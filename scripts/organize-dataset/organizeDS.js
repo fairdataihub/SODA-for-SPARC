@@ -22,28 +22,51 @@ const recursive_mark_sub_files_deleted = (dataset_folder, mode) => {
         continue;
       }
       if (mode === "delete") {
-        if (!dataset_folder["files"][file]["action"].includes("recursive_deleted")) {
+        if (
+          !dataset_folder["files"][file]["action"].includes("recursive_deleted")
+        ) {
           dataset_folder["files"][file]["action"].push("recursive_deleted");
         }
       } else if (mode === "restore") {
-        if (dataset_folder["files"][file]["action"].includes("recursive_deleted")) {
-          let index = dataset_folder["files"][file]["action"].indexOf("recursive_deleted");
+        if (
+          dataset_folder["files"][file]["action"].includes("recursive_deleted")
+        ) {
+          let index =
+            dataset_folder["files"][file]["action"].indexOf(
+              "recursive_deleted"
+            );
           dataset_folder["files"][file]["action"].splice(index, 1);
         }
       }
     }
   }
-  if ("folders" in dataset_folder && Object.keys(dataset_folder["folders"]).length !== 0) {
+  if (
+    "folders" in dataset_folder &&
+    Object.keys(dataset_folder["folders"]).length !== 0
+  ) {
     for (let folder in dataset_folder["folders"]) {
       recursive_mark_sub_files_deleted(dataset_folder["folders"][folder], mode);
       if ("action" in dataset_folder["folders"][folder]) {
         if (mode === "delete") {
-          if (!dataset_folder["folders"][folder]["action"].includes("recursive_deleted")) {
-            dataset_folder["folders"][folder]["action"].push("recursive_deleted");
+          if (
+            !dataset_folder["folders"][folder]["action"].includes(
+              "recursive_deleted"
+            )
+          ) {
+            dataset_folder["folders"][folder]["action"].push(
+              "recursive_deleted"
+            );
           }
         } else if (mode === "restore") {
-          if (dataset_folder["folders"][folder]["action"].includes("recursive_deleted")) {
-            let index = dataset_folder["folders"][folder]["action"].indexOf("recursive_deleted");
+          if (
+            dataset_folder["folders"][folder]["action"].includes(
+              "recursive_deleted"
+            )
+          ) {
+            let index =
+              dataset_folder["folders"][folder]["action"].indexOf(
+                "recursive_deleted"
+              );
             dataset_folder["folders"][folder]["action"].splice(index, 1);
           }
         }
@@ -53,7 +76,13 @@ const recursive_mark_sub_files_deleted = (dataset_folder, mode) => {
 };
 
 ///////// Option to delete folders or files
-function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGlobal) {
+function delFolder(
+  ev,
+  organizeCurrentLocation,
+  uiItem,
+  singleUIItem,
+  inputGlobal
+) {
   var itemToDelete = ev.parentElement.innerText;
   var promptVar;
   var type; // renaming files or folders
@@ -130,7 +159,10 @@ function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
         var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
 
         if (filtered.length == 1) {
-          let itemToRestore_new_key = itemToRestore.substring(0, itemToRestore.lastIndexOf("-"));
+          let itemToRestore_new_key = itemToRestore.substring(
+            0,
+            itemToRestore.lastIndexOf("-")
+          );
           if (itemToRestore_new_key in myPath[type]) {
             Swal.fire({
               title: `Unable to restore ${type}`,
@@ -150,20 +182,30 @@ function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
         }
 
         if (type === "folders") {
-          recursive_mark_sub_files_deleted(myPath[type][itemToDelete], "restore");
+          recursive_mark_sub_files_deleted(
+            myPath[type][itemToDelete],
+            "restore"
+          );
         }
 
         // update Json object with the restored object
         let index = myPath[type][itemToRestore]["action"].indexOf("deleted");
         myPath[type][itemToRestore]["action"].splice(index, 1);
-        let itemToRestore_new_key = itemToRestore.substring(0, itemToRestore.lastIndexOf("-"));
+        let itemToRestore_new_key = itemToRestore.substring(
+          0,
+          itemToRestore.lastIndexOf("-")
+        );
 
         // Add a (somenumber) if the file name already exists
         // Done using a loop to avoid a case where the same file number exists
         if (itemToRestore_new_key in myPath[type]) {
           myPath[type][itemToRestore]["action"].push("renamed");
-          itemToRestore_new_key_file_name = path.parse(itemToRestore_new_key).name;
-          itemToRestore_new_key_file_ext = path.parse(itemToRestore_new_key).ext;
+          itemToRestore_new_key_file_name = path.parse(
+            itemToRestore_new_key
+          ).name;
+          itemToRestore_new_key_file_ext = path.parse(
+            itemToRestore_new_key
+          ).ext;
           file_number = 1;
           while (true) {
             itemToRestore_potential_new_key =
@@ -214,7 +256,10 @@ function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
           var filtered = getGlobalPath(organizeCurrentLocation);
           var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
 
-          $("div.single-item.selected-item > .folder_desc").each(function (index, current_element) {
+          $("div.single-item.selected-item > .folder_desc").each(function (
+            index,
+            current_element
+          ) {
             itemToDelete = $(current_element).text();
             if (itemToDelete in myPath["files"]) {
               type = "files";
@@ -227,7 +272,10 @@ function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
                 myPath[type][itemToDelete]["action"].includes("existing"))
             ) {
               if (type === "folders") {
-                recursive_mark_sub_files_deleted(myPath[type][itemToDelete], "delete");
+                recursive_mark_sub_files_deleted(
+                  myPath[type][itemToDelete],
+                  "delete"
+                );
                 current_element.parentNode.remove();
               }
 
@@ -240,7 +288,8 @@ function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
                 delete myPath[type][itemToDelete];
                 let current_item = current_element.parentElement;
                 current_item.children[0].classList.add("deleted-file");
-                current_item.children[1].className = "folder_desc pennsieve_file";
+                current_item.children[1].className =
+                  "folder_desc pennsieve_file";
               }
             } else {
               delete myPath[type][itemToDelete];
@@ -249,7 +298,12 @@ function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
 
           // update UI with updated jsonobj
           listItems(myPath, uiItem, 500, (reset = true));
-          getInFolder(singleUIItem, uiItem, organizeCurrentLocation, inputGlobal);
+          getInFolder(
+            singleUIItem,
+            uiItem,
+            organizeCurrentLocation,
+            inputGlobal
+          );
           beginScrollListen();
         }
       });
@@ -283,7 +337,10 @@ function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
               myPath[type][itemToDelete]["action"].includes("existing"))
           ) {
             if (type === "folders") {
-              recursive_mark_sub_files_deleted(myPath[type][itemToDelete], "delete");
+              recursive_mark_sub_files_deleted(
+                myPath[type][itemToDelete],
+                "delete"
+              );
             }
 
             if (!myPath[type][itemToDelete]["action"].includes("deleted")) {
@@ -299,7 +356,12 @@ function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
           }
           // update UI with updated jsonobj
           listItems(myPath, uiItem, 500, (reset = true));
-          getInFolder(singleUIItem, uiItem, organizeCurrentLocation, inputGlobal);
+          getInFolder(
+            singleUIItem,
+            uiItem,
+            organizeCurrentLocation,
+            inputGlobal
+          );
           beginScrollListen();
         }
       });
@@ -339,7 +401,10 @@ function checkValidRenameInput(
     let double_ext_present = false;
     for (let index in double_extensions) {
       if (oldName.search(double_extensions[index]) != -1) {
-        newName = input.trim() + path.parse(path.parse(oldName).name).ext + path.parse(oldName).ext;
+        newName =
+          input.trim() +
+          path.parse(path.parse(oldName).name).ext +
+          path.parse(oldName).ext;
         double_ext_present = true;
         break;
       }
@@ -420,7 +485,8 @@ function renameFolder(
   var promptVar;
   var type; // renaming files or folders
   var newName;
-  var currentName = event1.parentElement.getElementsByTagName("div")[0].innerText;
+  var currentName =
+    event1.parentElement.getElementsByTagName("div")[0].innerText;
   var nameWithoutExtension;
   var highLevelFolderBool;
 
@@ -513,7 +579,9 @@ function renameFolder(
               Swal.showValidationMessage(
                 `The folder name cannot contains the following characters ${nonAllowedCharacters}, please rename to a different name!`
               );
-              let swal_message = document.getElementsByClassName("swal2-validation-message")[0];
+              let swal_message = document.getElementsByClassName(
+                "swal2-validation-message"
+              )[0];
               swal_message.style.margin = "1rem";
               $("#rename-folder-button").attr("disabled", true);
               return;
@@ -789,11 +857,13 @@ function showParentSwal(duplicateArray) {
   }
   if (tempFile[0].indexOf(".") != -1) {
     titleSwal = "Duplicate file(s) detected";
-    htmlSwal = "Files with the following names are already in the the current folder: ";
+    htmlSwal =
+      "Files with the following names are already in the the current folder: ";
     html_word = "Files";
   } else {
     titleSwal = "Duplicate folder(s) detected";
-    htmlSwal = "Folders with the following names are already in the current folder: ";
+    htmlSwal =
+      "Folders with the following names are already in the current folder: ";
     html_word = "Folders";
   }
   var listElements = showItemsAsListBootbox(tempFile);
@@ -978,7 +1048,9 @@ function handleDuplicateImports(btnId, duplicateArray, curationMode) {
       didOpen: () => {
         var confirm_button = document.getElementsByClassName("swal2-confirm");
         confirm_button[0].disabled = true;
-        var select_all = document.getElementById("container").parentElement.children[0].children[0];
+        var select_all =
+          document.getElementById("container").parentElement.children[0]
+            .children[0];
         var container = document.getElementById("container");
         var check_boxes = container.querySelectorAll("input[type=checkbox]");
         let checkedCount = 0;
@@ -1027,7 +1099,9 @@ function handleDuplicateImports(btnId, duplicateArray, curationMode) {
     }).then((result) => {
       if (result.isConfirmed) {
         let container = document.getElementById("container");
-        let checkboxes = container.querySelectorAll("input[type=checkbox]:checked");
+        let checkboxes = container.querySelectorAll(
+          "input[type=checkbox]:checked"
+        );
         var fileName = [];
         var newList = [];
         //remove slashes and place just file name in new array
@@ -1072,11 +1146,13 @@ function handleDuplicateImports(btnId, duplicateArray, curationMode) {
         let html_word = "";
         if (tempFile[0].indexOf(".") != -1) {
           titleSwal = "Duplicate file(s) detected";
-          htmlSwal = "Files with the following names are already in the the current folder: ";
+          htmlSwal =
+            "Files with the following names are already in the the current folder: ";
           html_word = "Files";
         } else {
           titleSwal = "Duplicate folder(s) detected";
-          htmlSwal = "Folders with the following names are already in the current folder: ";
+          htmlSwal =
+            "Folders with the following names are already in the current folder: ";
           html_word = "Folders";
         }
         Swal.fire({
@@ -1169,14 +1245,23 @@ function handleDuplicateImports(btnId, duplicateArray, curationMode) {
             element.addEventListener("input", function () {
               if (fileExt != -1) {
                 let first_ext = element.id.lastIndexOf(".");
-                let extType = element.id.substring(first_ext, element.id.length);
-                if (element.value === "" || keyCheck.hasOwnProperty(element.value + extType)) {
+                let extType = element.id.substring(
+                  first_ext,
+                  element.id.length
+                );
+                if (
+                  element.value === "" ||
+                  keyCheck.hasOwnProperty(element.value + extType)
+                ) {
                   confirm_button[0].disabled = true;
                 } else {
                   let one_input = false;
                   for (let i = 0; i < input_fields.length; i++) {
                     let file_Ext = input_fields[i].id.lastIndexOf(".");
-                    extType = input_fields[i].id.substring(file_Ext, input_fields[i].id.length);
+                    extType = input_fields[i].id.substring(
+                      file_Ext,
+                      input_fields[i].id.length
+                    );
                     if (
                       input_fields[i].value === "" ||
                       keyCheck.hasOwnProperty(input_fields[i].value + extType)
@@ -1194,12 +1279,18 @@ function handleDuplicateImports(btnId, duplicateArray, curationMode) {
                 }
               } else {
                 //working with folders
-                if (element.value === "" || keyCheck.hasOwnProperty(element.value)) {
+                if (
+                  element.value === "" ||
+                  keyCheck.hasOwnProperty(element.value)
+                ) {
                   confirm_button[0].disabled = true;
                 } else {
                   let one_input = false;
                   for (let i = 0; i < input_fields.length; i++) {
-                    if (input_fields[i].value === "" || keyCheck.hasOwnProperty(element.value)) {
+                    if (
+                      input_fields[i].value === "" ||
+                      keyCheck.hasOwnProperty(element.value)
+                    ) {
                       one_input = true;
                       break;
                     }
@@ -1233,7 +1324,8 @@ function handleDuplicateImports(btnId, duplicateArray, curationMode) {
                 //checks if newName has already been used
                 document.getElementById(inputField).style.borderColor = "red";
                 document.getElementById(inputField).value = "";
-                document.getElementById(inputField).placeholder = "Provide a new name";
+                document.getElementById(inputField).placeholder =
+                  "Provide a new name";
                 sameName.push(true);
               } else {
                 //if all elements are false then all newNames are original
@@ -1252,12 +1344,19 @@ function handleDuplicateImports(btnId, duplicateArray, curationMode) {
               justFileName = tempFile[i].substring(0, extIndex);
               let newName = document.getElementById(inputField).value;
 
-              let filewithExt = tempFile[i].substring(extIndex, tempFile[i].length);
+              let filewithExt = tempFile[i].substring(
+                extIndex,
+                tempFile[i].length
+              );
               newNamewithExt = newName.concat(filewithExt);
-              if (myPath["files"].hasOwnProperty(newNamewithExt) || newName == "") {
+              if (
+                myPath["files"].hasOwnProperty(newNamewithExt) ||
+                newName == ""
+              ) {
                 document.getElementById(inputField).style.borderColor = "red";
                 document.getElementById(inputField).value = "";
-                document.getElementById(inputField).placeholder = "Provide a new name";
+                document.getElementById(inputField).placeholder =
+                  "Provide a new name";
                 sameName.push(true);
               } else {
                 sameName.push(false);
@@ -1267,7 +1366,11 @@ function handleDuplicateImports(btnId, duplicateArray, curationMode) {
                 newName != "" &&
                 fileNames.includes(newName) === false
               ) {
-                fileNames.push(newName.concat(tempFile[i].substring(extIndex, tempFile[i].length)));
+                fileNames.push(
+                  newName.concat(
+                    tempFile[i].substring(extIndex, tempFile[i].length)
+                  )
+                );
                 fileLocation.push(temp[i]);
               }
             }
@@ -1291,9 +1394,19 @@ function handleDuplicateImports(btnId, duplicateArray, curationMode) {
                   action: ["new", "renamed"],
                 };
                 listItems(myPath, "#items");
-                getInFolder("#items", "#items", organizeDSglobalPath, datasetStructureJSONObj);
+                getInFolder(
+                  "#items",
+                  "#items",
+                  organizeDSglobalPath,
+                  datasetStructureJSONObj
+                );
                 hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-                hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
+                hideMenu(
+                  "high-level-folder",
+                  menuFolder,
+                  menuHighLevelFolders,
+                  menuFile
+                );
               }
             }
           } else {
@@ -1322,7 +1435,12 @@ function handleDuplicateImports(btnId, duplicateArray, curationMode) {
 
                 $("#items").html(appendString);
                 listItems(myPath, "#items");
-                getInFolder("#items", "#items", organizeDSglobalPath, datasetStructureJSONObj);
+                getInFolder(
+                  "#items",
+                  "#items",
+                  organizeDSglobalPath,
+                  datasetStructureJSONObj
+                );
               }
             }
           }
@@ -1341,7 +1459,9 @@ function handleDuplicateImports(btnId, duplicateArray, curationMode) {
           }
           var back_button = document.getElementById("button-back");
           back_button.click();
-          var folders = document.getElementById("items").getElementsByClassName("folder_desc");
+          var folders = document
+            .getElementById("items")
+            .getElementsByClassName("folder_desc");
           for (let i = 0; i < folders.length; i++) {
             if (folders[i].innerText === section) {
               folders[i].parentNode.dispatchEvent(new Event("dblclick"));
@@ -1404,7 +1524,9 @@ function handleDuplicateImports(btnId, duplicateArray, curationMode) {
       didOpen: () => {
         var confirm_button = document.getElementsByClassName("swal2-confirm");
         confirm_button[0].disabled = true;
-        var select_all = document.getElementById("container").parentElement.children[0].children[0];
+        var select_all =
+          document.getElementById("container").parentElement.children[0]
+            .children[0];
         var container = document.getElementById("container");
         var check_boxes = container.querySelectorAll("input[type=checkbox]");
         let checkedCount = 0;
@@ -1453,7 +1575,9 @@ function handleDuplicateImports(btnId, duplicateArray, curationMode) {
     }).then((result) => {
       if (result.isConfirmed) {
         container = document.getElementById("container");
-        var checkboxes = container.querySelectorAll("input[type=checkbox]:checked");
+        var checkboxes = container.querySelectorAll(
+          "input[type=checkbox]:checked"
+        );
         if (checkboxes.length > 0) {
           let fileCheck = [];
           for (let i = 0; i < temp.length; i++) {
@@ -1482,10 +1606,18 @@ function handleDuplicateImports(btnId, duplicateArray, curationMode) {
                 }
               }
               listItems(myPath, "#items");
-              getInFolder("#items", "#items", organizeDSglobalPath, datasetStructureJSONObj);
+              getInFolder(
+                "#items",
+                "#items",
+                organizeDSglobalPath,
+                datasetStructureJSONObj
+              );
             } else {
               let justName = checkboxes[i].id.substring(0, removeExt);
-              let ext = checkboxes[i].id.substring(removeExt, checkboxes[i].id.length);
+              let ext = checkboxes[i].id.substring(
+                removeExt,
+                checkboxes[i].id.length
+              );
               let index = fileCheck.indexOf(checkboxes[i].id);
               let fileName = checkboxes[i].id;
               delete myPath["files"][fileName];
@@ -1503,7 +1635,12 @@ function handleDuplicateImports(btnId, duplicateArray, curationMode) {
                 }
               }
               listItems(myPath, "#items");
-              getInFolder("#items", "#items", organizeDSglobalPath, datasetStructureJSONObj);
+              getInFolder(
+                "#items",
+                "#items",
+                organizeDSglobalPath,
+                datasetStructureJSONObj
+              );
             }
           }
           let section = organizeDSglobalPath.value;
@@ -1515,7 +1652,9 @@ function handleDuplicateImports(btnId, duplicateArray, curationMode) {
           }
           let back_button = document.getElementById("button-back");
           back_button.click();
-          let folders = document.getElementById("items").getElementsByClassName("folder_desc");
+          let folders = document
+            .getElementById("items")
+            .getElementsByClassName("folder_desc");
           for (let i = 0; i < folders.length; i++) {
             if (folders[i].innerText === section) {
               folders[i].parentNode.dispatchEvent(new Event("dblclick"));
@@ -1586,7 +1725,9 @@ const addFilesfunction = async (
   var nonAllowedCharacterFiles = [];
   const fileNameRegex = /[^-a-zA-z0-9]/g;
   let loadingIcon = document.getElementById("items_loading_container");
-  let loadingContainer = document.getElementById("loading-items-background-overlay");
+  let loadingContainer = document.getElementById(
+    "loading-items-background-overlay"
+  );
 
   for (var i = 0; i < fileArray.length; i++) {
     var fileName = fileArray[i];
@@ -1668,7 +1809,11 @@ const addFilesfunction = async (
             var nonAllowedDuplicate = false;
             //if file already exist in json
             if (fileName === currentLocation["files"][objectKey]["path"]) {
-              if (currentLocation["files"][objectKey]["action"].includes("renamed") === false) {
+              if (
+                currentLocation["files"][objectKey]["action"].includes(
+                  "renamed"
+                ) === false
+              ) {
                 //same path and has not been renamed
                 nonAllowedDuplicateFiles.push(fileName);
                 nonAllowedDuplicate = true;
@@ -1705,7 +1850,9 @@ const addFilesfunction = async (
       title:
         "The following files have an unexpected name starting with a period. How should we handle them?",
       html:
-        "<div style='max-height:300px; overflow-y:auto'>" + hiddenFiles.join("</br>") + "</div>",
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        hiddenFiles.join("</br>") +
+        "</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showDenyButton: true,
@@ -1735,7 +1882,9 @@ const addFilesfunction = async (
                 nonAllowedDuplicate = false;
                 if (file_name.substr(1, file_name.length) === objectKey) {
                   //if file already exist in json
-                  if (path_name === currentLocation["files"][objectKey]["path"]) {
+                  if (
+                    path_name === currentLocation["files"][objectKey]["path"]
+                  ) {
                     //same path and has not been renamed
                     nonAllowedDuplicateFiles.push(path_name);
                     nonAllowedDuplicate = true;
@@ -1785,7 +1934,9 @@ const addFilesfunction = async (
                 nonAllowedDuplicate = false;
                 //if file already exist in json
                 if (file_name === objectKey) {
-                  if (path_name === currentLocation["files"][objectKey]["path"]) {
+                  if (
+                    path_name === currentLocation["files"][objectKey]["path"]
+                  ) {
                     //same path and has not been renamed
                     nonAllowedDuplicateFiles.push(path_name);
                     nonAllowedDuplicate = true;
@@ -1840,11 +1991,13 @@ const addFilesfunction = async (
     if (baseName.length != 0) {
       if (baseName[0].indexOf(".") != -1) {
         titleSwal = "Duplicate file(s) detected";
-        htmlSwal = "Files with the following names are already in the the current folder: ";
+        htmlSwal =
+          "Files with the following names are already in the the current folder: ";
         html_word = "Files";
       } else {
         titleSwal = "Duplicate folder(s) detected";
-        htmlSwal = "Folders with the following names are already in the current folder: ";
+        htmlSwal =
+          "Folders with the following names are already in the current folder: ";
         html_word = "Folders";
       }
     }
@@ -1897,7 +2050,8 @@ const addFilesfunction = async (
       loadingIcon.style.display = "none";
     }
     await Swal.fire({
-      title: "The following files are banned as per SPARC guidelines and will not be imported",
+      title:
+        "The following files are banned as per SPARC guidelines and will not be imported",
       html:
         "<div style='max-height:300px; overflow-y:auto'>" +
         nonAllowedFiles.join("</br>") +
@@ -1931,7 +2085,9 @@ const addFilesfunction = async (
         currentLocation["files"][regularFiles[element]["basename"]]["path"]
       ).base;
       if (element !== originalName) {
-        currentLocation["files"][regularFiles[element]["basename"]]["action"].push("renamed");
+        currentLocation["files"][regularFiles[element]["basename"]][
+          "action"
+        ].push("renamed");
       }
     }
     await listItems(currentLocation, uiItem, 500);
@@ -1968,7 +2124,10 @@ let dataset_path = document.getElementById("input-global-path");
 function observeElement(element, property, callback, delay = 0) {
   let elementPrototype = Object.getPrototypeOf(element);
   if (elementPrototype.hasOwnProperty(property)) {
-    let descriptor = Object.getOwnPropertyDescriptor(elementPrototype, property);
+    let descriptor = Object.getOwnPropertyDescriptor(
+      elementPrototype,
+      property
+    );
     Object.defineProperty(element, property, {
       get: function () {
         return descriptor.get.apply(this, arguments);
@@ -1996,7 +2155,12 @@ function check_dataset_value() {
     var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
     amount = 500;
     listItems(myPath, "items", 500);
-    getInFolder(".single-item", "#items", dataset_path, datasetStructureJSONObj);
+    getInFolder(
+      ".single-item",
+      "#items",
+      dataset_path,
+      datasetStructureJSONObj
+    );
     beginScrollListen();
   }
 }
@@ -2028,7 +2192,8 @@ async function lazyLoad() {
       //loading icon is there
       if (
         item_box.scrollTop > item_box.scrollHeight - 300 ||
-        (item_box.scrollTop < 300 && item_box.children[0].id === "items_container")
+        (item_box.scrollTop < 300 &&
+          item_box.children[0].id === "items_container")
       ) {
         //for rerendering on scroll up
         //monitors when user scrolls back up to prepend elements
@@ -2056,7 +2221,12 @@ async function lazyLoad() {
             item_box.children[0].remove();
           }
         }
-        await getInFolder(".single-item", "#items", dataset_path, datasetStructureJSONObj);
+        await getInFolder(
+          ".single-item",
+          "#items",
+          dataset_path,
+          datasetStructureJSONObj
+        );
 
         if (item_box.lastChild.id === "items_container") {
           item_box.lastChild.remove();
@@ -2092,13 +2262,21 @@ async function lazyLoad() {
       }
     }
   } else {
-    if (item_box.scrollTop + 50 > item_box.scrollHeight - item_box.offsetHeight) {
+    if (
+      item_box.scrollTop + 50 >
+      item_box.scrollHeight - item_box.offsetHeight
+    ) {
       //user scrolls down, render more items if available
       let wait4items = new Promise(async (resolved) => {
         amount += 500;
         await listItems(myPath, uiItems, amount);
         // add_items_to_view(already_created_elem, 400);
-        await getInFolder(".single-item", "#items", dataset_path, datasetStructureJSONObj);
+        await getInFolder(
+          ".single-item",
+          "#items",
+          dataset_path,
+          datasetStructureJSONObj
+        );
         resolved();
       });
     }
@@ -2140,7 +2318,9 @@ async function add_items_to_view(list, amount_req, reset) {
   if (item_box.children[0] != undefined) {
     if (
       item_box.children[0].id === "items_container" ||
-      item_box.children[0].classList.contains("drag-drop-container-instructions")
+      item_box.children[0].classList.contains(
+        "drag-drop-container-instructions"
+      )
     ) {
       item_box.children[0].remove();
     }
@@ -2187,14 +2367,22 @@ const resetLazyLoading = () => {
 
 ///// function to load details to show in display once
 ///// users click Show details
-function loadDetailsContextMenu(fileName, filePath, textareaID1, textareaID2, paraLocalPath) {
+function loadDetailsContextMenu(
+  fileName,
+  filePath,
+  textareaID1,
+  textareaID2,
+  paraLocalPath
+) {
   if ("description" in filePath["files"][fileName]) {
-    document.getElementById(textareaID1).value = filePath["files"][fileName]["description"];
+    document.getElementById(textareaID1).value =
+      filePath["files"][fileName]["description"];
   } else {
     document.getElementById(textareaID1).value = "";
   }
   if ("additional-metadata" in filePath["files"][fileName]) {
-    document.getElementById(textareaID2).value = filePath["files"][fileName]["additional-metadata"];
+    document.getElementById(textareaID2).value =
+      filePath["files"][fileName]["additional-metadata"];
   } else {
     document.getElementById(textareaID2).value = "";
   }
@@ -2204,22 +2392,33 @@ function loadDetailsContextMenu(fileName, filePath, textareaID1, textareaID2, pa
   if (filePath["files"][fileName]["type"] === "bf") {
     path_label.innerHTML = "<b>Pennsieve path:<br></b>";
     bf_path = "";
-    filePath["files"][fileName]["bfpath"].forEach((item) => (bf_path += item + "/"));
+    filePath["files"][fileName]["bfpath"].forEach(
+      (item) => (bf_path += item + "/")
+    );
     bf_path += fileName;
     document.getElementById(paraLocalPath).innerHTML = bf_path;
   } else {
     path_label.innerHTML = "<b>Local path:<br></b>";
-    document.getElementById(paraLocalPath).innerHTML = filePath["files"][fileName]["path"];
+    document.getElementById(paraLocalPath).innerHTML =
+      filePath["files"][fileName]["path"];
   }
 }
 
 //path_label = document.querySelector("#organize-dataset-tab > div > div > div > div.div-display-details.file > div:nth-child(2) > label");
 
-function triggerManageDetailsPrompts(ev, fileName, filePath, textareaID1, textareaID2) {
+function triggerManageDetailsPrompts(
+  ev,
+  fileName,
+  filePath,
+  textareaID1,
+  textareaID2
+) {
   filePath["files"][fileName]["additional-metadata"] = document
     .getElementById(textareaID2)
     .value.trim();
-  filePath["files"][fileName]["description"] = document.getElementById(textareaID1).value.trim();
+  filePath["files"][fileName]["description"] = document
+    .getElementById(textareaID1)
+    .value.trim();
   // check for "Apply to all files"
   if (document.getElementById("input-add-file-metadata").checked) {
     for (var file in filePath["files"]) {
@@ -2230,7 +2429,9 @@ function triggerManageDetailsPrompts(ev, fileName, filePath, textareaID1, textar
   }
   if (document.getElementById("input-add-file-description").checked) {
     for (var file in filePath["files"]) {
-      filePath["files"][file]["description"] = document.getElementById(textareaID1).value.trim();
+      filePath["files"][file]["description"] = document
+        .getElementById(textareaID1)
+        .value.trim();
     }
   }
   // $(this).html("Done <i class='fas fa-check'></i>");

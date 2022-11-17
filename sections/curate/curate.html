@@ -1,10 +1,18 @@
-<section id="curate-section" class="section js-section u-category-windows" style="left: 235px">
+<section
+  id="curate-section"
+  class="section js-section u-category-windows"
+  style="left: 235px"
+>
   <head>
     <title>SODA - Keep calm and curate</title>
     <!-- <link rel="import" href="sections/curate/organize_files.html"> -->
   </head>
 
-  <main class="dash-content main show" id="curate_main" style="grid-template-columns: 1% 84% 15%">
+  <main
+    class="dash-content main show"
+    id="curate_main"
+    style="grid-template-columns: 1% 84% 15%"
+  >
     <h1 style="color: var(--color-accent); margin-bottom: 0">
       <svg
         style="margin-right: 20px; margin-bottom: -4px"
@@ -56,7 +64,13 @@
           style="background: #f6f6f6; pointer-events: none"
           id="button-section-validate-dataset"
         >
-          <h5 style="font-family: 'Raleway', sans-serif; color: #585858; font-size: 17px">
+          <h5
+            style="
+              font-family: 'Raleway', sans-serif;
+              color: #585858;
+              font-size: 17px;
+            "
+          >
             Validate dataset
           </h5>
           <svg
@@ -266,16 +280,30 @@
               id="Question-getting-started-1"
               style="text-align: -webkit-center"
             >
-              <div class="ui form" style="width: 100%; text-align: -webkit-center">
+              <div
+                class="ui form"
+                style="width: 100%; text-align: -webkit-center"
+              >
                 <div class="grouped fields">
-                  <label style="font-size: 17px; text-align: center; color: var(--color-bg-plum)"
+                  <label
+                    style="
+                      font-size: 17px;
+                      text-align: center;
+                      color: var(--color-bg-plum);
+                    "
                     >Let's get started. What would you like to do?
 
                     <br /><span style="color: #898989; font-size: 12px"
                       >Please select one:</span
                     ></label
                   >
-                  <div style="display: flex; flex-direction: row; justify-content: center">
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: center;
+                    "
+                  >
                     <div style="margin: 15px 0">
                       <div
                         class="option-card radio-button getting-started-1st-question"
@@ -339,7 +367,9 @@
                         </div>
                         <div class="card-body">
                           <i class="far fa-save" style="color: #13716d"></i>
-                          <h2>Continue with a previously saved progress in SODA</h2>
+                          <h2>
+                            Continue with a previously saved progress in SODA
+                          </h2>
                         </div>
                       </div>
                     </div>
@@ -421,7 +451,9 @@
                               fill="#13716D"
                             />
                           </svg>
-                          <h2>Continue working on an existing Pennsieve dataset</h2>
+                          <h2>
+                            Continue working on an existing Pennsieve dataset
+                          </h2>
                         </div>
                       </div>
                     </div>
@@ -436,12 +468,21 @@
             >
               <div class="ui form" style="width: 450px">
                 <div class="grouped fields">
-                  <label style="font-size: 17px; color: var(--color-bg-plum); text-align: center"
+                  <label
+                    style="
+                      font-size: 17px;
+                      color: var(--color-bg-plum);
+                      text-align: center;
+                    "
                     >What is the location of the dataset?</label
                   >
                   <div
                     class="field"
-                    style="margin: 15px auto; display: flex; justify-content: center"
+                    style="
+                      margin: 15px auto;
+                      display: flex;
+                      justify-content: center;
+                    "
                   >
                     <input
                       class="form-control"
@@ -453,9 +494,17 @@
                     />
                   </div>
                 </div>
-                <div id="loading_local_dataset" class="circular" style="display: none; top: -25%">
+                <div
+                  id="loading_local_dataset"
+                  class="circular"
+                  style="display: none; top: -25%"
+                >
                   <div class="inner" style="top: 90%; left: 20%"></div>
-                  <div id="local_dataset_number" class="number" style="top: 129%; left: 50%">
+                  <div
+                    id="local_dataset_number"
+                    class="number"
+                    style="top: 129%; left: 50%"
+                  >
                     0%
                   </div>
                   <div class="circle">
@@ -463,14 +512,21 @@
                       <div id="left-side_less_than_50" class="progress"></div>
                     </div>
                     <div class="bar right">
-                      <div id="right-side_greater_than_50" class="progress"></div>
+                      <div
+                        id="right-side_greater_than_50"
+                        class="progress"
+                      ></div>
                     </div>
                   </div>
                 </div>
                 <br />
                 <p
                   id="para-continue-location-dataset-getting-started"
-                  style="text-align: center; font-weight: 600; color: var(--color-light-green)"
+                  style="
+                    text-align: center;
+                    font-weight: 600;
+                    color: var(--color-light-green);
+                  "
                 ></p>
               </div>
             </div>
@@ -481,9 +537,14 @@
             >
               <div class="ui form" style="width: 450px">
                 <div class="grouped fields">
-                  <label style="font-size: 17px; color: var(--color-bg-plum); text-align: center"
-                    >Which dataset would you like to continue working on? <br /><span
-                      style="color: #696969; font-size: 13px"
+                  <label
+                    style="
+                      font-size: 17px;
+                      color: var(--color-bg-plum);
+                      text-align: center;
+                    "
+                    >Which dataset would you like to continue working on?
+                    <br /><span style="color: #696969; font-size: 13px"
                       >Please select one:
                     </span></label
                   >
@@ -493,7 +554,11 @@
                       onchange="loadProgressFile(this)"
                       name="progress file"
                       class="ui selection dropdown"
-                      style="width: 450px !important; border-radius: 7px; padding: 8px"
+                      style="
+                        width: 450px !important;
+                        border-radius: 7px;
+                        padding: 8px;
+                      "
                     >
                       <option>Select</option>
                     </select>
@@ -517,7 +582,12 @@
             >
               <div class="ui form" style="width: 100%">
                 <div class="grouped fields">
-                  <label style="font-size: 17px; color: var(--color-bg-plum); text-align: center"
+                  <label
+                    style="
+                      font-size: 17px;
+                      color: var(--color-bg-plum);
+                      text-align: center;
+                    "
                     >What is your Pennsieve account?</label
                   >
                   <div class="field" style="margin: 5px auto; width: 550px">
@@ -542,7 +612,10 @@
                         "
                       >
                         <div class="card-container manage-dataset">
-                          <h5 class="card-left" style="color: #808080; font-size: 15px">
+                          <h5
+                            class="card-left"
+                            style="color: #808080; font-size: 15px"
+                          >
                             Current account:
                           </h5>
                           <div class="change-current-account">
@@ -584,13 +657,22 @@
                       >
                         <h5
                           class="card-left"
-                          style="color: #808080; font-size: 15px; margin-left: 5px"
+                          style="
+                            color: #808080;
+                            font-size: 15px;
+                            margin-left: 5px;
+                          "
                         >
                           Account details:
                         </h5>
                         <p
                           class="card-right"
-                          style="color: #000; font-weight: 600; font-size: 15px; margin-left: -20px"
+                          style="
+                            color: #000;
+                            font-weight: 600;
+                            font-size: 15px;
+                            margin-left: -20px;
+                          "
                           id="para-account-detail-curate"
                         >
                           None
@@ -612,7 +694,11 @@
                       class="btn_animated"
                       onclick="transitionSubQuestions(this, 'Question-getting-started-BF-account', 'getting-started-tab', 'delete', 'individual-question getting-started')"
                       data-next="Question-getting-started-BF-dataset"
-                      style="margin: 0 10px; width: 100px; border: none !important"
+                      style="
+                        margin: 0 10px;
+                        width: 100px;
+                        border: none !important;
+                      "
                     >
                       Confirm
                     </button>
@@ -628,7 +714,8 @@
               <div class="ui form" style="width: 100%">
                 <div class="grouped fields">
                   <label style="font-size: 17px; color: var(--color-bg-plum)"
-                    >Which existing Pennsieve dataset would you like to use?</label
+                    >Which existing Pennsieve dataset would you like to
+                    use?</label
                   >
                   <div class="field" style="margin: 15px auto; width: 450px">
                     <div
@@ -643,8 +730,17 @@
                         border-radius: 5px;
                       "
                     >
-                      <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                        <h5 class="card-left" style="color: #808080; font-size: 15px">
+                      <div
+                        style="
+                          display: flex;
+                          flex-direction: row;
+                          margin-bottom: 15px;
+                        "
+                      >
+                        <h5
+                          class="card-left"
+                          style="color: #808080; font-size: 15px"
+                        >
                           Current dataset:
                         </h5>
                         <div class="change-current-account" style="flex: auto">
@@ -702,12 +798,16 @@
                         Confirm
                       </button>
                       <p
-                        style="text-align: center; font-weight: 600; display: none"
+                        style="
+                          text-align: center;
+                          font-weight: 600;
+                          display: none;
+                        "
                         id="dataset-loaded-message"
                       >
                         <span
-                          >Your requested dataset has been loaded successfully. Please select
-                          continue below!</span
+                          >Your requested dataset has been loaded successfully.
+                          Please select continue below!</span
                         >
                       </p>
                     </div>
@@ -730,7 +830,9 @@
                         "
                       >
                         <div class="inner"></div>
-                        <div class="pennsieve_loading_dataset_percentage fix">0%</div>
+                        <div class="pennsieve_loading_dataset_percentage fix">
+                          0%
+                        </div>
                         <div class="circle">
                           <div class="bar left">
                             <div
@@ -770,7 +872,11 @@
             >
               <p
                 id="para-continue-prepare-new-getting-started"
-                style="text-align: center; font-weight: 600; color: var(--color-light-green)"
+                style="
+                  text-align: center;
+                  font-weight: 600;
+                  color: var(--color-light-green);
+                "
               ></p>
             </div>
 
@@ -811,7 +917,11 @@
             <div class="container-body condensed" style="min-height: 450px">
               <h3
                 class="question-title"
-                style="text-align: center; padding-bottom: 5px; margin-bottom: 0"
+                style="
+                  text-align: center;
+                  padding-bottom: 5px;
+                  margin-bottom: 0;
+                "
               >
                 Which SPARC high-level folders<br />
                 would you like to add to your dataset?<br />
@@ -819,7 +929,9 @@
                   >Note: You will be able to delete undesired folders in step 3.
                 </span>
                 <br />
-                <span style="color: #696969; font-size: 13px">Please select at least one: </span>
+                <span style="color: #696969; font-size: 13px"
+                  >Please select at least one:
+                </span>
               </h3>
               <div>
                 <div class="first-three-high-level-folders">
@@ -827,26 +939,36 @@
                     <div class="card-head">
                       <h2><i class="fas fa-folder"></i>code</h2>
                       <div class="folder-checkbox" style="float: right">
-                        <input class="folder-input-check" id="code-check" type="checkbox" />
+                        <input
+                          class="folder-input-check"
+                          id="code-check"
+                          type="checkbox"
+                        />
                         <label for="code-check"></label>
                       </div>
                     </div>
                     <div class="card-body">
-                      <p>Folder containing all the source code used in the study</p>
+                      <p>
+                        Folder containing all the source code used in the study
+                      </p>
                     </div>
                   </div>
                   <div class="option-card high-level-folders">
                     <div class="card-head">
                       <h2><i class="fas fa-folder"></i>primary</h2>
                       <div class="folder-checkbox">
-                        <input class="folder-input-check" id="primary-check" type="checkbox" />
+                        <input
+                          class="folder-input-check"
+                          id="primary-check"
+                          type="checkbox"
+                        />
                         <label for="primary-check"></label>
                       </div>
                     </div>
                     <div class="card-body">
                       <p>
-                        Folder containing all folders and files for experimental subjects and/or
-                        samples
+                        Folder containing all folders and files for experimental
+                        subjects and/or samples
                       </p>
                     </div>
                   </div>
@@ -854,14 +976,18 @@
                     <div class="card-head">
                       <h2><i class="fas fa-folder"></i>source</h2>
                       <div class="folder-checkbox">
-                        <input class="folder-input-check" id="source-check" type="checkbox" />
+                        <input
+                          class="folder-input-check"
+                          id="source-check"
+                          type="checkbox"
+                        />
                         <label for="source-check"></label>
                       </div>
                     </div>
                     <div class="card-body">
                       <p>
-                        Folder containing very raw data i.e. raw or untouched files from an
-                        experiment
+                        Folder containing very raw data i.e. raw or untouched
+                        files from an experiment
                       </p>
                     </div>
                   </div>
@@ -871,14 +997,18 @@
                     <div class="card-head">
                       <h2><i class="fas fa-folder"></i>docs</h2>
                       <div class="folder-checkbox">
-                        <input class="folder-input-check" id="docs-check" type="checkbox" />
+                        <input
+                          class="folder-input-check"
+                          id="docs-check"
+                          type="checkbox"
+                        />
                         <label for="docs-check"></label>
                       </div>
                     </div>
                     <div class="card-body">
                       <p>
-                        Folder containing all other supporting files that don't belong to any of the
-                        other folders
+                        Folder containing all other supporting files that don't
+                        belong to any of the other folders
                       </p>
                     </div>
                   </div>
@@ -886,22 +1016,32 @@
                     <div class="card-head">
                       <h2><i class="fas fa-folder"></i>protocol</h2>
                       <div class="folder-checkbox">
-                        <input class="folder-input-check" id="protocol-check" type="checkbox" />
+                        <input
+                          class="folder-input-check"
+                          id="protocol-check"
+                          type="checkbox"
+                        />
                         <label for="protocol-check"></label>
                       </div>
                     </div>
                     <div class="card-body">
                       <p>
-                        Folder containing supplementary files to accompany the protocols submitted
-                        to Protocols.io.
+                        Folder containing supplementary files to accompany the
+                        protocols submitted to Protocols.io.
                       </p>
                     </div>
                   </div>
                   <div class="option-card high-level-folders">
                     <div class="card-head">
-                      <h2 style="padding-left: 15px"><i class="fas fa-folder"></i>derivative</h2>
+                      <h2 style="padding-left: 15px">
+                        <i class="fas fa-folder"></i>derivative
+                      </h2>
                       <div class="folder-checkbox">
-                        <input class="folder-input-check" id="derivative-check" type="checkbox" />
+                        <input
+                          class="folder-input-check"
+                          id="derivative-check"
+                          type="checkbox"
+                        />
                         <label for="derivative-check"></label>
                       </div>
                     </div>
@@ -943,12 +1083,21 @@
                   /> -->
               </a>
               <br /><br />
-              <span style="margin-top: 0; color: #000; font-size: 14px; font-weight: 500">
+              <span
+                style="
+                  margin-top: 0;
+                  color: #000;
+                  font-size: 14px;
+                  font-weight: 500;
+                "
+              >
                 Virtually structure your dataset in the interface below.
                 <br />
-                Double click on any high-level SPARC folder (they could be added here from Step 2)
+                Double click on any high-level SPARC folder (they could be added
+                here from Step 2)
                 <br />
-                and organize your dataset by importing files, creating folders, and renaming them.
+                and organize your dataset by importing files, creating folders,
+                and renaming them.
                 <br />
                 You may also drag and drop your files and folders here.
                 <br />
@@ -968,7 +1117,14 @@
                 justify-content: space-between;
               "
             >
-              <div style="width: 100%; display: flex; flex-direction: row; margin-right: 1rem">
+              <div
+                style="
+                  width: 100%;
+                  display: flex;
+                  flex-direction: row;
+                  margin-right: 1rem;
+                "
+              >
                 <div
                   class="container-fluid freeform-file-explorer"
                   id="free-form-folder-structure-container"
@@ -982,7 +1138,11 @@
                     <!-- <h5 style="cursor: pointer;float:left;font-size:15px;color:var(--tagify-dd-color-primary)">
           <a style="text-decoration:underline" id="globa-path-folder-1">My dataset </a><i class="fas fa-chevron-right" style="margin-left:5px;margin-right:5px;font-size:12px;"></i>
         </h5> -->
-                    <button id="button-back" class="button-back" style="float: left">
+                    <button
+                      id="button-back"
+                      class="button-back"
+                      style="float: left"
+                    >
                       <i class="fas fa-arrow-left fa-fw"></i>
                     </button>
                     <input
@@ -1059,32 +1219,63 @@
                           aria-labelledby="btnGroupDrop1"
                         >
                           <a class="dropdown-item" id="add-files" href="#"
-                            ><i class="fas fa-upload" style="margin-right: 5px"></i>Import files</a
+                            ><i
+                              class="fas fa-upload"
+                              style="margin-right: 5px"
+                            ></i
+                            >Import files</a
                           >
                           <a class="dropdown-item" id="add-folders" href="#"
-                            ><i class="fas fa-upload" style="margin-right: 5px"></i>Import
-                            folders</a
+                            ><i
+                              class="fas fa-upload"
+                              style="margin-right: 5px"
+                            ></i
+                            >Import folders</a
                           >
                         </div>
                       </div>
                     </div>
                   </div>
                   <!-- These are the context menu options, will not appear on the UI until prompted -->
-                  <ul class="menu reg-folder off shared-folder-structure-element">
-                    <li id="reg-folder-rename"><i class="fas fa-edit fa-fw"></i>Rename</li>
-                    <li id="folder-move"><i class="fas fa-external-link-alt"></i>Move</li>
-                    <li id="reg-folder-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
+                  <ul
+                    class="menu reg-folder off shared-folder-structure-element"
+                  >
+                    <li id="reg-folder-rename">
+                      <i class="fas fa-edit fa-fw"></i>Rename
+                    </li>
+                    <li id="folder-move">
+                      <i class="fas fa-external-link-alt"></i>Move
+                    </li>
+                    <li id="reg-folder-delete">
+                      <i class="far fa-trash-alt fa-fw"></i>Delete
+                    </li>
                   </ul>
-                  <ul class="menu high-level-folder off shared-folder-structure-element">
-                    <li id="high-folder-rename"><i class="fas fa-edit fa-fw"></i>Rename</li>
-                    <li id="high-folder-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
-                    <li id="tooltip-folders"><i class="fas fa-info fa-fw"></i>Details</li>
+                  <ul
+                    class="menu high-level-folder off shared-folder-structure-element"
+                  >
+                    <li id="high-folder-rename">
+                      <i class="fas fa-edit fa-fw"></i>Rename
+                    </li>
+                    <li id="high-folder-delete">
+                      <i class="far fa-trash-alt fa-fw"></i>Delete
+                    </li>
+                    <li id="tooltip-folders">
+                      <i class="fas fa-info fa-fw"></i>Details
+                    </li>
                   </ul>
                   <ul class="menu file off shared-folder-structure-element">
-                    <li id="file-rename"><i class="fas fa-edit fa-fw"></i>Rename</li>
-                    <li id="file-move"><i class="fas fa-external-link-alt"></i>Move</li>
-                    <li id="file-delete"><i class="far fa-trash-alt fa-fw"></i>Delete</li>
-                    <li id="file-description"><i class="far fa-plus-square fa-fw"></i>Details</li>
+                    <li id="file-rename">
+                      <i class="fas fa-edit fa-fw"></i>Rename
+                    </li>
+                    <li id="file-move">
+                      <i class="fas fa-external-link-alt"></i>Move
+                    </li>
+                    <li id="file-delete">
+                      <i class="far fa-trash-alt fa-fw"></i>Delete
+                    </li>
+                    <li id="file-description">
+                      <i class="far fa-plus-square fa-fw"></i>Details
+                    </li>
                   </ul>
                   <!-- <span class="hoverPath" style="display: none"></span> -->
                   <span
@@ -1131,7 +1322,8 @@
                         id="input-add-file-description"
                         type="checkbox"
                         style="color: #000; float: left; margin-top: 4px"
-                      /><label style="color: #000; float: left; margin-left: 5px"
+                      /><label
+                        style="color: #000; float: left; margin-left: 5px"
                         >Apply to all files in this folder</label
                       >
                     </div>
@@ -1152,7 +1344,8 @@
                         id="input-add-file-metadata"
                         type="checkbox"
                         style="color: #000; float: left; margin-top: 4px"
-                      /><label style="color: #000; float: left; margin-left: 5px"
+                      /><label
+                        style="color: #000; float: left; margin-left: 5px"
                         >Apply to all files in this folder</label
                       >
                     </div>
@@ -1211,7 +1404,10 @@
               <div style="margin-bottom: 15px">
                 <div class="flex-main-container">
                   <div class="flex-row-container">
-                    <div class="flex-content-container" style="flex-direction: column">
+                    <div
+                      class="flex-content-container"
+                      style="flex-direction: column"
+                    >
                       <div class="header-container">
                         <p class="content-header metadata-step4">
                           Mandatory high-level metadata files
@@ -1233,7 +1429,9 @@
                             <path
                               d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
                             ></path>
-                            <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"></path>
+                            <path
+                              d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"
+                            ></path>
                             <path
                               fill-rule="evenodd"
                               d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
@@ -1253,7 +1451,12 @@
                               d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
                             ></path>
                           </svg>
-                          <p style="margin-top: 30px; font-family: 'Raleway', sans-serif">
+                          <p
+                            style="
+                              margin-top: 30px;
+                              font-family: 'Raleway', sans-serif;
+                            "
+                          >
                             submission
                           </p>
                         </button>
@@ -1273,7 +1476,9 @@
                             <path
                               d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
                             ></path>
-                            <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"></path>
+                            <path
+                              d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"
+                            ></path>
                             <path
                               fill-rule="evenodd"
                               d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
@@ -1293,7 +1498,12 @@
                               d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
                             ></path>
                           </svg>
-                          <p style="margin-top: 30px; font-family: 'Raleway', sans-serif">
+                          <p
+                            style="
+                              margin-top: 30px;
+                              font-family: 'Raleway', sans-serif;
+                            "
+                          >
                             dataset_description
                           </p></button
                         ><button
@@ -1311,7 +1521,9 @@
                             <path
                               d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
                             ></path>
-                            <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"></path>
+                            <path
+                              d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"
+                            ></path>
                             <path
                               fill-rule="evenodd"
                               d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
@@ -1331,7 +1543,14 @@
                               d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
                             ></path>
                           </svg>
-                          <p style="margin-top: 30px; font-family: 'Raleway', sans-serif">README</p>
+                          <p
+                            style="
+                              margin-top: 30px;
+                              font-family: 'Raleway', sans-serif;
+                            "
+                          >
+                            README
+                          </p>
                         </button>
                       </div>
                     </div>
@@ -1359,7 +1578,9 @@
                             <path
                               d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
                             ></path>
-                            <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"></path>
+                            <path
+                              d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"
+                            ></path>
                             <path
                               fill-rule="evenodd"
                               d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
@@ -1379,7 +1600,12 @@
                               d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
                             ></path>
                           </svg>
-                          <p style="margin-top: 30px; font-family: 'Raleway', sans-serif">
+                          <p
+                            style="
+                              margin-top: 30px;
+                              font-family: 'Raleway', sans-serif;
+                            "
+                          >
                             subjects
                           </p>
                         </button>
@@ -1400,7 +1626,9 @@
                             <path
                               d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
                             ></path>
-                            <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"></path>
+                            <path
+                              d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"
+                            ></path>
                             <path
                               fill-rule="evenodd"
                               d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
@@ -1420,7 +1648,12 @@
                               d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
                             ></path>
                           </svg>
-                          <p style="margin-top: 30px; font-family: 'Raleway', sans-serif">
+                          <p
+                            style="
+                              margin-top: 30px;
+                              font-family: 'Raleway', sans-serif;
+                            "
+                          >
                             samples
                           </p>
                         </button>
@@ -1440,7 +1673,9 @@
                             <path
                               d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
                             ></path>
-                            <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"></path>
+                            <path
+                              d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"
+                            ></path>
                             <path
                               fill-rule="evenodd"
                               d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
@@ -1460,7 +1695,12 @@
                               d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
                             ></path>
                           </svg>
-                          <p style="margin-top: 30px; font-family: 'Raleway', sans-serif">
+                          <p
+                            style="
+                              margin-top: 30px;
+                              font-family: 'Raleway', sans-serif;
+                            "
+                          >
                             CHANGES
                           </p>
                         </button>
@@ -1470,10 +1710,15 @@
                   <!-- </div> -->
                   <!-- <div> -->
 
-                  <div class="flex-row-container code-metadata" style="display: flex">
+                  <div
+                    class="flex-row-container code-metadata"
+                    style="display: flex"
+                  >
                     <div class="flex-content-container">
                       <div class="header-container">
-                        <p class="content-header metadata-step4">Code-related metadata file</p>
+                        <p class="content-header metadata-step4">
+                          Code-related metadata file
+                        </p>
                       </div>
                       <div class="button-container">
                         <button
@@ -1492,7 +1737,9 @@
                             <path
                               d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
                             ></path>
-                            <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"></path>
+                            <path
+                              d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"
+                            ></path>
                             <path
                               fill-rule="evenodd"
                               d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
@@ -1512,7 +1759,12 @@
                               d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
                             ></path>
                           </svg>
-                          <p style="margin-top: 30px; font-family: 'Raleway', sans-serif">
+                          <p
+                            style="
+                              margin-top: 30px;
+                              font-family: 'Raleway', sans-serif;
+                            "
+                          >
                             code_description
                           </p>
                         </button>
@@ -1532,7 +1784,9 @@
                             <path
                               d="M4 0h5.5v1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5h1V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2z"
                             ></path>
-                            <path d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"></path>
+                            <path
+                              d="M9.5 3V0L14 4.5h-3A1.5 1.5 0 0 1 9.5 3z"
+                            ></path>
                             <path
                               fill-rule="evenodd"
                               d="M8 6.5a.5.5 0 0 1 .5.5v1.5H10a.5.5 0 0 1 0 1H8.5V11a.5.5 0 0 1-1 0V9.5H6a.5.5 0 0 1 0-1h1.5V7a.5.5 0 0 1 .5-.5z"
@@ -1552,7 +1806,12 @@
                               d="M13.854 3.646a.5.5 0 0 1 0 .708l-7 7a.5.5 0 0 1-.708 0l-3.5-3.5a.5.5 0 1 1 .708-.708L6.5 10.293l6.646-6.647a.5.5 0 0 1 .708 0z"
                             ></path>
                           </svg>
-                          <p style="margin-top: 30px; font-family: 'Raleway', sans-serif">
+                          <p
+                            style="
+                              margin-top: 30px;
+                              font-family: 'Raleway', sans-serif;
+                            "
+                          >
                             code_parameters
                           </p>
                         </button>
@@ -1611,7 +1870,13 @@
                     </svg>
                     <!-- <i style="font-size: 70px;color:var(--tagify-dd-color-primary)" class="fas fa-cloud-upload-alt"></i> -->
                   </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
+                  <p
+                    style="
+                      font-size: 13px;
+                      margin-top: 10px;
+                      margin-bottom: 5px;
+                    "
+                  >
                     Drag and drop your <br />
                     file here OR
                   </p>
@@ -1623,7 +1888,10 @@
                     Choose file
                   </button>
                 </div>
-                <div class="div-file-import pennsieve" id="metadata-submission-pennsieve">
+                <div
+                  class="div-file-import pennsieve"
+                  id="metadata-submission-pennsieve"
+                >
                   <p style="font-weight: bold">Import Pennsieve file</p>
                   <div>
                     <svg
@@ -1645,7 +1913,13 @@
                       />
                     </svg>
                   </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
+                  <p
+                    style="
+                      font-size: 13px;
+                      margin-top: 10px;
+                      margin-bottom: 5px;
+                    "
+                  >
                     Use the file present <br />
                     on Pennsieve
                   </p>
@@ -1658,7 +1932,10 @@
                 </div>
               </div>
               <div style="width: 80%; margin: 10px auto">
-                <p class="para-metadata-file-status" id="para-submission-file-path"></p>
+                <p
+                  class="para-metadata-file-status"
+                  id="para-submission-file-path"
+                ></p>
               </div>
               <div
                 class="div-metadata-confirm"
@@ -1708,7 +1985,8 @@
                     border: 1px solid var(--color-bg-plum);
                   "
                 >
-                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i
+                  >Back
                 </button>
               </div>
             </div>
@@ -1716,7 +1994,8 @@
             <!-- dataset desc. -->
             <div id="datasetDescriptionUpload" class="div-individual-metadata">
               <h5 style="text-align: center; color: #585858; font-size: 16px">
-                dataset_description <br />(must be in .csv, .xlsx, or .json format)
+                dataset_description <br />(must be in .csv, .xlsx, or .json
+                format)
               </h5>
               <div style="margin-top: 25px; text-align: center">
                 <h5 style="text-align: center"></h5>
@@ -1746,7 +2025,13 @@
                       />
                     </svg>
                   </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
+                  <p
+                    style="
+                      font-size: 13px;
+                      margin-top: 10px;
+                      margin-bottom: 5px;
+                    "
+                  >
                     Drag and drop your <br />
                     file here OR
                   </p>
@@ -1757,7 +2042,10 @@
                     Choose file
                   </button>
                 </div>
-                <div class="div-file-import pennsieve" id="metadata-ds-description-pennsieve">
+                <div
+                  class="div-file-import pennsieve"
+                  id="metadata-ds-description-pennsieve"
+                >
                   <p style="font-weight: bold">Import Pennsieve file</p>
                   <div>
                     <svg
@@ -1779,7 +2067,13 @@
                       />
                     </svg>
                   </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
+                  <p
+                    style="
+                      font-size: 13px;
+                      margin-top: 10px;
+                      margin-bottom: 5px;
+                    "
+                  >
                     Use the file present <br />
                     on Pennsieve
                   </p>
@@ -1792,7 +2086,10 @@
                 </div>
               </div>
               <div style="width: 80%; margin: 10px auto">
-                <p class="para-metadata-file-status" id="para-ds-description-file-path"></p>
+                <p
+                  class="para-metadata-file-status"
+                  id="para-ds-description-file-path"
+                ></p>
               </div>
               <div
                 class="div-metadata-confirm"
@@ -1842,7 +2139,8 @@
                     border: 1px solid var(--color-bg-plum);
                   "
                 >
-                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i
+                  >Back
                 </button>
               </div>
             </div>
@@ -1879,7 +2177,13 @@
                       />
                     </svg>
                   </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
+                  <p
+                    style="
+                      font-size: 13px;
+                      margin-top: 10px;
+                      margin-bottom: 5px;
+                    "
+                  >
                     Drag and drop your <br />
                     file here OR
                   </p>
@@ -1890,7 +2194,10 @@
                     Choose file
                   </button>
                 </div>
-                <div class="div-file-import pennsieve" id="metadata-subjects-pennsieve">
+                <div
+                  class="div-file-import pennsieve"
+                  id="metadata-subjects-pennsieve"
+                >
                   <p style="font-weight: bold">Import Pennsieve file</p>
                   <div>
                     <svg
@@ -1912,7 +2219,13 @@
                       />
                     </svg>
                   </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
+                  <p
+                    style="
+                      font-size: 13px;
+                      margin-top: 10px;
+                      margin-bottom: 5px;
+                    "
+                  >
                     Use the file present <br />
                     on Pennsieve
                   </p>
@@ -1925,7 +2238,10 @@
                 </div>
               </div>
               <div style="width: 80%; margin: 10px auto">
-                <p class="para-metadata-file-status" id="para-subjects-file-path"></p>
+                <p
+                  class="para-metadata-file-status"
+                  id="para-subjects-file-path"
+                ></p>
               </div>
               <div
                 class="div-metadata-confirm"
@@ -1975,7 +2291,8 @@
                     border: 1px solid var(--color-bg-plum);
                   "
                 >
-                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i
+                  >Back
                 </button>
               </div>
             </div>
@@ -2012,7 +2329,13 @@
                       />
                     </svg>
                   </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
+                  <p
+                    style="
+                      font-size: 13px;
+                      margin-top: 10px;
+                      margin-bottom: 5px;
+                    "
+                  >
                     Drag and drop your <br />
                     file here OR
                   </p>
@@ -2023,7 +2346,10 @@
                     Choose file
                   </button>
                 </div>
-                <div class="div-file-import pennsieve" id="metadata-samples-pennsieve">
+                <div
+                  class="div-file-import pennsieve"
+                  id="metadata-samples-pennsieve"
+                >
                   <p style="font-weight: bold">Import Pennsieve file</p>
                   <div>
                     <svg
@@ -2045,7 +2371,13 @@
                       />
                     </svg>
                   </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
+                  <p
+                    style="
+                      font-size: 13px;
+                      margin-top: 10px;
+                      margin-bottom: 5px;
+                    "
+                  >
                     Use the file present <br />
                     on Pennsieve
                   </p>
@@ -2058,7 +2390,10 @@
                 </div>
               </div>
               <div style="width: 80%; margin: 10px auto">
-                <p class="para-metadata-file-status" id="para-samples-file-path"></p>
+                <p
+                  class="para-metadata-file-status"
+                  id="para-samples-file-path"
+                ></p>
               </div>
               <div
                 class="div-metadata-confirm"
@@ -2108,7 +2443,8 @@
                     border: 1px solid var(--color-bg-plum);
                   "
                 >
-                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i
+                  >Back
                 </button>
               </div>
             </div>
@@ -2145,7 +2481,13 @@
                       />
                     </svg>
                   </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
+                  <p
+                    style="
+                      font-size: 13px;
+                      margin-top: 10px;
+                      margin-bottom: 5px;
+                    "
+                  >
                     Drag and drop your <br />
                     file here OR
                   </p>
@@ -2156,7 +2498,10 @@
                     Choose file
                   </button>
                 </div>
-                <div class="div-file-import pennsieve" id="metadata-CHANGES-pennsieve">
+                <div
+                  class="div-file-import pennsieve"
+                  id="metadata-CHANGES-pennsieve"
+                >
                   <p style="font-weight: bold">Import Pennsieve file</p>
                   <div>
                     <svg
@@ -2178,7 +2523,13 @@
                       />
                     </svg>
                   </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
+                  <p
+                    style="
+                      font-size: 13px;
+                      margin-top: 10px;
+                      margin-bottom: 5px;
+                    "
+                  >
                     Use the file present <br />
                     on Pennsieve
                   </p>
@@ -2191,7 +2542,10 @@
                 </div>
               </div>
               <div style="width: 80%; margin: 10px auto">
-                <p class="para-metadata-file-status" id="para-changes-file-path"></p>
+                <p
+                  class="para-metadata-file-status"
+                  id="para-changes-file-path"
+                ></p>
               </div>
               <div
                 class="div-metadata-confirm"
@@ -2241,7 +2595,8 @@
                     border: 1px solid var(--color-bg-plum);
                   "
                 >
-                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i
+                  >Back
                 </button>
               </div>
             </div>
@@ -2279,7 +2634,13 @@
                       />
                     </svg>
                   </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
+                  <p
+                    style="
+                      font-size: 13px;
+                      margin-top: 10px;
+                      margin-bottom: 5px;
+                    "
+                  >
                     Drag and drop your <br />
                     file here OR
                   </p>
@@ -2290,7 +2651,10 @@
                     Choose file
                   </button>
                 </div>
-                <div class="div-file-import pennsieve" id="metadata-README-pennsieve">
+                <div
+                  class="div-file-import pennsieve"
+                  id="metadata-README-pennsieve"
+                >
                   <p style="font-weight: bold">Import Pennsieve file</p>
                   <div>
                     <svg
@@ -2312,7 +2676,13 @@
                       />
                     </svg>
                   </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
+                  <p
+                    style="
+                      font-size: 13px;
+                      margin-top: 10px;
+                      margin-bottom: 5px;
+                    "
+                  >
                     Use the file present <br />
                     on Pennsieve
                   </p>
@@ -2325,7 +2695,10 @@
                 </div>
               </div>
               <div style="width: 80%; margin: 10px auto">
-                <p class="para-metadata-file-status" id="para-readme-file-path"></p>
+                <p
+                  class="para-metadata-file-status"
+                  id="para-readme-file-path"
+                ></p>
               </div>
               <div
                 class="div-metadata-confirm"
@@ -2375,7 +2748,8 @@
                     border: 1px solid var(--color-bg-plum);
                   "
                 >
-                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i
+                  >Back
                 </button>
               </div>
             </div>
@@ -2427,7 +2801,13 @@
                       />
                     </svg>
                   </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
+                  <p
+                    style="
+                      font-size: 13px;
+                      margin-top: 10px;
+                      margin-bottom: 5px;
+                    "
+                  >
                     Drag and drop your <br />
                     file here OR
                   </p>
@@ -2439,7 +2819,10 @@
                     Choose file
                   </button>
                 </div>
-                <div class="div-file-import pennsieve" id="metadata-codeDescription-pennsieve">
+                <div
+                  class="div-file-import pennsieve"
+                  id="metadata-codeDescription-pennsieve"
+                >
                   <p style="font-weight: bold">Import Pennsieve file</p>
                   <div>
                     <svg
@@ -2461,7 +2844,13 @@
                       />
                     </svg>
                   </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
+                  <p
+                    style="
+                      font-size: 13px;
+                      margin-top: 10px;
+                      margin-bottom: 5px;
+                    "
+                  >
                     Use the file present <br />
                     on Pennsieve
                   </p>
@@ -2474,7 +2863,10 @@
                 </div>
               </div>
               <div style="width: 80%; margin: 10px auto">
-                <p class="para-metadata-file-status" id="para-codeDescription-file-path"></p>
+                <p
+                  class="para-metadata-file-status"
+                  id="para-codeDescription-file-path"
+                ></p>
               </div>
               <div
                 class="div-metadata-confirm"
@@ -2524,14 +2916,16 @@
                     border: 1px solid var(--color-bg-plum);
                   "
                 >
-                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i
+                  >Back
                 </button>
               </div>
             </div>
             <!-- inputs_metadata -->
             <div id="inputsMetadataUpload" class="div-individual-metadata">
               <h5 style="text-align: center; color: #585858; font-size: 16px">
-                code_parameters <br />(must be in .csv, .tsv, .json or .xlsx format)
+                code_parameters <br />(must be in .csv, .tsv, .json or .xlsx
+                format)
               </h5>
               <div style="margin-top: 25px; text-align: center">
                 <h5 style="text-align: center"></h5>
@@ -2575,7 +2969,13 @@
                       />
                     </svg>
                   </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
+                  <p
+                    style="
+                      font-size: 13px;
+                      margin-top: 10px;
+                      margin-bottom: 5px;
+                    "
+                  >
                     Drag and drop your <br />
                     file here OR
                   </p>
@@ -2587,7 +2987,10 @@
                     Choose file
                   </button>
                 </div>
-                <div class="div-file-import pennsieve" id="metadata-inputsMetadata-pennsieve">
+                <div
+                  class="div-file-import pennsieve"
+                  id="metadata-inputsMetadata-pennsieve"
+                >
                   <p style="font-weight: bold">Import Pennsieve file</p>
                   <div>
                     <svg
@@ -2609,7 +3012,13 @@
                       />
                     </svg>
                   </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
+                  <p
+                    style="
+                      font-size: 13px;
+                      margin-top: 10px;
+                      margin-bottom: 5px;
+                    "
+                  >
                     Use the file present <br />
                     on Pennsieve
                   </p>
@@ -2622,7 +3031,10 @@
                 </div>
               </div>
               <div style="width: 80%; margin: 10px auto">
-                <p class="para-metadata-file-status" id="para-codeParamMetadata-file-path"></p>
+                <p
+                  class="para-metadata-file-status"
+                  id="para-codeParamMetadata-file-path"
+                ></p>
               </div>
               <div
                 class="div-metadata-confirm"
@@ -2672,7 +3084,8 @@
                     border: 1px solid var(--color-bg-plum);
                   "
                 >
-                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i
+                  >Back
                 </button>
               </div>
             </div>
@@ -2723,7 +3136,13 @@
                       />
                     </svg>
                   </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
+                  <p
+                    style="
+                      font-size: 13px;
+                      margin-top: 10px;
+                      margin-bottom: 5px;
+                    "
+                  >
                     Drag and drop your <br />
                     file here OR
                   </p>
@@ -2735,7 +3154,10 @@
                     Choose file
                   </button>
                 </div>
-                <div class="div-file-import pennsieve" id="metadata-outputsMetadata-pennsieve">
+                <div
+                  class="div-file-import pennsieve"
+                  id="metadata-outputsMetadata-pennsieve"
+                >
                   <p style="font-weight: bold">Import Pennsieve file</p>
                   <div>
                     <svg
@@ -2757,7 +3179,13 @@
                       />
                     </svg>
                   </div>
-                  <p style="font-size: 13px; margin-top: 10px; margin-bottom: 5px">
+                  <p
+                    style="
+                      font-size: 13px;
+                      margin-top: 10px;
+                      margin-bottom: 5px;
+                    "
+                  >
                     Use the file present <br />
                     on Pennsieve
                   </p>
@@ -2770,7 +3198,10 @@
                 </div>
               </div>
               <div style="width: 80%; margin: 10px auto">
-                <p class="para-metadata-file-status" id="para-outputsMetadata-file-path"></p>
+                <p
+                  class="para-metadata-file-status"
+                  id="para-outputsMetadata-file-path"
+                ></p>
               </div>
               <div
                 class="div-metadata-confirm"
@@ -2820,14 +3251,19 @@
                     border: 1px solid var(--color-bg-plum);
                   "
                 >
-                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
+                  <i class="fas fa-arrow-left" style="margin-right: 10px"></i
+                  >Back
                 </button>
               </div>
             </div>
           </div>
 
           <!-- 5. manifest file -->
-          <div class="parent-tabs" id="manifest-file-tab" style="grid-template-rows: 10% 90%">
+          <div
+            class="parent-tabs"
+            id="manifest-file-tab"
+            style="grid-template-rows: 10% 90%"
+          >
             <h3
               class="question-title"
               style="
@@ -2852,12 +3288,20 @@
               <br /><br />
             </h3>
             <div id="manifestUpload">
-              <h5 style="text-align: center; color: var(--color); font-size: 17px">
+              <h5
+                style="text-align: center; color: var(--color); font-size: 17px"
+              >
                 Would you like SODA to auto-generate your manifest files?
               </h5>
               <div style="height: 150px; text-align: center; margin: 100px">
-                <div style="margin-top: 30px; margin-bottom: 50px" id="pulse-manifest-checkbox">
-                  <label class="labelradiocurate-manifest no" style="padding-left: 10px">
+                <div
+                  style="margin-top: 30px; margin-bottom: 50px"
+                  id="pulse-manifest-checkbox"
+                >
+                  <label
+                    class="labelradiocurate-manifest no"
+                    style="padding-left: 10px"
+                  >
                     No
                   </label>
                   <label class="switch">
@@ -2868,7 +3312,10 @@
                       class="with-style-manifest"
                       onclick="updateManifestLabelColor(this)"
                     />
-                    <span class="slider round manifest" style="width: 60px; height: 30px"></span>
+                    <span
+                      class="slider round manifest"
+                      style="width: 60px; height: 30px"
+                    ></span>
                   </label>
                   <label
                     class="labelradiocurate-manifest yes"
@@ -2920,7 +3367,11 @@
           </div>
 
           <!-- 6. Generate dataset -->
-          <div class="parent-tabs" id="generate-dataset-tab" style="overflow-y: scroll">
+          <div
+            class="parent-tabs"
+            id="generate-dataset-tab"
+            style="overflow-y: scroll"
+          >
             <h3
               class="question-title"
               style="
@@ -2940,18 +3391,35 @@
               </a>
               <br /><br />
             </h3>
-            <div class="individual-question generate-dataset" id="Question-generate-dataset">
+            <div
+              class="individual-question generate-dataset"
+              id="Question-generate-dataset"
+            >
               <div class="ui form" style="width: 100%">
                 <div class="grouped fields">
-                  <label style="font-size: 17px; color: var(--color-bg-plum); text-align: center"
+                  <label
+                    style="
+                      font-size: 17px;
+                      color: var(--color-bg-plum);
+                      text-align: center;
+                    "
                     >Where would you like to generate your dataset? <br /><span
                       style="color: #898989; font-size: 12px"
                       >Please select one:</span
                     ></label
                   >
 
-                  <div style="display: flex; flex-direction: row; justify-content: center">
-                    <div style="margin: 15px 0" id="generate-dataset-replace-existing">
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: center;
+                    "
+                  >
+                    <div
+                      style="margin: 15px 0"
+                      id="generate-dataset-replace-existing"
+                    >
                       <div
                         class="option-card radio-button"
                         data-next="Question-generate-dataset-generate-div-old"
@@ -2969,7 +3437,10 @@
                           </div>
                         </div>
                         <div class="card-body">
-                          <i class="fas fa-redo" style="color: var(--color-bg-orange)"></i>
+                          <i
+                            class="fas fa-redo"
+                            style="color: var(--color-bg-orange)"
+                          ></i>
                           <h2>Replace files in current dataset folder</h2>
                         </div>
                       </div>
@@ -3036,7 +3507,9 @@
                               fill="#B80D49"
                             />
                           </svg>
-                          <h2 style="margin-top: 10px">Generate directly on Pennsieve</h2>
+                          <h2 style="margin-top: 10px">
+                            Generate directly on Pennsieve
+                          </h2>
                         </div>
                       </div>
                     </div>
@@ -3048,10 +3521,17 @@
                     <div class="ui form" style="width: 100%">
                       <div class="grouped fields">
                         <label
-                          style="font-size: 17px; color: var(--color-bg-plum); text-align: center"
+                          style="
+                            font-size: 17px;
+                            color: var(--color-bg-plum);
+                            text-align: center;
+                          "
                           >What is your Pennsieve account?</label
                         >
-                        <div class="field" style="margin: 5px auto; width: 550px">
+                        <div
+                          class="field"
+                          style="margin: 5px auto; width: 550px"
+                        >
                           <div
                             style="
                               display: flex;
@@ -3064,11 +3544,26 @@
                               border-radius: 5px;
                             "
                           >
-                            <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                              <h5 style="color: #808080; font-size: 15px; padding-left: 43px">
+                            <div
+                              style="
+                                display: flex;
+                                flex-direction: row;
+                                margin-bottom: 15px;
+                              "
+                            >
+                              <h5
+                                style="
+                                  color: #808080;
+                                  font-size: 15px;
+                                  padding-left: 43px;
+                                "
+                              >
                                 Current account:
                               </h5>
-                              <div class="change-current-account" style="flex: auto">
+                              <div
+                                class="change-current-account"
+                                style="flex: auto"
+                              >
                                 <span
                                   style="
                                     color: #000;
@@ -3096,8 +3591,20 @@
                                 </svg>
                               </div>
                             </div>
-                            <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                              <h5 style="color: #808080; font-size: 15px; padding-left: 46px">
+                            <div
+                              style="
+                                display: flex;
+                                flex-direction: row;
+                                margin-bottom: 15px;
+                              "
+                            >
+                              <h5
+                                style="
+                                  color: #808080;
+                                  font-size: 15px;
+                                  padding-left: 46px;
+                                "
+                              >
                                 Account details:
                               </h5>
                               <p
@@ -3129,7 +3636,11 @@
                             class="btn_animated"
                             onclick="transitionSubQuestionsButton(this, 'Question-generate-dataset-BF-account', 'generate-dataset-tab', 'delete', 'individual-question generate-dataset')"
                             data-next="Question-generate-dataset-options"
-                            style="margin: 0 10px; width: 100px; border: none !important"
+                            style="
+                              margin: 0 10px;
+                              width: 100px;
+                              border: none !important;
+                            "
                           >
                             Confirm
                           </button>
@@ -3145,13 +3656,23 @@
                     <div class="ui form" style="width: 100%">
                       <div class="grouped fields">
                         <label
-                          style="font-size: 17px; color: var(--color-bg-plum); text-align: center"
-                          >Which dataset would you like to generate on? <br /><span
-                            style="color: #898989; font-size: 12px"
+                          style="
+                            font-size: 17px;
+                            color: var(--color-bg-plum);
+                            text-align: center;
+                          "
+                          >Which dataset would you like to generate on?
+                          <br /><span style="color: #898989; font-size: 12px"
                             >Please select one:</span
                           ></label
                         >
-                        <div style="display: flex; flex-direction: row; justify-content: center">
+                        <div
+                          style="
+                            display: flex;
+                            flex-direction: row;
+                            justify-content: center;
+                          "
+                        >
                           <div style="margin: 15px 0">
                             <div
                               class="option-card radio-button"
@@ -3166,7 +3687,9 @@
                                     id="generate-BF-dataset-options-new"
                                     type="radio"
                                   />
-                                  <label for="generate-BF-dataset-options-new"></label>
+                                  <label
+                                    for="generate-BF-dataset-options-new"
+                                  ></label>
                                 </div>
                               </div>
                               <div class="card-body">
@@ -3208,7 +3731,9 @@
                                     id="generate-BF-dataset-options-existing"
                                     type="radio"
                                   />
-                                  <label for="generate-BF-dataset-options-existing"></label>
+                                  <label
+                                    for="generate-BF-dataset-options-existing"
+                                  ></label>
                                 </div>
                               </div>
                               <div class="card-body">
@@ -3231,7 +3756,9 @@
                                     fill="#13716D"
                                   />
                                 </svg>
-                                <h2>I want to generate on an existing dataset</h2>
+                                <h2>
+                                  I want to generate on an existing dataset
+                                </h2>
                               </div>
                             </div>
                           </div>
@@ -3257,18 +3784,28 @@
                         >
                         <div
                           class="field"
-                          style="margin: 15px auto; display: flex; justify-content: center"
+                          style="
+                            margin: 15px auto;
+                            display: flex;
+                            justify-content: center;
+                          "
                         >
                           <input
                             type="text"
                             class="form-control"
-                            style="background: #fff !important; width: 450px !important"
+                            style="
+                              background: #fff !important;
+                              width: 450px !important;
+                            "
                             id="inputNewNameDataset"
                             placeholder="Type here"
                           />
                         </div>
                       </div>
-                      <p style="color: red; width: 440px" id="para-new-name-dataset-message"></p>
+                      <p
+                        style="color: red; width: 440px"
+                        id="para-new-name-dataset-message"
+                      ></p>
                       <div
                         id="div-confirm-inputNewNameDataset"
                         style="
@@ -3301,7 +3838,11 @@
                     </div>
                     <p
                       id="para-continue-name-dataset-generate"
-                      style="text-align: center; font-weight: 600; color: var(--color-light-green)"
+                      style="
+                        text-align: center;
+                        font-weight: 600;
+                        color: var(--color-light-green);
+                      "
                     ></p>
                   </div>
 
@@ -3311,10 +3852,15 @@
                   >
                     <div class="ui form" style="width: 100%">
                       <div class="grouped fields">
-                        <label style="font-size: 17px; color: var(--color-bg-plum)"
-                          >Which existing Pennsieve dataset would you like to use?</label
+                        <label
+                          style="font-size: 17px; color: var(--color-bg-plum)"
+                          >Which existing Pennsieve dataset would you like to
+                          use?</label
                         >
-                        <div class="field" style="margin: 15px auto; width: 550px">
+                        <div
+                          class="field"
+                          style="margin: 15px auto; width: 550px"
+                        >
                           <div
                             style="
                               display: flex;
@@ -3327,13 +3873,28 @@
                               border-radius: 5px;
                             "
                           >
-                            <div style="display: flex; flex-direction: row; margin-bottom: 15px">
+                            <div
+                              style="
+                                display: flex;
+                                flex-direction: row;
+                                margin-bottom: 15px;
+                              "
+                            >
                               <div>
-                                <h5 style="color: #808080; font-size: 15px; padding-left: 25px">
+                                <h5
+                                  style="
+                                    color: #808080;
+                                    font-size: 15px;
+                                    padding-left: 25px;
+                                  "
+                                >
                                   Current dataset:
                                 </h5>
                               </div>
-                              <div class="change-current-account" style="flex: auto">
+                              <div
+                                class="change-current-account"
+                                style="flex: auto"
+                              >
                                 <span
                                   style="
                                     color: #000;
@@ -3364,18 +3925,34 @@
                                 style="display: none"
                               ></div>
                               <!-- this is what is shown in the Edit Current dataset prompt  -->
-                              <div style="display: none" id="div-permission-list-2">
-                                <h5 style="text-align: left; color: #000; display: none">
-                                  Select permissions for filtering dataset lists:
+                              <div
+                                style="display: none"
+                                id="div-permission-list-2"
+                              >
+                                <h5
+                                  style="
+                                    text-align: left;
+                                    color: #000;
+                                    display: none;
+                                  "
+                                >
+                                  Select permissions for filtering dataset
+                                  lists:
                                   <div class="tooltipnew">
-                                    <img class="info" src="assets/img/info.png" />
+                                    <img
+                                      class="info"
+                                      src="assets/img/info.png"
+                                    />
                                     <span class="tooltiptext">
-                                      You will see multiple dropdown lists throughout the SODA
-                                      interface listing you Pennsieve datasets. You can filter those
-                                      lists based on your permissions on the dataset.
+                                      You will see multiple dropdown lists
+                                      throughout the SODA interface listing you
+                                      Pennsieve datasets. You can filter those
+                                      lists based on your permissions on the
+                                      dataset.
                                       <br /><br />
-                                      The default filter is "All" that shows you all the datasets
-                                      for which you have permissions.
+                                      The default filter is "All" that shows you
+                                      all the datasets for which you have
+                                      permissions.
                                       <br /><br />
                                       See our
                                       <a
@@ -3384,7 +3961,8 @@
                                       >
                                         documentation</a
                                       >
-                                      on Pennsieve permissions for more information.
+                                      on Pennsieve permissions for more
+                                      information.
                                     </span>
                                   </div>
                                 </h5>
@@ -3412,7 +3990,11 @@
                                 ></p>
 
                                 <h5
-                                  style="text-align: left; color: #000; display: none"
+                                  style="
+                                    text-align: left;
+                                    color: #000;
+                                    display: none;
+                                  "
                                   id="bf-dataset-select-header"
                                 >
                                   Select your dataset
@@ -3427,10 +4009,16 @@
                                     id="curatebfdatasetlist"
                                     data-live-search="true"
                                     name="Pennsieve dataset"
-                                    style="width: 450px; border-radius: 7px; padding: 8px"
+                                    style="
+                                      width: 450px;
+                                      border-radius: 7px;
+                                      padding: 8px;
+                                    "
                                     data-none-selected-text="Loading datasets..."
                                   >
-                                    <option value="" disabled>Loading...</option>
+                                    <option value="" disabled>
+                                      Loading...
+                                    </option>
                                   </select>
                                 </div>
                               </div>
@@ -3465,7 +4053,11 @@
                   </div>
                   <p
                     id="para-continue-replace-local-generate"
-                    style="text-align: center; font-weight: 600; color: var(--color-light-green)"
+                    style="
+                      text-align: center;
+                      font-weight: 600;
+                      color: var(--color-light-green);
+                    "
                   ></p>
                 </div>
               </div>
@@ -3477,30 +4069,49 @@
             >
               <div class="ui form" style="width: 100%">
                 <div class="grouped fields">
-                  <label style="font-size: 17px; color: var(--color-bg-plum); text-align: center"
+                  <label
+                    style="
+                      font-size: 17px;
+                      color: var(--color-bg-plum);
+                      text-align: center;
+                    "
                     >How would you like to handle existing folders?
                     <div class="tooltipnew">
                       <img class="info" src="assets/img/info.png" />
                       <span class="tooltiptext" style="font-size: 12px">
-                        Tell SODA how to handle folders specified during Step 3 that are already
-                        existing (same name, same relative location) on your Pennsieve dataset
+                        Tell SODA how to handle folders specified during Step 3
+                        that are already existing (same name, same relative
+                        location) on your Pennsieve dataset
                         <ul>
-                          <li>Create duplicate: Create another copy of existing folders.</li>
                           <li>
-                            Replace: Delete existing folders on Pennsieve then upload new ones
+                            Create duplicate: Create another copy of existing
+                            folders.
                           </li>
                           <li>
-                            Merge: Upload new files into the existing folders. Existing files will
-                            be handles as intructed in the next step.
+                            Replace: Delete existing folders on Pennsieve then
+                            upload new ones
+                          </li>
+                          <li>
+                            Merge: Upload new files into the existing folders.
+                            Existing files will be handles as intructed in the
+                            next step.
                           </li>
                           <li>Skip: Existing folders will not be uploaded.</li>
                         </ul>
                       </span>
                     </div>
 
-                    <br /><span style="color: #898989; font-size: 12px">Please select one:</span>
+                    <br /><span style="color: #898989; font-size: 12px"
+                      >Please select one:</span
+                    >
                   </label>
-                  <div style="display: flex; flex-direction: row; justify-content: center">
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: center;
+                    "
+                  >
                     <div style="margin: 15px 0">
                       <div
                         class="option-card radio-button"
@@ -3544,7 +4155,10 @@
                           </div>
                         </div>
                         <div class="card-body">
-                          <i class="fas fa-eraser" style="color: #b80d49; font-size: 43px"></i>
+                          <i
+                            class="fas fa-eraser"
+                            style="color: #b80d49; font-size: 43px"
+                          ></i>
                           <h2>Replace</h2>
                         </div>
                       </div>
@@ -3633,24 +4247,44 @@
             >
               <div class="ui form" style="width: 100%">
                 <div class="grouped fields">
-                  <label style="font-size: 17px; color: var(--color-bg-plum); text-align: center"
+                  <label
+                    style="
+                      font-size: 17px;
+                      color: var(--color-bg-plum);
+                      text-align: center;
+                    "
                     >How would you like to handle existing files?
                     <div class="tooltipnew">
                       <img class="info" src="assets/img/info.png" />
                       <span class="tooltiptext" style="font-size: 12px">
-                        Tell SODA how to handle files specified during Step 3 and metadata files
-                        specified during Step 4 that are already existing (same name, same relative
-                        location) on your Pennsieve dataset
+                        Tell SODA how to handle files specified during Step 3
+                        and metadata files specified during Step 4 that are
+                        already existing (same name, same relative location) on
+                        your Pennsieve dataset
                         <ul>
-                          <li>Create duplicate: Create another copy of existing files.</li>
-                          <li>Replace: Delete existing files on Pennsieve then upload new ones</li>
+                          <li>
+                            Create duplicate: Create another copy of existing
+                            files.
+                          </li>
+                          <li>
+                            Replace: Delete existing files on Pennsieve then
+                            upload new ones
+                          </li>
                           <li>Skip: Existing files will not be uploaded.</li>
                         </ul>
                       </span>
                     </div>
-                    <br /><span style="color: #898989; font-size: 12px">Please select one:</span>
+                    <br /><span style="color: #898989; font-size: 12px"
+                      >Please select one:</span
+                    >
                   </label>
-                  <div style="display: flex; flex-direction: row; justify-content: center">
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: row;
+                      justify-content: center;
+                    "
+                  >
                     <div style="margin: 15px 0">
                       <div
                         class="option-card radio-button"
@@ -3669,7 +4303,10 @@
                           </div>
                         </div>
                         <div class="card-body">
-                          <i class="far fa-copy" style="color: #13716d; font-size: 43px"></i>
+                          <i
+                            class="far fa-copy"
+                            style="color: #13716d; font-size: 43px"
+                          ></i>
                           <h2>Create a duplicate</h2>
                         </div>
                       </div>
@@ -3694,7 +4331,10 @@
                           </div>
                         </div>
                         <div class="card-body">
-                          <i class="fas fa-eraser" style="color: #b80d49; font-size: 43px"></i>
+                          <i
+                            class="fas fa-eraser"
+                            style="color: #b80d49; font-size: 43px"
+                          ></i>
                           <h2>Replace</h2>
                         </div>
                       </div>
@@ -3738,7 +4378,11 @@
                   </div>
                   <p
                     id="para-continue-existing-files-generate"
-                    style="text-align: center; font-weight: 600; color: var(--color-light-green)"
+                    style="
+                      text-align: center;
+                      font-weight: 600;
+                      color: var(--color-light-green);
+                    "
                   ></p>
                 </div>
               </div>
@@ -3755,12 +4399,21 @@
             >
               <div class="ui form" style="width: 450px">
                 <div class="grouped fields">
-                  <label style="font-size: 17px; color: var(--color-bg-plum); text-align: center"
+                  <label
+                    style="
+                      font-size: 17px;
+                      color: var(--color-bg-plum);
+                      text-align: center;
+                    "
                     >At which location should we generate the dataset?</label
                   >
                   <div
                     class="field"
-                    style="margin: 15px auto; display: flex; justify-content: center"
+                    style="
+                      margin: 15px auto;
+                      display: flex;
+                      justify-content: center;
+                    "
                   >
                     <input
                       class="form-control"
@@ -3786,7 +4439,11 @@
                     class="btn_animated"
                     onclick="transitionSubQuestions(this, 'Question-generate-dataset-locally-destination', 'generate-dataset-tab', 'delete', 'generate-dataset');"
                     data-next="Question-generate-dataset-choose-ds-name"
-                    style="margin: 0 10px; width: 100px; border: none !important"
+                    style="
+                      margin: 0 10px;
+                      width: 100px;
+                      border: none !important;
+                    "
                   >
                     Confirm
                   </button>
@@ -3796,7 +4453,11 @@
           </div>
 
           <!-- 7. Preview dataset -->
-          <div class="parent-tabs" id="preview-dataset-tab" style="overflow-y: scroll">
+          <div
+            class="parent-tabs"
+            id="preview-dataset-tab"
+            style="overflow-y: scroll"
+          >
             <h3
               class="question-title"
               style="
@@ -3842,7 +4503,9 @@
                     >
                       <div style="margin-bottom: 10px" id="div-dataset-preview">
                         <div style="display: flex; justify-content: center">
-                          <h4 style="width: 100%; text-align: center; color: #000">
+                          <h4
+                            style="width: 100%; text-align: center; color: #000"
+                          >
                             Current dataset structure
                           </h4>
                           <i
@@ -3855,7 +4518,14 @@
                         <div id="div-dataset-tree-preview">js tree here.</div>
                       </div>
                       <br />
-                      <h4 style="width: 100%; text-align: center; color: #000; margin-bottom: 30px">
+                      <h4
+                        style="
+                          width: 100%;
+                          text-align: center;
+                          color: #000;
+                          margin-bottom: 30px;
+                        "
+                      >
                         Other dataset information
                       </h4>
                       <div id="other-dataset-information-container">
@@ -3885,7 +4555,11 @@
             <div
               class="individual-question generate-dataset"
               id="Question-generate-dataset-generate-div"
-              style="display: flex; flex-direction: row; justify-content: center"
+              style="
+                display: flex;
+                flex-direction: row;
+                justify-content: center;
+              "
             >
               <button
                 id="button-generate"
@@ -3970,7 +4644,10 @@
                   value="0"
                 ></progress>
               </div>
-              <div id="div-new-curate-progress-bar-status" style="clear: both; width: 100%">
+              <div
+                id="div-new-curate-progress-bar-status"
+                style="clear: both; width: 100%"
+              >
                 <p id="para-new-curate-progress-bar-status"></p>
                 <p></p>
               </div>
@@ -3978,7 +4655,12 @@
 
             <div
               id="div-generate-comeback"
-              style="display: none; flex-direction: row; justify-content: center; margin: 0 auto"
+              style="
+                display: none;
+                flex-direction: row;
+                justify-content: center;
+                margin: 0 auto;
+              "
             >
               <button
                 id="button-generate-comeback"
@@ -4053,7 +4735,12 @@
         "
       >
         <div style="display: flex; flex-direction: row">
-          <button type="button" onclick="nextPrev(-1)" id="prevBtn" class="transition-btn back">
+          <button
+            type="button"
+            onclick="nextPrev(-1)"
+            id="prevBtn"
+            class="transition-btn back"
+          >
             <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
           </button>
           <button
@@ -4168,8 +4855,12 @@
 
 <section id="validate-section" class="section js-section u-category-windows">
   <main class="dash-content main" id="validate_main">
-    <h5 class="dash-title" style="border-bottom: none; font-size: 17px; color: var(--color-accent)">
-      <i class="fas fa-chevron-right" style="margin-right: 10px"></i>Validate dataset
+    <h5
+      class="dash-title"
+      style="border-bottom: none; font-size: 17px; color: var(--color-accent)"
+    >
+      <i class="fas fa-chevron-right" style="margin-right: 10px"></i>Validate
+      dataset
     </h5>
     <div class="form-tabs tab-active" id="validate-tab">
       <h3 class="question-title">
@@ -4197,7 +4888,9 @@
       <button type="button" class="transition-btn prev">
         <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
       </button>
-      <button style="float: right" type="button" class="transition-btn">Next</button>
+      <button style="float: right" type="button" class="transition-btn">
+        Next
+      </button>
     </div>
   </main>
 </section>

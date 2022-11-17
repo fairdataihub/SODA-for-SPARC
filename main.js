@@ -121,9 +121,13 @@ const createPyProc = async () => {
         });
       } else {
         log.info("Application is not packaged");
-        pyflaskProcess = require("child_process").spawn("python", [script, port], {
-          stdio: "ignore",
-        });
+        pyflaskProcess = require("child_process").spawn(
+          "python",
+          [script, port],
+          {
+            stdio: "ignore",
+          }
+        );
       }
 
       if (pyflaskProcess != null) {
@@ -184,7 +188,10 @@ const killAllPreviousProcesses = async () => {
   // create a loop of 100
   for (let currentPort = PORT; currentPort <= endRange; currentPort++) {
     promisesArray.push(
-      axios.get(`http://127.0.0.1:${currentPort}/sodaforsparc_server_shutdown`, {})
+      axios.get(
+        `http://127.0.0.1:${currentPort}/sodaforsparc_server_shutdown`,
+        {}
+      )
     );
   }
 
@@ -236,7 +243,8 @@ function initialize() {
               type: "question",
               buttons: ["Yes", "No"],
               title: "Confirm",
-              message: "Any running process will be stopped. Are you sure you want to quit?",
+              message:
+                "Any running process will be stopped. Are you sure you want to quit?",
             })
             .then((responseObject) => {
               let { response } = responseObject;
@@ -330,14 +338,21 @@ function initialize() {
 
     mainWindow.on("show", () => {
       var first_launch = nodeStorage.getItem("firstlaunch");
-      if ((first_launch == true || first_launch == undefined) && window_reloaded == false) {
+      if (
+        (first_launch == true || first_launch == undefined) &&
+        window_reloaded == false
+      ) {
       }
       // run_pre_flight_checks();
     });
   });
 
   app.on("ready", () => {
-    trackEvent("Success", "App Launched - OS", os.platform() + "-" + os.release());
+    trackEvent(
+      "Success",
+      "App Launched - OS",
+      os.platform() + "-" + os.release()
+    );
     trackEvent("Success", "App Launched - SODA", app.getVersion());
   });
 

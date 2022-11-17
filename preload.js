@@ -12,14 +12,20 @@ const showHideDropdownButtons = (category, action) => {
       $($("#button-confirm-bf-dataset").parents()[0]).css("display", "flex");
       $("#button-confirm-bf-dataset").show();
       // btn under Step 1
-      $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css("display", "flex");
+      $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css(
+        "display",
+        "flex"
+      );
       $("#button-confirm-bf-dataset-getting-started").show();
     } else {
       // btn under Step 6
       $($("#button-confirm-bf-dataset").parents()[0]).css("display", "none");
       $("#button-confirm-bf-dataset").hide();
       // btn under Step 1
-      $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css("display", "none");
+      $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css(
+        "display",
+        "none"
+      );
       $("#button-confirm-bf-dataset-getting-started").hide();
     }
   } else if (category === "account") {
@@ -92,7 +98,9 @@ const updateDatasetList = (bfaccount) => {
 
   // waiting for dataset list to load first before initiating BF dataset dropdown list
   setTimeout(() => {
-    var myPermission = $(datasetPermissionDiv).find("#select-permission-list-2").val();
+    var myPermission = $(datasetPermissionDiv)
+      .find("#select-permission-list-2")
+      .val();
 
     if (!myPermission) {
       myPermission = "All";
@@ -148,13 +156,26 @@ const updateDatasetList = (bfaccount) => {
 // per change event of current dataset span text
 function confirm_click_function() {
   let temp = $(".bf-dataset-span").html();
-  if ($(".bf-dataset-span").html() == "None" || $(".bf-dataset-span").html() == "") {
-    $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "none");
+  if (
+    $(".bf-dataset-span").html() == "None" ||
+    $(".bf-dataset-span").html() == ""
+  ) {
+    $($(this).parents().find(".field").find(".div-confirm-button")).css(
+      "display",
+      "none"
+    );
     $("#para-review-dataset-info-disseminate").text("None");
   } else {
-    $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "flex");
+    $($(this).parents().find(".field").find(".div-confirm-button")).css(
+      "display",
+      "flex"
+    );
     if ($($(this).parents().find(".field").find(".synced-progress")).length) {
-      if ($($(this).parents().find(".field").find(".synced-progress")).css("display") === "none") {
+      if (
+        $($(this).parents().find(".field").find(".synced-progress")).css(
+          "display"
+        ) === "none"
+      ) {
         $(".confirm-button").click();
       }
     } else {
@@ -213,7 +234,10 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         defaultBfDataset = "Select dataset";
         document.getElementById("ds-description").innerHTML = "";
         refreshDatasetList();
-        $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css("display", "none");
+        $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css(
+          "display",
+          "none"
+        );
         $("#button-confirm-bf-dataset-getting-started").hide();
 
         $("#para-account-detail-curate").html("");
@@ -222,11 +246,14 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         showHideDropdownButtons("dataset", "hide");
 
         try {
-          let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
-            params: {
-              selected_account: bfacct,
-            },
-          });
+          let bf_account_details_req = await client.get(
+            `/manage_datasets/bf_account_details`,
+            {
+              params: {
+                selected_account: bfacct,
+              },
+            }
+          );
           let accountDetails = bf_account_details_req.data.account_details;
           $("#para-account-detail-curate").html(accountDetails);
           $("#current-bf-account").text(bfacct);
@@ -242,11 +269,14 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           gettingStartedPennsieveBtn.children[1].style.display = "flex";
 
           try {
-            let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
-              params: {
-                selected_account: bfacct,
-              },
-            });
+            let responseObject = await client.get(
+              `manage_datasets/bf_dataset_account`,
+              {
+                params: {
+                  selected_account: bfacct,
+                },
+              }
+            );
 
             datasetList = [];
             datasetList = responseObject.data.datasets;
@@ -300,10 +330,12 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         didOpen: () => {
           $(".swal-popover").popover();
           let div_footer = document.getElementsByClassName("swal2-footer")[0];
-          document.getElementsByClassName("swal2-popup")[0].style.width = "43rem";
+          document.getElementsByClassName("swal2-popup")[0].style.width =
+            "43rem";
           div_footer.style.flexDirection = "column";
           div_footer.style.alignItems = "center";
-          let swal_actions = document.getElementsByClassName("swal2-actions")[0];
+          let swal_actions =
+            document.getElementsByClassName("swal2-actions")[0];
           let api_button = document.createElement("button");
           let api_arrow = document.createElement("i");
 
@@ -335,15 +367,23 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             let response = await get_api_key(login, password, key_name);
             if (response[0] == "failed") {
               let error_message = response[1];
-              if (response[1]["message"] === "exceptions must derive from BaseException") {
+              if (
+                response[1]["message"] ===
+                "exceptions must derive from BaseException"
+              ) {
                 error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">It seems that you do not have access to the SPARC Consortium organization on Pennsieve. See our <a target="_blank" href="https://docs.sodaforsparc.io/docs/next/how-to/how-to-get-a-pennsieve-account">[dedicated help page]</a> to learn how to get access</div>`;
               }
-              if (response[1]["message"] === "Error: Username or password was incorrect.") {
+              if (
+                response[1]["message"] ===
+                "Error: Username or password was incorrect."
+              ) {
                 error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">Error: Username or password was incorrect</div>`;
               }
               Swal.hideLoading();
               Swal.showValidationMessage(error_message);
-              document.getElementById("swal2-validation-message").style.flexDirection = "column";
+              document.getElementById(
+                "swal2-validation-message"
+              ).style.flexDirection = "column";
             } else if (response["success"] == "success") {
               return {
                 key: response["key"],
@@ -380,11 +420,14 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             defaultBfDataset = "Select dataset";
 
             try {
-              let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
-                params: {
-                  selected_account: defaultBfAccount,
-                },
-              });
+              let bf_account_details_req = await client.get(
+                `/manage_datasets/bf_account_details`,
+                {
+                  params: {
+                    selected_account: defaultBfAccount,
+                  },
+                }
+              );
               let result = bf_account_details_req.data.account_details;
               $("#para-account-detail-curate").html(result);
               $("#current-bf-account").text(key_name);
@@ -477,15 +520,23 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         .append('<option value="Select dataset">Search here...</option>')
         .val("Select dataset");
 
-      $(datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "block");
+      $(datasetPermissionDiv)
+        .find("#div-filter-datasets-progress-2")
+        .css("display", "block");
 
       $("#bf-dataset-select-header").css("display", "none");
 
       $(datasetPermissionDiv).find("#para-filter-datasets-status-2").text("");
       $("#para-continue-bf-dataset-getting-started").text("");
 
-      $(datasetPermissionDiv).find("#select-permission-list-2").val("All").trigger("change");
-      $(datasetPermissionDiv).find("#curatebfdatasetlist").val("Select dataset").trigger("change");
+      $(datasetPermissionDiv)
+        .find("#select-permission-list-2")
+        .val("All")
+        .trigger("change");
+      $(datasetPermissionDiv)
+        .find("#curatebfdatasetlist")
+        .val("Select dataset")
+        .trigger("change");
 
       initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
 
@@ -542,11 +593,14 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         if (datasetList.length === 0) {
           let responseObject;
           try {
-            responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
-              params: {
-                selected_account: defaultBfAccount,
-              },
-            });
+            responseObject = await client.get(
+              `manage_datasets/bf_dataset_account`,
+              {
+                params: {
+                  selected_account: defaultBfAccount,
+                },
+              }
+            );
           } catch (error) {
             clientError(error);
             return;
@@ -572,13 +626,15 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           heightAuto: false,
           allowOutsideClick: false,
           allowEscapeKey: true,
-          title: "<h3 style='margin-bottom:20px !important'>No dataset found</h3>",
+          title:
+            "<h3 style='margin-bottom:20px !important'>No dataset found</h3>",
           html: "It appears that your don't have any datasets on Pennsieve with owner or manage permission.<br><br>Please create one to get started.",
           showClass: {
             popup: "animate__animated animate__fadeInDown animate__faster",
           },
           hideClass: {
-            popup: "animate__animated animate__fadeOutUp animate__faster animate_fastest",
+            popup:
+              "animate__animated animate__fadeOutUp animate__faster animate_fastest",
           },
           didOpen: () => {
             $(".ui.active.green.inline.loader.small").css("display", "none");
@@ -614,12 +670,14 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           reverseButtons: reverseSwalButtons,
           showCloseButton: true,
           showCancelButton: true,
-          title: "<h3 style='margin-bottom:20px !important'>Select your dataset</h3>",
+          title:
+            "<h3 style='margin-bottom:20px !important'>Select your dataset</h3>",
           showClass: {
             popup: "animate__animated animate__fadeInDown animate__faster",
           },
           hideClass: {
-            popup: "animate__animated animate__fadeOutUp animate__faster animate_fastest",
+            popup:
+              "animate__animated animate__fadeOutUp animate__faster animate_fastest",
           },
           willOpen: () => {
             $("#curatebfdatasetlist").selectpicker("hide");
@@ -631,14 +689,17 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             $(".ui.active.green.inline.loader.small").css("display", "none");
             datasetPermissionDiv.style.display = "block";
             $("#curatebfdatasetlist").attr("disabled", false);
-            $(datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "none");
+            $(datasetPermissionDiv)
+              .find("#div-filter-datasets-progress-2")
+              .css("display", "none");
             $("#curatebfdatasetlist").selectpicker("refresh");
             $("#curatebfdatasetlist").selectpicker("show");
             $("#bf-dataset-select-div").show();
 
             bfDataset = $("#curatebfdatasetlist").val();
             let sweet_al = document.getElementsByClassName("swal2-content")[0];
-            let sweet_alrt = document.getElementsByClassName("swal2-actions")[0];
+            let sweet_alrt =
+              document.getElementsByClassName("swal2-actions")[0];
             sweet_alrt.style.marginTop = "1rem";
 
             let tip_container = document.createElement("div");
@@ -719,7 +780,9 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             $("#dataset-loaded-message").hide();
 
             showHideDropdownButtons("dataset", "show");
-            document.getElementById("div-rename-bf-dataset").children[0].style.display = "flex";
+            document.getElementById(
+              "div-rename-bf-dataset"
+            ).children[0].style.display = "flex";
 
             // show the confirm button underneath the dataset select dropdown if one exists
             let btn = document.querySelector(".btn-confirm-ds-selection");
@@ -740,25 +803,42 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         //currently changing it but not visually in the UI
         $("#bf_list_users_pi").val("Select PI");
 
-        let oldDatasetButtonSelected = document.getElementById("oldDatasetDescription-selection");
-        let newDatasetButtonSelected = document.getElementById("newDatasetDescription-selection");
+        let oldDatasetButtonSelected = document.getElementById(
+          "oldDatasetDescription-selection"
+        );
+        let newDatasetButtonSelected = document.getElementById(
+          "newDatasetDescription-selection"
+        );
 
         if (newDatasetButtonSelected.classList.contains("checked")) {
-          document.getElementById("Question-prepare-dd-2").classList.add("show");
+          document
+            .getElementById("Question-prepare-dd-2")
+            .classList.add("show");
 
-          document.getElementById("dd-select-pennsieve-dataset").style.display = "block";
-          document.getElementById("ds-name").value =
-            document.getElementById("rename_dataset_name").innerText;
+          document.getElementById("dd-select-pennsieve-dataset").style.display =
+            "block";
+          document.getElementById("ds-name").value = document.getElementById(
+            "rename_dataset_name"
+          ).innerText;
         } else {
-          document.getElementById("Question-prepare-dd-4").classList.add("show");
-          let onMyCompButton = document.getElementById("Question-prepare-dd-4-new");
-          document.getElementById("dd-select-pennsieve-dataset").style.display = "none";
+          document
+            .getElementById("Question-prepare-dd-4")
+            .classList.add("show");
+          let onMyCompButton = document.getElementById(
+            "Question-prepare-dd-4-new"
+          );
+          document.getElementById("dd-select-pennsieve-dataset").style.display =
+            "none";
           let onPennsieveButton =
             onMyCompButton.parentElement.parentElement.children[1].children[0];
           if (onMyCompButton.classList.contains("checked")) {
-            document.getElementById("Question-prepare-dd-3").classList.add("show");
+            document
+              .getElementById("Question-prepare-dd-3")
+              .classList.add("show");
           } else {
-            document.getElementById("Question-prepare-dd-5").classList.add("show");
+            document
+              .getElementById("Question-prepare-dd-5")
+              .classList.add("show");
           }
         }
 
@@ -808,7 +888,13 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       $("body").removeClass("waiting");
       $(".svg-change-current-account.dataset").css("display", "block");
       $(".ui.active.green.inline.loader.small").css("display", "none");
-      ipcRenderer.send("track-event", "Success", "Selecting dataset", defaultBfDatasetId, 1);
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        "Selecting dataset",
+        defaultBfDatasetId,
+        1
+      );
     }, 10);
   }
 };

@@ -89,12 +89,16 @@ $("#ORCID-btn").on("click", async () => {
     ipcRenderer.send(
       "track-event",
       "Success",
-      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW + " - Integrate ORCID iD",
+      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
+        " - Integrate ORCID iD",
       defaultBfDatasetId
     );
 
     // mark the orcid item green
-    setPrepublishingChecklistItemIconByStatus("prepublishing-checklist-icon-ORCID", true);
+    setPrepublishingChecklistItemIconByStatus(
+      "prepublishing-checklist-icon-ORCID",
+      true
+    );
   });
 });
 
@@ -108,7 +112,8 @@ const showPrePublishingStatus = async (inPrePublishing = false) => {
   }
 
   if (
-    $("#para-review-dataset-info-disseminate").text() !== "Dataset is not under review currently"
+    $("#para-review-dataset-info-disseminate").text() !==
+    "Dataset is not under review currently"
   ) {
     return;
   }
@@ -169,9 +174,15 @@ const showPrePublishingStatus = async (inPrePublishing = false) => {
     statuses.subtitle
   );
 
-  setPrepublishingChecklistItemIconByStatus("prepublishing-checklist-icon-readme", statuses.readme);
+  setPrepublishingChecklistItemIconByStatus(
+    "prepublishing-checklist-icon-readme",
+    statuses.readme
+  );
 
-  setPrepublishingChecklistItemIconByStatus("prepublishing-checklist-icon-tags", statuses.tags);
+  setPrepublishingChecklistItemIconByStatus(
+    "prepublishing-checklist-icon-tags",
+    statuses.tags
+  );
 
   setPrepublishingChecklistItemIconByStatus(
     "prepublishing-checklist-icon-banner",
@@ -183,7 +194,10 @@ const showPrePublishingStatus = async (inPrePublishing = false) => {
     statuses.license
   );
 
-  setPrepublishingChecklistItemIconByStatus("prepublishing-checklist-icon-ORCID", statuses.ORCID);
+  setPrepublishingChecklistItemIconByStatus(
+    "prepublishing-checklist-icon-ORCID",
+    statuses.ORCID
+  );
 
   // hide the spinner and show the checklist item icons
   $(".icon-wrapper").attr("class", "icon-wrapper");
@@ -210,9 +224,11 @@ const allPrepublishingChecklistItemsCompleted = () => {
   let prePublishingChecklistItems = $(".icon-wrapper i");
 
   // filter out the completed items - by classname
-  let incompleteChecklistItems = Array.from(prePublishingChecklistItems).filter((checklistItem) => {
-    return checklistItem.className === "close icon";
-  });
+  let incompleteChecklistItems = Array.from(prePublishingChecklistItems).filter(
+    (checklistItem) => {
+      return checklistItem.className === "close icon";
+    }
+  );
 
   // if there are any incomplete checklist items then not all items are complete
   return incompleteChecklistItems.length ? false : true;
@@ -346,7 +362,9 @@ $(".pre-publishing-continue").on("click", async function () {
   let excludedFileObjects;
   try {
     // read in the excluded files
-    excludedFileObjects = await api.getFilesExcludedFromPublishing(defaultBfDataset);
+    excludedFileObjects = await api.getFilesExcludedFromPublishing(
+      defaultBfDataset
+    );
   } catch (error) {
     clientError(error);
     // tell the user something went wrong getting access to their datasets ignored files
@@ -365,7 +383,8 @@ $(".pre-publishing-continue").on("click", async function () {
     ipcRenderer.send(
       "track-event",
       "Error",
-      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW + " - Get Excluded Files",
+      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
+        " - Get Excluded Files",
       defaultBfDatasetId
     );
 
@@ -377,7 +396,8 @@ $(".pre-publishing-continue").on("click", async function () {
   ipcRenderer.send(
     "track-event",
     "Success",
-    DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW + " - Get Excluded Files",
+    DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
+      " - Get Excluded Files",
     defaultBfDatasetId
   );
 
@@ -404,7 +424,8 @@ $(".pre-publishing-continue").on("click", async function () {
     ipcRenderer.send(
       "track-event",
       "Error",
-      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW + " - Get Metadata Files",
+      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
+        " - Get Metadata Files",
       defaultBfDatasetId
     );
 
@@ -414,7 +435,8 @@ $(".pre-publishing-continue").on("click", async function () {
   ipcRenderer.send(
     "track-event",
     "Success",
-    DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW + " - Get Metadata Files",
+    DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW +
+      " - Get Metadata Files",
     defaultBfDatasetId
   );
 
@@ -486,7 +508,8 @@ $("#begin-prepublishing-btn").on("click", async function () {
   // check if the user is the owner
   if (role !== "owner") {
     await Swal.fire({
-      title: "Only the dataset owner can submit a dataset for pre-publishing review.",
+      title:
+        "Only the dataset owner can submit a dataset for pre-publishing review.",
       icon: "error",
       confirmButtonText: "Ok",
       heightAuto: false,

@@ -7,13 +7,26 @@ const nonAllowedCharacters = '<>:",;[]{}^`~@/|?*$=!%&+#\\';
 // per change event of current dataset span text
 function confirm_click_function() {
   let temp = $(".bf-dataset-span").html();
-  if ($(".bf-dataset-span").html() == "None" || $(".bf-dataset-span").html() == "") {
-    $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "none");
+  if (
+    $(".bf-dataset-span").html() == "None" ||
+    $(".bf-dataset-span").html() == ""
+  ) {
+    $($(this).parents().find(".field").find(".div-confirm-button")).css(
+      "display",
+      "none"
+    );
     $("#para-review-dataset-info-disseminate").text("None");
   } else {
-    $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "flex");
+    $($(this).parents().find(".field").find(".div-confirm-button")).css(
+      "display",
+      "flex"
+    );
     if ($($(this).parents().find(".field").find(".synced-progress")).length) {
-      if ($($(this).parents().find(".field").find(".synced-progress")).css("display") === "none") {
+      if (
+        $($(this).parents().find(".field").find(".synced-progress")).css(
+          "display"
+        ) === "none"
+      ) {
         $(".confirm-button").click();
       }
     } else {
@@ -36,13 +49,17 @@ document
   });
 
 document
-  .querySelector("#Question-generate-dataset-BF-dataset .change-current-account")
+  .querySelector(
+    "#Question-generate-dataset-BF-dataset .change-current-account"
+  )
   .addEventListener("click", function () {
     openDropdownPrompt(this, "dataset", false);
   });
 
 document
-  .querySelector("#Question-generate-dataset-BF-account .change-current-account")
+  .querySelector(
+    "#Question-generate-dataset-BF-account .change-current-account"
+  )
   .addEventListener("click", function () {
     openDropdownPrompt(this, "bf");
   });
@@ -60,7 +77,9 @@ document
 //   });
 
 $(".button-individual-metadata.remove").click(function () {
-  var metadataFileStatus = $($(this).parents()[1]).find(".para-metadata-file-status");
+  var metadataFileStatus = $($(this).parents()[1]).find(
+    ".para-metadata-file-status"
+  );
 
   $(metadataFileStatus).text("");
   $($(this).parents()[1]).find(".div-metadata-confirm").css("display", "none");
@@ -94,7 +113,9 @@ function confirmMetadataFilePath(ev) {
     "Your SPARC metadata file must be in one of the formats listed above!",
     "Your SPARC metadata file must be named and formatted exactly as listed above!",
   ];
-  var metadataFileStatus = $($(ev).parents()[1]).find(".para-metadata-file-status");
+  var metadataFileStatus = $($(ev).parents()[1]).find(
+    ".para-metadata-file-status"
+  );
 
   if (!errorMetadataFileMessages.includes($(metadataFileStatus).text())) {
     $(metadataFile).addClass("done");
@@ -138,7 +159,9 @@ function confirmMetadataFilePath(ev) {
 // })
 
 $(".button-individual-metadata.go-back").click(function () {
-  var metadataFileStatus = $($(this).parents()[1]).find(".para-metadata-file-status");
+  var metadataFileStatus = $($(this).parents()[1]).find(
+    ".para-metadata-file-status"
+  );
   $(metadataFileStatus).text("");
   $($(this).parents()[1]).removeClass("show");
   $(".div-organize-generate-dataset.metadata").removeClass("hide");
@@ -150,7 +173,9 @@ $(".button-individual-metadata.go-back").click(function () {
     "Your SPARC metadata file must be in one of the formats listed above!",
     "Your SPARC metadata file must be named and formatted exactly as listed above!",
   ];
-  var metadataFileStatus = $($(this).parents()[1]).find(".para-metadata-file-status");
+  var metadataFileStatus = $($(this).parents()[1]).find(
+    ".para-metadata-file-status"
+  );
   if (!errorMetadataFileMessages.includes($(metadataFileStatus).text())) {
     $(metadataFile).addClass("done");
   } else {
@@ -171,7 +196,13 @@ const metadataFileExtensionObject = {
   data_deliverable: [".docx", ".doc"],
 };
 
-async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeliverables = false) {
+async function dropHandler(
+  ev,
+  paraElement,
+  metadataFile,
+  curationMode,
+  dataDeliverables = false
+) {
   var gettingStartedSection = false;
   if (curationMode === "guided-getting-started") {
     curationMode = "guided";
@@ -195,11 +226,14 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
         var award = $("#submission-sparc-award");
         log.info(`Importing Data Deliverables document: ${filepath}`);
         try {
-          let extract_milestone = await client.get(`/prepare_metadata/import_milestone`, {
-            params: {
-              path: filepath,
-            },
-          });
+          let extract_milestone = await client.get(
+            `/prepare_metadata/import_milestone`,
+            {
+              params: {
+                path: filepath,
+              },
+            }
+          );
           let res = extract_milestone.data;
           milestoneObj = res;
 
@@ -230,11 +264,15 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
             //create a string with today's date in the format xxxx/xx/xx
             const today = new Date();
             const todayString = `
-                  ${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}
+                  ${today.getFullYear()}-${
+              today.getMonth() + 1
+            }-${today.getDate()}
                 `;
             //add a custom milestone row for when the user wants to add a custom milestone
             //not included in the dataset deliverables document
-            guidedMilestoneData["Not included in the Dataset Deliverables document"] = [
+            guidedMilestoneData[
+              "Not included in the Dataset Deliverables document"
+            ] = [
               {
                 "Description of data":
                   "Select this option when the dataset you are submitting is not related to a pre-agreed milestone",
@@ -243,18 +281,23 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
             ];
 
             //save the unselected milestones into sodaJSONObj
-            sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-imported-milestones"] =
-              guidedMilestoneData;
+            sodaJSONObj["dataset-metadata"]["submission-metadata"][
+              "temp-imported-milestones"
+            ] = guidedMilestoneData;
 
-            sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] = filepath;
+            sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] =
+              filepath;
 
             renderMilestoneSelectionTable(guidedMilestoneData);
 
             guidedSubmissionTagsTagify.settings.whitelist = [];
 
-            unHideAndSmoothScrollToElement("guided-div-data-deliverables-import");
+            unHideAndSmoothScrollToElement(
+              "guided-div-data-deliverables-import"
+            );
 
-            let dragDropContainer = document.getElementById(paraElement).parentElement;
+            let dragDropContainer =
+              document.getElementById(paraElement).parentElement;
 
             let lottieContainer = dragDropContainer.querySelector(
               ".code-metadata-lottie-container"
@@ -278,11 +321,16 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
                 loop: true,
                 autoplay: true,
               });
-              let swal_actions = document.getElementsByClassName("swal2-actions")[0];
+              let swal_actions =
+                document.getElementsByClassName("swal2-actions")[0];
               swal_actions.children[1].style.display = "flex";
-              let swal_content = document.getElementsByClassName("swal2-content")[0];
+              let swal_content =
+                document.getElementsByClassName("swal2-content")[0];
 
-              let ddFilePath = sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"];
+              let ddFilePath =
+                sodaJSONObj["dataset-metadata"]["submission-metadata"][
+                  "filepath"
+                ];
               if (ddFilePath) {
                 //append file path
                 let firstItem = swal_content.children[0];
@@ -301,7 +349,9 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
                 }
                 firstItem.append(paragraph2);
                 firstItem.prepend(paragraph);
-                document.getElementById("guided-button-import-data-deliverables").click();
+                document
+                  .getElementById("guided-button-import-data-deliverables")
+                  .click();
               }
             }
           }
@@ -329,11 +379,15 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
             }
             if (curationMode === "guided") {
               //Add success checkmark lottie animation inside metadata card
-              const dragDropContainer = document.getElementById(paraElement).parentElement;
+              const dragDropContainer =
+                document.getElementById(paraElement).parentElement;
               //get the value of data-code-metadata-file-type from dragDropContainer
-              const metadataFileType = dragDropContainer.dataset.codeMetadataFileType;
+              const metadataFileType =
+                dragDropContainer.dataset.codeMetadataFileType;
               //save the path of the metadata file to the json object
-              sodaJSONObj["dataset-metadata"]["code-metadata"][metadataFileType] = file.path;
+              sodaJSONObj["dataset-metadata"]["code-metadata"][
+                metadataFileType
+              ] = file.path;
               const lottieContainer = dragDropContainer.querySelector(
                 ".code-metadata-lottie-container"
               );
@@ -422,8 +476,9 @@ const checkAvailableSpace = () => {
       if (freeMemory < tempFolderSize) {
         $("#div-confirm-destination-locally button").hide();
         $("#Question-generate-dataset-choose-ds-name").css("display", "none");
-        document.getElementById("input-destination-generate-dataset-locally").placeholder =
-          "Browse here";
+        document.getElementById(
+          "input-destination-generate-dataset-locally"
+        ).placeholder = "Browse here";
 
         Swal.fire({
           backdrop: "rgba(0,0,0, 0.4)",
@@ -465,8 +520,14 @@ const checkAvailableSpace = () => {
     }
   });
 };
-const btnConfirmLocalDatasetGeneration = document.getElementById("btn-confirm-local-destination");
-btnConfirmLocalDatasetGeneration.addEventListener("click", checkAvailableSpace, false);
+const btnConfirmLocalDatasetGeneration = document.getElementById(
+  "btn-confirm-local-destination"
+);
+btnConfirmLocalDatasetGeneration.addEventListener(
+  "click",
+  checkAvailableSpace,
+  false
+);
 
 ////////////////// IMPORT EXISTING PROGRESS FILES ////////////////////////////////
 const progressFileDropdown = document.getElementById("progress-files-dropdown");
@@ -537,7 +598,10 @@ const recursive_check_for_missing_files = (dataset_folder) => {
       }
     }
   }
-  if ("folders" in dataset_folder && Object.keys(dataset_folder["folders"]).length !== 0) {
+  if (
+    "folders" in dataset_folder &&
+    Object.keys(dataset_folder["folders"]).length !== 0
+  ) {
     for (let folder in dataset_folder["folders"]) {
       recursive_check_for_missing_files(dataset_folder["folders"][folder]);
     }
@@ -565,9 +629,13 @@ const importGenerateDatasetStep = async (object) => {
         "placeholder",
         sodaJSONObj["generate-dataset"]["path"]
       );
-      $("#input-destination-generate-dataset-locally").val(sodaJSONObj["generate-dataset"]["path"]);
+      $("#input-destination-generate-dataset-locally").val(
+        sodaJSONObj["generate-dataset"]["path"]
+      );
       $("#btn-confirm-local-destination").click();
-      $("#inputNewNameDataset").val(sodaJSONObj["generate-dataset"]["dataset-name"]);
+      $("#inputNewNameDataset").val(
+        sodaJSONObj["generate-dataset"]["dataset-name"]
+      );
       $("#btn-confirm-new-dataset-name").click();
     } else if (sodaJSONObj["generate-dataset"]["destination"] === "bf") {
       $("#generate-upload-BF").prop("checked", true);
@@ -577,7 +645,8 @@ const importGenerateDatasetStep = async (object) => {
         "bf-account-selected" in sodaJSONObj &&
         sodaJSONObj["bf-account-selected"]["account-name"] !== ""
       ) {
-        var bfAccountSelected = sodaJSONObj["bf-account-selected"]["account-name"];
+        var bfAccountSelected =
+          sodaJSONObj["bf-account-selected"]["account-name"];
         if (bfAccountSelected != defaultBfAccount) {
           return;
         }
@@ -586,12 +655,17 @@ const importGenerateDatasetStep = async (object) => {
 
         try {
           log.info(`Loading account details for ${bfAccountSelected}`);
-          let dataset_request = await client.get(`/manage_datasets/bf_account_details`, {
-            params: {
-              selected_account: bfAccountSelected,
-            },
-          });
-          $("#para-account-detail-curate").html(dataset_request.data.account_details);
+          let dataset_request = await client.get(
+            `/manage_datasets/bf_account_details`,
+            {
+              params: {
+                selected_account: bfAccountSelected,
+              },
+            }
+          );
+          $("#para-account-detail-curate").html(
+            dataset_request.data.account_details
+          );
           updateBfAccountList();
         } catch (error) {
           clientError(error);
@@ -606,7 +680,8 @@ const importGenerateDatasetStep = async (object) => {
         ) {
           $("#generate-BF-dataset-options-existing").prop("checked", true);
           $($("#generate-BF-dataset-options-existing").parents()[2]).click();
-          var bfDatasetSelected = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+          var bfDatasetSelected =
+            sodaJSONObj["bf-dataset-selected"]["dataset-name"];
           setTimeout(() => {
             let valid_dataset = false;
             for (index in datasetList) {
@@ -622,20 +697,31 @@ const importGenerateDatasetStep = async (object) => {
             $("#button-confirm-bf-dataset").click();
             // Step 4: Handle existing files and folders
             if ("if-existing" in sodaJSONObj["generate-dataset"]) {
-              var existingFolderOption = sodaJSONObj["generate-dataset"]["if-existing"];
-              $("#existing-folders-" + existingFolderOption).prop("checked", true);
-              $($("#existing-folders-" + existingFolderOption).parents()[2]).click();
+              var existingFolderOption =
+                sodaJSONObj["generate-dataset"]["if-existing"];
+              $("#existing-folders-" + existingFolderOption).prop(
+                "checked",
+                true
+              );
+              $(
+                $("#existing-folders-" + existingFolderOption).parents()[2]
+              ).click();
             }
             if ("if-existing-files" in sodaJSONObj["generate-dataset"]) {
-              var existingFileOption = sodaJSONObj["generate-dataset"]["if-existing-files"];
+              var existingFileOption =
+                sodaJSONObj["generate-dataset"]["if-existing-files"];
               $("#existing-files-" + existingFileOption).prop("checked", true);
-              $($("#existing-files-" + existingFileOption).parents()[2]).click();
+              $(
+                $("#existing-files-" + existingFileOption).parents()[2]
+              ).click();
             }
           }, 3000);
         } else {
           $("#generate-BF-dataset-options-new").prop("checked", true);
           $($("#generate-BF-dataset-options-new").parents()[2]).click();
-          $("#inputNewNameDataset").val(sodaJSONObj["generate-dataset"]["dataset-name"]);
+          $("#inputNewNameDataset").val(
+            sodaJSONObj["generate-dataset"]["dataset-name"]
+          );
           $("#inputNewNameDataset").keyup();
         }
       }
@@ -646,7 +732,11 @@ const importGenerateDatasetStep = async (object) => {
       $("#previous-progress").prop("checked", true);
       $($("#previous-progress").parents()[2]).addClass("checked");
       $(
-        $($($("#div-getting-started-previous-progress").parents()[0]).siblings()[0]).children()[0]
+        $(
+          $(
+            $("#div-getting-started-previous-progress").parents()[0]
+          ).siblings()[0]
+        ).children()[0]
       ).toggleClass("non-selected");
     } else {
       exitCurate();
@@ -655,17 +745,27 @@ const importGenerateDatasetStep = async (object) => {
 };
 
 // check metadata files
-function populateMetadataProgress(populateBoolean, metadataFileName, localPath) {
+function populateMetadataProgress(
+  populateBoolean,
+  metadataFileName,
+  localPath
+) {
   var metadataButtonsArray = $(".metadata-button.button-generate-dataset");
   var correspondingMetadataParaElement = {
     submission: ["para-submission-file-path", metadataButtonsArray[0]],
-    dataset_description: ["para-ds-description-file-path", metadataButtonsArray[1]],
+    dataset_description: [
+      "para-ds-description-file-path",
+      metadataButtonsArray[1],
+    ],
     subjects: ["para-subjects-file-path", metadataButtonsArray[2]],
     samples: ["para-samples-file-path", metadataButtonsArray[3]],
     README: ["para-readme-file-path", metadataButtonsArray[4]],
     CHANGES: ["para-changes-file-path", metadataButtonsArray[5]],
     code_description: ["para-readme-file-path", metadataButtonsArray[6]],
-    code_parameters: ["para-codeParamMetadata-file-path", metadataButtonsArray[7]],
+    code_parameters: [
+      "para-codeParamMetadata-file-path",
+      metadataButtonsArray[7],
+    ],
   };
   if (populateBoolean) {
     if (metadataFileName in correspondingMetadataParaElement) {
@@ -726,7 +826,8 @@ const loadProgressFile = (ev) => {
       if (missing_dataset_files.length > 0 || missing_metadata_files > 0) {
         verify_missing_files("pre-existing");
       } else {
-        document.getElementById("div-progress-file-loader").style.display = "none";
+        document.getElementById("div-progress-file-loader").style.display =
+          "none";
         $("body").removeClass("waiting");
         let nextBtn = document.getElementById("nextBtn");
         if (nextBtn.disabled) {
@@ -746,7 +847,8 @@ const loadProgressFile = (ev) => {
       }
     }, 1000);
   } else {
-    sodaJSONObj = '{"starting-point":"new","dataset-structure":{},"metadata-files":{}}';
+    sodaJSONObj =
+      '{"starting-point":"new","dataset-structure":{},"metadata-files":{}}';
     setTimeout(() => {
       importManifest(sodaJSONObj);
       importMetadataFilesProgress(sodaJSONObj);
@@ -755,7 +857,8 @@ const loadProgressFile = (ev) => {
       if (missing_dataset_files.length > 0 || missing_metadata_files > 0) {
         return_option = verify_missing_files("new");
       } else {
-        document.getElementById("div-progress-file-loader").style.display = "none";
+        document.getElementById("div-progress-file-loader").style.display =
+          "none";
         $("body").removeClass("waiting");
         document.getElementById("para-progress-file-status").innerHTML = "";
       }
@@ -792,18 +895,21 @@ const verify_missing_files = (mode) => {
       popup: "animate__animated animate__zoomOut animate__faster",
     },
     didOpen() {
-      document.getElementById("swal2-title").parentNode.parentNode.style.width = "600px";
+      document.getElementById("swal2-title").parentNode.parentNode.style.width =
+        "600px";
       document.getElementById("swal2-content").style.overflowY = "scroll";
       document.getElementById("swal2-content").style.height = "400px";
-      document.getElementById("swal2-title").parentNode.parentNode.children[1].style.whiteSpace =
-        "nowrap";
+      document.getElementById(
+        "swal2-title"
+      ).parentNode.parentNode.children[1].style.whiteSpace = "nowrap";
       // document.getElementById("swal2-content").style.
     },
   }).then((result) => {
     if (result.isConfirmed) {
       remove_missing_files();
       if (mode === "pre-existing") {
-        document.getElementById("div-progress-file-loader").style.display = "none";
+        document.getElementById("div-progress-file-loader").style.display =
+          "none";
         $("body").removeClass("waiting");
         document.getElementById("nextBtn").disabled = false;
         document.getElementById("para-progress-file-status").innerHTML =
@@ -818,12 +924,14 @@ const verify_missing_files = (mode) => {
           Destinations.SAVED
         );
       } else if (mode === "new") {
-        document.getElementById("div-progress-file-loader").style.display = "none";
+        document.getElementById("div-progress-file-loader").style.display =
+          "none";
         $("body").removeClass("waiting");
         document.getElementById("para-progress-file-status").innerHTML = "";
       }
     } else {
-      document.getElementById("div-progress-file-loader").style.display = "none";
+      document.getElementById("div-progress-file-loader").style.display =
+        "none";
       $("body").removeClass("waiting");
       document.getElementById("para-progress-file-status").innerHTML = "";
     }
@@ -834,7 +942,10 @@ const remove_missing_files = () => {
   if (missing_metadata_files.length > 0) {
     for (let item_path in missing_metadata_files) {
       for (let item in sodaJSONObj["metadata-files"]) {
-        if (sodaJSONObj["metadata-files"][item]["path"] == missing_metadata_files[item_path]) {
+        if (
+          sodaJSONObj["metadata-files"][item]["path"] ==
+          missing_metadata_files[item_path]
+        ) {
           delete sodaJSONObj["metadata-files"][item];
         }
       }
@@ -861,9 +972,15 @@ const recursive_remove_missing_file = (item_path, dataset_folder) => {
       }
     }
   }
-  if ("folders" in dataset_folder && Object.keys(dataset_folder["folders"]).length !== 0) {
+  if (
+    "folders" in dataset_folder &&
+    Object.keys(dataset_folder["folders"]).length !== 0
+  ) {
     for (let folder in dataset_folder["folders"]) {
-      recursive_remove_missing_file(item_path, dataset_folder["folders"][folder]);
+      recursive_remove_missing_file(
+        item_path,
+        dataset_folder["folders"][folder]
+      );
     }
   }
 };
@@ -984,7 +1101,9 @@ $("#select-permission-list-2").change((e) => {
     $("#para-filter-datasets-status-2").html(
       "<span style='color:red'>Please select a Pennsieve account first!</span>"
     );
-    $(datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "none");
+    $(datasetPermissionDiv)
+      .find("#div-filter-datasets-progress-2")
+      .css("display", "none");
 
     //$("#bf-dataset-select-header").css("display", "block")
     $("#curatebfdatasetlist").selectpicker("show");
@@ -1023,10 +1142,16 @@ function checkPrevDivForConfirmButton(category) {
       $("#button-confirm-bf-dataset").hide();
     }
     if (!$("#Question-getting-started-BF-dataset").hasClass("prev")) {
-      $($("#button-confirm-bf-dataset-getting-started").parent()[0]).css("display", "flex");
+      $($("#button-confirm-bf-dataset-getting-started").parent()[0]).css(
+        "display",
+        "flex"
+      );
       $("#button-confirm-bf-dataset-getting-started").show();
     } else {
-      $($("#button-confirm-bf-dataset-getting-started").parent()[0]).css("display", "none");
+      $($("#button-confirm-bf-dataset-getting-started").parent()[0]).css(
+        "display",
+        "none"
+      );
       $("#button-confirm-bf-dataset-getting-started").hide();
     }
   }
@@ -1169,7 +1294,9 @@ function create_child_node(
                   type: nodeType,
                 };
                 newFormatNode["children"].push(new_node);
-                newFormatNode["children"].sort((a, b) => (a.text > b.text ? 1 : -1));
+                newFormatNode["children"].sort((a, b) =>
+                  a.text > b.text ? 1 : -1
+                );
               }
             } else {
               var new_node = {
@@ -1178,7 +1305,9 @@ function create_child_node(
                 type: nodeType,
               };
               newFormatNode["children"].push(new_node);
-              newFormatNode["children"].sort((a, b) => (a.text > b.text ? 1 : -1));
+              newFormatNode["children"].sort((a, b) =>
+                a.text > b.text ? 1 : -1
+              );
             }
           }
         }
@@ -1306,11 +1435,15 @@ const moveItems = async (ev, category) => {
   }
   for (var highLevelFol in datasetStructureJSONObj["folders"]) {
     if (
-      "manifest.xlsx" in datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
-      datasetStructureJSONObj["folders"][highLevelFol]["files"]["manifest.xlsx"]["forTreeview"] ===
-        true
+      "manifest.xlsx" in
+        datasetStructureJSONObj["folders"][highLevelFol]["files"] &&
+      datasetStructureJSONObj["folders"][highLevelFol]["files"][
+        "manifest.xlsx"
+      ]["forTreeview"] === true
     ) {
-      delete datasetStructureJSONObj["folders"][highLevelFol]["files"]["manifest.xlsx"];
+      delete datasetStructureJSONObj["folders"][highLevelFol]["files"][
+        "manifest.xlsx"
+      ];
     }
   }
   jsTreeData = create_child_node(
@@ -1350,7 +1483,8 @@ const moveItems = async (ev, category) => {
     reverseButtons: reverseSwalButtons,
     showCancelButton: true,
     showCloseButton: true,
-    title: "<h3 style='margin-bottom:20px !important'>Please choose a folder destination:</h3>",
+    title:
+      "<h3 style='margin-bottom:20px !important'>Please choose a folder destination:</h3>",
     customClass: { content: "swal-left-align" },
     showClass: {
       popup: "animate__animated animate__fadeInDown animate__faster",
@@ -1365,7 +1499,9 @@ const moveItems = async (ev, category) => {
         return undefined;
       } else {
         if (selectedNode === "My_dataset_folder") {
-          Swal.showValidationMessage("Items cannot be moved to this level of the dataset!");
+          Swal.showValidationMessage(
+            "Items cannot be moved to this level of the dataset!"
+          );
           return undefined;
         } else if (selectedNode === selectedItem) {
           Swal.showValidationMessage("Items cannot be moved into themselves!");
@@ -1452,7 +1588,9 @@ const moveItems = async (ev, category) => {
                   if (itemType == "folder") {
                     itemToMove = itemToMove + "/";
                   }
-                  duplicateItems.push(`<li style="font-size: large;">${itemToMove}</li>`);
+                  duplicateItems.push(
+                    `<li style="font-size: large;">${itemToMove}</li>`
+                  );
                 } else {
                   moveItemsHelper(itemToMove, selectedPath, itemType);
                   ev.parentElement.remove();
@@ -1524,17 +1662,26 @@ const moveItems = async (ev, category) => {
           listItems(datasetStructureJSONObj, "#items", 500);
           organizeLandingUIEffect();
           // reconstruct div with new elements
-          getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
+          getInFolder(
+            ".single-item",
+            "#items",
+            organizeDSglobalPath,
+            datasetStructureJSONObj
+          );
 
           // if moved into an empty folder we need to remove the class 'empty'
           // from the folder destination
           let folderDestinationName = pathAsArray[pathAsArray.length - 1];
-          if (Object.keys(myPath?.["folders"]?.[folderDestinationName]).length > 0) {
+          if (
+            Object.keys(myPath?.["folders"]?.[folderDestinationName]).length > 0
+          ) {
             //check if element has empty class
             let listedItems = document.getElementsByClassName("folder_desc");
             for (let i = 0; i < listedItems.length; i++) {
               if (listedItems[i].innerText === folderDestinationName) {
-                listedItems[i].parentElement.children[0].classList.remove("empty");
+                listedItems[i].parentElement.children[0].classList.remove(
+                  "empty"
+                );
               }
             }
           }
@@ -1548,7 +1695,10 @@ function moveItemsHelper(item, destination, category) {
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   var selectedNodeList = destination.split("/").slice(1);
-  var destinationPath = getRecursivePath(selectedNodeList, datasetStructureJSONObj);
+  var destinationPath = getRecursivePath(
+    selectedNodeList,
+    datasetStructureJSONObj
+  );
 
   // handle duplicates in destination folder
   if (category === "file") {
@@ -1616,7 +1766,12 @@ function moveItemsHelper(item, destination, category) {
   //delete item from the original location
   delete myPath[category][item];
   listItems(myPath, "#items");
-  getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
+  getInFolder(
+    ".single-item",
+    "#items",
+    organizeDSglobalPath,
+    datasetStructureJSONObj
+  );
 
   // log moving multiple files/folders successfully
   logCurationForAnalytics(
@@ -1632,7 +1787,9 @@ function updateManifestLabelColor(el) {
   document.getElementById("label-manifest").style.color = el.checked
     ? "var(--color-light-green)"
     : "#303030";
-  document.getElementById("label-manifest").style.fontWeight = el.checked ? "bold" : "normal";
+  document.getElementById("label-manifest").style.fontWeight = el.checked
+    ? "bold"
+    : "normal";
 }
 
 // helper functions to add "moved" to leaf nodes a.k.a files
@@ -1820,7 +1977,10 @@ function revertManifestForTreeView() {
   for (var key in datasetStructureJSONObj["folders"]) {
     if (highLevelFolders.includes(key)) {
       var fileKey = datasetStructureJSONObj["folders"][key]["files"];
-      if ("manifest.xlsx" in fileKey && fileKey["manifest.xlsx"]["forTreeview"] === true) {
+      if (
+        "manifest.xlsx" in fileKey &&
+        fileKey["manifest.xlsx"]["forTreeview"] === true
+      ) {
         delete fileKey["manifest.xlsx"];
       }
     }

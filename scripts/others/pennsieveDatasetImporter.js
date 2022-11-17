@@ -1,5 +1,5 @@
 // Tracks if bf_request_and_populate_dataset has has an error
-let importError = false;
+let importError = false
 
 /**
  *  Tracks and displays the progress of the current Pennsieve dataset import. Progress is displayed in the provided progress container.
@@ -7,18 +7,26 @@ let importError = false;
  *  @param {boolean} hide - Determines whether or not the progress container will be hidden after the import is complete. Default = true; hides after 2 seconds. (optional)
  */
 const trackPennsieveImportProgress = async (progressContainer, hide) => {
+
   let { percentage_text, left_progress_bar, right_progress_bar } =
     getProgressContainerElements(progressContainer);
 
-  resetProgressContainer(progressContainer, percentage_text, left_progress_bar, right_progress_bar);
-
+  resetProgressContainer(
+    progressContainer,
+    percentage_text,
+    left_progress_bar,
+    right_progress_bar
+  );
+  
   // * Update the progress container to properly display the progress of their dataset import.
   // * Once the import has been completed (i.e. the progress is 100%), the progress container will be hidden. The interval will be cleared.
   // * NOTE: The interval also clears on error.
   const updateProgress = async () => {
     let progressResponse;
     try {
-      progressResponse = await client.get("/organize_datasets/dataset_files_and_folders/progress");
+      progressResponse = await client.get(
+        "/organize_datasets/dataset_files_and_folders/progress"
+      );
     } catch (error) {
       clientError(error);
       clearInterval(interval);
@@ -42,13 +50,16 @@ const trackPennsieveImportProgress = async (progressContainer, hide) => {
     if (finished === 1 || importError) {
       clearInterval(interval);
       // reset the import error flag
-      importError = false;
+      importError = false
     }
   };
 
   // update the import's progress every 500 ms if the import is not complete
-  let interval = setInterval(updateProgress, 800);
-};
+  let interval = setInterval(
+    updateProgress,
+    800
+  );
+}
 
 /**
  *
@@ -63,11 +74,13 @@ const trackPennsieveImportProgress = async (progressContainer, hide) => {
  */
 var bf_request_and_populate_dataset = async (
   sodaJSONObj,
-  progressContainer = undefined,
-  hide = true
+  progressContainer=undefined,
+  hide=true
 ) => {
+
   // track the import progress if appropriate
-  if (!!progressContainer) trackPennsieveImportProgress(progressContainer, hide);
+  if(!!progressContainer) 
+    trackPennsieveImportProgress(progressContainer, hide);
 
   try {
     let filesFoldersResponse = await client.post(
@@ -80,14 +93,24 @@ var bf_request_and_populate_dataset = async (
 
     let data = filesFoldersResponse.data;
 
-    ipcRenderer.send("track-event", "Success", "Retrieve Dataset - Pennsieve", defaultBfDatasetId);
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Retrieve Dataset - Pennsieve",
+      defaultBfDatasetId
+    );
 
     return data;
   } catch (error) {
-    importError = true;
+    importError = true
     progressContainer.style.display = "none";
     clientError(error);
-    ipcRenderer.send("track-event", "Error", "Retrieve Dataset - Pennsieve", defaultBfDatasetId);
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Retrieve Dataset - Pennsieve",
+      defaultBfDatasetId
+    );
     throw Error(userErrorMessage(error));
   }
 };

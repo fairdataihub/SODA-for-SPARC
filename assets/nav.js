@@ -19,15 +19,21 @@ async function handleSectionTrigger(event) {
   // Display the current section
   const sectionId = `${event.target.dataset.section}-section`;
   const itemsContainer = document.getElementById("items");
-  const freeFormItemsContainer = document.getElementById("free-form-folder-structure-container");
-  const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
+  const freeFormItemsContainer = document.getElementById(
+    "free-form-folder-structure-container"
+  );
+  const freeFormButtons = document.getElementById(
+    "organize-path-and-back-button-div"
+  );
 
   if (sectionId === "organize-section") {
     //reset lazyloading values
     resetLazyLoading();
     //Transition file explorer elements to freeform mode
     scroll_box = document.querySelector("#organize-dataset-tab");
-    $(".shared-folder-structure-element").appendTo($("#free-form-folder-structure-container"));
+    $(".shared-folder-structure-element").appendTo(
+      $("#free-form-folder-structure-container")
+    );
     freeFormItemsContainer.classList.add("freeform-file-explorer"); //add styling for free form mode
     freeFormButtons.classList.add("freeform-file-explorer-buttons");
     organizeDSglobalPath = document.getElementById("input-global-path");
@@ -128,7 +134,9 @@ async function handleSectionTrigger(event) {
     resetLazyLoading();
     freeFormItemsContainer.classList.remove("freeform-file-explorer"); //add styling for free form mode
     freeFormButtons.classList.remove("freeform-file-explorer-buttons");
-    $(".shared-folder-structure-element").appendTo($("#guided-folder-structure-container"));
+    $(".shared-folder-structure-element").appendTo(
+      $("#guided-folder-structure-container")
+    );
 
     guidedPrepareHomeScreen();
   }

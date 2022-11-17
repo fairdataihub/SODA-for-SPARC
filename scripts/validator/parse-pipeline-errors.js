@@ -48,22 +48,28 @@ const pipelineErrorToTranslationTable = {
     missingModality: ParsedErrorTranslator.translateMissingModality,
     missingTechnique: ParsedErrorTranslator.translateMissingTechnique,
     missingFunding: ParsedErrorTranslator.translateMissingFunding,
-    missingProtocolUrlOrDoi: ParsedErrorTranslator.translateMissingProtocolUrlOrDoi,
+    missingProtocolUrlOrDoi:
+      ParsedErrorTranslator.translateMissingProtocolUrlOrDoi,
     missingTitle: ParsedErrorTranslator.translateMissingTitle,
-    missingNumberOfSubjects: ParsedErrorTranslator.translateMissingNumberOfSubjects,
-    missingNumberOfSamples: ParsedErrorTranslator.translateMissingNumberOfSamples,
+    missingNumberOfSubjects:
+      ParsedErrorTranslator.translateMissingNumberOfSubjects,
+    missingNumberOfSamples:
+      ParsedErrorTranslator.translateMissingNumberOfSamples,
     missingName: ParsedErrorTranslator.translateMissingName,
     missingDescription: ParsedErrorTranslator.translateMissingDescription,
     missingSamples: ParsedErrorTranslator.missingSamples,
     missingSubjects: ParsedErrorTranslator.missingSubjects,
     missingSpecies: ParsedErrorTranslator.missingSpecies,
-    missingRelatedIdentifier: ParsedErrorTranslator.translateMissingRelatedIdentifiers,
-    missingRelatedIdentifierType: ParsedErrorTranslator.translateMissingRelatedIdentifierType,
+    missingRelatedIdentifier:
+      ParsedErrorTranslator.translateMissingRelatedIdentifiers,
+    missingRelatedIdentifierType:
+      ParsedErrorTranslator.translateMissingRelatedIdentifierType,
   },
   type: {
     invalidSubjectIdType: ParsedErrorTranslator.translateInvalidSubjectIdType,
     invalidFundingType: ParsedErrorTranslator.translateInvalidFundingType,
-    invalidAcknowledgmentsType: ParsedErrorTranslator.translateInvalidFundingType,
+    invalidAcknowledgmentsType:
+      ParsedErrorTranslator.translateInvalidFundingType,
     invalidIdentifierDescriptionType:
       ParsedErrorTranslator.translateInvalidIdentifierDescriptionType,
   },
@@ -71,26 +77,32 @@ const pipelineErrorToTranslationTable = {
     invalidDatasetName: ParsedErrorTranslator.translateIncorrectDatasetName,
     invalidDatasetId: ParsedErrorTranslator.translateInvalidDatasetId,
     invalidOrganization: ParsedErrorTranslator.translateInvalidOrganization,
-    invalidSubjectIdPattern: ParsedErrorTranslator.translateInvalidSubjectIdPattern,
-    invalidContributorNamePattern: ParsedErrorTranslator.translateInvalidContributorNamePattern,
+    invalidSubjectIdPattern:
+      ParsedErrorTranslator.translateInvalidSubjectIdPattern,
+    invalidContributorNamePattern:
+      ParsedErrorTranslator.translateInvalidContributorNamePattern,
   },
   minItems: {
     missingTechnique: ParsedErrorTranslator.translateMissingTechniqueValues,
   },
   anyOf: {
     invalidSpeciesAnyOf: ParsedErrorTranslator.translateInvalidSpeciesAnyOf,
-    contributorAffiliationAnyOf: ParsedErrorTranslator.translateContributorAffiliationAnyOf,
+    contributorAffiliationAnyOf:
+      ParsedErrorTranslator.translateContributorAffiliationAnyOf,
   },
   contains: {
-    invalidContributorRole: ParsedErrorTranslator.translateInvalidContributorRole,
-    invalidContributorsContains: ParsedErrorTranslator.translateInvalidContributorsContains,
+    invalidContributorRole:
+      ParsedErrorTranslator.translateInvalidContributorRole,
+    invalidContributorsContains:
+      ParsedErrorTranslator.translateInvalidContributorsContains,
   },
   additionalProperties: {
     datasetDescriptionAdditionalProperties:
       ParsedErrorTranslator.translateAdditionalPropertiesDatasetDescription,
   },
   enum: {
-    invalidRelationTypeEnum: ParsedErrorTranslator.translateInvalidRelationTypeEnum,
+    invalidRelationTypeEnum:
+      ParsedErrorTranslator.translateInvalidRelationTypeEnum,
   },
 };
 

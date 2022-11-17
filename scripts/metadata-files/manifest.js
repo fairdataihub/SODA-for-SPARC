@@ -1,13 +1,15 @@
-const { platform } = require("os");
+const { platform } = require('os');
 
-const { copyFile, readdir } = require("fs").promises;
+const { copyFile, readdir } = require('fs').promises;
 
 // opendropdown event listeners
-document.querySelectorAll(".manifest-change-current-account").forEach((element) => {
-  element.addEventListener("click", function () {
-    openDropdownPrompt(null, "bf");
+document
+  .querySelectorAll(".manifest-change-current-account")
+  .forEach((element) => {
+    element.addEventListener("click", function () {
+      openDropdownPrompt(null, "bf");
+    });
   });
-});
 
 document.querySelectorAll(".manifest-change-current-ds").forEach((element) => {
   element.addEventListener("click", function () {
@@ -15,7 +17,9 @@ document.querySelectorAll(".manifest-change-current-ds").forEach((element) => {
   });
 });
 
-var jstreePreviewManifest = document.getElementById("div-dataset-tree-preview-manifest");
+var jstreePreviewManifest = document.getElementById(
+  "div-dataset-tree-preview-manifest"
+);
 
 const guidedJsTreePreviewManifest = document.getElementById(
   "guided-div-dataset-tree-preview-manifest"
@@ -30,60 +34,87 @@ function selectManifestGenerationLocation() {
 }
 
 const openDirectoryAtManifestGenerationLocation = (generationLocation) => {
-  openFolder(generationLocation);
+  openFolder(generationLocation)
   return;
-};
+
+}
+
 
 function openFolder(generationLocation) {
-  // create the folder path
+  // create the folder path 
   try {
-    client.get("/datasets/open", {
+    client.get('/datasets/open', {
       params: {
-        dataset_path: generationLocation,
-      },
-    });
+        dataset_path: generationLocation
+      }
+    })
   } catch (error) {
-    console.error(error);
-    clientError(error);
+    console.error(error)
+    clientError(error)
     Swal.fire({
       title: "Error",
       text: `Could not open the new manifest folder for you. Please view your manifest files by navigating to ${generationLocation}.`,
       icon: "error",
       confirmButtonText: "Ok",
-    });
+    })
   }
 }
 
+
 $(document).ready(function () {
-  ipcRenderer.on("selected-local-dataset-manifest-purpose", (event, folderPath) => {
-    if (folderPath.length > 0) {
-      if (folderPath !== null) {
-        document.getElementById("input-manifest-local-folder-dataset").placeholder = folderPath[0];
-        localDatasetFolderPath = folderPath[0];
-        $("#div-confirm-manifest-local-folder-dataset").css("display", "flex");
-        $($("#div-confirm-manifest-local-folder-dataset button")[0]).show();
+  ipcRenderer.on(
+    "selected-local-dataset-manifest-purpose",
+    (event, folderPath) => {
+      if (folderPath.length > 0) {
+        if (folderPath !== null) {
+          document.getElementById(
+            "input-manifest-local-folder-dataset"
+          ).placeholder = folderPath[0];
+          localDatasetFolderPath = folderPath[0];
+          $("#div-confirm-manifest-local-folder-dataset").css(
+            "display",
+            "flex"
+          );
+          $($("#div-confirm-manifest-local-folder-dataset button")[0]).show();
+        } else {
+          document.getElementById(
+            "input-manifest-local-folder-dataset"
+          ).placeholder = "Browse here";
+          localDatasetFolderPath = "";
+          $("#div-confirm-manifest-local-folder-dataset").hide();
+          $("#Question-prepare-manifest-2")
+            .nextAll()
+            .removeClass("show")
+            .removeClass("prev");
+        }
       } else {
-        document.getElementById("input-manifest-local-folder-dataset").placeholder = "Browse here";
+        document.getElementById(
+          "input-manifest-local-folder-dataset"
+        ).placeholder = "Browse here";
         localDatasetFolderPath = "";
         $("#div-confirm-manifest-local-folder-dataset").hide();
-        $("#Question-prepare-manifest-2").nextAll().removeClass("show").removeClass("prev");
+        $("#Question-prepare-manifest-2")
+          .nextAll()
+          .removeClass("show")
+          .removeClass("prev");
       }
-    } else {
-      document.getElementById("input-manifest-local-folder-dataset").placeholder = "Browse here";
-      localDatasetFolderPath = "";
-      $("#div-confirm-manifest-local-folder-dataset").hide();
-      $("#Question-prepare-manifest-2").nextAll().removeClass("show").removeClass("prev");
     }
-  });
+  );
 
-  ipcRenderer.on("selected-local-dataset-manifest-generate-purpose", (event, folderPath) => {
-    if (folderPath.length <= 0 || folderPath === null) {
-      document.getElementById("input-manifest-local-gen-location").placeholder = "Browse here";
-      return;
+  ipcRenderer.on(
+    "selected-local-dataset-manifest-generate-purpose",
+    (event, folderPath) => {
+      if (folderPath.length <= 0 || folderPath === null) {
+        document.getElementById(
+          "input-manifest-local-gen-location"
+        ).placeholder = "Browse here";
+        return;
+      }
+
+      document.getElementById("input-manifest-local-gen-location").placeholder =
+        folderPath[0];
     }
-
-    document.getElementById("input-manifest-local-gen-location").placeholder = folderPath[0];
-  });
+  );
 
   $("#bf_dataset_create_manifest").on("DOMSubtreeModified", function () {
     if ($("#bf_dataset_create_manifest").text().trim() !== "None") {
@@ -92,7 +123,10 @@ $(document).ready(function () {
     } else {
       $("#div-check-bf-create-manifest").css("display", "none");
     }
-    $("#Question-prepare-manifest-3").nextAll().removeClass("show").removeClass("prev");
+    $("#Question-prepare-manifest-3")
+      .nextAll()
+      .removeClass("show")
+      .removeClass("prev");
   });
 
   $(jstreePreviewManifest).on("open_node.jstree", function (event, data) {
@@ -105,9 +139,12 @@ $(document).ready(function () {
   $(jstreePreviewManifest).on("close_node.jstree", function (event, data) {
     data.instance.set_type(data.node, "folder closed");
   });
-  $(guidedJsTreePreviewManifest).on("close_node.jstree", function (event, data) {
-    data.instance.set_type(data.node, "folder closed");
-  });
+  $(guidedJsTreePreviewManifest).on(
+    "close_node.jstree",
+    function (event, data) {
+      data.instance.set_type(data.node, "folder closed");
+    }
+  );
 
   $(jstreePreviewManifest).jstree({
     core: {
@@ -262,8 +299,16 @@ $(document).ready(function () {
         },
       });
       var parentFolderName = $("#" + data.node.parent + "_anchor").text();
-      var localFolderPath = path.join(homeDirectory, "SODA", "manifest_files", parentFolderName);
-      var selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
+      var localFolderPath = path.join(
+        homeDirectory,
+        "SODA",
+        "manifest_files",
+        parentFolderName
+      );
+      var selectedManifestFilePath = path.join(
+        localFolderPath,
+        "manifest.xlsx"
+      );
       jsonManifest = excelToJson({
         sourceFile: selectedManifestFilePath,
         columnToKey: {
@@ -324,7 +369,10 @@ $(document).ready(function () {
         sodaJSONObj["digital-metadata"]["name"],
         parentFolderName
       );
-      var selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
+      var selectedManifestFilePath = path.join(
+        localFolderPath,
+        "manifest.xlsx"
+      );
       jsonManifest = excelToJson({
         sourceFile: selectedManifestFilePath,
         columnToKey: {
@@ -447,7 +495,9 @@ function loadManifestFileEdits(jsondata) {
           items.push({
             title: obj.options.text.deleteSelectedColumns,
             onclick: function () {
-              obj.deleteColumn(obj.getSelectedColumns().length ? undefined : parseInt(x));
+              obj.deleteColumn(
+                obj.getSelectedColumns().length ? undefined : parseInt(x)
+              );
             },
           });
         }
@@ -485,15 +535,12 @@ var finalManifestGenerationPath = "";
 let pennsievePreview = false;
 
 async function generateManifestPrecheck(manifestEditBoolean, ev) {
-  // if doing a local generation ( but not as part of the Pennsieve preview flow ) make sure the input
+
+  // if doing a local generation ( but not as part of the Pennsieve preview flow ) make sure the input 
   // that indicates where the manifest files will be generated is not empty
-  if (
-    ev.getAttribute("id") == document.getElementById("btn-local-manifest-gen").getAttribute("id")
-  ) {
+  if (ev.getAttribute("id") == document.getElementById("btn-local-manifest-gen").getAttribute("id")) {
     // check if the input is empty
-    if (
-      document.querySelector("#input-manifest-local-gen-location").placeholder === "Browse here"
-    ) {
+    if (document.querySelector("#input-manifest-local-gen-location").placeholder === "Browse here") {
       Swal.fire({
         title: "Please select a destination folder for the manifest file",
         icon: "error",
@@ -501,23 +548,29 @@ async function generateManifestPrecheck(manifestEditBoolean, ev) {
         heightAuto: false,
         backdrop: "rgba(0,0,0,0.4)",
       });
-      return;
+      return
     }
   }
 
   var type = "local";
   pennsievePreview = false;
-  if ($('input[name="generate-manifest-1"]:checked').prop("id") === "generate-manifest-from-Penn") {
+  if (
+    $('input[name="generate-manifest-1"]:checked').prop("id") ===
+    "generate-manifest-from-Penn"
+  ) {
     type = "bf";
   }
 
   if (
     ev.getAttribute("id") ==
-    document.getElementById("generate-local-preview-manifest").getAttribute("id")
+    document
+      .getElementById("generate-local-preview-manifest")
+      .getAttribute("id")
   ) {
     type = "local";
     pennsievePreview = true;
   }
+
 
   exitCurate();
   sodaJSONObj["starting-point"] = {};
@@ -540,11 +593,11 @@ async function generateManifestPrecheck(manifestEditBoolean, ev) {
     return;
   }
 
+
   let localGenerationDifferentDestination = false;
-  if (
-    document.querySelector("#input-manifest-local-gen-location").placeholder !==
-    document.querySelector("#input-manifest-local-folder-dataset").placeholder
-  ) {
+  if (document.querySelector(
+    "#input-manifest-local-gen-location"
+  ).placeholder !== document.querySelector("#input-manifest-local-folder-dataset").placeholder) {
     localGenerationDifferentDestination = true;
   }
 
@@ -579,7 +632,7 @@ async function generateManifestPrecheck(manifestEditBoolean, ev) {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   // clean the manifest files by dropping empty columns ( keep the required columns even if empty )
   await dropEmptyManifestColumns();
@@ -658,7 +711,9 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
         sodaJSONObj["starting-point"]["type"] = "local";
         // if the manifest is going to be recreated post edits
         if (manifestEditBoolean) {
-          localDatasetFolderPath = $("#input-manifest-local-folder-dataset").attr("placeholder");
+          localDatasetFolderPath = $(
+            "#input-manifest-local-folder-dataset"
+          ).attr("placeholder");
         }
 
         create_json_object(action, sodaJSONObj, localDatasetFolderPath);
@@ -684,7 +739,7 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
 
           // log the error to analytics
           logMetadataForAnalytics(
@@ -713,7 +768,7 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
           // log the error to analytics
           logMetadataForAnalytics(
             "Error",
@@ -741,7 +796,7 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
           // log the error to analytics
           logMetadataForAnalytics(
             "Error",
@@ -754,8 +809,12 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
           return;
         }
 
+
         generateManifestHelper();
-        initiate_generate_manifest_local(manifestEditBoolean, localDatasetFolderPath);
+        initiate_generate_manifest_local(
+          manifestEditBoolean,
+          localDatasetFolderPath
+        );
       }
     });
   } else {
@@ -765,7 +824,12 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
     } else {
       sodaJSONObj["bf-account-selected"] = { "account-name": defaultBfAccount };
       sodaJSONObj["bf-dataset-selected"] = { "dataset-name": defaultBfDataset };
-      extractBFDatasetForManifestFile(false, defaultBfAccount, defaultBfDataset, ev);
+      extractBFDatasetForManifestFile(
+        false,
+        defaultBfAccount,
+        defaultBfDataset,
+        ev
+      );
     }
   }
 }
@@ -811,6 +875,7 @@ async function generateManifestPreview(e) {
   // open a file dialog so the user can select their dataset folder
   let folderPath = await ipcRenderer.invoke("open-manifest-preview-location");
 
+
   // set final generation destination to the user's selected location
   finalManifestGenerationPath = folderPath[0];
 
@@ -844,8 +909,12 @@ function updateJSONStructureManifestGenerate() {
     };
   }
   if (sodaJSONObj["starting-point"]["type"] == "local") {
-    var localDestination = path.dirname(sodaJSONObj["starting-point"]["local-path"]);
-    var newDatasetName = path.basename(sodaJSONObj["starting-point"]["local-path"]);
+    var localDestination = path.dirname(
+      sodaJSONObj["starting-point"]["local-path"]
+    );
+    var newDatasetName = path.basename(
+      sodaJSONObj["starting-point"]["local-path"]
+    );
     sodaJSONObj["generate-dataset"] = {
       destination: "local",
       path: $("#input-manifest-local-folder-dataset").attr("placeholder"),
@@ -865,7 +934,11 @@ function updateJSONStructureManifestGenerate() {
   }
 }
 
-async function initiate_generate_manifest_local(manifestEditBoolean, originalDataset) {
+async function initiate_generate_manifest_local(
+  manifestEditBoolean,
+  originalDataset
+) {
+
   if (manifestEditBoolean === false) {
     createManifestLocally("local", false, originalDataset);
   } else {
@@ -883,11 +956,7 @@ async function initiate_generate_manifest_local(manifestEditBoolean, originalDat
       );
     }
 
-    openDirectoryAtManifestGenerationLocation(
-      finalManifestGenerationPath == originalDataset
-        ? finalManifestGenerationPath
-        : generationLocation
-    );
+    openDirectoryAtManifestGenerationLocation(finalManifestGenerationPath == originalDataset ? finalManifestGenerationPath : generationLocation);
 
     if (moveFinishedBool) {
       resetManifest(true);
@@ -904,7 +973,8 @@ async function initiate_generate_manifest_local(manifestEditBoolean, originalDat
       };
 
       Swal.fire({
-        title: "Successfully generated manifest files at the specified location!",
+        title:
+          "Successfully generated manifest files at the specified location!",
         icon: "success",
         showConfirmButton: true,
         heightAuto: false,
@@ -1055,7 +1125,11 @@ async function initiate_generate_manifest_bf() {
     high_level_folder_num
   );
 
-  logMetadataSizeForAnalytics(destination === "Pennsieve" ? true : false, "manifest.xlsx", res[1]);
+  logMetadataSizeForAnalytics(
+    destination === "Pennsieve" ? true : false,
+    "manifest.xlsx",
+    res[1]
+  );
 
   sodaJSONObj = {
     "starting-point": { type: "" },
@@ -1092,7 +1166,11 @@ function moveManifestFiles(sourceFolder, destinationFolder) {
       } else {
         folders.forEach(function (folder) {
           let sourceManifest = path.join(sourceFolder, folder, "manifest.xlsx");
-          let destinationManifest = path.join(destinationFolder, folder, "manifest.xlsx");
+          let destinationManifest = path.join(
+            destinationFolder,
+            folder,
+            "manifest.xlsx"
+          );
           const mv = require("mv");
           mv(sourceManifest, destinationManifest, function (err) {
             if (err) {
@@ -1111,12 +1189,13 @@ function moveManifestFiles(sourceFolder, destinationFolder) {
 // Rationale: A user will want to preview their manifest files before uploading them to Pennsieve. In the case of generating for a local dataset,
 // sometimes the location of the dataset is read only, so we need to generate the manifest files in a different location for the user.
 const moveManifestFilesPreview = async (sourceFolder, destinationFolder) => {
+
   // get the files/folders in the source folder
   let sourceDir;
   try {
-    sourceDir = await readdir(sourceFolder);
+    sourceDir = await readdir(sourceFolder)
   } catch (error) {
-    clientError(error);
+    clientError(error)
     Swal.fire({
       title: "Failed to generate manifest files for preview",
       text: userErrorMessage(error),
@@ -1124,16 +1203,16 @@ const moveManifestFilesPreview = async (sourceFolder, destinationFolder) => {
       showConfirmButton: true,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-    });
-    return [false, ""];
+    })
+    return [false, ""]
   }
 
   // create a directory for storing the manifest files in the destination folder
   let manifestFolderDirectory = "";
   try {
-    manifestFolderDirectory = await createDuplicateManifestDirectory(destinationFolder);
+    manifestFolderDirectory = await createDuplicateManifestDirectory(destinationFolder)
   } catch (error) {
-    clientError(error);
+    clientError(error)
     Swal.fire({
       title: "Failed to generate manifest files for preview",
       text: userErrorMessage(error),
@@ -1141,8 +1220,8 @@ const moveManifestFilesPreview = async (sourceFolder, destinationFolder) => {
       showConfirmButton: true,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-    });
-    return [false, ""];
+    })
+    return [false, ""]
   }
 
   // traverse the high level folders in the source folder and copy the source manifest files to the destination folder for user previewing
@@ -1151,15 +1230,21 @@ const moveManifestFilesPreview = async (sourceFolder, destinationFolder) => {
 
     let sourceManifest = path.join(sourceFolder, folder, "manifest.xlsx");
 
-    let destinationManifestHighLevelFolder = path.join(manifestFolderDirectory, folder);
+    let destinationManifestHighLevelFolder = path.join(
+      manifestFolderDirectory,
+      folder
+    );
     fs.mkdirSync(destinationManifestHighLevelFolder);
 
-    let destinationManifest = path.join(destinationManifestHighLevelFolder, "manifest.xlsx");
+    let destinationManifest = path.join(
+      destinationManifestHighLevelFolder,
+      "manifest.xlsx"
+    );
 
     try {
-      await copyFile(sourceManifest, destinationManifest);
+      await copyFile(sourceManifest, destinationManifest)
     } catch (error) {
-      clientError(error);
+      clientError(error)
       Swal.fire({
         title: "Failed to generate manifest files for preview",
         text: userErrorMessage(error),
@@ -1167,29 +1252,30 @@ const moveManifestFilesPreview = async (sourceFolder, destinationFolder) => {
         showConfirmButton: true,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
-      });
-      return [false, manifestFolderDirectory];
+      })
+      return [false, manifestFolderDirectory]
     }
   }
 
-  return [true, manifestFolderDirectory];
-};
+  return [true, manifestFolderDirectory]
+}
+
 
 // TODO: Generalize then add to utilities
 /**
  * Given a path to a destination, generate a SODA Manifest Files directory in that location.
  * If there are other SODA Manifest Files directories, then append a number to the end of the directory name and create it.
  * E.g., SODA Manifest Files (1), SODA Manifest Files (2), etc.
- * @param {URL} destination
- * @returns
+ * @param {URL} destination 
+ * @returns 
  */
 const createDuplicateManifestDirectory = async (destination) => {
   // get the files/folders in the destination folder
   let destinationDir;
   try {
-    destinationDir = await readdir(destination);
+    destinationDir = await readdir(destination)
   } catch (error) {
-    clientError(error);
+    clientError(error)
     Swal.fire({
       title: "Failed to generate manifest files for preview",
       text: userErrorMessage(error),
@@ -1197,49 +1283,56 @@ const createDuplicateManifestDirectory = async (destination) => {
       showConfirmButton: true,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-    });
-    return false;
+    })
+    return false
   }
 
   // get the folders in the destination folder that include SODA Manfiest Files
   let manifestFolderCopies = destinationDir.filter((folder) => {
-    return folder.includes("SODA Manifest Files");
-  });
+    return folder.includes("SODA Manifest Files")
+  })
 
   // filter out any extensions from the list
   manifestFolderCopies = manifestFolderCopies.filter((folder) => {
-    return !folder.includes(".");
-  });
+    return !folder.includes(".")
+  })
 
-  // if there is only one SODA Manifest Files directory create the first copy
+
+  // if there is only one SODA Manifest Files directory create the first copy 
   if (manifestFolderCopies.length === 0) {
-    let manifestFolderDirectory = path.join(destination, "SODA Manifest Files");
+    let manifestFolderDirectory = path.join(
+      destination,
+      "SODA Manifest Files"
+    );
     fs.mkdirSync(manifestFolderDirectory);
-    return manifestFolderDirectory;
+    return manifestFolderDirectory
   }
 
   if (manifestFolderCopies.length === 1) {
-    let manifestFolderDirectory = path.join(destination, "SODA Manifest Files (1)");
+    let manifestFolderDirectory = path.join(
+      destination,
+      "SODA Manifest Files (1)"
+    );
     fs.mkdirSync(manifestFolderDirectory);
-    return manifestFolderDirectory;
+    return manifestFolderDirectory
   }
 
   // if there are multiple SODA Manifest Files directories, get the number of the last copy
-  let copyNumbers = [];
+  let copyNumbers = []
   // get the numbers of all the copies
   for (const copy of manifestFolderCopies) {
     // check if not the first SODA Manifest Files folder - which doesn't have a number
     if (copy.split(" ")[3]) {
-      copyNumbers.push(parseInt(copy.split(" ")[3].replace("(", "").replace(")", "")));
+      copyNumbers.push(parseInt(copy.split(" ")[3].replace("(", "").replace(")", "")))
     }
   }
 
   // sort the copy numbers
   copyNumbers.sort((a, b) => {
-    return a - b;
-  });
+    return a - b
+  })
 
-  let lastCopyNumber = copyNumbers[copyNumbers.length - 1];
+  let lastCopyNumber = copyNumbers[copyNumbers.length - 1]
 
   // create a new SODA Manifest Files directory ending with ' (n)' where n is the number of times the directory has been created
   let manifestFolderDirectory = path.join(
@@ -1249,8 +1342,9 @@ const createDuplicateManifestDirectory = async (destination) => {
   fs.mkdirSync(manifestFolderDirectory);
 
   // return the path to the new SODA Manifest Files directory
-  return manifestFolderDirectory;
-};
+  return manifestFolderDirectory
+
+}
 
 const removeDir = function (pathdir) {
   if (fs.existsSync(pathdir)) {
@@ -1277,25 +1371,37 @@ const removeDir = function (pathdir) {
   }
 };
 
-async function extractBFDatasetForManifestFile(editBoolean, bfaccount, bfdataset, ev) {
-  // hide the entire progress container div
-  let progressContainer = document.querySelector("#manifest-progress-container");
+async function extractBFDatasetForManifestFile(
+  editBoolean,
+  bfaccount,
+  bfdataset,
+  ev
+) {
+
+  // hide the entire progress container div 
+  let progressContainer = document.querySelector("#manifest-progress-container")
   progressContainer.style.display = "block";
 
   // inform user the manifest files are being generated
-  let spanManifest = document.querySelector("#loading_pennsieve_dataset_manifest_span");
+  let spanManifest = document.querySelector(
+    "#loading_pennsieve_dataset_manifest_span"
+  )
   spanManifest.textContent = "Importing your Pennsieve dataset...";
   spanManifest.style.display = "block";
 
   // hide the loading bar's text
-  document.querySelector("#loading_pennsieve_dataset_manifest_span").style.visibility = "visible";
+  document.querySelector(
+    "#loading_pennsieve_dataset_manifest_span"
+  ).style.visibility = "visible";
 
   // scroll to the loaders
-  document.querySelector("#loading_pennsieve_dataset_manifest_span").scrollIntoView({
-    behavior: "smooth",
-    block: "start",
-    inline: "nearest",
-  });
+  document
+    .querySelector("#loading_pennsieve_dataset_manifest_span")
+    .scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+      inline: "nearest",
+    });
 
   var result;
   try {
@@ -1354,11 +1460,16 @@ async function extractBFDatasetForManifestFile(editBoolean, bfaccount, bfdataset
     populate_existing_folders(datasetStructureJSONObj);
     populate_existing_metadata(sodaJSONObj);
 
-    let continueProgressEmptyFolder = await checkEmptySubFolders(sodaJSONObj["dataset-structure"]);
+    let continueProgressEmptyFolder = await checkEmptySubFolders(
+      sodaJSONObj["dataset-structure"]
+    );
 
     if (!continueProgressEmptyFolder) {
-      hideProgressContainer(progressContainer);
+
+
+      hideProgressContainer(progressContainer)
       spanManifest.style.display = "none";
+
 
       Swal.fire({
         title: "Failed to generate the manifest files.",
@@ -1370,7 +1481,9 @@ async function extractBFDatasetForManifestFile(editBoolean, bfaccount, bfdataset
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
+
+
 
       $("#Question-prepare-manifest-4").removeClass("show");
       $("#Question-prepare-manifest-4").removeClass("prev");
@@ -1409,9 +1522,10 @@ async function extractBFDatasetForManifestFile(editBoolean, bfaccount, bfdataset
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
 
-      hideProgressContainer(progressContainer);
+
+      hideProgressContainer(progressContainer)
       spanManifest.style.display = "none";
 
       $("#Question-prepare-manifest-4").removeClass("show");
@@ -1430,7 +1544,9 @@ async function extractBFDatasetForManifestFile(editBoolean, bfaccount, bfdataset
     }
 
     // check for no SPARC folders on a Pennsieve datasets (already include check for a local dataset)
-    let continueProgressNoSPARCFolders = checkNoSparcFolders(sodaJSONObj["dataset-structure"]);
+    let continueProgressNoSPARCFolders = checkNoSparcFolders(
+      sodaJSONObj["dataset-structure"]
+    );
     if (continueProgressNoSPARCFolders === true) {
       Swal.fire({
         title: "Failed to generate the manifest files.",
@@ -1442,13 +1558,14 @@ async function extractBFDatasetForManifestFile(editBoolean, bfaccount, bfdataset
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       $("#Question-prepare-manifest-4").removeClass("show");
       $("#Question-prepare-manifest-4").removeClass("prev");
       $("#Question-prepare-manifest-3").removeClass("prev");
       $("#bf_dataset_create_manifest").text("None");
 
-      hideProgressContainer(progressContainer);
+
+      hideProgressContainer(progressContainer)
       spanManifest.style.display = "none";
 
       defaultBfDataset = "Select dataset";
@@ -1486,13 +1603,15 @@ async function extractBFDatasetForManifestFile(editBoolean, bfaccount, bfdataset
       $(ev).hide();
       loadDSTreePreviewManifest(sodaJSONObj["dataset-structure"]);
 
+
       // hide the loading bar's text
-      document.querySelector("#loading_pennsieve_dataset_manifest_span").style.visibility =
-        "hidden";
+      document.querySelector(
+        "#loading_pennsieve_dataset_manifest_span"
+      ).style.visibility = "hidden";
 
       localDatasetFolderPath = "";
 
-      // hide the entire progress container div
+      // hide the entire progress container div 
       document.querySelector("#manifest-progress-container").style.display = "none";
     }
   }
@@ -1535,12 +1654,17 @@ function validateSPARCdataset() {
 
   // skip because previewing the manifest files for the user based off a Pennsieve dataset stored in json that has already been verified
 
-  localDatasetFolderPath = $("#input-manifest-local-folder-dataset").attr("placeholder");
+  localDatasetFolderPath = $("#input-manifest-local-folder-dataset").attr(
+    "placeholder"
+  );
   valid_dataset = verify_sparc_folder(localDatasetFolderPath, "local");
   if (valid_dataset == true) {
     let action = "";
     irregularFolderArray = [];
-    detectIrregularFolders(path.basename(localDatasetFolderPath), localDatasetFolderPath);
+    detectIrregularFolders(
+      path.basename(localDatasetFolderPath),
+      localDatasetFolderPath
+    );
     var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
     if (irregularFolderArray.length > 0) {
       Swal.fire({
@@ -1556,7 +1680,7 @@ function validateSPARCdataset() {
           $(".swal-popover").popover();
         },
         footer: footer,
-      }).then((result) => {});
+      }).then((result) => { });
       return false;
     } else {
       return true;
@@ -1579,10 +1703,15 @@ function validateSPARCdataset() {
         Swal.hideLoading();
       },
     }).then((result) => {
-      document.getElementById("input-manifest-local-folder-dataset").placeholder = "Browse here";
+      document.getElementById(
+        "input-manifest-local-folder-dataset"
+      ).placeholder = "Browse here";
       $("#div-confirm-manifest-local-folder-dataset").hide();
       localDatasetFolderPath = "";
-      $("#Question-prepare-manifest-2").nextAll().removeClass("show").removeClass("prev");
+      $("#Question-prepare-manifest-2")
+        .nextAll()
+        .removeClass("show")
+        .removeClass("prev");
       return false;
     });
   }
@@ -1616,8 +1745,14 @@ function resetManifest(skip_permission) {
           .removeClass("checked")
           .removeClass("disabled")
           .removeClass("non-selected");
-        $("#Question-prepare-manifest-1 .option-card .folder-input-check").prop("checked", false);
-        $("#input-manifest-local-folder-dataset").attr("placeholder", "Browse here");
+        $("#Question-prepare-manifest-1 .option-card .folder-input-check").prop(
+          "checked",
+          false
+        );
+        $("#input-manifest-local-folder-dataset").attr(
+          "placeholder",
+          "Browse here"
+        );
         $("#div-confirm-manifest-local-folder-dataset").hide();
         $("#bf_dataset_create_manifest").text("None");
         let dir1 = path.join(homeDirectory, "SODA", "manifest_files");
@@ -1638,8 +1773,14 @@ function resetManifest(skip_permission) {
       .removeClass("checked")
       .removeClass("disabled")
       .removeClass("non-selected");
-    $("#Question-prepare-manifest-1 .option-card .folder-input-check").prop("checked", false);
-    $("#input-manifest-local-folder-dataset").attr("placeholder", "Browse here");
+    $("#Question-prepare-manifest-1 .option-card .folder-input-check").prop(
+      "checked",
+      false
+    );
+    $("#input-manifest-local-folder-dataset").attr(
+      "placeholder",
+      "Browse here"
+    );
     $("#div-confirm-manifest-local-folder-dataset").hide();
     $("#bf_dataset_create_manifest").text("None");
     let dir1 = path.join(homeDirectory, "SODA", "manifest_files");
@@ -1647,14 +1788,16 @@ function resetManifest(skip_permission) {
     removeDir(dir1);
     removeDir(dir2);
 
-    // reset the global variables for detecting the manifest path
-    finalManifestGenerationPath = "";
+    // reset the global variables for detecting the manifest path 
+    finalManifestGenerationPath = ""
   }
 }
 
 const trackManifestImportProgress = async () => {
   // show the progress container - it is hidden by default once the dataset import is complete
-  let progressContainer = document.getElementById("loading_pennsieve_dataset_manifest");
+  let progressContainer = document.getElementById(
+    "loading_pennsieve_dataset_manifest"
+  );
 
   let { percentage_text, left_progress_bar, right_progress_bar } =
     getProgressContainerElements(progressContainer);
@@ -1667,15 +1810,20 @@ const trackManifestImportProgress = async () => {
   );
 
   // inform user the manifest files are being generated
-  document.querySelector("#loading_pennsieve_dataset_manifest_span").textContent =
-    "Preparing manifest files...";
+  document.querySelector(
+    "#loading_pennsieve_dataset_manifest_span"
+  ).textContent = "Preparing manifest files...";
 
-  document.querySelector("#loading_pennsieve_dataset_manifest_span").style.display = "block";
+  document.querySelector(
+    "#loading_pennsieve_dataset_manifest_span"
+  ).style.display = "block";
 
   const manifest_creation_progress_pennsieve = async () => {
     let progressResponse;
     try {
-      progressResponse = await client.get("/prepare_metadata/manifest_files/pennsieve/progress");
+      progressResponse = await client.get(
+        "/prepare_metadata/manifest_files/pennsieve/progress"
+      );
     } catch (error) {
       clientError(error);
       clearInterval(manifestProgressInterval);
@@ -1700,7 +1848,10 @@ const trackManifestImportProgress = async () => {
   };
 
   // create an interval with a .5 second timer
-  let manifestProgressInterval = setInterval(manifest_creation_progress_pennsieve, 800);
+  let manifestProgressInterval = setInterval(
+    manifest_creation_progress_pennsieve,
+    800
+  );
 };
 
 // check for empty sub-folders before continuing to generate manifest files
@@ -1733,7 +1884,10 @@ function checkEmptySubFolders(datasetStructure) {
 // Return: manifest file folder path
 async function generateManifestFolderLocallyForEdit(ev) {
   var type = "local";
-  if ($('input[name="generate-manifest-1"]:checked').prop("id") === "generate-manifest-from-Penn") {
+  if (
+    $('input[name="generate-manifest-1"]:checked').prop("id") ===
+    "generate-manifest-from-Penn"
+  ) {
     type = "bf";
   }
 
@@ -1742,7 +1896,9 @@ async function generateManifestFolderLocallyForEdit(ev) {
     document.querySelector("#continue_step_5-manifest").style.display = "block";
     document.querySelector("#generate_step_5-manifest").style.display = "none";
     document.querySelector("#input-manifest-local-gen-location").placeholder =
-      document.querySelector("#input-manifest-local-folder-dataset").placeholder;
+      document.querySelector(
+        "#input-manifest-local-folder-dataset"
+      ).placeholder;
   } else {
     document.querySelector("#continue_step_5-manifest").style.display = "none";
     document.querySelector("#generate_step_5-manifest").style.display = "block";
@@ -1773,10 +1929,10 @@ async function generateManifestFolderLocallyForEdit(ev) {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
       backdrop: "rgba(0,0,0, 0.4)",
-    });
+    })
 
     // give the swal a chace to load in
-    await wait(500);
+    await wait(500)
 
     let continueProgressValidateDataset = true;
     let continueProgressEmptyFolder = true;
@@ -1784,6 +1940,7 @@ async function generateManifestFolderLocallyForEdit(ev) {
     if (!continueProgressValidateDataset) {
       return;
     }
+
 
     sodaJSONObj["starting-point"]["local-path"] = localDatasetFolderPath;
     sodaJSONObj["starting-point"]["type"] = "local";
@@ -1795,7 +1952,9 @@ async function generateManifestFolderLocallyForEdit(ev) {
     sodaJSONObj["bf-account-selected"] = {};
     sodaJSONObj["bf-dataset-selected"] = {};
     sodaJSONObj["generate-dataset"] = {};
-    continueProgressEmptyFolder = await checkEmptySubFolders(sodaJSONObj["dataset-structure"]);
+    continueProgressEmptyFolder = await checkEmptySubFolders(
+      sodaJSONObj["dataset-structure"]
+    );
 
     if (continueProgressEmptyFolder === false) {
       Swal.fire({
@@ -1813,23 +1972,32 @@ async function generateManifestFolderLocallyForEdit(ev) {
         },
         hideClass: {
           popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      }).then((result) => {});
+        }
+      }).then((result) => { });
       return;
     }
 
     createManifestLocally("local", true, "");
+
   } else {
     // Case 2: bf dataset
     sodaJSONObj["bf-account-selected"] = { "account-name": defaultBfAccount };
     sodaJSONObj["bf-dataset-selected"] = { "dataset-name": defaultBfDataset };
-    extractBFDatasetForManifestFile(true, defaultBfAccount, defaultBfDataset, ev);
+    extractBFDatasetForManifestFile(
+      true,
+      defaultBfAccount,
+      defaultBfDataset,
+      ev
+    );
   }
 }
 
 async function createManifestLocally(type, editBoolean, originalDataset) {
   var generatePath = "";
-  sodaJSONObj["manifest-files"]["local-destination"] = path.join(homeDirectory, "SODA");
+  sodaJSONObj["manifest-files"]["local-destination"] = path.join(
+    homeDirectory,
+    "SODA"
+  );
 
   if (type === "local") {
     generatePath = localDatasetFolderPath;
@@ -1848,7 +2016,9 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
       { timeout: 0 }
     );
 
-    let res = generate_local_manifest.data.success_message_or_manifest_destination;
+
+    let res =
+      generate_local_manifest.data.success_message_or_manifest_destination;
 
     // if the user wants to edit their manifest files then move them to the dataset folder
     // and then show the the manifest file editor in the UI
@@ -1864,6 +2034,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
             timeout: 0,
           }
         );
+
 
         Swal.fire({
           title: "Manifests ready!",
@@ -1881,7 +2052,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
           hideClass: {
             popup: "animate__animated animate__zoomOut animate__faster",
           },
-        }).then((result) => {});
+        }).then((result) => { });
         $("#preview-manifest-fake-confirm").click();
         $("#Question-prepare-manifest-4").removeClass("show");
         $("#Question-prepare-manifest-4").removeClass("prev");
@@ -1923,11 +2094,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
         moveFinishedBool = await moveManifestFiles(dir, originalDataset);
       }
 
-      openDirectoryAtManifestGenerationLocation(
-        originalDataset !== finalManifestGenerationPath
-          ? manifestGenerationDirectory
-          : originalDataset
-      );
+      openDirectoryAtManifestGenerationLocation(originalDataset !== finalManifestGenerationPath ? manifestGenerationDirectory : originalDataset);
 
       if (moveFinishedBool) {
         resetManifest(true);
@@ -1944,7 +2111,8 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
         };
 
         Swal.fire({
-          title: "Successfully generated manifest files at the specified location!",
+          title:
+            "Successfully generated manifest files at the specified location!",
           icon: "success",
           showConfirmButton: true,
           heightAuto: false,
@@ -1982,7 +2150,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
       didOpen: () => {
         Swal.hideLoading();
       },
-    }).then((result) => {});
+    }).then((result) => { });
     $("#Question-prepare-manifest-4").removeClass("show");
     $("#Question-prepare-manifest-4").removeClass("prev");
     $("#Question-prepare-manifest-3").removeClass("prev");
@@ -1990,7 +2158,9 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
   }
 
   transitionFreeFormMode(
-    document.querySelector("#div-confirm-manifest-local-folder-dataset .btn_animated"),
+    document.querySelector(
+      "#div-confirm-manifest-local-folder-dataset .btn_animated"
+    ),
     "Question-prepare-manifest-2",
     "create_manifest-tab",
     "",
@@ -2048,6 +2218,7 @@ function createChildNodeManifest(
   selectedState,
   disabledState
 ) {
+
   /*
     oldFormatNode: node in the format under "dataset-structure" key in SODA object
     nodeName: text to show for each node (name)
@@ -2088,7 +2259,15 @@ function createChildNodeManifest(
         newFormatNode.state.selected = selected;
         newFormatNode.state.opened = true;
         newFormatNode.state.disabled = disabled;
-        var new_node = createChildNodeManifest(value, key, "folder", "", true, selected, disabled);
+        var new_node = createChildNodeManifest(
+          value,
+          key,
+          "folder",
+          "",
+          true,
+          selected,
+          disabled
+        );
 
         firstNode = false;
       }
@@ -2131,7 +2310,9 @@ function createChildNodeManifest(
                 type: nodeType,
               };
               newFormatNode["children"].push(new_node);
-              newFormatNode["children"].sort((a, b) => (a.text > b.text ? 1 : -1));
+              newFormatNode["children"].sort((a, b) =>
+                a.text > b.text ? 1 : -1
+              );
             }
           }
         }
@@ -2179,7 +2360,9 @@ function checkInvalidHighLevelFolders(datasetStructure) {
       invalidFolders = true;
     } else {
       // checking if the datasetFolderArray is a subset of the highLevelFolders array or not, if not, then it must contain invalid folder(s)
-      invalidFolders = datasetFolderArray.some((val) => !highLevelFolders.includes(val));
+      invalidFolders = datasetFolderArray.some(
+        (val) => !highLevelFolders.includes(val)
+      );
     }
   } else {
     invalidFolders = true;
@@ -2216,7 +2399,7 @@ async function generateAfterEdits() {
 
   // move the generated manifest files to the user selected location for preview
   if (pennsievePreview) {
-    let [moved, location] = await moveManifestFilesPreview(dir, finalManifestGenerationPath);
+    let [moved, location] = await moveManifestFilesPreview(dir, finalManifestGenerationPath)
     openDirectoryAtManifestGenerationLocation(location);
     Swal.fire({
       title: "Successfully generated manifest files at the specified location!",
@@ -2224,7 +2407,7 @@ async function generateAfterEdits() {
       confirmButtonText: "OK",
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
-    });
+    })
     return;
   }
 
@@ -2232,59 +2415,76 @@ async function generateAfterEdits() {
   initiate_generate_manifest_bf();
 }
 
-document.querySelector("#btn-pull-ds-manifest").addEventListener("click", (e) => {
-  document.querySelector("#div-check-bf-create-manifest").style.visibility = "hidden";
+document
+  .querySelector("#btn-pull-ds-manifest")
+  .addEventListener("click", (e) => {
+    document.querySelector("#div-check-bf-create-manifest").style.visibility =
+      "hidden";
 
-  let section = document.querySelector("#manifest-gen-on-pennsieve-section");
-  section.style.display = "flex";
-  section.querySelector("div").style.display = "flex";
-});
+    let section = document.querySelector("#manifest-gen-on-pennsieve-section")
+    section.style.display = "flex"
+    section.querySelector("div").style.display = "flex"
+
+
+
+  });
 
 document.querySelector("#div-check-bf-create-manifest").addEventListener("click", () => {
   // show the continue button
   document.querySelector("#btn-continue-pennsieve-question-6").style.display = "flex";
 
+
   // hide the manifest generation section
-  let section = document.querySelector("#manifest-gen-on-pennsieve-section");
-  section.style.display = "none";
-});
+  let section = document.querySelector("#manifest-gen-on-pennsieve-section")
+  section.style.display = "none"
+})
 
 document
   .querySelector("#div-confirm-manifest-local-folder-dataset")
   .addEventListener("click", function () {
-    // hide the Generate manifest on pennsieve section
-    document.querySelector("#generate-local-preview-manifest").parentNode.style.display = "none";
-    document.querySelector("#manifest-gen-on-pennsieve-section").style.display = "none";
+    // hide the Generate manifest on pennsieve section 
+    document.querySelector(
+      "#generate-local-preview-manifest"
+    ).parentNode.style.display = "none";
+    document.querySelector("#manifest-gen-on-pennsieve-section").style.display = "none"
 
     // show the confinue button for moving on to step 6
-    document.querySelector("#continue_step_5-manifest").parentNode.style.visibility = "visible";
+    document.querySelector(
+      "#continue_step_5-manifest"
+    ).parentNode.style.visibility = "visible";
 
     // hide the 'this' value ( aka, the #div-confirm-manifest-local-folder-dataset div)
-    this.style.display = "none";
+    this.style.display = "none"
 
     // hide the Pennsieve continue button in question 5
-    document.querySelector("#btn-continue-pennsieve-question-6").style.display = "none";
+    document.querySelector("#btn-continue-pennsieve-question-6").style.display = "none"
   });
 
-document.querySelector("#continue_step_5-manifest").addEventListener("click", (e) => {
-  e.target.parentNode.style.visibility = "hidden";
-});
+document
+  .querySelector("#continue_step_5-manifest")
+  .addEventListener("click", (e) => {
+    e.target.parentNode.style.visibility = "hidden";
+  });
 
-document.querySelector(".manifest-change-current-ds").addEventListener("click", (e) => {
-  document.querySelector("#div-confirm-manifest-local-folder-dataset").style.visibility = "visible";
-});
+document
+  .querySelector(".manifest-change-current-ds")
+  .addEventListener("click", (e) => {
+    document.querySelector(
+      "#div-confirm-manifest-local-folder-dataset"
+    ).style.visibility = "visible";
+  });
+
 
 // show the manifest generation on Pennsieve section so the user can choose to generate on Pennsieve or create a local preview
-document
-  .querySelector("#show-manifest-gen-on-pennsieve-section-btn")
-  .addEventListener("click", function () {
-    // show the section
-    let section = document.querySelector("#manifest-gen-on-pennsieve-section");
-    section.style.display = "flex";
+document.querySelector("#show-manifest-gen-on-pennsieve-section-btn").addEventListener("click", function () {
+  // show the section 
+  let section = document.querySelector("#manifest-gen-on-pennsieve-section")
+  section.style.display = "flex"
 
-    // transition to the header
-    section.scrollIntoView({ behavior: "smooth" });
+  // transition to the header
+  section.scrollIntoView({ behavior: "smooth" })
 
-    // hide the continue button
-    this.parentNode.parentNode.style.display = "none";
-  });
+  // hide the continue button
+  this.parentNode.parentNode.style.display = "none"
+
+})

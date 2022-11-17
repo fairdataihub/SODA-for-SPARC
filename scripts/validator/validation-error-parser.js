@@ -190,13 +190,23 @@ const ValidationErrorParser = {
 
     // address a bug case wherein the validator parses a local dataset name
     // using a pennsieve dataset pattern
-    if (validator === "pattern" && lastElementOfPath === "uri_api" && pipeline === "local") {
+    if (
+      validator === "pattern" &&
+      lastElementOfPath === "uri_api" &&
+      pipeline === "local"
+    ) {
       return "";
     }
 
     // check if all conditions point to dealing with an invalid package/dataset name
-    if (lastElementOfPath === "uri_api" && pipeline === "pennsieve" && validator === "pattern") {
-      let regExp = new RegExp("does not match ^https://api\\.pennsieve\\.io/(datasets|packages)/");
+    if (
+      lastElementOfPath === "uri_api" &&
+      pipeline === "pennsieve" &&
+      validator === "pattern"
+    ) {
+      let regExp = new RegExp(
+        "does not match ^https://api\\.pennsieve\\.io/(datasets|packages)/"
+      );
 
       let hasIncorrectDatasetName = regExp.test(errorMessage);
 
@@ -213,12 +223,20 @@ const ValidationErrorParser = {
 
     // address a bug case wherein the validator parses a local dataset name
     // using a pennsieve dataset pattern and creates an id error
-    if (validator === "pattern" && lastElementOfPath === "id" && pipeline === "local") {
+    if (
+      validator === "pattern" &&
+      lastElementOfPath === "id" &&
+      pipeline === "local"
+    ) {
       return "";
     }
 
     // check if all conditions point to dealing with an invalid dataset id
-    if (lastElementOfPath === "id" && pipeline === "pennsieve" && validator === "pattern") {
+    if (
+      lastElementOfPath === "id" &&
+      pipeline === "pennsieve" &&
+      validator === "pattern"
+    ) {
       return "invalidDatasetId";
     }
 
@@ -230,14 +248,24 @@ const ValidationErrorParser = {
 
     // address a bug case wherein the validator treats a local dataset
     // as if it were a Pennsieve dataset
-    if (validator === "pattern" && lastElementOfPath === "uri_human" && pipeline === "local") {
+    if (
+      validator === "pattern" &&
+      lastElementOfPath === "uri_human" &&
+      pipeline === "local"
+    ) {
       return "";
     }
 
     // check if all conditions point to dealing with an invalid organization
-    if (lastElementOfPath === "uri_human" && validator === "pattern" && pipeline === "pennsieve") {
+    if (
+      lastElementOfPath === "uri_human" &&
+      validator === "pattern" &&
+      pipeline === "pennsieve"
+    ) {
       // check if the string has an N:organization pattern included in the message
-      let regExp = new RegExp("does not match '^https://app\\.pennsieve\\.io/N:organization:'");
+      let regExp = new RegExp(
+        "does not match '^https://app\\.pennsieve\\.io/N:organization:'"
+      );
 
       let hasInvalidOrganization = regExp.test(errorMessage);
 
@@ -405,7 +433,8 @@ const ValidationErrorParser = {
   },
 
   parseMissingRelatedIdentifier: (errorMessage) => {
-    if (errorMessage !== "'related_identifier' is a required property") return "";
+    if (errorMessage !== "'related_identifier' is a required property")
+      return "";
 
     return "missingRelatedIdentifier";
   },

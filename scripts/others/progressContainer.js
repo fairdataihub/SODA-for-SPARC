@@ -68,17 +68,24 @@ const updateProgressContainerManifest = (
   let manifestProgressPercentage = 0.0;
 
   if (totalManifestFilesCreated > 0) {
-    manifestProgressPercentage = Math.round((totalManifestFilesCreated / totalManifestFiles) * 100);
+    manifestProgressPercentage = Math.round(
+      (totalManifestFilesCreated / totalManifestFiles) * 100
+    );
   }
   percentage_text.innerText = manifestProgressPercentage + "%";
   if (manifestProgressPercentage <= 50) {
-    left_progress_bar.style.transform = `rotate(${manifestProgressPercentage * 0.01 * 360}deg)`;
+    left_progress_bar.style.transform = `rotate(${
+      manifestProgressPercentage * 0.01 * 360
+    }deg)`;
   } else {
     left_progress_bar.style.transition = "";
     left_progress_bar.classList.add("notransition");
     left_progress_bar.style.transform = `rotate(180deg)`;
-    right_progress_bar.style.transform = `rotate(${manifestProgressPercentage * 0.01 * 180}deg)`;
+    right_progress_bar.style.transform = `rotate(${
+      manifestProgressPercentage * 0.01 * 180
+    }deg)`;
   }
+
 
   let finished = manifestProgress.finished;
 
@@ -114,7 +121,8 @@ const updateProgressContainerPennsieveImport = (
   pennsieveImportProgress,
   hide
 ) => {
-  let percentage_amount = pennsieveImportProgress["import_progress_percentage"].toFixed(2);
+  let percentage_amount =
+    pennsieveImportProgress["import_progress_percentage"].toFixed(2);
 
   if (percentage_amount === 0) {
     percentage_amount = 0.0;
@@ -122,12 +130,16 @@ const updateProgressContainerPennsieveImport = (
   let finished = pennsieveImportProgress["import_completed_items"];
   percentage_text.innerText = percentage_amount + "%";
   if (percentage_amount <= 50) {
-    left_progress_bar.style.transform = `rotate(${percentage_amount * 0.01 * 360}deg)`;
+    left_progress_bar.style.transform = `rotate(${
+      percentage_amount * 0.01 * 360
+    }deg)`;
   } else {
     //left_progress_bar.style.transition = "";
     left_progress_bar.classList.add("notransition");
     left_progress_bar.style.transform = `rotate(180deg)`;
-    right_progress_bar.style.transform = `rotate(${percentage_amount * 0.01 * 180}deg)`;
+    right_progress_bar.style.transform = `rotate(${
+      percentage_amount * 0.01 * 180
+    }deg)`;
   }
 
   if (finished) {
@@ -175,11 +187,17 @@ const resetProgressContainer = async (
  * @returns
  */
 const getProgressContainerElements = (progressContainer) => {
-  let percentage_text = progressContainer.querySelector(".pennsieve_loading_dataset_percentage");
+  let percentage_text = progressContainer.querySelector(
+    ".pennsieve_loading_dataset_percentage"
+  );
 
-  let left_progress_bar = progressContainer.querySelector(".pennsieve_left-side_less_than_50");
+  let left_progress_bar = progressContainer.querySelector(
+    ".pennsieve_left-side_less_than_50"
+  );
 
-  let right_progress_bar = progressContainer.querySelector(".pennsieve_right-side_greater_than_50");
+  let right_progress_bar = progressContainer.querySelector(
+    ".pennsieve_right-side_greater_than_50"
+  );
 
   return {
     percentage_text,
@@ -188,6 +206,7 @@ const getProgressContainerElements = (progressContainer) => {
   };
 };
 
+
 const hideProgressContainer = (progressContainer) => {
   progressContainer.style.display = "none";
-};
+}

@@ -1,4 +1,7 @@
-<section id="prepare_dataset-section" class="section js-section u-category-windows">
+<section
+  id="prepare_dataset-section"
+  class="section js-section u-category-windows"
+>
   <header class="section-header">
     <div class="section-wrapper">
       <h1>
@@ -6,16 +9,20 @@
         Prepare Dataset
       </h1>
       <h3>
-        This interface will walk you through the steps for performing an initial curation of your
-        dataset before review by the Curation Team. Specify successively your requirements,
-        validate, and finally generate your SPARC dataset.
+        This interface will walk you through the steps for performing an initial
+        curation of your dataset before review by the Curation Team. Specify
+        successively your requirements, validate, and finally generate your
+        SPARC dataset.
       </h3>
     </div>
   </header>
 
   <div class="demo">
     <div class="demo-wrapper">
-      <button id="button-specfy-dataset-demo-toggle" class="js-container-target demo-toggle-button">
+      <button
+        id="button-specfy-dataset-demo-toggle"
+        class="js-container-target demo-toggle-button"
+      >
         Specify dataset files
         <a
           style="padding: 0px 0px 0px 10px"
@@ -32,9 +39,20 @@
         <div style="display: none">
           <form id="form-dataset-organize-form">
             <div style="padding: 10px 0px" class="switch-field">
-              <input id="organize-dataset" name="organizing-dataset" type="radio" checked />
-              <label for="organize-dataset" class="labelradio"> Organize my dataset </label>
-              <input id="preorganized-dataset" name="organizing-dataset" type="radio" />
+              <input
+                id="organize-dataset"
+                name="organizing-dataset"
+                type="radio"
+                checked
+              />
+              <label for="organize-dataset" class="labelradio">
+                Organize my dataset
+              </label>
+              <input
+                id="preorganized-dataset"
+                name="organizing-dataset"
+                type="radio"
+              />
               <label for="preorganized-dataset" class="labelradio">
                 Dataset already organized
               </label>
@@ -79,40 +97,47 @@
           </div>
           <h5></h5>
           <div class="demo-controls">
-            <button id="button-select-dataset" class="demo-button">Select Dataset Folder</button>
+            <button id="button-select-dataset" class="demo-button">
+              Select Dataset Folder
+            </button>
             <p id="para-selected-dataset" style="margin-top: -5px"></p>
           </div>
         </div>
 
         <div id="div-organize-dataset" class="datasetsaveoption">
           <h5>
-            Specify files/folders to be included in your dataset under the table located below.
+            Specify files/folders to be included in your dataset under the table
+            located below.
             <div class="tooltipnew">
               <img class="info" src="assets/img/info.png" />
               <span class="tooltiptext">
-                All SPARC datasets must follow the SPARC Dataset Structure. You can accomplish that
-                in SODA by adding files and folders in the table under the corresponding SPARC
-                folder. This table will then be used by SODA to create your dataset when you reach
-                the "Generate dataset" feature.
+                All SPARC datasets must follow the SPARC Dataset Structure. You
+                can accomplish that in SODA by adding files and folders in the
+                table under the corresponding SPARC folder. This table will then
+                be used by SODA to create your dataset when you reach the
+                "Generate dataset" feature.
                 <br /><br />
-                The tooltips located in the rows of the table provide information about the expected
-                files in each SPARC folder. At least one of the folders should be non-empty. More
-                details about the dataset structure can be found in the
+                The tooltips located in the rows of the table provide
+                information about the expected files in each SPARC folder. At
+                least one of the folders should be non-empty. More details about
+                the dataset structure can be found in the
                 <a
                   href="https://docs.google.com/presentation/d/1EQPn1FmANpPsFt3CguU-JOQVMMlJsNXluQAK_gb2qVg/edit#slide=id.p1"
                   style="color: white"
                 >
                   SPARC guidelines</a
                 >. <br /><br />
-                You could drag/drop files and folders from your computer on the table headers to
-                import them or click on the corresponding buttons to browse files and folders. You
-                can then add a description for files, which will be included in the corresponding
-                manifest file if generated with SODA. Click on a header of the table to collapse the
-                corresponding file/folder paths if you want a cleaner looking workspace.
+                You could drag/drop files and folders from your computer on the
+                table headers to import them or click on the corresponding
+                buttons to browse files and folders. You can then add a
+                description for files, which will be included in the
+                corresponding manifest file if generated with SODA. Click on a
+                header of the table to collapse the corresponding file/folder
+                paths if you want a cleaner looking workspace.
                 <br /><br />
-                Note: If a folder is added, only the path of the selected folder will be displayed
-                in the table but all sub-folders and files will be included when the dataset is
-                generated.
+                Note: If a folder is added, only the path of the selected folder
+                will be displayed in the table but all sub-folders and files
+                will be included when the dataset is generated.
               </span>
             </div>
             <br />
@@ -135,15 +160,20 @@
                   <button id="button-drop-code" class="demo-button-table drag">
                     Drag & drop here
                   </button>
-                  <button id="button-select-code" class="demo-button-table">Select files</button>
-                  <button id="button-select-code-directory" class="demo-button-table">
+                  <button id="button-select-code" class="demo-button-table">
+                    Select files
+                  </button>
+                  <button
+                    id="button-select-code-directory"
+                    class="demo-button-table"
+                  >
                     Select folders
                   </button>
                   <div class="tooltipnew">
                     <img class="info" src="assets/img/info.png" />
                     <span class="tooltiptext"
-                      >code: Folder containing all the source code used in the study (e.g., Python,
-                      MATLAB, etc.)
+                      >code: Folder containing all the source code used in the
+                      study (e.g., Python, MATLAB, etc.)
                     </span>
                   </div>
                 </th>
@@ -159,22 +189,32 @@
               >
                 <th class="table-header">derivative</th>
                 <th>
-                  <button id="button-drop-derivative" class="demo-button-table drag">
+                  <button
+                    id="button-drop-derivative"
+                    class="demo-button-table drag"
+                  >
                     Drag & drop here
                   </button>
-                  <button id="button-select-derivative" class="demo-button-table">
+                  <button
+                    id="button-select-derivative"
+                    class="demo-button-table"
+                  >
                     Select files
                   </button>
-                  <button id="button-select-derivative-directory" class="demo-button-table">
+                  <button
+                    id="button-select-derivative-directory"
+                    class="demo-button-table"
+                  >
                     Select folders
                   </button>
                   <div class="tooltipnew">
                     <img class="info" src="assets/img/info.png" />
                     <span class="tooltiptext"
-                      >derivative: Folder containing data files derived from raw data (e.g.,
-                      processed image stacks that are annotated via the MBF tools, segmentation
-                      files, smoothed overlays of current and voltage that demonstrate a particular
-                      effect, etc.)
+                      >derivative: Folder containing data files derived from raw
+                      data (e.g., processed image stacks that are annotated via
+                      the MBF tools, segmentation files, smoothed overlays of
+                      current and voltage that demonstrate a particular effect,
+                      etc.)
                     </span>
                   </div>
                 </th>
@@ -193,16 +233,21 @@
                   <button id="button-drop-docs" class="demo-button-table drag">
                     Drag & drop here
                   </button>
-                  <button id="button-select-docs" class="demo-button-table">Select files</button>
-                  <button id="button-select-docs-directory" class="demo-button-table">
+                  <button id="button-select-docs" class="demo-button-table">
+                    Select files
+                  </button>
+                  <button
+                    id="button-select-docs-directory"
+                    class="demo-button-table"
+                  >
                     Select folders
                   </button>
                   <div class="tooltipnew">
                     <img class="info" src="assets/img/info.png" />
                     <span class="tooltiptext"
-                      >docs: Folder containing all other supporting files that don't belong to any
-                      of the other folders (e.g., a representative image for the dataset, figures,
-                      etc.)
+                      >docs: Folder containing all other supporting files that
+                      don't belong to any of the other folders (e.g., a
+                      representative image for the dataset, figures, etc.)
                     </span>
                   </div>
                 </th>
@@ -218,27 +263,39 @@
               >
                 <th class="table-header">primary</th>
                 <th>
-                  <button id="button-drop-primary" class="demo-button-table drag">
+                  <button
+                    id="button-drop-primary"
+                    class="demo-button-table drag"
+                  >
                     Drag & drop here
                   </button>
-                  <button id="button-select-primary" class="demo-button-table">Select files</button>
-                  <button id="button-select-primary-directory" class="demo-button-table">
+                  <button id="button-select-primary" class="demo-button-table">
+                    Select files
+                  </button>
+                  <button
+                    id="button-select-primary-directory"
+                    class="demo-button-table"
+                  >
                     Select folders
                   </button>
                   <div class="tooltipnew">
                     <img class="info" src="assets/img/info.png" />
                     <span class="tooltiptext"
-                      >primary: Folder containing all folders and files for experimental subjects
-                      and/or samples. All subjects will have a unique folder with a standardized
-                      name the same as the names or IDs as referenced in the subjects metadata file.
-                      Within each subject folder, the experimenter may choose to include an optional
-                      “session” folder if the subject took part in multiple experiments/ trials/
-                      sessions. The resulting data is contained within data type-specific (Datatype)
-                      folders within the subject (or session) folders. The SPARC program’s Data
-                      Sharing Committee defines “raw" (primary) data as one of the types of data
-                      that should be shared. This covers minimally processed raw data, e.g.
-                      time-series data, tabular data, clinical imaging data, genomic, metabolomic,
-                      microscopy data, which can also be included within their own folders.
+                      >primary: Folder containing all folders and files for
+                      experimental subjects and/or samples. All subjects will
+                      have a unique folder with a standardized name the same as
+                      the names or IDs as referenced in the subjects metadata
+                      file. Within each subject folder, the experimenter may
+                      choose to include an optional “session” folder if the
+                      subject took part in multiple experiments/ trials/
+                      sessions. The resulting data is contained within data
+                      type-specific (Datatype) folders within the subject (or
+                      session) folders. The SPARC program’s Data Sharing
+                      Committee defines “raw" (primary) data as one of the types
+                      of data that should be shared. This covers minimally
+                      processed raw data, e.g. time-series data, tabular data,
+                      clinical imaging data, genomic, metabolomic, microscopy
+                      data, which can also be included within their own folders.
                     </span>
                   </div>
                 </th>
@@ -254,22 +311,32 @@
               >
                 <th class="table-header">protocol</th>
                 <th>
-                  <button id="button-drop-protocol" class="demo-button-table drag">
+                  <button
+                    id="button-drop-protocol"
+                    class="demo-button-table drag"
+                  >
                     Drag & drop here
                   </button>
                   <button id="button-select-protocol" class="demo-button-table">
                     Select files
                   </button>
-                  <button id="button-select-protocol-directory" class="demo-button-table">
+                  <button
+                    id="button-select-protocol-directory"
+                    class="demo-button-table"
+                  >
                     Select folders
                   </button>
                   <div class="tooltipnew">
                     <img class="info" src="assets/img/info.png" />
                     <span class="tooltiptext"
-                      >protocol: Folder containing supplementary files to accompany the experimental
-                      protocols submitted to Protocols.io. Please note that this is not a
-                      substitution for the experimental protocol which must be submitted to
-                      <a href="https://www.protocols.io/groups/sparc" style="color: white">
+                      >protocol: Folder containing supplementary files to
+                      accompany the experimental protocols submitted to
+                      Protocols.io. Please note that this is not a substitution
+                      for the experimental protocol which must be submitted to
+                      <a
+                        href="https://www.protocols.io/groups/sparc"
+                        style="color: white"
+                      >
                         Protocols.io/sparc </a
                       >.
                     </span>
@@ -287,21 +354,31 @@
               >
                 <th class="table-header">source</th>
                 <th>
-                  <button id="button-drop-source" class="demo-button-table drag">
+                  <button
+                    id="button-drop-source"
+                    class="demo-button-table drag"
+                  >
                     Drag & drop here
                   </button>
-                  <button id="button-select-source" class="demo-button-table">Select files</button>
-                  <button id="button-select-source-directory" class="demo-button-table">
+                  <button id="button-select-source" class="demo-button-table">
+                    Select files
+                  </button>
+                  <button
+                    id="button-select-source-directory"
+                    class="demo-button-table"
+                  >
                     Select folders
                   </button>
                   <div class="tooltipnew">
                     <img class="info" src="assets/img/info.png" />
                     <span class="tooltiptext"
-                      >source: Folder containing very raw data i.e. raw or untouched files from an
-                      experiment. For example, this folder may include the “truly” raw k-space data
-                      for an MR image that has not yet been reconstructed (the reconstructed DICOM
-                      or NIFTI files, for example, would be found within the primary folder).
-                      Another example is the unreconstructed images for a microscopy dataset.
+                      >source: Folder containing very raw data i.e. raw or
+                      untouched files from an experiment. For example, this
+                      folder may include the “truly” raw k-space data for an MR
+                      image that has not yet been reconstructed (the
+                      reconstructed DICOM or NIFTI files, for example, would be
+                      found within the primary folder). Another example is the
+                      unreconstructed images for a microscopy dataset.
                     </span>
                   </div>
                 </th>
@@ -315,29 +392,42 @@
             <div class="tooltipnew">
               <img class="info" src="assets/img/info.png" />
               <span class="tooltiptext">
-                Save Table: Save the tables from "Specify dataset files" and "Specify metadata
-                files" in a CSV format file for continuing later.
+                Save Table: Save the tables from "Specify dataset files" and
+                "Specify metadata files" in a CSV format file for continuing
+                later.
                 <br /><br />
-                Import Table: Import progress file you saved previously and continue organizing your
-                dataset.
+                Import Table: Import progress file you saved previously and
+                continue organizing your dataset.
                 <br /><br />
-                Preview: Get a preview of the dataset that will be generated based on the tables.
-                The preview is created in a folder named "Preview" and located in a "SODA" folder on
-                the user's computer. The files in the preview are mock files (0 KB) with only name
-                and extension corresponding to the actual files specified in the tables.
+                Preview: Get a preview of the dataset that will be generated
+                based on the tables. The preview is created in a folder named
+                "Preview" and located in a "SODA" folder on the user's computer.
+                The files in the preview are mock files (0 KB) with only name
+                and extension corresponding to the actual files specified in the
+                tables.
               </span>
             </div>
           </h5>
 
           <div class="demo-controls">
-            <button id="button-select-save-file-organization" class="demo-button">
+            <button
+              id="button-select-save-file-organization"
+              class="demo-button"
+            >
               Save Table
             </button>
-            <button id="button-select-upload-file-organization" class="demo-button">
+            <button
+              id="button-select-upload-file-organization"
+              class="demo-button"
+            >
               Import Table
             </button>
-            <button id="button-clear-table" class="demo-button">Clear Table</button>
-            <button id="button-preview-file-organization" class="demo-button">Preview</button>
+            <button id="button-clear-table" class="demo-button">
+              Clear Table
+            </button>
+            <button id="button-preview-file-organization" class="demo-button">
+              Preview
+            </button>
           </div>
 
           <p id="para-save-file-organization-status"></p>
@@ -348,7 +438,11 @@
 
         <div id="div-save-table" class="datasetsaveoption"></div>
 
-        <div id="div-smart-organize" class="datasetsaveoption" style="display: none">
+        <div
+          id="div-smart-organize"
+          class="datasetsaveoption"
+          style="display: none"
+        >
           <hr />
           <h5>Smart Organize</h5>
           <p>Coming soon... Tentative date: February 2020</p>
@@ -358,7 +452,9 @@
 
         <div id="div-organize-next-step" align="right">
           <br /><br />
-          <button id="button-organize-next-step" class="demo-button-next-step">Next Step</button>
+          <button id="button-organize-next-step" class="demo-button-next-step">
+            Next Step
+          </button>
         </div>
       </div>
     </div>
@@ -389,16 +485,18 @@
           <div class="tooltipnew">
             <img class="info" src="assets/img/info.png" />
             <span class="tooltiptext">
-              Select this option to include a manifest file in each of the high-level SPARC folder.
-              Then, when you generate the dataset, a "manifest.xlsx" file will be added to each
-              SPARC folder.
+              Select this option to include a manifest file in each of the
+              high-level SPARC folder. Then, when you generate the dataset, a
+              "manifest.xlsx" file will be added to each SPARC folder.
               <br /><br />
-              The "filename", "timestamp", and "file type" fields will be populated automatically in
-              these manifest files while "description" will be populated with descriptions (if any)
-              added in the table under the "Specify dataset files" feature.
+              The "filename", "timestamp", and "file type" fields will be
+              populated automatically in these manifest files while
+              "description" will be populated with descriptions (if any) added
+              in the table under the "Specify dataset files" feature.
               <br /><br />
-              Note: If this option is selected, any manifest files specified in the table under the
-              "Specify dataset files" feature will be ignored when the dataset is generated.
+              Note: If this option is selected, any manifest files specified in
+              the table under the "Specify dataset files" feature will be
+              ignored when the dataset is generated.
             </span>
           </div>
         </h5>
@@ -415,25 +513,32 @@
             />
             <span class="slider round"></span>
           </label>
-          <label id="label-manifest" class="labelradio-manifest" style="padding-left: 10px">
+          <label
+            id="label-manifest"
+            class="labelradio-manifest"
+            style="padding-left: 10px"
+          >
             Include auto-generated manifest files
           </label>
         </div>
 
         <p></p>
         <h5>
-          Specify high-level metadata files to be included (submission, dataset_description, etc.)
+          Specify high-level metadata files to be included (submission,
+          dataset_description, etc.)
           <div class="tooltipnew">
             <img class="info" src="assets/img/info.png" />
             <span class="tooltiptext">
               These files will be included in the main folder of your dataset.
               <br /><br />
-              The "submission", "dataset_description", and "subjects" files are mandatory for all
-              datasets. Requirement of "samples" files is dataset-specific. All these files must be
-              in xlsx, cvs, or json formats. Visit the "Prepare Metadata" section of SODA to
-              download templates of these files as provided by the Curation Team.
+              The "submission", "dataset_description", and "subjects" files are
+              mandatory for all datasets. Requirement of "samples" files is
+              dataset-specific. All these files must be in xlsx, cvs, or json
+              formats. Visit the "Prepare Metadata" section of SODA to download
+              templates of these files as provided by the Curation Team.
               <br /><br />
-              Other authorized metadata files are "README.txt" and "CHANGES.txt".
+              Other authorized metadata files are "README.txt" and
+              "CHANGES.txt".
               <br /><br />
               No other files are allowed.
             </span>
@@ -455,7 +560,9 @@
               <button id="button-drop-metadata" class="demo-button-table drag">
                 Drag & drop here
               </button>
-              <button id="button-select-metadata" class="demo-button-table">Select files</button>
+              <button id="button-select-metadata" class="demo-button-table">
+                Select files
+              </button>
             </th>
           </tr>
         </table>
@@ -467,23 +574,34 @@
           <div class="tooltipnew">
             <img class="info" src="assets/img/info.png" />
             <span class="tooltiptext">
-              Save Table: Save the tables from "Specify dataset files" and "Specify metadata files"
-              in a CSV format file for continuing later.
+              Save Table: Save the tables from "Specify dataset files" and
+              "Specify metadata files" in a CSV format file for continuing
+              later.
               <br /><br />
-              The preview is created in a folder named "Preview" and located in a "SODA" folder on
-              the user's computer. The files in the preview are mock files (0 KB) with only name and
-              extension corresponding to the actual files specified in the tables.
+              The preview is created in a folder named "Preview" and located in
+              a "SODA" folder on the user's computer. The files in the preview
+              are mock files (0 KB) with only name and extension corresponding
+              to the actual files specified in the tables.
             </span>
           </div>
         </h5>
         <div class="demo-controls">
-          <button id="button-select-save-file-organization-metadata" class="demo-button">
+          <button
+            id="button-select-save-file-organization-metadata"
+            class="demo-button"
+          >
             Save Table
           </button>
-          <button id="button-preview-file-organization-metadata" class="demo-button">
+          <button
+            id="button-preview-file-organization-metadata"
+            class="demo-button"
+          >
             Preview
           </button>
-          <p id="para-preview-organization-status-metadata" style="padding: 0 0; margin: 0 0"></p>
+          <p
+            id="para-preview-organization-status-metadata"
+            style="padding: 0 0; margin: 0 0"
+          ></p>
           <p></p>
         </div>
 
@@ -494,7 +612,10 @@
 
         <div id="div-specify-metadata-next-step" align="right">
           <h5></h5>
-          <button id="button-specify-metadata-next-step" class="demo-button-next-step">
+          <button
+            id="button-specify-metadata-next-step"
+            class="demo-button-next-step"
+          >
             Next Step
           </button>
         </div>
@@ -517,24 +638,38 @@
           <img class="nav-video" src="assets/img/documentation-icon.png" />
         </a>
         <div class="demo-meta u-avoid-clicks">
-          Check that information provided during the previous steps will generate a dataset without
-          major errors or check a locally stored dataset.
+          Check that information provided during the previous steps will
+          generate a dataset without major errors or check a locally stored
+          dataset.
         </div>
       </button>
 
-      <div id="div-validate-dataset-2" class="demo-box" style="display: none">Coming soon...</div>
+      <div id="div-validate-dataset-2" class="demo-box" style="display: none">
+        Coming soon...
+      </div>
 
       <div id="div-validate-dataset" class="demo-box">
         <form id="validator-form">
           <div style="padding: 10px 0px">
-            <input class="input-switch" id="validatorCurrent" type="radio" name="tabs" checked />
+            <input
+              class="input-switch"
+              id="validatorCurrent"
+              type="radio"
+              name="tabs"
+              checked
+            />
             <label
               class="label-switch"
               style="width: 250px; font-size: 15px; padding-top: 6px"
               for="validatorCurrent"
               >Validate specified files in SODA</label
             >
-            <input class="input-switch" id="validatorLocal" type="radio" name="tabs" />
+            <input
+              class="input-switch"
+              id="validatorLocal"
+              type="radio"
+              name="tabs"
+            />
             <label
               class="label-switch"
               style="width: 250px; font-size: 15px; padding-top: 6px"
@@ -553,9 +688,10 @@
             <div class="tooltipnew">
               <img class="info" src="assets/img/info.png" />
               <span class="tooltiptext">
-                In this feature, you will be able to check that the files specified in the SODA
-                interface under "Specify dataset files" and "Specify metadata files" will generate a
-                dataset without major errors.
+                In this feature, you will be able to check that the files
+                specified in the SODA interface under "Specify dataset files"
+                and "Specify metadata files" will generate a dataset without
+                major errors.
               </span>
             </div>
           </h5>
@@ -568,7 +704,10 @@
             >
               Preview
             </button>
-            <p id="para-preview-current-ds" style="margin-left: 7px; padding: 2 2; margin: 0 0"></p>
+            <p
+              id="para-preview-current-ds"
+              style="margin-left: 7px; padding: 2 2; margin: 0 0"
+            ></p>
           </div>
           <br />
           <h5>
@@ -576,16 +715,21 @@
             <div class="tooltipnew">
               <img class="info" src="assets/img/info.png" />
               <span class="tooltiptext">
-                Click to check your dataset through the SODA validator. Note that the SODA validator
-                is different from the validator developed and used by the Curation Team and some
-                errors may still be identified by the Curation Team after submission. SODA, however,
-                will check the dataset for high-level errors and errors commonly seen by the
-                Curation Team.
+                Click to check your dataset through the SODA validator. Note
+                that the SODA validator is different from the validator
+                developed and used by the Curation Team and some errors may
+                still be identified by the Curation Team after submission. SODA,
+                however, will check the dataset for high-level errors and errors
+                commonly seen by the Curation Team.
               </span>
             </div>
           </h5>
           <div class="demo-controls">
-            <button id="button-validate-current-ds" style="float: left" class="demo-button">
+            <button
+              id="button-validate-current-ds"
+              style="float: left"
+              class="demo-button"
+            >
               Validate
             </button>
             <div id="div-indetermiate-bar-validate-soda" class="progressdiv">
@@ -610,7 +754,11 @@
             <p></p>
           </div>
 
-          <div id="div-report-current" class="demo-controls" style="display: none">
+          <div
+            id="div-report-current"
+            class="demo-controls"
+            style="display: none"
+          >
             <button
               type="button"
               id="button-generate-report-current-ds"
@@ -648,16 +796,21 @@
             <div class="tooltipnew">
               <img class="info" src="assets/img/info.png" />
               <span class="tooltiptext">
-                Click to check your dataset through the SODA validator. Note that the SODA validator
-                is different from the validator developed and used by the Curation Team and some
-                errors may still be identified by the Curation Team after submission. SODA, however,
-                will check the dataset for high-level errors and errors commonly seen by the
-                Curation Team.
+                Click to check your dataset through the SODA validator. Note
+                that the SODA validator is different from the validator
+                developed and used by the Curation Team and some errors may
+                still be identified by the Curation Team after submission. SODA,
+                however, will check the dataset for high-level errors and errors
+                commonly seen by the Curation Team.
               </span>
             </div>
           </h5>
           <div style="display: flex; height: 40px">
-            <button id="button-validate-local-ds" style="float: left" class="demo-button">
+            <button
+              id="button-validate-local-ds"
+              style="float: left"
+              class="demo-button"
+            >
               Validate
             </button>
             <div id="div-indetermiate-bar-validate-local" class="progressdiv">
@@ -682,12 +835,23 @@
             style="display: none; user-select: all"
           >
             <!-- <textarea id="textarea-validate-dataset" class="validate-textarea" rows="10" readonly style="width:100%; max-width:100%"></textarea> -->
-            <p id="textarea-validate-local-dataset" style="background: white; max-width: 630px"></p>
+            <p
+              id="textarea-validate-local-dataset"
+              style="background: white; max-width: 630px"
+            ></p>
             <p></p>
           </div>
 
-          <div class="demo-controls" id="div-report-local" style="display: none">
-            <button id="button-generate-report-local-ds" style="float: left" class="demo-button">
+          <div
+            class="demo-controls"
+            id="div-report-local"
+            style="display: none"
+          >
+            <button
+              id="button-generate-report-local-ds"
+              style="float: left"
+              class="demo-button"
+            >
               Generate report
             </button>
             <p
@@ -699,7 +863,10 @@
 
         <div id="div-validate-dataset-next-step" align="right">
           <h5></h5>
-          <button id="button-validate-dataset-next-step" class="demo-button-next-step">
+          <button
+            id="button-validate-dataset-next-step"
+            class="demo-button-next-step"
+          >
             Next Step
           </button>
         </div>
@@ -722,14 +889,24 @@
           <img class="nav-video" src="assets/img/documentation-icon.png" />
         </a>
         <div class="demo-meta u-avoid-clicks">
-          Create dataset based on information specified during the previous steps
+          Create dataset based on information specified during the previous
+          steps
         </div>
       </button>
 
       <div id="div-generate-dataset" class="demo-box">
         <div id="div-existing-dataset" style="display: none">
-          <input id="existing-dataset" name="newdataset" type="radio" class="with-style" />
-          <label id="label-existing-dataset" for="existing-dataset" class="labelradio">
+          <input
+            id="existing-dataset"
+            name="newdataset"
+            type="radio"
+            class="with-style"
+          />
+          <label
+            id="label-existing-dataset"
+            for="existing-dataset"
+            class="labelradio"
+          >
             Modify current dataset</label
           >
           <div class="tooltipnew">
@@ -737,8 +914,8 @@
             <span class="tooltiptext"
               >This will add all changes to the current dataset folder.
               <br />
-              This option will only be available when "Dataset already organized" option is
-              selected.</span
+              This option will only be available when "Dataset already
+              organized" option is selected.</span
             >
           </div>
         </div>
@@ -752,11 +929,19 @@
               type="radio"
               checked
             />
-            <label for="create-newdataset" style="width: 230px" class="label-switch"
+            <label
+              for="create-newdataset"
+              style="width: 230px"
+              class="label-switch"
               >Create new dataset on computer</label
             >
 
-            <input class="input-switch" id="cloud-dataset" name="newdataset" type="radio" />
+            <input
+              class="input-switch"
+              id="cloud-dataset"
+              name="newdataset"
+              type="radio"
+            />
             <label for="cloud-dataset" style="width: 240px" class="label-switch"
               >Create new dataset directly on Pennsieve</label
             >
@@ -816,11 +1001,18 @@
           <!-- <button id="button-upload-check-bf-account-details" class="demo-button"> Load existing account(s) </button> -->
           <h5>Select account</h5>
           <div class="demo-controls">
-            <select id="bfuploadaccountlist" style="width: 58%" class="my-dropdown">
+            <select
+              id="bfuploadaccountlist"
+              style="width: 58%"
+              class="my-dropdown"
+            >
               <option>Select</option>
             </select>
             <p id="para-account-details"></p>
-            <button id="button-upload-check-bf-account-details" class="demo-button">
+            <button
+              id="button-upload-check-bf-account-details"
+              class="demo-button"
+            >
               Switch Account
             </button>
           </div>
@@ -836,10 +1028,12 @@
             <div class="tooltipnew">
               <img class="info" src="assets/img/info.png" />
               <span class="tooltiptext"
-                >Select the target dataset on your Pennsieve account (sorted alphabetically). <br />
+                >Select the target dataset on your Pennsieve account (sorted
+                alphabetically). <br />
                 <br />
-                Note: You must have "owner", "manager" or "editor" permissions on the dataset to
-                upload. See feature "Manage dataset permissions" of SODA and our associated
+                Note: You must have "owner", "manager" or "editor" permissions
+                on the dataset to upload. See feature "Manage dataset
+                permissions" of SODA and our associated
                 <a
                   href="https://github.com/bvhpatel/SODA/wiki/Manage-dataset-permissions"
                   style="color: white"
@@ -851,7 +1045,11 @@
             </div>
           </h5>
           <div class="demo-controls" style="margin-top: 15px">
-            <select class="my-dropdown" id="bfuploaddatasetlist" style="width: 80%">
+            <select
+              class="my-dropdown"
+              id="bfuploaddatasetlist"
+              style="width: 80%"
+            >
               <option>Select dataset</option>
             </select>
             <p></p>
@@ -869,11 +1067,16 @@
 
         <div id="div-curate-button" class="datasetsaveoption">
           <h5>Proceed</h5>
-          <button id="button-curate-dataset" class="demo-button">Generate</button>
+          <button id="button-curate-dataset" class="demo-button">
+            Generate
+          </button>
           <p id="para-please-wait-curate"></p>
         </div>
 
-        <div id="div-curate-progress-bar-error-status" class="datasetsaveoption">
+        <div
+          id="div-curate-progress-bar-error-status"
+          class="datasetsaveoption"
+        >
           <p id="para-curate-progress-bar-error-status"></p>
           <p></p>
         </div>
@@ -881,7 +1084,12 @@
         <div id="div-curate-progress">
           <div id="div-curate-meter-progress" class="datasetsaveoption">
             <h5>Progress</h5>
-            <progress class="progresstrack" id="progress-bar-curate" max="100" value="0"></progress>
+            <progress
+              class="progresstrack"
+              id="progress-bar-curate"
+              max="100"
+              value="0"
+            ></progress>
           </div>
           <div id="div-curate-progress-bar-status" class="datasetsaveoption">
             <p id="para-curate-progress-bar-status"></p>
@@ -896,14 +1104,23 @@
     require("./renderer-process/curate/radio-buttons-display");
   </script>
 
-  <script type="text/javascript" src="./renderer-process/curate/table-script.js"></script>
+  <script
+    type="text/javascript"
+    src="./renderer-process/curate/table-script.js"
+  ></script>
 
   <script type="text/javascript">
     //Manifest file label color change if checked
     function updateManifestLabelColor(el) {
-      document.getElementById("label-manifest").style.color = el.checked ? "inherit" : "#303030";
-      document.getElementById("label-manifest").style.fontWeight = el.checked ? "bold" : "normal";
-      document.getElementById("label-manifest").style.fontSize = el.checked ? "1.1em" : "1em";
+      document.getElementById("label-manifest").style.color = el.checked
+        ? "inherit"
+        : "#303030";
+      document.getElementById("label-manifest").style.fontWeight = el.checked
+        ? "bold"
+        : "normal";
+      document.getElementById("label-manifest").style.fontSize = el.checked
+        ? "1.1em"
+        : "1em";
     }
   </script>
 </section>

@@ -498,7 +498,8 @@ button.download-metadata:hover {
   padding: 1.5rem 2rem 2rem 2rem;
   border: 1px solid hsla(0, 0%, 0%, 0.06);
   border-radius: 6px;
-  background: var(--color-accent) linear-gradient(hsla(0, 0%, 100%, 0.85), hsla(0, 0%, 100%, 0.85));
+  background: var(--color-accent)
+    linear-gradient(hsla(0, 0%, 100%, 0.85), hsla(0, 0%, 100%, 0.85));
 }
 
 .demo-protip h2 {
@@ -887,7 +888,8 @@ progress.progresstrack[value]::-webkit-progress-value {
   left: 0;
   bottom: 0;
   will-change: left, right;
-  -webkit-animation: indeterminate 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite;
+  -webkit-animation: indeterminate 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395)
+    infinite;
   animation: indeterminate 2.1s cubic-bezier(0.65, 0.815, 0.735, 0.395) infinite;
 }
 
@@ -899,8 +901,10 @@ progress.progresstrack[value]::-webkit-progress-value {
   left: 0;
   bottom: 0;
   will-change: left, right;
-  -webkit-animation: indeterminate-short 2.1s cubic-bezier(0.165, 0.84, 0.44, 1) infinite;
-  animation: indeterminate-short 2.1s cubic-bezier(0.165, 0.84, 0.44, 1) infinite;
+  -webkit-animation: indeterminate-short 2.1s cubic-bezier(0.165, 0.84, 0.44, 1)
+    infinite;
+  animation: indeterminate-short 2.1s cubic-bezier(0.165, 0.84, 0.44, 1)
+    infinite;
   -webkit-animation-delay: 1.15s;
   animation-delay: 1.15s;
 }
@@ -1283,9 +1287,12 @@ input::-webkit-calendar-picker-indicator {
   content: "";
   -webkit-transform: translateX(-50%);
   transform: translateX(-50%);
-  transition: all 0.15s linear 0s, -webkit-transform 0.15s cubic-bezier(0.05, 1.09, 0.16, 1.4) 0s;
-  transition: all 0.15s linear 0s, transform 0.15s cubic-bezier(0.05, 1.09, 0.16, 1.4) 0s;
-  transition: all 0.15s linear 0s, transform 0.15s cubic-bezier(0.05, 1.09, 0.16, 1.4) 0s,
+  transition: all 0.15s linear 0s,
+    -webkit-transform 0.15s cubic-bezier(0.05, 1.09, 0.16, 1.4) 0s;
+  transition: all 0.15s linear 0s,
+    transform 0.15s cubic-bezier(0.05, 1.09, 0.16, 1.4) 0s;
+  transition: all 0.15s linear 0s,
+    transform 0.15s cubic-bezier(0.05, 1.09, 0.16, 1.4) 0s,
     -webkit-transform 0.15s cubic-bezier(0.05, 1.09, 0.16, 1.4) 0s;
   border: 2px solid currentColor;
   border-radius: 50%;

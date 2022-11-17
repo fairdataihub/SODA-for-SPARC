@@ -7,11 +7,15 @@
 // Presentation logic for transitioning from question one to question two
 const transitionToValidateQuestionTwo = async () => {
   // hide both local and pennsieve sections
-  let pennsieveSection = document.querySelector("#pennsieve-question-2-container");
+  let pennsieveSection = document.querySelector(
+    "#pennsieve-question-2-container"
+  );
 
   pennsieveSection.style = "display: none !important;";
 
-  let localSection = document.querySelector("#validate_dataset-question-1-local-container");
+  let localSection = document.querySelector(
+    "#validate_dataset-question-1-local-container"
+  );
   localSection.style = "display: none !important";
 
   // allow time for the check box to get checked
@@ -27,7 +31,9 @@ const transitionToValidateQuestionTwo = async () => {
     localSection.style = "display: flex;";
 
     // show the confirm button if it was hidden
-    let confirmDatasetBtn = document.querySelector("#validator-confirm-local-dataset-btn");
+    let confirmDatasetBtn = document.querySelector(
+      "#validator-confirm-local-dataset-btn"
+    );
 
     confirmDatasetBtn.parentElement.style.display = "none";
 
@@ -46,7 +52,9 @@ const transitionToValidateQuestionTwo = async () => {
     pennsieveSection.style = "display: flex;";
 
     // show the pennsieve track's confirm button
-    document.querySelector("#confirm-dataset-selection--validator").style.visibility = "visible";
+    document.querySelector(
+      "#confirm-dataset-selection--validator"
+    ).style.visibility = "visible";
   }
 
   return true;
@@ -59,7 +67,9 @@ const transitionToValidateQuestionThree = async () => {
   if (userWantsToReset === false) return userWantsToReset;
 
   // hide the confirm buttons
-  let confirmDatasetBtn = document.querySelector("#validator-confirm-local-dataset-btn");
+  let confirmDatasetBtn = document.querySelector(
+    "#validator-confirm-local-dataset-btn"
+  );
 
   // set the field display property to none to remove the margins
   confirmDatasetBtn.parentElement.style.display = "none";
@@ -68,33 +78,35 @@ const transitionToValidateQuestionThree = async () => {
 };
 
 // check the local dataset input
-document.querySelector("#validate_dataset-1-local").addEventListener("click", async (e) => {
-  // if there is validation work done check if the user wants to reset progress
-  let userWantsToReset = await userWantsToResetValidation();
-  if (!userWantsToReset) {
-    // deselect local option card and reselect pennsieve option card
-    undoOptionCardSelection(this);
-    // user does not want to reset
-    return;
-  }
+document
+  .querySelector("#validate_dataset-1-local")
+  .addEventListener("click", async (e) => {
+    // if there is validation work done check if the user wants to reset progress
+    let userWantsToReset = await userWantsToResetValidation();
+    if (!userWantsToReset) {
+      // deselect local option card and reselect pennsieve option card
+      undoOptionCardSelection(this);
+      // user does not want to reset
+      return;
+    }
 
-  // reset validation table
-  clearValidationResults();
+    // reset validation table
+    clearValidationResults();
 
-  // transition to the next question - uses transitionToValidateQuestionTwo
-  transitionFreeFormMode(
-    document.querySelector("#validate_dataset-1-local"),
-    "validate_dataset-question-1",
-    "validate_dataset-tab",
-    "",
-    "individual-question "
-  );
+    // transition to the next question - uses transitionToValidateQuestionTwo
+    transitionFreeFormMode(
+      document.querySelector("#validate_dataset-1-local"),
+      "validate_dataset-question-1",
+      "validate_dataset-tab",
+      "",
+      "individual-question "
+    );
 
-  // check the input
-  document.querySelector("#validate-1-Local").checked = true;
+    // check the input
+    document.querySelector("#validate-1-Local").checked = true;
 
-  document.querySelector("#validate-1-Pennsieve").checked = false;
-});
+    document.querySelector("#validate-1-Pennsieve").checked = false;
+  });
 
 // check the pennsieve dataset input
 document
@@ -129,62 +141,76 @@ document
 
 // open folder selection dialog so the user can choose which local dataset they would like to validate
 // also handles a user selecting a dataset when there are already validation results on the screen
-document.querySelector("#validate-local-dataset-path").addEventListener("click", async (evt) => {
-  let validationResults = getValidationResultsCount();
-  if (validationResults > 0) {
-    // if there is validation work done check if the user wants to reset progress
-    let userWantsToReset = await userWantsToResetValidation();
-    if (!userWantsToReset) {
-      // user does not want to reset
-      return;
+document
+  .querySelector("#validate-local-dataset-path")
+  .addEventListener("click", async (evt) => {
+    let validationResults = getValidationResultsCount();
+    if (validationResults > 0) {
+      // if there is validation work done check if the user wants to reset progress
+      let userWantsToReset = await userWantsToResetValidation();
+      if (!userWantsToReset) {
+        // user does not want to reset
+        return;
+      }
+
+      // reset validation table
+      clearValidationResults();
+
+      // clear the input value
+      this.value = "";
+
+      // hide the next section
+      let questionThreeSection = document.querySelector(
+        "#validate_dataset-question-3"
+      );
+      questionThreeSection.classList.remove("show");
+      questionThreeSection.classList.remove("prev");
+
+      // hide the run validator button
+      document
+        .querySelector("#validate_dataset-question-4")
+        .classList.remove("show");
+
+      // show the confirm button
+      let confirmDatasetBtn = document.querySelector(
+        "#validator-confirm-local-dataset-btn"
+      );
+      confirmDatasetBtn.parentElement.style.display = "flex";
+    } else {
+      // hide question 3
+      document.querySelector("#validate_dataset-question-3").style.visibility =
+        "hidden";
+
+      // show confirm button found under the input
+      let confirmDatasetBtn = document.querySelector(
+        "#validator-confirm-local-dataset-btn"
+      );
+
+      // set the field display property to none to remove the field margings
+      confirmDatasetBtn.parentElement.style.display = "flex";
     }
 
-    // reset validation table
-    clearValidationResults();
+    // open folder select dialog
+    ipcRenderer.send("open-folder-dialog-validate-local-dataset");
 
-    // clear the input value
-    this.value = "";
+    // listen for user's folder path
+    ipcRenderer.on(
+      "selected-validate-local-dataset",
+      (evtSender, folderPaths) => {
+        // check if a folder was not selected
+        if (!folderPaths.length) return;
 
-    // hide the next section
-    let questionThreeSection = document.querySelector("#validate_dataset-question-3");
-    questionThreeSection.classList.remove("show");
-    questionThreeSection.classList.remove("prev");
+        // get the folder path
+        let folderPath = folderPaths[0];
 
-    // hide the run validator button
-    document.querySelector("#validate_dataset-question-4").classList.remove("show");
+        // get the clicked input
+        let validationPathInput = evt.target;
 
-    // show the confirm button
-    let confirmDatasetBtn = document.querySelector("#validator-confirm-local-dataset-btn");
-    confirmDatasetBtn.parentElement.style.display = "flex";
-  } else {
-    // hide question 3
-    document.querySelector("#validate_dataset-question-3").style.visibility = "hidden";
-
-    // show confirm button found under the input
-    let confirmDatasetBtn = document.querySelector("#validator-confirm-local-dataset-btn");
-
-    // set the field display property to none to remove the field margings
-    confirmDatasetBtn.parentElement.style.display = "flex";
-  }
-
-  // open folder select dialog
-  ipcRenderer.send("open-folder-dialog-validate-local-dataset");
-
-  // listen for user's folder path
-  ipcRenderer.on("selected-validate-local-dataset", (evtSender, folderPaths) => {
-    // check if a folder was not selected
-    if (!folderPaths.length) return;
-
-    // get the folder path
-    let folderPath = folderPaths[0];
-
-    // get the clicked input
-    let validationPathInput = evt.target;
-
-    // set the input's placeholder value to the local dataset path
-    validationPathInput.value = folderPath;
+        // set the input's placeholder value to the local dataset path
+        validationPathInput.value = folderPath;
+      }
+    );
   });
-});
 
 document
   .querySelector("#validator-confirm-local-dataset-btn")
@@ -199,21 +225,24 @@ document
     );
 
     // set question 3's visibility to visible
-    document.querySelector("#validate_dataset-question-3").style.visibility = "visible";
+    document.querySelector("#validate_dataset-question-3").style.visibility =
+      "visible";
   });
 
 // start dataset validation
-document.querySelector("#run_validator_btn").addEventListener("click", async (evt) => {
-  // check if validating a local or pennsieve dataset
-  let localDatasetCard = document.querySelector("#validate-1-Local");
-  let validatingLocalDataset = localDatasetCard.checked;
+document
+  .querySelector("#run_validator_btn")
+  .addEventListener("click", async (evt) => {
+    // check if validating a local or pennsieve dataset
+    let localDatasetCard = document.querySelector("#validate-1-Local");
+    let validatingLocalDataset = localDatasetCard.checked;
 
-  if (validatingLocalDataset) {
-    await validateLocalDataset();
-  } else {
-    await validatePennsieveDataset();
-  }
-});
+    if (validatingLocalDataset) {
+      await validateLocalDataset();
+    } else {
+      await validatePennsieveDataset();
+    }
+  });
 
 document
   .querySelector("#confirm-dataset-selection--validator")
@@ -242,9 +271,10 @@ const questionTwoDatasetSelectionObserver = new MutationObserver(() => {
 });
 
 // begin observing the dataset label inn question 2
-questionTwoDatasetSelectionObserver.observe(document.querySelector("#bf_dataset_load_validator"), {
-  childList: true,
-});
+questionTwoDatasetSelectionObserver.observe(
+  document.querySelector("#bf_dataset_load_validator"),
+  { childList: true }
+);
 
 document
   .querySelector("#select-dataset-container--validator")
@@ -259,12 +289,16 @@ document
       clearValidationResults();
 
       // hide question 3
-      let questionThreeSection = document.querySelector("#validate_dataset-question-3");
+      let questionThreeSection = document.querySelector(
+        "#validate_dataset-question-3"
+      );
       questionThreeSection.classList.remove("show");
       questionThreeSection.classList.remove("prev");
 
       // hide question 4
-      document.querySelector("#validate_dataset-question-4").classList.remove("show");
+      document
+        .querySelector("#validate_dataset-question-4")
+        .classList.remove("show");
     }
 
     openDropdownPrompt(null, "dataset");
@@ -274,7 +308,9 @@ document
 // (local vs pennsieve) or to choose another dataset to validate
 const userWantsToResetValidation = async () => {
   // get validation table body
-  let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
+  let validationErrorsTable = document.querySelector(
+    "#validation-errors-container tbody"
+  );
 
   // check if there are any validation results
   if (validationErrorsTable.childElementCount > 0) {
@@ -327,7 +363,9 @@ const undoOptionCardSelection = (activeOptionCard) => {
 
 const clearValidationResults = () => {
   // get validation table body
-  let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
+  let validationErrorsTable = document.querySelector(
+    "#validation-errors-container tbody"
+  );
 
   // remove its children
   while (validationErrorsTable.firstChild) {
@@ -336,7 +374,9 @@ const clearValidationResults = () => {
 };
 
 const getValidationResultsCount = () => {
-  let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
+  let validationErrorsTable = document.querySelector(
+    "#validation-errors-container tbody"
+  );
 
   // check if there are any validation results
   return validationErrorsTable.childElementCount;

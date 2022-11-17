@@ -1,97 +1,114 @@
 {
-  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
-  "@type": "SoftwareSourceCode",
-  "license": "https://spdx.org/licenses/MIT",
-  "codeRepository": "https://github.com/fairdataihub/SODA-for-SPARC",
-  "dateCreated": "2021-10-08",
-  "datePublished": "2022-08-08",
-  "dateModified": "2022-09-23",
-  "downloadUrl": "https://fairdataihub.org/sodaforsparc",
-  "issueTracker": "https://github.com/fairdataihub/SODA-for-SPARC/issues",
-  "name": "SODA (Software to Organize Data Automatically) for SPARC",
-  "version": "9.2.1",
-  "identifier": "10.5072/zenodo.1108356",
-  "description": "Simplifying data curation for researchers funded by the NIH SPARC initiative",
-  "applicationCategory": "Scientific",
-  "releaseNotes": "## Feature additions:\n\n- An announcements system has been added to give the user updates on recents changes/additions to SODA.\n- Tags throughout SODA are now sortable. (Ex: Dataset tags, milestone tags, etc.)\n- Prepare Metadata - Create manifest.xlsx: Automated synchronization between manifest files and their Pennsieve dataset. E.g., if a file is removed from a dataset, the file's corresponding manifest file entry will be removed.\n- Prepare Metadata - Create manifest.xlsx: Empty columns are dropped from manifest files once the user generates their files locally or on Pennsieve.\n- Prepare Metadata - Create manifest.xlsx: Preview manifest files locally before they are uploaded to Pennsieve. \n- Prepare Metadata - Create manifest.xlsx: Generate manfiest files locally in your directory of choice.\n- Guided Mode - added the ability to edit auto-generated manifest files in a spreadsheet like UI.\n- Freeform Mode - Ability to add your dataset to a collection has been added. Intended to better group datasets.\n- Image optimzation for banner images. Image sizes that exceed over 2048 x 2048 will be prompted to scale the image accordingly for upload.\n## Bug fixes:\n\n- In Organize datasets, when importing files/folders the loading screen's z-index was higher than the duplicate alert popup. The issue has been resolved by lowering the loading screen's z-index.\n- When uploading a dataset \"Preparing list of files to upload\" would verify files from Pennsieve individually. For datasets with large files this would cause a long wait time during this step. Another method of verifying files was created to verify files by retrieving the information folder by folder, reducing wait time significantly.\n- Manifest files generated in SODA include timestamps following the designated SPARC format.\n- Prepare Metadata - Create manifest.xlsx: The manifest editor's 'Save' and 'Cancel' buttons now are always viewable without having to scroll to the bottom of the manifest file. \n\n### Known Issues:\n\n- When a user has a large amount of files the step \"Creating folder structure\" can take a good amount of time.",
-  "funding": "OT2OD030213",
-  "developmentStatus": "active",
-  "isPartOf": "https://fairdataihub.org/",
-  "referencePublication": "https://doi.org/10.1101/2021.02.10.430563",
-  "funder": {
-    "@type": "Organization",
-    "@name": "National Institutes of Health (NIH)"
-  },
-  "keywords": ["SPARC", "FAIR", "data", "curation", "mac", "sparc-dataset", "ubuntu", "windows"],
-  "programmingLanguage": ["JavaScript", "HTML", "Python", "CSS", "Jupyter Notebook"],
-  "operatingSystem": [
-    "Windows 10",
-    "Big Sur (macOS 11)",
-    "Catalina (macOS 10.15)",
-    "Windows 11",
-    "Ubuntu"
-  ],
-  "relatedLink": ["https://fairdataihub.org/sodaforsparc"],
-  "author": [
-    {
-      "@type": "Person",
-      "givenName": "Bhavesh",
-      "familyName": "Patel",
-      "email": "bpatel@calmi2.org",
-      "affiliation": {
+    "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+    "@type": "SoftwareSourceCode",
+    "license": "https://spdx.org/licenses/MIT",
+    "codeRepository": "https://github.com/fairdataihub/SODA-for-SPARC",
+    "dateCreated": "2021-10-08",
+    "datePublished": "2022-08-08",
+    "dateModified": "2022-09-23",
+    "downloadUrl": "https://fairdataihub.org/sodaforsparc",
+    "issueTracker": "https://github.com/fairdataihub/SODA-for-SPARC/issues",
+    "name": "SODA (Software to Organize Data Automatically) for SPARC",
+    "version": "9.2.1",
+    "identifier": "10.5072/zenodo.1108356",
+    "description": "Simplifying data curation for researchers funded by the NIH SPARC initiative",
+    "applicationCategory": "Scientific",
+    "releaseNotes": "## Feature additions:\n\n- An announcements system has been added to give the user updates on recents changes/additions to SODA.\n- Tags throughout SODA are now sortable. (Ex: Dataset tags, milestone tags, etc.)\n- Prepare Metadata - Create manifest.xlsx: Automated synchronization between manifest files and their Pennsieve dataset. E.g., if a file is removed from a dataset, the file's corresponding manifest file entry will be removed.\n- Prepare Metadata - Create manifest.xlsx: Empty columns are dropped from manifest files once the user generates their files locally or on Pennsieve.\n- Prepare Metadata - Create manifest.xlsx: Preview manifest files locally before they are uploaded to Pennsieve. \n- Prepare Metadata - Create manifest.xlsx: Generate manfiest files locally in your directory of choice.\n- Guided Mode - added the ability to edit auto-generated manifest files in a spreadsheet like UI.\n- Freeform Mode - Ability to add your dataset to a collection has been added. Intended to better group datasets.\n- Image optimzation for banner images. Image sizes that exceed over 2048 x 2048 will be prompted to scale the image accordingly for upload.\n## Bug fixes:\n\n- In Organize datasets, when importing files/folders the loading screen's z-index was higher than the duplicate alert popup. The issue has been resolved by lowering the loading screen's z-index.\n- When uploading a dataset \"Preparing list of files to upload\" would verify files from Pennsieve individually. For datasets with large files this would cause a long wait time during this step. Another method of verifying files was created to verify files by retrieving the information folder by folder, reducing wait time significantly.\n- Manifest files generated in SODA include timestamps following the designated SPARC format.\n- Prepare Metadata - Create manifest.xlsx: The manifest editor's 'Save' and 'Cancel' buttons now are always viewable without having to scroll to the bottom of the manifest file. \n\n### Known Issues:\n\n- When a user has a large amount of files the step \"Creating folder structure\" can take a good amount of time.",
+    "funding": "OT2OD030213",
+    "developmentStatus": "active",
+    "isPartOf": "https://fairdataihub.org/",
+    "referencePublication": "https://doi.org/10.1101/2021.02.10.430563",
+    "funder": {
         "@type": "Organization",
-        "name": "FAIR Data Innovations Hub"
-      }
+        "@name": "National Institutes of Health (NIH)"
     },
-    {
-      "@type": "Person",
-      "givenName": "Tram",
-      "familyName": "Ngo",
-      "email": "tno@calmi2.org",
-      "affiliation": {
-        "@type": "Organization",
-        "name": "FAIR Data Innovations Hub"
-      }
-    },
-    {
-      "@type": "Person",
-      "givenName": "Sanjay",
-      "familyName": "Soundarajan",
-      "email": "ssoundarajan@calmi2.org",
-      "affiliation": {
-        "@type": "Organization",
-        "name": "FAIR Data Innovations Hub"
-      }
-    },
-    {
-      "@type": "Person",
-      "givenName": "Aaron",
-      "familyName": "Marroquin",
-      "email": "cmarroquin@calmi2.org",
-      "affiliation": {
-        "@type": "Organization",
-        "name": "FAIR Data Innovations Hub"
-      }
-    },
-    {
-      "@type": "Person",
-      "givenName": "Jacob",
-      "familyName": "Clark",
-      "email": "jclark@calmi2.org",
-      "affiliation": {
-        "@type": "Organization",
-        "name": "FAIR Data Innovations Hub"
-      }
-    },
-    {
-      "@type": "Person",
-      "givenName": "Dorian",
-      "familyName": "Portillo",
-      "email": "dportillo@calmi2.org",
-      "affiliation": {
-        "@type": "Organization",
-        "name": "FAIR Data Innovations Hub"
-      }
-    }
-  ]
+    "keywords": [
+        "SPARC",
+        "FAIR",
+        "data",
+        "curation",
+        "mac",
+        "sparc-dataset",
+        "ubuntu",
+        "windows"
+    ],
+    "programmingLanguage": [
+        "JavaScript",
+        "HTML",
+        "Python",
+        "CSS",
+        "Jupyter Notebook"
+    ],
+    "operatingSystem": [
+        "Windows 10",
+        "Big Sur (macOS 11)",
+        "Catalina (macOS 10.15)",
+        "Windows 11",
+        "Ubuntu"
+    ],
+    "relatedLink": [
+        "https://fairdataihub.org/sodaforsparc"
+    ],
+    "author": [
+        {
+            "@type": "Person",
+            "givenName": "Bhavesh",
+            "familyName": "Patel",
+            "email": "bpatel@calmi2.org",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "FAIR Data Innovations Hub"
+            }
+        },
+        {
+            "@type": "Person",
+            "givenName": "Tram",
+            "familyName": "Ngo",
+            "email": "tno@calmi2.org",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "FAIR Data Innovations Hub"
+            }
+        },
+        {
+            "@type": "Person",
+            "givenName": "Sanjay",
+            "familyName": "Soundarajan",
+            "email": "ssoundarajan@calmi2.org",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "FAIR Data Innovations Hub"
+            }
+        },
+        {
+            "@type": "Person",
+            "givenName": "Aaron",
+            "familyName": "Marroquin",
+            "email": "cmarroquin@calmi2.org",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "FAIR Data Innovations Hub"
+            }
+        },
+        {
+            "@type": "Person",
+            "givenName": "Jacob",
+            "familyName": "Clark",
+            "email": "jclark@calmi2.org",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "FAIR Data Innovations Hub"
+            }
+        },
+        {
+            "@type": "Person",
+            "givenName": "Dorian",
+            "familyName": "Portillo",
+            "email": "dportillo@calmi2.org",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "FAIR Data Innovations Hub"
+            }
+        }
+    ]
 }

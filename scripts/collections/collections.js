@@ -87,7 +87,11 @@ $("#button-bf-collection").on("click", async () => {
     if (whiteListTags.length > 0) {
       //collection names that are already have an ID
       try {
-        await api.uploadCollectionTags(defaultBfAccount, defaultBfDataset, whiteListTags);
+        await api.uploadCollectionTags(
+          defaultBfAccount,
+          defaultBfDataset,
+          whiteListTags
+        );
         success.push(true);
       } catch (error) {
         clientError(error);
@@ -98,7 +102,11 @@ $("#button-bf-collection").on("click", async () => {
     if (removeTags.length > 0) {
       //remove collection names
       try {
-        await api.removeCollectionTags(defaultBfAccount, defaultBfDataset, removeTags);
+        await api.removeCollectionTags(
+          defaultBfAccount,
+          defaultBfDataset,
+          removeTags
+        );
         success.push(true);
       } catch (error) {
         clientError(error);
@@ -116,6 +124,7 @@ $("#button-bf-collection").on("click", async () => {
         success.push(false);
       }
     }
+
 
     await updateCollectionWhiteList();
     Swal.close();
@@ -164,11 +173,15 @@ const updateCollectionWhiteList = async () => {
 
 //object with both id and name of collection tags
 $("#button-collection-dataset-confirm").on("click", async () => {
-  let collection_section = document.getElementById("add_edit_bf_dataset_collection-section");
+  let collection_section = document.getElementById(
+    "add_edit_bf_dataset_collection-section"
+  );
 
   //sweet alert will show only if user is on the collections section
   if (collection_section.classList.contains("is-shown")) {
-    let datasetName = document.getElementById("collection_dataset_name").innerText;
+    let datasetName = document.getElementById(
+      "collection_dataset_name"
+    ).innerText;
     Swal.fire({
       title: `Getting collection of dataset: ${datasetName}`,
       html: "Please wait...",
@@ -185,7 +198,10 @@ $("#button-collection-dataset-confirm").on("click", async () => {
   }
 
   let collection_list = await api.getAllCollectionTags(defaultBfAccount);
-  let current_tags = await api.getCurrentCollectionTags(defaultBfAccount, defaultBfDataset);
+  let current_tags = await api.getCurrentCollectionTags(
+    defaultBfAccount,
+    defaultBfDataset
+  );
 
   let collectionNames = Object.keys(collection_list);
   let currentCollectionNames = Object.keys(current_tags);

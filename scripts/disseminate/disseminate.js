@@ -214,7 +214,9 @@ const disseminateCurationTeam = async (account, dataset, share_status = "") => {
     selectedRole = "remove current permissions";
   }
 
-  log.info(`Sharing dataset ${dataset} with ${selectedTeam} as ${selectedRole}`);
+  log.info(
+    `Sharing dataset ${dataset} with ${selectedTeam} as ${selectedRole}`
+  );
 
   try {
     await client.patch(
@@ -567,7 +569,11 @@ async function disseminateShowCurrentPermission(bfAcct, bfDS) {
   );
 }
 
-async function disseminiateShowCurrentDatasetStatus(callback, account, dataset) {
+async function disseminiateShowCurrentDatasetStatus(
+  callback,
+  account,
+  dataset
+) {
   if (dataset === "Select dataset") {
     $(bfCurrentDatasetStatusProgress).css("visbility", "hidden");
     $("#bf-dataset-status-spinner").css("display", "none");
@@ -575,12 +581,15 @@ async function disseminiateShowCurrentDatasetStatus(callback, account, dataset) 
     bfListDatasetStatus.style.color = "black";
   } else {
     try {
-      let statusOptionsResponse = await client.get(`/manage_datasets/bf_dataset_status`, {
-        params: {
-          selected_account: account,
-          selected_dataset: dataset,
-        },
-      });
+      let statusOptionsResponse = await client.get(
+        `/manage_datasets/bf_dataset_status`,
+        {
+          params: {
+            selected_account: account,
+            selected_dataset: dataset,
+          },
+        }
+      );
 
       let res = statusOptionsResponse.data;
       let { current_status } = statusOptionsResponse.data;
@@ -636,3 +645,4 @@ function checkDatasetDisseminate() {
     }
   }
 }
+

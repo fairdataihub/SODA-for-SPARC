@@ -25,7 +25,13 @@
           margin-bottom: 50px;
         "
       >
-        <div style="width: 100%; border-bottom: 3px solid #b80d49; margin-bottom: -5px">
+        <div
+          style="
+            width: 100%;
+            border-bottom: 3px solid #b80d49;
+            margin-bottom: -5px;
+          "
+        >
           <div class="need-help-div">
             <h2>Prepare Metadata - Create subjects.xlsx</h2>
             <a
@@ -39,13 +45,18 @@
     </header>
 
     <!-- Question 1: Loading previous progress or start anew -->
-    <div class="individual-question prepare-subjects show" id="Question-prepare-subjects-1">
+    <div
+      class="individual-question prepare-subjects show"
+      id="Question-prepare-subjects-1"
+    >
       <div class="ui form" style="width: 100%">
         <div class="grouped fields">
           <label style="font-size: 17px; color: var(--color-bg-plum)"
             >Please select an option below:
           </label>
-          <div style="display: flex; flex-direction: row; justify-content: center">
+          <div
+            style="display: flex; flex-direction: row; justify-content: center"
+          >
             <div style="margin: 15px 0">
               <div
                 class="option-card radio-button"
@@ -115,8 +126,13 @@
                   </div>
                 </div>
                 <div class="card-body">
-                  <i class="far fa-save" style="color: var(--color-bg-orange)"></i>
-                  <h2>I want to continue working on an existing subjects.xlsx file</h2>
+                  <i
+                    class="far fa-save"
+                    style="color: var(--color-bg-orange)"
+                  ></i>
+                  <h2>
+                    I want to continue working on an existing subjects.xlsx file
+                  </h2>
                 </div>
               </div>
             </div>
@@ -125,13 +141,18 @@
       </div>
     </div>
 
-    <div class="individual-question prepare-subjects" id="Question-prepare-subjects-2">
+    <div
+      class="individual-question prepare-subjects"
+      id="Question-prepare-subjects-2"
+    >
       <div class="ui form" style="width: 100%">
         <div class="grouped fields">
           <label style="font-size: 17px; color: var(--color-bg-plum)"
             >Where is the existing subjects.xlsx file located?
           </label>
-          <div style="display: flex; flex-direction: row; justify-content: center">
+          <div
+            style="display: flex; flex-direction: row; justify-content: center"
+          >
             <div style="margin: 15px 0">
               <div
                 class="option-card radio-button"
@@ -139,7 +160,11 @@
                 data-current="Question-prepare-subjects-2"
                 data-next="Question-prepare-subjects-5"
                 onclick="transitionFreeFormMode(this, 'Question-prepare-subjects-2', 'create_subjects-tab', '', 'individual-question prepare-subjects')"
-                style="max-width: 180px; height: 220px !important; width: 180px !important"
+                style="
+                  max-width: 180px;
+                  height: 220px !important;
+                  width: 180px !important;
+                "
               >
                 <div class="card-head">
                   <div class="folder-checkbox">
@@ -165,7 +190,9 @@
                       fill-rule="evenodd"
                       d="M13.5 3h-11a.5.5 0 0 0-.5.5V11h12V3.5a.5.5 0 0 0-.5-.5zm-11-1A1.5 1.5 0 0 0 1 3.5V12h14V3.5A1.5 1.5 0 0 0 13.5 2h-11z"
                     />
-                    <path d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z" />
+                    <path
+                      d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z"
+                    />
                   </svg>
                   <h2>On my computer</h2>
                 </div>
@@ -177,7 +204,11 @@
                 data-current="Question-prepare-subjects-2"
                 data-next="Question-prepare-subjects-4"
                 onclick="transitionFreeFormMode(this, 'Question-prepare-subjects-2', 'create_subjects-tab', '', 'individual-question prepare-subjects')"
-                style="max-width: 180px; height: 220px !important; width: 180px !important"
+                style="
+                  max-width: 180px;
+                  height: 220px !important;
+                  width: 180px !important;
+                "
               >
                 <div class="card-head">
                   <div class="folder-checkbox">
@@ -224,10 +255,18 @@
     >
       <div class="ui form" style="width: 450px">
         <div class="grouped fields">
-          <label style="font-size: 17px; color: var(--color-bg-plum); text-align: center"
+          <label
+            style="
+              font-size: 17px;
+              color: var(--color-bg-plum);
+              text-align: center;
+            "
             >Browse for your <i>subjects.xlsx</i> file below:
           </label>
-          <div class="field" style="margin: 15px auto; display: flex; justify-content: center">
+          <div
+            class="field"
+            style="margin: 15px auto; display: flex; justify-content: center"
+          >
             <input
               class="form-control"
               style="width: 450px !important"
@@ -239,7 +278,12 @@
             />
           </div>
           <div
-            style="display: none; flex-direction: row; justify-content: center; margin: 10px auto"
+            style="
+              display: none;
+              flex-direction: row;
+              justify-content: center;
+              margin: 10px auto;
+            "
             id="div-confirm-existing-subjects-import"
           >
             <button
@@ -284,13 +328,19 @@
       </div>
     </div>
 
-    <div class="individual-question prepare-subjects" id="Question-prepare-subjects-4">
+    <div
+      class="individual-question prepare-subjects"
+      id="Question-prepare-subjects-4"
+    >
       <div class="ui form" style="width: 100%">
         <div class="grouped fields">
           <label style="font-size: 17px; color: var(--color-bg-plum)"
             >Which Pennsieve dataset is the subjects.xlsx located at?
           </label>
-          <div class="field" style="margin: 0 auto !important; width: 500px !important">
+          <div
+            class="field"
+            style="margin: 0 auto !important; width: 500px !important"
+          >
             <div
               style="
                 display: flex;
@@ -303,13 +353,24 @@
                 border-radius: 5px;
               "
             >
-              <div style="display: flex; flex-direction: row; justify-content: space-between">
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: space-between;
+                "
+              >
                 <div class="card-container prepare-submission">
                   <div style="width: 100%">
-                    <h5 class="card-left" style="text-align: right; padding-right: 5px">
+                    <h5
+                      class="card-left"
+                      style="text-align: right; padding-right: 5px"
+                    >
                       Current account:
                     </h5>
-                    <div class="change-current-account subjects-change-current-account">
+                    <div
+                      class="change-current-account subjects-change-current-account"
+                    >
                       <h5 class="card-right bf-account-span">None</h5>
 
                       <svg
@@ -328,26 +389,45 @@
                   </div>
                 </div>
               </div>
-              <div style="display: flex; flex-direction: row; margin-bottom: 15px">
+              <div
+                style="display: flex; flex-direction: row; margin-bottom: 15px"
+              >
                 <div class="card-container prepare-submission">
                   <div>
-                    <h5 class="card-left" style="text-align: right; padding-right: 5px">
+                    <h5
+                      class="card-left"
+                      style="text-align: right; padding-right: 5px"
+                    >
                       Account details:
                     </h5>
-                    <h5 class="card-right bf-account-details-span" style="padding-left: 10px">
-                      None
-                    </h5>
+                    <h5 class="card-right bf-account-details-span" style="padding-left: 10px">None</h5>
                   </div>
                 </div>
               </div>
-              <div style="display: flex; flex-direction: row; justify-content: space-between">
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: space-between;
+                "
+              >
                 <div class="card-container prepare-submission">
                   <div style="width: 100%">
-                    <h5 class="card-left" style="text-align: right; padding-right: 5px">
+                    <h5
+                      class="card-left"
+                      style="text-align: right; padding-right: 5px"
+                    >
                       Current dataset:
                     </h5>
-                    <div class="change-current-account subjects-change-current-ds">
-                      <h5 id="bf_dataset_load_subjects" class="card-right bf-dataset-span">None</h5>
+                    <div
+                      class="change-current-account subjects-change-current-ds"
+                    >
+                      <h5
+                        id="bf_dataset_load_subjects"
+                        class="card-right bf-dataset-span"
+                      >
+                        None
+                      </h5>
 
                       <svg
                         class="svg-change-current-account dataset bi bi-pencil-fill"
@@ -364,11 +444,19 @@
                     </div>
                   </div>
                 </div>
-                <div class="ui active green inline loader small" style="display: none"></div>
+                <div
+                  class="ui active green inline loader small"
+                  style="display: none"
+                ></div>
               </div>
             </div>
             <div
-              style="display: none; flex-direction: row; justify-content: center; margin: 10px auto"
+              style="
+                display: none;
+                flex-direction: row;
+                justify-content: center;
+                margin: 10px auto;
+              "
               id="div-check-bf-import-subjects"
             >
               <button
@@ -414,13 +502,19 @@
       </div>
     </div>
 
-    <div class="individual-question prepare-subjects" id="Question-prepare-subjects-3">
+    <div
+      class="individual-question prepare-subjects"
+      id="Question-prepare-subjects-3"
+    >
       <div class="ui form" style="width: 100%">
         <div class="grouped fields">
           <label style="font-size: 17px; color: var(--color-bg-plum)"
-            >Enter information about each subject from your study then click "Generate"
+            >Enter information about each subject from your study then click
+            "Generate"
           </label>
-          <div style="display: flex; flex-direction: column; margin: 10px auto"></div>
+          <div
+            style="display: flex; flex-direction: column; margin: 10px auto"
+          ></div>
           <table
             class="ui celled table"
             style="
@@ -525,7 +619,11 @@
             style="margin: 0 auto; text-decoration: underline"
             id="div-import-primary-folder-subjects"
           >
-            <a href="#" onclick="showPrimaryBrowseFolder()" id="primary-folder-destination-input">
+            <a
+              href="#"
+              onclick="showPrimaryBrowseFolder()"
+              id="primary-folder-destination-input"
+            >
               I want to import subject ID(s) from my primary folder
             </a>
           </div>
@@ -538,15 +636,25 @@
       </div>
     </div>
 
-    <div class="individual-question prepare-subjects" id="Question-prepare-subjects-6">
+    <div
+      class="individual-question prepare-subjects"
+      id="Question-prepare-subjects-6"
+    >
       <div class="ui form" style="width: 100%">
         <div class="grouped fields">
-          <label style="font-size: 17px; color: var(--color-bg-plum); text-align: center"
+          <label
+            style="
+              font-size: 17px;
+              color: var(--color-bg-plum);
+              text-align: center;
+            "
             >Where would you like to generate your subjects.xlsx file? <br />
             <p class="sub-text">Please select one:</p></label
           >
 
-          <div style="display: flex; flex-direction: row; justify-content: center">
+          <div
+            style="display: flex; flex-direction: row; justify-content: center"
+          >
             <div style="margin: 15px 0">
               <div
                 class="option-card radio-button"
@@ -577,7 +685,9 @@
                       fill-rule="evenodd"
                       d="M13.5 3h-11a.5.5 0 0 0-.5.5V11h12V3.5a.5.5 0 0 0-.5-.5zm-11-1A1.5 1.5 0 0 0 1 3.5V12h14V3.5A1.5 1.5 0 0 0 13.5 2h-11z"
                     />
-                    <path d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z" />
+                    <path
+                      d="M0 12h16v.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 0 12.5V12z"
+                    />
                   </svg>
                   <h2>Generate on my computer</h2>
                 </div>
@@ -629,13 +739,24 @@
       </div>
     </div>
 
-    <div class="individual-question prepare-subjects" id="Question-prepare-subjects-7">
+    <div
+      class="individual-question prepare-subjects"
+      id="Question-prepare-subjects-7"
+    >
       <div class="ui form" style="width: 450px">
         <div class="grouped fields">
-          <label style="font-size: 17px; color: var(--color-bg-plum); text-align: center"
+          <label
+            style="
+              font-size: 17px;
+              color: var(--color-bg-plum);
+              text-align: center;
+            "
             >At which location should we generate the subjects.xlsx file?</label
           >
-          <div class="field" style="margin: 15px auto; display: flex; justify-content: center">
+          <div
+            class="field"
+            style="margin: 15px auto; display: flex; justify-content: center"
+          >
             <input
               class="form-control"
               style="width: 450px !important"
@@ -649,7 +770,12 @@
         </div>
         <div
           id="div-confirm-destination-subjects-locally"
-          style="display: none; flex-direction: row; justify-content: center; margin: 10px auto"
+          style="
+            display: none;
+            flex-direction: row;
+            justify-content: center;
+            margin: 10px auto;
+          "
         >
           <button
             id="btn-confirm-local-subjects-destination"
@@ -673,13 +799,20 @@
       </div>
     </div>
 
-    <div class="individual-question prepare-subjects" id="Question-prepare-subjects-8">
+    <div
+      class="individual-question prepare-subjects"
+      id="Question-prepare-subjects-8"
+    >
       <div class="ui form" style="width: 100%">
         <div class="grouped fields">
           <label style="font-size: 17px; color: var(--color-bg-plum)"
-            >Is this the Pennsieve dataset you want to upload the subjects.xlsx to?
+            >Is this the Pennsieve dataset you want to upload the subjects.xlsx
+            to?
           </label>
-          <div class="field" style="margin: 0 auto !important; width: 500px !important">
+          <div
+            class="field"
+            style="margin: 0 auto !important; width: 500px !important"
+          >
             <div
               style="
                 display: flex;
@@ -692,13 +825,24 @@
                 border-radius: 5px;
               "
             >
-              <div style="display: flex; flex-direction: row; justify-content: space-between">
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: space-between;
+                "
+              >
                 <div class="card-container prepare-submission">
                   <div style="width: 100%">
-                    <h5 class="card-left" style="text-align: right; padding-right: 5px">
+                    <h5
+                      class="card-left"
+                      style="text-align: right; padding-right: 5px"
+                    >
                       Current account:
                     </h5>
-                    <div class="change-current-account subjects-change-current-account">
+                    <div
+                      class="change-current-account subjects-change-current-account"
+                    >
                       <h5 class="card-right bf-account-span">None</h5>
 
                       <svg
@@ -717,24 +861,43 @@
                   </div>
                 </div>
               </div>
-              <div style="display: flex; flex-direction: row; margin-bottom: 15px">
+              <div
+                style="display: flex; flex-direction: row; margin-bottom: 15px"
+              >
                 <div class="card-container prepare-submission">
                   <div>
-                    <h5 class="card-left" style="text-align: right; padding-right: 5px">
+                    <h5
+                      class="card-left"
+                      style="text-align: right; padding-right: 5px"
+                    >
                       Account details:
                     </h5>
                     <h5 class="card-right bf-account-details-span">None</h5>
                   </div>
                 </div>
               </div>
-              <div style="display: flex; flex-direction: row; justify-content: space-between">
+              <div
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: space-between;
+                "
+              >
                 <div class="card-container prepare-submission">
                   <div style="width: 100%">
-                    <h5 class="card-left" style="text-align: right; padding-right: 5px">
+                    <h5
+                      class="card-left"
+                      style="text-align: right; padding-right: 5px"
+                    >
                       Current dataset:
                     </h5>
-                    <div class="change-current-account subjects-change-current-ds">
-                      <h5 id="bf_dataset_generate_subjects" class="card-right bf-dataset-span">
+                    <div
+                      class="change-current-account subjects-change-current-ds"
+                    >
+                      <h5
+                        id="bf_dataset_generate_subjects"
+                        class="card-right bf-dataset-span"
+                      >
                         None
                       </h5>
 
@@ -753,11 +916,19 @@
                     </div>
                   </div>
                 </div>
-                <div class="ui active green inline loader small" style="display: none"></div>
+                <div
+                  class="ui active green inline loader small"
+                  style="display: none"
+                ></div>
               </div>
             </div>
             <div
-              style="display: none; flex-direction: row; justify-content: center; margin: 10px auto"
+              style="
+                display: none;
+                flex-direction: row;
+                justify-content: center;
+                margin: 10px auto;
+              "
               id="div-check-bf-generate-subjects"
             >
               <button
@@ -796,7 +967,10 @@
       <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
     </button>
     <button onclick="resetSubjects()" class="start-over">
-      <i class="fas fa-sync-alt" style="margin-right: 10px; font-size: inherit"></i>
+      <i
+        class="fas fa-sync-alt"
+        style="margin-right: 10px; font-size: inherit"
+      ></i>
       Start over
     </button>
     <button
@@ -805,7 +979,10 @@
       data-section="create_samples"
       style="width: auto"
     >
-      Create samples.xlsx<i class="fas fa-arrow-right" style="margin-left: 10px"></i>
+      Create samples.xlsx<i
+        class="fas fa-arrow-right"
+        style="margin-left: 10px"
+      ></i>
     </button>
   </div>
 
@@ -857,14 +1034,19 @@
         ></i>
       </div>
     </div>
-    <p id="para-bootbox-subject-id" style="color: red; display: none; text-align: center">
+    <p
+      id="para-bootbox-subject-id"
+      style="color: red; display: none; text-align: center"
+    >
       Special characters are not allowed.
     </p>
     <div class="ui styled accordion">
       <div class="title" style="background: var(--color-bg-light-green-button)">
         <i class="dropdown icon"></i>
         Experimental Setup
-        <span style="font-style: italic; opacity: 0.8">(Mandatory if available)</span>
+        <span style="font-style: italic; opacity: 0.8"
+          >(Mandatory if available)</span
+        >
       </div>
       <div class="content">
         <div
@@ -876,7 +1058,10 @@
               <div class="row mandatory">
                 <div class="col" style="padding: 0">
                   <div class="div-dd-info subjects-rows">
-                    <div class="demo-controls-head mandatory" style="width: 30%">
+                    <div
+                      class="demo-controls-head mandatory"
+                      style="width: 30%"
+                    >
                       <div style="width: 100%">
                         <font color="black"> pool id</font>
                       </div>
@@ -907,7 +1092,10 @@
                 </div>
                 <div class="col" style="padding: 0">
                   <div class="div-dd-info">
-                    <div class="demo-controls-head mandatory" style="width: fit-content">
+                    <div
+                      class="demo-controls-head mandatory"
+                      style="width: fit-content"
+                    >
                       <div style="width: 100%">
                         <font color="black"> subject experimental group</font>
                       </div>
@@ -944,7 +1132,9 @@
       <div class="title" style="background: #a8d08d">
         <i class="dropdown icon"></i>
         Species Information
-        <span style="font-style: italic; opacity: 0.8">(Mandatory if available)</span>
+        <span style="font-style: italic; opacity: 0.8"
+          >(Mandatory if available)</span
+        >
       </div>
       <div class="content">
         <div
@@ -1096,7 +1286,9 @@
             <div class="div-dd-info subjects">
               <div class="demo-controls-head" style="text-align: center">
                 <div style="width: 100%">
-                  <font color="black"> Exact age at the start of experiment: </font>
+                  <font color="black">
+                    Exact age at the start of experiment:
+                  </font>
                 </div>
               </div>
               <div class="demo-controls-body">
@@ -1211,9 +1403,14 @@
                 />
               </div>
               <div class="tooltipnew demo-controls-end">
-                <img class="info" src="assets/img/info.png" style="margin-top: -2px" />
+                <img
+                  class="info"
+                  src="assets/img/info.png"
+                  style="margin-top: -2px"
+                />
                 <span class="tooltiptext">
-                  Research Resource Identifier Identification (RRID) for the strain For this field.
+                  Research Resource Identifier Identification (RRID) for the
+                  strain For this field.
                 </span>
               </div>
             </div>
@@ -1248,30 +1445,48 @@
                       <option value="crustacean post-larval stage">
                         crustacean post-larval stage
                       </option>
-                      <option value="cysticercus stage">cysticercus stage</option>
+                      <option value="cysticercus stage">
+                        cysticercus stage
+                      </option>
                       <option value="death stage">death stage</option>
                       <option value="embryo stage">embryo stage</option>
-                      <option value="fully formed stage">fully formed stage</option>
+                      <option value="fully formed stage">
+                        fully formed stage
+                      </option>
                       <option value="gastrula stage">gastrula stage</option>
                       <option value="glaucothoe stage">glaucothoe stage</option>
                       <option value="infant stage">infant stage</option>
                       <option value="juvenile stage">juvenile stage</option>
                       <option value="larval stage">larval stage</option>
                       <option value="late adult stage">late adult stage</option>
-                      <option value="late embryonic stage">late embryonic stage</option>
+                      <option value="late embryonic stage">
+                        late embryonic stage
+                      </option>
                       <option value="nauplius stage">nauplius stage</option>
                       <option value="neonate stage">neonate stage</option>
                       <option value="neurula stage">neurula stage</option>
                       <option value="nursing stage">nursing stage</option>
-                      <option value="organogenesis stage">organogenesis stage</option>
+                      <option value="organogenesis stage">
+                        organogenesis stage
+                      </option>
                       <option value="perinatal stage">perinatal stage</option>
                       <option value="pharyngula stage">pharyngula stage</option>
-                      <option value="post-embryonic stage">post-embryonic stage</option>
-                      <option value="post-juvenile adult stage">post-juvenile adult stage</option>
-                      <option value="prime adult stage">prime adult stage</option>
+                      <option value="post-embryonic stage">
+                        post-embryonic stage
+                      </option>
+                      <option value="post-juvenile adult stage">
+                        post-juvenile adult stage
+                      </option>
+                      <option value="prime adult stage">
+                        prime adult stage
+                      </option>
                       <option value="pupal stage">pupal stage</option>
-                      <option value="sexually immature stage">sexually immature stage</option>
-                      <option value="trochophore stage">trochophore stage</option>
+                      <option value="sexually immature stage">
+                        sexually immature stage
+                      </option>
+                      <option value="trochophore stage">
+                        trochophore stage
+                      </option>
                       <option value="veliger stage">veliger stage</option>
                       <option value="zoea stage">zoea stage</option>
                       <option value="zygote stage">zygote stage</option>
@@ -1474,7 +1689,10 @@
       </div>
       <div class="content">
         <!-- Optional fields -->
-        <div id="div-subjects-optional-fields" style="width: 90%; margin: 0 auto; font-size: 13px">
+        <div
+          id="div-subjects-optional-fields"
+          style="width: 90%; margin: 0 auto; font-size: 13px"
+        >
           <div>
             <div class="div-dd-info subjects">
               <div class="demo-controls-head">
@@ -1839,7 +2057,13 @@
       <button
         class="start-over"
         onclick="warningBeforeHideForm('subjects')"
-        style="width: 120px; background: #fff; color: red; border: 1px solid red; display: block"
+        style="
+          width: 120px;
+          background: #fff;
+          color: red;
+          border: 1px solid red;
+          display: block;
+        "
       >
         <i class="fas fa-times" style="margin-right: 7px"></i>
         Cancel
