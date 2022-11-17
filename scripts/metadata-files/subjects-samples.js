@@ -1,11 +1,9 @@
 // event listeners for open dropdown prompt
-document
-  .querySelectorAll(".subjects-change-current-account")
-  .forEach((element) => {
-    element.addEventListener("click", function () {
-      openDropdownPrompt(null, "bf");
-    });
+document.querySelectorAll(".subjects-change-current-account").forEach((element) => {
+  element.addEventListener("click", function () {
+    openDropdownPrompt(null, "bf");
   });
+});
 
 document.querySelectorAll(".subjects-change-current-ds").forEach((element) => {
   element.addEventListener("click", function () {
@@ -13,13 +11,11 @@ document.querySelectorAll(".subjects-change-current-ds").forEach((element) => {
   });
 });
 
-document
-  .querySelectorAll(".samples-change-current-account")
-  .forEach((element) => {
-    element.addEventListener("click", function () {
-      openDropdownPrompt(null, "bf");
-    });
+document.querySelectorAll(".samples-change-current-account").forEach((element) => {
+  element.addEventListener("click", function () {
+    openDropdownPrompt(null, "bf");
   });
+});
 
 document.querySelectorAll(".samples-change-current-ds").forEach((element) => {
   element.addEventListener("click", function () {
@@ -28,9 +24,7 @@ document.querySelectorAll(".samples-change-current-ds").forEach((element) => {
 });
 
 var subjectsFormDiv = document.getElementById("form-add-a-subject");
-var guidedSubjectsFormDiv = document.getElementById(
-  "guided-form-add-a-subject"
-);
+var guidedSubjectsFormDiv = document.getElementById("guided-form-add-a-subject");
 var samplesFormDiv = document.getElementById("form-add-a-sample");
 var guidedSamplesFormDiv = document.getElementById("guided-form-add-a-sample");
 var subjectsTableData = [];
@@ -88,22 +82,15 @@ function promptImportPrevInfoSamples(arr1, arr2) {
       $(".swal2-confirm").attr("id", "btn-confirm-previous-import");
       removeOptions(document.getElementById("previous-subject"));
       removeOptions(document.getElementById("previous-sample"));
-      $("#previous-subject").append(
-        `<option value="Select">Select a subject</option>`
-      );
-      $("#previous-sample").append(
-        `<option value="Select">Select a sample</option>`
-      );
+      $("#previous-subject").append(`<option value="Select">Select a subject</option>`);
+      $("#previous-sample").append(`<option value="Select">Select a sample</option>`);
       for (var ele of arr1) {
         $("#previous-subject").append(`<option value="${ele}">${ele}</option>`);
       }
     },
   }).then((result) => {
     if (result.isConfirmed) {
-      if (
-        $("#previous-subject").val() !== "Select" &&
-        $("#previous-sample").val() !== "Select"
-      ) {
+      if ($("#previous-subject").val() !== "Select" && $("#previous-sample").val() !== "Select") {
         populateFormsSamples(prevSubID, prevSamID, "import", "free-form");
       }
     } else {
@@ -114,9 +101,9 @@ function promptImportPrevInfoSamples(arr1, arr2) {
 
 // onboarding for subjects/samples file
 function onboardingMetadata(type) {
-  var helperButtons = $(
-    $($(`#table-${type}s`).children()[1]).find(`.row-${type}s`)[0]
-  ).find(".contributor-helper-buttons")[0];
+  var helperButtons = $($($(`#table-${type}s`).children()[1]).find(`.row-${type}s`)[0]).find(
+    ".contributor-helper-buttons"
+  )[0];
 
   if (!introStatus[type]) {
     introJs()
@@ -130,10 +117,7 @@ function onboardingMetadata(type) {
           {
             title: `1. Edit a ${type}`,
             element: $(helperButtons).children()[0],
-            intro:
-              "Click here to edit the information about a corresponding " +
-              type +
-              ".",
+            intro: "Click here to edit the information about a corresponding " + type + ".",
           },
           {
             title: `2. Copy a ${type}`,
@@ -179,13 +163,9 @@ function promptImportPrevInfoSubject(arr1) {
     reverseButtons: reverseSwalButtons,
     onOpen: function () {
       removeOptions(document.getElementById("previous-subject-single"));
-      $("#previous-subject-single").append(
-        `<option value="Select">Select a subject</option>`
-      );
+      $("#previous-subject-single").append(`<option value="Select">Select a subject</option>`);
       for (var ele of arr1) {
-        $("#previous-subject-single").append(
-          `<option value="${ele}">${ele}</option>`
-        );
+        $("#previous-subject-single").append(`<option value="${ele}">${ele}</option>`);
       }
     },
   }).then((result) => {
@@ -492,14 +472,8 @@ function clearAllSubjectFormFields(form) {
     }
 
     var keyword = "subject";
-    $(`#${curationModeSelectorPrefix}bootbox-${keyword}-species`).css(
-      "display",
-      "none"
-    );
-    $(`#${curationModeSelectorPrefix}bootbox-${keyword}-strain`).css(
-      "display",
-      "none"
-    );
+    $(`#${curationModeSelectorPrefix}bootbox-${keyword}-species`).css("display", "none");
+    $(`#${curationModeSelectorPrefix}bootbox-${keyword}-strain`).css("display", "none");
 
     if (form === guidedSubjectsFormDiv) {
       guidedSetStrainRRID("");
@@ -572,24 +546,12 @@ function switchSpeciesStrainInput(type, mode, curationMode) {
     $(`#${curationModeSelectorPrefix}button-add-${type}-subject`).html(
       `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add ${type}`
     );
-    $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).css(
-      "display",
-      "none"
-    );
+    $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).css("display", "none");
     $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).val("");
   } else if (mode === "edit") {
-    $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).css(
-      "display",
-      "block"
-    );
-    $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).attr(
-      "readonly",
-      true
-    );
-    $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).css(
-      "background",
-      "#f5f5f5"
-    );
+    $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).css("display", "block");
+    $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).attr("readonly", true);
+    $(`#${curationModeSelectorPrefix}bootbox-subject-${type}`).css("background", "#f5f5f5");
     $(`#${curationModeSelectorPrefix}button-add-${type}-subject`).html(
       "<i class='pen icon'></i>Edit"
     );
@@ -598,9 +560,7 @@ function switchSpeciesStrainInput(type, mode, curationMode) {
 
 const guidedSetStrainRRID = (RRID) => {
   const rridLabel = document.getElementById("guided-strain-rrid-label");
-  const rridInput = document.getElementById(
-    "guided-bootbox-subject-strain-RRID"
-  );
+  const rridInput = document.getElementById("guided-bootbox-subject-strain-RRID");
 
   if (!RRID) {
     rridLabel.classList.add("hidden");
@@ -640,9 +600,7 @@ async function addStrain(ev, type, curationMode) {
       createStrain("sweetalert-" + type + "-strain", type, curationMode);
     },
     preConfirm: () => {
-      if (
-        document.getElementById("sweetalert-" + type + "-strain").value === ""
-      ) {
+      if (document.getElementById("sweetalert-" + type + "-strain").value === "") {
         Swal.showValidationMessage("Please enter a strain.");
       }
       return document.getElementById("sweetalert-" + type + "-strain").value;
@@ -703,13 +661,8 @@ function populateRRID(strain, type, curationMode) {
             backdrop: "rgba(0,0,0, 0.4)",
           });
           $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val("");
-          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain-RRID`).val(
-            ""
-          );
-          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css(
-            "display",
-            "none"
-          );
+          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain-RRID`).val("");
+          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css("display", "none");
           if (type.includes("subject")) {
             $(`#${curationModeSelectorPrefix}button-add-strain-subject`).html(
               `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
@@ -722,18 +675,9 @@ function populateRRID(strain, type, curationMode) {
         } else {
           $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).val(strain);
           $("#btn-confirm-strain").removeClass("confirm-disabled");
-          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css(
-            "display",
-            "block"
-          );
-          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).attr(
-            "readonly",
-            true
-          );
-          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css(
-            "background",
-            "#f5f5f5"
-          );
+          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css("display", "block");
+          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).attr("readonly", true);
+          $(`#${curationModeSelectorPrefix}bootbox-${type}-strain`).css("background", "#f5f5f5");
           if (type.includes("subject")) {
             $(`#${curationModeSelectorPrefix}button-add-strain-subject`).html(
               "<i class='pen icon'></i>Edit"
@@ -780,11 +724,7 @@ function addSubjectMetadataEntriesIntoJSON(curationMode) {
   for (var field of $(`#${curationModeSelectorPrefix}form-add-a-subject`)
     .children()
     .find(".subjects-form-entry")) {
-    if (
-      field.value === "" ||
-      field.value === undefined ||
-      field.value === "Select"
-    ) {
+    if (field.value === "" || field.value === undefined || field.value === "Select") {
       field.value = null;
     } else {
     }
@@ -792,24 +732,17 @@ function addSubjectMetadataEntriesIntoJSON(curationMode) {
     // if it's age, then add age info input (day/week/month/year)
     if (field.name === "Age") {
       if (
-        $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val() !==
-          "Select" &&
-        $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val() !==
-          "N/A"
+        $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val() !== "Select" &&
+        $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val() !== "N/A"
       ) {
         field.value =
-          field.value +
-          " " +
-          $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val();
+          field.value + " " + $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val();
       } else {
         field.value = field.value;
       }
     }
     if (field.name === "Sex") {
-      if (
-        $(`#${curationModeSelectorPrefix}bootbox-subject-sex`).val() ===
-        "Unknown"
-      ) {
+      if ($(`#${curationModeSelectorPrefix}bootbox-subject-sex`).val() === "Unknown") {
         field.value = "";
       } else {
         field.value = field.value;
@@ -828,9 +761,7 @@ function addSubjectMetadataEntriesIntoJSON(curationMode) {
       }
     }
     if (curationMode === "guided") {
-      let subjectID = document.getElementById(
-        "guided-bootbox-subject-id"
-      ).value;
+      let subjectID = document.getElementById("guided-bootbox-subject-id").value;
       //Overwrite existing subject data with new subject data
       for (let i = 1; i < subjectsTableData.length; i++) {
         if (subjectsTableData[i][0] === subjectID) {
@@ -861,26 +792,18 @@ function addSampleMetadataEntriesIntoJSON(curationMode) {
   for (var field of $(`#${curationModeSelectorPrefix}form-add-a-sample`)
     .children()
     .find(".samples-form-entry")) {
-    if (
-      field.value === "" ||
-      field.value === undefined ||
-      field.value === "Select"
-    ) {
+    if (field.value === "" || field.value === undefined || field.value === "Select") {
       field.value = null;
     }
     headersArrSamples.push(field.name);
     // if it's age, then add age info input (day/week/month/year)
     if (field.name === "Age") {
       if (
-        $(`#${curationModeSelectorPrefix}bootbox-sample-age-info`).val() !==
-          "Select" &&
-        $(`#${curationModeSelectorPrefix}bootbox-sample-age-info`).val() !==
-          "N/A"
+        $(`#${curationModeSelectorPrefix}bootbox-sample-age-info`).val() !== "Select" &&
+        $(`#${curationModeSelectorPrefix}bootbox-sample-age-info`).val() !== "N/A"
       ) {
         field.value =
-          field.value +
-          " " +
-          $(`#${curationModeSelectorPrefix}#bootbox-sample-age-info`).val();
+          field.value + " " + $(`#${curationModeSelectorPrefix}#bootbox-sample-age-info`).val();
       } else {
         field.value = field.value;
       }
@@ -898,15 +821,10 @@ function addSampleMetadataEntriesIntoJSON(curationMode) {
     }
   }
   if (curationMode === "guided") {
-    let subjectID = document.getElementById(
-      "guided-bootbox-subject-id-samples"
-    ).value;
+    let subjectID = document.getElementById("guided-bootbox-subject-id-samples").value;
     let sampleID = document.getElementById("guided-bootbox-sample-id").value;
     for (let i = 1; i < samplesTableData.length; i++) {
-      if (
-        samplesTableData[i][0] === subjectID &&
-        samplesTableData[i][1] === sampleID
-      ) {
+      if (samplesTableData[i][0] === subjectID && samplesTableData[i][1] === sampleID) {
         samplesTableData[i] = valuesArr;
         break;
       }
@@ -1157,50 +1075,31 @@ function populateForms(subjectID, type, curationMode) {
             for (var unit of unitArr) {
               if (fullAge[1]) {
                 if (unit.includes(fullAge[1].toLowerCase())) {
-                  $(
-                    `#${curationModeSelectorPrefix}bootbox-subject-age-info`
-                  ).val(unit);
+                  $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val(unit);
                   breakBoolean = true;
                   break;
                 }
                 if (!breakBoolean) {
-                  $(
-                    `#${curationModeSelectorPrefix}bootbox-subject-age-info`
-                  ).val("N/A");
+                  $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val("N/A");
                 }
               } else {
-                $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val(
-                  "N/A"
-                );
+                $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val("N/A");
               }
             }
           } else if (field.name === "Species" && infoJson[i] !== "") {
-            $(`#${curationModeSelectorPrefix}bootbox-subject-species`).val(
-              infoJson[i]
-            );
+            $(`#${curationModeSelectorPrefix}bootbox-subject-species`).val(infoJson[i]);
             // manipulate the Add Strains/Species UI accordingly
             switchSpeciesStrainInput("species", "edit", curationMode);
           } else if (field.name === "Strain" && infoJson[i] !== "") {
-            $(`#${curationModeSelectorPrefix}bootbox-subject-strain`).val(
-              infoJson[i]
-            );
+            $(`#${curationModeSelectorPrefix}bootbox-subject-strain`).val(infoJson[i]);
             switchSpeciesStrainInput("strain", "edit", curationMode);
-          } else if (
-            curationMode === "guided" &&
-            field.name === "RRID for strain"
-          ) {
+          } else if (curationMode === "guided" && field.name === "RRID for strain") {
             guidedSetStrainRRID(infoJson[i]);
-          } else if (
-            curationMode == "guided" &&
-            field.name === "protocol url or doi"
-          ) {
+          } else if (curationMode == "guided" && field.name === "protocol url or doi") {
             //If the selected sample derived from
             const previouslySavedProtocolURL = infoJson[i];
 
-            const protocols =
-              sodaJSONObj["dataset-metadata"]["description-metadata"][
-                "protocols"
-              ];
+            const protocols = sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
             for (const protocol of protocols) {
               if (protocol.link === previouslySavedProtocolURL) {
                 protocolTitleDropdown.value = protocol.description;
@@ -1247,10 +1146,7 @@ function populateFormsSamples(subjectID, sampleID, type, curationMode) {
   }
   if (samplesTableData.length > 1) {
     for (var i = 1; i < samplesTableData.length; i++) {
-      if (
-        samplesTableData[i][0] === subjectID &&
-        samplesTableData[i][1] === sampleID
-      ) {
+      if (samplesTableData[i][0] === subjectID && samplesTableData[i][1] === sampleID) {
         infoJson = samplesTableData[i];
         break;
       }
@@ -1282,10 +1178,7 @@ function populateFormsSamples(subjectID, sampleID, type, curationMode) {
             } else {
               $(`#${curationModePrefix}bootbox-sample-age-info`).val("N/A");
             }
-          } else if (
-            curationMode == "guided" &&
-            field.name === "was derived from"
-          ) {
+          } else if (curationMode == "guided" && field.name === "was derived from") {
             //If the selected sample derived from still exists, select it
             //if not, reset the value
             const previouslySavedDerivedFromSample = infoJson[i];
@@ -1298,10 +1191,7 @@ function populateFormsSamples(subjectID, sampleID, type, curationMode) {
                 wasDerivedFromDropdown.value = sample.value;
               }
             }
-          } else if (
-            curationMode == "guided" &&
-            field.name === "protocol url or doi"
-          ) {
+          } else if (curationMode == "guided" && field.name === "protocol url or doi") {
             //If the selected sample derived from
             const previouslySavedProtocolURL = infoJson[i];
             const protocolTitleDropdown = document.getElementById(
@@ -1313,10 +1203,7 @@ function populateFormsSamples(subjectID, sampleID, type, curationMode) {
             protocolTitleDropdown.value = "";
             protocolURLDropdown.value = "";
 
-            const protocols =
-              sodaJSONObj["dataset-metadata"]["description-metadata"][
-                "protocols"
-              ];
+            const protocols = sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
             for (const protocol of protocols) {
               if (protocol.link === previouslySavedProtocolURL) {
                 protocolTitleDropdown.value = protocol.description;
@@ -1366,19 +1253,12 @@ function loadSampleInformation(ev, subjectID, sampleID) {
 }
 
 function editSubject(ev, subjectID) {
-  for (var field of $("#form-add-a-subject")
-    .children()
-    .find(".subjects-form-entry")) {
-    if (
-      field.value.trim() !== "" &&
-      field.value !== undefined &&
-      field.value !== "Select"
-    ) {
+  for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
+    if (field.value.trim() !== "" && field.value !== undefined && field.value !== "Select") {
       // if it's age, then add age info input (day/week/month/year)
       if (field.name === "Age") {
         if ($("#bootbox-subject-age-info").val() !== "Select") {
-          field.value =
-            field.value + " " + $("#bootbox-subject-age-info").val();
+          field.value = field.value + " " + $("#bootbox-subject-age-info").val();
         }
       }
       if (field.name === "Sex") {
@@ -1433,14 +1313,8 @@ function editSubject(ev, subjectID) {
 }
 
 function editSample(ev, sampleID) {
-  for (var field of $("#form-add-a-sample")
-    .children()
-    .find(".samples-form-entry")) {
-    if (
-      field.value.trim() !== "" &&
-      field.value !== undefined &&
-      field.value !== "Select"
-    ) {
+  for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
+    if (field.value.trim() !== "" && field.value !== undefined && field.value !== "Select") {
       samplesFileData.push(field.value);
     } else {
       samplesFileData.push("");
@@ -1695,33 +1569,20 @@ function updateIndexForTable(table) {
       $("#button-generate-subjects").css("display", "none");
     } else if (table === document.getElementById("table-samples")) {
       $("#button-generate-samples").css("display", "none");
-    } else if (
-      table === document.getElementById("table-current-contributors")
-    ) {
-      document.getElementById("div-contributor-table-dd").style.display =
-        "none";
+    } else if (table === document.getElementById("table-current-contributors")) {
+      document.getElementById("div-contributor-table-dd").style.display = "none";
     } else if (table === document.getElementById("protocol-link-table-dd")) {
       document.getElementById("protocol-link-table-dd").style.display = "none";
-      document.getElementById("div-protocol-link-table-dd").style.display =
-        "none";
-    } else if (
-      table === document.getElementById("guided-protocol-link-table-dd")
-    ) {
-      document.getElementById("guided-protocol-link-table-dd").style.display =
-        "none";
-      document.getElementById(
-        "guided-div-protocol-link-table-dd"
-      ).style.display = "none";
+      document.getElementById("div-protocol-link-table-dd").style.display = "none";
+    } else if (table === document.getElementById("guided-protocol-link-table-dd")) {
+      document.getElementById("guided-protocol-link-table-dd").style.display = "none";
+      document.getElementById("guided-div-protocol-link-table-dd").style.display = "none";
     } else if (table === document.getElementById("other-link-table-dd")) {
       document.getElementById("other-link-table-dd").style.display = "none";
       document.getElementById("div-other-link-table-dd").style.display = "none";
-    } else if (
-      table === document.getElementById("guided-other-link-table-dd")
-    ) {
-      document.getElementById("guided-other-link-table-dd").style.display =
-        "none";
-      document.getElementById("guided-div-other-link-table-dd").style.display =
-        "none";
+    } else if (table === document.getElementById("guided-other-link-table-dd")) {
+      document.getElementById("guided-other-link-table-dd").style.display = "none";
+      document.getElementById("guided-div-other-link-table-dd").style.display = "none";
     }
   }
   $("#table-subjects").css("pointer-events", "auto");
@@ -1794,14 +1655,8 @@ function showPrimaryBrowseFolderSamples() {
 
 function importPrimaryFolderSubjects(folderPath) {
   headersArrSubjects = [];
-  for (var field of $("#form-add-a-subject")
-    .children()
-    .find(".subjects-form-entry")) {
-    if (
-      field.value === "" ||
-      field.value === undefined ||
-      field.value === "Select"
-    ) {
+  for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
+    if (field.value === "" || field.value === undefined || field.value === "Select") {
       field.value = null;
     }
     headersArrSubjects.push(field.name);
@@ -1878,14 +1733,8 @@ function importPrimaryFolderSubjects(folderPath) {
 }
 function importPrimaryFolderSamples(folderPath) {
   headersArrSamples = [];
-  for (var field of $("#form-add-a-sample")
-    .children()
-    .find(".samples-form-entry")) {
-    if (
-      field.value === "" ||
-      field.value === undefined ||
-      field.value === "Select"
-    ) {
+  for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
+    if (field.value === "" || field.value === undefined || field.value === "Select") {
       field.value = null;
     }
     headersArrSamples.push(field.name);
@@ -1917,9 +1766,7 @@ function importPrimaryFolderSamples(folderPath) {
         if (statsSubjectID.isDirectory()) {
           var subjectFolder = fs.readdirSync(path.join(folderPath, folder));
           for (var subfolder of subjectFolder) {
-            var statsSampleID = fs.statSync(
-              path.join(folderPath, folder, subfolder)
-            );
+            var statsSampleID = fs.statSync(path.join(folderPath, folder, subfolder));
             if (statsSampleID.isDirectory()) {
               samplesFileData = [];
               samplesFileData[0] = folder;
@@ -2023,11 +1870,7 @@ function loadSamplesDataToTable() {
   // delete table rows except headers
   $("#table-samples tr:gt(0)").remove();
   for (var i = 1; i < samplesTableData.length; i++) {
-    var message = addNewIDToTable(
-      samplesTableData[i][1],
-      samplesTableData[i][0],
-      "samples"
-    );
+    var message = addNewIDToTable(samplesTableData[i][1], samplesTableData[i][0], "samples");
   }
   if (message !== "") {
     Swal.fire({
@@ -2072,10 +1915,7 @@ function resetSubjects() {
         .removeClass("checked")
         .removeClass("disabled")
         .removeClass("non-selected");
-      $("#Question-prepare-subjects-1 .option-card .folder-input-check").prop(
-        "checked",
-        false
-      );
+      $("#Question-prepare-subjects-1 .option-card .folder-input-check").prop("checked", false);
       $("#Question-prepare-subjects-2").find("button").show();
       $("#div-confirm-primary-folder-import").find("button").hide();
 
@@ -2085,10 +1925,7 @@ function resetSubjects() {
       subjectsFileData = [];
       subjectsTableData = [];
 
-      $("#existing-subjects-file-destination").attr(
-        "placeholder",
-        "Browse here"
-      );
+      $("#existing-subjects-file-destination").attr("placeholder", "Browse here");
 
       $("#div-confirm-existing-subjects-import").hide();
 
@@ -2117,10 +1954,7 @@ function resetSubjects() {
 
       $("#button-add-a-subject").show();
 
-      $("#input-destination-generate-subjects-locally").attr(
-        "placeholder",
-        "Browse here"
-      );
+      $("#input-destination-generate-subjects-locally").attr("placeholder", "Browse here");
       $("#div-confirm-destination-subjects-locally").css("display", "none");
     }
   });
@@ -2146,10 +1980,7 @@ function resetSamples() {
         .removeClass("checked")
         .removeClass("disabled")
         .removeClass("non-selected");
-      $("#Question-prepare-samples-1 .option-card .folder-input-check").prop(
-        "checked",
-        false
-      );
+      $("#Question-prepare-samples-1 .option-card .folder-input-check").prop("checked", false);
       $("#Question-prepare-samples-2").find("button").show();
       $("#div-confirm-primary-folder-import-samples").find("button").hide();
 
@@ -2159,10 +1990,7 @@ function resetSamples() {
       samplesFileData = [];
       samplesTableData = [];
 
-      $("#existing-samples-file-destination").attr(
-        "placeholder",
-        "Browse here"
-      );
+      $("#existing-samples-file-destination").attr("placeholder", "Browse here");
       $("#div-confirm-existing-samples-import").hide();
 
       // hide Strains and Species
@@ -2185,10 +2013,7 @@ function resetSamples() {
 
       $("#button-add-a-sample").show();
 
-      $("#input-destination-generate-samples-locally").attr(
-        "placeholder",
-        "Browse here"
-      );
+      $("#input-destination-generate-samples-locally").attr("placeholder", "Browse here");
       $("#div-confirm-destination-samples-locally").css("display", "none");
     }
   });
@@ -2303,9 +2128,7 @@ function addCustomHeader(type, customHeaderValue, curationMode) {
       </div>
     `;
 
-    $(`#${curationModeSelectorPrefix}accordian-custom-fields`).append(
-      divElement
-    );
+    $(`#${curationModeSelectorPrefix}accordian-custom-fields`).append(divElement);
     if (curationMode == "free-form") {
       headersArrSubjects.push(customName);
       // add empty entries for all of the other sub_ids to normalize the size of matrix
@@ -2337,9 +2160,7 @@ function addCustomHeader(type, customHeaderValue, curationMode) {
           </div>
         </div>
       `;
-    $(`#${curationModeSelectorPrefix}accordian-custom-fields-samples`).append(
-      divElement
-    );
+    $(`#${curationModeSelectorPrefix}accordian-custom-fields-samples`).append(divElement);
     if (curationMode == "free-form") {
       headersArrSamples.push(customName);
       // add empty entries for all of the other sub_ids to normalize the size of matrix
@@ -2367,10 +2188,7 @@ function deleteCustomField(ev, customField, category, curationMode) {
         $(ev).parents()[1].remove();
         if (category === 0) {
           if (headersArrSubjects.includes(customField)) {
-            headersArrSubjects.splice(
-              headersArrSubjects.indexOf(customField),
-              1
-            );
+            headersArrSubjects.splice(headersArrSubjects.indexOf(customField), 1);
           }
         } else {
           if (headersArrSamples.includes(customField)) {
@@ -2462,26 +2280,14 @@ var samplesDestinationPath = "";
 
 $(document).ready(function () {
   loadExistingProtocolInfo();
-  for (var field of $("#form-add-a-subject")
-    .children()
-    .find(".subjects-form-entry")) {
-    if (
-      field.value === "" ||
-      field.value === undefined ||
-      field.value === "Select"
-    ) {
+  for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
+    if (field.value === "" || field.value === undefined || field.value === "Select") {
       field.value = null;
     }
     headersArrSubjects.push(field.name);
   }
-  for (var field of $("#form-add-a-sample")
-    .children()
-    .find(".samples-form-entry")) {
-    if (
-      field.value === "" ||
-      field.value === undefined ||
-      field.value === "Select"
-    ) {
+  for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
+    if (field.value === "" || field.value === undefined || field.value === "Select") {
       field.value = null;
     }
     headersArrSamples.push(field.name);
@@ -2490,9 +2296,7 @@ $(document).ready(function () {
   ipcRenderer.on("selected-existing-subjects", (event, filepath) => {
     if (filepath.length > 0) {
       if (filepath != null) {
-        document.getElementById(
-          "existing-subjects-file-destination"
-        ).placeholder = filepath[0];
+        document.getElementById("existing-subjects-file-destination").placeholder = filepath[0];
         ipcRenderer.send(
           "track-event",
           "Success",
@@ -2500,20 +2304,15 @@ $(document).ready(function () {
           defaultBfAccount
         );
       } else {
-        document.getElementById(
-          "existing-subjects-file-destination"
-        ).placeholder = "Browse here";
+        document.getElementById("existing-subjects-file-destination").placeholder = "Browse here";
         $("#div-confirm-existing-subjects-import").hide();
       }
     } else {
-      document.getElementById(
-        "existing-subjects-file-destination"
-      ).placeholder = "Browse here";
+      document.getElementById("existing-subjects-file-destination").placeholder = "Browse here";
       $("#div-confirm-existing-subjects-import").hide();
     }
     if (
-      document.getElementById("existing-subjects-file-destination")
-        .placeholder !== "Browse here"
+      document.getElementById("existing-subjects-file-destination").placeholder !== "Browse here"
     ) {
       $("#div-confirm-existing-subjects-import").show();
       $($("#div-confirm-existing-subjects-import button")[0]).show();
@@ -2526,9 +2325,7 @@ $(document).ready(function () {
   ipcRenderer.on("selected-existing-samples", (event, filepath) => {
     if (filepath.length > 0) {
       if (filepath != null) {
-        document.getElementById(
-          "existing-samples-file-destination"
-        ).placeholder = filepath[0];
+        document.getElementById("existing-samples-file-destination").placeholder = filepath[0];
         // log the successful import to analytics
         logMetadataForAnalytics(
           "Success",
@@ -2538,19 +2335,15 @@ $(document).ready(function () {
           Destinations.LOCAL
         );
       } else {
-        document.getElementById(
-          "existing-samples-file-destination"
-        ).placeholder = "Browse here";
+        document.getElementById("existing-samples-file-destination").placeholder = "Browse here";
         $("#div-confirm-existing-samples-import").hide();
       }
     } else {
-      document.getElementById("existing-samples-file-destination").placeholder =
-        "Browse here";
+      document.getElementById("existing-samples-file-destination").placeholder = "Browse here";
       $("#div-confirm-existing-samples-import").hide();
     }
     if (
-      document.getElementById("existing-samples-file-destination")
-        .placeholder !== "Browse here"
+      document.getElementById("existing-samples-file-destination").placeholder !== "Browse here"
     ) {
       $("#div-confirm-existing-samples-import").show();
       $($("#div-confirm-existing-samples-import button")[0]).show();
@@ -2563,18 +2356,14 @@ $(document).ready(function () {
   ipcRenderer.on("selected-existing-DD", (event, filepath) => {
     if (filepath.length > 0) {
       if (filepath !== null) {
-        document.getElementById("existing-dd-file-destination").placeholder =
-          filepath[0];
+        document.getElementById("existing-dd-file-destination").placeholder = filepath[0];
         ipcRenderer.send(
           "track-event",
           "Success",
           "Prepare Metadata - Continue with existing dataset_description.xlsx",
           defaultBfAccount
         );
-        if (
-          document.getElementById("existing-dd-file-destination")
-            .placeholder !== "Browse here"
-        ) {
+        if (document.getElementById("existing-dd-file-destination").placeholder !== "Browse here") {
           $("#div-confirm-existing-dd-import").show();
           $($("#div-confirm-existing-dd-import button")[0]).show();
         } else {
@@ -2582,46 +2371,36 @@ $(document).ready(function () {
           $($("#div-confirm-existing-dd-import button")[0]).hide();
         }
       } else {
-        document.getElementById("existing-dd-file-destination").placeholder =
-          "Browse here";
+        document.getElementById("existing-dd-file-destination").placeholder = "Browse here";
         $("#div-confirm-existing-dd-import").hide();
       }
     } else {
-      document.getElementById("existing-dd-file-destination").placeholder =
-        "Browse here";
+      document.getElementById("existing-dd-file-destination").placeholder = "Browse here";
       $("#div-confirm-existing-dd-import").hide();
     }
   });
 
   // generate subjects file
-  ipcRenderer.on(
-    "selected-destination-generate-subjects-locally",
-    (event, dirpath) => {
-      if (dirpath.length > 0) {
-        document.getElementById(
-          "input-destination-generate-subjects-locally"
-        ).placeholder = dirpath[0];
-        var destinationPath = path.join(dirpath[0], "subjects.xlsx");
-        subjectsDestinationPath = destinationPath;
-        $("#div-confirm-destination-subjects-locally").css("display", "flex");
-      }
+  ipcRenderer.on("selected-destination-generate-subjects-locally", (event, dirpath) => {
+    if (dirpath.length > 0) {
+      document.getElementById("input-destination-generate-subjects-locally").placeholder =
+        dirpath[0];
+      var destinationPath = path.join(dirpath[0], "subjects.xlsx");
+      subjectsDestinationPath = destinationPath;
+      $("#div-confirm-destination-subjects-locally").css("display", "flex");
     }
-  );
+  });
 
   // generate samples file
-  ipcRenderer.on(
-    "selected-destination-generate-samples-locally",
-    (event, dirpath) => {
-      if (dirpath.length > 0) {
-        document.getElementById(
-          "input-destination-generate-samples-locally"
-        ).placeholder = dirpath[0];
-        var destinationPath = path.join(dirpath[0], "samples.xlsx");
-        samplesDestinationPath = destinationPath;
-        $("#div-confirm-destination-samples-locally").css("display", "flex");
-      }
+  ipcRenderer.on("selected-destination-generate-samples-locally", (event, dirpath) => {
+    if (dirpath.length > 0) {
+      document.getElementById("input-destination-generate-samples-locally").placeholder =
+        dirpath[0];
+      var destinationPath = path.join(dirpath[0], "samples.xlsx");
+      samplesDestinationPath = destinationPath;
+      $("#div-confirm-destination-samples-locally").css("display", "flex");
     }
-  );
+  });
 
   $("#bf_dataset_load_subjects").on("DOMSubtreeModified", function () {
     if (
@@ -2670,10 +2449,7 @@ $(document).ready(function () {
 });
 
 function showExistingSubjectsFile() {
-  if (
-    $("#existing-subjects-file-destination").prop("placeholder") !==
-    "Browse here"
-  ) {
+  if ($("#existing-subjects-file-destination").prop("placeholder") !== "Browse here") {
     Swal.fire({
       title: "Are you sure you want to import a different subjects file?",
       text: "This will delete all of your previous work on this file.",
@@ -2689,9 +2465,7 @@ function showExistingSubjectsFile() {
     }).then((boolean) => {
       if (boolean.isConfirmed) {
         ipcRenderer.send("open-file-dialog-existing-subjects");
-        document.getElementById(
-          "existing-subjects-file-destination"
-        ).placeholder = "Browse here";
+        document.getElementById("existing-subjects-file-destination").placeholder = "Browse here";
         $("#div-confirm-existing-subjects-import").hide();
         $($("#div-confirm-existing-subjects-import button")[0]).hide();
         $("#Question-prepare-subjects-3").removeClass("show");
@@ -2703,10 +2477,7 @@ function showExistingSubjectsFile() {
 }
 
 function showExistingSamplesFile() {
-  if (
-    $("#existing-samples-file-destination").prop("placeholder") !==
-    "Browse here"
-  ) {
+  if ($("#existing-samples-file-destination").prop("placeholder") !== "Browse here") {
     Swal.fire({
       title: "Are you sure you want to import a different samples file?",
       text: "This will delete all of your previous work on this file.",
@@ -2722,9 +2493,7 @@ function showExistingSamplesFile() {
     }).then((boolean) => {
       if (boolean.isConfirmed) {
         ipcRenderer.send("open-file-dialog-existing-samples");
-        document.getElementById(
-          "existing-samples-file-destination"
-        ).placeholder = "Browse here";
+        document.getElementById("existing-samples-file-destination").placeholder = "Browse here";
         $("#div-confirm-existing-samples-import").hide();
         $($("#div-confirm-existing-samples-import button")[0]).hide();
         $("#Question-prepare-samples-3").removeClass("show");
@@ -2738,11 +2507,7 @@ function showExistingSamplesFile() {
 function importExistingSubjectsFile() {
   var filePath = $("#existing-subjects-file-destination").prop("placeholder");
   if (filePath === "Browse here") {
-    Swal.fire(
-      "No file chosen",
-      "Please select a path to your subjects.xlsx file,",
-      "error"
-    );
+    Swal.fire("No file chosen", "Please select a path to your subjects.xlsx file,", "error");
 
     // log the error to analytics
     logMetadataForAnalytics(
@@ -2791,11 +2556,7 @@ function importExistingSubjectsFile() {
 function importExistingSamplesFile() {
   var filePath = $("#existing-samples-file-destination").prop("placeholder");
   if (filePath === "Browse here") {
-    Swal.fire(
-      "No file chosen",
-      "Please select a path to your samples.xlsx file.",
-      "error"
-    );
+    Swal.fire("No file chosen", "Please select a path to your samples.xlsx file.", "error");
 
     // log the error to analytics
     logMetadataForAnalytics(
@@ -2858,28 +2619,21 @@ async function checkBFImportSubjects() {
     },
   }).then((result) => {});
   var fieldEntries = [];
-  for (var field of $("#form-add-a-subject")
-    .children()
-    .find(".subjects-form-entry")) {
+  for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
     fieldEntries.push(field.name.toLowerCase());
   }
-  let bfDataset = document
-    .getElementById("bf_dataset_load_subjects")
-    .innerText.trim();
+  let bfDataset = document.getElementById("bf_dataset_load_subjects").innerText.trim();
 
   log.info(`Getting subjects.xlsx for dataset ${bfDataset} from Pennsieve.`);
   try {
-    let import_metadata_file = await client.get(
-      `/prepare_metadata/import_metadata_file`,
-      {
-        params: {
-          selected_account: defaultBfAccount,
-          selected_dataset: bfDataset,
-          file_type: "subjects.xlsx",
-          ui_fields: fieldEntries.toString(),
-        },
-      }
-    );
+    let import_metadata_file = await client.get(`/prepare_metadata/import_metadata_file`, {
+      params: {
+        selected_account: defaultBfAccount,
+        selected_dataset: bfDataset,
+        file_type: "subjects.xlsx",
+        ui_fields: fieldEntries.toString(),
+      },
+    });
     let res = import_metadata_file.data.subject_file_rows;
 
     // log the success to analytics
@@ -2928,9 +2682,7 @@ async function checkBFImportSamples() {
     },
   }).then((result) => {});
   var fieldEntries = [];
-  for (var field of $("#form-add-a-sample")
-    .children()
-    .find(".samples-form-entry")) {
+  for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
     fieldEntries.push(field.name.toLowerCase());
   }
 
@@ -2938,17 +2690,14 @@ async function checkBFImportSamples() {
 
   log.info(`Getting samples.xlsx for dataset ${bfDataset} from Pennsieve.`);
   try {
-    let importMetadataResponse = await client.get(
-      `/prepare_metadata/import_metadata_file`,
-      {
-        params: {
-          file_type: "samples.xlsx",
-          selected_account: defaultBfAccount,
-          selected_dataset: bfDataset,
-          ui_fields: fieldEntries.toString(),
-        },
-      }
-    );
+    let importMetadataResponse = await client.get(`/prepare_metadata/import_metadata_file`, {
+      params: {
+        file_type: "samples.xlsx",
+        selected_account: defaultBfAccount,
+        selected_dataset: bfDataset,
+        ui_fields: fieldEntries.toString(),
+      },
+    });
 
     let res = importMetadataResponse.data.sample_file_rows;
 
@@ -2984,15 +2733,11 @@ async function checkBFImportSamples() {
 
 function loadDataFrametoUI(type) {
   var fieldSubjectEntries = [];
-  for (var field of $("#form-add-a-subject")
-    .children()
-    .find(".subjects-form-entry")) {
+  for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
     fieldSubjectEntries.push(field.name.toLowerCase());
   }
   // separate regular headers and custom headers
-  const lowercasedHeaders = subjectsTableData[0].map((header) =>
-    header.toLowerCase()
-  );
+  const lowercasedHeaders = subjectsTableData[0].map((header) => header.toLowerCase());
   const customHeaders = [];
   for (var field of lowercasedHeaders) {
     if (!fieldSubjectEntries.includes(field)) {
@@ -3014,21 +2759,15 @@ function loadDataFrametoUI(type) {
     $("#div-check-bf-import-subjects").hide();
     $($("#div-check-bf-import-subjects button")[0]).hide();
     $("#button-fake-confirm-existing-bf-subjects-file-load").click();
-    $(
-      $("#button-fake-confirm-existing-bf-subjects-file-load").siblings()[0]
-    ).hide();
+    $($("#button-fake-confirm-existing-bf-subjects-file-load").siblings()[0]).hide();
   }
 }
 
 function loadDataFrametoUISamples(type) {
   // separate regular headers and custom headers
-  const lowercasedHeaders = samplesTableData[0].map((header) =>
-    header.toLowerCase()
-  );
+  const lowercasedHeaders = samplesTableData[0].map((header) => header.toLowerCase());
   var fieldSampleEntries = [];
-  for (var field of $("#form-add-a-sample")
-    .children()
-    .find(".samples-form-entry")) {
+  for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
     fieldSampleEntries.push(field.name.toLowerCase());
   }
   const customHeaders = [];
@@ -3052,9 +2791,7 @@ function loadDataFrametoUISamples(type) {
     $("#div-check-bf-import-samples").hide();
     $($("#div-check-bf-import-samples button")[0]).hide();
     $("#button-fake-confirm-existing-bf-samples-file-load").click();
-    $(
-      $("#button-fake-confirm-existing-bf-samples-file-load").siblings()[0]
-    ).hide();
+    $($("#button-fake-confirm-existing-bf-samples-file-load").siblings()[0]).hide();
   }
 }
 
@@ -3161,12 +2898,7 @@ function protocolAccountQuestion(type, changeAccountBoolean) {
             },
           });
           if (formValue) {
-            addProtocolLinktoTableDD(
-              formValue[0],
-              formValue[1],
-              formValue[2],
-              formValue[3]
-            );
+            addProtocolLinktoTableDD(formValue[0], formValue[1], formValue[2], formValue[3]);
           }
         }
       }
@@ -3177,8 +2909,7 @@ function protocolAccountQuestion(type, changeAccountBoolean) {
 async function connectProtocol(type) {
   const { value: protocolCredentials } = await Swal.fire({
     width: "fit-content",
-    title:
-      "Once you're signed in, grab your <i>private access token</i> and enter it below: ",
+    title: "Once you're signed in, grab your <i>private access token</i> and enter it below: ",
     html: '<div class="ui input" style="margin: 10px 0"><i style="margin-top: 12px; margin-right:10px; font-size:20px" class="lock icon"></i><input type="text" id="protocol-password" class="subjects-form-entry" placeholder="Private access token" style="padding-left:5px"></div>',
     imageUrl:
       "https://github.com/fairdataihub/SODA-for-SPARC/blob/main/docs/documentation/Prepare-metadata/subjects/protocol-info.png?raw=true",
@@ -3276,14 +3007,12 @@ function grabResearcherProtocolList(username, email, token, type, filetype) {
         var result = JSON.parse(data);
         protocolResearcherList = {};
         for (var item of result["items"]) {
-          protocolResearcherList["https://www.protocols.io/view/" + item.uri] =
-            item.title;
+          protocolResearcherList["https://www.protocols.io/view/" + item.uri] = item.title;
         }
         if (Object.keys(protocolResearcherList).length > 0) {
           if (type === "first-time") {
             Swal.fire({
-              title:
-                "Successfully connected! <br/>Loading your protocol information...",
+              title: "Successfully connected! <br/>Loading your protocol information...",
               timer: 2000,
               timerProgressBar: false,
               allowEscapeKey: false,
@@ -3345,9 +3074,7 @@ async function showProtocolCredentials(email, filetype) {
   });
   if (protocol) {
     if (filetype === "subjects") {
-      $("#bootbox-subject-protocol-title").val(
-        protocolResearcherList[protocol]
-      );
+      $("#bootbox-subject-protocol-title").val(protocolResearcherList[protocol]);
       $("#bootbox-subject-protocol-location").val(protocol);
     } else if (filetype === "samples") {
       $("#bootbox-sample-protocol-title").val(protocolResearcherList[protocol]);
@@ -3400,12 +3127,7 @@ async function showProtocolCredentials(email, filetype) {
         },
       });
       if (formValue) {
-        addProtocolLinktoTableDD(
-          formValue[0],
-          formValue[1],
-          formValue[2],
-          formValue[3]
-        );
+        addProtocolLinktoTableDD(formValue[0], formValue[1], formValue[2], formValue[3]);
       }
     }
   }
@@ -3483,10 +3205,7 @@ async function addAdditionalLink() {
       if ($("#DD-other-description").val() === "") {
         Swal.showValidationMessage(`Please enter a short description.`);
       }
-      var duplicate = checkLinkDuplicate(
-        link,
-        document.getElementById("other-link-table-dd")
-      );
+      var duplicate = checkLinkDuplicate(link, document.getElementById("other-link-table-dd"));
       if (duplicate) {
         Swal.showValidationMessage(
           `Duplicate ${protocolLink}. The ${protocolLink} you entered is already added.`
@@ -3540,11 +3259,7 @@ function showAgeSection(ev, div, type) {
   if (type === "subjects") {
     allDivsArr = ["div-exact-age", "div-age-category", "div-age-range"];
   } else {
-    allDivsArr = [
-      "div-exact-age-samples",
-      "div-age-category-samples",
-      "div-age-range-samples",
-    ];
+    allDivsArr = ["div-exact-age-samples", "div-age-category-samples", "div-age-range-samples"];
   }
   allDivsArr.splice(allDivsArr.indexOf(div), 1);
   if ($("#" + div).hasClass("hidden")) {

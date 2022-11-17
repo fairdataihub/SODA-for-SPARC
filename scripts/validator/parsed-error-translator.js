@@ -125,14 +125,12 @@ const ParsedErrorTranslator = {
     // get the contributor role values that are marked as incorrect from the error message
     let searchForContributorValues = /\['*.'\]/g;
 
-    let invalidContributorValues =
-      searchForContributorValues.match(errorMessage);
+    let invalidContributorValues = searchForContributorValues.match(errorMessage);
 
     let errorExplanation = "";
     // handle the case where no contributors are found
     if (!invalidContributorValues.length) {
-      errorExplanation =
-        "Your dataset description file has invalid contributor role values.";
+      errorExplanation = "Your dataset description file has invalid contributor role values.";
     } else {
       errorExplanation = `Your dataset description file has these invalid contributor role values: ${invalidContributorValues.join(
         ","
@@ -193,8 +191,7 @@ const ParsedErrorTranslator = {
     // handle there being no parameters found
     // happens if the regex is bad and doesn't find a result
     if (!indexOfTextFollowingId) {
-      errorExplanation =
-        "One of your Subject file's subject Ids has an invalid format";
+      errorExplanation = "One of your Subject file's subject Ids has an invalid format";
     } else {
       let invalidId = errorMessage.slice(0, indexOfTextFollowingId).trim();
       errorExplanation = `Your subject file has this invalid subject id: ${invalidId}`;
@@ -220,8 +217,7 @@ const ParsedErrorTranslator = {
     // handle there being no parameters found
     // happens if the regex is bad and doesn't find a result
     if (!indexOfTextFollowingId) {
-      errorExplanation =
-        "One of your Subject file's subject Ids is not formatted as a string";
+      errorExplanation = "One of your Subject file's subject Ids is not formatted as a string";
     } else {
       let invalidId = errorMessage.slice(0, indexOfTextFollowingId).trim();
       errorExplanation = `Your subject file has this ill-formed subject id: ${invalidId}`;
@@ -245,11 +241,9 @@ const ParsedErrorTranslator = {
   // TODO: when multiple species are invalid we get back an array in the string rather than just a single param
   //       format this? Probably not but I'll think about it.
   translateInvalidSpeciesAnyOf: (errorMessage) => {
-    let searchForTextFollowingSpeciesValue =
-      /is not valid under any of the given schemas/;
+    let searchForTextFollowingSpeciesValue = /is not valid under any of the given schemas/;
 
-    let indexOfTextFollowingSpeciesValue =
-      searchForTextFollowingSpeciesValue.exec(errorMessage);
+    let indexOfTextFollowingSpeciesValue = searchForTextFollowingSpeciesValue.exec(errorMessage);
 
     let errorExplanation = "";
 
@@ -257,17 +251,11 @@ const ParsedErrorTranslator = {
       errorExplanation =
         "Your subjects file has an invalid value for one of the species fields/rows.";
     } else {
-      let invalidSpecies = errorMessage.slice(
-        0,
-        indexOfTextFollowingSpeciesValue
-      );
+      let invalidSpecies = errorMessage.slice(0, indexOfTextFollowingSpeciesValue);
       errorExplanation = `Your subjects file has the following invalid species: ${invalidSpecies}`;
     }
 
-    return [
-      errorExplanation,
-      "To correct this problem change the invalid species field",
-    ];
+    return [errorExplanation, "To correct this problem change the invalid species field"];
   },
 
   translateInvalidContributorNamePattern: (errorMessage) => {
@@ -282,10 +270,7 @@ const ParsedErrorTranslator = {
       errorExplanation =
         "Your dataset description file has an invalid value for one of the contributor name fields";
     } else {
-      let invalidContributorName = errorMessage.slice(
-        0,
-        indexOfTextFollowingContributorNameValue
-      );
+      let invalidContributorName = errorMessage.slice(0, indexOfTextFollowingContributorNameValue);
       errorExplanation = `Your dataset description file has the following invalid contributor name: ${invalidContributorName}`;
     }
 
@@ -307,18 +292,14 @@ const ParsedErrorTranslator = {
   translateAdditionalPropertiesDatasetDescription: (errorMessage) => {
     let findAdditionalPropertiesRegExp = /\(/;
 
-    let additionalPropertiesIndex =
-      findAdditionalPropertiesRegExp.exec(errorMessage);
+    let additionalPropertiesIndex = findAdditionalPropertiesRegExp.exec(errorMessage);
 
     let errorExplanation = "";
 
     if (!additionalPropertiesIndex) {
-      errorExplanation =
-        "Your dataset description file has additional properties";
+      errorExplanation = "Your dataset description file has additional properties";
     } else {
-      let additionalProperties = errorExplanation.slice(
-        additionalPropertiesIndex
-      );
+      let additionalProperties = errorExplanation.slice(additionalPropertiesIndex);
       errorMessage = `Your dataset description file has additional properties: ${additionalProperties}`;
     }
 
@@ -330,11 +311,9 @@ const ParsedErrorTranslator = {
   },
 
   translateContributorAffiliationAnyOf: (errorMessage) => {
-    let searchForTextFollowingAffiliationValue =
-      /is not valid under any of the given schemas/;
+    let searchForTextFollowingAffiliationValue = /is not valid under any of the given schemas/;
 
-    let textFollowingAffiliationIdx =
-      searchForTextFollowingAffiliationValue.exec(errorMessage);
+    let textFollowingAffiliationIdx = searchForTextFollowingAffiliationValue.exec(errorMessage);
 
     let errorExplanation = "";
 
@@ -342,10 +321,7 @@ const ParsedErrorTranslator = {
       errorExplanation =
         "Your dataset description file has invalid entries for the Contributor affiliation field/column.";
     } else {
-      let invalidContributorAffiliations = errorMessage.slice(
-        0,
-        textFollowingAffiliationIdx
-      );
+      let invalidContributorAffiliations = errorMessage.slice(0, textFollowingAffiliationIdx);
       errorExplanation = `Your dataset description file has the following invalid entries for the Contributor affiliation row/field: ${invalidContributorAffiliations}`;
     }
 
@@ -376,10 +352,7 @@ const ParsedErrorTranslator = {
       errorExplanation =
         "Your dataset description file has invalid entries for the 'Identifier description' field/row.";
     } else {
-      let invalidEntry = errorMessage.slice(
-        0,
-        indexOfTextFollowingDescriptionParam
-      );
+      let invalidEntry = errorMessage.slice(0, indexOfTextFollowingDescriptionParam);
       errorExplanation = `Your dataset description file has this invalid entry for the 'Identifier description' field: ${invalidEntry}`;
     }
 
@@ -402,10 +375,7 @@ const ParsedErrorTranslator = {
       errorExplanation =
         "Your dataset description file has invalid entries for the 'relation type' field/row.";
     } else {
-      let invalidEntries = errorMessage.slice(
-        0,
-        idxForTextFollowingInvalidRelationType
-      );
+      let invalidEntries = errorMessage.slice(0, idxForTextFollowingInvalidRelationType);
       errorExplanation = `Your dataset description file has the following invalid entries: ${invalidEntries}`;
     }
 
@@ -419,8 +389,7 @@ const ParsedErrorTranslator = {
   translateMissingRelatedIdentifiers: () => {
     let errorExplanation = "";
 
-    errorExplanation =
-      "Your dataset description file is missing a required 'identifier' entry.";
+    errorExplanation = "Your dataset description file is missing a required 'identifier' entry.";
 
     return [
       errorExplanation,
@@ -430,8 +399,7 @@ const ParsedErrorTranslator = {
   },
 
   translateMissingRelatedIdentifierType: () => {
-    let errorExplanation =
-      "Your description file missing a required 'identifier type' entry";
+    let errorExplanation = "Your description file missing a required 'identifier type' entry";
 
     return [
       errorExplanation,
