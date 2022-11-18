@@ -2408,15 +2408,18 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 for folder_key, folder in my_folder["folders"].items():
                     if existing_folder_option == "skip":
                         if folder_key not in my_tracking_folder["children"]["folders"]:
-                            r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json=create_request_headers(ps), json=build_create_folder_request(folder_key, my_tracking_folder['content']['id'], ds['content']['id']))
+                            r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json=build_create_folder_request(folder_key, my_tracking_folder['content']['id'], ds['content']['id']))
                             r.raise_for_status()
                             ps_folder = r.json()
+                            normalize_tracking_folder(ps_folder)
+                        else:
+                            ps_folder = my_tracking_folder["children"]["folders"][folder_key]
                             normalize_tracking_folder(ps_folder)
 
                     elif existing_folder_option == "create-duplicate":
                         #print("Creating a code folder")
                         # TODO: change this so that when dealing with nested folders, it creates the folders in the correct place not just the dataset root. 
-                        r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json=create_request_headers(ps), json=build_create_folder_request(folder_key, my_tracking_folder['content']['id'], ds['content']['id']))
+                        r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json=build_create_folder_request(folder_key, my_tracking_folder['content']['id'], ds['content']['id']))
                         r.raise_for_status()
                         ps_folder = r.json()
                         normalize_tracking_folder(ps_folder)
