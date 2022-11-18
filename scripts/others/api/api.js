@@ -174,6 +174,7 @@ const submitDatasetForPublication = async (
   embargoReleaseDate,
   publicationType
 ) => {
+  console.log("sending request");
   // request that the dataset be sent in for publication/publication review
   await client.post(
     `/disseminate_datasets/datasets/${datasetName}/publication/request`,

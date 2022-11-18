@@ -1616,6 +1616,7 @@ const displayBannerImage = async (path) => {
                       document.getElementById("div-img-container").style.display = "block";
 
                       $("#para-path-image").html(image_path);
+                      console.log(converted_image_file);
                       bfViewImportedImage.src = converted_image_file;
                       myCropper.destroy();
                       myCropper = new Cropper(bfViewImportedImage, cropOptions);
@@ -1641,6 +1642,7 @@ const displayBannerImage = async (path) => {
               image_path = converted_image_file;
               imageExtension = "jpg";
               $("#para-path-image").html(image_path);
+              console.log(image_path);
               bfViewImportedImage.src = image_path;
               myCropper.destroy();
               myCropper = new Cropper(bfViewImportedImage, cropOptions);
@@ -1670,6 +1672,7 @@ const displayBannerImage = async (path) => {
       document.getElementById("div-img-container").style.display = "block";
 
       $("#para-path-image").html(image_path);
+      console.log(image_path);
       bfViewImportedImage.src = image_path;
       myCropper.destroy();
       myCropper = new Cropper(bfViewImportedImage, cropOptions);
@@ -1734,6 +1737,7 @@ const uploadBannerImage = async () => {
           }
         );
         let res = bf_add_banner.data.message;
+        console.log(res);
         $("#para-dataset-banner-image-status").html(res);
 
         showCurrentBannerImage();
@@ -1992,6 +1996,8 @@ const showCurrentBannerImage = async () => {
       myCropper.destroy();
     } else {
       document.getElementById("para-current-banner-img").innerHTML = "";
+      console.log(res);
+      console.log("updating banner image");
       bfCurrentBannerImg.src = res;
     }
     $("#banner_image_loader").hide();
