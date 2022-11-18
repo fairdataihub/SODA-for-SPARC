@@ -854,16 +854,16 @@ def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
 
     authenticate_user_with_client(ps, bfaccount)
 
-    selected_dataset_id = get_dataset_id(bfdataset)
+    selected_dataset_id = get_dataset_id(ps, bfdataset)
 
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(ps))
     r.raise_for_status()
 
-    items = r.json()["content"]
+    items = r.json()["children"]
 
-    for i in range(list(items)):
-        if items[i].name == file_type:
-            item_id = items[i].id
+    for i in items:
+        if i["content"]["name"] == file_type:
+            item_id = i["content"]["id"]
             url = returnFileURL(ps, item_id)
 
             if file_type == "submission.xlsx":
