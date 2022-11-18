@@ -2450,6 +2450,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             # folder children are packages such as collections and files stored on the Pennsieve dataset
             ps_folder_children = my_tracking_folder["children"] #ds (dataset)
 
+            # print("PS FOLDER CHILDREN: ", ps_folder_children)
             
 
             if "folders" in my_folder.keys():
@@ -2468,9 +2469,9 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                         relative_path,
                     )
 
-            if "files" in my_folder.keys() and my_tracking_folder["content"]["id"].find("N:dataset") != -1: 
+            if "files" in my_folder.keys() and my_tracking_folder["content"]["id"].find("N:dataset") == -1: 
                     
-
+                print("In files")
                 # delete files to be deleted
                 (
                    # my_bf_existing_files,
