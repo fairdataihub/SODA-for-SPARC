@@ -2009,6 +2009,12 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
 };
 
 document
+  .getElementById("guided-button-resume-pennsieve-dataset")
+  .addEventListener("click", async () => {
+    console.log("clicked");
+  });
+
+document
   .getElementById("guided-button-auto-generate-manifest-files")
   .addEventListener("click", async () => {
     //Wait for current call stack to finish
@@ -3002,9 +3008,9 @@ const openPage = async (targetPageID) => {
     // If the page has not been completed and the user is starting from Pennsieve
     // retrieve the data required for the page and save it into the JSON
     if (!sodaJSONObj["completed-tabs"].includes(targetPageID)) {
-      console.log("bing");
       if (sodaJSONObj?.["button-config"]?.["curation-starting-point"] === "pennsieve") {
-        console.log("bing this is where we import data from Pennsieve");
+        const uploadPageFromPennsieve = async () => {};
+        await uploadPageFromPennsieve(targetPageID);
       }
     }
 
