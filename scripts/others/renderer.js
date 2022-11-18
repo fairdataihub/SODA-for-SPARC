@@ -4037,7 +4037,7 @@ const showPublishingStatus = async (callback) => {
       }
     }
   });
-}
+};
 
 function publishStatusOutputConversion(res) {
   var reviewStatus = res["review_request_status"];

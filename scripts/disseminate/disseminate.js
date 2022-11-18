@@ -50,7 +50,7 @@ const disseminatePublish = async () => {
 
   // begin the dataset publishing flow
   await showPublishingStatus(submitReviewDatasetCheck);
-}
+};
 
 const refreshDatasetStatus = () => {
   var account = $("#current-bf-account").text();
@@ -58,7 +58,7 @@ const refreshDatasetStatus = () => {
     .html()
     .replace(/^\s+|\s+$/g, "");
   disseminateShowPublishingStatus("", account, dataset);
-}
+};
 
 const disseminateShowPublishingStatus = (callback, account, dataset) => {
   if (dataset !== "None") {
@@ -71,7 +71,7 @@ const disseminateShowPublishingStatus = (callback, account, dataset) => {
     }
   }
   $("#submit_prepublishing_review-spinner").hide();
-}
+};
 
 // Helper functions
 const disseminateDataset = (option) => {
