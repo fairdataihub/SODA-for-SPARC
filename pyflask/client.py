@@ -9,7 +9,7 @@ from os.path import exists
 client = Pennsieve()
 client.user.switch('soda')
 client.user.reauthenticate()
-client.useDataset("N:dataset:8a2d765f-fa97-4e76-b534-deedb6757571")
+# client.useDataset("N:dataset:8a2d765f-fa97-4e76-b534-deedb6757571")
 
 
 PENNSIEVE_URL = "https://api.pennsieve.io"
@@ -29,9 +29,9 @@ def create_request_headers(ps):
 # r.raise_for_status()
 
 
-file_info = client.manifest.listFiles(6, 0, 1)
-print(file_info)
-print(type(file_info))
+# file_info = client.manifest.listFiles(6, 0, 1)
+# print(file_info)
+# print(type(file_info))
 # print(file_info['file']['id'])
 
 
@@ -42,16 +42,16 @@ print(type(file_info))
 
 
 
-# try:
-#   r = requests.post(f"{PENNSIEVE_URL}/packages", headers={"Content-Type": "application/json", "Authorization": f"Bearer {client.getUser()['session_token']}",}, 
-#                     json={
-#                           "name": "caged", 
-#                           "dataset": "N:dataset:c38eb185-39ef-426a-b636-b1b9b7b4283a", 
-#                           "packageType": "collection", 
-#                           "properties": [ { "key": "aa", "value": "Aahhh" }] 
-#                           })
-#   r.raise_for_status()
-#   res = r.json()
+
+r = requests.post(f"{PENNSIEVE_URL}/packages", headers={"Content-Type": "application/json", "Authorization": f"Bearer {client.getUser()['session_token']}",}, 
+                json={
+                    "name": "nested", 
+                    "dataset": "N:dataset:f36a6c0a-5deb-466e-b404-bab54bc112a1", 
+                    "packageType": "collection", 
+                    "parent": "N:collection:cb129b62-63d3-4db4-a747-064482be0594"
+                    })
+r.raise_for_status()
+res = r.json()
 
 #   print(res)
 # except Exception as e:
