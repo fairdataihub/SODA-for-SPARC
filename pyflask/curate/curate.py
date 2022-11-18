@@ -2296,7 +2296,7 @@ def normalize_tracking_folder(tracking_folder):
     files are stored on Pennsieve. We update this as we update Pennsieve's state. 
     """
     if tracking_folder == "":
-        return []
+        return {"folders": {}, "files": {} }
     else:
         temp_children = {"folders": {}, "files": {}}
 
@@ -2312,6 +2312,25 @@ def normalize_tracking_folder(tracking_folder):
         # replace the non-normalized children structure with the normalized children structure
         tracking_folder["children"] = temp_children
         print("Added children folder and files")
+
+
+def build_create_folder_request(folder_name, folder_parent_id, dataset_id):
+    """
+    Create a folder on Pennsieve. 
+    """
+    body = {}
+
+    # if creating a folder at the root of the dataset the api does not require a parent key
+    if folder_parent_id.find("N:dataset") == -1:
+        body["parent"] = folder_parent_id
+    
+    body["name"] = folder_name
+    body["dataset"] = dataset_id
+    body["packageType"] = "collection"
+
+    return body
+
+
 
 def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
@@ -2357,7 +2376,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             Input:
                 my_folder: The dataset structure to be created on Pennsieve. Pass in the soda json object to start. 
                 my_tracking_folder: Tracks what folders have been created on Pennsieve thus far. Starts as an empty dictionary.
-                existing_folder_option: TODO: Figure out what this does.
+                existing_folder_option: Dictates whether to merge, duplicate, replace, or skip existing folders.
             """
 
             print(my_tracking_folder)
@@ -2403,13 +2422,28 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                         normalize_tracking_folder(ps_folder)
 
                     elif existing_folder_option == "replace":
+                        # if the folder exists on Pennsieve remove it
                         if folder_key in my_tracking_folder["children"]["folders"]:
-                            ps_folder = my_tracking_folder["children"]["folders"]
-                        r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json={"parent": f"{my_tracking_folder['content']['id']}", "name": f"{ps_folder['content']['name']}", "dataset": f"{ds['content']['id']}", "packageType": "collection" })
-                        r.raise_for_status()
+                            ps_folder = my_tracking_folder["children"]["folders"][folder_key]
 
-                        # TODO:  api call to add the folder
-                        # bf_folder = my_ps_folder.create_collection(folder_key)
+                            # TODO: Test that this doesn't cause havoc in nested folders - it should recursively delete so I dont believe it will. 
+                            r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": [ps_folder["content"]["id"]]})
+                            r.raise_for_status()
+
+                            # remove from ps_folder 
+                            del my_tracking_folder["children"]["folders"][folder_key]
+
+                        print("Creating a code folder")
+                        print("Name of folder is: ", folder_key)
+                        print("Dataset ID is: ", ds['content']['id'])
+                        print("PackageType is: collection")
+                        print("Parent is: ", my_tracking_folder['content']['id'])
+                        r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json=build_create_folder_request(folder_key, my_tracking_folder['content']['id'], ds['content']['id']))
+                        r.raise_for_status()
+                        ps_folder = r.json()
+                        normalize_tracking_folder(ps_folder)
+
+
 
                     elif existing_folder_option == "merge":
                         if folder_key in my_tracking_folder["children"]["folders"]:
@@ -2482,22 +2516,13 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 #print("my_bf_existing_files_name_with_extension: ", my_bf_existing_files_name_with_extension)
                 for file_key, file in my_folder["files"].items():
                     # if local then we are either adding a new file to an existing/new dataset or replacing a file in an existing dataset
-                    # TODO: Confirm accuracy of the above statement
                     if file["type"] == "local":
                         file_path = file["path"]
-                        # print("\n")
-                        # print("THIS PLACE HERE:", my_bf_existing_files_name_with_extension)
-                        # print("\n")
                         if isfile(file_path) and existing_file_option == "replace" and file_key in ps_folder_children["files"]:
-                            # print("WILL REPLACE THE SUBJECTS FILE HOPEFULLY")
                             my_file = ps_folder_children["files"][file_key]
-                            # print("\n")
-                            # print("MY_FILE:" , my_file)
-                            # print("\n")
                             # delete the package ( aka file ) from the dataset 
                             r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": [f"{my_file['content']['id']}"]})
                             r.raise_for_status()
-                            # print("REMOVED THE EXISTING SUBJECTS FILE FROM NESTED")
 
 
                 # create list of files to be uploaded with projected and desired names saved
@@ -3297,6 +3322,7 @@ def main_curate_function(soda_json_structure):
                     "destination"
                 ]
                 if generate_option == "new":
+                    # if dataset name is in the generate-dataset section, we are generating a new dataset
                     if "dataset-name" in soda_json_structure["generate-dataset"]:
                         dataset_name = soda_json_structure["generate-dataset"][
                             "dataset-name"
@@ -3304,10 +3330,11 @@ def main_curate_function(soda_json_structure):
                         ds = bf_create_new_dataset(dataset_name, ps)
                         generated_dataset_id = ds["content"]["id"]
 
-                        r = requests.get(f"{PENNSIEVE_URL}/datasets/{generated_dataset_id}", headers=create_request_headers(ps))
-                        r.raise_for_status()
-                        myds = r.json()
-                        
+                    # whether we are generating a new dataset or merging, we want the dataset information for later steps
+                    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(ps))
+                    r.raise_for_status()
+                    myds = r.json()
+                    
                     bf_generate_new_dataset(soda_json_structure, ps, myds)
                 if generate_option == "existing-bf":
                     # make an api request to pennsieve to get the dataset details
