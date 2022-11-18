@@ -2468,7 +2468,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                         relative_path,
                     )
 
-            if "files" in my_folder.keys():
+            if "files" in my_folder.keys() and my_tracking_folder["content"]["id"].find("N:dataset") != -1: 
+                    
 
                 # delete files to be deleted
                 (
