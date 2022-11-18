@@ -3176,10 +3176,15 @@ const setupPublicationOptionsPopover = () => {
   });
 };
 
-async function submitReviewDatasetCheck(res) {
-  var reviewstatus = res[0];
-  var publishingStatus = res[1];
-  if (publishingStatus === "PUBLISH_IN_PROGRESS") {
+const submitReviewDatasetCheck = async (res) => {
+  console.log(res);
+  console.log(res["publishing_status"]);
+  console.log(res["review_request_status"]);
+  let reviewstatus = res["review_request_status"];
+  let publishingStatus = res["publishing_status"];
+  // console.log(reviewStatus);
+  // console.log(publishingStatus);
+  if (res["publishing_status"] === "PUBLISH_IN_PROGRESS") {
     Swal.fire({
       icon: "error",
       title: "Your dataset is currently being published. Please wait until it is completed.",
@@ -3194,7 +3199,7 @@ async function submitReviewDatasetCheck(res) {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     });
-  } else if (reviewstatus === "requested") {
+  } else if (res["review_request_status"] === "requested") {
     Swal.fire({
       icon: "error",
       title: "Cannot submit the dataset for review at this time!",
@@ -3209,7 +3214,7 @@ async function submitReviewDatasetCheck(res) {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     });
-  } else if (publishingStatus === "PUBLISH_SUCCEEDED") {
+  } else if (res["publishing_status"] === "PUBLISH_SUCCEEDED") {
     // embargo release date represents the time a dataset that has been reviewed for publication becomes public
     // user sets this value in the UI otherwise it stays an empty string
     let embargoReleaseDate = "";
@@ -3271,6 +3276,7 @@ async function submitReviewDatasetCheck(res) {
         if (checkedRadioButton === "embargo-date-check") {
           // set the embargoDate variable if so
           embargoReleaseDate = $("#tui-date-picker-target").val();
+          console.log(embargoReleaseDate);
         }
       },
     });
@@ -3297,10 +3303,10 @@ async function submitReviewDatasetCheck(res) {
       },
     });
     // submit the dataset for review with the given embargoReleaseDate
+    console.log(embargoReleaseDate);
     await submitReviewDataset(embargoReleaseDate);
   } else {
     // status is NOT_PUBLISHED
-
     // embargo release date represents the time a dataset that has been reviewed for publication becomes public
     // user sets this value in the UI otherwise it stays an empty string
     let embargoReleaseDate = "";
@@ -3360,6 +3366,7 @@ async function submitReviewDatasetCheck(res) {
         if (checkedRadioButton === "embargo-date-check") {
           // set the embargoDate variable if so
           embargoReleaseDate = $("#tui-date-picker-target").val();
+          console.log(embargoReleaseDate);
         }
       },
     });
@@ -3386,9 +3393,10 @@ async function submitReviewDatasetCheck(res) {
     });
 
     // submit the dataset for review with the given embargoReleaseDate
+    console.log(embargoReleaseDate);
     await submitReviewDataset(embargoReleaseDate);
   }
-}
+};
 
 ipcRenderer.on("warning-publish-dataset-selection", (event, index) => {
   if (index === 0) {
@@ -3404,7 +3412,9 @@ ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
   $("#submit_prepublishing_review-spinner").hide();
 });
 
-async function submitReviewDataset(embargoReleaseDate) {
+const submitReviewDataset = async (embargoReleaseDate) => {
+  console.log("within submit review dataset");
+  console.log(embargoReleaseDate);
   $("#para-submit_prepublishing_review-status").text("");
   bfRefreshPublishingDatasetStatusBtn.disabled = true;
   var selectedBfAccount = defaultBfAccount;
@@ -3550,7 +3560,7 @@ async function submitReviewDataset(embargoReleaseDate) {
     "",
     "individual-question post-curation"
   );
-}
+};
 
 // //Withdraw dataset from review
 function withdrawDatasetSubmission() {
@@ -3975,6 +3985,7 @@ const showPrePublishingPageElements = () => {
 
 const showPublishingStatus = async (callback) => {
   return new Promise(async function (resolve, reject) {
+    console.log(callback);
     if (callback == "noClear") {
       var nothing;
     }
@@ -3986,9 +3997,16 @@ const showPublishingStatus = async (callback) => {
     if (selectedBfDataset === "None") {
       resolve();
     } else {
+      console.log(selectedBfDataset);
       try {
+        console.log("before call");
         let get_publishing_status = await client.get(
-          `/disseminate_datasets/datasets/${selectedBfDataset}/publishing_status?selected_account=${selectedBfAccount}`
+          `/disseminate_datasets/datasets/${selectedBfDataset}/publishing_status`,
+          {
+            params: {
+              selected_account: selectedBfAccount,
+            },
+          }
         );
         let res = get_publishing_status.data;
         console.log(res);
