@@ -165,13 +165,90 @@
               </p>
             </div>
             <p class="guided--help-text" style="margin-top: 1em">
-              Guided Mode is divided in four high-level sections. During the first three sections,
+              Guided Moded is divided in four high-level sections. During the first three sections,
               you will be directed to specify the files to include in your dataset and provide
               information about your dataset. On the final section, SODA will automatically generate
               your dataset on Pennsieve with the proper folder structure and metadata files. Note
               that none of your local data files will ever be modified or moved.
             </p>
           </div>
+
+          <div class="guided--section">
+            <label class="guided--form-label centered mb-0"
+              >Do you have an existing dataset on Pennsieve that you would like to resume?
+            </label>
+
+            <div class="guided--radio-button-container">
+              <button
+                class="guided--radio-button tile-button"
+                id="guided-button-resume-pennsieve-dataset"
+                data-next-element="guided-section-select-pennsieve-dataset-to-resume"
+                data-button-config-value="curation-starting-point"
+                data-button-config-value-state="pennsieve"
+              >
+                <div class="guided--tile-button-icon">
+                  <img
+                    src="assets\img\pennsieveLogo.png"
+                    alt="PennsieveLogo"
+                    width="50px"
+                    height="50px"
+                  />
+                </div>
+                <div class="guided--tile-body">
+                  <h2>Yes, resume dataset on Pennsieve</h2>
+                </div>
+              </button>
+              <button
+                class="guided--radio-button tile-button"
+                data-next-element="guided-section-start-new-curation"
+                data-button-config-value="curation-starting-point"
+                data-button-config-value-state="new"
+              >
+                <div class="guided--tile-button-icon">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink"
+                    viewbox="0 0 489.8 489.8"
+                    style="enable-background: new 0 0 489.8 489.8"
+                    xml:space="preserve"
+                  >
+                    <g>
+                      <g>
+                        <path
+                          d="M438.2,0H51.6C23.1,0,0,23.2,0,51.6v386.6c0,28.5,23.2,51.6,51.6,51.6h386.6c28.5,0,51.6-23.2,51.6-51.6V51.6    C489.8,23.2,466.6,0,438.2,0z M465.3,438.2c0,14.9-12.2,27.1-27.1,27.1H51.6c-14.9,0-27.1-12.2-27.1-27.1V51.6    c0-14.9,12.2-27.1,27.1-27.1h386.6c14.9,0,27.1,12.2,27.1,27.1V438.2z"
+                        />
+                        <path
+                          d="M337.4,232.7h-80.3v-80.3c0-6.8-5.5-12.3-12.3-12.3s-12.3,5.5-12.3,12.3v80.3h-80.3c-6.8,0-12.3,5.5-12.3,12.2    c0,6.8,5.5,12.3,12.3,12.3h80.3v80.3c0,6.8,5.5,12.3,12.3,12.3s12.3-5.5,12.3-12.3v-80.3h80.3c6.8,0,12.3-5.5,12.3-12.3    C349.7,238.1,344.2,232.7,337.4,232.7z"
+                        />
+                      </g>
+                    </g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                  </svg>
+                </div>
+                <div class="guided--tile-body">
+                  <h2>No, start a new dataset</h2>
+                </div>
+              </button>
+            </div>
+          </div>
+          <div class="guided--section" id="guided-section-select-pennsieve-dataset-to-resume">
+            a
+          </div>
+          <div class="guided--section" id="guided-section-start-new-curation">b</div>
         </div>
         <div
           id="guided-name-subtitle-tab"
