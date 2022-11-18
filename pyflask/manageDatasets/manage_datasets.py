@@ -1942,7 +1942,7 @@ def update_dataset_tags(selected_account, selected_dataset, updated_tags):
 
     try:
         jsonfile = {"tags": updated_tags}
-        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/readme", headers=create_request_headers(ps), json=jsonfile)
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(ps), json=jsonfile)
         r.raise_for_status()
         return {"message": "Tags updated"}
     except Exception as e:

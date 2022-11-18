@@ -3973,7 +3973,7 @@ const showPrePublishingPageElements = () => {
   $(".pre-publishing-continue-container").hide();
 };
 
-async function showPublishingStatus(callback) {
+const showPublishingStatus = async (callback) => {
   return new Promise(async function (resolve, reject) {
     if (callback == "noClear") {
       var nothing;
@@ -3991,6 +3991,7 @@ async function showPublishingStatus(callback) {
           `/disseminate_datasets/datasets/${selectedBfDataset}/publishing_status?selected_account=${selectedBfAccount}`
         );
         let res = get_publishing_status.data;
+        console.log(res);
 
         try {
           //update the dataset's publication status and display
@@ -4036,11 +4037,11 @@ async function showPublishingStatus(callback) {
       }
     }
   });
-}
+};
 
 function publishStatusOutputConversion(res) {
-  var reviewStatus = res["publishing_status"];
-  var publishStatus = res["review_request_status"];
+  var reviewStatus = res["review_request_status"];
+  var publishStatus = res["publishing_status"];
 
   var outputMessage = "";
   if (reviewStatus === "draft" || reviewStatus === "cancelled") {
@@ -8592,6 +8593,7 @@ function logGeneralOperationsForAnalytics(category, analyticsPrefix, granularity
  */
 const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   // check that a dataset name or id is provided
+  // console.log(datasetN)
   if (!datasetIdOrName || datasetIdOrName === "") {
     throw new Error(
       "Error: Must provide a valid dataset to log status of pre-publishing checklist items from."
@@ -8609,7 +8611,7 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   // set the subtitle's status
   statuses.subtitle = description && description.length ? true : false;
 
-  let readme = await api.getDatasetReadme(defaultBfAccount, defaultBfDatasetId);
+  let readme = await api.getDatasetReadme(defaultBfAccount, datasetIdOrName);
 
   // set the readme's status
   statuses.readme = readme && readme.length >= 1 ? true : false;

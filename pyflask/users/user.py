@@ -1,42 +1,63 @@
 import requests
 from os.path import join, expanduser, exists
 from configparser import ConfigParser
+from constants import PENNSIEVE_URL
+from utils import (
+    create_request_headers,
+    connect_pennsieve_client,
+    authenticate_user_with_client,
+)
+from namespaces import NamespaceEnum, get_namespace_logger
+from flask import abort
+from pennsieve2.pennsieve import Pennsieve
 
 
-# def integrate_orcid_with_pennsieve(access_code, pennsieve_account):
-#   """
-#   Given an OAuth access code link a user's ORCID ID to their Pennsieve account.
-#   This is required in order to publish a dataset for review with the SPARC Consortium.
-#   """
 
-#   if access_code == "" or access_code is None:
-#     abort(400, "Cannot integrate your ORCID iD to Pennsieve without an access code.")
+def integrate_orcid_with_pennsieve(access_code, pennsieve_account):
+  """
+  Given an OAuth access code link a user's ORCID ID to their Pennsieve account.
+  This is required in order to publish a dataset for review with the SPARC Consortium.
+  """
 
-#   # verify Pennsieve account
-#   try:
-#     bf = Pennsieve(pennsieve_account)
-#   except Exception as e:
-#      abort(400, "Error: Please select a valid Pennsieve account")
+  if access_code == "" or access_code is None:
+    abort(400, "Cannot integrate your ORCID iD to Pennsieve without an access code.")
+
+  # verify Pennsieve account
+  try:
+    ps = connect_pennsieve_client()
+    authenticate_user_with_client(ps, pennsieve_account)
+  except Exception as e:
+     abort(400, "Error: Please select a valid Pennsieve account")
     
   
-#   try:
-#     bf._api._post("/user/orcid", json={"authorizationCode":access_code})
-#   except Exception as e:
-#     print(e)
-#     abort(400, "Invalid access code")
+  try:
+    jsonfile = {"authorizationCode": access_code}
+    r = requests.post(f"{PENNSIEVE_URL}/user/orcid", json=jsonfile, headers=create_request_headers(ps))
+    r.raise_for_status()
+
+    return r.json()
+  except Exception as e:
+    print(e)
+    abort(400, "Invalid access code")
 
   
-# def get_user(selected_account):
-#   """
-#   Get a user's information.
-#   """
+def get_user(selected_account):
+  """
+  Get a user's information.
+  """
+  # ps = get_authenticated_ps(selected_account)
+  ps = connect_pennsieve_client()
+  authenticate_user_with_client(ps, selected_account)
+  print(ps)
+  print(selected_account)
+  try:
+    r = requests.get(f"{PENNSIEVE_URL}/user", headers=create_request_headers(ps))
+    r.raise_for_status()
 
-#   ps = get_authenticated_ps(selected_account)
-
-#   try:
-#     return ps._api._get("/user")
-#   except Exception as e:
-#     abort(500, e.response.json()["message"])
+    return r.json()
+  except Exception as e:
+    print(e);
+    raise Exception(e) from e
 
 
 
@@ -48,15 +69,16 @@ def get_user_information(token):
   PENNSIEVE_URL = "https://api.pennsieve.io"
 
   headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {token}",
-        }
+    "Content-Type": "application/json",
+    "Authorization": f"Bearer {token}",
+  }
 
-  r = requests.get(f"{PENNSIEVE_URL}/user", headers=headers)
-
-  r.raise_for_status()
-
-  return r.json()
+  try:
+    r = requests.get(f"{PENNSIEVE_URL}/user", headers=headers)    
+    r.raise_for_status()    
+    return r.json()
+  except Exception as e:
+    raise Exception(e) from e
 
 
 

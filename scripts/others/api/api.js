@@ -3,6 +3,7 @@ Purpose: An abstraction layer between the client and making HTTP requests via Ax
 */
 
 const getUserInformation = async () => {
+  console.log(defaultBfAccount);
   let userResponse = await client.get(`/user`, {
     params: {
       pennsieve_account: defaultBfAccount,
@@ -10,7 +11,7 @@ const getUserInformation = async () => {
   });
 
   let user = userResponse.data;
-
+  console.log(user);
   return user;
 };
 
@@ -21,6 +22,7 @@ const getUserInformation = async () => {
  */
 const getDataset = async (datasetId) => {
   let datasetResponse = await client.get(`/datasets/${datasetId}`);
+  console.log(datasetId);
   return datasetResponse.data;
 };
 
@@ -148,6 +150,8 @@ const getDatasetSubtitle = async (selected_account, selected_dataset) => {
 };
 
 const getDatasetReadme = async (selected_account, selected_dataset) => {
+  console.log(selected_account);
+  console.log(selected_dataset);
   let readmeResponse = await client.get(`/manage_datasets/datasets/${selected_dataset}/readme`, {
     params: { selected_account },
   });
