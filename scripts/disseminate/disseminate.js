@@ -10,7 +10,7 @@ Note: Some frontend elements of the workflow are in the renderer.js file as well
 */
 
 // Main functions
-async function disseminatePublish() {
+const disseminatePublish = async () => {
   // check that the user completed all pre-publishing checklist items for the given dataset
   if (!allPrepublishingChecklistItemsCompleted()) {
     // alert the user they must complete all checklist items before beginning the prepublishing process
@@ -52,7 +52,7 @@ async function disseminatePublish() {
   await showPublishingStatus(submitReviewDatasetCheck);
 }
 
-function refreshDatasetStatus() {
+const refreshDatasetStatus = () => {
   var account = $("#current-bf-account").text();
   var dataset = $(".bf-dataset-span")
     .html()
@@ -60,12 +60,13 @@ function refreshDatasetStatus() {
   disseminateShowPublishingStatus("", account, dataset);
 }
 
-function disseminateShowPublishingStatus(callback, account, dataset) {
+const disseminateShowPublishingStatus = (callback, account, dataset) => {
   if (dataset !== "None") {
     if (callback == "noClear") {
       var nothing;
     } else {
       $("#para-submit_prepublishing_review-status").text("");
+      console.log("where is function");
       showPublishingStatus("noClear");
     }
   }

@@ -273,6 +273,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         Swal.showValidationMessage("Please select an account!");
       }
     } else if (bfAccountSwal === false) {
+      console.log("chedck here");
       Swal.fire({
         allowOutsideClick: false,
         backdrop: "rgba(0,0,0, 0.4)",
