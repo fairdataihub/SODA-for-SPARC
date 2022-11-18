@@ -2999,6 +2999,15 @@ const openPage = async (targetPageID) => {
     //Note: if other nav bar needs to be shown, it will be handled later in this function
     hideSubNavAndShowMainNav(false);
 
+    // If the page has not been completed and the user is starting from Pennsieve
+    // retrieve the data required for the page and save it into the JSON
+    if (!sodaJSONObj["completed-tabs"].includes(targetPageID)) {
+      console.log("bing");
+      if (sodaJSONObj?.["button-config"]?.["curation-starting-point"] === "pennsieve") {
+        console.log("bing this is where we import data from Pennsieve");
+      }
+    }
+
     //Hide the high level progress steps and green pills if the user is on the before getting started page
     if (targetPageID === "guided-prepare-helpers-tab") {
       document.getElementById("structure-dataset-capsule-container").classList.add("hidden");
