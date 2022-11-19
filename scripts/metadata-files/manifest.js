@@ -1500,6 +1500,9 @@ async function extractBFDatasetForManifestFile(editBoolean, bfaccount, bfdataset
 
 function extractBFManifestFile() {
   return new Promise((resolve, reject) => {
+    console.log(JSON.stringify(sodaJSONObj));
+    console.log(defaultBfAccount);
+    console.log(defaultBfDataset);
     client
       .post(
         "/prepare_metadata/manifest_files/pennsieve",
