@@ -1493,7 +1493,17 @@ def create_high_level_manifest_files_existing_bf(
             Import manifest information from the Pennsieve dataset for the given folder and its children.
             """
 
-            print(folder)
+            
+
+            if len(folder['children']) == 0:
+                print("FETCHING")
+                r = requests.get(f"{PENNSIEVE_URL}/packages/{folder['content']['id']}", headers=create_request_headers(bf), json={"include": "files"})
+                r.raise_for_status()
+                ps_folder = r.json()
+                normalize_tracking_folder(ps_folder)
+                folder['children'] = ps_folder['children']
+
+            # TODO: Test for empty folder still happening here. Which would cause an Exception
 
             for _, folder_item in folder["children"]["folders"].items():
                 folder_name = folder_item['content']['name']
@@ -1726,12 +1736,12 @@ def create_high_level_manifest_files_existing_bf(
         makedirs(manifest_folder_path)
 
         print("Manifest building [START]")
-        print(ds)
+        print(my_tracking_folder)
 
         # import info about files already on bf
         dataset_structure = soda_json_structure["dataset-structure"]
         manifest_dict_save = {}
-        for high_level_folder_key, high_level_folder in ds["children"]["folders"].items():
+        for high_level_folder_key, high_level_folder in my_tracking_folder["children"]["folders"].items():
             if (
                 high_level_folder_key in dataset_structure["folders"].keys()
             ):
@@ -1746,7 +1756,8 @@ def create_high_level_manifest_files_existing_bf(
                 dict_folder_manifest["file type"] = []
                 dict_folder_manifest["Additional Metadata"] = []
 
-                # pull manifest file into if exists
+                # pull manifest file into if exists 
+                # TODO: improve by using a call to get the folder then iterate locally instead of making an api call for each file to get its name
                 manifest_df = pd.DataFrame()
                 for file_key, file in high_level_folder['children']['files'].items():
                     file_id = file['content']['id']
@@ -1775,8 +1786,11 @@ def create_high_level_manifest_files_existing_bf(
                     high_level_folder, relative_path, dict_folder_manifest, manifest_df
                 )
 
+                print("HIGH LEVEL Level Folder At This Point")
+                print(high_level_folder)
+
                 # TODO: Verify this key name path is sane
-                manifest_dict_save[high_level_folder['content']['name']] = {
+                manifest_dict_save[high_level_folder_key] = {
                     "manifest": dict_folder_manifest,
                     "bf_folder": high_level_folder,
                 }
@@ -1878,7 +1892,7 @@ def bf_get_existing_folders_details(ps_folders):
     print("Here is ps folder: ", ps_folders)
     for folder in ps_folders:
         print(folder)
-    ps_existing_folders = [folder for folder in ps_folders if folder["content"]["packageType"] == "Collection"]
+    ps_existing_folders = [ps_folders[folder] for folder in ps_folders if ps_folders[folder]["content"]["packageType"] == "Collection"]
     ps_existing_folders_name = [folder['content']["name"] for folder in ps_existing_folders]
 
     return ps_existing_folders, ps_existing_folders_name
