@@ -3033,6 +3033,13 @@ const checkIfPageIsValid = async (pageID) => {
   }
 };
 
+const pageNeedsUpdateFromPennsieve = (pageID) => {
+  return (
+    sodaJSONObj?.["button-config"]?.["curation-starting-point"] === "pennsieve" &&
+    !sodaJSONObj["completed-tabs"].includes(pageID)
+  );
+};
+
 //Main function that prepares individual pages based on the state of the sodaJSONObj
 //The general flow is to check if there is values for the keys relevant to the page
 //If the keys exist, extract the data from the sodaJSONObj and populate the page
@@ -3050,15 +3057,6 @@ const openPage = async (targetPageID) => {
     //Show the main nav bar
     //Note: if other nav bar needs to be shown, it will be handled later in this function
     hideSubNavAndShowMainNav(false);
-
-    // If the page has not been completed and the user is starting from Pennsieve
-    // retrieve the data required for the page and save it into the JSON
-    if (!sodaJSONObj["completed-tabs"].includes(targetPageID)) {
-      if (sodaJSONObj?.["button-config"]?.["curation-starting-point"] === "pennsieve") {
-        const uploadPageFromPennsieve = async () => {};
-        await uploadPageFromPennsieve(targetPageID);
-      }
-    }
 
     //Hide the high level progress steps and green pills if the user is on the before getting started page
     if (targetPageID === "guided-prepare-helpers-tab") {
@@ -3087,20 +3085,36 @@ const openPage = async (targetPageID) => {
     } else {
       $("#guided-back-button").css("visibility", "visible");
     }
+
     if (targetPageID === "guided-name-subtitle-tab") {
       const datasetNameInput = document.getElementById("guided-dataset-name-input");
       const datasetSubtitleInput = document.getElementById("guided-dataset-subtitle-input");
+      datasetNameInput.value = "";
+      datasetSubtitleInput.value = "";
+
       const datasetName = getGuidedDatasetName();
-      const datasetSubtitle = getGuidedDatasetSubtitle();
       if (datasetName) {
         datasetNameInput.value = datasetName;
-      } else {
-        datasetNameInput.value = "";
       }
-      if (datasetSubtitle) {
-        datasetSubtitleInput.value = datasetSubtitle;
+
+      if (pageNeedsUpdateFromPennsieve(targetPageID)) {
+        try {
+          //Try to get the dataset name from Pennsieve
+          //If the request fails, the subtitle input will remain blank
+          const datasetSubtitle = await api.getDatasetSubtitle(
+            defaultBfAccount,
+            sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
+          );
+          datasetSubtitleInput.value = datasetSubtitle;
+        } catch (error) {
+          console.log("UNABLE TO FETCH PENNSIEVE SUBTITLE");
+        }
       } else {
-        datasetSubtitleInput.value = "";
+        //Update subtitle from JSON
+        const datasetSubtitle = getGuidedDatasetSubtitle();
+        if (datasetSubtitle) {
+          datasetSubtitleInput.value = datasetSubtitle;
+        }
       }
 
       //Set the characters remaining counter
