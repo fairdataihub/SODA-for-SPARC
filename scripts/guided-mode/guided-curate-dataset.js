@@ -101,9 +101,16 @@ const savePageChanges = async (pageBeingLeftID) => {
         );
 
         let data = filesFoldersResponse.data;
-        console.log(data);
 
         datasetStructureJSONObj = data["soda_object"]["dataset-structure"];
+
+        try {
+          extractPoolSubSamStructureFromDataset(datasetStructureJSONObj);
+        } catch (error) {
+          console.log(error);
+        }
+
+        // Extract subject sample pool structure here
       }
     }
 
@@ -1149,6 +1156,104 @@ const updateDatasetUploadProgressTable = (progressObject) => {
     `;
   //insert adjustStatusElement at the end of datasetUploadTablebody
   datasetUploadTableBody.insertAdjacentHTML("beforeend", uploadStatusElement);
+};
+
+const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
+  const guidedFoldersInDataset = guidedHighLevelFolders.filter((folder) =>
+    Object.keys(datasetStructure["folders"]).includes(folder)
+  );
+
+  console.log(guidedFoldersInDataset);
+
+  // Loop through prim, src, and deriv if they exist in the datasetStructure
+  for (const hlf of guidedFoldersInDataset) {
+    //Get the names of the subfolders directly in the hlf
+    const hlfFolderNames = Object.keys(datasetStructure["folders"][hlf]["folders"]);
+    const subjectFoldersInBase = hlfFolderNames.filter((folder) => folder.startsWith("sub-"));
+    const poolFoldersInBase = hlfFolderNames.filter((folder) => folder.startsWith("pool-"));
+
+    // Loop through any folders starting with sub- in the hlf
+    for (const subjectFolder of subjectFoldersInBase) {
+      // Try to add the subject to the structure. This will throw if the subject has already
+      // been added from another hlf
+      try {
+        sodaJSONObj.addSubject(subjectFolder);
+      } catch (error) {
+        console.log(error);
+      }
+      // Get the names of the subfolders directly in the subject folder
+      const potentialSampleFolderNames = Object.keys(
+        datasetStructure["folders"][hlf]["folders"][subjectFolder]["folders"]
+      );
+      const sampleFoldersInSubject = potentialSampleFolderNames.filter((folder) =>
+        folder.startsWith("sam-")
+      );
+      // Loop through any folders starting with sam- in the subject folder
+      for (const sampleFolder of sampleFoldersInSubject) {
+        //add the sample to the structure. This will throw if the sample has already been added
+        //from another hlf
+        try {
+          sodaJSONObj.addSampleToSubject(sampleFolder, null, subjectFolder);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+    }
+
+    // Loop through any folders starting with pool- in the hlf
+    for (const poolFolder of poolFoldersInBase) {
+      // Try to add the pool to the structure. This will throw if the pool has already
+      // been added from another hlf
+      try {
+        sodaJSONObj.addPool(poolFolder);
+      } catch (error) {
+        console.log(error);
+      }
+      // Get the names of the subfolders directly in the pool folder
+      const potentialSubjectFolderNames = Object.keys(
+        datasetStructure["folders"][hlf]["folders"][poolFolder]["folders"]
+      );
+      const subjectFoldersInPool = potentialSubjectFolderNames.filter((folder) =>
+        folder.startsWith("sub-")
+      );
+      // Loop through any folders starting with sub- in the pool folder
+      for (const subjectFolder of subjectFoldersInPool) {
+        // Try to add the subject to the structure. This will throw if the subject has already
+        // been added from another hlf
+        try {
+          sodaJSONObj.addSubject(subjectFolder);
+        } catch (error) {
+          console.log(error);
+        }
+        // Try to move the subject to the pool. This will throw if the subject has already
+        // been added to the pool from another hlf
+        try {
+          sodaJSONObj.moveSubjectIntoPool(subjectFolder, poolFolder);
+        } catch (error) {
+          console.log(error);
+        }
+        const potentialSampleFolderNames = Object.keys(
+          datasetStructure["folders"][hlf]["folders"][poolFolder]["folders"][subjectFolder][
+            "folders"
+          ]
+        );
+        const sampleFoldersInSubject = potentialSampleFolderNames.filter((folder) =>
+          folder.startsWith("sam-")
+        );
+        // Loop through any folders starting with sam- in the subject folder
+        for (const sampleFolder of sampleFoldersInSubject) {
+          //add the sample to the structure. This will throw if the sample has already been added
+          //from another hlf
+          try {
+            sodaJSONObj.addSampleToSubject(sampleFolder, poolFolder, subjectFolder);
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      }
+    }
+  }
+  console.log(sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]);
 };
 
 const guidedLockSideBar = () => {
