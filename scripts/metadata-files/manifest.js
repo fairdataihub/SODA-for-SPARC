@@ -955,7 +955,7 @@ async function initiate_generate_manifest_bf() {
   }
 
   // clear the pennsieve queue
-  clearQueue();
+  // clearQueue();
   let curationResponse;
   try {
     curationResponse = await client.post(
@@ -1356,10 +1356,11 @@ async function extractBFDatasetForManifestFile(editBoolean, bfaccount, bfdataset
 
     let continueProgressEmptyFolder = await checkEmptySubFolders(sodaJSONObj["dataset-structure"]);
 
+    continueProgressEmptyFolder = true;
     if (!continueProgressEmptyFolder) {
       hideProgressContainer(progressContainer);
       spanManifest.style.display = "none";
-
+      console.log("right ehre")
       Swal.fire({
         title: "Failed to generate the manifest files.",
         text: "The dataset contains one or more empty folder(s). Per SPARC guidelines, a dataset must not contain any empty folders. Please remove them before generating the manifest files.",
@@ -1505,11 +1506,11 @@ function extractBFManifestFile() {
     console.log(defaultBfDataset);
     client
       .post(
-        "/prepare_metadata/manifest_files/pennsieve",
+        `/prepare_metadata/manifest_files/pennsieve`,
         {
-          soda_json_object: sodaJSONObj,
-          selected_account: defaultBfAccount,
-          selected_dataset: defaultBfDataset,
+            soda_json_object: sodaJSONObj,
+            selected_account: defaultBfAccount,
+            selected_dataset: defaultBfDataset
         },
         {
           timeout: 0,
@@ -1734,7 +1735,8 @@ function checkEmptySubFolders(datasetStructure) {
 // helper function 1: First, generate manifest file folder locally
 // Parameter: dataset structure object
 // Return: manifest file folder path
-async function generateManifestFolderLocallyForEdit(ev) {
+const generateManifestFolderLocallyForEdit = async (ev) => {
+  console.log("here")
   var type = "local";
   if ($('input[name="generate-manifest-1"]:checked').prop("id") === "generate-manifest-from-Penn") {
     type = "bf";
@@ -1799,7 +1801,8 @@ async function generateManifestFolderLocallyForEdit(ev) {
     sodaJSONObj["bf-dataset-selected"] = {};
     sodaJSONObj["generate-dataset"] = {};
     continueProgressEmptyFolder = await checkEmptySubFolders(sodaJSONObj["dataset-structure"]);
-
+    // continueProgressEmptyFolder = true
+    // console.log("before check")
     if (continueProgressEmptyFolder === false) {
       Swal.fire({
         title: "Failed to generate the manifest files.",
@@ -2029,6 +2032,9 @@ function showTreeViewPreviewManifestEdits(
   previewDiv,
   datasetStructure
 ) {
+  console.log(datasetStructure);
+  console.log(previewDiv);
+  console.log(new_dataset_name);
   var jsTreePreviewDataManifest = createChildNodeManifest(
     datasetStructure,
     new_dataset_name,

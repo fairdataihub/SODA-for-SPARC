@@ -1770,14 +1770,14 @@ $(jstreePreview).on("close_node.jstree", function (event, data) {
   data.instance.set_type(data.node, "folder closed");
 });
 
-function showTreeViewPreview(
+const showTreeViewPreview = (
   disabledBoolean,
   selectedBoolean,
   manifestFileBoolean,
   new_dataset_name,
   previewDiv,
   datasetStructure
-) {
+) => {
   if (manifestFileBoolean) {
     if (manifestFileCheck.checked) {
       addManifestFilesForTreeView();
@@ -1802,11 +1802,13 @@ function showTreeViewPreview(
 }
 
 // if checked
-function addManifestFilesForTreeView() {
+const addManifestFilesForTreeView = () => {
   for (var key in datasetStructureJSONObj["folders"]) {
     if (highLevelFolders.includes(key)) {
       var fileKey = datasetStructureJSONObj["folders"][key]["files"];
-      if (!("manifest.xlsx" in fileKey)) {
+      let folderAmount = Object.keys(datasetStructureJSONObj["folders"][key]["folders"]).length
+      let fileAmount = Object.keys(datasetStructureJSONObj["folders"][key]["files"]).length
+      if (!("manifest.xlsx" in fileKey) && folderAmount > 0 && fileAmount > 0) {
         fileKey["manifest.xlsx"] = {
           forTreeview: true,
         };

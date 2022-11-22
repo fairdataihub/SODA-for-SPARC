@@ -2830,6 +2830,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         if len(list_upload_files) > 0:
             first_file_local_path = list_upload_files[0][0][0]
             first_relative_path = list_upload_files[0][6]
+            print(first_file_local_path)
+            print("#" * 30)
             manifest_data = ps.manifest.create(first_file_local_path)
             manifest_id = manifest_data.manifest_id
 
@@ -2870,6 +2872,11 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 for file_path in list_file_paths:
                     #print("Queing file for upload")
                     # subprocess call to the pennsieve agent to add the files to the manifest
+                    print(manifest_id)
+                    print("-" * 20)
+                    print(file_path)
+                    print("-" * 20)
+                    print(folder_name)
                     subprocess.run(["pennsieve", "manifest", "add", str(manifest_id), file_path, "-t", folder_name])
 
 

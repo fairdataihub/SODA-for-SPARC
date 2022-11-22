@@ -702,6 +702,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             }
 
             if (dropdownEventID === "dd-select-pennsieve-dataset") {
+              console.log(dropdownEventID)
               $("#ds-name").val(bfDataset);
               $("#ds-description").val = $("#bf-dataset-subtitle").val;
               $("body").removeClass("waiting");
