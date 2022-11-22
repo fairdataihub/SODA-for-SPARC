@@ -779,6 +779,12 @@ def check_local_dataset_files_validity(soda_json_structure):
 
         for file_key in list(my_folder["files"].keys()):
             file = my_folder["files"][file_key]
+            if file_key in ["manifest.xlsx", "manifest.csv"]:
+                continue
+            print("#" * 30)
+            print("file info below")
+            print(file_key)
+            print(file)
             file_type = file["type"]
             if file_type == "local":
                 file_path = file["path"]
@@ -2065,6 +2071,8 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
     def recursive_file_delete(folder):
         if "files" in folder.keys():
             for item in list(folder["files"]):
+                if item in ["manifest.xlsx", "manifest.csv"]:
+                    continue
                 if "deleted" in folder["files"][item]["action"]:
                     file_path = folder["files"][item]["path"]
                     # remove the file from the dataset
@@ -2100,6 +2108,8 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
         
         if "files" in folder.keys():
             for item in list(folder["files"]):
+                if item in ["manifest.xslx", "manifest.csv"]:
+                    continue
                 if "folderpath" not in folder["files"][item]:
                     folder["files"][item]["folderpath"] = path[:]
 
@@ -2157,6 +2167,8 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
     def recursive_check_moved_files(folder):
         if "files" in folder.keys():
             for item in list(folder["files"]):
+                if item in ["manifest.xlsx", "manifest.csv"]:
+                    continue
                 if (
                     "moved" in folder["files"][item]["action"]
                     and folder["files"][item]["type"] == "bf"
@@ -2179,6 +2191,8 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
     def recursive_file_rename(folder):
         if "files" in folder.keys():
             for item in list(folder["files"]):
+                if item in ["manifest.xlsx", "manifest.csv"]:
+                    continue
                 if (
                     "renamed" in folder["files"][item]["action"]
                     and folder["files"][item]["type"] == "bf"
@@ -2543,6 +2557,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 #print("my_bf_existing_files_name_with_extension: ", my_bf_existing_files_name_with_extension)
                 for file_key, file in my_folder["files"].items():
                     # if local then we are either adding a new file to an existing/new dataset or replacing a file in an existing dataset
+                    if file_key in ["manifest.xlsx", "manifest.csv"]:
+                        continue
                     if file["type"] == "local":
                         file_path = file["path"]
                         if isfile(file_path) and existing_file_option == "replace" and file_key in ps_folder_children["files"]:
@@ -2572,6 +2588,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 # add the files that are set to be uploaded to Pennsieve to a list 
                 # handle renaming files and creating duplicates
                 for file_key, file in my_folder["files"].items():
+                    if file_key in ["manifest.xlsx", "manifest.csv"]:
+                        continue
                     if file["type"] == "local":
                         file_path = file["path"]
                         if isfile(file_path):
@@ -2995,9 +3013,13 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         if list_upload_manifest_files:
             namespace_logger.info("bf_generate_new_dataset (optional) step 7 upload manifest files")
 
-            # create the manifest 
+            # create the manifest
+            print(list_upload_manifest_files)
+            print(list_upload_manifest_files[0][0][0]) 
             manifest_data = ps.manifest.create(list_upload_manifest_files[0][0][0])
             manifest_id = manifest_data.manifest_id
+            print(manifest_data)
+            print(manifest_id)
 
             total_manifest_files += 1
 
@@ -3115,6 +3137,8 @@ def bf_check_dataset_files_validity(soda_json_structure, ps):
                 error = recursive_bf_dataset_check(folder, relative_path, error)
         if "files" in my_folder.keys():
             for file_key, file in my_folder["files"].items():
+                if file_key in ["manifest.xlsx", "manifest.csv"]:
+                    continue
                 file_type = file["type"]
                 if file_type == "bf":
                     package_id = file["path"]
