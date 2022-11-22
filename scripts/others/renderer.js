@@ -7506,7 +7506,6 @@ async function initiate_generate() {
     var elapsed_time_formatted = data["elapsed_time_formatted"];
     let total_files_uploaded = data["total_files_uploaded"];
 
-
     if (start_generate === 1) {
       var value = (main_generated_dataset_size / main_total_generate_dataset_size) * 100;
       generateProgressBar.value = value;
@@ -7520,9 +7519,8 @@ async function initiate_generate() {
           (main_total_generate_dataset_size / displaySize / displaySize).toFixed(2) + " MB";
       } else {
         var totalSizePrint =
-          (main_total_generate_dataset_size / displaySize / displaySize / displaySize).toFixed(
-            2
-          ) + " GB";
+          (main_total_generate_dataset_size / displaySize / displaySize / displaySize).toFixed(2) +
+          " GB";
       }
       var progressMessage = "";
       var statusProgressMessage = "";
@@ -7547,7 +7545,7 @@ async function initiate_generate() {
         progressStatus.innerHTML = main_curate_status + smileyCan;
         statusText.innerHTML = main_curate_status + smileyCan;
         successful = true;
-      } 
+      }
     } else {
       statusText.innerHTML =
         main_curate_progress_message + "<br>" + "Elapsed time: " + elapsed_time_formatted + "<br>";
@@ -7556,7 +7554,7 @@ async function initiate_generate() {
     }
 
     if (main_curate_status === "Done") {
-      console.log("Finished uploading now")
+      console.log("Finished uploading now");
       $("#sidebarCollapse").prop("disabled", false);
       countDone++;
       if (countDone > 1) {
