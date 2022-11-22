@@ -1799,15 +1799,15 @@ const showTreeViewPreview = (
   );
   $(previewDiv).jstree(true).settings.core.data = jsTreePreviewDataManifest;
   $(previewDiv).jstree(true).refresh();
-}
+};
 
 // if checked
 const addManifestFilesForTreeView = () => {
   for (var key in datasetStructureJSONObj["folders"]) {
     if (highLevelFolders.includes(key)) {
       var fileKey = datasetStructureJSONObj["folders"][key]["files"];
-      let folderAmount = Object.keys(datasetStructureJSONObj["folders"][key]["folders"]).length
-      let fileAmount = Object.keys(datasetStructureJSONObj["folders"][key]["files"]).length
+      let folderAmount = Object.keys(datasetStructureJSONObj["folders"][key]["folders"]).length;
+      let fileAmount = Object.keys(datasetStructureJSONObj["folders"][key]["files"]).length;
       if (!("manifest.xlsx" in fileKey) && folderAmount > 0 && fileAmount > 0) {
         fileKey["manifest.xlsx"] = {
           forTreeview: true,
@@ -1815,7 +1815,7 @@ const addManifestFilesForTreeView = () => {
       }
     }
   }
-}
+};
 
 // if unchecked
 function revertManifestForTreeView() {

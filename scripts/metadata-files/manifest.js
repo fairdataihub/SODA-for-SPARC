@@ -1360,7 +1360,7 @@ async function extractBFDatasetForManifestFile(editBoolean, bfaccount, bfdataset
     if (!continueProgressEmptyFolder) {
       hideProgressContainer(progressContainer);
       spanManifest.style.display = "none";
-      console.log("right ehre")
+      console.log("right ehre");
       Swal.fire({
         title: "Failed to generate the manifest files.",
         text: "The dataset contains one or more empty folder(s). Per SPARC guidelines, a dataset must not contain any empty folders. Please remove them before generating the manifest files.",
@@ -1508,9 +1508,9 @@ function extractBFManifestFile() {
       .post(
         `/prepare_metadata/manifest_files/pennsieve`,
         {
-            soda_json_object: sodaJSONObj,
-            selected_account: defaultBfAccount,
-            selected_dataset: defaultBfDataset
+          soda_json_object: sodaJSONObj,
+          selected_account: defaultBfAccount,
+          selected_dataset: defaultBfDataset,
         },
         {
           timeout: 0,
@@ -1736,7 +1736,7 @@ function checkEmptySubFolders(datasetStructure) {
 // Parameter: dataset structure object
 // Return: manifest file folder path
 const generateManifestFolderLocallyForEdit = async (ev) => {
-  console.log("here")
+  console.log("here");
   var type = "local";
   if ($('input[name="generate-manifest-1"]:checked').prop("id") === "generate-manifest-from-Penn") {
     type = "bf";
@@ -1831,7 +1831,7 @@ const generateManifestFolderLocallyForEdit = async (ev) => {
     sodaJSONObj["bf-dataset-selected"] = { "dataset-name": defaultBfDataset };
     extractBFDatasetForManifestFile(true, defaultBfAccount, defaultBfDataset, ev);
   }
-}
+};
 
 async function createManifestLocally(type, editBoolean, originalDataset) {
   var generatePath = "";
