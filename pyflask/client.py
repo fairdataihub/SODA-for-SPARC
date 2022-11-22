@@ -25,6 +25,35 @@ def create_request_headers(ps):
             "Authorization": f"Bearer {ps.getUser()['session_token']}",
     }
 
+
+
+
+def get_manifest_entry_id(manifest_id, entry_idx):
+
+    f = client.manifest.listFiles(manifest_id, entry_idx, 1)
+    fields = f.file
+    file_id = str(fields[0])[4:]
+    file_id = file_id.splitlines()[0]
+    return file_id.strip()
+
+
+def remove_manifest_entry(manifest_id, file_id):
+    """
+    Remove the first entry in the manifest. Necessary until the Pennsieve agent is updated to allow entering a target path 
+    when creating a manifest file.
+    """
+
+    # turn the file_id into a list 
+    file_id = [file_id]
+    
+    client.manifest.remove(manifest_id, file_id)
+
+
+ids = get_manifest_entry_id(6, 0)
+print(type(ids))
+remove_manifest_entry(6, ids)
+
+
 # r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(client), json={"things": ["N:package:eaf433a5-ec64-456e-acd3-881ef2784ec3"]})
 # r.raise_for_status()
 
@@ -43,15 +72,15 @@ def create_request_headers(ps):
 
 
 
-r = requests.post(f"{PENNSIEVE_URL}/packages", headers={"Content-Type": "application/json", "Authorization": f"Bearer {client.getUser()['session_token']}",}, 
-                json={
-                    "name": "nested", 
-                    "dataset": "N:dataset:f36a6c0a-5deb-466e-b404-bab54bc112a1", 
-                    "packageType": "collection", 
-                    "parent": "N:collection:cb129b62-63d3-4db4-a747-064482be0594"
-                    })
-r.raise_for_status()
-res = r.json()
+# r = requests.post(f"{PENNSIEVE_URL}/packages", headers={"Content-Type": "application/json", "Authorization": f"Bearer {client.getUser()['session_token']}",}, 
+#                 json={
+#                     "name": "nested", 
+#                     "dataset": "N:dataset:f36a6c0a-5deb-466e-b404-bab54bc112a1", 
+#                     "packageType": "collection", 
+#                     "parent": "N:collection:cb129b62-63d3-4db4-a747-064482be0594"
+#                     })
+# r.raise_for_status()
+# res = r.json()
 
 #   print(res)
 # except Exception as e:

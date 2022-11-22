@@ -7507,41 +7507,44 @@ async function initiate_generate() {
     let total_files_uploaded = data["total_files_uploaded"];
 
     if (start_generate === 1) {
+      var value = (main_generated_dataset_size / main_total_generate_dataset_size) * 100;
+      generateProgressBar.value = value;
+      statusMeter.value = value;
+      if (main_total_generate_dataset_size < displaySize) {
+        var totalSizePrint = main_total_generate_dataset_size.toFixed(2) + " B";
+      } else if (main_total_generate_dataset_size < displaySize * displaySize) {
+        var totalSizePrint = (main_total_generate_dataset_size / displaySize).toFixed(2) + " KB";
+      } else if (main_total_generate_dataset_size < displaySize * displaySize * displaySize) {
+        var totalSizePrint =
+          (main_total_generate_dataset_size / displaySize / displaySize).toFixed(2) + " MB";
+      } else {
+        var totalSizePrint =
+          (main_total_generate_dataset_size / displaySize / displaySize / displaySize).toFixed(2) +
+          " GB";
+      }
+      var progressMessage = "";
+      var statusProgressMessage = "";
+      progressMessage += main_curate_progress_message + "<br>";
+      statusProgressMessage += "Progress: " + value.toFixed(2) + "%" + "<br>";
+      statusProgressMessage += "Elapsed time: " + elapsed_time_formatted + "<br>";
+      progressMessage +=
+        "Progress: " + value.toFixed(2) + "%" + " (total size: " + totalSizePrint + ") " + "<br>";
+      progressMessage += "Elapsed time: " + elapsed_time_formatted + "<br>";
+      progressMessage += "Total files uploaded: " + total_files_uploaded + "<br>";
+      progressStatus.innerHTML = progressMessage;
+      statusText.innerHTML = statusProgressMessage;
       divGenerateProgressBar.style.display = "block";
+
       if (main_curate_progress_message.includes("Success: COMPLETED!")) {
+        // wait one second to dusplay the uploaded files in the case of a small upload where it will finish before the total file
+        // count is updated
+        await wait(1000);
+
         generateProgressBar.value = 100;
         statusMeter.value = 100;
         progressStatus.innerHTML = main_curate_status + smileyCan;
         statusText.innerHTML = main_curate_status + smileyCan;
         successful = true;
-      } else {
-        var value = (main_generated_dataset_size / main_total_generate_dataset_size) * 100;
-        generateProgressBar.value = value;
-        statusMeter.value = value;
-        if (main_total_generate_dataset_size < displaySize) {
-          var totalSizePrint = main_total_generate_dataset_size.toFixed(2) + " B";
-        } else if (main_total_generate_dataset_size < displaySize * displaySize) {
-          var totalSizePrint = (main_total_generate_dataset_size / displaySize).toFixed(2) + " KB";
-        } else if (main_total_generate_dataset_size < displaySize * displaySize * displaySize) {
-          var totalSizePrint =
-            (main_total_generate_dataset_size / displaySize / displaySize).toFixed(2) + " MB";
-        } else {
-          var totalSizePrint =
-            (main_total_generate_dataset_size / displaySize / displaySize / displaySize).toFixed(
-              2
-            ) + " GB";
-        }
-        var progressMessage = "";
-        var statusProgressMessage = "";
-        progressMessage += main_curate_progress_message + "<br>";
-        statusProgressMessage += "Progress: " + value.toFixed(2) + "%" + "<br>";
-        statusProgressMessage += "Elapsed time: " + elapsed_time_formatted + "<br>";
-        progressMessage +=
-          "Progress: " + value.toFixed(2) + "%" + " (total size: " + totalSizePrint + ") " + "<br>";
-        progressMessage += "Elapsed time: " + elapsed_time_formatted + "<br>";
-        progressMessage += "Total files uploaded: " + total_files_uploaded + "<br>";
-        progressStatus.innerHTML = progressMessage;
-        statusText.innerHTML = statusProgressMessage;
       }
     } else {
       statusText.innerHTML =
@@ -7551,6 +7554,7 @@ async function initiate_generate() {
     }
 
     if (main_curate_status === "Done") {
+      console.log("Finished uploading now");
       $("#sidebarCollapse").prop("disabled", false);
       countDone++;
       if (countDone > 1) {

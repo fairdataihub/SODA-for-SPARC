@@ -2065,8 +2065,8 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
             folder = soda_json_structure["metadata-files"]
             for item in list(folder):
                 if "deleted" in folder[item]["action"]:
-                    file = bf.get(folder[item]["path"])
-                    file.delete()
+                    r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": [folder[item]["path"]]})
+                    r.raise_for_status()
                     del folder[item]
 
         return
@@ -2283,7 +2283,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
     # 8. Delete any metadata files that are marked as deleted.
     namespace_logger.info("bf_update_existing_dataset step 8 delete any metadata files that are marked as deleted")
     main_curate_progress_message = "Removing any metadata files marked for deletion"
-    # metadata_file_delete(soda_json_structure)
+    metadata_file_delete(soda_json_structure)
     main_curate_progress_message = "Removed metadata files marked for deletion"
 
     # 9. Run the original code to upload any new files added to the dataset.
@@ -2372,8 +2372,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
     total_dataset_files = 0
     total_metadata_files = 0 
     total_manifest_files = 0
-
     total_files_uploaded = 0
+    total_bytes_uploaded = 0
     
     uploaded_folder_counter = 0
     current_size_of_uploaded_files = 0
@@ -2511,6 +2511,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                         relative_path,
                     )
 
+            # TODO: Test replacing metadata files from new -> Merge -> Replace onto Existing dataset to see if this stops it from working.
             if "files" in my_folder.keys() and my_tracking_folder["content"]["id"].find("N:dataset") == -1: 
                     
                 print("In files")
@@ -2686,28 +2687,10 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
         normalize_tracking_folder(tracking_json_structure)
 
-        # print("\n")
-        # print("Tracking Structure [ CREATE FOLDER START ]: ", tracking_json_structure)
-        # print("\n")
-
-        # print("\n")
-        # print("Dataset Structure [ CREATE FOLDER START ]: ", dataset_structure)
-        # print("\n")
-
-
         existing_folder_option = soda_json_structure["generate-dataset"]["if-existing"]
         recursive_create_folder_for_bf(
             dataset_structure, tracking_json_structure, existing_folder_option
         )
-
-        # print("\n")
-        # print("Tracking Structure [ CREATE FOLDER END ]: ", tracking_json_structure)
-        # print("\n")
-
-        # print("\n")
-        # print("Dataset Structure [ CREATE FOLDER END ]: ", dataset_structure)
-        # print("\n")
-
 
         namespace_logger.info("bf_generate_new_dataset step 2 create list of files to be uploaded and handle renaming")
         # 2. Scan the dataset structure and compile a list of files to be uploaded along with desired renaming
@@ -2834,13 +2817,23 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             print("#" * 30)
             manifest_data = ps.manifest.create(first_file_local_path)
             manifest_id = manifest_data.manifest_id
-
-
         
             # add the list of upload files' local paths to the manifest [ skip the first element we already added]
             namespace_logger.info("Queueing files now")
             namespace_logger.info(f"{list_upload_files}")
             namespace_logger.info("\n")
+         
+
+            # Rationale: When creating a manifest file we need to create it by adding one file to the root of the dataset. 
+            #            This file needs to be accounted for when determining when to stop the upload subscription. 
+            #            However, we do not want to show this file to the user. As it is not a file that they are supposed to be uploading twice.
+            #            Therefore after we finish the upload we subtract one from total_files. This means the user will only see the wrong value shortly.
+            #            We also need to double count the size of the file we are adding twice to ensure the progress bar does not go over 100%.
+            #            At the end we remove the duplicate file with an API call. 
+            total_dataset_files += 1 # account for the duplicate
+            main_total_generate_dataset_size += getsize(first_file_local_path)
+
+
             for folderInformation in list_upload_files:
                 # main_curate_progress_message = "In file one"
                 list_file_paths = folderInformation[0]
@@ -2850,9 +2843,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 list_final_names = folderInformation[4]
                 tracking_folder = folderInformation[5]
                 relative_path = folderInformation[6]
-
-                print("Relative path: ")
-                print(relative_path)
 
                 # namespace_logger.info(list_projected_names)
                 # namespace_logger.info(list_desired_names)
@@ -2878,10 +2868,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     print("-" * 20)
                     print(folder_name)
                     subprocess.run(["pennsieve", "manifest", "add", str(manifest_id), file_path, "-t", folder_name])
-
-
-                # remove the first item from the manifest - it needed to be added in order for the manifest to be created.
-                # ps.manifest.remove()
 
 
             # upload the manifest files
@@ -2917,7 +2903,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     if current_bytes_uploaded == total_bytes_to_upload:
                         files_uploaded += 1
                         total_files_uploaded += 1
-                        # print("Files Uploaded: " + str(files_uploaded) + "/" + str(total_dataset_files))
+                        namespace_logger.info("Files Uploaded: " + str(files_uploaded) + "/" + str(total_dataset_files))
+                        namespace_logger.info(f"TOTAL SIZE UPLOADED: {total_bytes_uploaded}")
 
                     # check if the upload has finished
                     if files_uploaded == total_dataset_files:
@@ -2926,6 +2913,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                         ps.unsubscribe(10)
 
 
+            # decrement the amount of files we show the user we have uploaded now that the subscriber does not rely on this amount to finish
+            total_files_uploaded -= 1
 
         # 6. Upload metadata files
         if list_upload_metadata_files:
@@ -2937,7 +2926,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             # create the manifest 
             manifest_data = ps.manifest.create(list_upload_metadata_files[0])
             manifest_id = manifest_data.manifest_id
-            
+
+        
             # add the files to the manifest
             for manifest_path in list_upload_metadata_files[1:]:
                 # subprocess call to the pennsieve agent to add the files to the manifest
@@ -2991,6 +2981,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             manifest_data = ps.manifest.create(list_upload_manifest_files[0][0][0])
             manifest_id = manifest_data.manifest_id
 
+            total_manifest_files += 1
+
 
             for item in list_upload_manifest_files:
                 manifest_file = item[0][0]
@@ -3038,6 +3030,13 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                         namespace_logger.info("Upload complete")
                         # unsubscribe from the agent's upload messages since the upload has finished
                         ps.unsubscribe(10)
+
+            # remove the duplicate manifest file from the count
+            total_files_uploaded -= 1
+
+        # TODO: remove the first file from the dataset 
+        #r = requests.post() 
+        print("Removing duplicate files")
 
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
 
@@ -3343,7 +3342,7 @@ def main_curate_function(soda_json_structure):
                             "dataset-name"
                         ]
                         ds = bf_create_new_dataset(dataset_name, ps)
-                        generated_dataset_id = ds["content"]["id"]
+                        selected_dataset_id = ds["content"]["id"]
 
                     # whether we are generating a new dataset or merging, we want the dataset information for later steps
                     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(ps))
