@@ -945,7 +945,11 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
     # get the count of the total number of high level folders in soda_json_structure
     for folder in list(dataset_structure["folders"]):
         if folder in high_level_folders:
-            manifest_progress["total_manifest_files"] += 1
+            print("#" * 30)
+            if dataset_structure["folders"][folder]["files"] == {} and dataset_structure["folders"][folder]["folders"] == {}:
+                print("folder is not empty" )
+                # print(dataset_structure["folders"][folder])
+                manifest_progress["total_manifest_files"] += 1
 
     # create the path to the dataset files and folders on Pennsieve and add them to the dataset structure stored in soda_json_structure
     recursive_item_path_create(dataset_structure, [])
@@ -995,10 +999,8 @@ def update_existing_pennsieve_manifest_files(ds_items, ps, dataset_structure, hi
                     if not exists(manifest_folder):
                         # create the path
                         os.makedirs(manifest_folder)
-                    else:
-                        # check if old manifest files are there
-                        if os.path.exists(join(manifest_folder, "manifest.xlsx")):
-                            os.remove(join(manifest_folder, "manifest.xlsx"))
+                    elif os.path.exists(join(manifest_folder, "manifest.xlsx")):
+                        os.remove(join(manifest_folder, "manifest.xlsx"))
 
                     item_id = j["content"]["nodeId"]
                     url = returnFileURL(ps, item_id)
@@ -1173,15 +1175,26 @@ def returnFileURL(ps, item_id):
 
 
 def recursive_item_path_create(folder, path):
+    print("*" * 30)
+    print("within recursive item path create")
     if "files" in folder.keys():
         for item in list(folder["files"]):
+            print("///////")
+            print("file within folderbelow")
+            print(item)
             if "folderpath" not in folder["files"][item]:
                 folder["files"][item]["folderpath"] = path[:]
+                print(path[:])
 
     if "folders" in folder.keys():
+        print("#" * 30)
+        print("fodlers within recursive create")
         for item in list(folder["folders"]):
+            print("///////")
+            print(item)
             if "folderpath" not in folder["folders"][item]:
                 folder["folders"][item]["folderpath"] = path[:]
+                print(path[:])
                 folder["folders"][item]["folderpath"].append(item)
             recursive_item_path_create(
                 folder["folders"][item], folder["folders"][item]["folderpath"][:]

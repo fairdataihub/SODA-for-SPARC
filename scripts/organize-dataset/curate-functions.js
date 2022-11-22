@@ -1808,7 +1808,11 @@ const addManifestFilesForTreeView = () => {
       var fileKey = datasetStructureJSONObj["folders"][key]["files"];
       let folderAmount = Object.keys(datasetStructureJSONObj["folders"][key]["folders"]).length;
       let fileAmount = Object.keys(datasetStructureJSONObj["folders"][key]["files"]).length;
-      if (!("manifest.xlsx" in fileKey) && folderAmount > 0 && fileAmount > 0) {
+      console.log(fileAmount);
+      console.log(folderAmount);
+      console.log("manifest" in fileKey);
+      if (!("manifest.xlsx" in fileKey) && (folderAmount > 0 || fileAmount > 0)) {
+        console.log(fileKey);
         fileKey["manifest.xlsx"] = {
           forTreeview: true,
         };

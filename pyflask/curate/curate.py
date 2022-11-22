@@ -1404,6 +1404,16 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
         # do not overwrite an existing manifest file 
         if high_level_folder not in high_level_folders:
             continue
+        
+        print("HIGH LEVEL FOLDER BELOW")
+        print(high_level_folder)
+        print(dataset_structure["folders"][high_level_folder])
+        if dataset_structure["folders"][high_level_folder]["files"] == {} and dataset_structure["folders"][high_level_folder]["folders"] == {}:
+            print("EMPTY FOLDER CONTINUING")
+            continue
+        print(dataset_structure["folders"][high_level_folder]["files"])
+        print(dataset_structure["folders"][high_level_folder]["folders"])
+        print("-" * 30)
 
         high_level_folders_present.append(high_level_folder)
 
@@ -1422,12 +1432,20 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
         recursive_folder_traversal(
             dataset_structure["folders"][high_level_folder], dict_folder_manifest
         )
+        print("#" * 30)
+        print("BELOW DICT FOLDER MANIFEST")
+        print(dict_folder_manifest)
+        print("*" * 30)
 
         df = pd.DataFrame.from_dict(dict_folder_manifest)
         df.to_excel(manifestfilepath, index=None, header=True)
 
-        # update the progress of manifest file generation 
+        # update the progress of manifest file generation
+        print("#"*30)
+        print("MANIFEST PROGRESS BELOW")
+        print(manifest_progress)
         if manifest_progress != {}:
+            print(manifest_progress["manifest_files_uploaded"]) 
             manifest_progress["manifest_files_uploaded"] += 1
         
         # add the path to the manifest into the structure
