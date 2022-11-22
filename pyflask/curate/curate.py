@@ -3338,16 +3338,15 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
                 if folder["files"][item]["type"] == "bf":
                     file_name = item
                     # get the timestamp from folder["files"][item]["timestamp"] and convert to an
-                    timestamp_entry = "asdf"
+                    timestamp_entry = folder["files"][item]["timestamp"]
                 else:
                     file_name = os.path.basename(local_path_to_file)
-                    mtime = file_path.stat().st_mtime
                     file_path = pathlib.Path(local_path_to_file)
+                    mtime = file_path.stat().st_mtime
                     last_mod_time = datetime.fromtimestamp(mtime, tz=local_timezone).fromtimestamp(mtime).astimezone(
                         local_timezone
                     )
-                    timestamp_entry = last_mod_time.isoformat().replace(".", ",").replace("+00:00", "Z")
-
+                    timestamp_entry = last_mod_time.isoformat().replace(".", ",")[:-6] + "Z"
 
                 filename_entry = "/".join(ds_struct_path) + "/" + file_name
                 # The extension of the file eg ".txt"
