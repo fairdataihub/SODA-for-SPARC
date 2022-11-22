@@ -87,6 +87,23 @@ const savePageChanges = async (pageBeingLeftID) => {
         sodaJSONObj["starting-point"]["type"] = "pennsieve";
         sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] = selectedPennsieveDatasetID;
         sodaJSONObj["digital-metadata"]["name"] = selectedPennsieveDataset;
+
+        //Pull the dataset folders and files from Pennsieve\
+        sodaJSONObj["bf-dataset-selected"] = {};
+        sodaJSONObj["bf-dataset-selected"]["dataset-name"] = selectedPennsieveDataset;
+        sodaJSONObj["bf-account-selected"]["account-name"] = defaultBfAccount;
+        let filesFoldersResponse = await client.post(
+          `/organize_datasets/dataset_files_and_folders`,
+          {
+            sodajsonobject: sodaJSONObj,
+          },
+          { timeout: 0 }
+        );
+
+        let data = filesFoldersResponse.data;
+        console.log(data);
+
+        datasetStructureJSONObj = data["soda_object"]["dataset-structure"];
       }
     }
 
@@ -2043,7 +2060,7 @@ document
   .getElementById("guided-button-auto-generate-manifest-files")
   .addEventListener("click", async () => {
     //Wait for current call stack to finish
-    await new Promise((r) => setTimeout(r, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     const manifestFilesCardsContainer = document.getElementById(
       "guided-container-manifest-file-cards"
