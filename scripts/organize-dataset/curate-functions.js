@@ -20,7 +20,7 @@ const confirm_click_function = () => {
       $(".confirm-button").click();
     }
   }
-}
+};
 
 // Event listeners for opening the dropdown prompt
 document
@@ -692,7 +692,7 @@ const populateMetadataProgress = (populateBoolean, metadataFileName, localPath) 
       $(paraElement[1]).removeClass("done");
     }
   }
-}
+};
 
 //////////////////////// Main Import progress function
 let missing_dataset_files = [];
@@ -873,7 +873,7 @@ const removeOptions = (selectbox) => {
   for (i = selectbox.options.length - 1; i >= 0; i--) {
     selectbox.remove(i);
   }
-}
+};
 //
 // Function to add options to dropdown list
 const addOption = (selectbox, text, value) => {
@@ -881,7 +881,7 @@ const addOption = (selectbox, text, value) => {
   opt.text = text;
   opt.value = value;
   selectbox.options.add(opt);
-}
+};
 
 // function to load Progress dropdown
 const importOrganizeProgressPrompt = () => {
@@ -1030,7 +1030,7 @@ const checkPrevDivForConfirmButton = (category) => {
       $("#button-confirm-bf-dataset-getting-started").hide();
     }
   }
-}
+};
 
 const create_child_node = (
   oldFormatNode,
@@ -1186,7 +1186,7 @@ const create_child_node = (
     }
   }
   return newFormatNode;
-}
+};
 
 // function recursiveExpandNodes(object) {
 //   // var newFormatNode = {"text": nodeName,
@@ -1626,14 +1626,14 @@ const moveItemsHelper = (item, destination, category) => {
     ["Step 3", "Move", category === "files" ? "File" : "Folder"],
     determineDatasetLocation()
   );
-}
+};
 
 const updateManifestLabelColor = (el) => {
   document.getElementById("label-manifest").style.color = el.checked
     ? "var(--color-light-green)"
     : "#303030";
   document.getElementById("label-manifest").style.fontWeight = el.checked ? "bold" : "normal";
-}
+};
 
 // helper functions to add "moved" to leaf nodes a.k.a files
 const addMovedRecursively = (object) => {
@@ -1669,7 +1669,7 @@ const addMovedRecursively = (object) => {
       addMovedRecursively(folder);
     }
   });
-}
+};
 
 $(document).ready(function () {
   $(".button-display-details").click(function () {
@@ -1827,7 +1827,7 @@ const revertManifestForTreeView = () => {
       }
     }
   }
-}
+};
 
 $("#generate-manifest-curate").change(function () {
   if (this.checked) {
@@ -1857,4 +1857,4 @@ const determineDatasetDestination = (dataset_name, dataset_destination) => {
   }
 
   return [dataset_name, dataset_destination];
-}
+};

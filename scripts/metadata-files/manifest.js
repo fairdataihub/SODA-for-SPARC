@@ -527,7 +527,7 @@ const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
   let continueProgressValidateDataset = true;
   let continueProgressEmptyFolder = true;
   var titleTerm = "folder";
-  console.log("after reseting the sodaJSON object")
+  console.log("after reseting the sodaJSON object");
 
   if (type === "bf") {
     titleTerm = "on Pennsieve";
@@ -588,7 +588,7 @@ const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
   await generateManifest("", type, manifestEditBoolean, ev);
 
   return;
-}
+};
 
 const generateManifest = async (action, type, manifestEditBoolean, ev) => {
   // Case 1: Local dataset
@@ -759,7 +759,7 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
       extractBFDatasetForManifestFile(false, defaultBfAccount, defaultBfDataset, ev);
     }
   }
-}
+};
 
 async function generateManifestHelper() {
   updateJSONStructureManifestGenerate();
@@ -2016,7 +2016,7 @@ const loadDSTreePreviewManifest = (datasetStructure) => {
     jstreePreviewManifest,
     datasetStructure
   );
-}
+};
 
 function showTreeViewPreviewManifestEdits(
   disabledBoolean,
@@ -2216,7 +2216,7 @@ async function generateAfterEdits() {
     "if-existing-files": "replace",
     "generate-option": "new",
   };
-  
+
   console.log("JSON after resetting it");
   console.log(JSON.stringify(sodaJSONObj));
 
