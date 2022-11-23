@@ -5,7 +5,7 @@ var jstreePreview = document.getElementById("div-dataset-tree-preview");
 const nonAllowedCharacters = '<>:",;[]{}^`~@/|?*$=!%&+#\\';
 
 // per change event of current dataset span text
-function confirm_click_function() {
+const confirm_click_function = () => {
   let temp = $(".bf-dataset-span").html();
   if ($(".bf-dataset-span").html() == "None" || $(".bf-dataset-span").html() == "") {
     $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "none");
@@ -655,7 +655,7 @@ const importGenerateDatasetStep = async (object) => {
 };
 
 // check metadata files
-function populateMetadataProgress(populateBoolean, metadataFileName, localPath) {
+const populateMetadataProgress = (populateBoolean, metadataFileName, localPath) => {
   var metadataButtonsArray = $(".metadata-button.button-generate-dataset");
   var correspondingMetadataParaElement = {
     submission: ["para-submission-file-path", metadataButtonsArray[0]],
@@ -868,7 +868,7 @@ const recursive_remove_missing_file = (item_path, dataset_folder) => {
   }
 };
 
-function removeOptions(selectbox) {
+const removeOptions = (selectbox) => {
   var i;
   for (i = selectbox.options.length - 1; i >= 0; i--) {
     selectbox.remove(i);
@@ -876,7 +876,7 @@ function removeOptions(selectbox) {
 }
 //
 // Function to add options to dropdown list
-function addOption(selectbox, text, value) {
+const addOption = (selectbox, text, value) => {
   var opt = document.createElement("OPTION");
   opt.text = text;
   opt.value = value;
@@ -998,7 +998,7 @@ $("#select-permission-list-2").change((e) => {
   }
 });
 
-function checkPrevDivForConfirmButton(category) {
+const checkPrevDivForConfirmButton = (category) => {
   if (category === "account") {
     if (!$("#Question-generate-dataset-BF-account").hasClass("prev")) {
       $("#div-bf-account-btns").css("display", "flex");
@@ -1032,7 +1032,7 @@ function checkPrevDivForConfirmButton(category) {
   }
 }
 
-function create_child_node(
+const create_child_node = (
   oldFormatNode,
   nodeName,
   type,
@@ -1042,7 +1042,7 @@ function create_child_node(
   disabledState,
   selectedOriginalLocation,
   viewOptions
-) {
+) => {
   /*
   oldFormatNode: node in the format under "dataset-structure" key in SODA object
   nodeName: text to show for each node (name)
@@ -1188,13 +1188,13 @@ function create_child_node(
   return newFormatNode;
 }
 
-function recursiveExpandNodes(object) {
-  // var newFormatNode = {"text": nodeName,
-  // "state": {"opened": openedState, "selected": selectedState},
-  // "children": [], "type": type + ext}
-  if (object.state.selected) {
-  }
-}
+// function recursiveExpandNodes(object) {
+//   // var newFormatNode = {"text": nodeName,
+//   // "state": {"opened": openedState, "selected": selectedState},
+//   // "children": [], "type": type + ext}
+//   if (object.state.selected) {
+//   }
+// }
 
 // var selected = false;
 var selectedPath;
@@ -1544,7 +1544,7 @@ const moveItems = async (ev, category) => {
   }
 };
 
-function moveItemsHelper(item, destination, category) {
+const moveItemsHelper = (item, destination, category) => {
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   var selectedNodeList = destination.split("/").slice(1);
@@ -1628,7 +1628,7 @@ function moveItemsHelper(item, destination, category) {
   );
 }
 
-function updateManifestLabelColor(el) {
+const updateManifestLabelColor = (el) => {
   document.getElementById("label-manifest").style.color = el.checked
     ? "var(--color-light-green)"
     : "#303030";
@@ -1636,7 +1636,7 @@ function updateManifestLabelColor(el) {
 }
 
 // helper functions to add "moved" to leaf nodes a.k.a files
-function addMovedRecursively(object) {
+const addMovedRecursively = (object) => {
   Object.keys(object["files"]).forEach((key) => {
     var file = object["files"][key];
     if ("action" in file) {
@@ -1808,11 +1808,7 @@ const addManifestFilesForTreeView = () => {
       var fileKey = datasetStructureJSONObj["folders"][key]["files"];
       let folderAmount = Object.keys(datasetStructureJSONObj["folders"][key]["folders"]).length;
       let fileAmount = Object.keys(datasetStructureJSONObj["folders"][key]["files"]).length;
-      console.log(fileAmount);
-      console.log(folderAmount);
-      console.log("manifest" in fileKey);
       if (!("manifest.xlsx" in fileKey) && (folderAmount > 0 || fileAmount > 0)) {
-        console.log(fileKey);
         fileKey["manifest.xlsx"] = {
           forTreeview: true,
         };
@@ -1822,7 +1818,7 @@ const addManifestFilesForTreeView = () => {
 };
 
 // if unchecked
-function revertManifestForTreeView() {
+const revertManifestForTreeView = () => {
   for (var key in datasetStructureJSONObj["folders"]) {
     if (highLevelFolders.includes(key)) {
       var fileKey = datasetStructureJSONObj["folders"][key]["files"];
@@ -1841,7 +1837,7 @@ $("#generate-manifest-curate").change(function () {
   }
 });
 
-function determineDatasetDestination(dataset_name, dataset_destination) {
+const determineDatasetDestination = (dataset_name, dataset_destination) => {
   // determine if the dataset is being uploaded to Pennsieve or being generated locally
   if ("bf-dataset-selected" in sodaJSONObj) {
     dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
@@ -1862,5 +1858,3 @@ function determineDatasetDestination(dataset_name, dataset_destination) {
 
   return [dataset_name, dataset_destination];
 }
-
-// module.exports = {determineDatasetDestination}
