@@ -1231,7 +1231,7 @@ def bf_add_permission(
             r.raise_for_status()
             return {"message":  "Permission " + "'" + selected_role + "' " + " added for " + selected_user}
         else:
-            jsonfile = {"id": selected_dataset_id, "role": selected_role}
+            jsonfile = {"id": selected_user_id, "role": selected_role}
             r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", json=jsonfile, headers=headers)
             r.raise_for_status()
             return {"message": "Permission " + "'" + selected_role + "' " + " added for " + selected_user}

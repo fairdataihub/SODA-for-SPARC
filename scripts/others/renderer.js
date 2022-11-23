@@ -458,15 +458,19 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
   }
 
   log.info("Done with startup");
+  console.log("DONE WITH STARTUP");
 
   // check integrity of all the core systems
   await run_pre_flight_checks();
 
   log.info("Running pre flight checks finished");
+  console.log("HASDGASDGDAGHDKKSAGHDH");
 
   // get apps base path
   const basepath = app.getAppPath();
   const resourcesPath = process.resourcesPath;
+
+  console.log("SENDING TEMPLATE PATHS REQUEST");
 
   // set the templates path
   try {
@@ -479,6 +483,8 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
     ipcRenderer.send("track-event", "Error", "Setting Templates Path");
     return;
   }
+
+  console.log("TEMPLATE PATHS REQUEST SUCCESSFUL");
 
   ipcRenderer.send("track-event", "Success", "Setting Templates Path");
 });
@@ -554,11 +560,15 @@ const run_pre_flight_checks = async (check_update = true) => {
       },
     });
 
+    console.log(result);
+
     // TODO: Especially test this part cuz its getting tricky in the conversion
-    if (result.isConfirmed) {
+    if (result) {
+      console.log("Should open dropdown prmpt");
       await openDropdownPrompt(null, "bf");
       return false;
     } else {
+      console.log("Here instead");
       return true;
     }
   }
@@ -585,7 +595,7 @@ const run_pre_flight_checks = async (check_update = true) => {
       cancelButtonText: "Skip for now",
     });
 
-    if (result.isConfirmed) {
+    if (result) {
       try {
         let [browser_download_url, latest_agent_version] = await get_latest_agent_version();
         shell.openExternal(browser_download_url);
@@ -634,7 +644,7 @@ const run_pre_flight_checks = async (check_update = true) => {
 
   // The agent is not up to date. Ask the user if they would like to update it.
   if (browser_download_url) {
-    let result = await Swal.fire({
+    let { value: result } = await Swal.fire({
       icon: "warning",
       text: "It appears that you are not running the latest version of the Pensieve Agent. We recommend that you update your software and restart SODA for the best experience.",
       heightAuto: false,
@@ -653,7 +663,7 @@ const run_pre_flight_checks = async (check_update = true) => {
 
     console.log("Result: ", result);
 
-    if (result.isConfirmed) {
+    if (result) {
       try {
         // If there is a newer agent version, download the latest agent from Github and link to their docs for installation instrucations if needed.
         [browser_download_url, latest_agent_version] = await get_latest_agent_version();
