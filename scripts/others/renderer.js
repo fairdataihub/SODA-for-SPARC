@@ -554,15 +554,15 @@ const run_pre_flight_checks = async (check_update = true) => {
       },
     });
 
-    console.log(result)
+    console.log(result);
 
     // TODO: Especially test this part cuz its getting tricky in the conversion
     if (result) {
-      console.log("Should open dropdown prmpt")
+      console.log("Should open dropdown prmpt");
       await openDropdownPrompt(null, "bf");
       return false;
     } else {
-      console.log("Here instead")
+      console.log("Here instead");
       return true;
     }
   }
