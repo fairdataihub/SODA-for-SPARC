@@ -1178,6 +1178,7 @@ def bf_add_permission(
         abort(400, error)
     
     try:
+        myds = ps.getDatasets()
         selected_dataset_id = myds[selected_bfdataset]
 
         # check that currently logged in user is a manager or a owner of the selected dataset (only manager and owner can change dataset permission)
@@ -1226,7 +1227,7 @@ def bf_add_permission(
 
             # change owner
             jsonfile = {"id": selected_user_id}
-            r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", json=jsonfile, headers=headers)
+            r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/owner", json=jsonfile, headers=headers)
             r.raise_for_status()
             return {"message":  "Permission " + "'" + selected_role + "' " + " added for " + selected_user}
         else:
