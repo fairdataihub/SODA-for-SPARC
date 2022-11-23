@@ -2410,7 +2410,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
     uploaded_folder_counter = 0
     current_size_of_uploaded_files = 0
 
-    # namespace_logger.info(soda_json_structure)
+    namespace_logger.info("The incoming object is: ")
+    namespace_logger.info(soda_json_structure)
 
     try:
 
@@ -2557,8 +2558,9 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 #print("my_bf_existing_files_name_with_extension: ", my_bf_existing_files_name_with_extension)
                 for file_key, file in my_folder["files"].items():
                     # if local then we are either adding a new file to an existing/new dataset or replacing a file in an existing dataset
-                    if file_key in ["manifest.xlsx", "manifest.csv"]:
-                        continue
+                    # # TODO: Test this
+                    # if file_key in ["manifest.xlsx", "manifest.csv"]:
+                    #     continue
                     if file["type"] == "local":
                         file_path = file["path"]
                         if isfile(file_path) and existing_file_option == "replace" and file_key in ps_folder_children["files"]:
@@ -2588,8 +2590,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 # add the files that are set to be uploaded to Pennsieve to a list 
                 # handle renaming files and creating duplicates
                 for file_key, file in my_folder["files"].items():
-                    if file_key in ["manifest.xlsx", "manifest.csv"]:
-                        continue
+                    # if file_key in ["manifest.xlsx", "manifest.csv"]:
+                    #     continue
                     if file["type"] == "local":
                         file_path = file["path"]
                         if isfile(file_path):
@@ -2744,6 +2746,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             list_upload_files,
             relative_path,
         )
+
+        namespace_logger.info(list_upload_files)
 
         # calculate the number of files in the dataset that will be uploaded
         # the total is shown to the front end client to communicate how many files have been uploaded so far
