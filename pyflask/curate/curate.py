@@ -779,12 +779,12 @@ def check_local_dataset_files_validity(soda_json_structure):
 
         for file_key in list(my_folder["files"].keys()):
             file = my_folder["files"][file_key]
-            if file_key in ["manifest.xlsx", "manifest.csv"]:
-                continue
+            # if file_key in ["manifest.xlsx", "manifest.csv"]:
+                # continue
             print("#" * 30)
-            print("file info below")
-            print(file_key)
             print(file)
+            print(file_key)
+            print("file info above")
             file_type = file["type"]
             if file_type == "local":
                 file_path = file["path"]
@@ -2071,8 +2071,8 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
     def recursive_file_delete(folder):
         if "files" in folder.keys():
             for item in list(folder["files"]):
-                if item in ["manifest.xlsx", "manifest.csv"]:
-                    continue
+                # if item in ["manifest.xlsx", "manifest.csv"]:
+                #     continue
                 if "deleted" in folder["files"][item]["action"]:
                     file_path = folder["files"][item]["path"]
                     # remove the file from the dataset
@@ -2167,8 +2167,8 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
     def recursive_check_moved_files(folder):
         if "files" in folder.keys():
             for item in list(folder["files"]):
-                if item in ["manifest.xlsx", "manifest.csv"]:
-                    continue
+                # if item in ["manifest.xlsx", "manifest.csv"]:
+                #     continue
                 if (
                     "moved" in folder["files"][item]["action"]
                     and folder["files"][item]["type"] == "bf"
@@ -2191,8 +2191,8 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
     def recursive_file_rename(folder):
         if "files" in folder.keys():
             for item in list(folder["files"]):
-                if item in ["manifest.xlsx", "manifest.csv"]:
-                    continue
+                # if item in ["manifest.xlsx", "manifest.csv"]:
+                #     continue
                 if (
                     "renamed" in folder["files"][item]["action"]
                     and folder["files"][item]["type"] == "bf"
@@ -3141,8 +3141,8 @@ def bf_check_dataset_files_validity(soda_json_structure, ps):
                 error = recursive_bf_dataset_check(folder, relative_path, error)
         if "files" in my_folder.keys():
             for file_key, file in my_folder["files"].items():
-                if file_key in ["manifest.xlsx", "manifest.csv"]:
-                    continue
+                # if file_key in ["manifest.xlsx", "manifest.csv"]:
+                #     continue
                 file_type = file["type"]
                 if file_type == "bf":
                     package_id = file["path"]
