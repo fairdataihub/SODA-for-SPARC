@@ -458,19 +458,19 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
   }
 
   log.info("Done with startup");
-  console.log("DONE WITH STARTUP")
+  console.log("DONE WITH STARTUP");
 
   // check integrity of all the core systems
   await run_pre_flight_checks();
 
   log.info("Running pre flight checks finished");
-  console.log("HASDGASDGDAGHDKKSAGHDH")
+  console.log("HASDGASDGDAGHDKKSAGHDH");
 
   // get apps base path
   const basepath = app.getAppPath();
   const resourcesPath = process.resourcesPath;
 
-  console.log("SENDING TEMPLATE PATHS REQUEST")
+  console.log("SENDING TEMPLATE PATHS REQUEST");
 
   // set the templates path
   try {
@@ -484,7 +484,7 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
     return;
   }
 
-  console.log("TEMPLATE PATHS REQUEST SUCCESSFUL")
+  console.log("TEMPLATE PATHS REQUEST SUCCESSFUL");
 
   ipcRenderer.send("track-event", "Success", "Setting Templates Path");
 });
@@ -644,7 +644,7 @@ const run_pre_flight_checks = async (check_update = true) => {
 
   // The agent is not up to date. Ask the user if they would like to update it.
   if (browser_download_url) {
-    let {value: result} = await Swal.fire({
+    let { value: result } = await Swal.fire({
       icon: "warning",
       text: "It appears that you are not running the latest version of the Pensieve Agent. We recommend that you update your software and restart SODA for the best experience.",
       heightAuto: false,
