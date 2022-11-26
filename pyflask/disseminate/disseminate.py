@@ -147,11 +147,7 @@ def construct_publication_qs(publication_type, embargo_release_date):
     """
     Function to construct the publication query string. Used in bf_submit_review_dataset.
     """
-    if embargo_release_date:
-        return {"publicationType": publication_type, "embargoReleaseDate": embargo_release_date}
-    else:
-        return {"publicationType": publication_type}
-    # return f"publicationType={publication_type}&embargoReleaseDate={embargo_release_date}" if embargo_release_date else f"?publicationType={publication_type}"
+    return f"?publicationType={publication_type}&embargoReleaseDate={embargo_release_date}" if embargo_release_date else f"?publicationType={publication_type}"
 
 
 def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset, publication_type, embargo_release_date):
@@ -167,6 +163,8 @@ def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset, publication
             Success or error message
     """
 
+    print("In like flynn")
+
     ps = connect_pennsieve_client()
 
     authenticate_user_with_client(ps, selected_bfaccount)
@@ -175,14 +173,18 @@ def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset, publication
 
     if not has_edit_permissions(ps, selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
+        
 
-    jsonfile = construct_publication_qs(publication_type, embargo_release_date)
+    qs = construct_publication_qs(publication_type, embargo_release_date)
 
+    print(qs)
+    print("More garbage")
     try:
-        r = requests.post(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/publication/request", headers=create_request_headers(ps), json=jsonfile)
+        r = requests.post(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/publication/request{qs}", headers=create_request_headers(ps))
         r.raise_for_status()
         return r.json()
     except Exception as e:
+        print(e)
         if "400" in str(e):
             abort(400, "Dataset cannot be published if owner does not have an ORCID ID")
         handle_http_error(e)
