@@ -153,6 +153,8 @@ def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, val_arr
     # calculate the size of the metadata file
     size = getsize(destination)
 
+    
+
     ## if generating directly on Pennsieve, then call upload function and then delete the destination path
     if upload_boolean:
         upload_metadata_file("submission.xlsx", bfaccount, bfdataset, destination, True)
@@ -176,10 +178,22 @@ def upload_RC_file(text_string, file_type, bfaccount, bfdataset):
     return { "size": size, "filepath": file_path }
 
 
+def subscriber_metadata(ps):
+    # subscriber or it will not finish uploading i guess 
+    sub = ps.subscribe(10)
+
+    for msg in sub:
+        current_bytes_uploaded = msg.upload_status.current 
+        total_bytes_to_upload = msg.upload_status.total
+
+        if total_bytes_to_upload != 0:
+            if current_bytes_uploaded == total_bytes_to_upload:
+                ps.unsubscribe(10)
+
 def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_after_upload):
     ## check if agent is running in the background
     # TODO: convert to new agent (agent_running is part of the old agent)
-    agent_running()
+    # agent_running()
 
     ps = connect_pennsieve_client()
 
@@ -218,7 +232,11 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
 
     # upload the manifest file
     # ps.manifest.upload(m_id)
-    ps.manifest.upload(int(m_id))
+    ps.manifest.upload(m_id)
+
+    # subscribe for the upload to finish
+    subscriber_metadata(ps)
+
 
     # delete the local file that was created for the purpose of uploading to Pennsieve
     if delete_after_upload:
