@@ -209,7 +209,7 @@ function initialize() {
   const checkForAnnouncements = () => {
     mainWindow.webContents.send("checkForAnnouncements");
   };
-  
+
   makeSingleInstance();
 
   loadDemos();
@@ -226,7 +226,6 @@ function initialize() {
         autoUpdater.checkForUpdatesAndNotify();
       }
     });
-
 
     mainWindow.on("close", async (e) => {
       if (!user_restart_confirmed) {
