@@ -76,6 +76,8 @@ def start_agent():
     
     command = [get_agent_installation_location(), "agent"]
 
+    print(command)
+
     return subprocess.run(command, check=True)
 
 
@@ -86,14 +88,25 @@ def get_agent_version():
     # start the agent if it is not running
     start_agent()
 
-    version = subprocess.run([get_agent_installation_location(), "version"], capture_output=True, check=True).stdout
+    print("Agent started")
 
-    print(version)
+    command = [get_agent_installation_location(), "version"]
+
+    version = ""
+
+    while version.find("Error") != -1 or version == "":
+        result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        version = result.stdout
+
+        version = version.decode()
+
+        print(version.find("Error"))
+
+        print(version)
     
     # decode the response 
-    version = version.decode().strip()
-
-    print(version)
+    version = version.strip()
 
     return { 'agent_version': version }
 

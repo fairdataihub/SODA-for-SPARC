@@ -38,7 +38,8 @@ from manageDatasets import (
     scale_image
 )
 
-from pysodaUtils import get_agent_version
+from pysodaUtils import get_agent_version, start_agent
+import time 
 
 from namespaces import get_namespace, NamespaceEnum
 from errorHandlers import notBadRequestException
@@ -222,6 +223,9 @@ class BfAccountList(Resource):
   @api.doc(responses={500: 'There was an internal server error'}, description="Returns a list of the user's accounts stored in the system.")
   def get(self):
     try:
+      api.logger.info("Starting Pennsieve Agent")
+      start_agent()
+      api.logger.info("Agent started")
       return bf_account_list()
     except Exception as e:
       api.abort(500, str(e))
@@ -242,6 +246,11 @@ class BfDefaultAccountLoad(Resource):
   @api.doc(responses={500: 'There was an internal server error'}, description="Returns the first valid account as the default account. Usually SODA-Pennsieve.")
   def get(self):
     try:
+      api.logger.info("Getting the account")
+      # wait for 2 seconds
+      time.sleep(2)
+      start_agent()
+      api.logger.info("Got the account")
       return bf_default_account_load()
     except Exception as e:
       api.abort(500, str(e))
