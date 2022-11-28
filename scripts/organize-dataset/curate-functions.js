@@ -5,22 +5,22 @@ var jstreePreview = document.getElementById("div-dataset-tree-preview");
 const nonAllowedCharacters = '<>:",;[]{}^`~@/|?*$=!%&+#\\';
 
 // per change event of current dataset span text
-const confirm_click_function = () => {
-  let temp = $(".bf-dataset-span").html();
-  if ($(".bf-dataset-span").html() == "None" || $(".bf-dataset-span").html() == "") {
-    $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "none");
-    $("#para-review-dataset-info-disseminate").text("None");
-  } else {
-    $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "flex");
-    if ($($(this).parents().find(".field").find(".synced-progress")).length) {
-      if ($($(this).parents().find(".field").find(".synced-progress")).css("display") === "none") {
-        $(".confirm-button").click();
-      }
-    } else {
-      $(".confirm-button").click();
-    }
-  }
-};
+// const confirm_click_function = () => {
+//   let temp = $(".bf-dataset-span").html();
+//   if ($(".bf-dataset-span").html() == "None" || $(".bf-dataset-span").html() == "") {
+//     $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "none");
+//     $("#para-review-dataset-info-disseminate").text("None");
+//   } else {
+//     $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "flex");
+//     if ($($(this).parents().find(".field").find(".synced-progress")).length) {
+//       if ($($(this).parents().find(".field").find(".synced-progress")).css("display") === "none") {
+//         $(".confirm-button").click();
+//       }
+//     } else {
+//       $(".confirm-button").click();
+//     }
+//   }
+// };
 
 // Event listeners for opening the dropdown prompt
 document
@@ -868,20 +868,20 @@ const recursive_remove_missing_file = (item_path, dataset_folder) => {
   }
 };
 
-const removeOptions = (selectbox) => {
-  var i;
-  for (i = selectbox.options.length - 1; i >= 0; i--) {
-    selectbox.remove(i);
-  }
-};
+// const removeOptions = (selectbox) => {
+//   var i;
+//   for (i = selectbox.options.length - 1; i >= 0; i--) {
+//     selectbox.remove(i);
+//   }
+// };
 //
 // Function to add options to dropdown list
-const addOption = (selectbox, text, value) => {
-  var opt = document.createElement("OPTION");
-  opt.text = text;
-  opt.value = value;
-  selectbox.options.add(opt);
-};
+// const addOption = (selectbox, text, value) => {
+//   var opt = document.createElement("OPTION");
+//   opt.text = text;
+//   opt.value = value;
+//   selectbox.options.add(opt);
+// };
 
 // function to load Progress dropdown
 const importOrganizeProgressPrompt = () => {
@@ -1837,24 +1837,24 @@ $("#generate-manifest-curate").change(function () {
   }
 });
 
-const determineDatasetDestination = (dataset_name, dataset_destination) => {
-  // determine if the dataset is being uploaded to Pennsieve or being generated locally
-  if ("bf-dataset-selected" in sodaJSONObj) {
-    dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-    dataset_destination = "Pennsieve";
-  } else if ("generate-dataset" in sodaJSONObj) {
-    if ("destination" in sodaJSONObj["generate-dataset"]) {
-      let destination = sodaJSONObj["generate-dataset"]["destination"];
-      if (destination == "local") {
-        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-        dataset_destination = "Local";
-      }
-      if (destination == "bf") {
-        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-        dataset_destination = "Pennsieve";
-      }
-    }
-  }
+// const determineDatasetDestination = (dataset_name, dataset_destination) => {
+//   // determine if the dataset is being uploaded to Pennsieve or being generated locally
+//   if ("bf-dataset-selected" in sodaJSONObj) {
+//     dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+//     dataset_destination = "Pennsieve";
+//   } else if ("generate-dataset" in sodaJSONObj) {
+//     if ("destination" in sodaJSONObj["generate-dataset"]) {
+//       let destination = sodaJSONObj["generate-dataset"]["destination"];
+//       if (destination == "local") {
+//         dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+//         dataset_destination = "Local";
+//       }
+//       if (destination == "bf") {
+//         dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+//         dataset_destination = "Pennsieve";
+//       }
+//     }
+//   }
 
-  return [dataset_name, dataset_destination];
-};
+//   return [dataset_name, dataset_destination];
+// };
