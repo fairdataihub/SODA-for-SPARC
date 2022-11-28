@@ -1158,12 +1158,23 @@ const updateDatasetUploadProgressTable = (progressObject) => {
   datasetUploadTableBody.insertAdjacentHTML("beforeend", uploadStatusElement);
 };
 
+// This function extracts the pool, subject, and sample structure from an imported dataset
+// and adds the pools, subjects, and samples to the guided mode structure if they exist.
+// This function also handles setting the button config options, for example, if the function
+// detects that there's primary subject data in the dataset, the yes button will be selected.
 const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
   const guidedFoldersInDataset = guidedHighLevelFolders.filter((folder) =>
     Object.keys(datasetStructure["folders"]).includes(folder)
   );
+  const nonGuidedFoldersInDataset = nonGuidedHighLevelFolders.filter((folder) =>
+    Object.keys(datasetStructure["folders"]).includes(folder)
+  );
 
   console.log(guidedFoldersInDataset);
+
+  const addedSubjects = [];
+  const addedPools = [];
+  const addedSamples = [];
 
   // Loop through prim, src, and deriv if they exist in the datasetStructure
   for (const hlf of guidedFoldersInDataset) {
@@ -1176,10 +1187,13 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
     for (const subjectFolder of subjectFoldersInBase) {
       // Try to add the subject to the structure. This will throw if the subject has already
       // been added from another hlf
-      try {
-        sodaJSONObj.addSubject(subjectFolder);
-      } catch (error) {
-        console.log(error);
+      if (!addedSubjects.includes(subjectFolder)) {
+        try {
+          sodaJSONObj.addSubject(subjectFolder);
+          addedSubjects.push(subjectFolder);
+        } catch (error) {
+          console.log(error);
+        }
       }
       // Get the names of the subfolders directly in the subject folder
       const potentialSampleFolderNames = Object.keys(
@@ -1192,22 +1206,31 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
       for (const sampleFolder of sampleFoldersInSubject) {
         //add the sample to the structure. This will throw if the sample has already been added
         //from another hlf
-        try {
-          sodaJSONObj.addSampleToSubject(sampleFolder, null, subjectFolder);
-        } catch (error) {
-          console.log(error);
+        if (!addedSamples.includes(sampleFolder)) {
+          try {
+            sodaJSONObj.addSampleToSubject(sampleFolder, null, subjectFolder);
+            addedSamples.push(sampleFolder);
+          } catch (error) {
+            console.log(error);
+          }
         }
       }
+    }
+
+    if (subjectFoldersInBase.length > 0) {
     }
 
     // Loop through any folders starting with pool- in the hlf
     for (const poolFolder of poolFoldersInBase) {
       // Try to add the pool to the structure. This will throw if the pool has already
       // been added from another hlf
-      try {
-        sodaJSONObj.addPool(poolFolder);
-      } catch (error) {
-        console.log(error);
+      if (!addedPools.includes(poolFolder)) {
+        try {
+          sodaJSONObj.addPool(poolFolder);
+          addedPools.push(poolFolder);
+        } catch (error) {
+          console.log(error);
+        }
       }
       // Get the names of the subfolders directly in the pool folder
       const potentialSubjectFolderNames = Object.keys(
@@ -1253,6 +1276,16 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
       }
     }
   }
+  if (addedSubjects.length > 0) {
+    sodaJSONObj["button-config"]["dataset-contains-subjects"] = "yes";
+  }
+  if (addedPools.length > 0) {
+    sodaJSONObj["button-config"]["dataset-contains-pools"] = "yes";
+  }
+  if (addedSamples.length > 0) {
+    sodaJSONObj["button-config"]["dataset-contains-samples"] = "yes";
+  }
+
   console.log(sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]);
 };
 
@@ -4996,6 +5029,7 @@ guidedCreateSodaJSONObj = () => {
   datasetStructureJSONObj = { folders: {}, files: {} };
 };
 const guidedHighLevelFolders = ["primary", "source", "derivative"];
+const nonGuidedHighLevelFolders = ["code", "protocol", "docs"];
 
 const attachGuidedMethodsToSodaJSONObj = () => {
   sodaJSONObj.getAllSubjects = function () {
