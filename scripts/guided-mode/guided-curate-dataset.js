@@ -1202,6 +1202,9 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
       const sampleFoldersInSubject = potentialSampleFolderNames.filter((folder) =>
         folder.startsWith("sam-")
       );
+      if (sampleFoldersInSubject.length > 0) {
+        sodaJSONObj["button-config"][`dataset-contains-${hlf}-sample-data`] = "yes";
+      }
       // Loop through any folders starting with sam- in the subject folder
       for (const sampleFolder of sampleFoldersInSubject) {
         //add the sample to the structure. This will throw if the sample has already been added
@@ -1218,6 +1221,7 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
     }
 
     if (subjectFoldersInBase.length > 0) {
+      sodaJSONObj["button-config"][`dataset-contains-${hlf}-subject-data`] = "yes";
     }
 
     // Loop through any folders starting with pool- in the hlf
@@ -1239,6 +1243,10 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
       const subjectFoldersInPool = potentialSubjectFolderNames.filter((folder) =>
         folder.startsWith("sub-")
       );
+
+      if (subjectFoldersInPool.length > 0) {
+        sodaJSONObj["button-config"][`dataset-contains-${hlf}-subject-data`] = "yes";
+      }
       // Loop through any folders starting with sub- in the pool folder
       for (const subjectFolder of subjectFoldersInPool) {
         // Try to add the subject to the structure. This will throw if the subject has already
@@ -1263,6 +1271,9 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
         const sampleFoldersInSubject = potentialSampleFolderNames.filter((folder) =>
           folder.startsWith("sam-")
         );
+        if (sampleFoldersInSubject.length > 0) {
+          sodaJSONObj["button-config"][`dataset-contains-${hlf}-sample-data`] = "yes";
+        }
         // Loop through any folders starting with sam- in the subject folder
         for (const sampleFolder of sampleFoldersInSubject) {
           //add the sample to the structure. This will throw if the sample has already been added
@@ -1275,6 +1286,14 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
         }
       }
     }
+
+    if (poolFoldersInBase.length > 0) {
+      sodaJSONObj["button-config"][`dataset-contains-${hlf}-pool-data`] = "yes";
+    }
+  }
+
+  for (const hlf of nonGuidedFoldersInDataset) {
+    sodaJSONObj["button-config"][`dataset-contains-${hlf}-data`] = "yes";
   }
   if (addedSubjects.length > 0) {
     sodaJSONObj["button-config"]["dataset-contains-subjects"] = "yes";

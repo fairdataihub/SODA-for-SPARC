@@ -2635,6 +2635,7 @@ async function checkBFImportSubjects() {
       },
     });
     let res = import_metadata_file.data.subject_file_rows;
+    console.log(res);
 
     // log the success to analytics
     logMetadataForAnalytics(
