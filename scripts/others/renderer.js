@@ -3622,9 +3622,13 @@ function withdrawDatasetSubmission() {
   });
 }
 
-async function withdrawDatasetCheck(res) {
-  var reviewstatus = res["publishing_status"];
-  if (reviewstatus !== "requested") {
+const withdrawDatasetCheck = async (res) => {
+  let reviewstatus = res["publishing_status"];
+  let requestStatus = res["review_request_status"];
+  console.log(requestStatus);
+  console.log(res);
+  console.log("here");
+  if (requestStatus != "requested") {
     Swal.fire({
       icon: "error",
       title: "Your dataset is not currently under review!",
@@ -3677,7 +3681,7 @@ async function withdrawDatasetCheck(res) {
   }
 }
 
-async function withdrawReviewDataset() {
+const withdrawReviewDataset = async () => {
   bfWithdrawReviewDatasetBtn.disabled = true;
   var selectedBfAccount = $("#current-bf-account").text();
   var selectedBfDataset = $(".bf-dataset-span")
