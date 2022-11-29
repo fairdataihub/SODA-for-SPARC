@@ -1538,13 +1538,24 @@ def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_pat
     if not has_edit_permissions(ps, selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
 
+    banner_file = open(banner_image_path, "rb")
+    payload = f"-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"banner\"\r\n\r\n{banner_file}\r\n-----011000010111000001101001--\r\n\r\n"
+
+    headers = {
+        "Content-Type": "multipart/form-data",
+        "Authorization": f"Bearer {ps.getUser()['session_token']}",
+    }
+
     try:
         def upload_image():
             with open(banner_image_path, "rb") as f:
-                requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/banner", files={"banner": f}, headers=create_request_headers(ps))
+                return requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/banner", data=payload, headers=headers)
 
         # delete banner image folder if it is located in SODA
-        upload_image()
+        r = upload_image()
+        # r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/banner", data=banner_file, headers=headers)
+        r.raise_for_status()
+        r.json()
         image_folder = dirname(banner_image_path)
         if (
             isdir(image_folder)
@@ -1554,6 +1565,8 @@ def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_pat
             shutil.rmtree(image_folder, ignore_errors=True)
         return {"message": "Uploaded!"}
     except Exception as e:
+        if type(e).__name__ == "HTTPError":
+            abort(400, e.response.json()["message"])
         raise Exception(e)
 
 

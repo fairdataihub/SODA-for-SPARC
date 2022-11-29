@@ -8562,6 +8562,7 @@ $(document).ready(async () => {
       return;
     }
 
+    console.log(bannerImagePath);
     try {
       await client.put(
         `/manage_datasets/bf_banner_image`,

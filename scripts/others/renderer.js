@@ -8910,6 +8910,7 @@ $("#validate_dataset_bttn").on("click", async () => {
 
 //function used to scale banner images
 const scaleBannerImage = async (imagePath) => {
+  console.log(imagePath);
   try {
     let imageScaled = await client.post(
       `/manage_datasets/bf_banner_image/scale_image`,

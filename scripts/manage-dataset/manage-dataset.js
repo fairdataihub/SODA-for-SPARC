@@ -1722,6 +1722,7 @@ const uploadBannerImage = async () => {
     if (image_file_size < 5 * 1024 * 1024) {
       let selectedBfAccount = defaultBfAccount;
       let selectedBfDataset = defaultBfDataset;
+      console.log(imagePath);
 
       try {
         let bf_add_banner = await client.put(
@@ -1795,6 +1796,7 @@ const uploadBannerImage = async () => {
       //final size is greater than 5mb so compress image here (image already created and stored in temp file)
       let scaledImagePath = await scaleBannerImage(imagePath); //scaled image will be in temp folder
       let image_file_size = fs.statSync(scaledImagePath)["size"]; //update size for analytics
+      console.log(scaledImagePath);
       try {
         let uploadBannerImage = await client.put(
           `/manage_datasets/bf_banner_image`,
