@@ -3679,7 +3679,7 @@ const withdrawDatasetCheck = async (res) => {
       await withdrawReviewDataset();
     }
   }
-}
+};
 
 const withdrawReviewDataset = async () => {
   bfWithdrawReviewDatasetBtn.disabled = true;
@@ -3757,7 +3757,7 @@ const withdrawReviewDataset = async () => {
       ["Withdraw dataset"]
     );
   }
-}
+};
 
 //////////////////////////////////
 // Helper functions
