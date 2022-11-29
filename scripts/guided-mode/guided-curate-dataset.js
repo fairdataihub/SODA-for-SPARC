@@ -3618,16 +3618,27 @@ const openPage = async (targetPageID) => {
               file_type: "dataset_description.xlsx",
             },
           });
-          let res = metadata_import.data;
-          console.log(res);
+          let contributorData = metadata_import.data["Contributor Information"];
+          console.log(sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"]);
+          /*
+            {
+              conAffliation: ["Penn State University"],
+              conID: "https://orcid.org/0000-0002-1825-0097",
+              conName: "John Doe",
+              conRole: ["Principal Investigator"],
+              contributorFirstName: "John",
+              contributorLastName: "Doe",
+            }
+          */
+          // Loop through the contributorData array besides the first row (which is the header)
+          for (let i = 1; i < contributorData.length; i++) {
+            let contributorData = contributorData[i];
+            let contributor = {
+              conAffliation: contributorData["Affiliation"],
+            };
+          }
         } catch (error) {
           console.log("UNABLE TO FETCH PENNSIEVE DATASET DESCRIPTION");
-        }
-      } else {
-        //Update subtitle from JSON
-        const datasetSubtitle = getGuidedDatasetSubtitle();
-        if (datasetSubtitle) {
-          datasetSubtitleInput.value = datasetSubtitle;
         }
       }
 
