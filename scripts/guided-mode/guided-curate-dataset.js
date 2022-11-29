@@ -3609,6 +3609,28 @@ const openPage = async (targetPageID) => {
       openSubPageNavigation(targetPageID);
     }
     if (targetPageID === "guided-contributors-tab") {
+      if (pageNeedsUpdateFromPennsieve("guided-contributors-tab")) {
+        try {
+          let metadata_import = await client.get(`/prepare_metadata/import_metadata_file`, {
+            params: {
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+              file_type: "dataset_description.xlsx",
+            },
+          });
+          let res = metadata_import.data;
+          console.log(res);
+        } catch (error) {
+          console.log("UNABLE TO FETCH PENNSIEVE DATASET DESCRIPTION");
+        }
+      } else {
+        //Update subtitle from JSON
+        const datasetSubtitle = getGuidedDatasetSubtitle();
+        if (datasetSubtitle) {
+          datasetSubtitleInput.value = datasetSubtitle;
+        }
+      }
+
       renderDatasetDescriptionContributorsTable();
     }
     if (targetPageID === "guided-protocols-tab") {
