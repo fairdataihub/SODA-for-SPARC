@@ -1538,14 +1538,32 @@ def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_pat
     if not has_edit_permissions(ps, selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
 
-    banner_file = open(banner_image_path, "rb")
-    payload = f"-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"banner\"\r\n\r\n{banner_file}\r\n-----011000010111000001101001--\r\n\r\n"
+    # payload = f"-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"banner\"\r\n\r\n{banner_image_path}\r\n-----011000010111000001101001--\r\n\r\n"
+    # payload2 = {
+        # "banner": payload
+    # }
+    # headers = {
+        # "accept": "*/*",
+        # "content-type": "multipart/form-data; boundary=---011000010111000001101001",
+    # }
+    payload2 = {
+        # "banner": banner_file.read()
+    }
+    # "Authorization": f"Bearer {ps.getUser()['session_token']}",
+    print("#" * 30)
+    # print(payload)
+    print("#" * 30)
+    # print(headers)
+    print("#" * 30)
 
+    banner_file = open(banner_image_path, "rb")
+    payload = f"-----011000010111000001101001\r\nContent-Disposition: form-data; name=\"banner\"\r\n\r\n{banner_file.read()}\r\n-----011000010111000001101001--\r\n\r\n"
+    # api_key = login_response["AuthenticationResult"]["AccessToken"]
     headers = {
-        "Content-Type": "multipart/form-data",
+        "accept": "*/*",
+        "content-type": "multipart/form-data; boundary=---011000010111000001101001",
         "Authorization": f"Bearer {ps.getUser()['session_token']}",
     }
-
     try:
         def upload_image():
             with open(banner_image_path, "rb") as f:
@@ -1553,7 +1571,7 @@ def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_pat
 
         # delete banner image folder if it is located in SODA
         r = upload_image()
-        # r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/banner", data=banner_file, headers=headers)
+        # r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/banner", files=payload2, headers=headers)
         r.raise_for_status()
         r.json()
         image_folder = dirname(banner_image_path)
@@ -1565,8 +1583,15 @@ def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_pat
             shutil.rmtree(image_folder, ignore_errors=True)
         return {"message": "Uploaded!"}
     except Exception as e:
-        if type(e).__name__ == "HTTPError":
-            abort(400, e.response.json()["message"])
+        # print("#" * 30)
+        # print(e)
+        # print("#" * 30)
+        # print(e.response)
+        # print("#" * 30)
+        # if type(e).__name__ == "HTTPError":
+            # print("TRUE")
+            # print(e.response.json()["message"])
+            # abort(400, e)
         raise Exception(e)
 
 

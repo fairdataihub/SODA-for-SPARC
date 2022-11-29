@@ -5225,6 +5225,8 @@ const dropHelper = async (
     /// Get all the file information
     var itemPath = ev1[i].path;
     var itemName = path.parse(itemPath).base;
+    console.log(itemPath);
+    console.log(itemName);
     var duplicate = false;
     var statsObj = fs.statSync(itemPath);
     // check for duplicate or files with the same name
@@ -8913,7 +8915,7 @@ const scaleBannerImage = async (imagePath) => {
   console.log(imagePath);
   try {
     let imageScaled = await client.post(
-      `/manage_datasets/bf_banner_image/scale_image`,
+      `/manage_datasets/scale_image`,
       {
         image_file_path: imagePath,
       },
