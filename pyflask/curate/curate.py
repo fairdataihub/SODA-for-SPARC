@@ -2453,6 +2453,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             # create/replace/skip folder
             if "folders" in my_folder.keys():
                 for folder_key, folder in my_folder["folders"].items():
+                    print("EXISTING FOLDER OPTION: ", existing_folder_option)")
                     if existing_folder_option == "skip":
                         if folder_key not in my_tracking_folder["children"]["folders"]:
                             r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json=build_create_folder_request(folder_key, my_tracking_folder['content']['id'], ds['content']['id']))
@@ -2757,6 +2758,11 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             total_files += file_paths_count
             total_dataset_files += file_paths_count
         
+
+        print("DS in question: *******8")
+        print(ds)
+
+
         # main_curate_progress_message = "About to update after doing recursive dataset scan"
         # 3. Add high-level metadata files to a list
         list_upload_metadata_files = []
@@ -2775,7 +2781,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                         initial_name = splitext(basename(metadata_path))[0]
                         if existing_file_option == "replace":
                             if initial_name in my_bf_existing_files_name:
-                                my_file = ds['children'][file_key]
+                                my_file = ds['children']['files'][file_key]
                                 # delete the file from Pennsieve
                                 r = requests.post(f"{PENNSIEVE_URL}/data/delete", json={"things": [my_file['content']['id']]}, headers=create_request_headers(ps))
                                 r.raise_for_status()
