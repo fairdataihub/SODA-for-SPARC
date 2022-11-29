@@ -105,7 +105,9 @@ const savePageChanges = async (pageBeingLeftID) => {
         datasetStructureJSONObj = data["soda_object"]["dataset-structure"];
 
         try {
-          extractPoolSubSamStructureFromDataset(datasetStructureJSONObj);
+          const metadataSubSamStructure = extractPoolSubSamStructureFromMetadata();
+          const datasetSubSamStructure =
+            extractPoolSubSamStructureFromDataset(datasetStructureJSONObj);
         } catch (error) {
           console.log(error);
         }
@@ -1157,7 +1159,30 @@ const updateDatasetUploadProgressTable = (progressObject) => {
   //insert adjustStatusElement at the end of datasetUploadTablebody
   datasetUploadTableBody.insertAdjacentHTML("beforeend", uploadStatusElement);
 };
+const extractPoolSubSamStructureFromMetadata = async () => {
+  /*let import_metadata_file = await client.get(`/prepare_metadata/import_metadata_file`, {
+    params: {
+      selected_account: defaultBfAccount,
+      selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+      file_type: "subjects.xlsx",
+      ui_fields: fieldEntries.toString(),
+    },
+  });
+  let res = import_metadata_file.data.subject_file_rows;
+  console.log(res);
 
+  let importMetadataResponse = await client.get(`/prepare_metadata/import_metadata_file`, {
+    params: {
+      file_type: "samples.xlsx",
+      selected_account: defaultBfAccount,
+      selected_dataset: bfDataset,
+      ui_fields: fieldEntries.toString(),
+    },
+  });
+
+  let res = importMetadataResponse.data.sample_file_rows;
+  console.log(res);*/
+};
 // This function extracts the pool, subject, and sample structure from an imported dataset
 // and adds the pools, subjects, and samples to the guided mode structure if they exist.
 // This function also handles setting the button config options, for example, if the function
@@ -4719,15 +4744,7 @@ const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
 const setGuidedProgressBarValue = (value) => {
   $("#guided-progress-bar-new-curate").attr("value", value);
 };
-function makeid(length) {
-  var result = "";
-  var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  var charactersLength = characters.length;
-  for (var i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
+
 const isNumberBetween = (number, minVal, maxVal) => {
   return !isNaN(parseFloat(number)) && isFinite(number) && number >= minVal && number <= maxVal;
 };
@@ -4780,53 +4797,6 @@ const validateInput = (inputElementToValidate) => {
       } else {
         generateAlertMessage(inputElementToValidate);
       }
-    }
-  }
-  if (inputID === "guided-number-of-subjects-input") {
-    let numSubjects = inputElementToValidate.val().trim();
-    if (numSubjects !== "") {
-      if (isNumberBetween(numSubjects, 1, 1000)) {
-        removeAlertMessageIfExists(inputElementToValidate);
-        $("#guided-same-amount-samples-form").css("display", "flex");
-        inputIsValid = true;
-      } else {
-        generateAlertMessage(inputElementToValidate);
-        $("#guided-same-amount-samples-form").hide();
-      }
-    } else {
-      $("#guided-same-amount-samples-form").hide();
-    }
-  }
-  if (inputID === "guided-number-of-samples-input") {
-    let numSamples = inputElementToValidate.val().trim();
-    if (numSamples !== "") {
-      if (isNumberBetween(numSamples, 1, 1000)) {
-        removeAlertMessageIfExists(inputElementToValidate);
-        $("#guided-button-generate-subjects-table").show();
-
-        inputIsValid = true;
-      } else {
-        generateAlertMessage(inputElementToValidate);
-        $("#guided-button-generate-subjects-table").hide();
-      }
-    } else {
-      $("#guided-button-generate-subjects-table").hide();
-    }
-  }
-  if (inputID === "guided-number-of-samples-input") {
-    let numSamples = inputElementToValidate.val().trim();
-    if (numSamples !== "") {
-      if (isNumberBetween(numSamples, 1, 1000)) {
-        removeAlertMessageIfExists(inputElementToValidate);
-        $("#guided-button-generate-subjects-table").show();
-
-        inputIsValid = true;
-      } else {
-        generateAlertMessage(inputElementToValidate);
-        $("#guided-button-generate-subjects-table").hide();
-      }
-    } else {
-      $("#guided-button-generate-subjects-table").hide();
     }
   }
   return inputIsValid;
@@ -8324,110 +8294,6 @@ const deleteSample = (sampleDeleteButton) => {
 };
 
 //SAMPLE TABLE FUNCTIONS
-
-$("#guided-button-generate-samples-table").on("click", () => {
-  let numSubjectRowsToCreate = parseInt($("#guided-number-of-samples-input").val());
-  let subjectsTableBody = document.getElementById("samples-table-body");
-
-  $("#number-of-samples-prompt").hide();
-  $("#samples-table").css("display", "flex");
-});
-
-const createSampleFolder = (event, sampleNameInput) => {
-  if (event.which == 13) {
-    try {
-      const sampleName = sampleNameInput.val().trim();
-      const sampleNameElement = `
-        <div class="space-between">
-          <span class="sample-id">${sampleName}</span>
-          <i
-            class="far fa-edit jump-back"
-            style="cursor: pointer"
-            onclick="openSampleRenameInput($(this))"
-          >
-          </i>
-        </div>
-      `;
-      const sampleIdCellToAddNameTo = sampleNameInput.parent();
-      const sampleParentSubjectName = sampleNameInput
-        .closest("tbody")
-        .siblings()
-        .find(".sample-table-name")
-        .text()
-        .trim();
-      let sampleNameArray = [];
-      //Add all existing sample names to anarray
-      Object.keys(datasetStructureJSONObj["folders"]["primary"]["folders"]).map((subjectName) => {
-        let samplesInSubject = Object.keys(
-          datasetStructureJSONObj["folders"]["primary"]["folders"][subjectName]["folders"]
-        );
-        Array.prototype.push.apply(sampleNameArray, samplesInSubject);
-      });
-      //Throw error if entered sample name is duplicate
-      if (sampleNameArray.includes(sampleName)) {
-        //Change input back to the previous name but throw an error to abort following logic
-        if (sampleNameInput.attr("data-prev-name") === sampleName) {
-          sampleIdCellToAddNameTo.html(sampleNameElement);
-        }
-        throw new Error("Sample name already exists");
-      }
-
-      if (sampleName.length > 0) {
-        if (subSamInputIsValid(sampleName)) {
-          removeAlertMessageIfExists(sampleNameInput);
-          //Add sample to sodaJSONobj
-          sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
-            sampleParentSubjectName
-          ].push(sampleName);
-
-          sampleIdCellToAddNameTo.html(sampleNameElement);
-
-          sampleTargetFolder = getRecursivePath(
-            ["primary", sampleParentSubjectName],
-            datasetStructureJSONObj
-          ).folders;
-          //Check to see if input has prev-name data attribute
-          //Added when renaming sample
-          if (sampleNameInput.attr("data-prev-name")) {
-            //get the name of the sample being renamed
-            const sampleFolderToRename = sampleNameInput.attr("data-prev-name");
-            //Remove old sample in sodaJSONobj
-            sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
-              sampleParentSubjectName
-            ] = sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
-              sampleParentSubjectName
-            ].filter((sample) => {
-              return sample !== sampleFolderToRename;
-            });
-
-            //create a temp copy of the folder to be renamed
-            copiedFolderToRename = sampleTargetFolder[sampleFolderToRename];
-            //set the copied obj from the prev name to the new obj name
-            sampleTargetFolder[sampleName] = copiedFolderToRename;
-            //delete the temp copy of the folder that was renamed
-            delete sampleTargetFolder[sampleFolderToRename];
-          } else {
-            //Create an empty folder for the new sample
-            sampleTargetFolder[sampleName] = {
-              folders: {},
-              files: {},
-              type: "",
-              action: [],
-            };
-          }
-        } else {
-          generateAlertMessage(sampleNameInput);
-        }
-      }
-    } catch (error) {
-      notyf.open({
-        duration: "3000",
-        type: "error",
-        message: error,
-      });
-    }
-  }
-};
 const openSampleRenameInput = (subjectNameEditButton) => {
   const sampleIdCellToRename = subjectNameEditButton.closest("td");
   const prevSampleName = sampleIdCellToRename.find(".sample-id").text();
