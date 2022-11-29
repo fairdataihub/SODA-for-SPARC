@@ -2431,11 +2431,11 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             my_bf_existing_folders_name = []
             my_bf_existing_folders = []
 
-            # print("IN RECURSIVE CREATE FOLDER FOR BF")
+            print("IN RECURSIVE CREATE FOLDER FOR BF")
             # print(my_folder)
-            # print("\n")
-            # print(my_tracking_folder)
-            # print("\n")
+            print("\n")
+            print(my_tracking_folder)
+            print("\n")
 
             # TODO: Place in better spot - We need to populate the folder with their children as we go so we can tell if a folder exists for not. IMP for the existing flow when replacing or merging. 
             if len(my_tracking_folder["children"]["folders"]) == 0:
@@ -2456,13 +2456,16 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     print("EXISTING FOLDER OPTION: ", existing_folder_option)
                     if existing_folder_option == "skip":
                         if folder_key not in my_tracking_folder["children"]["folders"]:
+                            print(f"Making a new folder since {folder_key} is not in tracking folder")
                             r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json=build_create_folder_request(folder_key, my_tracking_folder['content']['id'], ds['content']['id']))
                             r.raise_for_status()
                             ps_folder = r.json()
                             normalize_tracking_folder(ps_folder)
                         else:
+                            print(f"Not creating a new folder since {folder_key} is in tracking folder")
                             ps_folder = my_tracking_folder["children"]["folders"][folder_key]
                             normalize_tracking_folder(ps_folder)
+                            #ontinue
 
                     elif existing_folder_option == "create-duplicate":
                         #print("Creating a code folder")
@@ -2533,7 +2536,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 for folder_key, folder in my_folder["folders"].items():
                     relative_path = generate_relative_path(my_relative_path, folder_key)
 
-                    if existing_folder_option == "skip" and folder_key not in my_tracking_folder["children"]["folders"]:
+                    if existing_folder_option == "skip" and folder_key in my_tracking_folder["children"]["folders"]:
                         continue
 
                     tracking_folder = ps_folder_children["folders"][folder_key]
