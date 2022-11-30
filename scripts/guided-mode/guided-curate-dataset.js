@@ -7,38 +7,6 @@ const savePageChanges = async (pageBeingLeftID) => {
   const errorArray = [];
   try {
     //save changes to the current page
-    if (pageBeingLeftID === "guided-dataset-starting-point-tab") {
-      const buttonNoGuidedCurateSelected = document
-        .getElementById("guided-button-guided-dataset-structuring")
-        .classList.contains("selected");
-      const buttonYesImportExistingSelected = document
-        .getElementById("guided-button-import-existing-dataset-structure")
-        .classList.contains("selected");
-
-      if (!buttonNoGuidedCurateSelected && !buttonYesImportExistingSelected) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please select a dataset start location",
-        });
-        throw errorArray;
-      }
-
-      if (buttonNoGuidedCurateSelected) {
-        sodaJSONObj["starting-point"]["type"] = "new";
-        guidedUnSkipPage("guided-subjects-folder-tab");
-        guidedUnSkipPage("guided-primary-data-organization-tab");
-        guidedUnSkipPage("guided-source-data-organization-tab");
-        guidedUnSkipPage("guided-derivative-data-organization-tab");
-        guidedUnSkipPage("guided-code-folder-tab");
-        guidedUnSkipPage("guided-protocol-folder-tab");
-        guidedUnSkipPage("guided-docs-folder-tab");
-      }
-
-      if (buttonYesImportExistingSelected) {
-        sodaJSONObj["starting-point"]["type"] = "local";
-        guidedUnSkipPage("guided-folder-importation-tab");
-      }
-    }
 
     const getGuidedProgressFileNames = () => {
       return fs
@@ -3473,17 +3441,6 @@ const openPage = async (targetPageID) => {
         document.getElementById("guided-dataset-subtitle-input"),
         document.getElementById("guided-subtitle-char-count")
       );
-    }
-
-    if (targetPageID === "guided-dataset-starting-point-tab") {
-      guidedSkipPage("guided-subjects-folder-tab");
-      guidedSkipPage("guided-primary-data-organization-tab");
-      guidedSkipPage("guided-source-data-organization-tab");
-      guidedSkipPage("guided-derivative-data-organization-tab");
-      guidedSkipPage("guided-code-folder-tab");
-      guidedSkipPage("guided-protocol-folder-tab");
-      guidedSkipPage("guided-docs-folder-tab");
-      guidedSkipPage("guided-folder-importation-tab");
     }
 
     if (targetPageID === "guided-subjects-folder-tab") {
@@ -7905,7 +7862,6 @@ const openSubjectRenameInput = (subjectNameEditButton) => {
         value=${prevSubjectInput}
         placeholder="Enter subject ID and press enter"
         onkeyup="specifySubject(event, $(this))"
-        data-input-set="guided-subjects-folder-tab"
         data-alert-message="Subject IDs may not contain spaces or special characters"
         data-alert-type="danger"
         data-prev-name="${prevSubjectName}"
@@ -7929,7 +7885,6 @@ const openPoolRenameInput = (poolNameEditButton) => {
         value=${prevPoolInput}
         placeholder="Enter new pool ID"
         onkeyup="specifyPool(event, $(this))"
-        data-input-set="guided-pools-folder-tab"
         data-alert-message="Pool IDs may not contain spaces or special characters"
         data-alert-type="danger"
         data-prev-name="${prevPoolName}"
@@ -7990,7 +7945,6 @@ const generateSubjectSpecificationRowElement = () => {
             name="guided-subject-id"
             placeholder="Enter subject ID and press enter"
             onkeyup="specifySubject(event, $(this))"
-            data-input-set="guided-subjects-folder-tab"
             data-alert-message="Subject IDs may not contain spaces or special characters"
             data-alert-type="danger"
             style="margin-right: 5px;"
@@ -8076,7 +8030,6 @@ const generateSampleSpecificationRowElement = () => {
             name="guided-sample-id"
             placeholder="Enter sample ID and press enter"
             onkeyup="specifySample(event, $(this))"
-            data-input-set="guided-samples-folder-tab"
             data-alert-message="Sample IDs may not contain spaces or special characters"
             data-alert-type="danger"
             style="margin-right: 5px;"
@@ -8286,7 +8239,6 @@ const generatePoolSpecificationRowElement = () => {
           name="guided-pool-id"
           placeholder="Enter pool ID"
           onkeyup="specifyPool(event, $(this))"
-          data-input-set="guided-subjects-folder-tab"
           data-alert-message="Pool IDs may not contain spaces or special characters"
           data-alert-type="danger"
           style="width: 100%;"
@@ -8397,7 +8349,6 @@ const openSampleRenameInput = (subjectNameEditButton) => {
         name="guided-sample-id"
         placeholder="Enter new sample ID"
         onkeyup="specifySample(event, $(this))"
-        data-input-set="guided-samples-folder-tab"
         data-alert-message="Sample IDs may not contain spaces or special characters"
         data-alert-type="danger"
         data-prev-name="${prevSampleName}"

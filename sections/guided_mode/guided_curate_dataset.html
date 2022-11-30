@@ -419,7 +419,6 @@
             <input
               class="guided--input"
               id="guided-dataset-name-input"
-              data-input-set="guided-dataset-starting-point-tab"
               data-alert-message="A Pennsieve dataset name cannot contain any of the following characters: /:*?'."
               data-alert-type="danger"
               type="text"
@@ -537,9 +536,6 @@
         data-parent-tab-name="Dataset Structure"
       >
         <div class="guided--capsule-container">
-          <div class="guided--capsule active" id="guided-dataset-starting-point-capsule"></div>
-
-          <!-- Guided structure dataset capsule branch-->
           <div class="guided--capsule" id="guided-subjects-folder-capsule"></div>
           <div class="guided--capsule" id="guided-primary-data-organization-capsule"></div>
           <div class="guided--capsule" id="guided-source-data-organization-capsule"></div>
@@ -548,87 +544,8 @@
           <div class="guided--capsule" id="guided-protocol-folder-capsule"></div>
           <div class="guided--capsule" id="guided-docs-folder-capsule"></div>
 
-          <!-- import dataset capsule branch-->
           <div class="guided--capsule" id="guided-folder-importation-capsule"></div>
           <div class="guided--capsule" id="guided-folder-structure-preview-capsule"></div>
-        </div>
-
-        <div
-          id="guided-dataset-starting-point-tab"
-          class="guided--page hidden"
-          data-page-name="Select Starting Point"
-        >
-          <div class="guided--section">
-            <h1 class="guided--text-sub-step">SPARC Data Structure</h1>
-            <p class="guided--help-text">
-              The first step of the curation process consists of organizing your data according to
-              the SPARC Data Structure (SDS). SPARC datasets must contain all or a subset of the six
-              high-level folders shown in the image below. The primary folder must also be organized
-              in a specific manner. To learn more about the SPARC Data Structure, please visit the
-              <a href="https://docs.sparc.science/docs/overview-of-sparc-dataset-format">
-                SPARC help page </a
-              >.
-            </p>
-            <div class="guided--container-sub">
-              <img
-                src="assets/img/sparc-dataset-structure-example.png"
-                alt="SPARC dataset structure example"
-                style="width: 100%"
-              />
-            </div>
-          </div>
-
-          <div class="guided--section">
-            <label class="guided--form-label centered"
-              >Is your dataset already organized according to the SPARC Data Structure?
-            </label>
-            <div class="guided--radio-button-container">
-              <button
-                class="ui positive basic button guided--radio-button"
-                id="guided-button-import-existing-dataset-structure"
-                data-next-element="guided-import-existing-dataset-panel"
-                data-button-config-value="dataset-already-structured"
-                data-button-config-value-state="yes"
-              >
-                Yes
-              </button>
-              <button
-                class="ui negative basic button guided--radio-button"
-                id="guided-button-guided-dataset-structuring"
-                data-next-element="guided-structure-new-dataset-panel"
-                data-button-config-value="dataset-already-structured"
-                data-button-config-value-state="no"
-              >
-                No
-              </button>
-            </div>
-            <div class="guided--section hidden" id="guided-import-existing-dataset-panel">
-              <p class="guided--help-text">
-                Great, we can skip the guided folder structuring steps and import your dataset from
-                a local folder.
-              </p>
-              <button
-                class="ui primary button"
-                id="guided-import-existing-dataset"
-                style="background-color: var(--color-light-green) !important"
-              >
-                Import existing dataset
-              </button>
-            </div>
-            <div class="guided--section hidden" id="guided-structure-new-dataset-panel">
-              <p class="guided--help-text">
-                No problem, SODA will help you structure your data according to the SPARC Data
-                Structure.
-              </p>
-              <button
-                class="ui primary button"
-                id="guided-structure-new-dataset"
-                style="background-color: var(--color-light-green) !important"
-              >
-                Start dataset structuring
-              </button>
-            </div>
-          </div>
         </div>
 
         <div
