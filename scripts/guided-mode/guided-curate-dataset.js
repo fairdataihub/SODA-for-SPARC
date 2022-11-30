@@ -24,7 +24,6 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
 
       if (buttonNoGuidedCurateSelected) {
-        sodaJSONObj["guided-options"]["dataset-start-location"] = "guided-curate";
         sodaJSONObj["starting-point"]["type"] = "new";
         guidedUnSkipPage("guided-subjects-folder-tab");
         guidedUnSkipPage("guided-primary-data-organization-tab");
@@ -36,7 +35,6 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
 
       if (buttonYesImportExistingSelected) {
-        sodaJSONObj["guided-options"]["dataset-start-location"] = "import-existing";
         sodaJSONObj["starting-point"]["type"] = "local";
         guidedUnSkipPage("guided-folder-importation-tab");
       }
@@ -71,16 +69,63 @@ const savePageChanges = async (pageBeingLeftID) => {
     };
 
     if (pageBeingLeftID === "guided-intro-page-tab") {
-      const buttonResumeExistingPennsieveIsSelected = document
+      const startingNewCuration = document
+        .getElementById("guided-button-start-new-curation")
+        .classList.contains("selected");
+      const startingFromExistingLocal = document
+        .getElementById("guided-button-continue-existing-local-curation")
+        .classList.contains("selected");
+      const resumingPennsieveDataset = document
         .getElementById("guided-button-resume-pennsieve-dataset")
         .classList.contains("selected");
+      if (!startingNewCuration && !startingFromExistingLocal && !resumingPennsieveDataset) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please select a dataset start location",
+        });
+        throw errorArray;
+      }
+      if (startingNewCuration) {
+        sodaJSONObj["starting-point"]["type"] = "new";
+        guidedUnSkipPage("guided-subjects-folder-tab");
+        guidedUnSkipPage("guided-primary-data-organization-tab");
+        guidedUnSkipPage("guided-source-data-organization-tab");
+        guidedUnSkipPage("guided-derivative-data-organization-tab");
+        guidedUnSkipPage("guided-code-folder-tab");
+        guidedUnSkipPage("guided-protocol-folder-tab");
+        guidedUnSkipPage("guided-docs-folder-tab");
+      }
+      if (startingFromExistingLocal) {
+        sodaJSONObj["starting-point"]["type"] = "local";
+      }
+      if (resumingPennsieveDataset) {
+        if (
+          !document
+            .getElementById("guided-panel-pennsieve-dataset-import-loading")
+            .classList.contains("hidden")
+        ) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please wait for your datasets on Pennsieve to load",
+          });
+          throw errorArray;
+        }
 
-      if (buttonResumeExistingPennsieveIsSelected) {
         const selectedPennsieveDatasetToResume = $(
           "#guided-select-pennsieve-dataset-to-resume option:selected"
         );
+        // Get the text currently in the dropdown
         const selectedPennsieveDataset = selectedPennsieveDatasetToResume[0].innerHTML;
+        // Get the value of the dropdown (the dataset ID)
         const selectedPennsieveDatasetID = selectedPennsieveDatasetToResume.val();
+        if (!selectedPennsieveDatasetID) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please select a dataset on Pennsieve to resume",
+          });
+          throw errorArray;
+        }
+
         if (!selectedPennsieveDataset) {
           errorArray.push({
             type: "notyf",
@@ -2417,16 +2462,24 @@ document
 
 $("#guided-select-pennsieve-dataset-to-resume").selectpicker();
 const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
+  const loadingDiv = document.getElementById("guided-panel-pennsieve-dataset-import-loading");
+  const pennsieveDatasetSelectDiv = document.getElementById(
+    "guided-panel-pennsieve-dataset-select"
+  );
+  //Show the loading Div and hide the dropdown div while the datasets the user has access to are being retrieved
+  loadingDiv.classList.remove("hidden");
+  pennsieveDatasetSelectDiv.classList.add("hidden");
+
   const datasetSelectionSelectPicker = $("#guided-select-pennsieve-dataset-to-resume");
-  datasetSelectionSelectPicker;
   datasetSelectionSelectPicker.empty();
+
   let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
     params: {
       selected_account: defaultBfAccount,
     },
   });
-  console.log(responseObject);
   const datasets = responseObject.data.datasets;
+  //Add the datasets to the select picker
   datasetSelectionSelectPicker.append(
     `<option value="" selected>Select a dataset on Pennsieve to resume</option>`
   );
@@ -2434,6 +2487,11 @@ const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
     datasetSelectionSelectPicker.append(`<option value="${dataset.id}">${dataset.name}</option>`);
   }
   datasetSelectionSelectPicker.selectpicker("refresh");
+
+  //Hide the loading div and show the dropdown div
+  loadingDiv.classList.add("hidden");
+  pennsieveDatasetSelectDiv.classList.remove("hidden");
+  scrollToBottomOfGuidedBody();
 };
 
 $("#guided-sparc-award-dropdown").selectpicker();

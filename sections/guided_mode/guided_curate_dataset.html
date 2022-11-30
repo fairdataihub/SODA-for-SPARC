@@ -139,7 +139,7 @@
         <div
           id="guided-intro-page-tab"
           class="guided--page hidden"
-          data-page-name="About Guided Mode"
+          data-page-name="Select starting point"
         >
           <h1 class="guided--text-sub-step">Welcome to Guided Mode!</h1>
           <div class="guided--section">
@@ -175,31 +175,13 @@
 
           <div class="guided--section">
             <label class="guided--form-label centered mb-0"
-              >Do you have an existing dataset on Pennsieve that you would like to resume?
+              >How would you like to start curating your dataset?
             </label>
 
             <div class="guided--radio-button-container">
               <button
                 class="guided--radio-button tile-button"
-                id="guided-button-resume-pennsieve-dataset"
-                data-next-element="guided-section-select-pennsieve-dataset-to-resume"
-                data-button-config-value="curation-starting-point"
-                data-button-config-value-state="pennsieve"
-              >
-                <div class="guided--tile-button-icon">
-                  <img
-                    src="assets\img\pennsieveLogo.png"
-                    alt="PennsieveLogo"
-                    width="50px"
-                    height="50px"
-                  />
-                </div>
-                <div class="guided--tile-body">
-                  <h2>Yes, resume dataset on Pennsieve</h2>
-                </div>
-              </button>
-              <button
-                class="guided--radio-button tile-button"
+                id="guided-button-start-new-curation"
                 data-next-element="guided-section-start-new-curation"
                 data-button-config-value="curation-starting-point"
                 data-button-config-value-state="new"
@@ -240,64 +222,191 @@
                   </svg>
                 </div>
                 <div class="guided--tile-body">
-                  <h2>No, start a new dataset</h2>
+                  <h2>Start a new dataset from scratch</h2>
+                </div>
+              </button>
+
+              <button
+                class="guided--radio-button tile-button"
+                id="guided-button-continue-existing-local-curation"
+                data-next-element="guided-section-import-local-dataset"
+                data-button-config-value="curation-starting-point"
+                data-button-config-value-state="local"
+              >
+                <div class="guided--tile-button-icon">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink"
+                    version="1.1"
+                    id="Layer_1"
+                    x="0px"
+                    y="0px"
+                    viewBox="0 0 502 502"
+                    style="enable-background: new 0 0 502 502"
+                    xml:space="preserve"
+                  >
+                    <g>
+                      <polygon
+                        style="fill: #d1dceb"
+                        points="367,382.658 367,103 274,10 21,10 21,492 367,492 367,460.176 328.241,421.417  "
+                      />
+                      <polygon style="fill: #4ec9dc" points="274,103 274,10 367,103  " />
+                      <g>
+                        <path
+                          d="M247,174H81.5c-5.523,0-10-4.477-10-10s4.477-10,10-10H247c5.523,0,10,4.477,10,10S252.523,174,247,174z"
+                        />
+                      </g>
+                      <g>
+                        <path
+                          d="M306.5,240h-225c-5.523,0-10-4.477-10-10s4.477-10,10-10h225c5.523,0,10,4.477,10,10S312.023,240,306.5,240z"
+                        />
+                      </g>
+                      <g>
+                        <path
+                          d="M306.5,306h-225c-5.523,0-10-4.477-10-10s4.477-10,10-10h225c5.523,0,10,4.477,10,10S312.023,306,306.5,306z"
+                        />
+                      </g>
+                      <g>
+                        <path
+                          d="M306.5,372h-225c-5.523,0-10-4.477-10-10s4.477-10,10-10h225c5.523,0,10,4.477,10,10S312.023,372,306.5,372z"
+                        />
+                      </g>
+                      <g>
+                        <path
+                          d="M306.5,174h-22c-5.523,0-10-4.477-10-10s4.477-10,10-10h22c5.523,0,10,4.477,10,10S312.023,174,306.5,174z"
+                        />
+                      </g>
+                      <g>
+                        <path
+                          style="fill: #4ec9dc"
+                          d="M433.287,389.417c-7.891,0-14.287-6.397-14.287-14.287v-9.98c0-12.728-15.389-19.103-24.39-10.103    L367,382.658l-38.759,38.759L367,460.176l27.61,27.61c9,9,24.39,2.626,24.39-10.102v-9.98c0-7.891,6.396-14.287,14.287-14.287H481    v-64L433.287,389.417L433.287,389.417z"
+                        />
+                        <path
+                          d="M481,379.417h-47.713c-2.364,0-4.287-1.923-4.287-4.287v-9.98c0-9.858-5.885-18.666-14.993-22.438    s-19.497-1.706-26.468,5.265L377,358.516V103c0-2.652-1.054-5.196-2.929-7.071l-93-93C279.196,1.054,276.652,0,274,0H21    c-5.523,0-10,4.477-10,10v482c0,5.523,4.477,10,10,10h346c5.523,0,10-4.477,10-10v-7.681l10.539,10.539    c4.658,4.657,10.841,7.125,17.149,7.125c3.133,0,6.297-0.609,9.319-1.861c9.107-3.772,14.993-12.58,14.993-22.438v-9.98    c0-2.364,1.923-4.287,4.287-4.287H481c5.523,0,10-4.477,10-10v-64C491,383.894,486.523,379.417,481,379.417z M284,34.142    L342.858,93H284V34.142z M321.169,414.346c-1.406,1.407-2.351,3.189-2.735,5.111c-0.128,0.641-0.194,1.297-0.194,1.96    c0,2.652,1.054,5.196,2.929,7.071L357,464.319V482H31V20h233v83c0,5.523,4.477,10,10,10h83v265.516L321.169,414.346z     M342.383,421.417l59.298-59.298c1.763-1.762,3.684-1.338,4.672-0.929s2.646,1.468,2.646,3.96v9.98    c0,13.392,10.895,24.287,24.287,24.287H471v44h-37.713c-13.392,0-24.287,10.895-24.287,24.287v9.98    c0,2.493-1.658,3.551-2.646,3.961c-0.99,0.409-2.911,0.833-4.672-0.93L342.383,421.417z"
+                        />
+                      </g>
+                    </g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                  </svg>
+                </div>
+                <div class="guided--tile-body">
+                  <h2>Start from a local SPARC dataset</h2>
+                </div>
+              </button>
+              <button
+                class="guided--radio-button tile-button"
+                id="guided-button-resume-pennsieve-dataset"
+                data-next-element="guided-section-select-pennsieve-dataset-to-resume"
+                data-button-config-value="curation-starting-point"
+                data-button-config-value-state="pennsieve"
+              >
+                <div class="guided--tile-button-icon">
+                  <img
+                    src="assets\img\pennsieveLogo.png"
+                    alt="PennsieveLogo"
+                    width="50px"
+                    height="50px"
+                  />
+                </div>
+                <div class="guided--tile-body">
+                  <h2>Continue an existing dataset on Pennsieve</h2>
                 </div>
               </button>
             </div>
           </div>
+          <div class="guided--section" id="guided-section-start-new-curation">
+            <h2 class="guided--text-sub-step">
+              Click "Save and Continue" to start curating a new dataset from scratch
+            </h2>
+          </div>
+          <div class="guided--section" id="guided-section-import-local-dataset">Import div</div>
           <div class="guided--section" id="guided-section-select-pennsieve-dataset-to-resume">
-            <label class="guided--form-label centered mb-sm mt-lg"
-              >Select dataset on Pennsieve that you would like to resume curating below
-            </label>
-            <div
-              id="guided-pennsieve-dataset-resume-container"
-              style="display: flex; flex-direction: row; justify-content: space-around; width: 100%"
-            >
-              <select
-                class="selectpicker"
-                data-live-search="true"
-                style="
-                  padding: 8px 12px;
-                  margin-right: 30px;
-                  height: 38px;
-                  border-radius: 5px;
-                  border: 1px solid black;
-                "
-                id="guided-select-pennsieve-dataset-to-resume"
-              ></select>
-            </div>
-            <div class="guided--info-dropdown mt-lg">
-              <p class="guided--dropdown-text" data-dropdown-type="warning">
-                I don't see my SPARC Award in the dropdown
-              </p>
-              <i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="guided--info-container">
-              <p class="guided--help-text mb-0">
-                If you don't see your SPARC award in the dropdown above, you can add it yourself in
-                the
-                <a
-                  target="_blank"
-                  href="https://airtable.com/appiYd1Tz9Sv857GZ/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide"
-                  >SPARC Airtable sheet</a
-                >, and click the button below to refresh the dropdown.
-              </p>
-              <div class="guided--flex-center w-100 my-md-3">
-                <button
-                  class="ui primary button"
-                  id="guided-button-refresh-sparc-award-dropdown"
-                  style="background-color: var(--color-light-green) !important"
-                >
-                  Refresh SPARC Award dropdown
-                </button>
+            <div class="guided--panel mt-0" id="guided-panel-pennsieve-dataset-import-loading">
+              <div class="lds-roller">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
               </div>
-              <p class="guided--help-text">
-                Alternatively, you can select 'No, I'll enter my award metadata manually' to
-                manually enter your award metadata.
-              </p>
+              Importing datasets from Pennsieve
+            </div>
+
+            <div class="guided--panel mt-0" id="guided-panel-pennsieve-dataset-select">
+              <label class="guided--form-label centered mb-sm mt-lg"
+                >Select dataset on Pennsieve that you would like to resume curating below
+              </label>
+              <div
+                id="guided-pennsieve-dataset-resume-container"
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: space-around;
+                  width: 100%;
+                "
+              >
+                <select
+                  class="selectpicker"
+                  data-live-search="true"
+                  style="
+                    padding: 8px 12px;
+                    margin-right: 30px;
+                    height: 38px;
+                    border-radius: 5px;
+                    border: 1px solid black;
+                  "
+                  id="guided-select-pennsieve-dataset-to-resume"
+                ></select>
+              </div>
+              <div class="guided--info-dropdown mt-lg">
+                <p class="guided--dropdown-text" data-dropdown-type="warning">
+                  I don't see my SPARC Award in the dropdown
+                </p>
+                <i class="fas fa-chevron-right"></i>
+              </div>
+              <div class="guided--info-container">
+                <p class="guided--help-text mb-0">
+                  If you don't see your SPARC award in the dropdown above, you can add it yourself
+                  in the
+                  <a
+                    target="_blank"
+                    href="https://airtable.com/appiYd1Tz9Sv857GZ/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide"
+                    >SPARC Airtable sheet</a
+                  >, and click the button below to refresh the dropdown.
+                </p>
+                <div class="guided--flex-center w-100 my-md-3">
+                  <button
+                    class="ui primary button"
+                    id="guided-button-refresh-sparc-award-dropdown"
+                    style="background-color: var(--color-light-green) !important"
+                  >
+                    Refresh SPARC Award dropdown
+                  </button>
+                </div>
+                <p class="guided--help-text">
+                  Alternatively, you can select 'No, I'll enter my award metadata manually' to
+                  manually enter your award metadata.
+                </p>
+              </div>
             </div>
           </div>
-          <div class="guided--section" id="guided-section-start-new-curation">b</div>
         </div>
         <div
           id="guided-name-subtitle-tab"
