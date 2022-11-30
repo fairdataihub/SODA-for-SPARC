@@ -34,6 +34,7 @@ from pysodaUtils import (
     clear_queue,
     agent_running,
     check_forbidden_characters_bf,
+    get_agent_installation_location
 )
 
 from organizeDatasets import import_pennsieve_dataset
@@ -2377,6 +2378,15 @@ def build_create_folder_request(folder_name, folder_parent_id, dataset_id):
     return body
 
 
+def cleanup_dataset_root():
+    """
+    Remove any duplicate files we uploaded to the user's Pennsieve dataset. This happens because the Pennsieve agent does not currently support
+    setting a destination folder for the first file used to create a manifest file. The Pennsieve client is also not updated to support removing
+    files from the pennsieve manifest. So maybe we should instead make a subprocess call to the Pennsieve agent and remove the first entry in the 
+    manifest file? Time to test! Fear: The subprocess call will not work for a built Mac version. Actually I need to test a built Mac version again it has
+    been some time. Lets make sure this stuff works. If not then ouch cant do it until we are all up to date with the agent and client - a thing for 
+    which there are multiple issues open with the Pennsieve team.
+    """
 
 def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
@@ -2907,7 +2917,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 except ValueError as e:
                     folder_name = relative_path
                 
-                
+                loc = get_agent_installation_location()
                 for file_path in list_file_paths:
                     #print("Queing file for upload")
                     # subprocess call to the pennsieve agent to add the files to the manifest
@@ -2916,7 +2926,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     print(file_path)
                     print("-" * 20)
                     print(folder_name)
-                    subprocess.run(["pennsieve", "manifest", "add", str(manifest_id), file_path, "-t", folder_name])
+                    subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), file_path, "-t", folder_name])
 
 
             # upload the manifest files
@@ -2976,11 +2986,12 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             manifest_data = ps.manifest.create(list_upload_metadata_files[0])
             manifest_id = manifest_data.manifest_id
 
+            loc = get_agent_installation_location()
         
             # add the files to the manifest
             for manifest_path in list_upload_metadata_files[1:]:
                 # subprocess call to the pennsieve agent to add the files to the manifest
-                subprocess.run(["pennsieve", "manifest", "add", str(manifest_id), manifest_path])
+                subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), manifest_path])
 
             # upload the manifest 
             ps.manifest.upload(manifest_id)
@@ -3036,6 +3047,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
             total_manifest_files += 1
 
+            loc = get_agent_installation_location()
 
             for item in list_upload_manifest_files:
                 manifest_file = item[0][0]
@@ -3044,7 +3056,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 
                 # add the files to the manifest
                 # subprocess call to the pennsieve agent to add the files to the manifest
-                subprocess.run(["pennsieve", "manifest", "add", str(manifest_id), manifest_file, "-t", f"/{ps_folder['content']['name']}"])
+                subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), manifest_file, "-t", f"/{ps_folder['content']['name']}"])
 
                 
             # upload the manifest 
@@ -3095,7 +3107,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
     except Exception as e:
         raise e
-
 
 main_curate_status = ""
 main_curate_print_status = ""
