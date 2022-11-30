@@ -12440,10 +12440,6 @@ $(document).ready(async () => {
   });
 });
 
-
-
-
-
 const guidedSaveDescriptionDatasetInformation = () => {
   const title = sodaJSONObj["digital-metadata"]["name"];
   const subtitle = sodaJSONObj["digital-metadata"]["subtitle"];
