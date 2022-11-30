@@ -11,7 +11,6 @@ client.user.switch('soda')
 client.user.reauthenticate()
 # client.useDataset("N:dataset:8a2d765f-fa97-4e76-b534-deedb6757571")
 
-
 PENNSIEVE_URL = "https://api.pennsieve.io"
 
 def create_request_headers(ps):
@@ -28,13 +27,42 @@ def create_request_headers(ps):
 
 
 
-def get_manifest_entry_id(manifest_id, entry_idx):
+def get_manifest_entry_id(m_id):
 
-    f = client.manifest.listFiles(manifest_id, entry_idx, 1)
-    fields = f.file
-    file_id = str(fields[0])[4:]
-    file_id = file_id.splitlines()[0]
-    return file_id.strip()
+    # f = client.manifest.listFiles(manifest_id, entry_idx, 1)
+    # fields = f.file
+    # file_id = str(fields[0])[4:]
+    # file_id = file_id.splitlines()[0]
+    # return file_id.strip()
+
+    # use a subprocess call to remove the first entry of the given manifest id
+    r = subprocess.run(["pennsieve", "manifest", "list", f"{m_id}"], capture_output=True, check=True)
+    out = r.stdout
+    # print(list)
+    out = out.decode().strip()
+    # print(list)
+
+    # search for the word STATUS in the list string
+    status_idx = out.find("STATUS")
+
+    # slice the string starting at the keyword STATUS to the end
+    out = out[status_idx:]
+
+    # iterate through the string until the first number is found
+    for i in range(len(out)):
+        if out[i].isdigit():
+            out = out[i:]
+            break
+    
+
+    # iterate through the string while the character is a digit
+    for i in range(len(out)):
+        if not out[i].isdigit():
+            out = out[:i]
+            break
+
+    print(out)
+    return out.strip()
 
 
 def remove_manifest_entry(manifest_id, file_id):
@@ -44,14 +72,22 @@ def remove_manifest_entry(manifest_id, file_id):
     """
 
     # turn the file_id into a list 
-    file_id = [file_id]
+    # file_id = [file_id]
     
-    client.manifest.remove(manifest_id, file_id)
+    # client.manifest.remove(manifest_id, file_id)
+    print(file_id)
+
+    # use a subprocess call to remove the first entry of the given manifest id
+    r = subprocess.run(["pennsieve", "manifest", "remove", f"{manifest_id}", f"{file_id}"], capture_output=True)
 
 
-ids = get_manifest_entry_id(6, 0)
-print(type(ids))
-remove_manifest_entry(6, ids)
+
+_id = get_manifest_entry_id(3)
+remove_manifest_entry(3, _id)
+
+# ids = get_manifest_entry_id(6, 0)
+# print(type(ids))
+# remove_manifest_entry(6, ids)
 
 
 # r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(client), json={"things": ["N:package:eaf433a5-ec64-456e-acd3-881ef2784ec3"]})
