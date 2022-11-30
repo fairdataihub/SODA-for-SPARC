@@ -1,3 +1,8 @@
+const objectsHaveSameKeys = (...objects) => {
+  const allKeys = objects.reduce((keys, object) => keys.concat(Object.keys(object)), []);
+  const union = new Set(allKeys);
+  return objects.every((object) => union.size === Object.keys(object).length);
+};
 const savePageChanges = async (pageBeingLeftID) => {
   const errorArray = [];
   try {
@@ -66,11 +71,11 @@ const savePageChanges = async (pageBeingLeftID) => {
     };
 
     if (pageBeingLeftID === "guided-intro-page-tab") {
-      const buttonResumeExistingPennsieveSelected = document
+      const buttonResumeExistingPennsieveIsSelected = document
         .getElementById("guided-button-resume-pennsieve-dataset")
         .classList.contains("selected");
 
-      if (buttonResumeExistingPennsieveSelected) {
+      if (buttonResumeExistingPennsieveIsSelected) {
         const selectedPennsieveDatasetToResume = $(
           "#guided-select-pennsieve-dataset-to-resume option:selected"
         );
@@ -93,13 +98,15 @@ const savePageChanges = async (pageBeingLeftID) => {
         sodaJSONObj["bf-dataset-selected"]["dataset-name"] = selectedPennsieveDataset;
         sodaJSONObj["bf-account-selected"]["account-name"] = defaultBfAccount;
         try {
-          await client.post(
+          let filesFoldersResponse = await client.post(
             `/organize_datasets/dataset_files_and_folders`,
             {
               sodajsonobject: sodaJSONObj,
             },
             { timeout: 0 }
           );
+          let data = filesFoldersResponse.data;
+          datasetStructureJSONObj = data["soda_object"]["dataset-structure"];
         } catch (error) {
           console.log(error);
           errorArray.push({
@@ -110,22 +117,32 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
 
         try {
-          const temp = sodaJSONObj;
-          const metadataSubSamStructure = await extractPoolSubSamStructureFromMetadata();
-          sodaJSONObj = temp;
-          const datasetSubSamStructure = await extractPoolSubSamStructureFromDataset(
-            datasetStructureJSONObj
-          );
-          console.log(
-            "Created structures match: ",
-            metadataSubSamStructure == datasetSubSamStructure
-          );
-          sodaJSONObj = temp;
-        } catch (error) {
-          //console log the error 10 times
-          for (let i = 0; i < 10; i++) {
-            console.log("error diff checking");
+          const [datasetSubjectsMetadata, datasetSamplesMetadata, metadataSubSamStructure] =
+            await extractPoolSubSamStructureFromMetadata();
+          console.log(datasetSubjectsMetadata, datasetSamplesMetadata, metadataSubSamStructure);
+
+          const datasetSubSamStructure =
+            extractPoolSubSamStructureFromDataset(datasetStructureJSONObj);
+
+          if (datasetSubjectsMetadata && datasetSamplesMetadata) {
+            if (!objectsHaveSameKeys(metadataSubSamStructure, datasetSubSamStructure)) {
+              errorArray.push({
+                type: "notyf",
+                message: "The subjects and samples metadata do not have the same keys",
+              });
+              throw errorArray;
+            }
+          } else {
+            //subjects and samples metadata not found
+            //does this need a handle?
           }
+        } catch (error) {
+          console.log(error);
+          errorArray.push({
+            type: "notyf",
+            message: "Error comparing metadata and dataset structures",
+          });
+          throw errorArray;
         }
       }
     }
@@ -1173,65 +1190,107 @@ const updateDatasetUploadProgressTable = (progressObject) => {
   //insert adjustStatusElement at the end of datasetUploadTablebody
   datasetUploadTableBody.insertAdjacentHTML("beforeend", uploadStatusElement);
 };
-const extractPoolSubSamStructureFromMetadata = async () => {
-  const subjectFields = Array.from(
-    document.getElementById("guided-form-add-a-subject").querySelectorAll(".subjects-form-entry")
-  ).map((field) => field.name.toLowerCase());
-  const sampleFields = Array.from(
-    document.getElementById("guided-form-add-a-sample").querySelectorAll(".samples-form-entry")
-  ).map((field) => field.name.toLowerCase());
 
-  let subjectsMetadataResponse = await client.get(`/prepare_metadata/import_metadata_file`, {
-    params: {
-      selected_account: defaultBfAccount,
-      selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-      file_type: "subjects.xlsx",
-      ui_fields: subjectFields.toString(),
-    },
-  });
-  subjectsMetadataResponse = subjectsMetadataResponse.data.subject_file_rows;
-  //remove the first row of the subjectsMetadataResponse array, which is the header row
-  subjectsMetadataResponse.shift();
-  console.log(subjectsMetadataResponse);
-  const poolsFromMetadataFile = subjectsMetadataResponse
-    .map((subjectDataArray) => subjectDataArray[1])
-    .filter((pool) => pool !== "");
-  // remove duplicates from poolsFromMetadataFile
-  const uniquePoolsFromMetadataFile = [...new Set(poolsFromMetadataFile)];
-  for (pool of uniquePoolsFromMetadataFile) {
-    sodaJSONObj.addPool(pool);
+const createGuidedStructureFromSubSamMetadata = (subjectsMetadataRows, samplesMetadataRows) => {
+  const poolSubSamStructure = {
+    pools: {},
+    subjects: {},
+  };
+
+  const datasetPools = [
+    ...new Set(
+      subjectsMetadataRows
+        .map((subjectDataArray) => subjectDataArray[1])
+        .filter((pool) => pool !== "")
+    ),
+  ];
+
+  for (const pool of datasetPools) {
+    poolSubSamStructure["pools"][pool] = {};
   }
-  for (const subject of subjectsMetadataResponse) {
+
+  for (const subject of subjectsMetadataRows) {
     const subjectID = subject[0];
-    const pool = subject[1];
-    sodaJSONObj.addSubject(subjectID);
-    if (pool !== "") {
-      sodaJSONObj.moveSubjectIntoPool(subjectID, pool);
+    const poolID = subject[1];
+    if (poolID !== "") {
+      poolSubSamStructure["pools"][poolID][subjectID] = {};
+    } else {
+      poolSubSamStructure["subjects"][subjectID] = {};
     }
   }
 
-  let samplesMetadataResponse = await client.get(`/prepare_metadata/import_metadata_file`, {
-    params: {
-      file_type: "samples.xlsx",
-      selected_account: defaultBfAccount,
-      selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-      ui_fields: sampleFields.toString(),
-    },
-  });
-  samplesMetadataResponse = samplesMetadataResponse.data.sample_file_rows;
-  //remove the first row of the samplesMetadataResponse array, which is the header row
-  samplesMetadataResponse.shift();
-  console.log(samplesMetadataResponse);
-
-  for (const sample of samplesMetadataResponse) {
+  for (const sample of samplesMetadataRows) {
     const subjectID = sample[0];
     const sampleID = sample[1];
-    const pool = sample[3] ?? null;
-    console.log(subjectID, sampleID, pool);
-    sodaJSONObj.addSampleToSubject(sampleID, pool, subjectID);
+    const poolID = sample[3];
+    if (poolID !== "") {
+      poolSubSamStructure["pools"][poolID][subjectID][sampleID] = {};
+    } else {
+      poolSubSamStructure["subjects"][subjectID][sampleID] = {};
+    }
   }
-  console.log(sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]);
-  return sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"];
+  return poolSubSamStructure;
+};
+
+const extractPoolSubSamStructureFromMetadata = async () => {
+  let datasetSubjectsMetadata = null;
+  let datasetSamplesMetadata = null;
+
+  try {
+    let subjectsMetadataResponse = await client.get(`/prepare_metadata/import_metadata_file`, {
+      params: {
+        selected_account: defaultBfAccount,
+        selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+        file_type: "subjects.xlsx",
+        ui_fields: Array.from(
+          document
+            .getElementById("guided-form-add-a-subject")
+            .querySelectorAll(".subjects-form-entry")
+        )
+          .map((field) => field.name.toLowerCase())
+          .toString(),
+      },
+    });
+    subjectsMetadataResponse = subjectsMetadataResponse.data.subject_file_rows;
+    //remove the first row of the subjectsMetadataResponse array, which is the header row
+    subjectsMetadataResponse.shift();
+    datasetSubjectsMetadata = subjectsMetadataResponse;
+  } catch (error) {
+    console.log("Unable to fetch subjects metadata" + error);
+  }
+
+  try {
+    let samplesMetadataResponse = await client.get(`/prepare_metadata/import_metadata_file`, {
+      params: {
+        file_type: "samples.xlsx",
+        selected_account: defaultBfAccount,
+        selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+        ui_fields: Array.from(
+          document
+            .getElementById("guided-form-add-a-sample")
+            .querySelectorAll(".samples-form-entry")
+        )
+          .map((field) => field.name.toLowerCase())
+          .toString(),
+      },
+    });
+    samplesMetadataResponse = samplesMetadataResponse.data.sample_file_rows;
+    //remove the first row of the samplesMetadataResponse array, which is the header row
+    samplesMetadataResponse.shift();
+    datasetSamplesMetadata = samplesMetadataResponse;
+  } catch (error) {
+    console.log("Unable to fetch samples metadata" + error);
+  }
+
+  let poolSubSamStructure;
+  console.log(datasetSubjectsMetadata, datasetSamplesMetadata);
+  if (datasetSubjectsMetadata && datasetSamplesMetadata) {
+    poolSubSamStructure = createGuidedStructureFromSubSamMetadata(
+      datasetSubjectsMetadata,
+      datasetSamplesMetadata
+    );
+  }
+  return [datasetSubjectsMetadata, datasetSamplesMetadata, poolSubSamStructure];
 };
 // This function extracts the pool, subject, and sample structure from an imported dataset
 // and adds the pools, subjects, and samples to the guided mode structure if they exist.
@@ -1244,8 +1303,6 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
   const nonGuidedFoldersInDataset = nonGuidedHighLevelFolders.filter((folder) =>
     Object.keys(datasetStructure["folders"]).includes(folder)
   );
-
-  console.log(guidedFoldersInDataset);
 
   const addedSubjects = [];
   const addedPools = [];
