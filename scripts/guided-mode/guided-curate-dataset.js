@@ -92,26 +92,41 @@ const savePageChanges = async (pageBeingLeftID) => {
         sodaJSONObj["bf-dataset-selected"] = {};
         sodaJSONObj["bf-dataset-selected"]["dataset-name"] = selectedPennsieveDataset;
         sodaJSONObj["bf-account-selected"]["account-name"] = defaultBfAccount;
-        let filesFoldersResponse = await client.post(
-          `/organize_datasets/dataset_files_and_folders`,
-          {
-            sodajsonobject: sodaJSONObj,
-          },
-          { timeout: 0 }
-        );
-
-        let data = filesFoldersResponse.data;
-
         try {
-          const metadataSubSamStructure = await extractPoolSubSamStructureFromMetadata();
-          const datasetSubSamStructure = await extractPoolSubSamStructureFromDataset(
-            datasetStructureJSONObj
+          await client.post(
+            `/organize_datasets/dataset_files_and_folders`,
+            {
+              sodajsonobject: sodaJSONObj,
+            },
+            { timeout: 0 }
           );
         } catch (error) {
           console.log(error);
+          errorArray.push({
+            type: "notyf",
+            message: "Error pulling dataset folders and files from Pennsieve",
+          });
+          throw errorArray;
         }
 
-        // Extract subject sample pool structure here
+        try {
+          const temp = sodaJSONObj;
+          const metadataSubSamStructure = await extractPoolSubSamStructureFromMetadata();
+          sodaJSONObj = temp;
+          const datasetSubSamStructure = await extractPoolSubSamStructureFromDataset(
+            datasetStructureJSONObj
+          );
+          console.log(
+            "Created structures match: ",
+            metadataSubSamStructure == datasetSubSamStructure
+          );
+          sodaJSONObj = temp;
+        } catch (error) {
+          //console log the error 10 times
+          for (let i = 0; i < 10; i++) {
+            console.log("error diff checking");
+          }
+        }
       }
     }
 
@@ -1183,7 +1198,6 @@ const extractPoolSubSamStructureFromMetadata = async () => {
     .filter((pool) => pool !== "");
   // remove duplicates from poolsFromMetadataFile
   const uniquePoolsFromMetadataFile = [...new Set(poolsFromMetadataFile)];
-
   for (pool of uniquePoolsFromMetadataFile) {
     sodaJSONObj.addPool(pool);
   }
@@ -1216,7 +1230,7 @@ const extractPoolSubSamStructureFromMetadata = async () => {
     console.log(subjectID, sampleID, pool);
     sodaJSONObj.addSampleToSubject(sampleID, pool, subjectID);
   }
-  console.log(samplesMetadataResponse);
+  console.log(sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]);
   return sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"];
 };
 // This function extracts the pool, subject, and sample structure from an imported dataset
@@ -1367,6 +1381,7 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
   }
 
   console.log(sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]);
+  return sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"];
 };
 
 const guidedLockSideBar = () => {
