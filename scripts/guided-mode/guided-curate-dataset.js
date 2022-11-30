@@ -102,12 +102,11 @@ const savePageChanges = async (pageBeingLeftID) => {
 
         let data = filesFoldersResponse.data;
 
-        datasetStructureJSONObj = data["soda_object"]["dataset-structure"];
-
         try {
-          const metadataSubSamStructure = extractPoolSubSamStructureFromMetadata();
-          const datasetSubSamStructure =
-            extractPoolSubSamStructureFromDataset(datasetStructureJSONObj);
+          const metadataSubSamStructure = await extractPoolSubSamStructureFromMetadata();
+          const datasetSubSamStructure = await extractPoolSubSamStructureFromDataset(
+            datasetStructureJSONObj
+          );
         } catch (error) {
           console.log(error);
         }
@@ -1160,28 +1159,65 @@ const updateDatasetUploadProgressTable = (progressObject) => {
   datasetUploadTableBody.insertAdjacentHTML("beforeend", uploadStatusElement);
 };
 const extractPoolSubSamStructureFromMetadata = async () => {
-  /*let import_metadata_file = await client.get(`/prepare_metadata/import_metadata_file`, {
+  const subjectFields = Array.from(
+    document.getElementById("guided-form-add-a-subject").querySelectorAll(".subjects-form-entry")
+  ).map((field) => field.name.toLowerCase());
+  const sampleFields = Array.from(
+    document.getElementById("guided-form-add-a-sample").querySelectorAll(".samples-form-entry")
+  ).map((field) => field.name.toLowerCase());
+
+  let subjectsMetadataResponse = await client.get(`/prepare_metadata/import_metadata_file`, {
     params: {
       selected_account: defaultBfAccount,
       selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
       file_type: "subjects.xlsx",
-      ui_fields: fieldEntries.toString(),
+      ui_fields: subjectFields.toString(),
     },
   });
-  let res = import_metadata_file.data.subject_file_rows;
-  console.log(res);
+  subjectsMetadataResponse = subjectsMetadataResponse.data.subject_file_rows;
+  //remove the first row of the subjectsMetadataResponse array, which is the header row
+  subjectsMetadataResponse.shift();
+  console.log(subjectsMetadataResponse);
+  const poolsFromMetadataFile = subjectsMetadataResponse
+    .map((subjectDataArray) => subjectDataArray[1])
+    .filter((pool) => pool !== "");
+  // remove duplicates from poolsFromMetadataFile
+  const uniquePoolsFromMetadataFile = [...new Set(poolsFromMetadataFile)];
 
-  let importMetadataResponse = await client.get(`/prepare_metadata/import_metadata_file`, {
+  for (pool of uniquePoolsFromMetadataFile) {
+    sodaJSONObj.addPool(pool);
+  }
+  for (const subject of subjectsMetadataResponse) {
+    const subjectID = subject[0];
+    const pool = subject[1];
+    sodaJSONObj.addSubject(subjectID);
+    if (pool !== "") {
+      sodaJSONObj.moveSubjectIntoPool(subjectID, pool);
+    }
+  }
+
+  let samplesMetadataResponse = await client.get(`/prepare_metadata/import_metadata_file`, {
     params: {
       file_type: "samples.xlsx",
       selected_account: defaultBfAccount,
-      selected_dataset: bfDataset,
-      ui_fields: fieldEntries.toString(),
+      selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+      ui_fields: sampleFields.toString(),
     },
   });
+  samplesMetadataResponse = samplesMetadataResponse.data.sample_file_rows;
+  //remove the first row of the samplesMetadataResponse array, which is the header row
+  samplesMetadataResponse.shift();
+  console.log(samplesMetadataResponse);
 
-  let res = importMetadataResponse.data.sample_file_rows;
-  console.log(res);*/
+  for (const sample of samplesMetadataResponse) {
+    const subjectID = sample[0];
+    const sampleID = sample[1];
+    const pool = sample[3] ?? null;
+    console.log(subjectID, sampleID, pool);
+    sodaJSONObj.addSampleToSubject(sampleID, pool, subjectID);
+  }
+  console.log(samplesMetadataResponse);
+  return sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"];
 };
 // This function extracts the pool, subject, and sample structure from an imported dataset
 // and adds the pools, subjects, and samples to the guided mode structure if they exist.
