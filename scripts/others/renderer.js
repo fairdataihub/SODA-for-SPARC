@@ -3932,10 +3932,6 @@ async function loadDefaultAccount() {
 
   if (accounts.length > 0) {
     var myitemselect = accounts[0];
-    const guidedPennsieveAccount = document.getElementById("getting-started-pennsieve-account");
-    svgElements = guidedPennsieveAccount.children;
-    svgElements[0].style.display = "none";
-    svgElements[1].style.display = "flex";
     defaultBfAccount = myitemselect;
 
     $("#current-bf-account").text(myitemselect);
