@@ -5078,7 +5078,6 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"] = {};
   sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"] = {};
   sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["subjects"] = {};
-  sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["samples"] = {};
   sodaJSONObj["dataset-metadata"]["subject-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["sample-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["submission-metadata"] = {};
@@ -5628,35 +5627,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
       });
     }
     return [subjectsInPools, subjectsOutsidePools];
-  };
-
-  sodaJSONObj.updatePrimaryDatasetStructure = function () {
-    //Add pool keys to primary dataset structure
-    for (const pool of Object.keys(
-      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"]
-    )) {
-      if (datasetStructureJSONObj["folders"]["primary"]["folders"][pool]) {
-        datasetStructureJSONObj["folders"]["primary"]["folders"][pool] = {
-          folders: {},
-          files: {},
-          type: "",
-          action: [],
-        };
-      }
-    }
-    //Add sample keys to primary dataset structure
-    for (const sample of Object.keys(
-      this["dataset-metadata"]["pool-subject-sample-structure"]["samples"]
-    )) {
-      if (datasetStructureJSONObj["folders"]["primary"]["folders"][sample]) {
-        datasetStructureJSONObj["folders"]["primary"]["folders"][sample] = {
-          folders: {},
-          files: {},
-          type: "",
-          action: [],
-        };
-      }
-    }
   };
 };
 
