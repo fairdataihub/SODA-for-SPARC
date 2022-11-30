@@ -246,11 +246,6 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
     }
 
-    if (pageBeingLeftID === "guided-prepare-helpers-tab") {
-      // This is where we save data to the sodaJSONObj
-      // Take a look at logic around here to see how to save data to the sodaJSONObj
-    }
-
     if (pageBeingLeftID === "guided-source-folder-tab") {
       if (
         !$("#guided-button-has-source-data").hasClass("selected") &&
@@ -3423,15 +3418,6 @@ const openPage = async (targetPageID) => {
     //Note: if other nav bar needs to be shown, it will be handled later in this function
     hideSubNavAndShowMainNav(false);
 
-    //Hide the high level progress steps and green pills if the user is on the before getting started page
-    if (targetPageID === "guided-prepare-helpers-tab") {
-      document.getElementById("structure-dataset-capsule-container").classList.add("hidden");
-      document.querySelector(".guided--progression-tab-container").classList.add("hidden");
-    } else {
-      document.getElementById("structure-dataset-capsule-container").classList.remove("hidden");
-      document.querySelector(".guided--progression-tab-container").classList.remove("hidden");
-    }
-
     if (
       targetPageID === "guided-dataset-generation-confirmation-tab" ||
       targetPageID === "guided-dataset-generation-tab" ||
@@ -3487,11 +3473,6 @@ const openPage = async (targetPageID) => {
         document.getElementById("guided-dataset-subtitle-input"),
         document.getElementById("guided-subtitle-char-count")
       );
-    }
-    if (targetPageID === "guided-prepare-helpers-tab") {
-      //Hide the new dataset and existings local dataset capsule containers because
-      //We do now know what the user wants to do yet
-      $("#guided-curate-existing-local-dataset-branch-capsule-container").hide();
     }
 
     if (targetPageID === "guided-dataset-starting-point-tab") {
@@ -5078,7 +5059,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   //If a patch was applied that requires the user to restart from the first page,
   //then force the user to restart from the first page
   if (forceStartFromFirstPage) {
-    pageToReturnTo = "guided-prepare-helpers-tab";
+    pageToReturnTo = "guided-name-subtitle-tab";
   }
 
   //If the dataset was successfully uploaded, send the user to the share with curation team
