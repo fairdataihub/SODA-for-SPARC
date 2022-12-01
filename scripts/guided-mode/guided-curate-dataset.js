@@ -410,18 +410,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
       }
     }
-    if (pageBeingLeftID === "guided-folder-importation-tab") {
-      if (
-        !$("#guided-input-destination-getting-started-locally").val() ||
-        $("#guided-input-destination-getting-started-locally").val() === "Browse here"
-      ) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please select the location of your local datset",
-        });
-        throw errorArray;
-      }
-    }
+
     if (pageBeingLeftID === "guided-create-subjects-metadata-tab") {
       //Save the subject metadata from the subject currently being modified
       addSubject("guided");

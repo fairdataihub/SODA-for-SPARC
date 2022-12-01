@@ -333,7 +333,24 @@
               Click "Save and Continue" to start curating a new dataset from scratch
             </h2>
           </div>
-          <div class="guided--section" id="guided-section-import-local-dataset">Import div</div>
+          <div class="guided--section" id="guided-section-import-local-dataset">
+            <h1 class="guided--text-sub-step">Where is your dataset located?</h1>
+            <div class="field" style="display: flex; justify-content: center; width: 100%">
+              <input
+                class="form-control"
+                style="width: 600px !important; cursor: pointer"
+                id="guided-input-destination-getting-started-locally"
+                type="text"
+                readonly
+                placeholder="Browse here"
+              />
+            </div>
+            <p
+              class="hidden"
+              style="color: red; width: 500px; text-align: left; margin: auto"
+              id="guided-input-destination-getting-started-locally-warning-message"
+            ></p>
+          </div>
           <div class="guided--section" id="guided-section-select-pennsieve-dataset-to-resume">
             <div class="guided--panel mt-0" id="guided-panel-pennsieve-dataset-import-loading">
               <div class="lds-roller">
@@ -543,8 +560,6 @@
           <div class="guided--capsule" id="guided-code-folder-capsule"></div>
           <div class="guided--capsule" id="guided-protocol-folder-capsule"></div>
           <div class="guided--capsule" id="guided-docs-folder-capsule"></div>
-
-          <div class="guided--capsule" id="guided-folder-importation-capsule"></div>
           <div class="guided--capsule" id="guided-folder-structure-preview-capsule"></div>
         </div>
 
@@ -1821,30 +1836,6 @@
           <div class="guided--panel hidden" id="guided-user-has-docs-data"></div>
         </div>
 
-        <div
-          id="guided-folder-importation-tab"
-          class="guided--page hidden"
-          data-page-name="Import dataset folder"
-        >
-          <div class="guided--section" id="guided_dataset_name_div">
-            <h1 class="guided--text-sub-step">Where is your dataset located?</h1>
-            <div class="field" style="display: flex; justify-content: center; width: 100%">
-              <input
-                class="form-control"
-                style="width: 600px !important; cursor: pointer"
-                id="guided-input-destination-getting-started-locally"
-                type="text"
-                readonly
-                placeholder="Browse here"
-              />
-            </div>
-            <p
-              class="hidden"
-              style="color: red; width: 500px; text-align: left; margin: auto"
-              id="guided-input-destination-getting-started-locally-warning-message"
-            ></p>
-          </div>
-        </div>
         <div
           id="guided-folder-structure-preview-tab"
           class="guided--page hidden"
