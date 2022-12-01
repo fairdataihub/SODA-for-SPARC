@@ -3596,37 +3596,103 @@ const openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-airtable-award-tab") {
-      const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-
       const sparcAwardInput = document.getElementById("guided-input-sparc-award");
-      //If a sparc award exists, set the sparc award input
-      //If not, reset the input
-      if (sparcAward) {
-        sparcAwardInput.value = sparcAward;
+      guided - input - sparc - award;
+
+      if (pageNeedsUpdateFromPennsieve("guided-airtable-award-tab")) {
+        try {
+          let import_metadata = await client.get(`/prepare_metadata/import_metadata_file`, {
+            params: {
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+              file_type: "submission.xlsx",
+            },
+          });
+          let res = import_metadata.data;
+          const sparcAwardRes = res?.["SPARC Award number"];
+
+          //If the SPARC Award number was found, click the manual button and fill the SPARC Award number
+          if (sparcAwardRes) {
+            document.getElementById("guided-button-enter-sparc-award-manually").click();
+            //set the text of the sparc award input as sparcAwardRes
+            sparcAwardInput.value = sparcAwardRes;
+          }
+        } catch (error) {
+          console.log(error);
+          console.log("UNABLE TO FETCH SPARC AAWARD FROM PENNSIEVE");
+        }
       } else {
-        sparcAwardInput.value = "";
+        const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+
+        //If a sparc award exists, set the sparc award input
+        //If not, reset the input
+        if (sparcAward) {
+          sparcAwardInput.value = sparcAward;
+        } else {
+          sparcAwardInput.value = "";
+        }
       }
     }
 
     if (targetPageID === "guided-create-submission-metadata-tab") {
-      let submission_metadata = sodaJSONObj["dataset-metadata"]["submission-metadata"];
+      const sparcAwardInput = document.getElementById("guided-input-sparc-award");
 
-      let dataDeliverableLottieContainer = document.getElementById(
-        "data-deliverable-lottie-container"
-      );
-      let dataDeliverableParaText = document.getElementById("guided-data-deliverable-para-text");
-
-      if (Object.keys(submission_metadata).length > 0) {
-        if (submission_metadata["filepath"]) {
-          dataDeliverableLottieContainer.innerHTML = "";
-          lottie.loadAnimation({
-            container: dataDeliverableLottieContainer,
-            animationData: successCheck,
-            renderer: "svg",
-            loop: false,
-            autoplay: true,
+      if (pageNeedsUpdateFromPennsieve("guided-input-sparc-award")) {
+        try {
+          let import_metadata = await client.get(`/prepare_metadata/import_metadata_file`, {
+            params: {
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+              file_type: "submission.xlsx",
+            },
           });
-          dataDeliverableParaText.innerHTML = submission_metadata["filepath"];
+          let res = import_metadata.data;
+
+          console.log(res);
+          const sparcAwardRes = res?.["SPARC Award number"];
+
+          //If the SPARC Award number was found, click the manual button and fill the SPARC Award number
+          if (sparcAwardRes) {
+            console.log(typeof sparcAwardRes);
+            document.getElementById("guided-button-enter-sparc-award-manually").click();
+            //set the text of the sparc award input as sparcAwardRes
+            sparcAwardInput.value = sparcAwardRes;
+          }
+        } catch (error) {
+          console.log(error);
+          console.log("UNABLE TO FETCH SUBMISSION METADATA FROM PENNSIEVE");
+        }
+      } else {
+        let submission_metadata = sodaJSONObj["dataset-metadata"]["submission-metadata"];
+
+        let dataDeliverableLottieContainer = document.getElementById(
+          "data-deliverable-lottie-container"
+        );
+        let dataDeliverableParaText = document.getElementById("guided-data-deliverable-para-text");
+
+        if (Object.keys(submission_metadata).length > 0) {
+          if (submission_metadata["filepath"]) {
+            dataDeliverableLottieContainer.innerHTML = "";
+            lottie.loadAnimation({
+              container: dataDeliverableLottieContainer,
+              animationData: successCheck,
+              renderer: "svg",
+              loop: false,
+              autoplay: true,
+            });
+            dataDeliverableParaText.innerHTML = submission_metadata["filepath"];
+          } else {
+            //reset the code metadata lotties and para text
+            dataDeliverableLottieContainer.innerHTML = "";
+            lottie.loadAnimation({
+              container: dataDeliverableLottieContainer,
+              animationData: dragDrop,
+              renderer: "svg",
+              loop: true,
+              autoplay: true,
+            });
+            dataDeliverableParaText.innerHTML = "";
+          }
         } else {
           //reset the code metadata lotties and para text
           dataDeliverableLottieContainer.innerHTML = "";
@@ -3639,58 +3705,49 @@ const openPage = async (targetPageID) => {
           });
           dataDeliverableParaText.innerHTML = "";
         }
-      } else {
-        //reset the code metadata lotties and para text
-        dataDeliverableLottieContainer.innerHTML = "";
-        lottie.loadAnimation({
-          container: dataDeliverableLottieContainer,
-          animationData: dragDrop,
-          renderer: "svg",
-          loop: true,
-          autoplay: true,
-        });
-        dataDeliverableParaText.innerHTML = "";
-      }
 
-      const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-      const sparcAwardInputManual = document.getElementById("guided-submission-sparc-award-manual");
-      //If a sparc award exists, set the sparc award manual input
-      //If not, reset the input
-      if (sparcAward) {
-        sparcAwardInputManual.value = sparcAward;
-      } else {
-        //If no sparc award exists, reset the inputs
-        sparcAwardInputManual.value = "";
-      }
+        const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+        const sparcAwardInputManual = document.getElementById(
+          "guided-submission-sparc-award-manual"
+        );
+        //If a sparc award exists, set the sparc award manual input
+        //If not, reset the input
+        if (sparcAward) {
+          sparcAwardInputManual.value = sparcAward;
+        } else {
+          //If no sparc award exists, reset the inputs
+          sparcAwardInputManual.value = "";
+        }
 
-      const milestones = sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
-      guidedSubmissionTagsTagifyManual.removeAllTags();
+        const milestones = sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
+        guidedSubmissionTagsTagifyManual.removeAllTags();
 
-      //If milestones exist, add the tags to the milestone tagify element
-      if (milestones) {
-        guidedSubmissionTagsTagifyManual.addTags(milestones);
-      }
+        //If milestones exist, add the tags to the milestone tagify element
+        if (milestones) {
+          guidedSubmissionTagsTagifyManual.addTags(milestones);
+        }
 
-      const completionDate =
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"];
-      const completionDateInputManual = document.getElementById(
-        "guided-submission-completion-date-manual"
-      );
-      //If completion date exists, set the completion date input
-      //If not, reset the input
-      completionDateInputManual.innerHTML = `
+        const completionDate =
+          sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"];
+        const completionDateInputManual = document.getElementById(
+          "guided-submission-completion-date-manual"
+        );
+        //If completion date exists, set the completion date input
+        //If not, reset the input
+        completionDateInputManual.innerHTML = `
         <option value="Select a completion date">Select a completion date</option>
         <option value="Enter my own date">Enter my own date</option>
         <option value="N/A">N/A</option>
       `;
-      if (completionDate) {
-        completionDateInputManual.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
-        //select the completion date that was added
-        completionDateInputManual.value = completionDate;
-      }
+        if (completionDate) {
+          completionDateInputManual.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
+          //select the completion date that was added
+          completionDateInputManual.value = completionDate;
+        }
 
-      //Open the page and leave the sub-page hydration to the sub-page function
-      openSubPageNavigation(targetPageID);
+        //Open the page and leave the sub-page hydration to the sub-page function
+        openSubPageNavigation(targetPageID);
+      }
     }
     if (targetPageID === "guided-contributors-tab") {
       if (pageNeedsUpdateFromPennsieve("guided-contributors-tab")) {
