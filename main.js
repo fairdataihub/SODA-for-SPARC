@@ -230,12 +230,13 @@ function initialize() {
       if (!user_restart_confirmed) {
         if (app.showExitPrompt) {
           e.preventDefault(); // Prevents the window from closing
-          dialog.showMessageBox(BrowserWindow.getFocusedWindow(), {
-            type: "question",
-            buttons: ["Yes", "No"],
-            title: "Confirm",
-            message: "Any running process will be stopped. Are you sure you want to quit?",
-          })
+          dialog
+            .showMessageBox(BrowserWindow.getFocusedWindow(), {
+              type: "question",
+              buttons: ["Yes", "No"],
+              title: "Confirm",
+              message: "Any running process will be stopped. Are you sure you want to quit?",
+            })
             .then((responseObject) => {
               let { response } = responseObject;
               if (response === 0) {
@@ -467,12 +468,13 @@ ipcMain.on("spreadsheet", (event, spreadsheet) => {
 
   spreadSheetModal.on("close", (e) => {
     e.preventDefault(); // Prevents the window from closing
-    dialog.showMessageBox(spreadSheetModal, {
-      type: "question",
-      buttons: ["Yes", "No"],
-      title: "Confirm",
-      message: "Any progress will be unsaved. Are you sure you want to quit?",
-    })
+    dialog
+      .showMessageBox(spreadSheetModal, {
+        type: "question",
+        buttons: ["Yes", "No"],
+        title: "Confirm",
+        message: "Any progress will be unsaved. Are you sure you want to quit?",
+      })
       .then((responseObject) => {
         let { response } = responseObject;
         if (response === 0) {

@@ -1892,7 +1892,7 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
         headers: savedHeaders,
         data: savedData,
       };
-  
+
       //Save the sodaJSONObj with the new manifest file
       saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       //Rerender the manifest cards

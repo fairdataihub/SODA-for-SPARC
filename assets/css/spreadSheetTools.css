@@ -1,5 +1,7 @@
 body {
-  font-family: Lato,system-ui,-apple-system,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Helvetica Neue",Arial,"Noto Sans","Liberation Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+  font-family: Lato, system-ui, -apple-system, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+    "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
 .document-container {
@@ -41,7 +43,7 @@ body {
   --jexcel_content_color: #000;
   --jexcel_content_color_highlighted: #000;
   --jexcel_content_background: #fff;
-  --jexcel_content_background_highlighted: rgba(0,0,0,0.05);
+  --jexcel_content_background_highlighted: rgba(0, 0, 0, 0.05);
   --jexcel_menu_background: #fff;
   --jexcel_menu_background_highlighted: #ebebeb;
   --jexcel_menu_color: #555;
@@ -52,5 +54,11 @@ body {
   --active_color: #007aff;
 }
 
-.jexcel_content::-webkit-scrollbar { width: 6px; height: 100%; background-color: #c5c5c5; }
-.jexcel_content::-webkit-scrollbar-thumb { background: #666; }
+.jexcel_content::-webkit-scrollbar {
+  width: 6px;
+  height: 100%;
+  background-color: #c5c5c5;
+}
+.jexcel_content::-webkit-scrollbar-thumb {
+  background: #666;
+}

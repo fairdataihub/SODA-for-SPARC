@@ -24,18 +24,18 @@ document.addEventListener("DOMContentLoaded", function () {
         tableHeight: "calc(100vh - 181px)",
         toolbar: [
           {
-            type: 'i',
-            content: 'undo',
+            type: "i",
+            content: "undo",
             onclick: function () {
               manifestTable.undo();
-            }
+            },
           },
           {
-            type: 'i',
-            content: 'redo',
+            type: "i",
+            content: "redo",
             onclick: function () {
               manifestTable.redo();
-            }
+            },
           },
         ], //array of objects
         data: manifestFileData,
@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const savedHeaders = manifestTable.getHeaders().split(",");
         const savedData = manifestTable.getData();
         const result = [savedHeaders, savedData];
-        
+
         //send spreadsheet data back to main
         ipcRenderer.send("spreadsheet-results", result);
       });
