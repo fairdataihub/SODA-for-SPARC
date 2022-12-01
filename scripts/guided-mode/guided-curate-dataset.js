@@ -3702,7 +3702,9 @@ const openPage = async (targetPageID) => {
               file_type: "dataset_description.xlsx",
             },
           });
-          let contributorData = metadata_import.data["Contributor Information"];
+          console.log(metadata_import.data);
+          let contributorData = metadata_import.data["Contributor information"];
+          console.log(contributorData);
           console.log(sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"]);
           /*
             {
@@ -3722,6 +3724,7 @@ const openPage = async (targetPageID) => {
             };
           }
         } catch (error) {
+          console.log(error);
           console.log("UNABLE TO FETCH PENNSIEVE DATASET DESCRIPTION");
         }
       }
