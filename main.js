@@ -230,13 +230,12 @@ function initialize() {
       if (!user_restart_confirmed) {
         if (app.showExitPrompt) {
           e.preventDefault(); // Prevents the window from closing
-          dialog
-            .showMessageBox(BrowserWindow.getFocusedWindow(), {
-              type: "question",
-              buttons: ["Yes", "No"],
-              title: "Confirm",
-              message: "Any running process will be stopped. Are you sure you want to quit?",
-            })
+          dialog.showMessageBox(BrowserWindow.getFocusedWindow(), {
+            type: "question",
+            buttons: ["Yes", "No"],
+            title: "Confirm",
+            message: "Any running process will be stopped. Are you sure you want to quit?",
+          })
             .then((responseObject) => {
               let { response } = responseObject;
               if (response === 0) {
@@ -444,11 +443,11 @@ const wait = async (delay) => {
   return new Promise((resolve) => setTimeout(resolve, delay));
 };
 
-// passing in the jexcel (jspreadsheet) will be added to an html
+// passing in the spreadsheet data to pass to a modal
+// that will have a jspreadsheet for user edits
 ipcMain.on("spreadsheet", (event, spreadsheet) => {
   const windowOptions = {
     minHeight: 450,
-    // minWidth: 400,
     width: 1120,
     height: 500,
     center: true,
@@ -465,25 +464,52 @@ ipcMain.on("spreadsheet", (event, spreadsheet) => {
   };
 
   let spreadSheetModal = new BrowserWindow(windowOptions);
-  let spreadSheetResult;
 
-  spreadSheetModal.on("close", () => {
-    // send back the spreadsheet data to SODA
-    //spreadSheetResult = spreadsheetdata
-    event.reply("spreadsheet-reply", spreadSheetResult);
-    spreadSheetModal = null;
+  spreadSheetModal.on("close", (e) => {
+    e.preventDefault(); // Prevents the window from closing
+    dialog.showMessageBox(spreadSheetModal, {
+      type: "question",
+      buttons: ["Yes", "No"],
+      title: "Confirm",
+      message: "Any progress will be unsaved. Are you sure you want to quit?",
+    })
+      .then((responseObject) => {
+        let { response } = responseObject;
+        if (response === 0) {
+          // Runs the following if 'Yes' is clicked
+          // send back the spreadsheet data to SODA
+          // mainWindow.webContents.send("spreadsheet-reply", spreadSheetResult);
+          app.showExitPrompt = false;
+          spreadSheetModal.close();
+          /// feedback form iframe prevents closing gracefully
+          /// so force close
+          if (!spreadSheetModal.closed) {
+            spreadSheetModal.destroy();
+          }
+          spreadSheetModal = null;
+        }
+      });
   });
 
   spreadSheetModal.loadFile("./sections/spreadSheetModal/spreadSheet.html");
 
   spreadSheetModal.once("ready-to-show", async () => {
     spreadSheetModal.show();
+    //send data to child window
     spreadSheetModal.send("requested-spreadsheet", spreadsheet);
   });
 
   ipcMain.on("spreadsheet-results", async (ev, result) => {
-    console.log("results received from child window");
+    //send back spreadsheet data to main window
     mainWindow.webContents.send("spreadsheet-reply", result);
+
+    spreadSheetModal.close();
+    /// feedback form iframe prevents closing gracefully
+    /// so force close
+    if (!spreadSheetModal.closed) {
+      spreadSheetModal.destroy();
+    }
+    spreadSheetModal = null;
   });
 });
 

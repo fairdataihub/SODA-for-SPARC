@@ -1,3 +1,7 @@
+body {
+  font-family: Lato,system-ui,-apple-system,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Helvetica Neue",Arial,"Noto Sans","Liberation Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+}
+
 .document-container {
   display: flex;
   flex-direction: column;
@@ -17,7 +21,7 @@
 
 .modal-title {
   border-bottom: 4px solid #b80d49;
-  width: 97.5%;
+  width: 99%;
   display: flex;
   justify-content: center;
   margin-bottom: 1px;
@@ -25,5 +29,28 @@
 
 .title-text {
   font-size: larger;
+  font-weight: 700;
   margin-bottom: 0.2rem;
 }
+
+:root {
+  --jexcel_header_color: #000;
+  --jexcel_header_color_highlighted: #000;
+  --jexcel_header_background: #278984;
+  --jexcel_header_background_highlighted: #17827c;
+  --jexcel_content_color: #000;
+  --jexcel_content_color_highlighted: #000;
+  --jexcel_content_background: #fff;
+  --jexcel_content_background_highlighted: rgba(0,0,0,0.05);
+  --jexcel_menu_background: #fff;
+  --jexcel_menu_background_highlighted: #ebebeb;
+  --jexcel_menu_color: #555;
+  --jexcel_menu_color_highlighted: #555;
+  --jexcel_menu_box_shadow: 2px 2px 2px 0px rgba(143, 144, 145, 1);
+  --jexcel_border_color: #ccc;
+  --jexcel_border_color_highlighted: #000;
+  --active_color: #007aff;
+}
+
+.jexcel_content::-webkit-scrollbar { width: 6px; height: 100%; background-color: #c5c5c5; }
+.jexcel_content::-webkit-scrollbar-thumb { background: #666; }

@@ -1876,93 +1876,29 @@ const generateManifestEditCard = (highLevelFolderName) => {
 const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
   const existingManifestData = sodaJSONObj["guided-manifest-files"][highLevelFolderName];
 
-  let manifestFileHeaders = existingManifestData["headers"];
-  let manifestFileData = existingManifestData["data"];
-
-  let guidedManifestTable;
-
-  const readOnlyHeaders = ["filename", "file type", "timestamp"];
-
-  // const manifestSpreadsheetContainer1 = document.getElementById("guided-div-manifest-edit");
-  // guidedManifestTable = jspreadsheet(manifestSpreadsheetContainer1, {
-  //   tableOverflow: true,
-  //   lazyLoading: true,
-  //   loadingSpin: true,
-  //   data: manifestFileData,
-  //   columns: manifestFileHeaders.map((header) => {
-  //     return {
-  //       readOnly: readOnlyHeaders.includes(header) ? true : false,
-  //       type: "text",
-  //       title: header,
-  //       width: 200,
-  //     };
-  //   }),
-  // });
-
-  let saveManifestFiles = false;
+  //send manifest data to main.js to then send to child window
   ipcRenderer.send("spreadsheet", existingManifestData);
 
+  //upon receiving a reply of the spreadsheet, handle accordingly
   ipcRenderer.on("spreadsheet-reply", async (event, result) => {
-    console.log("reply received");
-    console.log(event);
     if (!result || result === "") {
-      console.log("nothing returned");
       return;
     } else {
-      console.log(result);
-      saveManifestFiles = true;
+      //spreadsheet reply contained results
+      const savedHeaders = result[0];
+      const savedData = result[1];
       console.log("something returned");
+      sodaJSONObj["guided-manifest-files"][highLevelFolderName] = {
+        headers: savedHeaders,
+        data: savedData,
+      };
+  
+      //Save the sodaJSONObj with the new manifest file
+      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      //Rerender the manifest cards
+      renderManifestCards();
     }
   });
-
-  // const { value: saveManifestFiles } = await Swal.fire({
-  //   title:
-  //     "<span style='font-size: 18px !important;'>Edit the manifest file below: </span> <br><span style='font-size: 13px; font-weight: 500'> Tip: Double click on a cell to edit it.<span>",
-  //   html: "<div id='guided-div-manifest-edit'></div>",
-  //   allowEscapeKey: false,
-  //   allowOutsideClick: false,
-  //   showConfirmButton: true,
-  //   confirmButtonText: "Confirm",
-  //   showCancelButton: true,
-  //   width: "90%",
-  //   customClass: "swal-large",
-  //   heightAuto: false,
-  //   backdrop: "rgba(0,0,0, 0.4)",
-  //   didOpen: () => {
-  //     Swal.hideLoading();
-  //     console.log(manifestFileData);
-  //     const manifestSpreadsheetContainer = document.getElementById("guided-div-manifest-edit");
-  //     guidedManifestTable = jspreadsheet(manifestSpreadsheetContainer, {
-  //       tableOverflow: true,
-  //       lazyLoading: true,
-  //       loadingSpin: true,
-  //       data: manifestFileData,
-  //       columns: manifestFileHeaders.map((header) => {
-  //         return {
-  //           readOnly: readOnlyHeaders.includes(header) ? true : false,
-  //           type: "text",
-  //           title: header,
-  //           width: 200,
-  //         };
-  //       }),
-  //     });
-  //   },
-  // });
-
-  if (saveManifestFiles) {
-    const savedHeaders = guidedManifestTable.getHeaders().split(",");
-    const savedData = guidedManifestTable.getData();
-
-    sodaJSONObj["guided-manifest-files"][highLevelFolderName] = {
-      headers: savedHeaders,
-      data: savedData,
-    };
-
-    //Save the sodaJSONObj with the new manifest file
-    saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-    //Rerender the manifest cards
-    renderManifestCards();
-  }
 };
 
 const extractFilNamesFromManifestData = (manifestData) => {

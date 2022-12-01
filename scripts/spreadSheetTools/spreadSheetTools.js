@@ -21,6 +21,23 @@ document.addEventListener("DOMContentLoaded", function () {
         tableOverflow: true,
         lazyLoading: true,
         loadingSpin: true,
+        tableHeight: "calc(100vh - 181px)",
+        toolbar: [
+          {
+            type: 'i',
+            content: 'undo',
+            onclick: function () {
+              manifestTable.undo();
+            }
+          },
+          {
+            type: 'i',
+            content: 'redo',
+            onclick: function () {
+              manifestTable.redo();
+            }
+          },
+        ], //array of objects
         data: manifestFileData,
         columns: manifestFileHeaders.map((header) => {
           return {
@@ -34,12 +51,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
       //create event listener for saving and exiting
       saveAndExitManifest.addEventListener("click", () => {
-        //send spreadsheet data back to main
         console.log("sending back results");
         //extract headers and data
         const savedHeaders = manifestTable.getHeaders().split(",");
         const savedData = manifestTable.getData();
         const result = [savedHeaders, savedData];
+        
+        //send spreadsheet data back to main
         ipcRenderer.send("spreadsheet-results", result);
       });
     }
