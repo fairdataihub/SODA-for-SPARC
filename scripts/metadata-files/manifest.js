@@ -475,9 +475,12 @@ function convertJSONToXlsx(jsondata, excelfile) {
 }
 
 var table1;
-function loadManifestFileEdits(jsondata) {
+const loadManifestFileEdits = (jsondata) => {
+  console.log(jsondata)
   let columns = Object.keys(jsondata[0]);
+  console.log(columns);
   let columnList = [];
+  console.log(columnList);
   for (let i = 0; i < columns.length; i++) {
     let subColumn = {
       type: "text",

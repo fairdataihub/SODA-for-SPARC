@@ -1883,36 +1883,71 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
 
   const readOnlyHeaders = ["filename", "file type", "timestamp"];
 
-  const { value: saveManifestFiles } = await Swal.fire({
-    title:
-      "<span style='font-size: 18px !important;'>Edit the manifest file below: </span> <br><span style='font-size: 13px; font-weight: 500'> Tip: Double click on a cell to edit it.<span>",
-    html: "<div id='guided-div-manifest-edit'></div>",
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    showConfirmButton: true,
-    confirmButtonText: "Confirm",
-    showCancelButton: true,
-    width: "90%",
-    customClass: "swal-large",
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    didOpen: () => {
-      Swal.hideLoading();
-      const manifestSpreadsheetContainer = document.getElementById("guided-div-manifest-edit");
-      guidedManifestTable = jspreadsheet(manifestSpreadsheetContainer, {
-        tableOverflow: true,
-        data: manifestFileData,
-        columns: manifestFileHeaders.map((header) => {
-          return {
-            readOnly: readOnlyHeaders.includes(header) ? true : false,
-            type: "text",
-            title: header,
-            width: 200,
-          };
-        }),
-      });
-    },
+  // const manifestSpreadsheetContainer1 = document.getElementById("guided-div-manifest-edit");
+  // guidedManifestTable = jspreadsheet(manifestSpreadsheetContainer1, {
+  //   tableOverflow: true,
+  //   lazyLoading: true,
+  //   loadingSpin: true,
+  //   data: manifestFileData,
+  //   columns: manifestFileHeaders.map((header) => {
+  //     return {
+  //       readOnly: readOnlyHeaders.includes(header) ? true : false,
+  //       type: "text",
+  //       title: header,
+  //       width: 200,
+  //     };
+  //   }),
+  // });
+
+  let saveManifestFiles = false;
+  ipcRenderer.send("spreadsheet", existingManifestData);
+
+  ipcRenderer.on("spreadsheet-reply", async (event, result) => {
+    console.log('reply received');
+    console.log(event);
+    if(!result || result === "") {
+      console.log("nothing returned");
+      return;
+    } else {
+      console.log(result);
+      saveManifestFiles = true;
+      console.log("something returned");
+    }
   });
+
+  // const { value: saveManifestFiles } = await Swal.fire({
+  //   title:
+  //     "<span style='font-size: 18px !important;'>Edit the manifest file below: </span> <br><span style='font-size: 13px; font-weight: 500'> Tip: Double click on a cell to edit it.<span>",
+  //   html: "<div id='guided-div-manifest-edit'></div>",
+  //   allowEscapeKey: false,
+  //   allowOutsideClick: false,
+  //   showConfirmButton: true,
+  //   confirmButtonText: "Confirm",
+  //   showCancelButton: true,
+  //   width: "90%",
+  //   customClass: "swal-large",
+  //   heightAuto: false,
+  //   backdrop: "rgba(0,0,0, 0.4)",
+  //   didOpen: () => {
+  //     Swal.hideLoading();
+  //     console.log(manifestFileData);
+  //     const manifestSpreadsheetContainer = document.getElementById("guided-div-manifest-edit");
+  //     guidedManifestTable = jspreadsheet(manifestSpreadsheetContainer, {
+  //       tableOverflow: true,
+  //       lazyLoading: true,
+  //       loadingSpin: true,
+  //       data: manifestFileData,
+  //       columns: manifestFileHeaders.map((header) => {
+  //         return {
+  //           readOnly: readOnlyHeaders.includes(header) ? true : false,
+  //           type: "text",
+  //           title: header,
+  //           width: 200,
+  //         };
+  //       }),
+  //     });
+  //   },
+  // });
 
   if (saveManifestFiles) {
     const savedHeaders = guidedManifestTable.getHeaders().split(",");
@@ -12373,15 +12408,6 @@ $(document).ready(async () => {
                 determineDatasetLocation()
               );
             } else {
-              // var appendString = "";
-              // appendString =
-              //   appendString +
-              //   '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">' +
-              //   newFolderName +
-              //   "</div></div>";
-              // $(appendString).appendTo("#items");
-
-              /// update datasetStructureJSONObj
               var currentPath = organizeDSglobalPath.value;
               var jsonPathArray = currentPath.split("/");
               var filtered = jsonPathArray.slice(1).filter(function (el) {

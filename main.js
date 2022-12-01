@@ -444,6 +444,49 @@ const wait = async (delay) => {
   return new Promise((resolve) => setTimeout(resolve, delay));
 };
 
+// passing in the jexcel (jspreadsheet) will be added to an html
+ipcMain.on("spreadsheet", (event, spreadsheet) => {
+  const windowOptions = {
+    minHeight: 450,
+    // minWidth: 400,
+    width: 1120,
+    height: 500,
+    center: true,
+    show: true,
+    icon: __dirname + "/assets/menu-icon/soda_icon.png",
+    webPreferences: {
+      nodeIntegration: true,
+      enableRemoteModule: true,
+      contextIsolation: false,
+    },
+    // modal: true,
+    parent: mainWindow,
+    closable: true,
+  };
+
+  let spreadSheetModal = new BrowserWindow(windowOptions);
+  let spreadSheetResult;
+
+  spreadSheetModal.on("close", () => {
+    // send back the spreadsheet data to SODA
+    //spreadSheetResult = spreadsheetdata
+    event.reply("spreadsheet-reply", spreadSheetResult);
+    spreadSheetModal = null;
+  });
+
+  spreadSheetModal.loadFile("./sections/spreadSheetModal/spreadSheet.html")
+
+  spreadSheetModal.once("ready-to-show", async () => {
+    spreadSheetModal.show();
+    spreadSheetModal.send("requested-spreadsheet", spreadsheet);
+  });
+
+  ipcMain.on("spreadsheet-results", async (ev, result) => {
+    console.log("results received from child window");
+    mainWindow.webContents.send("spreadsheet-reply", result);
+  });
+})
+
 ipcMain.on("orcid", (event, url) => {
   const windowOptions = {
     minWidth: 500,

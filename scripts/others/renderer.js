@@ -3917,7 +3917,7 @@ async function updateBfAccountList() {
   refreshBfTeamsList(bfListTeams);
 }
 
-async function loadDefaultAccount() {
+const loadDefaultAccount = async () => {
   let responseObject;
 
   try {
@@ -9221,3 +9221,7 @@ tippy("#datasetPathDisplay", {
   theme: "soda",
   maxWidth: "100%",
 });
+
+const createSpreadSheetWindow = async (spreadsheet) => {
+  ipcRenderer.send("spreadsheet", spreadsheet);
+}
