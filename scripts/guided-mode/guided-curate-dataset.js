@@ -9365,8 +9365,6 @@ $(document).ready(async () => {
       //Display the Dataset metadata upload table
       unHideAndSmoothScrollToElement("guided-div-dataset-metadata-upload-status-table");
 
-      // clear the Pennsieve Queue for dataset metadata generation (added to Renderer side for Mac users that are unable to clear the queue on the Python side)
-      clearQueue();
       //set timeout for 2 seconds
       await new Promise((r) => setTimeout(r, 2000));
 
@@ -9581,9 +9579,6 @@ $(document).ready(async () => {
       // create a dataset upload session
       datasetUploadSession.startSession();
     }
-
-    // clear the Pennsieve Queue (added to Renderer side for Mac users that are unable to clear the queue on the Python side)
-    clearQueue();
 
     client
       .post(
