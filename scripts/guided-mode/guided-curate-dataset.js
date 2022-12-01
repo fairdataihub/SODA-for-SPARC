@@ -1903,9 +1903,9 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
   ipcRenderer.send("spreadsheet", existingManifestData);
 
   ipcRenderer.on("spreadsheet-reply", async (event, result) => {
-    console.log('reply received');
+    console.log("reply received");
     console.log(event);
-    if(!result || result === "") {
+    if (!result || result === "") {
       console.log("nothing returned");
       return;
     } else {

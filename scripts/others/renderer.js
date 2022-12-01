@@ -3942,7 +3942,7 @@ const loadDefaultAccount = async () => {
     refreshBfUsersList();
     refreshBfTeamsList(bfListTeams);
   }
-}
+};
 
 const showPrePublishingPageElements = () => {
   var selectedBfAccount = defaultBfAccount;
@@ -9224,4 +9224,4 @@ tippy("#datasetPathDisplay", {
 
 const createSpreadSheetWindow = async (spreadsheet) => {
   ipcRenderer.send("spreadsheet", spreadsheet);
-}
+};

@@ -1,30 +1,29 @@
 .document-container {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
 .save-spreadsheet {
-    margin: 1rem;
-    height: 3rem;
-    border-radius: 4px;
-    background: #13716d;
-    color: white;
-    font-weight: 700;
-    border-color: #13716d;
+  margin: 1rem;
+  height: 3rem;
+  border-radius: 4px;
+  background: #13716d;
+  color: white;
+  font-weight: 700;
+  border-color: #13716d;
 }
 
 .modal-title {
-    border-bottom: 4px solid #b80d49;
-    width: 97.5%;
-    display: flex;
-    justify-content: center;
-    margin-bottom: 1px;
+  border-bottom: 4px solid #b80d49;
+  width: 97.5%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1px;
 }
 
 .title-text {
-    font-size: larger;
-    margin-bottom: 0.2rem;
+  font-size: larger;
+  margin-bottom: 0.2rem;
 }
-

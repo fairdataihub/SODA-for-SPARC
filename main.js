@@ -474,7 +474,7 @@ ipcMain.on("spreadsheet", (event, spreadsheet) => {
     spreadSheetModal = null;
   });
 
-  spreadSheetModal.loadFile("./sections/spreadSheetModal/spreadSheet.html")
+  spreadSheetModal.loadFile("./sections/spreadSheetModal/spreadSheet.html");
 
   spreadSheetModal.once("ready-to-show", async () => {
     spreadSheetModal.show();
@@ -485,7 +485,7 @@ ipcMain.on("spreadsheet", (event, spreadsheet) => {
     console.log("results received from child window");
     mainWindow.webContents.send("spreadsheet-reply", result);
   });
-})
+});
 
 ipcMain.on("orcid", (event, url) => {
   const windowOptions = {
