@@ -6565,7 +6565,23 @@ const openGuidedAddContributorSwal = async () => {
   });
 };
 
+const contributorDataIsValid = (contributorObj) => {
+  if (
+    contributorObj.conAffliation.length > 0 &&
+    contributorObj.conID &&
+    contributorObj.conRole.length > 0 &&
+    contributorObj.contributorFirstName &&
+    contributorObj.contributorLastName
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 const generateContributorTableRow = (contributorObj) => {
+  const contributorObjIsValid = contributorDataIsValid(contributorObj);
+  console.log(contributorObjIsValid);
   const contributorFullName = contributorObj["conName"];
   const contributorOrcid = contributorObj["conID"];
   const contributorRoleString = contributorObj["conRole"].join(", ");
@@ -6577,6 +6593,13 @@ const generateContributorTableRow = (contributorObj) => {
       </td>
       <td class="middle aligned">
         ${contributorRoleString}
+      </td>
+       <td class="middle aligned collapsing text-center">
+        ${
+          contributorObjIsValid
+            ? `<span class="badge badge-pill badge-success">Valid</span>`
+            : `<span class="badge badge-pill badge-warning">Missing Fields</span>`
+        }
       </td>
       <td class="middle aligned collapsing text-center">
         <button
