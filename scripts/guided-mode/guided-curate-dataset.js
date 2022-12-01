@@ -89,15 +89,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         if (!selectedPennsieveDatasetID) {
           errorArray.push({
             type: "notyf",
-            message: "Please select a dataset on Pennsieve to resume",
-          });
-          throw errorArray;
-        }
-
-        if (!selectedPennsieveDataset) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please select a Pennsieve dataset to resume",
+            message: "Please select a dataset on Pennsieve to resume from the dropdown above",
           });
           throw errorArray;
         }
@@ -158,6 +150,8 @@ const savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
       }
+      //Skip this page becausae we should not come back to it
+      guidedSkipPage("guided-intro-page-tab");
     }
 
     if (pageBeingLeftID === "guided-name-subtitle-tab") {
@@ -9365,6 +9359,7 @@ $(document).ready(async () => {
     guidedCreateSodaJSONObj();
     attachGuidedMethodsToSodaJSONObj();
     guidedTransitionFromHome();
+    guidedUnSkipPage("guided-intro-page-tab");
     await openPage("guided-intro-page-tab");
     /*introJs()
       .setOptions({
@@ -11725,9 +11720,11 @@ $(document).ready(async () => {
   //back button click handler
   $("#guided-back-button").on("click", () => {
     pageBeingLeftID = CURRENT_PAGE.id;
-    // If the user is on the first page, progress will be saved if they have a progress file.
-    // If not, they will simply be taken back to the home page.
-    if (pageBeingLeftID === "guided-intro-page-tab") {
+    // If the user is on the first two pages, Save and Exit if they try to go back again
+    if (
+      pageBeingLeftID === "guided-intro-page-tab" ||
+      pageBeingLeftID === "guided-name-subtitle-tab"
+    ) {
       guidedSaveAndExit();
       return;
     }
