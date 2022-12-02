@@ -469,15 +469,19 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
   }
 
   log.info("Done with startup");
+  console.log("DONE WITH STARTUP");
 
   // check integrity of all the core systems
   await run_pre_flight_checks();
 
   log.info("Running pre flight checks finished");
+  console.log("HASDGASDGDAGHDKKSAGHDH");
 
   // get apps base path
   const basepath = app.getAppPath();
   const resourcesPath = process.resourcesPath;
+
+  console.log("SENDING TEMPLATE PATHS REQUEST");
 
   // set the templates path
   try {
@@ -490,6 +494,8 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
     ipcRenderer.send("track-event", "Error", "Setting Templates Path");
     return;
   }
+
+  console.log("TEMPLATE PATHS REQUEST SUCCESSFUL");
 
   ipcRenderer.send("track-event", "Success", "Setting Templates Path");
 });
@@ -504,209 +510,212 @@ ipcRenderer.on("checkForAnnouncements", (event, index) => {
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 const run_pre_flight_checks = async (check_update = true) => {
   log.info("Running pre flight checks");
-  return new Promise(async (resolve) => {
-    let connection_response = "";
-    let agent_installed_response = "";
-    let agent_version_response = "";
-    let account_present = false;
+  console.log("Preflight checks");
+  let connection_response = "";
+  let agent_installed_response = "";
+  let agent_version_response = "";
+  let account_present = false;
 
-    // Check the internet connection and if available check the rest.
-    connection_response = await check_internet_connection();
+  // Check the internet connection and if available check the rest.
+  connection_response = await check_internet_connection();
 
-    if (!connection_response) {
-      await Swal.fire({
-        title: "No Internet Connection",
-        icon: "success",
-        text: "It appears that your computer is not connected to the internet. You may continue, but you will not be able to use features of SODA related to Pennsieve and especially none of the features located under the 'Manage Datasets' section.",
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: "I understand",
-        showConfirmButton: true,
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          // Do nothing
-        }
-      });
-      return resolve(false);
+  if (!connection_response) {
+    await Swal.fire({
+      title: "No Internet Connection",
+      icon: "success",
+      text: "It appears that your computer is not connected to the internet. You may continue, but you will not be able to use features of SODA related to Pennsieve and especially none of the features located under the 'Manage Datasets' section.",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "I understand",
+      showConfirmButton: true,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
+    return false;
+  }
+
+  // TODO: Remove? Test first.
+  await wait(500);
+
+  // TODO: Start the agent here or while determining installation and agent version.
+
+  // Check for an API key pair first. Calling the agent check without a config file, causes it to crash.
+  account_present = await check_api_key();
+
+  // TODO: Reimplement this section to work with the new agent
+  if (!account_present) {
+    if (check_update) {
+      checkNewAppVersion();
+    }
+
+    // If there is no API key pair, show the warning and let them add a key. Messages are dissmisable.
+    let { value: result } = await Swal.fire({
+      icon: "warning",
+      text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connected to Pennsieve. Would you like to do it now?",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Yes",
+      showCancelButton: true,
+      reverseButtons: reverseSwalButtons,
+      cancelButtonText: "I'll do it later",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
+    console.log(result);
+
+    // TODO: Especially test this part cuz its getting tricky in the conversion
+    if (result) {
+      console.log("Should open dropdown prmpt");
+      await openDropdownPrompt(null, "bf");
+      return false;
     } else {
-      await wait(500);
+      console.log("Here instead");
+      return true;
+    }
+  }
 
-      // Check for an API key pair first. Calling the agent check without a config file, causes it to crash.
-      account_present = await check_api_key();
-      if (account_present) {
-        // Check for an installed Pennsieve agent
-        await wait(500);
-        [agent_installed_response, agent_version_response] = await check_agent_installed();
-        // If no agent is installed, download the latest agent from Github and link to their docs for installation instrucations if needed.
-        if (!agent_installed_response) {
-          Swal.fire({
-            icon: "error",
-            title: "Pennsieve Agent error!",
-            html: agent_version_response,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            showCancelButton: true,
-            reverseButtons: reverseSwalButtons,
-            confirmButtonText: "Download now",
-            cancelButtonText: "Skip for now",
-          }).then(async (result) => {
-            if (result.isConfirmed) {
-              try {
-                let [browser_download_url, latest_agent_version] = await get_latest_agent_version();
-                shell.openExternal(browser_download_url);
-                shell.openExternal("https://docs.pennsieve.io/v1/docs/the-pennsieve-agent");
-              } catch (e) {
-                await Swal.fire({
-                  icon: "error",
-                  text: "We are unable to get the latest version of the Pennsieve Agent. Please try again later. If this issue persists please contact the SODA team at help@fairdataihub.org",
-                  heightAuto: false,
-                  backdrop: "rgba(0,0,0, 0.4)",
-                  showCancelButton: true,
-                  confirmButtonText: "Ok",
-                  showClass: {
-                    popup: "animate__animated animate__zoomIn animate__faster",
-                  },
-                  hideClass: {
-                    popup: "animate__animated animate__zoomOut animate__faster",
-                  },
-                });
-              }
-            }
-          });
-          resolve(false);
-        } else {
-          await wait(500);
-          // Check the installed agent version. We aren't enforcing the min limit yet but is the python version starts enforcing it, we might have to.
-          let browser_download_url,
-            latest_agent_version = "";
-          try {
-            [browser_download_url, latest_agent_version] = await check_agent_installed_version(
-              agent_version_response
-            );
-          } catch (e) {
-            notyf.dismiss(notification);
-            notyf.open({
-              type: "error",
-              message: "Unable to verify that your Pennsieve Agent is up to date.",
-            });
-            log.error("Unable to verify that your Pennsieve Agent is up to date.");
-            console.log(error);
-            log.error(error);
-            return resolve(false);
-          }
-          if (browser_download_url != "") {
-            Swal.fire({
-              icon: "warning",
-              text: "It appears that you are not running the latest version of the Pensieve Agent. We recommend that you update your software and restart SODA for the best experience.",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              showCancelButton: true,
-              confirmButtonText: "Download now",
-              cancelButtonText: "Skip for now",
-              reverseButtons: reverseSwalButtons,
-              showClass: {
-                popup: "animate__animated animate__zoomIn animate__faster",
-              },
-              hideClass: {
-                popup: "animate__animated animate__zoomOut animate__faster",
-              },
-            }).then(async (result) => {
-              if (result.isConfirmed) {
-                try {
-                  // If there is a newer agent version, download the latest agent from Github and link to their docs for installation instrucations if needed.
-                  [browser_download_url, latest_agent_version] = await get_latest_agent_version();
-                  shell.openExternal(browser_download_url);
-                  shell.openExternal("https://docs.pennsieve.io/v1/docs/the-pennsieve-agent");
-                } catch (e) {
-                  console.log(e);
-                  log.error(e);
-                  await Swal.fire({
-                    icon: "error",
-                    text: "We are unable to get the latest version of the Pennsieve Agent. Please try again later. If this issue persists please contact the SODA team at help@fairdataihub.org",
-                    heightAuto: false,
-                    backdrop: "rgba(0,0,0, 0.4)",
-                    showCancelButton: true,
-                    confirmButtonText: "Ok",
-                    showClass: {
-                      popup: "animate__animated animate__zoomIn animate__faster",
-                    },
-                    hideClass: {
-                      popup: "animate__animated animate__zoomOut animate__faster",
-                    },
-                  });
-                }
-                resolve(false);
-              }
-              if (result.isDismissed) {
-                if (check_update) {
-                  checkNewAppVersion();
-                }
-                await wait(500);
-                notyf.open({
-                  type: "final",
-                  message: "You're all set!",
-                });
-                if (launchAnnouncement) {
-                  await checkForAnnouncements("announcements");
-                  launchAnnouncement = false;
-                }
-                resolve(true);
-              }
-            });
-          } else {
-            if (check_update) {
-              checkNewAppVersion();
-            }
-            await wait(500);
-            notyf.open({
-              type: "final",
-              message: "You're all set!",
-            });
-            if (launchAnnouncement) {
-              await checkForAnnouncements("announcements");
-              launchAnnouncement = false;
-            }
-            resolve(true);
-          }
-        }
-      } else {
-        if (check_update) {
-          checkNewAppVersion();
-        }
-        // If there is no API key pair, show the warning and let them add a key. Messages are dissmisable.
-        Swal.fire({
-          icon: "warning",
-          text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connected to Pennsieve. Would you like to do it now?",
+  // an account is present
+  console.log("Checking the new agent.");
+  // Check for an installed Pennsieve agent
+  await wait(500);
+  [agent_installed, agent_version] = await check_agent_installed();
+
+  console.log("Agent installed version response: ", agent_version);
+
+  // If no agent is installed, download the latest agent from Github and link to their docs for installation instructions if needed.
+  if (!agent_installed) {
+    let { value: result } = await Swal.fire({
+      icon: "error",
+      title: "Pennsieve Agent error!",
+      text: "It seems you have not downloaded the Pennsieve Agent, or that you have the old Pennsieve Agent installed. It is highly recommended that you download the new Pennsieve Agent in order to use all of SODA's features.",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showCancelButton: true,
+      reverseButtons: reverseSwalButtons,
+      confirmButtonText: "Download now",
+      cancelButtonText: "Skip for now",
+    });
+
+    if (result) {
+      try {
+        let [browser_download_url, latest_agent_version] = await get_latest_agent_version();
+        shell.openExternal(browser_download_url);
+        shell.openExternal("https://docs.pennsieve.io/docs/uploading-files-programmatically");
+      } catch (e) {
+        await Swal.fire({
+          icon: "error",
+          text: "We are unable to get the latest version of the Pennsieve Agent. Please try again later. If this issue persists please contact the SODA team at help@fairdataihub.org",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: "Yes",
           showCancelButton: true,
-          reverseButtons: reverseSwalButtons,
-          cancelButtonText: "I'll do it later",
+          confirmButtonText: "Ok",
           showClass: {
             popup: "animate__animated animate__zoomIn animate__faster",
           },
           hideClass: {
             popup: "animate__animated animate__zoomOut animate__faster",
           },
-        }).then(async (result) => {
-          if (result.isConfirmed) {
-            await openDropdownPrompt(null, "bf");
-            resolve(false);
-          } else {
-            resolve(true);
-          }
         });
-        resolve(false);
       }
     }
+    return false;
+  }
+
+  // TODO: Check if we still need this wait
+  await wait(500);
+  // Check the installed agent version. We aren't enforcing the min limit yet but is the python version starts enforcing it, we might have to.
+  let browser_download_url,
+    latest_agent_version = "";
+
+  try {
+    [browser_download_url, latest_agent_version] = await check_agent_installed_version(
+      agent_version
+    );
+  } catch (e) {
+    // notyf.dismiss(notification);
+    notyf.open({
+      type: "error",
+      message: "Unable to verify that your Pennsieve Agent is up to date.",
+    });
+    log.error("Unable to verify that your Pennsieve Agent is up to date.");
+    console.log(error);
+    log.error(error);
+    return false;
+  }
+
+  // The agent is not up to date. Ask the user if they would like to update it.
+  if (browser_download_url) {
+    let { value: result } = await Swal.fire({
+      icon: "warning",
+      text: "It appears that you are not running the latest version of the Pensieve Agent. We recommend that you update your software and restart SODA for the best experience.",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showCancelButton: true,
+      confirmButtonText: "Download now",
+      cancelButtonText: "Skip for now",
+      reverseButtons: reverseSwalButtons,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
+    console.log("Result: ", result);
+
+    if (result) {
+      try {
+        // If there is a newer agent version, download the latest agent from Github and link to their docs for installation instrucations if needed.
+        [browser_download_url, latest_agent_version] = await get_latest_agent_version();
+        shell.openExternal(browser_download_url);
+        shell.openExternal("https://docs.pennsieve.io/docs/uploading-files-programmatically");
+      } catch (e) {
+        console.log(e);
+        log.error(e);
+        await Swal.fire({
+          icon: "error",
+          text: "We are unable to get the latest version of the Pennsieve Agent. Please try again later. If this issue persists please contact the SODA team at help@fairdataihub.org",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          showCancelButton: true,
+          confirmButtonText: "Ok",
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        });
+      }
+      return false;
+    }
+  }
+
+  if (check_update) {
+    checkNewAppVersion();
+  }
+
+  await wait(500);
+
+  notyf.open({
+    type: "final",
+    message: "You're all set!",
   });
+
+  await checkForAnnouncements("announcements");
+  console.log("Returning from preflight checks");
+  return true;
 };
 
 // Check if the Pysoda server is live
@@ -889,6 +898,7 @@ const check_api_key = async () => {
   }
 };
 
+// return the agent version or an error if the agent is not installed
 const check_agent_installed = async () => {
   let notification = null;
   notification = notyf.open({
@@ -912,6 +922,8 @@ const check_agent_installed = async () => {
     return [false, userErrorMessage(error)];
   }
 
+  console.log(responseObject);
+
   let { agent_version } = responseObject.data;
 
   notyf.dismiss(notification);
@@ -932,9 +944,11 @@ const check_agent_installed_version = async (agent_version) => {
   await wait(800);
   let latest_agent_version = "";
   let browser_download_url = "";
+
+  // IMP: error in subfunction is handled by caller
   [browser_download_url, latest_agent_version] = await get_latest_agent_version();
 
-  if (latest_agent_version != agent_version) {
+  if (agent_version.indexOf(latest_agent_version) === -1) {
     notyf.dismiss(notification);
     notyf.open({
       type: "warning",
@@ -943,6 +957,7 @@ const check_agent_installed_version = async (agent_version) => {
     log.warn(`Current agent version: ${agent_version}`);
     log.warn(`Latest agent version: ${latest_agent_version}`);
   } else {
+    console.log("We have the latest agent version");
     notyf.dismiss(notification);
     notyf.open({
       type: "success",
@@ -954,47 +969,59 @@ const check_agent_installed_version = async (agent_version) => {
   return [browser_download_url, latest_agent_version];
 };
 
-const get_latest_agent_version = () => {
-  return new Promise((resolve, reject) => {
-    $.getJSON("https://api.github.com/repos/Pennsieve/agent/releases")
-      .done((release_res) => {
-        let release = release_res[0];
-        let latest_agent_version = release.tag_name;
-        if (process.platform == "darwin") {
-          reverseSwalButtons = true;
-          release.assets.forEach((asset, index) => {
-            let file_name = asset.name;
-            if (path.extname(file_name) == ".pkg") {
-              browser_download_url = asset.browser_download_url;
-            }
-          });
-        }
-        if (process.platform == "win32") {
-          reverseSwalButtons = false;
-          release.assets.forEach((asset, index) => {
-            let file_name = asset.name;
-            if (path.extname(file_name) == ".msi" || path.extname(file_name) == ".exe") {
-              browser_download_url = asset.browser_download_url;
-            }
-          });
-        }
-        if (process.platform == "linux") {
-          reverseSwalButtons = false;
-          release.assets.forEach((asset, index) => {
-            let file_name = asset.name;
-            if (path.extname(file_name) == ".deb") {
-              browser_download_url = asset.browser_download_url;
-            }
-          });
-        }
+const get_latest_agent_version = async () => {
+  let browser_download_url = undefined;
 
-        resolve([browser_download_url, latest_agent_version]);
-      })
-      .fail((error) => {
-        console.log("Request failed: " + error);
-        reject();
-      });
-  });
+  // let the error raise up to the caller if one occurs
+  let releasesResponse = await axios.get(
+    "https://api.github.com/repos/Pennsieve/pennsieve-agent/releases"
+  );
+
+  let releases = releasesResponse.data;
+  let release = releases[0];
+  console.log(release);
+  let latest_agent_version = release.tag_name;
+
+  if (process.platform == "darwin") {
+    reverseSwalButtons = true;
+    release.assets.forEach((asset, index) => {
+      let file_name = asset.name;
+      if (path.extname(file_name) == ".pkg") {
+        browser_download_url = asset.browser_download_url;
+      }
+    });
+  }
+
+  if (process.platform == "win32") {
+    reverseSwalButtons = false;
+    release.assets.forEach((asset, index) => {
+      let file_name = asset.name;
+      if (path.extname(file_name) == ".msi" || path.extname(file_name) == ".exe") {
+        browser_download_url = asset.browser_download_url;
+      }
+    });
+  }
+
+  if (process.platform == "linux") {
+    reverseSwalButtons = false;
+    release.assets.forEach((asset, index) => {
+      let file_name = asset.name;
+      console.log(file_name);
+      console.log(path.extname(file_name));
+      if (path.extname(file_name) == ".deb") {
+        browser_download_url = asset.browser_download_url;
+      }
+    });
+  }
+
+  if (browser_download_url == undefined || latest_agent_version == undefined) {
+    throw new Error("Trouble getting the latest agent version.");
+  }
+
+  console.log(browser_download_url);
+  console.log(latest_agent_version);
+
+  return [browser_download_url, latest_agent_version];
 };
 
 const checkNewAppVersion = () => {
@@ -1175,6 +1202,7 @@ const bfListTeams = document.querySelector("#bf_list_teams");
 const bfListRolesTeam = document.querySelector("#bf_list_roles_team");
 const bfAddPermissionTeamBtn = document.getElementById("button-add-permission-team");
 // Guided mode dropdowns
+const guidedBfListUsersPi = document.querySelector("#guided_bf_list_users_pi");
 const guidedBfListUsersAndTeams = document.querySelector("#guided_bf_list_users_and_teams");
 
 //Pennsieve dataset status
@@ -3169,10 +3197,15 @@ const setupPublicationOptionsPopover = () => {
   });
 };
 
-async function submitReviewDatasetCheck(res) {
-  var reviewstatus = res[0];
-  var publishingStatus = res[1];
-  if (publishingStatus === "PUBLISH_IN_PROGRESS") {
+const submitReviewDatasetCheck = async (res) => {
+  console.log(res);
+  console.log(res["publishing_status"]);
+  console.log(res["review_request_status"]);
+  let reviewstatus = res["review_request_status"];
+  let publishingStatus = res["publishing_status"];
+  // console.log(reviewStatus);
+  // console.log(publishingStatus);
+  if (res["publishing_status"] === "PUBLISH_IN_PROGRESS") {
     Swal.fire({
       icon: "error",
       title: "Your dataset is currently being published. Please wait until it is completed.",
@@ -3187,7 +3220,7 @@ async function submitReviewDatasetCheck(res) {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     });
-  } else if (reviewstatus === "requested") {
+  } else if (res["review_request_status"] === "requested") {
     Swal.fire({
       icon: "error",
       title: "Cannot submit the dataset for review at this time!",
@@ -3202,7 +3235,7 @@ async function submitReviewDatasetCheck(res) {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     });
-  } else if (publishingStatus === "PUBLISH_SUCCEEDED") {
+  } else if (res["publishing_status"] === "PUBLISH_SUCCEEDED") {
     // embargo release date represents the time a dataset that has been reviewed for publication becomes public
     // user sets this value in the UI otherwise it stays an empty string
     let embargoReleaseDate = "";
@@ -3264,6 +3297,7 @@ async function submitReviewDatasetCheck(res) {
         if (checkedRadioButton === "embargo-date-check") {
           // set the embargoDate variable if so
           embargoReleaseDate = $("#tui-date-picker-target").val();
+          console.log(embargoReleaseDate);
         }
       },
     });
@@ -3290,10 +3324,10 @@ async function submitReviewDatasetCheck(res) {
       },
     });
     // submit the dataset for review with the given embargoReleaseDate
+    console.log(embargoReleaseDate);
     await submitReviewDataset(embargoReleaseDate);
   } else {
     // status is NOT_PUBLISHED
-
     // embargo release date represents the time a dataset that has been reviewed for publication becomes public
     // user sets this value in the UI otherwise it stays an empty string
     let embargoReleaseDate = "";
@@ -3353,6 +3387,7 @@ async function submitReviewDatasetCheck(res) {
         if (checkedRadioButton === "embargo-date-check") {
           // set the embargoDate variable if so
           embargoReleaseDate = $("#tui-date-picker-target").val();
+          console.log(embargoReleaseDate);
         }
       },
     });
@@ -3379,9 +3414,10 @@ async function submitReviewDatasetCheck(res) {
     });
 
     // submit the dataset for review with the given embargoReleaseDate
+    console.log(embargoReleaseDate);
     await submitReviewDataset(embargoReleaseDate);
   }
-}
+};
 
 ipcRenderer.on("warning-publish-dataset-selection", (event, index) => {
   if (index === 0) {
@@ -3397,7 +3433,9 @@ ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
   $("#submit_prepublishing_review-spinner").hide();
 });
 
-async function submitReviewDataset(embargoReleaseDate) {
+const submitReviewDataset = async (embargoReleaseDate) => {
+  console.log("within submit review dataset");
+  console.log(embargoReleaseDate);
   $("#para-submit_prepublishing_review-status").text("");
   bfRefreshPublishingDatasetStatusBtn.disabled = true;
   var selectedBfAccount = defaultBfAccount;
@@ -3436,7 +3474,7 @@ async function submitReviewDataset(embargoReleaseDate) {
     try {
       // exclude the user's selected files from publication
       //check res
-      await api.updateDatasetExcludedFiles(defaultBfDatasetId, files);
+      await api.updateDatasetExcludedFiles(defaultBfAccount, selectedBfDataset, files);
     } catch (error) {
       clientError(error);
       // log the error
@@ -3543,7 +3581,7 @@ async function submitReviewDataset(embargoReleaseDate) {
     "",
     "individual-question post-curation"
   );
-}
+};
 
 // //Withdraw dataset from review
 function withdrawDatasetSubmission() {
@@ -3595,9 +3633,13 @@ function withdrawDatasetSubmission() {
   });
 }
 
-async function withdrawDatasetCheck(res) {
-  var reviewstatus = res["publishing_status"];
-  if (reviewstatus !== "requested") {
+const withdrawDatasetCheck = async (res) => {
+  let reviewstatus = res["publishing_status"];
+  let requestStatus = res["review_request_status"];
+  console.log(requestStatus);
+  console.log(res);
+  console.log("here");
+  if (requestStatus != "requested") {
     Swal.fire({
       icon: "error",
       title: "Your dataset is not currently under review!",
@@ -3648,9 +3690,9 @@ async function withdrawDatasetCheck(res) {
       await withdrawReviewDataset();
     }
   }
-}
+};
 
-async function withdrawReviewDataset() {
+const withdrawReviewDataset = async () => {
   bfWithdrawReviewDatasetBtn.disabled = true;
   var selectedBfAccount = $("#current-bf-account").text();
   var selectedBfDataset = $(".bf-dataset-span")
@@ -3726,7 +3768,7 @@ async function withdrawReviewDataset() {
       ["Withdraw dataset"]
     );
   }
-}
+};
 
 //////////////////////////////////
 // Helper functions
@@ -3960,8 +4002,9 @@ const showPrePublishingPageElements = () => {
   $(".pre-publishing-continue-container").hide();
 };
 
-async function showPublishingStatus(callback) {
+const showPublishingStatus = async (callback) => {
   return new Promise(async function (resolve, reject) {
+    console.log(callback);
     if (callback == "noClear") {
       var nothing;
     }
@@ -3973,11 +4016,19 @@ async function showPublishingStatus(callback) {
     if (selectedBfDataset === "None") {
       resolve();
     } else {
+      console.log(selectedBfDataset);
       try {
+        console.log("before call");
         let get_publishing_status = await client.get(
-          `/disseminate_datasets/datasets/${selectedBfDataset}/publishing_status?selected_account=${selectedBfAccount}`
+          `/disseminate_datasets/datasets/${selectedBfDataset}/publishing_status`,
+          {
+            params: {
+              selected_account: selectedBfAccount,
+            },
+          }
         );
         let res = get_publishing_status.data;
+        console.log(res);
 
         try {
           //update the dataset's publication status and display
@@ -4023,11 +4074,11 @@ async function showPublishingStatus(callback) {
       }
     }
   });
-}
+};
 
 function publishStatusOutputConversion(res) {
-  var reviewStatus = res["publishing_status"];
-  var publishStatus = res["review_request_status"];
+  var reviewStatus = res["review_request_status"];
+  var publishStatus = res["publishing_status"];
 
   var outputMessage = "";
   if (reviewStatus === "draft" || reviewStatus === "cancelled") {
@@ -4423,6 +4474,7 @@ async function showDefaultBFAccount() {
   try {
     let bf_default_acc_req = await client.get("manage_datasets/bf_default_account_load");
     let accounts = bf_default_acc_req.data.defaultAccounts;
+    console.log("Result is: ", bf_default_acc_req.data);
     if (accounts.length > 0) {
       var myitemselect = accounts[0];
       defaultBfAccount = myitemselect;
@@ -5177,6 +5229,8 @@ const dropHelper = async (
     /// Get all the file information
     var itemPath = ev1[i].path;
     var itemName = path.parse(itemPath).base;
+    console.log(itemPath);
+    console.log(itemName);
     var duplicate = false;
     var statsObj = fs.statSync(itemPath);
     // check for duplicate or files with the same name
@@ -7143,11 +7197,12 @@ document.getElementById("button-generate").addEventListener("click", async funct
 
   statusText = "Please wait while we verify a few things...";
   if (dataset_destination == "Pennsieve") {
-    let supplementary_checks = await run_pre_flight_checks(false);
-    if (!supplementary_checks) {
-      $("#sidebarCollapse").prop("disabled", false);
-      return;
-    }
+    /// TODO: Uncomment this
+    // let supplementary_checks = await run_pre_flight_checks(false);
+    // if (!supplementary_checks) {
+    //   $("#sidebarCollapse").prop("disabled", false);
+    //   return;
+    // }
   }
 
   // from here you can modify
@@ -7174,6 +7229,8 @@ document.getElementById("button-generate").addEventListener("click", async funct
     }
   }
 
+  console.log("Checking empty files and folders");
+
   let emptyFilesFoldersResponse;
   try {
     emptyFilesFoldersResponse = await client.post(
@@ -7192,6 +7249,8 @@ document.getElementById("button-generate").addEventListener("click", async funct
     $("#sidebarCollapse").prop("disabled", false);
     return;
   }
+
+  console.log("Finished checking for empty files and folders");
 
   let { data } = emptyFilesFoldersResponse;
 
@@ -7382,9 +7441,6 @@ async function initiate_generate() {
     datasetUploadSession.startSession();
   }
 
-  // clear the Pennsieve Queue (added to Renderer side for Mac users that are unable to clear the queue on the Python side)
-  clearQueue();
-
   client
     .post(
       `/curate_datasets/curation`,
@@ -7403,14 +7459,14 @@ async function initiate_generate() {
       log.info("Completed curate function");
 
       // log relevant curation details about the dataset generation/Upload to Google Analytics
-      logCurationSuccessToAnalytics(
-        manifest_files_requested,
-        main_total_generate_dataset_size,
-        dataset_name,
-        dataset_destination,
-        uploadedFiles,
-        false
-      );
+      // logCurationSuccessToAnalytics(
+      //   manifest_files_requested,
+      //   main_total_generate_dataset_size,
+      //   dataset_name,
+      //   dataset_destination,
+      //   uploadedFiles,
+      //   false
+      // );
       //Allow guided_mode_view to be clicked again
       document.getElementById("guided_mode_view").style.pointerEvents = "";
 
@@ -7488,25 +7544,25 @@ async function initiate_generate() {
 
       // wait to see if the uploaded files or size will grow once the client has time to ask for the updated information
       // if they stay zero that means nothing was uploaded
-      if (uploadedFiles === 0 || uploadedFilesSize === 0) {
-        await wait(2000);
-      }
+      // if (uploadedFiles === 0 || uploadedFilesSize === 0) {
+      //   await wait(2000);
+      // }
 
       // log the curation errors to Google Analytics
-      logCurationErrorsToAnalytics(
-        uploadedFiles,
-        uploadedFilesSize,
-        dataset_destination,
-        main_total_generate_dataset_size,
-        increaseInFileSize,
-        datasetUploadSession,
-        false
-      );
+      // logCurationErrorsToAnalytics(
+      //   uploadedFiles,
+      //   uploadedFilesSize,
+      //   dataset_destination,
+      //   main_total_generate_dataset_size,
+      //   increaseInFileSize,
+      //   datasetUploadSession,
+      //   false
+      // );
     });
 
   // Progress tracking function for main curate
   var countDone = 0;
-  var timerProgress = setInterval(main_progressfunction, 1000);
+  var timerProgress = setInterval(main_progressfunction, 50);
   var successful = false;
 
   async function main_progressfunction() {
@@ -7567,48 +7623,55 @@ async function initiate_generate() {
 
     let { data } = mainCurationProgressResponse;
 
+    console.log(data);
+
     main_curate_status = data["main_curate_status"];
     var start_generate = data["start_generate"];
     var main_curate_progress_message = data["main_curate_progress_message"];
     main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
     var main_generated_dataset_size = data["main_generated_dataset_size"];
     var elapsed_time_formatted = data["elapsed_time_formatted"];
+    let total_files_uploaded = data["total_files_uploaded"];
 
     if (start_generate === 1) {
+      var value = (main_generated_dataset_size / main_total_generate_dataset_size) * 100;
+      generateProgressBar.value = value;
+      statusMeter.value = value;
+      if (main_total_generate_dataset_size < displaySize) {
+        var totalSizePrint = main_total_generate_dataset_size.toFixed(2) + " B";
+      } else if (main_total_generate_dataset_size < displaySize * displaySize) {
+        var totalSizePrint = (main_total_generate_dataset_size / displaySize).toFixed(2) + " KB";
+      } else if (main_total_generate_dataset_size < displaySize * displaySize * displaySize) {
+        var totalSizePrint =
+          (main_total_generate_dataset_size / displaySize / displaySize).toFixed(2) + " MB";
+      } else {
+        var totalSizePrint =
+          (main_total_generate_dataset_size / displaySize / displaySize / displaySize).toFixed(2) +
+          " GB";
+      }
+      var progressMessage = "";
+      var statusProgressMessage = "";
+      progressMessage += main_curate_progress_message + "<br>";
+      statusProgressMessage += "Progress: " + value.toFixed(2) + "%" + "<br>";
+      statusProgressMessage += "Elapsed time: " + elapsed_time_formatted + "<br>";
+      progressMessage +=
+        "Progress: " + value.toFixed(2) + "%" + " (total size: " + totalSizePrint + ") " + "<br>";
+      progressMessage += "Elapsed time: " + elapsed_time_formatted + "<br>";
+      progressMessage += "Total files uploaded: " + total_files_uploaded + "<br>";
+      progressStatus.innerHTML = progressMessage;
+      statusText.innerHTML = statusProgressMessage;
       divGenerateProgressBar.style.display = "block";
+
       if (main_curate_progress_message.includes("Success: COMPLETED!")) {
+        // wait one second to dusplay the uploaded files in the case of a small upload where it will finish before the total file
+        // count is updated
+        await wait(1000);
+
         generateProgressBar.value = 100;
         statusMeter.value = 100;
         progressStatus.innerHTML = main_curate_status + smileyCan;
         statusText.innerHTML = main_curate_status + smileyCan;
         successful = true;
-      } else {
-        var value = (main_generated_dataset_size / main_total_generate_dataset_size) * 100;
-        generateProgressBar.value = value;
-        statusMeter.value = value;
-        if (main_total_generate_dataset_size < displaySize) {
-          var totalSizePrint = main_total_generate_dataset_size.toFixed(2) + " B";
-        } else if (main_total_generate_dataset_size < displaySize * displaySize) {
-          var totalSizePrint = (main_total_generate_dataset_size / displaySize).toFixed(2) + " KB";
-        } else if (main_total_generate_dataset_size < displaySize * displaySize * displaySize) {
-          var totalSizePrint =
-            (main_total_generate_dataset_size / displaySize / displaySize).toFixed(2) + " MB";
-        } else {
-          var totalSizePrint =
-            (main_total_generate_dataset_size / displaySize / displaySize / displaySize).toFixed(
-              2
-            ) + " GB";
-        }
-        var progressMessage = "";
-        var statusProgressMessage = "";
-        progressMessage += main_curate_progress_message + "<br>";
-        statusProgressMessage += "Progress: " + value.toFixed(2) + "%" + "<br>";
-        statusProgressMessage += "Elapsed time: " + elapsed_time_formatted + "<br>";
-        progressMessage +=
-          "Progress: " + value.toFixed(2) + "%" + " (total size: " + totalSizePrint + ") " + "<br>";
-        progressMessage += "Elapsed time: " + elapsed_time_formatted + "<br>";
-        progressStatus.innerHTML = progressMessage;
-        statusText.innerHTML = statusProgressMessage;
       }
     } else {
       statusText.innerHTML =
@@ -7618,6 +7681,7 @@ async function initiate_generate() {
     }
 
     if (main_curate_status === "Done") {
+      console.log("Finished uploading now");
       $("#sidebarCollapse").prop("disabled", false);
       countDone++;
       if (countDone > 1) {
@@ -7741,7 +7805,7 @@ async function initiate_generate() {
     }
   };
 
-  let timerCheckForBucketUpload = setInterval(checkForBucketUpload, 1000);
+  // let timerCheckForBucketUpload = setInterval(checkForBucketUpload, 1000);
 } // end initiate_generate
 
 const show_curation_shortcut = () => {
@@ -7970,11 +8034,7 @@ const curation_consortium_check = async (mode = "") => {
       },
     });
     let res = bf_account_details_req.data;
-
-    let acc_details = res["account_details"];
-    // remove html tags from response
-    acc_details = acc_details.replace(/<[^>]*>?/gm, "");
-
+    console.log(res);
     let organization_id = res["organization_id"];
     if (organization_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0") {
       $("#current_curation_team_status").text("None");
@@ -8682,6 +8742,7 @@ function logGeneralOperationsForAnalytics(category, analyticsPrefix, granularity
  */
 const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   // check that a dataset name or id is provided
+  // console.log(datasetN)
   if (!datasetIdOrName || datasetIdOrName === "") {
     throw new Error(
       "Error: Must provide a valid dataset to log status of pre-publishing checklist items from."
@@ -8699,7 +8760,7 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   // set the subtitle's status
   statuses.subtitle = description && description.length ? true : false;
 
-  let readme = await api.getDatasetReadme(defaultBfAccount, defaultBfDatasetId);
+  let readme = await api.getDatasetReadme(defaultBfAccount, datasetIdOrName);
 
   // set the readme's status
   statuses.readme = readme && readme.length >= 1 ? true : false;
@@ -8962,9 +9023,10 @@ $("#validate_dataset_bttn").on("click", async () => {
 
 //function used to scale banner images
 const scaleBannerImage = async (imagePath) => {
+  console.log(imagePath);
   try {
     let imageScaled = await client.post(
-      `/manage_datasets/bf_banner_image/scale_image`,
+      `/manage_datasets/scale_image`,
       {
         image_file_path: imagePath,
       },

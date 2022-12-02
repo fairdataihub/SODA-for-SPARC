@@ -3112,6 +3112,7 @@ const exitCurate = async (resetProgressTabs, start_over = false) => {
 
 const wipeOutCurateProgress = async () => {
   // set SODA json object back
+  console.log("resetting the sodajson object");
   sodaJSONObj = {
     "starting-point": { type: "" },
     "dataset-structure": {},

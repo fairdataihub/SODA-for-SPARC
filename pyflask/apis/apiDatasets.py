@@ -1,37 +1,39 @@
 from flask_restx import Resource, reqparse, fields
 from namespaces import get_namespace, NamespaceEnum
 from errorHandlers import notBadRequestException, handle_http_error
-from datasets import get_role, get_dataset_by_id, get_current_collection_names, upload_collection_names, remove_collection_names
 import platform 
 import subprocess
 import os
+from datasets import ( 
+    get_role, 
+    get_dataset_by_id, 
+    get_current_collection_names, 
+    upload_collection_names, 
+    remove_collection_names
+)
 
 api = get_namespace(NamespaceEnum.DATASETS)
-
-
 
 
 model_get_role_response = api.model("GetRoleResponse", {
   "role": fields.String(description="The role of the dataset")
 })
 
-
-@api.route("/<string:dataset_name_or_id>/role")
-@api.doc(params={"dataset_name_or_id": "The name or id of the dataset"})
-
-@api.route('/<string:dataset_name_or_id>/role')
+# @api.route("/<string:dataset_name_or_id>/role")
+@api.route('/<string:dataset_name>/role')
 class DatasetRole(Resource):
   parser = reqparse.RequestParser()
   parser.add_argument('pennsieve_account', type=str, required=True, help='Pennsieve account', location="args")
+  @api.doc(params={"dataset_name": "The name of the dataset"})
 
   @api.expect(parser)
   @api.doc(responses={200: 'Success', 400: 'Bad Request', 500: "Internal server error"})
-  def get(self, dataset_name_or_id):
+  def get(self, dataset_name):
     args = self.parser.parse_args()
     pennsieve_account = args.get('pennsieve_account')
 
     try:
-      return get_role(pennsieve_account, dataset_name_or_id) 
+      return get_role(pennsieve_account, dataset_name) 
     except Exception as e:
       if notBadRequestException(e):
         api.abort(500, str(e))
@@ -80,7 +82,7 @@ class datasetCollection(Resource):
                 api.abort(500, str(e))
             raise e
 
-        #remove selected dataset from add argument
+    #remove selected dataset from add argument
     #change the urls to have dataset ids when being used
     upload_collection_parse = reqparse.RequestParser(bundle_errors=True)
     upload_collection_parse.add_argument('selected_account', type=str, required=True, help="The target account to work with.", location="args")
@@ -133,8 +135,6 @@ class OpenDataset(Resource):
     def get(self):
         args = self.parser.parse_args()
         dataset_path = args.get('dataset_path')
-
-        
 
         try:
           if platform.system() == "Windows":

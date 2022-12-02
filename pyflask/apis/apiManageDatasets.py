@@ -9,7 +9,7 @@ from manageDatasets import (
     bf_dataset_account,
     bf_account_details,
     bf_submit_dataset,
-    bf_new_dataset_folder,
+    create_new_dataset,
     bf_rename_dataset,
     bf_add_permission,
     bf_get_users,
@@ -28,7 +28,7 @@ from manageDatasets import (
     bf_change_dataset_status,
     bf_default_account_load,
     get_username,
-    check_agent_install,
+    # check_agent_install,
     SODA_SPARC_API_KEY,
     bf_submit_dataset_upload_details,
     update_dataset_readme,
@@ -37,6 +37,9 @@ from manageDatasets import (
     update_dataset_tags,
     scale_image
 )
+
+from pysodaUtils import get_agent_version, start_agent
+import time 
 
 from namespaces import get_namespace, NamespaceEnum
 from errorHandlers import notBadRequestException
@@ -220,6 +223,9 @@ class BfAccountList(Resource):
   @api.doc(responses={500: 'There was an internal server error'}, description="Returns a list of the user's accounts stored in the system.")
   def get(self):
     try:
+      api.logger.info("Starting Pennsieve Agent")
+      start_agent()
+      api.logger.info("Agent started")
       return bf_account_list()
     except Exception as e:
       api.abort(500, str(e))
@@ -240,6 +246,11 @@ class BfDefaultAccountLoad(Resource):
   @api.doc(responses={500: 'There was an internal server error'}, description="Returns the first valid account as the default account. Usually SODA-Pennsieve.")
   def get(self):
     try:
+      api.logger.info("Getting the account")
+      # wait for 2 seconds
+      time.sleep(2)
+      start_agent()
+      api.logger.info("Got the account")
       return bf_default_account_load()
     except Exception as e:
       api.abort(500, str(e))
@@ -348,13 +359,10 @@ class CheckAgentInstall(Resource):
   @api.marshal_with(model_pennsieve_agent_response, False, 200)
   @api.doc(responses={500: 'There was an internal server error', 400: "Pennsieve Agent is not installed"}, description="Returns the Pennsieve Agent version if it is installed.")
   def get(self):
-    from pennsieve.api.agent import AgentError
     try:
-      return check_agent_install()
+      return get_agent_version()
     except Exception as e:
       # if the exception is an AgentError, then return a 500 
-      if isinstance(e, AgentError):
-        api.abort(400, str(e))
       api.abort(500, str(e))
 
 
@@ -743,7 +751,9 @@ class BfGetUsername(Resource):
   parser_get_username.add_argument('selected_account', type=str, required=True, location='args', help='The target account to rename the dataset for.')
 
   @api.marshal_with(model_get_username_response, 200, False)
-  @api.doc(responses={500: "Internal Server Error", 400: "Bad Request"}, description="Retrieves the current SODA user's first and last name stored in the Pennsieve system.")
+  @api.doc(responses={500: "Internal Server Error", 400: "Bad Request"}, 
+           description="Retrieves the current SODA user's first and last name stored on Pennsieve."
+          )
   @api.expect(parser_get_username)
   def get(self):
     
@@ -843,7 +853,7 @@ class BfCreateDatasetFolder(Resource):
     dataset_name = data.get('input_dataset_name')
 
     try:
-      return bf_new_dataset_folder(dataset_name, selected_account)
+      return create_new_dataset(dataset_name, selected_account)
     except Exception as e:
       if notBadRequestException(e):
         api.abort(500, str(e))
@@ -858,7 +868,8 @@ class BfCreateDatasetFolder(Resource):
   @api.expect(parser_submit_dataset)
   @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request', 200: 'OK'}, description="Add data to an existing dataset entity on the Pennsieve platform.")
   def put(self):
-    from pennsieve.api.agent import AgentError
+
+    api.logger.info("In the route")
 
     data = self.parser_submit_dataset.parse_args()
 
@@ -870,12 +881,7 @@ class BfCreateDatasetFolder(Resource):
     try:
       return bf_submit_dataset(selected_account, selected_dataset, filepath)
     except Exception as e:
-      # TODO: Test this has 'message' property
-      if isinstance(e, AgentError):
-        # for now raise the mysterious AgentError all the way back to the client. 
-        # pretty sure we don't have to do this but I'll have to verify with tests later
-        api.abort(400, str(e))
-      elif notBadRequestException(e): 
+      if notBadRequestException(e): 
         api.abort(500, str(e))
       else:
         raise e
@@ -893,6 +899,7 @@ model_upload_progress_response = api.model("UploadProgressResponse", {
   'total_file_size': fields.Integer(required=True, description="The total size of the file being uploaded."),
   'upload_file_size': fields.Integer(required=True, description="The size of the file being uploaded."),
   'elapsed_time_formatted': fields.String(required=True, description="The elapsed time of the upload."),
+  'files_uploaded_status': fields.String(required=True, description="The amount of files uploaded vs the amount to upload."),
 })
 
 @api.route('/datasets/upload_progress')
@@ -912,25 +919,25 @@ class BfGetUploadProgress(Resource):
 
 
 
-model_upload_details_response = api.model("UploadDetailsResponse", {
-  'uploaded_files':  fields.Integer(required=True, description="The number of files uploaded."),
-  'uploaded_file_size': fields.Integer(required=True, description="The size of the file being uploaded in bytes."),
-  'did_fail': fields.Boolean(required=True, description="Whether or not the upload failed."),
-  'did_upload': fields.Boolean(required=True, description="To inform the user that the upload failed and that it failed after uploading data - important for logging upload sessions"),
-  'upload_folder_count': fields.Integer(required=True, description="The number of folders that have been uploaded."),
-})
+# model_upload_details_response = api.model("UploadDetailsResponse", {
+#   'uploaded_files':  fields.Integer(required=True, description="The number of files uploaded."),
+#   'uploaded_file_size': fields.Integer(required=True, description="The size of the file being uploaded in bytes."),
+#   'did_fail': fields.Boolean(required=True, description="Whether or not the upload failed."),
+#   'did_upload': fields.Boolean(required=True, description="To inform the user that the upload failed and that it failed after uploading data - important for logging upload sessions"),
+#   'upload_folder_count': fields.Integer(required=True, description="The number of folders that have been uploaded."),
+# })
 
-@api.route('/datasets/upload_details')
-class BfSubmitDatasetUploadDetails(Resource):
+# @api.route('/datasets/upload_details')
+# class BfSubmitDatasetUploadDetails(Resource):
 
 
-  @api.doc(responses={500: 'There was an internal server error'}, description="Get the upload details required for logging the upload session correctly.")
-  @api.marshal_with(model_upload_details_response, 200, False)
-  def get(self):
-    try: 
-      return bf_submit_dataset_upload_details()
-    except Exception as e:
-      api.abort(500, str(e))
+#   @api.doc(responses={500: 'There was an internal server error'}, description="Get the upload details required for logging the upload session correctly.")
+#   @api.marshal_with(model_upload_details_response, 200, False)
+#   def get(self):
+#     try: 
+#       return bf_submit_dataset_upload_details()
+#     except Exception as e:
+#       api.abort(500, str(e))
 
 
 
@@ -943,8 +950,6 @@ model_get_readme_response = api.model("GetReadmeResponse", {
 
 @api.route('/datasets/<string:dataset_name_or_id>/readme')
 class BfGetDatasetReadme(Resource):
-
-
   parser_readme = reqparse.RequestParser(bundle_errors=True)
   parser_readme.add_argument('selected_account', type=str, required=True, location='args', help='The target account to rename the dataset for.')
   parser_readme.add_argument('updated_readme', type=str, required=True, location='json', help='The updated readme content to save.')

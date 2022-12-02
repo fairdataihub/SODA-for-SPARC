@@ -61,7 +61,7 @@ const trackPennsieveImportProgress = async (progressContainer, hide) => {
  *    "manifest_error_message": ""
  * }
  */
-var bf_request_and_populate_dataset = async (
+const bf_request_and_populate_dataset = async (
   sodaJSONObj,
   progressContainer = undefined,
   hide = true
