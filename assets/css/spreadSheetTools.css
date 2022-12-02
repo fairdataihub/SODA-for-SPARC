@@ -63,12 +63,12 @@ body {
   background: #666;
 }
 
-.jexcel::-webkit-scrollbar {
+table::-webkit-scrollbar {
   width: 6px;
   height: 100%;
   background-color: #c5c5c5;
 }
-.jexcel::-webkit-scrollbar-thumb {
+table::-webkit-scrollbar-thumb {
   background: #666;
 }
 
