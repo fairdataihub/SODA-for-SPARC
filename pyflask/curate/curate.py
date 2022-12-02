@@ -3506,28 +3506,6 @@ def main_curate_function_progress():
     }
 
 
-def main_curate_function_upload_details():
-    """
-    Function frequently called by front end to help keep track of the amount of files that have
-    been successfully uploaded to Pennsieve, and the size of the uploaded files
-    Also tells us how many files have been copied (double usage of both variables) to a destination folder
-    for local dataset generation.
-    """
-    global main_curation_uploaded_files
-    global main_generated_dataset_size
-    global uploaded_folder_counter
-    global current_size_of_uploaded_files
-    # when the user creates a new Pennsieve dataset return back their new dataset id
-    global generated_dataset_id
-
-    return {
-        "main_curation_uploaded_files": main_curation_uploaded_files,
-        "current_size_of_uploaded_files": current_size_of_uploaded_files,
-        "uploaded_folder_counter": uploaded_folder_counter,
-        "generated_dataset_id": generated_dataset_id,
-    }
-
-
 def preview_dataset(soda_json_structure):
     """
     Associated with 'Preview' button in the SODA interface
