@@ -2815,9 +2815,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             total_dataset_files += file_paths_count
         
 
-        print("DS in question: *******8")
-        print(ds)
-
 
         # main_curate_progress_message = "About to update after doing recursive dataset scan"
         # 3. Add high-level metadata files to a list
@@ -2915,15 +2912,9 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         if len(list_upload_files) > 0:
             first_file_local_path = list_upload_files[0][0][0]
             first_relative_path = list_upload_files[0][6]
-            print(first_file_local_path)
-            print("#" * 30)
+
             manifest_data = ps.manifest.create(first_file_local_path)
             manifest_id = manifest_data.manifest_id
-        
-            # add the list of upload files' local paths to the manifest [ skip the first element we already added]
-            namespace_logger.info("Queueing files now")
-            namespace_logger.info(f"{list_upload_files}")
-            namespace_logger.info("\n")
 
             # Rationale: When creating a manifest file we need to create it by adding one file to the root of the dataset. 
             #            This file needs to be accounted for when determining when to stop the upload subscription. 
@@ -2932,7 +2923,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             #            We also need to double count the size of the file we are adding twice to ensure the progress bar does not go over 100%.
             #            At the end we remove the duplicate file with an API call. 
             total_dataset_files += 1 # account for the duplicate
-            main_total_generate_dataset_size += getsize(first_file_local_path)
+            # main_total_generate_dataset_size += getsize(first_file_local_path)
 
 
             for folderInformation in list_upload_files:
@@ -3142,11 +3133,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             # remove the duplicate manifest file from the count
             total_files_uploaded -= 1
 
-        # TODO: remove the first file from the dataset 
-        #r = requests.post() 
-        print("Removing duplicate files")
+        main_curate_progress_message = ("Cleaning up...")
         cleanup_dataset_root(ds["content"]["id"], tracking_json_structure, ps)
-
 
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
 
