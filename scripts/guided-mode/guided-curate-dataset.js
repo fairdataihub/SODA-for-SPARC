@@ -4413,6 +4413,7 @@ const openPage = async (targetPageID) => {
 };
 
 const setActiveSubPage = (pageIdToActivate) => {
+  console.log(pageIdToActivate);
   const pageElementToActivate = document.getElementById(pageIdToActivate);
 
   //create a switch statement for pageIdToActivate to load data from sodaJSONObj
@@ -4769,6 +4770,7 @@ const setActiveSubPage = (pageIdToActivate) => {
     }
 
     case "guided-completion-date-selection-page": {
+      console.log("we here");
       const selectedMilestoneData =
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-selected-milestones"];
 
@@ -12290,131 +12292,68 @@ $(document).ready(async () => {
         }
       }
 
-      if (CURRENT_PAGE.id === "guided-create-submission-metadata-tab") {
-        const buttonYesImportDataDerivatives = document.getElementById(
-          "guided-button-import-data-deliverables"
-        );
-        const buttonNoEnterSubmissionDataManually = document.getElementById(
-          "guided-button-enter-submission-metadata-manually"
-        );
-        if (
-          !buttonYesImportDataDerivatives.classList.contains("selected") &&
-          !buttonNoEnterSubmissionDataManually.classList.contains("selected")
-        ) {
+      if (openSubPageID === "guided-data-derivative-import-page") {
+        const checkedMilestoneData = getCheckedMilestones();
+        if (checkedMilestoneData.length === 0) {
           errorArray.push({
             type: "error",
-            message: "Please indicate if you would like to import milestone data.",
+            message: "Please select at least one milestone",
           });
           throw errorArray;
         }
-        /*
-        if (buttonYesImportDataDerivatives.classList.contains("selected")) {
-          if (openSubPageID === "guided-data-derivative-import-page") {
-            const checkedMilestoneData = getCheckedMilestones();
-            if (checkedMilestoneData.length === 0) {
-              errorArray.push({
-                type: "error",
-                message: "Please select at least one milestone",
-              });
-              throw errorArray;
-            }
 
-            sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-selected-milestones"] =
-              checkedMilestoneData;
-            setActiveSubPage("guided-completion-date-selection-page");
-          }
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-selected-milestones"] =
+          checkedMilestoneData;
+      }
 
-          if (openSubPageID === "guided-completion-date-selection-page") {
-            const selectedCompletionDate = document.querySelector(
-              "input[name='completion-date']:checked"
-            );
-            if (!selectedCompletionDate) {
-              errorArray.push({
-                type: "error",
-                message: "Please select a completion date",
-              });
-              throw errorArray;
-            }
-
-            const completionDate = selectedCompletionDate.value;
-            sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] =
-              completionDate;
-            setActiveSubPage("guided-submission-metadata-page");
-          }
-
-          if (openSubPageID === "guided-submission-metadata-page") {
-            const award = $("#guided-submission-sparc-award").val();
-            const date = $("#guided-submission-completion-date").val();
-            const milestones = getTagsFromTagifyElement(guidedSubmissionTagsTagify);
-
-            if (award === "") {
-              errorArray.push({
-                type: "error",
-                message: "Please add a SPARC award number to your submission metadata",
-              });
-            }
-            if (date === "Enter my own date") {
-              errorArray.push({
-                type: "error",
-                message: "Please add a completion date to your submission metadata",
-              });
-            }
-            if (milestones.length === 0) {
-              errorArray.push({
-                type: "error",
-                message: "Please add at least one milestone to your submission metadata",
-              });
-            }
-            if (errorArray.length > 0) {
-              throw errorArray;
-            }
-            // save the award string to JSONObj to be shared with other award inputs
-            sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = award;
-            //Save the data and milestones to the sodaJSONObj
-            sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = milestones;
-            sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = date;
-            sodaJSONObj["dataset-metadata"]["submission-metadata"]["submission-data-entry"] =
-              "import";
-
-            hideSubNavAndShowMainNav("next");
-          }
-        } */
-        if (buttonNoEnterSubmissionDataManually.classList.contains("selected")) {
-          const award = $("#guided-submission-sparc-award-manual").val();
-          const date = $("#guided-submission-completion-date-manual").val();
-          const milestones = getTagsFromTagifyElement(guidedSubmissionTagsTagifyManual);
-          //validate manually entered submission metadata
-          if (award === "") {
-            errorArray.push({
-              type: "error",
-              message: "Please add a SPARC award number to your submission metadata",
-            });
-          }
-          if (date === "Enter my own date") {
-            errorArray.push({
-              type: "error",
-              message: "Please add a completion date to your submission metadata",
-            });
-          }
-          if (milestones.length === 0) {
-            errorArray.push({
-              type: "error",
-              message: "Please add at least one milestone to your submission metadata",
-            });
-          }
-          if (errorArray.length > 0) {
-            throw errorArray;
-          }
-          // save the award string to JSONObj to be shared with other award inputs
-          sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = award;
-          //Save the data and milestones to the sodaJSONObj
-          sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = milestones;
-          sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = date;
-          sodaJSONObj["dataset-metadata"]["submission-metadata"]["submission-data-entry"] =
-            "manual";
-
-          hideSubNavAndShowMainNav("next");
+      if (openSubPageID === "guided-completion-date-selection-page") {
+        const selectedCompletionDate = document.querySelector(
+          "input[name='completion-date']:checked"
+        );
+        if (!selectedCompletionDate) {
+          errorArray.push({
+            type: "error",
+            message: "Please select a completion date",
+          });
+          throw errorArray;
         }
+
+        const completionDate = selectedCompletionDate.value;
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = completionDate;
+      }
+
+      if (openSubPageID === "guided-submission-metadata-page") {
+        const award = $("#guided-submission-sparc-award").val();
+        const date = $("#guided-submission-completion-date").val();
+        const milestones = getTagsFromTagifyElement(guidedSubmissionTagsTagify);
+
+        if (award === "") {
+          errorArray.push({
+            type: "error",
+            message: "Please add a SPARC award number to your submission metadata",
+          });
+        }
+        if (date === "Enter my own date") {
+          errorArray.push({
+            type: "error",
+            message: "Please add a completion date to your submission metadata",
+          });
+        }
+        if (milestones.length === 0) {
+          errorArray.push({
+            type: "error",
+            message: "Please add at least one milestone to your submission metadata",
+          });
+        }
+        if (errorArray.length > 0) {
+          throw errorArray;
+        }
+        // save the award string to JSONObj to be shared with other award inputs
+        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = award;
+        //Save the data and milestones to the sodaJSONObj
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = milestones;
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = date;
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["submission-data-entry"] = "import";
       }
 
       saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
@@ -12432,7 +12371,9 @@ $(document).ready(async () => {
     const openSubPageID = getOpenSubPageInPage(currentParentPageID);
 
     try {
+      console.log(openSubPageID);
       await saveSubPageChanges(openSubPageID);
+      console.log(openSubPageID + "page saved");
 
       if (!sodaJSONObj["completed-tabs"].includes(openSubPageID)) {
         sodaJSONObj["completed-tabs"].push(openSubPageID);
@@ -12446,6 +12387,7 @@ $(document).ready(async () => {
         //If the sub-page that's currently open is not the last sub-page in the parent page
         //Get the id of the next sub-page and open it
         const nextSubPageID = nonSkippedSiblingPages[openSubPageIndex + 1];
+        console.log(nextSubPageID);
         setActiveSubPage(nextSubPageID);
       }
     } catch (error) {
