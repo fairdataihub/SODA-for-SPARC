@@ -359,24 +359,44 @@ const logCurationSuccessToAnalytics = async (
     );
   }
 
-  // for tracking the total size of all the "saved", "new", "local", "pennsieve" datasets by category
-  ipcRenderer.send(
-    "track-event",
-    "Success",
-    "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
-    datasetLocation,
-    main_total_generate_dataset_size
-  );
+  if (guidedMode) {
+    // for tracking the total size of all the "saved", "new", "local", "pennsieve" datasets by category
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Guided Mode - Generate - Dataset - Size",
+      datasetLocation,
+      main_total_generate_dataset_size
+    );
 
-  // track amount of files for datasets by ID or Local
-  ipcRenderer.send(
-    "track-event",
-    "Success",
-    `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
-    datasetLocation,
-    uploadedFiles
-  );
-  
+    // track amount of files for datasets by ID or Local
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      `Guided Mode - Generate - Dataset - Number of Files`,
+      datasetLocation,
+      uploadedFiles
+    );
+  } else { // Free Form Mode
+    // for tracking the total size of all the "saved", "new", "local", "pennsieve" datasets by category
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
+      datasetLocation,
+      main_total_generate_dataset_size
+    );
+
+    // track amount of files for datasets by ID or Local
+    ipcRenderer.send(
+      "track-event",
+      "Success",
+      `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
+      datasetLocation,
+      uploadedFiles
+    );
+  }
+
   if (!guidedMode) {
     // log the preview card instructions for any files and folders being generated on Pennsieve
     Array.from(document.querySelectorAll(".generate-preview")).forEach((card) => {

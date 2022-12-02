@@ -10814,16 +10814,10 @@ $(document).ready(async () => {
           clientError(error);
         }
 
-        // wait to see if the uploaded files or size will grow once the client has time to ask for the updated information
-        // if they stay zero that means nothing was uploaded
-        if (uploadedFiles === 0 || uploadedFilesSize === 0) {
-          await wait(2000);
-        }
-
         // log the curation errors to Google Analytics
         logCurationErrorsToAnalytics(
-          uploadedFiles,
-          uploadedFilesSize,
+          0,
+          0,
           dataset_destination,
           main_total_generate_dataset_size,
           increaseInFileSize,
