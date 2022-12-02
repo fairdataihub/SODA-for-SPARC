@@ -7562,10 +7562,10 @@ async function initiate_generate() {
 
   // Progress tracking function for main curate
   var countDone = 0;
-  var timerProgress = setInterval(main_progressfunction, 50);
+  var timerProgress = setInterval(mainProgressFunction, 50);
   var successful = false;
 
-  async function main_progressfunction() {
+  async function mainProgressFunction() {
     let mainCurationProgressResponse;
     try {
       mainCurationProgressResponse = await client.get(`/curate_datasets/curation/progress`);
