@@ -7436,11 +7436,6 @@ async function initiate_generate() {
   dataset_name = nameDestinationPair[0];
   dataset_destination = nameDestinationPair[1];
 
-  if (dataset_destination == "Pennsieve" || dataset_destination == "bf") {
-    // create a dataset upload session
-    datasetUploadSession.startSession();
-  }
-
   client
     .post(
       `/curate_datasets/curation`,
@@ -7459,14 +7454,15 @@ async function initiate_generate() {
       log.info("Completed curate function");
 
       // log relevant curation details about the dataset generation/Upload to Google Analytics
-      // logCurationSuccessToAnalytics(
-      //   manifest_files_requested,
-      //   main_total_generate_dataset_size,
-      //   dataset_name,
-      //   dataset_destination,
-      //   uploadedFiles,
-      //   false
-      // );
+      logCurationSuccessToAnalytics(
+        manifest_files_requested,
+        main_total_generate_dataset_size,
+        dataset_name,
+        dataset_destination,
+        uploadedFiles,
+        false
+      );
+
       //Allow guided_mode_view to be clicked again
       document.getElementById("guided_mode_view").style.pointerEvents = "";
 
@@ -7542,22 +7538,16 @@ async function initiate_generate() {
         emessage = userErrorMessage(error);
       }
 
-      // wait to see if the uploaded files or size will grow once the client has time to ask for the updated information
-      // if they stay zero that means nothing was uploaded
-      // if (uploadedFiles === 0 || uploadedFilesSize === 0) {
-      //   await wait(2000);
-      // }
-
       // log the curation errors to Google Analytics
-      // logCurationErrorsToAnalytics(
-      //   uploadedFiles,
-      //   uploadedFilesSize,
-      //   dataset_destination,
-      //   main_total_generate_dataset_size,
-      //   increaseInFileSize,
-      //   datasetUploadSession,
-      //   false
-      // );
+      logCurationErrorsToAnalytics(
+        0,
+        0,
+        dataset_destination,
+        main_total_generate_dataset_size,
+        increaseInFileSize,
+        datasetUploadSession,
+        false
+      );
     });
 
   // Progress tracking function for main curate
