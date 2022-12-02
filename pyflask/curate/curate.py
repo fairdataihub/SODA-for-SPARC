@@ -52,7 +52,6 @@ total_dataset_size = 1
 curated_dataset_size = 0
 start_time = 0
 uploaded_folder_counter = 0
-total_files_uploaded = 0
 current_size_of_uploaded_files = 0
 generated_dataset_id = None
 
@@ -2450,14 +2449,14 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
     global current_size_of_uploaded_files
     global total_files
     global total_bytes_uploaded # current number of bytes uploaded to Pennsieve in the current session
-    global total_files_uploaded
+    global main_curation_uploaded_files
 
 
     total_files = 0
     total_dataset_files = 0
     total_metadata_files = 0 
     total_manifest_files = 0
-    total_files_uploaded = 0
+    main_curation_uploaded_files = 0
     total_bytes_uploaded = 0
     
     uploaded_folder_counter = 0
@@ -2995,7 +2994,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     # check if the given file has finished uploading
                     if current_bytes_uploaded == total_bytes_to_upload:
                         files_uploaded += 1
-                        total_files_uploaded += 1
+                        main_curation_uploaded_files += 1
                         namespace_logger.info("Files Uploaded: " + str(files_uploaded) + "/" + str(total_dataset_files))
                         namespace_logger.info(f"TOTAL SIZE UPLOADED: {total_bytes_uploaded}")
 
@@ -3007,7 +3006,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
 
             # decrement the amount of files we show the user we have uploaded now that the subscriber does not rely on this amount to finish
-            total_files_uploaded -= 1
+            main_curation_uploaded_files -= 1
 
         # 6. Upload metadata files
         if list_upload_metadata_files:
@@ -3056,7 +3055,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     # check if the given file has finished uploading
                     if current_bytes_uploaded == total_bytes_to_upload:
                         files_uploaded += 1
-                        total_files_uploaded += 1
+                        main_curation_uploaded_files += 1
 
 
                     # check if the upload has finished
@@ -3121,7 +3120,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     # check if the given file has finished uploading
                     if current_bytes_uploaded == total_bytes_to_upload:
                         files_uploaded += 1
-                        total_files_uploaded += 1
+                        main_curation_uploaded_files += 1
 
 
                     # check if the upload has finished
@@ -3131,7 +3130,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                         ps.unsubscribe(10)
 
             # remove the duplicate manifest file from the count
-            total_files_uploaded -= 1
+            main_curation_uploaded_files -= 1
 
         main_curate_progress_message = ("Cleaning up...")
         cleanup_dataset_root(ds["content"]["id"], tracking_json_structure, ps)
@@ -3485,8 +3484,7 @@ def main_curate_function_progress():
     global generate_start_time
     global main_generate_destination
     global main_initial_bfdataset_size
-    global total_files_uploaded
-
+    global main_curation_uploaded_files
     global total_bytes_uploaded # current number of bytes uploaded to Pennsieve in the upload session
 
     elapsed_time = time.time() - generate_start_time
@@ -3502,7 +3500,7 @@ def main_curate_function_progress():
         "main_total_generate_dataset_size": main_total_generate_dataset_size,
         "main_generated_dataset_size": total_bytes_uploaded,
         "elapsed_time_formatted": elapsed_time_formatted,
-        "total_files_uploaded": total_files_uploaded,
+        "total_files_uploaded": main_curation_uploaded_files,
     }
 
 
