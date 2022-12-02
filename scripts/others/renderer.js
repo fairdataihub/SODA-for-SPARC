@@ -7623,8 +7623,6 @@ async function initiate_generate() {
 
     let { data } = mainCurationProgressResponse;
 
-    console.log(data);
-
     main_curate_status = data["main_curate_status"];
     var start_generate = data["start_generate"];
     var main_curate_progress_message = data["main_curate_progress_message"];
@@ -7663,10 +7661,7 @@ async function initiate_generate() {
       divGenerateProgressBar.style.display = "block";
 
       if (main_curate_progress_message.includes("Success: COMPLETED!")) {
-        // wait one second to dusplay the uploaded files in the case of a small upload where it will finish before the total file
-        // count is updated
-        await wait(1000);
-
+        clearInterval(timerProgress);
         generateProgressBar.value = 100;
         statusMeter.value = 100;
         progressStatus.innerHTML = main_curate_status + smileyCan;
@@ -7683,38 +7678,34 @@ async function initiate_generate() {
     if (main_curate_status === "Done") {
       console.log("Finished uploading now");
       $("#sidebarCollapse").prop("disabled", false);
-      countDone++;
-      if (countDone > 1) {
-        log.info("Done curate track");
-        statusBarClone.remove();
-        sparc_container.style.display = "inline";
-        if (successful === true) {
-          organizeDataset_option_buttons.style.display = "flex";
-          organizeDataset.disabled = false;
-          organizeDataset.className = "content-button is-selected";
-          organizeDataset.style = "background-color: #fff";
-          uploadLocally.disabled = false;
-          uploadLocally.className = "content-button is-selected";
-          uploadLocally.style = "background-color: #fff";
-          uploadComplete.open({
-            type: "success",
-            message: "Dataset created successfully",
-          });
-        } else {
-          //enable buttons anyways
-          organizeDataset_option_buttons.style.display = "flex";
-          organizeDataset.disabled = false;
-          organizeDataset.className = "content-button is-selected";
-          organizeDataset.style = "background-color: #fff";
-          uploadLocally.disabled = false;
-          uploadLocally.className = "content-button is-selected";
-          uploadLocally.style = "background-color: #fff";
-        }
-        // then show the sidebar again
-        // forceActionSidebar("show");
-        clearInterval(timerProgress);
-        // electron.powerSaveBlocker.stop(prevent_sleep_id)
+      log.info("Done curate track");
+      statusBarClone.remove();
+      sparc_container.style.display = "inline";
+      console.log("Successful boolean status is: ", successful);
+      if (successful === true) {
+        organizeDataset_option_buttons.style.display = "flex";
+        organizeDataset.disabled = false;
+        organizeDataset.className = "content-button is-selected";
+        organizeDataset.style = "background-color: #fff";
+        uploadLocally.disabled = false;
+        uploadLocally.className = "content-button is-selected";
+        uploadLocally.style = "background-color: #fff";
+        uploadComplete.open({
+          type: "success",
+          message: "Dataset created successfully",
+        });
+      } else {
+        //enable buttons anyways
+        organizeDataset_option_buttons.style.display = "flex";
+        organizeDataset.disabled = false;
+        organizeDataset.className = "content-button is-selected";
+        organizeDataset.style = "background-color: #fff";
+        uploadLocally.disabled = false;
+        uploadLocally.className = "content-button is-selected";
+        uploadLocally.style = "background-color: #fff";
       }
+      // then show the sidebar again
+      // forceActionSidebar("show");
     }
   }
 
