@@ -1801,6 +1801,7 @@ const openSubPageNavigation = (pageBeingNavigatedTo) => {
   } else {
     subPageIDtoOpen = nonSkippedSubPages[0];
   }
+  console.log(subPageIDtoOpen);
 
   //Refresh data on the open sub-page
   setActiveSubPage(subPageIDtoOpen);
@@ -3597,7 +3598,7 @@ const openPage = async (targetPageID) => {
 
     if (targetPageID === "guided-airtable-award-tab") {
       const sparcAwardInput = document.getElementById("guided-input-sparc-award");
-      guided - input - sparc - award;
+      sparcAwardInput.value = "";
 
       if (pageNeedsUpdateFromPennsieve("guided-airtable-award-tab")) {
         try {
@@ -3623,21 +3624,31 @@ const openPage = async (targetPageID) => {
         }
       } else {
         const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-
         //If a sparc award exists, set the sparc award input
-        //If not, reset the input
         if (sparcAward) {
           sparcAwardInput.value = sparcAward;
-        } else {
-          sparcAwardInput.value = "";
         }
       }
     }
 
     if (targetPageID === "guided-create-submission-metadata-tab") {
-      const sparcAwardInput = document.getElementById("guided-input-sparc-award");
+      //Reset manual submission metadata UI
+      const sparcAwardInputManual = document.getElementById("guided-submission-sparc-award-manual");
+      sparcAwardInputManual.value = "";
+      guidedSubmissionTagsTagifyManual.removeAllTags();
 
-      if (pageNeedsUpdateFromPennsieve("guided-input-sparc-award")) {
+      const completionDateInputManual = document.getElementById(
+        "guided-submission-completion-date-manual"
+      );
+      completionDateInputManual.innerHTML = `
+        <option value="Select a completion date">Select a completion date</option>
+        <option value="Enter my own date">Enter my own date</option>
+        <option value="">N/A</option>
+      `;
+
+      if (pageNeedsUpdateFromPennsieve("guided-create-submission-metadata-tab")) {
+        const existingSPARCAward =
+          sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
         try {
           let import_metadata = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
@@ -3648,15 +3659,28 @@ const openPage = async (targetPageID) => {
           });
           let res = import_metadata.data;
 
-          console.log(res);
-          const sparcAwardRes = res?.["SPARC Award number"];
+          const sparcAwardRes = res["SPARC Award number"];
+          const pennsieveMileStones = res["Milestone achieved"];
+          const pennsieveCompletionDate = res["Milestone completion date"];
 
-          //If the SPARC Award number was found, click the manual button and fill the SPARC Award number
-          if (sparcAwardRes) {
-            console.log(typeof sparcAwardRes);
-            document.getElementById("guided-button-enter-sparc-award-manually").click();
-            //set the text of the sparc award input as sparcAwardRes
-            sparcAwardInput.value = sparcAwardRes;
+          // If there's already an existing SPARC Award, don't overwrite it
+          if (existingSPARCAward) {
+            sparcAwardInputManual.value = existingSPARCAward;
+          } else {
+            sparcAwardInputManual.value = sparcAwardRes;
+          }
+          if (pennsieveMileStones) {
+            guidedSubmissionTagsTagifyManual.addTags(pennsieveMileStones);
+          }
+
+          // It's possible that pennsieveCompletionDate can be an empty string if the user Selects N/A.
+          // If an empty string was pulled from Pennsieve, select the input with value "" which is N/A.
+          if (pennsieveCompletionDate === "") {
+            completionDateInputManual.value = "";
+          } else if (pennsieveCompletionDate) {
+            completionDateInputManual.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
+            //select the completion date that was added
+            completionDateInputManual.value = completionDate;
           }
         } catch (error) {
           console.log(error);
@@ -3707,9 +3731,7 @@ const openPage = async (targetPageID) => {
         }
 
         const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-        const sparcAwardInputManual = document.getElementById(
-          "guided-submission-sparc-award-manual"
-        );
+
         //If a sparc award exists, set the sparc award manual input
         //If not, reset the input
         if (sparcAward) {
@@ -3729,16 +3751,7 @@ const openPage = async (targetPageID) => {
 
         const completionDate =
           sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"];
-        const completionDateInputManual = document.getElementById(
-          "guided-submission-completion-date-manual"
-        );
-        //If completion date exists, set the completion date input
-        //If not, reset the input
-        completionDateInputManual.innerHTML = `
-        <option value="Select a completion date">Select a completion date</option>
-        <option value="Enter my own date">Enter my own date</option>
-        <option value="N/A">N/A</option>
-      `;
+
         if (completionDate) {
           completionDateInputManual.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
           //select the completion date that was added
