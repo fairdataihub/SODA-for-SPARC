@@ -2924,7 +2924,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             namespace_logger.info("Queueing files now")
             namespace_logger.info(f"{list_upload_files}")
             namespace_logger.info("\n")
-         
 
             # Rationale: When creating a manifest file we need to create it by adding one file to the root of the dataset. 
             #            This file needs to be accounted for when determining when to stop the upload subscription. 
@@ -2971,9 +2970,10 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     print(folder_name)
                     subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), file_path, "-t", folder_name])
 
-
             # upload the manifest files
             ps.manifest.upload(manifest_id)
+
+            main_curate_progress_message = ("Uploading data files...")
 
             subscription_rendezvous_object = ps.subscribe(10)
 
