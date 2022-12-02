@@ -2922,8 +2922,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             #            We also need to double count the size of the file we are adding twice to ensure the progress bar does not go over 100%.
             #            At the end we remove the duplicate file with an API call. 
             total_dataset_files += 1 # account for the duplicate
-            # main_total_generate_dataset_size += getsize(first_file_local_path)
-
 
             for folderInformation in list_upload_files:
                 # main_curate_progress_message = "In file one"
@@ -2953,11 +2951,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 for file_path in list_file_paths:
                     #print("Queing file for upload")
                     # subprocess call to the pennsieve agent to add the files to the manifest
-                    print(manifest_id)
-                    print("-" * 20)
-                    print(file_path)
-                    print("-" * 20)
-                    print(folder_name)
                     subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), file_path, "-t", folder_name])
 
             # upload the manifest files
@@ -2989,14 +2982,12 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     # calculate the additional amount of bytes that have just been uploaded for the given file id
                     total_bytes_uploaded += current_bytes_uploaded - previous_bytes_uploaded
 
-                    #print(total_bytes_uploaded)
-
                     # check if the given file has finished uploading
                     if current_bytes_uploaded == total_bytes_to_upload:
                         files_uploaded += 1
                         main_curation_uploaded_files += 1
                         namespace_logger.info("Files Uploaded: " + str(files_uploaded) + "/" + str(total_dataset_files))
-                        namespace_logger.info(f"TOTAL SIZE UPLOADED: {total_bytes_uploaded}")
+                        namespace_logger.info("Total Bytes Uploaded: " + str(total_bytes_uploaded) + "/" + str(main_total_generate_dataset_size))
 
                     # check if the upload has finished
                     if files_uploaded == total_dataset_files:
@@ -3288,7 +3279,7 @@ def main_curate_function(soda_json_structure):
 
     main_curate_status = ""
     main_curate_progress_message = "Starting..."
-    main_total_generate_dataset_size = 1
+    main_total_generate_dataset_size = 0
     main_generated_dataset_size = 0
     main_curation_uploaded_files = 0
     uploaded_folder_counter = 0
