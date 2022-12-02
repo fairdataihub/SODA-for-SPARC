@@ -10882,6 +10882,7 @@ $(document).ready(async () => {
       main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
       const main_generated_dataset_size = data["main_generated_dataset_size"];
       const elapsed_time_formatted = data["elapsed_time_formatted"];
+      const totalUploadedFiles = data["total_files_uploaded"]
 
       if (start_generate === 1) {
         $("#guided-progress-bar-new-curate").css("display", "block");
@@ -10911,6 +10912,7 @@ $(document).ready(async () => {
             "Upload status": `${main_curate_progress_message}`,
             "Percent uploaded": `${percentOfDatasetUploaded.toFixed(2)}%`,
             "Elapsed time": `${elapsed_time_formatted}`,
+            "Files Uploaded": `${totalUploadedFiles}`,
           });
         }
       } else {
