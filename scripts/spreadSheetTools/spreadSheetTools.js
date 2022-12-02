@@ -15,10 +15,16 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log(manifestFileData);
       let saveAndExitManifest = document.getElementById("manifest-save-exit");
 
-      const allHeaders = ["filename", "timestamp", "description", "file type", "Additional Metadata"];
+      const allHeaders = [
+        "filename",
+        "timestamp",
+        "description",
+        "file type",
+        "Additional Metadata",
+      ];
       const readOnlyHeaders = ["A", "B", "D"];
       const columnHeaders = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
-      if(manifestFileData[0][0] != "filename") {
+      if (manifestFileData[0][0] != "filename") {
         manifestFileData.unshift(allHeaders);
       }
       console.log(manifestFileData[0][0]);
@@ -50,10 +56,10 @@ document.addEventListener("DOMContentLoaded", function () {
         data: manifestFileData,
         columns: columnHeaders.map((header) => {
           return {
-            readOnly: readOnlyHeaders.includes(header) ? true: false,
+            readOnly: readOnlyHeaders.includes(header) ? true : false,
             type: "text",
             title: header,
-            width: '204px',
+            width: "204px",
           };
         }),
       });

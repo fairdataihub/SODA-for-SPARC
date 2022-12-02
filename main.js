@@ -482,13 +482,13 @@ ipcMain.on("spreadsheet", (event, spreadsheet) => {
     //       // Runs the following if 'Yes' is clicked
     //       // send back the spreadsheet data to SODA
     //       spreadSheetModal.showExitPrompt = false;
-          spreadSheetModal.close();
+    spreadSheetModal.close();
     //       /// feedback form iframe prevents closing gracefully
     //       /// so force close
-          if (!spreadSheetModal.closed) {
-            spreadSheetModal.destroy();
-          }
-          spreadSheetModal = null;
+    if (!spreadSheetModal.closed) {
+      spreadSheetModal.destroy();
+    }
+    spreadSheetModal = null;
     //     }
     //   });
   });
