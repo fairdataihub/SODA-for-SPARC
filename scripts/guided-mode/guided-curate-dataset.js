@@ -1887,7 +1887,7 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
       //spreadsheet reply contained results
       const savedHeaders = result[0];
       const savedData = result[1];
-      console.log("something returned");
+      
       sodaJSONObj["guided-manifest-files"][highLevelFolderName] = {
         headers: savedHeaders,
         data: savedData,

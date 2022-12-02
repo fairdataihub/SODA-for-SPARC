@@ -467,30 +467,30 @@ ipcMain.on("spreadsheet", (event, spreadsheet) => {
   let spreadSheetModal = new BrowserWindow(windowOptions);
 
   spreadSheetModal.on("close", (e) => {
-    e.preventDefault(); // Prevents the window from closing
-    dialog
-      .showMessageBox(spreadSheetModal, {
-        type: "question",
-        buttons: ["Yes", "No"],
-        title: "Confirm",
-        message: "Any progress will be unsaved. Are you sure you want to quit?",
-      })
-      .then((responseObject) => {
-        let { response } = responseObject;
-        if (response === 0) {
-          // Runs the following if 'Yes' is clicked
-          // send back the spreadsheet data to SODA
-          // mainWindow.webContents.send("spreadsheet-reply", spreadSheetResult);
-          app.showExitPrompt = false;
+    // mainWindow.webContents.send("spreadsheet-reply", spreadSheetResult);
+    // e.preventDefault(); // Prevents the window from closing
+    // dialog
+    //   .showMessageBox(spreadSheetModal, {
+    //     type: "question",
+    //     buttons: ["Yes", "No"],
+    //     title: "Confirm",
+    //     message: "Any progress will be unsaved. Are you sure you want to quit?",
+    //   })
+    //   .then((responseObject) => {
+    //     let { response } = responseObject;
+    //     if (response === 0) {
+    //       // Runs the following if 'Yes' is clicked
+    //       // send back the spreadsheet data to SODA
+    //       spreadSheetModal.showExitPrompt = false;
           spreadSheetModal.close();
-          /// feedback form iframe prevents closing gracefully
-          /// so force close
+    //       /// feedback form iframe prevents closing gracefully
+    //       /// so force close
           if (!spreadSheetModal.closed) {
             spreadSheetModal.destroy();
           }
           spreadSheetModal = null;
-        }
-      });
+    //     }
+    //   });
   });
 
   spreadSheetModal.loadFile("./sections/spreadSheetModal/spreadSheet.html");
@@ -511,7 +511,7 @@ ipcMain.on("spreadsheet", (event, spreadsheet) => {
     if (!spreadSheetModal.closed) {
       spreadSheetModal.destroy();
     }
-    spreadSheetModal = null;
+    // spreadSheetModal = null;
   });
 });
 

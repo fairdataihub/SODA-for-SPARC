@@ -5,15 +5,23 @@ document.addEventListener("DOMContentLoaded", function () {
   //Request the spreadsheet data from main
   ipcRenderer.on("requested-spreadsheet", async (ev, spreadsheet) => {
     if (!spreadsheet || spreadsheet === "") {
-      console.log("HELP");
+      console.log("No spreadsheet");
+      return;
     } else {
       //spreadsheet obtained, create jspreadsheet
       let manifestFileHeaders = spreadsheet["headers"];
       let manifestFileData = spreadsheet["data"];
+      console.log(manifestFileHeaders);
+      console.log(manifestFileData);
       let saveAndExitManifest = document.getElementById("manifest-save-exit");
 
-      const readOnlyHeaders = ["filename", "file type", "timestamp"];
-
+      const allHeaders = ["filename", "timestamp", "description", "file type", "Additional Metadata"];
+      const readOnlyHeaders = ["A", "B", "D"];
+      const columnHeaders = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
+      if(manifestFileData[0][0] != "filename") {
+        manifestFileData.unshift(allHeaders);
+      }
+      console.log(manifestFileData[0][0]);
       let manifestTable;
 
       const manifestSpreadsheetContainer = document.getElementById("manifest-edit");
@@ -21,7 +29,8 @@ document.addEventListener("DOMContentLoaded", function () {
         tableOverflow: true,
         lazyLoading: true,
         loadingSpin: true,
-        tableHeight: "calc(100vh - 181px)",
+        tableHeight: "calc(100vh - 193px)",
+        tableWidth: "calc(100vw - 23px)",
         toolbar: [
           {
             type: "i",
@@ -39,19 +48,18 @@ document.addEventListener("DOMContentLoaded", function () {
           },
         ], //array of objects
         data: manifestFileData,
-        columns: manifestFileHeaders.map((header) => {
+        columns: columnHeaders.map((header) => {
           return {
-            readOnly: readOnlyHeaders.includes(header) ? true : false,
+            readOnly: readOnlyHeaders.includes(header) ? true: false,
             type: "text",
             title: header,
-            width: 200,
+            width: '204px',
           };
         }),
       });
 
       //create event listener for saving and exiting
       saveAndExitManifest.addEventListener("click", () => {
-        console.log("sending back results");
         //extract headers and data
         const savedHeaders = manifestTable.getHeaders().split(",");
         const savedData = manifestTable.getData();

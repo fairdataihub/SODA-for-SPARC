@@ -32,7 +32,7 @@ body {
 .title-text {
   font-size: larger;
   font-weight: 700;
-  margin-bottom: 0.2rem;
+  margin-bottom: 1rem;
 }
 
 :root {
@@ -61,4 +61,21 @@ body {
 }
 .jexcel_content::-webkit-scrollbar-thumb {
   background: #666;
+}
+
+.jexcel::-webkit-scrollbar {
+  width: 6px;
+  height: 100%;
+  background-color: #c5c5c5;
+}
+.jexcel::-webkit-scrollbar-thumb {
+  background: #666;
+}
+
+.soda-logo {
+  position: absolute;
+  top: 0;
+  left: 14px;
+  width: 120px;
+  height: 51px;
 }
