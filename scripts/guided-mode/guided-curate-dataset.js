@@ -943,6 +943,13 @@ const savePageChanges = async (pageBeingLeftID) => {
   }
 };
 
+document
+  .getElementById("guided-button-enter-submission-metadata-manually")
+  .addEventListener("click", () => {});
+document
+  .getElementById("guided-button-import-data-deliverables")
+  .addEventListener("click", () => {});
+
 const getNonSkippedGuidedModePages = (parentElementToGetChildrenPagesFrom) => {
   let allChildPages = Array.from(
     parentElementToGetChildrenPagesFrom.querySelectorAll(".guided--page")
