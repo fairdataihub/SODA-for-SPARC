@@ -3446,6 +3446,7 @@ def main_curate_function(soda_json_structure):
                     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(ps))
                     r.raise_for_status()
                     myds = r.json()
+                    print("THe ds: ", myds)
                     
                     bf_generate_new_dataset(soda_json_structure, ps, myds)
                 if generate_option == "existing-bf":
@@ -3486,12 +3487,12 @@ def main_curate_function_progress():
     global main_initial_bfdataset_size
     global main_curation_uploaded_files
     global total_bytes_uploaded # current number of bytes uploaded to Pennsieve in the upload session
+    global myds 
+
+    print("In progress ds value is: ", myds)
 
     elapsed_time = time.time() - generate_start_time
     elapsed_time_formatted = time_format(elapsed_time)
-
-    # if start_generate == 1 and main_generate_destination == "bf":
-    #     main_generated_dataset_size 
 
     return {
         "main_curate_status": main_curate_status,
@@ -3501,6 +3502,7 @@ def main_curate_function_progress():
         "main_generated_dataset_size": total_bytes_uploaded,
         "elapsed_time_formatted": elapsed_time_formatted,
         "total_files_uploaded": main_curation_uploaded_files,
+        "generated_dataset_id": myds["content"]["id"] if myds != "" else None, # when a new dataset gets generated log its id to our analytics
     }
 
 

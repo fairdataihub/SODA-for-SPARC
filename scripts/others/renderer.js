@@ -7427,6 +7427,10 @@ async function initiate_generate() {
   let uploadedFiles = 0;
   let increaseInFileSize = 0;
   let generated_dataset_id = undefined;
+  // when generating a new dataset we need to add its ID to the ID -> Name mapping
+  // we need to do this only once
+  // TODO: Integrate into modified analytics tracking
+  let loggedDatasetNameToIdMapping = false;
 
   // determine where the dataset will be generated/uploaded
   let nameDestinationPair = determineDatasetDestination();
@@ -7693,12 +7697,30 @@ async function initiate_generate() {
       // then show the sidebar again
       // forceActionSidebar("show");
     }
+
+
+    // if a new Pennsieve dataset was generated log it once to the dataset id to name mapping
+    let generated_dataset_id = data["generated_dataset_id"];
+    if(!loggedDatasetNameToIdMapping) console.log("generated_dataset_id: ", generated_dataset_id);
+    if (
+      !loggedDatasetNameToIdMapping &&
+      generated_dataset_id !== null &&
+      generated_dataset_id !== undefined
+    ) {
+      console.log("Dataset ID to name mapping logged")
+      ipcRenderer.send(
+        "track-event",
+        "Dataset ID to Dataset Name Map",
+        generated_dataset_id,
+        dataset_name
+      );
+
+      // don't log this again for the current upload session
+      loggedDatasetNameToIdMapping = true;
+    }
   }
 
-  // when generating a new dataset we need to add its ID to the ID -> Name mapping
-  // we need to do this only once
-  // TODO: Integrate into modified analytics tracking
-  let loggedDatasetNameToIdMapping = false;
+
 
 } // end initiate_generate
 

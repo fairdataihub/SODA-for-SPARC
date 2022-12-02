@@ -48,7 +48,7 @@ class CheckEmptyFilesFolders(Resource):
 model_main_curation_function_response = api.model( "MainCurationFunctionResponse", {
     "main_curate_progress_message": fields.String(description="Progress message from the main curation function"),
     "main_total_generate_dataset_size": fields.String(description="Total size of the dataset"),
-    "main_curation_uploaded_files": fields.Integer(description="Number of files that are being generated. ")
+    "main_curation_uploaded_files": fields.Integer(description="Number of files that are being generated. "), 
 })
 
 @api.route("/curation")
@@ -87,6 +87,7 @@ model_curation_progress_response = api.model( "CurationProgressResponse", {
     "main_generated_dataset_size": fields.Integer(description="Size of the dataset that has been generated thus far"),
     "elapsed_time_formatted": fields.String(description="Elapsed time of the main curation function"),
     "total_files_uploaded": fields.Integer(description="Number of files that have been uploaded"),
+    "generated_dataset_id": fields.String(description="Generated dataset ID"),
 })
 
 @api.route("/curation/progress")
