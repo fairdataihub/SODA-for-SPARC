@@ -7425,9 +7425,6 @@ async function initiate_generate() {
 
   // track the amount of files that have been uploaded/generated
   let uploadedFiles = 0;
-  let uploadedFilesSize = 0;
-  let foldersUploaded = 0;
-  let previousUploadedFileSize = 0;
   let increaseInFileSize = 0;
   let generated_dataset_id = undefined;
 
@@ -7551,7 +7548,6 @@ async function initiate_generate() {
     });
 
   // Progress tracking function for main curate
-  var countDone = 0;
   var timerProgress = setInterval(mainProgressFunction, 50);
   var successful = false;
 
