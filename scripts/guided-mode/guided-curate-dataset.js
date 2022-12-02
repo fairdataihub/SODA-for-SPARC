@@ -945,10 +945,15 @@ const savePageChanges = async (pageBeingLeftID) => {
 
 document
   .getElementById("guided-button-enter-submission-metadata-manually")
-  .addEventListener("click", () => {});
+  .addEventListener("click", async () => {
+    await openPage("guided-create-submission-metadata-tab");
+  });
 document
   .getElementById("guided-button-import-data-deliverables")
-  .addEventListener("click", () => {});
+  .addEventListener("click", async () => {
+    //Open the page and leave the sub-page hydration to the sub-page function
+    openSubPageNavigation("guided-create-submission-metadata-tab");
+  });
 
 const getNonSkippedGuidedModePages = (parentElementToGetChildrenPagesFrom) => {
   let allChildPages = Array.from(
@@ -3764,9 +3769,6 @@ const openPage = async (targetPageID) => {
           //select the completion date that was added
           completionDateInputManual.value = completionDate;
         }
-
-        //Open the page and leave the sub-page hydration to the sub-page function
-        openSubPageNavigation(targetPageID);
       }
     }
     if (targetPageID === "guided-contributors-tab") {
@@ -12305,6 +12307,7 @@ $(document).ready(async () => {
           });
           throw errorArray;
         }
+        /*
         if (buttonYesImportDataDerivatives.classList.contains("selected")) {
           if (openSubPageID === "guided-data-derivative-import-page") {
             const checkedMilestoneData = getCheckedMilestones();
@@ -12375,7 +12378,7 @@ $(document).ready(async () => {
 
             hideSubNavAndShowMainNav("next");
           }
-        }
+        } */
         if (buttonNoEnterSubmissionDataManually.classList.contains("selected")) {
           const award = $("#guided-submission-sparc-award-manual").val();
           const date = $("#guided-submission-completion-date-manual").val();
@@ -12434,21 +12437,16 @@ $(document).ready(async () => {
       if (!sodaJSONObj["completed-tabs"].includes(openSubPageID)) {
         sodaJSONObj["completed-tabs"].push(openSubPageID);
       }
+      //Get an array of all the sub pages that are children of the parent page
+      const nonSkippedSiblingPages = getNonSkippedSubPages(currentParentPageID);
 
-      if (currentParentPageID != "guided-create-submission-metadata-tab") {
-        //Get an array of all the sub pages that are children of the parent page
-        const nonSkippedSiblingPages = getNonSkippedSubPages(currentParentPageID);
-
-        // Get the index of the sub-page that's currently open
-        const openSubPageIndex = nonSkippedSiblingPages.indexOf(openSubPageID);
-        if (openSubPageIndex < nonSkippedSiblingPages.length - 1) {
-          //If the sub-page that's currently open is not the last sub-page in the parent page
-          //Get the id of the next sub-page and open it
-          const nextSubPageID = nonSkippedSiblingPages[openSubPageIndex + 1];
-          setActiveSubPage(nextSubPageID);
-        } else {
-          hideSubNavAndShowMainNav("next");
-        }
+      // Get the index of the sub-page that's currently open
+      const openSubPageIndex = nonSkippedSiblingPages.indexOf(openSubPageID);
+      if (openSubPageIndex < nonSkippedSiblingPages.length - 1) {
+        //If the sub-page that's currently open is not the last sub-page in the parent page
+        //Get the id of the next sub-page and open it
+        const nextSubPageID = nonSkippedSiblingPages[openSubPageIndex + 1];
+        setActiveSubPage(nextSubPageID);
       }
     } catch (error) {
       console.log(error);
