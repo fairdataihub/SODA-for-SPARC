@@ -7720,92 +7720,9 @@ async function initiate_generate() {
 
   // when generating a new dataset we need to add its ID to the ID -> Name mapping
   // we need to do this only once
+  // TODO: Integrate into modified analytics tracking
   let loggedDatasetNameToIdMapping = false;
 
-  // if uploading to Pennsieve set an interval that gets the amount of files that have been uploaded
-  // and their aggregate size; starts for local dataset generation as well. Provides easy way to track amount of
-  // files copied and their aggregate size.
-  // IMP: This handles tracking a session that tracking a session that had a successful Pennsieve upload.
-  //      therefore it is unnecessary to have logs for Session ID tracking in the "api_main_curate" success block
-  // IMP: Two reasons this exists:
-  //    1. Pennsieve Agent can freeze. This prevents us from logging. So we log a Pennsieve dataset upload session as it happens.
-  //    2. Local dataset generation and Pennsieve dataset generation can fail. Having access to how many files and their aggregate size for logging at error time is valuable data.
-  const checkForBucketUpload = async () => {
-    // ask the server for the amount of files uploaded in the current session
-    // nothing to log for uploads where a user is solely deleting files in this section
-
-    let mainCurationDetailsResponse;
-    try {
-      mainCurationDetailsResponse = await client.get(`/curate_datasets/curation/upload_details`);
-    } catch (error) {
-      clientError(error);
-      clearInterval(timerCheckForBucketUpload);
-      return;
-    }
-
-    let { data } = mainCurationDetailsResponse;
-
-    // check if the amount of successfully uploaded files has increased
-    if (
-      data["main_curation_uploaded_files"] > 0 &&
-      data["uploaded_folder_counter"] > foldersUploaded
-    ) {
-      previousUploadedFileSize = uploadedFilesSize;
-      uploadedFiles = data["main_curation_uploaded_files"];
-      uploadedFilesSize = data["current_size_of_uploaded_files"];
-      foldersUploaded = data["uploaded_folder_counter"];
-
-      // log the increase in the file size
-      increaseInFileSize = uploadedFilesSize - previousUploadedFileSize;
-
-      // log the aggregate file count and size values when uploading to Pennsieve
-      if (dataset_destination === "bf" || dataset_destination === "Pennsieve") {
-        // use the session id as the label -- this will help with aggregating the number of files uploaded per session
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          PrepareDatasetsAnalyticsPrefix.CURATE +
-            " - Step 7 - Generate - Dataset - Number of Files",
-          `${datasetUploadSession.id}`,
-          uploadedFiles
-        );
-
-        // use the session id as the label -- this will help with aggregating the size of the given upload session
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          PrepareDatasetsAnalyticsPrefix.CURATE + " - Step 7 - Generate - Dataset - Size",
-          `${datasetUploadSession.id}`,
-          increaseInFileSize
-        );
-      }
-    }
-
-    generated_dataset_id = data["generated_dataset_id"];
-    // if a new Pennsieve dataset was generated log it once to the dataset id to name mapping
-    if (
-      !loggedDatasetNameToIdMapping &&
-      generated_dataset_id !== null &&
-      generated_dataset_id !== undefined
-    ) {
-      ipcRenderer.send(
-        "track-event",
-        "Dataset ID to Dataset Name Map",
-        generated_dataset_id,
-        dataset_name
-      );
-
-      // don't log this again for the current upload session
-      loggedDatasetNameToIdMapping = true;
-    }
-
-    //stop the inteval when the upload is complete
-    if (main_curate_status === "Done") {
-      clearInterval(timerCheckForBucketUpload);
-    }
-  };
-
-  // let timerCheckForBucketUpload = setInterval(checkForBucketUpload, 1000);
 } // end initiate_generate
 
 const show_curation_shortcut = () => {
