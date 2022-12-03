@@ -437,8 +437,7 @@ def bf_get_accounts():
     if SODA_SPARC_API_KEY in sections:
         add_api_host_to_config(config, SODA_SPARC_API_KEY, configpath)
         with contextlib.suppress(Exception):
-            ps = Pennsieve()
-            ps.user.switch(SODA_SPARC_API_KEY)
+            get_access_token()
             return SODA_SPARC_API_KEY
     elif "global" in sections:
         if "default_profile" in config["global"]:
@@ -446,19 +445,16 @@ def bf_get_accounts():
             if default_profile in sections:
                 add_api_host_to_config(config, default_profile, configpath)
                 with contextlib.suppress(Exception):
-                    ps = Pennsieve()
-                    ps.user.switch(default_profile)
+                    get_access_token()
                     return default_profile
     else:
         for account in sections:
             if account != 'agent':
                 add_api_host_to_config(config, account, configpath)
                 with contextlib.suppress(Exception):
-                    ps = Pennsieve()
-                    ps.user.switch(account)
-                    org_id = ps.getUser()['organization_id']
+                    token = get_access_token()
 
-                    if org_id == "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
+                    if in_sparc_organization(token):
                         if not config.has_section("global"):
                             config.add_section("global")
 
@@ -485,20 +481,23 @@ def bf_dataset_account(accountname):
     Output: a filtered dataset list with objects as elements: {"name": dataset's name, "id": dataset's id, "role": permission}
 
     """
+    global namespace_logger
     PENNSIEVE_URL = "https://api.pennsieve.io"
-
-    ps = connect_pennsieve_client()
-
-    authenticate_user_with_client(ps, accountname)
-    
-    datasets_dict = ps.getDatasets()
+    token = get_access_token()
 
     # get the session token
-    headers = create_request_headers(ps)
+    headers = create_request_headers(token)
+    
+    # get the user's datasets that they have access to in their given organization
+    r = requests.get(f"{PENNSIEVE_URL}/datasets", headers=headers)
+    r.raise_for_status()
+    datasets = r.json()
+
+    namespace_logger.info(f"datasets_dict: {datasets}")
 
     datasets_list = []
-    for name in datasets_dict.keys():
-        datasets_list.append({"name": name, "id": datasets_dict[name]})
+    for ds in datasets:
+        datasets_list.append({"name": ds["content"]["name"], "id": ds["content"]["id"]})
 
     def filter_dataset(datasets_list, store=None):
         if store is None:
@@ -563,6 +562,21 @@ def get_username(accountname):
     return {"username": username}
 
 
+
+def in_sparc_organization(token):
+    # get the organizations this user account has access to 
+    r = requests.get(f"{PENNSIEVE_URL}/organizations", headers=create_request_headers(token))
+    r.raise_for_status()
+
+    # add the sparc consortium as the organization name if the user is a member of the consortium
+    organizations = r.json()
+    for org in organizations["organizations"]:
+        if org["organization"]["id"] == "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
+            return True 
+    
+    return False
+
+
 def bf_account_details(accountname):
     """
     Args:
@@ -586,14 +600,18 @@ def bf_account_details(accountname):
     #acc_details = f"{acc_details}Organization: {user_info['preferredOrganization']}"
 
     # get the organizations this user account has access to 
-    r = requests.get(f"{PENNSIEVE_URL}/organizations", headers=create_request_headers(ps))
+    r = requests.get(f"{PENNSIEVE_URL}/organizations", headers=create_request_headers(token))
     r.raise_for_status()
+
+    org_id = ""
 
     # add the sparc consortium as the organization name if the user is a member of the consortium
     organizations = r.json()
     for org in organizations["organizations"]:
         if org["organization"]["id"] == "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
             acc_details = f"{acc_details}Organization: {org['organization']['name']}"
+            org_id = org["organization"]["id"]
+
 
 
     try:
@@ -603,7 +621,7 @@ def bf_account_details(accountname):
         update_config_account_name(accountname)
         
         ## return account details and datasets where such an account has some permission
-        return {"account_details": acc_details, "organization_id": ps.getUser()["organization_id"]}
+        return {"account_details": acc_details, "organization_id": org_id}
 
     except Exception as e:
         raise e

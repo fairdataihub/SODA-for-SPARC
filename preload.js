@@ -388,6 +388,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
                   selected_account: defaultBfAccount,
                 },
               });
+              console.log("Got the account details");
               let result = bf_account_details_req.data.account_details;
               $("#para-account-detail-curate").html(result);
               $("#current-bf-account").text(key_name);

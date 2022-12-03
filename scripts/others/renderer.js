@@ -545,6 +545,7 @@ const run_pre_flight_checks = async (check_update = true) => {
   // TODO: Start the agent here or while determining installation and agent version.
 
   // Check for an API key pair first. Calling the agent check without a config file, causes it to crash.
+  console.log("API KEYSSS");
   account_present = await check_api_key();
 
   // TODO: Reimplement this section to work with the new agent
@@ -868,7 +869,9 @@ const check_api_key = async () => {
   }
 
   try {
+    console.log("Here before account list in api key check");
     responseObject = await client.get("manage_datasets/bf_account_list");
+    console.log("After api key check");
   } catch (e) {
     notyf.dismiss(notification);
     notyf.open({
@@ -7698,16 +7701,15 @@ async function initiate_generate() {
       // forceActionSidebar("show");
     }
 
-
     // if a new Pennsieve dataset was generated log it once to the dataset id to name mapping
     let generated_dataset_id = data["generated_dataset_id"];
-    if(!loggedDatasetNameToIdMapping) console.log("generated_dataset_id: ", generated_dataset_id);
+    if (!loggedDatasetNameToIdMapping) console.log("generated_dataset_id: ", generated_dataset_id);
     if (
       !loggedDatasetNameToIdMapping &&
       generated_dataset_id !== null &&
       generated_dataset_id !== undefined
     ) {
-      console.log("Dataset ID to name mapping logged")
+      console.log("Dataset ID to name mapping logged");
       ipcRenderer.send(
         "track-event",
         "Dataset ID to Dataset Name Map",
@@ -7719,9 +7721,6 @@ async function initiate_generate() {
       loggedDatasetNameToIdMapping = true;
     }
   }
-
-
-
 } // end initiate_generate
 
 const show_curation_shortcut = () => {

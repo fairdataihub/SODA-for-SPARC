@@ -1,13 +1,19 @@
 
 
 
-def create_request_headers(ps):
+def create_request_headers(ps_or_token):
     """
     Creates necessary HTTP headers for making Pennsieve API requests.
     Input: 
         ps: Pennsieve object for a user that has been authenticated
     """
+    if type(ps_or_token) == str:
+        return {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {ps_or_token}",
+        }
+    
     return {
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {ps.getUser()['session_token']}",
+            "Authorization": f"Bearer {ps_or_token.getUser()['session_token']}",
     }
