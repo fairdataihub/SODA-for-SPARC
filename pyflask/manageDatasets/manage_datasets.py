@@ -573,19 +573,9 @@ def bf_account_details(accountname):
         Returns: return details of user associated with the account
     """
     try:
-        ps = Pennsieve()
-        ps.user.switch(accountname)
+        token = get_access_token()
     except Exception as e:
         abort(400, "Please select a valid Pennsieve account.")
-
-    
-    # authenticate the user
-    ps.user.reauthenticate()
-
-    # get the access token 
-    token = ps.getUser()["session_token"]
-
-    namespace_logger.info(f"Token: {token}")
 
     try:
         user_info = get_user_information(token)
