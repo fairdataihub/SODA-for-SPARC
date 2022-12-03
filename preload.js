@@ -371,11 +371,13 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           let apiSecret = result.value.secret;
           //needs to be replaced
           try {
+            console.log("Sending request to add account");
             await client.put(`/manage_datasets/account/username`, {
               keyname: key_name,
               key: apiKey,
               secret: apiSecret,
             });
+            console.log("Added the account. Now getting the account list");
             bfAccountOptions[key_name] = key_name;
             defaultBfAccount = key_name;
             defaultBfDataset = "Select dataset";
