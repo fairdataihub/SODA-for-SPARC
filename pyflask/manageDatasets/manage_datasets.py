@@ -314,7 +314,8 @@ def bf_add_account_username(keyname, key, secret):
 
     # Check key and secret are valid, if not delete account from config
     try:
-        get_access_token()
+        token = get_access_token()
+        namespace_logger.info(f"Access token: {token}")
     except Exception as e:
         namespace_logger.error(e)
         bf_delete_account(keyname)
@@ -322,10 +323,15 @@ def bf_add_account_username(keyname, key, secret):
             "Please check that key name, key, and secret are entered properly"
         )
 
-    
+    headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {token}",
+    }
 
     # Check that the Pennsieve account is in the SPARC Consortium organization
-    organization_id = ps.getUser()["organization_id"]
+    r = requests.get(f"{PENNSIEVE_URL}/user", headers=headers)
+    r.raise_for_status
+    organization_id = r.json()["preferredOrganization"]
     if organization_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
         bf_delete_account(keyname)
         abort(403,
