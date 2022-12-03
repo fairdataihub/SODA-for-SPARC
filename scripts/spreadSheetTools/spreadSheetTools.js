@@ -52,16 +52,16 @@ document.addEventListener("DOMContentLoaded", function () {
           };
         }),
         style: {
-          A1: 'background-color: #A0C2E6; font-weight: 700;',
-          B1: 'background-color: #a8d08d; font-weight: 700;',
-          C1: 'background-color: #a8d08d; font-weight: 700;',
-          D1: 'background-color: #a8d08d; font-weight: 700;',
-          E1: 'background-color: #ffd965; font-weight: 700;',
-          F1: 'background-color: #ffd965; font-weight: 700;',
-          G1: 'background-color: #ffd965; font-weight: 700;',
-          H1: 'background-color: #ffd965; font-weight: 700;',
-          I1: 'background-color: #ffd965; font-weight: 700;',
-      },
+          A1: "background-color: #A0C2E6; font-weight: 700;",
+          B1: "background-color: #a8d08d; font-weight: 700;",
+          C1: "background-color: #a8d08d; font-weight: 700;",
+          D1: "background-color: #a8d08d; font-weight: 700;",
+          E1: "background-color: #ffd965; font-weight: 700;",
+          F1: "background-color: #ffd965; font-weight: 700;",
+          G1: "background-color: #ffd965; font-weight: 700;",
+          H1: "background-color: #ffd965; font-weight: 700;",
+          I1: "background-color: #ffd965; font-weight: 700;",
+        },
       });
 
       //create event listener for saving and exiting
@@ -72,10 +72,10 @@ document.addEventListener("DOMContentLoaded", function () {
         savedData.shift();
 
         //remove extra columns created if headers are untitled
-        if(savedHeaders[8] === "") savedHeaders.splice(8, 1);
-        if(savedHeaders[7] === "") savedHeaders.splice(7, 1);
-        if(savedHeaders[6] === "") savedHeaders.splice(6, 1);
-        if(savedHeaders[5] === "") savedHeaders.splice(5, 1);
+        if (savedHeaders[8] === "") savedHeaders.splice(8, 1);
+        if (savedHeaders[7] === "") savedHeaders.splice(7, 1);
+        if (savedHeaders[6] === "") savedHeaders.splice(6, 1);
+        if (savedHeaders[5] === "") savedHeaders.splice(5, 1);
 
         const result = [savedHeaders, savedData];
 

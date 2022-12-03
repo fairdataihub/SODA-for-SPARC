@@ -397,15 +397,21 @@ const createWorkbookStyle = (wb, color) => {
       },
     },
   });
-}
+};
 
 const convertJSONToXlsx = (jsondata, excelfile) => {
   console.log(excelfile);
   console.log("creating new manifest files styled");
-  const requiredManifestHeaders = ["filename", "timestamp", "description", "file type", "Additional Metadata"];
+  const requiredManifestHeaders = [
+    "filename",
+    "timestamp",
+    "description",
+    "file type",
+    "Additional Metadata",
+  ];
   const blueHeader = ["filename", "File Name", "file name"];
   const greenHeader = ["timestamp", "description", "file type"];
-  const yellowHeader = ["Additional Metadata"]
+  const yellowHeader = ["Additional Metadata"];
   const wb = new excel4node.Workbook();
   // create wb style that makes the background styling
   const greenHeaderStyle = createWorkbookStyle(wb, "a8d08d");
@@ -522,9 +528,9 @@ const convertJSONToXlsx = (jsondata, excelfile) => {
   let headingColumnIndex = 1;
   headingColumnNames.forEach((heading) => {
     let styleObject = yellowHeaderStyle;
-    if(blueHeader.includes(heading)) styleObject = blueHeaderStyle;
-    if(yellowHeader.includes(heading)) styleObject = yellowHeaderStyle;
-    if(greenHeader.includes(heading)) styleObject = greenHeaderStyle;
+    if (blueHeader.includes(heading)) styleObject = blueHeaderStyle;
+    if (yellowHeader.includes(heading)) styleObject = yellowHeaderStyle;
+    if (greenHeader.includes(heading)) styleObject = greenHeaderStyle;
 
     ws.cell(1, headingColumnIndex++)
       .string(heading)
@@ -542,7 +548,7 @@ const convertJSONToXlsx = (jsondata, excelfile) => {
     rowIndex++;
   });
   wb.write(excelfile);
-}
+};
 
 var table1;
 const loadManifestFileEdits = (jsondata) => {

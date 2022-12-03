@@ -467,13 +467,13 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
   let spreadSheetModal = new BrowserWindow(windowOptions);
 
   spreadSheetModal.on("close", (e) => {
-    try{
+    try {
       spreadSheetModal.destroy();
       // spreadSheetModal.close();
-    } catch(e) {
+    } catch (e) {
       console.log(e);
     }
-  })
+  });
 
   spreadSheetModal.loadFile("./sections/spreadSheetModal/spreadSheet.html");
 
@@ -487,11 +487,11 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
   ipcMain.on("spreadsheet-results", async (ev, res) => {
     //send back spreadsheet data to main window
     mainWindow.webContents.send("spreadsheet-reply", res);
-    
+
     //destroy window
-    try{
+    try {
       spreadSheetModal.destroy();
-    } catch(e) {
+    } catch (e) {
       console.log(e);
     }
   });

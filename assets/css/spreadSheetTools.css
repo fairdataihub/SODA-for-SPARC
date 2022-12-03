@@ -43,7 +43,7 @@ body {
   --jexcel_content_color: #000;
   --jexcel_content_color_highlighted: #000;
   --jexcel_content_background: #fff;
-  --jexcel_content_background_highlighted: rgba(0,0,0,0.05);
+  --jexcel_content_background_highlighted: rgba(0, 0, 0, 0.05);
   --jexcel_menu_background: #fff;
   --jexcel_menu_background_highlighted: #ebebeb;
   --jexcel_menu_color: #555;

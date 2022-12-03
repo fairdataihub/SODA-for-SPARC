@@ -1885,13 +1885,13 @@ const updateManifestJson = async (highLvlFolderName, result) => {
   await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
   //Rerender the manifest cards
   await renderManifestCards();
-}
+};
 
 const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
   const existingManifestData = sodaJSONObj["guided-manifest-files"][highLevelFolderName];
   //send manifest data to main.js to then send to child window
   ipcRenderer.invoke("spreadsheet", existingManifestData);
-  
+
   //upon receiving a reply of the spreadsheet, handle accordingly
   ipcRenderer.on("spreadsheet-reply", async (event, result) => {
     if (!result || result === "") {
