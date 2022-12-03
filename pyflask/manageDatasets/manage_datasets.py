@@ -121,24 +121,6 @@ def time_format(elapsed_time):
     return "%dh:%02dmin:%02ds" % (hours, mins, secs)
 
 
-# def bf_keep_only_account(keyname):
-#     """
-#     Args:
-#         keyname: name of local Pennsieve account key (string)
-#     Action:
-#         Deletes account information from the Pennsieve config file
-#     """
-#     config = ConfigParser()
-#     config.read(configpath)
-#     config_sections = config.sections()
-
-#     for section in config_sections:
-#         if section not in ["agent", "global", keyname]:
-#             config.remove_section(section)
-#         with open(configpath, "w+") as configfile:
-#             config.write(configfile)
-
-
 ### Manage datasets (Pennsieve interface)
 def bf_add_account_api_key(keyname, key, secret):
     """
@@ -232,6 +214,47 @@ def bf_add_account_api_key(keyname, key, secret):
         raise e
 
 
+# get a target key's value from the config file 
+def read_from_config(key):
+    config = ConfigParser()
+    config.read(configpath)
+    if "global" not in config:
+        raise Exception("Profile has not been set")
+
+    keyname = config["global"]["default_profile"]
+
+    if keyname in config and key in config[keyname]:
+        return config[keyname][key]
+    return None
+
+
+def get_access_token():
+    # get cognito config 
+    r = requests.get(f"{PENNSIEVE_URL}/authentication/cognito-config")
+    r.raise_for_status()
+
+    cognito_app_client_id = r.json()["tokenPool"]["appClientId"]
+    cognito_region_name = r.json()["region"]
+
+    cognito_idp_client = boto3.client(
+    "cognito-idp",
+    region_name=cognito_region_name,
+    aws_access_key_id="",
+    aws_secret_access_key="",
+    )
+            
+    login_response = cognito_idp_client.initiate_auth(
+    AuthFlow="USER_PASSWORD_AUTH",
+    AuthParameters={"USERNAME": read_from_config("api_token"), "PASSWORD": read_from_config("api_secret")},
+    ClientId=cognito_app_client_id,
+    )
+
+    # write access token to a file
+    with open("access_token.txt", "w") as f:
+        f.write(login_response["AuthenticationResult"]["AccessToken"])
+        
+    return login_response["AuthenticationResult"]["AccessToken"]
+
 def bf_add_account_username(keyname, key, secret):
     """
     Associated with 'Add account' button in 'Login to your Pennsieve account' section of SODA
@@ -243,6 +266,8 @@ def bf_add_account_username(keyname, key, secret):
     Action:
         Adds account to the Pennsieve configuration file (local machine)
     """
+    global namespace_logger
+
     temp_keyname = "SODA_temp_generated"
     try:
         keyname = keyname.strip()
@@ -275,6 +300,11 @@ def bf_add_account_username(keyname, key, secret):
             config.set(keyname, "api_secret", secret)
             config.set(keyname, "api_host", PENNSIEVE_URL)
 
+        # set profile name in global section
+        if not config.has_section("global"):
+            config.add_section("global")
+            config.set("global", "default_profile", keyname)
+
         
         with open(configpath, "w") as configfile:
             config.write(configfile)
@@ -284,9 +314,9 @@ def bf_add_account_username(keyname, key, secret):
 
     # Check key and secret are valid, if not delete account from config
     try:
-        ps = Pennsieve()
-        ps.user.switch(keyname)
-    except Exception:
+        get_access_token()
+    except Exception as e:
+        namespace_logger.error(e)
         bf_delete_account(keyname)
         abort(401, 
             "Please check that key name, key, and secret are entered properly"
