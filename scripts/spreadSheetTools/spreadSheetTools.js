@@ -3,31 +3,20 @@ document.addEventListener("DOMContentLoaded", function () {
   const ipcRenderer = require("electron").ipcRenderer;
 
   //Request the spreadsheet data from main
-  ipcRenderer.on("requested-spreadsheet", async (ev, spreadsheet) => {
+  ipcRenderer.once("requested-spreadsheet", async (ev, spreadsheet) => {
     if (!spreadsheet || spreadsheet === "") {
-      console.log("No spreadsheet");
       return;
     } else {
       //spreadsheet obtained, create jspreadsheet
-      let manifestFileHeaders = spreadsheet["headers"];
+      let manifestHeaders = spreadsheet["headers"];
       let manifestFileData = spreadsheet["data"];
-      console.log(manifestFileHeaders);
-      console.log(manifestFileData);
       let saveAndExitManifest = document.getElementById("manifest-save-exit");
 
-      const allHeaders = [
-        "filename",
-        "timestamp",
-        "description",
-        "file type",
-        "Additional Metadata",
-      ];
       const readOnlyHeaders = ["A", "B", "D"];
       const columnHeaders = ["A", "B", "C", "D", "E", "F", "G", "H", "I"];
       if (manifestFileData[0][0] != "filename") {
-        manifestFileData.unshift(allHeaders);
+        manifestFileData.unshift(manifestHeaders);
       }
-      console.log(manifestFileData[0][0]);
       let manifestTable;
 
       const manifestSpreadsheetContainer = document.getElementById("manifest-edit");
@@ -52,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
               manifestTable.redo();
             },
           },
-        ], //array of objects
+        ],
         data: manifestFileData,
         columns: columnHeaders.map((header) => {
           return {
@@ -62,13 +51,32 @@ document.addEventListener("DOMContentLoaded", function () {
             width: "204px",
           };
         }),
+        style: {
+          A1: 'background-color: #A0C2E6; font-weight: 700;',
+          B1: 'background-color: #a8d08d; font-weight: 700;',
+          C1: 'background-color: #a8d08d; font-weight: 700;',
+          D1: 'background-color: #a8d08d; font-weight: 700;',
+          E1: 'background-color: #ffd965; font-weight: 700;',
+          F1: 'background-color: #ffd965; font-weight: 700;',
+          G1: 'background-color: #ffd965; font-weight: 700;',
+          H1: 'background-color: #ffd965; font-weight: 700;',
+          I1: 'background-color: #ffd965; font-weight: 700;',
+      },
       });
 
       //create event listener for saving and exiting
       saveAndExitManifest.addEventListener("click", () => {
         //extract headers and data
-        const savedHeaders = manifestTable.getHeaders().split(",");
         const savedData = manifestTable.getData();
+        const savedHeaders = savedData[0];
+        savedData.shift();
+
+        //remove extra columns created if headers are untitled
+        if(savedHeaders[8] === "") savedHeaders.splice(8, 1);
+        if(savedHeaders[7] === "") savedHeaders.splice(7, 1);
+        if(savedHeaders[6] === "") savedHeaders.splice(6, 1);
+        if(savedHeaders[5] === "") savedHeaders.splice(5, 1);
+
         const result = [savedHeaders, savedData];
 
         //send spreadsheet data back to main

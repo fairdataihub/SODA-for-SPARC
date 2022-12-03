@@ -38,12 +38,12 @@ body {
 :root {
   --jexcel_header_color: #000;
   --jexcel_header_color_highlighted: #000;
-  --jexcel_header_background: #278984;
-  --jexcel_header_background_highlighted: #17827c;
+  --jexcel_header_background: #f3f3f3;
+  --jexcel_header_background_highlighted: #dcdcdc;
   --jexcel_content_color: #000;
   --jexcel_content_color_highlighted: #000;
   --jexcel_content_background: #fff;
-  --jexcel_content_background_highlighted: rgba(0, 0, 0, 0.05);
+  --jexcel_content_background_highlighted: rgba(0,0,0,0.05);
   --jexcel_menu_background: #fff;
   --jexcel_menu_background_highlighted: #ebebeb;
   --jexcel_menu_color: #555;
@@ -56,7 +56,7 @@ body {
 
 .jexcel_content::-webkit-scrollbar {
   width: 6px;
-  height: 100%;
+  height: 6px;
   background-color: #c5c5c5;
 }
 .jexcel_content::-webkit-scrollbar-thumb {
@@ -65,7 +65,7 @@ body {
 
 table::-webkit-scrollbar {
   width: 6px;
-  height: 100%;
+  height: 6px;
   background-color: #c5c5c5;
 }
 table::-webkit-scrollbar-thumb {

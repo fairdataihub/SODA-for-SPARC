@@ -365,13 +365,51 @@ $(document).ready(function () {
   });
 });
 
-function convertJSONToXlsx(jsondata, excelfile) {
+const createWorkbookStyle = (wb, color) => {
+  return wb.createStyle({
+    fill: {
+      type: "pattern",
+      patternType: "solid",
+      fgColor: color,
+    },
+    font: {
+      bold: true,
+      color: "#000000",
+      size: 12,
+      name: "Calibri",
+    },
+    border: {
+      left: {
+        style: "thin",
+        color: "#000000",
+      },
+      right: {
+        style: "thin",
+        color: "#000000",
+      },
+      top: {
+        style: "thin",
+        color: "#000000",
+      },
+      bottom: {
+        style: "thin",
+        color: "#000000",
+      },
+    },
+  });
+}
+
+const convertJSONToXlsx = (jsondata, excelfile) => {
   console.log(excelfile);
   console.log("creating new manifest files styled");
-  const requiredManifestHeaders = ["filename", "timestamp", "description", "file type"];
+  const requiredManifestHeaders = ["filename", "timestamp", "description", "file type", "Additional Metadata"];
+  const blueHeader = ["filename", "File Name", "file name"];
+  const greenHeader = ["timestamp", "description", "file type"];
+  const yellowHeader = ["Additional Metadata"]
   const wb = new excel4node.Workbook();
-  // create wb style that makes the background red
-  const requiredHeaderStyle = wb.createStyle({
+  // create wb style that makes the background styling
+  const greenHeaderStyle = createWorkbookStyle(wb, "a8d08d");
+  const greenHeaderStyle = wb.createStyle({
     fill: {
       type: "pattern",
       patternType: "solid",
@@ -402,11 +440,42 @@ function convertJSONToXlsx(jsondata, excelfile) {
       },
     },
   });
-  const optionalHeaderStyle = wb.createStyle({
+  const yellowHeaderStyle = wb.createStyle({
     fill: {
       type: "pattern",
       patternType: "solid",
       fgColor: "ffd965",
+    },
+    font: {
+      bold: true,
+      color: "#000000",
+      size: 12,
+      name: "Calibri",
+    },
+    border: {
+      left: {
+        style: "thin",
+        color: "#000000",
+      },
+      right: {
+        style: "thin",
+        color: "#000000",
+      },
+      top: {
+        style: "thin",
+        color: "#000000",
+      },
+      bottom: {
+        style: "thin",
+        color: "#000000",
+      },
+    },
+  });
+  const blueHeaderStyle = wb.createStyle({
+    fill: {
+      type: "pattern",
+      patternType: "solid",
+      fgColor: "A0C2E6",
     },
     font: {
       bold: true,
@@ -452,9 +521,10 @@ function convertJSONToXlsx(jsondata, excelfile) {
   //Write Column Title in Excel file
   let headingColumnIndex = 1;
   headingColumnNames.forEach((heading) => {
-    let styleObject = requiredManifestHeaders.includes(heading)
-      ? requiredHeaderStyle
-      : optionalHeaderStyle;
+    let styleObject = yellowHeaderStyle;
+    if(blueHeader.includes(heading)) styleObject = blueHeaderStyle;
+    if(yellowHeader.includes(heading)) styleObject = yellowHeaderStyle;
+    if(greenHeader.includes(heading)) styleObject = greenHeaderStyle;
 
     ws.cell(1, headingColumnIndex++)
       .string(heading)

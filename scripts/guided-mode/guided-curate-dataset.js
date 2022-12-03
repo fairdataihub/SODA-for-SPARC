@@ -1547,7 +1547,7 @@ const guidedTransitionFromDatasetNameSubtitlePage = () => {
   $("#guided-footer-div").css("display", "flex");
 };
 
-const saveGuidedProgress = (guidedProgressFileName) => {
+const saveGuidedProgress = async (guidedProgressFileName) => {
   //return if guidedProgressFileName is not a strnig greater than 0
   if (typeof guidedProgressFileName !== "string" || guidedProgressFileName.length === 0) {
     console.log("Dataset does not have a name therefore not saveable");
@@ -1827,7 +1827,7 @@ const renderProgressCards = (progressFileJSONdata) => {
   });
 };
 
-const renderManifestCards = () => {
+const renderManifestCards = async () => {
   const guidedManifestData = sodaJSONObj["guided-manifest-files"];
   const highLevelFoldersWithManifestData = Object.keys(guidedManifestData);
 
@@ -1873,30 +1873,34 @@ const generateManifestEditCard = (highLevelFolderName) => {
   `;
 };
 
+const updateManifestJson = async (highLvlFolderName, result) => {
+  const savedHeaders = result[0];
+  const savedData = result[1];
+  sodaJSONObj["guided-manifest-files"][highLvlFolderName] = {
+    headers: savedHeaders,
+    data: savedData,
+  };
+
+  //Save the sodaJSONObj with the new manifest file
+  await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+  //Rerender the manifest cards
+  await renderManifestCards();
+}
+
 const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
   const existingManifestData = sodaJSONObj["guided-manifest-files"][highLevelFolderName];
-
   //send manifest data to main.js to then send to child window
-  ipcRenderer.send("spreadsheet", existingManifestData);
-
+  ipcRenderer.invoke("spreadsheet", existingManifestData);
+  
   //upon receiving a reply of the spreadsheet, handle accordingly
   ipcRenderer.on("spreadsheet-reply", async (event, result) => {
     if (!result || result === "") {
+      ipcRenderer.removeAllListeners("spreadsheet-reply");
       return;
     } else {
       //spreadsheet reply contained results
-      const savedHeaders = result[0];
-      const savedData = result[1];
-
-      sodaJSONObj["guided-manifest-files"][highLevelFolderName] = {
-        headers: savedHeaders,
-        data: savedData,
-      };
-
-      //Save the sodaJSONObj with the new manifest file
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-      //Rerender the manifest cards
-      renderManifestCards();
+      await updateManifestJson(highLevelFolderName, result);
+      ipcRenderer.removeAllListeners("spreadsheet-reply");
     }
   });
 };
@@ -1911,6 +1915,7 @@ const extractFilNamesFromManifestData = (manifestData) => {
   //return sorted allFileNamesinDsStructure
   return allFileNamesinDsStructure.sort();
 };
+
 const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
   const prevManifestFileNames = extractFilNamesFromManifestData(existingManifestData);
   const newManifestFileNames = extractFilNamesFromManifestData(newManifestData);
@@ -2037,7 +2042,7 @@ document
 
       sodaJSONObj["guided-manifest-files"] = updatedManifestData;
       // Save the sodaJSONObj with the new manifest files
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (err) {
       console.log(err);
       clientError(err);
@@ -2045,7 +2050,7 @@ document
     }
 
     //Rerender the manifest cards
-    renderManifestCards();
+    await renderManifestCards();
   });
 
 $("#guided-sparc-award-dropdown").selectpicker();
@@ -3724,7 +3729,7 @@ const openPage = async (targetPageID) => {
           })
           .join("\n")}))
       `;
-      renderSubjectsMetadataAsideItems();
+      await renderSubjectsMetadataAsideItems();
       const subjectsMetadataBlackArrowLottieContainer = document.getElementById(
         "subjects-metadata-black-arrow-lottie-container"
       );
@@ -3901,7 +3906,7 @@ const openPage = async (targetPageID) => {
     }
     // Set the last opened page and save it
     sodaJSONObj["page-before-exit"] = targetPageID;
-    saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+    await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
   } catch (error) {
     console.log(error);
   }
@@ -7117,7 +7122,7 @@ const openCopySubjectMetadataPopup = async () => {
       confirmButtonColor: "Copy",
       focusCancel: true,
     })
-    .then((result) => {
+    .then(async (result) => {
       if (result.isConfirmed) {
         const selectedCopyFromSubject = $("input[name='copy-from']:checked").val();
         //loop through checked copy-to checkboxes and return the value of the checkbox element if checked
@@ -7151,7 +7156,7 @@ const openCopySubjectMetadataPopup = async () => {
           openModifySubjectMetadataPage(currentSubjectOpenInView);
         }
 
-        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+        await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       }
     });
 };
@@ -7211,7 +7216,7 @@ const openCopySampleMetadataPopup = async () => {
       confirmButtonText: "Copy",
       focusCancel: true,
     })
-    .then((result) => {
+    .then(async (result) => {
       if (result.isConfirmed) {
         const selectedCopyFromSample = $("input[name='copy-from']:checked").val();
         //loop through checked copy-to checkboxes and return the value of the checkbox element if checked
@@ -7258,7 +7263,7 @@ const openCopySampleMetadataPopup = async () => {
             currentSamplePoolOpenInView
           );
         }
-        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+        await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       }
     });
 };
@@ -8846,7 +8851,7 @@ const renderPoolsHighLevelFolderAsideItems = (highLevelFolderName) => {
   });
 };
 
-const renderSubjectsMetadataAsideItems = () => {
+const renderSubjectsMetadataAsideItems = async () => {
   const asideElement = document.getElementById(`guided-subjects-metadata-aside`);
   asideElement.innerHTML = "";
 
@@ -8928,8 +8933,8 @@ const renderSubjectsMetadataAsideItems = () => {
 
   //add click event to each subject item
   const selectionAsideItems = document.querySelectorAll(`a.subjects-metadata-aside-item`);
-  selectionAsideItems.forEach((item) => {
-    item.addEventListener("click", (e) => {
+  selectionAsideItems.forEach(async (item) => {
+    item.addEventListener("click", async (e) => {
       //Hide intro and show metadata fields if intro is open
       const introElement = document.getElementById("guided-form-add-a-subject-intro");
       if (!introElement.classList.contains("hidden")) {
@@ -8961,7 +8966,7 @@ const renderSubjectsMetadataAsideItems = () => {
       document.getElementById("guided-bootbox-subject-pool-id").value =
         e.target.getAttribute("data-pool-id");
 
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     });
     //add hover event that changes the background color
     item.addEventListener("mouseover", (e) => {
@@ -9063,8 +9068,8 @@ const renderSamplesMetadataAsideItems = () => {
 
   //add click event to each sample item
   const selectionAsideItems = document.querySelectorAll(`a.samples-metadata-aside-item`);
-  selectionAsideItems.forEach((item) => {
-    item.addEventListener("click", (e) => {
+  selectionAsideItems.forEach(async (item) => {
+    item.addEventListener("click", async (e) => {
       //Hide intro and show metadata fields if intro is open
       const introElement = document.getElementById("guided-form-add-a-sample-intro");
       if (!introElement.classList.contains("hidden")) {
@@ -9102,7 +9107,7 @@ const renderSamplesMetadataAsideItems = () => {
       //call openModifySampleMetadataPage function on clicked item
       openModifySampleMetadataPage(e.target.innerText.split("/")[1], samplesSubject, samplesPool);
 
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     });
 
     item.addEventListener("mouseover", (e) => {
@@ -9605,7 +9610,7 @@ $(document).ready(async () => {
         // so new metadata can be uploaded to the newly created dataset
         // (This would happen if the user deleted the dataset on Pennsieve)
         sodaJSONObj["previously-uploaded-data"] = {};
-        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+        await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       }
     }
 
@@ -9636,7 +9641,7 @@ $(document).ready(async () => {
       //Save the dataset ID generated by pennsieve so the dataset is not re-uploaded when the user
       //resumes progress after failing an upload
       sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] = createdDatasetsID;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
       return createdDatasetsID;
     } catch (error) {
@@ -9711,7 +9716,7 @@ $(document).ready(async () => {
       datasetSubtitleUploadText.innerHTML = `Successfully added dataset subtitle: ${datasetSubtitle}`;
       guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "success");
       sodaJSONObj["previously-uploaded-data"]["subtitle"] = datasetSubtitle;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       console.error(error);
       let emessage = userErrorMessage(error);
@@ -9760,7 +9765,7 @@ $(document).ready(async () => {
       datasetDescriptionUploadText.innerHTML = `Successfully added dataset description!`;
       guidedUploadStatusIcon("guided-dataset-description-upload-status", "success");
       sodaJSONObj["previously-uploaded-data"]["description"] = description;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       datasetDescriptionUploadText.innerHTML = "Failed to add a dataset description.";
       guidedUploadStatusIcon("guided-dataset-description-upload-status", "error");
@@ -9799,7 +9804,7 @@ $(document).ready(async () => {
       datasetBannerImageUploadText.innerHTML = `Successfully added dataset banner image!`;
       guidedUploadStatusIcon("guided-dataset-banner-image-upload-status", "success");
       sodaJSONObj["previously-uploaded-data"]["banner-image-path"] = bannerImagePath;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       console.error(error);
       let emessage = userErrorMessage(error);
@@ -9837,7 +9842,7 @@ $(document).ready(async () => {
       datasetLicenseUploadText.innerHTML = `Successfully added dataset license: ${datasetLicense}`;
       guidedUploadStatusIcon("guided-dataset-license-upload-status", "success");
       sodaJSONObj["previously-uploaded-data"]["license"] = datasetLicense;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       console.error(error);
       let emessage = userErrorMessage(error);
@@ -9887,7 +9892,7 @@ $(document).ready(async () => {
         datasetPiOwnerUploadText.innerHTML = `Successfully added PI: ${piOwnerObj["name"]}`;
         guidedUploadStatusIcon("guided-dataset-pi-owner-upload-status", "success");
         sodaJSONObj["previously-uploaded-data"]["pi-owner"] = piOwnerObj;
-        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+        await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       } catch (error) {
         console.error(error);
         let emessage = userErrorMessage(error);
@@ -9928,7 +9933,7 @@ $(document).ready(async () => {
       datasetTagsUploadText.innerHTML = `Successfully added dataset tags: ${tags.join(", ")}`;
       guidedUploadStatusIcon("guided-dataset-tags-upload-status", "success");
       sodaJSONObj["previously-uploaded-data"]["tags"] = tags;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       datasetTagsUploadText.innerHTML = "Failed to add dataset tags.";
       guidedUploadStatusIcon("guided-dataset-tags-upload-status", "error");
@@ -10121,7 +10126,7 @@ $(document).ready(async () => {
       guidedUploadStatusIcon("guided-subjects-metadata-upload-status", "success");
       subjectsMetadataUploadText.innerHTML = `Subjects metadata successfully uploaded`;
       sodaJSONObj["previously-uploaded-data"]["subjects-metadata"] = subjectsTableData;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       guidedUploadStatusIcon("guided-subjects-metadata-upload-status", "error");
       subjectsMetadataUploadText.innerHTML = `Failed to upload subjects metadata`;
@@ -10163,7 +10168,7 @@ $(document).ready(async () => {
       guidedUploadStatusIcon("guided-samples-metadata-upload-status", "success");
       samplesMetadataUploadText.innerHTML = `Samples metadata successfully uploaded`;
       sodaJSONObj["previously-uploaded-data"]["samples-metadata"] = samplesTableData;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       guidedUploadStatusIcon("guided-samples-metadata-upload-status", "error");
       samplesMetadataUploadText.innerHTML = `Failed to upload samples metadata`;
@@ -10207,7 +10212,7 @@ $(document).ready(async () => {
       guidedUploadStatusIcon("guided-submission-metadata-upload-status", "success");
       submissionMetadataUploadText.innerHTML = `Submission metadata successfully uploaded`;
       sodaJSONObj["previously-uploaded-data"]["submission-metadata"] = submissionMetadataJSON;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       guidedUploadStatusIcon("guided-submission-metadata-upload-status", "error");
       submissionMetadataUploadText.innerHTML = `Failed to upload submission metadata`;
@@ -10277,7 +10282,7 @@ $(document).ready(async () => {
         contributorInformation,
         additionalLinks,
       };
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       guidedUploadStatusIcon("guided-dataset-description-metadata-upload-status", "error");
       datasetDescriptionMetadataUploadText.innerHTML = `Failed to upload dataset description metadata`;
@@ -10359,7 +10364,7 @@ $(document).ready(async () => {
       datasetDescriptionMetadataUploadText.innerHTML = `${readmeORchanges.toUpperCase()} metadata successfully uploaded`;
       sodaJSONObj["previously-uploaded-data"][`${readmeORchanges}-metadata`] =
         readmeOrChangesMetadata;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       guidedUploadStatusIcon(`guided-${readmeORchanges}-metadata-upload-status`, "error");
       datasetDescriptionMetadataUploadText.innerHTML = `Failed to upload ${readmeORchanges.toUpperCase()} metadata`;
@@ -10751,7 +10756,7 @@ $(document).ready(async () => {
           sodaJSONObj["digital-metadata"]["name"];
 
         // Save the sodaJSONObj after a successful upload
-        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+        await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
         //Display the click next text
         document
@@ -11401,7 +11406,7 @@ $(document).ready(async () => {
     try {
       await savePageChanges(pageBeingLeftID);
       //Save progress onto local storage with the dataset name as the key
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
       //Mark page as completed in JSONObj so we know what pages to load when loading local saves
       //(if it hasn't already been marked complete)
@@ -12079,7 +12084,7 @@ $(document).ready(async () => {
         }
       }
 
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       console.log(error);
       throw error;

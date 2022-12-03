@@ -446,7 +446,7 @@ const wait = async (delay) => {
 
 // passing in the spreadsheet data to pass to a modal
 // that will have a jspreadsheet for user edits
-ipcMain.on("spreadsheet", (event, spreadsheet) => {
+ipcMain.handle("spreadsheet", (event, spreadsheet) => {
   const windowOptions = {
     minHeight: 450,
     width: 1120,
@@ -467,51 +467,33 @@ ipcMain.on("spreadsheet", (event, spreadsheet) => {
   let spreadSheetModal = new BrowserWindow(windowOptions);
 
   spreadSheetModal.on("close", (e) => {
-    // mainWindow.webContents.send("spreadsheet-reply", spreadSheetResult);
-    // e.preventDefault(); // Prevents the window from closing
-    // dialog
-    //   .showMessageBox(spreadSheetModal, {
-    //     type: "question",
-    //     buttons: ["Yes", "No"],
-    //     title: "Confirm",
-    //     message: "Any progress will be unsaved. Are you sure you want to quit?",
-    //   })
-    //   .then((responseObject) => {
-    //     let { response } = responseObject;
-    //     if (response === 0) {
-    //       // Runs the following if 'Yes' is clicked
-    //       // send back the spreadsheet data to SODA
-    //       spreadSheetModal.showExitPrompt = false;
-    spreadSheetModal.close();
-    //       /// feedback form iframe prevents closing gracefully
-    //       /// so force close
-    if (!spreadSheetModal.closed) {
+    try{
       spreadSheetModal.destroy();
+      // spreadSheetModal.close();
+    } catch(e) {
+      console.log(e);
     }
-    spreadSheetModal = null;
-    //     }
-    //   });
-  });
+  })
 
   spreadSheetModal.loadFile("./sections/spreadSheetModal/spreadSheet.html");
 
   spreadSheetModal.once("ready-to-show", async () => {
+    //display window when ready to show
     spreadSheetModal.show();
     //send data to child window
     spreadSheetModal.send("requested-spreadsheet", spreadsheet);
   });
 
-  ipcMain.on("spreadsheet-results", async (ev, result) => {
+  ipcMain.on("spreadsheet-results", async (ev, res) => {
     //send back spreadsheet data to main window
-    mainWindow.webContents.send("spreadsheet-reply", result);
-
-    spreadSheetModal.close();
-    /// feedback form iframe prevents closing gracefully
-    /// so force close
-    if (!spreadSheetModal.closed) {
+    mainWindow.webContents.send("spreadsheet-reply", res);
+    
+    //destroy window
+    try{
       spreadSheetModal.destroy();
+    } catch(e) {
+      console.log(e);
     }
-    // spreadSheetModal = null;
   });
 });
 
