@@ -3785,8 +3785,11 @@ const openPage = async (targetPageID) => {
           });
           console.log(metadata_import.data);
           let contributorData = metadata_import.data["Contributor information"];
+          //Filter out returned rows that only contain empty srings (first name is checked)
+          contributorData = contributorData.filter((row) => {
+            return row[0] !== "";
+          });
           console.log(contributorData);
-          console.log(sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"]);
           /*
             {
               conAffliation: ["Penn State University"],
@@ -3799,10 +3802,8 @@ const openPage = async (targetPageID) => {
           */
           // Loop through the contributorData array besides the first row (which is the header)
           for (let i = 1; i < contributorData.length; i++) {
-            let contributorData = contributorData[i];
-            let contributor = {
-              conAffliation: contributorData["Affiliation"],
-            };
+            const contributorArray = contributorData[i];
+            console.log(contributorArray);
           }
         } catch (error) {
           console.log(error);
@@ -6359,6 +6360,9 @@ const openGuidedAddContributorSwal = async () => {
       return contributor.conID;
     });
 
+    // fetch contributors from AirTable using the sparc award specified
+    // If any of the contributors in the dataset are found,
+    // they will be added to a dropdown at the top of the swal
     let contributorData = await fetchContributorDataFromAirTable();
 
     //Filter out contributors that have already been added
@@ -6368,7 +6372,7 @@ const openGuidedAddContributorSwal = async () => {
 
     // If contributor data is returned from airtable, add a select option for each contributor with
     // a returned first and last name
-    if (contributorData.length > 0) {
+    /*if (contributorData.length > 0) {
       addContributorTitle =
         "Select a contributor from the dropdown below or add their information manually.";
       contributorAdditionHeader = `
@@ -6419,10 +6423,10 @@ const openGuidedAddContributorSwal = async () => {
           ${contributorOptions}
         </select>
       `;
-    } else {
-      contributorAdditionHeader = ``;
-      addContributorTitle = "Enter the contributor's information below.";
-    }
+    } else {*/
+    contributorAdditionHeader = ``;
+    addContributorTitle = "Enter the contributor's information below.";
+    //}
   } catch (error) {
     console.log(error);
   }
@@ -6717,7 +6721,7 @@ const renderDatasetDescriptionContributorsTable = () => {
   if (contributors.length === 0) {
     contributorsTableHTML = `
       <tr>
-        <td colspan="4">
+        <td colspan="5">
           <div style="margin-right:.5rem" class="alert alert-warning guided--alert" role="alert">
             No contributors have been added to your dataset. To add a contributor, click the "Add a new contributor" button below.
           </div>
