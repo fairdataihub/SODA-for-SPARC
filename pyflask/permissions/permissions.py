@@ -13,7 +13,7 @@ def bf_get_current_user_permission_agent_two(dataset_id, ps):
 
 
 
-def has_edit_permissions(ps, selected_dataset_id):
+def has_edit_permissions(ps_or_token, selected_dataset_id):
     """
         Checks if the current user has permission to edit the given dataset.
 
@@ -21,8 +21,18 @@ def has_edit_permissions(ps, selected_dataset_id):
             selected_dataset_id: Pennsieve dataset ID to check permissions for
             ps: Pennsieve client object of a user that has been authenticated
     """
+
+
+    if type(ps_or_token) == str:
+        r = requests.get(f"https://api.pennsieve.io/datasets/{selected_dataset_id}/role", headers={"Authorization": f"Bearer {ps_or_token}"})
+        r.raise_for_status()
+
+        role = r.json()["role"]
+
+        return role in ["owner", "manager"]
+
     try:
-        role = bf_get_current_user_permission_agent_two(selected_dataset_id, ps)["role"]
+        role = bf_get_current_user_permission_agent_two(selected_dataset_id, ps_or_token)["role"]
     except Exception as e:
         abort(500, "Could not get permissions for this dataset.")
 
