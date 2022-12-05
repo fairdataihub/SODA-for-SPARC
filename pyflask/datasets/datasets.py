@@ -52,13 +52,11 @@ def get_current_collection_names(account, dataset):
     """
     Function used to get collection names of the current dataset
     """
-    ps = connect_pennsieve_client()
+    token = get_access_token()
 
-    authenticate_user_with_client(ps, account)
+    selected_dataset_id = get_dataset_id(token, dataset)
 
-    selected_dataset_id = get_dataset_id(ps, dataset)
-
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collections", headers=create_request_headers(ps))
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collections", headers=create_request_headers(token))
     r.raise_for_status()
 
     return r.json()
@@ -70,13 +68,11 @@ def upload_collection_names(account, dataset, tags):
     @params
         tags: List of the collection tag id's (int)
     """
-    ps = connect_pennsieve_client()
+    token = get_access_token()
 
-    authenticate_user_with_client(ps, account)
+    selected_dataset_id = get_dataset_id(token, dataset)
 
-    selected_dataset_id = get_dataset_id(ps, dataset)
-
-    if not has_edit_permissions(ps, selected_dataset_id):
+    if not has_edit_permissions(token, selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
     
     print(tags)
@@ -84,7 +80,7 @@ def upload_collection_names(account, dataset, tags):
     store = []
     for tag in tags:
         jsonfile = {"collectionId": int(tag)}
-        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collections", json=jsonfile, headers=create_request_headers(ps))
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collections", json=jsonfile, headers=create_request_headers(token))
         r.raise_for_status()
         result = r.json()
         for res_object in result:
@@ -107,18 +103,16 @@ def remove_collection_names(account, dataset, tags):
 
     statusResponses = []
 
-    ps = connect_pennsieve_client()
+    token = get_access_token()
 
-    authenticate_user_with_client(ps, account)
+    selected_dataset_id = get_dataset_id(token, dataset)
 
-    selected_dataset_id = get_dataset_id(ps, dataset)
-
-    if not has_edit_permissions(ps, selected_dataset_id):
+    if not has_edit_permissions(token, selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
 
     print(selected_dataset_id)
     for tagid in tags:
-        r = requests.delete(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/collections/{str(tagid)}", headers=create_request_headers(ps))
+        r = requests.delete(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/collections/{str(tagid)}", headers=create_request_headers(token))
         r.raise_for_status()
         print("JSON RESULT")
         print(r.text)
