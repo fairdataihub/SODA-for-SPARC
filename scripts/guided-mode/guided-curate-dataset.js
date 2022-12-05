@@ -3786,11 +3786,17 @@ const openPage = async (targetPageID) => {
           console.log(metadata_import.data);
           let contributorData = metadata_import.data["Contributor information"];
           //Filter out returned rows that only contain empty srings (first name is checked)
-          contributorData = contributorData.filter((row) => {
-            return row[0] !== "";
+          const currentContributorFullNames = getContributorFullNames();
+          contributorData = contributorData = contributorData.filter((row) => {
+            return row[0] !== "" && !currentContributorFullNames.includes(row[0]);
           });
           console.log(contributorData);
           /*
+         contributorData.contributorFirstName;
+ contributorData.contributorLastName;
+  contributorData.conID;
+   contributorData.conAffliation;
+  const contributorRolesArray = contributorData.conRole;
             {
               conAffliation: ["Penn State University"],
               conID: "https://orcid.org/0000-0002-1825-0097",
@@ -3799,11 +3805,32 @@ const openPage = async (targetPageID) => {
               contributorFirstName: "John",
               contributorLastName: "Doe",
             }
+            const addContributor = (
+  contributorFirstName,
+  contributorLastName,
+  contributorORCID,
+  contributorAffiliationsArray,
+  contributorRolesArray
+) => {
           */
           // Loop through the contributorData array besides the first row (which is the header)
           for (let i = 1; i < contributorData.length; i++) {
             const contributorArray = contributorData[i];
-            console.log(contributorArray);
+            // split the name into first and last name with the first name being the first element and last name being the rest of the elements
+            const contributorFullName = contributorArray[0];
+            const contributorFirstName = contributorFullName.split(" ")[0];
+            const contributorLastName = contributorFullName.split(" ").slice(1).join(" ");
+            const contributorID = contributorArray[1];
+            const contributorAffiliation = contributorArray[2].split(",");
+            const contributorRoles = contributorArray[3].split(",");
+
+            addContributor(
+              contributorFirstName,
+              contributorLastName,
+              contributorID,
+              contributorAffiliation,
+              contributorRoles
+            );
           }
         } catch (error) {
           console.log(error);
@@ -6034,6 +6061,13 @@ const fetchContributorDataFromAirTable = async () => {
   }
 };
 
+const getContributorFullNames = () => {
+  return sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"].map(
+    (contributor) => {
+      return contributor.conName;
+    }
+  );
+};
 const addContributor = (
   contributorFirstName,
   contributorLastName,
@@ -6434,7 +6468,7 @@ const openGuidedAddContributorSwal = async () => {
   let affiliationTagify;
   let contributorRolesTagify;
 
-  const { value: newContributorData } = await Swal.fire({
+  await Swal.fire({
     allowOutsideClick: false,
     allowEscapeKey: false,
     backdrop: "rgba(0,0,0, 0.4)",
@@ -6555,7 +6589,7 @@ const openGuidedAddContributorSwal = async () => {
       });
       createDragSort(contributorRolesTagify);
 
-      $("#guided-dd-contributor-dropdown").selectpicker({
+      /*$("#guided-dd-contributor-dropdown").selectpicker({
         style: "guided--select-picker",
       });
       $("#guided-dd-contributor-dropdown").selectpicker("refresh");
@@ -6581,10 +6615,10 @@ const openGuidedAddContributorSwal = async () => {
 
         contributorRolesTagify.removeAllTags();
         contributorRolesTagify.addTags(selectedRoles.split());
-      });
+      });*/
     },
 
-    preConfirm: (inputValue) => {
+    preConfirm: () => {
       const contributorFirstName = document.getElementById("guided-contributor-first-name").value;
       const contributorLastName = document.getElementById("guided-contributor-last-name").value;
       const contributorOrcid = document.getElementById("guided-contributor-orcid").value;
