@@ -1554,11 +1554,15 @@ def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_pat
     if not has_edit_permissions(token, selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
 
+    headers = {
+        "Authorization": f"Bearer {token}",
+    }
+
 
     try:
         def upload_image():
             with open(banner_image_path, "rb") as f:
-                return requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/banner", files={"banner": f}, headers=create_request_headers(token))
+                return requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/banner", files={"banner": f}, headers=headers)
 
         # delete banner image folder if it is located in SODA
         r = upload_image()
