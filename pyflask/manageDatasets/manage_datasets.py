@@ -1302,7 +1302,7 @@ def bf_add_permission_team(
     c = 0
 
     try:
-        selected_dataset_id = get_dataset_id(myds, selected_bfdataset)
+        selected_dataset_id = get_dataset_id(token, selected_bfdataset)
     except Exception as e:
         error = error + "Please select a valid Pennsieve dataset" + "<br>"
         c += 1
