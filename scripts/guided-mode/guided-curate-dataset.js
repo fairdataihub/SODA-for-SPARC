@@ -952,6 +952,8 @@ document
   .getElementById("guided-button-import-data-deliverables")
   .addEventListener("click", async () => {
     //Open the page and leave the sub-page hydration to the sub-page function
+    //after waiting for call stack to finish
+    await new Promise((resolve) => setTimeout(resolve, 0));
     openSubPageNavigation("guided-create-submission-metadata-tab");
   });
 
