@@ -3442,7 +3442,6 @@ def main_curate_function_progress():
     global total_bytes_uploaded # current number of bytes uploaded to Pennsieve in the upload session
     global myds 
 
-    print("In progress ds value is: ", myds)
 
     elapsed_time = time.time() - generate_start_time
     elapsed_time_formatted = time_format(elapsed_time)

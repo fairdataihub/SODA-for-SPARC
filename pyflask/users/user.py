@@ -10,6 +10,7 @@ from utils import (
 from namespaces import NamespaceEnum, get_namespace_logger
 from flask import abort
 from pennsieve2.pennsieve import Pennsieve
+from authentication import get_access_token
 
 
 
@@ -45,13 +46,9 @@ def get_user(selected_account):
   """
   Get a user's information.
   """
-  # ps = get_authenticated_ps(selected_account)
-  ps = connect_pennsieve_client()
-  authenticate_user_with_client(ps, selected_account)
-  print(ps)
-  print(selected_account)
+  token = get_access_token()
   try:
-    r = requests.get(f"{PENNSIEVE_URL}/user", headers=create_request_headers(ps))
+    r = requests.get(f"{PENNSIEVE_URL}/user", headers=create_request_headers(token))
     r.raise_for_status()
 
     return r.json()
