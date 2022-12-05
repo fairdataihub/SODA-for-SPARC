@@ -12389,6 +12389,9 @@ $(document).ready(async () => {
         const nextSubPageID = nonSkippedSiblingPages[openSubPageIndex + 1];
         console.log(nextSubPageID);
         setActiveSubPage(nextSubPageID);
+      } else {
+        console.log("going next after sub page");
+        hideSubNavAndShowMainNav("next");
       }
     } catch (error) {
       console.log(error);
@@ -12416,52 +12419,18 @@ $(document).ready(async () => {
     //Get the id of the sub-page that's currently open
     const openSubPageID = getOpenSubPageInPage(currentParentPageID);
 
-    if (currentParentPageID != "guided-create-submission-metadata-tab") {
-      const nonSkippedSiblingPages = getNonSkippedSubPages(currentParentPageID);
+    const nonSkippedSiblingPages = getNonSkippedSubPages(currentParentPageID);
 
-      // Get the index of the sub-page that's currently open
-      const openSubPageIndex = nonSkippedSiblingPages.indexOf(openSubPageID);
+    // Get the index of the sub-page that's currently open
+    const openSubPageIndex = nonSkippedSiblingPages.indexOf(openSubPageID);
 
-      if (openSubPageIndex > 0) {
-        //If the sub-page that's currently open is not the first sub-page in the parent page
-        //Get the id of the previous sub-page and open it
-        const previousSubPageID = nonSkippedSiblingPages[openSubPageIndex - 1];
-        setActiveSubPage(previousSubPageID);
-      } else {
-        hideSubNavAndShowMainNav("back");
-      }
+    if (openSubPageIndex > 0) {
+      //If the sub-page that's currently open is not the first sub-page in the parent page
+      //Get the id of the previous sub-page and open it
+      const previousSubPageID = nonSkippedSiblingPages[openSubPageIndex - 1];
+      setActiveSubPage(previousSubPageID);
     } else {
-      const buttonYesImportDataDerivatives = document.getElementById(
-        "guided-button-import-data-deliverables"
-      );
-      const buttonNoEnterSubmissionDataManually = document.getElementById(
-        "guided-button-enter-submission-metadata-manually"
-      );
-      if (
-        !buttonYesImportDataDerivatives.classList.contains("selected") &&
-        !buttonNoEnterSubmissionDataManually.classList.contains("selected")
-      ) {
-        hideSubNavAndShowMainNav("back");
-      }
-      if (buttonYesImportDataDerivatives.classList.contains("selected")) {
-        switch (openSubPageID) {
-          case "guided-data-derivative-import-page": {
-            hideSubNavAndShowMainNav("back");
-            break;
-          }
-          case "guided-completion-date-selection-page": {
-            setActiveSubPage("guided-data-derivative-import-page");
-            break;
-          }
-          case "guided-submission-metadata-page": {
-            setActiveSubPage("guided-completion-date-selection-page");
-            break;
-          }
-        }
-      }
-      if (buttonNoEnterSubmissionDataManually.classList.contains("selected")) {
-        hideSubNavAndShowMainNav("back");
-      }
+      hideSubNavAndShowMainNav("back");
     }
   });
 
