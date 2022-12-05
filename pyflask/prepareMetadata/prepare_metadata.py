@@ -206,8 +206,10 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
     if not has_edit_permissions(ps, selected_dataset_id):
         abort(403, "You do not have permissions to edit this dataset.")
 
+    headers = create_request_headers(ps)
+
     # handle duplicates on Pennsieve: first, obtain the existing file ID
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(ps))
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
     r.raise_for_status()
     items = r.json()
     for item in items["children"]:
@@ -218,7 +220,7 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
             }
 
             # then, delete it using Pennsieve method delete(id)\vf = Pennsieve()
-            r = requests.post(f"{PENNSIEVE_URL}/data/delete",json=jsonfile, headers=create_request_headers(ps))
+            r = requests.post(f"{PENNSIEVE_URL}/data/delete",json=jsonfile, headers=headers)
             r.raise_for_status()
 
     try:
