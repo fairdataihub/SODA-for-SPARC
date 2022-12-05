@@ -593,29 +593,6 @@ def create_dataset(jsonpath, pathdataset):
         raise e
 
 
-def bf_get_current_user_permission(bf, myds):
-
-    """
-    Function to get the permission of currently logged in user for a selected dataset
-
-    Args:
-        bf: logged Pennsieve acccount (dict)
-        myds: selected Pennsieve dataset (dict)
-    Output:
-        permission of current user (string)
-    """
-
-    try:
-        selected_dataset_id = myds.id
-        user_role = bf._api._get("/datasets/" + str(selected_dataset_id) + "/role")[
-            "role"
-        ]
-
-        return user_role
-
-    except Exception as e:
-        raise e
-
 
 """
 ------------------------------------------
@@ -624,21 +601,6 @@ FUNCTIONS
 ------------------------------------------
 
 """
-
-
-def bf_dataset_size():
-    """
-    Function to get storage size of a dataset on Pennsieve
-    """
-    global bf
-    global myds
-
-    try:
-        selected_dataset_id = myds.id
-        bf_response = bf._api._get(f"/datasets/{str(selected_dataset_id)}")
-        return bf_response["storage"] if "storage" in bf_response.keys() else 0
-    except Exception as e:
-        raise e
 
 
 def check_empty_files_folders(soda_json_structure):
