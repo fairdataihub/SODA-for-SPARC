@@ -27,6 +27,7 @@ from permissions import bf_get_current_user_permission_agent_two, has_edit_permi
 from utils import connect_pennsieve_client, get_dataset_id, create_request_headers, authenticate_user_with_client
 from namespaces import NamespaceEnum, get_namespace_logger
 namespace_logger = get_namespace_logger(NamespaceEnum.ORGANIZE_DATASETS)
+from authentication import get_access_token
 
 
 
@@ -906,7 +907,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
     
 
-    def createFolderStructure(subfolder_json, pennsieve_client, manifest):
+    def createFolderStructure(subfolder_json, pennsieve_client_or_token, manifest):
         """
             Function for creating the Pennsieve folder structure for a given dataset as an object stored locally.
             Arguments:
@@ -920,7 +921,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         
         collection_id = subfolder_json["path"]
 
-        headers = create_request_headers(pennsieve_client)
+        headers = create_request_headers(pennsieve_client_or_token)
 
         r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}", headers=headers)
         r.raise_for_status()
@@ -1020,7 +1021,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         if len(subfolder_json["folders"].keys()) != 0:  # there are subfolders
             for folder in subfolder_json["folders"].keys():
                 subfolder = subfolder_json["folders"][folder]
-                createFolderStructure(subfolder, pennsieve_client, manifest)
+                createFolderStructure(subfolder, pennsieve_client_or_token, manifest)
 
     # START
 
@@ -1034,9 +1035,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
     namespace_logger.info(f"bf_account_name: {bf_account_name}")
 
-    ps = connect_pennsieve_client()
-
-    authenticate_user_with_client(ps, bf_account_name)
+    token = get_access_token()
 
     # check that the Pennsieve dataset is valid
     try:
@@ -1044,12 +1043,12 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     except Exception as e:
         raise e
 
-    selected_dataset_id = get_dataset_id(ps, bf_dataset_name)
+    selected_dataset_id = get_dataset_id(token, bf_dataset_name)
 
 
     # check that the user has permission to edit this dataset
     try:
-        role = bf_get_current_user_permission_agent_two(selected_dataset_id, ps)["role"]
+        role = bf_get_current_user_permission_agent_two(selected_dataset_id, token)["role"]
         namespace_logger.info(f"role: {role}")
         if role not in ["owner", "manager", "editor"]:
             curatestatus = "Done"
@@ -1067,7 +1066,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
 
     # headers for making requests to Pennsieve's api
-    headers = create_request_headers(ps)
+    headers = create_request_headers(token)
 
     # root of dataset is pulled here
     # root_children is the files and folders within root
@@ -1157,7 +1156,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
                 if folder in manifest_dict:
                     createFolderStructure(
-                        subfolder_section, ps, manifest_dict[folder]
+                        subfolder_section, token, manifest_dict[folder]
                     )  # passing item's json and the collection ID
 
     success_message = (
