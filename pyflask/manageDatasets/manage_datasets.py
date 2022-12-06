@@ -170,6 +170,14 @@ def bf_add_account_api_key(keyname, key, secret):
         config.set(keyname, "api_secret", secret)
         config.set(keyname, "api_host", PENNSIEVE_URL)
 
+
+        # add the profile under the global section 
+        if config.has_section("global"):
+            config.set("global", "default_profile", keyname)
+        else:
+            config.add_section("global")
+            config.set("global", "default_profile", keyname)
+
         with open(configpath, "w") as configfile:
             config.write(configfile)
 
