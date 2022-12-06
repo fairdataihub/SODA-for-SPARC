@@ -3791,46 +3791,30 @@ const openPage = async (targetPageID) => {
             return row[0] !== "" && !currentContributorFullNames.includes(row[0]);
           });
           console.log(contributorData);
-          /*
-         contributorData.contributorFirstName;
- contributorData.contributorLastName;
-  contributorData.conID;
-   contributorData.conAffliation;
-  const contributorRolesArray = contributorData.conRole;
-            {
-              conAffliation: ["Penn State University"],
-              conID: "https://orcid.org/0000-0002-1825-0097",
-              conName: "John Doe",
-              conRole: ["Principal Investigator"],
-              contributorFirstName: "John",
-              contributorLastName: "Doe",
-            }
-            const addContributor = (
-  contributorFirstName,
-  contributorLastName,
-  contributorORCID,
-  contributorAffiliationsArray,
-  contributorRolesArray
-) => {
-          */
+
           // Loop through the contributorData array besides the first row (which is the header)
           for (let i = 1; i < contributorData.length; i++) {
             const contributorArray = contributorData[i];
+            console.log(contributorArray);
             // split the name into first and last name with the first name being the first element and last name being the rest of the elements
             const contributorFullName = contributorArray[0];
-            const contributorFirstName = contributorFullName.split(" ")[0];
+            const contributorFirstName = contributorFullName.split(", ")[0];
             const contributorLastName = contributorFullName.split(" ").slice(1).join(" ");
             const contributorID = contributorArray[1];
-            const contributorAffiliation = contributorArray[2].split(",");
-            const contributorRoles = contributorArray[3].split(",");
-
-            addContributor(
-              contributorFirstName,
-              contributorLastName,
-              contributorID,
-              contributorAffiliation,
-              contributorRoles
-            );
+            const contributorAffiliation = contributorArray[2].split(", ");
+            const contributorRoles = contributorArray[3].split(", ");
+            try {
+              addContributor(
+                contributorFirstName,
+                contributorLastName,
+                contributorID,
+                contributorAffiliation,
+                contributorRoles
+              );
+            } catch (error) {
+              console.log(error);
+              notyf.error(error);
+            }
           }
         } catch (error) {
           console.log(error);
@@ -6075,6 +6059,12 @@ const addContributor = (
   contributorAffiliationsArray,
   contributorRolesArray
 ) => {
+  console.log("first name: ", contributorFirstName);
+  console.log("last name: ", contributorLastName);
+  console.log("orcid: ", contributorORCID);
+  console.log(contributorAffiliationsArray);
+  console.log(contributorRolesArray);
+
   if (getContributorByOrcid(contributorORCID)) {
     throw new Error("A contributor with the entered ORCID already exists");
   }
@@ -6084,8 +6074,8 @@ const addContributor = (
     contributorLastName: contributorLastName,
     conName: `${contributorFirstName} ${contributorLastName}`,
     conID: contributorORCID,
-    conAffliation: contributorAffiliationsArray.map((affiliation) => affiliation.value),
-    conRole: contributorRolesArray.map((role) => role.value),
+    conAffliation: contributorAffiliationsArray,
+    conRole: contributorRolesArray,
   });
 };
 
@@ -6622,8 +6612,8 @@ const openGuidedAddContributorSwal = async () => {
       const contributorFirstName = document.getElementById("guided-contributor-first-name").value;
       const contributorLastName = document.getElementById("guided-contributor-last-name").value;
       const contributorOrcid = document.getElementById("guided-contributor-orcid").value;
-      const contributorAffiliations = affiliationTagify.value;
-      const contributorRoles = contributorRolesTagify.value;
+      const contributorAffiliations = affiliationTagify.value.map((item) => item.value);
+      const contributorRoles = contributorRolesTagify.value.map((item) => item.value);
 
       if (
         !contributorFirstName ||
