@@ -1,9 +1,24 @@
+const guidedSetNavLoadingState = (loadingState) => {
+  if (loadingState === true) {
+  }
+  if (loadingState === false) {
+  }
+};
+
 const objectsHaveSameKeys = (...objects) => {
   const allKeys = objects.reduce((keys, object) => keys.concat(Object.keys(object)), []);
   const union = new Set(allKeys);
   return objects.every((object) => union.size === Object.keys(object).length);
 };
 const savePageChanges = async (pageBeingLeftID) => {
+  // Dorian: this is where you would set loading state as true
+  // This function is used by both the navigation bar and the side buttons,
+  // and whenever it is being called, we know that the user is trying to save the changes on the current page.
+  // this function is async because we sometimes need to make calls to validate data before the page is ready to be left.
+  guidedSetNavLoadingState(true);
+
+  //Dorian this is added to simulate a 1 second load time
+  await new Promise((resolve) => setTimeout(resolve, 1000));
   const errorArray = [];
   try {
     //save changes to the current page
@@ -3371,6 +3386,15 @@ const pageNeedsUpdateFromPennsieve = (pageID) => {
 //If the keys exist, extract the data from the sodaJSONObj and populate the page
 //If the keys do not exist, reset the page (inputs, tables etc.) to the default state
 const openPage = async (targetPageID) => {
+  // Dorian: this is where you would set loading state as true
+  // This function is used by both the navigation bar and the side buttons,
+  // and whenever it is being called, we know that the user is trying to navigate to a new page
+  // this function is async because we sometimes need to fetch data before the page is ready to be opened
+  guidedSetNavLoadingState(true);
+
+  //Dorian this is added to simulate a 1 second load time
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
   let itemsContainer = document.getElementById("items-guided-container");
   if (itemsContainer.classList.contains("border-styling")) {
     itemsContainer.classList.remove("border-styling");
@@ -11769,9 +11793,8 @@ $(document).ready(async () => {
       await openPage("guided-dataset-dissemination-tab");
       return;
     }
-    //remove blue pulse
-    $(this).removeClass("pulse-blue");
-    //add a bootstrap loader to the next button
+
+    // Dorian: The below loading class should be removed
     $(this).addClass("loading");
     let errorArray = [];
 
