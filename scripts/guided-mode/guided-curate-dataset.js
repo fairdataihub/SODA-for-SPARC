@@ -1,4 +1,4 @@
-const guidedSetNavLoadingState = (loadingState) => {
+const guidedSetNavLoadingState = async (loadingState) => {
   const subBackButton = document.getElementById("guided-button-sub-page-back");
   const subContinueButton = document.getElementById("guided-button-sub-page-continue");
   const mainBackButton = document.getElementById("guided-back-button");
@@ -13,8 +13,8 @@ const guidedSetNavLoadingState = (loadingState) => {
     mainContinueButton.disabled = true;
     // guidedNavBar.disabled = true;
     navItems.forEach((nav) => {
-      console.log(nav);
-      nav.disabled = true;
+      nav.classList.add("disabled-nav");
+      // console.log(nav);
     });
   }
   if (loadingState === false) {
@@ -25,7 +25,7 @@ const guidedSetNavLoadingState = (loadingState) => {
     mainContinueButton.disabled = false;
     // guidedNavBar.disabled = false;
     navItems.forEach((nav) => {
-      nav.disabled = false;
+      nav.classList.remove("disabled-nav")
     });
   }
 };
@@ -41,7 +41,7 @@ const savePageChanges = async (pageBeingLeftID) => {
   // This function is used by both the navigation bar and the side buttons,
   // and whenever it is being called, we know that the user is trying to save the changes on the current page.
   // this function is async because we sometimes need to make calls to validate data before the page is ready to be left.
-  guidedSetNavLoadingState(true);
+  await guidedSetNavLoadingState(true);
 
   //Dorian this is added to simulate a 1 second load time
   // await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -992,13 +992,16 @@ const savePageChanges = async (pageBeingLeftID) => {
       resolve();
     } catch (error) {
       console.log("rejecting savePageChanges");
-      guidedSetNavLoadingState(false);
-      reject();
+      await guidedSetNavLoadingState(false);
+      reject(error);
       throw error;
     }
+  }).catch(async (error) => {
+    console.log(error);
+    await guidedSetNavLoadingState(false);
+    throw error;
   });
-
-  guidedSetNavLoadingState(false);
+  await guidedSetNavLoadingState(false);
 };
 
 document
@@ -3437,7 +3440,7 @@ const openPage = async (targetPageID) => {
   // This function is used by both the navigation bar and the side buttons,
   // and whenever it is being called, we know that the user is trying to navigate to a new page
   // this function is async because we sometimes need to fetch data before the page is ready to be opened
-  guidedSetNavLoadingState(true);
+  await guidedSetNavLoadingState(true);
 
   //Dorian this is added to simulate a 1 second load time
   // await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -4525,11 +4528,16 @@ const openPage = async (targetPageID) => {
     } catch (error) {
       console.log(error);
       console.log("rejecting openPage");
-      guidedSetNavLoadingState(false);
-      reject();
+      await guidedSetNavLoadingState(false);
+      reject(error);
     }
+  }).catch(async (error) => {
+    console.log(error);
+    await guidedSetNavLoadingState(false);
+    throw error;
   });
-  guidedSetNavLoadingState(false);
+  await guidedSetNavLoadingState(false);
+  
 };
 
 const setActiveSubPage = (pageIdToActivate) => {
@@ -11853,7 +11861,7 @@ $(document).ready(async () => {
   $("#guided-next-button").on("click", async function () {
     //Get the ID of the current page to handle actions on page leave (next button pressed)
     pageBeingLeftID = CURRENT_PAGE.id;
-    guidedSetNavLoadingState(true);
+    await guidedSetNavLoadingState(true);
 
     if (pageBeingLeftID === "guided-dataset-generation-tab") {
       guidedUnSkipPage("guided-dataset-dissemination-tab");
@@ -11913,7 +11921,7 @@ $(document).ready(async () => {
       });
     }
     $(this).removeClass("loading");
-    guidedSetNavLoadingState(false);
+    await guidedSetNavLoadingState(false);
   });
 
   /* const getNextPageNotSkipped = (currentPageID) => {
