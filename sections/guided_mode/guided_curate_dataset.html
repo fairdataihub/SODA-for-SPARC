@@ -2753,18 +2753,18 @@
             <h2 class="guided--text-sub-step mb-0">
               Add details about each protocol associated with this dataset
             </h2>
-
-            <div class="guided--panel"></div>
-            <table>
-              <tr>
-                <th style="min-width: 250px">Link</th>
-                <th>Type</th>
-                <th class="text-center">Description</th>
-                <th class="text-center">Delete</th>
-              </tr>
+            <table class="ui celled striped table" style="margin-bottom: 25px; width: 100%">
+              <thead>
+                <tr>
+                  <th>Link</th>
+                  <th>Description</th>
+                  <th class="center aligned collapsing">Type</th>
+                  <th class="center aligned collapsing">Status</th>
+                  <th class="center aligned collapsing">Delete</th>
+                </tr>
+              </thead>
               <tbody id="protocols-container"></tbody>
             </table>
-
             <button
               class="ui primary basic button mt-lg"
               id="guided-button-add-protocol"

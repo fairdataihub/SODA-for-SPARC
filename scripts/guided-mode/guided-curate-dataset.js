@@ -3840,9 +3840,8 @@ const openPage = async (targetPageID) => {
         } catch (error) {
           console.log(error);
         }
-      } else {
-        renderProtocolsTable();
       }
+      renderProtocolsTable();
     }
     if (targetPageID === "guided-create-description-metadata-tab") {
       guidedLoadDescriptionDatasetInformation();
@@ -6897,6 +6896,18 @@ const addContributorField = () => {
   smoothScrollToElement(newlyAddedContributorField);
 };
 
+const addGuidedProtocol = (link, type, relation, description) => {
+  sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = [
+    ...sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"],
+    {
+      link: link,
+      type: type,
+      relation: relation,
+      description: description,
+    },
+  ];
+};
+
 const addProtocolField = async () => {
   const protocolsContainer = document.getElementById("protocols-container");
   const values = await openProtocolSwal();
@@ -6918,6 +6929,7 @@ const openProtocolSwal = async (protocolElement) => {
   let protocolURL = "";
   let protocolDescription = "";
   if (protocolElement) {
+    console.log(protocolElement);
     protocolURL = protocolElement.dataset.protocolUrl;
     protocolDescription = protocolElement.dataset.protocolDescription;
   }
@@ -7027,6 +7039,7 @@ const removeProtocolField = (protocolElement) => {
 
 //TODO: handle new blank protocol fields (when parameter are blank)
 const generateProtocolField = (protocolUrl, protocolType, protocolDescription) => {
+  const protocolObjIsValid = protocolUrl && protocolType && protocolDescription;
   return `
     <tr 
       class="guided-protocol-field-container"
@@ -7034,18 +7047,25 @@ const generateProtocolField = (protocolUrl, protocolType, protocolDescription) =
       data-protocol-description="${protocolDescription}"
       data-protocol-type="${protocolType}"
     >
-      <td class="middle aligned collapsing link-name-cell" style="color: black">
+      <td class="middle aligned collapsing link-name-cell" >
         ${protocolUrl}
       </td>
-      <td class="middle aligned collapsing link-name-cell" style="color: black">
+      <td class="middle aligned collapsing link-name-cell">
         ${protocolType}
+      </td>
+      <td class="middle aligned collapsing text-center">
+        ${
+          protocolObjIsValid
+            ? `<span class="badge badge-pill badge-success">Valid</span>`
+            : `<span class="badge badge-pill badge-warning">Missing Fields</span>`
+        }
       </td>
       <td class="middle aligned collapsing link-name-cell">
         <button
           type="button"
           class="btn btn-sm"
           style="color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);"
-          onclick="openProtocolSwal(this.parentElement.parentElement)"
+          onclick="openProtocolSwal(this)"
         >
         View/Edit
         </button>
