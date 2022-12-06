@@ -997,6 +997,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       throw error;
     }
   });
+
   guidedSetNavLoadingState(false);
 };
 
