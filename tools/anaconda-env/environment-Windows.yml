@@ -28,3 +28,5 @@ dependencies:
   - opencv-python == 4.5.3.56
   - certifi == 2021.10.8
   - requests
+  - boto3 
+  - pennsieve 
