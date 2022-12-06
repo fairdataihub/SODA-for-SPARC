@@ -3825,9 +3825,24 @@ const openPage = async (targetPageID) => {
       renderDatasetDescriptionContributorsTable();
     }
     if (targetPageID === "guided-protocols-tab") {
-      renderProtocolsTable();
-      //Click the manual button because we don't currently allow protocols.io import
-      $("#guided-section-enter-protocols-manually").click();
+      if (pageNeedsUpdateFromPennsieve("guided-protocols-tab")) {
+        try {
+          let metadata_import = await client.get(`/prepare_metadata/import_metadata_file`, {
+            params: {
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+              file_type: "dataset_description.xlsx",
+            },
+          });
+          let protocolData = metadata_import.data["Protocol information"];
+
+          console.log(protocolData);
+        } catch (error) {
+          console.log(error);
+        }
+      } else {
+        renderProtocolsTable();
+      }
     }
     if (targetPageID === "guided-create-description-metadata-tab") {
       guidedLoadDescriptionDatasetInformation();
