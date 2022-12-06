@@ -25,7 +25,7 @@ const guidedSetNavLoadingState = async (loadingState) => {
     mainContinueButton.disabled = false;
     // guidedNavBar.disabled = false;
     navItems.forEach((nav) => {
-      nav.classList.remove("disabled-nav")
+      nav.classList.remove("disabled-nav");
     });
   }
 };
@@ -4537,7 +4537,6 @@ const openPage = async (targetPageID) => {
     throw error;
   });
   await guidedSetNavLoadingState(false);
-  
 };
 
 const setActiveSubPage = (pageIdToActivate) => {
