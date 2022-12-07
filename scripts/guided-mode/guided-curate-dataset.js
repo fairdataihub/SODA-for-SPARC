@@ -1837,9 +1837,7 @@ const guidedTransitionFromHome = async () => {
     page.classList.add("hidden");
   });
 
-  //Set the current page to the guided intro page
   CURRENT_PAGE = document.getElementById("guided-intro-page-tab");
-  openPage("guided-intro-page-tab");
 
   //reset sub-page navigation (Set the first sub-page to be the active sub-page
   //for all pages with sub-pages)
