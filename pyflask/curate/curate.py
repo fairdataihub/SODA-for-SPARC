@@ -2031,17 +2031,19 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
 
     # Delete any files on Pennsieve that have been marked as deleted
     def recursive_file_delete(folder):
+        namespace_logger.info("Starting recursive_file_delete")
         if "files" in folder.keys():
             for item in list(folder["files"]):
-                # if item in ["manifest.xlsx", "manifest.csv"]:
-                #     continue
                 if "deleted" in folder["files"][item]["action"]:
+                    namespace_logger.info("Deleting file: " + folder["files"][item]["path"])
                     file_path = folder["files"][item]["path"]
                     # remove the file from the dataset
                     r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": [file_path]})
                     r.raise_for_status()
                     # remove the file from the soda json structure
+                    namespace_logger.info("File value before deletion: " + str(folder["files"][item]))
                     del folder["files"][item]
+                    namespace_logger.info("File value after deletion: " + str(folder["files"][item]))
 
         for item in list(folder["folders"]):
             recursive_file_delete(folder["folders"][item])
@@ -2586,6 +2588,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                             # delete the package ( aka file ) from the dataset 
                             r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": [f"{my_file['content']['id']}"]})
                             r.raise_for_status()
+                            del ps_folder_children["files"][file_key]
 
 
                 # create list of files to be uploaded with projected and desired names saved
