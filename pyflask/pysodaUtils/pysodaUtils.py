@@ -11,6 +11,7 @@ import errno
 import re
 import sys
 from os.path import exists 
+import os
 
 
 def clear_queue():
@@ -50,14 +51,16 @@ def get_agent_installation_location():
         return "/usr/local/bin/pennsieve"
 
     elif sys.platform.startswith("linux"):
-        print("Here at linux location")
         return "/usr/local/bin/pennsieve"
 
     elif sys.platform in ["win32", "cygwin"]:
-        if exists("C:/Program Files (x86)/Pennsieve/pennsieve.exe"): 
-            return "C:/Program Files (x86)/Pennsieve/pennsieve.exe"
+        win_path = os.path.normpath("C:\Program Files (x86)\Pennsieve\pennsieve.exe")
+        if exists(win_path): 
+            print("Path exists")
+            return win_path
         else:
-            return "C:/Program Files/Pennsieve/pennsieve.exe"
+            print("Non x86 path path")
+            return os.path.normpath("C:\Program Files\Pennsieve\pennsieve.exe")
 
 def check_agent_installation():
     """
@@ -73,7 +76,9 @@ def start_agent():
     """
     if not check_agent_installation(): 
         raise FileNotFoundError("Pennsieve agent not installed. Please install the agent before running this function.")
-    
+
+    print(get_agent_installation_location())
+
     command = [get_agent_installation_location(), "agent"]
 
     print(command)
