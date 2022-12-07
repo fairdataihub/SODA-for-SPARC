@@ -6908,22 +6908,6 @@ const addGuidedProtocol = (link, type, relation, description) => {
   ];
 };
 
-const addProtocolField = async () => {
-  const protocolsContainer = document.getElementById("protocols-container");
-  const values = await openProtocolSwal();
-  if (values) {
-    let firstProtocol = protocolsContainer.children[0];
-    if (firstProtocol.id === "protocolAlert") {
-      firstProtocol.remove();
-    }
-    const newProtocolField = generateProtocolField(values[0], values[1], values[3]);
-    //add sweet alert here
-    protocolsContainer.insertAdjacentHTML("beforeend", newProtocolField);
-    //scroll to the new element
-    scrollToBottomOfGuidedBody();
-  }
-};
-
 const openProtocolSwal = async (protocolElement) => {
   //pass in name of url and check within soda json
   let protocolURL = "";
@@ -6975,15 +6959,7 @@ const openProtocolSwal = async (protocolElement) => {
       if ($("#DD-protocol-description").val() === "") {
         Swal.showValidationMessage(`Please enter a short description!`);
       }
-      var duplicate = checkLinkDuplicate(
-        $("#DD-protocol-link").val(),
-        document.getElementById("protocol-link-table-dd")
-      );
-      if (duplicate) {
-        Swal.showValidationMessage(
-          "Duplicate protocol. The protocol you entered is already added."
-        );
-      }
+
       return [
         $("#DD-protocol-link").val(),
         protocolLink,
@@ -6992,17 +6968,6 @@ const openProtocolSwal = async (protocolElement) => {
       ];
     },
   });
-  if (values) {
-    if (protocolElement) {
-      protocolElement.dataset.protocolUrl = values[0];
-      protocolElement.children[0].innerText = values[0];
-      protocolElement.dataset.protocolType = values[1];
-      protocolElement.children[1].innerText = values[1];
-      protocolElement.dataset.protocolDescription = values[3];
-    } else {
-      return values;
-    }
-  }
 };
 
 const removeProtocolField = (protocolElement) => {
@@ -7039,6 +7004,7 @@ const removeProtocolField = (protocolElement) => {
 
 //TODO: handle new blank protocol fields (when parameter are blank)
 const generateProtocolField = (protocolUrl, protocolType, protocolDescription) => {
+  console.log(protocolUrl, protocolType, protocolDescription);
   const protocolObjIsValid = protocolUrl && protocolType && protocolDescription;
   return `
     <tr 
@@ -7047,11 +7013,11 @@ const generateProtocolField = (protocolUrl, protocolType, protocolDescription) =
       data-protocol-description="${protocolDescription}"
       data-protocol-type="${protocolType}"
     >
-      <td class="middle aligned collapsing link-name-cell" >
+      <td class="middle aligned link-name-cell" >
         ${protocolUrl}
       </td>
-      <td class="middle aligned collapsing link-name-cell">
-        ${protocolType}
+      <td class="middle aligned">
+        ${protocolDescription}
       </td>
       <td class="middle aligned collapsing text-center">
         ${
@@ -7060,7 +7026,7 @@ const generateProtocolField = (protocolUrl, protocolType, protocolDescription) =
             : `<span class="badge badge-pill badge-warning">Missing Fields</span>`
         }
       </td>
-      <td class="middle aligned collapsing link-name-cell">
+      <td class="middle aligned collapsing text-center">
         <button
           type="button"
           class="btn btn-sm"
@@ -7070,7 +7036,7 @@ const generateProtocolField = (protocolUrl, protocolType, protocolDescription) =
         View/Edit
         </button>
       </td>
-      <td class="middle aligned collapsing link-name-cell">
+      <td class="middle aligned collapsing text-center">
         <button
           type="button"
           class="btn btn-danger btn-sm" 
@@ -7085,6 +7051,7 @@ const generateProtocolField = (protocolUrl, protocolType, protocolDescription) =
 
 const renderProtocolsTable = () => {
   const protocols = sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
+  console.log(protocols);
 
   const protocolsContainer = document.getElementById("protocols-container");
 
