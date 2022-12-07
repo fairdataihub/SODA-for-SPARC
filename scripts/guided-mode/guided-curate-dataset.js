@@ -3832,7 +3832,12 @@ const openPage = async (targetPageID) => {
               file_type: "dataset_description.xlsx",
             },
           });
-          let protocolData = metadata_import.data["Protocol information"];
+          console.log(metadata_import.data);
+          let protocolData = metadata_import.data["Related information"];
+          const protocolsWorthImporting = protocolData.filter((protocolArray) => {
+            return protocolArray[1] === "IsProtocolFor" && protocolArray[2] !== "";
+          });
+          console.log(protocolsWorthImporting);
 
           console.log(protocolData);
         } catch (error) {
@@ -9520,13 +9525,6 @@ $(document).ready(async () => {
         disableInteraction: false,
       })
       .start();*/
-  });
-
-  $("#guided-structure-new-dataset").on("click", () => {
-    $("#guided-next-button").click();
-  });
-  $("#guided-import-existing-dataset").on("click", () => {
-    $("#guided-next-button").click();
   });
 
   $("#guided-button-add-permission-user-or-team").on("click", function () {
