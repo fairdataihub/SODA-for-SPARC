@@ -77,11 +77,19 @@ def start_agent():
     if not check_agent_installation(): 
         raise FileNotFoundError("Pennsieve agent not installed. Please install the agent before running this function.")
 
-    print(get_agent_installation_location())
-
     command = [get_agent_installation_location(), "agent"]
 
-    print(command)
+    return subprocess.run(command, check=True)
+
+def stop_agent():
+    """
+    Stops the Pennsieve agent if it is running.
+    """
+
+    if not check_agent_installation(): 
+        raise FileNotFoundError("Pennsieve agent not installed. Please install the agent before running this function.")
+
+    command = [get_agent_installation_location(), "agent", "stop"]
 
     return subprocess.run(command, check=True)
 

@@ -36,7 +36,7 @@ from docx import Document
 from flask import abort 
 from curate import create_high_level_manifest_files_existing_bf_starting_point, get_name_extension
 
-from pysodaUtils import agent_running
+from pysodaUtils import agent_running, stop_agent, start_agent
 
 from namespaces import NamespaceEnum, get_namespace_logger
 namespace_logger = get_namespace_logger(NamespaceEnum.CURATE_DATASETS)
@@ -150,6 +150,8 @@ def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, val_arr
 
     wb.save(destination)
 
+    wb.close()
+
     # calculate the size of the metadata file
     size = getsize(destination)
 
@@ -239,10 +241,14 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
     # subscribe for the upload to finish
     subscriber_metadata(ps)
 
+    # kill the agent then start it again
+    stop_agent()
 
     # delete the local file that was created for the purpose of uploading to Pennsieve
     if delete_after_upload:
         os.remove(file_path)
+
+    start_agent()
 
 def excel_columns(start_index=0):
     """
