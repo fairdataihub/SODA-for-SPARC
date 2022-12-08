@@ -8,6 +8,7 @@ var allParentStepsJSON = {
   "organize-dataset": "organize-dataset-tab",
   "metadata-files": "metadata-files-tab",
   "manifest-file": "manifest-file-tab",
+  "validate-dataset": "validate-dataset-tab",
   "generate-dataset": "generate-dataset-tab",
 };
 
@@ -449,6 +450,9 @@ const checkHighLevelFoldersInput = () => {
 };
 
 // function associated with the Back/Continue buttons
+// in the Organize dataset section of the app.
+// Perform events or actions ( such as update SODAJSONObk) based off the state of the Organize Datasets section 
+// currently being displayed after pressing the Continue button/back button.
 const nextPrev = (n) => {
   var x = document.getElementsByClassName("parent-tabs");
 
@@ -458,8 +462,8 @@ const nextPrev = (n) => {
         target: { dataset: { section: "main_tabs" }, classList: ["someclass"] },
       },
     });
-    // $("#sidebarCollapse").click();
-    // forceActionSidebar("show");
+
+
     document.body.dispatchEvent(event);
     if ($("#nextBtn").prop("disabled") === true) {
       nextBtnDisabledVariable = true;

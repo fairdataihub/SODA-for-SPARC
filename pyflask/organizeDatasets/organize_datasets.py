@@ -26,6 +26,7 @@ import requests
 from permissions import bf_get_current_user_permission_agent_two, has_edit_permissions
 from utils import connect_pennsieve_client, get_dataset_id, create_request_headers, authenticate_user_with_client
 from namespaces import NamespaceEnum, get_namespace_logger
+import json
 namespace_logger = get_namespace_logger(NamespaceEnum.ORGANIZE_DATASETS)
 from authentication import get_access_token
 
@@ -1163,6 +1164,8 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         "Data files under a valid high-level SPARC folders have been imported"
     )
     create_soda_json_completed = 1
+
+    
     return {
         "soda_object": soda_json_structure,
         "success_message": success_message,

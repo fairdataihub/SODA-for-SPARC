@@ -34,6 +34,56 @@
       >
         <div class="ui form" style="width: 100%">
           <div class="grouped fields">
+            <div class="about-container">
+              <label
+                class="about-title"
+                style="color: var(--color-bg-plum) !important"
+                >About</label
+              >
+              <p class="about-text">
+                Use this feature to validate a dataset against the SPARC Dataset
+                Structure (SDS). It is possible to validate datasets stored on
+                Pennsieve or stored locally on your computer. We recommend that
+                your dataset passes validation before being being shared with
+                the SPARC Curation Team.
+              </p>
+            </div>
+
+            <button id="click-me">Click Me</button>
+            <button id="remove-me">Remove Me</button>
+
+            <div
+              id="scicrunch"
+              class="individual_question"
+              style="
+                display: flex;
+                flex-direction: column;
+                align-self: center;
+                width: 800px;
+              "
+            >
+              <h2 style="color: black; align-self: center; font-size: 17px">
+                Connect a Scicrunch api key to SODA in order to use the
+                Validator
+              </h2>
+              <p>
+                First register for a Scicrunch account
+                <a href="https://scicrunch.org/" target="_blank">here</a>. Then
+                under the 'My Account' button select 'API Keys'. Then click
+                'Generate An API Key'. Choose a 'Project Name'. Click 'Update
+                Text'. Copy the key and paste it below.
+              </p>
+              <label type="text">Scicrunch API Key: </label>
+              <input />
+              <label type="text">Scicrunch API Key Name: </label>
+              <input />
+              <button
+                style="align-self: center; width: 400px; margin-top: 15px"
+              >
+                Submit
+              </button>
+            </div>
+
             <!--Select how you wish to validate the dataset-->
             <label style="font-size: 17px; color: var(--color-bg-plum)"
               >Please select an option below:
@@ -80,41 +130,34 @@
               </div>
 
               <div
-                style="margin: 15px 0"
-                data-content="Coming soon..."
-                rel="popover"
-                data-placement="bottom"
-                data-trigger="hover"
-                class="coming-soon-div"
+                class="option-card radio-button"
+                data-current="validate_dataset-question-1"
+                id="validate_dataset-1-pennsieve"
+                data-next="validate_dataset-question-2"
+                style="
+                  max-width: 180px;
+                  height: 220px !important;
+                  width: 180px !important;
+                  margin-top: 25px;
+                "
               >
-                <div
-                  class="option-card radio-button"
-                  data-current="validate_dataset-question-1"
-                  id="validate_dataset-1-pennsieve"
-                  data-next="validate_dataset-question-2"
-                  style="
-                    max-width: 180px;
-                    height: 220px !important;
-                    width: 180px !important;
-                    pointer-events: none;
-                    background: #f6f6f6;
-                  "
-                >
-                  <div class="card-head">
-                    <div class="folder-checkbox">
-                      <input
-                        class="folder-input-check"
-                        name="validate-1-Pennsieve"
-                        type="radio"
-                        id="validate-1-Pennsieve"
-                      />
-                      <label for="validate-1-Pennsieve"></label>
-                    </div>
+                <div class="card-head">
+                  <div class="folder-checkbox">
+                    <input
+                      class="folder-input-check"
+                      name="validate-1-Pennsieve"
+                      type="radio"
+                      id="validate-1-Pennsieve"
+                    />
+                    <label for="validate-1-Pennsieve"></label>
                   </div>
-                  <div class="card-body">
-                    <i class="far fa-save" style="color: var(--color-bg-orange)"></i>
-                    <h2>I want to validate a Pennsieve dataset</h2>
-                  </div>
+                </div>
+                <div class="card-body">
+                  <i
+                    class="far fa-save"
+                    style="color: var(--color-bg-orange)"
+                  ></i>
+                  <h2>I want to validate a Pennsieve dataset</h2>
                 </div>
               </div>
             </div>
@@ -320,19 +363,24 @@
               id="validation-errors-container"
               style="visibility: hidden; display: flex; flex-direction: column; align-items: center"
             >
-              <label style="font-size: 17px; color: var(--color-bg-plum)"
-                >Validation Errors
-                <i
-                  class="fas fa-info-circle popover-tooltip"
-                  data-content="The path column indicates where the errors occurred. The message column provides an explanation of what the errors are."
-                  rel="popover"
-                  data-html="true"
-                  data-placement="right"
-                  data-trigger="hover"
-                  data-original-title=""
-                  title=""
-                ></i>
+              <label style="font-size: 17px; color: var(--color-bg-plum)">
+                Validation Errors
               </label>
+              <div
+                style="
+                  border-radius: 0.5rem;
+                  margin-top: 5px;
+                  width: 550px;
+                  align-self: center;
+                "
+              >
+                <p class="tip-content">
+                  The path column indicates where the errors occurred in your
+                  dataset. The message column provides an explanation of what
+                  the errors are. For updated validation results you can re-run
+                  validation.
+                </p>
+              </div>
 
               <table class="ui celled padded table">
                 <thead>
@@ -360,4 +408,4 @@
   </div>
 </section>
 
-<script src="./scripts/validator/validate.js"></script>
+
