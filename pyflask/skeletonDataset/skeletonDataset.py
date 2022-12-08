@@ -11,7 +11,7 @@ from xml.dom import InvalidStateErr
 from pathlib import Path
 from sparcur.simple.validate import main as validate
 import copy
-from skeletonDatasetUtils import import_bf_metadata_files_skeleton, import_manifest_files_skeleton
+from .skeletonDatasetUtils import import_bf_metadata_files_skeleton, import_manifest_files_skeleton
 # from organizeDatasets import import_pennsieve_dataset
 
 path = os.path.join(expanduser("~"), "SODA", "skeleton")
@@ -95,7 +95,7 @@ def get_path_prefix(path):
 
 ### START OF SCRIPT ###
 
-def create(soda_json_structure, selected_account, selected_dataset):
+def create(soda_json_structure, selected_account, selected_dataset, pennsieve_pipeline):
     """
     Creates a skeleton dataset ( a set of empty data files but with valid metadata files ) of the given soda_json_structure on the local machine.
     Used for validating a user's dataset before uploading it to Pennsieve.
@@ -114,8 +114,13 @@ def create(soda_json_structure, selected_account, selected_dataset):
     # create a folder to hold the skeleton
     os.mkdir(path)
 
-    # create the manifest files for the skeleton dataset based off the SODA JSON object
-    # TODO: Implement 
+    # create the manifest files for the skeleton dataset based off the SODA JSON object if the user requested it in Organize Datasets 
+    # otherwise import their manifest files from Pennsieve and place them at the root of the skeleton dataset
+    if pennsieve_pipeline:
+        import_manifest_files_skeleton(soda_json_structure, ps)
+    else:
+        # TODO: add the manifest file creation function here
+        pass 
 
     create_skeleton(soda_json_structure["dataset-structure"], path)
 
@@ -123,7 +128,7 @@ def create(soda_json_structure, selected_account, selected_dataset):
     if "metadata-files" in soda_json_structure:
         for metadata_file_name, props in soda_json_structure["metadata-files"].items():
             if props["type"] == "bf": 
-                import_bf_metadata_files_skeleton(selected_account, selected_dataset)
+                import_bf_metadata_files_skeleton(selected_dataset)
 
                 file_location = os.path.join(expanduser("~"), "SODA", "metadata_files", metadata_file_name)
             else:
@@ -265,7 +270,7 @@ soda_json_structure = {
 }
 
 
-create(soda_json_structure, "", "")
+# create(soda_json_structure, "", "", False)
 
 
 
