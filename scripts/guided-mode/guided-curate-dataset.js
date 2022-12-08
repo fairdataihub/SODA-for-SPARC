@@ -3847,6 +3847,12 @@ const openPage = async (targetPageID) => {
           // Extract the non-protocol additional links'
           let additionalLinks = metadata_import.data["Related information"];
           console.log(additionalLinks);
+          sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"].push({
+            link: link,
+            relation: relation,
+            description: description,
+            type: linkType,
+          });
         } catch (error) {
           console.log(error);
         }
@@ -5943,9 +5949,50 @@ const updateFolderStructureUI = (pageDataObj) => {
   listItems(myPath, "#items", 500, (reset = true));
   getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
 };
+
+const getAdditionalLinks = () => {
+  return sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"].map(
+    (link) => link.link
+  );
+};
 //Description metadata functions
-const editAdditionalLink = (clickedEditLinkButton) => {
-  const tr = clickedEditLinkButton.parentNode.parentNode;
+const addAdditionalLink = (link, description, type, relation) => {
+  const currentProtocolLinks = getGuidedProtocolLinks();
+
+  if (currentProtocolLinks.includes(link)) {
+    throw new Error("Link already exists");
+  }
+
+  const isFair = protocolObjIsFair(link, description);
+
+  //add the new protocol to the JSONObj
+  sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"] = [
+    ...sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"],
+    {
+      link: link,
+      type: type,
+      relation: "IsProtocolFor",
+      description: description,
+      isFair: isFair,
+    },
+  ];
+};
+const editAdditionalLink = (oldLink, newLink, description, type) => {
+  const currentProtocolLinks = sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
+  //find the index of the protocol to be edited
+  const protocolIndex = currentProtocolLinks.findIndex((protocol) => protocol.link === oldLink);
+  console.log(protocolIndex);
+
+  const isFair = protocolObjIsFair(newLink, description);
+
+  //replace the protocol at the index with the new protocol
+  sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"][protocolIndex] = {
+    link: newLink,
+    type: type,
+    relation: "IsProtocolFor",
+    description: description,
+    isFair: isFair,
+  };
 };
 
 const deleteAdditionalLink = (clickedDeleteLinkButton) => {
@@ -7450,6 +7497,7 @@ const openAddAdditionLinkSwal = async () => {
       relation: relation,
       description: description,
       type: linkType,
+      isFair: true,
     });
     renderAdditionalLinksTable();
   }
