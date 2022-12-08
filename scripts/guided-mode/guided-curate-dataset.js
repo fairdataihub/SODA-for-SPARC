@@ -889,7 +889,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           const protocolObj = {
             link: protocolUrlInput,
             type: protocolType,
-            relation: "isProtocolFor",
+            relation: "IsProtocolFor",
             description: protocolDescriptionInput,
           };
           protocols.push(protocolObj);
@@ -3834,10 +3834,19 @@ const openPage = async (targetPageID) => {
           });
           console.log(metadata_import.data);
           let protocolData = metadata_import.data["Related information"];
-          const protocolsWorthImporting = protocolData.filter((protocolArray) => {
+          const protocolsFromPennsieve = protocolData.filter((protocolArray) => {
             return protocolArray[1] === "IsProtocolFor" && protocolArray[2] !== "";
           });
-          console.log(protocolsWorthImporting);
+          const currentProtocolLinks = getGuidedProtocolLinks();
+
+          for (const protocol of protocolsFromPennsieve) {
+            const protocolLink = protocol[2];
+            const protocolDescription = protocol[0];
+            const protocolType = protocol[3];
+            console.log(protocolLink);
+            console.log(protocolDescription);
+            console.log(protocolType);
+          }
 
           console.log(protocolData);
         } catch (error) {
@@ -6831,7 +6840,6 @@ const addContributorField = () => {
       class="guided--input guided-orcid-input"
       type="text"
       placeholder="Enter ORCID here"
-      onkeyup="validateInput($(this))"
     />
     <label class="guided--form-label required mt-md">Affiliation(s): </label>
     <input class="guided-contributor-affiliation-input"
@@ -6898,21 +6906,61 @@ const addContributorField = () => {
   createDragSort(tagify);
   smoothScrollToElement(newlyAddedContributorField);
 };
+const getGuidedProtocolLinks = () => {
+  return sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"].map(
+    (protocol) => protocol.link
+  );
+};
+const addGuidedProtocol = (link, description, type) => {
+  const currentProtocolLinks = getGuidedProtocolLinks();
 
-const addGuidedProtocol = (link, type, relation, description) => {
+  if (currentProtocolLinks.includes(link)) {
+    throw new Error("Protocol link already exists");
+  }
+
+  //add the new protocol to the JSONObj
   sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = [
     ...sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"],
     {
       link: link,
       type: type,
-      relation: relation,
+      relation: "IsProtocolFor",
       description: description,
     },
   ];
 };
+const editGuidedProtocol = (oldLink, newLink, description, type) => {
+  const currentProtocolLinks = sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
+  //find the index of the protocol to be edited
+  const protocolIndex = currentProtocolLinks.findIndex((protocol) => protocol.link === oldLink);
+  console.log(protocolIndex);
+  //replace the protocol at the index with the new protocol
+  sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"][protocolIndex] = {
+    link: newLink,
+    type: type,
+    relation: "IsProtocolFor",
+    description: description,
+  };
+};
+
+const determineIfLinkIsDOIorURL = (link) => {
+  // returns either "DOI" or "URL" or "neither"
+  console.log(link);
+  if (doiRegex.declared({ exact: true }).test(link) === true) {
+    return "DOI";
+  }
+  if (validator.isURL(link) != true) {
+    return "neither";
+  }
+  if (link.includes("doi")) {
+    return "DOI";
+  } else {
+    return "URL";
+  }
+};
 
 const openProtocolSwal = async (protocolElement) => {
-  //pass in name of url and check within soda json
+  // True if adding a new protocol, false if editing an existing protocol
   let protocolURL = "";
   let protocolDescription = "";
   if (protocolElement) {
@@ -6938,39 +6986,44 @@ const openProtocolSwal = async (protocolElement) => {
       $(".swal-popover").popover();
     },
     preConfirm: () => {
-      var link = $("#DD-protocol-link").val();
-      let protocolLink = "";
+      const link = $("#DD-protocol-link").val();
+      const protocolDescription = $("#DD-protocol-description").val();
       if (link === "") {
         Swal.showValidationMessage(`Please enter a link!`);
-      } else {
-        if (doiRegex.declared({ exact: true }).test(link) === true) {
-          protocolLink = "DOI";
-        } else {
-          //check if link is valid
-          if (validator.isURL(link) != true) {
-            Swal.showValidationMessage(`Please enter a valid link`);
-          } else {
-            //link is valid url and check for 'doi' in link
-            if (link.includes("doi")) {
-              protocolLink = "DOI";
-            } else {
-              protocolLink = "URL";
-            }
-          }
-        }
       }
-      if ($("#DD-protocol-description").val() === "") {
+      if (protocolDescription === "") {
         Swal.showValidationMessage(`Please enter a short description!`);
       }
+      console.log(link);
+      let protocolType = determineIfLinkIsDOIorURL(link);
+      console.log(protocolType);
+      if (protocolType === "neither") {
+        Swal.showValidationMessage(`Please enter a valid URL or DOI!`);
+      }
 
-      return [
-        $("#DD-protocol-link").val(),
-        protocolLink,
-        "IsProtocolFor",
-        $("#DD-protocol-description").val(),
-      ];
+      try {
+        if (!protocolElement) {
+          // Add the protocol
+          addGuidedProtocol(link, protocolDescription, protocolType);
+        } else {
+          // Edit the existing protocol
+          const protocolToEdit = protocolElement.dataset.protocolUrl;
+          editGuidedProtocol(protocolToEdit, link, protocolDescription, protocolType);
+        }
+        renderProtocolsTable();
+      } catch (error) {
+        Swal.showValidationMessage(error);
+      }
     },
   });
+};
+
+const guidedDeleteProtocol = (protocolElement) => {
+  const linkToDelete = protocolElement.dataset.protocolUrl;
+  sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = sodaJSONObj[
+    "dataset-metadata"
+  ]["description-metadata"]["protocols"].filter((protocol) => protocol.link !== linkToDelete);
+  renderProtocolsTable();
 };
 
 const removeProtocolField = (protocolElement) => {
@@ -7012,9 +7065,6 @@ const generateProtocolField = (protocolUrl, protocolType, protocolDescription) =
   return `
     <tr 
       class="guided-protocol-field-container"
-      data-protocol-url="${protocolUrl}"
-      data-protocol-description="${protocolDescription}"
-      data-protocol-type="${protocolType}"
     >
       <td class="middle aligned link-name-cell" >
         ${protocolUrl}
@@ -7034,6 +7084,8 @@ const generateProtocolField = (protocolUrl, protocolType, protocolDescription) =
           type="button"
           class="btn btn-sm"
           style="color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);"
+          data-protocol-url="${protocolUrl}"
+          data-protocol-description="${protocolDescription}"
           onclick="openProtocolSwal(this)"
         >
         View/Edit
@@ -7042,8 +7094,10 @@ const generateProtocolField = (protocolUrl, protocolType, protocolDescription) =
       <td class="middle aligned collapsing text-center">
         <button
           type="button"
-          class="btn btn-danger btn-sm" 
-          onclick=removeProtocolField(this.parentElement.parentElement)
+          class="btn btn-danger btn-sm"
+          data-protocol-url="${protocolUrl}"
+          data-protocol-description="${protocolDescription}"
+          onclick="guidedDeleteProtocol(this)"
         >
         Delete
         </button>
