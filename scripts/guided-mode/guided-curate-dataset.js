@@ -876,24 +876,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
 
       if (buttonYesUserHasProtocols.classList.contains("selected")) {
-        let protocols = [];
-
-        const protocolFields = document.querySelectorAll(".guided-protocol-field-container");
-        //loop through protocol fields and get protocol values
-        const protocolFieldsArray = Array.from(protocolFields);
-        protocolFieldsArray.forEach((protocolField) => {
-          const protocolUrlInput = protocolField.dataset.protocolUrl;
-          const protocolDescriptionInput = protocolField.dataset.protocolDescription;
-          const protocolType = protocolField.dataset.protocolType;
-
-          const protocolObj = {
-            link: protocolUrlInput,
-            type: protocolType,
-            relation: "IsProtocolFor",
-            description: protocolDescriptionInput,
-          };
-          protocols.push(protocolObj);
-        });
+        const protocols = sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
 
         if (protocols.length === 0) {
           errorArray.push({
@@ -902,7 +885,16 @@ const savePageChanges = async (pageBeingLeftID) => {
           });
           throw errorArray;
         }
-        sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = protocols;
+
+        const unFairProtocols = protocols.filter((protocol) => protocol["isFair"] === false);
+        if (unFairProtocols.length > 0) {
+          errorArray.push({
+            type: "notyf",
+            message:
+              "Some of your protocols are missing data. Please edit all invalid rows in the table.",
+          });
+          throw errorArray;
+        }
       }
 
       if (buttonNoDelayProtocolEntry.classList.contains("selected")) {
@@ -3843,9 +3835,14 @@ const openPage = async (targetPageID) => {
             const protocolLink = protocol[2];
             const protocolDescription = protocol[0];
             const protocolType = protocol[3];
-            console.log(protocolLink);
-            console.log(protocolDescription);
-            console.log(protocolType);
+
+            // If the protocol doesn't already exist, add it
+            // If it does, update the protocol in the JSONObj
+            if (!currentProtocolLinks.includes(protocolLink)) {
+              addGuidedProtocol(protocolLink, protocolDescription, protocolType);
+            } else {
+              editGuidedProtocol(protocolLink, protocolLink, protocolDescription, protocolType);
+            }
           }
 
           console.log(protocolData);
@@ -6911,12 +6908,19 @@ const getGuidedProtocolLinks = () => {
     (protocol) => protocol.link
   );
 };
+
+const protocolObjIsFair = (protocolLink, protocoldescription) => {
+  return protocolLink.length > 0 && protocoldescription.length > 0;
+};
+
 const addGuidedProtocol = (link, description, type) => {
   const currentProtocolLinks = getGuidedProtocolLinks();
 
   if (currentProtocolLinks.includes(link)) {
     throw new Error("Protocol link already exists");
   }
+
+  const isFair = protocolObjIsFair(link, description);
 
   //add the new protocol to the JSONObj
   sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = [
@@ -6926,6 +6930,7 @@ const addGuidedProtocol = (link, description, type) => {
       type: type,
       relation: "IsProtocolFor",
       description: description,
+      isFair: isFair,
     },
   ];
 };
@@ -6934,12 +6939,16 @@ const editGuidedProtocol = (oldLink, newLink, description, type) => {
   //find the index of the protocol to be edited
   const protocolIndex = currentProtocolLinks.findIndex((protocol) => protocol.link === oldLink);
   console.log(protocolIndex);
+
+  const isFair = protocolObjIsFair(newLink, description);
+
   //replace the protocol at the index with the new protocol
   sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"][protocolIndex] = {
     link: newLink,
     type: type,
     relation: "IsProtocolFor",
     description: description,
+    isFair: isFair,
   };
 };
 
@@ -7058,10 +7067,12 @@ const removeProtocolField = (protocolElement) => {
   }
 };
 
+const protocolRowIsValid = (url, description, type) => {
+  return url && description && type;
+};
+
 //TODO: handle new blank protocol fields (when parameter are blank)
-const generateProtocolField = (protocolUrl, protocolType, protocolDescription) => {
-  console.log(protocolUrl, protocolType, protocolDescription);
-  const protocolObjIsValid = protocolUrl && protocolType && protocolDescription;
+const generateProtocolField = (protocolUrl, protocolType, protocolDescription, isFair) => {
   return `
     <tr 
       class="guided-protocol-field-container"
@@ -7074,7 +7085,7 @@ const generateProtocolField = (protocolUrl, protocolType, protocolDescription) =
       </td>
       <td class="middle aligned collapsing text-center">
         ${
-          protocolObjIsValid
+          isFair
             ? `<span class="badge badge-pill badge-success">Valid</span>`
             : `<span class="badge badge-pill badge-warning">Missing Fields</span>`
         }
@@ -7125,7 +7136,12 @@ const renderProtocolsTable = () => {
 
   const protocolElements = protocols
     .map((protocol) => {
-      return generateProtocolField(protocol["link"], protocol["type"], protocol["description"]);
+      return generateProtocolField(
+        protocol["link"],
+        protocol["type"],
+        protocol["description"],
+        protocol["isFair"]
+      );
     })
     .join("\n");
   protocolsContainer.innerHTML = protocolElements;
