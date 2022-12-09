@@ -3779,12 +3779,16 @@ const openPage = async (targetPageID) => {
             },
           });
           console.log(metadata_import.data);
-          let protocolData = metadata_import.data["Related information"];
-          const protocolsFromPennsieve = protocolData.filter((protocolArray) => {
-            return protocolArray[1] === "IsProtocolFor" && protocolArray[2] !== "";
-          });
-          const currentProtocolLinks = getGuidedProtocolLinks();
+          let relatedInformationData = metadata_import.data["Related information"];
+          const protocolsFromPennsieve = relatedInformationData.filter(
+            (relatedInformationArray) => {
+              return (
+                relatedInformationArray[1] === "IsProtocolFor" && relatedInformationArray[2] !== ""
+              );
+            }
+          );
 
+          const currentProtocolLinks = getGuidedProtocolLinks();
           for (const protocol of protocolsFromPennsieve) {
             const protocolLink = protocol[2];
             const protocolDescription = protocol[0];
@@ -3879,15 +3883,27 @@ const openPage = async (targetPageID) => {
             };
           }
 
-          // Extract the non-protocol additional links'
-          let additionalLinks = metadata_import.data["Related information"];
-          console.log(additionalLinks);
-          sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"].push({
-            link: link,
-            relation: relation,
-            description: description,
-            type: linkType,
-          });
+          let relatedInformationData = metadata_import.data["Related information"];
+          const additionalLinksFromPennsieve = relatedInformationData
+            .slice(1)
+            .filter((relatedInformationArray) => {
+              return (
+                relatedInformationArray[1] != "IsProtocolFor" && relatedInformationArray[2] !== ""
+              );
+            });
+          const currentAdditionalLinks = getGuidedAdditionalLinks();
+          for (const link of additionalLinksFromPennsieve) {
+            const additionalLinkLink = link[2];
+            const additionalLinkDescription = link[0];
+            const additionalLinkType = link[3];
+            console.log("link" + additionalLinkLink);
+            console.log("description" + additionalLinkDescription);
+            console.log("type" + additionalLinkType);
+          }
+          // Click the yes protocol button if protocols were imported
+          if (protocolsFromPennsieve.length > 0) {
+            document.getElementById("guided-button-user-has-protocols").click();
+          }
         } catch (error) {
           console.log(error);
         }
@@ -5987,7 +6003,7 @@ const updateFolderStructureUI = (pageDataObj) => {
   getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
 };
 
-const getAdditionalLinks = () => {
+const getGuidedAdditionalLinks = () => {
   return sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"].map(
     (link) => link.link
   );
