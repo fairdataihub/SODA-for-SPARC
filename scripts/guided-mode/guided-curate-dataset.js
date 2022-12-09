@@ -3884,6 +3884,7 @@ const openPage = async (targetPageID) => {
           }
 
           let relatedInformationData = metadata_import.data["Related information"];
+          console.log(relatedInformationData);
           const additionalLinksFromPennsieve = relatedInformationData
             .slice(1)
             .filter((relatedInformationArray) => {
@@ -3891,7 +3892,6 @@ const openPage = async (targetPageID) => {
                 relatedInformationArray[1] != "IsProtocolFor" && relatedInformationArray[2] !== ""
               );
             });
-          const currentAdditionalLinks = getGuidedAdditionalLinks();
           for (const link of additionalLinksFromPennsieve) {
             const additionalLinkLink = link[2];
             const additionalLinkDescription = link[0];
@@ -3899,10 +3899,6 @@ const openPage = async (targetPageID) => {
             console.log("link" + additionalLinkLink);
             console.log("description" + additionalLinkDescription);
             console.log("type" + additionalLinkType);
-          }
-          // Click the yes protocol button if protocols were imported
-          if (protocolsFromPennsieve.length > 0) {
-            document.getElementById("guided-button-user-has-protocols").click();
           }
         } catch (error) {
           console.log(error);
