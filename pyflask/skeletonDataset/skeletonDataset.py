@@ -12,6 +12,7 @@ from pathlib import Path
 from sparcur.simple.validate import main as validate
 import copy
 from .skeletonDatasetUtils import import_bf_metadata_files_skeleton, import_manifest_files_skeleton
+from pennsieve2.pennsieve import Pennsieve
 # from organizeDatasets import import_pennsieve_dataset
 
 path = os.path.join(expanduser("~"), "SODA", "skeleton")
@@ -114,27 +115,33 @@ def create(soda_json_structure, selected_account, selected_dataset, pennsieve_pi
     # create a folder to hold the skeleton
     os.mkdir(path)
 
-    # create the manifest files for the skeleton dataset based off the SODA JSON object if the user requested it in Organize Datasets 
-    # otherwise import their manifest files from Pennsieve and place them at the root of the skeleton dataset
-    # NOTE: It seems that the import keeps teh manifest key value empty if the user is not creating a new manifest file and that organize datasets 
-    # adds the generate-dataset value inside of the manifest-files key if the user is creating a new manifest file; in our case we will want to determine two things first:
-    # 1. Is the user creating a new manifest file or using an old one? If creating a new one then there are existing methods to use for this that work off the soda_json_structure ( or should we update their old ones using the json structure a-la standalone to ensure nothing is missed in the validation if they are starting from Pennsieve? Hmm can be somewhat complicated on this step.)
-    # 2. If using an old manifest file where are they storing it? On Pennsieve or on their local machine. Both have different import methods. 
-    # IMP: How to tell what we are dealing with:
-    #  The generate-dataset key has 4 properties we can use to determine what we should do:
-    #     1. destination: bf or local 
-    #     2. generate-option: new or existing 
-    #     3. if-existing: merge, skip, create-duplicate, replace
-    #     4. if-existing-files: merge, skip, create-duplicate, replace
-    #  What their combinations mean:
-    #     destination: bf; generate-option: existing; Tells us we are updating an existing dataset through the Update Existing flow; use the standalone man generator algo
-    #     destination: bf; generate-option: new; if-existing: not create-duplicate; if-existing-files: not create-duplicate; Tells us we are merging a new local dataset into an existing ds; use the standalone man generator algo 
-    #     destination: bf; generate-option: new; if-existing: create-duplicate; if-existing-files: create-duplicate; and DS does not exist on Pennsieve; Tells us we are creating a new dataset from scratch; use curate manifest algo  
-    #     destination: local; generate-option: new; 
+    # create Pennsieve client if the user is validating a Pennsieve dataset  
+    if pennsieve_pipeline or soda_json_structure["generate-dataset"]["destination"] == "bf":
+        ps = Pennsieve()
+
+    # create the manifest files for the skeleton dataset based off the SODA JSON object if the user requested it in the Organize Datasets 
+    # workflow. Otherwise import the existing manifest files from Pennsieve if the user requested validation outside of the Organize Datasets workflow.
     if pennsieve_pipeline:
         import_manifest_files_skeleton(soda_json_structure, ps)
     else:
         # TODO: add the manifest file creation function here
+        # NOTE: It seems that the import keeps teh manifest key value empty if the user is not creating a new manifest file and that organize datasets 
+        # adds the generate-dataset value inside of the manifest-files key if the user is creating a new manifest file; in our case we will want to determine two things first:
+        # 1. Is the user creating a new manifest file or using an old one? If creating a new one then there are existing methods to use for this that work off the soda_json_structure ( or should we update their old ones using the json structure a-la standalone to ensure nothing is missed in the validation if they are starting from Pennsieve? Hmm can be somewhat complicated on this step.)
+        # 2. If using an old manifest file where are they storing it? On Pennsieve or on their local machine. Both have different import methods. 
+        # IMP: How to tell what we are dealing with:
+        #  The generate-dataset key has 4 properties we can use to determine what we should do:
+        #     1. destination: bf or local 
+        #     2. generate-option: new or existing 
+        #     3. if-existing: merge, skip, create-duplicate, replace
+        #     4. if-existing-files: merge, skip, create-duplicate, replace
+        #  What their combinations mean:
+        #     destination: bf; generate-option: existing; Tells us we are updating an existing dataset through the Update Existing flow; use the standalone man generator algo
+        #     destination: bf; generate-option: new; if-existing: not create-duplicate; if-existing-files: not create-duplicate; Tells us we are merging a new local dataset into an existing ds; use the standalone man generator algo 
+        #     destination: bf; generate-option: new; if-existing: create-duplicate; if-existing-files: create-duplicate; and DS does not exist on Pennsieve; Tells us we are creating a new dataset from scratch; use curate manifest algo  
+        #     destination: local; generate-option: new; if-existing: new; Means a new local dataset is getting created; use curate manifest algo 
+        #     destination: local; generate-option: new; if-existing: merge; Means a local dataset is getting merged over an existing one; Might need to create a new algo for this case.
+        # TODO: add the manifest file creation function(s) here
         pass 
 
     create_skeleton(soda_json_structure["dataset-structure"], path)
@@ -143,7 +150,7 @@ def create(soda_json_structure, selected_account, selected_dataset, pennsieve_pi
     if "metadata-files" in soda_json_structure:
         for metadata_file_name, props in soda_json_structure["metadata-files"].items():
             if props["type"] == "bf": 
-                import_bf_metadata_files_skeleton(selected_dataset)
+                import_bf_metadata_files_skeleton(selected_dataset, ps)
 
                 file_location = os.path.join(expanduser("~"), "SODA", "metadata_files", metadata_file_name)
             else:
