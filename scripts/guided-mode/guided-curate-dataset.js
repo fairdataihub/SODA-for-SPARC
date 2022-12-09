@@ -7110,9 +7110,14 @@ const addContributorField = () => {
   smoothScrollToElement(newlyAddedContributorField);
 };
 const getGuidedProtocolLinks = () => {
-  return sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"].map(
-    (protocol) => protocol.link
-  );
+  try {
+    return sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"].map(
+      (protocol) => protocol.link
+    );
+  } catch (error) {
+    // return an empty array if the protocol array doesn't exist yet
+    return [];
+  }
 };
 
 const protocolObjIsFair = (protocolLink, protocoldescription) => {
@@ -7205,15 +7210,18 @@ const openProtocolSwal = async (protocolElement) => {
       const protocolDescription = $("#DD-protocol-description").val();
       if (link === "") {
         Swal.showValidationMessage(`Please enter a link!`);
+        return;
       }
       if (protocolDescription === "") {
         Swal.showValidationMessage(`Please enter a short description!`);
+        return;
       }
       console.log(link);
       let protocolType = determineIfLinkIsDOIorURL(link);
       console.log(protocolType);
       if (protocolType === "neither") {
         Swal.showValidationMessage(`Please enter a valid URL or DOI!`);
+        return;
       }
 
       try {
