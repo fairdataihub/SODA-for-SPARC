@@ -100,13 +100,7 @@ def import_metadata(url, filename):
 
 
 # import existing metadata files except Readme and Changes from Pennsieve
-def import_bf_metadata_files_skeleton(bfdataset):
-    # sourcery skip: raise-specific-error
-    try: 
-        ps = Pennsieve()
-    except Exception as e:
-        raise Exception("Please select a valid Pennsieve account.") from e
-
+def import_bf_metadata_files_skeleton(bfdataset, ps):
     try: 
         selected_dataset_id = ps.getDatasets()[bfdataset]
     except Exception as e:
