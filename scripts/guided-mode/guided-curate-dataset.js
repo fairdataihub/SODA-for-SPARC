@@ -1,5 +1,5 @@
-const guidedSetNavLoadingState = (loadingState) => {
-  //pause for 1 second  //depending on the boolean loading state will determine whether or not
+const guidedSetNavLoadingState = async (loadingState) => {
+  //depending on the boolean loading state will determine whether or not
   //to disable the primary and sub buttons along with the nav menu
   const subBackButton = document.getElementById("guided-button-sub-page-back");
   const subContinueButton = document.getElementById("guided-button-sub-page-continue");
@@ -8,6 +8,7 @@ const guidedSetNavLoadingState = (loadingState) => {
   const navItems = document.querySelectorAll(".guided--nav-bar-section-page");
 
   if (loadingState === true) {
+    console.log("disable nav and buttons");
     subBackButton.disabled = true;
     subContinueButton.disabled = true;
     mainBackButton.disabled = true;
@@ -19,6 +20,7 @@ const guidedSetNavLoadingState = (loadingState) => {
   }
 
   if (loadingState === false) {
+    console.log("enable nav and buttons");
     subBackButton.disabled = false;
     subContinueButton.disabled = false;
     mainBackButton.disabled = false;
@@ -29,13 +31,20 @@ const guidedSetNavLoadingState = (loadingState) => {
     });
   }
 };
+
 const objectsHaveSameKeys = (...objects) => {
   const allKeys = objects.reduce((keys, object) => keys.concat(Object.keys(object)), []);
   const union = new Set(allKeys);
   return objects.every((object) => union.size === Object.keys(object).length);
 };
+
 const savePageChanges = async (pageBeingLeftID) => {
-  guidedSetNavLoadingState(true);
+  // Dorian: this is where you would set loading state as true
+  // This function is used by both the navigation bar and the side buttons,
+  // and whenever it is being called, we know that the user is trying to save the changes on the current page.
+  // this function is async because we sometimes need to make calls to validate data before the page is ready to be left.
+  await guidedSetNavLoadingState(true);
+
   const errorArray = [];
   try {
     //save changes to the current page
@@ -742,8 +751,8 @@ const savePageChanges = async (pageBeingLeftID) => {
         const { value: continueProgress } = await Swal.fire({
           title: `No folders or files have been added to your dataset.`,
           html: `You can go back and add folders and files to your dataset, however, if
-          you choose to generate your dataset on the final step, no folders or files will be
-          added to your target destination.`,
+            you choose to generate your dataset on the final step, no folders or files will be
+            added to your target destination.`,
           allowEscapeKey: false,
           allowOutsideClick: false,
           heightAuto: false,
@@ -966,7 +975,8 @@ const savePageChanges = async (pageBeingLeftID) => {
     guidedSetNavLoadingState(false);
     throw error;
   }
-  guidedSetNavLoadingState(false);
+
+  await guidedSetNavLoadingState(false);
 };
 
 document
@@ -3314,11 +3324,25 @@ const pageNeedsUpdateFromPennsieve = (pageID) => {
 //If the keys exist, extract the data from the sodaJSONObj and populate the page
 //If the keys do not exist, reset the page (inputs, tables etc.) to the default state
 const openPage = async (targetPageID) => {
+  //TOD: disable the nav bar from being used
+  //NOTE: 2 Bottom back buttons (one handles sub pages, and the other handles main pages)
+  //Back buttons should be disabled and the function setLoading should be (set as false?)
+  // Dorian: this is where you would set loading state as true
+  // This function is used by both the navigation bar and the side buttons,
+  // and whenever it is being called, we know that the user is trying to navigate to a new page
+  // this function is async because we sometimes need to fetch data before the page is ready to be opened
+  await guidedSetNavLoadingState(true);
+
+  //add promise to main try block to know when to enable the buttons again
+
   let itemsContainer = document.getElementById("items-guided-container");
   if (itemsContainer.classList.contains("border-styling")) {
     itemsContainer.classList.remove("border-styling");
   }
   guidedSetNavLoadingState(true);
+
+  //when the promise completes there is a catch for error handling
+  //upon resolving it will set navLoadingstate to false
   try {
     //reset the radio buttons for the page being navigated to
     resetGuidedRadioButtons(targetPageID);
@@ -3599,10 +3623,10 @@ const openPage = async (targetPageID) => {
         "guided-submission-completion-date-manual"
       );
       completionDateInputManual.innerHTML = `
-        <option value="Select a completion date">Select a completion date</option>
-        <option value="Enter my own date">Enter my own date</option>
-        <option value="">N/A</option>
-      `;
+          <option value="Select a completion date">Select a completion date</option>
+          <option value="Enter my own date">Enter my own date</option>
+          <option value="">N/A</option>
+        `;
 
       if (pageNeedsUpdateFromPennsieve("guided-create-submission-metadata-tab")) {
         const existingSPARCAward =
@@ -4406,36 +4430,36 @@ const openPage = async (targetPageID) => {
         : subjectsProtocolContainer.classList.add("hidden");
 
       document.getElementById("guided-bootbox-subject-protocol-title").innerHTML = `
-        <option value="">No protocols associated with this sample</option>
-        ${protocols
-          .map((protocol) => {
-            return `
-              <option
-                value="${protocol.description}"
-                data-protocol-link="${protocol.link}"
-              >
-                ${protocol.description}
-              </option>
-            `;
-          })
-          .join("\n")}))
-      `;
+          <option value="">No protocols associated with this sample</option>
+          ${protocols
+            .map((protocol) => {
+              return `
+                <option
+                  value="${protocol.description}"
+                  data-protocol-link="${protocol.link}"
+                >
+                  ${protocol.description}
+                </option>
+              `;
+            })
+            .join("\n")}))
+        `;
 
       document.getElementById("guided-bootbox-subject-protocol-location").innerHTML = `
-        <option value="">No protocols associated with this sample</option>
-        ${protocols
-          .map((protocol) => {
-            return `
-              <option
-                value="${protocol.link}"
-                data-protocol-description="${protocol.description}"
-              >
-                ${protocol.link}
-              </option>
-            `;
-          })
-          .join("\n")}))
-      `;
+          <option value="">No protocols associated with this sample</option>
+          ${protocols
+            .map((protocol) => {
+              return `
+                <option
+                  value="${protocol.link}"
+                  data-protocol-description="${protocol.description}"
+                >
+                  ${protocol.link}
+                </option>
+              `;
+            })
+            .join("\n")}))
+        `;
       renderSubjectsMetadataAsideItems();
       const subjectsMetadataBlackArrowLottieContainer = document.getElementById(
         "subjects-metadata-black-arrow-lottie-container"
@@ -4617,8 +4641,10 @@ const openPage = async (targetPageID) => {
   } catch (error) {
     guidedSetNavLoadingState(false);
     console.log(error);
+    throw error;
   }
-  guidedSetNavLoadingState(false);
+
+  await guidedSetNavLoadingState(false);
 };
 
 const setActiveSubPage = (pageIdToActivate) => {
@@ -12010,16 +12036,17 @@ $(document).ready(async () => {
   $("#guided-next-button").on("click", async function () {
     //Get the ID of the current page to handle actions on page leave (next button pressed)
     pageBeingLeftID = CURRENT_PAGE.id;
+    await guidedSetNavLoadingState(true);
 
     if (pageBeingLeftID === "guided-dataset-generation-tab") {
       guidedUnSkipPage("guided-dataset-dissemination-tab");
       await openPage("guided-dataset-dissemination-tab");
       return;
     }
-    //remove blue pulse
-    $(this).removeClass("pulse-blue");
-    //add a bootstrap loader to the next button
-    $(this).addClass("loading");
+
+    // Dorian: The below loading class should be removed
+    console.log("remove loading from here");
+    // $(this).addClass("loading");
     let errorArray = [];
 
     try {
@@ -12068,7 +12095,8 @@ $(document).ready(async () => {
         }
       });
     }
-    $(this).removeClass("loading");
+    // $(this).removeClass("loading");
+    await guidedSetNavLoadingState(false);
   });
 
   /* const getNextPageNotSkipped = (currentPageID) => {
