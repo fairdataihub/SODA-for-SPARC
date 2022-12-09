@@ -13,6 +13,7 @@ from sparcur.simple.validate import main as validate
 import copy
 from .skeletonDatasetUtils import import_bf_metadata_files_skeleton, import_manifest_files_skeleton
 from pennsieve2.pennsieve import Pennsieve
+from manifest import ManifestBuilder, ManifestBuilderSkeleton
 # from organizeDatasets import import_pennsieve_dataset
 
 path = os.path.join(expanduser("~"), "SODA", "skeleton")
@@ -124,25 +125,8 @@ def create(soda_json_structure, selected_account, selected_dataset, pennsieve_pi
     if pennsieve_pipeline:
         import_manifest_files_skeleton(soda_json_structure, ps)
     else:
-        # TODO: add the manifest file creation function here
-        # NOTE: It seems that the import keeps teh manifest key value empty if the user is not creating a new manifest file and that organize datasets 
-        # adds the generate-dataset value inside of the manifest-files key if the user is creating a new manifest file; in our case we will want to determine two things first:
-        # 1. Is the user creating a new manifest file or using an old one? If creating a new one then there are existing methods to use for this that work off the soda_json_structure ( or should we update their old ones using the json structure a-la standalone to ensure nothing is missed in the validation if they are starting from Pennsieve? Hmm can be somewhat complicated on this step.)
-        # 2. If using an old manifest file where are they storing it? On Pennsieve or on their local machine. Both have different import methods. 
-        # IMP: How to tell what we are dealing with:
-        #  The generate-dataset key has 4 properties we can use to determine what we should do:
-        #     1. destination: bf or local 
-        #     2. generate-option: new or existing 
-        #     3. if-existing: merge, skip, create-duplicate, replace
-        #     4. if-existing-files: merge, skip, create-duplicate, replace
-        #  What their combinations mean:
-        #     destination: bf; generate-option: existing; Tells us we are updating an existing dataset through the Update Existing flow; use the standalone man generator algo
-        #     destination: bf; generate-option: new; bf-dataset-selected key is present;  Tells us we are merging a new local dataset into an existing ds; use the standalone man generator algo 
-        #     destination: bf; generate-option: new; if-existing: create-duplicate; if-existing-files: create-duplicate; and DS does not exist on Pennsieve; Tells us we are creating a new dataset from scratch; use curate manifest algo  
-        #     destination: local; generate-option: new; if-existing: new; Means a new local dataset is getting created; use curate manifest algo 
-        #     destination: local; generate-option: new; if-existing: merge; Means a local dataset is getting merged over an existing one; Might need to create a new algo for this case.
-        # TODO: add the manifest file creation function(s) here
-        pass 
+        mbs = ManifestBuilderSkeleton(soda_json_structure)
+        mbs.build(ps)
 
     create_skeleton(soda_json_structure["dataset-structure"], path)
 
