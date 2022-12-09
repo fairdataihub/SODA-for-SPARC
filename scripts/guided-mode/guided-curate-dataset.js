@@ -1,9 +1,41 @@
+const guidedSetNavLoadingState = (loadingState) => {
+  //pause for 1 second  //depending on the boolean loading state will determine whether or not
+  //to disable the primary and sub buttons along with the nav menu
+  const subBackButton = document.getElementById("guided-button-sub-page-back");
+  const subContinueButton = document.getElementById("guided-button-sub-page-continue");
+  const mainBackButton = document.getElementById("guided-back-button");
+  const mainContinueButton = document.getElementById("guided-next-button");
+  const navItems = document.querySelectorAll(".guided--nav-bar-section-page");
+
+  if (loadingState === true) {
+    subBackButton.disabled = true;
+    subContinueButton.disabled = true;
+    mainBackButton.disabled = true;
+    mainContinueButton.disabled = true;
+    // guidedNavBar.disabled = true;
+    navItems.forEach((nav) => {
+      nav.classList.add("disabled-nav");
+    });
+  }
+
+  if (loadingState === false) {
+    subBackButton.disabled = false;
+    subContinueButton.disabled = false;
+    mainBackButton.disabled = false;
+    mainContinueButton.disabled = false;
+    // guidedNavBar.disabled = false;
+    navItems.forEach((nav) => {
+      nav.classList.remove("disabled-nav");
+    });
+  }
+};
 const objectsHaveSameKeys = (...objects) => {
   const allKeys = objects.reduce((keys, object) => keys.concat(Object.keys(object)), []);
   const union = new Set(allKeys);
   return objects.every((object) => union.size === Object.keys(object).length);
 };
 const savePageChanges = async (pageBeingLeftID) => {
+  guidedSetNavLoadingState(true);
   const errorArray = [];
   try {
     //save changes to the current page
@@ -931,8 +963,10 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
     }
   } catch (error) {
+    guidedSetNavLoadingState(false);
     throw error;
   }
+  guidedSetNavLoadingState(false);
 };
 
 document
@@ -3284,6 +3318,7 @@ const openPage = async (targetPageID) => {
   if (itemsContainer.classList.contains("border-styling")) {
     itemsContainer.classList.remove("border-styling");
   }
+  guidedSetNavLoadingState(true);
   try {
     //reset the radio buttons for the page being navigated to
     resetGuidedRadioButtons(targetPageID);
@@ -4536,8 +4571,10 @@ const openPage = async (targetPageID) => {
     sodaJSONObj["page-before-exit"] = targetPageID;
     saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
   } catch (error) {
+    guidedSetNavLoadingState(false);
     console.log(error);
   }
+  guidedSetNavLoadingState(false);
 };
 
 const setActiveSubPage = (pageIdToActivate) => {
@@ -5956,7 +5993,7 @@ const getAdditionalLinks = () => {
   );
 };
 //Description metadata functions
-const addAdditionalLink = (link, description, type, relation) => {
+const addGuidedAdditionalLink = (link, description, type, relation) => {
   const currentProtocolLinks = getGuidedProtocolLinks();
 
   if (currentProtocolLinks.includes(link)) {
@@ -12066,6 +12103,7 @@ $(document).ready(async () => {
   });
 
   const saveSubPageChanges = async (openSubPageID) => {
+    guidedSetNavLoadingState(true);
     const errorArray = [];
     try {
       if (openSubPageID === "guided-specify-subjects-page") {
@@ -12593,9 +12631,10 @@ $(document).ready(async () => {
 
       saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
-      console.log(error);
+      guidedSetNavLoadingState(false);
       throw error;
     }
+    guidedSetNavLoadingState(false);
   };
 
   //sub page next button click handler

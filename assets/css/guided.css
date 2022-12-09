@@ -1435,3 +1435,9 @@ h1.guided--text-sub-step {
 .tippy-box[data-theme~="soda"][data-placement^="top"] > .tippy-arrow::before {
   border-top-color: #13716d;
 }
+
+.disabled-nav {
+  border-left: 3px solid var(--color-transparent-soda-green);
+  pointer-events: none;
+  opacity: 0.5;
+}
