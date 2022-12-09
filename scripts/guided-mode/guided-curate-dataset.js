@@ -3882,23 +3882,38 @@ const openPage = async (targetPageID) => {
               acknowledgment: studyAcknowledgements,
             };
           }
-
+          // Add  the related Links
           let relatedInformationData = metadata_import.data["Related information"];
-          console.log(relatedInformationData);
+
+          // Filter out invalid Links and protocol links
           const additionalLinksFromPennsieve = relatedInformationData
             .slice(1)
             .filter((relatedInformationArray) => {
               return (
-                relatedInformationArray[1] != "IsProtocolFor" && relatedInformationArray[2] !== ""
+                relatedInformationArray[0] !== "" &&
+                relatedInformationArray[1] != "IsProtocolFor" &&
+                relatedInformationArray[2] !== "" &&
+                relatedInformationArray[3] !== ""
               );
             });
+          const currentAddtionalLinks = getGuidedAdditionalLinks();
           for (const link of additionalLinksFromPennsieve) {
-            const additionalLinkLink = link[2];
             const additionalLinkDescription = link[0];
+            const additionalLinkRelation = link[1];
+            const additionalLinkLink = link[2];
             const additionalLinkType = link[3];
-            console.log("link" + additionalLinkLink);
-            console.log("description" + additionalLinkDescription);
-            console.log("type" + additionalLinkType);
+            // If the ink has already been added, delete it and add the updated data
+            // from Pennsieve
+            if (currentAddtionalLinks.includes(additionalLinkLink)) {
+              deleteAdditionalLink(additionalLinkLink);
+            }
+            sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"].push({
+              link: additionalLinkLink,
+              relation: additionalLinkRelation,
+              description: additionalLinkDescription,
+              type: additionalLinkType,
+              isFair: true,
+            });
           }
         } catch (error) {
           console.log(error);
@@ -6022,53 +6037,13 @@ const getGuidedAdditionalLinks = () => {
   );
 };
 //Description metadata functions
-const addGuidedAdditionalLink = (link, description, type, relation) => {
-  const currentProtocolLinks = getGuidedProtocolLinks();
 
-  if (currentProtocolLinks.includes(link)) {
-    throw new Error("Link already exists");
-  }
-
-  const isFair = protocolObjIsFair(link, description);
-
-  //add the new protocol to the JSONObj
-  sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"] = [
-    ...sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"],
-    {
-      link: link,
-      type: type,
-      relation: "IsProtocolFor",
-      description: description,
-      isFair: isFair,
-    },
-  ];
-};
-const editAdditionalLink = (oldLink, newLink, description, type) => {
-  const currentProtocolLinks = sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
-  //find the index of the protocol to be edited
-  const protocolIndex = currentProtocolLinks.findIndex((protocol) => protocol.link === oldLink);
-  console.log(protocolIndex);
-
-  const isFair = protocolObjIsFair(newLink, description);
-
-  //replace the protocol at the index with the new protocol
-  sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"][protocolIndex] = {
-    link: newLink,
-    type: type,
-    relation: "IsProtocolFor",
-    description: description,
-    isFair: isFair,
-  };
-};
-
-const deleteAdditionalLink = (clickedDeleteLinkButton) => {
-  const tr = clickedDeleteLinkButton.parentNode.parentNode;
-  const linkNameToDelete = tr.querySelector(".link-name-cell").innerHTML.trim();
+const deleteAdditionalLink = (linkName) => {
   const additionalLinks =
     sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"];
   //filter additional links to remove the one to be deleted
   const filteredAdditionalLinks = additionalLinks.filter((link) => {
-    return link.link != linkNameToDelete;
+    return link.link != linkName;
   });
   sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"] =
     filteredAdditionalLinks;
@@ -6091,7 +6066,7 @@ const generateadditionalLinkRowElement = (link, linkType, linkRelation) => {
         <button
           type="button"
           class="btn btn-danger btn-sm"
-          onclick="deleteAdditionalLink(this)"
+          onclick="deleteAdditionalLink('${link}')"
         >   
           Delete link
         </button>
@@ -7536,12 +7511,15 @@ const openAddAdditionLinkSwal = async () => {
       const link = $("#guided-other-link").val();
       if (link === "") {
         Swal.showValidationMessage(`Please enter a link.`);
+        return;
       }
       if ($("#guided-other-link-relation").val() === "Select") {
         Swal.showValidationMessage(`Please select a link relation.`);
+        return;
       }
       if ($("#guided-other-description").val() === "") {
         Swal.showValidationMessage(`Please enter a short description.`);
+        return;
       }
       var duplicate = checkLinkDuplicate(link, document.getElementById("other-link-table-dd"));
       if (duplicate) {
