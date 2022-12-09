@@ -4048,6 +4048,23 @@ const openPage = async (targetPageID) => {
       }
     }
     if (targetPageID === "guided-banner-image-tab") {
+      if (pageNeedsUpdateFromPennsieve("guided-banner-image-tab")) {
+        // Dorian: Fetch banner image here and set it to the path sodaJSONObj["digital-metadata"]["banner-image-path"]
+        // If the fetch fails, (they don't have a banner image yet) then you shouldn't have to do anything.
+        try {
+          let metadata_import = await client.get(`/prepare_metadata/import_metadata_file`, {
+            // This needs to be updated to banner image endpoint
+            params: {
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+              file_type: "dataset_description.xlsx",
+            },
+          });
+        } catch (error) {
+          console.log(error);
+          console.log("Don't have a banner image yet");
+        }
+      }
       if (sodaJSONObj["digital-metadata"]["banner-image-path"]) {
         guidedShowBannerImagePreview(sodaJSONObj["digital-metadata"]["banner-image-path"]);
       } else {
