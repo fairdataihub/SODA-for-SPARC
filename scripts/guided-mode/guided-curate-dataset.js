@@ -1,4 +1,4 @@
-const guidedSetNavLoadingState = async (loadingState) => {
+const guidedSetNavLoadingState = (loadingState) => {
   //depending on the boolean loading state will determine whether or not
   //to disable the primary and sub buttons along with the nav menu
   const subBackButton = document.getElementById("guided-button-sub-page-back");
@@ -43,7 +43,7 @@ const savePageChanges = async (pageBeingLeftID) => {
   // This function is used by both the navigation bar and the side buttons,
   // and whenever it is being called, we know that the user is trying to save the changes on the current page.
   // this function is async because we sometimes need to make calls to validate data before the page is ready to be left.
-  await guidedSetNavLoadingState(true);
+  guidedSetNavLoadingState(true);
 
   const errorArray = [];
   try {
@@ -976,7 +976,7 @@ const savePageChanges = async (pageBeingLeftID) => {
     throw error;
   }
 
-  await guidedSetNavLoadingState(false);
+  guidedSetNavLoadingState(false);
 };
 
 document
@@ -3324,16 +3324,12 @@ const pageNeedsUpdateFromPennsieve = (pageID) => {
 //If the keys exist, extract the data from the sodaJSONObj and populate the page
 //If the keys do not exist, reset the page (inputs, tables etc.) to the default state
 const openPage = async (targetPageID) => {
-  //TOD: disable the nav bar from being used
   //NOTE: 2 Bottom back buttons (one handles sub pages, and the other handles main pages)
   //Back buttons should be disabled and the function setLoading should be (set as false?)
-  // Dorian: this is where you would set loading state as true
+
   // This function is used by both the navigation bar and the side buttons,
   // and whenever it is being called, we know that the user is trying to navigate to a new page
   // this function is async because we sometimes need to fetch data before the page is ready to be opened
-  await guidedSetNavLoadingState(true);
-
-  //add promise to main try block to know when to enable the buttons again
 
   let itemsContainer = document.getElementById("items-guided-container");
   if (itemsContainer.classList.contains("border-styling")) {
@@ -4644,7 +4640,7 @@ const openPage = async (targetPageID) => {
     throw error;
   }
 
-  await guidedSetNavLoadingState(false);
+  guidedSetNavLoadingState(false);
 };
 
 const setActiveSubPage = (pageIdToActivate) => {
@@ -12036,7 +12032,7 @@ $(document).ready(async () => {
   $("#guided-next-button").on("click", async function () {
     //Get the ID of the current page to handle actions on page leave (next button pressed)
     pageBeingLeftID = CURRENT_PAGE.id;
-    await guidedSetNavLoadingState(true);
+    guidedSetNavLoadingState(true);
 
     if (pageBeingLeftID === "guided-dataset-generation-tab") {
       guidedUnSkipPage("guided-dataset-dissemination-tab");
@@ -12096,7 +12092,7 @@ $(document).ready(async () => {
       });
     }
     // $(this).removeClass("loading");
-    await guidedSetNavLoadingState(false);
+    guidedSetNavLoadingState(false);
   });
 
   /* const getNextPageNotSkipped = (currentPageID) => {
