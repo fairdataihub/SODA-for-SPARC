@@ -4079,22 +4079,22 @@ const openPage = async (targetPageID) => {
       if (pageNeedsUpdateFromPennsieve("guided-banner-image-tab")) {
         // Dorian: Fetch banner image here and set it to the path sodaJSONObj["digital-metadata"]["banner-image-path"]
         // If the fetch fails, (they don't have a banner image yet) then you shouldn't have to do anything.
+        const datasetName = sodaJSONObj["digital-metadata"]["name"];
+
         try {
-          let metadata_import = await client.get(`/prepare_metadata/import_metadata_file`, {
-            // This needs to be updated to banner image endpoint
-            params: {
-              selected_account: defaultBfAccount,
-              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-              file_type: "dataset_description.xlsx",
-            },
-          });
+          let res = await api.getDatasetBannerImageURL(defaultBfAccount, datasetName);
+          if (res != "No banner image") {
+            //Banner is returned as an s3 bucket url
+            sodaJSONObj["digital-metadata"]["banner-image-path"] = res;
+          }
         } catch (error) {
           console.log(error);
           console.log("Don't have a banner image yet");
         }
       }
       if (sodaJSONObj["digital-metadata"]["banner-image-path"]) {
-        guidedShowBannerImagePreview(sodaJSONObj["digital-metadata"]["banner-image-path"]);
+        //added extra param to function to prevent modification of URL
+        guidedShowBannerImagePreview(sodaJSONObj["digital-metadata"]["banner-image-path"], true);
       } else {
         //reset the banner image page
         $("#guided-button-add-banner-image").html("Add banner image");
@@ -9082,26 +9082,39 @@ const getGuidedDatasetSubtitle = () => {
   return sodaJSONObj["digital-metadata"]["subtitle"];
 };
 
-const guidedShowBannerImagePreview = (imagePath) => {
+const guidedShowBannerImagePreview = (imagePath, imported) => {
   const bannerImagePreviewelement = document.getElementById("guided-banner-image-preview");
 
-  // bannerImagePreviewelement.innerHTML = '';
   if (bannerImagePreviewelement.childElementCount > 0) {
+    //remove old banner image
     bannerImagePreviewelement.removeChild(bannerImagePreviewelement.firstChild);
   }
+  if (imported) {
+    //if imported = true then add imagepath without cachebreaker
+    let guidedbannerImageElem = document.createElement("img");
 
-  let date = new Date();
-  let guidedbannerImageElem = document.createElement("img");
-  //imagePath + cachebreakeer at the end to update image every time
-  guidedbannerImageElem.src = imagePath + "?" + date.getMilliseconds();
-  guidedbannerImageElem.alt = "Preview of banner image";
-  guidedbannerImageElem.style = "max-height: 300px";
+    guidedbannerImageElem.src = imagePath;
+    guidedbannerImageElem.alt = "Preview of banner image";
+    guidedbannerImageElem.style = "max-height: 300px";
 
-  bannerImagePreviewelement.appendChild(guidedbannerImageElem);
+    bannerImagePreviewelement.appendChild(guidedbannerImageElem);
 
-  // bannerImagePreviewelement.innerHTML = guidedBannerImageElement;
-  $("#guided-banner-image-preview-container").show();
-  $("#guided-button-add-banner-image").html("Edit banner image");
+    $("#guided-banner-image-preview-container").show();
+    $("#guided-button-add-banner-image").html("Edit banner image");
+  } else {
+    let date = new Date();
+    let guidedbannerImageElem = document.createElement("img");
+
+    //imagePath + cachebreakeer at the end to update image every time
+    guidedbannerImageElem.src = imagePath + "?" + date.getMilliseconds();
+    guidedbannerImageElem.alt = "Preview of banner image";
+    guidedbannerImageElem.style = "max-height: 300px";
+
+    bannerImagePreviewelement.appendChild(guidedbannerImageElem);
+
+    $("#guided-banner-image-preview-container").show();
+    $("#guided-button-add-banner-image").html("Edit banner image");
+  }
 };
 const setGuidedBannerImage = (croppedImagePath) => {
   sodaJSONObj["digital-metadata"]["banner-image-path"] = croppedImagePath;
