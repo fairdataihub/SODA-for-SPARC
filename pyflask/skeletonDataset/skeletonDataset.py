@@ -137,7 +137,7 @@ def create(soda_json_structure, selected_account, selected_dataset, pennsieve_pi
         #     4. if-existing-files: merge, skip, create-duplicate, replace
         #  What their combinations mean:
         #     destination: bf; generate-option: existing; Tells us we are updating an existing dataset through the Update Existing flow; use the standalone man generator algo
-        #     destination: bf; generate-option: new; if-existing: not create-duplicate; if-existing-files: not create-duplicate; Tells us we are merging a new local dataset into an existing ds; use the standalone man generator algo 
+        #     destination: bf; generate-option: new; bf-dataset-selected key is present;  Tells us we are merging a new local dataset into an existing ds; use the standalone man generator algo 
         #     destination: bf; generate-option: new; if-existing: create-duplicate; if-existing-files: create-duplicate; and DS does not exist on Pennsieve; Tells us we are creating a new dataset from scratch; use curate manifest algo  
         #     destination: local; generate-option: new; if-existing: new; Means a new local dataset is getting created; use curate manifest algo 
         #     destination: local; generate-option: new; if-existing: merge; Means a local dataset is getting merged over an existing one; Might need to create a new algo for this case.
