@@ -8,24 +8,22 @@ const guidedSetNavLoadingState = (loadingState) => {
   const navItems = document.querySelectorAll(".guided--nav-bar-section-page");
 
   if (loadingState === true) {
-    console.log("disable nav and buttons");
     subBackButton.disabled = true;
     subContinueButton.disabled = true;
     mainBackButton.disabled = true;
     mainContinueButton.disabled = true;
-    // guidedNavBar.disabled = true;
+
     navItems.forEach((nav) => {
       nav.classList.add("disabled-nav");
     });
   }
 
   if (loadingState === false) {
-    console.log("enable nav and buttons");
     subBackButton.disabled = false;
     subContinueButton.disabled = false;
     mainBackButton.disabled = false;
     mainContinueButton.disabled = false;
-    // guidedNavBar.disabled = false;
+
     navItems.forEach((nav) => {
       nav.classList.remove("disabled-nav");
     });
@@ -39,7 +37,6 @@ const objectsHaveSameKeys = (...objects) => {
 };
 
 const savePageChanges = async (pageBeingLeftID) => {
-  // Dorian: this is where you would set loading state as true
   // This function is used by both the navigation bar and the side buttons,
   // and whenever it is being called, we know that the user is trying to save the changes on the current page.
   // this function is async because we sometimes need to make calls to validate data before the page is ready to be left.
@@ -12041,8 +12038,7 @@ $(document).ready(async () => {
     }
 
     // Dorian: The below loading class should be removed
-    console.log("remove loading from here");
-    // $(this).addClass("loading");
+    $(this).addClass("loading");
     let errorArray = [];
 
     try {
@@ -12091,7 +12087,7 @@ $(document).ready(async () => {
         }
       });
     }
-    // $(this).removeClass("loading");
+    $(this).removeClass("loading");
     guidedSetNavLoadingState(false);
   });
 
