@@ -1,5 +1,5 @@
 const guidedSetNavLoadingState = (loadingState) => {
-  //pause for 1 second  //depending on the boolean loading state will determine whether or not
+  //depending on the boolean loading state will determine whether or not
   //to disable the primary and sub buttons along with the nav menu
   const subBackButton = document.getElementById("guided-button-sub-page-back");
   const subContinueButton = document.getElementById("guided-button-sub-page-continue");
@@ -12,7 +12,7 @@ const guidedSetNavLoadingState = (loadingState) => {
     subContinueButton.disabled = true;
     mainBackButton.disabled = true;
     mainContinueButton.disabled = true;
-    // guidedNavBar.disabled = true;
+
     navItems.forEach((nav) => {
       nav.classList.add("disabled-nav");
     });
@@ -23,19 +23,25 @@ const guidedSetNavLoadingState = (loadingState) => {
     subContinueButton.disabled = false;
     mainBackButton.disabled = false;
     mainContinueButton.disabled = false;
-    // guidedNavBar.disabled = false;
+
     navItems.forEach((nav) => {
       nav.classList.remove("disabled-nav");
     });
   }
 };
+
 const objectsHaveSameKeys = (...objects) => {
   const allKeys = objects.reduce((keys, object) => keys.concat(Object.keys(object)), []);
   const union = new Set(allKeys);
   return objects.every((object) => union.size === Object.keys(object).length);
 };
+
 const savePageChanges = async (pageBeingLeftID) => {
+  // This function is used by both the navigation bar and the side buttons,
+  // and whenever it is being called, we know that the user is trying to save the changes on the current page.
+  // this function is async because we sometimes need to make calls to validate data before the page is ready to be left.
   guidedSetNavLoadingState(true);
+
   const errorArray = [];
   try {
     //save changes to the current page
@@ -742,8 +748,8 @@ const savePageChanges = async (pageBeingLeftID) => {
         const { value: continueProgress } = await Swal.fire({
           title: `No folders or files have been added to your dataset.`,
           html: `You can go back and add folders and files to your dataset, however, if
-          you choose to generate your dataset on the final step, no folders or files will be
-          added to your target destination.`,
+            you choose to generate your dataset on the final step, no folders or files will be
+            added to your target destination.`,
           allowEscapeKey: false,
           allowOutsideClick: false,
           heightAuto: false,
@@ -966,6 +972,7 @@ const savePageChanges = async (pageBeingLeftID) => {
     guidedSetNavLoadingState(false);
     throw error;
   }
+
   guidedSetNavLoadingState(false);
 };
 
@@ -3317,11 +3324,21 @@ const pageNeedsUpdateFromPennsieve = (pageID) => {
 //If the keys exist, extract the data from the sodaJSONObj and populate the page
 //If the keys do not exist, reset the page (inputs, tables etc.) to the default state
 const openPage = async (targetPageID) => {
+  //NOTE: 2 Bottom back buttons (one handles sub pages, and the other handles main pages)
+  //Back buttons should be disabled and the function setLoading should be (set as false?)
+
+  // This function is used by both the navigation bar and the side buttons,
+  // and whenever it is being called, we know that the user is trying to navigate to a new page
+  // this function is async because we sometimes need to fetch data before the page is ready to be opened
+
   let itemsContainer = document.getElementById("items-guided-container");
   if (itemsContainer.classList.contains("border-styling")) {
     itemsContainer.classList.remove("border-styling");
   }
   guidedSetNavLoadingState(true);
+
+  //when the promise completes there is a catch for error handling
+  //upon resolving it will set navLoadingstate to false
   try {
     //reset the radio buttons for the page being navigated to
     resetGuidedRadioButtons(targetPageID);
@@ -3602,10 +3619,10 @@ const openPage = async (targetPageID) => {
         "guided-submission-completion-date-manual"
       );
       completionDateInputManual.innerHTML = `
-        <option value="Select a completion date">Select a completion date</option>
-        <option value="Enter my own date">Enter my own date</option>
-        <option value="">N/A</option>
-      `;
+          <option value="Select a completion date">Select a completion date</option>
+          <option value="Enter my own date">Enter my own date</option>
+          <option value="">N/A</option>
+        `;
 
       if (pageNeedsUpdateFromPennsieve("guided-create-submission-metadata-tab")) {
         const existingSPARCAward =
@@ -4065,22 +4082,22 @@ const openPage = async (targetPageID) => {
       if (pageNeedsUpdateFromPennsieve("guided-banner-image-tab")) {
         // Dorian: Fetch banner image here and set it to the path sodaJSONObj["digital-metadata"]["banner-image-path"]
         // If the fetch fails, (they don't have a banner image yet) then you shouldn't have to do anything.
+        const datasetName = sodaJSONObj["digital-metadata"]["name"];
+
         try {
-          let metadata_import = await client.get(`/prepare_metadata/import_metadata_file`, {
-            // This needs to be updated to banner image endpoint
-            params: {
-              selected_account: defaultBfAccount,
-              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-              file_type: "dataset_description.xlsx",
-            },
-          });
+          let res = await api.getDatasetBannerImageURL(defaultBfAccount, datasetName);
+          if (res != "No banner image") {
+            //Banner is returned as an s3 bucket url
+            sodaJSONObj["digital-metadata"]["banner-image-path"] = res;
+          }
         } catch (error) {
           console.log(error);
           console.log("Don't have a banner image yet");
         }
       }
       if (sodaJSONObj["digital-metadata"]["banner-image-path"]) {
-        guidedShowBannerImagePreview(sodaJSONObj["digital-metadata"]["banner-image-path"]);
+        //added extra param to function to prevent modification of URL
+        guidedShowBannerImagePreview(sodaJSONObj["digital-metadata"]["banner-image-path"], true);
       } else {
         //reset the banner image page
         $("#guided-button-add-banner-image").html("Add banner image");
@@ -4409,20 +4426,20 @@ const openPage = async (targetPageID) => {
         : subjectsProtocolContainer.classList.add("hidden");
 
       document.getElementById("guided-bootbox-subject-protocol-title").innerHTML = `
-        <option value="">No protocols associated with this sample</option>
-        ${protocols
-          .map((protocol) => {
-            return `
-              <option
-                value="${protocol.description}"
-                data-protocol-link="${protocol.link}"
-              >
-                ${protocol.description}
-              </option>
-            `;
-          })
-          .join("\n")}))
-      `;
+          <option value="">No protocols associated with this sample</option>
+          ${protocols
+            .map((protocol) => {
+              return `
+                <option
+                  value="${protocol.description}"
+                  data-protocol-link="${protocol.link}"
+                >
+                  ${protocol.description}
+                </option>
+              `;
+            })
+            .join("\n")}))
+        `;
 
       document.getElementById("guided-bootbox-subject-protocol-location").innerHTML = `
         <option value="">No protocols associated with this sample</option>
@@ -4620,7 +4637,9 @@ const openPage = async (targetPageID) => {
   } catch (error) {
     guidedSetNavLoadingState(false);
     console.log(error);
+    throw error;
   }
+
   guidedSetNavLoadingState(false);
 };
 
@@ -9066,26 +9085,39 @@ const getGuidedDatasetSubtitle = () => {
   return sodaJSONObj["digital-metadata"]["subtitle"];
 };
 
-const guidedShowBannerImagePreview = (imagePath) => {
+const guidedShowBannerImagePreview = (imagePath, imported) => {
   const bannerImagePreviewelement = document.getElementById("guided-banner-image-preview");
 
-  // bannerImagePreviewelement.innerHTML = '';
   if (bannerImagePreviewelement.childElementCount > 0) {
+    //remove old banner image
     bannerImagePreviewelement.removeChild(bannerImagePreviewelement.firstChild);
   }
+  if (imported) {
+    //if imported = true then add imagepath without cachebreaker
+    let guidedbannerImageElem = document.createElement("img");
 
-  let date = new Date();
-  let guidedbannerImageElem = document.createElement("img");
-  //imagePath + cachebreakeer at the end to update image every time
-  guidedbannerImageElem.src = imagePath + "?" + date.getMilliseconds();
-  guidedbannerImageElem.alt = "Preview of banner image";
-  guidedbannerImageElem.style = "max-height: 300px";
+    guidedbannerImageElem.src = imagePath;
+    guidedbannerImageElem.alt = "Preview of banner image";
+    guidedbannerImageElem.style = "max-height: 300px";
 
-  bannerImagePreviewelement.appendChild(guidedbannerImageElem);
+    bannerImagePreviewelement.appendChild(guidedbannerImageElem);
 
-  // bannerImagePreviewelement.innerHTML = guidedBannerImageElement;
-  $("#guided-banner-image-preview-container").show();
-  $("#guided-button-add-banner-image").html("Edit banner image");
+    $("#guided-banner-image-preview-container").show();
+    $("#guided-button-add-banner-image").html("Edit banner image");
+  } else {
+    let date = new Date();
+    let guidedbannerImageElem = document.createElement("img");
+
+    //imagePath + cachebreakeer at the end to update image every time
+    guidedbannerImageElem.src = imagePath + "?" + date.getMilliseconds();
+    guidedbannerImageElem.alt = "Preview of banner image";
+    guidedbannerImageElem.style = "max-height: 300px";
+
+    bannerImagePreviewelement.appendChild(guidedbannerImageElem);
+
+    $("#guided-banner-image-preview-container").show();
+    $("#guided-button-add-banner-image").html("Edit banner image");
+  }
 };
 const setGuidedBannerImage = (croppedImagePath) => {
   sodaJSONObj["digital-metadata"]["banner-image-path"] = croppedImagePath;
@@ -12113,15 +12145,15 @@ $(document).ready(async () => {
   $("#guided-next-button").on("click", async function () {
     //Get the ID of the current page to handle actions on page leave (next button pressed)
     pageBeingLeftID = CURRENT_PAGE.id;
+    guidedSetNavLoadingState(true);
 
     if (pageBeingLeftID === "guided-dataset-generation-tab") {
       guidedUnSkipPage("guided-dataset-dissemination-tab");
       await openPage("guided-dataset-dissemination-tab");
       return;
     }
-    //remove blue pulse
-    $(this).removeClass("pulse-blue");
-    //add a bootstrap loader to the next button
+
+    // Dorian: The below loading class should be removed
     $(this).addClass("loading");
     let errorArray = [];
 
@@ -12172,6 +12204,7 @@ $(document).ready(async () => {
       });
     }
     $(this).removeClass("loading");
+    guidedSetNavLoadingState(false);
   });
 
   /* const getNextPageNotSkipped = (currentPageID) => {
