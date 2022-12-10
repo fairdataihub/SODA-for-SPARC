@@ -4529,6 +4529,22 @@ const openPage = async (targetPageID) => {
       }
     }
     if (targetPageID === "guided-create-readme-metadata-tab") {
+      if (pageNeedsUpdateFromPennsieve("guided-create-readme-metadata-tab")) {
+        try {
+          let readme_import = await client.get(`/prepare_metadata/readme_changes_file`, {
+            params: {
+              file_type: "README",
+
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+            },
+          });
+          let readme_text = readme_import.data.text;
+          sodaJSONObj["dataset-metadata"]["README"] = readme_text;
+        } catch (error) {
+          console.log(error);
+        }
+      }
       const readMeTextArea = document.getElementById("guided-textarea-create-readme");
 
       const readMe = sodaJSONObj["dataset-metadata"]["README"];
