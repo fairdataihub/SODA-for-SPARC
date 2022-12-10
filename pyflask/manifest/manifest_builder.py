@@ -20,27 +20,23 @@ Create manifest files for the skeleton dataset validation workflow.
 #     destination: local; generate-option: new; if-existing: merge; Means a local dataset is getting merged over an existing one; Might need to create a new algo for this case.
 # TODO: add the manifest file creation function(s) here
 """
-
-
-
-import os.path
 from .manifest_writer import ManifestWriterStandaloneAlgorithm 
 
-class ManifestBuilder:
+class ManifestBuilderBase:
     """
     Builds manifest files for the skeleton dataset validation workflow.
-    Places them at the root of the skeleton directory.
+    Places them at the root of the sekected directory.
     """
-    def __init__(self, soda_json_structure):
+    def __init__(self, soda_json_structure, path):
         self.soda_json_structure = soda_json_structure
-        self.skeleton_directory_path = os.path.join(os.path.expanduser("~"), "SODA", "skeleton")
+        self.skeleton_directory_path = path
 
     def build(self, ps):
         """"
         Builds manifest files for the given soda_json_structure and place them in the skeleton directory.
         """
 
-        builder = self._create_manifest_builder(self.soda_json_structure)
+        builder = self._create_manifest_builder()
 
         builder.write(self.soda_json_structure)
 
@@ -116,7 +112,7 @@ class ManifestBuilder:
 
 
 
-class ManifestBuilderSkeleton(ManifestBuilder):
+class ManifestBuilder(ManifestBuilderBase):
     """
     Builds manifest files for the skeleton dataset validation workflow.
     """
