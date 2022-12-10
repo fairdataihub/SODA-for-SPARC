@@ -3302,6 +3302,9 @@ const checkIfPageIsValid = async (pageID) => {
   }
 };
 
+// Function that checks if the page needs to be updated from Pennsieve
+// This function will be return true if the user is updating a dataset from Pennsieve and
+// the page has not yet been saved
 const pageNeedsUpdateFromPennsieve = (pageID) => {
   return (
     sodaJSONObj?.["button-config"]?.["curation-starting-point"] === "pennsieve" &&
@@ -4436,7 +4439,7 @@ const openPage = async (targetPageID) => {
           })
           .join("\n")}))
       `;
-      renderSubjectsMetadataAsideItems();
+      await renderSubjectsMetadataAsideItems();
       const subjectsMetadataBlackArrowLottieContainer = document.getElementById(
         "subjects-metadata-black-arrow-lottie-container"
       );
@@ -4456,7 +4459,7 @@ const openPage = async (targetPageID) => {
       document.getElementById("guided-accordian-custom-fields-samples").innerHTML = "";
       document.getElementById("guided-bootbox-subject-id-samples").value = "";
       document.getElementById("guided-bootbox-sample-id").value = "";
-      renderSamplesMetadataAsideItems();
+      await renderSamplesMetadataAsideItems();
       const samplesMetadataBlackArrowLottieContainer = document.getElementById(
         "samples-metadata-black-arrow-lottie-container"
       );
@@ -9476,7 +9479,7 @@ const renderPoolsHighLevelFolderAsideItems = (highLevelFolderName) => {
   });
 };
 
-const renderSubjectsMetadataAsideItems = () => {
+const renderSubjectsMetadataAsideItems = async () => {
   const asideElement = document.getElementById(`guided-subjects-metadata-aside`);
   asideElement.innerHTML = "";
 
@@ -9484,6 +9487,52 @@ const renderSubjectsMetadataAsideItems = () => {
 
   //Combine sample data from subjects in and out of pools
   let subjects = [...subjectsInPools, ...subjectsOutsidePools];
+  const subjectNames = subjects.map((subject) => subject.subjectName);
+
+  if (pageNeedsUpdateFromPennsieve("guided-create-subjects-metadata-tab")) {
+    try {
+      let subjectsMetadataResponse = await client.get(`/prepare_metadata/import_metadata_file`, {
+        params: {
+          selected_account: defaultBfAccount,
+          selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+          file_type: "subjects.xlsx",
+          ui_fields: Array.from(
+            document
+              .getElementById("guided-form-add-a-subject")
+              .querySelectorAll(".subjects-form-entry")
+          )
+            .map((field) => field.name.toLowerCase())
+            .toString(),
+        },
+      });
+      subjectsMetadataResponse = subjectsMetadataResponse.data.subject_file_rows;
+      //remove the first row of the subjectsMetadataResponse array, which is the header row
+      subjectsMetadataResponse.shift();
+      console.log(subjectsMetadataResponse);
+
+      // Loop through the suject names overwrite the metadata rows with the metadata from Pennsieve if it exists
+      for (const subjectName of subjectNames) {
+        const subjectMetadataArrayFromPennsieve = subjectsMetadataResponse.find(
+          (subjectMetadataRow) => subjectMetadataRow[0] == subjectName
+        );
+
+        // Update the subject in the subjectsTableData with the metadata from Pennsieve
+        const subjectIndex = subjectsTableData.findIndex((subject) => subject[0] == subjectName);
+        // Overwrite the metadata after the first two elemnts in subjectsTableData with the metadata from Pennsieve
+        // (These are the subject and pool names that are already in the table)
+        subjectsTableData[subjectIndex].splice(2);
+        subjectsTableData[subjectIndex].push(...subjectMetadataArrayFromPennsieve.splice(2));
+
+        console.log(subjectIndex);
+        console.log(subjectMetadataArrayFromPennsieve);
+      }
+      console.log(subjectsTableData);
+
+      // Add the subjects metadata from Pennsieve to the sodaJSONObj
+    } catch (error) {
+      console.log("Unable to fetch subjects metadata" + error);
+    }
+  }
 
   const subjectMetadataCopyButton = document.getElementById("guided-button-subject-metadata-copy");
   if (subjects.length > 1) {
@@ -9602,13 +9651,67 @@ const renderSubjectsMetadataAsideItems = () => {
     });
   });
 };
-const renderSamplesMetadataAsideItems = () => {
+const renderSamplesMetadataAsideItems = async () => {
   const asideElement = document.getElementById(`guided-samples-metadata-aside`);
   asideElement.innerHTML = "";
 
   const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
   //Combine sample data from samples in and out of pools
   let samples = [...samplesInPools, ...samplesOutsidePools];
+  const sampleNames = samples.map((sample) => sample.sampleName);
+
+  if (pageNeedsUpdateFromPennsieve("guided-create-samples-metadata-tab")) {
+    try {
+      let samplesMetadataRes = await client.get(`/prepare_metadata/import_metadata_file`, {
+        params: {
+          selected_account: defaultBfAccount,
+          selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+          file_type: "samples.xlsx",
+          ui_fields: Array.from(
+            document
+              .getElementById("guided-form-add-a-sample")
+              .querySelectorAll(".samples-form-entry")
+          )
+            .map((field) => field.name.toLowerCase())
+            .toString(),
+        },
+      });
+      samplesMetadataRes = samplesMetadataRes.data.sample_file_rows;
+      //remove the first row of the subjectsMetadataResponse array, which is the header row
+      samplesMetadataRes.shift();
+      console.log(samplesMetadataRes);
+      console.log(samplesTableData);
+
+      // Loop through the sample names and overwrite the metadata rows with the metadata from Pennsieve if it exists
+      for (const sampleName of sampleNames) {
+        const sampleMetadataArrayFromPennsieve = samplesMetadataRes.find(
+          (sampleMetadtaRow) => sampleMetadtaRow[1] == sampleName
+        );
+        console.log(sampleMetadataArrayFromPennsieve);
+
+        // Update the subject in the samplesTableData with the metadata from Pennsieve
+        const sampleIndex = samplesTableData.findIndex((sample) => sample[1] == sampleName);
+        const samplePoolVal = samplesTableData[sampleIndex][3];
+        const newArray = [];
+
+        // Overwrite the metadata besides the first 2 and fourth element in samplesTableData with the metadata from Pennsieve
+        // (These are the subject and pool names that are already in the table)
+
+        // push the first two values of samplesTableData[sampleIndex] to the new array
+        newArray.push(...samplesTableData[sampleIndex].slice(0, 2));
+        newArray.push(sampleMetadataArrayFromPennsieve[2]);
+        newArray.push(samplePoolVal);
+        // push the values of sampleMetadataArrayFromPennsieve starting at index 4 to the new array
+        newArray.push(...sampleMetadataArrayFromPennsieve.splice(4));
+        samplesTableData[sampleIndex] = newArray;
+      }
+      console.log(samplesTableData);
+
+      // Add the subjects metadata from Pennsieve to the sodaJSONObj
+    } catch (error) {
+      console.log("Unable to fetch subjects metadata" + error);
+    }
+  }
 
   const sampleMetadataCopyButton = document.getElementById("guided-button-sample-metadata-copy");
   if (samples.length > 1) {
