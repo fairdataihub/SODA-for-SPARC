@@ -4080,15 +4080,82 @@ const openPage = async (targetPageID) => {
     }
     if (targetPageID === "guided-banner-image-tab") {
       if (pageNeedsUpdateFromPennsieve("guided-banner-image-tab")) {
-        // Dorian: Fetch banner image here and set it to the path sodaJSONObj["digital-metadata"]["banner-image-path"]
-        // If the fetch fails, (they don't have a banner image yet) then you shouldn't have to do anything.
+        // If the fetch fails, (they don't have a banner image yet)
         const datasetName = sodaJSONObj["digital-metadata"]["name"];
 
         try {
           let res = await api.getDatasetBannerImageURL(defaultBfAccount, datasetName);
           if (res != "No banner image") {
-            //Banner is returned as an s3 bucket url
-            sodaJSONObj["digital-metadata"]["banner-image-path"] = res;
+            //Banner is returned as an s3 bucket url but image needs to be converted as
+            //base64 to save and write to users local system
+
+            let img_base64 = await getBase64(res); // encode image to base64
+            let guided_img_url = res;
+            let imageType = "";
+            let fullBase64Image = "";
+            let position = guided_img_url.search("X-Amz-Security-Token");
+
+            if (position != -1) {
+              // The image url will be before the security token
+              let new_img_src = guided_img_url.substring(0, position - 1);
+              let new_position = new_img_src.lastIndexOf("."); //
+
+              if (new_position != -1) {
+                imageExtension = new_img_src.substring(new_position + 1);
+
+                if (imageExtension.toLowerCase() == "png") {
+                  fullBase64Image = "data:image/png;base64," + img_base64;
+                  imageType = "png";
+                } else if (
+                  imageExtension.toLowerCase() == "jpeg" ||
+                  imageExtension.toLowerCase() == "jpg"
+                ) {
+                  fullBase64Image = "data:image/jpg;base64," + img_base64;
+                  imageType = "jpg";
+                } else {
+                  log.error(`An error happened: ${guided_img_url}`);
+                  Swal.fire({
+                    icon: "error",
+                    text: "An error occurred when importing the image. Please try again later.",
+                    showConfirmButton: "OK",
+                    backdrop: "rgba(0,0,0, 0.4)",
+                    heightAuto: false,
+                  });
+
+                  logGeneralOperationsForAnalytics(
+                    "Error",
+                    ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+                    AnalyticsGranularity.ALL_LEVELS,
+                    ["Importing Banner Image"]
+                  );
+                }
+              }
+            }
+
+            let imageFolder = path.join(homeDirectory, "SODA", "guided-banner-images");
+            let buf = new Buffer(img_base64, "base64");
+
+            if (!fs.existsSync(imageFolder)) {
+              //create SODA/guided-banner-images if it doesn't exist
+              fs.mkdirSync(imageFolder, { recursive: true });
+            }
+            let imagePath = path.join(imageFolder, `${datasetName}.` + imageType);
+            //store file at imagePath destination
+            fs.writeFileSync(imagePath, buf);
+            //save imagePath to sodaJson
+            sodaJSONObj["digital-metadata"]["banner-image-path"] = imagePath;
+
+            //add image to modal and display image on main banner import page
+            $("#guided-image-banner").attr("src", fullBase64Image);
+            $("#guided-para-path-image").html(imagePath);
+            document.getElementById("guided-div-img-container-holder").style.display = "none";
+            document.getElementById("guided-div-img-container").style.display = "block";
+
+            //set new cropper for imported image
+            myCropper.destroy();
+            myCropper = new Cropper(guidedBfViewImportedImage, guidedCropOptions);
+
+            $("#guided-save-banner-image").css("visibility", "visible");
           }
         } catch (error) {
           console.log(error);
@@ -10272,6 +10339,8 @@ $(document).ready(async () => {
   // function for importing a banner image if one already exists
   $("#guided-button-add-banner-image").click(async () => {
     $("#guided-banner-image-modal").modal("show");
+    myCropper.destroy();
+    myCropper = new Cropper(guidedBfViewImportedImage, guidedCropOptions);
   });
 
   // Action when user click on "Import image" button for banner image
