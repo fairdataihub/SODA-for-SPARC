@@ -20,7 +20,7 @@ Create manifest files for the skeleton dataset validation workflow.
 #     destination: local; generate-option: new; if-existing: merge; Means a local dataset is getting merged over an existing one; Might need to create a new algo for this case.
 # TODO: add the manifest file creation function(s) here
 """
-from .manifest_writer import ManifestWriterStandaloneAlgorithm , ManifestWriterNewPennsieve
+from .manifest_writer import ManifestWriterStandaloneAlgorithm , ManifestWriterNewPennsieve, ManifestWriterStandaloneLocal
 
 class ManifestBuilderBase:
     """
@@ -126,7 +126,6 @@ class ManifestBuilder(ManifestBuilderBase):
             return 
         elif self._updating_existing_local_dataset(self.soda_json_structure):
             # generating on top of an existing dataset
-            # return standalone_manifest_generator_algorithm IMP: maybe need to update for local datasets 
-            return 
+            return ManifestWriterStandaloneLocal(self.soda_json_structure, self.skeleton_directory_path)
         else:
             raise Exception("Invalid soda_json_structure")

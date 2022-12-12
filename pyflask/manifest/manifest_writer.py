@@ -2,8 +2,8 @@
 Classes for creating manifest files for a dataset stored locally/on Pennsieve. 
 """
 
-from os.path import join, exists, expanduser, isdir
-from os import makedirs, remove
+from os.path import join, exists, expanduser, isdir, isfile
+from os import makedirs, remove, listdir
 import datetime
 import pathlib
 import shutil 
@@ -289,7 +289,35 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
         manifest_files_structure[high_level_folder] = manifestfilepath
 
     return manifest_files_structure
+    
 
+def create_high_level_manifest_files_existing_local_starting_point(dataset_path, manifest_path):
+   #  soda_manifest_folder_path = join(userpath, "SODA", "manifest_files")
+
+    if dataset_path != "":
+        for high_level_fol in listdir(dataset_path):
+
+            if high_level_fol in [
+                "primary",
+                "derivative",
+                "docs",
+                "code",
+                "source",
+                "protocol",
+            ]:
+                onlyfiles = [
+                    join(dataset_path, high_level_fol, f)
+                    for f in listdir(join(dataset_path, high_level_fol))
+                    if isfile(join(dataset_path, high_level_fol, f))
+                ]
+
+                for file in onlyfiles:
+                    p = pathlib.Path(file)
+                    # create high-level folder at the temporary location
+                    folderpath = join(manifest_path, high_level_fol)
+                    if p.stem == "manifest":
+                        # make copy from this manifest path to folderpath
+                        shutil.copyfile(file, join(folderpath, p.name))
 
 class ManifestWriter(object):
     """
@@ -345,6 +373,27 @@ class ManifestWriterStandaloneAlgorithm(ManifestWriter):
         create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, self.manifest_path, high_level_folders, manifest_progress)
 
 
+class ManifestWriterStandaloneLocal(ManifestWriter):
+    """
+    Writes manifest files for a dataset that is stored locally.
+    """
+
+    def __init__(self, soda_json_structure, path):
+        """
+        Constructor.
+        """
+        super(ManifestWriterStandaloneLocal, self).__init__(soda_json_structure, path)
+
+
+    def write(self, soda_json_structure, ps=None):
+        """
+        Writes the manifest file for the dataset.
+        """
+
+        # TODO: Send in the correct path to the dataset using the soda_json structure
+        create_high_level_manifest_files_existing_local_starting_point(soda_json_structure["dataset_path"], self.manifest_path)
+
+        
 
 class ManifestWriterNewPennsieve(ManifestWriter):
     def __init__(self, soda_json_structure, path):

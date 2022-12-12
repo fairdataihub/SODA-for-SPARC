@@ -11,8 +11,9 @@ from curate import (
     generate_manifest_file_locally,
     guided_generate_manifest_file_data,
     check_JSON_size,
-    create_high_level_manifest_files_existing_local_starting_point,
 )
+
+from manifest import create_high_level_manifest_files_existing_local_starting_point
 from errorHandlers.notBadRequestException import notBadRequestException
 
 api = get_namespace(NamespaceEnum.CURATE_DATASETS)
