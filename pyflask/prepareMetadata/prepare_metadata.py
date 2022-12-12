@@ -34,9 +34,9 @@ from openpyxl.styles import PatternFill, Font
 from docx import Document
 
 from flask import abort 
-from curate import create_high_level_manifest_files_existing_bf_starting_point, get_name_extension
 
 from pysodaUtils import agent_running, stop_agent, start_agent
+from manifest import update_existing_pennsieve_manifest_files, create_high_level_manifest_files_existing_bf_starting_point
 
 from namespaces import NamespaceEnum, get_namespace_logger
 namespace_logger = get_namespace_logger(NamespaceEnum.CURATE_DATASETS)
@@ -980,13 +980,8 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
 
     high_level_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
 
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/packages", headers=create_request_headers(ps))
-    r.raise_for_status()
-
-    ds_items = r.json()["packages"]
-
     # handle updating any existing manifest files on Pennsieve
-    update_existing_pennsieve_manifest_files(ds_items, ps, dataset_structure, high_level_folders)
+    update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level_folders, manifest_progress)
 
     # create manifest files from scratch for any high level folders that don't have a manifest file on Pennsieve
     create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, high_level_folders, manifest_progress)
