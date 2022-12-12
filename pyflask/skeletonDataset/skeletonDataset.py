@@ -125,7 +125,7 @@ def create(soda_json_structure, selected_account, selected_dataset, pennsieve_pi
     if pennsieve_pipeline:
         import_manifest_files_skeleton(soda_json_structure, ps)
     else:
-        mbs = ManifestBuilderSkeleton(soda_json_structure)
+        mbs = ManifestBuilderSkeleton(soda_json_structure, path)
         mbs.build(ps)
 
     create_skeleton(soda_json_structure["dataset-structure"], path)
