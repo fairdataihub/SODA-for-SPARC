@@ -45,6 +45,7 @@ userpath = expanduser("~")
 METADATA_UPLOAD_BF_PATH = join(userpath, "SODA", "METADATA")
 TEMPLATE_PATH = ""
 PENNSIEVE_URL = "https://api.pennsieve.io"
+manifest_folder_path = join(userpath, "SODA", "manifest_files")
 
 ### Sets the TEMPLATE_PATH using SODA-for-SPARC's basepath so that the prepare_metadata section can find
 ### the templates stored in file_templates direcotory
@@ -947,6 +948,7 @@ manifest_progress = {
 def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
     # reset the progress tracking information
     global manifest_progress
+    global manifest_folder_path
     manifest_progress["finished"] = False
     manifest_progress["total_manifest_files"] = 0
     manifest_progress["manifest_files_uploaded"] = 0
@@ -984,7 +986,7 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
     update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level_folders, manifest_progress)
 
     # create manifest files from scratch for any high level folders that don't have a manifest file on Pennsieve
-    create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, high_level_folders, manifest_progress)
+    create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, manifest_folder_path, high_level_folders, manifest_progress)
 
     # finished with the manifest generation process
     manifest_progress["finished"] = True

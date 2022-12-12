@@ -16,11 +16,11 @@ from utils import create_request_headers, column_check, returnFileURL, remove_hi
 userpath = expanduser("~")
 
 PENNSIEVE_URL = "https://api.pennsieve.io"
-manifest_folder_path = join(userpath, "SODA", "manifest_files")
 
 
 
-def update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level_folders, manifest_progress):
+
+def update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level_folders, manifest_progress, manifest_path):
 
     dataset_id = get_dataset_id(ps, soda_json_structure["bf-dataset-selected"]["name"])
 
@@ -50,7 +50,7 @@ def update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level
             packageItems = r.json()["children"]
             for j in packageItems:
                 if j["content"]["name"] == "manifest.xlsx":
-                    manifest_folder = join(manifest_folder_path, folder_name)
+                    manifest_folder = join(manifest_path, folder_name)
                     if not exists(manifest_folder):
                         # create the path
                         makedirs(manifest_folder)
@@ -65,7 +65,7 @@ def update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level
                     )
 
                     filepath = join(
-                        manifest_folder_path, folder_name, "manifest.xlsx"
+                        manifest_path, folder_name, "manifest.xlsx"
                     )
                     # print(filepath)
 
@@ -74,9 +74,9 @@ def update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level
                     updated_manifest_dict = update_existing_pennsieve_manifest_file(dataset_structure["folders"][folder_name], manifest_df)
                     # print(updated_manifest_dict)
 
-                    if not exists(join(manifest_folder_path, folder_name)):
+                    if not exists(join(manifest_path, folder_name)):
                         # create the path
-                        makedirs(join(manifest_folder_path, folder_name))
+                        makedirs(join(manifest_path, folder_name))
 
                     new_manifest = pd.DataFrame.from_dict(updated_manifest_dict)
                     new_manifest.to_excel(filepath, index=False)
@@ -168,7 +168,7 @@ def update_existing_pennsieve_manifest_file_helper(folder, old_manifest_dict, ne
 
 
 
-def create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, high_level_folders=["code", "derivative", "docs", "primary", "protocol", "source" ], manifest_progress={}):
+def create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, manifest_path, high_level_folders=["code", "derivative", "docs", "primary", "protocol", "source" ], manifest_progress={}):
     """
     Function to create manifest files for each high-level SPARC folder for an existing Pennsieve dataset.
     Args:
@@ -246,8 +246,8 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
 
     # create local folder to save manifest files temporarily if the existing files are stale (i.e. not from updating existing manfiest files)
     if len(high_level_folders) == 6:
-        shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
-        makedirs(manifest_folder_path)
+        shutil.rmtree(manifest_path) if isdir(manifest_path) else 0
+        makedirs(manifest_path)
 
     for high_level_folder in list(dataset_structure["folders"]):
 
@@ -261,7 +261,7 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
 
         high_level_folders_present.append(high_level_folder)
 
-        folderpath = join(manifest_folder_path, high_level_folder)
+        folderpath = join(manifest_path, high_level_folder)
         makedirs(folderpath)
         manifestfilepath = join(folderpath, "manifest.xlsx")
 
@@ -339,10 +339,7 @@ class ManifestWriterStandaloneAlgorithm(ManifestWriter):
 
         # create the manifest file
         # handle updating any existing manifest files on Pennsieve
-        update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level_folders, manifest_progress)
+        update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level_folders, manifest_progress, self.manifest_path)
 
         # create manifest files from scratch for any high level folders that don't have a manifest file on Pennsieve
-        create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, high_level_folders, manifest_progress)
-        
-
-        # write the manifest file to the skeleton directory's root folder
+        create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, self.manifest_path, high_level_folders, manifest_progress)
