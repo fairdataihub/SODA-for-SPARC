@@ -38,7 +38,7 @@ class ManifestBuilderBase:
 
         builder = self._create_manifest_builder()
 
-        builder.write(self.soda_json_structure)
+        builder.write(self.soda_json_structure, ps)
 
     def _create_manifest_builder(self):
         """
