@@ -121,23 +121,14 @@ def update_existing_pennsieve_manifest_file_helper(folder, old_manifest_dict, ne
 
     if "files" in folder.keys():
         for file in list(folder["files"]):
-            print("#" * 30)
-            print(file)
-            print(folder["files"][file]["folderpath"])
             file_path = remove_high_level_folder_from_path(folder["files"][file]["folderpath"]) + f"{file}"
-            print("-" * 40)
-            print(file_path)
 
             # select the row in the old manifest file that has the same file path as the file in the current folder
             # rationale: this means the file still exists in the user's dataset
             row_idx = filename_idx_map.get(file_path, None)
-            print("row id below")
-            print(row_idx)
 
             if row_idx is None:
                 for key in new_manifest_dict.keys():
-                    print(key)
-                    print(new_manifest_dict[key])
                     if key == "filename":
                         new_manifest_dict["filename"].append(file_path)   
                     elif key == "timestamp":
@@ -157,8 +148,6 @@ def update_existing_pennsieve_manifest_file_helper(folder, old_manifest_dict, ne
                 # add the existing rows to the new manifest dictionary's arrays
                 # TODO: Confirm it adds NULL/NaN if the value is empty
                 for column in manifest_columns:
-                    print("#" * 40)
-                    print(column)
                     new_manifest_dict[column].append(old_manifest_dict[column][row_idx])
 
     if "folders" in folder.keys():
