@@ -4292,6 +4292,18 @@ const openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-add-tags-tab") {
+      if (pageNeedsUpdateFromPennsieve("guided-add-tags-tab")) {
+        const currentDatasetID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+        try {
+          const tagsReq = await client.get(`/manage_datasets/datasets/${currentDatasetID}/tags`, {
+            params: { selected_account: defaultBfAccount },
+          });
+          const tags = tagsReq.data.tags;
+          sodaJSONObj["digital-metadata"]["dataset-tags"] = tags;
+        } catch (error) {
+          console.log(error);
+        }
+      }
       const descriptionMetadata =
         sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"];
       const datasetTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
