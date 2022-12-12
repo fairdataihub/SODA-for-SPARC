@@ -19,7 +19,7 @@ import json
 from pennsieve2.pennsieve import Pennsieve
 #from pennsieve import Pennsieve
 from manageDatasets import bf_dataset_account
-from utils import ( connect_pennsieve_client, authenticate_user_with_client, get_dataset_id, create_request_headers)
+from utils import ( connect_pennsieve_client, authenticate_user_with_client, get_dataset_id, create_request_headers, column_check, returnFileURL)
 from permissions import has_edit_permissions, bf_get_current_user_permission_agent_two
 from collections import defaultdict
 import requests
@@ -675,9 +675,7 @@ def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastruct
     return {"size": size}
 
 
-# check for non-empty fields (cells)
-def column_check(x):
-    return "unnamed" not in x.lower()
+
 
 
 # import an existing subjects/samples files from an excel file
@@ -1000,152 +998,6 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
     return {"message": "Finished"}
 
 
-def update_existing_pennsieve_manifest_files(ds_items, ps, dataset_structure, high_level_folders):
-    global manifest_progress
-    # handle updating any existing manifest files on Pennsieve
-    for i in ds_items:
-        if i["content"]["name"] in [
-            "code",
-            "derivative",
-            "docs",
-            "primary",
-            "protocol",
-            "source",
-        ]:
-            # request the packages of that folder
-            folder_name = i["content"]["name"]
-            folder_collection_id = i["content"]["nodeId"]
-            r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_collection_id}", headers=create_request_headers(ps))
-            r.raise_for_status()
-
-            packageItems = r.json()["children"]
-            for j in packageItems:
-                if j["content"]["name"] == "manifest.xlsx":
-                    manifest_folder = join(manifest_folder_path, folder_name)
-                    if not exists(manifest_folder):
-                        # create the path
-                        os.makedirs(manifest_folder)
-                    elif os.path.exists(join(manifest_folder, "manifest.xlsx")):
-                        os.remove(join(manifest_folder, "manifest.xlsx"))
-
-                    item_id = j["content"]["nodeId"]
-                    url = returnFileURL(ps, item_id)
-
-                    manifest_df = pd.read_excel(
-                        url, engine="openpyxl", usecols=column_check, header=0
-                    )
-
-                    filepath = join(
-                        manifest_folder_path, folder_name, "manifest.xlsx"
-                    )
-                    # print(filepath)
-
-                    high_level_folders.remove(folder_name)
-
-                    updated_manifest_dict = update_existing_pennsieve_manifest_file(dataset_structure["folders"][folder_name], manifest_df)
-                    # print(updated_manifest_dict)
-
-                    if not exists(join(manifest_folder_path, folder_name)):
-                        # create the path
-                        os.makedirs(join(manifest_folder_path, folder_name))
-
-                    new_manifest = pd.DataFrame.from_dict(updated_manifest_dict)
-                    new_manifest.to_excel(filepath, index=False)
-
-                    manifest_progress["manifest_files_uploaded"] += 1
-
-                    no_manifest_boolean = True
-
-                    # break because we only need to read the "manifest.xlsx" file in each high level folder.
-                    break
-
-
-def update_existing_pennsieve_manifest_file(high_level_folder, manifest_df):
-    """
-        Given a high level folder and the existing manifest file therein, create a new updated manifest file. 
-        This manifest file needs to have files that only exist in the high level folder. Additionally, it needs to 
-        retain any custom metadata that the user has added to the old manifest file for entries that still exist. 
-    """
-
-    new_manifest_dict = {'filename': [], 'timestamp': [], 'description': [], 'file type': [], 'Additional Metadata': []}
-    SET_COLUMNS = ['filename', 'timestamp', 'description', 'file type', 'Additional Metadata']
-    for column in manifest_df.columns: 
-        if column not in new_manifest_dict:
-            new_manifest_dict[column] = []
-            SET_COLUMNS.append(column)
-
-    # convert the old manifest into a dictionary to optimize the lookup time
-    old_manifest_dict = {x: manifest_df[x].values.tolist() for x in manifest_df}
-    print(old_manifest_dict)
-    print("#"*30)
-    # old_manifest_dict = {x:manifest_df[x].values.tolist() for x in manifest_df}
-
-    # create a mapping of filename to the idx of the row in the old_manidest_dict
-    if "filename" in manifest_df:
-        filename_idx_map = {x:i for i, x in enumerate(manifest_df['filename'])}
-    if "File Name" in manifest_df:
-        filename_idx_map = {x:i for i, x in enumerate(manifest_df['File Name'])}
-
-    # traverse through the high level folder items
-    update_existing_pennsieve_manifest_file_helper(high_level_folder, old_manifest_dict, new_manifest_dict, filename_idx_map, manifest_columns=SET_COLUMNS)
-
-    # write the new manifest_df to the correct location as an excel file 
-    return new_manifest_dict
-
-
-def update_existing_pennsieve_manifest_file_helper(folder, old_manifest_dict, new_manifest_dict, filename_idx_map, manifest_columns):
-    """
-        Traverse through each high level folder in the dataset and update the new manifest data frame.
-    """
-
-    if "files" in folder.keys():
-        for file in list(folder["files"]):
-            print("#" * 30)
-            print(file)
-            print(folder["files"][file]["folderpath"])
-            file_path = remove_high_level_folder_from_path(folder["files"][file]["folderpath"]) + f"{file}"
-            print("-" * 40)
-            print(file_path)
-
-            # select the row in the old manifest file that has the same file path as the file in the current folder
-            # rationale: this means the file still exists in the user's dataset
-            row_idx = filename_idx_map.get(file_path, None)
-            print("row id below")
-            print(row_idx)
-
-            if row_idx is None:
-                for key in new_manifest_dict.keys():
-                    print(key)
-                    print(new_manifest_dict[key])
-                    if key == "filename":
-                        new_manifest_dict["filename"].append(file_path)   
-                    elif key == "timestamp":
-                        new_manifest_dict["timestamp"].append(folder["files"][file]["timestamp"]), 
-                    elif key == "description": 
-                        new_manifest_dict["description"].append(folder["files"][file].get("description", ""))
-                    elif key == "file type":
-                        unused_file_name, file_extension = get_name_extension(file)
-                        new_manifest_dict["file type"].append(file_extension), 
-                    elif key == "Additional Metadata":
-                        new_manifest_dict["Additional Metadata"].append(folder["files"][file].get("additional-metadata", ""))
-                    else:
-                        new_manifest_dict[key].append("")
-                    
-
-            else:
-                # add the existing rows to the new manifest dictionary's arrays
-                # TODO: Confirm it adds NULL/NaN if the value is empty
-                for column in manifest_columns:
-                    print("#" * 40)
-                    print(column)
-                    new_manifest_dict[column].append(old_manifest_dict[column][row_idx])
-
-    if "folders" in folder.keys():
-        for current_folder in list(folder["folders"]):
-            update_existing_pennsieve_manifest_file_helper(folder["folders"][current_folder], old_manifest_dict, new_manifest_dict, filename_idx_map, manifest_columns)
-
-    return 
-
 
 def manifest_creation_progress():
     """
@@ -1160,12 +1012,7 @@ def manifest_creation_progress():
     }
 
 
-def remove_high_level_folder_from_path(paths):
-    """
-        Remove the high level folder from the path. This is necessary because the high level folder is not included in the manifest file name entry.
-    """
 
-    return "" if len(paths) == 1 else "/".join(paths[1:]) + "/"
 
 
 
@@ -1182,22 +1029,7 @@ def copytree(src, dst, symlinks=False, ignore=None):
             shutil.copy2(s, d)
 
 
-# obtain Pennsieve S3 URL for an existing metadata file
-def returnFileURL(ps, item_id):
-    r = requests.get(f"{PENNSIEVE_URL}/packages/{item_id}/view", headers=create_request_headers(ps))
-    r.raise_for_status()
 
-    file_details = r.json()
-    file_id = file_details[0]["content"]["id"]
-    # print(file_id)
-    r = requests.get(
-        f"{PENNSIEVE_URL}/packages/{item_id}/files/{file_id}", headers=create_request_headers(ps)
-    )
-    r.raise_for_status()
-
-    file_url_info = r.json()
-    # print(file_url_info)
-    return file_url_info["url"]
 
 
 def recursive_item_path_create(folder, path):

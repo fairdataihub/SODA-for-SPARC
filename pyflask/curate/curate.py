@@ -28,7 +28,7 @@ from flask import abort
 import requests
 from datetime import datetime, timezone
 from permissions import bf_get_current_user_permission_agent_two
-from utils import authenticate_user_with_client, connect_pennsieve_client, get_dataset_id, create_request_headers
+from utils import authenticate_user_with_client, connect_pennsieve_client, get_dataset_id, create_request_headers, get_name_extension
 
 from pysodaUtils import (
     clear_queue,
@@ -1264,26 +1264,7 @@ double_extensions = [
     ".bcl.gz",
 ]
 
-def get_name_extension(file_name):
-    double_ext = False
-    for ext in double_extensions:
-        if file_name.find(ext) != -1:
-            double_ext = True
-            break
 
-    ext = ""
-    name = ""
-
-    if double_ext == False:
-        name = os.path.splitext(file_name)[0]
-        ext = os.path.splitext(file_name)[1]
-    else:
-        ext = (
-            os.path.splitext(os.path.splitext(file_name)[0])[1]
-            + os.path.splitext(file_name)[1]
-        )
-        name = os.path.splitext(os.path.splitext(file_name)[0])[0]
-    return name, ext
 
 
 def create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, high_level_folders=["code", "derivative", "docs", "primary", "protocol", "source" ], manifest_progress={}):
