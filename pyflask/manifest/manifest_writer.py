@@ -305,7 +305,7 @@ class ManifestWriter(object):
         self.manifest_path = path
 
 
-    def write(self, soda_json_structure, ps):
+    def write(self, soda_json_structure, ps=None):
         """
         Writes the manifest file for the dataset. Abstract.
         """
@@ -340,6 +340,33 @@ class ManifestWriterStandaloneAlgorithm(ManifestWriter):
         # create the manifest file
         # handle updating any existing manifest files on Pennsieve
         update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level_folders, manifest_progress, self.manifest_path)
+
+        # create manifest files from scratch for any high level folders that don't have a manifest file on Pennsieve
+        create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, self.manifest_path, high_level_folders, manifest_progress)
+
+
+
+class ManifestWriterNewPennsieve(ManifestWriter):
+    def __init__(self, soda_json_structure, path):
+        """
+        Constructor.
+        """
+        super(ManifestWriterStandaloneAlgorithm, self).__init__(soda_json_structure, path)
+
+
+    def write(self, soda_json_structure, ps):
+        """
+        Writes the manifest file for the dataset.
+        """
+
+        high_level_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
+
+        manifest_progress = {
+            "total_manifest_files": 0,
+            "manifest_files_uploaded": 0,
+            "finished": False
+        }
+
 
         # create manifest files from scratch for any high level folders that don't have a manifest file on Pennsieve
         create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, self.manifest_path, high_level_folders, manifest_progress)
