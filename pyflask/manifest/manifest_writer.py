@@ -592,7 +592,7 @@ class ManifestWriterNewLocal(ManifestWriter):
         """
         Constructor.
         """
-        super(ManifestWriterStandaloneLocal, self).__init__(soda_json_structure, path)
+        super().__init__(soda_json_structure, path)
 
 
     def write(self, soda_json_structure, ps=None):
