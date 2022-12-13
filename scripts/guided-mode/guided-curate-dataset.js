@@ -3583,7 +3583,7 @@ const openPage = async (targetPageID) => {
           let import_metadata = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
               selected_account: defaultBfAccount,
-              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+              selected_dataset: sodaJSONObj["digital-metadata"]["name"],
               file_type: "submission.xlsx",
             },
           });
@@ -3598,6 +3598,7 @@ const openPage = async (targetPageID) => {
           }
         } catch (error) {
           console.log(error);
+          clientError(error);
           console.log("UNABLE TO FETCH SPARC AAWARD FROM PENNSIEVE");
         }
       } else {
@@ -3631,11 +3632,12 @@ const openPage = async (targetPageID) => {
           let import_metadata = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
               selected_account: defaultBfAccount,
-              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+              selected_dataset: sodaJSONObj["digital-metadata"]["name"],
               file_type: "submission.xlsx",
             },
           });
           let res = import_metadata.data;
+          console.log(res);
 
           const sparcAwardRes = res["SPARC Award number"];
           const pennsieveMileStones = res["Milestone achieved"];
@@ -3644,11 +3646,19 @@ const openPage = async (targetPageID) => {
           // If there's already an existing SPARC Award, don't overwrite it
           if (existingSPARCAward) {
             sparcAwardInputManual.value = existingSPARCAward;
+            console.log(existingSPARCAward);
           } else {
             sparcAwardInputManual.value = sparcAwardRes;
+            console.log(sparcAwardRes);
           }
           if (pennsieveMileStones) {
-            guidedSubmissionTagsTagifyManual.addTags(pennsieveMileStones);
+            console.log(sparcAwardInputManual);
+            console.log(guidedSubmissionTagsTagifyManual.isTagDuplicate(pennsieveMileStones[0]));
+            pennsieveMileStones.map((milestone) => {
+              if (guidedSubmissionTagsTagifyManual.isTagDuplicate(milestone) === 0) {
+                guidedSubmissionTagsTagifyManual.addTags(pennsieveMileStones);
+              }
+            });
           }
 
           // It's possible that pennsieveCompletionDate can be an empty string if the user Selects N/A.
@@ -3656,12 +3666,20 @@ const openPage = async (targetPageID) => {
           if (pennsieveCompletionDate === "") {
             completionDateInputManual.value = "";
           } else if (pennsieveCompletionDate) {
-            completionDateInputManual.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
+            console.log(completionDateInputManual);
+            if (
+              $(
+                `#guided-submission-completion-date-manual option[value='${pennsieveCompletionDate}'`
+              ).length == 0
+            ) {
+              completionDateInputManual.innerHTML += `<option value="${pennsieveCompletionDate}">${pennsieveCompletionDate}</option>`;
+            }
             //select the completion date that was added
-            completionDateInputManual.value = completionDate;
+            completionDateInputManual.value = pennsieveCompletionDate;
           }
         } catch (error) {
           console.log(error);
+          clientError(error);
           console.log("UNABLE TO FETCH SUBMISSION METADATA FROM PENNSIEVE");
         }
       } else {
