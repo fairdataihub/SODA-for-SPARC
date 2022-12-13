@@ -11424,6 +11424,9 @@ $(document).ready(async () => {
 
       const guidedAdditionalLinks =
         sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"];
+      const guidedProtocols = sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
+      const allDatasetLinks = [...guidedAdditionalLinks, ...guidedProtocols];
+      console.log(allDatasetLinks);
 
       //README and CHANGES Metadata variables
       const guidedReadMeMetadata = sodaJSONObj["dataset-metadata"]["README"];
@@ -11507,7 +11510,7 @@ $(document).ready(async () => {
         guidedDatasetInformation,
         guidedStudyInformation,
         guidedContributorInformation,
-        guidedAdditionalLinks
+        allDatasetLinks
       );
 
       let readMeMetadataRes = await guidedUploadREADMEorCHANGESMetadata(
