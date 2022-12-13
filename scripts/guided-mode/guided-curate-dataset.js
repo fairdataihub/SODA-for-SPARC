@@ -3313,9 +3313,15 @@ const checkIfPageIsValid = async (pageID) => {
 // This function will be return true if the user is updating a dataset from Pennsieve and
 // the page has not yet been saved
 const pageNeedsUpdateFromPennsieve = (pageID) => {
+  // Add the pages-fetched-from-pennsieve array to the sodaJSONObj if it does not exist
+  if (!sodaJSONObj["pages-fetched-from-pennsieve"]) {
+    sodaJSONObj["pages-fetched-from-pennsieve"] = [];
+  }
+
   return (
     sodaJSONObj?.["button-config"]?.["curation-starting-point"] === "pennsieve" &&
-    !sodaJSONObj["completed-tabs"].includes(pageID)
+    !sodaJSONObj["completed-tabs"].includes(pageID) &&
+    !sodaJSONObj["pages-fetched-from-pennsieve"].includes(pageID)
   );
 };
 
@@ -3378,7 +3384,7 @@ const openPage = async (targetPageID) => {
         datasetNameInput.value = datasetName;
       }
 
-      if (pageNeedsUpdateFromPennsieve(targetPageID)) {
+      if (pageNeedsUpdateFromPennsieve("guided-name-subtitle-tab")) {
         try {
           //Try to get the dataset name from Pennsieve
           //If the request fails, the subtitle input will remain blank
@@ -3387,6 +3393,7 @@ const openPage = async (targetPageID) => {
             sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
           );
           datasetSubtitleInput.value = datasetSubtitle;
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-name-subtitle-tab");
         } catch (error) {
           console.log("UNABLE TO FETCH PENNSIEVE SUBTITLE");
         }
@@ -3596,6 +3603,7 @@ const openPage = async (targetPageID) => {
             //set the text of the sparc award input as sparcAwardRes
             sparcAwardInput.value = sparcAwardRes;
           }
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-airtable-award-tab");
         } catch (error) {
           console.log(error);
           clientError(error);
@@ -3677,6 +3685,7 @@ const openPage = async (targetPageID) => {
             //select the completion date that was added
             completionDateInputManual.value = pennsieveCompletionDate;
           }
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-submission-metadata-tab");
         } catch (error) {
           console.log(error);
           clientError(error);
@@ -3798,6 +3807,7 @@ const openPage = async (targetPageID) => {
               notyf.error(error);
             }
           }
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-contributors-tab");
         } catch (error) {
           console.log(error);
           console.log("UNABLE TO FETCH PENNSIEVE DATASET DESCRIPTION");
@@ -3844,6 +3854,7 @@ const openPage = async (targetPageID) => {
           if (protocolsFromPennsieve.length > 0) {
             document.getElementById("guided-button-user-has-protocols").click();
           }
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-protocols-tab");
         } catch (error) {
           console.log(error);
         }
@@ -3953,6 +3964,9 @@ const openPage = async (targetPageID) => {
               isFair: true,
             });
           }
+          sodaJSONObj["pages-fetched-from-pennsieve"].push(
+            "guided-create-description-metadata-tab"
+          );
         } catch (error) {
           console.log(error);
         }
@@ -4175,6 +4189,7 @@ const openPage = async (targetPageID) => {
 
             $("#guided-save-banner-image").css("visibility", "visible");
           }
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-banner-image-tab");
         } catch (error) {
           console.log(error);
           console.log("Don't have a banner image yet");
@@ -4233,6 +4248,7 @@ const openPage = async (targetPageID) => {
           for (const userPermission of filteredPermissions) {
           }
           console.log(filteredPermissions);
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-designate-permissions-tab");
         } catch (error) {
           console.log(error);
         }
@@ -4318,6 +4334,7 @@ const openPage = async (targetPageID) => {
           });
           const tags = tagsReq.data.tags;
           sodaJSONObj["digital-metadata"]["dataset-tags"] = tags;
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-add-tags-tab");
         } catch (error) {
           console.log(error);
         }
@@ -4352,6 +4369,7 @@ const openPage = async (targetPageID) => {
           if (license === "Creative Commons Attribution") {
             sodaJSONObj["digital-metadata"]["license"] = "Creative Commons Attribution";
           }
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-assign-license-tab");
         } catch (error) {
           console.log(error);
         }
@@ -4725,6 +4743,7 @@ const openPage = async (targetPageID) => {
           });
           let readme_text = readme_import.data.text;
           sodaJSONObj["dataset-metadata"]["README"] = readme_text;
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-readme-metadata-tab");
         } catch (error) {
           console.log(error);
         }
@@ -9779,6 +9798,7 @@ const renderSubjectsMetadataAsideItems = async () => {
       // console.log(subjectsTableData);
 
       // Add the subjects metadata from Pennsieve to the sodaJSONObj
+      sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-subjects-metadata-tab");
     } catch (error) {
       console.log("Unable to fetch subjects metadata" + error);
     }
@@ -9959,6 +9979,7 @@ const renderSamplesMetadataAsideItems = async () => {
       console.log(samplesTableData);
 
       // Add the subjects metadata from Pennsieve to the sodaJSONObj
+      sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-samples-metadata-tab");
     } catch (error) {
       console.log("Unable to fetch samples metadata" + error);
     }
