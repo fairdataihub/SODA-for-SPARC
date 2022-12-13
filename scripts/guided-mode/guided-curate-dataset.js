@@ -3320,7 +3320,6 @@ const pageNeedsUpdateFromPennsieve = (pageID) => {
 
   return (
     sodaJSONObj?.["button-config"]?.["curation-starting-point"] === "pennsieve" &&
-    !sodaJSONObj["completed-tabs"].includes(pageID) &&
     !sodaJSONObj["pages-fetched-from-pennsieve"].includes(pageID)
   );
 };
@@ -3767,6 +3766,7 @@ const openPage = async (targetPageID) => {
     if (targetPageID === "guided-contributors-tab") {
       if (pageNeedsUpdateFromPennsieve("guided-contributors-tab")) {
         try {
+          console.log("fetching contributors from pennsieve");
           let metadata_import = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
               selected_account: defaultBfAccount,
