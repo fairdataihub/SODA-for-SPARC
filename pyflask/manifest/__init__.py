@@ -5,5 +5,7 @@ from .manifest_writer import (
     ManifestWriterNewPennsieve, 
     ManifestWriterStandaloneAlgorithm, 
     create_high_level_manifest_files_existing_local_starting_point, 
-    ManifestWriterStandaloneLocal
+    ManifestWriterStandaloneLocal, 
+    create_high_level_manifest_files, 
+    ManifestWriterNewLocal,
 )
