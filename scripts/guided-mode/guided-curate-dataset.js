@@ -3583,7 +3583,7 @@ const openPage = async (targetPageID) => {
           let import_metadata = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
               selected_account: defaultBfAccount,
-              selected_dataset: sodaJSONObj["digital-metadata"]["name"],
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
               file_type: "submission.xlsx",
             },
           });
@@ -3632,7 +3632,7 @@ const openPage = async (targetPageID) => {
           let import_metadata = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
               selected_account: defaultBfAccount,
-              selected_dataset: sodaJSONObj["digital-metadata"]["name"],
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
               file_type: "submission.xlsx",
             },
           });
@@ -9726,7 +9726,7 @@ const renderSubjectsMetadataAsideItems = async () => {
       let res = await client.get(`/prepare_metadata/import_metadata_file`, {
         params: {
           selected_account: defaultBfAccount,
-          selected_dataset: sodaJSONObj["digital-metadata"]["name"],
+          selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
           file_type: "subjects.xlsx",
           ui_fields: Array.from(
             document
