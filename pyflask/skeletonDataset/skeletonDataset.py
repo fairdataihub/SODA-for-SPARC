@@ -27,6 +27,7 @@ def create_skeleton(dataset_structure, path):
         os.mkdir(os.path.join(path, folder))
         create_skeleton(dataset_structure["folders"][folder], os.path.join(path, folder))
     for file in dataset_structure["files"]:
+        # TODO: If the type is bf/virtual then create a generic file with the name of the file key ( and write information to it )
         with open(os.path.join(path, file), "w") as f:
             f.write("SODA")
 
@@ -144,13 +145,13 @@ def create(soda_json_structure, selected_account, selected_dataset, pennsieve_pi
             # create the file at the root of the skeleton dataset 
             shutil.copyfile(file_location, os.path.join(path, metadata_file_name))
 
-    # run the validator on the skeleton
-    norm_ds_path = Path(path)
+    # # run the validator on the skeleton
+    # norm_ds_path = Path(path)
 
-    # validate the dataset
-    blob = validate(norm_ds_path) 
+    # # validate the dataset
+    # blob = validate(norm_ds_path) 
 
-    print(blob)
+    # print(blob)
 
     # validate_validation_result(blob)
 
