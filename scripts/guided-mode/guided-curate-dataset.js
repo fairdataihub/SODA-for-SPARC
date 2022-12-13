@@ -3826,7 +3826,6 @@ const openPage = async (targetPageID) => {
               file_type: "dataset_description.xlsx",
             },
           });
-          console.log(metadata_import.data);
           let relatedInformationData = metadata_import.data["Related information"];
           const protocolsFromPennsieve = relatedInformationData.filter(
             (relatedInformationArray) => {
@@ -3836,19 +3835,11 @@ const openPage = async (targetPageID) => {
             }
           );
 
-          const currentProtocolLinks = getGuidedProtocolLinks();
           for (const protocol of protocolsFromPennsieve) {
             const protocolLink = protocol[2];
             const protocolDescription = protocol[0];
             const protocolType = protocol[3];
-
-            // If the protocol doesn't already exist, add it
-            // If it does, update the protocol in the JSONObj
-            if (!currentProtocolLinks.includes(protocolLink)) {
-              addGuidedProtocol(protocolLink, protocolDescription, protocolType);
-            } else {
-              editGuidedProtocol(protocolLink, protocolLink, protocolDescription, protocolType);
-            }
+            addGuidedProtocol(protocolLink, protocolDescription, protocolType);
           }
           // Click the yes protocol button if protocols were imported
           if (protocolsFromPennsieve.length > 0) {
