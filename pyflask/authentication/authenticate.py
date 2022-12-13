@@ -48,4 +48,4 @@ def read_from_config(key):
     return None
 
 
-get_access_token()
+#get_access_token()

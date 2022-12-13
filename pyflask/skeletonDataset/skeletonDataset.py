@@ -13,7 +13,7 @@ from sparcur.simple.validate import main as validate
 import copy
 from .skeletonDatasetUtils import import_bf_metadata_files_skeleton, import_manifest_files_skeleton
 from pennsieve2.pennsieve import Pennsieve
-from manifest import ManifestBuilder, ManifestBuilderSkeleton
+from manifest import ManifestBuilderBase, ManifestBuilder
 # from organizeDatasets import import_pennsieve_dataset
 
 path = os.path.join(expanduser("~"), "SODA", "skeleton")
@@ -126,7 +126,7 @@ def create(soda_json_structure, selected_account, selected_dataset, pennsieve_pi
     if pennsieve_pipeline:
         import_manifest_files_skeleton(soda_json_structure, ps)
     else:
-        mbs = ManifestBuilderSkeleton(soda_json_structure, path)
+        mbs = ManifestBuilder(soda_json_structure, path)
         mbs.build(ps)
 
     create_skeleton(soda_json_structure["dataset-structure"], path)
