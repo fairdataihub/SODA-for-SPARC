@@ -117,6 +117,8 @@ def create(soda_json_structure, selected_account, selected_dataset, pennsieve_pi
     # create a folder to hold the skeleton
     os.mkdir(path)
 
+    ps = None 
+
     # create Pennsieve client if the user is validating a Pennsieve dataset  
     if pennsieve_pipeline or soda_json_structure["generate-dataset"]["destination"] == "bf":
         ps = Pennsieve()
@@ -127,7 +129,7 @@ def create(soda_json_structure, selected_account, selected_dataset, pennsieve_pi
         import_manifest_files_skeleton(soda_json_structure, ps)
     else:
         mbs = ManifestBuilder(soda_json_structure, path)
-        mbs.build(ps)
+        mbs.build( ps if ps != None  else None)
 
     create_skeleton(soda_json_structure["dataset-structure"], path)
 

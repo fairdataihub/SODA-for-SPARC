@@ -31,7 +31,7 @@ class ManifestBuilderBase:
         self.soda_json_structure = soda_json_structure
         self.skeleton_directory_path = path
 
-    def build(self, ps):
+    def build(self, ps=None):
         """"
         Builds manifest files for the given soda_json_structure and place them in the skeleton directory.
         """
@@ -48,7 +48,7 @@ class ManifestBuilderBase:
         
 
 
-    def _get_generate_dataset_keys(self):
+    def _get_generate_dataset_keys(self, soda_json_structure):
         """
         Returns the keys in the generate-dataset dictionary in the soda_json_structure.
         """
