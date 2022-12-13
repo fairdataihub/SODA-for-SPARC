@@ -4293,8 +4293,8 @@ const openPage = async (targetPageID) => {
 
     if (targetPageID === "guided-add-tags-tab") {
       if (pageNeedsUpdateFromPennsieve("guided-add-tags-tab")) {
-        const currentDatasetID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
         try {
+          const currentDatasetID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
           const tagsReq = await client.get(`/manage_datasets/datasets/${currentDatasetID}/tags`, {
             params: { selected_account: defaultBfAccount },
           });
@@ -4322,6 +4322,22 @@ const openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-assign-license-tab") {
+      if (pageNeedsUpdateFromPennsieve("guided-assign-license-tab")) {
+        try {
+          const licenseReq = await client.get(`/manage_datasets/bf_license`, {
+            params: {
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+            },
+          });
+          const license = licenseReq.data.license;
+          if (license === "Creative Commons Attribution") {
+            sodaJSONObj["digital-metadata"]["license"] = "Creative Commons Attribution";
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
       const licenseCheckbox = document.getElementById("guided-license-checkbox");
       if (sodaJSONObj["digital-metadata"]["license"]) {
         licenseCheckbox.checked = true;
