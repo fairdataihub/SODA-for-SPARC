@@ -25,9 +25,9 @@ def create_skeleton(dataset_structure, path):
     """
     for folder in dataset_structure["folders"]:
         dp = (os.path.join(path, folder)) 
-        if os.path.exists(dp):
-            shutil.rmtree(dp, ignore_errors=True)
-        os.mkdir(dp)
+        if not os.path.exists(dp):
+            os.mkdir(dp)
+        
         create_skeleton(dataset_structure["folders"][folder], os.path.join(path, folder))
     for file in dataset_structure["files"]:
         # TODO: If the type is bf/virtual then create a generic file with the name of the file key ( and write information to it )
