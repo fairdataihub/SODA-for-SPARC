@@ -325,6 +325,8 @@ def create_high_level_manifest_files_existing_local_starting_point(dataset_path,
                     # create high-level folder at the temporary location
                     folderpath = join(manifest_path, high_level_fol)
                     if p.stem == "manifest":
+                        if not exists(folderpath):
+                            makedirs(folderpath)
                         # make copy from this manifest path to folderpath
                         shutil.copyfile(file, join(folderpath, p.name))
 
@@ -543,7 +545,7 @@ class ManifestWriterStandaloneLocal(ManifestWriter):
         """
         Constructor.
         """
-        super(ManifestWriterStandaloneLocal, self).__init__(soda_json_structure, path)
+        super().__init__(soda_json_structure, path)
 
 
     def write(self, soda_json_structure, ps=None):
@@ -551,8 +553,10 @@ class ManifestWriterStandaloneLocal(ManifestWriter):
         Writes the manifest file for the dataset.
         """
 
+        ds_path = join(soda_json_structure["generate-dataset"]["path"], soda_json_structure["generate-dataset"]["dataset-name"])
+
         # TODO: Send in the correct path to the dataset using the soda_json structure
-        create_high_level_manifest_files_existing_local_starting_point(soda_json_structure["dataset_path"], self.manifest_path)
+        create_high_level_manifest_files_existing_local_starting_point(ds_path, self.manifest_path)
 
         
 
