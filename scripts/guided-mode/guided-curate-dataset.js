@@ -3643,6 +3643,7 @@ const openPage = async (targetPageID) => {
               file_type: "submission.xlsx",
             },
           });
+          $("#guided-button-enter-submission-metadata-manually").click();
           let res = import_metadata.data;
           console.log(res);
 
@@ -3659,11 +3660,9 @@ const openPage = async (targetPageID) => {
             console.log(sparcAwardRes);
           }
           if (pennsieveMileStones) {
-            console.log(sparcAwardInputManual);
-            console.log(guidedSubmissionTagsTagifyManual.isTagDuplicate(pennsieveMileStones[0]));
             pennsieveMileStones.map((milestone) => {
               if (guidedSubmissionTagsTagifyManual.isTagDuplicate(milestone) === 0) {
-                guidedSubmissionTagsTagifyManual.addTags(pennsieveMileStones);
+                guidedSubmissionTagsTagifyManual.addTags(milestone);
               }
             });
           }
