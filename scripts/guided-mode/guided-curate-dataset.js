@@ -3789,8 +3789,9 @@ const openPage = async (targetPageID) => {
             console.log(contributorArray);
             // split the name into first and last name with the first name being the first element and last name being the rest of the elements
             const contributorFullName = contributorArray[0];
-            const contributorFirstName = contributorFullName.split(", ")[0];
-            const contributorLastName = contributorFullName.split(" ").slice(1).join(" ");
+            console.log(contributorFullName);
+            const contributorFirstName = contributorFullName.split(", ")[0].trim();
+            const contributorLastName = contributorFullName.split(", ")[1].trim();
             const contributorID = contributorArray[1];
             const contributorAffiliation = contributorArray[2].split(", ");
             const contributorRoles = contributorArray[3].split(", ");
@@ -3804,7 +3805,6 @@ const openPage = async (targetPageID) => {
               );
             } catch (error) {
               console.log(error);
-              notyf.error(error);
             }
           }
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-contributors-tab");
@@ -3839,7 +3839,11 @@ const openPage = async (targetPageID) => {
             const protocolLink = protocol[2];
             const protocolDescription = protocol[0];
             const protocolType = protocol[3];
-            addGuidedProtocol(protocolLink, protocolDescription, protocolType);
+            try {
+              addGuidedProtocol(protocolLink, protocolDescription, protocolType);
+            } catch (error) {
+              console.log(error);
+            }
           }
           // Click the yes protocol button if protocols were imported
           if (protocolsFromPennsieve.length > 0) {
