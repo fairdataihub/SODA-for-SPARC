@@ -4,7 +4,7 @@ Classes for creating manifest files for a dataset stored locally/on Pennsieve.
 
 from os.path import join, exists, expanduser, isdir, isfile, splitext
 from os import makedirs, remove, listdir
-import datetime
+from datetime import datetime
 import pathlib
 import shutil 
 
