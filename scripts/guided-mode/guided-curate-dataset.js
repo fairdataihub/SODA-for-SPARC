@@ -4172,13 +4172,59 @@ const openPage = async (targetPageID) => {
       }
     }
     if (targetPageID === "guided-designate-permissions-tab") {
+      const createPiOwnerObj = (userString, UUID, name) => {
+        return {
+          userString: userString,
+          UUID: UUID,
+          name: name,
+        };
+      };
+      if (pageNeedsUpdateFromPennsieve("guided-designate-permissions-tab")) {
+        try {
+          const sparcUsersReq = await client.get(
+            `manage_datasets/bf_get_users?selected_account=${defaultBfAccount}`
+          );
+          const sparcTeamsReq = await client.get(
+            `manage_datasets/bf_get_teams?selected_account=${defaultBfAccount}`
+          );
+
+          //Returns an array of strings with the user's name and role
+          const currentDatasetPermissions = await api.getDatasetPermissions(
+            defaultBfAccount,
+            sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
+          );
+          const sparcUsers = sparcUsersReq.data.users;
+          console.log(sparcUsers[5]);
+          console.log(sparcUsers[9]);
+
+          console.log(removeSpacesFromString(sparcUsers[5]));
+          const sparcTeams = sparcTeamsReq.data.teams;
+          console.log(sparcUsers);
+          console.log(sparcTeams);
+
+          const permissions = await api.getDatasetPermissions(
+            defaultBfAccount,
+            sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
+          );
+          //Filter out the integration user
+          /*const filteredPermissions = permissions.filter((permission) => {
+            return !permission.includes("Integration User");
+          });*/
+          const permissionsObj = {};
+          //const filteredPermissions = ['User: Jacob Clark , role: owner', 'User: Christopher Marroquin , role: viewer', 'User: Dorian Portillo , role: editor']
+          for (const userPermission of filteredPermissions) {
+          }
+          console.log(filteredPermissions);
+        } catch (error) {
+          console.log(error);
+        }
+      }
       //Get the user information of the user that is currently curating
       const user = await api.getUserInformation();
 
       const loggedInUserString = `${user["firstName"]} ${user["lastName"]} (${user["email"]})`;
       const loggedInUserUUID = user["id"];
       const loggedInUserName = `${user["firstName"]} ${user["lastName"]}`;
-
       const loggedInUserPiObj = {
         userString: loggedInUserString,
         UUID: loggedInUserUUID,
@@ -4190,6 +4236,30 @@ const openPage = async (targetPageID) => {
       guidedResetUserTeamPermissionsDropdowns();
     }
     if (targetPageID === "guided-add-description-tab") {
+      if (pageNeedsUpdateFromPennsieve("guided-add-description-tab")) {
+        const description = await api.getDatasetReadme(
+          defaultBfAccount,
+          sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
+        );
+        const parsedDescription = createParsedReadme(description);
+        console.log(parsedDescription);
+        sodaJSONObj["digital-metadata"]["description"]["study-purpose"] = parsedDescription[
+          "study purpose"
+        ]
+          ? parsedDescription["study purpose"].replace(/\r?\n|\r/g, "").trim()
+          : "";
+        sodaJSONObj["digital-metadata"]["description"]["data-collection"] = parsedDescription[
+          "data collection"
+        ]
+          ? parsedDescription["data collection"].replace(/\r?\n|\r/g, "").trim()
+          : "";
+        sodaJSONObj["digital-metadata"]["description"]["primary-conclusion"] = parsedDescription[
+          "primary conclusion"
+        ]
+          ? parsedDescription["primary conclusion"].replace(/\r?\n|\r/g, "").trim()
+          : "";
+      }
+
       const studyPurposeInput = document.getElementById("guided-pennsieve-study-purpose");
       const studyDataCollectionInput = document.getElementById(
         "guided-pennsieve-study-data-collection"
@@ -4202,6 +4272,7 @@ const openPage = async (targetPageID) => {
         sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"];
 
       const descriptionMetadata = sodaJSONObj["digital-metadata"]["description"];
+      console.log(descriptionMetadata);
 
       if (Object.keys(descriptionMetadata).length > 0) {
         studyPurposeInput.value = descriptionMetadata["study-purpose"];
@@ -4221,6 +4292,18 @@ const openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-add-tags-tab") {
+      if (pageNeedsUpdateFromPennsieve("guided-add-tags-tab")) {
+        try {
+          const currentDatasetID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+          const tagsReq = await client.get(`/manage_datasets/datasets/${currentDatasetID}/tags`, {
+            params: { selected_account: defaultBfAccount },
+          });
+          const tags = tagsReq.data.tags;
+          sodaJSONObj["digital-metadata"]["dataset-tags"] = tags;
+        } catch (error) {
+          console.log(error);
+        }
+      }
       const descriptionMetadata =
         sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"];
       const datasetTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
@@ -4239,6 +4322,22 @@ const openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-assign-license-tab") {
+      if (pageNeedsUpdateFromPennsieve("guided-assign-license-tab")) {
+        try {
+          const licenseReq = await client.get(`/manage_datasets/bf_license`, {
+            params: {
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+            },
+          });
+          const license = licenseReq.data.license;
+          if (license === "Creative Commons Attribution") {
+            sodaJSONObj["digital-metadata"]["license"] = "Creative Commons Attribution";
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      }
       const licenseCheckbox = document.getElementById("guided-license-checkbox");
       if (sodaJSONObj["digital-metadata"]["license"]) {
         licenseCheckbox.checked = true;
@@ -9824,6 +9923,7 @@ const renderSamplesMetadataAsideItems = async () => {
 
         // Update the subject in the samplesTableData with the metadata from Pennsieve
         const sampleIndex = samplesTableData.findIndex((sample) => sample[1] == sampleName);
+        console.log(samplesTableData[sampleIndex]);
         const samplePoolVal = samplesTableData[sampleIndex][3];
         const newArray = [];
 
@@ -9842,7 +9942,7 @@ const renderSamplesMetadataAsideItems = async () => {
 
       // Add the subjects metadata from Pennsieve to the sodaJSONObj
     } catch (error) {
-      console.log("Unable to fetch subjects metadata" + error);
+      console.log("Unable to fetch samples metadata" + error);
     }
   }
 
@@ -10600,7 +10700,7 @@ $(document).ready(async () => {
 
     descriptionArray.push("**Study Purpose:** " + studyPurpose + "\n\n");
     descriptionArray.push("**Data Collection:** " + dataCollection + "\n\n");
-    descriptionArray.push("**Data Conclusion:** " + dataConclusion + "\n\n");
+    descriptionArray.push("**Primary Conclusion:** " + dataConclusion + "\n\n");
 
     const description = descriptionArray.join("");
 
@@ -12120,7 +12220,7 @@ $(document).ready(async () => {
       }
     }*/
 
-    openPage("guided-dataset-generation-tab");
+    await openPage("guided-dataset-generation-tab");
     guidedPennsieveDatasetUpload();
   });
 
