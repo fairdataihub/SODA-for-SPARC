@@ -3789,8 +3789,8 @@ const openPage = async (targetPageID) => {
             // split the name into first and last name with the first name being the first element and last name being the rest of the elements
             const contributorFullName = contributorArray[0];
             console.log(contributorFullName);
-            const contributorFirstName = contributorFullName.split(", ")[0].trim();
-            const contributorLastName = contributorFullName.split(", ")[1].trim();
+            const contributorFirstName = contributorFullName.split(" ")[1].trim();
+            const contributorLastName = contributorFullName.split(" ")[0].trim();
             const contributorID = contributorArray[1];
             const contributorAffiliation = contributorArray[2].split(", ");
             const contributorRoles = contributorArray[3].split(", ");
@@ -9729,14 +9729,13 @@ const renderSubjectsMetadataAsideItems = async () => {
   asideElement.innerHTML = "";
 
   const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
-
   //Combine sample data from subjects in and out of pools
   let subjects = [...subjectsInPools, ...subjectsOutsidePools];
-  const subjectNames = subjects.map((subject) => subject.subjectName);
 
   if (pageNeedsUpdateFromPennsieve("guided-create-subjects-metadata-tab")) {
     try {
-      let res = await client.get(`/prepare_metadata/import_metadata_file`, {
+      console.log(subjectsTableData);
+      let subjectsMetadataResponse = await client.get(`/prepare_metadata/import_metadata_file`, {
         params: {
           selected_account: defaultBfAccount,
           selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
@@ -9750,48 +9749,8 @@ const renderSubjectsMetadataAsideItems = async () => {
             .toString(),
         },
       });
-      let subjectsMetadataResponse = res.data.subject_file_rows;
-
-      // console.log(res.data.subject_file_rows[0]);
-      const testHeaders = res.data.subject_file_rows[0];
-      console.log(testHeaders);
-
-      //remove the first row of the subjectsMetadataResponse array, which is the header row
-      subjectsMetadataResponse.shift();
-
-      // Loop through the suject names overwrite the metadata rows with the metadata from Pennsieve if it exists
-      for (const subjectName of subjectNames) {
-        const subjectMetadataArrayFromPennsieve = subjectsMetadataResponse.find(
-          (subjectMetadataRow) => subjectMetadataRow[0] == subjectName
-        );
-
-        // Update the subject in the subjectsTableData with the metadata from Pennsieve
-        const subjectIndex = subjectsTableData.findIndex((subject) => subject[0] == subjectName);
-        // Overwrite the metadata after the first two elemnts in subjectsTableData with the metadata from Pennsieve
-        // (These are the subject and pool names that are already in the table)
-        console.log(subjectsTableData);
-        console.log(subjectsTableData[subjectIndex]);
-        console.log(subjectsTableData[subjectIndex].splice(2));
-        console.log(...subjectMetadataArrayFromPennsieve.splice(2));
-        subjectsTableData[subjectIndex].splice(2);
-        subjectsTableData[subjectIndex].push(...subjectMetadataArrayFromPennsieve.splice(2));
-      }
-      // subjectsTableData[0] = testHeaders;
-      // subjectsTableData[0] = res.data.subject_file_rows[0];
-      // console.log(testHeaders);
-      // if (testHeaders.length > 27) {
-      //   // testHeaders.splice(27, 1);
-      //   console.log(testHeaders.length);
-      //   console.log(testHeaders);
-      //   for (let i = 27; i < testHeaders.length; i++) {
-      //     console.log(testHeaders[i]);
-      //     subjectsTableData[0].push(testHeaders[i]);
-      //   }
-      // }
-      // console.log(testHeaders);
-      // console.log(subjectsTableData);
-
-      // Add the subjects metadata from Pennsieve to the sodaJSONObj
+      subjectsMetadataResponse = subjectsMetadataResponse.data.subject_file_rows;
+      subjectsTableData = subjectsMetadataResponse;
       sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-subjects-metadata-tab");
     } catch (error) {
       console.log("Unable to fetch subjects metadata" + error);
@@ -9812,8 +9771,6 @@ const renderSubjectsMetadataAsideItems = async () => {
   });
 
   if (subjectsTableData.length == 0) {
-    //Get items with class "subjects-form-entry" from subjectsForDiv
-
     subjectsTableData[0] = subjectsFormNames;
     for (const subject of subjects) {
       const subjectDataArray = [];
@@ -9941,38 +9898,7 @@ const renderSamplesMetadataAsideItems = async () => {
         },
       });
       samplesMetadataRes = samplesMetadataRes.data.sample_file_rows;
-      //remove the first row of the subjectsMetadataResponse array, which is the header row
-      samplesMetadataRes.shift();
-      console.log(samplesMetadataRes);
-      console.log(samplesTableData);
-
-      // Loop through the sample names and overwrite the metadata rows with the metadata from Pennsieve if it exists
-      for (const sampleName of sampleNames) {
-        const sampleMetadataArrayFromPennsieve = samplesMetadataRes.find(
-          (sampleMetadtaRow) => sampleMetadtaRow[1] == sampleName
-        );
-        console.log(sampleMetadataArrayFromPennsieve);
-
-        // Update the subject in the samplesTableData with the metadata from Pennsieve
-        const sampleIndex = samplesTableData.findIndex((sample) => sample[1] == sampleName);
-        console.log(samplesTableData[sampleIndex]);
-        const samplePoolVal = samplesTableData[sampleIndex][3];
-        const newArray = [];
-
-        // Overwrite the metadata besides the first 2 and fourth element in samplesTableData with the metadata from Pennsieve
-        // (These are the subject and pool names that are already in the table)
-
-        // push the first two values of samplesTableData[sampleIndex] to the new array
-        newArray.push(...samplesTableData[sampleIndex].slice(0, 2));
-        newArray.push(sampleMetadataArrayFromPennsieve[2]);
-        newArray.push(samplePoolVal);
-        // push the values of sampleMetadataArrayFromPennsieve starting at index 4 to the new array
-        newArray.push(...sampleMetadataArrayFromPennsieve.splice(4));
-        samplesTableData[sampleIndex] = newArray;
-      }
-      console.log(samplesTableData);
-
-      // Add the subjects metadata from Pennsieve to the sodaJSONObj
+      samplesTableData = samplesMetadataRes;
       sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-samples-metadata-tab");
     } catch (error) {
       console.log("Unable to fetch samples metadata" + error);
