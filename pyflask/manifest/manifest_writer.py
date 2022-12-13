@@ -21,6 +21,10 @@ PENNSIEVE_URL = "https://api.pennsieve.io"
 
 
 def update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level_folders, manifest_progress, manifest_path):
+    """
+    Updates old manifest files with new information from the dataset. Also creates new manifest files if they don't exist.
+    Used in the standalone manifest workflow for Pennsieve datasets. 
+    """
 
     dataset_id = get_dataset_id(ps, soda_json_structure["bf-dataset-selected"]["name"])
 
@@ -171,6 +175,8 @@ def update_existing_pennsieve_manifest_file_helper(folder, old_manifest_dict, ne
 def create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, manifest_path, high_level_folders=["code", "derivative", "docs", "primary", "protocol", "source" ], manifest_progress={}):
     """
     Function to create manifest files for each high-level SPARC folder for an existing Pennsieve dataset.
+    Unlike the standalone manifest generator algorithm this removes any existing manifest files and replaces them with new ones.
+    Optional columns/fields a user created for the existing manifest files are not carried over into the new manifest files. 
     Args:
         soda_json_structure: soda dict with information about the dataset to be generated/modified
         high_level_folders: (optional) list of high-level folders to generate manifests for. Defaults to all primary folders.
@@ -292,6 +298,9 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
     
 
 def create_high_level_manifest_files_existing_local_starting_point(dataset_path, manifest_path):
+    """
+    Standalone manifest generator algorithm. Imports manifest files from a local dataset folder. 
+    """
    #  soda_manifest_folder_path = join(userpath, "SODA", "manifest_files")
 
     if dataset_path != "":
@@ -322,7 +331,7 @@ def create_high_level_manifest_files_existing_local_starting_point(dataset_path,
 
 def create_high_level_manifest_files(soda_json_structure, manifest_path):
     """
-    Function to create manifest files for each high-level SPARC folder.
+    Function to create manifest files for each high-level SPARC folder. To be used for a local dataset.
 
     Args:
         soda_json_structure: soda dict with information about the dataset to be generated/modified
