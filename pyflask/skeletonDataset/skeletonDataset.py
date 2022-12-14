@@ -27,11 +27,14 @@ def create_skeleton(dataset_structure, path):
         dp = (os.path.join(path, folder)) 
         if not os.path.exists(dp):
             os.mkdir(dp)
-        
+
         create_skeleton(dataset_structure["folders"][folder], os.path.join(path, folder))
-    for file in dataset_structure["files"]:
-        # TODO: If the type is bf/virtual then create a generic file with the name of the file key ( and write information to it )
-        with open(os.path.join(path, file), "w") as f:
+    for file_key in dataset_structure["files"]:
+        # TODO: If the type is bf then create a generic file with the name of the file key ( and write information to it )
+        # if dataset_structure["files"][file_key]["type"] in ["bf"]:
+        #     continue
+            
+        with open(os.path.join(path, file_key), "w") as f:
             f.write("SODA")
 
 
@@ -124,7 +127,9 @@ def create(soda_json_structure, selected_account, selected_dataset, pennsieve_pi
 
     # create Pennsieve client if the user is validating a Pennsieve dataset  
     if pennsieve_pipeline or soda_json_structure["generate-dataset"]["destination"] == "bf":
+        print("Creating a pennsieve client...")
         ps = Pennsieve()
+        print("Created Pennsieve client")
 
     # create the manifest files for the skeleton dataset based off the SODA JSON object if the user requested it in the Organize Datasets 
     # workflow. Otherwise import the existing manifest files from Pennsieve if the user requested validation outside of the Organize Datasets workflow.

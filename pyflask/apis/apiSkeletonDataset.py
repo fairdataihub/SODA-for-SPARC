@@ -31,15 +31,17 @@ class SkeletonDataset(Resource):
         # if "selected_dataset" not in data:
         #     api.abort(400, "Need the selected_dataset to create the skeleton dataset structure")
 
+
+        print("HERHER")
         
 
         sodajsonobject = data["sodajsonobject"]
-        # selected_account = data["selected_account"]
-        # selected_dataset = data["selected_dataset"]
+        selected_account = data["selected_account"]
+        selected_dataset = data["selected_dataset"]
 
         # create the skeleton dataset structure in the ~/SODA/skeleton directory
         try:
-            return create(sodajsonobject, None, None, False)
+            return create(sodajsonobject, selected_account, selected_dataset, False)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))

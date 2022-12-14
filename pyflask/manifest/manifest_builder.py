@@ -71,7 +71,7 @@ class ManifestBuilderBase:
         """
         destination, generate_option, _, _ = self._get_generate_dataset_keys(soda_json_structure)
 
-        return destination == "bf" and generate_option == "existing"
+        return destination == "bf" and generate_option == "existing-bf"
 
     def _merging_into_existing_dataset(self, soda_json_structure):
         """
