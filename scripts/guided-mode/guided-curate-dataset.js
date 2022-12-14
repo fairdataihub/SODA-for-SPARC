@@ -5625,6 +5625,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["dataset-metadata"]["code-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"] = [];
   sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] = [];
+  sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = [];
   sodaJSONObj["dataset-metadata"]["README"] = "";
   sodaJSONObj["dataset-metadata"]["CHANGES"] = "";
   sodaJSONObj["digital-metadata"] = {};
