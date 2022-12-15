@@ -3672,10 +3672,15 @@ const openPage = async (targetPageID) => {
           });
           $("#guided-button-enter-submission-metadata-manually").click();
           let res = import_metadata.data;
+          console.log(res);
 
           const sparcAwardRes = res["SPARC Award number"];
           const pennsieveMileStones = res["Milestone achieved"];
           const pennsieveCompletionDate = res["Milestone completion date"];
+
+          console.log(sparcAwardRes);
+          console.log(pennsieveMileStones);
+          console.log(pennsieveCompletionDate);
 
           if (sparcAwardRes) {
             sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = sparcAwardRes;
@@ -3685,7 +3690,7 @@ const openPage = async (targetPageID) => {
             sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] =
               pennsieveMileStones;
           }
-          if (pennsieveCompletionDate) {
+          if (pennsieveCompletionDate != undefined) {
             sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] =
               pennsieveCompletionDate;
           }
@@ -3721,10 +3726,14 @@ const openPage = async (targetPageID) => {
       const completionDate =
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"];
 
-      if (completionDate) {
-        completionDateInputManual.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
-        //select the completion date that was added
-        completionDateInputManual.value = completionDate;
+      if (completionDate === "") {
+        completionDateInputManual.value = "";
+      } else {
+        if (completionDate) {
+          completionDateInputManual.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
+          //select the completion date that was added
+          completionDateInputManual.value = completionDate;
+        }
       }
 
       //Click the manual submission metadata button because it's likely best for the user
@@ -4213,7 +4222,6 @@ const openPage = async (targetPageID) => {
           });
 
           const permissionsObj = {};
-          //const filteredPermissions = ['User: Jacob Clark , role: owner', 'User: Christopher Marroquin , role: viewer', 'User: Dorian Portillo , role: editor']
           for (const userPermission of filteredPermissions) {
           }
           console.log(filteredPermissions);
@@ -12313,7 +12321,6 @@ $(document).ready(async () => {
   $("#guided-next-button").on("click", async function () {
     //Get the ID of the current page to handle actions on page leave (next button pressed)
     pageBeingLeftID = CURRENT_PAGE.id;
-    guidedSetNavLoadingState(true);
 
     if (pageBeingLeftID === "guided-dataset-generation-tab") {
       guidedUnSkipPage("guided-dataset-dissemination-tab");
