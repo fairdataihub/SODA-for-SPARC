@@ -1020,11 +1020,6 @@ const savePageChanges = async (pageBeingLeftID) => {
 };
 
 document
-  .getElementById("guided-button-enter-submission-metadata-manually")
-  .addEventListener("click", async () => {
-    await openPage("guided-create-submission-metadata-tab");
-  });
-document
   .getElementById("guided-button-import-data-deliverables")
   .addEventListener("click", async () => {
     //Open the page and leave the sub-page hydration to the sub-page function
@@ -3466,6 +3461,9 @@ const openPage = async (targetPageID) => {
     if (targetPageID === "guided-derivative-data-organization-tab") {
       openSubPageNavigation(targetPageID);
     }
+    if (targetPageID === "guided-create-submission-metadata-tab") {
+      openSubPageNavigation(targetPageID);
+    }
 
     if (targetPageID === "guided-protocol-folder-tab") {
       //Append the guided-file-explorer element to the derivative folder organization container
@@ -3662,22 +3660,8 @@ const openPage = async (targetPageID) => {
 
     if (targetPageID === "guided-create-submission-metadata-tab") {
       //Reset manual submission metadata UI
-      const sparcAwardInputManual = document.getElementById("guided-submission-sparc-award-manual");
-      sparcAwardInputManual.value = "";
-      guidedSubmissionTagsTagifyManual.removeAllTags();
-
-      const completionDateInputManual = document.getElementById(
-        "guided-submission-completion-date-manual"
-      );
-      completionDateInputManual.innerHTML = `
-          <option value="Select a completion date">Select a completion date</option>
-          <option value="Enter my own date">Enter my own date</option>
-          <option value="">N/A</option>
-        `;
 
       if (pageNeedsUpdateFromPennsieve("guided-create-submission-metadata-tab")) {
-        const existingSPARCAward =
-          sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
         try {
           let import_metadata = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
@@ -3688,116 +3672,65 @@ const openPage = async (targetPageID) => {
           });
           $("#guided-button-enter-submission-metadata-manually").click();
           let res = import_metadata.data;
-          console.log(res);
 
           const sparcAwardRes = res["SPARC Award number"];
           const pennsieveMileStones = res["Milestone achieved"];
           const pennsieveCompletionDate = res["Milestone completion date"];
 
-          // If there's already an existing SPARC Award, don't overwrite it
-          if (existingSPARCAward) {
-            sparcAwardInputManual.value = existingSPARCAward;
-          } else {
-            sparcAwardInputManual.value = sparcAwardRes;
+          if (sparcAwardRes) {
+            sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = sparcAwardRes;
           }
 
           if (pennsieveMileStones) {
-            pennsieveMileStones.map((milestone) => {
-              if (guidedSubmissionTagsTagifyManual.isTagDuplicate(milestone) === 0) {
-                guidedSubmissionTagsTagifyManual.addTags(milestone);
-              }
-            });
+            sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] =
+              pennsieveMileStones;
+          }
+          if (pennsieveCompletionDate) {
+            sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] =
+              pennsieveCompletionDate;
           }
 
-          // It's possible that pennsieveCompletionDate can be an empty string if the user Selects N/A.
-          // If an empty string was pulled from Pennsieve, select the input with value "" which is N/A.
-          if (pennsieveCompletionDate === "") {
-            completionDateInputManual.value = "";
-          } else if (pennsieveCompletionDate) {
-            console.log(completionDateInputManual);
-
-            completionDateInputManual.innerHTML += `<option value="${pennsieveCompletionDate}">${pennsieveCompletionDate}</option>`;
-            //select the completion date that was added
-            completionDateInputManual.value = pennsieveCompletionDate;
-          }
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-submission-metadata-tab");
         } catch (error) {
-          console.log(error);
           clientError(error);
           console.log("UNABLE TO FETCH SUBMISSION METADATA FROM PENNSIEVE");
         }
-      } else {
-        let submission_metadata = sodaJSONObj["dataset-metadata"]["submission-metadata"];
-
-        let dataDeliverableLottieContainer = document.getElementById(
-          "data-deliverable-lottie-container"
-        );
-        let dataDeliverableParaText = document.getElementById("guided-data-deliverable-para-text");
-
-        if (Object.keys(submission_metadata).length > 0) {
-          if (submission_metadata["filepath"]) {
-            dataDeliverableLottieContainer.innerHTML = "";
-            lottie.loadAnimation({
-              container: dataDeliverableLottieContainer,
-              animationData: successCheck,
-              renderer: "svg",
-              loop: false,
-              autoplay: true,
-            });
-            dataDeliverableParaText.innerHTML = submission_metadata["filepath"];
-          } else {
-            //reset the code metadata lotties and para text
-            dataDeliverableLottieContainer.innerHTML = "";
-            lottie.loadAnimation({
-              container: dataDeliverableLottieContainer,
-              animationData: dragDrop,
-              renderer: "svg",
-              loop: true,
-              autoplay: true,
-            });
-            dataDeliverableParaText.innerHTML = "";
-          }
-        } else {
-          //reset the code metadata lotties and para text
-          dataDeliverableLottieContainer.innerHTML = "";
-          lottie.loadAnimation({
-            container: dataDeliverableLottieContainer,
-            animationData: dragDrop,
-            renderer: "svg",
-            loop: true,
-            autoplay: true,
-          });
-          dataDeliverableParaText.innerHTML = "";
-        }
-
-        const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-
-        //If a sparc award exists, set the sparc award manual input
-        //If not, reset the input
-        if (sparcAward) {
-          sparcAwardInputManual.value = sparcAward;
-        } else {
-          //If no sparc award exists, reset the inputs
-          sparcAwardInputManual.value = "";
-        }
-
-        const milestones = sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
-        guidedSubmissionTagsTagifyManual.removeAllTags();
-
-        //If milestones exist, add the tags to the milestone tagify element
-        if (milestones) {
-          guidedSubmissionTagsTagifyManual.addTags(milestones);
-        }
-
-        const completionDate =
-          sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"];
-
-        if (completionDate) {
-          completionDateInputManual.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
-          //select the completion date that was added
-          completionDateInputManual.value = completionDate;
-        }
       }
+      //Reset the manual submission metadata UI
+      const sparcAwardInputManual = document.getElementById("guided-submission-sparc-award-manual");
+      sparcAwardInputManual.value = "";
+      guidedSubmissionTagsTagifyManual.removeAllTags();
+      const completionDateInputManual = document.getElementById(
+        "guided-submission-completion-date-manual"
+      );
+      completionDateInputManual.innerHTML = `
+          <option value="Select a completion date">Select a completion date</option>
+          <option value="Enter my own date">Enter my own date</option>
+          <option value="">N/A</option>
+        `;
+
+      //Update the UI if their respective keys exist in the sodaJSONObj
+      const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+      if (sparcAward) {
+        sparcAwardInputManual.value = sparcAward;
+      }
+      const milestones = sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
+      if (milestones) {
+        guidedSubmissionTagsTagifyManual.addTags(milestones);
+      }
+      const completionDate =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"];
+
+      if (completionDate) {
+        completionDateInputManual.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
+        //select the completion date that was added
+        completionDateInputManual.value = completionDate;
+      }
+
+      //Click the manual submission metadata button because it's likely best for the user
+      document.getElementById("guided-button-enter-submission-metadata-manually").click();
+
+      sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-submission-metadata-tab");
     }
     if (targetPageID === "guided-contributors-tab") {
       if (pageNeedsUpdateFromPennsieve("guided-contributors-tab")) {
@@ -5223,10 +5156,27 @@ const setActiveSubPage = (pageIdToActivate) => {
     }
 
     case "guided-data-derivative-import-page": {
+      const dataDeliverableLottieContainer = document.getElementById(
+        "data-deliverable-lottie-container"
+      );
+      const dataDeliverableParaText = document.getElementById("guided-data-deliverable-para-text");
+
       const importedMilestones =
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-imported-milestones"];
 
       if (importedMilestones) {
+        // set the data deliverable import lottie as complete
+        dataDeliverableLottieContainer.innerHTML = "";
+        lottie.loadAnimation({
+          container: dataDeliverableLottieContainer,
+          animationData: successCheck,
+          renderer: "svg",
+          loop: false,
+          autoplay: true,
+        });
+        dataDeliverableParaText.innerHTML =
+          sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"];
+
         renderMilestoneSelectionTable(importedMilestones);
         const tempSelectedMilestones =
           sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-selected-milestones"];
@@ -5247,6 +5197,16 @@ const setActiveSubPage = (pageIdToActivate) => {
         }
         unHideAndSmoothScrollToElement("guided-div-data-deliverables-import");
       } else {
+        //reset the submission metadata lotties and para text
+        dataDeliverableLottieContainer.innerHTML = "";
+        lottie.loadAnimation({
+          container: dataDeliverableLottieContainer,
+          animationData: dragDrop,
+          renderer: "svg",
+          loop: true,
+          autoplay: true,
+        });
+        dataDeliverableParaText.innerHTML = "";
         document.getElementById("guided-div-data-deliverables-import").classList.add("hidden");
       }
       break;
@@ -12462,6 +12422,8 @@ $(document).ready(async () => {
     guidedSetNavLoadingState(true);
     const errorArray = [];
     try {
+      // temp logic that clicks the next button if the user is on the submission metadata page:
+
       if (openSubPageID === "guided-specify-subjects-page") {
         const buttonYesSubjects = document.getElementById("guided-button-add-subjects-table");
         const buttonNoSubjects = document.getElementById("guided-button-no-subjects");
@@ -12997,6 +12959,18 @@ $(document).ready(async () => {
   $("#guided-button-sub-page-continue").on("click", async () => {
     //Get the id of the parent page that's currently open
     const currentParentPageID = CURRENT_PAGE.id;
+
+    if (currentParentPageID === "guided-create-submission-metadata-tab") {
+      if (
+        document
+          .getElementById("guided-button-enter-submission-metadata-manually")
+          .classList.contains("selected")
+      ) {
+        document.getElementById("guided-next-button").click();
+        return;
+      }
+    }
+
     //Get the id of the sub-page that's currently open
     const openSubPageID = getOpenSubPageInPage(currentParentPageID);
 
@@ -13046,6 +13020,18 @@ $(document).ready(async () => {
   $("#guided-button-sub-page-back").on("click", () => {
     //Get the id of the parent page that's currently open
     const currentParentPageID = CURRENT_PAGE.id;
+
+    if (currentParentPageID === "guided-create-submission-metadata-tab") {
+      if (
+        document
+          .getElementById("guided-button-enter-submission-metadata-manually")
+          .classList.contains("selected")
+      ) {
+        document.getElementById("guided-back-button").click();
+        return;
+      }
+    }
+
     //Get the id of the sub-page that's currently open
     const openSubPageID = getOpenSubPageInPage(currentParentPageID);
 
