@@ -64,7 +64,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       if (bannerImagePathToUpdate) {
         const newBannerImagePath = bannerImagePathToUpdate.replace(
           previousDatasetName,
-          datasetName
+          newDatasetName
         );
         //Rename the old banner image folder to the new dataset name
         fs.renameSync(bannerImagePathToUpdate, newBannerImagePath);
@@ -215,7 +215,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
       const currentDatasetName = sodaJSONObj["digital-metadata"]["name"];
-
+      console.log(currentDatasetName);
       if (currentDatasetName) {
         // Update the progress file path name and banner image path if needed
         if (datasetNameInput !== currentDatasetName) {
@@ -4078,9 +4078,12 @@ const openPage = async (targetPageID) => {
       if (pageNeedsUpdateFromPennsieve("guided-banner-image-tab")) {
         // If the fetch fails, (they don't have a banner image yet)
         const datasetName = sodaJSONObj["digital-metadata"]["name"];
+        const datasetID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
 
         try {
-          let res = await api.getDatasetBannerImageURL(defaultBfAccount, datasetName);
+          // pass in the id in case the name of the dataset has been
+          // changed from the original Pennsieve dataset name
+          let res = await api.getDatasetBannerImageURL(defaultBfAccount, datasetID);
           if (res != "No banner image") {
             //Banner is returned as an s3 bucket url but image needs to be converted as
             //base64 to save and write to users local system
