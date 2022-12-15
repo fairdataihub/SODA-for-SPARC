@@ -8,4 +8,5 @@ from .manifest_writer import (
     ManifestWriterStandaloneLocal, 
     create_high_level_manifest_files, 
     ManifestWriterNewLocal,
+    recursive_item_path_create
 )

@@ -297,6 +297,35 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
     return manifest_files_structure
     
 
+def recursive_item_path_create(folder, path):
+    print("*" * 30)
+    print("within recursive item path create")
+    if "files" in folder.keys():
+        for item in list(folder["files"]):
+            print("///////")
+            print("file within folderbelow")
+            print(item)
+            if "folderpath" not in folder["files"][item]:
+                folder["files"][item]["folderpath"] = path[:]
+                print(path[:])
+
+    if "folders" in folder.keys():
+        print("#" * 30)
+        print("fodlers within recursive create")
+        for item in list(folder["folders"]):
+            print("///////")
+            print(item)
+            if "folderpath" not in folder["folders"][item]:
+                folder["folders"][item]["folderpath"] = path[:]
+                print(path[:])
+                folder["folders"][item]["folderpath"].append(item)
+            recursive_item_path_create(
+                folder["folders"][item], folder["folders"][item]["folderpath"][:]
+            )
+
+    return
+
+
 def create_high_level_manifest_files_existing_local_starting_point(dataset_path, manifest_path):
     """
     Standalone manifest generator algorithm. Imports manifest files from a local dataset folder. 
@@ -531,6 +560,9 @@ class ManifestWriterStandaloneAlgorithm(ManifestWriter):
         # create the manifest file
         # handle updating any existing manifest files on Pennsieve
         update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level_folders, manifest_progress, self.manifest_path)
+
+
+        recursive_item_path_create(soda_json_structure["dataset-structure"], [])
 
         # create manifest files from scratch for any high level folders that don't have a manifest file on Pennsieve
         create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, self.manifest_path, high_level_folders, manifest_progress)

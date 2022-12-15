@@ -36,7 +36,7 @@ from docx import Document
 from flask import abort 
 
 from pysodaUtils import agent_running, stop_agent, start_agent
-from manifest import update_existing_pennsieve_manifest_files, create_high_level_manifest_files_existing_bf_starting_point
+from manifest import update_existing_pennsieve_manifest_files, create_high_level_manifest_files_existing_bf_starting_point, recursive_item_path_create
 
 from namespaces import NamespaceEnum, get_namespace_logger
 namespace_logger = get_namespace_logger(NamespaceEnum.CURATE_DATASETS)
@@ -1029,33 +1029,6 @@ def copytree(src, dst, symlinks=False, ignore=None):
 
 
 
-def recursive_item_path_create(folder, path):
-    print("*" * 30)
-    print("within recursive item path create")
-    if "files" in folder.keys():
-        for item in list(folder["files"]):
-            print("///////")
-            print("file within folderbelow")
-            print(item)
-            if "folderpath" not in folder["files"][item]:
-                folder["files"][item]["folderpath"] = path[:]
-                print(path[:])
-
-    if "folders" in folder.keys():
-        print("#" * 30)
-        print("fodlers within recursive create")
-        for item in list(folder["folders"]):
-            print("///////")
-            print(item)
-            if "folderpath" not in folder["folders"][item]:
-                folder["folders"][item]["folderpath"] = path[:]
-                print(path[:])
-                folder["folders"][item]["folderpath"].append(item)
-            recursive_item_path_create(
-                folder["folders"][item], folder["folders"][item]["folderpath"][:]
-            )
-
-    return
 
 
 ## import an existing local or Pennsieve dataset_description.xlsx file
