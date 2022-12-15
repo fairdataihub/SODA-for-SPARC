@@ -3289,8 +3289,8 @@ function copyLink(link) {
 }
 
 const validatePageArray = async (arrayOfPagesToCheck) => {
-  const x = getNonSkippedGuidedModePages(document);
-  for (const page of x) {
+  const nonSkippedPages = getNonSkippedGuidedModePages(document);
+  for (const page of nonSkippedPages) {
     try {
       await checkIfPageIsValid(page.id);
     } catch (error) {
