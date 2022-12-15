@@ -886,6 +886,49 @@ const savePageChanges = async (pageBeingLeftID) => {
         delete sodaJSONObj["dataset-metadata"]["shared-metadata"]["imported-sparc-award"];
       }
     }
+
+    if (pageBeingLeftID === "guided-create-submission-metadata-tab") {
+      const userIsAddingSubmissionMetadataManually = document
+        .getElementById("guided-button-enter-submission-metadata-manually")
+        .classList.contains("selected");
+
+      if (userIsAddingSubmissionMetadataManually) {
+        const award = document.getElementById("guided-submission-sparc-award-manual").value;
+        const milestones = getTagsFromTagifyElement(guidedSubmissionTagsTagifyManual);
+        const completionDate = document.getElementById(
+          "guided-submission-completion-date-manual"
+        ).value;
+
+        if (award === "") {
+          errorArray.push({
+            type: "notyf",
+            message: "Please add a SPARC award number to your submission metadata",
+          });
+        }
+        if (completionDate === "Select a completion date") {
+          errorArray.push({
+            type: "notyf",
+            message: "Please add a completion date to your submission metadata",
+          });
+        }
+        if (milestones.length === 0) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please add at least one milestone to your submission metadata",
+          });
+        }
+        if (errorArray.length > 0) {
+          throw errorArray;
+        }
+
+        // save the award string to JSONObj to be shared with other award inputs
+        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = award;
+        //Save the data and milestones to the sodaJSONObj
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = milestones;
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = completionDate;
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["submission-data-entry"] = "manual";
+      }
+    }
     if (pageBeingLeftID === "guided-contributors-tab") {
       // Make sure the user has added at least one contributor
       const contributors = sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
@@ -3654,11 +3697,10 @@ const openPage = async (targetPageID) => {
           // If there's already an existing SPARC Award, don't overwrite it
           if (existingSPARCAward) {
             sparcAwardInputManual.value = existingSPARCAward;
-            console.log(existingSPARCAward);
           } else {
             sparcAwardInputManual.value = sparcAwardRes;
-            console.log(sparcAwardRes);
           }
+
           if (pennsieveMileStones) {
             pennsieveMileStones.map((milestone) => {
               if (guidedSubmissionTagsTagifyManual.isTagDuplicate(milestone) === 0) {
@@ -3673,13 +3715,8 @@ const openPage = async (targetPageID) => {
             completionDateInputManual.value = "";
           } else if (pennsieveCompletionDate) {
             console.log(completionDateInputManual);
-            if (
-              $(
-                `#guided-submission-completion-date-manual option[value='${pennsieveCompletionDate}'`
-              ).length == 0
-            ) {
-              completionDateInputManual.innerHTML += `<option value="${pennsieveCompletionDate}">${pennsieveCompletionDate}</option>`;
-            }
+
+            completionDateInputManual.innerHTML += `<option value="${pennsieveCompletionDate}">${pennsieveCompletionDate}</option>`;
             //select the completion date that was added
             completionDateInputManual.value = pennsieveCompletionDate;
           }
@@ -4223,11 +4260,11 @@ const openPage = async (targetPageID) => {
             defaultBfAccount,
             sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
           );
+          console.log(currentDatasetPermissions);
           const sparcUsers = sparcUsersReq.data.users;
           console.log(sparcUsers[5]);
           console.log(sparcUsers[9]);
 
-          console.log(removeSpacesFromString(sparcUsers[5]));
           const sparcTeams = sparcTeamsReq.data.teams;
           console.log(sparcUsers);
           console.log(sparcTeams);
@@ -4236,10 +4273,12 @@ const openPage = async (targetPageID) => {
             defaultBfAccount,
             sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
           );
+
           //Filter out the integration user
-          /*const filteredPermissions = permissions.filter((permission) => {
+          const filteredPermissions = permissions.filter((permission) => {
             return !permission.includes("Integration User");
-          });*/
+          });
+
           const permissionsObj = {};
           //const filteredPermissions = ['User: Jacob Clark , role: owner', 'User: Christopher Marroquin , role: viewer', 'User: Dorian Portillo , role: editor']
           for (const userPermission of filteredPermissions) {
