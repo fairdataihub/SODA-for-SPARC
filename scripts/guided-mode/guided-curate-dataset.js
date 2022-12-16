@@ -4195,12 +4195,14 @@ const openPage = async (targetPageID) => {
           );
           console.log(currentDatasetPermissions);
           const sparcUsers = sparcUsersReq.data.users;
-          console.log(sparcUsers[5]);
-          console.log(sparcUsers[9]);
 
           const sparcTeams = sparcTeamsReq.data.teams;
-          console.log(sparcUsers);
+          let sparcUsersDivided = [];
           console.log(sparcTeams);
+          sparcUsers.forEach((element) => {
+            //first two elements of this array will just be an email
+            sparcUsersDivided.push(element.split(" !|**|!"));
+          });
 
           const permissions = await api.getDatasetPermissions(
             defaultBfAccount,
@@ -4212,11 +4214,76 @@ const openPage = async (targetPageID) => {
             return !permission.includes("Integration User");
           });
 
-          const permissionsObj = {};
+          const userPermissionsObj = {};
+          let arrayCon = [];
+          let teamArray = [];
           //const filteredPermissions = ['User: Jacob Clark , role: owner', 'User: Christopher Marroquin , role: viewer', 'User: Dorian Portillo , role: editor']
+          //Store fetched users and team members and store in soda json
+          // going to need the UUID of user permissions
+          //Fetch or do we already have the info?
+
+          //so check for PI owner as well
           for (const userPermission of filteredPermissions) {
+            // Will include teams and users
+            let container2 = userPermission.split(",");
+            // Will look like:
+            // ['User: John Doe ', ' role: owner']
+            // need to split above
+            let nameSplit = container2[0].split(":");   // will appear as ['Team', ' DRC Team'] 
+            let roleSplit = container2[1].split(":");   // will appear as [' role', ' Viewer']
+            let userName = nameSplit[1].trim();
+            let userPermiss = roleSplit[1].trim();
+            let teamOrUser = nameSplit[0].trim().toLowerCase();
+            if(teamOrUser === "team") {
+              teamArray.push(
+                {
+                  "UUID": userName,
+                  "permission": userPermiss,
+                  "teamString": userName
+                }
+              )
+
+            } else {
+              if(userPermiss === "manager") {
+                //update PI owner key
+              } else {
+                arrayCon.push(
+                  {
+                    "permission": userPermiss,
+                    "userName": userName,
+                  }
+                );
+              }
+            }
           }
-          console.log(filteredPermissions);
+          // After loop use the array of objects to find the UUID and email
+          console.log(arrayCon);
+          console.log("Iterating array of objects");
+          let finalUserArray = [];
+          arrayCon.map((object) => {
+            // if user go to user array is a user
+            // console.log("is user");
+            // console.log(sparcUsersDivided);
+            sparcUsersDivided.forEach((element) => {
+              // console.log(element);
+              if(element[0].includes(object["userName"])) {
+                // name was found now get UUID
+                let userEmailSplit = element[0].split(" (");
+                console.log(userEmailSplit);
+                finalUserArray.push(
+                  {
+                    "UUID": element[1],
+                    "permission": object.permission,
+                    "userName": userEmailSplit[0],
+                    "userString": element[0]
+                  }
+                );
+              }
+            });
+          });
+          console.log(finalUserArray);
+          // guidedAddTeamPermission(fetchedPermissions);
+          // console.log(filteredPermissions);
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-designate-permissions-tab");
         } catch (error) {
           console.log(error);
@@ -9067,7 +9134,7 @@ const renderPermissionsTable = () => {
 
   let permissionsTable = permissionsTableElements.join("\n");
   let permissionsTableBody = document.getElementById("permissions-table-body");
-  permissionsTableBody.innerHTML = permissionsTable;
+permissionsTableBody.innerHTML = permissionsTable;
 };
 
 $("#guided-button-no-source-data").on("click", () => {
