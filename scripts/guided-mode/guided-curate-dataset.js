@@ -4238,30 +4238,25 @@ const openPage = async (targetPageID) => {
             // Will look like:
             // ['User: John Doe ', ' role: owner']
             // need to split above
-            let nameSplit = container2[0].split(":");   // will appear as ['Team', ' DRC Team'] 
-            let roleSplit = container2[1].split(":");   // will appear as [' role', ' Viewer']
+            let nameSplit = container2[0].split(":"); // will appear as ['Team', ' DRC Team']
+            let roleSplit = container2[1].split(":"); // will appear as [' role', ' Viewer']
             let userName = nameSplit[1].trim();
             let userPermiss = roleSplit[1].trim();
             let teamOrUser = nameSplit[0].trim().toLowerCase();
-            if(teamOrUser === "team") {
-              teamArray.push(
-                {
-                  "UUID": userName,
-                  "permission": userPermiss,
-                  "teamString": userName
-                }
-              )
-
+            if (teamOrUser === "team") {
+              teamArray.push({
+                UUID: userName,
+                permission: userPermiss,
+                teamString: userName,
+              });
             } else {
-              if(userPermiss === "manager") {
+              if (userPermiss === "manager") {
                 //update PI owner key
               } else {
-                arrayCon.push(
-                  {
-                    "permission": userPermiss,
-                    "userName": userName,
-                  }
-                );
+                arrayCon.push({
+                  permission: userPermiss,
+                  userName: userName,
+                });
               }
             }
           }
@@ -4275,18 +4270,16 @@ const openPage = async (targetPageID) => {
             // console.log(sparcUsersDivided);
             sparcUsersDivided.forEach((element) => {
               // console.log(element);
-              if(element[0].includes(object["userName"])) {
+              if (element[0].includes(object["userName"])) {
                 // name was found now get UUID
                 let userEmailSplit = element[0].split(" (");
                 console.log(userEmailSplit);
-                finalUserArray.push(
-                  {
-                    "UUID": element[1],
-                    "permission": object.permission,
-                    "userName": userEmailSplit[0],
-                    "userString": element[0]
-                  }
-                );
+                finalUserArray.push({
+                  UUID: element[1],
+                  permission: object.permission,
+                  userName: userEmailSplit[0],
+                  userString: element[0],
+                });
               }
             });
           });
@@ -9143,7 +9136,7 @@ const renderPermissionsTable = () => {
 
   let permissionsTable = permissionsTableElements.join("\n");
   let permissionsTableBody = document.getElementById("permissions-table-body");
-permissionsTableBody.innerHTML = permissionsTable;
+  permissionsTableBody.innerHTML = permissionsTable;
 };
 
 $("#guided-button-no-source-data").on("click", () => {
