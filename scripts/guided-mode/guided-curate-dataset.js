@@ -4202,14 +4202,15 @@ const openPage = async (targetPageID) => {
             defaultBfAccount,
             sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
           );
-          console.log(currentDatasetPermissions);
-          const sparcUsers = sparcUsersReq.data.users;
 
+          const sparcUsers = sparcUsersReq.data.users;
           const sparcTeams = sparcTeamsReq.data.teams;
+
           let sparcUsersDivided = [];
-          console.log(sparcTeams);
+
+          //sparc users results needs to be formatted
           sparcUsers.forEach((element) => {
-            //first two elements of this array will just be an email
+            //first two elements of this array will just be an email with no name
             sparcUsersDivided.push(element.split(" !|**|!"));
           });
 
@@ -4223,9 +4224,9 @@ const openPage = async (targetPageID) => {
             return !permission.includes("Integration User");
           });
 
-          const userPermissionsObj = {};
-          let arrayCon = [];
-          let teamArray = [];
+          let partialUserDetails = [];
+          let finalTeamPermissions = [];
+          let piOwner = [];
           //const filteredPermissions = ['User: Jacob Clark , role: owner', 'User: Christopher Marroquin , role: viewer', 'User: Dorian Portillo , role: editor']
           //Store fetched users and team members and store in soda json
           // going to need the UUID of user permissions
@@ -4234,37 +4235,32 @@ const openPage = async (targetPageID) => {
           //so check for PI owner as well
           for (const userPermission of filteredPermissions) {
             // Will include teams and users
-            let container2 = userPermission.split(",");
+            let userRoleSplit = userPermission.split(",");
             // Will look like:
             // ['User: John Doe ', ' role: owner']
             // need to split above
-            let nameSplit = container2[0].split(":"); // will appear as ['Team', ' DRC Team']
-            let roleSplit = container2[1].split(":"); // will appear as [' role', ' Viewer']
+            let nameSplit = userRoleSplit[0].split(":"); // will appear as ['Team', ' DRC Team']
+            let roleSplit = userRoleSplit[1].split(":"); // will appear as [' role', ' Viewer']
             let userName = nameSplit[1].trim();
             let userPermiss = roleSplit[1].trim();
             let teamOrUser = nameSplit[0].trim().toLowerCase();
+
             if (teamOrUser === "team") {
-              teamArray.push({
+              finalTeamPermissions.push({
                 UUID: userName,
                 permission: userPermiss,
                 teamString: userName,
               });
             } else {
-              if (userPermiss === "manager") {
-                //update PI owner key
-              } else {
-                arrayCon.push({
-                  permission: userPermiss,
-                  userName: userName,
-                });
-              }
+              partialUserDetails.push({
+                permission: userPermiss,
+                userName: userName,
+              });
             }
           }
           // After loop use the array of objects to find the UUID and email
-          console.log(arrayCon);
-          console.log("Iterating array of objects");
-          let finalUserArray = [];
-          arrayCon.map((object) => {
+          let finalUserPermissions = [];
+          partialUserDetails.map((object) => {
             // if user go to user array is a user
             // console.log("is user");
             // console.log(sparcUsersDivided);
@@ -4273,19 +4269,42 @@ const openPage = async (targetPageID) => {
               if (element[0].includes(object["userName"])) {
                 // name was found now get UUID
                 let userEmailSplit = element[0].split(" (");
-                console.log(userEmailSplit);
-                finalUserArray.push({
-                  UUID: element[1],
-                  permission: object.permission,
-                  userName: userEmailSplit[0],
-                  userString: element[0],
-                });
+                if (object["permission"] === "owner") {
+                  //set for pi owner
+                  piOwner.push({
+                    UUID: object.permission,
+                    name: userEmailSplit[0],
+                    userString: element[0],
+                  });
+                  //update PI owner key
+                } else {
+                  console.log(userEmailSplit);
+                  finalUserPermissions.push({
+                    UUID: element[1],
+                    permission: object.permission,
+                    userName: userEmailSplit[0],
+                    userString: element[0],
+                  });
+                }
               }
             });
           });
-          console.log(finalUserArray);
-          // guidedAddTeamPermission(fetchedPermissions);
-          // console.log(filteredPermissions);
+
+          let multiplePermissions = false;
+          if (finalTeamPermissions.length > 0) {
+            multiplePermissions = true;
+            sodaJSONObj["digital-metadata"]["team-permissions"] = finalTeamPermissions;
+          }
+          if (finalUserPermissions.length > 0) {
+            multiplePermissions = true;
+            sodaJSONObj["digital-metadata"]["user-permissions"] = finalUserPermissions;
+          }
+          sodaJSONObj["digital-metadata"]["pi-owner"] = piOwner[0];
+
+          if (multiplePermissions) {
+            $("#guided-button-add-additional-permissions").click();
+          }
+
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-designate-permissions-tab");
         } catch (error) {
           console.log(error);
