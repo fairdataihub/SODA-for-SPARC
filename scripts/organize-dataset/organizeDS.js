@@ -16,7 +16,6 @@ function showTooltips(ev) {
 }
 
 const recursive_mark_sub_files_deleted = (dataset_folder, mode) => {
-  console.log("datasetFolderParam: " + JSON.stringify(dataset_folder));
   if ("files" in dataset_folder) {
     for (let file in dataset_folder["files"]) {
       if ("forTreeview" in dataset_folder["files"][file]) {
