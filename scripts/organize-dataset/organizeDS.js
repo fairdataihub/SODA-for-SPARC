@@ -16,6 +16,7 @@ function showTooltips(ev) {
 }
 
 const recursive_mark_sub_files_deleted = (dataset_folder, mode) => {
+  console.log("datasetFolderParam: " + JSON.stringify(dataset_folder));
   if ("files" in dataset_folder) {
     for (let file in dataset_folder["files"]) {
       if ("forTreeview" in dataset_folder["files"][file]) {
@@ -211,8 +212,10 @@ function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
         },
       }).then((result) => {
         if (result.isConfirmed) {
+          copnsole.log(organizeCurrentLocation);
           var filtered = getGlobalPath(organizeCurrentLocation);
           var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
+          console.log(myPath);
 
           $("div.single-item.selected-item > .folder_desc").each(function (index, current_element) {
             itemToDelete = $(current_element).text();
