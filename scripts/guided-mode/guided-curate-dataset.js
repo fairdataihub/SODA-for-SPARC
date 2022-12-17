@@ -9176,56 +9176,6 @@ $("#guided-button-no-source-data").on("click", () => {
   }
 });
 
-/*********** Derivative page functions ***********/
-$("#guided-button-has-derivative-data").on("click", () => {
-  if (datasetStructureJSONObj["folders"]["derivative"] == undefined)
-    datasetStructureJSONObj["folders"]["derivative"] = {
-      folders: {},
-      files: {},
-      type: "",
-      action: [],
-    };
-  $("#guided-file-explorer-elements").appendTo($("#guided-user-has-derivative-data"));
-  updateFolderStructureUI(highLevelFolderPageData.derivative);
-});
-$("#guided-button-no-derivative-data").on("click", () => {
-  //ask user to confirm they would like to delete derivative folder if it exists
-  if (datasetStructureJSONObj["folders"]["derivative"] != undefined) {
-    Swal.fire({
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      title:
-        "Reverting your decision will wipe out any changes you have made to the derivative folder.",
-      text: "Are you sure you would like to delete your derivative folder progress?",
-      icon: "warning",
-      showConfirmButton: true,
-      confirmButtonText: "Delete",
-      confirmButtonColor: "#3085d6 !important",
-      showCancelButton: true,
-      focusCancel: true,
-      reverseButtons: reverseSwalButtons,
-      heightAuto: false,
-      customClass: "swal-wide",
-      backdrop: "rgba(0,0,0, 0.4)",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        //User agrees to delete derivative folder
-        delete datasetStructureJSONObj["folders"]["derivative"];
-      } else {
-        //User cancels
-        //reset button UI to how it was before the user clicked no derivative files
-        $("#guided-button-has-derivative-data").click();
-      }
-    });
-  }
-});
-
 const getTagsFromTagifyElement = (tagifyElement) => {
   return Array.from(tagifyElement.getTagElms()).map((tag) => {
     return tag.textContent;
