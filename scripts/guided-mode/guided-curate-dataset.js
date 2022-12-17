@@ -4250,6 +4250,8 @@ const openPage = async (targetPageID) => {
                 UUID: userName,
                 permission: userPermiss,
                 teamString: userName,
+                permissionSource: "Pennsieve",
+                deleteFromPennsieve: false,
               });
             } else {
               partialUserDetails.push({
@@ -4275,6 +4277,8 @@ const openPage = async (targetPageID) => {
                     UUID: object.permission,
                     name: userEmailSplit[0],
                     userString: element[0],
+                    permissionSource: "Pennsieve",
+                    deleteFromPennsieve: false,
                   });
                   //update PI owner key
                 } else {
@@ -4284,6 +4288,8 @@ const openPage = async (targetPageID) => {
                     permission: object.permission,
                     userName: userEmailSplit[0],
                     userString: element[0],
+                    permissonSource: "Pennsieve",
+                    deleteFromPennsieve: false,
                   });
                 }
               }
@@ -9069,6 +9075,32 @@ const openSampleRenameInput = (subjectNameEditButton) => {
   sampleIdCellToRename.html(sampleRenameElement);
 };
 
+const removePennsievePermission = (clickedPermissionRemoveButton) => {
+  let permissionElementToRemove = clickedPermissionRemoveButton.closest("tr");
+  let permissionEntityType = permissionElementToRemove.attr("data-entity-type");
+  let permissionNameToRemove = permissionElementToRemove.find(".permission-name-cell").text();
+  let permissionTypeToRemove = permissionElementToRemove.find(".permission-type-cell").text();
+  // permissionElementToRemove.prevObject[0]
+  // console.log(permissionElementToRemove.prevObject[0]).classList.remove("fa-trash-alt");
+  if (permissionElementToRemove.prevObject[0].classList.contains("fa-trash-alt")) {
+    permissionElementToRemove.prevObject[0].classList.remove("fa-trash-alt");
+    permissionElementToRemove.prevObject[0].classList.add("fa-trash-arrow-up");
+    permissionElementToRemove.prevObject[0].style.color = "#007bff";
+  } else {
+    //restore was triggered
+    permissionElementToRemove.prevObject[0].classList.remove("fa-trash-arrow-up");
+    permissionElementToRemove.prevObject[0].classList.add("fa-trash-alt");
+    permissionElementToRemove.prevObject[0].style.color = "red";
+  }
+  console.log(permissionEntityType);
+  console.log(permissionNameToRemove);
+  console.log(permissionTypeToRemove);
+  console.log("need to apply css to show user that role will be deleted");
+  // modify this element
+  //permissionElementToRemove
+  //change key to false (deleteFromPennsieve)
+};
+
 const removePermission = (clickedPermissionRemoveButton) => {
   let permissionElementToRemove = clickedPermissionRemoveButton.closest("tr");
   let permissionEntityType = permissionElementToRemove.attr("data-entity-type");
@@ -9131,7 +9163,27 @@ const createPermissionsTableRowElement = (entityType, name, permission) => {
     </tr>
   `;
 };
+
+const createPennsievePermissionsTableRowElement = (entityType, name, permission) => {
+  return `
+    <tr class="fromPennsieve" data-entity-type=${entityType}>
+      <td class="middle aligned permission-name-cell">${name}</td>
+      <td class="middle aligned remove-left-border permission-type-cell">${permission}</td>
+      <td class="middle aligned text-center remove-left-border" style="width: 20px">
+        <i
+        class="far fa-trash-alt"
+        style="color: red; cursor: pointer"
+        onclick="removePennsievePermission($(this))"
+        ></i>
+      </td>
+    </tr>
+  `;
+};
 const renderPermissionsTable = () => {
+  // when rendering permissions we will need to check if the permission was fetched from pennsieve
+  // we will then create a different table element that will behave differently
+  // visually showing user that the permission will be deleted upon upload
+  // along with restore option and role modification
   let permissionsTableElements = [];
   const owner = sodaJSONObj["digital-metadata"]["pi-owner"]["userString"];
   const users = sodaJSONObj["digital-metadata"]["user-permissions"];
@@ -9139,18 +9191,39 @@ const renderPermissionsTable = () => {
   permissionsTableElements.push(createPermissionsTableRowElement("owner", owner, "owner"));
 
   for (user of users) {
-    permissionsTableElements.push(
-      createPermissionsTableRowElement(
-        user.loggedInUser ? "loggedInUser" : "user",
-        user["userString"],
-        user["permission"]
-      )
-    );
+    console.log(user);
+    if (user?.["permissonSource"]) {
+      // user was pull from pennsieve, create pennsieve element
+      console.log(user + " is from pennsieve");
+      permissionsTableElements.push(
+        createPennsievePermissionsTableRowElement(
+          user.loggedInUser ? "loggedInUser" : "user",
+          user.userString,
+          user.permission
+        )
+      );
+    } else {
+      permissionsTableElements.push(
+        createPermissionsTableRowElement(
+          user.loggedInUser ? "loggedInUser" : "user",
+          user["userString"],
+          user["permission"]
+        )
+      );
+    }
   }
   for (team of teams) {
-    permissionsTableElements.push(
-      createPermissionsTableRowElement("team", team["teamString"], team["permission"])
-    );
+    if (team?.["permissionSource"]) {
+      //team was pulled from Pennsieve, create Pennsieve element
+      console.log(team + " is from pennsieve");
+      permissionsTableElements.push(
+        createPennsievePermissionsTableRowElement("team", team["teamString"], team["permission"])
+      );
+    } else {
+      permissionsTableElements.push(
+        createPermissionsTableRowElement("team", team["teamString"], team["permission"])
+      );
+    }
   }
 
   let permissionsTable = permissionsTableElements.join("\n");
