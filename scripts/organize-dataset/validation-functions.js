@@ -3,8 +3,9 @@
 // Validate the dataset that has just been organized in Organize Dataset Step 6: Validate Dataset
 // TODO: Pennsieve vs local considerations for result parsing and error handling
 const validateOrganizedDataset = async () => {
+    let sodaJSONObject = await getFormattedSodaJSON()
 
-    let sodaJSONObject = getFormattedSodaJSON()
+    console.log(sodaJSONObject)
 
     let skeletonDatasetResponse
     try {
@@ -88,6 +89,16 @@ const getFormattedSodaJSON = async () => {
     // TODO: Ensure no data loss with this method of creating a deep copy. Should be fine since we only use simple types. 
     //       We do use timestamps I believe but this shouldnt cause issue. Will test. 
     let sodaJSONObjCopy = JSON.parse(JSON.stringify(sodaJSONObj));
+
+    // TODO: Move page to after the user selects their dataset generation location ( figure out how to handle update existing ) to make this dynamic 
+    //      for now will set generate-dataset to Local for testing 
+    sodaJSONObjCopy["generate-dataset"] = {
+            "destination": "local",
+            "path": "/Users/aaronm/Desktop",
+            "dataset-name": "local-skeleton-test",
+            "generate-option": "new",
+            "if-existing": "new"
+    }
 
     // updateJSON structure after Generate dataset tab
     // TODO: Update to work on the given soda json so it will not change the main one just the above copy
