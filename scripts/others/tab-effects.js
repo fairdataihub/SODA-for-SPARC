@@ -630,7 +630,8 @@ const nextPrev = (n) => {
       currentTab = currentTab + n;
       $("#nextBtn").prop("disabled", false);
     } else {
-      currentTab = currentTab + 2;
+      console.log("It happens here?")
+      currentTab = currentTab + 1;
       fixStepDone(4);
       $("#nextBtn").prop("disabled", true);
     }
