@@ -2850,6 +2850,7 @@ const recursive_remove_local_deleted_files = (dataset_folder) => {
 // Step 6: Generate dataset
 // update JSON object after users finish Generate dataset step
 const updateJSONStructureGenerate = (progress = false, sodaJSONObj) => {
+  console.log(sodaJSONObj)
   let starting_point = sodaJSONObj["starting-point"]["type"];
   if (sodaJSONObj["starting-point"]["type"] == "bf") {
     sodaJSONObj["generate-dataset"] = {
@@ -2857,6 +2858,7 @@ const updateJSONStructureGenerate = (progress = false, sodaJSONObj) => {
       "generate-option": "existing-bf",
     };
   }
+
   if (sodaJSONObj["starting-point"]["type"] == "local") {
     var localDestination = require("path").dirname(sodaJSONObj["starting-point"]["local-path"]);
     var newDatasetName = require("path").basename(sodaJSONObj["starting-point"]["local-path"]);
@@ -2878,8 +2880,10 @@ const updateJSONStructureGenerate = (progress = false, sodaJSONObj) => {
       delete sodaJSONObj["bf-dataset-selected"];
     }
     sodaJSONObj["starting-point"]["type"] = "new";
+    // TODO: Do not delete local files if user is in validation step and not in initiate_generate step (validator-phase-4-simple)
     recursive_remove_local_deleted_files(sodaJSONObj["dataset-structure"]);
   }
+
   if (sodaJSONObj["starting-point"]["type"] == "new") {
     if ($('input[name="generate-1"]:checked').length > 0) {
       if ($('input[name="generate-1"]:checked')[0].id === "generate-local-desktop") {
