@@ -7157,83 +7157,7 @@ const divGenerateProgressBar = document.getElementById("div-new-curate-meter-pro
 const generateProgressBar = document.getElementById("progress-bar-new-curate");
 var progressStatus = document.getElementById("para-new-curate-progress-bar-status");
 
-document.getElementById("button-generate").addEventListener("click", async function () {
-  $($($(this).parent()[0]).parents()[0]).removeClass("tab-active");
-  document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
-  document.getElementById("para-please-wait-new-curate").innerHTML = "";
-  document.getElementById("prevBtn").style.display = "none";
-  document.getElementById("start-over-btn").style.display = "none";
-  document.getElementById("div-vertical-progress-bar").style.display = "none";
-  document.getElementById("div-generate-comeback").style.display = "none";
-  document.getElementById("generate-dataset-progress-tab").style.display = "flex";
-  $("#sidebarCollapse").prop("disabled", false);
-
-  // updateJSON structure after Generate dataset tab
-  updateJSONStructureGenerate();
-  if (sodaJSONObj["starting-point"]["type"] === "local") {
-    sodaJSONObj["starting-point"]["type"] = "new";
-  }
-
-  let dataset_name = "";
-  let dataset_destination = "";
-
-  if ("bf-dataset-selected" in sodaJSONObj) {
-    dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-    dataset_destination = "Pennsieve";
-  } else if ("generate-dataset" in sodaJSONObj) {
-    if ("destination" in sodaJSONObj["generate-dataset"]) {
-      let destination = sodaJSONObj["generate-dataset"]["destination"];
-      if (destination == "local") {
-        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-        dataset_destination = "Local";
-      }
-      if (destination == "bf") {
-        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-        dataset_destination = "Pennsieve";
-      }
-    }
-  }
-
-  generateProgressBar.value = 0;
-
-  progressStatus.innerHTML = "Please wait while we verify a few things...";
-
-  statusText = "Please wait while we verify a few things...";
-  if (dataset_destination == "Pennsieve") {
-    /// TODO: Uncomment this
-    // let supplementary_checks = await run_pre_flight_checks(false);
-    // if (!supplementary_checks) {
-    //   $("#sidebarCollapse").prop("disabled", false);
-    //   return;
-    // }
-  }
-
-  // from here you can modify
-  document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
-  document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
-  progressStatus.innerHTML = "";
-  document.getElementById("div-new-curate-progress").style.display = "none";
-
-  progressBarNewCurate.value = 0;
-
-  // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
-  if ("files" in sodaJSONObj["dataset-structure"]) {
-    sodaJSONObj["dataset-structure"]["files"] = {};
-  }
-  // delete manifest files added for treeview
-  for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
-    if (
-      "manifest.xlsx" in sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
-      sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"][
-        "forTreeview"
-      ]
-    ) {
-      delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];
-    }
-  }
-
-  console.log("Checking empty files and folders");
-
+const checkEmptyFilesAndFolders = async (sodaJSONObj) => {
   let emptyFilesFoldersResponse;
   try {
     emptyFilesFoldersResponse = await client.post(
@@ -7257,7 +7181,7 @@ document.getElementById("button-generate").addEventListener("click", async funct
 
   let { data } = emptyFilesFoldersResponse;
 
-  document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
+
   log.info("Continue with curate");
   let errorMessage = "";
   error_files = data["empty_files"];
@@ -7273,6 +7197,103 @@ document.getElementById("button-generate").addEventListener("click", async funct
     var error_message_folders = backend_to_frontend_warning_message(error_folders);
     errorMessage += error_message_folders;
   }
+
+  return errorMessage
+}
+
+const setSodaJSONStartingPoint = (sodaJSONObj) => {
+  if (sodaJSONObj["starting-point"]["type"] === "local") {
+    sodaJSONObj["starting-point"]["type"] = "new";
+  }
+}
+
+const setDatasetNameAndDestination = (sodaJSONObj) => {
+  let dataset_name = "";
+  let dataset_destination = "";
+
+  if ("bf-dataset-selected" in sodaJSONObj) {
+    dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+    dataset_destination = "Pennsieve";
+  } else if ("generate-dataset" in sodaJSONObj) {
+    if ("destination" in sodaJSONObj["generate-dataset"]) {
+      let destination = sodaJSONObj["generate-dataset"]["destination"];
+      if (destination == "local") {
+        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+        dataset_destination = "Local";
+      }
+      if (destination == "bf") {
+        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+        dataset_destination = "Pennsieve";
+      }
+    }
+  }
+
+  return [dataset_name, dataset_destination];
+}
+
+const deleteTreeviewFiles = (sodaJSONObj) => {
+    // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
+    if ("files" in sodaJSONObj["dataset-structure"]) {
+      sodaJSONObj["dataset-structure"]["files"] = {};
+    }
+    // delete manifest files added for treeview
+    for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
+      if (
+        "manifest.xlsx" in sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"][
+          "forTreeview"
+        ]
+      ) {
+        delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];
+      }
+    }
+}
+
+document.getElementById("button-generate").addEventListener("click", async function () {
+  $($($(this).parent()[0]).parents()[0]).removeClass("tab-active");
+  document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
+  document.getElementById("para-please-wait-new-curate").innerHTML = "";
+  document.getElementById("prevBtn").style.display = "none";
+  document.getElementById("start-over-btn").style.display = "none";
+  document.getElementById("div-vertical-progress-bar").style.display = "none";
+  document.getElementById("div-generate-comeback").style.display = "none";
+  document.getElementById("generate-dataset-progress-tab").style.display = "flex";
+  $("#sidebarCollapse").prop("disabled", false);
+
+  // updateJSON structure after Generate dataset tab
+  updateJSONStructureGenerate();
+
+  setSodaJSONStartingPoint(sodaJSONObj);
+
+  let [dataset_name, dataset_destination] = setDatasetNameAndDestination(sodaJSONObj);
+
+  generateProgressBar.value = 0;
+
+  progressStatus.innerHTML = "Please wait while we verify a few things...";
+
+  statusText = "Please wait while we verify a few things...";
+  if (dataset_destination == "Pennsieve") {
+    /// TODO: Uncomment this
+    // let supplementary_checks = await run_pre_flight_checks(false);
+    // if (!supplementary_checks) {
+    //   $("#sidebarCollapse").prop("disabled", false);
+    //   return;
+    // }
+  }
+
+  // from here you can modify
+  document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
+  document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
+  progressStatus.innerHTML = "";
+  document.getElementById("div-new-curate-progress").style.display = "none";
+
+  progressBarNewCurate.value = 0;
+
+  deleteTreeviewFiles(sodaJSONObj);
+
+  document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
+  let errorMessage = await checkEmptyFilesAndFolders(sodaJSONObj);
+
 
   if (errorMessage) {
     errorMessage += "Would you like to continue?";
