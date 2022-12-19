@@ -650,6 +650,7 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-designate-permissions-tab") {
+      console.log("leaving page");
       const buttonYesAddAdditionalPermissions = document.getElementById(
         "guided-button-add-additional-permissions"
       );
@@ -9131,7 +9132,9 @@ const removePennsievePermission = (clickedPermissionRemoveButton) => {
   let permissionNameToRemove = permissionElementToRemove.find(".permission-name-cell").text();
   let permissionTypeToRemove = permissionElementToRemove.find(".permission-type-cell").text();
 
-  console.log(permissionElementToRemove.prevObject[0].classList);
+  console.log(permissionEntityType);
+  console.log(permissionNameToRemove);
+  console.log(permissionTypeToRemove);
 
   if (permissionElementToRemove.prevObject[0].classList.contains("btn-danger")) {
     permissionElementToRemove.prevObject[0].style.display = "none";
@@ -9145,6 +9148,27 @@ const removePennsievePermission = (clickedPermissionRemoveButton) => {
       "0.5";
     permissionElementToRemove.prevObject[0].parentElement.parentElement.children[1].style.opacity =
       "0.5";
+
+    if (permissionEntityType === "user") {
+      const currentUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
+      console.log(currentUsers);
+      for (let i = 0; i < currentUsers.length; i++) {
+        if (currentUsers[i]["userString"] === permissionNameToRemove) {
+          currentUsers[i]["deleteFromPennsieve"] = true;
+        }
+        console.log(currentUsers[i]["deleteFromPennsieve"]);
+      }
+    }
+    if (permissionEntityType === "team") {
+      const currentTeams = sodaJSONObj["digital-metadata"]["team-permissions"];
+      console.log(currentTeams);
+      for (let i = 0; i < currentTeams.length; i++) {
+        if (currentTeams[i]["teamString"] === permissionNameToRemove) {
+          currentTeams[i]["deleteFromPennsieve"] = true;
+        }
+        console.log(currentTeams[i]["deleteFromPennsieve"]);
+      }
+    }
   } else {
     //restore was triggered
     permissionElementToRemove.prevObject[0].style.display = "none";
@@ -9158,6 +9182,26 @@ const removePennsievePermission = (clickedPermissionRemoveButton) => {
       "1";
     permissionElementToRemove.prevObject[0].parentElement.parentElement.children[1].style.opacity =
       "1";
+    if (permissionEntityType === "user") {
+      const currentUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
+      console.log(currentUsers);
+      for (let i = 0; i < currentUsers.length; i++) {
+        if (currentUsers[i]["userString"] === permissionNameToRemove) {
+          currentUsers[i]["deleteFromPennsieve"] = false;
+        }
+        console.log(currentUsers[i]["deleteFromPennsieve"]);
+      }
+    }
+    if (permissionEntityType === "team") {
+      const currentTeams = sodaJSONObj["digital-metadata"]["team-permissions"];
+      console.log(currentTeams);
+      for (let i = 0; i < currentTeams.length; i++) {
+        if (currentTeams[i]["teamString"] === permissionNameToRemove) {
+          currentTeams[i]["deleteFromPennsieve"] = false;
+        }
+        console.log(currentTeams[i]["deleteFromPennsieve"]);
+      }
+    }
   }
 };
 
@@ -9220,17 +9264,30 @@ const createPermissionsTableRowElement = (entityType, name, permission) => {
   `;
 };
 
-const createPennsievePermissionsTableRowElement = (entityType, name, permission) => {
-  return `
+const createPennsievePermissionsTableRowElement = (entityType, name, permission, deleted) => {
+  if (deleted) {
+    return `
     <tr class="fromPennsieve" data-entity-type=${entityType}>
-      <td class="middle aligned permission-name-cell">${name}</td>
-      <td class="middle aligned remove-left-border permission-type-cell">${permission}</td>
+      <td style="opacity: 0.5" class="middle aligned permission-name-cell">${name}</td>
+      <td style="opacity: 0.5" class="middle aligned remove-left-border permission-type-cell">${permission}</td>
       <td class="middle aligned text-center remove-left-border" style="width: 20px">
-      <button type="button" class="btn btn-danger btn-sm" onclick="removePennsievePermission($(this))">Delete</button>
-      <button type="button" class="btn btn-sm" style="display: none;color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);" onclick="removePennsievePermission($(this))">Restore</button>
+        <button type="button" style="display: none" class="btn btn-danger btn-sm" onclick="removePennsievePermission($(this))">Delete</button>
+        <button type="button" class="btn btn-sm" style="display: inline-block;color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);" onclick="removePennsievePermission($(this))">Restore</button>
       </td>
     </tr>
   `;
+  } else {
+    return `
+      <tr class="fromPennsieve" data-entity-type=${entityType}>
+        <td class="middle aligned permission-name-cell">${name}</td>
+        <td class="middle aligned remove-left-border permission-type-cell">${permission}</td>
+        <td class="middle aligned text-center remove-left-border" style="width: 20px">
+          <button type="button" class="btn btn-danger btn-sm" onclick="removePennsievePermission($(this))">Delete</button>
+          <button type="button" class="btn btn-sm" style="display: none;color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);" onclick="removePennsievePermission($(this))">Restore</button>
+        </td>
+      </tr>
+    `;
+  }
 };
 const renderPermissionsTable = () => {
   // when rendering permissions we will need to check if the permission was fetched from pennsieve
@@ -9247,14 +9304,26 @@ const renderPermissionsTable = () => {
     console.log(user);
     if (user?.["permissonSource"]) {
       // user was pull from pennsieve, create pennsieve element
+      if (user?.["deleteFromPennsieve"] === true) {
+        permissionsTableElements.push(
+          createPennsievePermissionsTableRowElement(
+            user.loggedInUser ? "loggedInUser" : "user",
+            user.userString,
+            user.permission,
+            true
+          )
+        );
+      } else {
+        permissionsTableElements.push(
+          createPennsievePermissionsTableRowElement(
+            user.loggedInUser ? "loggedInUser" : "user",
+            user.userString,
+            user.permission,
+            false
+          )
+        );
+      }
       console.log(user + " is from pennsieve");
-      permissionsTableElements.push(
-        createPennsievePermissionsTableRowElement(
-          user.loggedInUser ? "loggedInUser" : "user",
-          user.userString,
-          user.permission
-        )
-      );
     } else {
       permissionsTableElements.push(
         createPermissionsTableRowElement(
@@ -11087,6 +11156,7 @@ $(document).ready(async () => {
 
   const guidedAddUserPermissions = async (bfAccount, datasetName, userPermissionsArray) => {
     //filter user permissions with loggedInUser key
+    console.log("adding here?");
     const promises = userPermissionsArray.map((userPermission) => {
       return guidedGrantUserPermission(
         bfAccount,
@@ -11581,6 +11651,7 @@ $(document).ready(async () => {
       await guidedAddDatasetLicense(guidedBfAccount, guidedDatasetName, guidedLicense);
       await guidedAddDatasetTags(guidedBfAccount, guidedDatasetName, guidedTags);
       await guidedAddPiOwner(guidedBfAccount, guidedDatasetName, guidedPIOwner);
+      console.log("function call to add users/teams");
       await guidedAddUserPermissions(guidedBfAccount, guidedDatasetName, guidedUsers);
       await guidedAddTeamPermissions(guidedBfAccount, guidedDatasetName, guidedTeams);
 
