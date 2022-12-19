@@ -55,6 +55,10 @@ class ManifestBuilderBase:
 
         destination = self.soda_json_structure["generate-dataset"]["destination"]
         generate_option = self.soda_json_structure["generate-dataset"]["generate-option"]
+
+        if generate_option == "existing-bf":
+            return destination, generate_option, None, None
+
         if_existing = self.soda_json_structure["generate-dataset"]["if-existing"]
 
         if "if-existing-files" not in self.soda_json_structure["generate-dataset"]:
