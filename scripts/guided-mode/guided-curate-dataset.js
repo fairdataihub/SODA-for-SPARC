@@ -11106,7 +11106,7 @@ $(document).ready(async () => {
       userPermissionUploadElement = `
       <tr id="guided-dataset-${userUUID}-permissions-upload-tr" class="permissions-upload-tr">
         <td class="middle aligned" id="guided-dataset-${userUUID}-permissions-upload-text">
-          Removing ${userName} permissions...
+          Removing permissions for: ${userName}
         </td>
         <td class="middle aligned text-center collapsing border-left-0 p-0">
           <div
@@ -11221,7 +11221,7 @@ $(document).ready(async () => {
       teamPermissionUploadElement = `
         <tr id="guided-dataset-${teamString}-permissions-upload-tr" class="permissions-upload-tr">
           <td class="middle aligned" id="guided-dataset-${teamString}-permissions-upload-text">
-            Remove ${teamString} permissions.
+            Remove permissions from: ${teamString}.
           </td>
           <td class="middle aligned text-center collapsing border-left-0 p-0">
             <div
@@ -11281,8 +11281,12 @@ $(document).ready(async () => {
         log.info(`${selectedRole} permissions granted to ${teamString}`);
       }
     } catch (error) {
+      if (selectedRole === "remove current permissions") {
+        teamPermissionUploadStatusText.innerHTML = `Failed to remove permissions for ${teamString}`;
+      } else {
+        teamPermissionUploadStatusText.innerHTML = `Failed to grant ${selectedRole} permissions to ${teamString}`;
+      }
       guidedUploadStatusIcon(`guided-dataset-${teamString}-permissions-upload-status`, "error");
-      teamPermissionUploadStatusText.innerHTML = `Failed to grant ${selectedRole} permissions to ${teamString}`;
       log.error(error);
       console.error(error);
       let emessage = userError(error);
