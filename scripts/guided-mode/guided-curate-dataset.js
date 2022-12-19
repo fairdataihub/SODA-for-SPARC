@@ -3113,7 +3113,8 @@ const cleanUpEmptyGuidedStructureFolders = async (
               delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
                 sample.poolName
               ]["folders"][sample.subjectName]["folders"][sample.sampleName];
-            } else {
+            }
+            if (!sample.poolName) {
               delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
                 sample.subjectName
               ]["folders"][sample.sampleName];
@@ -5848,6 +5849,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
                 subject.poolName
               ]?.["folders"]?.[subjectName]
             ) {
+              k, m;
               delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
                 subject.poolName
               ]["folders"][subjectName];
@@ -8972,19 +8974,6 @@ const addPoolTableRow = () => {
   }
 };
 
-//Deletes the entered subject folder from dsJSONObj and updates UI
-const deleteSubjectFolder = (subjectDeleteButton) => {
-  const subjectIdCellToDelete = subjectDeleteButton.closest("tr");
-  const subjectIdToDelete = subjectIdCellToDelete.find(".subject-id").text();
-  //delete the table row element in the UI
-  subjectIdCellToDelete.remove();
-  //Update subject table row indices
-  updateGuidedTableIndices("subject-table-index");
-  //delete the subject folder from sodaJSONobj
-  delete sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][subjectIdToDelete];
-  //delete the subject folder from the dataset structure obj
-  delete datasetStructureJSONObj["folders"]["primary"]["folders"][subjectIdToDelete];
-};
 //deletes subject from jsonObj and UI
 const deleteSubject = (subjectDeleteButton) => {
   const subjectIdCellToDelete = subjectDeleteButton.closest("tr");
@@ -9001,6 +8990,7 @@ const deleteSubject = (subjectDeleteButton) => {
   //remove the add subject help text
   document.getElementById("guided-add-subject-instructions").classList.add("hidden");
 };
+
 const deletePool = (poolDeleteButton) => {
   const poolIdCellToDelete = poolDeleteButton.closest("tr");
   const poolIdToDelete = poolIdCellToDelete.find(".pool-id").text();
@@ -9772,6 +9762,7 @@ const renderSubjectsMetadataAsideItems = async () => {
       });
       subjectsMetadataResponse = subjectsMetadataResponse.data.subject_file_rows;
       subjectsTableData = subjectsMetadataResponse;
+      console.log(subjectsTableData);
       sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-subjects-metadata-tab");
     } catch (error) {
       console.log("Unable to fetch subjects metadata" + error);
