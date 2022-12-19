@@ -11092,6 +11092,7 @@ $(document).ready(async () => {
       guidedUploadStatusIcon("guided-dataset-tags-upload-status", "error");
     }
   };
+
   const guidedGrantUserPermission = async (
     bfAccount,
     datasetName,
@@ -11099,21 +11100,37 @@ $(document).ready(async () => {
     userUUID,
     selectedRole
   ) => {
-    log.info("Adding a permission for a user on a dataset");
-
-    const userPermissionUploadElement = `
-        <tr id="guided-dataset-${userUUID}-permissions-upload-tr" class="permissions-upload-tr">
-          <td class="middle aligned" id="guided-dataset-${userUUID}-permissions-upload-text">
-            Granting ${userName} ${selectedRole} permissions...
-          </td>
-          <td class="middle aligned text-center collapsing border-left-0 p-0">
-            <div
-              class="guided--container-upload-status"
-              id="guided-dataset-${userUUID}-permissions-upload-status"
-            ></div>
-          </td>
-        </tr>
-      `;
+    let userPermissionUploadElement = "";
+    if (selectedRole === "remove current permissions") {
+      log.info("Removing a permission for a user on a dataset");
+      userPermissionUploadElement = `
+      <tr id="guided-dataset-${userUUID}-permissions-upload-tr" class="permissions-upload-tr">
+        <td class="middle aligned" id="guided-dataset-${userUUID}-permissions-upload-text">
+          Removing ${userName} permissions...
+        </td>
+        <td class="middle aligned text-center collapsing border-left-0 p-0">
+          <div
+            class="guided--container-upload-status"
+            id="guided-dataset-${userUUID}-permissions-upload-status"
+          ></div>
+        </td>
+      </tr>
+    `;
+    } else {
+      log.info("Adding a permission for a user on a dataset");
+      userPermissionUploadElement = `
+      <tr id="guided-dataset-${userUUID}-permissions-upload-tr" class="permissions-upload-tr">
+        <td class="middle aligned" id="guided-dataset-${userUUID}-permissions-upload-text">
+          Granting ${userName} ${selectedRole} permissions...
+        </td>
+        <td class="middle aligned text-center collapsing border-left-0 p-0">
+          <div
+            class="guided--container-upload-status"
+            id="guided-dataset-${userUUID}-permissions-upload-status"
+          ></div>
+        </td>
+      </tr>`;
+    }
 
     //apend the upload element to the end of the table body
     document
@@ -11141,12 +11158,23 @@ $(document).ready(async () => {
           },
         }
       );
-      guidedUploadStatusIcon(`guided-dataset-${userUUID}-permissions-upload-status`, "success");
-      userPermissionUploadStatusText.innerHTML = `${selectedRole} permissions granted to user: ${userName}`;
-      log.info(`${selectedRole} permissions granted to ${userName}`);
+
+      if (selectedRole === "remove current permissions") {
+        guidedUploadStatusIcon(`guided-dataset-${userUUID}-permissions-upload-status`, "success");
+        userPermissionUploadStatusText.innerHTML = `${selectedRole} permissions removed for user: ${userName}`;
+        log.info(`${selectedRole} permissions granted to ${userName}`);
+      } else {
+        guidedUploadStatusIcon(`guided-dataset-${userUUID}-permissions-upload-status`, "success");
+        userPermissionUploadStatusText.innerHTML = `${selectedRole} permissions removed for user: ${userName}`;
+        log.info(`${selectedRole} permissions granted to ${userName}`);
+      }
     } catch (error) {
       guidedUploadStatusIcon(`guided-dataset-${userUUID}-permissions-upload-status`, "error");
-      userPermissionUploadStatusText.innerHTML = `Failed to grant ${selectedRole} permissions to ${userName}`;
+      if (selectedRole === "remove current permissions") {
+        userPermissionUploadStatusText.innerHTML = `Failed to remove permissions for ${userName}`;
+      } else {
+        userPermissionUploadStatusText.innerHTML = `Failed to grant ${selectedRole} permissions to ${userName}`;
+      }
       log.error(error);
       console.error(error);
       let emessage = userError(error);
@@ -11158,13 +11186,25 @@ $(document).ready(async () => {
     //filter user permissions with loggedInUser key
     console.log("adding here?");
     const promises = userPermissionsArray.map((userPermission) => {
-      return guidedGrantUserPermission(
-        bfAccount,
-        datasetName,
-        userPermission.userName,
-        userPermission.UUID,
-        userPermission.permission
-      );
+      if (userPermission?.["deleteFromPennsieve"] === true) {
+        console.log(userPermission);
+        console.log("above should be deleted");
+        return guidedGrantUserPermission(
+          bfAccount,
+          datasetName,
+          userPermission.userName,
+          userPermission.UUID,
+          "remove current permissions"
+        );
+      } else {
+        return guidedGrantUserPermission(
+          bfAccount,
+          datasetName,
+          userPermission.userName,
+          userPermission.UUID,
+          userPermission.permission
+        );
+      }
     });
     const result = await Promise.allSettled(promises);
   };
@@ -11176,7 +11216,23 @@ $(document).ready(async () => {
     teamString,
     selectedRole
   ) => {
-    const teamPermissionUploadElement = `
+    let teamPermissionUploadElement = "";
+    if (selectedRole === "remove current permissions") {
+      teamPermissionUploadElement = `
+        <tr id="guided-dataset-${teamString}-permissions-upload-tr" class="permissions-upload-tr">
+          <td class="middle aligned" id="guided-dataset-${teamString}-permissions-upload-text">
+            Remove ${teamString} permissions.
+          </td>
+          <td class="middle aligned text-center collapsing border-left-0 p-0">
+            <div
+              class="guided--container-upload-status"
+              id="guided-dataset-${teamString}-permissions-upload-status"
+            ></div>
+          </td>
+        </tr>
+      `;
+    } else {
+      teamPermissionUploadElement = `
       <tr id="guided-dataset-${teamString}-permissions-upload-tr" class="permissions-upload-tr">
         <td class="middle aligned" id="guided-dataset-${teamString}-permissions-upload-text">
           Granting ${teamString} ${selectedRole} permissions.
@@ -11189,6 +11245,7 @@ $(document).ready(async () => {
         </td>
       </tr>
     `;
+    }
 
     //apend the upload element to the end of the table body
     document
@@ -11216,8 +11273,13 @@ $(document).ready(async () => {
         }
       );
       guidedUploadStatusIcon(`guided-dataset-${teamString}-permissions-upload-status`, "success");
-      teamPermissionUploadStatusText.innerHTML = `${selectedRole} permissions granted to team: ${teamString}`;
-      log.info(`${selectedRole} permissions granted to ${teamString}`);
+      if (selectedRole === "remove current permissions") {
+        teamPermissionUploadStatusText.innerHTML = `Permissions removed from team: ${teamString}`;
+        log.info(`Permissions remove from: ${teamString}`);
+      } else {
+        teamPermissionUploadStatusText.innerHTML = `${selectedRole} permissions granted to team: ${teamString}`;
+        log.info(`${selectedRole} permissions granted to ${teamString}`);
+      }
     } catch (error) {
       guidedUploadStatusIcon(`guided-dataset-${teamString}-permissions-upload-status`, "error");
       teamPermissionUploadStatusText.innerHTML = `Failed to grant ${selectedRole} permissions to ${teamString}`;
@@ -11230,13 +11292,23 @@ $(document).ready(async () => {
 
   const guidedAddTeamPermissions = async (bfAccount, datasetName, teamPermissionsArray) => {
     const promises = teamPermissionsArray.map((teamPermission) => {
-      return guidedGrantTeamPermission(
-        bfAccount,
-        datasetName,
-        teamPermission.UUID,
-        teamPermission.teamString,
-        teamPermission.permission
-      );
+      if (teamPermission?.["deleteFromPennsieve"] === true) {
+        return guidedGrantTeamPermission(
+          bfAccount,
+          datasetName,
+          teamPermission.UUID,
+          teamPermission.teamString,
+          "remove current permissions"
+        );
+      } else {
+        return guidedGrantTeamPermission(
+          bfAccount,
+          datasetName,
+          teamPermission.UUID,
+          teamPermission.teamString,
+          teamPermission.permission
+        );
+      }
     });
     const result = await Promise.allSettled(promises);
   };
