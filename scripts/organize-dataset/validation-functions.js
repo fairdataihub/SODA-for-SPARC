@@ -44,7 +44,7 @@ const validateOrganizedDataset = async () => {
     // this works because the returned validation results are in an Object Literal. If the returned object is changed this will break (e.g., an array will have a length property as well)
     let hasValidationErrors = Object.getOwnPropertyNames(errors).length >= 1;
 
-    Swal.fire({
+    await Swal.fire({
         title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
         text: hasValidationErrors
             ? `Please fix the errors listed in the table below. 
@@ -64,15 +64,27 @@ const validateOrganizedDataset = async () => {
         return;
     }
 
+    // get validation table body
+    let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
+
+    // remove its children
+    while (validationErrorsTable.firstChild) {
+        validationErrorsTable.removeChild(validationErrorsTable.firstChild);
+    }
+
     // display errors onto the page
     displayValidationErrors(errors, document.querySelector("#organize--table-validation-errors tbody"));
 
     // show the validation errors to the user
     document.querySelector("#organize--table-validation-errors").style.visibility = "visible";
 
+    // TODO: 
     // lock the continue button if results are not valid ( for now since the validator is incomplete just show a warning message instead ) -- Maybe never lock it? WIP datasets may not be 
     // able to pass validation? Well not really just add make things valid as you go. NO metadata equals no validation errors in any case. But in those situations the 
-    // dataset isn't even ready yet. 
+    // dataset isn't even ready yet. ( validator-phase-4-simple )
+
+    // scroll so that the table is in the viewport 
+    document.querySelector("#organize--table-validation-errors").scrollIntoView({'behavior': 'smooth'});
 }
 
 
