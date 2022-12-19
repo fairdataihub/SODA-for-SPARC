@@ -90,18 +90,7 @@ const getFormattedSodaJSON = async () => {
     //       We do use timestamps I believe but this shouldnt cause issue. Will test. 
     let sodaJSONObjCopy = JSON.parse(JSON.stringify(sodaJSONObj));
 
-    // TODO: Move page to after the user selects their dataset generation location ( figure out how to handle update existing ) to make this dynamic 
-    //      for now will set generate-dataset to Local for testing 
-    // sodaJSONObjCopy["generate-dataset"] = {
-    //         "destination": "local",
-    //         "path": "/Users/aaronm/Desktop",
-    //         "dataset-name": "local-skeleton-test",
-    //         "generate-option": "new",
-    //         "if-existing": "new"
-    // }
-
     // updateJSON structure after Generate dataset tab
-    // TODO: Update to work on the given soda json so it will not change the main one just the above copy
     updateJSONStructureGenerate(false, sodaJSONObjCopy);
 
     setSodaJSONStartingPoint(sodaJSONObjCopy);
