@@ -105,6 +105,7 @@ def get_path_prefix(path):
 ### START OF SCRIPT ###
 
 def create(soda_json_structure, selected_account, selected_dataset, pennsieve_pipeline):
+    # TODO: Need to run through update_bf_dataset function for correct metadata generation or need to emulate it ( validator-phase-4-simple)
     """
     Creates a skeleton dataset ( a set of empty data files but with valid metadata files ) of the given soda_json_structure on the local machine.
     Used for validating a user's dataset before uploading it to Pennsieve.
