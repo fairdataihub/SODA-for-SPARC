@@ -4,9 +4,10 @@
 // TODO: Pennsieve vs local considerations for result parsing and error handling
 const validateOrganizedDataset = async () => {
     // send the soda json object to the soda api to create a skeleton dataset
+    // TODO: Massage the soda_json_object to match the state it is in when it is sent to the /curate endpoint 
     let skeletonDatasetResponse
     try {
-        skeletonDatasetResponse = await client.post("/skeleton_dataset", {
+        skeletonDatasetResponse = await client.post("/skeleton_dataset/", {
             sodajsonobject: sodaJSONObj,
             selected_account: defaultBfAccount,
             selected_dataset: defaultBfDataset,
@@ -19,13 +20,14 @@ const validateOrganizedDataset = async () => {
         return
     }
 
+    let pathToSkeletonDataset = skeletonDatasetResponse.data["path_to_skeleton_dataset"];
+
     // call the soda api with the path to the skeleton dataset to validate the dataset
     let validationResponse
     try {
         validationResponse = await client.get("/validator/local_dataset_validation_result", {
-            // TODO: Dynamic path depending upon OS
             params: {
-                path: 'SODA/skeleton'
+                path: pathToSkeletonDataset
             }
         }, {
             timeout: 0
