@@ -24,8 +24,6 @@ const validateOrganizedDataset = async () => {
 
     let pathToSkeletonDataset = skeletonDatasetResponse.data["path_to_skeleton_dataset"];
 
-    return
-
     // call the soda api with the path to the skeleton dataset to validate the dataset
     let validationResponse
     try {
