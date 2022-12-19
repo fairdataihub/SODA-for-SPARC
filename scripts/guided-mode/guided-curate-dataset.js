@@ -1,3 +1,58 @@
+const folderImportedFromPennsieve = (folderJSONPath) => {
+  return folderJSONPath.type === "bf";
+};
+
+const guidedModifyPennsieveFolder = (folderJSONPath, action) => {
+  //Actions can be "delete"  or "restore"
+  if (!folderJSONPath) {
+    console.log("The folder path does not exist");
+    return;
+  }
+  if (action === "delete") {
+    if (!folderJSONPath["action"].includes("recursive_deleted")) {
+      folderJSONPath["action"].push("recursive_deleted");
+    }
+    recursive_mark_sub_files_deleted(folderJSONPath, "delete");
+  }
+  if (action === "restore") {
+    folderJSONPath["action"] = folderJSONPath["action"].filter(
+      (action) => action !== "recursive_deleted"
+    );
+    recursive_mark_sub_files_deleted(folderJSONPath, "restore");
+  }
+};
+
+document.getElementById("guided-button-has-code-data").addEventListener("click", () => {
+  const codeFolder = datasetStructureJSONObj["folders"]["code"];
+  if (codeFolder) {
+    if (folderImportedFromPennsieve(codeFolder)) {
+      // If the protocol folder is imported from Pennsieve, unmark it as deleted and update the UI
+      guidedModifyPennsieveFolder(codeFolder, "restore");
+      updateFolderStructureUI(highLevelFolderPageData.code);
+    }
+  }
+});
+document.getElementById("guided-button-has-protocol-data").addEventListener("click", () => {
+  const protocolFolder = datasetStructureJSONObj["folders"]["protocol"];
+  if (protocolFolder) {
+    if (folderImportedFromPennsieve(protocolFolder)) {
+      // If the protocol folder is imported from Pennsieve, unmark it as deleted and update the UI
+      guidedModifyPennsieveFolder(protocolFolder, "restore");
+      updateFolderStructureUI(highLevelFolderPageData.protocol);
+    }
+  }
+});
+document.getElementById("guided-button-has-docs-data").addEventListener("click", () => {
+  const docsFolder = datasetStructureJSONObj["folders"]["docs"];
+  if (docsFolder) {
+    if (folderImportedFromPennsieve(docsFolder)) {
+      // If the protocol folder is imported from Pennsieve, unmark it as deleted and update the UI
+      guidedModifyPennsieveFolder(docsFolder, "restore");
+      updateFolderStructureUI(highLevelFolderPageData.docs);
+    }
+  }
+});
+
 const guidedSetNavLoadingState = (loadingState) => {
   //depending on the boolean loading state will determine whether or not
   //to disable the primary and sub buttons along with the nav menu
@@ -323,8 +378,13 @@ const savePageChanges = async (pageBeingLeftID) => {
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
           });
+
           if (deleteCodeFolderWithData) {
-            delete datasetStructureJSONObj["folders"]["code"];
+            if (folderImportedFromPennsieve(codeFolder)) {
+              guidedModifyPennsieveFolder(codeFolder, "delete");
+            } else {
+              delete datasetStructureJSONObj["folders"]["code"];
+            }
             guidedSkipPage("guided-add-code-metadata-tab");
           } else {
             guidedButtonUserHasCodeData.click();
@@ -385,7 +445,11 @@ const savePageChanges = async (pageBeingLeftID) => {
             backdrop: "rgba(0,0,0, 0.4)",
           });
           if (deleteProtocolFolderWithData) {
-            delete datasetStructureJSONObj["folders"]["protocol"];
+            if (folderImportedFromPennsieve(protocolFolder)) {
+              guidedModifyPennsieveFolder(protocolFolder, "delete");
+            } else {
+              delete datasetStructureJSONObj["folders"]["protocol"];
+            }
           } else {
             guidedButtonUserHasProtocolData.click();
           }
@@ -441,7 +505,11 @@ const savePageChanges = async (pageBeingLeftID) => {
             backdrop: "rgba(0,0,0, 0.4)",
           });
           if (deleteDocsFolderWithData) {
-            delete datasetStructureJSONObj["folders"]["docs"];
+            if (folderImportedFromPennsieve(docsFolder)) {
+              guidedModifyPennsieveFolder(docsFolder, "delete");
+            } else {
+              delete datasetStructureJSONObj["folders"]["docs"];
+            }
           } else {
             guidedButtonUserHasDocsData.click();
           }
@@ -3045,7 +3113,8 @@ const cleanUpEmptyGuidedStructureFolders = async (
               delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
                 sample.poolName
               ]["folders"][sample.subjectName]["folders"][sample.sampleName];
-            } else {
+            }
+            if (!sample.poolName) {
               delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
                 sample.subjectName
               ]["folders"][sample.sampleName];
@@ -3463,14 +3532,6 @@ const openPage = async (targetPageID) => {
     }
     if (targetPageID === "guided-create-submission-metadata-tab") {
       openSubPageNavigation(targetPageID);
-    }
-
-    if (targetPageID === "guided-protocol-folder-tab") {
-      //Append the guided-file-explorer element to the derivative folder organization container
-      $("#guided-file-explorer-elements").appendTo($("#guided-user-has-protocol-data"));
-      //Remove hidden class from file explorer element in case it was hidden
-      //when showing the intro for prim/src/deriv organization
-      document.getElementById("guided-file-explorer-elements").classList.remove("hidden");
     }
 
     if (targetPageID === "guided-code-folder-tab") {
@@ -5874,6 +5935,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
                 subject.poolName
               ]?.["folders"]?.[subjectName]
             ) {
+              k, m;
               delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
                 subject.poolName
               ]["folders"][subjectName];
@@ -8998,19 +9060,6 @@ const addPoolTableRow = () => {
   }
 };
 
-//Deletes the entered subject folder from dsJSONObj and updates UI
-const deleteSubjectFolder = (subjectDeleteButton) => {
-  const subjectIdCellToDelete = subjectDeleteButton.closest("tr");
-  const subjectIdToDelete = subjectIdCellToDelete.find(".subject-id").text();
-  //delete the table row element in the UI
-  subjectIdCellToDelete.remove();
-  //Update subject table row indices
-  updateGuidedTableIndices("subject-table-index");
-  //delete the subject folder from sodaJSONobj
-  delete sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][subjectIdToDelete];
-  //delete the subject folder from the dataset structure obj
-  delete datasetStructureJSONObj["folders"]["primary"]["folders"][subjectIdToDelete];
-};
 //deletes subject from jsonObj and UI
 const deleteSubject = (subjectDeleteButton) => {
   const subjectIdCellToDelete = subjectDeleteButton.closest("tr");
@@ -9027,6 +9076,7 @@ const deleteSubject = (subjectDeleteButton) => {
   //remove the add subject help text
   document.getElementById("guided-add-subject-instructions").classList.add("hidden");
 };
+
 const deletePool = (poolDeleteButton) => {
   const poolIdCellToDelete = poolDeleteButton.closest("tr");
   const poolIdToDelete = poolIdCellToDelete.find(".pool-id").text();
@@ -9267,56 +9317,6 @@ $("#guided-button-no-source-data").on("click", () => {
         //User cancels
         //reset button UI to how it was before the user clicked no source files
         $("#guided-button-has-source-data").click();
-      }
-    });
-  }
-});
-
-/*********** Derivative page functions ***********/
-$("#guided-button-has-derivative-data").on("click", () => {
-  if (datasetStructureJSONObj["folders"]["derivative"] == undefined)
-    datasetStructureJSONObj["folders"]["derivative"] = {
-      folders: {},
-      files: {},
-      type: "",
-      action: [],
-    };
-  $("#guided-file-explorer-elements").appendTo($("#guided-user-has-derivative-data"));
-  updateFolderStructureUI(highLevelFolderPageData.derivative);
-});
-$("#guided-button-no-derivative-data").on("click", () => {
-  //ask user to confirm they would like to delete derivative folder if it exists
-  if (datasetStructureJSONObj["folders"]["derivative"] != undefined) {
-    Swal.fire({
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      title:
-        "Reverting your decision will wipe out any changes you have made to the derivative folder.",
-      text: "Are you sure you would like to delete your derivative folder progress?",
-      icon: "warning",
-      showConfirmButton: true,
-      confirmButtonText: "Delete",
-      confirmButtonColor: "#3085d6 !important",
-      showCancelButton: true,
-      focusCancel: true,
-      reverseButtons: reverseSwalButtons,
-      heightAuto: false,
-      customClass: "swal-wide",
-      backdrop: "rgba(0,0,0, 0.4)",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        //User agrees to delete derivative folder
-        delete datasetStructureJSONObj["folders"]["derivative"];
-      } else {
-        //User cancels
-        //reset button UI to how it was before the user clicked no derivative files
-        $("#guided-button-has-derivative-data").click();
       }
     });
   }
@@ -9918,6 +9918,7 @@ const renderSubjectsMetadataAsideItems = async () => {
       });
       subjectsMetadataResponse = subjectsMetadataResponse.data.subject_file_rows;
       subjectsTableData = subjectsMetadataResponse;
+      console.log(subjectsTableData);
       sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-subjects-metadata-tab");
     } catch (error) {
       console.log("Unable to fetch subjects metadata" + error);
