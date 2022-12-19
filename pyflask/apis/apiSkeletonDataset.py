@@ -31,13 +31,14 @@ class SkeletonDataset(Resource):
         # if "selected_dataset" not in data:
         #     api.abort(400, "Need the selected_dataset to create the skeleton dataset structure")
 
-
-        print("HERHER")
         
 
         sodajsonobject = data["sodajsonobject"]
-        selected_account = data["selected_account"]
-        selected_dataset = data["selected_dataset"]
+        selected_account = None
+        selected_dataset = None
+        if sodajsonobject["generate-dataset"]["destination"] == "bf":
+            selected_account = data["selected_account"]
+            selected_dataset = data["selected_dataset"]
 
         # create the skeleton dataset structure in the ~/SODA/skeleton directory
         try:
