@@ -3,12 +3,13 @@
 // Validate the dataset that has just been organized in Organize Dataset Step 6: Validate Dataset
 // TODO: Pennsieve vs local considerations for result parsing and error handling
 const validateOrganizedDataset = async () => {
-    // send the soda json object to the soda api to create a skeleton dataset
-    // TODO: Massage the soda_json_object to match the state it is in when it is sent to the /curate endpoint 
+
+    let sodaJSONObject = getFormattedSodaJSON()
+
     let skeletonDatasetResponse
     try {
         skeletonDatasetResponse = await client.post("/skeleton_dataset/", {
-            sodajsonobject: sodaJSONObj,
+            sodajsonobject: sodaJSONObject,
             selected_account: defaultBfAccount,
             selected_dataset: defaultBfDataset,
         }, {
@@ -17,7 +18,7 @@ const validateOrganizedDataset = async () => {
     } catch (error) {
         clientError(error)
         // TODO: SWAL 
-        return
+        return 
     }
 
     let pathToSkeletonDataset = skeletonDatasetResponse.data["path_to_skeleton_dataset"];
@@ -71,6 +72,86 @@ const validateOrganizedDataset = async () => {
     // lock the continue button if results are not valid ( for now since the validator is incomplete just show a warning message instead ) -- Maybe never lock it? WIP datasets may not be 
     // able to pass validation? Well not really just add make things valid as you go. NO metadata equals no validation errors in any case. But in those situations the 
     // dataset isn't even ready yet. 
+}
 
 
+
+/**
+ * Create a deep copy of the soda json object and format it so it can be used to generate a skeleton dataset.
+ * @returns {Object} The formatted soda json object; ready for being used to generate a skeleton dataset
+ */
+const getFormattedSodaJSON = async () => {
+    // send the soda json object to the soda api to create a skeleton dataset
+    // TODO: Massage the soda_json_object to match the state it is in when it is sent to the /curate endpoint 
+    // TODO: Ensure no data loss with this method of creating a deep copy. Should be fine since we only use simple types. 
+    //       We do use timestamps I believe but this shouldnt cause issue. Will test. 
+    let sodaJSONObjCopy = JSON.parse(JSON.stringify(sodaJSONObj));
+
+    // updateJSON structure after Generate dataset tab
+    // TODO: Update to work on the given soda json so it will not change the main one just the above copy
+    updateJSONStructureGenerate();
+
+    setSodaJSONStartingPoint(sodaJSONObjCopy);
+
+    let [dataset_name, dataset_destination] = setDatasetNameAndDestination(sodaJSONObjCopy);
+
+    generateProgressBar.value = 0;
+
+    progressStatus.innerHTML = "Please wait while we verify a few things...";
+
+    statusText = "Please wait while we verify a few things...";
+    if (dataset_destination == "Pennsieve") {
+        /// TODO: Uncomment this
+        // let supplementary_checks = await run_pre_flight_checks(false);
+        // if (!supplementary_checks) {
+        //   $("#sidebarCollapse").prop("disabled", false);
+        //   return;
+        // }
+    }
+
+    // from here you can modify
+    //   document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
+    //   document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
+    //   progressStatus.innerHTML = "";
+    //   document.getElementById("div-new-curate-progress").style.display = "none";
+
+    progressBarNewCurate.value = 0;
+
+    deleteTreeviewFiles(sodaJSONObjCopy);
+
+    document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
+    let errorMessage = await checkEmptyFilesAndFolders(sodaJSONObjCopy);
+
+
+    if (errorMessage) {
+        errorMessage += "Would you like to continue?";
+        errorMessage = "<div style='text-align: left'>" + errorMessage + "</div>";
+        Swal.fire({
+            icon: "warning",
+            html: errorMessage,
+            showCancelButton: true,
+            cancelButtonText: "No, I want to review my files",
+            focusCancel: true,
+            confirmButtonText: "Yes, Continue",
+            backdrop: "rgba(0,0,0, 0.4)",
+            reverseButtons: reverseSwalButtons,
+            heightAuto: false,
+            showClass: {
+                popup: "animate__animated animate__zoomIn animate__faster",
+            },
+            hideClass: {
+                popup: "animate__animated animate__zoomOut animate__faster",
+            },
+        }).then((result) => {
+            if (result.isConfirmed) {
+                initiate_generate();
+            } else {
+                $("#sidebarCollapse").prop("disabled", false);
+                document.getElementById("para-please-wait-new-curate").innerHTML = "Return to make changes";
+                document.getElementById("div-generate-comeback").style.display = "flex";
+            }
+        });
+    }
+
+    return sodaJSONObjCopy;
 }
