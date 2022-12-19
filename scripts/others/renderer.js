@@ -7261,7 +7261,7 @@ document.getElementById("button-generate").addEventListener("click", async funct
   $("#sidebarCollapse").prop("disabled", false);
 
   // updateJSON structure after Generate dataset tab
-  updateJSONStructureGenerate();
+  updateJSONStructureGenerate(false, sodaJSONObj);
 
   setSodaJSONStartingPoint(sodaJSONObj);
 

@@ -23,6 +23,8 @@ const validateOrganizedDataset = async () => {
 
     let pathToSkeletonDataset = skeletonDatasetResponse.data["path_to_skeleton_dataset"];
 
+    return
+
     // call the soda api with the path to the skeleton dataset to validate the dataset
     let validationResponse
     try {
@@ -89,7 +91,7 @@ const getFormattedSodaJSON = async () => {
 
     // updateJSON structure after Generate dataset tab
     // TODO: Update to work on the given soda json so it will not change the main one just the above copy
-    updateJSONStructureGenerate();
+    updateJSONStructureGenerate(false, sodaJSONObjCopy);
 
     setSodaJSONStartingPoint(sodaJSONObjCopy);
 

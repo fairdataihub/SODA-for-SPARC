@@ -2849,7 +2849,7 @@ const recursive_remove_local_deleted_files = (dataset_folder) => {
 
 // Step 6: Generate dataset
 // update JSON object after users finish Generate dataset step
-const updateJSONStructureGenerate = (progress = false) => {
+const updateJSONStructureGenerate = (progress = false, sodaJSONObj) => {
   let starting_point = sodaJSONObj["starting-point"]["type"];
   if (sodaJSONObj["starting-point"]["type"] == "bf") {
     sodaJSONObj["generate-dataset"] = {
@@ -3199,7 +3199,7 @@ const updateJSONObjectProgress = () => {
   updateJSONStructureMetadataFiles();
   updateJSONStructureManifest();
   updateJSONStructureDSstructure();
-  updateJSONStructureGenerate(true);
+  updateJSONStructureGenerate(true, sodaJSONObj);
 };
 
 const saveSODAJSONProgress = (progressFileName) => {
