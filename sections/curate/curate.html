@@ -3344,7 +3344,7 @@
           <div  
             class="parent-tabs"
             id="validate-dataset-tab"
-            style="grid-template-rows: 10% 90%"
+            style="display: flex; flex-direction: column;"
           >
             <h3
             class="question-title"
@@ -3367,14 +3367,14 @@
           </h3>
 
           <!--Some random stuff here woo woo -->
-          <div>
+          <div style="display: flex; flex-direction: column;">
             <h5
               style="text-align: center; color: var(--color); font-size: 17px"
             >
               Run the validator before generating your dataset to ensure your dataset follows the SPARC Dataset Structure.
             </h5>
             <button 
-              style="text-align:center; color: var(--color); font-size:17px" 
+              style="color: var(--color); font-size:17px; align-self: center; margin-top: 100px;" 
               id="organize--button-validate-dataset"
               onclick="validateOrganizedDataset()">
                 Validate Dataset
