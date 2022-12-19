@@ -9080,25 +9080,35 @@ const removePennsievePermission = (clickedPermissionRemoveButton) => {
   let permissionEntityType = permissionElementToRemove.attr("data-entity-type");
   let permissionNameToRemove = permissionElementToRemove.find(".permission-name-cell").text();
   let permissionTypeToRemove = permissionElementToRemove.find(".permission-type-cell").text();
-  // permissionElementToRemove.prevObject[0]
-  // console.log(permissionElementToRemove.prevObject[0]).classList.remove("fa-trash-alt");
-  if (permissionElementToRemove.prevObject[0].classList.contains("fa-trash-alt")) {
-    permissionElementToRemove.prevObject[0].classList.remove("fa-trash-alt");
-    permissionElementToRemove.prevObject[0].classList.add("fa-trash-arrow-up");
-    permissionElementToRemove.prevObject[0].style.color = "#007bff";
+
+  console.log(permissionElementToRemove.prevObject[0].classList);
+
+  if (permissionElementToRemove.prevObject[0].classList.contains("btn-danger")) {
+    permissionElementToRemove.prevObject[0].style.display = "none";
+    console.log(permissionElementToRemove.prevObject[0]);
+    permissionElementToRemove.prevObject[0].nextElementSibling.style.display = "inline-block";
+    // add removeFromPennsieve css
+    permissionElementToRemove.prevObject[0].parentElement.parentElement.children[0].classList.add(
+      "removeFromPennsieve"
+    );
+    permissionElementToRemove.prevObject[0].parentElement.parentElement.children[0].style.opacity =
+      "0.5";
+    permissionElementToRemove.prevObject[0].parentElement.parentElement.children[1].style.opacity =
+      "0.5";
   } else {
     //restore was triggered
-    permissionElementToRemove.prevObject[0].classList.remove("fa-trash-arrow-up");
-    permissionElementToRemove.prevObject[0].classList.add("fa-trash-alt");
-    permissionElementToRemove.prevObject[0].style.color = "red";
+    permissionElementToRemove.prevObject[0].style.display = "none";
+    console.log(permissionElementToRemove.prevObject[0]);
+    permissionElementToRemove.prevObject[0].previousElementSibling.style.display = "inline-block";
+    // remove removeFromPennsieve css
+    permissionElementToRemove.prevObject[0].parentElement.parentElement.children[0].classList.remove(
+      "removeFromPennsieve"
+    );
+    permissionElementToRemove.prevObject[0].parentElement.parentElement.children[0].style.opacity =
+      "1";
+    permissionElementToRemove.prevObject[0].parentElement.parentElement.children[1].style.opacity =
+      "1";
   }
-  console.log(permissionEntityType);
-  console.log(permissionNameToRemove);
-  console.log(permissionTypeToRemove);
-  console.log("need to apply css to show user that role will be deleted");
-  // modify this element
-  //permissionElementToRemove
-  //change key to false (deleteFromPennsieve)
 };
 
 const removePermission = (clickedPermissionRemoveButton) => {
@@ -9154,11 +9164,7 @@ const createPermissionsTableRowElement = (entityType, name, permission) => {
       <td class="middle aligned permission-name-cell">${name}</td>
       <td class="middle aligned remove-left-border permission-type-cell">${permission}</td>
       <td class="middle aligned text-center remove-left-border" style="width: 20px">
-        <i
-        class="far fa-trash-alt"
-        style="color: red; cursor: pointer"
-        onclick="removePermission($(this))"
-        ></i>
+        <button type="button" class="btn btn-danger btn-sm" onclick="removePermission($(this))">Delete</button>
       </td>
     </tr>
   `;
@@ -9170,11 +9176,8 @@ const createPennsievePermissionsTableRowElement = (entityType, name, permission)
       <td class="middle aligned permission-name-cell">${name}</td>
       <td class="middle aligned remove-left-border permission-type-cell">${permission}</td>
       <td class="middle aligned text-center remove-left-border" style="width: 20px">
-        <i
-        class="far fa-trash-alt"
-        style="color: red; cursor: pointer"
-        onclick="removePennsievePermission($(this))"
-        ></i>
+      <button type="button" class="btn btn-danger btn-sm" onclick="removePennsievePermission($(this))">Delete</button>
+      <button type="button" class="btn btn-sm" style="display: none;color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);" onclick="removePennsievePermission($(this))">Restore</button>
       </td>
     </tr>
   `;

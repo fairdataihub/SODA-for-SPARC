@@ -1442,20 +1442,17 @@ h1.guided--text-sub-step {
   opacity: 0.5;
 }
 
-.myFile.deleted_file:before {
-  opacity: 0.5;
+.removeFromPennsieve:before {
 }
 
-.myFile.deleted_file:after {
+.removeFromPennsieve:after {
+  /* opacity: 0.5; */
   content: "\00D7";
-  position: absolute;
-  bottom: 26px;
-  right: 23px;
-  line-height: 1;
   color: rgb(252, 0, 0);
   z-index: 10;
   font-size: 35px;
   font-family: helvetica, arial, sans-serif;
   font-weight: bold;
   pointer-events: none;
+  vertical-align: middle;
 }
