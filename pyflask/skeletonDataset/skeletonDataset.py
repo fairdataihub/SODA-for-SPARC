@@ -155,13 +155,18 @@ def create(soda_json_structure, selected_account, selected_dataset, pennsieve_pi
             # create the file at the root of the skeleton dataset 
             shutil.copyfile(file_location, os.path.join(path, metadata_file_name))
 
-    # # run the validator on the skeleton
+
+    return {"path_to_skeleton_dataset": path}
+
+    # run the validator on the skeleton
     # norm_ds_path = Path(path)
 
     # # validate the dataset
     # blob = validate(norm_ds_path) 
 
-    # print(blob)
+    # # write the blob to validation.txt in the current directory
+    # with open("validation.txt", "w") as f:
+    #     f.write(str(blob))
 
     # validate_validation_result(blob)
 

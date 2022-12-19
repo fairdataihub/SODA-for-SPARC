@@ -1,11 +1,16 @@
 
-from flask_restx import Resource
+from flask_restx import Resource, fields
 from flask import request
 from namespaces import get_namespace, NamespaceEnum
 from skeletonDataset import create
 from errorHandlers import notBadRequestException
 
 api = get_namespace(NamespaceEnum.SKELETON_DATASET)
+
+
+skeleton_model = api.model('Skeleton', {
+    'path_to_skeleton_dataset': fields.String(required=True, description="Path to the skeleton dataset structure"),
+})
 
 
 @api.route('/')
