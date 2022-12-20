@@ -18,7 +18,17 @@ const validateOrganizedDataset = async () => {
         })
     } catch (error) {
         clientError(error)
-        // TODO: SWAL 
+        await Swal.fire({
+            title: "Could not validate your dataset.",
+            message: `SODA has encountered the following problem: ${userErrorMessage(error)}`,
+            allowEscapeKey: true,
+            allowOutsideClick: false,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            timerProgressBar: false,
+            showConfirmButton: true,
+            icon: hasValidationErrors ? "error" : "success",
+        })
         return 
     }
 
@@ -36,7 +46,17 @@ const validateOrganizedDataset = async () => {
         })
     } catch (error) {
         clientError(error)
-        //TODO: SWAL
+        await Swal.fire({
+            title: "Could not validate your dataset.",
+            message: `SODA has encountered the following problem: ${userErrorMessage(error)}`,
+            allowEscapeKey: true,
+            allowOutsideClick: false,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            timerProgressBar: false,
+            showConfirmButton: true,
+            icon: hasValidationErrors ? "error" : "success",
+        })
     }
 
     let errors = validationResponse.data;
