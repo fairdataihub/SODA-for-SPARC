@@ -130,8 +130,7 @@ def remove_manifest_entry(manifest_id, file_id):
 
 
 
-_id = get_manifest_entry_id(3)
-remove_manifest_entry(3, _id)
+
 
 # ids = get_manifest_entry_id(6, 0)
 # print(type(ids))
@@ -149,10 +148,15 @@ remove_manifest_entry(3, _id)
 
 
 
+client = Pennsieve()
+local_ds = path.join(path.expanduser("~"), "Desktop", "DatasetTemplate")
+manifest = client.manifest.create(local_ds)
+client.manifest.upload(manifest.manifest_id)
 
-#local_ds = path.join(path.expanduser("~"), "Desktop", "DatasetTemplate")
-# manifest = client.manifest.create(local_ds)
+sub = client.subscribe(10)
 
+for msg in sub:
+    print(sub)
 
 
 
