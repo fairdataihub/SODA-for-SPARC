@@ -2097,7 +2097,7 @@ async function addCustomField(type, curationMode) {
   }
 }
 
-function addCustomHeader(type, customHeaderValue, curationMode) {
+const addCustomHeader = (type, customHeaderValue, curationMode) => {
   let curationModeSelectorPrefix = "";
   if (curationMode == "guided") {
     curationModeSelectorPrefix = "guided-";

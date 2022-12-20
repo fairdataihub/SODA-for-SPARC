@@ -9986,6 +9986,7 @@ const renderSubjectsMetadataAsideItems = async () => {
         },
       });
       subjectsMetadataResponse = subjectsMetadataResponse.data.subject_file_rows;
+      subjectsTableData = [];
       subjectsTableData = subjectsMetadataResponse;
       console.log(subjectsTableData);
       sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-subjects-metadata-tab");
@@ -10041,9 +10042,17 @@ const renderSubjectsMetadataAsideItems = async () => {
 
     //If custom fields have been added to the subjectsTableData, create a field for each custom field
     //added
-    for (let i = 0; i < subjectsTableData[0].length; i++) {
-      if (!subjectsFormNames.includes(subjectsTableData[0][i])) {
-        addCustomHeader("subjects", subjectsTableData[0][i], "guided");
+    // There are 27 standard fields for subjects so if there are more headers than that, there exists additional information
+    if (subjectsTableData[0].length > 27) {
+      for (let i = 27; i < subjectsTableData[0].length; i++) {
+        if (
+          !subjectsFormNames.includes(
+            subjectsTableData[0][i].charAt(0).toUpperCase() + subjectsTableData[0][i].slice(1)
+          ) ||
+          !subjectsFormNames.includes(subjectsTableData[0][i])
+        ) {
+          addCustomHeader("subjects", subjectsTableData[0][i], "guided");
+        }
       }
     }
   }
@@ -10109,6 +10118,7 @@ const renderSubjectsMetadataAsideItems = async () => {
     });
   });
 };
+
 const renderSamplesMetadataAsideItems = async () => {
   const asideElement = document.getElementById(`guided-samples-metadata-aside`);
   asideElement.innerHTML = "";
@@ -10134,7 +10144,9 @@ const renderSamplesMetadataAsideItems = async () => {
             .toString(),
         },
       });
+      //clear samples table data before
       samplesMetadataRes = samplesMetadataRes.data.sample_file_rows;
+      samplesTableData = [];
       samplesTableData = samplesMetadataRes;
       sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-samples-metadata-tab");
     } catch (error) {
@@ -10197,9 +10209,17 @@ const renderSamplesMetadataAsideItems = async () => {
 
   //If custom fields have been added to the samplesTableData, create a field for each custom field
   //added
-  for (let i = 0; i < samplesTableData[0].length; i++) {
-    if (!samplesFormNames.includes(samplesTableData[0][i])) {
-      addCustomHeader("samples", samplesTableData[0][i], "guided");
+  // Samples metadata have 19 standard fields to fill, if the sample has more then additional fields are included
+  if (samplesTableData[0].length > 19) {
+    for (let i = 19; i < samplesTableData[0].length; i++) {
+      if (
+        !samplesFormNames.includes(samplesTableData[0][i]) ||
+        !samplesFormNames.includes(
+          samplesTableData[0][i].charAt(0).toUpperCase() + samplesTableData[0][i].slice(1)
+        )
+      ) {
+        addCustomHeader("samples", samplesTableData[0][i], "guided");
+      }
     }
   }
 
