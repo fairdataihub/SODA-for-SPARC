@@ -2169,7 +2169,7 @@ const addCustomHeader = (type, customHeaderValue, curationMode) => {
       }
     }
   }
-}
+};
 
 function deleteCustomField(ev, customField, category, curationMode) {
   // category 0 => subjects;
