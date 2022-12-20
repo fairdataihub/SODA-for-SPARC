@@ -414,7 +414,8 @@ document.querySelector("#validate_dataset-1-local").addEventListener("click", as
   }
 
   // reset validation table
-  clearValidationResults();
+  let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
+  clearValidationResults(validationErrorsTable);
 
   // transition to the next question - uses transitionToValidateQuestionTwo
   transitionFreeFormMode(
@@ -444,7 +445,8 @@ document
     }
 
     // reset validation table
-    clearValidationResults();
+    let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
+    clearValidationResults(validationErrorsTable);
 
     // move to next question
     transitionFreeFormMode(
@@ -477,8 +479,10 @@ document.querySelector("#validate-local-dataset-path").addEventListener("click",
     // set the ccurrent section to active by removing prev
     document.querySelector("#validate_dataset-question-2").classList.remove("prev");
 
+    let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
+
     // reset validation table
-    clearValidationResults();
+    clearValidationResults(validationErrorsTable);
 
     // clear the input value
     this.value = "";
@@ -625,7 +629,9 @@ document
         return;
       }
 
-      clearValidationResults();
+        // get validation table body
+      let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
+      clearValidationResults(validationErrorsTable);
 
       // hide question 3
       let questionThreeSection = document.querySelector("#validate_dataset-question-3");
@@ -694,13 +700,10 @@ const undoOptionCardSelection = (activeOptionCard) => {
   activeOptionCard.classList.remove("checked");
 };
 
-const clearValidationResults = () => {
-  // get validation table body
-  let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
-
+const clearValidationResults = (validationTableElement) => {
   // remove its children
-  while (validationErrorsTable.firstChild) {
-    validationErrorsTable.removeChild(validationErrorsTable.firstChild);
+  while (validationTableElement.firstChild) {
+    validationTableElement.removeChild(validationTableElement.firstChild);
   }
 };
 

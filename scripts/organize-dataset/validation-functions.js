@@ -67,10 +67,7 @@ const validateOrganizedDataset = async () => {
     // get validation table body
     let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
 
-    // remove its children
-    while (validationErrorsTable.firstChild) {
-        validationErrorsTable.removeChild(validationErrorsTable.firstChild);
-    }
+    clearValidationResults(validationErrorsTable)
 
     // display errors onto the page
     displayValidationErrors(errors, document.querySelector("#organize--table-validation-errors tbody"));
