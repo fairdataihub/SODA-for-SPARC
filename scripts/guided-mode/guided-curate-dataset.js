@@ -5925,35 +5925,44 @@ const attachGuidedMethodsToSodaJSONObj = () => {
       if (subject.subjectName === subjectName) {
         //if the subject is in a pool
         if (subject.poolName) {
+          //Delete the subjects folders in the datasetStructeJSONObj
+          for (const highLevelFolder of guidedHighLevelFolders) {
+            const subjectFolderInHighLevelFolder =
+              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+                subject.poolName
+              ]?.["folders"]?.[subjectName];
+
+            if (subjectFolderInHighLevelFolder) {
+              if (folderImportedFromPennsieve(subjectFolderInHighLevelFolder)) {
+                guidedModifyPennsieveFolder(subjectFolderInHighLevelFolder, "delete");
+                console.log(subjectFolderInHighLevelFolder);
+              } else {
+                delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                  subject.poolName
+                ]["folders"][subjectName];
+              }
+            }
+          }
+
           delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
             subject.poolName
           ][subjectName];
-
-          //Delete the subjects folders in the datasetStructeJSONObj
-          for (const highLevelFolder of guidedHighLevelFolders) {
-            if (
-              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
-                subject.poolName
-              ]?.["folders"]?.[subjectName]
-            ) {
-              k, m;
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                subject.poolName
-              ]["folders"][subjectName];
-            }
-          }
         } else {
           //if the subject is not in a pool
-          delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
-
           //Delete the subjects folders in the datasetStructeJSONObj
           for (const highLevelFolder of guidedHighLevelFolders) {
-            if (
-              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName]
-            ) {
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName];
+            const subjectFolderInHighLevelFolder =
+              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName];
+            if (subjectFolderInHighLevelFolder) {
+              if (folderImportedFromPennsieve(subjectFolderInHighLevelFolder)) {
+                guidedModifyPennsieveFolder(subjectFolderInHighLevelFolder, "delete");
+                console.log(subjectFolderInHighLevelFolder);
+              } else {
+                delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName];
+              }
             }
           }
+          delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
         }
       }
     }
