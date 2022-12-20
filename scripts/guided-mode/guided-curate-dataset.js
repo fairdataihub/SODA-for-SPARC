@@ -9739,30 +9739,6 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
       );
 
       if (sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] == false) {
-        $("#items").html(`
-          <div
-            class="single-item ds-selectable"
-            id="guided-sample-data-folder"
-            onmouseover="hoverForFullName(this)"
-            onmouseleave="hideFullName()"
-          >
-            <h1 oncontextmenu="folderContextMenu(this)" class="myFol empty"></h1>
-            <div class="folder_desc">Sample data folder</div>
-          </div>
-          <div
-            class="single-item ds-selectable"
-            id="guided-sample-data-file"
-            onmouseover="hoverForFullName(this)"
-            onmouseleave="hideFullName()"
-          >
-            <h1
-              class="myFile xlsx"
-              oncontextmenu="fileContextMenu(this)"
-              style="margin-bottom: 10px"
-            ></h1>
-            <div class="folder_desc">Sample data file.xlsx</div>
-          </div>
-        `);
         //right click the second child in #items jqeury
         introJs()
           .setOptions({
@@ -9807,8 +9783,6 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
           })
           .onbeforeexit(function () {
             sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] = true;
-            //reUpdate the file explorer
-            updateFolderStructureUI(samplePageData);
           })
           .start();
       } else {
