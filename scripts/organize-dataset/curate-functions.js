@@ -1832,8 +1832,11 @@ const revertManifestForTreeView = () => {
 $("#generate-manifest-curate").change(function () {
   if (this.checked) {
     $("#button-generate-manifest-locally").show();
+    //display manifest generator UI here
+    $("#ffm-manifest-generator").show();
   } else {
     $("#button-generate-manifest-locally").hide();
+    $("#ffm-manifest-generator").hide();
   }
 });
 
