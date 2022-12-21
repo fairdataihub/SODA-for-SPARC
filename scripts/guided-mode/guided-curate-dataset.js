@@ -9,14 +9,13 @@ const guidedModifyPennsieveFolder = (folderJSONPath, action) => {
     return;
   }
   if (action === "delete") {
-    if (!folderJSONPath["action"].includes("recursive_deleted")) {
-      folderJSONPath["action"].push("recursive_deleted");
-    }
+    folderJSONPath["action"] = ["existing", "deleted"];
+
     recursive_mark_sub_files_deleted(folderJSONPath, "delete");
   }
   if (action === "restore") {
     folderJSONPath["action"] = folderJSONPath["action"].filter(
-      (action) => action !== "recursive_deleted"
+      (action) => action !== "recursive_deleted" || action !== "deleted"
     );
     recursive_mark_sub_files_deleted(folderJSONPath, "restore");
   }
@@ -148,6 +147,8 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
       if (startingNewCuration) {
         sodaJSONObj["starting-point"]["type"] = "new";
+        sodaJSONObj["generate-dataset"]["generate-option"] = "new";
+
         guidedUnSkipPage("guided-subjects-folder-tab");
         guidedUnSkipPage("guided-primary-data-organization-tab");
         guidedUnSkipPage("guided-source-data-organization-tab");
@@ -188,6 +189,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
 
         sodaJSONObj["starting-point"]["type"] = "pennsieve";
+        sodaJSONObj["generate-dataset"]["generate-option"] = "existing-bf";
         sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] = selectedPennsieveDatasetID;
         sodaJSONObj["digital-metadata"]["name"] = selectedPennsieveDataset;
 
@@ -215,30 +217,20 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
 
         try {
-          const [datasetSubjectsMetadata, datasetSamplesMetadata, metadataSubSamStructure] =
+          /*const [datasetSubjectsMetadata, datasetSamplesMetadata, metadataSubSamStructure] =
             await extractPoolSubSamStructureFromMetadata();
           console.log(datasetSubjectsMetadata, datasetSamplesMetadata, metadataSubSamStructure);
+          */
 
           const datasetSubSamStructure =
             extractPoolSubSamStructureFromDataset(datasetStructureJSONObj);
 
-          if (datasetSubjectsMetadata && datasetSamplesMetadata) {
-            if (!objectsHaveSameKeys(metadataSubSamStructure, datasetSubSamStructure)) {
-              errorArray.push({
-                type: "notyf",
-                message: "The subjects and samples metadata do not have the same keys",
-              });
-              throw errorArray;
-            }
-          } else {
-            //subjects and samples metadata not found
-            //does this need a handle?
-          }
+          console.log(datasetSubSamStructure);
         } catch (error) {
           console.log(error);
           errorArray.push({
             type: "notyf",
-            message: "Error comparing metadata and dataset structures",
+            message: "Error extracting guided structure from dataset",
           });
           throw errorArray;
         }
@@ -5768,7 +5760,6 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
   sodaJSONObj["generate-dataset"] = {};
   sodaJSONObj["guided-manifest-files"] = {};
-  sodaJSONObj["metadata-files"] = {};
   sodaJSONObj["starting-point"] = {};
   sodaJSONObj["dataset-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["shared-metadata"] = {};
@@ -5964,13 +5955,12 @@ const attachGuidedMethodsToSodaJSONObj = () => {
           }
           delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
         }
+        // delete the subject's samples
+        for (const sample of subject.samples) {
+          sodaJSONObj.deleteSample(sample.sampleName);
+        }
       }
     }
-
-    //remove the subject's subject metadata
-    subjectsTableData = subjectsTableData.filter((subject) => {
-      return subject[0] !== subjectName;
-    });
   };
   sodaJSONObj.getSubjectsOutsidePools = function () {
     let subjectsNotInPools = Object.keys(
@@ -6099,8 +6089,16 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     }
 
     for (const highLevelFolder of guidedHighLevelFolders) {
-      if (datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]) {
-        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName];
+      const poolInHighLevelFolder =
+        datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[poolName];
+
+      if (poolInHighLevelFolder) {
+        if (folderImportedFromPennsieve(poolInHighLevelFolder)) {
+          guidedModifyPennsieveFolder(poolInHighLevelFolder, "delete");
+          console.log(poolInHighLevelFolder);
+        } else {
+          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName];
+        }
       }
     }
 
@@ -6268,45 +6266,54 @@ const attachGuidedMethodsToSodaJSONObj = () => {
 
     for (const sample of samples) {
       if (sample.sampleName === sampleName) {
-        //remove the sample's sample metadata
-        samplesTableData = samplesTableData.filter((sampleDataArray) => {
-          return sampleDataArray[1] !== sample.sampleName;
-        });
-
         if (sample.poolName) {
+          //Delete the samples folder in the datasetStructureJSONObj
+          for (const highLevelFolder of guidedHighLevelFolders) {
+            const sampleFolderInHighLevelFolder =
+              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+                sample.poolName
+              ]?.["folders"]?.[sample.subjectName]?.["folders"]?.[sampleName];
+
+            if (sampleFolderInHighLevelFolder) {
+              if (folderImportedFromPennsieve(sampleFolderInHighLevelFolder)) {
+                guidedModifyPennsieveFolder(sampleFolderInHighLevelFolder, "delete");
+                console.log(sampleFolderInHighLevelFolder);
+              } else {
+                delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                  sample.poolName
+                ]["folders"][sample.subjectName]["folders"][sampleName];
+              }
+            }
+          }
+
+          // Remove the sample from the guided structure
           delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
             sample.poolName
           ][sample.subjectName][sampleName];
-
+        } else {
           //Delete the samples folder in the datasetStructureJSONObj
           for (const highLevelFolder of guidedHighLevelFolders) {
-            if (
+            const sampleFolderInHighLevelFolder =
               datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
-                sample.poolName
-              ]?.["folders"]?.[sample.subjectName]?.["folders"]?.[sampleName]
-            ) {
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                sample.poolName
-              ]["folders"][sample.subjectName]["folders"][sampleName];
+                sample.subjectName
+              ]?.["folders"]?.[sampleName];
+
+            if (sampleFolderInHighLevelFolder) {
+              if (folderImportedFromPennsieve(sampleFolderInHighLevelFolder)) {
+                guidedModifyPennsieveFolder(sampleFolderInHighLevelFolder, "delete");
+                console.log(sampleFolderInHighLevelFolder);
+              } else {
+                delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                  sample.poolName
+                ]["folders"][sample.subjectName]["folders"][sampleName];
+              }
             }
           }
-        } else {
+
+          // Remove the sample from the guided structure
           delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
             sample.subjectName
           ][sampleName];
-
-          //Delete the samples folder in the datasetStructureJSONObj
-          for (const highLevelFolder of guidedHighLevelFolders) {
-            if (
-              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
-                sample.subjectName
-              ]?.["folders"]?.[sampleName]
-            ) {
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                sample.subjectName
-              ]["folders"][sampleName];
-            }
-          }
         }
       }
     }
@@ -10023,6 +10030,14 @@ const renderSubjectsMetadataAsideItems = async () => {
       }
     }
 
+    // If the subject is in the table but not in the subjects array, remove it
+    const subjectNames = subjects.map((subject) => subject.subjectName);
+    for (let i = 1; i < subjectsTableData.length; i++) {
+      if (!subjectNames.includes(subjectsTableData[i][0])) {
+        subjectsTableData.splice(i, 1);
+      }
+    }
+
     //If custom fields have been added to the subjectsTableData, create a field for each custom field
     //added
     // There are 27 standard fields for subjects so if there are more headers than that, there exists additional information
@@ -10187,6 +10202,13 @@ const renderSamplesMetadataAsideItems = async () => {
         }
         samplesTableData.push(sampleDataArray);
       }
+    }
+  }
+
+  // If the subject is in the table but not in the subjects array, remove it
+  for (let i = 1; i < samplesTableData.length; i++) {
+    if (!sampleNames.includes(samplesTableData[i][1])) {
+      samplesTableData.splice(i, 1);
     }
   }
 
@@ -11937,7 +11959,6 @@ $(document).ready(async () => {
     let dataset_destination;
 
     if (sodaJSONObj["generate-dataset"]["destination"] == "bf") {
-      sodaJSONObj["generate-dataset"]["generate-option"] = "new";
       //Replace files and folders since guided mode always uploads to an existing Pennsieve dataset
       sodaJSONObj["generate-dataset"]["if-existing"] = "merge";
       sodaJSONObj["generate-dataset"]["if-existing-files"] = "skip";
