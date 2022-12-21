@@ -3245,7 +3245,7 @@ def generate_manifest_file_locally(generate_purpose, soda_json_structure):
     manifest_destination = soda_json_structure["manifest-files"]["local-destination"]
 
     recursive_item_path_create(dataset_structure, [])
-    create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure)
+    create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, manifest_folder_path)
 
     if generate_purpose == "edit-manifest":
         manifest_destination = os.path.join(manifest_destination, "SODA Manifest Files")
