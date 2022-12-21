@@ -4,6 +4,7 @@ const folderImportedFromPennsieve = (folderJSONPath) => {
 
 const guidedModifyPennsieveFolder = (folderJSONPath, action) => {
   //Actions can be "delete"  or "restore"
+
   if (!folderJSONPath) {
     console.log("The folder path does not exist");
     return;
@@ -19,6 +20,24 @@ const guidedModifyPennsieveFolder = (folderJSONPath, action) => {
     );
     recursive_mark_sub_files_deleted(folderJSONPath, "restore");
   }
+};
+
+const guidedMovePennsieveFolder = (movedFolderName, folderJSONPath, newFolderJSONPath) => {
+  if (!folderJSONPath) {
+    console.log("The folder path does not exist");
+    return;
+  }
+  if (!newFolderJSONPath) {
+    console.log("The new parent folder path does not exist");
+    return;
+  }
+
+  console.log("this needs to be deleted outside of this function", folderJSONPath);
+
+  folderJSONPath["action"] = ["existing", "moved"];
+  addMovedRecursively(folderJSONPath);
+  newFolderJSONPath["folders"][movedFolderName] = folderJSONPath;
+  console.log(newFolderJSONPath["folders"]);
 };
 
 document.getElementById("guided-button-has-code-data").addEventListener("click", () => {
@@ -3694,21 +3713,20 @@ const openPage = async (targetPageID) => {
           //If the SPARC Award number was found, click the manual button and fill the SPARC Award number
           if (sparcAwardRes) {
             document.getElementById("guided-button-enter-sparc-award-manually").click();
-            //set the text of the sparc award input as sparcAwardRes
-            sparcAwardInput.value = sparcAwardRes;
+
+            sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = sparcAwardRes;
           }
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-airtable-award-tab");
         } catch (error) {
           console.log(error);
           clientError(error);
-          console.log("UNABLE TO FETCH SPARC AAWARD FROM PENNSIEVE");
+          console.log("UNABLE TO FETCH SPARC AWARD FROM PENNSIEVE");
         }
-      } else {
-        const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-        //If a sparc award exists, set the sparc award input
-        if (sparcAward) {
-          sparcAwardInput.value = sparcAward;
-        }
+      }
+      const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+      //If a sparc award exists, set the sparc award input
+      if (sparcAward) {
+        sparcAwardInput.value = sparcAward;
       }
     }
 
@@ -5555,6 +5573,16 @@ const openEditGuidedDatasetSwal = async (datasetName) => {
   });
 };
 
+//function that creates a new folder object
+const createNewFolderObj = () => {
+  return {
+    folders: {},
+    files: {},
+    type: "",
+    action: ["new"],
+  };
+};
+
 const patchPreviousGuidedModeVersions = () => {
   let forceUserToRestartFromFirstPage = false;
 
@@ -5966,22 +5994,40 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     let subjectsNotInPools = Object.keys(
       this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
     );
-    return /*subjectsInPools.concat(*/ subjectsNotInPools /*)*/;
+    return subjectsNotInPools;
   };
   sodaJSONObj.getSubjectsInPools = function () {
     return this["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
   };
   sodaJSONObj.moveSubjectIntoPool = function (subjectName, poolName) {
-    this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName][subjectName] =
-      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
-    delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
-
     //Move the subjects folders in the datasetStructeJSONObj
     for (const highLevelFolder of guidedHighLevelFolders) {
-      if (datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName]) {
-        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]["folders"][
-          subjectName
-        ] = datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName];
+      const subjectFolderOutsidePool =
+        datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName];
+
+      console.log(subjectFolderOutsidePool);
+
+      if (subjectFolderOutsidePool) {
+        // If the target folder doesn't exist, create it
+        if (!datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]) {
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName] =
+            createNewFolderObj();
+          console.log("added a new folder for " + highLevelFolder);
+        }
+
+        if (folderImportedFromPennsieve(subjectFolderOutsidePool)) {
+          console.log("Moving Pennsieve folder");
+          guidedMovePennsieveFolder(
+            subjectName,
+            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName],
+            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]
+          );
+        } else {
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]["folders"][
+            subjectName
+          ] = subjectFolderOutsidePool;
+        }
+        // Delete the subject folder outside the pool
         delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName];
       }
     }
@@ -5992,30 +6038,44 @@ const attachGuidedMethodsToSodaJSONObj = () => {
         subjectDataArray[1] = poolName;
       }
     }
+
+    this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName][subjectName] =
+      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
+    delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
   };
   sodaJSONObj.moveSubjectOutOfPool = function (subjectName, poolName) {
-    this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName] =
-      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName][subjectName];
-    delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName][
-      subjectName
-    ];
-
     //Copy the subject folders from the pool into the root of the high level folder
     for (const highLevelFolder of guidedHighLevelFolders) {
-      if (
+      const subjectFolderInPoolFolder =
         datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
           "folders"
-        ]?.[subjectName]
-      ) {
-        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName] =
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]["folders"][
-            subjectName
-          ];
-        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]["folders"][
-          subjectName
-        ];
+        ]?.[subjectName];
+      if (subjectFolderInPoolFolder) {
+        if (folderImportedFromPennsieve(subjectFolderInPoolFolder)) {
+          console.log(subjectFolderInPoolFolder);
+          guidedMovePennsieveFolder(subjectFolderInPoolFolder, highLevelFolder);
+          delete subjectFolderInPoolFolder;
+        } else {
+          console.log("moving non pennsieve");
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName] =
+            subjectFolderInPoolFolder;
+          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName][
+            "folders"
+          ][subjectName];
+        }
       }
     }
+
+    /*if (sampleFolderInHighLevelFolder) {
+      if (folderImportedFromPennsieve(sampleFolderInHighLevelFolder)) {
+        guidedModifyPennsieveFolder(sampleFolderInHighLevelFolder, "delete");
+        console.log(sampleFolderInHighLevelFolder);
+      } else {
+        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName][
+          "folders"
+        ][sample.subjectName]["folders"][sampleName];
+      }
+    }*/
 
     //Remove the pool from the subject's entry in the subjectsTableData
     for (const subjectDataArray of subjectsTableData) {
@@ -6030,6 +6090,13 @@ const attachGuidedMethodsToSodaJSONObj = () => {
         sampleDataArray[3] = "";
       }
     }
+
+    //Remove the subject from the pool in the guided structures
+    this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName] =
+      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName][subjectName];
+    delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName][
+      subjectName
+    ];
   };
   sodaJSONObj.addPool = function (poolName) {
     if (this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName]) {

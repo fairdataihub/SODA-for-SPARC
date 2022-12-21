@@ -1503,6 +1503,9 @@ const moveItems = async (ev, category) => {
 };
 
 function moveItemsHelper(item, destination, category) {
+  console.log("item: ", item);
+  console.log("destination: ", destination);
+  console.log("category: ", category);
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   var selectedNodeList = destination.split("/").slice(1);
