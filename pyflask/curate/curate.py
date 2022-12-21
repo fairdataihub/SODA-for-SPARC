@@ -2493,7 +2493,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 print("Manifest first option is executing")
                 manifest_files_structure = (
                     create_high_level_manifest_files_existing_bf_starting_point(
-                        soda_json_structure
+                        soda_json_structure, 
+                        manifest_folder_path
                     )
                 )
             else:
