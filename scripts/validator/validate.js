@@ -30,14 +30,11 @@ const validateLocalDataset = async () => {
   let validationResponse;
   try {
     // send the dataset path to the validator endpoint
-    validationResponse = await client.get(
-      `validator/local_dataset_validation_result`,
-      {
-        params: {
-          path: datasetPath,
-        },
-      }
-    );
+    validationResponse = await client.get(`validator/local_dataset_validation_result`, {
+      params: {
+        path: datasetPath,
+      },
+    });
 
     // track that a local validation succeeded
     ipcRenderer.send(
@@ -161,15 +158,12 @@ const validatePennsieveDataset = async () => {
 
   try {
     // request validation for the current pennsieve dataset
-    validationResponse = await client.get(
-      `validator/pennsieve_dataset_validation_result`,
-      {
-        params: {
-          selected_account: defaultBfAccount,
-          selected_dataset: defaultBfDatasetId,
-        },
-      }
-    );
+    validationResponse = await client.get(`validator/pennsieve_dataset_validation_result`, {
+      params: {
+        selected_account: defaultBfAccount,
+        selected_dataset: defaultBfDatasetId,
+      },
+    });
 
     // track that a local validation succeeded
     ipcRenderer.send(
@@ -572,37 +566,33 @@ document
     );
   });
 
-document
-  .querySelector("#scicrunch button")
-  .addEventListener("click", async function () {
-    // get the api key from the first of two inputs field nested in the scicrunch div
-    let apiKey = document.querySelector("#scicrunch input").value;
+document.querySelector("#scicrunch button").addEventListener("click", async function () {
+  // get the api key from the first of two inputs field nested in the scicrunch div
+  let apiKey = document.querySelector("#scicrunch input").value;
 
-    // get the api key name from the last input element  nested in the scicrunch div
-    let apiKeyName = document.querySelector(
-      "#scicrunch input:last-of-type"
-    ).value;
+  // get the api key name from the last input element  nested in the scicrunch div
+  let apiKeyName = document.querySelector("#scicrunch input:last-of-type").value;
 
-    // send the api key and api key name as params to the server using the endpoint /validator/scicrunch [ use the axios client stored in variable 'client']
-    let response;
-    try {
-      response = await client.post("/validator/scicrunch_config", {
-        api_key: apiKey,
-        api_key_name: apiKeyName,
-        selected_account: defaultBfAccount,
-      });
-    } catch (error) {
-      clientError(error);
-      await Swal.fire({
-        title: "Error",
-        text: "There was an error adding your scicrunch api key. Pleas try again.",
-        icon: "error",
-        confirmButtonText: "OK",
-      });
-    }
+  // send the api key and api key name as params to the server using the endpoint /validator/scicrunch [ use the axios client stored in variable 'client']
+  let response;
+  try {
+    response = await client.post("/validator/scicrunch_config", {
+      api_key: apiKey,
+      api_key_name: apiKeyName,
+      selected_account: defaultBfAccount,
+    });
+  } catch (error) {
+    clientError(error);
+    await Swal.fire({
+      title: "Error",
+      text: "There was an error adding your scicrunch api key. Pleas try again.",
+      icon: "error",
+      confirmButtonText: "OK",
+    });
+  }
 
-    console.log("Congrats that worked!");
-  });
+  console.log("Congrats that worked!");
+});
 
 // observer for the selected dataset label in the dataset selection card in question 2
 const questionTwoDatasetSelectionObserver = new MutationObserver(() => {
@@ -629,7 +619,7 @@ document
         return;
       }
 
-        // get validation table body
+      // get validation table body
       let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
       clearValidationResults(validationErrorsTable);
 

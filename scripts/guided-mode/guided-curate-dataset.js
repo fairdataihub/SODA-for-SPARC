@@ -10853,7 +10853,6 @@ $(document).ready(async () => {
         app.quit();
       });
 
-
     const guidedUpdateUploadStatus = async () => {
       let mainCurationProgressResponse;
       try {
@@ -10876,7 +10875,7 @@ $(document).ready(async () => {
       main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
       const main_generated_dataset_size = data["main_generated_dataset_size"];
       const elapsed_time_formatted = data["elapsed_time_formatted"];
-      const totalUploadedFiles = data["total_files_uploaded"]
+      const totalUploadedFiles = data["total_files_uploaded"];
 
       if (start_generate === 1) {
         $("#guided-progress-bar-new-curate").css("display", "block");

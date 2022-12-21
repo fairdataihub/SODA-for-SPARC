@@ -7181,7 +7181,6 @@ const checkEmptyFilesAndFolders = async (sodaJSONObj) => {
 
   let { data } = emptyFilesFoldersResponse;
 
-
   log.info("Continue with curate");
   let errorMessage = "";
   error_files = data["empty_files"];
@@ -7198,14 +7197,14 @@ const checkEmptyFilesAndFolders = async (sodaJSONObj) => {
     errorMessage += error_message_folders;
   }
 
-  return errorMessage
-}
+  return errorMessage;
+};
 
 const setSodaJSONStartingPoint = (sodaJSONObj) => {
   if (sodaJSONObj["starting-point"]["type"] === "local") {
     sodaJSONObj["starting-point"]["type"] = "new";
   }
-}
+};
 
 const setDatasetNameAndDestination = (sodaJSONObj) => {
   let dataset_name = "";
@@ -7229,25 +7228,25 @@ const setDatasetNameAndDestination = (sodaJSONObj) => {
   }
 
   return [dataset_name, dataset_destination];
-}
+};
 
 const deleteTreeviewFiles = (sodaJSONObj) => {
-    // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
-    if ("files" in sodaJSONObj["dataset-structure"]) {
-      sodaJSONObj["dataset-structure"]["files"] = {};
+  // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
+  if ("files" in sodaJSONObj["dataset-structure"]) {
+    sodaJSONObj["dataset-structure"]["files"] = {};
+  }
+  // delete manifest files added for treeview
+  for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
+    if (
+      "manifest.xlsx" in sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+      sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"][
+        "forTreeview"
+      ]
+    ) {
+      delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];
     }
-    // delete manifest files added for treeview
-    for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
-      if (
-        "manifest.xlsx" in sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
-        sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"][
-          "forTreeview"
-        ]
-      ) {
-        delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];
-      }
-    }
-}
+  }
+};
 
 document.getElementById("button-generate").addEventListener("click", async function () {
   $($($(this).parent()[0]).parents()[0]).removeClass("tab-active");
@@ -7293,7 +7292,6 @@ document.getElementById("button-generate").addEventListener("click", async funct
 
   document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
   let errorMessage = await checkEmptyFilesAndFolders(sodaJSONObj);
-
 
   if (errorMessage) {
     errorMessage += "Would you like to continue?";

@@ -451,7 +451,7 @@ const checkHighLevelFoldersInput = () => {
 
 // function associated with the Back/Continue buttons
 // in the Organize dataset section of the app.
-// Perform events or actions ( such as update SODAJSONObk) based off the state of the Organize Datasets section 
+// Perform events or actions ( such as update SODAJSONObk) based off the state of the Organize Datasets section
 // currently being displayed after pressing the Continue button/back button.
 const nextPrev = (n) => {
   var x = document.getElementsByClassName("parent-tabs");
@@ -462,7 +462,6 @@ const nextPrev = (n) => {
         target: { dataset: { section: "main_tabs" }, classList: ["someclass"] },
       },
     });
-
 
     document.body.dispatchEvent(event);
     if ($("#nextBtn").prop("disabled") === true) {
@@ -630,7 +629,7 @@ const nextPrev = (n) => {
       currentTab = currentTab + n;
       $("#nextBtn").prop("disabled", false);
     } else {
-      console.log("It happens here?")
+      console.log("It happens here?");
       currentTab = currentTab + 1;
       fixStepDone(4);
       $("#nextBtn").prop("disabled", true);
@@ -2851,7 +2850,7 @@ const recursive_remove_local_deleted_files = (dataset_folder) => {
 // Step 6: Generate dataset
 // update JSON object after users finish Generate dataset step
 const updateJSONStructureGenerate = (progress = false, sodaJSONObj) => {
-  console.log(sodaJSONObj)
+  console.log(sodaJSONObj);
   let starting_point = sodaJSONObj["starting-point"]["type"];
   if (sodaJSONObj["starting-point"]["type"] == "bf") {
     sodaJSONObj["generate-dataset"] = {

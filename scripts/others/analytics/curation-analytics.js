@@ -98,10 +98,9 @@ const logCurationErrorsToAnalytics = async (
     );
   }
 
-
-  // Tracks files that have been uploaded even when an upload session fails. For now we will remove this. If we find that the 
-  // new Pennsieve agent fails after an upload begins often we will add this back in. 
-  // if (!guidedMode) { 
+  // Tracks files that have been uploaded even when an upload session fails. For now we will remove this. If we find that the
+  // new Pennsieve agent fails after an upload begins often we will add this back in.
+  // if (!guidedMode) {
   //   let datasetLocation = determineDatasetLocation();
 
   //   // log failed Local, Saved, or New dataset generation to Google Analytics
@@ -377,7 +376,8 @@ const logCurationSuccessToAnalytics = async (
       datasetLocation,
       uploadedFiles
     );
-  } else { // Free Form Mode
+  } else {
+    // Free Form Mode
     // for tracking the total size of all the "saved", "new", "local", "pennsieve" datasets by category
     ipcRenderer.send(
       "track-event",
