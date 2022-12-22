@@ -40,6 +40,33 @@ const guidedMovePennsieveFolder = (movedFolderName, folderJSONPath, newFolderJSO
   console.log(newFolderJSONPath["folders"]);
 };
 
+const guidedCheckHighLevelFoldersForImproperFiles = (datasetStructureJSONObj) => {
+  const invalidFolders = [];
+  const invalidFiles = [];
+
+  for (hlf of highLevelFolders) {
+    if (datasetStructureJSONObj["folders"][hlf]) {
+      const hlfFolders = Object.keys(datasetStructureJSONObj["folders"][hlf]["folders"]);
+      const invalidBaseFolders = hlfFolders.filter((folder) => {
+        !folder.startsWith("pool-") || !folder.startsWith("sub-");
+      });
+
+      const hlfFiles = Object.keys(datasetStructureJSONObj["folders"][hlf]["files"]);
+      const invalidBaseFiles = hlfFiles.filter((file) => {
+        !file.startsWith("manifest");
+      });
+
+      for (invalidBaseFolder of invalidBaseFolders) {
+        invalidFolders.push(invalidBaseFolder);
+      }
+      for (invalidBaseFile of invalidBaseFiles) {
+        invalidFiles.push(invalidBaseFile);
+      }
+    }
+  }
+  return [invalidFolders, invalidFiles];
+};
+
 document.getElementById("guided-button-has-code-data").addEventListener("click", () => {
   const codeFolder = datasetStructureJSONObj["folders"]["code"];
   if (codeFolder) {
@@ -157,6 +184,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       const resumingPennsieveDataset = document
         .getElementById("guided-button-resume-pennsieve-dataset")
         .classList.contains("selected");
+
       if (!startingNewCuration && !startingFromExistingLocal && !resumingPennsieveDataset) {
         errorArray.push({
           type: "notyf",
@@ -235,25 +263,84 @@ const savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
 
-        try {
-          /*const [datasetSubjectsMetadata, datasetSamplesMetadata, metadataSubSamStructure] =
-            await extractPoolSubSamStructureFromMetadata();
-          console.log(datasetSubjectsMetadata, datasetSamplesMetadata, metadataSubSamStructure);
-          */
-
-          const datasetSubSamStructure =
-            extractPoolSubSamStructureFromDataset(datasetStructureJSONObj);
-
-          console.log(datasetSubSamStructure);
-        } catch (error) {
-          console.log(error);
+        // Datasets pulled into Guided Mode should only have pool-folders or sub-folders inside of the primary, source,
+        // and derivative high level folders. If this is not the case with the pulled dataset, reject it.
+        const [invalidFolders, invalidFiles] =
+          guidedCheckHighLevelFoldersForImproperFiles(datasetStructureJSONObj);
+        if (invalidFolders.length > 0 || invalidFiles.length > 0) {
           errorArray.push({
             type: "notyf",
-            message: "Error extracting guided structure from dataset",
+            message:
+              "Your primary, source, and derivative folders must only contain pool-folders or sub-folders when resuming a Pennsieve dataset",
           });
           throw errorArray;
         }
+
+        try {
+          let subjectsMetadataResponse = await client.get(
+            `/prepare_metadata/import_metadata_file`,
+            {
+              params: {
+                selected_account: defaultBfAccount,
+                selected_dataset: sodaJSONObj["digital-metadata"]["name"],
+                file_type: "subjects.xlsx",
+                ui_fields: Array.from(
+                  document
+                    .getElementById("guided-form-add-a-subject")
+                    .querySelectorAll(".subjects-form-entry")
+                )
+                  .map((field) => field.name.toLowerCase())
+                  .toString(),
+              },
+            }
+          );
+          // Set subjectsTableData as the res
+          subjectsTableData = subjectsMetadataResponse.data.subject_file_rows;
+        } catch (error) {
+          console.log("Unable to fetch subjects metadata" + error);
+        }
+
+        try {
+          let samplesMetadataResponse = await client.get(`/prepare_metadata/import_metadata_file`, {
+            params: {
+              file_type: "samples.xlsx",
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["name"],
+              ui_fields: Array.from(
+                document
+                  .getElementById("guided-form-add-a-sample")
+                  .querySelectorAll(".samples-form-entry")
+              )
+                .map((field) => field.name.toLowerCase())
+                .toString(),
+            },
+          });
+          // Set the samplesTableData as the samples metadata response
+          samplesTableData = samplesMetadataResponse.data.sample_file_rows;
+        } catch (error) {
+          console.log("Unable to fetch samples metadata" + error);
+        }
+
+        if (subjectsTableData.length > 1 && samplesTableData.length > 1) {
+          const metadataSubSamStructure = createGuidedStructureFromSubSamMetadata(
+            subjectsTableData.slice(1),
+            samplesTableData.slice(1)
+          );
+          const datasetSubSamStructure =
+            extractPoolSubSamStructureFromDataset(datasetStructureJSONObj);
+          console.log(datasetSubSamStructure);
+          if (!objectsHaveSameKeys(metadataSubSamStructure, datasetSubSamStructure)) {
+            errorArray.push({
+              type: "notyf",
+              message: "The subjects and samples metadata do not have the same keys",
+            });
+            throw errorArray;
+          }
+        } else {
+          extractPoolSubSamStructureFromDataset(datasetStructureJSONObj);
+        }
       }
+
       //Skip this page becausae we should not come back to it
       guidedSkipPage("guided-intro-page-tab");
     }
@@ -1389,63 +1476,13 @@ const createGuidedStructureFromSubSamMetadata = (subjectsMetadataRows, samplesMe
 };
 
 const extractPoolSubSamStructureFromMetadata = async () => {
-  let datasetSubjectsMetadata = null;
-  let datasetSamplesMetadata = null;
-
-  try {
-    let subjectsMetadataResponse = await client.get(`/prepare_metadata/import_metadata_file`, {
-      params: {
-        selected_account: defaultBfAccount,
-        selected_dataset: sodaJSONObj["digital-metadata"]["name"],
-        file_type: "subjects.xlsx",
-        ui_fields: Array.from(
-          document
-            .getElementById("guided-form-add-a-subject")
-            .querySelectorAll(".subjects-form-entry")
-        )
-          .map((field) => field.name.toLowerCase())
-          .toString(),
-      },
-    });
-    subjectsMetadataResponse = subjectsMetadataResponse.data.subject_file_rows;
-    //remove the first row of the subjectsMetadataResponse array, which is the header row
-    subjectsMetadataResponse.shift();
-    datasetSubjectsMetadata = subjectsMetadataResponse;
-  } catch (error) {
-    console.log("Unable to fetch subjects metadata" + error);
-  }
-
-  try {
-    let samplesMetadataResponse = await client.get(`/prepare_metadata/import_metadata_file`, {
-      params: {
-        file_type: "samples.xlsx",
-        selected_account: defaultBfAccount,
-        selected_dataset: sodaJSONObj["digital-metadata"]["name"],
-        ui_fields: Array.from(
-          document
-            .getElementById("guided-form-add-a-sample")
-            .querySelectorAll(".samples-form-entry")
-        )
-          .map((field) => field.name.toLowerCase())
-          .toString(),
-      },
-    });
-    samplesMetadataResponse = samplesMetadataResponse.data.sample_file_rows;
-    //remove the first row of the samplesMetadataResponse array, which is the header row
-    samplesMetadataResponse.shift();
-    datasetSamplesMetadata = samplesMetadataResponse;
-  } catch (error) {
-    console.log("Unable to fetch samples metadata" + error);
-  }
-
-  let poolSubSamStructure;
-  console.log(datasetSubjectsMetadata, datasetSamplesMetadata);
   if (datasetSubjectsMetadata && datasetSamplesMetadata) {
     poolSubSamStructure = createGuidedStructureFromSubSamMetadata(
-      datasetSubjectsMetadata,
-      datasetSamplesMetadata
+      datasetSubjectsMetadata.slice(1),
+      datasetSamplesMetadata.slice(1)
     );
   }
+
   return [datasetSubjectsMetadata, datasetSamplesMetadata, poolSubSamStructure];
 };
 // This function extracts the pool, subject, and sample structure from an imported dataset
@@ -5989,6 +6026,11 @@ const attachGuidedMethodsToSodaJSONObj = () => {
         }
       }
     }
+    for (let i = 1; i < subjectsTableData.length; i++) {
+      if (subjectsTableData[i][0] === subjectName) {
+        subjectsTableData.splice(i, 1);
+      }
+    }
   };
   sodaJSONObj.getSubjectsOutsidePools = function () {
     let subjectsNotInPools = Object.keys(
@@ -6378,6 +6420,13 @@ const attachGuidedMethodsToSodaJSONObj = () => {
             sample.subjectName
           ][sampleName];
         }
+      }
+    }
+
+    // Remove the sample from the samples metadata
+    for (let i = 1; i < samplesTableData.length; i++) {
+      if (samplesTableData[i][1] === sampleName) {
+        samplesTableData.splice(i, 1);
       }
     }
   };
@@ -9995,7 +10044,7 @@ const renderSubjectsMetadataAsideItems = async () => {
   //Combine sample data from subjects in and out of pools
   let subjects = [...subjectsInPools, ...subjectsOutsidePools];
 
-  if (pageNeedsUpdateFromPennsieve("guided-create-subjects-metadata-tab")) {
+  /*if (pageNeedsUpdateFromPennsieve("guided-create-subjects-metadata-tab")) {
     try {
       console.log(subjectsTableData);
       let subjectsMetadataResponse = await client.get(`/prepare_metadata/import_metadata_file`, {
@@ -10020,7 +10069,7 @@ const renderSubjectsMetadataAsideItems = async () => {
     } catch (error) {
       console.log("Unable to fetch subjects metadata" + error);
     }
-  }
+  }*/
 
   const subjectMetadataCopyButton = document.getElementById("guided-button-subject-metadata-copy");
   if (subjects.length > 1) {
@@ -10163,7 +10212,7 @@ const renderSamplesMetadataAsideItems = async () => {
   let samples = [...samplesInPools, ...samplesOutsidePools];
   const sampleNames = samples.map((sample) => sample.sampleName);
 
-  if (pageNeedsUpdateFromPennsieve("guided-create-samples-metadata-tab")) {
+  /*if (pageNeedsUpdateFromPennsieve("guided-create-samples-metadata-tab")) {
     try {
       let samplesMetadataRes = await client.get(`/prepare_metadata/import_metadata_file`, {
         params: {
@@ -10187,7 +10236,7 @@ const renderSamplesMetadataAsideItems = async () => {
     } catch (error) {
       console.log("Unable to fetch samples metadata" + error);
     }
-  }
+  }*/
 
   const sampleMetadataCopyButton = document.getElementById("guided-button-sample-metadata-copy");
   if (samples.length > 1) {
