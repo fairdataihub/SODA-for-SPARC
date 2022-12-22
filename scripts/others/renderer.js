@@ -1165,6 +1165,8 @@ const manifestStatus = document.querySelector("#generate-manifest");
 // Manage datasets //
 var myitem;
 var datasetList = [];
+var sodaCopy = {};
+var datasetStructCopy = {};
 const bfUploadRefreshDatasetBtn = document.getElementById("button-upload-refresh-dataset-list");
 
 const pathSubmitDataset = document.querySelector("#selected-local-dataset-submit");

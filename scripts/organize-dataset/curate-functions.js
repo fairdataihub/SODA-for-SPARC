@@ -1829,11 +1829,171 @@ const revertManifestForTreeView = () => {
   }
 };
 
-$("#generate-manifest-curate").change(function () {
+const generateFFManifestEditCard = (highLevelFolderName) => {
+  return `
+  <div class="guided--dataset-card">        
+    <div class="guided--dataset-card-body shrink">
+      <div class="guided--dataset-card-row">
+        <h1 class="guided--text-dataset-card">
+          <span class="manifest-folder-name">${highLevelFolderName}</span>
+        </h1>
+      </div>
+    </div>
+    <div class="guided--container-dataset-card-center">
+      <button
+        class="ui primary button guided--button-footer"
+        style="
+          background-color: var(--color-light-green) !important;
+          width: 280px !important;
+          margin: 4px;
+        "
+        onClick="ffOpenManifestEditSwal('${highLevelFolderName}')"
+      >
+        Preview/Edit ${highLevelFolderName} manifest file
+      </button>
+    </div>
+  </div>
+`;
+};
+
+const renderFFManifestCards = () => {
+  const manifestData = sodaCopy["manifest-files"];
+  const highLevelFoldersWithManifestData = Object.keys(manifestData);
+
+  const manifestCards = highLevelFoldersWithManifestData
+    .map((highLevelFolder) => {
+      return generateFFManifestEditCard(highLevelFolder);
+    })
+    .join("\n");
+
+  const manifestFilesCardsContainer = document.getElementById("ffm-container-manifest-file-cards");
+  manifestFilesCardsContainer.innerHTML = manifestCards;
+
+  //smoothScrollToElement(manifestFilesCardsContainer)
+};
+
+const ffOpenManifestEditSwal = async (highlevelFolderName) => {
+  const existingManifestData = sodaCopy["manifest-files"]?.[highlevelFolderName];
+
+  let manifestFileHeaders = existingManifestData["headers"];
+  let manifestFileData = existingManifestData["data"];
+
+  let ffManifestTable;
+
+  const readOnlyHeaders = ["filename", "file type", "timestamp", "file name"];
+
+  const { value: saveManifestFiles } = await Swal.fire({
+    title:
+      "<span style='font-size: 18px !important;'>Edit the manifest file below: </span> <br><span style='font-size: 13px; font-weight: 500'> Tip: Double click on a cell to edit it.<span>",
+    html: "<div id='ffm-div-manifest-edit'></div>",
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    showConfirmButton: true,
+    confirmButtonText: "Confirm",
+    showCancelButton: true,
+    width: "90%",
+    customClass: "swal-large",
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    didOpen: () => {
+      Swal.hideLoading();
+      const manifestSpreadsheetContainer = document.getElementById("ffm-div-manifest-edit");
+      guidedManifestTable = jspreadsheet(manifestSpreadsheetContainer, {
+        tableOverflow: true,
+        data: manifestFileData,
+        columns: manifestFileHeaders.map((header) => {
+          return {
+            readOnly: readOnlyHeaders.includes(header) ? true : false,
+            type: "text",
+            title: header,
+            width: 200,
+          };
+        }),
+      });
+    },
+  });
+
+  if (saveManifestFiles) {
+    //if additional metadata or description gets added for a file then add to json as well
+    const savedHeaders = guidedManifestTable.getHeaders().split(",");
+    const savedData = guidedManifestTable.getData();
+
+    sodaCopy["manifest-files"][highlevelFolderName] = {
+      headers: savedHeaders,
+      data: savedData,
+    };
+  }
+
+  //Save the sodaJSONObj with the new manifest file
+  // saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+  //Rerender the manifest cards
+  renderFFManifestCards();
+};
+
+$("#generate-manifest-curate").change(async function () {
   if (this.checked) {
     $("#button-generate-manifest-locally").show();
     //display manifest generator UI here
     $("#ffm-manifest-generator").show();
+    await new Promise((r) => setTimeout(r, 0));
+    //create a copy of the sodajson object
+    sodaCopy = sodaJSONObj;
+    datasetStructCopy = datasetStructureJSONObj;
+    console.log(sodaCopy);
+    try {
+      const res = await client.post(
+        `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
+        {
+          dataset_structure_obj: datasetStructCopy,
+        },
+        { timeout: 0 }
+      );
+      const manifestRes = res.data;
+      console.log(manifestRes);
+      //loop through each of the high level folders and store their manifest headers and data into the sodaJSONObj
+      let newManifestData = {};
+      for (const [highLevelFolderName, manifestFileData] of Object.entries(manifestRes)) {
+        //Only save manifest files for high lvl folders that returned more than the headers
+        //meaning manifest file data was generated in the response
+        console.log(manifestFileData);
+        if (manifestFileData.length > 1) {
+          const manifestHeader = manifestFileData.shift();
+
+          newManifestData[highLevelFolderName] = {
+            headers: manifestHeader,
+            data: manifestFileData,
+          };
+        }
+      }
+
+      const existingManifestData = sodaCopy["manifest-files"];
+      console.log(sodaCopy["manifest-files"]);
+      if (sodaCopy["manifest-files"]?.["destination"]) {
+        delete sodaCopy["manifest-files"]["destination"];
+      }
+      let updatedManifestData;
+
+      if (existingManifestData) {
+        console.log("add function, needed");
+        updatedManifestData = diffCheckManifestFiles(newManifestData, existingManifestData);
+      } else {
+        updatedManifestData = newManifestData;
+      }
+
+      sodaCopy["manifest-files"] = updatedManifestData;
+
+      // below needs to be added at the very end before the main_curate_function begins
+      // sodaJSONObj["manifest-files"]["destination"] = "generate-dataset";
+      // console.log(sodaJSONObj);
+      //save the sodajson with the new manifest files
+      //saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+    } catch (err) {
+      clientError(err);
+      console.log(err);
+      userError(err);
+    }
+
+    renderFFManifestCards();
   } else {
     $("#button-generate-manifest-locally").hide();
     $("#ffm-manifest-generator").hide();

@@ -3284,6 +3284,7 @@
                 text-align: center;
                 font-weight: 600;
                 margin-top: 20px;
+                padding-bottom: 0;
               "
             >
               Step 5: Request manifest files
@@ -3302,7 +3303,7 @@
               >
                 Would you like SODA to auto-generate your manifest files?
               </h5>
-              <div style="height: 150px; text-align: center; margin: 100px">
+              <div style="height: 150px; text-align: center;">
                 <div
                   style="margin-top: 30px; margin-bottom: 50px"
                   id="pulse-manifest-checkbox"
@@ -3334,7 +3335,7 @@
                     Yes
                   </label>
                 </div>
-                <div>
+                <div style="display: flex; flex-direction: column; justify-content: center">
                   <a
                     id="button-generate-manifest-locally"
                     data-content="Use this button to generate and view the manifest file locally"
@@ -3346,6 +3347,7 @@
                     Create a copy of the Manifest files locally to review.
                   </a>
                   <div id="ffm-manifest-generator">CONTENT</div>
+                  <div id="ffm-container-manifest-file-cards" style="display: flex; flex-direction: column; justify-content: center; align-items: center"></div>
                 </div>
               </div>
             </div>

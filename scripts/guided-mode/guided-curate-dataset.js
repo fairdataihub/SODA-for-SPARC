@@ -1933,6 +1933,8 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
 const extractFilNamesFromManifestData = (manifestData) => {
   let allFileNamesinDsStructure = [];
   for (const highLevelFolder of Object.keys(manifestData)) {
+    console.log(manifestData[highLevelFolder]);
+    if (manifestData[highLevelFolder] === "generate-dataset") continue;
     for (const row of manifestData[highLevelFolder]["data"]) {
       allFileNamesinDsStructure.push(row[0]);
     }
@@ -1941,6 +1943,8 @@ const extractFilNamesFromManifestData = (manifestData) => {
   return allFileNamesinDsStructure.sort();
 };
 const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
+  console.log(existingManifestData);
+  console.log(newManifestData);
   const prevManifestFileNames = extractFilNamesFromManifestData(existingManifestData);
   const newManifestFileNames = extractFilNamesFromManifestData(newManifestData);
 

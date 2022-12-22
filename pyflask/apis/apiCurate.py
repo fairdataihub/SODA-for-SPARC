@@ -2,6 +2,10 @@ from flask_restx import Resource, fields, reqparse
 from namespaces import NamespaceEnum, get_namespace
 from flask import request
 import json
+from os.path import (
+    expanduser,
+    join,
+)
 
 from curate import (
     create_folder_level_manifest,
@@ -11,10 +15,12 @@ from curate import (
     generate_manifest_file_locally,
     guided_generate_manifest_file_data,
     check_JSON_size,
+    clean_json_structure
 )
 
 from manifest import create_high_level_manifest_files_existing_local_starting_point
 from errorHandlers.notBadRequestException import notBadRequestException
+userpath = expanduser("~")
 
 api = get_namespace(NamespaceEnum.CURATE_DATASETS)
 
@@ -42,7 +48,29 @@ class CheckEmptyFilesFolders(Resource):
         except Exception as e:
             api.abort(500, str(e))
 
+model_clean_dataset = api.model("DatasetCleanup", {
+    "soda_json_structure": fields.String(description="JSON structure of the SODA dataset")
+})
 
+@api.route("/clean-dataset")
+class Curation(Resource):
+    @api.doc(responses={500: "There was an internal server error", 400: "Bad request", 403: "Forbidden"}, description="Given a sodajson object, clean up the dataset structure for imported datasets that have been modified")
+    @api.marshal_with(model_clean_dataset)
+    def post(self):
+        data = request.get_json()
+
+        if "soda_json_structure" not in data:
+            api.abort(400, "Missing parameter: soda_json_structure")
+
+        soda_json_structure = data["soda_json_structure"]
+        api.logger.info("/clean-dataset POST request")
+
+        try:
+            return clean_json_structure(soda_json_structure)
+        except Exception as e:
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e
 
 
 
@@ -139,7 +167,7 @@ class GenerateManifestFiles(Resource):
         filepath = data.get("filepath")
 
         try:
-            return create_high_level_manifest_files_existing_local_starting_point(filepath)
+            return create_high_level_manifest_files_existing_local_starting_point(filepath, join(userpath, "SODA", "manifest_files"))
         except Exception as e:
             api.abort(500, str(e))
 

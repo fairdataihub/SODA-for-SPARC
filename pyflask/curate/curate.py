@@ -2890,6 +2890,37 @@ def bf_check_dataset_files_validity(soda_json_structure, ps):
     return error
 
 
+def clean_json_structure(soda_json_structure):
+    global namespace_logger
+    main_keys = soda_json_structure.keys()
+    # will return letting the user know to add files in dataset structure
+    if ("dataset-structure" not in soda_json_structure and "metadata-files" not in soda_json_structure):
+        abort(400, "Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset.")
+
+    # Check that local files/folders exist
+    try:
+        if error := check_local_dataset_files_validity(soda_json_structure):
+            abort(400, error)
+        # check that dataset is not empty after removing all the empty files and folders
+        if not soda_json_structure["dataset-structure"]["folders"] and "metadata-files" not in soda_json_structure:
+            abort(400, "Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset.")
+    except Exception as e:
+        raise e
+
+    # Check that bf files/folders exist
+    if "generate-dataset" in main_keys:
+        generate_option = soda_json_structure["generate-dataset"]["generate-option"]
+        if generate_option == "existing-bf":
+            try:
+                if soda_json_structure["generate-dataset"]["destination"] == "bf":
+                    if error := bf_check_dataset_files_validity(soda_json_structure, ps):
+                        abort(400, error)
+            except Exception as e:
+                raise e
+    # here will be clean up the soda json object before creating the manifest file cards
+    return soda_json_structure
+
+
 def main_curate_function(soda_json_structure):
 
     global namespace_logger

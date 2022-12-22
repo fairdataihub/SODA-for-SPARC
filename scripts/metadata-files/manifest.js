@@ -1917,6 +1917,8 @@ const generateManifestFolderLocallyForEdit = async (ev) => {
 };
 
 async function createManifestLocally(type, editBoolean, originalDataset) {
+  console.log(sodaJSONObj);
+  console.log("how it should look before sending the api call");
   var generatePath = "";
   sodaJSONObj["manifest-files"]["local-destination"] = path.join(homeDirectory, "SODA");
 
