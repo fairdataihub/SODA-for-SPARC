@@ -3297,6 +3297,8 @@ def generate_manifest_file_locally(generate_purpose, soda_json_structure):
 
 
 def guided_generate_manifest_file_data(dataset_structure_obj):
+    # modify this function here to handle paths from pennsieve
+    # create path using bfpath key from json object
 
     local_timezone = TZLOCAL()
 
@@ -3342,6 +3344,7 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
                 local_path_to_file = folder["files"][item]["path"].replace("\\", "/")
 
                 # The name of the file eg "file.txt"
+                
                 file_name = os.path.basename(local_path_to_file)
                 filename_entry = "/".join(ds_struct_path) + "/" + file_name
                 
@@ -3374,6 +3377,49 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
                 relative_structure_path.pop()
         return
 
+    def pennsieve_recursive_folder_traversal(folder, hlf_data_array, ds_struct_path):
+        print("function here")
+        if "files" in folder.keys():
+            for item in list(folder["files"]):
+                file_manifest_template_data = []
+
+                pennsieve_path_to_file = "/".join(folder["files"][item]["bfpath"])
+                # local_path_to_file = folder["files"][item]["path"].replace("\\", "/")
+
+                # The name of the file eg "file.txt"
+                
+                file_name = os.path.basename(pennsieve_path_to_file)
+                filename_entry = "/".join(ds_struct_path) + "/" + file_name
+                
+
+                # The extension of the file eg ".txt"
+                file_type_entry = get_name_extension(file_name)
+
+                # The timestamp of the file on the user's local machine
+                file_path = pathlib.Path(pennsieve_path_to_file)
+                mtime = file_path.stat().st_mtime
+                last_mod_time = datetime.fromtimestamp(mtime, tz=local_timezone).fromtimestamp(mtime).astimezone(
+                    local_timezone
+                )
+                timestamp_entry = last_mod_time.isoformat().replace(".", ",").replace("+00:00", "Z")
+
+                file_manifest_template_data.append(filename_entry)
+                file_manifest_template_data.append(timestamp_entry)
+                file_manifest_template_data.append("")
+                file_manifest_template_data.append(file_type_entry)
+                file_manifest_template_data.append("")
+
+                hlf_data_array.append(file_manifest_template_data)
+
+        if "folders" in folder.keys():
+            for item in list(folder["folders"]):
+                relative_structure_path.append(item)
+                pennsieve_recursive_folder_traversal(
+                    folder["folders"][item], hlf_data_array, relative_structure_path
+                )
+                relative_structure_path.pop()
+        return
+
     # Initialize the array that the manifest data will be added to.
     hlf_manifest_data = {}
 
@@ -3392,7 +3438,11 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
         "file type",
         "Additional Metadata",
         ])
-        guided_recursive_folder_traversal(dataset_structure_obj["folders"][high_level_folder], hlf_data_array, relative_structure_path)
+        if "bfpath" in dataset_structure_obj["folders"][high_level_folder]:
+            # means the json is from a pennsieve dataset
+            pennsieve_recursive_folder_traversal(dataset_structure_obj["folders"][high_level_folder], hlf_data_array, relative_structure_path)
+        else:
+            guided_recursive_folder_traversal(dataset_structure_obj["folders"][high_level_folder], hlf_data_array, relative_structure_path)
         hlf_manifest_data[high_level_folder] = hlf_data_array
 
     return hlf_manifest_data
