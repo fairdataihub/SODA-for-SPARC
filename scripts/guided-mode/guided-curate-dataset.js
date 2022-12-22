@@ -5999,6 +5999,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
   sodaJSONObj.getSubjectsInPools = function () {
     return this["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
   };
+
   sodaJSONObj.moveSubjectIntoPool = function (subjectName, poolName) {
     //Move the subjects folders in the datasetStructeJSONObj
     for (const highLevelFolder of guidedHighLevelFolders) {
@@ -6023,6 +6024,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
             datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]
           );
         } else {
+          console.log("Moving non-Pennsieve folder");
           datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]["folders"][
             subjectName
           ] = subjectFolderOutsidePool;
@@ -6052,30 +6054,24 @@ const attachGuidedMethodsToSodaJSONObj = () => {
         ]?.[subjectName];
       if (subjectFolderInPoolFolder) {
         if (folderImportedFromPennsieve(subjectFolderInPoolFolder)) {
-          console.log(subjectFolderInPoolFolder);
-          guidedMovePennsieveFolder(subjectFolderInPoolFolder, highLevelFolder);
-          delete subjectFolderInPoolFolder;
+          console.log("moving pennsieve subject ouf of pool");
+          guidedMovePennsieveFolder(
+            subjectName,
+            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]["folders"][
+              subjectName
+            ],
+            datasetStructureJSONObj["folders"][highLevelFolder]
+          );
         } else {
           console.log("moving non pennsieve");
           datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName] =
             subjectFolderInPoolFolder;
-          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName][
-            "folders"
-          ][subjectName];
         }
+        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]["folders"][
+          subjectName
+        ];
       }
     }
-
-    /*if (sampleFolderInHighLevelFolder) {
-      if (folderImportedFromPennsieve(sampleFolderInHighLevelFolder)) {
-        guidedModifyPennsieveFolder(sampleFolderInHighLevelFolder, "delete");
-        console.log(sampleFolderInHighLevelFolder);
-      } else {
-        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName][
-          "folders"
-        ][sample.subjectName]["folders"][sampleName];
-      }
-    }*/
 
     //Remove the pool from the subject's entry in the subjectsTableData
     for (const subjectDataArray of subjectsTableData) {
@@ -6384,32 +6380,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
         }
       }
     }
-  };
-  sodaJSONObj.getAllSubjects = function () {
-    let subjectsInPools = [];
-    let subjectsOutsidePools = [];
-
-    for (const [poolName, pool] of Object.entries(
-      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"]
-    )) {
-      for (const [subjectName, subjectData] of Object.entries(pool)) {
-        subjectsInPools.push({
-          subjectName: subjectName,
-          poolName: poolName,
-          samples: Object.keys(subjectData),
-        });
-      }
-    }
-
-    for (const [subjectName, subjectData] of Object.entries(
-      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
-    )) {
-      subjectsOutsidePools.push({
-        subjectName: subjectName,
-        samples: Object.keys(subjectData),
-      });
-    }
-    return [subjectsInPools, subjectsOutsidePools];
   };
 };
 
