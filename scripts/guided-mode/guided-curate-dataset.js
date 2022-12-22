@@ -337,6 +337,9 @@ const savePageChanges = async (pageBeingLeftID) => {
             throw errorArray;
           }
         } else {
+          console.log("resetting subjects and samples table data");
+          subjectsTableData = [];
+          samplesTableData = [];
           extractPoolSubSamStructureFromDataset(datasetStructureJSONObj);
         }
       }
