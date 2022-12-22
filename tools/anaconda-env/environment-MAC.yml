@@ -26,3 +26,4 @@ dependencies:
   - opencv-python == 4.5.3.56
   - requests
   - pennsieve2
+  - numpy == 1.23.0

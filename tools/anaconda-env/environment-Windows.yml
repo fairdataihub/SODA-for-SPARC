@@ -30,3 +30,4 @@ dependencies:
   - requests
   - boto3 
   - pennsieve 
+  - numpy == 1.23.0
