@@ -78,46 +78,7 @@ let introStatus = {
   samples: false,
 };
 
-/**
- * Clear the Pennsieve Agent's upload queue. Should be run after pre_rlight_checks have passed.
- *
- */
-const clearQueue = () => {
-  // determine OS
-  const os = require("os");
-  const platform = os.platform();
-  let pennsievePath;
 
-  if (platform === "darwin") {
-    pennsievePath = "/usr/local/opt/pennsieve/bin/pennsieve";
-  } else if (platform === "win32") {
-    pennsievePath = "C:\\Program Files\\PennSieve\\pennsieve.exe";
-  } else {
-    // linux pennsieve path
-    pennsievePath = "/usr/local/bin/pennsieve";
-  }
-
-  //* clear the Pennsieve Queue
-  const child = require("child_process").spawnSync(
-    pennsievePath,
-    ["upload-status", "--cancel-all"],
-    { timeout: 4000 }
-  );
-
-  //* check if there was an error in the subprocess that prevented it from launching
-  if (child.error !== undefined) {
-    console.error(child.error);
-    log.error(child.error);
-    return;
-  }
-
-  //* if Pennsieve had an error outputed to the console log it for debugging
-  if (child.stderr !== null && child.stderr.length > 0) {
-    console.error(child.stderr.toString("utf8"));
-    log.error(child.stderr.toString("utf8"));
-    return;
-  }
-};
 
 //////////////////////////////////
 // App launch actions

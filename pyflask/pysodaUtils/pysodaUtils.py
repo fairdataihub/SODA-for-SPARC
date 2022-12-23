@@ -1,45 +1,9 @@
-from pennsieve.api.agent import (
-    agent_cmd,
-    agent_cmd,
-    AgentError,
-    socket_address
-)
 import subprocess
-from websocket import create_connection
-import socket
-import errno
 import re
 import sys
 from os.path import exists 
 import os
 
-
-def clear_queue():
-
-    command = [agent_cmd(), "upload-status", "--cancel-all"]
-
-    return subprocess.run(command, check=True)
-
-
-def agent_running():
-    listen_port = 11235
-
-    try:
-        # x = "ws://127.0.0.1:11235"
-        # create_connection(x).close()
-        # CHANGE BACK
-        create_connection(socket_address(listen_port)).close()
-
-    except socket.error as e:
-
-        if e.errno == errno.ECONNREFUSED:  # ConnectionRefusedError for Python 3
-            return True
-        else:
-            raise e
-    else:
-        raise AgentError(
-            "The Pennsieve agent is already running. Learn more about how to solve the issue <a href='https://docs.sodaforsparc.io/docs/common-errors/pennsieve-agent-is-already-running' target='_blank'>here</a>."
-        )
 
 
 
@@ -61,6 +25,8 @@ def get_agent_installation_location():
         else:
             print("Non x86 path path")
             return os.path.normpath("C:\Program Files\Pennsieve\pennsieve.exe")
+
+
 
 def check_agent_installation():
     """

@@ -31,8 +31,6 @@ from permissions import bf_get_current_user_permission_agent_two
 from utils import authenticate_user_with_client, connect_pennsieve_client, get_dataset_id, create_request_headers
 
 from pysodaUtils import (
-    clear_queue,
-    agent_running,
     check_forbidden_characters_bf,
     get_agent_installation_location
 )

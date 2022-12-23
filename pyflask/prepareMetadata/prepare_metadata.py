@@ -36,7 +36,7 @@ from docx import Document
 from flask import abort 
 from curate import create_high_level_manifest_files_existing_bf_starting_point, get_name_extension
 
-from pysodaUtils import agent_running, stop_agent, start_agent
+from pysodaUtils import stop_agent, start_agent
 
 from namespaces import NamespaceEnum, get_namespace_logger
 namespace_logger = get_namespace_logger(NamespaceEnum.CURATE_DATASETS)
