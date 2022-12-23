@@ -1917,6 +1917,36 @@ const ffOpenManifestEditSwal = async (highlevelFolderName) => {
     //if additional metadata or description gets added for a file then add to json as well
     const savedHeaders = guidedManifestTable.getHeaders().split(",");
     const savedData = guidedManifestTable.getData();
+    //Update the metadata in json object
+    for (let i = 0; i < savedData.length; i++) {
+      let fileName = savedData[i][0];
+      let cleanedFileName = "";
+      let fileNameSplit = fileName.split("/");
+      let description = savedData[i][2];
+      let additionalMetadata = savedData[i][4];
+      if (fileNameSplit[0] === "") {
+        //not in a subfolder
+        cleanedFileName = fileNameSplit[1];
+        sodaCopy["dataset-structure"]["folders"][highlevelFolderName]["files"][cleanedFileName][
+          "description"
+        ] = description;
+        sodaCopy["dataset-structure"]["folders"][highlevelFolderName]["files"][cleanedFileName][
+          "additional-metadata"
+        ] = additionalMetadata;
+      } else {
+        // is in a subfolder so search for it and update metadata
+        let folderDepth = sodaCopy["dataset-structure"]["folders"][highlevelFolderName];
+        for (let j = 0; j < fileNameSplit.length; j++) {
+          if (j === fileNameSplit.length - 1) {
+            console.log(j);
+            folderDepth["files"][fileNameSplit[j]]["description"] = description;
+            folderDepth["files"][fileNameSplit[j]]["additional-metadata"] = additionalMetadata;
+          } else {
+            folderDepth = folderDepth["folders"][fileNameSplit[j]];
+          }
+        }
+      }
+    }
 
     sodaCopy["manifest-files"][highlevelFolderName] = {
       headers: savedHeaders,
@@ -1939,7 +1969,24 @@ $("#generate-manifest-curate").change(async function () {
     //create a copy of the sodajson object
     sodaCopy = sodaJSONObj;
     datasetStructCopy = datasetStructureJSONObj;
-    console.log(sodaCopy);
+    // console.log(sodaCopy);
+    try {
+      //used for imported local datasets and pennsieve datasets
+      const cleanJson = await client.post(
+        `/curate_datasets/clean-dataset`,
+        { soda_json_structure: sodaCopy },
+        { timeout: 0 }
+      );
+      let json_structure = cleanJson.data;
+      console.log(json_structure);
+    } catch (e) {
+      clientError(e);
+      console.log(e);
+    }
+    //filter out deleted files/folders before creating manifest data again
+    //manifest will still include pennsieve or locally imported files
+    console.log("sending data again");
+    console.log(datasetStructCopy);
     try {
       const res = await client.post(
         `/curate_datasets/guided_generate_high_level_folder_manifest_data`,

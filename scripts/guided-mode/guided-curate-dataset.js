@@ -1943,17 +1943,16 @@ const extractFilNamesFromManifestData = (manifestData) => {
   return allFileNamesinDsStructure.sort();
 };
 const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
-  console.log(existingManifestData);
-  console.log(newManifestData);
   const prevManifestFileNames = extractFilNamesFromManifestData(existingManifestData);
   const newManifestFileNames = extractFilNamesFromManifestData(newManifestData);
 
-  if (JSON.stringify(prevManifestFileNames) === JSON.stringify(newManifestFileNames)) {
+  if (JSON.stringify(existingManifestData) === JSON.stringify(newManifestData)) {
     //All files have remained the same, no need to diff check
+    console.log("are the same");
     return existingManifestData;
   }
 
-  const numImmutableManifestDataCols = 3;
+  const numImmutableManifestDataCols = 2;
 
   // Create a hash table for the existing manifest data
   const existingManifestDataHashTable = {};
@@ -1973,7 +1972,6 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
       existingManifestDataHashTable[fileName] = fileObj;
     }
   }
-
   let returnObj = {};
 
   for (const highLevelFolder of Object.keys(newManifestData)) {
@@ -2005,10 +2003,10 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
           newManifestReturnObj["data"].push(row);
         }
         returnObj[highLevelFolder] = newManifestReturnObj;
+        console.log(returnObj[highLevelFolder]);
       }
     }
   }
-
   return returnObj;
 };
 

@@ -7460,7 +7460,13 @@ async function initiate_generate() {
   let nameDestinationPair = determineDatasetDestination();
   dataset_name = nameDestinationPair[0];
   dataset_destination = nameDestinationPair[1];
-
+  if (sodaJSONObj?.["manifest-files"]?.["destination"]) {
+    sodaJSONObj["manifest-files"] = {
+      destination: "generate-dataset",
+    };
+  }
+  console.log(sodaJSONObj);
+  console.log(sodaCopy);
   client
     .post(
       `/curate_datasets/curation`,

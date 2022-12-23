@@ -2892,31 +2892,92 @@ def bf_check_dataset_files_validity(soda_json_structure, ps):
 
 def clean_json_structure(soda_json_structure):
     global namespace_logger
+    namespace_logger.info("Cleaning json structure")
+        # Delete any files on Pennsieve that have been marked as deleted
+    def recursive_file_delete(folder):
+        if "files" in folder.keys():
+            for item in list(folder["files"]):
+                if "deleted" in folder["files"][item]["action"]:
+                    # remove the file from the soda json structure
+                    del folder["files"][item]
+                    # namespace_logger.info("File value after deletion: " + str(folder["files"][item]))
+
+        for item in list(folder["folders"]):
+            recursive_file_delete(folder["folders"][item])
+        return
+
+    # Delete any files on Pennsieve that have been marked as deleted
+    def metadata_file_delete(soda_json_structure):
+        if "metadata-files" in soda_json_structure.keys():
+            folder = soda_json_structure["metadata-files"]
+            for item in list(folder):
+                if "deleted" in folder[item]["action"]:
+                    del folder[item]
+        return
+
+    # Rename any files that exist on Pennsieve
+    def recursive_file_rename(folder):
+        if "files" in folder.keys():
+            for item in list(folder["files"]):
+                # if item in ["manifest.xlsx", "manifest.csv"]:
+                #     continue
+                if (
+                    "renamed" in folder["files"][item]["action"]
+                    and folder["files"][item]["type"] == "bf"
+                ):
+                    continue
+                    # r = requests.put(f"{PENNSIEVE_URL}/packages/{folder['files'][item]['path']}?updateStorage=true", json={"name": item}, headers=create_request_headers(ps))
+                    # r.raise_for_status()
+
+        for item in list(folder["folders"]):
+            recursive_file_rename(folder["folders"][item])
+
+        return
+
+
+    def recursive_folder_delete(folder):
+        """
+        Delete any stray folders that exist on Pennsieve
+        Only top level files are deleted since the api deletes any
+        files and folders that exist inside.
+        """
+
+        print("FOLDER TO DELETE IS: ", folder)
+
+        for item in list(folder["folders"]):
+            if folder["folders"][item]["type"] == "bf":
+                if "deleted" in folder["folders"][item]["action"]:
+                    del folder["folders"][item]
+                else:
+                    recursive_folder_delete(folder["folders"][item])
+            else:
+                recursive_folder_delete(folder["folders"][item])
+        return
+
     main_keys = soda_json_structure.keys()
-    # will return letting the user know to add files in dataset structure
-    if ("dataset-structure" not in soda_json_structure and "metadata-files" not in soda_json_structure):
+    dataset_structure = soda_json_structure["dataset-structure"]
+
+    if ("dataset-structure" not in main_keys and "metadata-files" not in main_keys):
         abort(400, "Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset.")
 
-    # Check that local files/folders exist
-    try:
-        if error := check_local_dataset_files_validity(soda_json_structure):
-            abort(400, error)
-        # check that dataset is not empty after removing all the empty files and folders
-        if not soda_json_structure["dataset-structure"]["folders"] and "metadata-files" not in soda_json_structure:
-            abort(400, "Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset.")
-    except Exception as e:
-        raise e
-
-    # Check that bf files/folders exist
     if "generate-dataset" in main_keys:
-        generate_option = soda_json_structure["generate-dataset"]["generate-option"]
-        if generate_option == "existing-bf":
-            try:
-                if soda_json_structure["generate-dataset"]["destination"] == "bf":
-                    if error := bf_check_dataset_files_validity(soda_json_structure, ps):
-                        abort(400, error)
-            except Exception as e:
-                raise e
+        # Check that local files/folders exist
+        try:
+            if error := check_local_dataset_files_validity(soda_json_structure):
+                abort(400, error)
+            # check that dataset is not empty after removing all the empty files and folders
+            if not soda_json_structure["dataset-structure"]["folders"] and "metadata-files" not in soda_json_structure:
+                abort(400, "Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset.")
+        except Exception as e:
+            raise e
+
+    if "starting-point" in main_keys:
+        if soda_json_structure["starting-point"]["type"] == "bf":
+            # remove deleted files and folders from the json
+            recursive_file_delete(dataset_structure)
+            recursive_folder_delete(dataset_structure)
+            soda_json_structure["dataset-structure"] = dataset_structure
+
     # here will be clean up the soda json object before creating the manifest file cards
     return soda_json_structure
 
@@ -3383,25 +3444,10 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
             for item in list(folder["files"]):
                 file_manifest_template_data = []
 
-                pennsieve_path_to_file = "/".join(folder["files"][item]["bfpath"])
-                # local_path_to_file = folder["files"][item]["path"].replace("\\", "/")
-
-                # The name of the file eg "file.txt"
-                
-                file_name = os.path.basename(pennsieve_path_to_file)
-                filename_entry = "/".join(ds_struct_path) + "/" + file_name
-                
-
-                # The extension of the file eg ".txt"
+                file_name = os.path.basename(item)
                 file_type_entry = get_name_extension(file_name)
-
-                # The timestamp of the file on the user's local machine
-                file_path = pathlib.Path(pennsieve_path_to_file)
-                mtime = file_path.stat().st_mtime
-                last_mod_time = datetime.fromtimestamp(mtime, tz=local_timezone).fromtimestamp(mtime).astimezone(
-                    local_timezone
-                )
-                timestamp_entry = last_mod_time.isoformat().replace(".", ",").replace("+00:00", "Z")
+                filename_entry = "/".join(ds_struct_path) + "/" + file_name
+                timestamp_entry = folder["files"][item]["timestamp"]
 
                 file_manifest_template_data.append(filename_entry)
                 file_manifest_template_data.append(timestamp_entry)
