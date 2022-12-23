@@ -39,30 +39,73 @@ const guidedMovePennsieveFolder = (movedFolderName, folderJSONPath, newFolderJSO
   newFolderJSONPath["folders"][movedFolderName] = folderJSONPath;
   console.log(newFolderJSONPath["folders"]);
 };
+const checkIfPoolsFoldersAreCorrect = (poolFolderPath) => {
+  const poolFolders = Object.keys(poolFolderPath["folders"]);
+  const invalidPoolFolders = poolFolders.filter((folder) => {
+    !folder.startsWith("sub-");
+  });
+  const poolSubjectFolders = poolFolders.filter((folder) => {
+    folder.startsWith("sub-");
+  });
+  console.log(poolSubjectFolders);
+  for (const subjectFolder of poolSubjectFolders) {
+    checkIfSubjectsFoldersAreCorrect(poolFolderPath["folders"][subjectFolder]);
+  }
 
-const guidedCheckHighLevelFoldersForImproperFiles = (datasetStructureJSONObj) => {
+  for (const invalidPoolFolder of invalidPoolFolders) {
+    invalidFolders.push(invalidPoolFolder);
+  }
+
+  //Push all files in the pools to invalid files since the user should not have files in the pool folders
+  const poolFiles = Object.keys(poolFolderPath["files"]);
+  for (const poolFile of poolFiles) {
+    invalidFiles.push(poolFile);
+  }
+};
+const checkIfSubjectsFoldersAreCorrect = (subjectFolderPath) => {
+  const subjectFolders = Object.keys(subjectFolderPath["folders"]);
+  console.log(subjectFolders.map((folder) => folder.startsWith("sam-")));
+  const invalidSubjectFolders = subjectFolders.filter((folder) => {
+    !folder.startsWith("sam-");
+  });
+
+  for (const invalidSubjectFolder of invalidSubjectFolders) {
+    invalidFolders.push(invalidSubjectFolder);
+  }
+  const subjectFiles = Object.keys(subjectFolderPath["files"]);
+  for (const subjectFile of subjectFiles) {
+    invalidFiles.push(subjectFile);
+  }
+};
+const guidedCheckHighLevelFoldersForImproperFiles = (datasetStructure) => {
   const invalidFolders = [];
   const invalidFiles = [];
 
-  for (hlf of highLevelFolders) {
-    if (datasetStructureJSONObj["folders"][hlf]) {
-      const hlfFolders = Object.keys(datasetStructureJSONObj["folders"][hlf]["folders"]);
+  for (hlf of guidedHighLevelFolders) {
+    if (datasetStructure["folders"][hlf]) {
+      const hlfFolders = Object.keys(datasetStructure["folders"][hlf]["folders"]);
+      console.log(hlfFolders);
+      //filter out hlfFolders that do not start with pool- or sub-
       const invalidBaseFolders = hlfFolders.filter((folder) => {
-        !folder.startsWith("pool-") || !folder.startsWith("sub-");
+        return !folder.startsWith("pool-") || !folder.startsWith("sub-");
       });
 
-      const hlfFiles = Object.keys(datasetStructureJSONObj["folders"][hlf]["files"]);
-      const invalidBaseFiles = hlfFiles.filter((file) => {
-        !file.startsWith("manifest");
-      });
-
-      for (invalidBaseFolder of invalidBaseFolders) {
+      console.log(invalidBaseFolders);
+      for (const invalidBaseFolder of invalidBaseFolders) {
         invalidFolders.push(invalidBaseFolder);
       }
-      for (invalidBaseFile of invalidBaseFiles) {
+
+      const hlfFiles = Object.keys(datasetStructure["folders"][hlf]["files"]);
+      const invalidBaseFiles = hlfFiles.filter((file) => {
+        return !file.startsWith("manifest");
+      });
+      for (const invalidBaseFile of invalidBaseFiles) {
         invalidFiles.push(invalidBaseFile);
       }
     }
+  }
+  if (invalidFolders.length > 0 && invalidFiles.length > 0) {
+    console.log("no invalid folders or files found in the guided base folders");
   }
   return [invalidFolders, invalidFiles];
 };
@@ -267,12 +310,23 @@ const savePageChanges = async (pageBeingLeftID) => {
         // and derivative high level folders. If this is not the case with the pulled dataset, reject it.
         const [invalidFolders, invalidFiles] =
           guidedCheckHighLevelFoldersForImproperFiles(datasetStructureJSONObj);
+        console.log(invalidFolders);
+        console.log(invalidFiles);
         if (invalidFolders.length > 0 || invalidFiles.length > 0) {
-          errorArray.push({
-            type: "notyf",
-            message:
-              "Your primary, source, and derivative folders must only contain pool-folders or sub-folders when resuming a Pennsieve dataset",
-          });
+          if (invalidFolders.length > 0) {
+            errorArray.push({
+              type: "notyf",
+              message:
+                "Your primary, source, and derivative folders must only contain pool-folders or sub-folders when resuming a Pennsieve dataset",
+            });
+          }
+          if (invalidFiles.length > 0) {
+            errorArray.push({
+              type: "notyf",
+              message:
+                "Your primary, source, and derivative folders must be empty besides the pool-folders or sub-folders",
+            });
+          }
           throw errorArray;
         }
 
@@ -333,6 +387,7 @@ const savePageChanges = async (pageBeingLeftID) => {
             errorArray.push({
               type: "notyf",
               message: "The subjects and samples metadata do not have the same keys",
+              h,
             });
             throw errorArray;
           }
@@ -1470,6 +1525,11 @@ const createGuidedStructureFromSubSamMetadata = (subjectsMetadataRows, samplesMe
     const sampleID = sample[1];
     const poolID = sample[3];
     if (poolID !== "") {
+      console.log("no pool id");
+      console.log(subjectID);
+      console.log(sampleID);
+      console.log(poolID);
+      console.log(poolSubSamStructure["pools"]);
       poolSubSamStructure["pools"][poolID][subjectID][sampleID] = {};
     } else {
       poolSubSamStructure["subjects"][subjectID][sampleID] = {};
