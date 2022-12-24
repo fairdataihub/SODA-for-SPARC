@@ -365,7 +365,7 @@ $(document).ready(function () {
   });
 });
 
-function convertJSONToXlsx(jsondata, excelfile) {
+const convertJSONToXlsx = (jsondata, excelfile) => {
   console.log(excelfile);
   console.log("creating new manifest files styled");
   const requiredManifestHeaders = ["filename", "timestamp", "description", "file type"];
@@ -472,7 +472,7 @@ function convertJSONToXlsx(jsondata, excelfile) {
     rowIndex++;
   });
   wb.write(excelfile);
-}
+};
 
 var table1;
 function loadManifestFileEdits(jsondata) {
@@ -887,7 +887,7 @@ async function generateManifestHelper() {
   }
 }
 
-async function generateManifestPreview(e) {
+const generateManifestPreview = async (e) => {
   // open a file dialog so the user can select their dataset folder
   let folderPath = await ipcRenderer.invoke("open-manifest-preview-location");
 
@@ -898,7 +898,7 @@ async function generateManifestPreview(e) {
   await generateManifestPrecheck(true, e);
 
   Swal.close();
-}
+};
 
 /**
  *  Before a user uploads their manifest files to Pennsieve or generates them locally remove empty custom  columns.

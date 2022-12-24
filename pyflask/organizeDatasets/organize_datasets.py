@@ -954,6 +954,8 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         "bfpath": [],
                         "timestamp": formatted_timestamp,
                         "type": "bf",
+                        "additional-metadata": "",
+                        "description": "",
                     }
                     for paths in subfolder_json["bfpath"]:
                         subfolder_json["files"][item_name]["bfpath"].append(paths)

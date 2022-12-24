@@ -2972,14 +2972,14 @@ def clean_json_structure(soda_json_structure):
             raise e
 
     if "starting-point" in main_keys:
-        if soda_json_structure["starting-point"]["type"] == "bf":
+        if soda_json_structure["starting-point"]["type"] == "bf" or soda_json_structure["starting-point"]["type"] == "local":
             # remove deleted files and folders from the json
             recursive_file_delete(dataset_structure)
             recursive_folder_delete(dataset_structure)
             soda_json_structure["dataset-structure"] = dataset_structure
 
     # here will be clean up the soda json object before creating the manifest file cards
-    return soda_json_structure
+    return {"soda_json_structure": soda_json_structure}
 
 
 def main_curate_function(soda_json_structure):
@@ -3400,9 +3400,12 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
     def guided_recursive_folder_traversal(folder, hlf_data_array, ds_struct_path):
         if "files" in folder.keys():
             for item in list(folder["files"]):
+
                 file_manifest_template_data = []
 
                 local_path_to_file = folder["files"][item]["path"].replace("\\", "/")
+                item_description = folder["files"][item]["description"]
+                item_additional_info = folder["files"][item]["additional-metadata"]
 
                 # The name of the file eg "file.txt"
                 
@@ -3423,9 +3426,9 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
 
                 file_manifest_template_data.append(filename_entry)
                 file_manifest_template_data.append(timestamp_entry)
-                file_manifest_template_data.append("")
+                file_manifest_template_data.append(item_description)
                 file_manifest_template_data.append(file_type_entry)
-                file_manifest_template_data.append("")
+                file_manifest_template_data.append(item_additional_info)
 
                 hlf_data_array.append(file_manifest_template_data)
 
@@ -3442,18 +3445,32 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
         print("function here")
         if "files" in folder.keys():
             for item in list(folder["files"]):
-                file_manifest_template_data = []
 
-                file_name = os.path.basename(item)
-                file_type_entry = get_name_extension(file_name)
+                # check if files is from pennsieve or was locally imported
+                file_manifest_template_data = []
+                item_description = folder["files"][item]["description"]
+                item_additional_info = folder["files"][item]["additional-metadata"]
+                file_name = ""
+                if folder["files"][item]["type"] == "bf": 
+                    file_name = os.path.basename(item)
+                    timestamp_entry = folder["files"][item]["timestamp"]
+                else:
+                    local_path_to_file = folder["files"][item]["path"].replace("\\", "/")
+                    file_name = os.path.basename(local_path_to_file)
+                    file_path = pathlib.Path(local_path_to_file)
+                    mtime = file_path.stat().st_mtime
+                    last_mod_time = datetime.fromtimestamp(mtime, tz=local_timezone).fromtimestamp(mtime).astimezone(local_timezone)
+                    timestamp_entry = last_mod_time.isoformat().replace(".", ",").replace("+00:00", "Z")
+
+                
                 filename_entry = "/".join(ds_struct_path) + "/" + file_name
-                timestamp_entry = folder["files"][item]["timestamp"]
+                file_type_entry = get_name_extension(file_name)
 
                 file_manifest_template_data.append(filename_entry)
                 file_manifest_template_data.append(timestamp_entry)
-                file_manifest_template_data.append("")
+                file_manifest_template_data.append(item_description)
                 file_manifest_template_data.append(file_type_entry)
-                file_manifest_template_data.append("")
+                file_manifest_template_data.append(item_additional_info)
 
                 hlf_data_array.append(file_manifest_template_data)
 

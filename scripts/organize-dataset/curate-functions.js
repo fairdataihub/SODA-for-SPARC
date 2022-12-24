@@ -1930,19 +1930,29 @@ const ffOpenManifestEditSwal = async (highlevelFolderName) => {
         sodaCopy["dataset-structure"]["folders"][highlevelFolderName]["files"][cleanedFileName][
           "description"
         ] = description;
+        sodaJSONObj["dataset-structure"]["folders"][highlevelFolderName]["files"][cleanedFileName][
+          "description"
+        ]
         sodaCopy["dataset-structure"]["folders"][highlevelFolderName]["files"][cleanedFileName][
+          "additional-metadata"
+        ] = additionalMetadata;
+        sodaJSONObj["dataset-structure"]["folders"][highlevelFolderName]["files"][cleanedFileName][
           "additional-metadata"
         ] = additionalMetadata;
       } else {
         // is in a subfolder so search for it and update metadata
-        let folderDepth = sodaCopy["dataset-structure"]["folders"][highlevelFolderName];
+        let folderDepthCopy = sodaCopy["dataset-structure"]["folders"][highlevelFolderName];
+        let folderDepthReal = sodaJSONObj["dataset-structure"]["folders"][highlevelFolderName];
         for (let j = 0; j < fileNameSplit.length; j++) {
           if (j === fileNameSplit.length - 1) {
-            console.log(j);
-            folderDepth["files"][fileNameSplit[j]]["description"] = description;
-            folderDepth["files"][fileNameSplit[j]]["additional-metadata"] = additionalMetadata;
+            // console.log(j);
+            folderDepthCopy["files"][fileNameSplit[j]]["description"] = description;
+            folderDepthReal["files"][fileNameSplit[j]]["description"] = description;
+            folderDepthCopy["files"][fileNameSplit[j]]["additional-metadata"] = additionalMetadata;
+            folderDepthReal["files"][fileNameSplit[j]]["additional-metadata"] = additionalMetadata;
           } else {
-            folderDepth = folderDepth["folders"][fileNameSplit[j]];
+            folderDepthCopy = folderDepthCopy["folders"][fileNameSplit[j]];
+            folderDepthReal = folderDepthReal["folders"][fileNameSplit[j]];
           }
         }
       }
@@ -1960,90 +1970,102 @@ const ffOpenManifestEditSwal = async (highlevelFolderName) => {
   renderFFManifestCards();
 };
 
+const ffmCreateManifest = async (sodaJson) => {
+  await new Promise((r) => setTimeout(r, 0));
+  //create a copy of the sodajson object
+  sodaCopy = sodaJson;
+  datasetStructCopy = sodaCopy["dataset-structure"];
+  // console.log(sodaCopy);
+  try {
+    //used for imported local datasets and pennsieve datasets
+    const cleanJson = await client.post(
+      `/curate_datasets/clean-dataset`,
+      { soda_json_structure: sodaCopy },
+      { timeout: 0 }
+    );
+    let response = cleanJson.data.soda_json_structure;
+    let regex = /'/gm;
+    let formattedResponse = response.replace(regex, "\"");
+    // console.log(formattedResponse);
+    let json_structure = JSON.parse(formattedResponse);
+    sodaCopy = json_structure;
+    datasetStructCopy = sodaCopy["dataset-structure"];
+    // console.log(json_structure);
+    // console.log(typeof(json_structure));
+  } catch (e) {
+    clientError(e);
+    console.log(e);
+  }
+  //filter out deleted files/folders before creating manifest data again
+  //manifest will still include pennsieve or locally imported files
+  console.log("sending data again");
+  console.log(datasetStructCopy);
+  try {
+    const res = await client.post(
+      `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
+      {
+        dataset_structure_obj: datasetStructCopy,
+      },
+      { timeout: 0 }
+    );
+    const manifestRes = res.data;
+    console.log(manifestRes);
+    //loop through each of the high level folders and store their manifest headers and data into the sodaJSONObj
+    let newManifestData = {};
+    for (const [highLevelFolderName, manifestFileData] of Object.entries(manifestRes)) {
+      //Only save manifest files for high lvl folders that returned more than the headers
+      //meaning manifest file data was generated in the response
+      console.log(manifestFileData);
+      if (manifestFileData.length > 1) {
+        const manifestHeader = manifestFileData.shift();
+
+        newManifestData[highLevelFolderName] = {
+          headers: manifestHeader,
+          data: manifestFileData,
+        };
+      }
+    }
+
+    const existingManifestData = sodaCopy["manifest-files"];
+    console.log(sodaCopy["manifest-files"]);
+    if (sodaCopy["manifest-files"]?.["destination"]) {
+      delete sodaCopy["manifest-files"]["destination"];
+    }
+    let updatedManifestData;
+
+    if (existingManifestData) {
+      console.log("add function, needed");
+      updatedManifestData = diffCheckManifestFiles(newManifestData, existingManifestData);
+    } else {
+      updatedManifestData = newManifestData;
+    }
+
+    sodaCopy["manifest-files"] = updatedManifestData;
+
+    // below needs to be added at the very end before the main_curate_function begins
+    // sodaJSONObj["manifest-files"]["destination"] = "generate-dataset";
+    // console.log(sodaJSONObj);
+    //save the sodajson with the new manifest files
+    //saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+  } catch (err) {
+    clientError(err);
+    console.log(err);
+    userError(err);
+  }
+
+  renderFFManifestCards();
+}
+
 $("#generate-manifest-curate").change(async function () {
   if (this.checked) {
     $("#button-generate-manifest-locally").show();
     //display manifest generator UI here
     $("#ffm-manifest-generator").show();
-    await new Promise((r) => setTimeout(r, 0));
-    //create a copy of the sodajson object
-    sodaCopy = sodaJSONObj;
-    datasetStructCopy = datasetStructureJSONObj;
-    // console.log(sodaCopy);
-    try {
-      //used for imported local datasets and pennsieve datasets
-      const cleanJson = await client.post(
-        `/curate_datasets/clean-dataset`,
-        { soda_json_structure: sodaCopy },
-        { timeout: 0 }
-      );
-      let json_structure = cleanJson.data;
-      console.log(json_structure);
-    } catch (e) {
-      clientError(e);
-      console.log(e);
-    }
-    //filter out deleted files/folders before creating manifest data again
-    //manifest will still include pennsieve or locally imported files
-    console.log("sending data again");
-    console.log(datasetStructCopy);
-    try {
-      const res = await client.post(
-        `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
-        {
-          dataset_structure_obj: datasetStructCopy,
-        },
-        { timeout: 0 }
-      );
-      const manifestRes = res.data;
-      console.log(manifestRes);
-      //loop through each of the high level folders and store their manifest headers and data into the sodaJSONObj
-      let newManifestData = {};
-      for (const [highLevelFolderName, manifestFileData] of Object.entries(manifestRes)) {
-        //Only save manifest files for high lvl folders that returned more than the headers
-        //meaning manifest file data was generated in the response
-        console.log(manifestFileData);
-        if (manifestFileData.length > 1) {
-          const manifestHeader = manifestFileData.shift();
-
-          newManifestData[highLevelFolderName] = {
-            headers: manifestHeader,
-            data: manifestFileData,
-          };
-        }
-      }
-
-      const existingManifestData = sodaCopy["manifest-files"];
-      console.log(sodaCopy["manifest-files"]);
-      if (sodaCopy["manifest-files"]?.["destination"]) {
-        delete sodaCopy["manifest-files"]["destination"];
-      }
-      let updatedManifestData;
-
-      if (existingManifestData) {
-        console.log("add function, needed");
-        updatedManifestData = diffCheckManifestFiles(newManifestData, existingManifestData);
-      } else {
-        updatedManifestData = newManifestData;
-      }
-
-      sodaCopy["manifest-files"] = updatedManifestData;
-
-      // below needs to be added at the very end before the main_curate_function begins
-      // sodaJSONObj["manifest-files"]["destination"] = "generate-dataset";
-      // console.log(sodaJSONObj);
-      //save the sodajson with the new manifest files
-      //saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-    } catch (err) {
-      clientError(err);
-      console.log(err);
-      userError(err);
-    }
-
-    renderFFManifestCards();
+    await ffmCreateManifest(sodaJSONObj);
   } else {
     $("#button-generate-manifest-locally").hide();
     $("#ffm-manifest-generator").hide();
+    document.getElementById("ffm-container-manifest-file-cards").innerHTML = "";
   }
 });
 

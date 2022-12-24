@@ -39,6 +39,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
   if (tabNow === 0) {
     fixStepDone(tabNow);
   } else {
+    console.log("revealing here?")
     fixStepDone(tabNow - 1);
   }
 
@@ -61,6 +62,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
   $("#nextBtn").html("Continue");
 
   if (nextOrPrev === -1) {
+    console.log("revealing here?")
     $("#nextBtn").prop("disabled", false);
   }
 
@@ -78,17 +80,30 @@ const showParentTab = (tabNow, nextOrPrev) => {
     highLevelFoldersDisableOptions();
   } else {
     if (tabNow === 3) {
+      console.log("revealing here?")
       if (Object.keys(datasetStructureJSONObj["folders"]).includes("code")) {
         $(".metadata-button.button-generate-dataset.code-metadata").css("display", "block");
         $(".flex-row-container.code-metadata").css("display", "flex");
       } else {
+        console.log("revealing here?")
         $(".metadata-button.button-generate-dataset.code-metadata").css("display", "none");
         $(".flex-row-container.code-metadata").css("display", "none");
       }
     }
     $("#nextBtn").prop("disabled", false);
   }
+  if(tabNow == 4) {
+    console.log("just create here");
+    if(document.getElementById("generate-manifest-curate").checked) {
+      // need to run manifest creation
+      ffmCreateManifest(sodaJSONObj);
+    } else {
+      document.getElementById("ffm-container-manifest-file-cards").innerHTML = "";
+    }
+  }
+
   if (tabNow == 5) {
+    console.log("revealing here?")
     // Disable the continue button if a destination has not been selected
     // Used when traversing back and forth between tabs
     if (
@@ -104,6 +119,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
     ) {
       $("#nextBtn").prop("disabled", false);
     } else {
+      console.log("revealing here?")
       $("#nextBtn").prop("disabled", true);
     }
   }
@@ -152,6 +168,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == x.length - 1) {
+    console.log("revealing here?")
     // If in step 6, show the generate button and the preview tab
     $("#nextBtn").css("display", "none");
 
@@ -599,6 +616,9 @@ const nextPrev = (n) => {
           // Increase or decrease the current tab by 1:
           currentTab = currentTab + n;
           // Display the correct tab:
+          console.log("It happens here?");
+          console.log(currentTab);
+          console.log(n);
           showParentTab(currentTab, n);
         }
       });
@@ -608,6 +628,9 @@ const nextPrev = (n) => {
       // Increase or decrease the current tab by 1:
       currentTab = currentTab + n;
       // Display the correct tab:
+      console.log("It happens here?");
+      console.log(currentTab);
+      console.log(n);
       showParentTab(currentTab, n);
     }
   } else if (
@@ -615,7 +638,7 @@ const nextPrev = (n) => {
     sodaJSONObj["starting-point"]["type"] == "bf"
   ) {
     $(x[currentTab]).removeClass("tab-active");
-
+    console.log("It happens here?");
     currentTab = currentTab - 2;
     showParentTab(currentTab, n);
     $("#nextBtn").prop("disabled", false);
@@ -626,6 +649,7 @@ const nextPrev = (n) => {
     // cj -skip step 6
     $(x[currentTab]).removeClass("tab-active");
     if (n == -1) {
+      console.log("It happens here?");
       currentTab = currentTab + n;
       $("#nextBtn").prop("disabled", false);
     } else {
@@ -640,6 +664,7 @@ const nextPrev = (n) => {
     (sodaJSONObj["starting-point"]["type"] === "new" ||
       sodaJSONObj["starting-point"]["type"] === "local")
   ) {
+    console.log("It happens here?");
     $(x[currentTab]).removeClass("tab-active");
     currentTab = currentTab + n;
     $("#Question-generate-dataset").show();
@@ -1611,7 +1636,7 @@ const verify_sparc_folder = (root_folder_path, type) => {
 };
 
 // function similar to transitionSubQuestions, but for buttons
-async function transitionSubQuestionsButton(ev, currentDiv, parentDiv, button, category) {
+const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, category) => {
   /*
     ev: the button being clicked
     currentDiv: current option-card (question)
