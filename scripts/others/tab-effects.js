@@ -39,7 +39,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
   if (tabNow === 0) {
     fixStepDone(tabNow);
   } else {
-    console.log("revealing here?")
+    console.log("revealing here?");
     fixStepDone(tabNow - 1);
   }
 
@@ -62,7 +62,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
   $("#nextBtn").html("Continue");
 
   if (nextOrPrev === -1) {
-    console.log("revealing here?")
+    console.log("revealing here?");
     $("#nextBtn").prop("disabled", false);
   }
 
@@ -80,21 +80,21 @@ const showParentTab = (tabNow, nextOrPrev) => {
     highLevelFoldersDisableOptions();
   } else {
     if (tabNow === 3) {
-      console.log("revealing here?")
+      console.log("revealing here?");
       if (Object.keys(datasetStructureJSONObj["folders"]).includes("code")) {
         $(".metadata-button.button-generate-dataset.code-metadata").css("display", "block");
         $(".flex-row-container.code-metadata").css("display", "flex");
       } else {
-        console.log("revealing here?")
+        console.log("revealing here?");
         $(".metadata-button.button-generate-dataset.code-metadata").css("display", "none");
         $(".flex-row-container.code-metadata").css("display", "none");
       }
     }
     $("#nextBtn").prop("disabled", false);
   }
-  if(tabNow == 4) {
+  if (tabNow == 4) {
     console.log("just create here");
-    if(document.getElementById("generate-manifest-curate").checked) {
+    if (document.getElementById("generate-manifest-curate").checked) {
       // need to run manifest creation
       ffmCreateManifest(sodaJSONObj);
     } else {
@@ -103,7 +103,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == 5) {
-    console.log("revealing here?")
+    console.log("revealing here?");
     // Disable the continue button if a destination has not been selected
     // Used when traversing back and forth between tabs
     if (
@@ -119,7 +119,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
     ) {
       $("#nextBtn").prop("disabled", false);
     } else {
-      console.log("revealing here?")
+      console.log("revealing here?");
       $("#nextBtn").prop("disabled", true);
     }
   }
@@ -168,7 +168,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == x.length - 1) {
-    console.log("revealing here?")
+    console.log("revealing here?");
     // If in step 6, show the generate button and the preview tab
     $("#nextBtn").css("display", "none");
 
@@ -1884,7 +1884,7 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
       $("#nextBtn").prop("disabled", true);
     }
   }
-}
+};
 
 const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, category) => {
   let continueProgressRC = true;

@@ -1932,7 +1932,7 @@ const ffOpenManifestEditSwal = async (highlevelFolderName) => {
         ] = description;
         sodaJSONObj["dataset-structure"]["folders"][highlevelFolderName]["files"][cleanedFileName][
           "description"
-        ]
+        ];
         sodaCopy["dataset-structure"]["folders"][highlevelFolderName]["files"][cleanedFileName][
           "additional-metadata"
         ] = additionalMetadata;
@@ -1985,7 +1985,7 @@ const ffmCreateManifest = async (sodaJson) => {
     );
     let response = cleanJson.data.soda_json_structure;
     let regex = /'/gm;
-    let formattedResponse = response.replace(regex, "\"");
+    let formattedResponse = response.replace(regex, '"');
     // console.log(formattedResponse);
     let json_structure = JSON.parse(formattedResponse);
     sodaCopy = json_structure;
@@ -2054,7 +2054,7 @@ const ffmCreateManifest = async (sodaJson) => {
   }
 
   renderFFManifestCards();
-}
+};
 
 $("#generate-manifest-curate").change(async function () {
   if (this.checked) {
