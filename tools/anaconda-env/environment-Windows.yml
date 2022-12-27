@@ -30,3 +30,4 @@ dependencies:
   - certifi == 2021.10.8
   - requests
   - boto3 
+  - numpy == 1.23.0

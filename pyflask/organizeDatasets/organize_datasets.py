@@ -19,7 +19,6 @@ import shutil
 import subprocess
 import re
 import gevent
-from pennsieve import Pennsieve
 import pathlib
 from datetime import datetime, timezone
 import requests 

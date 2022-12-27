@@ -12,7 +12,6 @@ dependencies:
   - chardet == 4.0.0
   - pandas == 1.4.2
   - openpyxl == 3.0.9
-  - pennsieve == 6.1.2
   - configparser == 4.0.2
   - python-docx == 0.8.10
   - xlrd == 2.0.1
@@ -26,3 +25,4 @@ dependencies:
   - opencv-python == 4.5.3.56
   - requests
   - pennsieve2
+  - numpy == 1.23.0

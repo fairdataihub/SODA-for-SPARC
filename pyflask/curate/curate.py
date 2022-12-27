@@ -32,8 +32,6 @@ from utils import authenticate_user_with_client, connect_pennsieve_client, get_d
 from manifest import create_high_level_manifest_files_existing_bf_starting_point, create_high_level_manifest_files, get_auto_generated_manifest_files
 
 from pysodaUtils import (
-    clear_queue,
-    agent_running,
     check_forbidden_characters_bf,
     get_agent_installation_location
 )
@@ -55,7 +53,8 @@ start_time = 0
 uploaded_folder_counter = 0
 current_size_of_uploaded_files = 0
 generated_dataset_id = None
-
+# the pennsieve python client used for uploading dataset files 
+client = None 
 
 userpath = expanduser("~")
 configpath = join(userpath, ".pennsieve", "config.ini")
@@ -2088,6 +2087,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
     global total_files
     global total_bytes_uploaded # current number of bytes uploaded to Pennsieve in the current session
     global main_curation_uploaded_files
+    global client 
 
 
     total_files = 0
@@ -2411,6 +2411,50 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
             return list_upload_files
 
+        def monitor_subscriber_progress(events_dict):
+            """
+            Monitors the progress of a subscriber and unsubscribes once the upload finishes. 
+            """
+            global files_uploaded 
+            global total_bytes_uploaded 
+            global total_dataset_files
+
+            files_uploaded = files_uploaded
+            total_bytes_uploaded = total_bytes_uploaded
+            bytes_uploaded_per_file = bytes_uploaded_per_file
+            total_dataset_files = total_dataset_files
+
+            if events_dict["type"] == 1:  # upload status: file_id, total, current, worker_id
+                #logging.debug("UPLOAD STATUS: " + str(events_dict["upload_status"]))
+                file_id = events_dict["upload_status"].file_id
+                total_bytes_to_upload = events_dict["upload_status"].total
+                current_bytes_uploaded = events_dict["upload_status"].current
+
+
+                # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
+                previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
+
+                # update the file id's current total bytes uploaded value 
+                bytes_uploaded_per_file[file_id] = current_bytes_uploaded
+
+                # calculate the additional amount of bytes that have just been uploaded for the given file id
+                total_bytes_uploaded += current_bytes_uploaded - previous_bytes_uploaded
+
+                # check if the given file has finished uploading
+                if current_bytes_uploaded == total_bytes_to_upload:
+                    print("File uploaded")
+                    files_uploaded += 1
+                    # main_curation_uploaded_files += 1
+                    # namespace_logger.info("Files Uploaded: " + str(files_uploaded) + "/" + str(total_dataset_files))
+                    # namespace_logger.info("Total Bytes
+
+                # check if the upload has finished
+                if files_uploaded == total_dataset_files:
+                    print("Finished")
+                    # namespace_logger.info("Upload complete")
+                    # unsubscribe from the agent's upload messages since the upload has finished
+                    ps.unsubscribe(10)
+
         namespace_logger.info("bf_generate_new_dataset step 1 create non-existent folders")
         # 1. Scan the dataset structure to create all non-existent folders
         # create a tracking dict which would track the generation of the dataset on Pennsieve
@@ -2558,92 +2602,53 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             first_file_local_path = list_upload_files[0][0][0]
             first_relative_path = list_upload_files[0][6]
 
-            manifest_data = ps.manifest.create(first_file_local_path)
+            manifest_data = ps.manifest.create(first_file_local_path, first_relative_path)
             manifest_id = manifest_data.manifest_id
+            if len(list_upload_files) > 1:
+                for folderInformation in list_upload_files:
+                    # main_curate_progress_message = "In file one"
+                    list_file_paths = folderInformation[0]
+                    bf_folder = folderInformation[1]
+                    list_projected_names = folderInformation[2]
+                    list_desired_names = folderInformation[3]
+                    list_final_names = folderInformation[4]
+                    tracking_folder = folderInformation[5]
+                    relative_path = folderInformation[6]
 
-            # Rationale: When creating a manifest file we need to create it by adding one file to the root of the dataset. 
-            #            This file needs to be accounted for when determining when to stop the upload subscription. 
-            #            However, we do not want to show this file to the user. As it is not a file that they are supposed to be uploading twice.
-            #            Therefore after we finish the upload we subtract one from total_files. This means the user will only see the wrong value shortly.
-            #            We also need to double count the size of the file we are adding twice to ensure the progress bar does not go over 100%.
-            #            At the end we remove the duplicate file with an API call. 
-            total_dataset_files += 1 # account for the duplicate
+                    # namespace_logger.info(list_projected_names)
+                    # namespace_logger.info(list_desired_names)
+                    # namespace_logger.info(list_final_names)
 
-            for folderInformation in list_upload_files:
-                # main_curate_progress_message = "In file one"
-                list_file_paths = folderInformation[0]
-                bf_folder = folderInformation[1]
-                list_projected_names = folderInformation[2]
-                list_desired_names = folderInformation[3]
-                list_final_names = folderInformation[4]
-                tracking_folder = folderInformation[5]
-                relative_path = folderInformation[6]
+                    # TODO: Reimpelement using the client once the Pensieve team updates the client's protocol buffers
+                    # ps.manifest.add(manifest_id, list_upload, targetBasePath="/code")
 
-                # namespace_logger.info(list_projected_names)
-                # namespace_logger.info(list_desired_names)
-                # namespace_logger.info(list_final_names)
-
-                # TODO: Reimpelement using the client once the Pensieve team updates the client's protocol buffers
-                # ps.manifest.add(manifest_id, list_upload, targetBasePath="/code")
-
-                # get the substring from the string relative_path that starts at the index of the / and contains the rest of the string
-                # this is the folder name
-                try:
-                    folder_name = relative_path[relative_path.index("/"):]
-                except ValueError as e:
-                    folder_name = relative_path
-                
-                loc = get_agent_installation_location()
-                for file_path in list_file_paths:
-                    #print("Queing file for upload")
-                    # subprocess call to the pennsieve agent to add the files to the manifest
-                    subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), file_path, "-t", folder_name])
+                    # get the substring from the string relative_path that starts at the index of the / and contains the rest of the string
+                    # this is the folder name
+                    try:
+                        folder_name = relative_path[relative_path.index("/"):]
+                    except ValueError as e:
+                        folder_name = relative_path
+                    
+                    loc = get_agent_installation_location()
+                    for file_path in list_file_paths:
+                        #print("Queing file for upload")
+                        # subprocess call to the pennsieve agent to add the files to the manifest
+                        subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), file_path, "-t", folder_name])
 
             # upload the manifest files
             ps.manifest.upload(manifest_id)
 
             main_curate_progress_message = ("Uploading data files...")
 
-            subscription_rendezvous_object = ps.subscribe(10)
-
             files_uploaded = 0
             bytes_uploaded_per_file = {}
+
+            ps.subscribe(10, monitor_subscriber_progress)
+
+
             namespace_logger.info("Uploading files now")
             namespace_logger.info(f"TOTAL FILES TO UPLOAD: {total_dataset_files}")
             namespace_logger.info(f"TOTAL SIZE OF FILES TO UPLOAD: {main_total_generate_dataset_size}")
-
-            for msg in subscription_rendezvous_object:
-                current_bytes_uploaded = msg.upload_status.current 
-                total_bytes_to_upload = msg.upload_status.total
-                file_id = msg.upload_status.file_id
-
-                if total_bytes_to_upload != 0:
-
-                    # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
-                    previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
-
-                    # update the file id's current total bytes uploaded value 
-                    bytes_uploaded_per_file[file_id] = current_bytes_uploaded
-
-                    # calculate the additional amount of bytes that have just been uploaded for the given file id
-                    total_bytes_uploaded += current_bytes_uploaded - previous_bytes_uploaded
-
-                    # check if the given file has finished uploading
-                    if current_bytes_uploaded == total_bytes_to_upload:
-                        files_uploaded += 1
-                        main_curation_uploaded_files += 1
-                        namespace_logger.info("Files Uploaded: " + str(files_uploaded) + "/" + str(total_dataset_files))
-                        namespace_logger.info("Total Bytes Uploaded: " + str(total_bytes_uploaded) + "/" + str(main_total_generate_dataset_size))
-
-                    # check if the upload has finished
-                    if files_uploaded == total_dataset_files:
-                        namespace_logger.info("Upload complete")
-                        # unsubscribe from the agent's upload messages since the upload has finished
-                        ps.unsubscribe(10)
-
-
-            # decrement the amount of files we show the user we have uploaded now that the subscriber does not rely on this amount to finish
-            main_curation_uploaded_files -= 1
 
         # 6. Upload metadata files
         if list_upload_metadata_files:
@@ -2667,40 +2672,10 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             ps.manifest.upload(manifest_id)
 
             # subscribe to the manifest upload so we wait until it has finished uploading before moving on
-            subscription_rendezvous_object = ps.subscribe(10)
+            ps.subscribe(10, monitor_subscriber_progress)
 
             bytes_uploaded_per_file = {}
             files_uploaded = 0 
-            for msg in subscription_rendezvous_object:
-                current_bytes_uploaded = msg.upload_status.current 
-                total_bytes_to_upload = msg.upload_status.total
-                file_id = msg.upload_status.file_id
-
-                if total_bytes_to_upload != 0:
-
-                    # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
-                    previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
-
-                    # update the file id's current total bytes uploaded value 
-                    bytes_uploaded_per_file[file_id] = current_bytes_uploaded
-
-                    # calculate the additional amount of bytes that have just been uploaded for the given file id
-                    total_bytes_uploaded += current_bytes_uploaded - previous_bytes_uploaded
-
-                    print(total_bytes_uploaded)
-
-                    # check if the given file has finished uploading
-                    if current_bytes_uploaded == total_bytes_to_upload:
-                        files_uploaded += 1
-                        main_curation_uploaded_files += 1
-
-
-                    # check if the upload has finished
-                    if files_uploaded == total_metadata_files:
-                        namespace_logger.info("Upload complete")
-                        # unsubscribe from the agent's upload messages since the upload has finished
-                        ps.unsubscribe(10)
-
 
 
         # 7. Upload manifest files
@@ -2708,69 +2683,32 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             namespace_logger.info("bf_generate_new_dataset (optional) step 7 upload manifest files")
 
             # create the manifest
-            print(list_upload_manifest_files)
-            print(list_upload_manifest_files[0][0][0]) 
-            manifest_data = ps.manifest.create(list_upload_manifest_files[0][0][0])
+            ps_folder = list_upload_manifest_files[0][1]
+            manifest_data = ps.manifest.create(list_upload_manifest_files[0][0][0], ps_folder)
             manifest_id = manifest_data.manifest_id
-            print(manifest_data)
-            print(manifest_id)
 
             total_manifest_files += 1
 
             loc = get_agent_installation_location()
 
-            for item in list_upload_manifest_files:
-                manifest_file = item[0][0]
-                ps_folder = item[1]
-                main_curate_progress_message = ( f"Uploading manifest file in {ps_folder['content']['name']} folder" )
-                
-                # add the files to the manifest
-                # subprocess call to the pennsieve agent to add the files to the manifest
-                subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), manifest_file, "-t", f"/{ps_folder['content']['name']}"])
+            if len(list_upload_manifest_files) > 1:
+                for item in list_upload_manifest_files:
+                    manifest_file = item[0][0]
+                    ps_folder = item[1]
+                    main_curate_progress_message = ( f"Uploading manifest file in {ps_folder['content']['name']} folder" )
+                    
+                    # add the files to the manifest
+                    # subprocess call to the pennsieve agent to add the files to the manifest
+                    subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), manifest_file, "-t", f"/{ps_folder['content']['name']}"])
 
                 
             # upload the manifest 
             ps.manifest.upload(manifest_id)
 
-            subscription_rendezvous_object = ps.subscribe(10)
+            ps.subscribe(10,monitor_subscriber_progress)
 
             bytes_uploaded_per_file = {}
             files_uploaded = 0 
-            for msg in subscription_rendezvous_object:
-                current_bytes_uploaded = msg.upload_status.current 
-                total_bytes_to_upload = msg.upload_status.total
-                file_id = msg.upload_status.file_id
-
-                if total_bytes_to_upload != 0:
-
-                    # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
-                    previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
-
-                    # update the file id's current total bytes uploaded value 
-                    bytes_uploaded_per_file[file_id] = current_bytes_uploaded
-
-                    # calculate the additional amount of bytes that have just been uploaded for the given file id
-                    total_bytes_uploaded += current_bytes_uploaded - previous_bytes_uploaded
-
-                    print(total_bytes_uploaded)
-
-                    # check if the given file has finished uploading
-                    if current_bytes_uploaded == total_bytes_to_upload:
-                        files_uploaded += 1
-                        main_curation_uploaded_files += 1
-
-
-                    # check if the upload has finished
-                    if files_uploaded == total_manifest_files:
-                        namespace_logger.info("Upload complete")
-                        # unsubscribe from the agent's upload messages since the upload has finished
-                        ps.unsubscribe(10)
-
-            # remove the duplicate manifest file from the count
-            main_curation_uploaded_files -= 1
-
-        main_curate_progress_message = ("Cleaning up...")
-        cleanup_dataset_root(ds["content"]["id"], tracking_json_structure, ps)
 
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
 

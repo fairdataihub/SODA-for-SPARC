@@ -926,8 +926,7 @@ async function initiate_generate_manifest_bf() {
     }
   }
 
-  // clear the pennsieve queue
-  // clearQueue();
+
   console.log(sodaJSONObj);
   console.log(JSON.stringify(sodaJSONObj));
   console.log("Above is before the curation call");

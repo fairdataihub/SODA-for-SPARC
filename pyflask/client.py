@@ -130,8 +130,7 @@ def remove_manifest_entry(manifest_id, file_id):
 
 
 
-_id = get_manifest_entry_id(3)
-remove_manifest_entry(3, _id)
+
 
 # ids = get_manifest_entry_id(6, 0)
 # print(type(ids))
@@ -147,11 +146,60 @@ remove_manifest_entry(3, _id)
 # print(type(file_info))
 # print(file_info['file']['id'])
 
+bytes_uploaded_per_file = {}
+total_dataset_files = 2
+files_uploaded = 0 
+total_bytes_uploaded = 0 
+
+
+def run_sb_stop_sub(events_dict):
+    global files_uploaded
+    global total_bytes_uploaded
+    #print(evt_dict)
+
+    if events_dict["type"] == 1:  # upload status: file_id, total, current, worker_id
+        #logging.debug("UPLOAD STATUS: " + str(events_dict["upload_status"]))
+        file_id = events_dict["upload_status"].file_id
+        total_bytes_to_upload = events_dict["upload_status"].total
+        current_bytes_uploaded = events_dict["upload_status"].current
+        worker_id = events_dict["upload_status"].worker_id
+        status = events_dict["upload_status"].status
 
 
 
-#local_ds = path.join(path.expanduser("~"), "Desktop", "DatasetTemplate")
-# manifest = client.manifest.create(local_ds)
+        # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
+        previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
+
+        # update the file id's current total bytes uploaded value 
+        bytes_uploaded_per_file[file_id] = current_bytes_uploaded
+
+        # calculate the additional amount of bytes that have just been uploaded for the given file id
+        total_bytes_uploaded += current_bytes_uploaded - previous_bytes_uploaded
+
+        # check if the given file has finished uploading
+        if current_bytes_uploaded == total_bytes_to_upload:
+            print("File uploaded")
+            files_uploaded += 1
+            # main_curation_uploaded_files += 1
+            # namespace_logger.info("Files Uploaded: " + str(files_uploaded) + "/" + str(total_dataset_files))
+            # namespace_logger.info("Total Bytes
+
+        # check if the upload has finished
+        if files_uploaded == total_dataset_files:
+            print("Finished")
+            # namespace_logger.info("Upload complete")
+            # unsubscribe from the agent's upload messages since the upload has finished
+            client.unsubscribe(10)
+
+
+
+
+client = Pennsieve()
+local_ds = path.join(path.expanduser("~"), "Desktop", "DatasetTemplate")
+manifest = client.manifest.create("C:\\Users\\aaron\\upload_dis")
+client.manifest.upload(manifest.manifest_id)
+
+client.subscribe(10, False, run_sb_stop_sub)
 
 
 
