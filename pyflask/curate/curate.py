@@ -2868,62 +2868,53 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             first_file_local_path = list_upload_files[0][0][0]
             first_relative_path = list_upload_files[0][6]
 
-            manifest_data = ps.manifest.create(first_file_local_path)
+            manifest_data = ps.manifest.create(first_file_local_path, first_relative_path)
             manifest_id = manifest_data.manifest_id
+            if len(list_upload_files) > 1:
+                for folderInformation in list_upload_files:
+                    # main_curate_progress_message = "In file one"
+                    list_file_paths = folderInformation[0]
+                    bf_folder = folderInformation[1]
+                    list_projected_names = folderInformation[2]
+                    list_desired_names = folderInformation[3]
+                    list_final_names = folderInformation[4]
+                    tracking_folder = folderInformation[5]
+                    relative_path = folderInformation[6]
 
-            # Rationale: When creating a manifest file we need to create it by adding one file to the root of the dataset. 
-            #            This file needs to be accounted for when determining when to stop the upload subscription. 
-            #            However, we do not want to show this file to the user. As it is not a file that they are supposed to be uploading twice.
-            #            Therefore after we finish the upload we subtract one from total_files. This means the user will only see the wrong value shortly.
-            #            We also need to double count the size of the file we are adding twice to ensure the progress bar does not go over 100%.
-            #            At the end we remove the duplicate file with an API call. 
-            total_dataset_files += 1 # account for the duplicate
+                    # namespace_logger.info(list_projected_names)
+                    # namespace_logger.info(list_desired_names)
+                    # namespace_logger.info(list_final_names)
 
-            for folderInformation in list_upload_files:
-                # main_curate_progress_message = "In file one"
-                list_file_paths = folderInformation[0]
-                bf_folder = folderInformation[1]
-                list_projected_names = folderInformation[2]
-                list_desired_names = folderInformation[3]
-                list_final_names = folderInformation[4]
-                tracking_folder = folderInformation[5]
-                relative_path = folderInformation[6]
+                    # TODO: Reimpelement using the client once the Pensieve team updates the client's protocol buffers
+                    # ps.manifest.add(manifest_id, list_upload, targetBasePath="/code")
 
-                # namespace_logger.info(list_projected_names)
-                # namespace_logger.info(list_desired_names)
-                # namespace_logger.info(list_final_names)
-
-                # TODO: Reimpelement using the client once the Pensieve team updates the client's protocol buffers
-                # ps.manifest.add(manifest_id, list_upload, targetBasePath="/code")
-
-                # get the substring from the string relative_path that starts at the index of the / and contains the rest of the string
-                # this is the folder name
-                try:
-                    folder_name = relative_path[relative_path.index("/"):]
-                except ValueError as e:
-                    folder_name = relative_path
-                
-                loc = get_agent_installation_location()
-                for file_path in list_file_paths:
-                    #print("Queing file for upload")
-                    # subprocess call to the pennsieve agent to add the files to the manifest
-                    subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), file_path, "-t", folder_name])
+                    # get the substring from the string relative_path that starts at the index of the / and contains the rest of the string
+                    # this is the folder name
+                    try:
+                        folder_name = relative_path[relative_path.index("/"):]
+                    except ValueError as e:
+                        folder_name = relative_path
+                    
+                    loc = get_agent_installation_location()
+                    for file_path in list_file_paths:
+                        #print("Queing file for upload")
+                        # subprocess call to the pennsieve agent to add the files to the manifest
+                        subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), file_path, "-t", folder_name])
 
             # upload the manifest files
             ps.manifest.upload(manifest_id)
 
             main_curate_progress_message = ("Uploading data files...")
 
-            ps.subscribe(10, monitor_subscriber_progress)
-
             files_uploaded = 0
             bytes_uploaded_per_file = {}
+
+            ps.subscribe(10, monitor_subscriber_progress)
+
+
             namespace_logger.info("Uploading files now")
             namespace_logger.info(f"TOTAL FILES TO UPLOAD: {total_dataset_files}")
             namespace_logger.info(f"TOTAL SIZE OF FILES TO UPLOAD: {main_total_generate_dataset_size}")
-
-            # decrement the amount of files we show the user we have uploaded now that the subscriber does not rely on this amount to finish
-            main_curation_uploaded_files -= 1
 
         # 6. Upload metadata files
         if list_upload_metadata_files:
@@ -2958,25 +2949,23 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             namespace_logger.info("bf_generate_new_dataset (optional) step 7 upload manifest files")
 
             # create the manifest
-            print(list_upload_manifest_files)
-            print(list_upload_manifest_files[0][0][0]) 
-            manifest_data = ps.manifest.create(list_upload_manifest_files[0][0][0])
+            ps_folder = list_upload_manifest_files[0][1]
+            manifest_data = ps.manifest.create(list_upload_manifest_files[0][0][0], ps_folder)
             manifest_id = manifest_data.manifest_id
-            print(manifest_data)
-            print(manifest_id)
 
             total_manifest_files += 1
 
             loc = get_agent_installation_location()
 
-            for item in list_upload_manifest_files:
-                manifest_file = item[0][0]
-                ps_folder = item[1]
-                main_curate_progress_message = ( f"Uploading manifest file in {ps_folder['content']['name']} folder" )
-                
-                # add the files to the manifest
-                # subprocess call to the pennsieve agent to add the files to the manifest
-                subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), manifest_file, "-t", f"/{ps_folder['content']['name']}"])
+            if len(list_upload_manifest_files) > 1:
+                for item in list_upload_manifest_files:
+                    manifest_file = item[0][0]
+                    ps_folder = item[1]
+                    main_curate_progress_message = ( f"Uploading manifest file in {ps_folder['content']['name']} folder" )
+                    
+                    # add the files to the manifest
+                    # subprocess call to the pennsieve agent to add the files to the manifest
+                    subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), manifest_file, "-t", f"/{ps_folder['content']['name']}"])
 
                 
             # upload the manifest 
@@ -2986,9 +2975,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
             bytes_uploaded_per_file = {}
             files_uploaded = 0 
-
-            # remove the duplicate manifest file from the count
-            main_curation_uploaded_files -= 1
 
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
 
