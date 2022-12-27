@@ -310,8 +310,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         // and derivative high level folders. If this is not the case with the pulled dataset, reject it.
         const [invalidFolders, invalidFiles] =
           guidedCheckHighLevelFoldersForImproperFiles(datasetStructureJSONObj);
-        console.log(invalidFolders);
-        console.log(invalidFiles);
+
         if (invalidFolders.length > 0 || invalidFiles.length > 0) {
           if (invalidFolders.length > 0) {
             errorArray.push({
@@ -330,6 +329,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
 
+        //Fetch subjects and sample metadata and set subjectsTableData and sampleTableData
         try {
           let subjectsMetadataResponse = await client.get(
             `/prepare_metadata/import_metadata_file`,
@@ -353,7 +353,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         } catch (error) {
           console.log("Unable to fetch subjects metadata" + error);
         }
-
         try {
           let samplesMetadataResponse = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
