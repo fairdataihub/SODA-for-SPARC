@@ -802,7 +802,8 @@ h1.guided--text-sub-step {
 .container--dashed {
   cursor: pointer;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   flex-wrap: wrap;
   padding: 10px;
   border: 1px dashed #ccc;
