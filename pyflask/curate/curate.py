@@ -2340,64 +2340,6 @@ def build_create_folder_request(folder_name, folder_parent_id, dataset_id):
     return body
 
 
-def cleanup_dataset_root(selected_dataset, my_tracking_folder, ps):
-    """
-    Remove any duplicate files we uploaded to the user's Pennsieve dataset. This happens because the Pennsieve agent does not currently support
-    setting a destination folder for the first file used to create a manifest file. The Pennsieve client is also not updated to support removing
-    files from the pennsieve manifest. So maybe we should instead make a subprocess call to the Pennsieve agent and remove the first entry in the 
-    manifest file? Time to test! Fear: The subprocess call will not work for a built Mac version. Actually I need to test a built Mac version again it has
-    been some time. Lets make sure this stuff works. If not then ouch cant do it until we are all up to date with the agent and client - a thing for 
-    which there are multiple issues open with the Pennsieve team. No because that doesnt work in the Agent either. lol :<)
-    
-    """
-
-    time.sleep(30)
-
-    METADATA_FILES_SPARC = [
-        "submission.xlsx",
-        "submission.csv",
-        "submission.json",
-        "dataset_description.xlsx",
-        "dataset_description.csv",
-        "dataset_description.json",
-        "subjects.xlsx",
-        "subjects.csv",
-        "subjects.json",
-        "samples.xlsx",
-        "samples.csv",
-        "samples.json",
-        "README.txt",
-        "CHANGES.txt",
-        "code_description.xlsx",
-        "inputs_metadata.xlsx",
-        "outputs_metadata.xlsx",
-    ]
-
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset}", headers=create_request_headers(ps))
-    r.raise_for_status()
-
-    print(r.json())
-
-    children = r.json()["children"]
-
-    files_to_delete = []
-
-    # remove any file from children that is not part of the root tracking folder and is not a metadata file
-    for child in children:
-        if child["content"]["packageType"] != "Collection" and child["content"]["name"] not in my_tracking_folder["children"]["files"].keys() and child["content"]["name"] not in METADATA_FILES_SPARC:
-            files_to_delete.append(child["content"]["id"])
-
-    print(f"files to delete: {files_to_delete}")
-
-    # delete the files
-    r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": files_to_delete})
-    r.raise_for_status()
-
-
-
-
-
-
 def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
     global namespace_logger
