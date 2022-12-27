@@ -373,7 +373,8 @@ const savePageChanges = async (pageBeingLeftID) => {
         } catch (error) {
           console.log("Unable to fetch samples metadata" + error);
         }
-
+        // If subjectsTableData was found, check if the subject/sample metadata has the same structure as the
+        // dataset structure. If subject and sample metadata were not found, reset it and we'll add the metadata latersw
         if (subjectsTableData.length > 1 && samplesTableData.length > 1) {
           const metadataSubSamStructure = createGuidedStructureFromSubSamMetadata(
             subjectsTableData.slice(1),
@@ -386,7 +387,6 @@ const savePageChanges = async (pageBeingLeftID) => {
             errorArray.push({
               type: "notyf",
               message: "The subjects and samples metadata do not have the same keys",
-              h,
             });
             throw errorArray;
           }
@@ -2802,6 +2802,7 @@ const guidedPrepareHomeScreen = async () => {
     fs.mkdirSync(guidedProgressFilePath, { recursive: true });
   }
 
+  //Reset the "Datasets in progress" and "Datasets uploaded to Pennsieve buttons"
   resetGuidedRadioButtons("guided-div-dataset-cards-radio-buttons");
 
   const datasetCardsRadioButtonsContainer = document.getElementById(
@@ -2811,9 +2812,6 @@ const guidedPrepareHomeScreen = async () => {
   const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
   //render progress resumption cards from progress file array on first page of guided mode
   if (guidedSavedProgressFiles.length != 0) {
-    // $("#guided-continue-curation-header").text(
-    //   "Or continue curating a previously started dataset below."
-    // );
     datasetCardsRadioButtonsContainer.classList.remove("hidden");
     const progressFileData = await getAllProgressFileData(guidedSavedProgressFiles);
     renderProgressCards(progressFileData);
