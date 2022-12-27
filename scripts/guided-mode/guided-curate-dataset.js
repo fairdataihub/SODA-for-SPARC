@@ -6033,19 +6033,27 @@ const attachGuidedMethodsToSodaJSONObj = () => {
               }
             }
           }
-          //Update the pool-sub-sam structure to reflect the subject name change          this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][newSubjectName] =
-          this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][prevSubjectName];
+
+          //Update the pool-sub-sam structure to reflect the subject name change
+          this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][newSubjectName] =
+            this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][prevSubjectName];
           delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
             prevSubjectName
           ];
         }
-      }
-    }
+        //Update the subjects name in the subjects metadata if it exists
+        for (let i = 1; i < subjectsTableData.length; i++) {
+          if (subjectsTableData[i][0] === prevSubjectName) {
+            subjectsTableData[i][0] = newSubjectName;
+          }
+        }
 
-    //Rename the subject's entry in the subjectsTableData
-    for (const subjectDataArray of subjectsTableData.slice(1)) {
-      if (subjectDataArray[0] === prevSubjectName) {
-        subjectDataArray[0] = newSubjectName;
+        //Update the subjects name for all samples the subject had
+        for (let i = 1; i < samplesTableData.length; i++) {
+          if (samplesTableData[i][0] === prevSubjectName) {
+            samplesTableData[i][0] = newSubjectName;
+          }
+        }
       }
     }
   };
