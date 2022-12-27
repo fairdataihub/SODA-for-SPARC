@@ -1915,8 +1915,26 @@ const ffOpenManifestEditSwal = async (highlevelFolderName) => {
 
   if (saveManifestFiles) {
     //if additional metadata or description gets added for a file then add to json as well
+    sodaJSONObj["manifest-files"]["destination"] = "auto-generated";
     const savedHeaders = guidedManifestTable.getHeaders().split(",");
     const savedData = guidedManifestTable.getData();
+    let jsonManifest = {};
+    let localFolderPath = path.join(homeDirectory, "SODA", "manifest_files", highlevelFolderName);
+    let selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
+    if (!fs.existsSync(localFolderPath)) {
+      fs.mkdirSync(localFolderPath);
+      fs.closeSync(fs.openSync(selectedManifestFilePath, "w"));
+    }
+    jsonManifest = excelToJson({
+      sourceFile: selectedManifestFilePath,
+      columnToKey: {
+        "*": "{{columnHeader}}",
+      },
+    })["Sheet1"];
+
+    let sortedJSON = processManifestInfo(savedHeaders, savedData);
+    jsonManifest = JSON.stringify(sortedJSON);
+    convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
     //Update the metadata in json object
     for (let i = 0; i < savedData.length; i++) {
       let fileName = savedData[i][0];
@@ -2000,6 +2018,11 @@ const ffmCreateManifest = async (sodaJson) => {
   //manifest will still include pennsieve or locally imported files
   console.log("sending data again");
   console.log(datasetStructCopy);
+  console.log(sodaCopy["manifest-files"]);
+  if (sodaCopy["manifest-files"]?.["destination"]) {
+    delete sodaCopy["manifest-files"]["destination"];
+  }
+
   try {
     const res = await client.post(
       `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
@@ -2023,14 +2046,34 @@ const ffmCreateManifest = async (sodaJson) => {
           headers: manifestHeader,
           data: manifestFileData,
         };
+        // Will create an excel sheet of the manifest files in case they receive no edits
+        let jsonManifest = {};
+        let localFolderPath = path.join(
+          homeDirectory,
+          "SODA",
+          "manifest_files",
+          highLevelFolderName
+        );
+        let selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
+        if (!fs.existsSync(localFolderPath)) {
+          fs.mkdirSync(localFolderPath);
+          fs.closeSync(fs.openSync(selectedManifestFilePath, "w"));
+        }
+        jsonManifest = excelToJson({
+          sourceFile: selectedManifestFilePath,
+          columnToKey: {
+            "*": "{{columnHeader}}",
+          },
+        })["Sheet1"];
+
+        let sortedJSON = processManifestInfo(manifestHeader, manifestFileData);
+        jsonManifest = JSON.stringify(sortedJSON);
+        convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
       }
     }
 
     const existingManifestData = sodaCopy["manifest-files"];
-    console.log(sodaCopy["manifest-files"]);
-    if (sodaCopy["manifest-files"]?.["destination"]) {
-      delete sodaCopy["manifest-files"]["destination"];
-    }
+
     let updatedManifestData;
 
     if (existingManifestData) {
@@ -2043,7 +2086,7 @@ const ffmCreateManifest = async (sodaJson) => {
     sodaCopy["manifest-files"] = updatedManifestData;
 
     // below needs to be added at the very end before the main_curate_function begins
-    // sodaJSONObj["manifest-files"]["destination"] = "generate-dataset";
+    sodaJSONObj["manifest-files"]["destination"] = "auto-generated";
     // console.log(sodaJSONObj);
     //save the sodajson with the new manifest files
     //saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
@@ -2062,10 +2105,14 @@ $("#generate-manifest-curate").change(async function () {
     //display manifest generator UI here
     $("#ffm-manifest-generator").show();
     await ffmCreateManifest(sodaJSONObj);
+    sodaJSONObj["manifest-files"]["destination"] = "auto-generated";
   } else {
     $("#button-generate-manifest-locally").hide();
     $("#ffm-manifest-generator").hide();
     document.getElementById("ffm-container-manifest-file-cards").innerHTML = "";
+    if (sodaJSONObj["manifest-files"]?.["destination"]) {
+      delete sodaJSONObj["manifest-files"]["destination"];
+    }
   }
 });
 

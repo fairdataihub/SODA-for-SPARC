@@ -29,7 +29,7 @@ import requests
 from datetime import datetime, timezone
 from permissions import bf_get_current_user_permission_agent_two
 from utils import authenticate_user_with_client, connect_pennsieve_client, get_dataset_id, create_request_headers, TZLOCAL
-from manifest import create_high_level_manifest_files_existing_bf_starting_point, create_high_level_manifest_files
+from manifest import create_high_level_manifest_files_existing_bf_starting_point, create_high_level_manifest_files, get_auto_generated_manifest_files
 
 from pysodaUtils import (
     clear_queue,
@@ -2066,6 +2066,8 @@ def cleanup_dataset_root(selected_dataset, my_tracking_folder, ps):
     r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": files_to_delete})
     r.raise_for_status()
 
+
+
 def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
     global namespace_logger
@@ -2487,35 +2489,41 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         list_upload_manifest_files = []
         if "manifest-files" in soda_json_structure.keys():
             namespace_logger.info("bf_generate_new_dataset (optional) step 4 create manifest list")
-
-            # prepare manifest files
-            if soda_json_structure["starting-point"]["type"] == "bf":
-                print("Manifest first option is executing")
+            if "auto-generated" in soda_json_structure["manifest-files"]["destination"]:
                 manifest_files_structure = (
-                    create_high_level_manifest_files_existing_bf_starting_point(
-                        soda_json_structure, 
-                        manifest_folder_path
-                    )
+                    get_auto_generated_manifest_files(soda_json_structure)
                 )
             else:
-                if (
-                    soda_json_structure["generate-dataset"]["destination"] == "bf"
-                    and "dataset-name" not in soda_json_structure["generate-dataset"]
-                ):
-                    # generating dataset on an existing bf dataset - account for existing files and manifest files
-                    # TODO: implement with new agent
-                    print("Manifest second option is executing")
+                # prepare manifest files
+                if soda_json_structure["starting-point"]["type"] == "bf":
+                    print("Manifest first option is executing")
+                    # get auto generated manifest file
                     manifest_files_structure = (
-                        create_high_level_manifest_files_existing_bf(
-                            soda_json_structure, ps, ds, tracking_json_structure
+                        create_high_level_manifest_files_existing_bf_starting_point(
+                            soda_json_structure, 
+                            manifest_folder_path
                         )
                     )
                 else:
-                    # generating on new bf
-                    # NOTE: No translation work is required in this case. 
-                    manifest_files_structure = create_high_level_manifest_files(
-                        soda_json_structure, manifest_folder_path
-                    )
+                    if (
+                        soda_json_structure["generate-dataset"]["destination"] == "bf"
+                        and "dataset-name" not in soda_json_structure["generate-dataset"]
+                    ):
+                        # generating dataset on an existing bf dataset - account for existing files and manifest files
+                        # TODO: implement with new agent
+                        print("Manifest second option is executing")
+                        # get auto generated manifest file
+                        manifest_files_structure = (
+                            create_high_level_manifest_files_existing_bf(
+                                soda_json_structure, ps, ds, tracking_json_structure
+                            )
+                        )
+                    else:
+                        # generating on new bf
+                        # NOTE: No translation work is required in this case. 
+                        manifest_files_structure = create_high_level_manifest_files(
+                            soda_json_structure, manifest_folder_path
+                        )
 
             # add manifest files to list after deleting existing ones
             list_upload_manifest_files = []
@@ -2543,7 +2551,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         start_generate = 1
 
         # set the dataset 
-        ps.useDataset(ds["content"]["id"])
+        ps.use_dataset(ds["content"]["id"])
 
         # create a manifest - IMP: We use a single file to start with since creating a manifest requires a file path.  We need to remove this at the end. 
         if len(list_upload_files) > 0:

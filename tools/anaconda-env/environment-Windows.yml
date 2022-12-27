@@ -14,7 +14,7 @@ dependencies:
   - chardet == 4.0.0
   - pandas == 1.4.2
   - openpyxl == 3.0.9
-  - pennsieve2 == 0.0.4
+  - pennsieve2 == 0.1.1
   - configparser == 4.0.2
   - python-docx == 0.8.10
   - xlrd == 2.0.1
@@ -24,10 +24,9 @@ dependencies:
   - werkzeug == 2.0.2
   - certifi == 2021.10.8
   - flask_restx
-  - protobuf == 3.20.0
+  - protobuf
   - PyInstaller == 4.7
   - opencv-python == 4.5.3.56
   - certifi == 2021.10.8
   - requests
   - boto3 
-  - pennsieve 

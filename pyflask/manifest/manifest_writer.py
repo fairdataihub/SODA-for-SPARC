@@ -18,7 +18,14 @@ userpath = expanduser("~")
 PENNSIEVE_URL = "https://api.pennsieve.io"
 
 
-
+def get_auto_generated_manifest_files(soda_json_structure):
+    high_lvl_folders = soda_json_structure["dataset-structure"]["folders"].keys()
+    manifest_folder_structure = {}
+    for folder in high_lvl_folders:
+        # get manifest file for each high level folder
+        manifestFilePath = join(userpath, 'SODA', 'manifest-files', folder, 'manifest.xlsx')
+        manifest_folder_structure[folder] = manifestFilePath
+    return manifest_folder_structure
 
 def update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level_folders, manifest_progress, manifest_path):
     """
@@ -473,36 +480,41 @@ def create_high_level_manifest_files(soda_json_structure, manifest_path):
             return dict_folder_manifest
 
         # create local folder to save manifest files temporarly (delete any existing one first)
-        shutil.rmtree(manifest_path) if isdir(manifest_path) else 0
-        makedirs(manifest_path)
-
-        dataset_structure = soda_json_structure["dataset-structure"]
-        local_timezone = TZLOCAL()
-        manifest_files_structure = {}
-        for folder_key, folder in dataset_structure["folders"].items():
-            # Initialize dict where manifest info will be stored
-            dict_folder_manifest = {}
-            dict_folder_manifest["filename"] = []
-            dict_folder_manifest["timestamp"] = []
-            dict_folder_manifest["description"] = []
-            dict_folder_manifest["file type"] = []
-            dict_folder_manifest["Additional Metadata"] = []
-
-            relative_path = ""
-            dict_folder_manifest = recursive_manifest_builder(
-                folder, relative_path, dict_folder_manifest
+        if "auto-generated" in soda_json_structure["manifest-files"]["destination"]:
+            manifest_files_structure = (
+                get_auto_generated_manifest_files(soda_json_structure)
             )
+        else:
+            shutil.rmtree(manifest_path) if isdir(manifest_path) else 0
+            makedirs(manifest_path)
 
-            # create high-level folder at the temporary location
-            folderpath = join(manifest_path, folder_key)
-            makedirs(folderpath)
+            dataset_structure = soda_json_structure["dataset-structure"]
+            local_timezone = TZLOCAL()
+            manifest_files_structure = {}
+            for folder_key, folder in dataset_structure["folders"].items():
+                # Initialize dict where manifest info will be stored
+                dict_folder_manifest = {}
+                dict_folder_manifest["filename"] = []
+                dict_folder_manifest["timestamp"] = []
+                dict_folder_manifest["description"] = []
+                dict_folder_manifest["file type"] = []
+                dict_folder_manifest["Additional Metadata"] = []
 
-            # save manifest file
-            manifestfilepath = join(folderpath, "manifest.xlsx")
-            df = pd.DataFrame.from_dict(dict_folder_manifest)
-            df.to_excel(manifestfilepath, index=None, header=True)
+                relative_path = ""
+                dict_folder_manifest = recursive_manifest_builder(
+                    folder, relative_path, dict_folder_manifest
+                )
 
-            manifest_files_structure[folder_key] = manifestfilepath
+                # create high-level folder at the temporary location
+                folderpath = join(manifest_path, folder_key)
+                makedirs(folderpath)
+
+                # save manifest file
+                manifestfilepath = join(folderpath, "manifest.xlsx")
+                df = pd.DataFrame.from_dict(dict_folder_manifest)
+                df.to_excel(manifestfilepath, index=None, header=True)
+
+                manifest_files_structure[folder_key] = manifestfilepath
 
         return manifest_files_structure
 

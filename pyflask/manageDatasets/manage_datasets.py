@@ -821,7 +821,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
     # select the dataset 
     try:
-        ps.useDataset(selected_dataset_id)
+        ps.use_dataset(selected_dataset_id)
     except Exception as e:
         submitdatastatus = "Done"
         did_fail = True

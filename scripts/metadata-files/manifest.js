@@ -54,6 +54,20 @@ function openFolder(generationLocation) {
   }
 }
 
+const processManifestInfo = (headers, data) => {
+  let sortedArr = [];
+  // sort json data by appending ordered entries (by columns) to each object's element
+  for (let i = 0; i < data.length; i++) {
+    let temp = {};
+    for (let j = 0; j < headers.length; j++) {
+      let header = headers[j];
+      temp[header] = data[i][j];
+    }
+    sortedArr.push(temp);
+  }
+  return sortedArr;
+};
+
 $(document).ready(function () {
   ipcRenderer.on("selected-local-dataset-manifest-purpose", (event, folderPath) => {
     if (folderPath.length > 0) {
@@ -365,115 +379,7 @@ $(document).ready(function () {
   });
 });
 
-const convertJSONToXlsx = (jsondata, excelfile) => {
-  console.log(excelfile);
-  console.log("creating new manifest files styled");
-  const requiredManifestHeaders = ["filename", "timestamp", "description", "file type"];
-  const wb = new excel4node.Workbook();
-  // create wb style that makes the background red
-  const requiredHeaderStyle = wb.createStyle({
-    fill: {
-      type: "pattern",
-      patternType: "solid",
-      fgColor: "a8d08d",
-    },
-    font: {
-      bold: true,
-      color: "#000000",
-      size: 12,
-      name: "Calibri",
-    },
-    border: {
-      left: {
-        style: "thin",
-        color: "#000000",
-      },
-      right: {
-        style: "thin",
-        color: "#000000",
-      },
-      top: {
-        style: "thin",
-        color: "#000000",
-      },
-      bottom: {
-        style: "thin",
-        color: "#000000",
-      },
-    },
-  });
-  const optionalHeaderStyle = wb.createStyle({
-    fill: {
-      type: "pattern",
-      patternType: "solid",
-      fgColor: "ffd965",
-    },
-    font: {
-      bold: true,
-      color: "#000000",
-      size: 12,
-      name: "Calibri",
-    },
-    border: {
-      left: {
-        style: "thin",
-        color: "#000000",
-      },
-      right: {
-        style: "thin",
-        color: "#000000",
-      },
-      top: {
-        style: "thin",
-        color: "#000000",
-      },
-      bottom: {
-        style: "thin",
-        color: "#000000",
-      },
-    },
-  });
-  const standardCellStyle = wb.createStyle({
-    font: {
-      bold: false,
-      color: "#000000",
-      size: 12,
-      name: "Calibri",
-    },
-  });
-
-  const wsOptions = {
-    sheetFormat: {
-      defaultColWidth: 20,
-    },
-  };
-  const ws = wb.addWorksheet("Sheet1", wsOptions);
-  const headingColumnNames = Object.keys(jsondata[0]);
-  //Write Column Title in Excel file
-  let headingColumnIndex = 1;
-  headingColumnNames.forEach((heading) => {
-    let styleObject = requiredManifestHeaders.includes(heading)
-      ? requiredHeaderStyle
-      : optionalHeaderStyle;
-
-    ws.cell(1, headingColumnIndex++)
-      .string(heading)
-      .style(styleObject);
-  });
-  //Write Data in Excel file
-  let rowIndex = 2;
-  jsondata.forEach((record) => {
-    let columnIndex = 1;
-    Object.keys(record).forEach((columnName) => {
-      ws.cell(rowIndex, columnIndex++)
-        .string(record[columnName])
-        .style(standardCellStyle);
-    });
-    rowIndex++;
-  });
-  wb.write(excelfile);
-};
-
+// add function back to see if it detects in other file
 var table1;
 function loadManifestFileEdits(jsondata) {
   let columns = Object.keys(jsondata[0]);
@@ -554,20 +460,6 @@ function loadManifestFileEdits(jsondata) {
       e.target.focus();
     });
 }
-
-const processManifestInfo = (headers, data) => {
-  let sortedArr = [];
-  // sort json data by appending ordered entries (by columns) to each object's element
-  for (let i = 0; i < data.length; i++) {
-    let temp = {};
-    for (let j = 0; j < headers.length; j++) {
-      let header = headers[j];
-      temp[header] = data[i][j];
-    }
-    sortedArr.push(temp);
-  }
-  return sortedArr;
-};
 
 var localDatasetFolderPath = "";
 var finalManifestGenerationPath = "";
