@@ -2861,7 +2861,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         start_generate = 1
 
         # set the dataset 
-        ps.useDataset(ds["content"]["id"])
+        ps.use_dataset(ds["content"]["id"])
 
         # create a manifest - IMP: We use a single file to start with since creating a manifest requires a file path.  We need to remove this at the end. 
         if len(list_upload_files) > 0:
