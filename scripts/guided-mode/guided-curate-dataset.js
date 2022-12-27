@@ -10,7 +10,9 @@ const guidedModifyPennsieveFolder = (folderJSONPath, action) => {
     return;
   }
   if (action === "delete") {
-    folderJSONPath["action"] = ["existing", "deleted"];
+    if (!folderJSONPath["action"].includes("deleted")) {
+      folderJSONPath["action"].push("deleted");
+    }
 
     recursive_mark_sub_files_deleted(folderJSONPath, "delete");
   }
@@ -87,7 +89,7 @@ const guidedCheckHighLevelFoldersForImproperFiles = (datasetStructure) => {
       console.log(hlfFolders);
       //filter out hlfFolders that do not start with pool- or sub-
       const invalidBaseFolders = hlfFolders.filter((folder) => {
-        return !folder.startsWith("pool-") || !folder.startsWith("sub-");
+        return !folder.startsWith("pool-") && !folder.startsWith("sub-");
       });
 
       console.log(invalidBaseFolders);
@@ -5956,12 +5958,13 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName] = {};
   };
   sodaJSONObj.renameSubject = function (prevSubjectName, newSubjectName) {
-    const [subjectsInPools, subjectsOutsidePools] = this.getAllSubjects();
-    const subjects = [...subjectsInPools, ...subjectsOutsidePools];
-
+    console.log("renameSubject called");
     if (prevSubjectName === newSubjectName) {
       return;
     }
+
+    const [subjectsInPools, subjectsOutsidePools] = this.getAllSubjects();
+    const subjects = [...subjectsInPools, ...subjectsOutsidePools];
 
     //Throw an error if the subject name that the user is changing the old subject name
     //to already exists
@@ -5973,6 +5976,30 @@ const attachGuidedMethodsToSodaJSONObj = () => {
       if (subject.subjectName === prevSubjectName) {
         //if the subject is in a pool
         if (subject.poolName) {
+          //Rename the subjects folders in the datasetStructJSONObj
+          for (const highLevelFolder of guidedHighLevelFolders) {
+            const prevNameSubjectFolderInHighLevelFolder =
+              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+                subject.poolName
+              ]?.["folders"]?.[prevSubjectName];
+
+            if (prevNameSubjectFolderInHighLevelFolder) {
+              if (folderImportedFromPennsieve(prevNameSubjectFolderInHighLevelFolder)) {
+                console.log("folder from Pennsieve adding rename action");
+                if (!prevNameSubjectFolderInHighLevelFolder["action"].includes["rename"]) {
+                  prevNameSubjectFolderInHighLevelFolder["action"].push("rename");
+                }
+              }
+              datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
+                "folders"
+              ][newSubjectName] = prevNameSubjectFolderInHighLevelFolder;
+
+              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                subject.poolName
+              ]["folders"][prevSubjectName];
+            }
+          }
+          //Update the pool-sub-sam structure to reflect the subject name change
           this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][subject.poolName][
             newSubjectName
           ] =
@@ -5982,47 +6009,35 @@ const attachGuidedMethodsToSodaJSONObj = () => {
           delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
             subject.poolName
           ][prevSubjectName];
-
-          //Rename the subjects folders in the datasetStructJSONObj
+        } else {
+          //Rename the subjects folders in the datasetStructeJSONObj
           for (const highLevelFolder of guidedHighLevelFolders) {
-            if (
+            const prevNameSubjectFolderInHighLevelFolder =
               datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
-                subject.poolName
-              ]?.["folders"]?.[prevSubjectName]
-            ) {
-              datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
-                "folders"
-              ][newSubjectName] =
-                datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
-                  "folders"
-                ][prevSubjectName];
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                subject.poolName
-              ]["folders"][prevSubjectName];
+                prevSubjectName
+              ];
+
+            if (prevNameSubjectFolderInHighLevelFolder) {
+              if (folderImportedFromPennsieve(prevNameSubjectFolderInHighLevelFolder)) {
+                console.log("folder from Pennsieve adding rename action");
+                if (!prevNameSubjectFolderInHighLevelFolder["action"].includes["rename"]) {
+                  prevNameSubjectFolderInHighLevelFolder["action"].push("rename");
+                }
+
+                datasetStructureJSONObj["folders"][highLevelFolder]["folders"][newSubjectName] =
+                  prevNameSubjectFolderInHighLevelFolder;
+
+                delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                  prevSubjectName
+                ];
+              }
             }
           }
-        } else {
-          //if the subject is not in a pool
-          this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][newSubjectName] =
-            this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][prevSubjectName];
+          //Update the pool-sub-sam structure to reflect the subject name change          this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][newSubjectName] =
+          this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][prevSubjectName];
           delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
             prevSubjectName
           ];
-
-          //Rename the subjects folders in the datasetStructeJSONObj
-          for (const highLevelFolder of guidedHighLevelFolders) {
-            if (
-              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
-                prevSubjectName
-              ]
-            ) {
-              datasetStructureJSONObj["folders"][highLevelFolder]["folders"][newSubjectName] =
-                datasetStructureJSONObj["folders"][highLevelFolder]["folders"][prevSubjectName];
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                prevSubjectName
-              ];
-            }
-          }
         }
       }
     }
