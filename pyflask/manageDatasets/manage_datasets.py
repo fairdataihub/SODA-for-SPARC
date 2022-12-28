@@ -884,8 +884,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         # pass
         # abort(400, error_message)
 
-    return 
-
     # get the dataset size before starting the upload
     total_file_size, invalid_dataset_messages, total_files_to_upload = get_dataset_size(pathdataset)
 
