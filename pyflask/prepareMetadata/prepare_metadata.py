@@ -35,7 +35,7 @@ from docx import Document
 
 from flask import abort 
 
-from pysodaUtils import agent_running, stop_agent, start_agent
+from pysodaUtils import stop_agent, start_agent
 from manifest import update_existing_pennsieve_manifest_files, create_high_level_manifest_files_existing_bf_starting_point, recursive_item_path_create
 
 from namespaces import NamespaceEnum, get_namespace_logger
