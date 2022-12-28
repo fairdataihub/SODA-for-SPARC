@@ -51,7 +51,7 @@ def get_dataset_id(ps_or_token, selected_dataset):
 
         abort(400, "Please select a valid Pennsieve dataset.")
     try:
-        return ps_or_token.getDatasets()[selected_dataset]
+        return ps_or_token.get_datasets()[selected_dataset]
     except Exception as e:
         abort(400, "Please select a valid Pennsieve dataset.")
 

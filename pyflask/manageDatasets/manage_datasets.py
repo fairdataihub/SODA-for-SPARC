@@ -842,6 +842,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
     namespace_logger.info("Created a ps instance")
 
+    namespace_logger.info(f"Account is {accountname}")
+
 
     # select the user
     try:
@@ -852,6 +854,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         did_upload = False
         error_message = "Please select a valid Pennsieve account"
         abort(400, error_message)
+
+    namespace_logger.info("Switched to given account")
 
 
     # reauthenticate the user
@@ -864,19 +868,23 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         error_message = "Could not reauthenticate this user"
         abort(400, error_message)
 
+    namespace_logger.info(f"Using dataset {bfdataset}")
+
     selected_dataset_id = get_dataset_id(ps, bfdataset)
 
     # select the dataset 
     try:
-        ps.use_dataset(selected_dataset_id)
+        ps.use_dataset("christmas")
+        namespace_logger.info("Used the dataset")
     except Exception as e:
         submitdatastatus = "Done"
         did_fail = True
         did_upload = False
         error_message = "Please select a valid Pennsieve dataset"
-        abort(400, error_message)
+        # pass
+        # abort(400, error_message)
 
-
+    return 
 
     # get the dataset size before starting the upload
     total_file_size, invalid_dataset_messages, total_files_to_upload = get_dataset_size(pathdataset)
