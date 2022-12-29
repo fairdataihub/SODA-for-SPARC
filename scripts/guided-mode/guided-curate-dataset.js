@@ -6229,34 +6229,42 @@ const attachGuidedMethodsToSodaJSONObj = () => {
         throw new Error("Pool names must be unique.");
       }
 
-      if (this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][prevPoolName]) {
-        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][newPoolName] =
-          this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][prevPoolName];
-        delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][prevPoolName];
+      //Rename the pool folder in the datasetStructureJSONObj
+      for (const highLevelFolder of guidedHighLevelFolders) {
+        const prevNamePoolInHighLevelFolder =
+          datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[prevPoolName];
 
-        //Rename the pool folder in the datasetStructureJSONObj
-        for (const highLevelFolder of guidedHighLevelFolders) {
-          if (
-            datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[prevPoolName]
-          ) {
-            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][newPoolName] =
-              datasetStructureJSONObj["folders"][highLevelFolder]["folders"][prevPoolName];
-            delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][prevPoolName];
+        if (prevNamePoolInHighLevelFolder) {
+          if (folderImportedFromPennsieve(prevNamePoolInHighLevelFolder)) {
+            console.log("folder from Pennsieve adding rename action");
+
+            if (!prevNamePoolInHighLevelFolder["action"].includes["rename"]) {
+              prevNamePoolInHighLevelFolder["action"].push("rename");
+            }
           }
+
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][newPoolName] =
+            prevNamePoolInHighLevelFolder;
+          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][prevPoolName];
         }
+      }
 
-        //Rename the pool in the subjectsTableData
-        for (const subjectDataArray of subjectsTableData.slice(1)) {
-          if (subjectDataArray[1] === prevPoolName) {
-            subjectDataArray[1] = newPoolName;
-          }
+      //Rename the pool in the pool-subject-sample-structure
+      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][newPoolName] =
+        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][prevPoolName];
+      delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][prevPoolName];
+
+      //Rename the pool in the subjectsTableData
+      for (const subjectDataArray of subjectsTableData.slice(1)) {
+        if (subjectDataArray[1] === prevPoolName) {
+          subjectDataArray[1] = newPoolName;
         }
+      }
 
-        //Rename the pool in the samplesTableData
-        for (const sampleDataArray of samplesTableData.slice(1)) {
-          if (sampleDataArray[3] === prevPoolName) {
-            sampleDataArray[3] = newPoolName;
-          }
+      //Rename the pool in the samplesTableData
+      for (const sampleDataArray of samplesTableData.slice(1)) {
+        if (sampleDataArray[3] === prevPoolName) {
+          sampleDataArray[3] = newPoolName;
         }
       }
     }
@@ -6405,6 +6413,8 @@ const attachGuidedMethodsToSodaJSONObj = () => {
                 ]["folders"][sample.subjectName]["folders"][prevSampleName];
               }
             }
+
+            //Update the pool-sub-sam structure to reflect the sample name change
             this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][sample.poolName][
               sample.subjectName
             ][newSampleName] =
