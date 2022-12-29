@@ -2049,12 +2049,9 @@ const ffmCreateManifest = async (sodaJson) => {
         // Will create an excel sheet of the manifest files in case they receive no edits
         let jsonManifest = {};
         let manifestFolder = path.join(homeDirectory, "SODA", "manifest_files");
-        let localFolderPath = path.join(
-          manifestFolder,
-          highLevelFolderName
-        );
+        let localFolderPath = path.join(manifestFolder, highLevelFolderName);
         let selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
-        if(!fs.existsSync(manifestFolder)) {
+        if (!fs.existsSync(manifestFolder)) {
           fs.mkdirSync(manifestFolder);
         }
         if (!fs.existsSync(localFolderPath)) {
