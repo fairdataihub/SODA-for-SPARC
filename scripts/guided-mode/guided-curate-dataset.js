@@ -2925,23 +2925,13 @@ function guidedShowTreePreview(new_dataset_name, targetElement) {
 const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
   //add high level folder if it does not exist
   if (!datasetStructureJSONObj["folders"][highLevelFolder]) {
-    datasetStructureJSONObj["folders"][highLevelFolder] = {
-      folders: {},
-      files: {},
-      type: "",
-      action: [],
-    };
+    datasetStructureJSONObj["folders"][highLevelFolder] = newEmptyFolderObj();
   }
   //Add pools to the datsetStructuresJSONObj if they don't exist
   const pools = Object.keys(sodaJSONObj.getPools());
   for (const pool of pools) {
     if (!datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool]) {
-      datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool] = {
-        folders: {},
-        files: {},
-        type: "",
-        action: [],
-      };
+      datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool] = newEmptyFolderObj();
     }
   }
   if (subjectsOrSamples === "subjects") {
@@ -2955,22 +2945,13 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
       ) {
         datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName]["folders"][
           subject.subjectName
-        ] = {
-          folders: {},
-          files: {},
-          type: "",
-          action: [],
-        };
+        ] = newEmptyFolderObj();
       }
     }
     for (subject of subjectsOutsidePools) {
       if (!datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.subjectName]) {
-        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.subjectName] = {
-          folders: {},
-          files: {},
-          type: "",
-          action: [],
-        };
+        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.subjectName] =
+          newEmptyFolderObj();
       }
     }
   }
@@ -2984,12 +2965,8 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
        * If not, add it.
        */
       if (!datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName]) {
-        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName] = {
-          folders: {},
-          files: {},
-          type: "",
-          action: [],
-        };
+        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName] =
+          newEmptyFolderObj();
       }
       /**
        * Check to see if the sample's subject is in the datasetStructureJSONObj.
@@ -3002,12 +2979,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
       ) {
         datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName]["folders"][
           sample.subjectName
-        ] = {
-          folders: {},
-          files: {},
-          type: "",
-          action: [],
-        };
+        ] = newEmptyFolderObj();
       }
       /**
        * Check to see if the sample's folder is in the datasetStructureJSONObj.
@@ -3020,12 +2992,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
       ) {
         datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName]["folders"][
           sample.subjectName
-        ]["folders"][sample.sampleName] = {
-          folders: {},
-          files: {},
-          type: "",
-          action: [],
-        };
+        ]["folders"][sample.sampleName] = newEmptyFolderObj();
       }
     }
     for (sample of samplesOutsidePools) {
@@ -3034,12 +3001,8 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
        * If not, add it.
        */
       if (!datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName]) {
-        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName] = {
-          folders: {},
-          files: {},
-          type: "",
-          action: [],
-        };
+        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName] =
+          newEmptyFolderObj();
       }
       /**
        * Check to see if the sample's folder is in the datasetStructureJSONObj.
@@ -3052,12 +3015,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
       ) {
         datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName][
           "folders"
-        ][sample.sampleName] = {
-          folders: {},
-          files: {},
-          type: "",
-          action: [],
-        };
+        ][sample.sampleName] = newEmptyFolderObj();
       }
     }
   }
@@ -3650,12 +3608,7 @@ const openPage = async (targetPageID) => {
       const codeFolder = datasetStructureJSONObj["folders"]["code"];
       if (!codeFolder) {
         //create a docs folder
-        datasetStructureJSONObj["folders"]["code"] = {
-          folders: {},
-          files: {},
-          type: "",
-          action: [],
-        };
+        datasetStructureJSONObj["folders"]["code"] = newEmptyFolderObj();
       }
       //Append the guided-file-explorer element to the docs folder organization container
       $("#guided-file-explorer-elements").appendTo($("#guided-user-has-code-data"));
@@ -3671,12 +3624,7 @@ const openPage = async (targetPageID) => {
       const protocolFolder = datasetStructureJSONObj["folders"]["protocol"];
       if (!protocolFolder) {
         //create a docs folder
-        datasetStructureJSONObj["folders"]["protocol"] = {
-          folders: {},
-          files: {},
-          type: "",
-          action: [],
-        };
+        datasetStructureJSONObj["folders"]["protocol"] = newEmptyFolderObj();
       }
       //Append the guided-file-explorer element to the docs folder organization container
       $("#guided-file-explorer-elements").appendTo($("#guided-user-has-protocol-data"));
@@ -3692,12 +3640,7 @@ const openPage = async (targetPageID) => {
       const docsFolder = datasetStructureJSONObj["folders"]["docs"];
       if (!docsFolder) {
         //create a docs folder
-        datasetStructureJSONObj["folders"]["docs"] = {
-          folders: {},
-          files: {},
-          type: "",
-          action: [],
-        };
+        datasetStructureJSONObj["folders"]["docs"] = newEmptyFolderObj();
       }
       //Append the guided-file-explorer element to the docs folder organization container
       $("#guided-file-explorer-elements").appendTo($("#guided-user-has-docs-data"));
@@ -5673,11 +5616,11 @@ const openEditGuidedDatasetSwal = async (datasetName) => {
 };
 
 //function that creates a new folder object
-const createNewFolderObj = () => {
+const newEmptyFolderObj = () => {
   return {
     folders: {},
     files: {},
-    type: "",
+    type: "virtual",
     action: ["new"],
   };
 };
@@ -6038,7 +5981,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
         // If the target folder doesn't exist, create it
         if (!datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]) {
           datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName] =
-            createNewFolderObj();
+            newEmptyFolderObj();
           console.log("added a new folder for " + highLevelFolder);
         }
 
@@ -13753,12 +13696,7 @@ $(document).ready(async () => {
               var myPath = getRecursivePath(filtered, datasetStructureJSONObj);
               // update Json object with new folder created
               var renamedNewFolder = newFolderName;
-              myPath["folders"][renamedNewFolder] = {
-                folders: {},
-                files: {},
-                type: "virtual",
-                action: ["new"],
-              };
+              myPath["folders"][renamedNewFolder] = newEmptyFolderObj();
 
               listItems(myPath, "#items", 500, (reset = true));
               getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
