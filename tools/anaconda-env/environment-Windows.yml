@@ -30,3 +30,4 @@ dependencies:
   - requests
   - boto3 
   - numpy == 1.23.0
+  - sparcur
