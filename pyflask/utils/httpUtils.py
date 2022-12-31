@@ -15,5 +15,5 @@ def create_request_headers(ps_or_token):
     
     return {
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {ps_or_token.getUser()['session_token']}",
+            "Authorization": f"Bearer {ps_or_token.get_user()['session_token']}",
     }

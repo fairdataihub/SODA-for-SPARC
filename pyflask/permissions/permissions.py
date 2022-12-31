@@ -7,7 +7,7 @@ def bf_get_current_user_permission_agent_two(dataset_id, ps_or_token):
     if type(ps_or_token) is str:
         access_token = ps_or_token
     else:
-        access_token = ps_or_token.getUser()["session_token"]
+        access_token = ps_or_token.get_user()["session_token"]
 
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/role", headers={"Authorization": f"Bearer {access_token}"})
     r.raise_for_status()
