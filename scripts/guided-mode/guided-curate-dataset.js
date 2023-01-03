@@ -6480,16 +6480,16 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     }
 
     //Remove the pool from the subject's entry in the subjectsTableData
-    for (const subjectDataArray of subjectsTableData) {
-      if (subjectDataArray[0] === subjectName) {
-        subjectDataArray[1] = "";
+    for (let i = 1; i < subjectsTableData.length; i++) {
+      if (subjectsTableData[i][0] === subjectName) {
+        subjectsTableData[i][1] = "";
       }
     }
 
-    //Remove the sample from the samplesTableData
-    for (const sampleDataArray of samplesTableData) {
-      if (sampleDataArray[0] === subjectName) {
-        sampleDataArray[3] = "";
+    //Remove the pool from the samples that belong to the subject
+    for (let i = 1; i < samplesTableData.length; i++) {
+      if (samplesTableData[i][0] === subjectName) {
+        samplesTableData[i][3] = "";
       }
     }
 
