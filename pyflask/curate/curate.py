@@ -2869,10 +2869,12 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         if len(list_upload_files) > 0:
             first_file_local_path = list_upload_files[0][0][0]
             first_relative_path = list_upload_files[0][6]
-
             manifest_data = ps.manifest.create(first_file_local_path, first_relative_path)
             manifest_id = manifest_data.manifest_id
-            if len(list_upload_files) > 1:
+
+            # there are files to add to the manifest if there are more than one file in the first folder or more than one folder
+            if len(list_upload_files[0][0]) > 1 or len(list_upload_files) > 1:
+                namespace_logger.info("Made it into list of files correctly")
                 for folderInformation in list_upload_files:
                     # main_curate_progress_message = "In file one"
                     list_file_paths = folderInformation[0]
@@ -2899,6 +2901,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     
                     loc = get_agent_installation_location()
                     for file_path in list_file_paths:
+                        namespace_logger.info(f"File path is: {file_path}")
                         #print("Queing file for upload")
                         # subprocess call to the pennsieve agent to add the files to the manifest
                         subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), file_path, "-t", folder_name])
