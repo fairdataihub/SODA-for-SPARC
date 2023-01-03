@@ -76,6 +76,8 @@ start_time_bf_upload = 0
 start_submit = 0
 metadatapath = join(userpath, "SODA", "SODA_metadata")
 
+total_bytes_uploaded = {}
+
 bf = ""
 myds = ""
 initial_bfdataset_size = 0
@@ -756,6 +758,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     global namespace_logger
     global files_uploaded
     global total_files_to_upload 
+    global total_bytes_uploaded
 
     files_uploaded = 0
     total_files_to_upload = 0
@@ -770,20 +773,19 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     did_fail = False
     upload_folder_count = 0
     bytes_uploaded_per_file = {}
+    total_bytes_uploaded = {"value": 0}
 
     def monitor_subscriber_progress(events_dict):
         """
         Monitors the progress of a subscriber and unsubscribes once the upload finishes. 
         """
-        global files_uploaded 
-        global total_bytes_uploaded 
-        global total_files_to_upload
-        global bytes_uploaded_per_file
 
-        files_uploaded = files_uploaded
-        total_bytes_uploaded = total_bytes_uploaded
-        bytes_uploaded_per_file = bytes_uploaded_per_file
         total_dataset_files = total_files_to_upload
+        global files_uploaded
+        global total_bytes_uploaded
+
+        print("In callback")
+        print(events_dict)
 
         if events_dict["type"] == 1:  # upload status: file_id, total, current, worker_id
             #logging.debug("UPLOAD STATUS: " + str(events_dict["upload_status"]))
@@ -791,7 +793,13 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
             total_bytes_to_upload = events_dict["upload_status"].total
             current_bytes_uploaded = events_dict["upload_status"].current
 
+            print(file_id)
+            print(total_bytes_to_upload)
+            print(current_bytes_uploaded)
 
+            print(events_dict)
+
+            
             # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
             previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
 
@@ -799,7 +807,9 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
             bytes_uploaded_per_file[file_id] = current_bytes_uploaded
 
             # calculate the additional amount of bytes that have just been uploaded for the given file id
-            total_bytes_uploaded += current_bytes_uploaded - previous_bytes_uploaded
+            total_bytes_uploaded["value"] += current_bytes_uploaded - previous_bytes_uploaded
+
+            print(total_bytes_uploaded)
 
             # check if the given file has finished uploading
             if current_bytes_uploaded == total_bytes_to_upload:
@@ -877,6 +887,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         ps.use_dataset("christmas")
         namespace_logger.info("Used the dataset")
     except Exception as e:
+        print("FAASFSF")
         submitdatastatus = "Done"
         did_fail = True
         did_upload = False
@@ -903,6 +914,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         did_upload = False
         abort(403, "You don't have permissions for uploading to this Pennsieve dataset")
 
+    print("Has permissions")
 
     ## check if agent is installed
     # try:
@@ -924,6 +936,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         error_message = "Could not create manifest file for this dataset"
         abort(500, e)
     
+    print("Created manifest")
 
     # upload the dataset
     try:
@@ -933,10 +946,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         start_submit = 1
         manifest_id = manifest_data.manifest_id
         ps.manifest.upload(manifest_id)
-        ps.subscribe(10, monitor_subscriber_progress)
-
-
-
+        print("Uploading the files")
+        ps.subscribe(10, False, monitor_subscriber_progress)
         namespace_logger.info("Upload complete now no more messages")
         submitdatastatus = "Done"
     except Exception as e:
@@ -991,6 +1002,7 @@ def submit_dataset_progress():
     global completed_files
     global files_uploaded
     global total_files_to_upload
+    global total_bytes_uploaded
 
     if start_submit == 1:
         elapsed_time = time.time() - start_time_bf_upload
@@ -1003,14 +1015,14 @@ def submit_dataset_progress():
         elapsed_time_formatted = 0
         elapsed_time_formatted_display = "<br>" + "Initiating..." + "<br>"
 
-    namespace_logger.info(f"Total file size in upload: {uploaded_file_size}")
+    namespace_logger.info(f"Total file size in upload: {total_bytes_uploaded['value']}")
         
     return {
         'progress': submitdataprogress + elapsed_time_formatted_display,
         'submit_dataset_status': submitdatastatus,
         'submit_print_status': submitprintstatus,
         'total_file_size': total_file_size,
-        'upload_file_size': uploaded_file_size,
+        'upload_file_size': total_bytes_uploaded["value"],
         'elapsed_time_formatted': elapsed_time_formatted,
         'files_uploaded_status': f"Uploaded {files_uploaded} of {total_files_to_upload} files",
     }
