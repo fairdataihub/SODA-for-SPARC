@@ -2340,15 +2340,12 @@ def build_create_folder_request(folder_name, folder_parent_id, dataset_id):
     return body
 
 
+bytes_uploaded_per_file = {}
+total_bytes_uploaded = {"value": 0}
+
 def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
     global namespace_logger
-
-    # namespace_logger.info("Starting bf_generate_new_dataset")
-
-    # namespace_logger.info("Dataset is: ", ds)
-
-    # print(create_request_headers(ps))
 
     global main_curate_progress_message
     global main_total_generate_dataset_size
@@ -2359,8 +2356,9 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
     global current_size_of_uploaded_files
     global total_files
     global total_bytes_uploaded # current number of bytes uploaded to Pennsieve in the current session
-    global main_curation_uploaded_files
     global client 
+    global files_uploaded
+    global total_dataset_files
 
 
     total_files = 0
@@ -2368,7 +2366,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
     total_metadata_files = 0 
     total_manifest_files = 0
     main_curation_uploaded_files = 0
-    total_bytes_uploaded = 0
+    total_bytes_uploaded = {"value": 0}
+    files_uploaded = 0
     
     uploaded_folder_counter = 0
     current_size_of_uploaded_files = 0
@@ -2691,17 +2690,17 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             global files_uploaded 
             global total_bytes_uploaded 
             global total_dataset_files
-
-            files_uploaded = files_uploaded
-            total_bytes_uploaded = total_bytes_uploaded
-            bytes_uploaded_per_file = bytes_uploaded_per_file
-            total_dataset_files = total_dataset_files
+            global bytes_uploaded_per_file
+            global main_curation_uploaded_files
 
             if events_dict["type"] == 1:  # upload status: file_id, total, current, worker_id
                 #logging.debug("UPLOAD STATUS: " + str(events_dict["upload_status"]))
                 file_id = events_dict["upload_status"].file_id
                 total_bytes_to_upload = events_dict["upload_status"].total
                 current_bytes_uploaded = events_dict["upload_status"].current
+
+                namespace_logger.info(total_bytes_uploaded)
+                namespace_logger.info(current_bytes_uploaded)
 
 
                 # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
@@ -2711,13 +2710,15 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 bytes_uploaded_per_file[file_id] = current_bytes_uploaded
 
                 # calculate the additional amount of bytes that have just been uploaded for the given file id
-                total_bytes_uploaded += current_bytes_uploaded - previous_bytes_uploaded
+                total_bytes_uploaded["value"] += current_bytes_uploaded - previous_bytes_uploaded
+
+                namespace_logger.info(total_bytes_uploaded["value"])
 
                 # check if the given file has finished uploading
                 if current_bytes_uploaded == total_bytes_to_upload:
                     print("File uploaded")
                     files_uploaded += 1
-                    # main_curation_uploaded_files += 1
+                    main_curation_uploaded_files += 1
                     # namespace_logger.info("Files Uploaded: " + str(files_uploaded) + "/" + str(total_dataset_files))
                     # namespace_logger.info("Total Bytes
 
@@ -2768,6 +2769,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             file_paths_count = len(folderInformation[0])
             total_files += file_paths_count
             total_dataset_files += file_paths_count
+            
         
 
 
@@ -2909,7 +2911,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             files_uploaded = 0
             bytes_uploaded_per_file = {}
 
-            ps.subscribe(10, monitor_subscriber_progress)
+            ps.subscribe(10, False, monitor_subscriber_progress)
 
 
             namespace_logger.info("Uploading files now")
@@ -2938,7 +2940,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             ps.manifest.upload(manifest_id)
 
             # subscribe to the manifest upload so we wait until it has finished uploading before moving on
-            ps.subscribe(10, monitor_subscriber_progress)
+            ps.subscribe(10, False, monitor_subscriber_progress)
 
             bytes_uploaded_per_file = {}
             files_uploaded = 0 
@@ -2971,7 +2973,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             # upload the manifest 
             ps.manifest.upload(manifest_id)
 
-            ps.subscribe(10,monitor_subscriber_progress)
+            ps.subscribe(10, False, monitor_subscriber_progress)
 
             bytes_uploaded_per_file = {}
             files_uploaded = 0 
@@ -3339,7 +3341,7 @@ def main_curate_function_progress():
         "start_generate": start_generate,
         "main_curate_progress_message": main_curate_progress_message,
         "main_total_generate_dataset_size": main_total_generate_dataset_size,
-        "main_generated_dataset_size": total_bytes_uploaded,
+        "main_generated_dataset_size": total_bytes_uploaded["value"],
         "elapsed_time_formatted": elapsed_time_formatted,
         "total_files_uploaded": main_curation_uploaded_files,
         "generated_dataset_id": myds["content"]["id"] if myds != "" else None, # when a new dataset gets generated log its id to our analytics
