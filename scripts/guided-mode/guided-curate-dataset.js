@@ -5956,8 +5956,8 @@ const attachGuidedMethodsToSodaJSONObj = () => {
           if (folderImportedFromPennsieve(prevNamePoolInHighLevelFolder)) {
             console.log("folder from Pennsieve adding rename action");
 
-            if (!prevNamePoolInHighLevelFolder["action"].includes["rename"]) {
-              prevNamePoolInHighLevelFolder["action"].push("rename");
+            if (!prevNamePoolInHighLevelFolder["action"].includes["renamed"]) {
+              prevNamePoolInHighLevelFolder["action"].push("renamed");
             }
           }
 
@@ -6016,8 +6016,8 @@ const attachGuidedMethodsToSodaJSONObj = () => {
             if (prevNameSubjectFolderInHighLevelFolder) {
               if (folderImportedFromPennsieve(prevNameSubjectFolderInHighLevelFolder)) {
                 console.log("folder from Pennsieve adding rename action");
-                if (!prevNameSubjectFolderInHighLevelFolder["action"].includes["rename"]) {
-                  prevNameSubjectFolderInHighLevelFolder["action"].push("rename");
+                if (!prevNameSubjectFolderInHighLevelFolder["action"].includes["renamed"]) {
+                  prevNameSubjectFolderInHighLevelFolder["action"].push("renamed");
                 }
               }
               datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
@@ -6050,8 +6050,8 @@ const attachGuidedMethodsToSodaJSONObj = () => {
             if (prevNameSubjectFolderInHighLevelFolder) {
               if (folderImportedFromPennsieve(prevNameSubjectFolderInHighLevelFolder)) {
                 console.log("folder from Pennsieve adding rename action");
-                if (!prevNameSubjectFolderInHighLevelFolder["action"].includes["rename"]) {
-                  prevNameSubjectFolderInHighLevelFolder["action"].push("rename");
+                if (!prevNameSubjectFolderInHighLevelFolder["action"].includes["renamed"]) {
+                  prevNameSubjectFolderInHighLevelFolder["action"].push("renamed");
                 }
 
                 datasetStructureJSONObj["folders"][highLevelFolder]["folders"][newSubjectName] =
@@ -6116,8 +6116,8 @@ const attachGuidedMethodsToSodaJSONObj = () => {
               if (prevNameSampleFolderInHighLevelFolder) {
                 if (folderImportedFromPennsieve(prevNameSampleFolderInHighLevelFolder)) {
                   console.log("folder from Pennsieve adding rename action");
-                  if (!prevNameSampleFolderInHighLevelFolder["action"].includes["rename"]) {
-                    prevNameSampleFolderInHighLevelFolder["action"].push("rename");
+                  if (!prevNameSampleFolderInHighLevelFolder["action"].includes["renamed"]) {
+                    prevNameSampleFolderInHighLevelFolder["action"].push("renamed");
                   }
                 }
 
@@ -6152,8 +6152,8 @@ const attachGuidedMethodsToSodaJSONObj = () => {
               if (prevNameSampleFolderInHighLevelFolder) {
                 if (folderImportedFromPennsieve(prevNameSampleFolderInHighLevelFolder)) {
                   console.log("folder from Pennsieve adding rename action");
-                  if (!prevNameSampleFolderInHighLevelFolder["action"].includes["rename"]) {
-                    prevNameSampleFolderInHighLevelFolder["action"].push("rename");
+                  if (!prevNameSampleFolderInHighLevelFolder["action"].includes["renamed"]) {
+                    prevNameSampleFolderInHighLevelFolder["action"].push("renamed");
                   }
                 }
 
