@@ -5039,6 +5039,36 @@ const openPage = async (targetPageID) => {
   guidedSetNavLoadingState(false);
 };
 
+const renderSubjectsTable = () => {
+  const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+  //Combine sample data from subjects in and out of pools
+  const subjects = [...subjectsInPools, ...subjectsOutsidePools];
+  const subjectElementRows = subjects
+    .map((subject) => {
+      return generateSubjectRowElement(subject.subjectName);
+    })
+    .join("\n");
+  document.getElementById("subject-specification-table-body").innerHTML = subjectElementRows;
+};
+
+const renderSamplesTable = () => {
+  const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+  //Combine sample data from subjects in and out of pools
+  let subjects = [...subjectsInPools, ...subjectsOutsidePools];
+
+  //Create the HTML for the subjects
+  const subjectSampleAdditionTables = subjects
+    .map((subject) => {
+      return renderSubjectSampleAdditionTable(subject);
+    })
+    .join("\n");
+
+  const subjectSampleAdditionTableContainer = document.getElementById(
+    "guided-div-add-samples-tables"
+  );
+  subjectSampleAdditionTableContainer.innerHTML = subjectSampleAdditionTables;
+};
+
 const setActiveSubPage = (pageIdToActivate) => {
   console.log(pageIdToActivate);
   const pageElementToActivate = document.getElementById(pageIdToActivate);
@@ -5047,15 +5077,7 @@ const setActiveSubPage = (pageIdToActivate) => {
   //depending on page being opened
   switch (pageIdToActivate) {
     case "guided-specify-subjects-page": {
-      const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
-      //Combine sample data from subjects in and out of pools
-      let subjects = [...subjectsInPools, ...subjectsOutsidePools];
-      const subjectElementRows = subjects
-        .map((subject) => {
-          return generateSubjectRowElement(subject.subjectName);
-        })
-        .join("\n");
-      document.getElementById("subject-specification-table-body").innerHTML = subjectElementRows;
+      renderSubjectsTable();
       //remove the add subject help text
       document.getElementById("guided-add-subject-instructions").classList.add("hidden");
       break;
@@ -5104,23 +5126,7 @@ const setActiveSubPage = (pageIdToActivate) => {
     }
 
     case "guided-specify-samples-page": {
-      const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
-      //Combine sample data from subjects in and out of pools
-      let subjects = [...subjectsInPools, ...subjectsOutsidePools];
-
-      //Create the HTML for the subjects
-      const subjectSampleAdditionTables = subjects
-        .map((subject) => {
-          return renderSubjectSampleAdditionTable(subject);
-        })
-        .join("\n");
-
-      //Add the subject sample addition elements to the DOM
-      const subjectSampleAdditionTableContainer = document.getElementById(
-        "guided-div-add-samples-tables"
-      );
-
-      subjectSampleAdditionTableContainer.innerHTML = subjectSampleAdditionTables;
+      renderSamplesTable();
       break;
     }
 
@@ -5863,32 +5869,41 @@ guidedCreateSodaJSONObj = () => {
 const guidedHighLevelFolders = ["primary", "source", "derivative"];
 const nonGuidedHighLevelFolders = ["code", "protocol", "docs"];
 
+const guidedWarnBeforeDeletingEntity = async (entityType, entityName) => {
+  let warningMessage;
+  if (entityType === "pool") {
+    warningMessage = `Are you sure you want to delete the pool '${entityName}'? After deleting this pool, all subject folders will be moved directly into their high level folders.`;
+  }
+  if (entityType === "subject") {
+    warningMessage = `Are you sure you want to delete the subject '${entityName}'? ${entityName} has folders and files associated with it, and if you continue with the deletion, the folders and files will be deleted as well.`;
+  }
+  if (entityType === "sample") {
+    warningMessage = `Are you sure you want to delete the sample '${entityName}'? ${entityName} has folders and files associated with it, and if you continue with the deletion, the folders and files will be deleted as well.`;
+  }
+
+  const continueWithDeletion = await Swal.fire({
+    icon: "warning",
+    title: "Are you sure?",
+    html: warningMessage,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    showCancelButton: true,
+    focusCancel: true,
+    confirmButtonText: `Delete ${entityType}`,
+    cancelButtonText: "Cancel deletion",
+    reverseButtons: reverseSwalButtons,
+  });
+
+  return continueWithDeletion.isConfirmed;
+};
+
 const attachGuidedMethodsToSodaJSONObj = () => {
-  sodaJSONObj.getAllSubjects = function () {
-    let subjectsInPools = [];
-    let subjectsOutsidePools = [];
-
-    for (const [poolName, pool] of Object.entries(
-      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"]
-    )) {
-      for (const [subjectName, subjectData] of Object.entries(pool)) {
-        subjectsInPools.push({
-          subjectName: subjectName,
-          poolName: poolName,
-          samples: Object.keys(subjectData),
-        });
-      }
+  sodaJSONObj.addPool = function (poolName) {
+    if (this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName]) {
+      throw new Error("Pool names must be unique.");
     }
 
-    for (const [subjectName, subjectData] of Object.entries(
-      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
-    )) {
-      subjectsOutsidePools.push({
-        subjectName: subjectName,
-        samples: Object.keys(subjectData),
-      });
-    }
-    return [subjectsInPools, subjectsOutsidePools];
+    this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName] = {};
   };
   sodaJSONObj.addSubject = function (subjectName) {
     //check if subject with the same name already exists
@@ -5900,247 +5915,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     }
     this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName] = {};
   };
-
-  sodaJSONObj.deleteSubject = function (subjectName) {
-    const [subjectsInPools, subjectsOutsidePools] = this.getAllSubjects();
-    const subjects = [...subjectsInPools, ...subjectsOutsidePools];
-    for (const subject of subjects) {
-      if (subject.subjectName === subjectName) {
-        //if the subject is in a pool
-        if (subject.poolName) {
-          //Delete the subjects folders in the datasetStructeJSONObj
-          for (const highLevelFolder of guidedHighLevelFolders) {
-            const subjectFolderInHighLevelFolder =
-              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
-                subject.poolName
-              ]?.["folders"]?.[subjectName];
-
-            if (subjectFolderInHighLevelFolder) {
-              if (folderImportedFromPennsieve(subjectFolderInHighLevelFolder)) {
-                guidedModifyPennsieveFolder(subjectFolderInHighLevelFolder, "delete");
-                console.log(subjectFolderInHighLevelFolder);
-              } else {
-                delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                  subject.poolName
-                ]["folders"][subjectName];
-              }
-            }
-          }
-
-          delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-            subject.poolName
-          ][subjectName];
-        } else {
-          //if the subject is not in a pool
-          //Delete the subjects folders in the datasetStructeJSONObj
-          for (const highLevelFolder of guidedHighLevelFolders) {
-            const subjectFolderInHighLevelFolder =
-              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName];
-            if (subjectFolderInHighLevelFolder) {
-              if (folderImportedFromPennsieve(subjectFolderInHighLevelFolder)) {
-                guidedModifyPennsieveFolder(subjectFolderInHighLevelFolder, "delete");
-                console.log(subjectFolderInHighLevelFolder);
-              } else {
-                delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName];
-              }
-            }
-          }
-          delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
-        }
-        // delete the subject's samples
-        for (const sample of subject.samples) {
-          sodaJSONObj.deleteSample(sample.sampleName);
-        }
-      }
-    }
-    for (let i = 1; i < subjectsTableData.length; i++) {
-      if (subjectsTableData[i][0] === subjectName) {
-        subjectsTableData.splice(i, 1);
-      }
-    }
-  };
-  sodaJSONObj.getSubjectsOutsidePools = function () {
-    let subjectsNotInPools = Object.keys(
-      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
-    );
-    return subjectsNotInPools;
-  };
-  sodaJSONObj.getSubjectsInPools = function () {
-    return this["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
-  };
-
-  sodaJSONObj.moveSubjectIntoPool = function (subjectName, poolName) {
-    //Move the subjects folders in the datasetStructeJSONObj
-    for (const highLevelFolder of guidedHighLevelFolders) {
-      const subjectFolderOutsidePool =
-        datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName];
-
-      console.log(subjectFolderOutsidePool);
-
-      if (subjectFolderOutsidePool) {
-        // If the target folder doesn't exist, create it
-        if (!datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]) {
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName] =
-            newEmptyFolderObj();
-          console.log("added a new folder for " + highLevelFolder);
-        }
-
-        if (folderImportedFromPennsieve(subjectFolderOutsidePool)) {
-          console.log("Moving Pennsieve folder");
-          guidedMovePennsieveFolder(
-            subjectName,
-            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName],
-            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]
-          );
-        } else {
-          console.log("Moving non-Pennsieve folder");
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]["folders"][
-            subjectName
-          ] = subjectFolderOutsidePool;
-        }
-        // Delete the subject folder outside the pool
-        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName];
-      }
-    }
-
-    //Add the pool name to the subjectsTableData if if an entry exists
-    for (const subjectDataArray of subjectsTableData.slice(1)) {
-      if (subjectDataArray[0] === subjectName) {
-        subjectDataArray[1] = poolName;
-      }
-    }
-
-    this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName][subjectName] =
-      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
-    delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
-  };
-  sodaJSONObj.moveSubjectOutOfPool = function (subjectName, poolName) {
-    //Copy the subject folders from the pool into the root of the high level folder
-    for (const highLevelFolder of guidedHighLevelFolders) {
-      const subjectFolderInPoolFolder =
-        datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
-          "folders"
-        ]?.[subjectName];
-      if (subjectFolderInPoolFolder) {
-        if (folderImportedFromPennsieve(subjectFolderInPoolFolder)) {
-          console.log("moving pennsieve subject ouf of pool");
-          guidedMovePennsieveFolder(
-            subjectName,
-            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]["folders"][
-              subjectName
-            ],
-            datasetStructureJSONObj["folders"][highLevelFolder]
-          );
-        } else {
-          console.log("moving non pennsieve");
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName] =
-            subjectFolderInPoolFolder;
-        }
-        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]["folders"][
-          subjectName
-        ];
-      }
-    }
-
-    //Remove the pool from the subject's entry in the subjectsTableData
-    for (const subjectDataArray of subjectsTableData) {
-      if (subjectDataArray[0] === subjectName) {
-        subjectDataArray[1] = "";
-      }
-    }
-
-    //Remove the sample from the samplesTableData
-    for (const sampleDataArray of samplesTableData) {
-      if (sampleDataArray[0] === subjectName) {
-        sampleDataArray[3] = "";
-      }
-    }
-
-    //Remove the subject from the pool in the guided structures
-    this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName] =
-      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName][subjectName];
-    delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName][
-      subjectName
-    ];
-  };
-  sodaJSONObj.addPool = function (poolName) {
-    if (this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName]) {
-      throw new Error("Pool names must be unique.");
-    }
-
-    this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName] = {};
-  };
-
-  sodaJSONObj.deletePool = function (poolName) {
-    //empty the subjects in the pool back into subjects
-    let pool = this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName];
-
-    //Loop through the subjects and remove their folders from the pool in the dataset structure
-    //this handles moving the subject folders back to the root of the high level folder
-    //and removes the pool from the subject/sample metadata arrays
-    for (let subject in pool) {
-      sodaJSONObj.moveSubjectOutOfPool(subject, poolName);
-    }
-
-    for (const highLevelFolder of guidedHighLevelFolders) {
-      const poolInHighLevelFolder =
-        datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[poolName];
-
-      if (poolInHighLevelFolder) {
-        if (folderImportedFromPennsieve(poolInHighLevelFolder)) {
-          guidedModifyPennsieveFolder(poolInHighLevelFolder, "delete");
-          console.log(poolInHighLevelFolder);
-        } else {
-          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName];
-        }
-      }
-    }
-
-    //delete the pool after copying the subjects back into subjects
-    delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName];
-  };
-  sodaJSONObj.getPools = function () {
-    return this["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
-  };
-  sodaJSONObj.getPoolSubjects = function (poolName) {
-    return Object.keys(
-      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName]
-    );
-  };
-
-  sodaJSONObj.getAllSamplesFromSubjects = function () {
-    let samplesInPools = [];
-    let samplesOutsidePools = [];
-
-    //get all the samples in subjects in pools
-    for (const [poolName, poolData] of Object.entries(
-      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"]
-    )) {
-      for (const [subjectName, subjectData] of Object.entries(poolData)) {
-        for (sampleName of Object.keys(subjectData)) {
-          samplesInPools.push({
-            sampleName: sampleName,
-            subjectName: subjectName,
-            poolName: poolName,
-          });
-        }
-      }
-    }
-
-    //get all the samples in subjects not in pools
-    for (const [subjectName, subjectData] of Object.entries(
-      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
-    )) {
-      for (sampleName of Object.keys(subjectData)) {
-        samplesOutsidePools.push({
-          sampleName: sampleName,
-          subjectName: subjectName,
-        });
-      }
-    }
-    return [samplesInPools, samplesOutsidePools];
-  };
-
   sodaJSONObj.addSampleToSubject = function (sampleName, subjectPoolName, subjectName) {
     const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
     //Combine sample data from samples in and out of pools
@@ -6165,6 +5939,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
       ] = {};
     }
   };
+
   sodaJSONObj.renamePool = function (prevPoolName, newPoolName) {
     //check if name already exists
     if (prevPoolName != newPoolName) {
@@ -6212,7 +5987,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
       }
     }
   };
-
   sodaJSONObj.renameSubject = function (prevSubjectName, newSubjectName) {
     console.log("renameSubject called");
     if (prevSubjectName === newSubjectName) {
@@ -6413,13 +6187,136 @@ const attachGuidedMethodsToSodaJSONObj = () => {
       }
     }
   };
+  sodaJSONObj.deletePool = function (poolName) {
+    //empty the subjects in the pool back into subjects
+    let pool = this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName];
 
-  sodaJSONObj.deleteSample = function (sampleName) {
+    //Loop through the subjects and remove their folders from the pool in the dataset structure
+    //this handles moving the subject folders back to the root of the high level folder
+    //and removes the pool from the subject/sample metadata arrays
+    for (let subject in pool) {
+      sodaJSONObj.moveSubjectOutOfPool(subject, poolName);
+    }
+
+    for (const highLevelFolder of guidedHighLevelFolders) {
+      const poolInHighLevelFolder =
+        datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[poolName];
+
+      if (poolInHighLevelFolder) {
+        if (folderImportedFromPennsieve(poolInHighLevelFolder)) {
+          guidedModifyPennsieveFolder(poolInHighLevelFolder, "delete");
+          console.log(poolInHighLevelFolder);
+        } else {
+          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName];
+        }
+      }
+    }
+
+    //delete the pool after copying the subjects back into subjects
+    delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName];
+  };
+  sodaJSONObj.deleteSubject = async function (subjectName) {
+    const [subjectsInPools, subjectsOutsidePools] = this.getAllSubjects();
+    const subjects = [...subjectsInPools, ...subjectsOutsidePools];
+    for (const subject of subjects) {
+      // Variable to track if the user has been warned about deleting a subject with folders
+      let warningBeforeDeletingSubjectWithFoldersSwalHasBeenShown = false;
+
+      if (subject.subjectName === subjectName) {
+        //if the subject is in a pool
+        if (subject.poolName) {
+          //Delete the subjects folders in the datasetStructeJSONObj
+          for (const highLevelFolder of guidedHighLevelFolders) {
+            const subjectFolderInHighLevelFolder =
+              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+                subject.poolName
+              ]?.["folders"]?.[subjectName];
+
+            if (subjectFolderInHighLevelFolder) {
+              if (!warningBeforeDeletingSubjectWithFoldersSwalHasBeenShown) {
+                // Warn the user if they are deleting a subject with folders
+                // If they cancel the deletion, we return and the subject or its folders are not deleted
+                const continueWithSubjectDeletion = await guidedWarnBeforeDeletingEntity(
+                  "subject",
+                  subjectName
+                );
+                if (continueWithSubjectDeletion) {
+                  warningBeforeDeletingSubjectWithFoldersSwalHasBeenShown = true;
+                } else {
+                  return;
+                }
+              }
+
+              if (folderImportedFromPennsieve(subjectFolderInHighLevelFolder)) {
+                guidedModifyPennsieveFolder(subjectFolderInHighLevelFolder, "delete");
+                console.log(subjectFolderInHighLevelFolder);
+              } else {
+                delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                  subject.poolName
+                ]["folders"][subjectName];
+              }
+            }
+          }
+
+          delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+            subject.poolName
+          ][subjectName];
+        } else {
+          //if the subject is not in a pool
+          //Delete the subjects folders in the datasetStructeJSONObj
+          for (const highLevelFolder of guidedHighLevelFolders) {
+            const subjectFolderInHighLevelFolder =
+              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName];
+
+            if (subjectFolderInHighLevelFolder) {
+              if (!warningBeforeDeletingSubjectWithFoldersSwalHasBeenShown) {
+                // Warn the user if they are deleting a subject with folders
+                // If they cancel the deletion, we return and the subject or its folders are not deleted
+                const continueWithSubjectDeletion = await guidedWarnBeforeDeletingEntity(
+                  "subject",
+                  subjectName
+                );
+                console.log(continueWithSubjectDeletion);
+                if (continueWithSubjectDeletion) {
+                  warningBeforeDeletingSubjectWithFoldersSwalHasBeenShown = true;
+                } else {
+                  return;
+                }
+              }
+              console.log(warningBeforeDeletingSubjectWithFoldersSwalHasBeenShown);
+
+              if (folderImportedFromPennsieve(subjectFolderInHighLevelFolder)) {
+                guidedModifyPennsieveFolder(subjectFolderInHighLevelFolder, "delete");
+                console.log(subjectFolderInHighLevelFolder);
+              } else {
+                delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName];
+              }
+            }
+          }
+          console.log(this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]);
+          delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
+        }
+        // delete the subject's samples
+        for (const sample of subject.samples) {
+          await sodaJSONObj.deleteSample(sample.sampleName, false);
+        }
+      }
+    }
+    for (let i = 1; i < subjectsTableData.length; i++) {
+      if (subjectsTableData[i][0] === subjectName) {
+        subjectsTableData.splice(i, 1);
+      }
+    }
+  };
+  sodaJSONObj.deleteSample = async function (sampleName, showWarningIfSampleFoldersExist) {
     const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
     //Combine sample data from samples in and out of pools
     let samples = [...samplesInPools, ...samplesOutsidePools];
 
     for (const sample of samples) {
+      // Variable to track if the user has been warned about deleting a subject with folders
+      let warningBeforeDeletingSampleWithFoldersSwalHasBeenShown = false;
+
       if (sample.sampleName === sampleName) {
         if (sample.poolName) {
           //Delete the samples folder in the datasetStructureJSONObj
@@ -6430,6 +6327,20 @@ const attachGuidedMethodsToSodaJSONObj = () => {
               ]?.["folders"]?.[sample.subjectName]?.["folders"]?.[sampleName];
 
             if (sampleFolderInHighLevelFolder) {
+              if (showWarningIfSampleFoldersExist) {
+                // Warn the user if they are deleting a sample with folders
+                // If they cancel the deletion, we return and the sample or its folders are not deleted
+                const continueWithSampleDeletion = await guidedWarnBeforeDeletingEntity(
+                  "sample",
+                  sampleName
+                );
+                if (continueWithSampleDeletion) {
+                  warningBeforeDeletingSampleWithFoldersSwalHasBeenShown = true;
+                } else {
+                  return;
+                }
+              }
+
               if (folderImportedFromPennsieve(sampleFolderInHighLevelFolder)) {
                 guidedModifyPennsieveFolder(sampleFolderInHighLevelFolder, "delete");
                 console.log(sampleFolderInHighLevelFolder);
@@ -6454,6 +6365,20 @@ const attachGuidedMethodsToSodaJSONObj = () => {
               ]?.["folders"]?.[sampleName];
 
             if (sampleFolderInHighLevelFolder) {
+              if (showWarningIfSampleFoldersExist) {
+                // Warn the user if they are deleting a sample with folders
+                // If they cancel the deletion, we return and the sample or its folders are not deleted
+                const continueWithSampleDeletion = await guidedWarnBeforeDeletingEntity(
+                  "sample",
+                  sampleName
+                );
+                if (continueWithSampleDeletion) {
+                  warningBeforeDeletingSampleWithFoldersSwalHasBeenShown = true;
+                } else {
+                  return;
+                }
+              }
+
               if (folderImportedFromPennsieve(sampleFolderInHighLevelFolder)) {
                 guidedModifyPennsieveFolder(sampleFolderInHighLevelFolder, "delete");
                 console.log(sampleFolderInHighLevelFolder);
@@ -6479,6 +6404,176 @@ const attachGuidedMethodsToSodaJSONObj = () => {
         samplesTableData.splice(i, 1);
       }
     }
+  };
+
+  sodaJSONObj.moveSubjectIntoPool = function (subjectName, poolName) {
+    //Move the subjects folders in the datasetStructeJSONObj
+    for (const highLevelFolder of guidedHighLevelFolders) {
+      const subjectFolderOutsidePool =
+        datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName];
+
+      console.log(subjectFolderOutsidePool);
+
+      if (subjectFolderOutsidePool) {
+        // If the target folder doesn't exist, create it
+        if (!datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]) {
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName] =
+            newEmptyFolderObj();
+          console.log("added a new folder for " + highLevelFolder);
+        }
+
+        if (folderImportedFromPennsieve(subjectFolderOutsidePool)) {
+          console.log("Moving Pennsieve folder");
+          guidedMovePennsieveFolder(
+            subjectName,
+            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName],
+            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]
+          );
+        } else {
+          console.log("Moving non-Pennsieve folder");
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]["folders"][
+            subjectName
+          ] = subjectFolderOutsidePool;
+        }
+        // Delete the subject folder outside the pool
+        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName];
+      }
+    }
+
+    //Add the pool name to the subjectsTableData if if an entry exists
+    for (const subjectDataArray of subjectsTableData.slice(1)) {
+      if (subjectDataArray[0] === subjectName) {
+        subjectDataArray[1] = poolName;
+      }
+    }
+
+    this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName][subjectName] =
+      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
+    delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
+  };
+  sodaJSONObj.moveSubjectOutOfPool = function (subjectName, poolName) {
+    //Copy the subject folders from the pool into the root of the high level folder
+    for (const highLevelFolder of guidedHighLevelFolders) {
+      const subjectFolderInPoolFolder =
+        datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
+          "folders"
+        ]?.[subjectName];
+      if (subjectFolderInPoolFolder) {
+        if (folderImportedFromPennsieve(subjectFolderInPoolFolder)) {
+          console.log("moving pennsieve subject ouf of pool");
+          guidedMovePennsieveFolder(
+            subjectName,
+            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]["folders"][
+              subjectName
+            ],
+            datasetStructureJSONObj["folders"][highLevelFolder]
+          );
+        } else {
+          console.log("moving non pennsieve");
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName] =
+            subjectFolderInPoolFolder;
+        }
+        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]["folders"][
+          subjectName
+        ];
+      }
+    }
+
+    //Remove the pool from the subject's entry in the subjectsTableData
+    for (const subjectDataArray of subjectsTableData) {
+      if (subjectDataArray[0] === subjectName) {
+        subjectDataArray[1] = "";
+      }
+    }
+
+    //Remove the sample from the samplesTableData
+    for (const sampleDataArray of samplesTableData) {
+      if (sampleDataArray[0] === subjectName) {
+        sampleDataArray[3] = "";
+      }
+    }
+
+    //Remove the subject from the pool in the guided structures
+    this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName] =
+      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName][subjectName];
+    delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName][
+      subjectName
+    ];
+  };
+  sodaJSONObj.getPools = function () {
+    return this["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
+  };
+  sodaJSONObj.getPoolSubjects = function (poolName) {
+    return Object.keys(
+      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName]
+    );
+  };
+  sodaJSONObj.getAllSamplesFromSubjects = function () {
+    let samplesInPools = [];
+    let samplesOutsidePools = [];
+
+    //get all the samples in subjects in pools
+    for (const [poolName, poolData] of Object.entries(
+      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"]
+    )) {
+      for (const [subjectName, subjectData] of Object.entries(poolData)) {
+        for (sampleName of Object.keys(subjectData)) {
+          samplesInPools.push({
+            sampleName: sampleName,
+            subjectName: subjectName,
+            poolName: poolName,
+          });
+        }
+      }
+    }
+
+    //get all the samples in subjects not in pools
+    for (const [subjectName, subjectData] of Object.entries(
+      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
+    )) {
+      for (sampleName of Object.keys(subjectData)) {
+        samplesOutsidePools.push({
+          sampleName: sampleName,
+          subjectName: subjectName,
+        });
+      }
+    }
+    return [samplesInPools, samplesOutsidePools];
+  };
+  sodaJSONObj.getAllSubjects = function () {
+    let subjectsInPools = [];
+    let subjectsOutsidePools = [];
+
+    for (const [poolName, pool] of Object.entries(
+      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"]
+    )) {
+      for (const [subjectName, subjectData] of Object.entries(pool)) {
+        subjectsInPools.push({
+          subjectName: subjectName,
+          poolName: poolName,
+          samples: Object.keys(subjectData),
+        });
+      }
+    }
+
+    for (const [subjectName, subjectData] of Object.entries(
+      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
+    )) {
+      subjectsOutsidePools.push({
+        subjectName: subjectName,
+        samples: Object.keys(subjectData),
+      });
+    }
+    return [subjectsInPools, subjectsOutsidePools];
+  };
+  sodaJSONObj.getSubjectsOutsidePools = function () {
+    let subjectsNotInPools = Object.keys(
+      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
+    );
+    return subjectsNotInPools;
+  };
+  sodaJSONObj.getSubjectsInPools = function () {
+    return this["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
   };
 };
 
@@ -9214,18 +9309,19 @@ const addPoolTableRow = () => {
 };
 
 //deletes subject from jsonObj and UI
-const deleteSubject = (subjectDeleteButton) => {
+const deleteSubject = async (subjectDeleteButton) => {
   const subjectIdCellToDelete = subjectDeleteButton.closest("tr");
   const subjectIdToDelete = subjectIdCellToDelete.find(".subject-id").text();
 
   //Check to see if a subject has been added to the element
   //if it has, delete the subject from the pool-sub-sam structure
   if (subjectIdToDelete) {
-    sodaJSONObj.deleteSubject(subjectIdToDelete);
+    await sodaJSONObj.deleteSubject(subjectIdToDelete);
   }
 
-  //delete the table row element in the UI
-  subjectIdCellToDelete.remove();
+  //Rerender the subjects table
+  renderSubjectsTable();
+
   //remove the add subject help text
   document.getElementById("guided-add-subject-instructions").classList.add("hidden");
 };
@@ -9239,18 +9335,18 @@ const deletePool = (poolDeleteButton) => {
   removeAlertMessageIfExists($("#pools-table"));
 };
 
-const deleteSample = (sampleDeleteButton) => {
+const deleteSample = async (sampleDeleteButton) => {
   const sampleIdCellToDelete = sampleDeleteButton.closest("tr");
   const sampleIdToDelete = sampleIdCellToDelete.find(".sample-id").text();
 
   //Check to see if a sample has been added to the element
   //if it has, delete the sample from the pool-sub-sam structure
   if (sampleIdToDelete) {
-    sodaJSONObj.deleteSample(sampleIdToDelete);
+    await sodaJSONObj.deleteSample(sampleIdToDelete, true);
   }
 
-  //delete the table row element in the UI
-  sampleIdCellToDelete.remove();
+  //Rerender the samples table
+  renderSamplesTable();
 };
 
 //SAMPLE TABLE FUNCTIONS
