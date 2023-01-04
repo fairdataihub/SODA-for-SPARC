@@ -520,7 +520,11 @@ const savePageChanges = async (pageBeingLeftID) => {
           Object.keys(codeFolder.folders).length === 0 &&
           Object.keys(codeFolder.files).length === 0
         ) {
-          delete datasetStructureJSONObj["folders"]["code"];
+          if (folderImportedFromPennsieve(codeFolder)) {
+            guidedModifyPennsieveFolder(codeFolder, "delete");
+          } else {
+            delete datasetStructureJSONObj["folders"]["code"];
+          }
           guidedSkipPage("guided-add-code-metadata-tab");
         } else {
           const { value: deleteCodeFolderWithData } = await Swal.fire({
@@ -587,7 +591,11 @@ const savePageChanges = async (pageBeingLeftID) => {
           Object.keys(protocolFolder.folders).length === 0 &&
           Object.keys(protocolFolder.files).length === 0
         ) {
-          delete datasetStructureJSONObj["folders"]["protocol"];
+          if (folderImportedFromPennsieve(protocolFolder)) {
+            guidedModifyPennsieveFolder(protocolFolder, "delete");
+          } else {
+            delete datasetStructureJSONObj["folders"]["protocol"];
+          }
         } else {
           const { value: deleteProtocolFolderWithData } = await Swal.fire({
             title: "Delete protocol folder?",
@@ -647,7 +655,11 @@ const savePageChanges = async (pageBeingLeftID) => {
           Object.keys(docsFolder.folders).length === 0 &&
           Object.keys(docsFolder.files).length === 0
         ) {
-          delete datasetStructureJSONObj["folders"]["docs"];
+          if (folderImportedFromPennsieve(docsFolder)) {
+            guidedModifyPennsieveFolder(docsFolder, "delete");
+          } else {
+            delete datasetStructureJSONObj["folders"]["docs"];
+          }
         } else {
           const { value: deleteDocsFolderWithData } = await Swal.fire({
             title: "Delete docs folder?",
@@ -807,31 +819,6 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-designate-permissions-tab") {
-      console.log("leaving page");
-      const buttonYesAddAdditionalPermissions = document.getElementById(
-        "guided-button-add-additional-permissions"
-      );
-      const buttonNoNoAdditionalPermissions = document.getElementById(
-        "guided-button-no-additional-permissions"
-      );
-
-      if (
-        !buttonYesAddAdditionalPermissions.classList.contains("selected") &&
-        !buttonNoNoAdditionalPermissions.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "notyf",
-          message:
-            "Please indicate if you would like to add additional Pennsieve permissions to your dataset",
-        });
-        throw errorArray;
-      }
-
-      if (buttonNoNoAdditionalPermissions.classList.contains("selected")) {
-        //If the user had added additional permissions, remove them
-        sodaJSONObj["digital-metadata"]["user-permissions"] = [];
-        sodaJSONObj["digital-metadata"]["team-permissions"] = [];
-      }
     }
 
     if (pageBeingLeftID === "guided-add-description-tab") {
@@ -4295,13 +4282,6 @@ const openPage = async (targetPageID) => {
       }
     }
     if (targetPageID === "guided-designate-permissions-tab") {
-      const createPiOwnerObj = (userString, UUID, name) => {
-        return {
-          userString: userString,
-          UUID: UUID,
-          name: name,
-        };
-      };
       if (pageNeedsUpdateFromPennsieve("guided-designate-permissions-tab")) {
         try {
           const sparcUsersReq = await client.get(
@@ -4376,10 +4356,8 @@ const openPage = async (targetPageID) => {
           }
           // After loop use the array of objects to find the UUID and email
           let finalUserPermissions = [];
+
           partialUserDetails.map((object) => {
-            // if user go to user array is a user
-            // console.log("is user");
-            // console.log(sparcUsersDivided);
             sparcUsersDivided.forEach((element) => {
               // console.log(element);
               if (element[0].includes(object["userName"])) {
@@ -4410,38 +4388,31 @@ const openPage = async (targetPageID) => {
             });
           });
 
-          let multiplePermissions = false;
-          if (finalTeamPermissions.length > 0) {
-            multiplePermissions = true;
-            sodaJSONObj["digital-metadata"]["team-permissions"] = finalTeamPermissions;
-          }
-          if (finalUserPermissions.length > 0) {
-            multiplePermissions = true;
-            sodaJSONObj["digital-metadata"]["user-permissions"] = finalUserPermissions;
-          }
+          sodaJSONObj["digital-metadata"]["team-permissions"] = finalTeamPermissions;
+          sodaJSONObj["digital-metadata"]["user-permissions"] = finalUserPermissions;
           sodaJSONObj["digital-metadata"]["pi-owner"] = piOwner[0];
-
-          if (multiplePermissions) {
-            $("#guided-button-add-additional-permissions").click();
-          }
 
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-designate-permissions-tab");
         } catch (error) {
           console.log(error);
         }
       }
-      //Get the user information of the user that is currently curating
-      const user = await api.getUserInformation();
 
-      const loggedInUserString = `${user["firstName"]} ${user["lastName"]} (${user["email"]})`;
-      const loggedInUserUUID = user["id"];
-      const loggedInUserName = `${user["firstName"]} ${user["lastName"]}`;
-      const loggedInUserPiObj = {
-        userString: loggedInUserString,
-        UUID: loggedInUserUUID,
-        name: loggedInUserName,
-      };
-      setGuidedDatasetPiOwner(loggedInUserPiObj);
+      //If the PI owner is empty, set the PI owner to the user that is currently curating
+      if (Object.keys(sodaJSONObj["digital-metadata"]["pi-owner"]).length === 0) {
+        //Get the user information of the user that is currently curating
+        const user = await api.getUserInformation();
+
+        const loggedInUserString = `${user["firstName"]} ${user["lastName"]} (${user["email"]})`;
+        const loggedInUserUUID = user["id"];
+        const loggedInUserName = `${user["firstName"]} ${user["lastName"]}`;
+        const loggedInUserPiObj = {
+          userString: loggedInUserString,
+          UUID: loggedInUserUUID,
+          name: loggedInUserName,
+        };
+        setGuidedDatasetPiOwner(loggedInUserPiObj);
+      }
 
       renderPermissionsTable();
       guidedResetUserTeamPermissionsDropdowns();
