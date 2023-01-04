@@ -12768,6 +12768,19 @@ $(document).ready(async () => {
     }
   });
 
+  const getNextPageNotSkipped = (currentPageID) => {
+    const parentContainer = document.getElementById(currentPageID).closest(".guided--parent-tab");
+    const siblingPages = getNonSkippedGuidedModePages(parentContainer).map((page) => page.id);
+
+    const currentPageIndex = siblingPages.indexOf(currentPageID);
+    if (currentPageIndex != siblingPages.length - 1) {
+      return document.getElementById(siblingPages[currentPageIndex + 1]);
+    } else {
+      const nextParentContainer = parentContainer.nextElementSibling;
+      return getNonSkippedGuidedModePages(nextParentContainer)[0];
+    }
+  };
+
   //next button click handler
   $("#guided-next-button").on("click", async function () {
     //Get the ID of the current page to handle actions on page leave (next button pressed)
@@ -12779,8 +12792,6 @@ $(document).ready(async () => {
       return;
     }
 
-    // Dorian: The below loading class should be removed
-    $(this).addClass("loading");
     let errorArray = [];
 
     try {
@@ -12794,27 +12805,12 @@ $(document).ready(async () => {
         sodaJSONObj["completed-tabs"].push(pageBeingLeftID);
       }
 
-      const getNextPageNotSkipped = (currentPageID) => {
-        const parentContainer = document
-          .getElementById(currentPageID)
-          .closest(".guided--parent-tab");
-        const siblingPages = getNonSkippedGuidedModePages(parentContainer).map((page) => page.id);
-
-        const currentPageIndex = siblingPages.indexOf(currentPageID);
-        if (currentPageIndex != siblingPages.length - 1) {
-          return document.getElementById(siblingPages[currentPageIndex + 1]);
-        } else {
-          const nextParentContainer = parentContainer.nextElementSibling;
-          return getNonSkippedGuidedModePages(nextParentContainer)[0];
-        }
-      };
-
       //NAVIGATE TO NEXT PAGE + CHANGE ACTIVE TAB/SET ACTIVE PROGRESSION TAB
       //if more tabs in parent tab, go to next tab and update capsule
       let targetPage = getNextPageNotSkipped(CURRENT_PAGE.id);
       let targetPageID = targetPage.id;
 
-      openPage(targetPageID);
+      await openPage(targetPageID);
     } catch (error) {
       log.error(error);
       console.log(error);
@@ -12829,8 +12825,6 @@ $(document).ready(async () => {
         }
       });
     }
-    $(this).removeClass("loading");
-    guidedSetNavLoadingState(false);
   });
 
   /* const getNextPageNotSkipped = (currentPageID) => {
