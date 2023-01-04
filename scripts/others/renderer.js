@@ -7320,9 +7320,6 @@ var uploadComplete = new Notyf({
   ],
 });
 
-//const remote = require("electron").remote;
-//child.setPosition(position[0], position[1]);
-
 // Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
 async function initiate_generate() {
   // Disable the Guided Mode sidebar button to prevent the sodaJSONObj from being modified
@@ -7422,14 +7419,7 @@ async function initiate_generate() {
   let nameDestinationPair = determineDatasetDestination();
   dataset_name = nameDestinationPair[0];
   dataset_destination = nameDestinationPair[1];
-  // if (sodaJSONObj?.["manifest-files"]?.["destination"]) {
-  //   sodaJSONObj["manifest-files"] = {
-  //     destination: "generate-dataset",
-  //   };
-  // }
-  console.log(sodaJSONObj["manifest-files"]);
-  console.log(JSON.stringify(sodaJSONObj));
-  console.log(sodaCopy);
+
   client
     .post(
       `/curate_datasets/curation`,
@@ -9188,6 +9178,29 @@ tippy("#datasetPathDisplay", {
   theme: "soda",
   maxWidth: "100%",
 });
+
+// function that removes hidden class from js element by id and smooth scrolls to it
+const unHideAndSmoothScrollToElement = (id) => {
+  elementToUnhideAndScrollTo = document.getElementById(id);
+  elementToUnhideAndScrollTo.classList.remove("hidden");
+  elementToUnhideAndScrollTo.scrollIntoView({
+    behavior: "smooth",
+  });
+};
+
+const smoothScrollToElement = (idOrElement) => {
+  //check if idOrElement is an element
+  if (typeof idOrElement === "string") {
+    elementToScrollTo = document.getElementById(id);
+    elementToScrollTo.scrollIntoView({
+      behavior: "smooth",
+    });
+  } else {
+    idOrElement.scrollIntoView({
+      behavior: "smooth",
+    });
+  }
+};
 
 const convertJSONToXlsx = (jsondata, excelfile) => {
   console.log(excelfile);

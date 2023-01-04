@@ -3399,11 +3399,8 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
         return
 
     def pennsieve_recursive_folder_traversal(folder, hlf_data_array, ds_struct_path):
-        print("function here")
         if "files" in folder.keys():
             for item in list(folder["files"]):
-
-                # check if files is from pennsieve or was locally imported
                 file_manifest_template_data = []
                 item_description = folder["files"][item]["description"]
                 item_additional_info = folder["files"][item]["additional-metadata"]
@@ -3428,6 +3425,15 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
                 file_manifest_template_data.append(item_description)
                 file_manifest_template_data.append(file_type_entry)
                 file_manifest_template_data.append(item_additional_info)
+                # extra column key is an object of all extra columns of a manifest
+                # key will be the column header and value will be the value of the column+row 
+                # (from the excel) (now in the form of a dict)
+                if "extra_columns" in folder["files"][item]:
+                    for key in folder["files"][item]["extra_columns"]:
+                        file_manifest_template_data.append(folder["files"][item]["extra_columns"][key])
+                        if key not in standard_manifest_columns:
+                            # add column name to manifest column names array
+                            standard_manifest_columns.append(key)
 
                 hlf_data_array.append(file_manifest_template_data)
 
@@ -3442,6 +3448,8 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
 
     # Initialize the array that the manifest data will be added to.
     hlf_manifest_data = {}
+    # any additional columns created by the user will be appended with the high level folder when found
+    standard_manifest_columns = ["filename", "timestamp", "description", "file type", "Additional Metadata"]
 
 
     # Loop through each high level folder and create a manifest data array for each.
@@ -3450,14 +3458,8 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
 
         # create an array to keep track of the path to the obj being recursed over
         relative_structure_path = []
- 
-        hlf_data_array.append([
-        "filename",
-        "timestamp",
-        "description",
-        "file type",
-        "Additional Metadata",
-        ])
+        hlf_data_array.append(standard_manifest_columns)
+
         if "bfpath" in dataset_structure_obj["folders"][high_level_folder]:
             # means the json is from a pennsieve dataset
             pennsieve_recursive_folder_traversal(dataset_structure_obj["folders"][high_level_folder], hlf_data_array, relative_structure_path)

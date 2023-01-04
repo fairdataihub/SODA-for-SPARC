@@ -1869,10 +1869,11 @@ const renderFFManifestCards = () => {
   const manifestFilesCardsContainer = document.getElementById("ffm-container-manifest-file-cards");
   manifestFilesCardsContainer.innerHTML = manifestCards;
 
-  //smoothScrollToElement(manifestFilesCardsContainer)
+  smoothScrollToElement(manifestFilesCardsContainer);
 };
 
 const ffOpenManifestEditSwal = async (highlevelFolderName) => {
+  // Function for when user wants to edit the manifest cards
   const existingManifestData = sodaCopy["manifest-files"]?.[highlevelFolderName];
 
   let manifestFileHeaders = existingManifestData["headers"];
@@ -1959,11 +1960,11 @@ const ffOpenManifestEditSwal = async (highlevelFolderName) => {
         ] = additionalMetadata;
       } else {
         // is in a subfolder so search for it and update metadata
+        // need to add description and additional metadata to original sodaJSONObj
         let folderDepthCopy = sodaCopy["dataset-structure"]["folders"][highlevelFolderName];
         let folderDepthReal = sodaJSONObj["dataset-structure"]["folders"][highlevelFolderName];
         for (let j = 0; j < fileNameSplit.length; j++) {
           if (j === fileNameSplit.length - 1) {
-            // console.log(j);
             folderDepthCopy["files"][fileNameSplit[j]]["description"] = description;
             folderDepthReal["files"][fileNameSplit[j]]["description"] = description;
             folderDepthCopy["files"][fileNameSplit[j]]["additional-metadata"] = additionalMetadata;
@@ -1982,47 +1983,47 @@ const ffOpenManifestEditSwal = async (highlevelFolderName) => {
     };
   }
 
-  //Save the sodaJSONObj with the new manifest file
-  // saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
   //Rerender the manifest cards
   renderFFManifestCards();
 };
 
+// Function takes in original sodaJSONObj and creates a copy of it to modify to manifest edits
+// Manifest edits will create
 const ffmCreateManifest = async (sodaJson) => {
   await new Promise((r) => setTimeout(r, 0));
   //create a copy of the sodajson object
   sodaCopy = sodaJson;
   datasetStructCopy = sodaCopy["dataset-structure"];
-  // console.log(sodaCopy);
+
   try {
-    //used for imported local datasets and pennsieve datasets
+    // used for imported local datasets and pennsieve datasets
+    // filters out deleted files/folders before creating manifest data again
     const cleanJson = await client.post(
       `/curate_datasets/clean-dataset`,
       { soda_json_structure: sodaCopy },
       { timeout: 0 }
     );
+
     let response = cleanJson.data.soda_json_structure;
+    // response does not format in JSON format so need to format ' with "
     let regex = /'/gm;
     let formattedResponse = response.replace(regex, '"');
-    // console.log(formattedResponse);
+
     let json_structure = JSON.parse(formattedResponse);
     sodaCopy = json_structure;
     datasetStructCopy = sodaCopy["dataset-structure"];
-    // console.log(json_structure);
-    // console.log(typeof(json_structure));
   } catch (e) {
     clientError(e);
     console.log(e);
   }
-  //filter out deleted files/folders before creating manifest data again
+
   //manifest will still include pennsieve or locally imported files
-  console.log("sending data again");
-  console.log(datasetStructCopy);
-  console.log(sodaCopy["manifest-files"]);
+  // deleted to prevent from showing up as manifest card
   if (sodaCopy["manifest-files"]?.["destination"]) {
     delete sodaCopy["manifest-files"]["destination"];
   }
 
+  // create manifest data of all high level folders
   try {
     const res = await client.post(
       `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
@@ -2031,17 +2032,14 @@ const ffmCreateManifest = async (sodaJson) => {
       },
       { timeout: 0 }
     );
+
+    // loop through each of the high level folders and create excel sheet in case no edits are made
+    // will be auto generated and ready for upload
     const manifestRes = res.data;
-    console.log(manifestRes);
-    //loop through each of the high level folders and store their manifest headers and data into the sodaJSONObj
     let newManifestData = {};
     for (const [highLevelFolderName, manifestFileData] of Object.entries(manifestRes)) {
-      //Only save manifest files for high lvl folders that returned more than the headers
-      //meaning manifest file data was generated in the response
-      console.log(manifestFileData);
       if (manifestFileData.length > 1) {
         const manifestHeader = manifestFileData.shift();
-
         newManifestData[highLevelFolderName] = {
           headers: manifestHeader,
           data: manifestFileData,
@@ -2051,6 +2049,7 @@ const ffmCreateManifest = async (sodaJson) => {
         let manifestFolder = path.join(homeDirectory, "SODA", "manifest_files");
         let localFolderPath = path.join(manifestFolder, highLevelFolderName);
         let selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
+        // create manifest folders if they don't exist
         if (!fs.existsSync(manifestFolder)) {
           fs.mkdirSync(manifestFolder);
         }
@@ -2071,30 +2070,26 @@ const ffmCreateManifest = async (sodaJson) => {
       }
     }
 
+    // Check if manifest data is different from what exists already (if previous data exists)
     const existingManifestData = sodaCopy["manifest-files"];
-
     let updatedManifestData;
 
     if (existingManifestData) {
-      console.log("add function, needed");
       updatedManifestData = diffCheckManifestFiles(newManifestData, existingManifestData);
     } else {
       updatedManifestData = newManifestData;
     }
-
+    // manifest data will be stored in sodaCopy to be reused for manifest edits/regenerating cards
+    // sodaJSONObj will remain the same and only have 'additonal-metadata' and 'description' data
     sodaCopy["manifest-files"] = updatedManifestData;
 
-    // below needs to be added at the very end before the main_curate_function begins
+    // below needs to be added added before the main_curate_function begins
     sodaJSONObj["manifest-files"]["destination"] = "auto-generated";
-    // console.log(sodaJSONObj);
-    //save the sodajson with the new manifest files
-    //saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
   } catch (err) {
     clientError(err);
     console.log(err);
     userError(err);
   }
-
   renderFFManifestCards();
 };
 
@@ -2103,7 +2098,9 @@ $("#generate-manifest-curate").change(async function () {
     $("#button-generate-manifest-locally").show();
     //display manifest generator UI here
     $("#ffm-manifest-generator").show();
+    // create the manifest of the high level folders within sodaJSONObj
     await ffmCreateManifest(sodaJSONObj);
+    // For the back end to know the manifest files have been created in $HOME/SODA/manifest-files/<highLvlFolder>
     sodaJSONObj["manifest-files"]["destination"] = "auto-generated";
   } else {
     $("#button-generate-manifest-locally").hide();

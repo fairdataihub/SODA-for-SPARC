@@ -246,29 +246,6 @@ const createCompletionDateRadioElement = (name, label) => {
   `;
 };
 
-// function that removes hidden class from js element by id and smooth scrolls to it
-const unHideAndSmoothScrollToElement = (id) => {
-  elementToUnhideAndScrollTo = document.getElementById(id);
-  elementToUnhideAndScrollTo.classList.remove("hidden");
-  elementToUnhideAndScrollTo.scrollIntoView({
-    behavior: "smooth",
-  });
-};
-
-const smoothScrollToElement = (idOrElement) => {
-  //check if idOrElement is an element
-  if (typeof idOrElement === "string") {
-    elementToScrollTo = document.getElementById(id);
-    elementToScrollTo.scrollIntoView({
-      behavior: "smooth",
-    });
-  } else {
-    idOrElement.scrollIntoView({
-      behavior: "smooth",
-    });
-  }
-};
-
 const handleMilestoneClick = () => {
   //get all checked checkboxes with name "milestone" vanilla js
   const checkedMilestones = document.querySelectorAll("input[name='milestone']:checked");

@@ -1674,6 +1674,8 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
 
     let sodaObject = {};
     let manifestErrorMessage = [];
+    console.log(sodaJSONObj);
+    console.log("Before reponse ^");
     try {
       let data = await bf_request_and_populate_dataset(
         sodaJSONObj,
@@ -1682,6 +1684,9 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
       );
       sodaObject = data.soda_object;
       manifestErrorMessage = data.manifest_error_message;
+      console.log("After response");
+      console.log(sodaObject);
+      console.log(manifestErrorMessage);
     } catch (err) {
       Swal.fire({
         icon: "error",
