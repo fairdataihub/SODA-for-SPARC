@@ -8368,27 +8368,7 @@ const guidedLoadSubjectMetadataIfExists = (subjectMetadataId) => {
   }
 };
 
-const guidedLoadSampleMetadataIfExists = (sampleMetadataId, subjectMetadataId) => {
-  //loop through all samplesTableData elemenents besides the first one
-  for (let i = 1; i < samplesTableData.length; i++) {
-    if (
-      samplesTableData[i][0] === subjectMetadataId &&
-      samplesTableData[i][1] === sampleMetadataId
-    ) {
-      //if the id matches, load the metadata into the form
-      populateFormsSamples(subjectMetadataId, sampleMetadataId, "", "guided");
-      return;
-    }
-  }
-};
-const openModifySubjectMetadataPage = (subjectMetadataID) => {
-  guidedLoadSubjectMetadataIfExists(subjectMetadataID);
-};
-const openModifySampleMetadataPage = (
-  sampleMetadataID,
-  sampleMetadataSubjectID,
-  sampleMetadataPoolID
-) => {
+const openModifySampleMetadataPage = (sampleMetadataID, samplesSubjectID) => {
   //Get all samples from the dataset and add all other samples to the was derived from dropdown
   const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
   //Combine sample data from samples in and out of pools
@@ -8438,11 +8418,16 @@ const openModifySampleMetadataPage = (
       .join("\n")}))
   `;
 
-  guidedLoadSampleMetadataIfExists(sampleMetadataID, sampleMetadataSubjectID);
-
-  document.getElementById("guided-bootbox-sample-id").value = sampleMetadataID;
-  document.getElementById("guided-bootbox-subject-id-samples").value = sampleMetadataSubjectID;
-  document.getElementById("guided-bootbox-sample-pool-id").value = sampleMetadataPoolID;
+  for (let i = 1; i < samplesTableData.length; i++) {
+    if (
+      samplesTableData[i][0] === samplesSubjectID &&
+      samplesTableData[i][1] === sampleMetadataID
+    ) {
+      //if the id matches, load the metadata into the form
+      populateFormsSamples(samplesSubjectID, sampleMetadataID, "", "guided");
+      return;
+    }
+  }
 };
 
 const openCopySubjectMetadataPopup = async () => {
@@ -10112,13 +10097,6 @@ const renderSubjectsHighLevelFolderAsideItems = (highLevelFolderName) => {
       );
       updateFolderStructureUI(samplePageData);
     });
-    //add hover event that changes the background color to black
-    item.addEventListener("mouseover", (e) => {
-      e.target.style.backgroundColor = "whitesmoke";
-    });
-    item.addEventListener("mouseout", (e) => {
-      e.target.style.backgroundColor = "";
-    });
   });
 };
 
@@ -10172,13 +10150,6 @@ const renderPoolsHighLevelFolderAsideItems = (highLevelFolderName) => {
       );
       updateFolderStructureUI(poolPageData);
     });
-    //add hover event that changes the background color to black
-    item.addEventListener("mouseover", (e) => {
-      e.target.style.backgroundColor = "whitesmoke";
-    });
-    item.addEventListener("mouseout", (e) => {
-      e.target.style.backgroundColor = "";
-    });
   });
 };
 
@@ -10190,33 +10161,6 @@ const renderSubjectsMetadataAsideItems = async () => {
   //Combine sample data from subjects in and out of pools
   let subjects = [...subjectsInPools, ...subjectsOutsidePools];
 
-  /*if (pageNeedsUpdateFromPennsieve("guided-create-subjects-metadata-tab")) {
-    try {
-      console.log(subjectsTableData);
-      let subjectsMetadataResponse = await client.get(`/prepare_metadata/import_metadata_file`, {
-        params: {
-          selected_account: defaultBfAccount,
-          selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-          file_type: "subjects.xlsx",
-          ui_fields: Array.from(
-            document
-              .getElementById("guided-form-add-a-subject")
-              .querySelectorAll(".subjects-form-entry")
-          )
-            .map((field) => field.name.toLowerCase())
-            .toString(),
-        },
-      });
-      subjectsMetadataResponse = subjectsMetadataResponse.data.subject_file_rows;
-      subjectsTableData = [];
-      subjectsTableData = subjectsMetadataResponse;
-      console.log(subjectsTableData);
-      sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-subjects-metadata-tab");
-    } catch (error) {
-      console.log("Unable to fetch subjects metadata" + error);
-    }
-  }*/
-
   const subjectMetadataCopyButton = document.getElementById("guided-button-subject-metadata-copy");
   if (subjects.length > 1) {
     subjectMetadataCopyButton.classList.remove("hidden");
@@ -10224,11 +10168,11 @@ const renderSubjectsMetadataAsideItems = async () => {
     subjectMetadataCopyButton.classList.add("hidden");
   }
 
-  const subjectsFormEntries = guidedSubjectsFormDiv.querySelectorAll(".subjects-form-entry");
-  //Create an array of subjectFormEntries name attribute
-  const subjectsFormNames = [...subjectsFormEntries].map((entry) => {
-    return entry.name;
-  });
+  const subjectsFormNames = [...guidedSubjectsFormDiv.querySelectorAll(".subjects-form-entry")].map(
+    (entry) => {
+      return entry.name;
+    }
+  );
 
   if (subjectsTableData.length == 0) {
     subjectsTableData[0] = subjectsFormNames;
@@ -10291,10 +10235,11 @@ const renderSubjectsMetadataAsideItems = async () => {
   const subjectItems = subjects
     .map((subject) => {
       return `
-          <a 
+          <div 
             class="subjects-metadata-aside-item selection-aside-item"
-            data-pool-id="${subject.poolName ? subject.poolName : ""}"
-          ><span class="subject-metadata-id">${subject.subjectName}</span></a>
+          >
+            ${subject.subjectName}
+          </div>
         `;
     })
     .join("\n");
@@ -10303,9 +10248,10 @@ const renderSubjectsMetadataAsideItems = async () => {
   asideElement.innerHTML = subjectItems;
 
   //add click event to each subject item
-  const selectionAsideItems = document.querySelectorAll(`a.subjects-metadata-aside-item`);
+  const selectionAsideItems = document.querySelectorAll(`div.subjects-metadata-aside-item`);
   selectionAsideItems.forEach((item) => {
     item.addEventListener("click", (e) => {
+      console.log("clicked");
       //Hide intro and show metadata fields if intro is open
       const introElement = document.getElementById("guided-form-add-a-subject-intro");
       if (!introElement.classList.contains("hidden")) {
@@ -10316,12 +10262,12 @@ const renderSubjectsMetadataAsideItems = async () => {
       //check to see if previousSubject is empty
       if (previousSubject) {
         addSubject("guided");
+        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       }
 
       clearAllSubjectFormFields(guidedSubjectsFormDiv);
 
-      //call openModifySubjectMetadataPage function on clicked item
-      openModifySubjectMetadataPage(e.target.innerText);
+      populateForms(e.target.innerText, "", "guided");
 
       //add selected class to clicked element
       e.target.classList.add("is-selected");
@@ -10333,18 +10279,6 @@ const renderSubjectsMetadataAsideItems = async () => {
       });
 
       document.getElementById("guided-bootbox-subject-id").value = e.target.innerText;
-      //Set the pool id field based of clicked elements data-pool-id attribute
-      document.getElementById("guided-bootbox-subject-pool-id").value =
-        e.target.getAttribute("data-pool-id");
-
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-    });
-    //add hover event that changes the background color
-    item.addEventListener("mouseover", (e) => {
-      e.target.style.backgroundColor = "whitesmoke";
-    });
-    item.addEventListener("mouseout", (e) => {
-      e.target.style.backgroundColor = "";
     });
   });
 };
@@ -10357,32 +10291,6 @@ const renderSamplesMetadataAsideItems = async () => {
   //Combine sample data from samples in and out of pools
   let samples = [...samplesInPools, ...samplesOutsidePools];
   const sampleNames = samples.map((sample) => sample.sampleName);
-
-  /*if (pageNeedsUpdateFromPennsieve("guided-create-samples-metadata-tab")) {
-    try {
-      let samplesMetadataRes = await client.get(`/prepare_metadata/import_metadata_file`, {
-        params: {
-          selected_account: defaultBfAccount,
-          selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-          file_type: "samples.xlsx",
-          ui_fields: Array.from(
-            document
-              .getElementById("guided-form-add-a-sample")
-              .querySelectorAll(".samples-form-entry")
-          )
-            .map((field) => field.name.toLowerCase())
-            .toString(),
-        },
-      });
-      //clear samples table data before
-      samplesMetadataRes = samplesMetadataRes.data.sample_file_rows;
-      samplesTableData = [];
-      samplesTableData = samplesMetadataRes;
-      sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-samples-metadata-tab");
-    } catch (error) {
-      console.log("Unable to fetch samples metadata" + error);
-    }
-  }*/
 
   const sampleMetadataCopyButton = document.getElementById("guided-button-sample-metadata-copy");
   if (samples.length > 1) {
@@ -10464,16 +10372,13 @@ const renderSamplesMetadataAsideItems = async () => {
   const sampleItems = samples
     .map((sample) => {
       return `
-        <a
+        <div
           class="samples-metadata-aside-item selection-aside-item"
           data-samples-subject-name="${sample.subjectName}"
-          data-samples-pool-id="${sample.poolName ? sample.poolName : ""}"
         >
-          <span class="sample-metadata-id">
           ${sample.subjectName}/${sample.sampleName}
-          </span>
-        </a>
-        `;
+        </div>
+      `;
     })
     .join("\n");
 
@@ -10481,7 +10386,7 @@ const renderSamplesMetadataAsideItems = async () => {
   asideElement.innerHTML = sampleItems;
 
   //add click event to each sample item
-  const selectionAsideItems = document.querySelectorAll(`a.samples-metadata-aside-item`);
+  const selectionAsideItems = document.querySelectorAll(`div.samples-metadata-aside-item`);
   selectionAsideItems.forEach((item) => {
     item.addEventListener("click", (e) => {
       //Hide intro and show metadata fields if intro is open
@@ -10495,6 +10400,7 @@ const renderSamplesMetadataAsideItems = async () => {
       //check to see if previousSample is empty
       if (previousSample) {
         addSample("guided");
+        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       }
 
       //add selected class to clicked element
@@ -10505,30 +10411,15 @@ const renderSamplesMetadataAsideItems = async () => {
           item.classList.remove("is-selected");
         }
       });
-      //Get sample's subject and pool from rendered HTML
-      const samplesSubject = e.target.getAttribute("data-samples-subject-name");
-      const samplesPool = e.target.getAttribute("data-samples-pool-id");
-
-      //Set the subject id field based of clicked elements data-subject-id attribute
-      document.getElementById("guided-bootbox-subject-id-samples").value = samplesSubject;
-
-      //Set the pool id field based of clicked elements data-pool-id attribute
-      document.getElementById("guided-bootbox-sample-pool-id").value = samplesPool;
 
       //clear all sample form fields
       clearAllSubjectFormFields(guidedSamplesFormDiv);
 
       //call openModifySampleMetadataPage function on clicked item
-      openModifySampleMetadataPage(e.target.innerText.split("/")[1], samplesSubject, samplesPool);
-
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-    });
-
-    item.addEventListener("mouseover", (e) => {
-      e.target.style.backgroundColor = "whitesmoke";
-    });
-    item.addEventListener("mouseout", (e) => {
-      e.target.style.backgroundColor = "";
+      openModifySampleMetadataPage(
+        e.target.innerText.split("/")[1],
+        e.target.innerText.split("/")[0]
+      );
     });
   });
 };

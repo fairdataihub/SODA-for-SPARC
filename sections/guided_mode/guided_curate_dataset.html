@@ -3056,21 +3056,15 @@
               <div class="guided--section neumorphic mt-xl">
                 <h2 class="guided--text-sub-step mt-0">Experimental Setup</h2>
 
-                <label class="guided--form-label mt-xl hidden">Pool ID:</label>
+                <label class="guided--form-label mt-xl">Pool ID:</label>
                 <input
-                  class="guided--input subjects-form-entry hidden"
+                  class="guided--input subjects-form-entry"
                   id="guided-bootbox-subject-pool-id"
                   name="pool id"
                   type="text"
-                  placeholder="Enter Pool ID here"
-                  onkeyup="validateInput($(this))"
+                  placeholder="This subject is not part of a pool"
                   readonly
                 />
-                <!--
-                  <p class="guided--text-input-instructions mb-0">
-                    The pool that contains the subject. <br />
-                    <b>No further action required.</b>
-                  </p>-->
 
                 <label class="guided--form-label mt-xl">Subject experimental group:</label>
                 <input
@@ -3735,15 +3729,15 @@
                   sample ID of the sample from which the current sample was derived. <br />
                 </p>
 
-                <label class="guided--form-label mt-xl hidden">Pool id:</label>
-                <div class="demo-controls-body w-100 hidden">
+                <label class="guided--form-label mt-xl">Pool id:</label>
+                <div class="demo-controls-body w-100">
                   <div class="ui input modified">
                     <input
                       type="text"
                       id="guided-bootbox-sample-pool-id"
                       name="pool id"
                       class="samples-form-entry"
-                      placeholder="Type here..."
+                      placeholder="This sample is not part of a pool"
                       readonly
                     />
                   </div>

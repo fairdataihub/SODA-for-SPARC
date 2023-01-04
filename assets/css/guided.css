@@ -1158,6 +1158,12 @@ h1.guided--text-sub-step {
   margin-top: 7px;
   cursor: pointer;
 }
+.selection-aside-item:hover {
+  background-color: whitesmoke;
+  width: 97%;
+  align-self: center;
+}
+
 .selection-aside-item.is-selected {
   background-color: #e8f0fe;
   border: 1px solid black;
