@@ -69,7 +69,7 @@ def create_request_headers(ps):
     """
     return {
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {ps.get_user()['session_token']}",
+            "Authorization": f"Bearer {ps.get_user().session_token}",
     }
 
 

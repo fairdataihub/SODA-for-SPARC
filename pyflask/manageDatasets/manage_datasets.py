@@ -76,6 +76,7 @@ start_time_bf_upload = 0
 start_submit = 0
 metadatapath = join(userpath, "SODA", "SODA_metadata")
 
+total_bytes_uploaded = {}
 bf = ""
 myds = ""
 initial_bfdataset_size = 0
@@ -755,7 +756,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     global upload_folder_count
     global namespace_logger
     global files_uploaded
-    global total_files_to_upload 
+    global total_files_to_upload
+    global total_bytes_uploaded
 
     files_uploaded = 0
     total_files_to_upload = 0
@@ -769,6 +771,36 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     did_upload = False
     did_fail = False
     upload_folder_count = 0
+    bytes_uploaded_per_file = {}
+    total_bytes_uploaded = {"value": 0}
+
+    def monitor_subscriber_progress(events_dict):
+        """
+        Monitors the progress of a subscriber and unsubscribes once the upload finishes
+        """
+        total_dataset_files = total_files_to_upload
+        global files_uploaded
+        global total_bytes_uploaded
+
+        if events_dict["type"] == 1:
+            file_id = events_dict["upload_status"].file_id
+            total_bytes_to_upload = events_dict["upload_status"].total
+            current_bytes_uploaded = events_dict["upload_status"].current
+
+            #get the previous bytes uploaded for the give file id - use 0 if no bytes have been uploaded for this file id yet
+            previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
+
+            # calculate the additional amount of bytes that have just been uploaded for the given file id
+            total_bytes_uploaded["value"] += current_bytes_uploaded - previous_bytes_uploaded
+
+            # check if the given file has finished uploading
+            if current_bytes_uploaded == total_bytes_to_upload:
+                files_uploaded += 1
+
+            if files_uploaded == total_dataset_files:
+                namespace_logger.info("Upload complete")
+                # unsubscribe from the agent's upload messages since the upload has finished
+                ps.unsubscribe(10)
 
     # check if the local dataset folder exists
     if not isdir(pathdataset):
@@ -880,53 +912,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         start_submit = 1
         manifest_id = manifest_data.manifest_id
         ps.manifest.upload(manifest_id)
-        subscription_rendezvous_object = ps.subscribe(10)
-
-        # store the amount of bytes uploaded for each file_id
-        bytes_uploaded_per_file = {}
-
-        # each message is a response from the Go Agent ( serialized as a Python dict ) that contains this information:
-        #   type: UPLOAD_STATUS
-        #   upload_status {
-        #       file_id: "/home/cmarroquin/Desktop/Pennsieve-dataset-115-version-2/files/docs/Video_S4.mp4"
-        #       total: 26954999
-        #       current: 26954999
-        #       worker_id: 9
-        #   }
-        # Workers ( the worker sending the given message denoted by worker_id ) are uploading files and informing us whenever a chunk has been uploaded.
-        for msg in subscription_rendezvous_object:
-            # print properties of the msg
-            current_bytes_uploaded = msg.upload_status.current 
-            total_bytes_to_upload = msg.upload_status.total
-            file_id = msg.upload_status.file_id
-
-            if total_bytes_to_upload != 0:
-                namespace_logger.info(msg)
-
-                # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
-                previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
-
-                # update the file id's current total bytes uploaded value 
-                bytes_uploaded_per_file[file_id] = current_bytes_uploaded
-
-                # calculate the additional amount of bytes that have just been uploaded for the given file id
-                bytes_increase = current_bytes_uploaded - previous_bytes_uploaded
-
-                # update the total bytes uploaded so far value 
-                uploaded_file_size += bytes_increase
-
-                # if a file has finished uploading then update the files uploaded tracker - this can tell us when to unsubscribe
-                if current_bytes_uploaded == total_bytes_to_upload:
-                    files_uploaded += 1
-                
-                # check if the upload is complete
-                if files_uploaded == total_files_to_upload:
-                    namespace_logger.info(f"Uploaded {files_uploaded} of {total_files_to_upload} files")
-                    namespace_logger.info(f"Uploaded {uploaded_file_size} in upload function")
-                    namespace_logger.info("Upload complete unsubscribing from channel for id 10.")
-                    ps.unsubscribe(10)
-
-
+        # subscription_rendezvous_object = ps.subscribe(10)
+        ps.subscribe(1, False, monitor_subscriber_progress)
 
         namespace_logger.info("Upload complete now no more messages")
         submitdatastatus = "Done"
@@ -982,6 +969,7 @@ def submit_dataset_progress():
     global completed_files
     global files_uploaded
     global total_files_to_upload
+    global total_bytes_uploaded
 
     if start_submit == 1:
         elapsed_time = time.time() - start_time_bf_upload
@@ -994,14 +982,14 @@ def submit_dataset_progress():
         elapsed_time_formatted = 0
         elapsed_time_formatted_display = "<br>" + "Initiating..." + "<br>"
 
-    namespace_logger.info(f"Total file size in upload: {uploaded_file_size}")
+    namespace_logger.info(f"Total file size in upload: {total_bytes_uploaded['value']}")
         
     return {
         'progress': submitdataprogress + elapsed_time_formatted_display,
         'submit_dataset_status': submitdatastatus,
         'submit_print_status': submitprintstatus,
         'total_file_size': total_file_size,
-        'upload_file_size': uploaded_file_size,
+        'upload_file_size': total_bytes_uploaded["value"],
         'elapsed_time_formatted': elapsed_time_formatted,
         'files_uploaded_status': f"Uploaded {files_uploaded} of {total_files_to_upload} files",
     }
