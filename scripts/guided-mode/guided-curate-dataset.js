@@ -157,6 +157,8 @@ const guidedSetNavLoadingState = (loadingState) => {
     subContinueButton.disabled = true;
     mainBackButton.disabled = true;
     mainContinueButton.disabled = true;
+    mainBackButton.classList.add("loading");
+    mainContinueButton.classList.add("loading");
 
     navItems.forEach((nav) => {
       nav.classList.add("disabled-nav");
@@ -168,6 +170,8 @@ const guidedSetNavLoadingState = (loadingState) => {
     subContinueButton.disabled = false;
     mainBackButton.disabled = false;
     mainContinueButton.disabled = false;
+    mainBackButton.classList.remove("loading");
+    mainContinueButton.classList.remove("loading");
 
     navItems.forEach((nav) => {
       nav.classList.remove("disabled-nav");
