@@ -1549,6 +1549,7 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
   );
 
   const addedSubjects = [];
+  const subjectsMovedIntoPools = [];
   const addedPools = [];
   const addedSamples = [];
 
@@ -1561,8 +1562,6 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
 
     // Loop through any folders starting with sub- in the hlf
     for (const subjectFolder of subjectFoldersInBase) {
-      // Try to add the subject to the structure. This will throw if the subject has already
-      // been added from another hlf
       if (!addedSubjects.includes(subjectFolder)) {
         try {
           sodaJSONObj.addSubject(subjectFolder);
@@ -1583,8 +1582,6 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
       }
       // Loop through any folders starting with sam- in the subject folder
       for (const sampleFolder of sampleFoldersInSubject) {
-        //add the sample to the structure. This will throw if the sample has already been added
-        //from another hlf
         if (!addedSamples.includes(sampleFolder)) {
           try {
             sodaJSONObj.addSampleToSubject(sampleFolder, null, subjectFolder);
@@ -1602,8 +1599,6 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
 
     // Loop through any folders starting with pool- in the hlf
     for (const poolFolder of poolFoldersInBase) {
-      // Try to add the pool to the structure. This will throw if the pool has already
-      // been added from another hlf
       if (!addedPools.includes(poolFolder)) {
         try {
           sodaJSONObj.addPool(poolFolder);
@@ -1625,20 +1620,24 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
       }
       // Loop through any folders starting with sub- in the pool folder
       for (const subjectFolder of subjectFoldersInPool) {
-        // Try to add the subject to the structure. This will throw if the subject has already
-        // been added from another hlf
-        try {
-          sodaJSONObj.addSubject(subjectFolder);
-        } catch (error) {
-          console.log(error);
+        if (!addedSubjects.includes(subjectFolder)) {
+          try {
+            sodaJSONObj.addSubject(subjectFolder);
+            addedSubjects.push(subjectFolder);
+          } catch (error) {
+            console.log(error);
+          }
         }
-        // Try to move the subject to the pool. This will throw if the subject has already
-        // been added to the pool from another hlf
-        try {
-          sodaJSONObj.moveSubjectIntoPool(subjectFolder, poolFolder);
-        } catch (error) {
-          console.log(error);
+
+        if (!subjectsMovedIntoPools.includes(subjectFolder)) {
+          try {
+            sodaJSONObj.moveSubjectIntoPool(subjectFolder, poolFolder);
+            subjectsMovedIntoPools.push(subjectFolder);
+          } catch (error) {
+            console.log(error);
+          }
         }
+
         const potentialSampleFolderNames = Object.keys(
           datasetStructure["folders"][hlf]["folders"][poolFolder]["folders"][subjectFolder][
             "folders"
@@ -1652,12 +1651,13 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
         }
         // Loop through any folders starting with sam- in the subject folder
         for (const sampleFolder of sampleFoldersInSubject) {
-          //add the sample to the structure. This will throw if the sample has already been added
-          //from another hlf
-          try {
-            sodaJSONObj.addSampleToSubject(sampleFolder, poolFolder, subjectFolder);
-          } catch (error) {
-            console.log(error);
+          if (!addedSamples.includes(sampleFolder)) {
+            try {
+              sodaJSONObj.addSampleToSubject(sampleFolder, poolFolder, subjectFolder);
+              addedSamples.push(sampleFolder);
+            } catch (error) {
+              console.log(error);
+            }
           }
         }
       }
@@ -1681,7 +1681,6 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
     sodaJSONObj["button-config"]["dataset-contains-samples"] = "yes";
   }
 
-  console.log(sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]);
   return sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"];
 };
 
@@ -2054,7 +2053,6 @@ const openSubPageNavigation = (pageBeingNavigatedTo) => {
   } else {
     subPageIDtoOpen = nonSkippedSubPages[0];
   }
-  console.log(subPageIDtoOpen);
 
   //Refresh data on the open sub-page
   setActiveSubPage(subPageIDtoOpen);
@@ -3557,7 +3555,8 @@ const openPage = async (targetPageID) => {
           datasetSubtitleInput.value = datasetSubtitle;
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-name-subtitle-tab");
         } catch (error) {
-          console.log("UNABLE TO FETCH PENNSIEVE SUBTITLE");
+          console.log(error);
+          clientError(error);
         }
       } else {
         //Update subtitle from JSON
@@ -3749,7 +3748,6 @@ const openPage = async (targetPageID) => {
         } catch (error) {
           console.log(error);
           clientError(error);
-          console.log("UNABLE TO FETCH SPARC AWARD FROM PENNSIEVE");
         }
       }
       const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
@@ -3773,15 +3771,10 @@ const openPage = async (targetPageID) => {
           });
           $("#guided-button-enter-submission-metadata-manually").click();
           let res = import_metadata.data;
-          console.log(res);
 
           const sparcAwardRes = res["SPARC Award number"];
           const pennsieveMileStones = res["Milestone achieved"];
           const pennsieveCompletionDate = res["Milestone completion date"];
-
-          console.log(sparcAwardRes);
-          console.log(pennsieveMileStones);
-          console.log(pennsieveCompletionDate);
 
           if (sparcAwardRes) {
             sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = sparcAwardRes;
@@ -3798,8 +3791,8 @@ const openPage = async (targetPageID) => {
 
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-submission-metadata-tab");
         } catch (error) {
+          console.log(error);
           clientError(error);
-          console.log("UNABLE TO FETCH SUBMISSION METADATA FROM PENNSIEVE");
         }
       }
       //Reset the manual submission metadata UI
@@ -3845,7 +3838,6 @@ const openPage = async (targetPageID) => {
     if (targetPageID === "guided-contributors-tab") {
       if (pageNeedsUpdateFromPennsieve("guided-contributors-tab")) {
         try {
-          console.log("fetching contributors from pennsieve");
           let metadata_import = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
               selected_account: defaultBfAccount,
@@ -3853,22 +3845,18 @@ const openPage = async (targetPageID) => {
               file_type: "dataset_description.xlsx",
             },
           });
-          console.log(metadata_import.data);
           let contributorData = metadata_import.data["Contributor information"];
           //Filter out returned rows that only contain empty srings (first name is checked)
           const currentContributorFullNames = getContributorFullNames();
           contributorData = contributorData = contributorData.filter((row) => {
             return row[0] !== "" && !currentContributorFullNames.includes(row[0]);
           });
-          console.log(contributorData);
 
           // Loop through the contributorData array besides the first row (which is the header)
           for (let i = 1; i < contributorData.length; i++) {
             const contributorArray = contributorData[i];
-            console.log(contributorArray);
             // split the name into first and last name with the first name being the first element and last name being the rest of the elements
             const contributorFullName = contributorArray[0];
-            console.log(contributorFullName);
             const contributorFirstName = contributorFullName.split(" ")[1].trim();
             const contributorLastName = contributorFullName.split(" ")[0].trim();
             const contributorID = contributorArray[1];
@@ -3889,7 +3877,7 @@ const openPage = async (targetPageID) => {
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-contributors-tab");
         } catch (error) {
           console.log(error);
-          console.log("UNABLE TO FETCH PENNSIEVE DATASET DESCRIPTION");
+          clientError(error);
         }
       }
 
@@ -3945,10 +3933,8 @@ const openPage = async (targetPageID) => {
               file_type: "dataset_description.xlsx",
             },
           });
-          console.log(metadata_import.data);
           // guidedLoadDescriptionDatasetInformation
           let basicInformation = metadata_import.data["Basic information"];
-          console.log(basicInformation);
           if (basicInformation[0][0] === "Type" && basicInformation[3][0] === "Keywords") {
             const studyType = basicInformation[0][1];
             const studyKeywords = basicInformation[3].slice(1).filter((keyword) => keyword !== "");
@@ -4359,7 +4345,6 @@ const openPage = async (targetPageID) => {
 
           partialUserDetails.map((object) => {
             sparcUsersDivided.forEach((element) => {
-              // console.log(element);
               if (element[0].includes(object["userName"])) {
                 // name was found now get UUID
                 let userEmailSplit = element[0].split(" (");
@@ -4374,7 +4359,6 @@ const openPage = async (targetPageID) => {
                   });
                   //update PI owner key
                 } else {
-                  console.log(userEmailSplit);
                   finalUserPermissions.push({
                     UUID: element[1],
                     permission: object.permission,
@@ -4424,7 +4408,6 @@ const openPage = async (targetPageID) => {
           sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
         );
         const parsedDescription = createParsedReadme(description);
-        console.log(parsedDescription);
         sodaJSONObj["digital-metadata"]["description"]["study-purpose"] = parsedDescription[
           "study purpose"
         ]
@@ -4454,7 +4437,6 @@ const openPage = async (targetPageID) => {
         sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"];
 
       const descriptionMetadata = sodaJSONObj["digital-metadata"]["description"];
-      console.log(descriptionMetadata);
 
       if (Object.keys(descriptionMetadata).length > 0) {
         studyPurposeInput.value = descriptionMetadata["study-purpose"];
@@ -5041,7 +5023,6 @@ const renderSamplesTable = () => {
 };
 
 const setActiveSubPage = (pageIdToActivate) => {
-  console.log(pageIdToActivate);
   const pageElementToActivate = document.getElementById(pageIdToActivate);
 
   //create a switch statement for pageIdToActivate to load data from sodaJSONObj
@@ -5401,7 +5382,6 @@ const setActiveSubPage = (pageIdToActivate) => {
     }
 
     case "guided-completion-date-selection-page": {
-      console.log("we here");
       const selectedMilestoneData =
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-selected-milestones"];
 
@@ -5925,8 +5905,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
 
         if (prevNamePoolInHighLevelFolder) {
           if (folderImportedFromPennsieve(prevNamePoolInHighLevelFolder)) {
-            console.log("folder from Pennsieve adding rename action");
-
             if (!prevNamePoolInHighLevelFolder["action"].includes["renamed"]) {
               prevNamePoolInHighLevelFolder["action"].push("renamed");
             }
@@ -5959,7 +5937,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     }
   };
   sodaJSONObj.renameSubject = function (prevSubjectName, newSubjectName) {
-    console.log("renameSubject called");
     if (prevSubjectName === newSubjectName) {
       return;
     }
@@ -5986,7 +5963,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
 
             if (prevNameSubjectFolderInHighLevelFolder) {
               if (folderImportedFromPennsieve(prevNameSubjectFolderInHighLevelFolder)) {
-                console.log("folder from Pennsieve adding rename action");
                 if (!prevNameSubjectFolderInHighLevelFolder["action"].includes["renamed"]) {
                   prevNameSubjectFolderInHighLevelFolder["action"].push("renamed");
                 }
@@ -6020,7 +5996,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
 
             if (prevNameSubjectFolderInHighLevelFolder) {
               if (folderImportedFromPennsieve(prevNameSubjectFolderInHighLevelFolder)) {
-                console.log("folder from Pennsieve adding rename action");
                 if (!prevNameSubjectFolderInHighLevelFolder["action"].includes["renamed"]) {
                   prevNameSubjectFolderInHighLevelFolder["action"].push("renamed");
                 }
@@ -6086,7 +6061,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
 
               if (prevNameSampleFolderInHighLevelFolder) {
                 if (folderImportedFromPennsieve(prevNameSampleFolderInHighLevelFolder)) {
-                  console.log("folder from Pennsieve adding rename action");
                   if (!prevNameSampleFolderInHighLevelFolder["action"].includes["renamed"]) {
                     prevNameSampleFolderInHighLevelFolder["action"].push("renamed");
                   }
@@ -6122,7 +6096,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
 
               if (prevNameSampleFolderInHighLevelFolder) {
                 if (folderImportedFromPennsieve(prevNameSampleFolderInHighLevelFolder)) {
-                  console.log("folder from Pennsieve adding rename action");
                   if (!prevNameSampleFolderInHighLevelFolder["action"].includes["renamed"]) {
                     prevNameSampleFolderInHighLevelFolder["action"].push("renamed");
                   }
@@ -6176,7 +6149,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
       if (poolInHighLevelFolder) {
         if (folderImportedFromPennsieve(poolInHighLevelFolder)) {
           guidedModifyPennsieveFolder(poolInHighLevelFolder, "delete");
-          console.log(poolInHighLevelFolder);
         } else {
           delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName];
         }
@@ -6220,7 +6192,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
 
               if (folderImportedFromPennsieve(subjectFolderInHighLevelFolder)) {
                 guidedModifyPennsieveFolder(subjectFolderInHighLevelFolder, "delete");
-                console.log(subjectFolderInHighLevelFolder);
               } else {
                 delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
                   subject.poolName
@@ -6247,14 +6218,12 @@ const attachGuidedMethodsToSodaJSONObj = () => {
                   "subject",
                   subjectName
                 );
-                console.log(continueWithSubjectDeletion);
                 if (continueWithSubjectDeletion) {
                   warningBeforeDeletingSubjectWithFoldersSwalHasBeenShown = true;
                 } else {
                   return;
                 }
               }
-              console.log(warningBeforeDeletingSubjectWithFoldersSwalHasBeenShown);
 
               if (folderImportedFromPennsieve(subjectFolderInHighLevelFolder)) {
                 guidedModifyPennsieveFolder(subjectFolderInHighLevelFolder, "delete");
@@ -6264,7 +6233,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
               }
             }
           }
-          console.log(this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]);
           delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
         }
         // delete the subject's samples
@@ -6314,7 +6282,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
 
               if (folderImportedFromPennsieve(sampleFolderInHighLevelFolder)) {
                 guidedModifyPennsieveFolder(sampleFolderInHighLevelFolder, "delete");
-                console.log(sampleFolderInHighLevelFolder);
               } else {
                 delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
                   sample.poolName
@@ -6352,7 +6319,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
 
               if (folderImportedFromPennsieve(sampleFolderInHighLevelFolder)) {
                 guidedModifyPennsieveFolder(sampleFolderInHighLevelFolder, "delete");
-                console.log(sampleFolderInHighLevelFolder);
               } else {
                 delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
                   sample.poolName
@@ -6383,25 +6349,20 @@ const attachGuidedMethodsToSodaJSONObj = () => {
       const subjectFolderOutsidePool =
         datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName];
 
-      console.log(subjectFolderOutsidePool);
-
       if (subjectFolderOutsidePool) {
         // If the target folder doesn't exist, create it
         if (!datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]) {
           datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName] =
             newEmptyFolderObj();
-          console.log("added a new folder for " + highLevelFolder);
         }
 
         if (folderImportedFromPennsieve(subjectFolderOutsidePool)) {
-          console.log("Moving Pennsieve folder");
           guidedMovePennsieveFolder(
             subjectName,
             datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName],
             datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]
           );
         } else {
-          console.log("Moving non-Pennsieve folder");
           datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]["folders"][
             subjectName
           ] = subjectFolderOutsidePool;
@@ -6431,7 +6392,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
         ]?.[subjectName];
       if (subjectFolderInPoolFolder) {
         if (folderImportedFromPennsieve(subjectFolderInPoolFolder)) {
-          console.log("moving pennsieve subject ouf of pool");
           guidedMovePennsieveFolder(
             subjectName,
             datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]["folders"][
@@ -6440,7 +6400,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
             datasetStructureJSONObj["folders"][highLevelFolder]
           );
         } else {
-          console.log("moving non pennsieve");
           datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName] =
             subjectFolderInPoolFolder;
         }
@@ -6872,12 +6831,6 @@ const addContributor = (
   contributorAffiliationsArray,
   contributorRolesArray
 ) => {
-  console.log("first name: ", contributorFirstName);
-  console.log("last name: ", contributorLastName);
-  console.log("orcid: ", contributorORCID);
-  console.log(contributorAffiliationsArray);
-  console.log(contributorRolesArray);
-
   if (getContributorByOrcid(contributorORCID)) {
     throw new Error("A contributor with the entered ORCID already exists");
   }
@@ -7505,7 +7458,6 @@ const contributorDataIsValid = (contributorObj) => {
 
 const generateContributorTableRow = (contributorObj) => {
   const contributorObjIsValid = contributorDataIsValid(contributorObj);
-  console.log(contributorObjIsValid);
   const contributorFullName = contributorObj["conName"];
   const contributorOrcid = contributorObj["conID"];
   const contributorRoleString = contributorObj["conRole"].join(", ");
@@ -7733,7 +7685,6 @@ const editGuidedProtocol = (oldLink, newLink, description, type) => {
   const currentProtocolLinks = sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
   //find the index of the protocol to be edited
   const protocolIndex = currentProtocolLinks.findIndex((protocol) => protocol.link === oldLink);
-  console.log(protocolIndex);
 
   const isFair = protocolObjIsFair(newLink, description);
 
@@ -7749,7 +7700,6 @@ const editGuidedProtocol = (oldLink, newLink, description, type) => {
 
 const determineIfLinkIsDOIorURL = (link) => {
   // returns either "DOI" or "URL" or "neither"
-  console.log(link);
   if (doiRegex.declared({ exact: true }).test(link) === true) {
     return "DOI";
   }
@@ -7768,7 +7718,6 @@ const openProtocolSwal = async (protocolElement) => {
   let protocolURL = "";
   let protocolDescription = "";
   if (protocolElement) {
-    console.log(protocolElement);
     protocolURL = protocolElement.dataset.protocolUrl;
     protocolDescription = protocolElement.dataset.protocolDescription;
   }
@@ -7800,9 +7749,7 @@ const openProtocolSwal = async (protocolElement) => {
         Swal.showValidationMessage(`Please enter a short description!`);
         return;
       }
-      console.log(link);
       let protocolType = determineIfLinkIsDOIorURL(link);
-      console.log(protocolType);
       if (protocolType === "neither") {
         Swal.showValidationMessage(`Please enter a valid URL or DOI!`);
         return;
@@ -7917,7 +7864,6 @@ const generateProtocolField = (protocolUrl, protocolType, protocolDescription, i
 
 const renderProtocolsTable = () => {
   const protocols = sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
-  console.log(protocols);
 
   const protocolsContainer = document.getElementById("protocols-container");
 
@@ -9336,13 +9282,8 @@ const removePennsievePermission = (clickedPermissionRemoveButton) => {
   let permissionNameToRemove = permissionElementToRemove.find(".permission-name-cell").text();
   let permissionTypeToRemove = permissionElementToRemove.find(".permission-type-cell").text();
 
-  console.log(permissionEntityType);
-  console.log(permissionNameToRemove);
-  console.log(permissionTypeToRemove);
-
   if (permissionElementToRemove.prevObject[0].classList.contains("btn-danger")) {
     permissionElementToRemove.prevObject[0].style.display = "none";
-    console.log(permissionElementToRemove.prevObject[0]);
     permissionElementToRemove.prevObject[0].nextElementSibling.style.display = "inline-block";
     // add removeFromPennsieve css
     permissionElementToRemove.prevObject[0].parentElement.parentElement.children[0].classList.add(
@@ -9355,28 +9296,23 @@ const removePennsievePermission = (clickedPermissionRemoveButton) => {
 
     if (permissionEntityType === "user") {
       const currentUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
-      console.log(currentUsers);
       for (let i = 0; i < currentUsers.length; i++) {
         if (currentUsers[i]["userString"] === permissionNameToRemove) {
           currentUsers[i]["deleteFromPennsieve"] = true;
         }
-        console.log(currentUsers[i]["deleteFromPennsieve"]);
       }
     }
     if (permissionEntityType === "team") {
       const currentTeams = sodaJSONObj["digital-metadata"]["team-permissions"];
-      console.log(currentTeams);
       for (let i = 0; i < currentTeams.length; i++) {
         if (currentTeams[i]["teamString"] === permissionNameToRemove) {
           currentTeams[i]["deleteFromPennsieve"] = true;
         }
-        console.log(currentTeams[i]["deleteFromPennsieve"]);
       }
     }
   } else {
     //restore was triggered
     permissionElementToRemove.prevObject[0].style.display = "none";
-    console.log(permissionElementToRemove.prevObject[0]);
     permissionElementToRemove.prevObject[0].previousElementSibling.style.display = "inline-block";
     // remove removeFromPennsieve css
     permissionElementToRemove.prevObject[0].parentElement.parentElement.children[0].classList.remove(
@@ -9388,22 +9324,18 @@ const removePennsievePermission = (clickedPermissionRemoveButton) => {
       "1";
     if (permissionEntityType === "user") {
       const currentUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
-      console.log(currentUsers);
       for (let i = 0; i < currentUsers.length; i++) {
         if (currentUsers[i]["userString"] === permissionNameToRemove) {
           currentUsers[i]["deleteFromPennsieve"] = false;
         }
-        console.log(currentUsers[i]["deleteFromPennsieve"]);
       }
     }
     if (permissionEntityType === "team") {
       const currentTeams = sodaJSONObj["digital-metadata"]["team-permissions"];
-      console.log(currentTeams);
       for (let i = 0; i < currentTeams.length; i++) {
         if (currentTeams[i]["teamString"] === permissionNameToRemove) {
           currentTeams[i]["deleteFromPennsieve"] = false;
         }
-        console.log(currentTeams[i]["deleteFromPennsieve"]);
       }
     }
   }
@@ -9505,7 +9437,6 @@ const renderPermissionsTable = () => {
   permissionsTableElements.push(createPermissionsTableRowElement("owner", owner, "owner"));
 
   for (user of users) {
-    console.log(user);
     if (user?.["permissonSource"]) {
       // user was pull from pennsieve, create pennsieve element
       if (user?.["deleteFromPennsieve"] === true) {
@@ -9527,7 +9458,6 @@ const renderPermissionsTable = () => {
           )
         );
       }
-      console.log(user + " is from pennsieve");
     } else {
       permissionsTableElements.push(
         createPermissionsTableRowElement(
@@ -9541,7 +9471,6 @@ const renderPermissionsTable = () => {
   for (team of teams) {
     if (team?.["permissionSource"]) {
       //team was pulled from Pennsieve, create Pennsieve element
-      console.log(team + " is from pennsieve");
       permissionsTableElements.push(
         createPennsievePermissionsTableRowElement("team", team["teamString"], team["permission"])
       );
@@ -10222,7 +10151,6 @@ const renderSubjectsMetadataAsideItems = async () => {
   const selectionAsideItems = document.querySelectorAll(`div.subjects-metadata-aside-item`);
   selectionAsideItems.forEach((item) => {
     item.addEventListener("click", (e) => {
-      console.log("clicked");
       //Hide intro and show metadata fields if intro is open
       const introElement = document.getElementById("guided-form-add-a-subject-intro");
       if (!introElement.classList.contains("hidden")) {
@@ -11284,7 +11212,7 @@ $(document).ready(async () => {
         log.info(`${selectedRole} permissions granted to ${userName}`);
       } else {
         guidedUploadStatusIcon(`guided-dataset-${userUUID}-permissions-upload-status`, "success");
-        userPermissionUploadStatusText.innerHTML = `${selectedRole} permissions removed for user: ${userName}`;
+        userPermissionUploadStatusText.innerHTML = `${selectedRole} permissions granted to user: ${userName}`;
         log.info(`${selectedRole} permissions granted to ${userName}`);
       }
     } catch (error) {
@@ -11303,11 +11231,8 @@ $(document).ready(async () => {
 
   const guidedAddUserPermissions = async (bfAccount, datasetName, userPermissionsArray) => {
     //filter user permissions with loggedInUser key
-    console.log("adding here?");
     const promises = userPermissionsArray.map((userPermission) => {
       if (userPermission?.["deleteFromPennsieve"] === true) {
-        console.log(userPermission);
-        console.log("above should be deleted");
         return guidedGrantUserPermission(
           bfAccount,
           datasetName,
@@ -11800,7 +11725,6 @@ $(document).ready(async () => {
         sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"];
       const guidedProtocols = sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
       const allDatasetLinks = [...guidedAdditionalLinks, ...guidedProtocols];
-      console.log(allDatasetLinks);
 
       //README and CHANGES Metadata variables
       const guidedReadMeMetadata = sodaJSONObj["dataset-metadata"]["README"];
@@ -11846,7 +11770,6 @@ $(document).ready(async () => {
       await guidedAddDatasetLicense(guidedBfAccount, guidedDatasetName, guidedLicense);
       await guidedAddDatasetTags(guidedBfAccount, guidedDatasetName, guidedTags);
       await guidedAddPiOwner(guidedBfAccount, guidedDatasetName, guidedPIOwner);
-      console.log("function call to add users/teams");
       await guidedAddUserPermissions(guidedBfAccount, guidedDatasetName, guidedUsers);
       await guidedAddTeamPermissions(guidedBfAccount, guidedDatasetName, guidedTeams);
 
@@ -11919,7 +11842,6 @@ $(document).ready(async () => {
       //Upload the dataset files
       const mainCurationResponse = await guidedUploadDatasetToPennsieve();
     } catch (error) {
-      console.log(error);
       clientError(error);
       let emessage = userErrorMessage(error);
       //make an unclosable sweet alert that forces the user to close out of the app
@@ -12014,7 +11936,6 @@ $(document).ready(async () => {
           guidedManifestData[highLevelFolder]["headers"],
           guidedManifestData[highLevelFolder]["data"]
         );
-        console.log(manifestJSON);
         jsonManifest = JSON.stringify(manifestJSON);
 
         const manifestPath = path.join(guidedManifestFilePath, highLevelFolder, "manifest.xlsx");
@@ -13385,9 +13306,7 @@ $(document).ready(async () => {
     const openSubPageID = getOpenSubPageInPage(currentParentPageID);
 
     try {
-      console.log(openSubPageID);
       await saveSubPageChanges(openSubPageID);
-      console.log(openSubPageID + "page saved");
 
       if (!sodaJSONObj["completed-tabs"].includes(openSubPageID)) {
         sodaJSONObj["completed-tabs"].push(openSubPageID);
@@ -13401,10 +13320,8 @@ $(document).ready(async () => {
         //If the sub-page that's currently open is not the last sub-page in the parent page
         //Get the id of the next sub-page and open it
         const nextSubPageID = nonSkippedSiblingPages[openSubPageIndex + 1];
-        console.log(nextSubPageID);
         setActiveSubPage(nextSubPageID);
       } else {
-        console.log("going next after sub page");
         hideSubNavAndShowMainNav("next");
       }
     } catch (error) {
