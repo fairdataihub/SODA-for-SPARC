@@ -299,7 +299,10 @@ const savePageChanges = async (pageBeingLeftID) => {
             document.querySelector("#guided_loading_pennsieve_dataset-organize"),
             true
           );
-          console.log(data);
+          // Save a copy of the dataset structure used to make sure the user doesn't change it
+          // on future progress continuations
+          sodaJSONObj["initially-pulled-dataset-structure"] =
+            data["soda_object"]["dataset-structure"];
           datasetStructureJSONObj = data["soda_object"]["dataset-structure"];
 
           /*
@@ -411,6 +414,23 @@ const savePageChanges = async (pageBeingLeftID) => {
           samplesTableData = [];
           extractPoolSubSamStructureFromDataset(datasetStructureJSONObj);
         }
+        await Swal.fire({
+          icon: "info",
+          title: "Begining Pennsieve Dataset edit session",
+          html: `
+            Note: it is imperative that you do not manually make any changes to your dataset directly
+            on Pennsieve while working on this dataset on SODA.
+            <br />
+            <br />
+            If you do, all saved changes that you have made on SODA will be lost and you will have to start over.
+          `,
+          width: 500,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: `Got it!`,
+          focusConfirm: true,
+          allowOutsideClick: false,
+        });
       }
 
       //Skip this page becausae we should not come back to it
@@ -5715,10 +5735,34 @@ const guidedResumeProgress = async (resumeProgressButton) => {
     }
   }
   if (datasetResumeJsonObj["starting-point"]?.["type"] === "pennsieve") {
-    alert("resuming pennsieve check here");
+    let filesFoldersResponse = await client.post(
+      `/organize_datasets/dataset_files_and_folders`,
+      {
+        sodajsonobject: datasetResumeJsonObj,
+      },
+      { timeout: 0 }
+    );
+    let data = filesFoldersResponse.data;
+    const currentPennsieveDatasetStructure = data["soda_object"]["dataset-structure"];
+    const intitiallyPulledDatasetStructure =
+      datasetResumeJsonObj["initially-pulled-dataset-structure"];
+    console.log("currentPennsieveDatasetStructure", currentPennsieveDatasetStructure);
+    console.log("intitiallyPulledDatasetStructure", intitiallyPulledDatasetStructure);
+    // check to make sure current and initially pulled dataset structures are the same
+    if (
+      JSON.stringify(currentPennsieveDatasetStructure) !==
+      JSON.stringify(intitiallyPulledDatasetStructure)
+    ) {
+      notyf.open({
+        type: "error",
+        message: `The dataset ${datasetResumeJsonObj["digital-metadata"]["name"]} has been modified on Pennsieve since you last modified it via Guided Mode. You can no longer modify this dataset via Guided Mode.`,
+        duration: 7000,
+      });
+      resumeProgressButton.removeClass("loading");
+      return;
+    }
   }
   sodaJSONObj = datasetResumeJsonObj;
-
   attachGuidedMethodsToSodaJSONObj();
 
   datasetStructureJSONObj = sodaJSONObj["saved-datset-structure-json-obj"];
