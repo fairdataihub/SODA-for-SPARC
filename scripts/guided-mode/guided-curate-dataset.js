@@ -294,6 +294,15 @@ const savePageChanges = async (pageBeingLeftID) => {
         sodaJSONObj["bf-dataset-selected"]["dataset-name"] = selectedPennsieveDataset;
         sodaJSONObj["bf-account-selected"]["account-name"] = defaultBfAccount;
         try {
+          let data = await bf_request_and_populate_dataset(
+            sodaJSONObj,
+            document.querySelector("#guided_loading_pennsieve_dataset-organize"),
+            true
+          );
+          console.log(data);
+          datasetStructureJSONObj = data["soda_object"]["dataset-structure"];
+
+          /*
           let filesFoldersResponse = await client.post(
             `/organize_datasets/dataset_files_and_folders`,
             {
@@ -302,7 +311,7 @@ const savePageChanges = async (pageBeingLeftID) => {
             { timeout: 0 }
           );
           let data = filesFoldersResponse.data;
-          datasetStructureJSONObj = data["soda_object"]["dataset-structure"];
+          datasetStructureJSONObj = data["soda_object"]["dataset-structure"];*/
         } catch (error) {
           console.log(error);
           errorArray.push({
@@ -883,6 +892,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
       setGuidedLicense("Creative Commons Attribution (CC-BY)");
     }
+    /*
     if (pageBeingLeftID === "guided-dataset-generate-location-tab") {
       const buttonGenerateLocally = document.getElementById(
         "guided-button-generate-dataset-locally"
@@ -916,6 +926,8 @@ const savePageChanges = async (pageBeingLeftID) => {
         sodaJSONObj["generate-dataset"]["destination"] = "bf";
       }
     }
+    */
+    /*
     if (pageBeingLeftID === "guided-dataset-generate-destination-tab") {
       const buttonGenerateOnExistingPennsieveDataset = document.getElementById(
         "guided-button-pennsieve-generate-existing"
@@ -955,6 +967,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         sodaJSONObj["generate-dataset"]["destination"] = "bf";
       }
     }
+    */
 
     if (pageBeingLeftID === "guided-folder-structure-preview-tab") {
       //if folders and files in datasetStruture json obj are empty, warn the user
@@ -4516,6 +4529,7 @@ const openPage = async (targetPageID) => {
       }
     }
 
+    /*
     if (targetPageID === "guided-dataset-generate-location-tab") {
       const currentAccountText = document.getElementById("guided-bf-account");
       const currentAccountDetailsText = document.getElementById("guided-account-details");
@@ -4540,7 +4554,9 @@ const openPage = async (targetPageID) => {
         currentAccountDetailsText.innerHTML = "None";
       }
     }
+    */
 
+    /*
     if (targetPageID === "guided-dataset-generate-destination-tab") {
       const datasetName = sodaJSONObj["digital-metadata"]["name"];
 
@@ -4550,6 +4566,7 @@ const openPage = async (targetPageID) => {
 
       confirmDatasetGenerationNameinput.value = datasetName;
     }
+    */
 
     if (targetPageID === "guided-dataset-generation-confirmation-tab") {
       //Set the inner text of the generate/retry pennsieve dataset button depending on
@@ -4560,7 +4577,10 @@ const openPage = async (targetPageID) => {
       const reviewGenerateButtionTextElement = document.getElementById(
         "review-generate-button-text"
       );
-      if (sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]) {
+      if (
+        sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] &&
+        !sodaJSONObj["starting-point"]["type"] === "pennsieve"
+      ) {
         const generateButtonText = "Resume Pennsieve upload in progress";
         generateOrRetryDatasetUploadButton.innerHTML = generateButtonText;
         reviewGenerateButtionTextElement.innerHTML = generateButtonText;
@@ -5694,6 +5714,9 @@ const guidedResumeProgress = async (resumeProgressButton) => {
       return;
     }
   }
+  if (datasetResumeJsonObj["starting-point"]?.["type"] === "pennsieve") {
+    alert("resuming pennsieve check here");
+  }
   sodaJSONObj = datasetResumeJsonObj;
 
   attachGuidedMethodsToSodaJSONObj();
@@ -5790,6 +5813,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["bf-account-selected"] = {};
   sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
   sodaJSONObj["generate-dataset"] = {};
+  sodaJSONObj["generate-dataset"]["destination"] = "bf";
   sodaJSONObj["guided-manifest-files"] = {};
   sodaJSONObj["starting-point"] = {};
   sodaJSONObj["dataset-metadata"] = {};

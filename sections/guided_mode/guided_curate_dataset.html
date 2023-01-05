@@ -393,6 +393,33 @@
                   id="guided-select-pennsieve-dataset-to-resume"
                 ></select>
               </div>
+              <div
+                id="guided_loading_pennsieve_dataset-organize"
+                class="circular"
+                style="
+                  align-self: center;
+                  visibility: hidden;
+                  margin-top: -50px;
+                  margin-bottom: 20px;
+                "
+              >
+                <div class="inner"></div>
+                <div class="pennsieve_loading_dataset_percentage fix">0%</div>
+                <div class="circle">
+                  <div class="bar left">
+                    <div
+                      class="pennsieve_left-side_less_than_50 progress"
+                      style="transform: rotate(0deg)"
+                    ></div>
+                  </div>
+                  <div class="bar right">
+                    <div
+                      class="pennsieve_right-side_greater_than_50 progress"
+                      style="transform: rotate(0deg)"
+                    ></div>
+                  </div>
+                </div>
+              </div>
               <div class="guided--info-dropdown mt-lg">
                 <p class="guided--dropdown-text" data-dropdown-type="warning">
                   I don't see my dataset on Pennsieve in the dropdown above
@@ -4748,13 +4775,16 @@
         data-parent-tab-name="Generate dataset"
       >
         <div class="guided--capsule-container">
+          <!--
           <div class="guided--capsule" id="guided-dataset-generate-location-capsule"></div>
           <div class="guided--capsule" id="guided-dataset-generate-destination-capsule"></div>
+          -->
           <div class="guided--capsule" id="guided-dataset-generation-confirmation-capsule"></div>
           <div class="guided--capsule" id="guided-dataset-generation-capsule"></div>
           <div class="guided--capsule" id="guided-dataset-dissemination-capsule"></div>
         </div>
 
+        <!--
         <div
           id="guided-dataset-generate-location-tab"
           class="guided--page hidden"
@@ -4967,7 +4997,6 @@
                               class="ui active green inline loader small"
                               style="display: none"
                             ></div>
-                            <!-- this is what is shown in the Edit Current dataset prompt  -->
                             <div style="display: none" id="guided-div-permission-list">
                               <h5 style="text-align: left; color: #000; display: none">
                                 Select permissions for filtering dataset lists:
@@ -5070,6 +5099,7 @@
             </div>
           </div>
         </div>
+        -->
 
         <div
           id="guided-dataset-generation-confirmation-tab"
