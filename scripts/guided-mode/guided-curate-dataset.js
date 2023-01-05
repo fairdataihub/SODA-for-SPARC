@@ -9973,7 +9973,7 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
           .setOptions({
             steps: [
               {
-                element: document.querySelector(".primary-selection-aside-item"),
+                element: document.querySelector(".selection-aside-item"),
                 intro: "Select the different samples here to specify data files for each of them.",
               },
               {
