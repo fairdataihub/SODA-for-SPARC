@@ -293,12 +293,14 @@ const savePageChanges = async (pageBeingLeftID) => {
         sodaJSONObj["bf-dataset-selected"] = {};
         sodaJSONObj["bf-dataset-selected"]["dataset-name"] = selectedPennsieveDataset;
         sodaJSONObj["bf-account-selected"]["account-name"] = defaultBfAccount;
+
+        const importProgressCircle = document.querySelector(
+          "#guided_loading_pennsieve_dataset-organize"
+        );
+        importProgressCircle.classList.remove("hidden");
+
         try {
-          let data = await bf_request_and_populate_dataset(
-            sodaJSONObj,
-            document.querySelector("#guided_loading_pennsieve_dataset-organize"),
-            true
-          );
+          let data = await bf_request_and_populate_dataset(sodaJSONObj, importProgressCircle, true);
           // Save a copy of the dataset structure used to make sure the user doesn't change it
           // on future progress continuations
           sodaJSONObj["initially-pulled-dataset-structure"] =
@@ -418,8 +420,8 @@ const savePageChanges = async (pageBeingLeftID) => {
           icon: "info",
           title: "Begining Pennsieve Dataset edit session",
           html: `
-            Note: it is imperative that you do not manually make any changes to your dataset directly
-            on Pennsieve while working on this dataset on SODA.
+            Note: it is imperative that you do not manually make any changes to your dataset folders and files
+            directly on Pennsieve while working on this dataset on SODA.
             <br />
             <br />
             If you do, all saved changes that you have made on SODA will be lost and you will have to start over.
@@ -3570,6 +3572,14 @@ const openPage = async (targetPageID) => {
       $("#guided-back-button").css("visibility", "visible");
     }
 
+    if (targetPageID === "guided-intro-page-tab") {
+      // Hide the pennsieve dataset import progress circle
+      const importProgressCircle = document.querySelector(
+        "#guided_loading_pennsieve_dataset-organize"
+      );
+      importProgressCircle.classList.add("hidden");
+    }
+
     if (targetPageID === "guided-name-subtitle-tab") {
       const datasetNameInput = document.getElementById("guided-dataset-name-input");
       const datasetSubtitleInput = document.getElementById("guided-dataset-subtitle-input");
@@ -5754,6 +5764,9 @@ const guidedResumeProgress = async (resumeProgressButton) => {
     const intitiallyPulledDatasetStructure =
       datasetResumeJsonObj["initially-pulled-dataset-structure"];
     notyf.dismiss(nofiication);
+
+    console.log("currentPennsieveDatasetStructure", currentPennsieveDatasetStructure);
+    console.log("intitiallyPulledDatasetStructure", intitiallyPulledDatasetStructure);
 
     // check to make sure current and initially pulled dataset structures are the same
     if (
