@@ -32,7 +32,9 @@ from utils import authenticate_user_with_client, connect_pennsieve_client, get_d
 
 from pysodaUtils import (
     check_forbidden_characters_bf,
-    get_agent_installation_location
+    get_agent_installation_location,
+    stop_agent,
+    start_agent
 )
 
 from organizeDatasets import import_pennsieve_dataset
@@ -2854,7 +2856,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                         r.raise_for_status()
 
                 # upload new manifest files
-                list_upload_manifest_files.append([[manifestpath], folder])
+                list_upload_manifest_files.append([[manifestpath], key])
                 total_files += 1
                 total_manifest_files += 1
                 main_total_generate_dataset_size += getsize(manifestpath)
@@ -2958,6 +2960,11 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         if list_upload_manifest_files:
             namespace_logger.info("bf_generate_new_dataset (optional) step 7 upload manifest files")
 
+
+
+            # # start the agent
+            # start_agent()
+
             # create the manifest
             ps_folder = list_upload_manifest_files[0][1]
             manifest_data = ps.manifest.create(list_upload_manifest_files[0][0][0], ps_folder)
@@ -2968,10 +2975,11 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             loc = get_agent_installation_location()
 
             if len(list_upload_manifest_files) > 1:
-                for item in list_upload_manifest_files:
+                for item in list_upload_manifest_files[1:]:
                     manifest_file = item[0][0]
                     ps_folder = item[1]
                     main_curate_progress_message = ( f"Uploading manifest file in {ps_folder['content']['name']} folder" )
+                    print("Before failure on manifest adding")
                     
                     # add the files to the manifest
                     # subprocess call to the pennsieve agent to add the files to the manifest
@@ -2986,6 +2994,10 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             ps.manifest.upload(manifest_id)
 
             ps.subscribe(10, False, monitor_subscriber_progress)
+
+
+        # # stop the agent so that we can remove the manifest files that have just been uploaded
+        stop_agent()
 
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
 
