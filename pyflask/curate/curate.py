@@ -2342,6 +2342,7 @@ def build_create_folder_request(folder_name, folder_parent_id, dataset_id):
 
 bytes_uploaded_per_file = {}
 total_bytes_uploaded = {"value": 0}
+current_files_in_subscriber_session = 0
 
 def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
@@ -2359,6 +2360,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
     global client 
     global files_uploaded
     global total_dataset_files
+    global current_files_in_subscriber_session
 
 
     total_files = 0
@@ -2689,7 +2691,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             """
             global files_uploaded 
             global total_bytes_uploaded 
-            global total_dataset_files
+            global current_files_in_subscriber_session
             global bytes_uploaded_per_file
             global main_curation_uploaded_files
 
@@ -2719,11 +2721,11 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     print("File uploaded")
                     files_uploaded += 1
                     main_curation_uploaded_files += 1
-                    # namespace_logger.info("Files Uploaded: " + str(files_uploaded) + "/" + str(total_dataset_files))
+                    namespace_logger.info("Files Uploaded: " + str(files_uploaded) + "/" + str(current_files_in_subscriber_session))
                     # namespace_logger.info("Total Bytes
 
                 # check if the upload has finished
-                if files_uploaded == total_dataset_files:
+                if files_uploaded == current_files_in_subscriber_session:
                     print("Finished")
                     # namespace_logger.info("Upload complete")
                     # unsubscribe from the agent's upload messages since the upload has finished
@@ -2906,13 +2908,15 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                         # subprocess call to the pennsieve agent to add the files to the manifest
                         subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), file_path, "-t", folder_name])
 
+            bytes_uploaded_per_file = {}
+            total_bytes_uploaded = {"value": 0}
+            current_files_in_subscriber_session = total_dataset_files
+            files_uploaded = 0
+
             # upload the manifest files
             ps.manifest.upload(manifest_id)
 
             main_curate_progress_message = ("Uploading data files...")
-
-            files_uploaded = 0
-            bytes_uploaded_per_file = {}
 
             ps.subscribe(10, False, monitor_subscriber_progress)
 
@@ -2939,14 +2943,15 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 # subprocess call to the pennsieve agent to add the files to the manifest
                 subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), manifest_path])
 
+            bytes_uploaded_per_file = {}
+            current_files_in_subscriber_session = total_metadata_files
+            files_uploaded = 0
+
             # upload the manifest 
             ps.manifest.upload(manifest_id)
 
             # subscribe to the manifest upload so we wait until it has finished uploading before moving on
             ps.subscribe(10, False, monitor_subscriber_progress)
-
-            bytes_uploaded_per_file = {}
-            files_uploaded = 0 
 
 
         # 7. Upload manifest files
@@ -2973,13 +2978,14 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), manifest_file, "-t", f"/{ps_folder['content']['name']}"])
 
                 
+            bytes_uploaded_per_file = {}
+            current_files_in_subscriber_session = total_manifest_files
+            files_uploaded = 0
+
             # upload the manifest 
             ps.manifest.upload(manifest_id)
 
             ps.subscribe(10, False, monitor_subscriber_progress)
-
-            bytes_uploaded_per_file = {}
-            files_uploaded = 0 
 
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
 
