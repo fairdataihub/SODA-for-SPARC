@@ -2067,16 +2067,11 @@ def cleanup_dataset_root(selected_dataset, my_tracking_folder, ps):
 
 bytes_uploaded_per_file = {}
 total_bytes_uploaded = {"value": 0}
+current_files_in_subscriber_session = 0
 
 def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
     global namespace_logger
-
-    # namespace_logger.info("Starting bf_generate_new_dataset")
-
-    # namespace_logger.info("Dataset is: ", ds)
-
-    # print(create_request_headers(ps))
 
     global main_curate_progress_message
     global main_total_generate_dataset_size
@@ -2087,25 +2082,22 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
     global current_size_of_uploaded_files
     global total_files
     global total_bytes_uploaded # current number of bytes uploaded to Pennsieve in the current session
-    # global main_curation_uploaded_files
-    global client 
+    global client
     global files_uploaded
     global total_dataset_files
+    global current_files_in_subscriber_session
 
 
     total_files = 0
     total_dataset_files = 0
-    total_metadata_files = 0 
+    total_metadata_files = 0
     total_manifest_files = 0
     main_curation_uploaded_files = 0
     total_bytes_uploaded = {"value": 0}
     files_uploaded = 0
-    
+
     uploaded_folder_counter = 0
     current_size_of_uploaded_files = 0
-
-    namespace_logger.info("The incoming object is: ")
-    namespace_logger.info(soda_json_structure)
 
     try:
 
@@ -2224,7 +2216,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             ps_folder_children = my_tracking_folder["children"] #ds (dataset)
 
             # print("PS FOLDER CHILDREN: ", ps_folder_children)
-            
+
 
             if "folders" in my_folder.keys():
                 for folder_key, folder in my_folder["folders"].items():
@@ -2244,7 +2236,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
             # TODO: Test replacing metadata files from new -> Merge -> Replace onto Existing dataset to see if this stops it from working.
             if "files" in my_folder.keys() and my_tracking_folder["content"]["id"].find("N:dataset") == -1: 
-                    
+
                 print("In files")
                 # delete files to be deleted
                 (
@@ -2419,14 +2411,9 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             """
             Monitors the progress of a subscriber and unsubscribes once the upload finishes. 
             """
-            global files_uploaded 
-            global total_bytes_uploaded 
-            global total_dataset_files
-
-            # files_uploaded = files_uploaded
-            # total_bytes_uploaded = total_bytes_uploaded
-            # bytes_uploaded_per_file = bytes_uploaded_per_file
-            # total_dataset_files = total_dataset_files
+            global files_uploaded
+            global total_bytes_uploaded
+            global current_files_in_subscriber_session
             global bytes_uploaded_per_file
             global main_curation_uploaded_files
 
@@ -2453,11 +2440,11 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     print("File uploaded")
                     files_uploaded += 1
                     main_curation_uploaded_files += 1
-                    # namespace_logger.info("Files Uploaded: " + str(files_uploaded) + "/" + str(total_dataset_files))
-                    # namespace_logger.info("Total Bytes
+                    namespace_logger.info(f"Files Uploaded: {files_uploaded}/{(current_files_in_subscriber_session)}")
+                                    # namespace_logger.info("Total Bytes
 
                 # check if the upload has finished
-                if files_uploaded == total_dataset_files:
+                if files_uploaded == current_files_in_subscriber_session:
                     print("Finished")
                     namespace_logger.info("Upload complete")
                     # unsubscribe from the agent's upload messages since the upload has finished
@@ -2503,7 +2490,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             file_paths_count = len(folderInformation[0])
             total_files += file_paths_count
             total_dataset_files += file_paths_count
-        
+
 
 
         # main_curate_progress_message = "About to update after doing recursive dataset scan"
@@ -2522,15 +2509,19 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     metadata_path = file["path"]
                     if isfile(metadata_path):
                         initial_name = splitext(basename(metadata_path))[0]
-                        if existing_file_option == "replace":
-                            if initial_name in my_bf_existing_files_name:
-                                my_file = ds['children']['files'][file_key]
-                                # delete the file from Pennsieve
-                                r = requests.post(f"{PENNSIEVE_URL}/data/delete", json={"things": [my_file['content']['id']]}, headers=create_request_headers(ps))
-                                r.raise_for_status()
-                        if existing_file_option == "skip":
-                            if initial_name in my_bf_existing_files_name:
-                                continue
+                        if (
+                            existing_file_option == "replace"
+                            and initial_name in my_bf_existing_files_name
+                        ):
+                            my_file = ds['children']['files'][file_key]
+                            # delete the file from Pennsieve
+                            r = requests.post(f"{PENNSIEVE_URL}/data/delete", json={"things": [my_file['content']['id']]}, headers=create_request_headers(ps))
+                            r.raise_for_status()
+                        if (
+                            existing_file_option == "skip"
+                            and initial_name in my_bf_existing_files_name
+                        ):
+                            continue
 
                         list_upload_metadata_files.append(metadata_path)
                         main_total_generate_dataset_size += getsize(metadata_path)
@@ -2637,7 +2628,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                         folder_name = relative_path[relative_path.index("/"):]
                     except ValueError as e:
                         folder_name = relative_path
-                    
+
                     loc = get_agent_installation_location()
                     for file_path in list_file_paths:
                         #print("Queing file for upload")
@@ -2672,21 +2663,21 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             manifest_id = manifest_data.manifest_id
 
             loc = get_agent_installation_location()
-        
+
             # add the files to the manifest
             for manifest_path in list_upload_metadata_files[1:]:
                 # subprocess call to the pennsieve agent to add the files to the manifest
                 subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), manifest_path])
+
+            bytes_uploaded_per_file = {}
+            current_files_in_subscriber_session = total_metadata_files
+            files_uploaded = 0
 
             # upload the manifest 
             ps.manifest.upload(manifest_id)
 
             # subscribe to the manifest upload so we wait until it has finished uploading before moving on
             ps.subscribe(10, False, monitor_subscriber_progress)
-
-            bytes_uploaded_per_file = {}
-            files_uploaded = 0 
-
 
         # 7. Upload manifest files
         if list_upload_manifest_files:
@@ -2706,16 +2697,20 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     manifest_file = item[0][0]
                     ps_folder = item[1]
                     main_curate_progress_message = ( f"Uploading manifest file in {ps_folder['content']['name']} folder" )
-                    
+
                     # add the files to the manifest
                     # subprocess call to the pennsieve agent to add the files to the manifest
                     subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), manifest_file, "-t", f"/{ps_folder['content']['name']}"])
 
-                
+
+            bytes_uploaded_per_file = {}
+            current_files_in_subscriber_session = total_manifest_files
+            files_uploaded = 0
+
             # upload the manifest 
             ps.manifest.upload(manifest_id)
 
-            ps.subscribe(10,monitor_subscriber_progress)
+            ps.subscribe(10, False, monitor_subscriber_progress)
 
             bytes_uploaded_per_file = {}
             files_uploaded = 0 
