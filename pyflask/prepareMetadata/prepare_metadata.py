@@ -181,13 +181,10 @@ def upload_RC_file(text_string, file_type, bfaccount, bfdataset):
     return { "size": size, "filepath": file_path }
 
 
-def subscriber_metadata(evt_dict, ps):
-    current_bytes_uploaded = msg.upload_status.current 
-    total_bytes_to_upload = msg.upload_status.total
-
+def subscriber_metadata(ps, events_dict):
     if events_dict["type"] == 1:  # upload status: file_id, total, current, worker_id
         #logging.debug("UPLOAD STATUS: " + str(events_dict["upload_status"]))
-        file_id = events_dict["upload_status"].file_id
+        efid = events_dict["upload_status"].file_id
         total_bytes_to_upload = events_dict["upload_status"].total
         current_bytes_uploaded = events_dict["upload_status"].current
 
@@ -253,8 +250,6 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
 
     # subscribe for the upload to finish
     ps.subscribe(10, False, g)
-
-    namespace_logger.ingo("Finished uploading the metadata file!")
 
     # kill the agent then start it again
     stop_agent()
