@@ -7420,6 +7420,8 @@ async function initiate_generate() {
   dataset_name = nameDestinationPair[0];
   dataset_destination = nameDestinationPair[1];
 
+  console.log("BEFORE CURATION");
+  console.log(JSON.stringify(sodaJSONObj));
   client
     .post(
       `/curate_datasets/curation`,

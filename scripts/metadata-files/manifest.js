@@ -926,7 +926,7 @@ async function initiate_generate_manifest_bf() {
     }
   }
 
-  console.log(sodaJSONObj);
+  // console.log(sodaJSONObj);
   console.log(JSON.stringify(sodaJSONObj));
   console.log("Above is before the curation call");
   let curationResponse;

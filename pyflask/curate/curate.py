@@ -2583,7 +2583,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                         r.raise_for_status()
 
                 # upload new manifest files
-                list_upload_manifest_files.append([[manifestpath], folder])
+                list_upload_manifest_files.append([[manifestpath], key])
                 total_files += 1
                 total_manifest_files += 1
                 main_total_generate_dataset_size += getsize(manifestpath)
@@ -2604,7 +2604,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             manifest_data = ps.manifest.create(first_file_local_path, first_relative_path)
             manifest_id = manifest_data.manifest_id
             if len(list_upload_files[0][0]) > 1 or len(list_upload_files) > 1:
-                namespace_logger.info("Made it into list of files correctly");
+                namespace_logger.info("Made it into list of files correctly")
                 for folderInformation in list_upload_files:
                     # main_curate_progress_message = "In file one"
                     list_file_paths = folderInformation[0]
@@ -2684,6 +2684,14 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             namespace_logger.info("bf_generate_new_dataset (optional) step 7 upload manifest files")
 
             # create the manifest
+            print("$" * 40)
+            # print(list_upload_manifest_files[0]); #
+            print("$" * 40)
+            # print(list_upload_manifest_files)
+            print("$" * 40)
+            # print(list_upload_manifest_files[0].folder) #provides the path
+            print("$" * 40)
+
             ps_folder = list_upload_manifest_files[0][1]
             manifest_data = ps.manifest.create(list_upload_manifest_files[0][0][0], ps_folder)
             manifest_id = manifest_data.manifest_id
