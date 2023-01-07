@@ -2874,13 +2874,17 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             first_file_local_path = list_upload_files[0][0][0]
             first_relative_path = list_upload_files[0][6]
             folder_name = first_relative_path[first_relative_path.index("/"):]
-            manifest_data = ps.manifest.create(first_file_local_path, folder_name)
+            namespace_logger.info(f"First file added to manifest at this folder name {folder_name}")
+            manifest_data = ps.manifest.create(first_file_local_path, folder_name[1:])
             manifest_id = manifest_data.manifest_id
+
+            # remove the item just added to the manifest 
+            list_upload_files[0][0].pop(0)
 
             # there are files to add to the manifest if there are more than one file in the first folder or more than one folder
             if len(list_upload_files[0][0]) > 1 or len(list_upload_files) > 1:
                 namespace_logger.info("Made it into list of files correctly")
-                for folderInformation in list_upload_files[1:]:
+                for folderInformation in list_upload_files:
                     # main_curate_progress_message = "In file one"
                     list_file_paths = folderInformation[0]
                     bf_folder = folderInformation[1]
@@ -2905,6 +2909,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                         folder_name = relative_path
                     
                     loc = get_agent_installation_location()
+                    # skip the first file as it has already been uploaded
                     for file_path in list_file_paths:
                         namespace_logger.info(f"File path is: {file_path}")
                         #print("Queing file for upload")
@@ -2995,7 +3000,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
 
         # # stop the agent so that we can remove the manifest files that have just been uploaded
-        stop_agent()
+        # stop_agent()
 
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
 
