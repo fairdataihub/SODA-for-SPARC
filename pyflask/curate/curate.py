@@ -2908,7 +2908,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                         namespace_logger.info(f"File path is: {file_path}")
                         #print("Queing file for upload")
                         # subprocess call to the pennsieve agent to add the files to the manifest
-                        subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), file_path, "-t", folder_name])
+                        subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), file_path, "-t", folder_name[1:]]) # drop the / to avoid duplicates due to a Pennsieve bug
 
             bytes_uploaded_per_file = {}
             total_bytes_uploaded = {"value": 0}
