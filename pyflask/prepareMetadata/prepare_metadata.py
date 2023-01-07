@@ -16,6 +16,7 @@ import csv
 import shutil
 import numpy as np
 import json
+from functools import partial
 from pennsieve2.pennsieve import Pennsieve
 #from pennsieve import Pennsieve
 from manageDatasets import bf_dataset_account
@@ -180,22 +181,26 @@ def upload_RC_file(text_string, file_type, bfaccount, bfdataset):
     return { "size": size, "filepath": file_path }
 
 
-def subscriber_metadata(ps):
-    # subscriber or it will not finish uploading i guess 
-    sub = ps.subscribe(10)
+def subscriber_metadata(evt_dict, ps):
+    current_bytes_uploaded = msg.upload_status.current 
+    total_bytes_to_upload = msg.upload_status.total
 
-    for msg in sub:
-        current_bytes_uploaded = msg.upload_status.current 
-        total_bytes_to_upload = msg.upload_status.total
+    if events_dict["type"] == 1:  # upload status: file_id, total, current, worker_id
+        #logging.debug("UPLOAD STATUS: " + str(events_dict["upload_status"]))
+        file_id = events_dict["upload_status"].file_id
+        total_bytes_to_upload = events_dict["upload_status"].total
+        current_bytes_uploaded = events_dict["upload_status"].current
 
-        if total_bytes_to_upload != 0:
-            if current_bytes_uploaded == total_bytes_to_upload:
-                ps.unsubscribe(10)
+        if current_bytes_uploaded == total_bytes_to_upload:
+            ps.unsubscribe(10)
 
 def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_after_upload):
+    global namespace_logger
     ## check if agent is running in the background
     # TODO: convert to new agent (agent_running is part of the old agent)
-    # agent_running()
+    start_agent()
+
+    namespace_logger.info("Connecting to the pennsieve client")
 
     ps = connect_pennsieve_client()
 
@@ -226,20 +231,30 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
             r.raise_for_status()
 
     try:
+        namespace_logger.info("Pre use_ds and manfiest create")
+
         # create a new manifest for the metadata file
-        ps.useDataset(selected_dataset_id)
+        ps.use_dataset(selected_dataset_id)
         manifest = ps.manifest.create(file_path)
         m_id = manifest.manifest_id
     except Exception as e:
         error_message = "Could not create manifest file for this dataset"
         abort(500, error_message)
 
+    namespace_logger.info("Finished pennsieve setup and created manifest")
+    
+
     # upload the manifest file
     # ps.manifest.upload(m_id)
     ps.manifest.upload(m_id)
 
+    # create a subscriber function with ps attached so it can be used to unusbscribe
+    g = partial(subscriber_metadata, ps)
+
     # subscribe for the upload to finish
-    subscriber_metadata(ps)
+    ps.subscribe(10, False, g)
+
+    namespace_logger.ingo("Finished uploading the metadata file!")
 
     # kill the agent then start it again
     stop_agent()
