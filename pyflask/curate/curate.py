@@ -2880,7 +2880,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             # there are files to add to the manifest if there are more than one file in the first folder or more than one folder
             if len(list_upload_files[0][0]) > 1 or len(list_upload_files) > 1:
                 namespace_logger.info("Made it into list of files correctly")
-                for folderInformation in list_upload_files:
+                for folderInformation in list_upload_files[1:]:
                     # main_curate_progress_message = "In file one"
                     list_file_paths = folderInformation[0]
                     bf_folder = folderInformation[1]
