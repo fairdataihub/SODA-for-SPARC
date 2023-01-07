@@ -2873,7 +2873,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         if len(list_upload_files) > 0:
             first_file_local_path = list_upload_files[0][0][0]
             first_relative_path = list_upload_files[0][6]
-            manifest_data = ps.manifest.create(first_file_local_path, first_relative_path)
+            folder_name = first_relative_path[first_relative_path.index("/"):]
+            manifest_data = ps.manifest.create(first_file_local_path, folder_name)
             manifest_id = manifest_data.manifest_id
 
             # there are files to add to the manifest if there are more than one file in the first folder or more than one folder
@@ -2959,9 +2960,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         # 7. Upload manifest files
         if list_upload_manifest_files:
             namespace_logger.info("bf_generate_new_dataset (optional) step 7 upload manifest files")
-
-
-
             # # start the agent
             # start_agent()
 
