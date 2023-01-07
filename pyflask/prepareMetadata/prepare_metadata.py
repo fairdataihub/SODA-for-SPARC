@@ -246,10 +246,10 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
     ps.manifest.upload(m_id)
 
     # create a subscriber function with ps attached so it can be used to unusbscribe
-    g = partial(subscriber_metadata, ps)
+    subscriber_metadata_ps_client = partial(subscriber_metadata, ps)
 
     # subscribe for the upload to finish
-    ps.subscribe(10, False, g)
+    ps.subscribe(10, False, subscriber_metadata_ps_client)
 
     # kill the agent then start it again
     stop_agent()
