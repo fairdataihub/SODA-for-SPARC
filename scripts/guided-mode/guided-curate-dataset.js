@@ -13373,7 +13373,7 @@ $(document).ready(async () => {
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["submission-data-entry"] = "import";
       }
 
-      hideSubNavAndShowMainNav("next");
+      // hideSubNavAndShowMainNav("next");
 
       await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
