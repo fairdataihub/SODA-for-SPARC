@@ -3010,15 +3010,11 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             ps.subscribe(10, False, monitor_subscriber_progress)
 
 
-        # wait a few moments
-        time.sleep(2)
-
-        # # stop the agent so that we can remove the manifest files that have just been uploaded
-        stop_agent()
+        # before we can remove files we need to wait for all of the Agent's threads/subprocesses to finish
+        # elsewise we get an error that the file is in use and therefore cannot be deleted
+        time.sleep(1)
 
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
-
-        start_agent()
 
     except Exception as e:
         raise e
