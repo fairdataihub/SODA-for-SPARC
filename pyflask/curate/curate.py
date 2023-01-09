@@ -2984,25 +2984,25 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             manifest_data = ps.manifest.create(list_upload_manifest_files[0][0][0], ps_folder)
             manifest_id = manifest_data.manifest_id
 
-            total_manifest_files += 1
-
             loc = get_agent_installation_location()
 
             if len(list_upload_manifest_files) > 1:
                 for item in list_upload_manifest_files[1:]:
+                    namespace_logger.info(item)
                     manifest_file = item[0][0]
                     ps_folder = item[1]
-                    main_curate_progress_message = ( f"Uploading manifest file in {ps_folder['content']['name']} folder" )
+                    main_curate_progress_message = ( f"Uploading manifest file in {ps_folder} folder" )
                     print("Before failure on manifest adding")
                     
                     # add the files to the manifest
                     # subprocess call to the pennsieve agent to add the files to the manifest
-                    subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), manifest_file, "-t", f"/{ps_folder['content']['name']}"])
-
+                    subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), manifest_file, "-t", f"{ps_folder}"])
                 
             bytes_uploaded_per_file = {}
             current_files_in_subscriber_session = total_manifest_files
             files_uploaded = 0
+
+            namespace_logger.info(f"Uploading {total_manifest_files} manifest files to Pennsieve.")
 
             # upload the manifest 
             ps.manifest.upload(manifest_id)
