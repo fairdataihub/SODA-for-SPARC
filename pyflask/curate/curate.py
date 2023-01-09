@@ -2735,9 +2735,9 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     
 
                 # check if the upload has finished
-                if files_uploaded == current_files_in_subscriber_session :
+                if files_uploaded == current_files_in_subscriber_session:
                     print("Finished")
-                    # namespace_logger.info("Upload complete")
+                    namespace_logger.info("Upload complete")
                     # unsubscribe from the agent's upload messages since the upload has finished
                     ps.unsubscribe(10)
 
@@ -2972,6 +2972,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             ps.subscribe(10, False, monitor_subscriber_progress)
 
 
+        namespace_logger.info("Finished uploading metadata files")
         # 7. Upload manifest files
         if list_upload_manifest_files:
             namespace_logger.info("bf_generate_new_dataset (optional) step 7 upload manifest files")
@@ -3010,12 +3011,14 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
 
         # wait a few moments
-        time.sleep(500)
+        time.sleep(2)
 
         # # stop the agent so that we can remove the manifest files that have just been uploaded
         stop_agent()
 
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
+
+        start_agent()
 
     except Exception as e:
         raise e
