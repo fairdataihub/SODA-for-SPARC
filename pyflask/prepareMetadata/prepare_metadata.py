@@ -4,6 +4,7 @@
 
 import platform
 import os
+import time
 from os.path import (
     isdir,
     join,
@@ -184,11 +185,14 @@ def upload_RC_file(text_string, file_type, bfaccount, bfdataset):
 def subscriber_metadata(ps, events_dict):
     if events_dict["type"] == 1:  # upload status: file_id, total, current, worker_id
         #logging.debug("UPLOAD STATUS: " + str(events_dict["upload_status"]))
-        efid = events_dict["upload_status"].file_id
+        fileid = events_dict["upload_status"].file_id
         total_bytes_to_upload = events_dict["upload_status"].total
         current_bytes_uploaded = events_dict["upload_status"].current
 
-        if current_bytes_uploaded == total_bytes_to_upload:
+        namespace_logger.info("File upload progress: " + str(current_bytes_uploaded) + "/" + str(total_bytes_to_upload))
+        namespace_logger.info("For file: " + fileid)
+        if current_bytes_uploaded == total_bytes_to_upload and fileid != "":
+            namespace_logger.info("File upload complete")
             ps.unsubscribe(10)
 
 def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_after_upload):
@@ -251,14 +255,14 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
     # subscribe for the upload to finish
     ps.subscribe(10, False, subscriber_metadata_ps_client)
 
-    # kill the agent then start it again
-    stop_agent()
+    # before we can remove files we need to wait for all of the Agent's threads/subprocesses to finish
+    # elsewise we get an error that the file is in use and therefore cannot be deleted
+    time.sleep(5)
 
-    # delete the local file that was created for the purpose of uploading to Pennsieve
+    # # delete the local file that was created for the purpose of uploading to Pennsieve
     if delete_after_upload:
         os.remove(file_path)
 
-    start_agent()
 
 def excel_columns(start_index=0):
     """
