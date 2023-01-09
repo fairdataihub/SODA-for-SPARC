@@ -802,7 +802,8 @@ h1.guided--text-sub-step {
 .container--dashed {
   cursor: pointer;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   flex-wrap: wrap;
   padding: 10px;
   border: 1px dashed #ccc;
@@ -1157,6 +1158,12 @@ h1.guided--text-sub-step {
   margin-top: 7px;
   cursor: pointer;
 }
+.selection-aside-item:hover {
+  background-color: whitesmoke;
+  width: 97%;
+  align-self: center;
+}
+
 .selection-aside-item.is-selected {
   background-color: #e8f0fe;
   border: 1px solid black;
@@ -1434,4 +1441,25 @@ h1.guided--text-sub-step {
 
 .tippy-box[data-theme~="soda"][data-placement^="top"] > .tippy-arrow::before {
   border-top-color: #13716d;
+}
+
+.disabled-nav {
+  border-left: 3px solid var(--color-transparent-soda-green);
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.removeFromPennsieve:before {
+}
+
+.removeFromPennsieve:after {
+  /* opacity: 0.5; */
+  content: "\00D7";
+  color: rgb(252, 0, 0);
+  z-index: 10;
+  font-size: 35px;
+  font-family: helvetica, arial, sans-serif;
+  font-weight: bold;
+  pointer-events: none;
+  vertical-align: middle;
 }

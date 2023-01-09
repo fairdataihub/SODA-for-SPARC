@@ -3923,7 +3923,7 @@ async function updateBfAccountList() {
   refreshBfTeamsList(bfListTeams);
 }
 
-async function loadDefaultAccount() {
+const loadDefaultAccount = async () => {
   let responseObject;
 
   try {
@@ -3938,10 +3938,6 @@ async function loadDefaultAccount() {
 
   if (accounts.length > 0) {
     var myitemselect = accounts[0];
-    const guidedPennsieveAccount = document.getElementById("getting-started-pennsieve-account");
-    svgElements = guidedPennsieveAccount.children;
-    svgElements[0].style.display = "none";
-    svgElements[1].style.display = "flex";
     defaultBfAccount = myitemselect;
 
     $("#current-bf-account").text(myitemselect);
@@ -3952,7 +3948,7 @@ async function loadDefaultAccount() {
     refreshBfUsersList();
     refreshBfTeamsList(bfListTeams);
   }
-}
+};
 
 const showPrePublishingPageElements = () => {
   var selectedBfAccount = defaultBfAccount;
@@ -9539,3 +9535,7 @@ tippy("#datasetPathDisplay", {
   theme: "soda",
   maxWidth: "100%",
 });
+
+const createSpreadSheetWindow = async (spreadsheet) => {
+  ipcRenderer.send("spreadsheet", spreadsheet);
+};

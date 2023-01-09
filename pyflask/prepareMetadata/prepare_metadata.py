@@ -691,6 +691,8 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
         templateHeaderList = samplesTemplateHeaderList
 
     importedHeaderList = list(subjects_df.columns.values)
+    print(importedHeaderList)
+    print("#" * 30)
 
     transpose = []
     for header in templateHeaderList:
@@ -701,7 +703,12 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
             column.extend([""] * len(subjects_df))
         transpose.append(column)
 
+    # print(header)
     for header in importedHeaderList:
+        print("$" * 40)
+        print(header)
+        print("$" * 40)
+
         if header.lower() in templateHeaderList:
             continue
         column = [header]
@@ -711,6 +718,9 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
             column.extend([""] * len(subjects_df))
         transpose.append(column)
 
+    print(transpose)
+    print("#" * 30)
+    print(ui_fields)
     sortMatrix = sortedSubjectsTableData(transpose, ui_fields)
 
     return {"sample_file_rows": transposeMatrix(sortMatrix)} if type in ["samples.xlsx", "samples"] else {"subject_file_rows": transposeMatrix(sortMatrix)}
