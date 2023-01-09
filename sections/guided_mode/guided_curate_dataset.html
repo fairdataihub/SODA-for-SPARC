@@ -70,25 +70,26 @@
       <div id="guided-home" class="guided--main-tab">
         <div class="guided--panel">
           <h1 class="guided--text-sub-step">Guided Mode</h1>
-          <!-- <div class="title-border">
-            </div> -->
           <p class="guided--help-text" style="margin-bottom: 2rem">
-            The Guided Mode is intended to guide users step-by-step through all the requirements for
+            Guided Mode is intended to guide users step-by-step through all the requirements for
             curating and sharing datasets according to the SPARC data standards. The user interfaces
             of the Guided Mode are designed to logically guide users through the curation steps and
             include all necessary information such that no prior knowledge of the SPARC data
             standards is required. Contrary to the Free Form Mode, the Guided Mode interfaces are
-            interconnected and form a single workflow such that the curation process is streamlined
-            further.
+            interconnected and form a single workflow.
           </p>
+
           <div class="justify-center" id="curate-new-home" style="align-items: center">
             <div
               class="container--dashed"
               id="guided-button-start-new-curate"
-              style="width: 320px; margin: 5px; width: 28rem; height: 16.5rem"
+              style="width: 800px; margin: 5px; height: 16.5rem"
             >
               <div id="new-dataset-lottie-container" style="height: 150px; width: 150px"></div>
-              <h2 class="guided--text-sub-step">Begin curating a new dataset</h2>
+              <h2 class="guided--text-sub-step">
+                Begin curating a new dataset starting from scratch or edit an existing Pennsieve
+                dataset
+              </h2>
             </div>
           </div>
 
@@ -139,7 +140,7 @@
         <div
           id="guided-intro-page-tab"
           class="guided--page hidden"
-          data-page-name="About Guided Mode"
+          data-page-name="Select starting point"
         >
           <h1 class="guided--text-sub-step">Welcome to Guided Mode!</h1>
           <div class="guided--section">
@@ -165,12 +166,273 @@
               </p>
             </div>
             <p class="guided--help-text" style="margin-top: 1em">
-              Guided Mode is divided in four high-level sections. During the first three sections,
+              Guided Moded is divided in four high-level sections. During the first three sections,
               you will be directed to specify the files to include in your dataset and provide
               information about your dataset. On the final section, SODA will automatically generate
               your dataset on Pennsieve with the proper folder structure and metadata files. Note
               that none of your local data files will ever be modified or moved.
             </p>
+          </div>
+
+          <div class="guided--section">
+            <label class="guided--form-label centered mb-0"
+              >How would you like to start curating your dataset?
+            </label>
+
+            <div class="guided--radio-button-container">
+              <button
+                class="guided--radio-button tile-button"
+                id="guided-button-start-new-curation"
+                data-next-element="guided-section-start-new-curation"
+                data-button-config-value="curation-starting-point"
+                data-button-config-value-state="new"
+              >
+                <div class="guided--tile-button-icon">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink"
+                    viewbox="0 0 489.8 489.8"
+                    style="enable-background: new 0 0 489.8 489.8"
+                    xml:space="preserve"
+                  >
+                    <g>
+                      <g>
+                        <path
+                          d="M438.2,0H51.6C23.1,0,0,23.2,0,51.6v386.6c0,28.5,23.2,51.6,51.6,51.6h386.6c28.5,0,51.6-23.2,51.6-51.6V51.6    C489.8,23.2,466.6,0,438.2,0z M465.3,438.2c0,14.9-12.2,27.1-27.1,27.1H51.6c-14.9,0-27.1-12.2-27.1-27.1V51.6    c0-14.9,12.2-27.1,27.1-27.1h386.6c14.9,0,27.1,12.2,27.1,27.1V438.2z"
+                        />
+                        <path
+                          d="M337.4,232.7h-80.3v-80.3c0-6.8-5.5-12.3-12.3-12.3s-12.3,5.5-12.3,12.3v80.3h-80.3c-6.8,0-12.3,5.5-12.3,12.2    c0,6.8,5.5,12.3,12.3,12.3h80.3v80.3c0,6.8,5.5,12.3,12.3,12.3s12.3-5.5,12.3-12.3v-80.3h80.3c6.8,0,12.3-5.5,12.3-12.3    C349.7,238.1,344.2,232.7,337.4,232.7z"
+                        />
+                      </g>
+                    </g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                  </svg>
+                </div>
+                <div class="guided--tile-body">
+                  <h2>Start a new dataset from scratch</h2>
+                </div>
+              </button>
+
+              <button
+                class="guided--radio-button tile-button"
+                id="guided-button-continue-existing-local-curation"
+                data-next-element="guided-section-import-local-dataset"
+                data-button-config-value="curation-starting-point"
+                data-button-config-value-state="local"
+              >
+                <div class="guided--tile-button-icon">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink"
+                    version="1.1"
+                    id="Layer_1"
+                    x="0px"
+                    y="0px"
+                    viewbox="0 0 502 502"
+                    style="enable-background: new 0 0 502 502"
+                    xml:space="preserve"
+                  >
+                    <g>
+                      <polygon
+                        style="fill: #d1dceb"
+                        points="367,382.658 367,103 274,10 21,10 21,492 367,492 367,460.176 328.241,421.417  "
+                      />
+                      <polygon style="fill: #4ec9dc" points="274,103 274,10 367,103  " />
+                      <g>
+                        <path
+                          d="M247,174H81.5c-5.523,0-10-4.477-10-10s4.477-10,10-10H247c5.523,0,10,4.477,10,10S252.523,174,247,174z"
+                        />
+                      </g>
+                      <g>
+                        <path
+                          d="M306.5,240h-225c-5.523,0-10-4.477-10-10s4.477-10,10-10h225c5.523,0,10,4.477,10,10S312.023,240,306.5,240z"
+                        />
+                      </g>
+                      <g>
+                        <path
+                          d="M306.5,306h-225c-5.523,0-10-4.477-10-10s4.477-10,10-10h225c5.523,0,10,4.477,10,10S312.023,306,306.5,306z"
+                        />
+                      </g>
+                      <g>
+                        <path
+                          d="M306.5,372h-225c-5.523,0-10-4.477-10-10s4.477-10,10-10h225c5.523,0,10,4.477,10,10S312.023,372,306.5,372z"
+                        />
+                      </g>
+                      <g>
+                        <path
+                          d="M306.5,174h-22c-5.523,0-10-4.477-10-10s4.477-10,10-10h22c5.523,0,10,4.477,10,10S312.023,174,306.5,174z"
+                        />
+                      </g>
+                      <g>
+                        <path
+                          style="fill: #4ec9dc"
+                          d="M433.287,389.417c-7.891,0-14.287-6.397-14.287-14.287v-9.98c0-12.728-15.389-19.103-24.39-10.103    L367,382.658l-38.759,38.759L367,460.176l27.61,27.61c9,9,24.39,2.626,24.39-10.102v-9.98c0-7.891,6.396-14.287,14.287-14.287H481    v-64L433.287,389.417L433.287,389.417z"
+                        />
+                        <path
+                          d="M481,379.417h-47.713c-2.364,0-4.287-1.923-4.287-4.287v-9.98c0-9.858-5.885-18.666-14.993-22.438    s-19.497-1.706-26.468,5.265L377,358.516V103c0-2.652-1.054-5.196-2.929-7.071l-93-93C279.196,1.054,276.652,0,274,0H21    c-5.523,0-10,4.477-10,10v482c0,5.523,4.477,10,10,10h346c5.523,0,10-4.477,10-10v-7.681l10.539,10.539    c4.658,4.657,10.841,7.125,17.149,7.125c3.133,0,6.297-0.609,9.319-1.861c9.107-3.772,14.993-12.58,14.993-22.438v-9.98    c0-2.364,1.923-4.287,4.287-4.287H481c5.523,0,10-4.477,10-10v-64C491,383.894,486.523,379.417,481,379.417z M284,34.142    L342.858,93H284V34.142z M321.169,414.346c-1.406,1.407-2.351,3.189-2.735,5.111c-0.128,0.641-0.194,1.297-0.194,1.96    c0,2.652,1.054,5.196,2.929,7.071L357,464.319V482H31V20h233v83c0,5.523,4.477,10,10,10h83v265.516L321.169,414.346z     M342.383,421.417l59.298-59.298c1.763-1.762,3.684-1.338,4.672-0.929s2.646,1.468,2.646,3.96v9.98    c0,13.392,10.895,24.287,24.287,24.287H471v44h-37.713c-13.392,0-24.287,10.895-24.287,24.287v9.98    c0,2.493-1.658,3.551-2.646,3.961c-0.99,0.409-2.911,0.833-4.672-0.93L342.383,421.417z"
+                        />
+                      </g>
+                    </g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                    <g></g>
+                  </svg>
+                </div>
+                <div class="guided--tile-body">
+                  <h2>Start from a local SPARC dataset</h2>
+                </div>
+              </button>
+              <button
+                class="guided--radio-button tile-button"
+                id="guided-button-resume-pennsieve-dataset"
+                data-next-element="guided-section-select-pennsieve-dataset-to-resume"
+                data-button-config-value="curation-starting-point"
+                data-button-config-value-state="pennsieve"
+              >
+                <div class="guided--tile-button-icon">
+                  <img
+                    src="assets\img\pennsieveLogo.png"
+                    alt="PennsieveLogo"
+                    width="50px"
+                    height="50px"
+                  />
+                </div>
+                <div class="guided--tile-body">
+                  <h2>Continue an existing dataset on Pennsieve</h2>
+                </div>
+              </button>
+            </div>
+          </div>
+          <div class="guided--section" id="guided-section-start-new-curation">
+            <h2 class="guided--text-sub-step">
+              Click "Save and Continue" to start curating a new dataset from scratch
+            </h2>
+          </div>
+          <div class="guided--section" id="guided-section-import-local-dataset">
+            <h1 class="guided--text-sub-step">Where is your dataset located?</h1>
+            <div class="field" style="display: flex; justify-content: center; width: 100%">
+              <input
+                class="form-control"
+                style="width: 600px !important; cursor: pointer"
+                id="guided-input-destination-getting-started-locally"
+                type="text"
+                readonly
+                placeholder="Browse here"
+              />
+            </div>
+            <p
+              class="hidden"
+              style="color: red; width: 500px; text-align: left; margin: auto"
+              id="guided-input-destination-getting-started-locally-warning-message"
+            ></p>
+          </div>
+          <div class="guided--section" id="guided-section-select-pennsieve-dataset-to-resume">
+            <div class="guided--panel mt-0" id="guided-panel-pennsieve-dataset-import-loading">
+              <div class="lds-roller">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+              Importing datasets from Pennsieve
+            </div>
+
+            <div class="guided--panel mt-0" id="guided-panel-pennsieve-dataset-select">
+              <label class="guided--form-label centered mb-sm mt-lg"
+                >Select the dataset on Pennsieve that you would like to resume curating below
+              </label>
+              <div
+                id="guided-pennsieve-dataset-resume-container"
+                style="
+                  display: flex;
+                  flex-direction: row;
+                  justify-content: space-around;
+                  width: 100%;
+                "
+              >
+                <select
+                  class="selectpicker"
+                  data-live-search="true"
+                  style="
+                    padding: 8px 12px;
+                    margin-right: 30px;
+                    height: 38px;
+                    border-radius: 5px;
+                    border: 1px solid black;
+                  "
+                  id="guided-select-pennsieve-dataset-to-resume"
+                ></select>
+              </div>
+              <div
+                id="guided_loading_pennsieve_dataset-organize"
+                class="circular"
+                style="
+                  align-self: center;
+                  visibility: hidden;
+                  margin-top: -50px;
+                  margin-bottom: 50px;
+                "
+              >
+                <div class="inner"></div>
+                <div class="pennsieve_loading_dataset_percentage fix">0%</div>
+                <div class="circle">
+                  <div class="bar left">
+                    <div
+                      class="pennsieve_left-side_less_than_50 progress"
+                      style="transform: rotate(0deg)"
+                    ></div>
+                  </div>
+                  <div class="bar right">
+                    <div
+                      class="pennsieve_right-side_greater_than_50 progress"
+                      style="transform: rotate(0deg)"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+              <div class="guided--info-dropdown mt-lg">
+                <p class="guided--dropdown-text" data-dropdown-type="warning">
+                  I don't see my dataset on Pennsieve in the dropdown above
+                </p>
+                <i class="fas fa-chevron-right"></i>
+              </div>
+              <div class="guided--info-container">
+                <p class="guided--help-text mb-0">
+                  If you don't see your SPARC award in the dropdown above, your dataset either does
+                  not exist on Pennsieve or you do not have Owner or Manager permissions.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
         <div
@@ -184,7 +446,6 @@
             <input
               class="guided--input"
               id="guided-dataset-name-input"
-              data-input-set="guided-dataset-starting-point-tab"
               data-alert-message="A Pennsieve dataset name cannot contain any of the following characters: /:*?'."
               data-alert-type="danger"
               type="text"
@@ -302,9 +563,6 @@
         data-parent-tab-name="Dataset Structure"
       >
         <div class="guided--capsule-container">
-          <div class="guided--capsule active" id="guided-dataset-starting-point-capsule"></div>
-
-          <!-- Guided structure dataset capsule branch-->
           <div class="guided--capsule" id="guided-subjects-folder-capsule"></div>
           <div class="guided--capsule" id="guided-primary-data-organization-capsule"></div>
           <div class="guided--capsule" id="guided-source-data-organization-capsule"></div>
@@ -312,88 +570,7 @@
           <div class="guided--capsule" id="guided-code-folder-capsule"></div>
           <div class="guided--capsule" id="guided-protocol-folder-capsule"></div>
           <div class="guided--capsule" id="guided-docs-folder-capsule"></div>
-
-          <!-- import dataset capsule branch-->
-          <div class="guided--capsule" id="guided-folder-importation-capsule"></div>
           <div class="guided--capsule" id="guided-folder-structure-preview-capsule"></div>
-        </div>
-
-        <div
-          id="guided-dataset-starting-point-tab"
-          class="guided--page hidden"
-          data-page-name="Select Starting Point"
-        >
-          <div class="guided--section">
-            <h1 class="guided--text-sub-step">SPARC Data Structure</h1>
-            <p class="guided--help-text">
-              The first step of the curation process consists of organizing your data according to
-              the SPARC Data Structure (SDS). SPARC datasets must contain all or a subset of the six
-              high-level folders shown in the image below. The primary folder must also be organized
-              in a specific manner. To learn more about the SPARC Data Structure, please visit the
-              <a href="https://docs.sparc.science/docs/overview-of-sparc-dataset-format">
-                SPARC help page </a
-              >.
-            </p>
-            <div class="guided--container-sub">
-              <img
-                src="assets/img/sparc-dataset-structure-example.png"
-                alt="SPARC dataset structure example"
-                style="width: 100%"
-              />
-            </div>
-          </div>
-
-          <div class="guided--section">
-            <label class="guided--form-label centered"
-              >Is your dataset already organized according to the SPARC Data Structure?
-            </label>
-            <div class="guided--radio-button-container">
-              <button
-                class="ui positive basic button guided--radio-button"
-                id="guided-button-import-existing-dataset-structure"
-                data-next-element="guided-import-existing-dataset-panel"
-                data-button-config-value="dataset-already-structured"
-                data-button-config-value-state="yes"
-              >
-                Yes
-              </button>
-              <button
-                class="ui negative basic button guided--radio-button"
-                id="guided-button-guided-dataset-structuring"
-                data-next-element="guided-structure-new-dataset-panel"
-                data-button-config-value="dataset-already-structured"
-                data-button-config-value-state="no"
-              >
-                No
-              </button>
-            </div>
-            <div class="guided--section hidden" id="guided-import-existing-dataset-panel">
-              <p class="guided--help-text">
-                Great, we can skip the guided folder structuring steps and import your dataset from
-                a local folder.
-              </p>
-              <button
-                class="ui primary button"
-                id="guided-import-existing-dataset"
-                style="background-color: var(--color-light-green) !important"
-              >
-                Import existing dataset
-              </button>
-            </div>
-            <div class="guided--section hidden" id="guided-structure-new-dataset-panel">
-              <p class="guided--help-text">
-                No problem, SODA will help you structure your data according to the SPARC Data
-                Structure.
-              </p>
-              <button
-                class="ui primary button"
-                id="guided-structure-new-dataset"
-                style="background-color: var(--color-light-green) !important"
-              >
-                Start dataset structuring
-              </button>
-            </div>
-          </div>
         </div>
 
         <div
@@ -1670,30 +1847,6 @@
         </div>
 
         <div
-          id="guided-folder-importation-tab"
-          class="guided--page hidden"
-          data-page-name="Import dataset folder"
-        >
-          <div class="guided--section" id="guided_dataset_name_div">
-            <h1 class="guided--text-sub-step">Where is your dataset located?</h1>
-            <div class="field" style="display: flex; justify-content: center; width: 100%">
-              <input
-                class="form-control"
-                style="width: 600px !important; cursor: pointer"
-                id="guided-input-destination-getting-started-locally"
-                type="text"
-                readonly
-                placeholder="Browse here"
-              />
-            </div>
-            <p
-              class="hidden"
-              style="color: red; width: 500px; text-align: left; margin: auto"
-              id="guided-input-destination-getting-started-locally-warning-message"
-            ></p>
-          </div>
-        </div>
-        <div
           id="guided-folder-structure-preview-tab"
           class="guided--page hidden"
           data-page-name="Dataset structure preview"
@@ -2386,6 +2539,7 @@
                 <tr>
                   <th>Name</th>
                   <th>Role(s)</th>
+                  <th class="center aligned collapsing">Status</th>
                   <th class="center aligned collapsing">Modify</th>
                   <th class="center aligned collapsing">Delete</th>
                 </tr>
@@ -2609,22 +2763,22 @@
             <h2 class="guided--text-sub-step mb-0">
               Add details about each protocol associated with this dataset
             </h2>
-
-            <div class="guided--panel"></div>
-            <table>
-              <tr>
-                <th style="min-width: 250px">Link</th>
-                <th>Type</th>
-                <th class="text-center">Description</th>
-                <th class="text-center">Delete</th>
-              </tr>
+            <table class="ui celled striped table" style="margin-bottom: 25px; width: 100%">
+              <thead>
+                <tr>
+                  <th>Link</th>
+                  <th>Description</th>
+                  <th class="center aligned collapsing">Status</th>
+                  <th class="center aligned collapsing">Modify</th>
+                  <th class="center aligned collapsing">Delete</th>
+                </tr>
+              </thead>
               <tbody id="protocols-container"></tbody>
             </table>
-
             <button
               class="ui primary basic button mt-lg"
               id="guided-button-add-protocol"
-              onclick="addProtocolField()"
+              onclick="openProtocolSwal()"
             >
               <i class="fas fa-plus" style="margin-right: 7px"></i>Add a new protocol
             </button>
@@ -2662,14 +2816,14 @@
               <div class="grouped fields">
                 <div class="field">
                   <div class="ui radio checkbox">
-                    <input type="radio" name="dataset-relation" value="Experimental" />
-                    <label>Experimental</label>
+                    <input type="radio" name="dataset-relation" value="experimental" />
+                    <label>experimental</label>
                   </div>
                 </div>
                 <div class="field mb-0">
                   <div class="ui radio checkbox">
-                    <input type="radio" name="dataset-relation" value="Computational" />
-                    <label>Computational</label>
+                    <input type="radio" name="dataset-relation" value="computational" />
+                    <label>computational</label>
                   </div>
                 </div>
               </div>
@@ -2795,7 +2949,7 @@
           <div class="guided--section neumorphic mt-xl">
             <h2 class="guided--text-sub-step mt-0">Related information</h2>
             <label class="guided--form-label mt-xl">Additional links</label>
-            <table class="ui celled striped table" style="margin-bottom: 25px; width: 800px">
+            <table class="ui celled striped table" style="margin-bottom: 25px; width: 100%">
               <thead>
                 <tr>
                   <th style="min-width: 250px">Link</th>
@@ -2810,7 +2964,7 @@
               <i class="fas fa-plus" style="margin-right: 7px"></i>Add an additional link
             </button>
           </div>
-          <div class="guided--section neumorphic mt-xl">
+          <div class="guided--section neumorphic mt-xl mb-lg">
             <h2 class="guided--text-sub-step mt-0">Additional information</h2>
             <label class="guided--form-label mt-xl">Study collection title:</label>
             <input
@@ -2930,21 +3084,15 @@
               <div class="guided--section neumorphic mt-xl">
                 <h2 class="guided--text-sub-step mt-0">Experimental Setup</h2>
 
-                <label class="guided--form-label mt-xl hidden">Pool ID:</label>
+                <label class="guided--form-label mt-xl">Pool ID:</label>
                 <input
-                  class="guided--input subjects-form-entry hidden"
+                  class="guided--input subjects-form-entry"
                   id="guided-bootbox-subject-pool-id"
                   name="pool id"
                   type="text"
-                  placeholder="Enter Pool ID here"
-                  onkeyup="validateInput($(this))"
+                  placeholder="This subject is not part of a pool"
                   readonly
                 />
-                <!--
-                  <p class="guided--text-input-instructions mb-0">
-                    The pool that contains the subject. <br />
-                    <b>No further action required.</b>
-                  </p>-->
 
                 <label class="guided--form-label mt-xl">Subject experimental group:</label>
                 <input
@@ -3609,15 +3757,15 @@
                   sample ID of the sample from which the current sample was derived. <br />
                 </p>
 
-                <label class="guided--form-label mt-xl hidden">Pool id:</label>
-                <div class="demo-controls-body w-100 hidden">
+                <label class="guided--form-label mt-xl">Pool id:</label>
+                <div class="demo-controls-body w-100">
                   <div class="ui input modified">
                     <input
                       type="text"
                       id="guided-bootbox-sample-pool-id"
                       name="pool id"
                       class="samples-form-entry"
-                      placeholder="Type here..."
+                      placeholder="This sample is not part of a pool"
                       readonly
                     />
                   </div>
@@ -4380,52 +4528,7 @@
               before it is published. You can give permissions to your team members if you expect
               them to modify your dataset before publication.
             </p>
-          </div>
 
-          <div class="guided--section mb-0">
-            <label class="guided--form-label centered mb-0"
-              >Does anyone else on your team need to edit this dataset?
-            </label>
-
-            <div class="guided--radio-button-container">
-              <button
-                class="guided--radio-button tile-button"
-                id="guided-button-add-additional-permissions"
-                data-next-element="guided-section-add-additional-permissions"
-                data-button-config-value="user-has-additional-permissions-to-add"
-                data-button-config-value-state="yes"
-              >
-                <div class="guided--tile-button-icon">
-                  <i class="fas fa-users fa-4x" color="black"></i>
-                </div>
-                <div class="guided--tile-body">
-                  <h2>Yes, grant other users/teams permissions</h2>
-                </div>
-              </button>
-              <button
-                class="guided--radio-button tile-button"
-                id="guided-button-no-additional-permissions"
-                data-next-element="guided-section-no-additional-permissions"
-                data-button-config-value="user-has-additional-permissions-to-add"
-                data-button-config-value-state="no"
-              >
-                <div class="guided--tile-button-icon">
-                  <i class="fas fa-user fa-4x" color="black"></i>
-                </div>
-                <div class="guided--tile-body">
-                  <h2>No, I am the only contributor to this dataset</h2>
-                </div>
-              </button>
-            </div>
-          </div>
-
-          <div class="guided--section" id="guided-section-add-additional-permissions">
-            <p class="guided--help-text text-left mb-md">
-              Current permissions are listed in the table below. To add a permission, select the
-              Pennsieve user or team you would like to grant a permission to, select their role, and
-              press "Designate permission". To delete a permission, click the delete icon in the
-              table below.
-            </p>
             <div class="guided--info-dropdown">
               <p class="guided--dropdown-text" data-dropdown-type="info">
                 Learn more about dataset Permissions on Pennsieve
@@ -4454,6 +4557,16 @@
                 </li>
               </ul>
             </div>
+          </div>
+
+          <div class="guided--section" id="guided-section-add-additional-permissions">
+            <p class="guided--help-text text-left mb-md">
+              Current permissions are listed in the table below. To add a permission, select the
+              Pennsieve user or team you would like to grant a permission to, select their role, and
+              press "Designate permission". To delete a permission, click the delete icon in the
+              table below.
+            </p>
+
             <table class="ui celled striped table" style="margin-bottom: 10px; width: 800px">
               <thead>
                 <tr>
@@ -4547,12 +4660,6 @@
                 user or team.
               </p>
             </div>
-          </div>
-          <div class="guided--section" id="guided-section-no-additional-permissions">
-            <h2 class="guided--text-sub-step">
-              Click "Save and Continue" to designate yourself as owner and grant no other user/team
-              permissions
-            </h2>
           </div>
         </div>
 
@@ -4668,13 +4775,16 @@
         data-parent-tab-name="Generate dataset"
       >
         <div class="guided--capsule-container">
+          <!--
           <div class="guided--capsule" id="guided-dataset-generate-location-capsule"></div>
           <div class="guided--capsule" id="guided-dataset-generate-destination-capsule"></div>
+          -->
           <div class="guided--capsule" id="guided-dataset-generation-confirmation-capsule"></div>
           <div class="guided--capsule" id="guided-dataset-generation-capsule"></div>
           <div class="guided--capsule" id="guided-dataset-dissemination-capsule"></div>
         </div>
 
+        <!--
         <div
           id="guided-dataset-generate-location-tab"
           class="guided--page hidden"
@@ -4887,7 +4997,6 @@
                               class="ui active green inline loader small"
                               style="display: none"
                             ></div>
-                            <!-- this is what is shown in the Edit Current dataset prompt  -->
                             <div style="display: none" id="guided-div-permission-list">
                               <h5 style="text-align: left; color: #000; display: none">
                                 Select permissions for filtering dataset lists:
@@ -4990,6 +5099,7 @@
             </div>
           </div>
         </div>
+        -->
 
         <div
           id="guided-dataset-generation-confirmation-tab"

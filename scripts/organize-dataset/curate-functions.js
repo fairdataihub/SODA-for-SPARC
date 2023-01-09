@@ -172,11 +172,6 @@ const metadataFileExtensionObject = {
 };
 
 async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeliverables = false) {
-  var gettingStartedSection = false;
-  if (curationMode === "guided-getting-started") {
-    curationMode = "guided";
-    var gettingStartedSection = true;
-  }
   // Prevent default behavior (Prevent file from being opened)
   ev.preventDefault();
   document.getElementById(paraElement).innerHTML = "";
@@ -267,43 +262,6 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
               loop: true,
               autoplay: true,
             });
-
-            if (gettingStartedSection === true) {
-              const DDLottie = document.getElementById("swal-data-deliverable");
-              DDLottie.innerHTML = "";
-              lottie.loadAnimation({
-                container: DDLottie,
-                animationData: successCheck,
-                renderer: "svg",
-                loop: true,
-                autoplay: true,
-              });
-              let swal_actions = document.getElementsByClassName("swal2-actions")[0];
-              swal_actions.children[1].style.display = "flex";
-              let swal_content = document.getElementsByClassName("swal2-content")[0];
-
-              let ddFilePath = sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"];
-              if (ddFilePath) {
-                //append file path
-                let firstItem = swal_content.children[0];
-                let paragraph = document.createElement("p");
-                let paragraph2 = document.createElement("p");
-                paragraph.id = "getting-started-filepath";
-                paragraph2.innerText =
-                  "To replace the current Data Deliverables just drop in or select a new one.";
-                paragraph2.style.marginBottom = "1rem";
-                paragraph.style.marginTop = "1rem";
-                paragraph.style.fontWeight = "700";
-                paragraph.innerText = "File Path: " + ddFilePath;
-                if (firstItem.children[0].id === "getting-started-filepath") {
-                  firstItem.children[0].remove();
-                  firstItem.children[firstItem.childElementCount - 1].remove();
-                }
-                firstItem.append(paragraph2);
-                firstItem.prepend(paragraph);
-                document.getElementById("guided-button-import-data-deliverables").click();
-              }
-            }
           }
         } catch (error) {
           clientError(error);
@@ -1545,6 +1503,9 @@ const moveItems = async (ev, category) => {
 };
 
 function moveItemsHelper(item, destination, category) {
+  console.log("item: ", item);
+  console.log("destination: ", destination);
+  console.log("category: ", category);
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   var selectedNodeList = destination.split("/").slice(1);
