@@ -251,6 +251,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             datasetList = [];
             datasetList = responseObject.data.datasets;
             refreshDatasetList();
+            console.log(datasetList);
           } catch (error) {
             clientError(error);
             document.getElementById("para-filter-datasets-status-2").innerHTML =

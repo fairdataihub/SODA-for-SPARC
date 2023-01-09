@@ -691,6 +691,8 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
         templateHeaderList = samplesTemplateHeaderList
 
     importedHeaderList = list(subjects_df.columns.values)
+    print(importedHeaderList)
+    print("#" * 30)
 
     transpose = []
     for header in templateHeaderList:
@@ -701,7 +703,12 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
             column.extend([""] * len(subjects_df))
         transpose.append(column)
 
+    # print(header)
     for header in importedHeaderList:
+        print("$" * 40)
+        print(header)
+        print("$" * 40)
+
         if header.lower() in templateHeaderList:
             continue
         column = [header]
@@ -711,6 +718,9 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
             column.extend([""] * len(subjects_df))
         transpose.append(column)
 
+    print(transpose)
+    print("#" * 30)
+    print(ui_fields)
     sortMatrix = sortedSubjectsTableData(transpose, ui_fields)
 
     return {"sample_file_rows": transposeMatrix(sortMatrix)} if type in ["samples.xlsx", "samples"] else {"subject_file_rows": transposeMatrix(sortMatrix)}
@@ -973,7 +983,8 @@ def update_existing_pennsieve_manifest_files(myds, bf, dataset_structure, high_l
 
                     item_id = myds.items[i][j].id
                     url = returnFileURL(bf, item_id)
-
+                    namespace_logger.info(url)
+                    namespace_logger.info("above is the url to the excel file we read")
                     manifest_df = pd.read_excel(
                         url, engine="openpyxl", usecols=column_check, header=0
                     )
@@ -981,6 +992,8 @@ def update_existing_pennsieve_manifest_files(myds, bf, dataset_structure, high_l
                     filepath = join(
                         manifest_folder_path, myds.items[i].name, "manifest.xlsx"
                     )
+                    namespace_logger.info(filepath)
+                    namespace_logger.info("file path to store manifest locally")
 
                     high_level_folders.remove(myds.items[i].name)
 
@@ -992,6 +1005,23 @@ def update_existing_pennsieve_manifest_files(myds, bf, dataset_structure, high_l
 
                     new_manifest = pd.DataFrame.from_dict(updated_manifest_dict)
                     new_manifest.to_excel(filepath, index=False)
+                    wb = load_workbook(filepath)
+                    ws = wb.active
+                    blueFill = PatternFill(
+                        start_color="9DC3E6", fill_type="solid"
+                    )
+                    greenFill = PatternFill(
+                        start_color="A8D08D", fill_type="solid"
+                    )
+                    yellowFill = PatternFill(
+                        start_color="FFD965", fill_type="solid"
+                    )
+                    ws['A1'].fill = blueFill
+                    ws['B1'].fill = greenFill
+                    ws['C1'].fill = greenFill
+                    ws['D1'].fill = greenFill
+                    ws['E1'].fill = yellowFill
+                    wb.save(filepath)
 
                     manifest_progress["manifest_files_uploaded"] += 1
 
@@ -1329,5 +1359,23 @@ def drop_manifest_empty_columns(manifest_file_location):
         edited_manifest_df = pd.DataFrame.from_dict(manifest_dict)
 
         # save the data frame to the manifest folder as an excel file
-        edited_manifest_df.to_excel(os.path.join(manifest_file_location, high_level_folder, "manifest.xlsx"), index=False)
+        save_location = os.path.join(manifest_file_location, high_level_folder, "manifest.xlsx")
+        edited_manifest_df.to_excel(save_location, index=False)
+        wb = load_workbook(save_location)
+        ws = wb.active
+        blueFill = PatternFill(
+            start_color="9DC3E6", fill_type="solid"
+        )
+        greenFill = PatternFill(
+            start_color="A8D08D", fill_type="solid"
+        )
+        yellowFill = PatternFill(
+            start_color="FFD965", fill_type="solid"
+        )
+        ws['A1'].fill = blueFill
+        ws['B1'].fill = greenFill
+        ws['C1'].fill = greenFill
+        ws['D1'].fill = greenFill
+        ws['E1'].fill = yellowFill
+        wb.save(save_location)
 

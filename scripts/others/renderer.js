@@ -321,6 +321,17 @@ const notyf = new Notyf({
       duration: 3000,
     },
     {
+      type: "info",
+      background: "#13716D",
+      icon: {
+        className: "fas fa-info-circle",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 3000,
+    },
+
+    {
       type: "app_update_warning",
       background: "#fa8c16",
       icon: {
@@ -1414,6 +1425,59 @@ function sendHTTPsRequestAirtable(options, varSuccess) {
   });
 }
 
+var awardObj = {};
+var globalSPARCAward = "";
+// indicate to user that airtable records are being retrieved
+const loadAwardData = async () => {
+  ///// Construct table from data
+  var awardResultArray = [];
+  let result = false;
+  ///// config and load live data from Airtable
+  var airKeyContent = parseJson(airtableConfigPath);
+  if (JSON.stringify(airKeyContent) !== "{}") {
+    var airKeyInput = airKeyContent["api-key"];
+    var airKeyName = airKeyContent["key-name"];
+    if (airKeyInput !== "" && airKeyName !== "") {
+      Airtable.configure({
+        endpointUrl: "https://" + airtableHostname,
+        apiKey: airKeyInput,
+      });
+      var base = Airtable.base("appiYd1Tz9Sv857GZ");
+      base("sparc_members")
+        .select({
+          view: "All members (ungrouped)",
+        })
+        .eachPage(
+          function page(records, fetchNextPage) {
+            records.forEach(function (record) {
+              if (record.get("Project_title") !== undefined) {
+                var awardNumber = (item = record.get("SPARC_Award_#"));
+                item = record.get("SPARC_Award_#").concat(" (", record.get("Project_title"), ")");
+                awardResultArray.push(item);
+                awardObj[awardNumber] = item;
+              }
+            }),
+              fetchNextPage();
+          },
+          function done(err) {
+            if (err) {
+              log.error(err);
+              console.log(err);
+              console.log("error here");
+              return;
+            } else {
+              // create set to remove duplicates
+              var awardSet = new Set(awardResultArray);
+              var resultArray = [...awardSet];
+              result = true;
+            }
+          }
+        );
+      return result;
+    }
+  }
+};
+
 loadAwardData();
 
 /////////////////////// Download Metadata Templates ////////////////////////////
@@ -2315,55 +2379,6 @@ function addOption(selectbox, text, value) {
   selectbox.options.add(opt);
 }
 
-var awardObj = {};
-var globalSPARCAward = "";
-// indicate to user that airtable records are being retrieved
-function loadAwardData() {
-  ///// Construct table from data
-  var awardResultArray = [];
-  ///// config and load live data from Airtable
-  var airKeyContent = parseJson(airtableConfigPath);
-  if (JSON.stringify(airKeyContent) !== "{}") {
-    var airKeyInput = airKeyContent["api-key"];
-    var airKeyName = airKeyContent["key-name"];
-    if (airKeyInput !== "" && airKeyName !== "") {
-      Airtable.configure({
-        endpointUrl: "https://" + airtableHostname,
-        apiKey: airKeyInput,
-      });
-      var base = Airtable.base("appiYd1Tz9Sv857GZ");
-      base("sparc_members")
-        .select({
-          view: "All members (ungrouped)",
-        })
-        .eachPage(
-          function page(records, fetchNextPage) {
-            records.forEach(function (record) {
-              if (record.get("Project_title") !== undefined) {
-                var awardNumber = (item = record.get("SPARC_Award_#"));
-                item = record.get("SPARC_Award_#").concat(" (", record.get("Project_title"), ")");
-                awardResultArray.push(item);
-                awardObj[awardNumber] = item;
-              }
-            }),
-              fetchNextPage();
-          },
-          function done(err) {
-            if (err) {
-              log.error(err);
-              console.log(err);
-              return;
-            } else {
-              // create set to remove duplicates
-              var awardSet = new Set(awardResultArray);
-              var resultArray = [...awardSet];
-            }
-          }
-        );
-    }
-  }
-}
-
 //////////////// Dataset description file ///////////////////////
 //////////////// //////////////// //////////////// ////////////////
 
@@ -3093,8 +3108,10 @@ const guidedCropOptions = {
   viewMode: 1,
   responsive: true,
   crop: function (event) {
+    console.log(event);
     var data = event.detail;
     let image_height = Math.round(data.height);
+    console.log(image_height);
 
     guidedFormBannerHeight.value = image_height;
 
@@ -3906,7 +3923,7 @@ async function updateBfAccountList() {
   refreshBfTeamsList(bfListTeams);
 }
 
-async function loadDefaultAccount() {
+const loadDefaultAccount = async () => {
   let responseObject;
 
   try {
@@ -3921,10 +3938,6 @@ async function loadDefaultAccount() {
 
   if (accounts.length > 0) {
     var myitemselect = accounts[0];
-    const guidedPennsieveAccount = document.getElementById("getting-started-pennsieve-account");
-    svgElements = guidedPennsieveAccount.children;
-    svgElements[0].style.display = "none";
-    svgElements[1].style.display = "flex";
     defaultBfAccount = myitemselect;
 
     $("#current-bf-account").text(myitemselect);
@@ -3935,7 +3948,7 @@ async function loadDefaultAccount() {
     refreshBfUsersList();
     refreshBfTeamsList(bfListTeams);
   }
-}
+};
 
 const showPrePublishingPageElements = () => {
   var selectedBfAccount = defaultBfAccount;
@@ -4324,15 +4337,6 @@ function hoverForFullName(ev) {
   // which we will put through the overflowing check in showFullName function
   showFullName(event, ev.children[1], fullPath);
 }
-
-// // If the document is clicked somewhere
-// document.addEventListener('onmouseover', function(e){
-//   if (e.target.classList.value !== "myFile") {
-//     hideFullPath()
-//   } else {
-//     hoverForPath(e)
-//   }
-// });
 
 document.addEventListener("onmouseover", function (e) {
   if (e.target.classList.value === "fas fa-folder") {
@@ -5195,19 +5199,21 @@ const dropHelper = async (
         break;
       }
     }
+    let slashCount = getPathSlashCount();
     /// check for File duplicate
     if (statsObj.isFile()) {
       var nonAllowedDuplicate = false;
       var originalFileName = path.parse(itemPath).base;
       var slashCount = getPathSlashCount();
+      let filePath = itemPath;
 
-      let forbiddenCheck = forbiddenFileCheck(itemName);
+      let forbiddenCheck = forbiddenFileCheck(filePath);
       if (forbiddenCheck === "forbidden") {
-        nonAllowedFiles.push(itemPath);
+        nonAllowedFiles.push(filePath);
         continue;
       }
       if (forbiddenCheck === "hidden") {
-        hiddenFiles.push(itemPath);
+        hiddenFiles.push(filePath);
         continue;
       }
 
@@ -5225,22 +5231,22 @@ const dropHelper = async (
       //   continue;
       // }
 
-      let warningCharacterBool = warningCharacterCheck(itemName);
+      let warningCharacterBool = warningCharacterCheck(filePath);
       // let regex = /[\+&\%#]/i;
       if (warningCharacterBool === true) {
-        nonAllowedCharacterFiles.push(itemPath);
+        nonAllowedCharacterFiles.push(filePath);
         continue;
       }
 
-      let extensionCount = checkForMultipleExtensions(itemName);
+      let extensionCount = checkForMultipleExtensions(filePath);
       if (extensionCount > 2) {
         //multiple extensions, raise warning (do not import)
-        tripleExtension.push(itemPath);
+        tripleExtension.push(filePath);
         continue;
       }
       if (extensionCount === 2) {
         //double extension ask if compressed file
-        doubleExtension.push(itemPath);
+        doubleExtension.push(filePath);
         continue;
       }
 
@@ -5252,6 +5258,10 @@ const dropHelper = async (
       // }
 
       if (slashCount === 1) {
+        if (loadingContainer != undefined) {
+          loadingContainer.style.display = "none";
+          loadingIcon.style.display = "none";
+        }
         await Swal.fire({
           icon: "error",
           html: "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
@@ -5261,26 +5271,26 @@ const dropHelper = async (
         break;
       } else {
         if (JSON.stringify(myPath["files"]) === "{}" && JSON.stringify(importedFiles) === "{}") {
-          importedFiles[path.parse(itemPath).base] = {
-            path: itemPath,
-            basename: path.parse(itemPath).base,
+          importedFiles[originalFileName] = {
+            path: filePath,
+            basename: originalFileName,
           };
         } else {
           //check if fileName is in to-be-imported object keys
           if (importedFiles.hasOwnProperty(originalFileName)) {
             nonAllowedDuplicate = true;
-            nonAllowedDuplicateFiles.push(itemPath);
+            nonAllowedDuplicateFiles.push(filePath);
             continue;
           } else {
             //check if filename is in already-imported object keys
             if (myPath["files"].hasOwnProperty(originalFileName)) {
               nonAllowedDuplicate = true;
-              nonAllowedDuplicateFiles.push(itemPath);
+              nonAllowedDuplicateFiles.push(filePath);
               continue;
             } else {
               if (Object.keys(myPath["files"]).length === 0) {
                 importedFiles[originalFileName] = {
-                  path: itemPath,
+                  path: filePath,
                   basename: originalFileName,
                 };
               }
@@ -5288,14 +5298,14 @@ const dropHelper = async (
                 if (objectKey !== undefined) {
                   nonAllowedDuplicate = false;
                   //just checking if paths are the same
-                  if (itemPath === myPath["files"][objectKey]["path"]) {
-                    nonAllowedDuplicateFiles.push(itemPath);
+                  if (filePath === myPath["files"][objectKey]["path"]) {
+                    nonAllowedDuplicateFiles.push(filePath);
                     nonAllowedDuplicate = true;
                     continue;
                   } else {
                     //in neither so write
                     importedFiles[originalFileName] = {
-                      path: itemPath,
+                      path: filePath,
                       basename: originalFileName,
                     };
                   }
@@ -5307,7 +5317,12 @@ const dropHelper = async (
       }
     } else if (statsObj.isDirectory()) {
       /// drop a folder
+      let folderPath = itemPath;
       if (slashCount === 1) {
+        if (loadingContainer != undefined) {
+          loadingContainer.style.display = "none";
+          loadingIcon.style.display = "none";
+        }
         await Swal.fire({
           icon: "error",
           text: "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
@@ -5319,7 +5334,7 @@ const dropHelper = async (
         var originalFolderName = itemName;
         var renamedFolderName = originalFolderName;
 
-        if (irregularFolderArray.includes(itemPath)) {
+        if (irregularFolderArray.includes(folderPath)) {
           if (action !== "ignore" && action !== "") {
             if (action === "remove") {
               renamedFolderName = removeIrregularFolders(itemName);
@@ -5327,7 +5342,7 @@ const dropHelper = async (
               renamedFolderName = replaceIrregularFolders(itemName);
             }
             importedFolders[renamedFolderName] = {
-              path: itemPath,
+              path: folderPath,
               "original-basename": originalFolderName,
             };
           }
@@ -5335,13 +5350,13 @@ const dropHelper = async (
           if (myPath["folders"].hasOwnProperty(originalFolderName) === true) {
             //folder is already imported
             duplicateFolders.push(itemName);
-            folderPath.push(itemPath);
+            folderPath.push(folderPath);
             continue;
           } else {
             if (importedFolders.hasOwnProperty(originalFolderName) === true) {
               //folder is already in to-be-imported list
               duplicateFolders.push(itemName);
-              folderPath.push(itemPath);
+              folderPath.push(folderPath);
               continue;
             } else {
               //folder is in neither so write
@@ -5489,6 +5504,10 @@ const dropHelper = async (
   }
 
   if (hiddenFiles.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
     await Swal.fire({
       title:
         "The following files have an unexpected name starting with a period and are considered hidden files. As per SPARC Data Standards they are typically not recommended to be imported as hidden. How should we handle them?",
@@ -5604,6 +5623,10 @@ const dropHelper = async (
   }
 
   if (nonAllowedFiles.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
     await Swal.fire({
       title:
         "The following files are not allowed in datasets as per the SPARC Data Standards and will thus not be imported",
@@ -5625,6 +5648,10 @@ const dropHelper = async (
   var listElements = showItemsAsListBootbox(duplicateFolders);
   var list = JSON.stringify(folderPath).replace(/"/g, "");
   if (duplicateFolders.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
     await Swal.fire({
       title: "Duplicate folder(s) detected",
       icon: "warning",
@@ -5670,6 +5697,10 @@ const dropHelper = async (
     }
     var listElements = showItemsAsListBootbox(baseName);
     var list = JSON.stringify(nonAllowedDuplicateFiles).replace(/"/g, "");
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
     await Swal.fire({
       title: "Duplicate file(s) detected",
       icon: "warning",
@@ -5845,6 +5876,165 @@ ipcRenderer.on("save-file-organization-dialog", (event) => {
     event.sender.send("selected-saveorganizationfile", filename);
   });
 });
+
+// displays the user selected banner image using Jimp in the edit banner image modal
+//path: array
+//curationMode: string (guided-moded) (freeform)
+const handleSelectedBannerImage = async (path, curationMode) => {
+  let imgContainer = "";
+  let imgHolder = "";
+  let paraImagePath = "";
+  let viewImportedImage = "";
+  let saveBannerImage = "";
+  let cropperOptions = "";
+  console.log(curationMode);
+  if (curationMode === "guided-mode") {
+    imgHolder = document.getElementById("guided-div-img-container-holder");
+    imgContainer = document.getElementById("guided-div-img-container");
+    viewImportedImage = guidedBfViewImportedImage;
+    paraImagePath = "#guided-para-path-image";
+    saveBannerImage = "#guided-save-banner-image";
+    cropperOptions = guidedCropOptions;
+  }
+  if (curationMode === "freeform") {
+    cropperOptions = cropOptions;
+    paraImagePath = "#para-path-image";
+    saveBannerImage = "#save-banner-image";
+    viewImportedImage = bfViewImportedImage;
+    imgHolder = document.getElementById("div-img-container-holder");
+    imgContainer = document.getElementById("div-img-container");
+  }
+
+  if (path.length > 0) {
+    let original_image_path = path[0];
+    let image_path = original_image_path;
+    let destination_image_path = require("path").join(
+      homeDirectory,
+      "SODA",
+      "banner-image-conversion"
+    );
+    let converted_image_file = require("path").join(destination_image_path, "converted-tiff.jpg");
+    let conversion_success = true;
+    imageExtension = path[0].split(".").pop();
+
+    if (imageExtension.toLowerCase() == "tiff") {
+      Swal.fire({
+        title: "Image conversion in progress!",
+        html: "Pennsieve does not support .tiff banner images. Please wait while SODA converts your image to the appropriate format required.",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showClass: {
+          popup: "animate__animated animate__fadeInDown animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp animate__faster",
+        },
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      await Jimp.read(original_image_path)
+        .then(async (file) => {
+          if (!fs.existsSync(destination_image_path)) {
+            fs.mkdirSync(destination_image_path, { recursive: true });
+          }
+
+          try {
+            if (fs.existsSync(converted_image_file)) {
+              fs.unlinkSync(converted_image_file);
+            }
+          } catch (err) {
+            conversion_success = false;
+            console.error(err);
+          }
+
+          return file.write(converted_image_file, async () => {
+            if (fs.existsSync(converted_image_file)) {
+              let stats = fs.statSync(converted_image_file);
+              let fileSizeInBytes = stats.size;
+              let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
+
+              if (fileSizeInMegabytes > 5) {
+                fs.unlinkSync(converted_image_file);
+
+                await Jimp.read(original_image_path)
+                  .then((file) => {
+                    return file.resize(1024, 1024).write(converted_image_file, () => {
+                      imgHolder.style.display = "none";
+                      imgContainer.style.display = "block";
+
+                      $(paraImagePath).html(image_path);
+                      viewImportedImage.src = converted_image_file;
+                      myCropper.destroy();
+                      myCropper = new Cropper(viewImportedImage, cropperOptions);
+                      $(saveBannerImage).css("visibility", "visible");
+                      $("body").removeClass("waiting");
+                    });
+                  })
+                  .catch((err) => {
+                    conversion_success = false;
+                    console.error(err);
+                  });
+                if (fs.existsSync(converted_image_file)) {
+                  let stats = fs.statSync(converted_image_file);
+                  let fileSizeInBytes = stats.size;
+                  let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
+
+                  if (fileSizeInMegabytes > 5) {
+                    conversion_success = false;
+                    // SHOW ERROR
+                  }
+                }
+              }
+              image_path = converted_image_file;
+              imageExtension = "jpg";
+              $(paraImagePath).html(image_path);
+              viewImportedImage.src = image_path;
+              myCropper.destroy();
+              myCropper = new Cropper(viewImportedImage, cropperOptions);
+              $(paraImagePath).css("visibility", "visible");
+            }
+          });
+        })
+        .catch((err) => {
+          conversion_success = false;
+          console.error(err);
+          Swal.fire({
+            icon: "error",
+            text: "Something went wrong",
+            confirmButtonText: "OK",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+        });
+      if (conversion_success == false) {
+        $("body").removeClass("waiting");
+        return;
+      } else {
+        Swal.close();
+      }
+    } else {
+      imgHolder.style.display = "none";
+      imgContainer.style.display = "block";
+
+      $(paraImagePath).html(image_path);
+      viewImportedImage.src = image_path;
+      myCropper.destroy();
+      myCropper = new Cropper(viewImportedImage, cropperOptions);
+
+      $(saveBannerImage).css("visibility", "visible");
+    }
+  } else {
+    if (curationMode == "freeform") {
+      if ($("#para-current-banner-img").text() === "None") {
+        $(saveBannerImage).css("visibility", "hidden");
+      } else {
+        $(saveBannerImage).css("visibility", "visible");
+      }
+    }
+  }
+};
 
 //////////////////////////////////////////////////////////////////////////////
 /////////////////// CONTEXT MENU OPTIONS FOR FOLDERS AND FILES ///////////////
@@ -6185,6 +6375,7 @@ $(document).bind("click", (event) => {
 
 // sort JSON objects by keys alphabetically (folder by folder, file by file)
 function sortObjByKeys(object) {
+  console.log(object);
   const orderedFolders = {};
   const orderedFiles = {};
   /// sort the files in objects
@@ -6211,9 +6402,19 @@ function sortObjByKeys(object) {
 }
 
 const listItems = async (jsonObj, uiItem, amount_req, reset) => {
+  console.log(jsonObj);
+  console.log("listing items");
   //allow amount to choose how many elements to create
   //break elements into sets of 100
   const rootFolders = ["primary", "source", "derivative"];
+  const datasetPath = document.getElementById("guided-input-global-path");
+  const pathDisplay = document.getElementById("datasetPathDisplay");
+  const fileExplorerBackButton = document.getElementById("guided-button-back");
+  let hideSampleFolders = false;
+  let hideSubjectFolders = false;
+  let splitPath = datasetPath.value.split("/");
+  let fullPath = datasetPath.value;
+
   if (organizeDSglobalPath.id === "guided-input-global-path") {
     const splitPathCheck = (num, button) => {
       //based on the paths length we will determine if the back button should be disabled/hidden or not
@@ -6228,7 +6429,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
       }
     };
 
-    let currentPageID = CURRENT_PAGE.attr("id");
+    let currentPageID = CURRENT_PAGE.id;
     //capsules need to determine if sample or subjects section
     //subjects initially display two folder levels meanwhile samples will initially only show one folder level
     let primarySampleCapsule = document.getElementById(
@@ -6237,24 +6438,28 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     let primarySubjectCapsule = document.getElementById(
       "guided-primary-subjects-organization-page-capsule"
     );
+    let primaryPoolCapsule = document.getElementById(
+      "guided-primary-pools-organization-page-capsule"
+    );
     let sourceSampleCapsule = document.getElementById(
       "guided-source-samples-organization-page-capsule"
     );
     let sourceSubjectCapsule = document.getElementById(
       "guided-source-subjects-organization-page-capsule"
     );
+    let sourcePoolCapsule = document.getElementById(
+      "guided-source-pools-organization-page-capsule"
+    );
+
     let derivativeSampleCapsule = document.getElementById(
       "guided-derivative-samples-organization-page-capsule"
     );
     let derivativeSubjectCapsule = document.getElementById(
       "guided-derivative-subjects-organization-page-capsule"
     );
-
-    let datasetPath = document.getElementById("guided-input-global-path");
-    let pathDisplay = document.getElementById("datasetPathDisplay");
-    let fileExplorerBackButton = document.getElementById("guided-button-back");
-    let splitPath = datasetPath.value.split("/");
-    let fullPath = datasetPath.value;
+    let derivativePoolCapsule = document.getElementById(
+      "guided-derivative-pools-organization-page-capsule"
+    );
 
     //remove my_dataset_folder and if any of the ROOT FOLDER names is included
     if (splitPath[0] === "My_dataset_folder") splitPath.shift();
@@ -6262,31 +6467,75 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     //remove the last element in array is it is always ''
     splitPath.pop();
 
-    //get 2 last lvls of the folder path
     let trimmedPath = "";
     if (currentPageID.includes("primary")) {
       if (primarySampleCapsule.classList.contains("active")) {
-        splitPathCheck(2, fileExplorerBackButton);
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(3, fileExplorerBackButton);
+        } else {
+          splitPathCheck(2, fileExplorerBackButton);
+        }
       }
       if (primarySubjectCapsule.classList.contains("active")) {
-        splitPathCheck(1, fileExplorerBackButton);
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(2, fileExplorerBackButton);
+        } else {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        hideSampleFolders = true;
+      }
+      if (primaryPoolCapsule.classList.contains("active")) {
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        hideSubjectFolders = true;
       }
     }
     if (currentPageID.includes("source")) {
       if (sourceSubjectCapsule.classList.contains("active")) {
-        splitPathCheck(1, fileExplorerBackButton);
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(2, fileExplorerBackButton);
+        } else {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        hideSampleFolders = true;
       }
       if (sourceSampleCapsule.classList.contains("active")) {
-        splitPathCheck(2, fileExplorerBackButton);
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(3, fileExplorerBackButton);
+        } else {
+          splitPathCheck(2, fileExplorerBackButton);
+        }
+      }
+      if (sourcePoolCapsule.classList.contains("active")) {
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        hideSubjectFolders = true;
       }
     }
     if (currentPageID.includes("derivative")) {
       //check the active capsule
-      if (derivativeSampleCapsule.classList.contains("active")) {
-        splitPathCheck(2, fileExplorerBackButton);
-      }
       if (derivativeSubjectCapsule.classList.contains("active")) {
-        splitPathCheck(1, fileExplorerBackButton);
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(2, fileExplorerBackButton);
+        } else {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        hideSampleFolders = true;
+      }
+      if (derivativeSampleCapsule.classList.contains("active")) {
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(3, fileExplorerBackButton);
+        } else {
+          splitPathCheck(2, fileExplorerBackButton);
+        }
+      }
+      if (derivativePoolCapsule.classList.contains("active")) {
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        hideSubjectFolders = true;
       }
     }
     if (
@@ -6304,11 +6553,9 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
       trimmedPath += splitPath[i] + "/";
     }
 
+    //append path to tippy and display path to the file explorer
     pathDisplay.innerText = trimmedPath;
     pathDisplay._tippy.setContent(fullPath);
-
-    //get the path of the dataset when rendering
-    //with the path you can determine whether or not to disable the back button
   }
 
   var appendString = "";
@@ -6316,8 +6563,85 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
   let file_elements = [],
     folder_elements = [];
   let count = 0;
+
+  //start creating folder elements to be rendered
   if (Object.keys(sortedObj["folders"]).length > 0) {
     for (var item in sortedObj["folders"]) {
+      //hide samples when on the subjects page
+      if (hideSampleFolders) {
+        let currentSampleFolder = splitPath[0];
+        let allSamples = sodaJSONObj.getAllSamplesFromSubjects();
+        let noPoolSamples = [];
+        let poolSamples = [];
+        let skipSubjectFolder = false;
+        if (allSamples.length > 1) {
+          //subjects within pools and others not
+          poolSamples = allSamples[0];
+          noPoolSamples = allSamples[1];
+          for (let i = 0; i < poolSamples.length; i++) {
+            if (item === poolSamples[i]["sampleName"]) {
+              skipSubjectFolder = true;
+              break;
+            }
+          }
+          if (skipSubjectFolder) continue;
+          for (let i = 0; i < noPoolSamples.length; i++) {
+            if (item === noPoolSamples[i]["sampleName"]) {
+              skipSubjectFolder = true;
+              break;
+            }
+          }
+          if (skipSubjectFolder) continue;
+        }
+        if (allSamples.length === 1) {
+          poolSamples = allSamples[1];
+          for (let i = 0; i < poolSamples.length; i++) {
+            if (item === poolSamples[i]["sampleName"]) {
+              skipSubjectFolder = true;
+              break;
+            }
+          }
+          if (skipSubjectFolder) continue;
+        }
+      }
+      if (hideSubjectFolders) {
+        //hide subject folders when displaying pool page
+        const currentPoolName = splitPath[0];
+        let currentSubjects = sodaJSONObj.getAllSubjects();
+        let poolSubjects = [];
+        let noPoolSubjects = [];
+        let skipSubjectFolder = false;
+        if (currentSubjects.length === 1) {
+          poolSubjects = currentSubjects[0];
+          for (let i = 0; i < poolSubjects.length; i++) {
+            if (item === poolSubjects[i]["subjectName"]) {
+              skipSubjectFolder = true;
+              break;
+            }
+          }
+          if (skipSubjectFolder) continue;
+        }
+        if (currentSubjects.length > 1) {
+          //some subjects in pools and some not
+          poolSubjects = currentSubjects[0];
+          noPoolSubjects = currentSubjects[1];
+          for (let i = 0; i < noPoolSubjects.length; i++) {
+            if (item === noPoolSubjects[i]["subjectName"]) {
+              skipSubjectFolder = true;
+              break;
+            }
+          }
+          if (skipSubjectFolder) continue;
+          for (let i = 0; i < poolSubjects.length; i++) {
+            if (item === poolSubjects[i]["subjectName"]) {
+              skipSubjectFolder = true;
+              break;
+            }
+          }
+        }
+        if (skipSubjectFolder) continue;
+      }
+
       count += 1;
       var emptyFolder = "";
       if (!highLevelFolders.includes(item)) {
@@ -6373,9 +6697,9 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
           item +
           "</div></div>";
 
-        // folder_elements.push(elem_creation);
         appendString = appendString + elem_creation;
         if (count === 100) {
+          //every one hundred elements created we put it into one element within the array
           folder_elements.push(appendString);
           count = 0;
           appendString = "";
@@ -6391,9 +6715,9 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
           item +
           "</div></div>";
 
-        // folder_elements.push(element_creation);
         appendString = appendString + element_creation;
         if (count === 100) {
+          //every one hundred elements created we put it into one element within the array
           folder_elements.push(appendString);
           count = 0;
           appendString = "";
@@ -6402,6 +6726,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
       }
     }
     if (count < 100) {
+      //if items to be rendered is less than 100 we push whatever we have to the array element
       if (!folder_elements.includes(appendString) && appendString != "") {
         folder_elements.push(appendString);
         count = 0;
@@ -6608,15 +6933,23 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
       if (currentFolder.startsWith("sam-")) {
         folderType = "sample";
       }
+      if (currentFolder.startsWith("pool-")) {
+        folderType = "pool";
+      }
     }
 
     let dragDropInstructionsText;
     if (folderType === undefined) {
       dragDropInstructionsText = `Drag and Drop folders and files to be included in the <b>${currentFolder}</b> folder.`;
-    } else if (folderType == "subject") {
+    }
+    if (folderType == "subject") {
       dragDropInstructionsText = `Drag and drop folders and files associated with the subject ${currentFolder}`;
-    } else if (folderType === "sample") {
+    }
+    if (folderType === "sample") {
       dragDropInstructionsText = `Drag and drop folders and files associated with the sample ${currentFolder}`;
+    }
+    if (folderType === "pool") {
+      dragDropInstructionsText = `Drag and drop folders and files associated with the pool ${currentFolder}`;
     }
 
     $("#items").html(
@@ -9390,3 +9723,7 @@ tippy("#datasetPathDisplay", {
   theme: "soda",
   maxWidth: "100%",
 });
+
+const createSpreadSheetWindow = async (spreadsheet) => {
+  ipcRenderer.send("spreadsheet", spreadsheet);
+};

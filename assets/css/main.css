@@ -274,6 +274,7 @@ button[data-id="bf_list_roles_team"] {
   border-radius: 7px;
   width: 90% !important;
 }
+button[data-id="guided-select-pennsieve-dataset-to-resume"],
 button[data-id="guided-sparc-award-dropdown"],
 button[data-id="bf_list_users_pi"],
 button[data-id="guided_bf_list_users_pi"],
@@ -286,7 +287,7 @@ button[data-id="guided_bf_list_users_and_teams"] {
 #pi_bootstrap_select_div > .dropdown.bootstrap-select {
   width: 550px;
 }
-
+#guided-pennsieve-dataset-resume-container > .dropdown.bootstrap-select,
 #guided_sparc_award_bootstrap_select_div > .dropdown.bootstrap-select,
 #guided_pi_bootstrap_select_div > .dropdown.bootstrap-select,
 #guided_permissions_select_div > .dropdown.bootstrap-select {

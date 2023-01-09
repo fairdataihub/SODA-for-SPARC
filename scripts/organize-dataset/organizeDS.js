@@ -211,8 +211,10 @@ function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
         },
       }).then((result) => {
         if (result.isConfirmed) {
+          copnsole.log(organizeCurrentLocation);
           var filtered = getGlobalPath(organizeCurrentLocation);
           var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
+          console.log(myPath);
 
           $("div.single-item.selected-item > .folder_desc").each(function (index, current_element) {
             itemToDelete = $(current_element).text();
@@ -1733,7 +1735,7 @@ const addFilesfunction = async (
                 nonAllowedDuplicate = true;
                 continue;
               } else {
-                //store in regular files
+                //no duplicates and no problems with file, thus we import
                 filesToImport[fileName] = {
                   path: filePath,
                   basename: fileName,
@@ -1917,13 +1919,13 @@ const addFilesfunction = async (
           let path_name = hiddenFiles[i];
 
           if (Object.keys(currentLocation["files"]).length > 0) {
-            for (const objectKey in currentLocation["files"]) {
+            for (const alreadyImportedFile in currentLocation["files"]) {
               //tries finding duplicates with the same path
-              if (objectKey != undefined) {
+              if (alreadyImportedFile != undefined) {
                 nonAllowedDuplicate = false;
-                if (file_name.substr(1, file_name.length) === objectKey) {
+                if (file_name.substr(1, file_name.length) === alreadyImportedFile) {
                   //if file already exist in json
-                  if (path_name === currentLocation["files"][objectKey]["path"]) {
+                  if (path_name === currentLocation["files"][alreadyImportedFile]["path"]) {
                     //same path and has not been renamed
                     nonAllowedDuplicateFiles.push(path_name);
                     nonAllowedDuplicate = true;
@@ -1967,13 +1969,13 @@ const addFilesfunction = async (
           let path_name = hiddenFiles[i];
 
           if (Object.keys(currentLocation["files"]).length > 0) {
-            for (const objectKey in currentLocation["files"]) {
+            for (const alreadyImportedFile in currentLocation["files"]) {
               //tries finding duplicates with the same path
-              if (objectKey != undefined) {
+              if (alreadyImportedFile != undefined) {
                 nonAllowedDuplicate = false;
                 //if file already exist in json
-                if (file_name === objectKey) {
-                  if (path_name === currentLocation["files"][objectKey]["path"]) {
+                if (file_name === alreadyImportedFile) {
+                  if (path_name === currentLocation["files"][alreadyImportedFile]["path"]) {
                     //same path and has not been renamed
                     nonAllowedDuplicateFiles.push(path_name);
                     nonAllowedDuplicate = true;

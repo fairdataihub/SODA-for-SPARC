@@ -1455,6 +1455,8 @@ $("#edit_banner_image_button").click(async () => {
   if ($("#para-current-banner-img").text() === "None") {
     //Do nothing... regular import
   } else {
+    console.log(img_src);
+    console.log(img_base64);
     let img_src = $("#current-banner-img").attr("src");
     let img_base64 = await getBase64(img_src); // encode image to base64
 
@@ -1466,6 +1468,7 @@ $("#edit_banner_image_button").click(async () => {
 
     // Look for the security token in the URL. If this this doesn't exist, something went wrong with the aws bucket link.
     let position = img_src.search("X-Amz-Security-Token");
+    console.log(position);
 
     if (position != -1) {
       // The image url will be before the security token
@@ -1553,143 +1556,11 @@ $("#edit_banner_image_button").click(async () => {
   }
 });
 
-// displays the user selected banner image using Jimp in the edit banner image modal
-const displayBannerImage = async (path) => {
-  if (path.length > 0) {
-    let original_image_path = path[0];
-    let image_path = original_image_path;
-    let destination_image_path = require("path").join(
-      homeDirectory,
-      "SODA",
-      "banner-image-conversion"
-    );
-    let converted_image_file = require("path").join(destination_image_path, "converted-tiff.jpg");
-    let conversion_success = true;
-    imageExtension = path[0].split(".").pop();
-
-    if (imageExtension.toLowerCase() == "tiff") {
-      $("body").addClass("waiting");
-      Swal.fire({
-        title: "Image conversion in progress!",
-        html: "Pennsieve does not support .tiff banner images. Please wait while SODA converts your image to the appropriate format required.",
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        showClass: {
-          popup: "animate__animated animate__fadeInDown animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__fadeOutUp animate__faster",
-        },
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      });
-
-      await Jimp.read(original_image_path)
-        .then(async (file) => {
-          if (!fs.existsSync(destination_image_path)) {
-            fs.mkdirSync(destination_image_path);
-          }
-
-          try {
-            if (fs.existsSync(converted_image_file)) {
-              fs.unlinkSync(converted_image_file);
-            }
-          } catch (err) {
-            conversion_success = false;
-            console.error(err);
-          }
-
-          return file.write(converted_image_file, async () => {
-            if (fs.existsSync(converted_image_file)) {
-              let stats = fs.statSync(converted_image_file);
-              let fileSizeInBytes = stats.size;
-              let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
-
-              if (fileSizeInMegabytes > 5) {
-                fs.unlinkSync(converted_image_file);
-
-                await Jimp.read(original_image_path)
-                  .then((file) => {
-                    return file.resize(1024, 1024).write(converted_image_file, () => {
-                      document.getElementById("div-img-container-holder").style.display = "none";
-                      document.getElementById("div-img-container").style.display = "block";
-
-                      $("#para-path-image").html(image_path);
-                      bfViewImportedImage.src = converted_image_file;
-                      myCropper.destroy();
-                      myCropper = new Cropper(bfViewImportedImage, cropOptions);
-                      $("#save-banner-image").css("visibility", "visible");
-                      $("body").removeClass("waiting");
-                    });
-                  })
-                  .catch((err) => {
-                    conversion_success = false;
-                    console.error(err);
-                  });
-                if (fs.existsSync(converted_image_file)) {
-                  let stats = fs.statSync(converted_image_file);
-                  let fileSizeInBytes = stats.size;
-                  let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
-
-                  if (fileSizeInMegabytes > 5) {
-                    conversion_success = false;
-                    // SHOW ERROR
-                  }
-                }
-              }
-              image_path = converted_image_file;
-              imageExtension = "jpg";
-              $("#para-path-image").html(image_path);
-              bfViewImportedImage.src = image_path;
-              myCropper.destroy();
-              myCropper = new Cropper(bfViewImportedImage, cropOptions);
-              $("#save-banner-image").css("visibility", "visible");
-            }
-          });
-        })
-        .catch((err) => {
-          conversion_success = false;
-          console.error(err);
-          Swal.fire({
-            icon: "error",
-            text: "Something went wrong",
-            confirmButtonText: "OK",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-        });
-      if (conversion_success == false) {
-        $("body").removeClass("waiting");
-        return;
-      } else {
-        Swal.close();
-      }
-    } else {
-      document.getElementById("div-img-container-holder").style.display = "none";
-      document.getElementById("div-img-container").style.display = "block";
-
-      $("#para-path-image").html(image_path);
-      bfViewImportedImage.src = image_path;
-      myCropper.destroy();
-      myCropper = new Cropper(bfViewImportedImage, cropOptions);
-
-      $("#save-banner-image").css("visibility", "visible");
-    }
-  } else {
-    if ($("#para-current-banner-img").text() === "None") {
-      $("#save-banner-image").css("visibility", "hidden");
-    } else {
-      $("#save-banner-image").css("visibility", "visible");
-    }
-  }
-};
-
 // Action when user click on "Import image" button for banner image
 $("#button-import-banner-image").click(async () => {
   $("#para-dataset-banner-image-status").html("");
   let filePaths = await ipcRenderer.invoke("open-file-dialog-import-banner-image");
-  displayBannerImage(filePaths);
+  handleSelectedBannerImage(filePaths, "freeform");
 });
 
 const uploadBannerImage = async () => {
@@ -1992,6 +1863,7 @@ const showCurrentBannerImage = async () => {
       myCropper.destroy();
     } else {
       document.getElementById("para-current-banner-img").innerHTML = "";
+      console.log(res);
       bfCurrentBannerImg.src = res;
     }
     $("#banner_image_loader").hide();

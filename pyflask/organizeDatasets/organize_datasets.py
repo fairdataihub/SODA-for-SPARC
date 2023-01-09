@@ -6,6 +6,8 @@ monkey.patch_all()
 import platform
 import os
 from os import makedirs, mkdir, walk
+from openpyxl.styles import PatternFill, Font
+from openpyxl import load_workbook
 from os.path import (
     isdir,
     join,
@@ -362,6 +364,23 @@ def create_folder_level_manifest(jsonpath, jsondescription):
                 # Save manifest as Excel sheet
                 manifestfile = join(folderpath, "manifest.xlsx")
                 df.to_excel(manifestfile, index=None, header=True)
+                wb = load_workbook(manifestfile)
+                ws = wb.active
+                blueFill = PatternFill(
+                    start_color="9DC3E6", fill_type="solid"
+                )
+                greenFill = PatternFill(
+                    start_color="A8D08D", fill_type="solid"
+                )
+                yellowFill = PatternFill(
+                    start_color="FFD965", fill_type="solid"
+                )
+                ws['A1'].fill = blueFill
+                ws['B1'].fill = greenFill
+                ws['C1'].fill = greenFill
+                ws['D1'].fill = greenFill
+                ws['E1'].fill = yellowFill
+                wb.save(manifestfile)
                 total_dataset_size += path_size(manifestfile)
                 jsonpath[folder].append(manifestfile)
 
@@ -1085,11 +1104,12 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
             if item_name in high_level_metadata_sparc:
                 create_soda_json_progress += 1
                 # is a metadata file
-                soda_json_structure["metadata-files"][item_name] = {
-                    "type": "bf",
-                    "action": ["existing"],
-                    "path": item_id,
-                }
+                if "metadata-files" in soda_json_structure.keys():
+                    soda_json_structure["metadata-files"][item_name] = {
+                        "type": "bf",
+                        "action": ["existing"],
+                        "path": item_id,
+                    }
         else:
             if item_name in high_level_sparc_folders:
                 create_soda_json_progress += 1

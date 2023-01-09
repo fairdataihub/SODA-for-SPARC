@@ -169,9 +169,16 @@ const metadataFileExtensionObject = {
   code_description: [".xlsx"],
   code_parameters: [".xlsx", ".csv", ".tsv", ".json"],
   data_deliverable: [".docx", ".doc"],
+  bannerImage: [".png", ".PNG", ".jpeg", ".JPEG", ".tiff"],
 };
 
-async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeliverables = false) {
+const dropHandler = async (
+  ev,
+  paraElement,
+  metadataFile,
+  curationMode,
+  dataDeliverables = false
+) => {
   var gettingStartedSection = false;
   if (curationMode === "guided-getting-started") {
     curationMode = "guided";
@@ -189,7 +196,12 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
       var file = ev.dataTransfer.items[0].getAsFile();
       var metadataWithoutExtension = file.name.slice(0, file.name.indexOf("."));
       var extension = file.name.slice(file.name.indexOf("."));
-
+      if (ev.dataTransfer.items[0].type.includes("image")) {
+        //handle dropped images for banner images
+        let path = [file.path];
+        handleSelectedBannerImage(path, "guided-mode");
+        $("#guided-banner-image-modal").modal("show");
+      }
       if (dataDeliverables === true) {
         let filepath = file.path;
         var award = $("#submission-sparc-award");
@@ -267,43 +279,6 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
               loop: true,
               autoplay: true,
             });
-
-            if (gettingStartedSection === true) {
-              const DDLottie = document.getElementById("swal-data-deliverable");
-              DDLottie.innerHTML = "";
-              lottie.loadAnimation({
-                container: DDLottie,
-                animationData: successCheck,
-                renderer: "svg",
-                loop: true,
-                autoplay: true,
-              });
-              let swal_actions = document.getElementsByClassName("swal2-actions")[0];
-              swal_actions.children[1].style.display = "flex";
-              let swal_content = document.getElementsByClassName("swal2-content")[0];
-
-              let ddFilePath = sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"];
-              if (ddFilePath) {
-                //append file path
-                let firstItem = swal_content.children[0];
-                let paragraph = document.createElement("p");
-                let paragraph2 = document.createElement("p");
-                paragraph.id = "getting-started-filepath";
-                paragraph2.innerText =
-                  "To replace the current Data Deliverables just drop in or select a new one.";
-                paragraph2.style.marginBottom = "1rem";
-                paragraph.style.marginTop = "1rem";
-                paragraph.style.fontWeight = "700";
-                paragraph.innerText = "File Path: " + ddFilePath;
-                if (firstItem.children[0].id === "getting-started-filepath") {
-                  firstItem.children[0].remove();
-                  firstItem.children[firstItem.childElementCount - 1].remove();
-                }
-                firstItem.append(paragraph2);
-                firstItem.prepend(paragraph);
-                document.getElementById("guided-button-import-data-deliverables").click();
-              }
-            }
           }
         } catch (error) {
           clientError(error);
@@ -315,7 +290,7 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
           });
         }
       } else {
-        //dataDelieravles is true for the name to be however it needs to be, just check extension is doc or docx
+        //data deliverables is true for the name to be however it needs to be, just check extension is doc or docx
         if (metadataWithoutExtension === metadataFile) {
           if (metadataFileExtensionObject[metadataFile].includes(extension)) {
             document.getElementById(paraElement).innerHTML = file.path;
@@ -328,7 +303,7 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
                 .css("display", "none");
             }
             if (curationMode === "guided") {
-              //Add success checkmark lottie animation inside metadata card
+              //Add success check mark lottie animation inside metadata card
               const dragDropContainer = document.getElementById(paraElement).parentElement;
               //get the value of data-code-metadata-file-type from dragDropContainer
               const metadataFileType = dragDropContainer.dataset.codeMetadataFileType;
@@ -363,7 +338,7 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
         "<span style='color:red'>Please only drag and drop a file!</span>";
     }
   }
-}
+};
 
 const checkAvailableSpace = () => {
   const roundToHundredth = (value) => {
@@ -1032,7 +1007,7 @@ function checkPrevDivForConfirmButton(category) {
   }
 }
 
-function create_child_node(
+const create_child_node = (
   oldFormatNode,
   nodeName,
   type,
@@ -1042,7 +1017,11 @@ function create_child_node(
   disabledState,
   selectedOriginalLocation,
   viewOptions
-) {
+) => {
+  console.log(nodeName);
+  console.log(selectedOriginalLocation);
+  console.log(oldFormatNode);
+  console.log(ext);
   /*
   oldFormatNode: node in the format under "dataset-structure" key in SODA object
   nodeName: text to show for each node (name)
@@ -1186,7 +1165,7 @@ function create_child_node(
     }
   }
   return newFormatNode;
-}
+};
 
 function recursiveExpandNodes(object) {
   // var newFormatNode = {"text": nodeName,
@@ -1222,7 +1201,19 @@ $(document).ready(function () {
       data: {},
       expand_selected_onload: true,
     },
-    plugins: ["types", "changed"],
+    plugins: ["types", "changed", "sort"],
+    sort: function (a, b) {
+      a1 = this.get_node(a);
+      b1 = this.get_node(b);
+
+      if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
+        //if the word assets is included in the icon then we can assume it is a file
+        //folder icons are under font awesome meanwhile files come from the assets folder
+        return a1.text > b1.text ? 1 : -1;
+      } else {
+        return a1.icon < b1.icon ? 1 : -1;
+      }
+    },
     types: {
       folder: {
         icon: "fas fa-folder fa-fw",
@@ -1545,6 +1536,9 @@ const moveItems = async (ev, category) => {
 };
 
 function moveItemsHelper(item, destination, category) {
+  console.log("item: ", item);
+  console.log("destination: ", destination);
+  console.log("category: ", category);
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   var selectedNodeList = destination.split("/").slice(1);
@@ -1702,7 +1696,19 @@ $(document).ready(function () {
       check_callback: true,
       data: {},
     },
-    plugins: ["types"],
+    plugins: ["types", "sort"],
+    sort: function (a, b) {
+      a1 = this.get_node(a);
+      b1 = this.get_node(b);
+
+      if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
+        //if the word assets is included in the icon then we can assume it is a file
+        //folder icons are under font awesome meanwhile files come from the assets folder
+        return a1.text > b1.text ? 1 : -1;
+      } else {
+        return a1.icon < b1.icon ? 1 : -1;
+      }
+    },
     types: {
       folder: {
         icon: "fas fa-folder fa-fw",

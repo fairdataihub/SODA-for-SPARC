@@ -17,7 +17,6 @@ build/
 app.spec
 
 *.pyc
-package-lock.json
 src/.DS_Store
 .DS_Store
 electron-builder.yml
@@ -33,3 +32,4 @@ src/build
 .env
 .env.local
 .env.production
+access_token.txt
