@@ -2703,8 +2703,9 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 total_bytes_to_upload = events_dict["upload_status"].total
                 current_bytes_uploaded = events_dict["upload_status"].current
 
-                namespace_logger.info(total_bytes_uploaded)
-                namespace_logger.info(current_bytes_uploaded)
+                
+                namespace_logger.info(f"The bytes uploaded for the current file ({file_id}): {current_bytes_uploaded}")
+                namespace_logger.info(f"The total bytes needed to upload for the file({file_id}): {total_bytes_to_upload}")
 
 
                 # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
@@ -2713,21 +2714,28 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 # update the file id's current total bytes uploaded value 
                 bytes_uploaded_per_file[file_id] = current_bytes_uploaded
 
+                # sometimes a user uploads the same file to multiple locations in the same session. Edge case. Handle it by resetting the value to 0 if it is equivalent to the 
+                # total bytes for that file 
+                if previous_bytes_uploaded == total_bytes_to_upload:
+                    previous_bytes_uploaded = 0 
+
+                namespace_logger.info(f"The previous bytes uploaded for the current file ({file_id}): {previous_bytes_uploaded}")
+
                 # calculate the additional amount of bytes that have just been uploaded for the given file id
                 total_bytes_uploaded["value"] += current_bytes_uploaded - previous_bytes_uploaded
 
                 namespace_logger.info(total_bytes_uploaded["value"])
 
                 # check if the given file has finished uploading
-                if current_bytes_uploaded == total_bytes_to_upload:
+                if current_bytes_uploaded == total_bytes_to_upload and  file_id != "":
                     print("File uploaded")
                     files_uploaded += 1
                     main_curation_uploaded_files += 1
                     namespace_logger.info("Files Uploaded: " + str(files_uploaded) + "/" + str(current_files_in_subscriber_session))
-                    # namespace_logger.info("Total Bytes
+                    
 
                 # check if the upload has finished
-                if files_uploaded == current_files_in_subscriber_session:
+                if files_uploaded == current_files_in_subscriber_session :
                     print("Finished")
                     # namespace_logger.info("Upload complete")
                     # unsubscribe from the agent's upload messages since the upload has finished
@@ -2764,7 +2772,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             relative_path,
         )
 
-        namespace_logger.info(list_upload_files)
 
         # calculate the number of files in the dataset that will be uploaded
         # the total is shown to the front end client to communicate how many files have been uploaded so far
@@ -2869,6 +2876,11 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         # set the dataset 
         ps.use_dataset(ds["content"]["id"])
 
+
+        namespace_logger.info("Uploading files now")
+        namespace_logger.info(f"TOTAL FILES TO UPLOAD: {total_dataset_files}")
+        namespace_logger.info(f"TOTAL SIZE OF FILES TO UPLOAD: {main_total_generate_dataset_size}")
+
         # create a manifest - IMP: We use a single file to start with since creating a manifest requires a file path.  We need to remove this at the end. 
         if len(list_upload_files) > 0:
             first_file_local_path = list_upload_files[0][0][0]
@@ -2929,9 +2941,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             ps.subscribe(10, False, monitor_subscriber_progress)
 
 
-            namespace_logger.info("Uploading files now")
-            namespace_logger.info(f"TOTAL FILES TO UPLOAD: {total_dataset_files}")
-            namespace_logger.info(f"TOTAL SIZE OF FILES TO UPLOAD: {main_total_generate_dataset_size}")
+            
 
         # 6. Upload metadata files
         if list_upload_metadata_files:
@@ -2999,8 +3009,11 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             ps.subscribe(10, False, monitor_subscriber_progress)
 
 
+        # wait a few moments
+        time.sleep(500)
+
         # # stop the agent so that we can remove the manifest files that have just been uploaded
-        # stop_agent()
+        stop_agent()
 
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
 
