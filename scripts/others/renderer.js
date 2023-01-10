@@ -7391,6 +7391,11 @@ async function initiate_generate() {
     document.getElementById("sidebarCollapse").click();
   }
 
+  if ($("#generate-manifest-curate")[0].checked) {
+    sodaJSONObj["manifest-files"]["destination"] = "auto-generated";
+    console.log("setting destination status to auto generated");
+  }
+
   //dissmisButton.addEventListener("click", dismiss('status-bar-curate-progress'));
   if ("manifest-files" in sodaJSONObj) {
     if ("destination" in sodaJSONObj["manifest-files"]) {
@@ -7401,6 +7406,7 @@ async function initiate_generate() {
       if (sodaJSONObj["manifest-files"]["destination"] === "auto-generated") {
         delete_imported_manifest();
       }
+      console.log(sodaJSONObj["manifest-files"]["destination"]);
     }
   }
   let dataset_destination = "";
