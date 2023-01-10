@@ -369,6 +369,11 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           let key_name = result.value.name;
           let apiKey = result.value.key;
           let apiSecret = result.value.secret;
+
+          // lowercase the key_name the user provided
+          // this is to prevent an issue caused by the pennsiev agent
+          // wherein it fails to validate an account if it is not lowercase
+          key_name = key_name.toLowerCase();
           //needs to be replaced
           try {
             console.log("Sending request to add account");
