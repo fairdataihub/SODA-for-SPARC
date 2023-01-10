@@ -34,7 +34,8 @@ from manifest import create_high_level_manifest_files_existing_bf_starting_point
 from pysodaUtils import (
     check_forbidden_characters_bf,
     get_agent_installation_location,
-    stop_agent
+    stop_agent,
+    start_agent
 )
 
 from organizeDatasets import import_pennsieve_dataset
@@ -2013,6 +2014,10 @@ def build_create_folder_request(folder_name, folder_parent_id, dataset_id):
     return body
 
 
+bytes_uploaded_per_file = {}
+total_bytes_uploaded = {"value": 0}
+current_files_in_subscriber_session = 0
+
 def cleanup_dataset_root(selected_dataset, my_tracking_folder, ps):
     """
     Remove any duplicate files we uploaded to the user's Pennsieve dataset. This happens because the Pennsieve agent does not currently support
@@ -2443,16 +2448,18 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 # calculate the additional amount of bytes that have just been uploaded for the given file id
                 total_bytes_uploaded["value"] += current_bytes_uploaded - previous_bytes_uploaded
 
+                namespace_logger.info(total_bytes_uploaded["value"])
+
                 # check if the given file has finished uploading
-                if current_bytes_uploaded == total_bytes_to_upload:
+                if current_bytes_uploaded == total_bytes_to_upload and  file_id != "":
                     print("File uploaded")
                     files_uploaded += 1
                     main_curation_uploaded_files += 1
-                    namespace_logger.info(f"Files Uploaded: {files_uploaded}/{(current_files_in_subscriber_session)}")
-                                    # namespace_logger.info("Total Bytes
+                    namespace_logger.info("Files Uploaded: " + str(files_uploaded) + "/" + str(current_files_in_subscriber_session))
+                    
 
                 # check if the upload has finished
-                if files_uploaded == current_files_in_subscriber_session and file_id != "":
+                if files_uploaded == current_files_in_subscriber_session:
                     print("Finished")
                     namespace_logger.info("Upload complete")
                     # unsubscribe from the agent's upload messages since the upload has finished
@@ -2489,7 +2496,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             relative_path,
         )
 
-        namespace_logger.info(list_upload_files)
 
         # calculate the number of files in the dataset that will be uploaded
         # the total is shown to the front end client to communicate how many files have been uploaded so far
@@ -2498,7 +2504,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             file_paths_count = len(folderInformation[0])
             total_files += file_paths_count
             total_dataset_files += file_paths_count
-
+            
+        
 
 
         # main_curate_progress_message = "About to update after doing recursive dataset scan"
@@ -2604,18 +2611,24 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         # set the dataset 
         ps.use_dataset(ds["content"]["id"])
 
+
+        namespace_logger.info("Uploading files now")
+        namespace_logger.info(f"TOTAL FILES TO UPLOAD: {total_dataset_files}")
+        namespace_logger.info(f"TOTAL SIZE OF FILES TO UPLOAD: {main_total_generate_dataset_size}")
+
         # create a manifest - IMP: We use a single file to start with since creating a manifest requires a file path.  We need to remove this at the end. 
         if len(list_upload_files) > 0:
             first_file_local_path = list_upload_files[0][0][0]
             first_relative_path = list_upload_files[0][6]
             folder_name = first_relative_path[first_relative_path.index("/"):]
-            
+            namespace_logger.info(f"First file added to manifest at this folder name {folder_name}")
             manifest_data = ps.manifest.create(first_file_local_path, folder_name[1:])
             manifest_id = manifest_data.manifest_id
 
-            # remove the item just added to the manifest
+            # remove the item just added to the manifest 
             list_upload_files[0][0].pop(0)
-            
+
+            # there are files to add to the manifest if there are more than one file in the first folder or more than one folder
             if len(list_upload_files[0][0]) > 1 or len(list_upload_files) > 1:
                 namespace_logger.info("Made it into list of files correctly")
                 for folderInformation in list_upload_files:
@@ -2645,6 +2658,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     loc = get_agent_installation_location()
                     # skio the first file as it has already been uploaded
                     for file_path in list_file_paths:
+                        namespace_logger.info(f"File path is: {file_path}")
                         #print("Queing file for upload")
                         namespace_logger.info(f"File path is: {file_path}")
                         # subprocess call to the pennsieve agent to add the files to the manifest
@@ -2660,15 +2674,10 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
             main_curate_progress_message = ("Uploading data files...")
 
-            files_uploaded = 0
-            bytes_uploaded_per_file = {}
-
             ps.subscribe(10, False, monitor_subscriber_progress)
 
 
-            namespace_logger.info("Uploading files now")
-            namespace_logger.info(f"TOTAL FILES TO UPLOAD: {total_dataset_files}")
-            namespace_logger.info(f"TOTAL SIZE OF FILES TO UPLOAD: {main_total_generate_dataset_size}")
+            
 
         # 6. Upload metadata files
         if list_upload_metadata_files:
@@ -2698,29 +2707,32 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             # subscribe to the manifest upload so we wait until it has finished uploading before moving on
             ps.subscribe(10, False, monitor_subscriber_progress)
 
+
+        namespace_logger.info("Finished uploading metadata files")
         # 7. Upload manifest files
         if list_upload_manifest_files:
             namespace_logger.info("bf_generate_new_dataset (optional) step 7 upload manifest files")
+            # # start the agent
+            # start_agent()
 
             ps_folder = list_upload_manifest_files[0][1]
             manifest_data = ps.manifest.create(list_upload_manifest_files[0][0][0], ps_folder)
             manifest_id = manifest_data.manifest_id
 
-            total_manifest_files += 1
-
             loc = get_agent_installation_location()
 
             if len(list_upload_manifest_files) > 1:
-                for item in list_upload_manifest_files:
+                for item in list_upload_manifest_files[1:]:
+                    namespace_logger.info(item)
                     manifest_file = item[0][0]
                     ps_folder = item[1]
-                    main_curate_progress_message = ( f"Uploading manifest file in {ps_folder['content']['name']} folder" )
-
+                    main_curate_progress_message = ( f"Uploading manifest file in {ps_folder} folder" )
+                    print("Before failure on manifest adding")
+                    
                     # add the files to the manifest
                     # subprocess call to the pennsieve agent to add the files to the manifest
-                    subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), manifest_file, "-t", f"/{ps_folder['content']['name']}"])
-
-
+                    subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), manifest_file, "-t", f"{ps_folder}"])
+                
             bytes_uploaded_per_file = {}
             current_files_in_subscriber_session = total_manifest_files
             files_uploaded = 0
@@ -2731,9 +2743,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             ps.manifest.upload(manifest_id)
 
             ps.subscribe(10, False, monitor_subscriber_progress)
-
-            bytes_uploaded_per_file = {}
-            files_uploaded = 0 
 
         #wait a few memoments
         # before we can remove files we need to wait for all of the Agent's threads/subprocesses to finish

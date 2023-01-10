@@ -77,6 +77,7 @@ start_submit = 0
 metadatapath = join(userpath, "SODA", "SODA_metadata")
 
 total_bytes_uploaded = {}
+
 bf = ""
 myds = ""
 initial_bfdataset_size = 0
@@ -500,8 +501,6 @@ def bf_dataset_account(accountname):
     r.raise_for_status()
     datasets = r.json()
 
-    namespace_logger.info(f"datasets_dict: {datasets}")
-
     datasets_list = []
     for ds in datasets:
         datasets_list.append({"name": ds["content"]["name"], "id": ds["content"]["id"]})
@@ -776,31 +775,55 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
     def monitor_subscriber_progress(events_dict):
         """
-        Monitors the progress of a subscriber and unsubscribes once the upload finishes
+        Monitors the progress of a subscriber and unsubscribes once the upload finishes. 
         """
+
         total_dataset_files = total_files_to_upload
         global files_uploaded
         global total_bytes_uploaded
 
-        if events_dict["type"] == 1:
+        print("In callback")
+        print(events_dict)
+
+        if events_dict["type"] == 1:  # upload status: file_id, total, current, worker_id
+            #logging.debug("UPLOAD STATUS: " + str(events_dict["upload_status"]))
             file_id = events_dict["upload_status"].file_id
             total_bytes_to_upload = events_dict["upload_status"].total
             current_bytes_uploaded = events_dict["upload_status"].current
 
-            #get the previous bytes uploaded for the give file id - use 0 if no bytes have been uploaded for this file id yet
+            print(file_id)
+            print(total_bytes_to_upload)
+            print(current_bytes_uploaded)
+
+            print(events_dict)
+
+            
+            # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
             previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
+
+            # update the file id's current total bytes uploaded value 
+            bytes_uploaded_per_file[file_id] = current_bytes_uploaded
 
             # calculate the additional amount of bytes that have just been uploaded for the given file id
             total_bytes_uploaded["value"] += current_bytes_uploaded - previous_bytes_uploaded
 
+            print(total_bytes_uploaded)
+
             # check if the given file has finished uploading
             if current_bytes_uploaded == total_bytes_to_upload:
+                print("File uploaded")
                 files_uploaded += 1
+                # main_curation_uploaded_files += 1
+                # namespace_logger.info("Files Uploaded: " + str(files_uploaded) + "/" + str(total_dataset_files))
+                # namespace_logger.info("Total Bytes
 
+            # check if the upload has finished
             if files_uploaded == total_dataset_files:
-                namespace_logger.info("Upload complete")
+                print("Finished")
+                # namespace_logger.info("Upload complete")
                 # unsubscribe from the agent's upload messages since the upload has finished
                 ps.unsubscribe(10)
+
 
     # check if the local dataset folder exists
     if not isdir(pathdataset):
@@ -827,6 +850,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
     namespace_logger.info("Created a ps instance")
 
+    namespace_logger.info(f"Account is {accountname}")
+
 
     # select the user
     try:
@@ -837,6 +862,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         did_upload = False
         error_message = "Please select a valid Pennsieve account"
         abort(400, error_message)
+
+    namespace_logger.info("Switched to given account")
 
 
     # reauthenticate the user
@@ -849,19 +876,22 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         error_message = "Could not reauthenticate this user"
         abort(400, error_message)
 
+    namespace_logger.info(f"Using dataset {bfdataset}")
+
     selected_dataset_id = get_dataset_id(ps, bfdataset)
 
     # select the dataset 
     try:
-        ps.use_dataset(selected_dataset_id)
+        ps.use_dataset("christmas")
+        namespace_logger.info("Used the dataset")
     except Exception as e:
+        print("FAASFSF")
         submitdatastatus = "Done"
         did_fail = True
         did_upload = False
         error_message = "Please select a valid Pennsieve dataset"
-        abort(400, error_message)
-
-
+        # pass
+        # abort(400, error_message)
 
     # get the dataset size before starting the upload
     total_file_size, invalid_dataset_messages, total_files_to_upload = get_dataset_size(pathdataset)
@@ -882,6 +912,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         did_upload = False
         abort(403, "You don't have permissions for uploading to this Pennsieve dataset")
 
+    print("Has permissions")
 
     ## check if agent is installed
     # try:
@@ -903,6 +934,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         error_message = "Could not create manifest file for this dataset"
         abort(500, e)
     
+    print("Created manifest")
 
     # upload the dataset
     try:
@@ -912,9 +944,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         start_submit = 1
         manifest_id = manifest_data.manifest_id
         ps.manifest.upload(manifest_id)
-        # subscription_rendezvous_object = ps.subscribe(10)
-        ps.subscribe(1, False, monitor_subscriber_progress)
-
+        print("Uploading the files")
+        ps.subscribe(10, False, monitor_subscriber_progress)
         namespace_logger.info("Upload complete now no more messages")
         submitdatastatus = "Done"
     except Exception as e:

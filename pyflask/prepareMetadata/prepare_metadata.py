@@ -12,12 +12,12 @@ from os.path import (
     expanduser,
     getsize,
 )
-from functools import partial
 import pandas as pd
 import csv
 import shutil
 import numpy as np
 import json
+from functools import partial
 from pennsieve2.pennsieve import Pennsieve
 #from pennsieve import Pennsieve
 from manageDatasets import bf_dataset_account
@@ -197,7 +197,10 @@ def subscriber_metadata(ps, events_dict):
 def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_after_upload):
     global namespace_logger
     ## check if agent is running in the background
+    # TODO: convert to new agent (agent_running is part of the old agent)
     start_agent()
+
+    namespace_logger.info("Connecting to the pennsieve client")
 
     namespace_logger.info("Connecting to the pennsieve client")
     
@@ -241,18 +244,15 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
     subscriber_metadata_ps_client = partial(subscriber_metadata, ps)
     # subscribe for the upload to finish
     ps.subscribe(10, False, subscriber_metadata_ps_client)
+    ps.subscribe(10, False, subscriber_metadata_ps_client)
 
-    # kill the agent then start it again
-    stop_agent()
     # before we can remove files we need to wait for all of the Agent's threads/subprocesses to finish
     # elsewise we get an error that the file is in use and therefore cannot be deleted
     time.sleep(5)
 
-    # delete the local file that was created for the purpose of uploading to Pennsieve
+    # # delete the local file that was created for the purpose of uploading to Pennsieve
     if delete_after_upload:
         os.remove(file_path)
-
-    start_agent()
 
 
 def excel_columns(start_index=0):
