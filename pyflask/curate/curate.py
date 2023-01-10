@@ -33,7 +33,8 @@ from manifest import create_high_level_manifest_files_existing_bf_starting_point
 
 from pysodaUtils import (
     check_forbidden_characters_bf,
-    get_agent_installation_location
+    get_agent_installation_location,
+    stop_agent
 )
 
 from organizeDatasets import import_pennsieve_dataset
@@ -2423,14 +2424,21 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 total_bytes_to_upload = events_dict["upload_status"].total
                 current_bytes_uploaded = events_dict["upload_status"].current
 
-                namespace_logger.info(total_bytes_uploaded)
-                namespace_logger.info(current_bytes_uploaded)
+                namespace_logger.info(f"The bytes uploaded for the current file ({file_id}): {current_bytes_uploaded}")
+                namespace_logger.info(f"The total bytes needed to upload for the file({file_id}): {total_bytes_to_upload}")
 
                 # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
                 previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
 
                 # update the file id's current total bytes uploaded value 
                 bytes_uploaded_per_file[file_id] = current_bytes_uploaded
+
+                # sometimes a user uploads the same file to multiple locations in the same session. Edge case. Handle it by resetting the value to 0 if it is equivalent to the 
+                # total bytes for that file 
+                if previous_bytes_uploaded == total_bytes_to_upload:
+                    previous_bytes_uploaded = 0 
+
+                namespace_logger.info(f"The previous bytes uploaded for the current file ({file_id}): {previous_bytes_uploaded}")
 
                 # calculate the additional amount of bytes that have just been uploaded for the given file id
                 total_bytes_uploaded["value"] += current_bytes_uploaded - previous_bytes_uploaded
@@ -2444,7 +2452,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                                     # namespace_logger.info("Total Bytes
 
                 # check if the upload has finished
-                if files_uploaded == current_files_in_subscriber_session:
+                if files_uploaded == current_files_in_subscriber_session and file_id != "":
                     print("Finished")
                     namespace_logger.info("Upload complete")
                     # unsubscribe from the agent's upload messages since the upload has finished
@@ -2600,9 +2608,14 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         if len(list_upload_files) > 0:
             first_file_local_path = list_upload_files[0][0][0]
             first_relative_path = list_upload_files[0][6]
-
-            manifest_data = ps.manifest.create(first_file_local_path, first_relative_path)
+            folder_name = first_relative_path[first_relative_path.index("/"):]
+            
+            manifest_data = ps.manifest.create(first_file_local_path, folder_name[1:])
             manifest_id = manifest_data.manifest_id
+
+            # remove the item just added to the manifest
+            list_upload_files[0][0].pop(0)
+            
             if len(list_upload_files[0][0]) > 1 or len(list_upload_files) > 1:
                 namespace_logger.info("Made it into list of files correctly")
                 for folderInformation in list_upload_files:
@@ -2630,12 +2643,18 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                         folder_name = relative_path
 
                     loc = get_agent_installation_location()
+                    # skio the first file as it has already been uploaded
                     for file_path in list_file_paths:
                         #print("Queing file for upload")
                         namespace_logger.info(f"File path is: {file_path}")
                         # subprocess call to the pennsieve agent to add the files to the manifest
-                        subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), file_path, "-t", folder_name])
+                        subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), file_path, "-t", folder_name[1:]])
 
+            bytes_uploaded_per_file = {}
+            total_bytes_uploaded = {"value": 0}
+            current_files_in_subscriber_session = total_dataset_files
+            file_uploaded = 0
+            
             # upload the manifest files
             ps.manifest.upload(manifest_id)
 
@@ -2683,15 +2702,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         if list_upload_manifest_files:
             namespace_logger.info("bf_generate_new_dataset (optional) step 7 upload manifest files")
 
-            # create the manifest
-            print("$" * 40)
-            # print(list_upload_manifest_files[0]); #
-            print("$" * 40)
-            # print(list_upload_manifest_files)
-            print("$" * 40)
-            # print(list_upload_manifest_files[0].folder) #provides the path
-            print("$" * 40)
-
             ps_folder = list_upload_manifest_files[0][1]
             manifest_data = ps.manifest.create(list_upload_manifest_files[0][0][0], ps_folder)
             manifest_id = manifest_data.manifest_id
@@ -2715,6 +2725,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             current_files_in_subscriber_session = total_manifest_files
             files_uploaded = 0
 
+            namespace_logger.info(f"Uploading {total_manifest_files} manifest files to Pennsieve.")
+
             # upload the manifest 
             ps.manifest.upload(manifest_id)
 
@@ -2723,6 +2735,12 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             bytes_uploaded_per_file = {}
             files_uploaded = 0 
 
+        #wait a few memoments
+        # before we can remove files we need to wait for all of the Agent's threads/subprocesses to finish
+        # elsewise we get an error that the file is in use and therefore cannot be deleted
+        time.sleep(1)
+
+        # stop_agent()
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
 
     except Exception as e:

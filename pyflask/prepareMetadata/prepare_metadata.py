@@ -4,6 +4,7 @@
 
 import platform
 import os
+import time
 from os.path import (
     isdir,
     join,
@@ -11,6 +12,7 @@ from os.path import (
     expanduser,
     getsize,
 )
+from functools import partial
 import pandas as pd
 import csv
 import shutil
@@ -181,36 +183,32 @@ def upload_RC_file(text_string, file_type, bfaccount, bfdataset):
     return { "size": size, "filepath": file_path }
 
 
-def subscriber_metadata(ps):
-    # subscriber or it will not finish uploading i guess 
-    sub = ps.subscribe(10)
-
-    for msg in sub:
-        current_bytes_uploaded = msg.upload_status.current 
-        total_bytes_to_upload = msg.upload_status.total
-
-        if total_bytes_to_upload != 0:
-            if current_bytes_uploaded == total_bytes_to_upload:
-                ps.unsubscribe(10)
+def subscriber_metadata(ps, events_dict):
+    if events_dict["type"] == 1:
+        fileid = events_dict["upload_status"].file_id
+        total_bytes_to_upload = events_dict["upload_status"].total
+        current_bytes_uploaded = events_dict["upload_status"].current
+        namespace_logger.info("File upload progress: " + str(current_bytes_uploaded) + "/" + str(total_bytes_to_upload))
+        namespace_logger.info("For file: " + fileid)
+        if current_bytes_uploaded == total_bytes_to_upload and fileid != "":
+            namespace_logger.info("File upload complete")
+            ps.unsubscribe(10)
 
 def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_after_upload):
+    global namespace_logger
     ## check if agent is running in the background
     # TODO: convert to new agent (agent_running is part of the old agent)
-    # agent_running()
-
+    start_agent()
+    namespace_logger.info("Connecting to the pennsieve client")
     ps = connect_pennsieve_client()
-
     authenticate_user_with_client(ps, bfaccount)
     
     # check that the Pennsieve dataset is valid
     selected_dataset_id = get_dataset_id(ps, bfdataset)
-
     # check that the user has permissions for uploading and modifying the dataset
     if not has_edit_permissions(ps, selected_dataset_id):
         abort(403, "You do not have permissions to edit this dataset.")
-
     headers = create_request_headers(ps)
-
     # handle duplicates on Pennsieve: first, obtain the existing file ID
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
     r.raise_for_status()
@@ -221,35 +219,40 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
             jsonfile = {
                 "things": [item_id]
             }
-
             # then, delete it using Pennsieve method delete(id)\vf = Pennsieve()
             r = requests.post(f"{PENNSIEVE_URL}/data/delete",json=jsonfile, headers=headers)
             r.raise_for_status()
-
     try:
+        namespace_logger.info("Pre use_ds and manfiest create")
         # create a new manifest for the metadata file
-        ps.useDataset(selected_dataset_id)
+        ps.use_dataset(selected_dataset_id)
         manifest = ps.manifest.create(file_path)
         m_id = manifest.manifest_id
     except Exception as e:
         error_message = "Could not create manifest file for this dataset"
         abort(500, error_message)
-
+    namespace_logger.info("Finished pennsieve setup and created manifest")
+    
     # upload the manifest file
     # ps.manifest.upload(m_id)
     ps.manifest.upload(m_id)
-
+    # create a subscriber function with ps attached so it can be used to unusbscribe
+    subscriber_metadata_ps_client = partial(subscriber_metadata, ps)
     # subscribe for the upload to finish
-    subscriber_metadata(ps)
+    ps.subscribe(10, False, subscriber_metadata_ps_client)
 
     # kill the agent then start it again
     stop_agent()
+    # before we can remove files we need to wait for all of the Agent's threads/subprocesses to finish
+    # elsewise we get an error that the file is in use and therefore cannot be deleted
+    time.sleep(5)
 
     # delete the local file that was created for the purpose of uploading to Pennsieve
     if delete_after_upload:
         os.remove(file_path)
 
     start_agent()
+
 
 def excel_columns(start_index=0):
     """
