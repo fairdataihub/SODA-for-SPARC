@@ -823,11 +823,11 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
             print(total_bytes_uploaded)
 
             # check if the given file has finished uploading
-            if current_bytes_uploaded == total_bytes_to_upload:
+            if current_bytes_uploaded == total_bytes_to_upload and file_id != "":
                 print("File uploaded")
                 files_uploaded += 1
                 # main_curation_uploaded_files += 1
-                # namespace_logger.info("Files Uploaded: " + str(files_uploaded) + "/" + str(total_dataset_files))
+                namespace_logger.info("Files Uploaded: " + str(files_uploaded) + "/" + str(total_dataset_files))
                 # namespace_logger.info("Total Bytes
 
             # check if the upload has finished
@@ -895,7 +895,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
     # select the dataset 
     try:
-        ps.use_dataset("christmas")
+        ps.use_dataset(bfdataset)
         namespace_logger.info("Used the dataset")
     except Exception as e:
         print("FAASFSF")
@@ -953,7 +953,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     try:
         submitprintstatus = "Uploading"
         start_time_bf_upload = time.time()
-        initial_bfdataset_size_submit = bf_dataset_size(ps, selected_dataset_id)
+        # initial_bfdataset_size_submit = bf_dataset_size(ps, selected_dataset_id)
         start_submit = 1
         manifest_id = manifest_data.manifest_id
         ps.manifest.upload(manifest_id)
