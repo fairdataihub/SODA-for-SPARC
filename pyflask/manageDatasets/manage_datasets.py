@@ -882,7 +882,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
     # select the dataset 
     try:
-        ps.use_dataset("christmas")
+        ps.use_dataset(selected_dataset_id)
         namespace_logger.info("Used the dataset")
     except Exception as e:
         print("FAASFSF")

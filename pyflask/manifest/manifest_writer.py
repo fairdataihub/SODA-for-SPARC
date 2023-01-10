@@ -23,7 +23,7 @@ def get_auto_generated_manifest_files(soda_json_structure):
     manifest_folder_structure = {}
     for folder in high_lvl_folders:
         # get manifest file for each high level folder
-        manifestFilePath = join(userpath, 'SODA', 'manifest-files', folder, 'manifest.xlsx')
+        manifestFilePath = join(userpath, 'SODA', 'manifest_files', folder, 'manifest.xlsx')
         manifest_folder_structure[folder] = manifestFilePath
     return manifest_folder_structure
 
@@ -480,10 +480,11 @@ def create_high_level_manifest_files(soda_json_structure, manifest_path):
             return dict_folder_manifest
 
         # create local folder to save manifest files temporarly (delete any existing one first)
-        if "auto-generated" in soda_json_structure["manifest-files"]["destination"]:
-            manifest_files_structure = (
-                get_auto_generated_manifest_files(soda_json_structure)
-            )
+        if "auto-generated" in soda_json_structure["manifest-files"]:
+            if soda_json_structure["manifest-files"]["auto-generated"] == True:
+                manifest_files_structure = (
+                    get_auto_generated_manifest_files(soda_json_structure)
+                )
         else:
             shutil.rmtree(manifest_path) if isdir(manifest_path) else 0
             makedirs(manifest_path)

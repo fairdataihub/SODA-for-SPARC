@@ -7392,21 +7392,22 @@ async function initiate_generate() {
   }
 
   if ($("#generate-manifest-curate")[0].checked) {
-    sodaJSONObj["manifest-files"]["destination"] = "auto-generated";
+    sodaJSONObj["manifest-files"]["auto-generated"] = true;
     console.log("setting destination status to auto generated");
   }
 
   //dissmisButton.addEventListener("click", dismiss('status-bar-curate-progress'));
   if ("manifest-files" in sodaJSONObj) {
-    if ("destination" in sodaJSONObj["manifest-files"]) {
+    if ("auto-generated" in sodaJSONObj["manifest-files"]) {
+      if (sodaJSONObj["manifest-files"]["auto-generated"] === true) {
+        delete_imported_manifest();
+      }
+      console.log(sodaJSONObj["manifest-files"]["destination"]);
+    } else {
       if (sodaJSONObj["manifest-files"]["destination"] === "generate-dataset") {
         manifest_files_requested = true;
         delete_imported_manifest();
       }
-      if (sodaJSONObj["manifest-files"]["destination"] === "auto-generated") {
-        delete_imported_manifest();
-      }
-      console.log(sodaJSONObj["manifest-files"]["destination"]);
     }
   }
   let dataset_destination = "";

@@ -1916,7 +1916,7 @@ const ffOpenManifestEditSwal = async (highlevelFolderName) => {
 
   if (saveManifestFiles) {
     //if additional metadata or description gets added for a file then add to json as well
-    sodaJSONObj["manifest-files"]["destination"] = "auto-generated";
+    sodaJSONObj["manifest-files"]["auto-generated"] = true;
     const savedHeaders = guidedManifestTable.getHeaders().split(",");
     const savedData = guidedManifestTable.getData();
     let jsonManifest = {};
@@ -2084,7 +2084,7 @@ const ffmCreateManifest = async (sodaJson) => {
     sodaCopy["manifest-files"] = updatedManifestData;
 
     // below needs to be added added before the main_curate_function begins
-    sodaJSONObj["manifest-files"]["destination"] = "auto-generated";
+    sodaJSONObj["manifest-files"]["auto-generated"] = true;
   } catch (err) {
     clientError(err);
     console.log(err);
@@ -2101,7 +2101,7 @@ $("#generate-manifest-curate").change(async function () {
     // create the manifest of the high level folders within sodaJSONObj
     await ffmCreateManifest(sodaJSONObj);
     // For the back end to know the manifest files have been created in $HOME/SODA/manifest-files/<highLvlFolder>
-    sodaJSONObj["manifest-files"]["destination"] = "auto-generated";
+    sodaJSONObj["manifest-files"]["auto-generated"] = true;
   } else {
     $("#button-generate-manifest-locally").hide();
     $("#ffm-manifest-generator").hide();

@@ -1958,7 +1958,12 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
     # 9. Run the original code to upload any new files added to the dataset.
     namespace_logger.info("bf_update_existing_dataset step 9 run the bf_generate_new_dataset code to upload any new files added to the dataset")
     if "manifest-files" in soda_json_structure.keys():
-        soda_json_structure["manifest-files"] = {"destination": "bf"}
+        if "auto-generated" in soda_json_structure["manifest-files"].keys():
+            soda_json_structure["manifest-files"] = {"destination": "bf", "auto-generated": True}
+        else:
+            soda_json_structure["manifest-files"] = {"destination": "bf"}
+
+
 
     soda_json_structure["generate-dataset"] = {
         "destination": "bf",
@@ -2547,10 +2552,14 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         list_upload_manifest_files = []
         if "manifest-files" in soda_json_structure.keys():
             namespace_logger.info("bf_generate_new_dataset (optional) step 4 create manifest list")
-            if "auto-generated" in soda_json_structure["manifest-files"]["destination"]:
-                manifest_files_structure = (
-                    get_auto_generated_manifest_files(soda_json_structure)
-                )
+            print(soda_json_structure["manifest-files"])
+            # create local folder to save manifest files temporarly (delete any existing one first)
+            if "auto-generated" in soda_json_structure["manifest-files"]:
+                if soda_json_structure["manifest-files"]["auto-generated"] == True:
+                    print("CORRECT")
+                    manifest_files_structure = (
+                        get_auto_generated_manifest_files(soda_json_structure)
+                    )
             else:
                 # prepare manifest files
                 if soda_json_structure["starting-point"]["type"] == "bf":
