@@ -48,7 +48,7 @@ from utils import (
 from authentication import get_access_token
 from users import get_user_information, update_config_account_name
 from permissions import has_edit_permissions, bf_get_current_user_permission_agent_two
-from configUtils import add_api_host_to_config
+from configUtils import add_api_host_to_config, lowercase_account_names
 from constants import PENNSIEVE_URL
 
 
@@ -236,32 +236,32 @@ def read_from_config(key):
     return None
 
 
-def get_access_token():
-    # get cognito config 
-    r = requests.get(f"{PENNSIEVE_URL}/authentication/cognito-config")
-    r.raise_for_status()
+# def get_access_token():
+#     # get cognito config 
+#     r = requests.get(f"{PENNSIEVE_URL}/authentication/cognito-config")
+#     r.raise_for_status()
 
-    cognito_app_client_id = r.json()["tokenPool"]["appClientId"]
-    cognito_region_name = r.json()["region"]
+#     cognito_app_client_id = r.json()["tokenPool"]["appClientId"]
+#     cognito_region_name = r.json()["region"]
 
-    cognito_idp_client = boto3.client(
-    "cognito-idp",
-    region_name=cognito_region_name,
-    aws_access_key_id="",
-    aws_secret_access_key="",
-    )
+#     cognito_idp_client = boto3.client(
+#     "cognito-idp",
+#     region_name=cognito_region_name,
+#     aws_access_key_id="",
+#     aws_secret_access_key="",
+#     )
             
-    login_response = cognito_idp_client.initiate_auth(
-    AuthFlow="USER_PASSWORD_AUTH",
-    AuthParameters={"USERNAME": read_from_config("api_token"), "PASSWORD": read_from_config("api_secret")},
-    ClientId=cognito_app_client_id,
-    )
+#     login_response = cognito_idp_client.initiate_auth(
+#     AuthFlow="USER_PASSWORD_AUTH",
+#     AuthParameters={"USERNAME": read_from_config("api_token"), "PASSWORD": read_from_config("api_secret")},
+#     ClientId=cognito_app_client_id,
+#     )
 
-    # write access token to a file
-    with open("access_token.txt", "w") as f:
-        f.write(login_response["AuthenticationResult"]["AccessToken"])
+#     # write access token to a file
+#     with open("access_token.txt", "w") as f:
+#         f.write(login_response["AuthenticationResult"]["AccessToken"])
         
-    return login_response["AuthenticationResult"]["AccessToken"]
+#     return login_response["AuthenticationResult"]["AccessToken"]
 
 def bf_add_account_username(keyname, key, secret):
     """
@@ -444,17 +444,25 @@ def bf_get_accounts():
 
     if SODA_SPARC_API_KEY in sections:
         add_api_host_to_config(config, SODA_SPARC_API_KEY, configpath)
+        lowercase_account_names(config, SODA_SPARC_API_KEY, configpath)
         with contextlib.suppress(Exception):
             get_access_token()
-            return SODA_SPARC_API_KEY
+            return SODA_SPARC_API_KEY.lower()
     elif "global" in sections:
+        print("Here global in sections")
         if "default_profile" in config["global"]:
             default_profile = config["global"]["default_profile"]
             if default_profile in sections:
+                print("default profile addressed")
                 add_api_host_to_config(config, default_profile, configpath)
-                with contextlib.suppress(Exception):
+                lowercase_account_names(config, default_profile, configpath)
+                try:
+                    print("Getting access token")
                     get_access_token()
-                    return default_profile
+                    print("Access token success")
+                    return default_profile.lower()
+                except Exception as e:
+                    print(e)
     else:
         for account in sections:
             if account != 'agent':
@@ -472,9 +480,14 @@ def bf_get_accounts():
                         with open(configpath, "w+") as configfile:
                             config.write(configfile)
 
-                        return account
+                        lowercase_account_names(config, account, configpath)
+                        
+                        return account.lower()
+    print("Returning empty string")
     namespace_logger.info("Returning empty string?")
     return ""
+
+
 
 
 

@@ -3,14 +3,19 @@ import requests
 from os.path import expanduser, join
 from configparser import ConfigParser
 
+import time
+
 userpath = expanduser("~")
 configpath = join(userpath, ".pennsieve", "config.ini")
 PENNSIEVE_URL = "https://api.pennsieve.io"
 
 def get_access_token():
+    print("Sending congitor request")
     # get cognito config 
     r = requests.get(f"{PENNSIEVE_URL}/authentication/cognito-config")
     r.raise_for_status()
+
+    print("cognito request complete")
 
     cognito_app_client_id = r.json()["tokenPool"]["appClientId"]
     cognito_region_name = r.json()["region"]
@@ -21,6 +26,7 @@ def get_access_token():
     aws_access_key_id="",
     aws_secret_access_key="",
     )
+
             
     login_response = cognito_idp_client.initiate_auth(
     AuthFlow="USER_PASSWORD_AUTH",
@@ -34,9 +40,11 @@ def get_access_token():
 
 # get a target key's value from the config file 
 def read_from_config(key):
+    print("Reading from config")
     config = ConfigParser()
     config.read(configpath)
     if "global" not in config:
+        print("Global not in config")
         raise Exception("Profile has not been set")
 
     keyname = config["global"]["default_profile"]
