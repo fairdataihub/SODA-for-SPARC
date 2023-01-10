@@ -5204,7 +5204,6 @@ const dropHelper = async (
     if (statsObj.isFile()) {
       var nonAllowedDuplicate = false;
       var originalFileName = path.parse(itemPath).base;
-      var slashCount = getPathSlashCount();
       let filePath = itemPath;
 
       let forbiddenCheck = forbiddenFileCheck(filePath);
@@ -5216,20 +5215,6 @@ const dropHelper = async (
         hiddenFiles.push(filePath);
         continue;
       }
-
-      // if (path.parse(itemPath).name.substr(0, 1) === ".") {
-      //   if (path.parse(itemPath).base === ".DS_Store") {
-      //     nonAllowedFiles.push(itemPath);
-      //     continue;
-      //   } else {
-      //     hiddenFiles.push(itemPath);
-      //     continue;
-      //   }
-      // }
-      // if (path.parse(itemPath).base === "Thumbs.db") {
-      //   nonAllowedFiles.push(itemPath);
-      //   continue;
-      // }
 
       let warningCharacterBool = warningCharacterCheck(filePath);
       // let regex = /[\+&\%#]/i;
@@ -5249,13 +5234,6 @@ const dropHelper = async (
         doubleExtension.push(filePath);
         continue;
       }
-
-      // if ((path.parse(itemPath).base.match(/\./g) || []).length > 2) {
-      // } else if ((path.parse(itemPath).base.match(/\./g) || []).length === 2) {
-      //   //double extension ask if compressed file
-      //   doubleExtension.push(itemPath);
-      //   continue;
-      // }
 
       if (slashCount === 1) {
         if (loadingContainer != undefined) {
