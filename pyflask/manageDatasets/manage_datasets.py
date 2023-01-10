@@ -804,11 +804,11 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
             total_bytes_to_upload = events_dict["upload_status"].total
             current_bytes_uploaded = events_dict["upload_status"].current
 
-            print(file_id)
-            print(total_bytes_to_upload)
-            print(current_bytes_uploaded)
+            namespace_logger.info(file_id)
+            namespace_logger.info(total_bytes_to_upload)
+            namespace_logger.info(current_bytes_uploaded)
 
-            print(events_dict)
+            # print(events_dict)
 
             
             # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
@@ -820,7 +820,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
             # calculate the additional amount of bytes that have just been uploaded for the given file id
             total_bytes_uploaded["value"] += current_bytes_uploaded - previous_bytes_uploaded
 
-            print(total_bytes_uploaded)
+            namespace_logger.info(total_bytes_uploaded)
 
             # check if the given file has finished uploading
             if current_bytes_uploaded == total_bytes_to_upload and file_id != "":
@@ -909,6 +909,8 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     # get the dataset size before starting the upload
     total_file_size, invalid_dataset_messages, total_files_to_upload = get_dataset_size(pathdataset)
 
+    namespace_logger.info(f"Size of the dataset: {total_file_size} bytes")
+
     if invalid_dataset_messages != "":
         submitdatastatus = "Done"
         invalid_dataset_messages = (
@@ -925,21 +927,10 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         did_upload = False
         abort(403, "You don't have permissions for uploading to this Pennsieve dataset")
 
-    print("Has permissions")
-
-    ## check if agent is installed
-    # try:
-    #     validate_agent_installation(Settings())
-    # except AgentError:
-    #     did_fail = True
-    #     did_upload = False
-    #     raise AgentError(
-    #         "The Pennsieve agent is not installed on your computer. Click <a href='https://docs.sodaforsparc.io/docs/common-errors/installing-the-pennsieve-agent' target='_blank'>here</a> for installation instructions."
-    #     )
 
     # create the manifest file for the dataset
     try:
-        manifest_data = ps.manifest.create(pathdataset)
+        manifest_data = ps.manifest.create(pathdataset, os.path.basename(pathdataset))
     except Exception as e:
         submitdatastatus = "Done"
         did_fail = True
