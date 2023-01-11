@@ -5,22 +5,22 @@ var jstreePreview = document.getElementById("div-dataset-tree-preview");
 const nonAllowedCharacters = '<>:",;[]{}^`~@/|?*$=!%&+#\\';
 
 // per change event of current dataset span text
-function confirm_click_function() {
-  let temp = $(".bf-dataset-span").html();
-  if ($(".bf-dataset-span").html() == "None" || $(".bf-dataset-span").html() == "") {
-    $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "none");
-    $("#para-review-dataset-info-disseminate").text("None");
-  } else {
-    $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "flex");
-    if ($($(this).parents().find(".field").find(".synced-progress")).length) {
-      if ($($(this).parents().find(".field").find(".synced-progress")).css("display") === "none") {
-        $(".confirm-button").click();
-      }
-    } else {
-      $(".confirm-button").click();
-    }
-  }
-}
+// const confirm_click_function = () => {
+//   let temp = $(".bf-dataset-span").html();
+//   if ($(".bf-dataset-span").html() == "None" || $(".bf-dataset-span").html() == "") {
+//     $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "none");
+//     $("#para-review-dataset-info-disseminate").text("None");
+//   } else {
+//     $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "flex");
+//     if ($($(this).parents().find(".field").find(".synced-progress")).length) {
+//       if ($($(this).parents().find(".field").find(".synced-progress")).css("display") === "none") {
+//         $(".confirm-button").click();
+//       }
+//     } else {
+//       $(".confirm-button").click();
+//     }
+//   }
+// };
 
 // Event listeners for opening the dropdown prompt
 document
@@ -613,7 +613,7 @@ const importGenerateDatasetStep = async (object) => {
 };
 
 // check metadata files
-function populateMetadataProgress(populateBoolean, metadataFileName, localPath) {
+const populateMetadataProgress = (populateBoolean, metadataFileName, localPath) => {
   var metadataButtonsArray = $(".metadata-button.button-generate-dataset");
   var correspondingMetadataParaElement = {
     submission: ["para-submission-file-path", metadataButtonsArray[0]],
@@ -650,7 +650,7 @@ function populateMetadataProgress(populateBoolean, metadataFileName, localPath) 
       $(paraElement[1]).removeClass("done");
     }
   }
-}
+};
 
 //////////////////////// Main Import progress function
 let missing_dataset_files = [];
@@ -826,20 +826,20 @@ const recursive_remove_missing_file = (item_path, dataset_folder) => {
   }
 };
 
-function removeOptions(selectbox) {
-  var i;
-  for (i = selectbox.options.length - 1; i >= 0; i--) {
-    selectbox.remove(i);
-  }
-}
+// const removeOptions = (selectbox) => {
+//   var i;
+//   for (i = selectbox.options.length - 1; i >= 0; i--) {
+//     selectbox.remove(i);
+//   }
+// };
 //
 // Function to add options to dropdown list
-function addOption(selectbox, text, value) {
-  var opt = document.createElement("OPTION");
-  opt.text = text;
-  opt.value = value;
-  selectbox.options.add(opt);
-}
+// const addOption = (selectbox, text, value) => {
+//   var opt = document.createElement("OPTION");
+//   opt.text = text;
+//   opt.value = value;
+//   selectbox.options.add(opt);
+// };
 
 // function to load Progress dropdown
 const importOrganizeProgressPrompt = () => {
@@ -956,7 +956,7 @@ $("#select-permission-list-2").change((e) => {
   }
 });
 
-function checkPrevDivForConfirmButton(category) {
+const checkPrevDivForConfirmButton = (category) => {
   if (category === "account") {
     if (!$("#Question-generate-dataset-BF-account").hasClass("prev")) {
       $("#div-bf-account-btns").css("display", "flex");
@@ -988,9 +988,9 @@ function checkPrevDivForConfirmButton(category) {
       $("#button-confirm-bf-dataset-getting-started").hide();
     }
   }
-}
+};
 
-function create_child_node(
+const create_child_node = (
   oldFormatNode,
   nodeName,
   type,
@@ -1000,7 +1000,7 @@ function create_child_node(
   disabledState,
   selectedOriginalLocation,
   viewOptions
-) {
+) => {
   /*
   oldFormatNode: node in the format under "dataset-structure" key in SODA object
   nodeName: text to show for each node (name)
@@ -1144,15 +1144,15 @@ function create_child_node(
     }
   }
   return newFormatNode;
-}
+};
 
-function recursiveExpandNodes(object) {
-  // var newFormatNode = {"text": nodeName,
-  // "state": {"opened": openedState, "selected": selectedState},
-  // "children": [], "type": type + ext}
-  if (object.state.selected) {
-  }
-}
+// function recursiveExpandNodes(object) {
+//   // var newFormatNode = {"text": nodeName,
+//   // "state": {"opened": openedState, "selected": selectedState},
+//   // "children": [], "type": type + ext}
+//   if (object.state.selected) {
+//   }
+// }
 
 // var selected = false;
 var selectedPath;
@@ -1587,17 +1587,17 @@ function moveItemsHelper(item, destination, category) {
     ["Step 3", "Move", category === "files" ? "File" : "Folder"],
     determineDatasetLocation()
   );
-}
+};
 
-function updateManifestLabelColor(el) {
+const updateManifestLabelColor = (el) => {
   document.getElementById("label-manifest").style.color = el.checked
     ? "var(--color-light-green)"
     : "#303030";
   document.getElementById("label-manifest").style.fontWeight = el.checked ? "bold" : "normal";
-}
+};
 
 // helper functions to add "moved" to leaf nodes a.k.a files
-function addMovedRecursively(object) {
+const addMovedRecursively = (object) => {
   Object.keys(object["files"]).forEach((key) => {
     var file = object["files"][key];
     if ("action" in file) {
@@ -1630,7 +1630,7 @@ function addMovedRecursively(object) {
       addMovedRecursively(folder);
     }
   });
-}
+};
 
 $(document).ready(function () {
   $(".button-display-details").click(function () {
@@ -1731,14 +1731,14 @@ $(jstreePreview).on("close_node.jstree", function (event, data) {
   data.instance.set_type(data.node, "folder closed");
 });
 
-function showTreeViewPreview(
+const showTreeViewPreview = (
   disabledBoolean,
   selectedBoolean,
   manifestFileBoolean,
   new_dataset_name,
   previewDiv,
   datasetStructure
-) {
+) => {
   if (manifestFileBoolean) {
     if (manifestFileCheck.checked) {
       addManifestFilesForTreeView();
@@ -1760,24 +1760,26 @@ function showTreeViewPreview(
   );
   $(previewDiv).jstree(true).settings.core.data = jsTreePreviewDataManifest;
   $(previewDiv).jstree(true).refresh();
-}
+};
 
 // if checked
-function addManifestFilesForTreeView() {
+const addManifestFilesForTreeView = () => {
   for (var key in datasetStructureJSONObj["folders"]) {
     if (highLevelFolders.includes(key)) {
       var fileKey = datasetStructureJSONObj["folders"][key]["files"];
-      if (!("manifest.xlsx" in fileKey)) {
+      let folderAmount = Object.keys(datasetStructureJSONObj["folders"][key]["folders"]).length;
+      let fileAmount = Object.keys(datasetStructureJSONObj["folders"][key]["files"]).length;
+      if (!("manifest.xlsx" in fileKey) && (folderAmount > 0 || fileAmount > 0)) {
         fileKey["manifest.xlsx"] = {
           forTreeview: true,
         };
       }
     }
   }
-}
+};
 
 // if unchecked
-function revertManifestForTreeView() {
+const revertManifestForTreeView = () => {
   for (var key in datasetStructureJSONObj["folders"]) {
     if (highLevelFolders.includes(key)) {
       var fileKey = datasetStructureJSONObj["folders"][key]["files"];
@@ -1786,7 +1788,7 @@ function revertManifestForTreeView() {
       }
     }
   }
-}
+};
 
 $("#generate-manifest-curate").change(function () {
   if (this.checked) {
@@ -1796,26 +1798,24 @@ $("#generate-manifest-curate").change(function () {
   }
 });
 
-function determineDatasetDestination(dataset_name, dataset_destination) {
-  // determine if the dataset is being uploaded to Pennsieve or being generated locally
-  if ("bf-dataset-selected" in sodaJSONObj) {
-    dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-    dataset_destination = "Pennsieve";
-  } else if ("generate-dataset" in sodaJSONObj) {
-    if ("destination" in sodaJSONObj["generate-dataset"]) {
-      let destination = sodaJSONObj["generate-dataset"]["destination"];
-      if (destination == "local") {
-        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-        dataset_destination = "Local";
-      }
-      if (destination == "bf") {
-        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-        dataset_destination = "Pennsieve";
-      }
-    }
-  }
+// const determineDatasetDestination = (dataset_name, dataset_destination) => {
+//   // determine if the dataset is being uploaded to Pennsieve or being generated locally
+//   if ("bf-dataset-selected" in sodaJSONObj) {
+//     dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+//     dataset_destination = "Pennsieve";
+//   } else if ("generate-dataset" in sodaJSONObj) {
+//     if ("destination" in sodaJSONObj["generate-dataset"]) {
+//       let destination = sodaJSONObj["generate-dataset"]["destination"];
+//       if (destination == "local") {
+//         dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+//         dataset_destination = "Local";
+//       }
+//       if (destination == "bf") {
+//         dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+//         dataset_destination = "Pennsieve";
+//       }
+//     }
+//   }
 
-  return [dataset_name, dataset_destination];
-}
-
-// module.exports = {determineDatasetDestination}
+//   return [dataset_name, dataset_destination];
+// };

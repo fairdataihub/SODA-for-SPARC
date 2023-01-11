@@ -3,6 +3,7 @@ Purpose: An abstraction layer between the client and making HTTP requests via Ax
 */
 
 const getUserInformation = async () => {
+  console.log(defaultBfAccount);
   let userResponse = await client.get(`/user`, {
     params: {
       pennsieve_account: defaultBfAccount,
@@ -10,7 +11,7 @@ const getUserInformation = async () => {
   });
 
   let user = userResponse.data;
-
+  console.log(user);
   return user;
 };
 
@@ -21,6 +22,7 @@ const getUserInformation = async () => {
  */
 const getDataset = async (datasetId) => {
   let datasetResponse = await client.get(`/datasets/${datasetId}`);
+  console.log(datasetId);
   return datasetResponse.data;
 };
 
@@ -54,16 +56,16 @@ const getDatasetRole = async (datasetNameOrId) => {
  * @param {string} datasetIdOrName
  * @returns {Promise<void>}
  */
-const withdrawDatasetReviewSubmission = async (datasetIdOrName, selected_account) => {
-  await client.post(`/disseminate_datasets/datasets/${datasetIdOrName}/publication/cancel`, {
+const withdrawDatasetReviewSubmission = async (datasetName, selected_account) => {
+  await client.post(`/disseminate_datasets/datasets/${datasetName}/publication/cancel`, {
     selected_account,
   });
 };
 
-const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
+const getFilesExcludedFromPublishing = async (datasetName) => {
   // get the excluded files
   let excludedFilesRes = await client.get(
-    `/disseminate_datasets/datasets/${datasetIdOrName}/ignore-files`,
+    `/disseminate_datasets/datasets/${datasetName}/ignore-files`,
     {
       params: {
         selected_account: defaultBfAccount,
@@ -79,22 +81,23 @@ const getFilesExcludedFromPublishing = async (datasetIdOrName) => {
 // tell Pennsieve to ignore a set of user selected files when publishing their dataset.
 // this keeps those files hidden from the public but visible to publishers and collaboraors.
 // I:
-//  datasetIdOrName: string - A dataset id or name
+//  datasetIdOrName: string - dataset name
 //  files: [{fileName: string}] - An array of file name objects
-const updateDatasetExcludedFiles = async (datasetId, files) => {
+const updateDatasetExcludedFiles = async (account, datasetName, files) => {
   // create the request options
-  await client.put(`/disseminate_datasets/datasets/${datasetId}/ignore-files`, {
+  await client.put(`/disseminate_datasets/datasets/${datasetName}/ignore-files`, {
     ignore_files: files,
+    selected_account: account,
   });
 };
 
 // retrieves the currently selected dataset's metadata files
 // I:
-//  datasetIdOrName: string - A dataset id or name
-const getDatasetMetadataFiles = async (datasetIdOrName) => {
+//  datasetName: string - Selected dataset name
+const getDatasetMetadataFiles = async (datasetName) => {
   // get the metadata files for the dataset
   let datasetwithChildrenResponse = await client.get(
-    `/disseminate_datasets/datasets/${datasetIdOrName}/metadata-files`,
+    `/disseminate_datasets/datasets/${datasetName}/metadata-files`,
     {
       params: {
         selected_account: defaultBfAccount,
@@ -165,13 +168,14 @@ const getDatasetReadme = async (selected_account, selected_dataset) => {
 // O: void
 const submitDatasetForPublication = async (
   pennsieveAccount,
-  datasetIdOrName,
+  datasetName,
   embargoReleaseDate,
   publicationType
 ) => {
+  console.log("sending request");
   // request that the dataset be sent in for publication/publication review
   await client.post(
-    `/disseminate_datasets/datasets/${datasetIdOrName}/publication/request`,
+    `/disseminate_datasets/datasets/${datasetName}/publication/request`,
     {
       publication_type: publicationType,
       embargo_release_date: embargoReleaseDate,
@@ -286,6 +290,7 @@ const uploadNewTags = async (account, dataset, tags) => {
 const removeCollectionTags = async (account, dataset, tags) => {
   //remove collection names from a dataset with their given IDs
   //PARAMS: tags = list of collection IDs
+  console.log(tags);
   try {
     let removedTags = await client.delete(
       `datasets/${dataset}/collections?selected_account=${account}`,
@@ -302,6 +307,7 @@ const removeCollectionTags = async (account, dataset, tags) => {
 const uploadCollectionTags = async (account, dataset, tags) => {
   //upload tags that have already been created on Pennsieve
   //PARAMS: tags = list of collection IDs
+  console.log(tags);
   try {
     let uploadedTags = await client.put(
       `datasets/${dataset}/collections`,
@@ -314,6 +320,7 @@ const uploadCollectionTags = async (account, dataset, tags) => {
         },
       }
     );
+    console.log(uploadedTags.data);
     return uploadedTags.data;
   } catch (error) {
     clientError(error);

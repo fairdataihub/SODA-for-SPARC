@@ -274,6 +274,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         Swal.showValidationMessage("Please select an account!");
       }
     } else if (bfAccountSwal === false) {
+      console.log("chedck here");
       Swal.fire({
         allowOutsideClick: false,
         backdrop: "rgba(0,0,0, 0.4)",
@@ -369,13 +370,20 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           let key_name = result.value.name;
           let apiKey = result.value.key;
           let apiSecret = result.value.secret;
+
+          // lowercase the key_name the user provided
+          // this is to prevent an issue caused by the pennsiev agent
+          // wherein it fails to validate an account if it is not lowercase
+          key_name = key_name.toLowerCase();
           //needs to be replaced
           try {
+            console.log("Sending request to add account");
             await client.put(`/manage_datasets/account/username`, {
               keyname: key_name,
               key: apiKey,
               secret: apiSecret,
             });
+            console.log("Added the account. Now getting the account list");
             bfAccountOptions[key_name] = key_name;
             defaultBfAccount = key_name;
             defaultBfDataset = "Select dataset";
@@ -386,6 +394,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
                   selected_account: defaultBfAccount,
                 },
               });
+              console.log("Got the account details");
               let result = bf_account_details_req.data.account_details;
               $("#para-account-detail-curate").html(result);
               $("#current-bf-account").text(key_name);
@@ -701,6 +710,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               });
             }
             if (dropdownEventID === "dd-select-pennsieve-dataset") {
+              console.log(dropdownEventID);
               $("#ds-name").val(bfDataset);
               $("#ds-description").val = $("#bf-dataset-subtitle").val;
               $("body").removeClass("waiting");

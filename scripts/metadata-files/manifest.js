@@ -573,7 +573,7 @@ var localDatasetFolderPath = "";
 var finalManifestGenerationPath = "";
 let pennsievePreview = false;
 
-async function generateManifestPrecheck(manifestEditBoolean, ev) {
+const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
   // if doing a local generation ( but not as part of the Pennsieve preview flow ) make sure the input
   // that indicates where the manifest files will be generated is not empty
   if (
@@ -616,6 +616,7 @@ async function generateManifestPrecheck(manifestEditBoolean, ev) {
   let continueProgressValidateDataset = true;
   let continueProgressEmptyFolder = true;
   var titleTerm = "folder";
+  console.log("after reseting the sodaJSON object");
 
   if (type === "bf") {
     titleTerm = "on Pennsieve";
@@ -676,21 +677,9 @@ async function generateManifestPrecheck(manifestEditBoolean, ev) {
   await generateManifest("", type, manifestEditBoolean, ev);
 
   return;
-}
+};
 
-async function generateManifest(action, type, manifestEditBoolean, ev) {
-  // Swal.fire({
-  //   title: "Reviewing the dataset structure.",
-  //   html: "Please wait...",
-  //   allowEscapeKey: false,
-  //   allowOutsideClick: false,
-  //   showConfirmButton: false,
-  //   heightAuto: false,
-  //   backdrop: "rgba(0,0,0, 0.4)",
-  //   didOpen: () => {
-  //     Swal.showLoading();
-  //   },
-  // }).then((result) => { });
+const generateManifest = async (action, type, manifestEditBoolean, ev) => {
   // Case 1: Local dataset
   if (type === "local") {
     if (finalManifestGenerationPath === "") {
@@ -849,6 +838,8 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
     });
   } else {
     // Case 2: bf dataset
+    console.log(manifestEditBoolean);
+    console.log("manifest edit boolean above");
     if (manifestEditBoolean) {
       generateAfterEdits();
     } else {
@@ -857,7 +848,7 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
       extractBFDatasetForManifestFile(false, defaultBfAccount, defaultBfDataset, ev);
     }
   }
-}
+};
 
 async function generateManifestHelper() {
   updateJSONStructureManifestGenerate();
@@ -1043,8 +1034,10 @@ async function initiate_generate_manifest_bf() {
     }
   }
 
-  // clear the pennsieve queue
-  clearQueue();
+
+  console.log(sodaJSONObj);
+  console.log(JSON.stringify(sodaJSONObj));
+  console.log("Above is before the curation call");
   let curationResponse;
   try {
     curationResponse = await client.post(
@@ -1445,10 +1438,11 @@ async function extractBFDatasetForManifestFile(editBoolean, bfaccount, bfdataset
 
     let continueProgressEmptyFolder = await checkEmptySubFolders(sodaJSONObj["dataset-structure"]);
 
+    continueProgressEmptyFolder = true;
     if (!continueProgressEmptyFolder) {
       hideProgressContainer(progressContainer);
       spanManifest.style.display = "none";
-
+      console.log("right ehre");
       Swal.fire({
         title: "Failed to generate the manifest files.",
         text: "The dataset contains one or more empty folder(s). Per SPARC guidelines, a dataset must not contain any empty folders. Please remove them before generating the manifest files.",
@@ -1589,9 +1583,12 @@ async function extractBFDatasetForManifestFile(editBoolean, bfaccount, bfdataset
 
 function extractBFManifestFile() {
   return new Promise((resolve, reject) => {
+    console.log(JSON.stringify(sodaJSONObj));
+    console.log(defaultBfAccount);
+    console.log(defaultBfDataset);
     client
       .post(
-        "/prepare_metadata/manifest_files/pennsieve",
+        `/prepare_metadata/manifest_files/pennsieve`,
         {
           soda_json_object: sodaJSONObj,
           selected_account: defaultBfAccount,
@@ -1820,7 +1817,8 @@ function checkEmptySubFolders(datasetStructure) {
 // helper function 1: First, generate manifest file folder locally
 // Parameter: dataset structure object
 // Return: manifest file folder path
-async function generateManifestFolderLocallyForEdit(ev) {
+const generateManifestFolderLocallyForEdit = async (ev) => {
+  console.log("here");
   var type = "local";
   if ($('input[name="generate-manifest-1"]:checked').prop("id") === "generate-manifest-from-Penn") {
     type = "bf";
@@ -1885,7 +1883,8 @@ async function generateManifestFolderLocallyForEdit(ev) {
     sodaJSONObj["bf-dataset-selected"] = {};
     sodaJSONObj["generate-dataset"] = {};
     continueProgressEmptyFolder = await checkEmptySubFolders(sodaJSONObj["dataset-structure"]);
-
+    // continueProgressEmptyFolder = true
+    // console.log("before check")
     if (continueProgressEmptyFolder === false) {
       Swal.fire({
         title: "Failed to generate the manifest files.",
@@ -1914,7 +1913,7 @@ async function generateManifestFolderLocallyForEdit(ev) {
     sodaJSONObj["bf-dataset-selected"] = { "dataset-name": defaultBfDataset };
     extractBFDatasetForManifestFile(true, defaultBfAccount, defaultBfDataset, ev);
   }
-}
+};
 
 async function createManifestLocally(type, editBoolean, originalDataset) {
   var generatePath = "";
@@ -2091,7 +2090,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
 // (so users can choose which manifest file to add additional metadata to)
 // Parameter: dataset structure object
 // Return tree
-function loadDSTreePreviewManifest(datasetStructure) {
+const loadDSTreePreviewManifest = (datasetStructure) => {
   // return tree view
   // upon clicking on a node, if node == manifest, feed the actual path of that manifest file -> UI library xspreadsheet
   // -> popup opens up with loaded info from such manifest.xlsx file.
@@ -2105,7 +2104,7 @@ function loadDSTreePreviewManifest(datasetStructure) {
     jstreePreviewManifest,
     datasetStructure
   );
-}
+};
 
 function showTreeViewPreviewManifestEdits(
   disabledBoolean,
@@ -2115,6 +2114,9 @@ function showTreeViewPreviewManifestEdits(
   previewDiv,
   datasetStructure
 ) {
+  console.log(datasetStructure);
+  console.log(previewDiv);
+  console.log(new_dataset_name);
   var jsTreePreviewDataManifest = createChildNodeManifest(
     datasetStructure,
     new_dataset_name,
@@ -2302,6 +2304,9 @@ async function generateAfterEdits() {
     "if-existing-files": "replace",
     "generate-option": "new",
   };
+
+  console.log("JSON after resetting it");
+  console.log(JSON.stringify(sodaJSONObj));
 
   // move the generated manifest files to the user selected location for preview
   if (pennsievePreview) {

@@ -3,24 +3,28 @@ channels:
   - defaults
   - conda-forge
 dependencies:
-  - python = 3.9
-  - PyInstaller = 4.7
-  - nodejs = 16.14.2
-  - libgcc = 7.2.0
-  - git = 2.20.1
-  - pip
-  - pip:
-      - chardet == 4.0.0
-      - pandas == 1.4.2
-      - openpyxl == 3.0.3
-      - pennsieve == 6.1.2
-      - configparser == 4.0.2
-      - python-docx == 0.8.10
-      - xlrd == 1.2.0
-      - biopython == 1.79
-      - flask == 2.0.2
-      - flask_restx
-      - protobuf == 3.20.0
-      - gevent == 21.12.0
-      - werkzeug == 2.0.2
-      - opencv-python == 4.5.3.56
+- python = 3.9
+- PyInstaller = 4.7
+- nodejs = 16.14.2
+- libgcc = 7.2.0
+- git = 2.20.1
+- pip
+- pip:
+  - chardet == 4.0.0
+  - pandas == 1.4.2
+  - openpyxl == 3.0.3
+  - configparser == 4.0.2
+  - python-docx == 0.8.10
+  - xlrd == 1.2.0
+  - biopython == 1.79
+  - flask == 2.0.2
+  - flask_restx
+  - protobuf == 3.20.0
+  - gevent == 21.12.0
+  - werkzeug == 2.0.2
+  - opencv-python == 4.5.3.56
+  - requests
+  - grpcio == 1.50.0
+  - boto3 == 1.26.17
+  - numpy == 1.23.0
+  - pennsieve2

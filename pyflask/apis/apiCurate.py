@@ -11,7 +11,6 @@ from curate import (
     generate_manifest_file_locally,
     guided_generate_manifest_file_data,
     check_JSON_size,
-    main_curate_function_upload_details,
     create_high_level_manifest_files_existing_local_starting_point,
 )
 from errorHandlers.notBadRequestException import notBadRequestException
@@ -49,7 +48,7 @@ class CheckEmptyFilesFolders(Resource):
 model_main_curation_function_response = api.model( "MainCurationFunctionResponse", {
     "main_curate_progress_message": fields.String(description="Progress message from the main curation function"),
     "main_total_generate_dataset_size": fields.String(description="Total size of the dataset"),
-    "main_curation_uploaded_files": fields.Integer(description="Number of files that are being generated. ")
+    "main_curation_uploaded_files": fields.Integer(description="Number of files that are being generated. "), 
 })
 
 @api.route("/curation")
@@ -87,6 +86,8 @@ model_curation_progress_response = api.model( "CurationProgressResponse", {
     "main_total_generate_dataset_size": fields.Integer(description="Total size of the dataset"),
     "main_generated_dataset_size": fields.Integer(description="Size of the dataset that has been generated thus far"),
     "elapsed_time_formatted": fields.String(description="Elapsed time of the main curation function"),
+    "total_files_uploaded": fields.Integer(description="Number of files that have been uploaded"),
+    "generated_dataset_id": fields.String(description="Generated dataset ID"),
 })
 
 @api.route("/curation/progress")
@@ -114,16 +115,6 @@ model_curation_file_details_response = api.model( "CurationFileDetailsResponse",
     "generated_dataset_id": fields.String(description="ID of the dataset that has been generated. ")
 })
 
-@api.route("/curation/upload_details")
-class CurationFileDetails(Resource):
-    
-        @api.marshal_with(model_curation_file_details_response, False, 200)
-        @api.doc(responses={500: 'There was an internal server error'}, description="Function frequently called by front end to help keep track of the amount of files that have been successfully uploaded to Pennsieve, and the size of the uploaded files. Also tells us how many files have been copied (double usage of both variables) to a destination folder for local dataset generation.")
-        def get(self):
-            try:
-                return main_curate_function_upload_details()
-            except Exception as e:
-                api.abort(500, str(e))
 
 
 
