@@ -553,6 +553,9 @@ const nextPrev = (n) => {
     });
     // check if required metadata files are included
   } else if (n === 1 && x[currentTab].id === "metadata-files-tab") {
+    console.log("true help me 1321here");
+    console.log(n);
+    console.log(x[currentTab].id);
     var requiredFiles = ["submission", "dataset_description", "subjects", "README"];
     let missingFiles = [];
     var withoutExtMetadataArray = [];
@@ -564,6 +567,7 @@ const nextPrev = (n) => {
     }
 
     if (Object.keys(sodaJSONObj["metadata-files"]).length > 0) {
+      console.log("true help me here");
       Object.keys(sodaJSONObj["metadata-files"]).forEach((element) => {
         let file_name = path.parse(element).name;
         if (!element.includes("-DELETED")) {
@@ -637,6 +641,7 @@ const nextPrev = (n) => {
     x[currentTab].id === "preview-dataset-tab" &&
     sodaJSONObj["starting-point"]["type"] == "bf"
   ) {
+    console.log("f");
     $(x[currentTab]).removeClass("tab-active");
     console.log("It happens here?");
     currentTab = currentTab - 2;
@@ -646,11 +651,12 @@ const nextPrev = (n) => {
     x[currentTab].id === "manifest-file-tab" &&
     sodaJSONObj["starting-point"]["type"] == "bf"
   ) {
+    console.log($(x[currentTab]));
     // cj -skip step 6
     $(x[currentTab]).removeClass("tab-active");
-    if (n == -1) {
+    if (n == 1) {
       console.log("It happens here?");
-      currentTab = currentTab + n;
+      currentTab = currentTab + 2;
       $("#nextBtn").prop("disabled", false);
     } else {
       console.log("It happens here?");
@@ -658,6 +664,8 @@ const nextPrev = (n) => {
       fixStepDone(4);
       $("#nextBtn").prop("disabled", true);
     }
+    console.log(currentTab);
+    console.log(n);
     showParentTab(currentTab, n);
   } else if (
     x[currentTab].id === "manifest-file-tab" &&
