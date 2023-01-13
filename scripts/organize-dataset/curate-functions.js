@@ -1994,6 +1994,14 @@ const ffmCreateManifest = async (sodaJson) => {
   //create a copy of the sodajson object
   sodaCopy = sodaJson;
   datasetStructCopy = sodaCopy["dataset-structure"];
+  if ("auto-generated" in sodaCopy["manifest-files"]) {
+    delete sodaCopy["manifest-files"]["auto-generated"];
+  }
+  if ("destination" in sodaCopy["manifest-files"]) {
+    delete sodaCopy["manifest-files"]["destination"];
+  }
+
+  console.log(sodaCopy);
 
   try {
     // used for imported local datasets and pennsieve datasets
@@ -2008,7 +2016,13 @@ const ffmCreateManifest = async (sodaJson) => {
     // response does not format in JSON format so need to format ' with "
     let regex = /'/gm;
     let formattedResponse = response.replace(regex, '"');
+    console.log(response);
+    let capitalTPosition = formattedResponse.search("True");
+    if (capitalTPosition != -1) {
+      formattedResponse = formattedResponse.replace("True", "true");
+    }
 
+    console.log(formattedResponse);
     let json_structure = JSON.parse(formattedResponse);
     sodaCopy = json_structure;
     datasetStructCopy = sodaCopy["dataset-structure"];
@@ -2084,7 +2098,10 @@ const ffmCreateManifest = async (sodaJson) => {
     sodaCopy["manifest-files"] = updatedManifestData;
 
     // below needs to be added added before the main_curate_function begins
-    sodaJSONObj["manifest-files"]["auto-generated"] = true;
+    sodaJSONObj["manifest-files"] = {
+      "auto-generated": true,
+      destination: "generate-dataset",
+    };
   } catch (err) {
     clientError(err);
     console.log(err);

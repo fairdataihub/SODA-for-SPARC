@@ -434,7 +434,6 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
   await run_pre_flight_checks();
 
   log.info("Running pre flight checks finished");
-  console.log("HASDGASDGDAGHDKKSAGHDH");
 
   // get apps base path
   const basepath = app.getAppPath();

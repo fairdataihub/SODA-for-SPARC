@@ -36,10 +36,10 @@ const showParentTab = (tabNow, nextOrPrev) => {
   // This function will display the specified tab of the form ...
   var x = document.getElementsByClassName("parent-tabs");
   fixStepIndicator(tabNow);
+  console.log("fixed tab indicator");
   if (tabNow === 0) {
     fixStepDone(tabNow);
   } else {
-    console.log("revealing here?");
     fixStepDone(tabNow - 1);
   }
 
@@ -62,7 +62,6 @@ const showParentTab = (tabNow, nextOrPrev) => {
   $("#nextBtn").html("Continue");
 
   if (nextOrPrev === -1) {
-    console.log("revealing here?");
     $("#nextBtn").prop("disabled", false);
   }
 
@@ -80,12 +79,10 @@ const showParentTab = (tabNow, nextOrPrev) => {
     highLevelFoldersDisableOptions();
   } else {
     if (tabNow === 3) {
-      console.log("revealing here?");
       if (Object.keys(datasetStructureJSONObj["folders"]).includes("code")) {
         $(".metadata-button.button-generate-dataset.code-metadata").css("display", "block");
         $(".flex-row-container.code-metadata").css("display", "flex");
       } else {
-        console.log("revealing here?");
         $(".metadata-button.button-generate-dataset.code-metadata").css("display", "none");
         $(".flex-row-container.code-metadata").css("display", "none");
       }
@@ -103,7 +100,6 @@ const showParentTab = (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == 5) {
-    console.log("revealing here?");
     // Disable the continue button if a destination has not been selected
     // Used when traversing back and forth between tabs
     if (
@@ -466,14 +462,15 @@ const checkHighLevelFoldersInput = () => {
   return checked;
 };
 
-// function associated with the Back/Continue buttons
+// function associated with the Back/Continue buttons of FreeForm Mode
 // in the Organize dataset section of the app.
-// Perform events or actions ( such as update SODAJSONObk) based off the state of the Organize Datasets section
+// Perform events or actions (such as update sodaJSONObj) based off the state of the Organize Datasets section
 // currently being displayed after pressing the Continue button/back button.
-const nextPrev = (n) => {
-  var x = document.getElementsByClassName("parent-tabs");
+const nextPrev = (pageIndex) => {
+  // var x = document.getElementsByClassName("parent-tabs");
+  let parentTabs = document.getElementsByClassName("parent-tabs");
 
-  if (n == -1 && x[currentTab].id === "getting-started-tab") {
+  if (pageIndex == -1 && parentTabs[currentTab].id === "getting-started-tab") {
     let event = new CustomEvent("custom-back", {
       detail: {
         target: { dataset: { section: "main_tabs" }, classList: ["someclass"] },
@@ -490,16 +487,19 @@ const nextPrev = (n) => {
   }
 
   // update JSON structure
-  updateOverallJSONStructure(x[currentTab].id);
+  updateOverallJSONStructure(parentTabs[currentTab].id);
 
   // reset datasetStructureObject["files"] back to {},
   // and delete ui preview-added manifest files
-  if (x[currentTab].id === "high-level-folders-tab") {
+  if (parentTabs[currentTab].id === "high-level-folders-tab") {
     $("#items").empty();
     $("#items").append(already_created_elem);
     getInFolder(".single-item", "#items", dataset_path, datasetStructureJSONObj);
   }
-  if (x[currentTab].id === "high-level-folders-tab" || x[currentTab].id === "metadata-files-tab") {
+  if (
+    parentTabs[currentTab].id === "high-level-folders-tab" ||
+    parentTabs[currentTab].id === "metadata-files-tab"
+  ) {
     organizeLandingUIEffect();
     // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
     if ("files" in datasetStructureJSONObj) {
@@ -519,8 +519,8 @@ const nextPrev = (n) => {
   }
 
   if (
-    n === 1 &&
-    x[currentTab].id === "organize-dataset-tab" &&
+    pageIndex === 1 &&
+    parentTabs[currentTab].id === "organize-dataset-tab" &&
     sodaJSONObj["dataset-structure"] === { folders: {} }
   ) {
     Swal.fire({
@@ -540,22 +540,22 @@ const nextPrev = (n) => {
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        $(x[currentTab]).removeClass("tab-active");
+        $(parentTabs[currentTab]).removeClass("tab-active");
         // Increase or decrease the current tab by 1:
-        currentTab = currentTab + n;
+        currentTab = currentTab + pageIndex;
         // For step 1,2,3, check for High level folders input to disable Continue button
         if (currentTab === 1 || currentTab === 2 || currentTab === 3) {
           highLevelFoldersDisableOptions();
         }
         // Display the correct tab:
-        showParentTab(currentTab, n);
+        showParentTab(currentTab, pageIndex);
       }
     });
     // check if required metadata files are included
-  } else if (n === 1 && x[currentTab].id === "metadata-files-tab") {
+  } else if (pageIndex === 1 && parentTabs[currentTab].id === "metadata-files-tab") {
     console.log("true help me 1321here");
-    console.log(n);
-    console.log(x[currentTab].id);
+    console.log(pageIndex);
+    console.log(parentTabs[currentTab].id);
     var requiredFiles = ["submission", "dataset_description", "subjects", "README"];
     let missingFiles = [];
     var withoutExtMetadataArray = [];
@@ -616,65 +616,58 @@ const nextPrev = (n) => {
       }).then((result) => {
         if (result.isConfirmed) {
           // Hide the current tab:
-          $(x[currentTab]).removeClass("tab-active");
+          $(parentTabs[currentTab]).removeClass("tab-active");
           // Increase or decrease the current tab by 1:
-          currentTab = currentTab + n;
+          currentTab = currentTab + pageIndex;
           // Display the correct tab:
           console.log("It happens here?");
           console.log(currentTab);
-          console.log(n);
-          showParentTab(currentTab, n);
+          console.log(pageIndex);
+          showParentTab(currentTab, pageIndex);
         }
       });
     } else {
       // Hide the current tab:
-      $(x[currentTab]).removeClass("tab-active");
+      $(parentTabs[currentTab]).removeClass("tab-active");
       // Increase or decrease the current tab by 1:
-      currentTab = currentTab + n;
+      currentTab = currentTab + pageIndex;
       // Display the correct tab:
       console.log("It happens here?");
       console.log(currentTab);
-      console.log(n);
-      showParentTab(currentTab, n);
+      console.log(pageIndex);
+      showParentTab(currentTab, pageIndex);
     }
   } else if (
-    x[currentTab].id === "preview-dataset-tab" &&
+    parentTabs[currentTab].id === "preview-dataset-tab" &&
     sodaJSONObj["starting-point"]["type"] == "bf"
   ) {
-    console.log("f");
-    $(x[currentTab]).removeClass("tab-active");
+    $(parentTabs[currentTab]).removeClass("tab-active");
     console.log("It happens here?");
-    currentTab = currentTab - 2;
-    showParentTab(currentTab, n);
+    currentTab = currentTab - 1;
+    showParentTab(currentTab, pageIndex);
     $("#nextBtn").prop("disabled", false);
   } else if (
-    x[currentTab].id === "manifest-file-tab" &&
+    parentTabs[currentTab].id === "manifest-file-tab" &&
     sodaJSONObj["starting-point"]["type"] == "bf"
   ) {
-    console.log($(x[currentTab]));
-    // cj -skip step 6
-    $(x[currentTab]).removeClass("tab-active");
-    if (n == 1) {
-      console.log("It happens here?");
+    $(parentTabs[currentTab]).removeClass("tab-active");
+    if (pageIndex == 1) {
       currentTab = currentTab + 2;
       $("#nextBtn").prop("disabled", false);
     } else {
-      console.log("It happens here?");
-      currentTab = currentTab + 1;
+      currentTab = currentTab - 1;
       fixStepDone(4);
       $("#nextBtn").prop("disabled", true);
     }
-    console.log(currentTab);
-    console.log(n);
-    showParentTab(currentTab, n);
+    showParentTab(currentTab, pageIndex);
   } else if (
-    x[currentTab].id === "manifest-file-tab" &&
+    parentTabs[currentTab].id === "manifest-file-tab" &&
     (sodaJSONObj["starting-point"]["type"] === "new" ||
       sodaJSONObj["starting-point"]["type"] === "local")
   ) {
     console.log("It happens here?");
-    $(x[currentTab]).removeClass("tab-active");
-    currentTab = currentTab + n;
+    $(parentTabs[currentTab]).removeClass("tab-active");
+    currentTab = currentTab + pageIndex;
     $("#Question-generate-dataset").show();
     $("#Question-generate-dataset").children().show();
     $("#Question-generate-dataset-generate-div").hide();
@@ -694,35 +687,46 @@ const nextPrev = (n) => {
       $("#generate-dataset-replace-existing").children().hide();
     }
     $("#nextBtn").prop("disabled", true);
-    showParentTab(currentTab, n);
+    showParentTab(currentTab, pageIndex);
+  } else if (
+    parentTabs[currentTab].id === "validate-dataset-tab" &&
+    sodaJSONObj["starting-point"]["type"] === "bf"
+  ) {
+    console.log(currentTab);
+    if (pageIndex === -1) {
+      currentTab = currentTab - 2;
+      // fixStepDone(5);
+      // $("#nextBtn").prop("disabled", true);
+    } else {
+      currentTab = currentTab + 1;
+    }
+    showParentTab(currentTab, pageIndex);
   } else {
     // Hide the current tab:
-    $(x[currentTab]).removeClass("tab-active");
+    $(parentTabs[currentTab]).removeClass("tab-active");
     // Increase or decrease the current tab by 1:
-    currentTab = currentTab + n;
+    currentTab = currentTab + pageIndex;
     // For step 1,2,3, check for High level folders input to disable Continue button
     if (currentTab === 1 || currentTab === 2 || currentTab === 3) {
       highLevelFoldersDisableOptions();
     }
     // Display the correct tab:
-    showParentTab(currentTab, n);
+    showParentTab(currentTab, pageIndex);
   }
 };
 
-const fixStepIndicator = (n) => {
+const fixStepIndicator = (pageIndex) => {
   // This function removes the "is-current" class of all steps...
-  var i,
-    x = document.getElementsByClassName("vertical-progress-bar-step");
-  for (i = 0; i < x.length; i++) {
-    x[i].className = x[i].className.replace(" is-current", "");
+  let progressSteps = document.getElementsByClassName("vertical-progress-bar-step");
+  for (let step of progressSteps) {
+    step.className = step.className.replace(" is-current", "");
   }
-  //... and adds the "active" class to the current step:
-  x[n].className += " is-current";
+  progressSteps[pageIndex].className += " is-current";
 };
 
-const fixStepDone = (n) => {
-  var x = document.getElementsByClassName("vertical-progress-bar-step");
-  $(x[n]).addClass("done");
+const fixStepDone = (pageIndex) => {
+  let progressSteps = document.getElementsByClassName("vertical-progress-bar-step");
+  $(progressSteps[pageIndex]).addClass("done");
 };
 
 //// High level folders check mark effect

@@ -2,7 +2,7 @@
 Classes for creating manifest files for a dataset stored locally/on Pennsieve. 
 """
 
-from os.path import join, exists, expanduser, isdir, isfile, splitext
+from os.path import join, exists, expanduser, isdir, isfile, splitext, normpath, isfile
 from os import makedirs, remove, listdir
 from datetime import datetime
 import pathlib
@@ -23,8 +23,10 @@ def get_auto_generated_manifest_files(soda_json_structure):
     manifest_folder_structure = {}
     for folder in high_lvl_folders:
         # get manifest file for each high level folder
-        manifestFilePath = join(userpath, 'SODA', 'manifest_files', folder, 'manifest.xlsx')
-        manifest_folder_structure[folder] = manifestFilePath
+        filePath = join(userpath, 'SODA', 'manifest_files', folder, 'manifest.xlsx')
+        if(isfile(filePath)):
+            manifestFilePath = normpath(filePath)
+            manifest_folder_structure[folder] = manifestFilePath
     return manifest_folder_structure
 
 def update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level_folders, manifest_progress, manifest_path):

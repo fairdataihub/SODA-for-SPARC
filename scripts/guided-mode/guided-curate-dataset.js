@@ -1930,21 +1930,29 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
   }
 };
 
-const extractFilNamesFromManifestData = (manifestData) => {
+const extractFileNamesFromManifestData = (manifestData) => {
   let allFileNamesinDsStructure = [];
   for (const highLevelFolder of Object.keys(manifestData)) {
     console.log(manifestData[highLevelFolder]);
-    if (manifestData[highLevelFolder] === "generate-dataset") continue;
+    console.log(highLevelFolder);
+    if (highLevelFolder === "auto-generated" || highLevelFolder === "destination") {
+      continue;
+    }
+    // console.log(highLevelFolder);
     for (const row of manifestData[highLevelFolder]["data"]) {
+      console.log(row);
       allFileNamesinDsStructure.push(row[0]);
     }
   }
+  // console.log(allFileNamesinDsStructure.sort());
   //return sorted allFileNamesinDsStructure
   return allFileNamesinDsStructure.sort();
 };
 const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
-  const prevManifestFileNames = extractFilNamesFromManifestData(existingManifestData);
-  const newManifestFileNames = extractFilNamesFromManifestData(newManifestData);
+  const prevManifestFileNames = extractFileNamesFromManifestData(existingManifestData);
+  const newManifestFileNames = extractFileNamesFromManifestData(newManifestData);
+  console.log(newManifestFileNames);
+  console.log(prevManifestFileNames);
 
   if (JSON.stringify(existingManifestData) === JSON.stringify(newManifestData)) {
     //All files have remained the same, no need to diff check
@@ -1956,10 +1964,12 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
 
   // Create a hash table for the existing manifest data
   const existingManifestDataHashTable = {};
+  console.log(existingManifestData);
   for (const highLevelFolderName in existingManifestData) {
     const existingManifestDataHeaders = existingManifestData[highLevelFolderName]["headers"];
     const existingManifestDataData = existingManifestData[highLevelFolderName]["data"];
 
+    console.log(existingManifestDataData);
     for (const row of existingManifestDataData) {
       const fileObj = {};
       const fileName = row[0];
