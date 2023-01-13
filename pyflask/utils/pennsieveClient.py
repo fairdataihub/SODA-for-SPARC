@@ -34,10 +34,14 @@ def authenticate_user_with_client(ps, selected_account):
 def get_dataset_id(ps_or_token, selected_dataset):
     """
         Returns the dataset ID for the given dataset name.
+        If the dataset ID was provided instead of the name, the ID will be returned. *Common for Guided Mode*
         Input:
             ps: An initialized Pennsieve object
             selected_dataset: Pennsieve dataset to get the ID for
     """
+
+    if selected_dataset.startswith("N:dataset:"):
+        return selected_dataset
 
     if type(ps_or_token) == str:
         r = requests.get("https://api.pennsieve.io/datasets", headers={"Authorization": f"Bearer {ps_or_token}"})

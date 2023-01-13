@@ -148,15 +148,21 @@ const guidedSetNavLoadingState = (loadingState) => {
   //to disable the primary and sub buttons along with the nav menu
   const subBackButton = document.getElementById("guided-button-sub-page-back");
   const subContinueButton = document.getElementById("guided-button-sub-page-continue");
+  const subSaveAndExitButton = document.getElementById("guided-button-sub-page-save-and-exit");
+
   const mainBackButton = document.getElementById("guided-back-button");
   const mainContinueButton = document.getElementById("guided-next-button");
+  const saveAndExitButton = document.getElementById("guided-button-save-and-exit");
+
   const navItems = document.querySelectorAll(".guided--nav-bar-section-page");
 
   if (loadingState === true) {
     subBackButton.disabled = true;
     subContinueButton.disabled = true;
+    subSaveAndExitButton.disabled = true;
     mainBackButton.disabled = true;
     mainContinueButton.disabled = true;
+    saveAndExitButton.disabled = true;
     mainBackButton.classList.add("loading");
     mainContinueButton.classList.add("loading");
 
@@ -168,10 +174,12 @@ const guidedSetNavLoadingState = (loadingState) => {
   if (loadingState === false) {
     subBackButton.disabled = false;
     subContinueButton.disabled = false;
+    subSaveAndExitButton.disabled = false;
     mainBackButton.disabled = false;
     mainContinueButton.disabled = false;
     mainBackButton.classList.remove("loading");
     mainContinueButton.classList.remove("loading");
+    saveAndExitButton.disabled = false;
 
     navItems.forEach((nav) => {
       nav.classList.remove("disabled-nav");
@@ -284,7 +292,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
 
-        sodaJSONObj["starting-point"]["type"] = "pennsieve";
+        sodaJSONObj["starting-point"]["type"] = "bf";
         sodaJSONObj["generate-dataset"]["generate-option"] = "existing-bf";
         sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] = selectedPennsieveDatasetID;
         sodaJSONObj["digital-metadata"]["name"] = selectedPennsieveDataset;
@@ -303,20 +311,11 @@ const savePageChanges = async (pageBeingLeftID) => {
           let data = await bf_request_and_populate_dataset(sodaJSONObj, importProgressCircle, true);
           // Save a copy of the dataset structure used to make sure the user doesn't change it
           // on future progress continuations
-          sodaJSONObj["initially-pulled-dataset-structure"] =
-            data["soda_object"]["dataset-structure"];
-          datasetStructureJSONObj = data["soda_object"]["dataset-structure"];
-
-          /*
-          let filesFoldersResponse = await client.post(
-            `/organize_datasets/dataset_files_and_folders`,
-            {
-              sodajsonobject: sodaJSONObj,
-            },
-            { timeout: 0 }
+          sodaJSONObj["initially-pulled-dataset-structure"] = JSON.parse(
+            JSON.stringify(data["soda_object"]["dataset-structure"])
           );
-          let data = filesFoldersResponse.data;
-          datasetStructureJSONObj = data["soda_object"]["dataset-structure"];*/
+
+          datasetStructureJSONObj = data["soda_object"]["dataset-structure"];
         } catch (error) {
           console.log(error);
           errorArray.push({
@@ -2545,6 +2544,8 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
 const extractFilNamesFromManifestData = (manifestData) => {
   let allFileNamesinDsStructure = [];
   for (const highLevelFolder of Object.keys(manifestData)) {
+    console.log(manifestData[highLevelFolder]);
+    if (manifestData[highLevelFolder] === "generate-dataset") continue;
     for (const row of manifestData[highLevelFolder]["data"]) {
       allFileNamesinDsStructure.push(row[0]);
     }
@@ -2556,12 +2557,12 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
   const prevManifestFileNames = extractFilNamesFromManifestData(existingManifestData);
   const newManifestFileNames = extractFilNamesFromManifestData(newManifestData);
 
-  if (JSON.stringify(prevManifestFileNames) === JSON.stringify(newManifestFileNames)) {
+  if (JSON.stringify(existingManifestData) === JSON.stringify(newManifestData)) {
     //All files have remained the same, no need to diff check
     return existingManifestData;
   }
 
-  const numImmutableManifestDataCols = 3;
+  const numImmutableManifestDataCols = 2;
 
   // Create a hash table for the existing manifest data
   const existingManifestDataHashTable = {};
@@ -2581,7 +2582,6 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
       existingManifestDataHashTable[fileName] = fileObj;
     }
   }
-
   let returnObj = {};
 
   for (const highLevelFolder of Object.keys(newManifestData)) {
@@ -2613,10 +2613,10 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
           newManifestReturnObj["data"].push(row);
         }
         returnObj[highLevelFolder] = newManifestReturnObj;
+        console.log(returnObj[highLevelFolder]);
       }
     }
   }
-
   return returnObj;
 };
 
@@ -2646,15 +2646,33 @@ document
     scrollToBottomOfGuidedBody();
 
     try {
+      const sodaCopy = { ...sodaJSONObj };
+      delete sodaCopy["generate-dataset"];
+      sodaCopy["metadata-files"] = {};
+      sodaCopy["dataset-structure"] = datasetStructureJSONObj;
+      const cleanJson = await client.post(
+        `/curate_datasets/clean-dataset`,
+        { soda_json_structure: sodaCopy },
+        { timeout: 0 }
+      );
+      let response = cleanJson.data.soda_json_structure;
+      console.log(response);
+      // response does not format in JSON format so need to format ' with "
+      let regex = /'/gm;
+      let formattedResponse = JSON.parse(response.replace(regex, '"'));
+      console.log(formattedResponse);
+      const formattedDatasetStructure = formattedResponse["dataset-structure"];
+      console.log(formattedDatasetStructure);
       // Retrieve the manifest data to be used to generate the manifest files
       const res = await client.post(
         `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
         {
-          dataset_structure_obj: datasetStructureJSONObj,
+          dataset_structure_obj: formattedDatasetStructure,
         },
         { timeout: 0 }
       );
       const manifestRes = res.data;
+      console.log(manifestRes);
       //loop through each of the high level folders and store their manifest headers and data
       //into the sodaJSONObj
 
@@ -3783,6 +3801,7 @@ const openPage = async (targetPageID) => {
             },
           });
           let res = import_metadata.data;
+          console.log(res);
           const sparcAwardRes = res?.["SPARC Award number"];
 
           //If the SPARC Award number was found, click the manual button and fill the SPARC Award number
@@ -4609,7 +4628,7 @@ const openPage = async (targetPageID) => {
       );
       if (
         sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] &&
-        !sodaJSONObj["starting-point"]["type"] === "pennsieve"
+        !sodaJSONObj["starting-point"]["type"] === "bf"
       ) {
         const generateButtonText = "Resume Pennsieve upload in progress";
         generateOrRetryDatasetUploadButton.innerHTML = generateButtonText;
@@ -5664,17 +5683,6 @@ const patchPreviousGuidedModeVersions = () => {
     }
   }
 
-  const resetGuidedManifestFiles = () => {
-    sodaJSONObj["guided-manifest-files"] = {};
-  };
-
-  //Update manifest files key from old key ("manifest-files") to new key ("guided-manifest-files")
-  if (sodaJSONObj["manifest-files"]) {
-    resetGuidedManifestFiles();
-    delete sodaJSONObj["manifest-files"];
-    forceUserToRestartFromFirstPage = true;
-  }
-
   let oldManifestFileHeaders = false;
   for (highLevelFolderManifestData in sodaJSONObj["guided-manifest-files"]) {
     if (
@@ -5746,7 +5754,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   }
 
   // If the dataset is being edited on Pensieve, check to make sure the folders and files are still the same.
-  if (datasetResumeJsonObj["starting-point"]?.["type"] === "pennsieve") {
+  if (datasetResumeJsonObj["starting-point"]?.["type"] === "bf") {
     const nofiication = notyf.open({
       type: "info",
       message: `Checking to make sure the dataset structure on Pennsieve is the same as when you started editing this dataset.`,
@@ -5763,6 +5771,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
     const currentPennsieveDatasetStructure = data["soda_object"]["dataset-structure"];
     const intitiallyPulledDatasetStructure =
       datasetResumeJsonObj["initially-pulled-dataset-structure"];
+
     notyf.dismiss(nofiication);
 
     console.log("currentPennsieveDatasetStructure", currentPennsieveDatasetStructure);
@@ -5774,7 +5783,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
       JSON.stringify(intitiallyPulledDatasetStructure)
     ) {
       await Swal.fire({
-        icon: "error  ",
+        icon: "error",
         title: "Dataset structure on Pennsieve has changed",
         html: `
           The dataset structure on Pennsieve has changed since you started editing this dataset.
@@ -5896,6 +5905,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["generate-dataset"] = {};
   sodaJSONObj["generate-dataset"]["destination"] = "bf";
   sodaJSONObj["guided-manifest-files"] = {};
+  console.log(sodaJSONObj["guided-manifest-files"]);
   sodaJSONObj["starting-point"] = {};
   sodaJSONObj["dataset-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["shared-metadata"] = {};
@@ -5923,7 +5933,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["skipped-pages"] = [];
   sodaJSONObj["last-modified"] = "";
   sodaJSONObj["button-config"] = {};
-  sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] = false;
+  sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] = "false";
   datasetStructureJSONObj = { folders: {}, files: {} };
 };
 const guidedHighLevelFolders = ["primary", "source", "derivative"];
@@ -9980,7 +9990,7 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
         pathSuffix
       );
 
-      if (sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] == false) {
+      if (sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] == "false") {
         //right click the second child in #items jqeury
         introJs()
           .setOptions({
@@ -10024,7 +10034,7 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
             disableInteraction: false,
           })
           .onbeforeexit(function () {
-            sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] = true;
+            sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] = "true";
             //reUpdate the file explorer
             updateFolderStructureUI(samplePageData);
           })
@@ -12039,7 +12049,6 @@ $(document).ready(async () => {
       fs.emptyDirSync(guidedManifestFilePath);
 
       const guidedManifestData = sodaJSONObj["guided-manifest-files"];
-
       for (const [highLevelFolder, manifestData] of Object.entries(guidedManifestData)) {
         let manifestJSON = processManifestInfo(
           guidedManifestData[highLevelFolder]["headers"],
@@ -12213,7 +12222,6 @@ $(document).ready(async () => {
         app.quit();
       });
 
-
     const guidedUpdateUploadStatus = async () => {
       let mainCurationProgressResponse;
       try {
@@ -12236,7 +12244,7 @@ $(document).ready(async () => {
       main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
       const main_generated_dataset_size = data["main_generated_dataset_size"];
       const elapsed_time_formatted = data["elapsed_time_formatted"];
-      const totalUploadedFiles = data["total_files_uploaded"]
+      const totalUploadedFiles = data["total_files_uploaded"];
 
       if (start_generate === 1) {
         $("#guided-progress-bar-new-curate").css("display", "block");
