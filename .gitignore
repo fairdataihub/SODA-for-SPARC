@@ -32,3 +32,4 @@ src/build
 .env
 .env.local
 .env.production
+access_token.txt

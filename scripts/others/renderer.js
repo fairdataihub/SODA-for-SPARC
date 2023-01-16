@@ -2329,7 +2329,7 @@ function addOption(selectbox, text, value) {
 var awardObj = {};
 var globalSPARCAward = "";
 // indicate to user that airtable records are being retrieved
-function loadAwardData() {
+const loadAwardData = async () => {
   ///// Construct table from data
   var awardResultArray = [];
   ///// config and load live data from Airtable
@@ -2373,7 +2373,7 @@ function loadAwardData() {
         );
     }
   }
-}
+};
 
 //////////////// Dataset description file ///////////////////////
 //////////////// //////////////// //////////////// ////////////////

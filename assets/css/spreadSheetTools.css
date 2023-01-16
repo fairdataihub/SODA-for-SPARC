@@ -1,0 +1,81 @@
+body {
+  font-family: Lato, system-ui, -apple-system, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell,
+    "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+}
+
+.document-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.save-spreadsheet {
+  margin: 1rem;
+  height: 3rem;
+  border-radius: 4px;
+  background: #13716d;
+  color: white;
+  font-weight: 700;
+  border-color: #13716d;
+}
+
+.modal-title {
+  border-bottom: 4px solid #b80d49;
+  width: 99%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 1px;
+}
+
+.title-text {
+  font-size: larger;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+:root {
+  --jexcel_header_color: #000;
+  --jexcel_header_color_highlighted: #000;
+  --jexcel_header_background: #f3f3f3;
+  --jexcel_header_background_highlighted: #dcdcdc;
+  --jexcel_content_color: #000;
+  --jexcel_content_color_highlighted: #000;
+  --jexcel_content_background: #fff;
+  --jexcel_content_background_highlighted: rgba(0, 0, 0, 0.05);
+  --jexcel_menu_background: #fff;
+  --jexcel_menu_background_highlighted: #ebebeb;
+  --jexcel_menu_color: #555;
+  --jexcel_menu_color_highlighted: #555;
+  --jexcel_menu_box_shadow: 2px 2px 2px 0px rgba(143, 144, 145, 1);
+  --jexcel_border_color: #ccc;
+  --jexcel_border_color_highlighted: #000;
+  --active_color: #007aff;
+}
+
+.jexcel_content::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background-color: #c5c5c5;
+}
+.jexcel_content::-webkit-scrollbar-thumb {
+  background: #666;
+}
+
+table::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background-color: #c5c5c5;
+}
+table::-webkit-scrollbar-thumb {
+  background: #666;
+}
+
+.soda-logo {
+  position: absolute;
+  top: 0;
+  left: 14px;
+  width: 120px;
+  height: 51px;
+}
