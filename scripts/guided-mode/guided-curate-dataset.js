@@ -3542,6 +3542,33 @@ const pageNeedsUpdateFromPennsieve = (pageID) => {
   );
 };
 
+// Function that allows the user to retry fetching the page if any errors occur
+// while pulling from Pennsieve. Ultimately, this function just tries to re-open the page
+const guidedShowOptionalRetrySwal = async (errorMessage) => {
+  const { value: retry } = await Swal.fire({
+    icon: "error",
+    title: "Error fetching page data from Pennsieve",
+    html: `
+      <b>Error message:</b> ${emessage}
+      <br />
+      <br />
+      Would you like to retry fetching the page data from Pennsieve?
+    `,
+    width: 700,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    showCancelButton: true,
+    confirmButtonText: "Retry",
+    cancelButtonText: "Enter manually",
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+  });
+  if (retry) {
+    const currentPageId = CURRENT_PAGE.id;
+    await openPage(currentPageId);
+  }
+};
+
 //Main function that prepares individual pages based on the state of the sodaJSONObj
 //The general flow is to check if there is values for the keys relevant to the page
 //If the keys exist, extract the data from the sodaJSONObj and populate the page
@@ -3620,8 +3647,9 @@ const openPage = async (targetPageID) => {
           datasetSubtitleInput.value = datasetSubtitle;
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-name-subtitle-tab");
         } catch (error) {
-          console.log(error);
           clientError(error);
+          const emessage = error.response.data.message;
+          guidedShowOptionalRetrySwal(emessage);
         }
       } else {
         //Update subtitle from JSON
@@ -3812,8 +3840,9 @@ const openPage = async (targetPageID) => {
           }
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-airtable-award-tab");
         } catch (error) {
-          console.log(error);
           clientError(error);
+          const emessage = error.response.data.message;
+          guidedShowOptionalRetrySwal(emessage);
         }
       }
       const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
@@ -3857,8 +3886,9 @@ const openPage = async (targetPageID) => {
 
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-submission-metadata-tab");
         } catch (error) {
-          console.log(error);
           clientError(error);
+          const emessage = error.response.data.message;
+          guidedShowOptionalRetrySwal(emessage);
         }
       }
       //Reset the manual submission metadata UI
@@ -3898,8 +3928,6 @@ const openPage = async (targetPageID) => {
 
       //Click the manual submission metadata button because it's likely best for the user
       document.getElementById("guided-button-enter-submission-metadata-manually").click();
-
-      sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-submission-metadata-tab");
     }
     if (targetPageID === "guided-contributors-tab") {
       if (pageNeedsUpdateFromPennsieve("guided-contributors-tab")) {
@@ -3942,8 +3970,9 @@ const openPage = async (targetPageID) => {
           }
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-contributors-tab");
         } catch (error) {
-          console.log(error);
           clientError(error);
+          const emessage = error.response.data.message;
+          guidedShowOptionalRetrySwal(emessage);
         }
       }
 
@@ -3984,7 +4013,9 @@ const openPage = async (targetPageID) => {
           }
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-protocols-tab");
         } catch (error) {
-          console.log(error);
+          clientError(error);
+          const emessage = error.response.data.message;
+          guidedShowOptionalRetrySwal(emessage);
         }
       }
       renderProtocolsTable();
@@ -4094,7 +4125,9 @@ const openPage = async (targetPageID) => {
             "guided-create-description-metadata-tab"
           );
         } catch (error) {
-          console.log(error);
+          clientError(error);
+          const emessage = error.response.data.message;
+          guidedShowOptionalRetrySwal(emessage);
         }
       }
       const guidedLoadDescriptionDatasetInformation = () => {
@@ -4320,8 +4353,9 @@ const openPage = async (targetPageID) => {
           }
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-banner-image-tab");
         } catch (error) {
-          console.log(error);
-          console.log("Don't have a banner image yet");
+          clientError(error);
+          const emessage = error.response.data.message;
+          guidedShowOptionalRetrySwal(emessage);
         }
       }
       if (sodaJSONObj["digital-metadata"]["banner-image-path"]) {
@@ -4444,7 +4478,9 @@ const openPage = async (targetPageID) => {
 
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-designate-permissions-tab");
         } catch (error) {
-          console.log(error);
+          clientError(error);
+          const emessage = error.response.data.message;
+          guidedShowOptionalRetrySwal(emessage);
         }
       }
 
@@ -4532,7 +4568,9 @@ const openPage = async (targetPageID) => {
           sodaJSONObj["digital-metadata"]["dataset-tags"] = tags;
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-add-tags-tab");
         } catch (error) {
-          console.log(error);
+          clientError(error);
+          const emessage = error.response.data.message;
+          guidedShowOptionalRetrySwal(emessage);
         }
       }
       const descriptionMetadata =
@@ -4567,7 +4605,9 @@ const openPage = async (targetPageID) => {
           }
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-assign-license-tab");
         } catch (error) {
-          console.log(error);
+          clientError(error);
+          const emessage = error.response.data.message;
+          guidedShowOptionalRetrySwal(emessage);
         }
       }
       const licenseCheckbox = document.getElementById("guided-license-checkbox");
@@ -4948,7 +4988,9 @@ const openPage = async (targetPageID) => {
           sodaJSONObj["dataset-metadata"]["README"] = readme_text;
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-readme-metadata-tab");
         } catch (error) {
-          console.log(error);
+          clientError(error);
+          const emessage = error.response.data.message;
+          guidedShowOptionalRetrySwal(emessage);
         }
       }
       const readMeTextArea = document.getElementById("guided-textarea-create-readme");
