@@ -148,15 +148,21 @@ const guidedSetNavLoadingState = (loadingState) => {
   //to disable the primary and sub buttons along with the nav menu
   const subBackButton = document.getElementById("guided-button-sub-page-back");
   const subContinueButton = document.getElementById("guided-button-sub-page-continue");
+  const subSaveAndExitButton = document.getElementById("guided-button-sub-page-save-and-exit");
+
   const mainBackButton = document.getElementById("guided-back-button");
   const mainContinueButton = document.getElementById("guided-next-button");
+  const saveAndExitButton = document.getElementById("guided-button-save-and-exit");
+
   const navItems = document.querySelectorAll(".guided--nav-bar-section-page");
 
   if (loadingState === true) {
     subBackButton.disabled = true;
     subContinueButton.disabled = true;
+    subSaveAndExitButton.disabled = true;
     mainBackButton.disabled = true;
     mainContinueButton.disabled = true;
+    saveAndExitButton.disabled = true;
     mainBackButton.classList.add("loading");
     mainContinueButton.classList.add("loading");
 
@@ -168,10 +174,12 @@ const guidedSetNavLoadingState = (loadingState) => {
   if (loadingState === false) {
     subBackButton.disabled = false;
     subContinueButton.disabled = false;
+    subSaveAndExitButton.disabled = false;
     mainBackButton.disabled = false;
     mainContinueButton.disabled = false;
     mainBackButton.classList.remove("loading");
     mainContinueButton.classList.remove("loading");
+    saveAndExitButton.disabled = false;
 
     navItems.forEach((nav) => {
       nav.classList.remove("disabled-nav");
@@ -284,7 +292,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
 
-        sodaJSONObj["starting-point"]["type"] = "pennsieve";
+        sodaJSONObj["starting-point"]["type"] = "bf";
         sodaJSONObj["generate-dataset"]["generate-option"] = "existing-bf";
         sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] = selectedPennsieveDatasetID;
         sodaJSONObj["digital-metadata"]["name"] = selectedPennsieveDataset;
@@ -303,20 +311,11 @@ const savePageChanges = async (pageBeingLeftID) => {
           let data = await bf_request_and_populate_dataset(sodaJSONObj, importProgressCircle, true);
           // Save a copy of the dataset structure used to make sure the user doesn't change it
           // on future progress continuations
-          sodaJSONObj["initially-pulled-dataset-structure"] =
-            data["soda_object"]["dataset-structure"];
-          datasetStructureJSONObj = data["soda_object"]["dataset-structure"];
-
-          /*
-          let filesFoldersResponse = await client.post(
-            `/organize_datasets/dataset_files_and_folders`,
-            {
-              sodajsonobject: sodaJSONObj,
-            },
-            { timeout: 0 }
+          sodaJSONObj["initially-pulled-dataset-structure"] = JSON.parse(
+            JSON.stringify(data["soda_object"]["dataset-structure"])
           );
-          let data = filesFoldersResponse.data;
-          datasetStructureJSONObj = data["soda_object"]["dataset-structure"];*/
+
+          datasetStructureJSONObj = data["soda_object"]["dataset-structure"];
         } catch (error) {
           console.log(error);
           errorArray.push({
@@ -2517,6 +2516,8 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
 const extractFilNamesFromManifestData = (manifestData) => {
   let allFileNamesinDsStructure = [];
   for (const highLevelFolder of Object.keys(manifestData)) {
+    console.log(manifestData[highLevelFolder]);
+    if (manifestData[highLevelFolder] === "generate-dataset") continue;
     for (const row of manifestData[highLevelFolder]["data"]) {
       allFileNamesinDsStructure.push(row[0]);
     }
@@ -2528,12 +2529,12 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
   const prevManifestFileNames = extractFilNamesFromManifestData(existingManifestData);
   const newManifestFileNames = extractFilNamesFromManifestData(newManifestData);
 
-  if (JSON.stringify(prevManifestFileNames) === JSON.stringify(newManifestFileNames)) {
+  if (JSON.stringify(existingManifestData) === JSON.stringify(newManifestData)) {
     //All files have remained the same, no need to diff check
     return existingManifestData;
   }
 
-  const numImmutableManifestDataCols = 3;
+  const numImmutableManifestDataCols = 2;
 
   // Create a hash table for the existing manifest data
   const existingManifestDataHashTable = {};
@@ -2553,7 +2554,6 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
       existingManifestDataHashTable[fileName] = fileObj;
     }
   }
-
   let returnObj = {};
 
   for (const highLevelFolder of Object.keys(newManifestData)) {
@@ -2585,10 +2585,10 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
           newManifestReturnObj["data"].push(row);
         }
         returnObj[highLevelFolder] = newManifestReturnObj;
+        console.log(returnObj[highLevelFolder]);
       }
     }
   }
-
   return returnObj;
 };
 
@@ -2618,15 +2618,33 @@ document
     scrollToBottomOfGuidedBody();
 
     try {
+      const sodaCopy = { ...sodaJSONObj };
+      delete sodaCopy["generate-dataset"];
+      sodaCopy["metadata-files"] = {};
+      sodaCopy["dataset-structure"] = datasetStructureJSONObj;
+      const cleanJson = await client.post(
+        `/curate_datasets/clean-dataset`,
+        { soda_json_structure: sodaCopy },
+        { timeout: 0 }
+      );
+      let response = cleanJson.data.soda_json_structure;
+      console.log(response);
+      // response does not format in JSON format so need to format ' with "
+      let regex = /'/gm;
+      let formattedResponse = JSON.parse(response.replace(regex, '"'));
+      console.log(formattedResponse);
+      const formattedDatasetStructure = formattedResponse["dataset-structure"];
+      console.log(formattedDatasetStructure);
       // Retrieve the manifest data to be used to generate the manifest files
       const res = await client.post(
         `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
         {
-          dataset_structure_obj: datasetStructureJSONObj,
+          dataset_structure_obj: formattedDatasetStructure,
         },
         { timeout: 0 }
       );
       const manifestRes = res.data;
+      console.log(manifestRes);
       //loop through each of the high level folders and store their manifest headers and data
       //into the sodaJSONObj
 
@@ -3496,6 +3514,33 @@ const pageNeedsUpdateFromPennsieve = (pageID) => {
   );
 };
 
+// Function that allows the user to retry fetching the page if any errors occur
+// while pulling from Pennsieve. Ultimately, this function just tries to re-open the page
+const guidedShowOptionalRetrySwal = async (errorMessage) => {
+  const { value: retry } = await Swal.fire({
+    icon: "error",
+    title: "Error fetching page data from Pennsieve",
+    html: `
+      <b>Error message:</b> ${emessage}
+      <br />
+      <br />
+      Would you like to retry fetching the page data from Pennsieve?
+    `,
+    width: 700,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    showCancelButton: true,
+    confirmButtonText: "Retry",
+    cancelButtonText: "Enter manually",
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+  });
+  if (retry) {
+    const currentPageId = CURRENT_PAGE.id;
+    await openPage(currentPageId);
+  }
+};
+
 //Main function that prepares individual pages based on the state of the sodaJSONObj
 //The general flow is to check if there is values for the keys relevant to the page
 //If the keys exist, extract the data from the sodaJSONObj and populate the page
@@ -3584,8 +3629,9 @@ const openPage = async (targetPageID) => {
           datasetSubtitleInput.value = datasetSubtitle;
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-name-subtitle-tab");
         } catch (error) {
-          console.log(error);
           clientError(error);
+          const emessage = error.response.data.message;
+          guidedShowOptionalRetrySwal(emessage);
         }
       } else {
         //Update subtitle from JSON
@@ -3777,6 +3823,7 @@ const openPage = async (targetPageID) => {
             },
           });
           let res = import_metadata.data;
+          console.log(res);
           const sparcAwardRes = res?.["SPARC Award number"];
 
           //If the SPARC Award number was found, click the manual button and fill the SPARC Award number
@@ -3787,8 +3834,9 @@ const openPage = async (targetPageID) => {
           }
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-airtable-award-tab");
         } catch (error) {
-          console.log(error);
           clientError(error);
+          const emessage = error.response.data.message;
+          guidedShowOptionalRetrySwal(emessage);
         }
       }
       const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
@@ -3832,8 +3880,9 @@ const openPage = async (targetPageID) => {
 
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-submission-metadata-tab");
         } catch (error) {
-          console.log(error);
           clientError(error);
+          const emessage = error.response.data.message;
+          guidedShowOptionalRetrySwal(emessage);
         }
       }
       //Reset the manual submission metadata UI
@@ -3873,8 +3922,6 @@ const openPage = async (targetPageID) => {
 
       //Click the manual submission metadata button because it's likely best for the user
       document.getElementById("guided-button-enter-submission-metadata-manually").click();
-
-      sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-submission-metadata-tab");
     }
     if (targetPageID === "guided-contributors-tab") {
       if (pageNeedsUpdateFromPennsieve("guided-contributors-tab")) {
@@ -3917,8 +3964,9 @@ const openPage = async (targetPageID) => {
           }
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-contributors-tab");
         } catch (error) {
-          console.log(error);
           clientError(error);
+          const emessage = error.response.data.message;
+          guidedShowOptionalRetrySwal(emessage);
         }
       }
 
@@ -3959,7 +4007,9 @@ const openPage = async (targetPageID) => {
           }
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-protocols-tab");
         } catch (error) {
-          console.log(error);
+          clientError(error);
+          const emessage = error.response.data.message;
+          guidedShowOptionalRetrySwal(emessage);
         }
       }
       renderProtocolsTable();
@@ -4069,7 +4119,9 @@ const openPage = async (targetPageID) => {
             "guided-create-description-metadata-tab"
           );
         } catch (error) {
-          console.log(error);
+          clientError(error);
+          const emessage = error.response.data.message;
+          guidedShowOptionalRetrySwal(emessage);
         }
       }
       const guidedLoadDescriptionDatasetInformation = () => {
@@ -4295,8 +4347,9 @@ const openPage = async (targetPageID) => {
           }
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-banner-image-tab");
         } catch (error) {
-          console.log(error);
-          console.log("Don't have a banner image yet");
+          clientError(error);
+          const emessage = error.response.data.message;
+          guidedShowOptionalRetrySwal(emessage);
         }
       }
       if (sodaJSONObj["digital-metadata"]["banner-image-path"]) {
@@ -4419,7 +4472,9 @@ const openPage = async (targetPageID) => {
 
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-designate-permissions-tab");
         } catch (error) {
-          console.log(error);
+          clientError(error);
+          const emessage = error.response.data.message;
+          guidedShowOptionalRetrySwal(emessage);
         }
       }
 
@@ -4507,7 +4562,9 @@ const openPage = async (targetPageID) => {
           sodaJSONObj["digital-metadata"]["dataset-tags"] = tags;
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-add-tags-tab");
         } catch (error) {
-          console.log(error);
+          clientError(error);
+          const emessage = error.response.data.message;
+          guidedShowOptionalRetrySwal(emessage);
         }
       }
       const descriptionMetadata =
@@ -4542,7 +4599,9 @@ const openPage = async (targetPageID) => {
           }
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-assign-license-tab");
         } catch (error) {
-          console.log(error);
+          clientError(error);
+          const emessage = error.response.data.message;
+          guidedShowOptionalRetrySwal(emessage);
         }
       }
       const licenseCheckbox = document.getElementById("guided-license-checkbox");
@@ -4603,7 +4662,7 @@ const openPage = async (targetPageID) => {
       );
       if (
         sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] &&
-        !sodaJSONObj["starting-point"]["type"] === "pennsieve"
+        !sodaJSONObj["starting-point"]["type"] === "bf"
       ) {
         const generateButtonText = "Resume Pennsieve upload in progress";
         generateOrRetryDatasetUploadButton.innerHTML = generateButtonText;
@@ -4935,7 +4994,9 @@ const openPage = async (targetPageID) => {
           sodaJSONObj["dataset-metadata"]["README"] = readme_text;
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-readme-metadata-tab");
         } catch (error) {
-          console.log(error);
+          clientError(error);
+          const emessage = error.response.data.message;
+          guidedShowOptionalRetrySwal(emessage);
         }
       }
       const readMeTextArea = document.getElementById("guided-textarea-create-readme");
@@ -5670,17 +5731,6 @@ const patchPreviousGuidedModeVersions = () => {
     }
   }
 
-  const resetGuidedManifestFiles = () => {
-    sodaJSONObj["guided-manifest-files"] = {};
-  };
-
-  //Update manifest files key from old key ("manifest-files") to new key ("guided-manifest-files")
-  if (sodaJSONObj["manifest-files"]) {
-    resetGuidedManifestFiles();
-    delete sodaJSONObj["manifest-files"];
-    forceUserToRestartFromFirstPage = true;
-  }
-
   let oldManifestFileHeaders = false;
   for (highLevelFolderManifestData in sodaJSONObj["guided-manifest-files"]) {
     if (
@@ -5752,7 +5802,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   }
 
   // If the dataset is being edited on Pensieve, check to make sure the folders and files are still the same.
-  if (datasetResumeJsonObj["starting-point"]?.["type"] === "pennsieve") {
+  if (datasetResumeJsonObj["starting-point"]?.["type"] === "bf") {
     const nofiication = notyf.open({
       type: "info",
       message: `Checking to make sure the dataset structure on Pennsieve is the same as when you started editing this dataset.`,
@@ -5769,6 +5819,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
     const currentPennsieveDatasetStructure = data["soda_object"]["dataset-structure"];
     const intitiallyPulledDatasetStructure =
       datasetResumeJsonObj["initially-pulled-dataset-structure"];
+
     notyf.dismiss(nofiication);
 
     console.log("currentPennsieveDatasetStructure", currentPennsieveDatasetStructure);
@@ -5780,7 +5831,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
       JSON.stringify(intitiallyPulledDatasetStructure)
     ) {
       await Swal.fire({
-        icon: "error  ",
+        icon: "error",
         title: "Dataset structure on Pennsieve has changed",
         html: `
           The dataset structure on Pennsieve has changed since you started editing this dataset.
@@ -5902,6 +5953,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["generate-dataset"] = {};
   sodaJSONObj["generate-dataset"]["destination"] = "bf";
   sodaJSONObj["guided-manifest-files"] = {};
+  console.log(sodaJSONObj["guided-manifest-files"]);
   sodaJSONObj["starting-point"] = {};
   sodaJSONObj["dataset-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["shared-metadata"] = {};
@@ -5929,7 +5981,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["skipped-pages"] = [];
   sodaJSONObj["last-modified"] = "";
   sodaJSONObj["button-config"] = {};
-  sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] = false;
+  sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] = "false";
   datasetStructureJSONObj = { folders: {}, files: {} };
 };
 const guidedHighLevelFolders = ["primary", "source", "derivative"];
@@ -9986,7 +10038,7 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
         pathSuffix
       );
 
-      if (sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] == false) {
+      if (sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] == "false") {
         //right click the second child in #items jqeury
         introJs()
           .setOptions({
@@ -10030,7 +10082,7 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
             disableInteraction: false,
           })
           .onbeforeexit(function () {
-            sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] = true;
+            sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] = "true";
             //reUpdate the file explorer
             updateFolderStructureUI(samplePageData);
           })
@@ -11783,8 +11835,6 @@ $(document).ready(async () => {
       //Display the Dataset metadata upload table
       unHideAndSmoothScrollToElement("guided-div-dataset-metadata-upload-status-table");
 
-      // clear the Pennsieve Queue for dataset metadata generation (added to Renderer side for Mac users that are unable to clear the queue on the Python side)
-      clearQueue();
       //set timeout for 2 seconds
       await new Promise((r) => setTimeout(r, 2000));
 
@@ -11937,7 +11987,6 @@ $(document).ready(async () => {
       fs.emptyDirSync(guidedManifestFilePath);
 
       const guidedManifestData = sodaJSONObj["guided-manifest-files"];
-
       for (const [highLevelFolder, manifestData] of Object.entries(guidedManifestData)) {
         let manifestJSON = processManifestInfo(
           guidedManifestData[highLevelFolder]["headers"],
@@ -11996,9 +12045,6 @@ $(document).ready(async () => {
       // create a dataset upload session
       datasetUploadSession.startSession();
     }
-
-    // clear the Pennsieve Queue (added to Renderer side for Mac users that are unable to clear the queue on the Python side)
-    clearQueue();
 
     client
       .post(
@@ -12075,16 +12121,10 @@ $(document).ready(async () => {
           clientError(error);
         }
 
-        // wait to see if the uploaded files or size will grow once the client has time to ask for the updated information
-        // if they stay zero that means nothing was uploaded
-        if (uploadedFiles === 0 || uploadedFilesSize === 0) {
-          await wait(2000);
-        }
-
         // log the curation errors to Google Analytics
         logCurationErrorsToAnalytics(
-          uploadedFiles,
-          uploadedFilesSize,
+          0,
+          0,
           dataset_destination,
           main_total_generate_dataset_size,
           increaseInFileSize,
@@ -12119,6 +12159,7 @@ $(document).ready(async () => {
         app.showExitPrompt = false;
         app.quit();
       });
+
     const guidedUpdateUploadStatus = async () => {
       let mainCurationProgressResponse;
       try {
@@ -12141,6 +12182,7 @@ $(document).ready(async () => {
       main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
       const main_generated_dataset_size = data["main_generated_dataset_size"];
       const elapsed_time_formatted = data["elapsed_time_formatted"];
+      const totalUploadedFiles = data["total_files_uploaded"];
 
       if (start_generate === 1) {
         $("#guided-progress-bar-new-curate").css("display", "block");
@@ -12170,6 +12212,7 @@ $(document).ready(async () => {
             "Upload status": `${main_curate_progress_message}`,
             "Percent uploaded": `${percentOfDatasetUploaded.toFixed(2)}%`,
             "Elapsed time": `${elapsed_time_formatted}`,
+            "Files Uploaded": `${totalUploadedFiles}`,
           });
         }
       } else {
@@ -12193,73 +12236,8 @@ $(document).ready(async () => {
 
     // when generating a new dataset we need to add its ID to the ID -> Name mapping
     // we need to do this only once
+    // TODO: Reintegrate
     let loggedDatasetNameToIdMapping = false;
-
-    // if uploading to Pennsieve set an interval that gets the amount of files that have been uploaded
-    // and their aggregate size; starts for local dataset generation as well. Provides easy way to track amount of
-    // files copied and their aggregate size.
-    // IMP: This handles tracking a session that tracking a session that had a successful Pennsieve upload.
-    //      therefore it is unnecessary to have logs for Session ID tracking in the "api_main_curate" success block
-    // IMP: Two reasons this exists:
-    //    1. Pennsieve Agent can freeze. This prevents us from logging. So we log a Pennsieve dataset upload session as it happens.
-    //    2. Local dataset generation and Pennsieve dataset generation can fail. Having access to how many files and their aggregate size for logging at error time is valuable data.
-    const checkForBucketUpload = async () => {
-      // ask the server for the amount of files uploaded in the current session
-      // nothing to log for uploads where a user is solely deleting files in this section
-
-      let mainCurationDetailsResponse;
-      try {
-        mainCurationDetailsResponse = await client.get(`/curate_datasets/curation/upload_details`);
-      } catch (error) {
-        clientError(error);
-        clearInterval(timerCheckForBucketUpload);
-        return;
-      }
-
-      let { data } = mainCurationDetailsResponse;
-
-      // check if the amount of successfully uploaded files has increased
-      if (
-        data["main_curation_uploaded_files"] > 0 &&
-        data["uploaded_folder_counter"] > foldersUploaded
-      ) {
-        previousUploadedFileSize = uploadedFilesSize;
-        uploadedFiles = data["main_curation_uploaded_files"];
-        uploadedFilesSize = data["current_size_of_uploaded_files"];
-        foldersUploaded = data["uploaded_folder_counter"];
-
-        // log the increase in the file size
-        increaseInFileSize = uploadedFilesSize - previousUploadedFileSize;
-
-        // log the aggregate file count and size values when uploading to Pennsieve
-        if (dataset_destination === "bf" || dataset_destination === "Pennsieve") {
-          // use the session id as the label -- this will help with aggregating the number of files uploaded per session
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            "Guided Mode - Generate - Dataset - Number of Files",
-            `${datasetUploadSession.id}`,
-            uploadedFiles
-          );
-
-          // use the session id as the label -- this will help with aggregating the size of the given upload session
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            "Guided Mode - Generate - Dataset - Size",
-            `${datasetUploadSession.id}`,
-            increaseInFileSize
-          );
-        }
-      }
-
-      //stop the inteval when the upload is complete
-      if (main_curate_status === "Done") {
-        clearInterval(timerCheckForBucketUpload);
-      }
-    };
-
-    let timerCheckForBucketUpload = setInterval(checkForBucketUpload, 1000);
   };
 
   $("#guided-add-subject-button").on("click", () => {
