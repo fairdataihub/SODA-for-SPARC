@@ -3510,7 +3510,8 @@ const pageNeedsUpdateFromPennsieve = (pageID) => {
 
   return (
     sodaJSONObj?.["button-config"]?.["curation-starting-point"] === "pennsieve" &&
-    !sodaJSONObj["pages-fetched-from-pennsieve"].includes(pageID)
+    !sodaJSONObj["pages-fetched-from-pennsieve"].includes(pageID) &&
+    !sodaJSONObj["completed-tabs"].includes(pageID)
   );
 };
 
@@ -3521,7 +3522,7 @@ const guidedShowOptionalRetrySwal = async (errorMessage) => {
     icon: "error",
     title: "Error fetching page data from Pennsieve",
     html: `
-      <b>Error message:</b> ${emessage}
+      <b>Error message:</b> ${errorMessage}
       <br />
       <br />
       Would you like to retry fetching the page data from Pennsieve?
@@ -3631,7 +3632,7 @@ const openPage = async (targetPageID) => {
         } catch (error) {
           clientError(error);
           const emessage = error.response.data.message;
-          guidedShowOptionalRetrySwal(emessage);
+          await guidedShowOptionalRetrySwal(emessage);
         }
       } else {
         //Update subtitle from JSON
@@ -3836,7 +3837,7 @@ const openPage = async (targetPageID) => {
         } catch (error) {
           clientError(error);
           const emessage = error.response.data.message;
-          guidedShowOptionalRetrySwal(emessage);
+          await guidedShowOptionalRetrySwal(emessage);
         }
       }
       const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
@@ -3882,7 +3883,7 @@ const openPage = async (targetPageID) => {
         } catch (error) {
           clientError(error);
           const emessage = error.response.data.message;
-          guidedShowOptionalRetrySwal(emessage);
+          await guidedShowOptionalRetrySwal(emessage);
         }
       }
       //Reset the manual submission metadata UI
@@ -3966,7 +3967,7 @@ const openPage = async (targetPageID) => {
         } catch (error) {
           clientError(error);
           const emessage = error.response.data.message;
-          guidedShowOptionalRetrySwal(emessage);
+          await guidedShowOptionalRetrySwal(emessage);
         }
       }
 
@@ -4009,7 +4010,7 @@ const openPage = async (targetPageID) => {
         } catch (error) {
           clientError(error);
           const emessage = error.response.data.message;
-          guidedShowOptionalRetrySwal(emessage);
+          await guidedShowOptionalRetrySwal(emessage);
         }
       }
       renderProtocolsTable();
@@ -4121,7 +4122,7 @@ const openPage = async (targetPageID) => {
         } catch (error) {
           clientError(error);
           const emessage = error.response.data.message;
-          guidedShowOptionalRetrySwal(emessage);
+          await guidedShowOptionalRetrySwal(emessage);
         }
       }
       const guidedLoadDescriptionDatasetInformation = () => {
@@ -4349,7 +4350,7 @@ const openPage = async (targetPageID) => {
         } catch (error) {
           clientError(error);
           const emessage = error.response.data.message;
-          guidedShowOptionalRetrySwal(emessage);
+          await guidedShowOptionalRetrySwal(emessage);
         }
       }
       if (sodaJSONObj["digital-metadata"]["banner-image-path"]) {
@@ -4474,7 +4475,7 @@ const openPage = async (targetPageID) => {
         } catch (error) {
           clientError(error);
           const emessage = error.response.data.message;
-          guidedShowOptionalRetrySwal(emessage);
+          await guidedShowOptionalRetrySwal(emessage);
         }
       }
 
@@ -4564,7 +4565,7 @@ const openPage = async (targetPageID) => {
         } catch (error) {
           clientError(error);
           const emessage = error.response.data.message;
-          guidedShowOptionalRetrySwal(emessage);
+          await guidedShowOptionalRetrySwal(emessage);
         }
       }
       const descriptionMetadata =
@@ -4601,7 +4602,7 @@ const openPage = async (targetPageID) => {
         } catch (error) {
           clientError(error);
           const emessage = error.response.data.message;
-          guidedShowOptionalRetrySwal(emessage);
+          await guidedShowOptionalRetrySwal(emessage);
         }
       }
       const licenseCheckbox = document.getElementById("guided-license-checkbox");
@@ -4996,7 +4997,7 @@ const openPage = async (targetPageID) => {
         } catch (error) {
           clientError(error);
           const emessage = error.response.data.message;
-          guidedShowOptionalRetrySwal(emessage);
+          await guidedShowOptionalRetrySwal(emessage);
         }
       }
       const readMeTextArea = document.getElementById("guided-textarea-create-readme");
