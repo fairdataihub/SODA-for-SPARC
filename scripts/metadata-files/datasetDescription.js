@@ -2404,7 +2404,7 @@ function addNewRow(table) {
   }
 }
 
-function addAirtableAccountInsideSweetalert(keyword, curationMode) {
+const addAirtableAccountInsideSweetalert = (keyword, curationMode) => {
   // var name = $("#bootbox-airtable-key-name").val();
   var name = "SODA-Airtable";
   var key = $("#bootbox-airtable-key").val();
@@ -2439,7 +2439,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
         hideClass: {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
-      }).then((result) => {
+      }).then(async (result) => {
         if (result.isConfirmed) {
           const optionsSparcTable = {
             hostname: airtableHostname,
@@ -2448,7 +2448,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
             headers: { Authorization: `Bearer ${key}` },
           };
           var sparcTableSuccess;
-          https.get(optionsSparcTable, (res) => {
+          https.get(optionsSparcTable, async (res) => {
             if (res.statusCode === 200) {
               /// updating api key in SODA's storage
               createMetadataDir();
@@ -2464,7 +2464,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
               $("#current-airtable-account").html(name);
               // $("#bootbox-airtable-key-name").val("");
               $("#bootbox-airtable-key").val("");
-              loadAwardData();
+              await loadAwardData();
               // ddNoAirtableMode("Off");
               Swal.fire({
                 title: "Successfully connected. Loading your Airtable account...",
@@ -2555,7 +2555,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
         headers: { Authorization: `Bearer ${key}` },
       };
       let sparcTableSuccess;
-      https.get(optionsSparcTable, (res) => {
+      https.get(optionsSparcTable, async (res) => {
         if (res.statusCode === 200) {
           /// updating api key in SODA's storage
           createMetadataDir();
@@ -2567,7 +2567,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
 
           $("#current-airtable-account").html(name);
           $("#bootbox-airtable-key").val("");
-          loadAwardData();
+          await loadAwardData();
           Swal.fire({
             title: "Successfully connected. Loading your Airtable account...",
             timer: 3000,
@@ -2656,7 +2656,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
       });
     }
   }
-}
+};
 
 function importExistingDDFile() {
   var filePath = $("#existing-dd-file-destination").prop("placeholder");
