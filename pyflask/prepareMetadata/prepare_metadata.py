@@ -1002,6 +1002,23 @@ def update_existing_pennsieve_manifest_files(myds, bf, dataset_structure, high_l
 
                     new_manifest = pd.DataFrame.from_dict(updated_manifest_dict)
                     new_manifest.to_excel(filepath, index=False)
+                    wb = load_workbook(filepath)
+                    ws = wb.active
+                    blueFill = PatternFill(
+                        start_color="9DC3E6", fill_type="solid"
+                    )
+                    greenFill = PatternFill(
+                        start_color="A8D08D", fill_type="solid"
+                    )
+                    yellowFill = PatternFill(
+                        start_color="FFD965", fill_type="solid"
+                    )
+                    ws['A1'].fill = blueFill
+                    ws['B1'].fill = greenFill
+                    ws['C1'].fill = greenFill
+                    ws['D1'].fill = greenFill
+                    ws['E1'].fill = yellowFill
+                    wb.save(filepath)
 
                     manifest_progress["manifest_files_uploaded"] += 1
 
@@ -1339,5 +1356,23 @@ def drop_manifest_empty_columns(manifest_file_location):
         edited_manifest_df = pd.DataFrame.from_dict(manifest_dict)
 
         # save the data frame to the manifest folder as an excel file
-        edited_manifest_df.to_excel(os.path.join(manifest_file_location, high_level_folder, "manifest.xlsx"), index=False)
+        save_location = os.path.join(manifest_file_location, high_level_folder, "manifest.xlsx")
+        edited_manifest_df.to_excel(save_location, index=False)
+        wb = load_workbook(save_location)
+        ws = wb.active
+        blueFill = PatternFill(
+            start_color="9DC3E6", fill_type="solid"
+        )
+        greenFill = PatternFill(
+            start_color="A8D08D", fill_type="solid"
+        )
+        yellowFill = PatternFill(
+            start_color="FFD965", fill_type="solid"
+        )
+        ws['A1'].fill = blueFill
+        ws['B1'].fill = greenFill
+        ws['C1'].fill = greenFill
+        ws['D1'].fill = greenFill
+        ws['E1'].fill = yellowFill
+        wb.save(save_location)
 

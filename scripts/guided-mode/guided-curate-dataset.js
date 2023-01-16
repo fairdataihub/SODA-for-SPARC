@@ -2159,7 +2159,7 @@ const guidedTransitionFromDatasetNameSubtitlePage = () => {
   $("#guided-footer-div").css("display", "flex");
 };
 
-const saveGuidedProgress = (guidedProgressFileName) => {
+const saveGuidedProgress = async (guidedProgressFileName) => {
   //return if guidedProgressFileName is not a strnig greater than 0
   if (typeof guidedProgressFileName !== "string" || guidedProgressFileName.length === 0) {
     console.log("Dataset does not have a name therefore not saveable");
@@ -2439,7 +2439,7 @@ const renderProgressCards = (progressFileJSONdata) => {
   });
 };
 
-const renderManifestCards = () => {
+const renderManifestCards = async () => {
   const guidedManifestData = sodaJSONObj["guided-manifest-files"];
   const highLevelFoldersWithManifestData = Object.keys(guidedManifestData);
 
@@ -2485,61 +2485,33 @@ const generateManifestEditCard = (highLevelFolderName) => {
   `;
 };
 
+const updateManifestJson = async (highLevelFolderName, result) => {
+  const savedHeaders = result[0];
+  const savedData = result[1];
+
+  sodaJSONObj["guided-manifest-files"][highLevelFolderName] = {
+    headers: savedHeaders,
+    data: savedData,
+  };
+};
+
 const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
   const existingManifestData = sodaJSONObj["guided-manifest-files"][highLevelFolderName];
+  //send manifest data to main.js to then send to child window
+  ipcRenderer.invoke("spreadsheet", existingManifestData);
 
-  let manifestFileHeaders = existingManifestData["headers"];
-  let manifestFileData = existingManifestData["data"];
-
-  let guidedManifestTable;
-
-  const readOnlyHeaders = ["filename", "file type", "timestamp"];
-
-  const { value: saveManifestFiles } = await Swal.fire({
-    title:
-      "<span style='font-size: 18px !important;'>Edit the manifest file below: </span> <br><span style='font-size: 13px; font-weight: 500'> Tip: Double click on a cell to edit it.<span>",
-    html: "<div id='guided-div-manifest-edit'></div>",
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    showConfirmButton: true,
-    confirmButtonText: "Confirm",
-    showCancelButton: true,
-    width: "90%",
-    customClass: "swal-large",
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    didOpen: () => {
-      Swal.hideLoading();
-      const manifestSpreadsheetContainer = document.getElementById("guided-div-manifest-edit");
-      guidedManifestTable = jspreadsheet(manifestSpreadsheetContainer, {
-        tableOverflow: true,
-        data: manifestFileData,
-        columns: manifestFileHeaders.map((header) => {
-          return {
-            readOnly: readOnlyHeaders.includes(header) ? true : false,
-            type: "text",
-            title: header,
-            width: 200,
-          };
-        }),
-      });
-    },
+  //upon receiving a reply of the spreadsheet, handle accordingly
+  ipcRenderer.on("spreadsheet-reply", async (event, result) => {
+    if (!result || result === "") {
+      ipcRenderer.removeAllListeners("spreadsheet-reply");
+      return;
+    } else {
+      //spreadsheet reply contained results
+      await updateManifestJson(highLevelFolderName, result);
+      ipcRenderer.removeAllListeners("spreadsheet-reply");
+      renderManifestCards();
+    }
   });
-
-  if (saveManifestFiles) {
-    const savedHeaders = guidedManifestTable.getHeaders().split(",");
-    const savedData = guidedManifestTable.getData();
-
-    sodaJSONObj["guided-manifest-files"][highLevelFolderName] = {
-      headers: savedHeaders,
-      data: savedData,
-    };
-
-    //Save the sodaJSONObj with the new manifest file
-    saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-    //Rerender the manifest cards
-    renderManifestCards();
-  }
 };
 
 const extractFilNamesFromManifestData = (manifestData) => {
@@ -2684,7 +2656,7 @@ document
 
       sodaJSONObj["guided-manifest-files"] = updatedManifestData;
       // Save the sodaJSONObj with the new manifest files
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (err) {
       console.log(err);
       clientError(err);
@@ -2692,7 +2664,7 @@ document
     }
 
     //Rerender the manifest cards
-    renderManifestCards();
+    await renderManifestCards();
   });
 
 $("#guided-select-pennsieve-dataset-to-resume").selectpicker();
@@ -2764,9 +2736,9 @@ const renderGuidedAwardSelectionDropdown = () => {
 
 document
   .getElementById("guided-button-refresh-sparc-award-dropdown")
-  .addEventListener("click", () => {
+  .addEventListener("click", async () => {
     //call update the awardObj
-    loadAwardData();
+    await loadAwardData();
     //Update the dropdown
     renderGuidedAwardSelectionDropdown();
     //Notify the user that the dropdown has been updated
@@ -2862,36 +2834,18 @@ const guidedPrepareHomeScreen = async () => {
 function guidedShowTreePreview(new_dataset_name, targetElement) {
   const dsJsonObjCopy = JSON.parse(JSON.stringify(datasetStructureJSONObj));
 
-  //Add the Readme file to the preview if it exists in JSON
-  if (sodaJSONObj["dataset-metadata"]["README"]) {
-    dsJsonObjCopy["files"]["README.txt"] = {
-      action: ["new"],
-      path: "",
-      type: "local",
-    };
-  }
-
-  //Add the Subjects metadata file to the preview if at least one subject has been added
-  if (subjectsTableData.length > 0) {
-    dsJsonObjCopy["files"]["subjects.xlsx"] = {
-      action: ["new"],
-      path: "",
-      type: "local",
-    };
-  }
-
-  //Add the Samples metadata file to the preview if at least one sample has been added
-  if (samplesTableData.length > 0) {
-    dsJsonObjCopy["files"]["samples.xlsx"] = {
-      action: ["new"],
-      path: "",
-      type: "local",
-    };
-  }
-
   //Add the code_description metadata file to the preview if the code_description path has been declared
   if (sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"]) {
     dsJsonObjCopy["files"]["code_description.xlsx"] = {
+      action: ["new"],
+      path: "",
+      type: "local",
+    };
+  }
+
+  //Add the dataset_description metadata file to the preview if the dataset_description page has been completed
+  if (sodaJSONObj["completed-tabs"].includes("guided-create-description-metadata-tab")) {
+    dsJsonObjCopy["files"]["dataset_description.xlsx"] = {
       action: ["new"],
       path: "",
       type: "local",
@@ -2907,18 +2861,36 @@ function guidedShowTreePreview(new_dataset_name, targetElement) {
     };
   }
 
-  //Add the submission metadata file to the preview if the submission metadata page has been completed
-  if (sodaJSONObj["completed-tabs"].includes("guided-create-submission-metadata-tab")) {
-    dsJsonObjCopy["files"]["submission.xlsx"] = {
+  //Add the Readme file to the preview if it exists in JSON
+  if (sodaJSONObj["dataset-metadata"]["README"]) {
+    dsJsonObjCopy["files"]["README.txt"] = {
       action: ["new"],
       path: "",
       type: "local",
     };
   }
 
-  //Add the dataset_description metadata file to the preview if the dataset_description page has been completed
-  if (sodaJSONObj["completed-tabs"].includes("guided-create-description-metadata-tab")) {
-    dsJsonObjCopy["files"]["dataset_description.xlsx"] = {
+  //Add the Samples metadata file to the preview if at least one sample has been added
+  if (samplesTableData.length > 0) {
+    dsJsonObjCopy["files"]["samples.xlsx"] = {
+      action: ["new"],
+      path: "",
+      type: "local",
+    };
+  }
+
+  //Add the Subjects metadata file to the preview if at least one subject has been added
+  if (subjectsTableData.length > 0) {
+    dsJsonObjCopy["files"]["subjects.xlsx"] = {
+      action: ["new"],
+      path: "",
+      type: "local",
+    };
+  }
+
+  //Add the submission metadata file to the preview if the submission metadata page has been completed
+  if (sodaJSONObj["completed-tabs"].includes("guided-create-submission-metadata-tab")) {
+    dsJsonObjCopy["files"]["submission.xlsx"] = {
       action: ["new"],
       path: "",
       type: "local",
@@ -3553,6 +3525,16 @@ const openPage = async (targetPageID) => {
     //Note: if other nav bar needs to be shown, it will be handled later in this function
     hideSubNavAndShowMainNav(false);
 
+    //Hide the high level progress steps and green pills if the user is on the before getting started page
+    if (targetPageID === "guided-prepare-helpers-tab") {
+      //validate the api key and adjust icon accordingly
+      document.getElementById("structure-dataset-capsule-container").classList.add("hidden");
+      document.querySelector(".guided--progression-tab-container").classList.add("hidden");
+    } else {
+      document.getElementById("structure-dataset-capsule-container").classList.remove("hidden");
+      document.querySelector(".guided--progression-tab-container").classList.remove("hidden");
+    }
+
     if (
       targetPageID === "guided-dataset-generation-confirmation-tab" ||
       targetPageID === "guided-dataset-generation-tab" ||
@@ -3690,7 +3672,19 @@ const openPage = async (targetPageID) => {
           check_callback: true,
           data: {},
         },
-        plugins: ["types"],
+        plugins: ["types", "sort"],
+        sort: function (a, b) {
+          a1 = this.get_node(a);
+          b1 = this.get_node(b);
+
+          if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
+            //if the word assets is included in the icon then we can assume it is a file
+            //folder icons are under font awesome meanwhile files come from the assets folder
+            return a1.text > b1.text ? 1 : -1;
+          } else {
+            return a1.icon < b1.icon ? 1 : -1;
+          }
+        },
         types: {
           folder: {
             icon: "fas fa-folder fa-fw",
@@ -4728,7 +4722,19 @@ const openPage = async (targetPageID) => {
           check_callback: true,
           data: {},
         },
-        plugins: ["types"],
+        plugins: ["types", "sort"],
+        sort: function (a, b) {
+          a1 = this.get_node(a);
+          b1 = this.get_node(b);
+
+          if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
+            //if the word assets is included in the icon then we can assume it is a file
+            //folder icons are under font awesome meanwhile files come from the assets folder
+            return a1.text > b1.text ? 1 : -1;
+          } else {
+            return a1.icon < b1.icon ? 1 : -1;
+          }
+        },
         types: {
           folder: {
             icon: "fas fa-folder fa-fw",
@@ -5036,7 +5042,7 @@ const openPage = async (targetPageID) => {
     }
     // Set the last opened page and save it
     sodaJSONObj["page-before-exit"] = targetPageID;
-    saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+    await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
   } catch (error) {
     guidedSetNavLoadingState(false);
     console.log(error);
@@ -7218,7 +7224,7 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
             const checkDigit = result === 10 ? "X" : String(result);
 
             if (checkDigit !== contributorOrcid.substr(-1)) {
-              Swal.showValidationMessage("ORCID is not valid");
+              Swal.showValidationMessage("ORCID iD does not exist");
             } else {
               try {
                 editContributorByOrcid(
@@ -7523,7 +7529,7 @@ const openGuidedAddContributorSwal = async () => {
             const checkDigit = result === 10 ? "X" : String(result);
 
             if (checkDigit !== contributorOrcid.substr(-1)) {
-              Swal.showValidationMessage("ORCID is not valid");
+              Swal.showValidationMessage("ORCID iD does not exist");
             } else {
               try {
                 addContributor(
@@ -8510,7 +8516,7 @@ const openCopySubjectMetadataPopup = async () => {
       confirmButtonColor: "Copy",
       focusCancel: true,
     })
-    .then((result) => {
+    .then(async (result) => {
       if (result.isConfirmed) {
         const selectedCopyFromSubject = $("input[name='copy-from']:checked").val();
         //loop through checked copy-to checkboxes and return the value of the checkbox element if checked
@@ -8544,7 +8550,7 @@ const openCopySubjectMetadataPopup = async () => {
           openModifySubjectMetadataPage(currentSubjectOpenInView);
         }
 
-        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+        await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       }
     });
 };
@@ -8604,7 +8610,7 @@ const openCopySampleMetadataPopup = async () => {
       confirmButtonText: "Copy",
       focusCancel: true,
     })
-    .then((result) => {
+    .then(async (result) => {
       if (result.isConfirmed) {
         const selectedCopyFromSample = $("input[name='copy-from']:checked").val();
         //loop through checked copy-to checkboxes and return the value of the checkbox element if checked
@@ -8651,7 +8657,7 @@ const openCopySampleMetadataPopup = async () => {
             currentSamplePoolOpenInView
           );
         }
-        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+        await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       }
     });
 };
@@ -10260,8 +10266,8 @@ const renderSubjectsMetadataAsideItems = async () => {
 
   //add click event to each subject item
   const selectionAsideItems = document.querySelectorAll(`div.subjects-metadata-aside-item`);
-  selectionAsideItems.forEach((item) => {
-    item.addEventListener("click", (e) => {
+  selectionAsideItems.forEach(async (item) => {
+    item.addEventListener("click", async (e) => {
       //Hide intro and show metadata fields if intro is open
       const introElement = document.getElementById("guided-form-add-a-subject-intro");
       if (!introElement.classList.contains("hidden")) {
@@ -10272,7 +10278,7 @@ const renderSubjectsMetadataAsideItems = async () => {
       //check to see if previousSubject is empty
       if (previousSubject) {
         addSubject("guided");
-        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+        await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       }
 
       clearAllSubjectFormFields(guidedSubjectsFormDiv);
@@ -10397,8 +10403,8 @@ const renderSamplesMetadataAsideItems = async () => {
 
   //add click event to each sample item
   const selectionAsideItems = document.querySelectorAll(`div.samples-metadata-aside-item`);
-  selectionAsideItems.forEach((item) => {
-    item.addEventListener("click", (e) => {
+  selectionAsideItems.forEach(async (item) => {
+    item.addEventListener("click", async (e) => {
       //Hide intro and show metadata fields if intro is open
       const introElement = document.getElementById("guided-form-add-a-sample-intro");
       if (!introElement.classList.contains("hidden")) {
@@ -10410,7 +10416,7 @@ const renderSamplesMetadataAsideItems = async () => {
       //check to see if previousSample is empty
       if (previousSample) {
         addSample("guided");
-        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+        await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       }
 
       //add selected class to clicked element
@@ -10430,6 +10436,8 @@ const renderSamplesMetadataAsideItems = async () => {
         e.target.innerText.split("/")[1],
         e.target.innerText.split("/")[0]
       );
+
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     });
   });
 };
@@ -10624,7 +10632,19 @@ $(document).ready(async () => {
       check_callback: true,
       data: {},
     },
-    plugins: ["types"],
+    plugins: ["types", "sort"],
+    sort: function (a, b) {
+      a1 = this.get_node(a);
+      b1 = this.get_node(b);
+
+      if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
+        //if the word assets is included in the icon then we can assume it is a file
+        //folder icons are under font awesome meanwhile files come from the assets folder
+        return a1.text > b1.text ? 1 : -1;
+      } else {
+        return a1.icon < b1.icon ? 1 : -1;
+      }
+    },
     types: {
       folder: {
         icon: "fas fa-folder fa-fw",
@@ -10747,135 +10767,11 @@ $(document).ready(async () => {
   $("#guided-button-import-banner-image").click(async () => {
     $("#guided-para-dataset-banner-image-status").html("");
     let filePaths = await ipcRenderer.invoke("open-file-dialog-import-banner-image");
-    guidedHandleSelectedBannerImage(filePaths);
+    handleSelectedBannerImage(filePaths, "guided-mode");
   });
   /////////////////////////////////////////////////////////
   //////////    GUIDED IPC RENDERER LISTENERS    //////////
   /////////////////////////////////////////////////////////
-
-  const guidedHandleSelectedBannerImage = async (path) => {
-    if (path.length > 0) {
-      let original_image_path = path[0];
-      let image_path = original_image_path;
-      let destination_image_path = require("path").join(
-        homeDirectory,
-        "SODA",
-        "banner-image-conversion"
-      );
-      let converted_image_file = require("path").join(destination_image_path, "converted-tiff.jpg");
-      let conversion_success = true;
-      imageExtension = path[0].split(".").pop();
-
-      if (imageExtension.toLowerCase() == "tiff") {
-        Swal.fire({
-          title: "Image conversion in progress!",
-          html: "Pennsieve does not support .tiff banner images. Please wait while SODA converts your image to the appropriate format required.",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          showClass: {
-            popup: "animate__animated animate__fadeInDown animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__fadeOutUp animate__faster",
-          },
-          didOpen: () => {
-            Swal.showLoading();
-          },
-        });
-
-        await Jimp.read(original_image_path)
-          .then(async (file) => {
-            if (!fs.existsSync(destination_image_path)) {
-              fs.mkdirSync(destination_image_path, { recursive: true });
-            }
-
-            try {
-              if (fs.existsSync(converted_image_file)) {
-                fs.unlinkSync(converted_image_file);
-              }
-            } catch (err) {
-              conversion_success = false;
-              console.error(err);
-            }
-
-            return file.write(converted_image_file, async () => {
-              if (fs.existsSync(converted_image_file)) {
-                let stats = fs.statSync(converted_image_file);
-                let fileSizeInBytes = stats.size;
-                let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
-
-                if (fileSizeInMegabytes > 5) {
-                  fs.unlinkSync(converted_image_file);
-
-                  await Jimp.read(original_image_path)
-                    .then((file) => {
-                      return file.resize(1024, 1024).write(converted_image_file, () => {
-                        document.getElementById("div-img-container-holder").style.display = "none";
-                        document.getElementById("div-img-container").style.display = "block";
-
-                        $("#para-path-image").html(image_path);
-                        guidedBfViewImportedImage.src = converted_image_file;
-                        myCropper.destroy();
-                        myCropper = new Cropper(guidedBfViewImportedImage, guidedCropOptions);
-                        $("#save-banner-image").css("visibility", "visible");
-                        $("body").removeClass("waiting");
-                      });
-                    })
-                    .catch((err) => {
-                      conversion_success = false;
-                      console.error(err);
-                    });
-                  if (fs.existsSync(converted_image_file)) {
-                    let stats = fs.statSync(converted_image_file);
-                    let fileSizeInBytes = stats.size;
-                    let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
-
-                    if (fileSizeInMegabytes > 5) {
-                      conversion_success = false;
-                      // SHOW ERROR
-                    }
-                  }
-                }
-                image_path = converted_image_file;
-                imageExtension = "jpg";
-                $("#para-path-image").html(image_path);
-                guidedBfViewImportedImage.src = image_path;
-                myCropper.destroy();
-                myCropper = new Cropper(guidedBfViewImportedImage, guidedCropOptions);
-                $("#save-banner-image").css("visibility", "visible");
-              }
-            });
-          })
-          .catch((err) => {
-            conversion_success = false;
-            console.error(err);
-            Swal.fire({
-              icon: "error",
-              text: "Something went wrong",
-              confirmButtonText: "OK",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-            });
-          });
-        if (conversion_success == false) {
-          $("body").removeClass("waiting");
-          return;
-        } else {
-          Swal.close();
-        }
-      } else {
-        document.getElementById("guided-div-img-container-holder").style.display = "none";
-        document.getElementById("guided-div-img-container").style.display = "block";
-
-        $("#guided-para-path-image").html(image_path);
-        guidedBfViewImportedImage.src = image_path;
-        myCropper.destroy();
-        myCropper = new Cropper(guidedBfViewImportedImage, guidedCropOptions);
-
-        $("#guided-save-banner-image").css("visibility", "visible");
-      }
-    }
-  };
 
   $("#guided-input-destination-getting-started-locally").on("click", () => {
     ipcRenderer.send("guided-open-file-dialog-local-destination-curate");
@@ -10921,7 +10817,7 @@ $(document).ready(async () => {
         // so new metadata can be uploaded to the newly created dataset
         // (This would happen if the user deleted the dataset on Pennsieve)
         sodaJSONObj["previously-uploaded-data"] = {};
-        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+        await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       }
     }
 
@@ -10952,7 +10848,7 @@ $(document).ready(async () => {
       //Save the dataset ID generated by pennsieve so the dataset is not re-uploaded when the user
       //resumes progress after failing an upload
       sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] = createdDatasetsID;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
       return createdDatasetsID;
     } catch (error) {
@@ -11027,7 +10923,7 @@ $(document).ready(async () => {
       datasetSubtitleUploadText.innerHTML = `Successfully added dataset subtitle: ${datasetSubtitle}`;
       guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "success");
       sodaJSONObj["previously-uploaded-data"]["subtitle"] = datasetSubtitle;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       console.error(error);
       let emessage = userErrorMessage(error);
@@ -11076,7 +10972,7 @@ $(document).ready(async () => {
       datasetDescriptionUploadText.innerHTML = `Successfully added dataset description!`;
       guidedUploadStatusIcon("guided-dataset-description-upload-status", "success");
       sodaJSONObj["previously-uploaded-data"]["description"] = description;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       datasetDescriptionUploadText.innerHTML = "Failed to add a dataset description.";
       guidedUploadStatusIcon("guided-dataset-description-upload-status", "error");
@@ -11115,7 +11011,7 @@ $(document).ready(async () => {
       datasetBannerImageUploadText.innerHTML = `Successfully added dataset banner image!`;
       guidedUploadStatusIcon("guided-dataset-banner-image-upload-status", "success");
       sodaJSONObj["previously-uploaded-data"]["banner-image-path"] = bannerImagePath;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       console.error(error);
       let emessage = userErrorMessage(error);
@@ -11153,7 +11049,7 @@ $(document).ready(async () => {
       datasetLicenseUploadText.innerHTML = `Successfully added dataset license: ${datasetLicense}`;
       guidedUploadStatusIcon("guided-dataset-license-upload-status", "success");
       sodaJSONObj["previously-uploaded-data"]["license"] = datasetLicense;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       console.error(error);
       let emessage = userErrorMessage(error);
@@ -11203,7 +11099,7 @@ $(document).ready(async () => {
         datasetPiOwnerUploadText.innerHTML = `Successfully added PI: ${piOwnerObj["name"]}`;
         guidedUploadStatusIcon("guided-dataset-pi-owner-upload-status", "success");
         sodaJSONObj["previously-uploaded-data"]["pi-owner"] = piOwnerObj;
-        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+        await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       } catch (error) {
         console.error(error);
         let emessage = userErrorMessage(error);
@@ -11244,7 +11140,7 @@ $(document).ready(async () => {
       datasetTagsUploadText.innerHTML = `Successfully added dataset tags: ${tags.join(", ")}`;
       guidedUploadStatusIcon("guided-dataset-tags-upload-status", "success");
       sodaJSONObj["previously-uploaded-data"]["tags"] = tags;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       datasetTagsUploadText.innerHTML = "Failed to add dataset tags.";
       guidedUploadStatusIcon("guided-dataset-tags-upload-status", "error");
@@ -11511,7 +11407,7 @@ $(document).ready(async () => {
       guidedUploadStatusIcon("guided-subjects-metadata-upload-status", "success");
       subjectsMetadataUploadText.innerHTML = `Subjects metadata successfully uploaded`;
       sodaJSONObj["previously-uploaded-data"]["subjects-metadata"] = subjectsTableData;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       guidedUploadStatusIcon("guided-subjects-metadata-upload-status", "error");
       subjectsMetadataUploadText.innerHTML = `Failed to upload subjects metadata`;
@@ -11553,7 +11449,7 @@ $(document).ready(async () => {
       guidedUploadStatusIcon("guided-samples-metadata-upload-status", "success");
       samplesMetadataUploadText.innerHTML = `Samples metadata successfully uploaded`;
       sodaJSONObj["previously-uploaded-data"]["samples-metadata"] = samplesTableData;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       guidedUploadStatusIcon("guided-samples-metadata-upload-status", "error");
       samplesMetadataUploadText.innerHTML = `Failed to upload samples metadata`;
@@ -11597,7 +11493,7 @@ $(document).ready(async () => {
       guidedUploadStatusIcon("guided-submission-metadata-upload-status", "success");
       submissionMetadataUploadText.innerHTML = `Submission metadata successfully uploaded`;
       sodaJSONObj["previously-uploaded-data"]["submission-metadata"] = submissionMetadataJSON;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       guidedUploadStatusIcon("guided-submission-metadata-upload-status", "error");
       submissionMetadataUploadText.innerHTML = `Failed to upload submission metadata`;
@@ -11667,7 +11563,7 @@ $(document).ready(async () => {
         contributorInformation,
         additionalLinks,
       };
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       guidedUploadStatusIcon("guided-dataset-description-metadata-upload-status", "error");
       datasetDescriptionMetadataUploadText.innerHTML = `Failed to upload dataset description metadata`;
@@ -11749,7 +11645,7 @@ $(document).ready(async () => {
       datasetDescriptionMetadataUploadText.innerHTML = `${readmeORchanges.toUpperCase()} metadata successfully uploaded`;
       sodaJSONObj["previously-uploaded-data"][`${readmeORchanges}-metadata`] =
         readmeOrChangesMetadata;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       guidedUploadStatusIcon(`guided-${readmeORchanges}-metadata-upload-status`, "error");
       datasetDescriptionMetadataUploadText.innerHTML = `Failed to upload ${readmeORchanges.toUpperCase()} metadata`;
@@ -12140,7 +12036,7 @@ $(document).ready(async () => {
           sodaJSONObj["digital-metadata"]["name"];
 
         // Save the sodaJSONObj after a successful upload
-        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+        await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
         //Display the click next text
         document
@@ -12800,7 +12696,7 @@ $(document).ready(async () => {
     try {
       await savePageChanges(pageBeingLeftID);
       //Save progress onto local storage with the dataset name as the key
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
       //Mark page as completed in JSONObj so we know what pages to load when loading local saves
       //(if it hasn't already been marked complete)
@@ -13389,7 +13285,7 @@ $(document).ready(async () => {
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["submission-data-entry"] = "import";
       }
 
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       guidedSetNavLoadingState(false);
       throw error;
@@ -13592,18 +13488,21 @@ $(document).ready(async () => {
           popup: "animate__animated animate__fadeOutUp animate__faster",
         },
         didOpen: () => {
+          let swal_container = document.getElementsByClassName("swal2-popup")[0];
+          swal_container.style.width = "600px";
+          swal_container.style.padding = "1.5rem";
           $(".swal2-input").attr("id", "add-new-folder-input");
           $(".swal2-confirm").attr("id", "add-new-folder-button");
           $("#add-new-folder-input").keyup(function () {
             var val = $("#add-new-folder-input").val();
-            for (var char of nonAllowedCharacters) {
-              if (val.includes(char)) {
-                Swal.showValidationMessage(
-                  `The folder name cannot contains the following characters ${nonAllowedCharacters}, please enter a different name!`
-                );
-                $("#add-new-folder-button").attr("disabled", true);
-                return;
-              }
+            let folderNameCheck = checkIrregularNameBoolean(val);
+            if (folderNameCheck === true) {
+              Swal.showValidationMessage(
+                `The folder name contains non-allowed characters. To follow SPARC Data Standards, please create a folder name with only alphanumberic characters and hyphens '-'`
+              );
+              $("#add-new-folder-button").attr("disabled", true);
+              return;
+            } else {
               $("#add-new-folder-button").attr("disabled", false);
             }
           });
