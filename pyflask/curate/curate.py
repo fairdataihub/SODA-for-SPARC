@@ -29,6 +29,8 @@ import requests
 from datetime import datetime, timezone
 from permissions import bf_get_current_user_permission_agent_two
 from utils import authenticate_user_with_client, connect_pennsieve_client, get_dataset_id, create_request_headers
+from openpyxl import load_workbook
+from openpyxl.styles import PatternFill
 
 from pysodaUtils import (
     check_forbidden_characters_bf,
