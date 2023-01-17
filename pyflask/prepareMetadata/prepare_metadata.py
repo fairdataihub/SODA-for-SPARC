@@ -978,11 +978,9 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
     manifest_progress["total_manifest_files"] = 0
     manifest_progress["manifest_files_uploaded"] = 0
 
-    ps = connect_pennsieve_client()
+    token = get_access_token()
 
-    authenticate_user_with_client(ps, bfaccount)
-
-    dataset_id = get_dataset_id(ps, bfdataset)
+    dataset_id = get_dataset_id(token, bfdataset)
 
     high_level_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
     # convert the string into a json object/dictionary
@@ -1007,13 +1005,13 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
 
     high_level_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
 
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/packages", headers=create_request_headers(ps))
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/packages", headers=create_request_headers(token))
     r.raise_for_status()
 
     ds_items = r.json()["packages"]
 
     # handle updating any existing manifest files on Pennsieve
-    update_existing_pennsieve_manifest_files(ds_items, ps, dataset_structure, high_level_folders)
+    update_existing_pennsieve_manifest_files(ds_items, token, dataset_structure, high_level_folders)
 
     # create manifest files from scratch for any high level folders that don't have a manifest file on Pennsieve
     create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, high_level_folders, manifest_progress)
@@ -1025,7 +1023,7 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
     return {"message": "Finished"}
 
 
-def update_existing_pennsieve_manifest_files(ds_items, ps, dataset_structure, high_level_folders):
+def update_existing_pennsieve_manifest_files(ds_items, ps_or_token, dataset_structure, high_level_folders):
     global manifest_progress
     # handle updating any existing manifest files on Pennsieve
     for i in ds_items:
@@ -1040,7 +1038,7 @@ def update_existing_pennsieve_manifest_files(ds_items, ps, dataset_structure, hi
             # request the packages of that folder
             folder_name = i["content"]["name"]
             folder_collection_id = i["content"]["nodeId"]
-            r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_collection_id}", headers=create_request_headers(ps))
+            r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_collection_id}", headers=create_request_headers(ps_or_token))
             r.raise_for_status()
 
             packageItems = r.json()["children"]
@@ -1054,7 +1052,7 @@ def update_existing_pennsieve_manifest_files(ds_items, ps, dataset_structure, hi
                         os.remove(join(manifest_folder, "manifest.xlsx"))
 
                     item_id = j["content"]["nodeId"]
-                    url = returnFileURL(ps, item_id)
+                    url = returnFileURL(ps_or_token, item_id)
 
                     manifest_df = pd.read_excel(
                         url, engine="openpyxl", usecols=column_check, header=0
