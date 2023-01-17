@@ -5,6 +5,17 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.10.4.0 - 2022-10-13
+
+## Feature additions:
+
+- Guided Mode: NEW STUFF FOR GUIDED MODE
+- Freeform Mode: NEW STUFF FOR FF MODE
+
+## Bug fixes:
+
+- NEVER
+
 ## v.9.4.1 - 2022-11-04
 
 ## Bug fixes:
