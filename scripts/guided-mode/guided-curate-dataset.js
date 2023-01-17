@@ -390,15 +390,28 @@ const savePageChanges = async (pageBeingLeftID) => {
         } catch (error) {
           console.log("Unable to fetch samples metadata" + error);
         }
+
+        const datasetSubSamStructure =
+          extractPoolSubSamStructureFromDataset(datasetStructureJSONObj);
+
+        const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+        if (subjectsInPools.length === 0 || subjectsOutsidePools.length === 0) {
+          errorArray.push({
+            type: "notyf",
+            message:
+              "Your dataset must have at least one subject to resume from Pennsieve using Guided Mode",
+          });
+          throw errorArray;
+        }
+
         // If subjectsTableData was found, check if the subject/sample metadata has the same structure as the
-        // dataset structure. If subject and sample metadata were not found, reset it and we'll add the metadata latersw
+        // dataset structure. If subject and sample metadata were not found, reset it and we'll add the metadata later
         if (subjectsTableData.length > 1 && samplesTableData.length > 1) {
           const metadataSubSamStructure = createGuidedStructureFromSubSamMetadata(
             subjectsTableData.slice(1),
             samplesTableData.slice(1)
           );
-          const datasetSubSamStructure =
-            extractPoolSubSamStructureFromDataset(datasetStructureJSONObj);
+
           console.log(datasetSubSamStructure);
           if (!objectsHaveSameKeys(metadataSubSamStructure, datasetSubSamStructure)) {
             errorArray.push({
@@ -12660,8 +12673,6 @@ $(document).ready(async () => {
       return;
     }
 
-    let errorArray = [];
-
     try {
       await savePageChanges(pageBeingLeftID);
       //Save progress onto local storage with the dataset name as the key
@@ -12686,7 +12697,7 @@ $(document).ready(async () => {
         // get the total number of words in error.message
         if (error.type === "notyf") {
           notyf.open({
-            duration: "5500",
+            duration: "7000",
             type: "error",
             message: error.message,
           });
