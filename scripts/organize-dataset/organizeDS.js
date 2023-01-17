@@ -1552,7 +1552,6 @@ const handleDuplicateImports = (btnId, duplicateArray, curationMode) => {
     });
     //then handle the selected checkboxes
   }
-}
 };
 
 const checkForMultipleExtensions = (filename) => {
@@ -1609,8 +1608,6 @@ const addFilesfunction = async (
 
   // check for duplicate or files with the same name
   var nonAllowedDuplicateFiles = [];
-  let doubleExtension = [];
-  let tripleExtension = [];
   var nonAllowedFiles = [];
   var filesToImport = {};
   var hiddenFiles = [];
@@ -1626,28 +1623,6 @@ const addFilesfunction = async (
     let fileBase = path.parse(filePath).base;
     let fileName = path.parse(filePath).name;
 
-    //Check for nonallowed characters
-    let warningCharacterBool = warningCharacterCheck(fileBase);
-    if (warningCharacterBool === true) {
-      nonAllowedCharacterFiles.push(filePath);
-      continue;
-    }
-
-    //count amount of extensions
-    let extensionCount = checkForMultipleExtensions(fileBase);
-    if (extensionCount == 2) {
-      //double extension ask if compressed file
-      doubleExtension.push(filePath);
-      continue;
-    }
-    if (extensionCount > 2) {
-      //multiple extensions, raise warning
-      tripleExtension.push(filePath);
-      continue;
-    }
-
-    //check for non allowed files
-    //.DS_Store and Thumbs.db files are strictly not allowed
     //Check for nonallowed characters
     let warningCharacterBool = warningCharacterCheck(fileBase);
     if (warningCharacterBool === true) {
