@@ -1414,12 +1414,14 @@ function sendHTTPsRequestAirtable(options, varSuccess) {
     return res;
   });
 }
+
 var awardObj = {};
 var globalSPARCAward = "";
 // indicate to user that airtable records are being retrieved
 const loadAwardData = async () => {
   ///// Construct table from data
   var awardResultArray = [];
+  let result = false;
   ///// config and load live data from Airtable
   var airKeyContent = parseJson(airtableConfigPath);
   if (JSON.stringify(airKeyContent) !== "{}") {
@@ -1451,14 +1453,17 @@ const loadAwardData = async () => {
             if (err) {
               log.error(err);
               console.log(err);
+              console.log("error here");
               return;
             } else {
               // create set to remove duplicates
               var awardSet = new Set(awardResultArray);
               var resultArray = [...awardSet];
+              result = true;
             }
           }
         );
+      return result;
     }
   }
 };
@@ -3093,8 +3098,10 @@ const guidedCropOptions = {
   viewMode: 1,
   responsive: true,
   crop: function (event) {
+    console.log(event);
     var data = event.detail;
     let image_height = Math.round(data.height);
+    console.log(image_height);
 
     guidedFormBannerHeight.value = image_height;
 
@@ -5207,6 +5214,7 @@ const dropHelper = async (
         break;
       }
     }
+    let slashCount = getPathSlashCount();
     /// check for File duplicate
     if (statsObj.isFile()) {
       var nonAllowedDuplicate = false;
@@ -5687,6 +5695,10 @@ const dropHelper = async (
     }
     var listElements = showItemsAsListBootbox(baseName);
     var list = JSON.stringify(nonAllowedDuplicateFiles).replace(/"/g, "");
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
     await Swal.fire({
       title: "Duplicate file(s) detected",
       icon: "warning",
@@ -6388,6 +6400,8 @@ const sortObjByKeys = (object) => {
 };
 
 const listItems = async (jsonObj, uiItem, amount_req, reset) => {
+  console.log(jsonObj);
+  console.log("listing items");
   //allow amount to choose how many elements to create
   //break elements into sets of 100
   const rootFolders = ["primary", "source", "derivative"];
@@ -6398,6 +6412,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
   let hideSubjectFolders = false;
   let splitPath = datasetPath.value.split("/");
   let fullPath = datasetPath.value;
+
   if (organizeDSglobalPath.id === "guided-input-global-path") {
     const splitPathCheck = (num, button) => {
       //based on the paths length we will determine if the back button should be disabled/hidden or not
@@ -6418,29 +6433,30 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     let primarySampleCapsule = document.getElementById(
       "guided-primary-samples-organization-page-capsule"
     );
-    let primaryPoolCapsule = document.getElementById(
-      "guided-primary-pools-organization-page-capsule"
-    );
     let primarySubjectCapsule = document.getElementById(
       "guided-primary-subjects-organization-page-capsule"
+    );
+    let primaryPoolCapsule = document.getElementById(
+      "guided-primary-pools-organization-page-capsule"
     );
     let sourceSampleCapsule = document.getElementById(
       "guided-source-samples-organization-page-capsule"
     );
-    let sourcePoolCapsule = document.getElementById(
-      "guided-source-pools-organization-page-capsule"
-    );
     let sourceSubjectCapsule = document.getElementById(
       "guided-source-subjects-organization-page-capsule"
     );
+    let sourcePoolCapsule = document.getElementById(
+      "guided-source-pools-organization-page-capsule"
+    );
+
     let derivativeSampleCapsule = document.getElementById(
       "guided-derivative-samples-organization-page-capsule"
     );
-    let derivativePoolCapsule = document.getElementById(
-      "guided-derivative-pools-organization-page-capsule"
-    );
     let derivativeSubjectCapsule = document.getElementById(
       "guided-derivative-subjects-organization-page-capsule"
+    );
+    let derivativePoolCapsule = document.getElementById(
+      "guided-derivative-pools-organization-page-capsule"
     );
 
     //remove my_dataset_folder and if any of the ROOT FOLDER names is included
@@ -6449,7 +6465,6 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     //remove the last element in array is it is always ''
     splitPath.pop();
 
-    //get 2 last lvls of the folder path
     let trimmedPath = "";
     if (currentPageID.includes("primary")) {
       if (primarySampleCapsule.classList.contains("active")) {
@@ -6499,440 +6514,444 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     }
     if (currentPageID.includes("derivative")) {
       //check the active capsule
-      if (derivativeSampleCapsule.classList.contains("active")) {
-        if (derivativeSubjectCapsule.classList.contains("active")) {
-          if (splitPath[0].includes("pool-")) {
-            splitPathCheck(2, fileExplorerBackButton);
-          } else {
-            splitPathCheck(1, fileExplorerBackButton);
-          }
-          hideSampleFolders = true;
-        }
-      }
       if (derivativeSubjectCapsule.classList.contains("active")) {
-        if (derivativePoolCapsule.classList.contains("active")) {
-          if (splitPath[0].includes("pool-")) {
-            splitPathCheck(1, fileExplorerBackButton);
-          }
-          hideSubjectFolders = true;
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(2, fileExplorerBackButton);
+        } else {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        hideSampleFolders = true;
+      }
+      if (derivativeSampleCapsule.classList.contains("active")) {
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(3, fileExplorerBackButton);
+        } else {
+          splitPathCheck(2, fileExplorerBackButton);
         }
       }
-      if (
-        currentPageID.includes("code") ||
-        currentPageID.includes("protocol") ||
-        currentPageID.includes("docs") ||
-        currentPageID.includes("helpers")
-      ) {
-        //for code/protocols/docs we only initially display one folder lvl
-        splitPathCheck(1, fileExplorerBackButton);
+      if (derivativePoolCapsule.classList.contains("active")) {
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        hideSubjectFolders = true;
       }
-
-      for (let i = 0; i < splitPath.length; i++) {
-        if (splitPath[i] === "My_dataset_folder" || splitPath[i] === undefined) continue;
-        trimmedPath += splitPath[i] + "/";
-      }
-
-      pathDisplay.innerText = trimmedPath;
-      pathDisplay._tippy.setContent(fullPath);
-
-      //get the path of the dataset when rendering
-      //with the path you can determine whether or not to disable the back button
+    }
+    if (
+      currentPageID.includes("code") ||
+      currentPageID.includes("protocol") ||
+      currentPageID.includes("docs") ||
+      currentPageID.includes("helpers")
+    ) {
+      //for code/protocols/docs we only initially display one folder lvl
+      splitPathCheck(1, fileExplorerBackButton);
     }
 
-    var appendString = "";
-    var sortedObj = sortObjByKeys(jsonObj);
-    let file_elements = [],
-      folder_elements = [];
-    let count = 0;
-    if (Object.keys(sortedObj["folders"]).length > 0) {
-      for (var item in sortedObj["folders"]) {
-        //hide samples when on the subjects page
-        if (hideSampleFolders) {
-          let currentSampleFolder = splitPath[0];
-          let allSamples = sodaJSONObj.getAllSamplesFromSubjects();
-          let noPoolSamples = [];
-          let poolSamples = [];
-          let skipSubjectFolder = false;
-          if (allSamples.length > 1) {
-            //subjects within pools and others not
-            poolSamples = allSamples[0];
-            noPoolSamples = allSamples[1];
-            for (let i = 0; i < poolSamples.length; i++) {
-              if (item === poolSamples[i]["sampleName"]) {
-                skipSubjectFolder = true;
-                break;
-              }
+    for (let i = 0; i < splitPath.length; i++) {
+      if (splitPath[i] === "My_dataset_folder" || splitPath[i] === undefined) continue;
+      trimmedPath += splitPath[i] + "/";
+    }
+
+    //append path to tippy and display path to the file explorer
+    pathDisplay.innerText = trimmedPath;
+    pathDisplay._tippy.setContent(fullPath);
+  }
+
+  var appendString = "";
+  var sortedObj = sortObjByKeys(jsonObj);
+  let file_elements = [],
+    folder_elements = [];
+  let count = 0;
+
+  //start creating folder elements to be rendered
+  if (Object.keys(sortedObj["folders"]).length > 0) {
+    for (var item in sortedObj["folders"]) {
+      //hide samples when on the subjects page
+      if (hideSampleFolders) {
+        let currentSampleFolder = splitPath[0];
+        let allSamples = sodaJSONObj.getAllSamplesFromSubjects();
+        let noPoolSamples = [];
+        let poolSamples = [];
+        let skipSubjectFolder = false;
+        if (allSamples.length > 1) {
+          //subjects within pools and others not
+          poolSamples = allSamples[0];
+          noPoolSamples = allSamples[1];
+          for (let i = 0; i < poolSamples.length; i++) {
+            if (item === poolSamples[i]["sampleName"]) {
+              skipSubjectFolder = true;
+              break;
             }
-            if (skipSubjectFolder) continue;
-            for (let i = 0; i < noPoolSamples.length; i++) {
-              if (item === noPoolSamples[i]["sampleName"]) {
-                skipSubjectFolder = true;
-                break;
-              }
-            }
-            if (skipSubjectFolder) continue;
           }
-          if (allSamples.length === 1) {
-            poolSamples = allSamples[1];
-            for (let i = 0; i < poolSamples.length; i++) {
-              if (item === poolSamples[i]["sampleName"]) {
-                skipSubjectFolder = true;
-                break;
-              }
-            }
-            if (skipSubjectFolder) continue;
-          }
-        }
-        if (hideSubjectFolders) {
-          //hide subject folders when displaying pool page
-          const currentPoolName = splitPath[0];
-          let currentSubjects = sodaJSONObj.getAllSubjects();
-          let poolSubjects = [];
-          let noPoolSubjects = [];
-          let skipSubjectFolder = false;
-          if (currentSubjects.length === 1) {
-            poolSubjects = currentSubjects[0];
-            for (let i = 0; i < poolSubjects.length; i++) {
-              if (item === poolSubjects[i]["subjectName"]) {
-                skipSubjectFolder = true;
-                break;
-              }
-            }
-            if (skipSubjectFolder) continue;
-          }
-          if (currentSubjects.length > 1) {
-            //some subjects in pools and some not
-            poolSubjects = currentSubjects[0];
-            noPoolSubjects = currentSubjects[1];
-            for (let i = 0; i < noPoolSubjects.length; i++) {
-              if (item === noPoolSubjects[i]["subjectName"]) {
-                skipSubjectFolder = true;
-                break;
-              }
-            }
-            if (skipSubjectFolder) continue;
-            for (let i = 0; i < poolSubjects.length; i++) {
-              if (item === poolSubjects[i]["subjectName"]) {
-                skipSubjectFolder = true;
-                break;
-              }
+          if (skipSubjectFolder) continue;
+          for (let i = 0; i < noPoolSamples.length; i++) {
+            if (item === noPoolSamples[i]["sampleName"]) {
+              skipSubjectFolder = true;
+              break;
             }
           }
           if (skipSubjectFolder) continue;
         }
-        count += 1;
-        var emptyFolder = "";
-        if (!highLevelFolders.includes(item)) {
-          if (
-            JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
-            JSON.stringify(sortedObj["folders"][item]["files"]) === "{}"
-          ) {
-            emptyFolder = " empty";
+        if (allSamples.length === 1) {
+          poolSamples = allSamples[1];
+          for (let i = 0; i < poolSamples.length; i++) {
+            if (item === poolSamples[i]["sampleName"]) {
+              skipSubjectFolder = true;
+              break;
+            }
           }
+          if (skipSubjectFolder) continue;
         }
-
-        cloud_item = "";
-        deleted_folder = false;
-
-        if ("action" in sortedObj["folders"][item]) {
-          if (
-            sortedObj["folders"][item]["action"].includes("deleted") ||
-            sortedObj["folders"][item]["action"].includes("recursive_deleted")
-          ) {
-            emptyFolder += " deleted_folder";
-            deleted_folder = true;
-            if (sortedObj["folders"][item]["action"].includes("recursive_deleted")) {
-              emptyFolder += " recursive_deleted_file";
+      }
+      if (hideSubjectFolders) {
+        //hide subject folders when displaying pool page
+        const currentPoolName = splitPath[0];
+        let currentSubjects = sodaJSONObj.getAllSubjects();
+        let poolSubjects = [];
+        let noPoolSubjects = [];
+        let skipSubjectFolder = false;
+        if (currentSubjects.length === 1) {
+          poolSubjects = currentSubjects[0];
+          for (let i = 0; i < poolSubjects.length; i++) {
+            if (item === poolSubjects[i]["subjectName"]) {
+              skipSubjectFolder = true;
+              break;
+            }
+          }
+          if (skipSubjectFolder) continue;
+        }
+        if (currentSubjects.length > 1) {
+          //some subjects in pools and some not
+          poolSubjects = currentSubjects[0];
+          noPoolSubjects = currentSubjects[1];
+          for (let i = 0; i < noPoolSubjects.length; i++) {
+            if (item === noPoolSubjects[i]["subjectName"]) {
+              skipSubjectFolder = true;
+              break;
+            }
+          }
+          if (skipSubjectFolder) continue;
+          for (let i = 0; i < poolSubjects.length; i++) {
+            if (item === poolSubjects[i]["subjectName"]) {
+              skipSubjectFolder = true;
+              break;
             }
           }
         }
+        if (skipSubjectFolder) continue;
+      }
 
-        if (sortedObj["folders"][item]["type"] == "bf") {
-          cloud_item = " pennsieve_folder";
-          if (deleted_folder) {
-            cloud_item = " pennsieve_folder_deleted";
-          }
-        }
-
+      count += 1;
+      var emptyFolder = "";
+      if (!highLevelFolders.includes(item)) {
         if (
-          sortedObj["folders"][item]["type"] == "local" &&
-          sortedObj["folders"][item]["action"].includes("existing")
+          JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
+          JSON.stringify(sortedObj["folders"][item]["files"]) === "{}"
         ) {
-          cloud_item = " local_folder";
-          if (deleted_folder) {
-            cloud_item = " local_folder_deleted";
-          }
+          emptyFolder = " empty";
         }
+      }
 
-        if (sortedObj["folders"][item]["action"].includes("updated")) {
-          cloud_item = " update-file";
-          let elem_creation =
-            '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
-            emptyFolder +
-            '"></h1><div class="folder_desc' +
-            cloud_item +
-            '">' +
-            item +
-            "</div></div>";
+      cloud_item = "";
+      deleted_folder = false;
 
-          // folder_elements.push(elem_creation);
-          appendString = appendString + elem_creation;
-          if (count === 100) {
-            folder_elements.push(appendString);
-            count = 0;
-            appendString = "";
-            continue;
-          }
-        } else {
-          let element_creation =
-            '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
-            emptyFolder +
-            '"></h1><div class="folder_desc' +
-            cloud_item +
-            '">' +
-            item +
-            "</div></div>";
-
-          appendString = appendString + element_creation;
-
-          // every one hundred elements created we put into one element within the array
-          if (count === 100) {
-            folder_elements.push(appendString);
-            count = 0;
-            appendString = "";
-            continue;
+      if ("action" in sortedObj["folders"][item]) {
+        if (
+          sortedObj["folders"][item]["action"].includes("deleted") ||
+          sortedObj["folders"][item]["action"].includes("recursive_deleted")
+        ) {
+          emptyFolder += " deleted_folder";
+          deleted_folder = true;
+          if (sortedObj["folders"][item]["action"].includes("recursive_deleted")) {
+            emptyFolder += " recursive_deleted_file";
           }
         }
       }
-      if (count < 100) {
-        //if items to be rendered is less than 100 we push whatever we have to the array element
-        if (!folder_elements.includes(appendString) && appendString != "") {
+
+      if (sortedObj["folders"][item]["type"] == "bf") {
+        cloud_item = " pennsieve_folder";
+        if (deleted_folder) {
+          cloud_item = " pennsieve_folder_deleted";
+        }
+      }
+
+      if (
+        sortedObj["folders"][item]["type"] == "local" &&
+        sortedObj["folders"][item]["action"].includes("existing")
+      ) {
+        cloud_item = " local_folder";
+        if (deleted_folder) {
+          cloud_item = " local_folder_deleted";
+        }
+      }
+
+      if (sortedObj["folders"][item]["action"].includes("updated")) {
+        cloud_item = " update-file";
+        let elem_creation =
+          '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+          emptyFolder +
+          '"></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
+
+        appendString = appendString + elem_creation;
+        if (count === 100) {
+          //every one hundred elements created we put it into one element within the array
           folder_elements.push(appendString);
           count = 0;
+          appendString = "";
+          continue;
+        }
+      } else {
+        let element_creation =
+          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+          emptyFolder +
+          '"></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
+
+        appendString = appendString + element_creation;
+        if (count === 100) {
+          //every one hundred elements created we put it into one element within the array
+          folder_elements.push(appendString);
+          count = 0;
+          appendString = "";
+          continue;
         }
       }
     }
-    //reset count and string for file elements
-    count = 0;
-    appendString = "";
-    if (Object.keys(sortedObj["files"]).length > 0) {
-      for (var item in sortedObj["files"]) {
-        count += 1;
-        // not the auto-generated manifest
-        if (sortedObj["files"][item].length !== 1) {
-          if ("path" in sortedObj["files"][item]) {
-            var extension = path.extname(sortedObj["files"][item]["path"]).slice(1);
-          } else {
-            var extension = "other";
-          }
-          if (sortedObj["files"][item]["type"] == "bf") {
-            if (sortedObj["files"][item]["action"].includes("deleted")) {
-              original_file_name = item.substring(0, item.lastIndexOf("-"));
-              extension = original_file_name.split(".").pop();
-            } else {
-              extension = item.split(".").pop();
-            }
-          }
-          if (
-            ![
-              "docx",
-              "doc",
-              "pdf",
-              "txt",
-              "jpg",
-              "JPG",
-              "jpeg",
-              "JPEG",
-              "xlsx",
-              "xls",
-              "csv",
-              "png",
-              "PNG",
-            ].includes(extension)
-          ) {
-            extension = "other";
-          }
+    if (count < 100) {
+      //if items to be rendered is less than 100 we push whatever we have to the array element
+      if (!folder_elements.includes(appendString) && appendString != "") {
+        folder_elements.push(appendString);
+        count = 0;
+      }
+    }
+  }
+  //reset count and string for file elements
+  count = 0;
+  appendString = "";
+  if (Object.keys(sortedObj["files"]).length > 0) {
+    for (var item in sortedObj["files"]) {
+      count += 1;
+      // not the auto-generated manifest
+      if (sortedObj["files"][item].length !== 1) {
+        if ("path" in sortedObj["files"][item]) {
+          var extension = path.extname(sortedObj["files"][item]["path"]).slice(1);
         } else {
+          var extension = "other";
+        }
+        if (sortedObj["files"][item]["type"] == "bf") {
+          if (sortedObj["files"][item]["action"].includes("deleted")) {
+            original_file_name = item.substring(0, item.lastIndexOf("-"));
+            extension = original_file_name.split(".").pop();
+          } else {
+            extension = item.split(".").pop();
+          }
+        }
+        if (
+          ![
+            "docx",
+            "doc",
+            "pdf",
+            "txt",
+            "jpg",
+            "JPG",
+            "jpeg",
+            "JPEG",
+            "xlsx",
+            "xls",
+            "csv",
+            "png",
+            "PNG",
+          ].includes(extension)
+        ) {
           extension = "other";
         }
+      } else {
+        extension = "other";
+      }
 
-        cloud_item = "";
-        deleted_file = false;
+      cloud_item = "";
+      deleted_file = false;
 
-        if ("action" in sortedObj["files"][item]) {
-          if (
-            sortedObj["files"][item]["action"].includes("deleted") ||
-            sortedObj["files"][item]["action"].includes("recursive_deleted")
-          ) {
-            extension += " deleted_file";
-            deleted_file = true;
-            if (sortedObj["files"][item]["action"].includes("recursive_deleted")) {
-              extension += " recursive_deleted_file";
-            }
-          }
-        }
-
-        if (sortedObj["files"][item]["type"] == "bf") {
-          cloud_item = " pennsieve_file";
-          if (deleted_file) {
-            cloud_item = " pennsieve_file_deleted";
-          }
-          let element_creation =
-            '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
-            extension +
-            '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
-            cloud_item +
-            '">' +
-            item +
-            "</div></div>";
-        }
-
+      if ("action" in sortedObj["files"][item]) {
         if (
-          sortedObj["files"][item]["type"] == "local" &&
-          sortedObj["files"][item]["action"].includes("existing")
+          sortedObj["files"][item]["action"].includes("deleted") ||
+          sortedObj["files"][item]["action"].includes("recursive_deleted")
         ) {
-          cloud_item = " local_file";
-          if (deleted_file) {
-            cloud_item = " local_file_deleted";
-          }
-        }
-        if (
-          sortedObj["files"][item]["type"] == "local" &&
-          sortedObj["files"][item]["action"].includes("updated")
-        ) {
-          cloud_item = " update-file";
-          if (deleted_file) {
-            cloud_item = "pennsieve_file_deleted";
-          }
-          let elem_creation =
-            '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
-            extension +
-            '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
-            cloud_item +
-            '">' +
-            item +
-            "</div></div>";
-
-          appendString = appendString + elem_creation;
-          if (count === 100) {
-            file_elements.push(appendString);
-            count = 0;
-            appendString = "";
-            continue;
-          }
-        } else {
-          let element_creation =
-            '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
-            extension +
-            '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
-            cloud_item +
-            '">' +
-            item +
-            "</div></div>";
-
-          appendString = appendString + element_creation;
-          if (count === 100) {
-            file_elements.push(appendString);
-            count = 0;
-            appendString = "";
-            continue;
+          extension += " deleted_file";
+          deleted_file = true;
+          if (sortedObj["files"][item]["action"].includes("recursive_deleted")) {
+            extension += " recursive_deleted_file";
           }
         }
       }
-      if (count < 100) {
-        if (!file_elements.includes(appendString) && appendString != "") {
+
+      if (sortedObj["files"][item]["type"] == "bf") {
+        cloud_item = " pennsieve_file";
+        if (deleted_file) {
+          cloud_item = " pennsieve_file_deleted";
+        }
+        let element_creation =
+          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+          extension +
+          '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
+      }
+
+      if (
+        sortedObj["files"][item]["type"] == "local" &&
+        sortedObj["files"][item]["action"].includes("existing")
+      ) {
+        cloud_item = " local_file";
+        if (deleted_file) {
+          cloud_item = " local_file_deleted";
+        }
+      }
+      if (
+        sortedObj["files"][item]["type"] == "local" &&
+        sortedObj["files"][item]["action"].includes("updated")
+      ) {
+        cloud_item = " update-file";
+        if (deleted_file) {
+          cloud_item = "pennsieve_file_deleted";
+        }
+        let elem_creation =
+          '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+          extension +
+          '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
+
+        appendString = appendString + elem_creation;
+        if (count === 100) {
           file_elements.push(appendString);
           count = 0;
+          appendString = "";
+          continue;
         }
-        // continue;
-      }
-    }
-    if (folder_elements[0] === "") {
-      folder_elements.splice(0, 1);
-    }
-    if (file_elements[0] === "") {
-      file_elements.splice(0, 1);
-    }
-    let items = [folder_elements, file_elements];
-
-    if (amount_req != undefined) {
-      //add items using a different function
-      //want the initial files to be imported
-      let itemDisplay = new Promise(async (resolved) => {
-        if (reset != undefined) {
-          await add_items_to_view(items, amount_req, reset);
-          resolved();
-        } else {
-          await add_items_to_view(items, amount_req);
-          resolved();
-        }
-      });
-    } else {
-      //load everything in place
-      let itemDisplay = new Promise(async (resolved) => {
-        // $(uiItem).empty();
-        await add_items_to_view(items, 500);
-        resolved();
-      });
-    }
-
-    dragselect_area.stop();
-
-    dragselect_area = new DragSelect({
-      selectables: document.querySelectorAll(".single-item"),
-      draggability: false,
-      area: document.getElementById("items"),
-    });
-
-    dragselect_area.subscribe("callback", ({ items, event, isDragging }) => {
-      select_items(items, event, isDragging);
-    });
-
-    dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
-      select_items_ctrl(items, event, isDragging);
-    });
-    drag_event_fired = false;
-
-    //check if folder_elements is an empty object and file_elements is an empty array
-    if (folder_elements.length == 0 && file_elements.length == 0) {
-      //Fired when no folders are to be appended to the folder structure element.
-      //Gets the name of the current folder from organizeDSglobalPath and instructs the user
-      //on what to do in the empty folder.
-      let currentFolder = "";
-      let folderType;
-
-      if (organizeDSglobalPath.value == undefined) {
-        currentFolder = "My_dataset_folder";
       } else {
-        //Get the name of the folder the user is currently in.
-        currentFolder = organizeDSglobalPath.value.split("/").slice(-2)[0];
-        if (currentFolder.startsWith("sub-")) {
-          folderType = "subject";
-        }
-        if (currentFolder.startsWith("sam-")) {
-          folderType = "sample";
-        }
-        if (currentFolder.startsWith("pool-")) {
-          folderType = "pool";
-        }
-      }
+        let element_creation =
+          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+          extension +
+          '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+          cloud_item +
+          '">' +
+          item +
+          "</div></div>";
 
-      let dragDropInstructionsText;
-      if (folderType === undefined) {
-        dragDropInstructionsText = `Drag and Drop folders and files to be included in the <b>${currentFolder}</b> folder.`;
+        appendString = appendString + element_creation;
+        if (count === 100) {
+          file_elements.push(appendString);
+          count = 0;
+          appendString = "";
+          continue;
+        }
       }
-      if (folderType == "subject") {
-        dragDropInstructionsText = `Drag and drop folders and files associated with the subject ${currentFolder}`;
+    }
+    if (count < 100) {
+      if (!file_elements.includes(appendString) && appendString != "") {
+        file_elements.push(appendString);
+        count = 0;
       }
-      if (folderType === "sample") {
-        dragDropInstructionsText = `Drag and drop folders and files associated with the sample ${currentFolder}`;
-      }
-      if (folderType === "pool") {
-        dragDropInstructionsText = `Drag and drop folders and files associated with the pool ${currentFolder}`;
-      }
+      // continue;
+    }
+  }
+  if (folder_elements[0] === "") {
+    folder_elements.splice(0, 1);
+  }
+  if (file_elements[0] === "") {
+    file_elements.splice(0, 1);
+  }
+  let items = [folder_elements, file_elements];
 
-      $("#items").html(
-        `<div class="drag-drop-container-instructions">
+  if (amount_req != undefined) {
+    //add items using a different function
+    //want the initial files to be imported
+    let itemDisplay = new Promise(async (resolved) => {
+      if (reset != undefined) {
+        await add_items_to_view(items, amount_req, reset);
+        resolved();
+      } else {
+        await add_items_to_view(items, amount_req);
+        resolved();
+      }
+    });
+  } else {
+    //load everything in place
+    let itemDisplay = new Promise(async (resolved) => {
+      // $(uiItem).empty();
+      await add_items_to_view(items, 500);
+      resolved();
+    });
+  }
+
+  dragselect_area.stop();
+
+  dragselect_area = new DragSelect({
+    selectables: document.querySelectorAll(".single-item"),
+    draggability: false,
+    area: document.getElementById("items"),
+  });
+
+  dragselect_area.subscribe("callback", ({ items, event, isDragging }) => {
+    select_items(items, event, isDragging);
+  });
+
+  dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
+    select_items_ctrl(items, event, isDragging);
+  });
+  drag_event_fired = false;
+
+  //check if folder_elements is an empty object and file_elements is an empty array
+  if (folder_elements.length == 0 && file_elements.length == 0) {
+    //Fired when no folders are to be appended to the folder structure element.
+    //Gets the name of the current folder from organizeDSglobalPath and instructs the user
+    //on what to do in the empty folder.
+    let currentFolder = "";
+    let folderType;
+
+    if (organizeDSglobalPath.value == undefined) {
+      currentFolder = "My_dataset_folder";
+    } else {
+      //Get the name of the folder the user is currently in.
+      currentFolder = organizeDSglobalPath.value.split("/").slice(-2)[0];
+      if (currentFolder.startsWith("sub-")) {
+        folderType = "subject";
+      }
+      if (currentFolder.startsWith("sam-")) {
+        folderType = "sample";
+      }
+      if (currentFolder.startsWith("pool-")) {
+        folderType = "pool";
+      }
+    }
+
+    let dragDropInstructionsText;
+    if (folderType === undefined) {
+      dragDropInstructionsText = `Drag and Drop folders and files to be included in the <b>${currentFolder}</b> folder.`;
+    }
+    if (folderType == "subject") {
+      dragDropInstructionsText = `Drag and drop folders and files associated with the subject ${currentFolder}`;
+    }
+    if (folderType === "sample") {
+      dragDropInstructionsText = `Drag and drop folders and files associated with the sample ${currentFolder}`;
+    }
+    if (folderType === "pool") {
+      dragDropInstructionsText = `Drag and drop folders and files associated with the pool ${currentFolder}`;
+    }
+
+    $("#items").html(
+      `<div class="drag-drop-container-instructions">
         <div id="dragDropLottieContainer" style="height: 100px; width: 100px;"></div>
         <p class="text-center large">
           ${dragDropInstructionsText}
@@ -6943,19 +6962,18 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
           } using the buttons in the upper right corner
         </p>
       </div>`
-      );
-      const dragDropLottieContainer = document.getElementById("dragDropLottieContainer");
+    );
+    const dragDropLottieContainer = document.getElementById("dragDropLottieContainer");
 
-      dragDropLottieContainer.innerHTML = ``;
+    dragDropLottieContainer.innerHTML = ``;
 
-      let dragDropAnimation = lottie.loadAnimation({
-        container: dragDropLottieContainer,
-        animationData: dragDrop,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-    }
+    let dragDropAnimation = lottie.loadAnimation({
+      container: dragDropLottieContainer,
+      animationData: dragDrop,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+    });
   }
 };
 

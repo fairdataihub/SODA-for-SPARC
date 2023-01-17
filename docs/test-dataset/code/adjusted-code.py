@@ -31,6 +31,12 @@ from threading import Thread
 import pathlib
 import io
 from contextlib import redirect_stdout
+from openpyxl.styles import PatternFill, Font
+from openpyxl import load_workbook
+from namespaces import NamespaceEnum, get_namespace_logger
+from namespaces import NamespaceEnum, get_namespace_logger
+
+# namespace_logger = get_namespace_logger(NamespaceEnum.ADJUSTE)
 
 from datetime import datetime, timezone
 
@@ -243,6 +249,24 @@ def create_folder_level_manifest(jsonpath, jsondescription):
                 # Save manifest as Excel sheet
                 manifestfile = join(folderpath, 'manifest.xlsx')
                 df.to_excel(manifestfile, index=None, header=True)
+                wb = load_workbook(manifestfile)
+                ws = wb.active
+                blueFill = PatternFill(
+                    start_color="9DC3E6", fill_type="solid"
+                )
+                greenFill = PatternFill(
+                    start_color="A8D08D", fill_type="solid"
+                )
+                yellowFill = PatternFill(
+                    start_color="FFD965", fill_type="solid"
+                )
+                ws['A1'].fill = blueFill
+                ws['B1'].fill = greenFill
+                ws['C1'].fill = greenFill
+                ws['D1'].fill = greenFill
+                ws['E1'].fill = yellowFill
+
+                wb.save(manifestfile)
                 total_dataset_size += path_size(manifestfile)
                 jsonpath[folder].append(manifestfile)
 
@@ -1224,6 +1248,23 @@ def create_high_level_manifest_files(soda_json_structure):
             manifestfilepath = join(folderpath, 'manifest.xlsx')
             df = pd.DataFrame.from_dict(dict_folder_manifest)
             df.to_excel(manifestfilepath, index=None, header=True)
+            wb = load_workbook(manifestfilepath)
+            ws = wb.active
+            blueFill = PatternFill(
+                start_color="9DC3E6", fill_type="solid"
+            )
+            greenFill = PatternFill(
+                start_color="A8D08D", fill_type="solid"
+            )
+            yellowFill = PatternFill(
+                start_color="FFD965", fill_type="solid"
+            )
+            ws['A1'].fill = blueFill
+            ws['B1'].fill = greenFill
+            ws['C1'].fill = greenFill
+            ws['D1'].fill = greenFill
+            ws['E1'].fill = yellowFill
+            wb.save(manifestfilepath)
 
             manifest_files_structure[folder_key] = manifestfilepath
 
@@ -1479,6 +1520,11 @@ def bf_create_new_dataset(datasetname, bf):
     except Exception as e:
         raise e
 
+def fillColor(color, cell):
+    colorFill = PatternFill(start_color=color, end_color=color, fill_type="solid")
+
+    cell.fill = colorFill
+
 def create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure):
     """
     Function to create manifest files for each high-level SPARC folder for an existing blackfynn dataset.
@@ -1559,6 +1605,25 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
         df = pd.DataFrame.from_dict(dict_folder_manifest)
         df.to_excel(manifestfilepath, index=None, header=True)
         manifest_files_structure[high_level_folder] = manifestfilepath
+        wb = load_workbook(manifestfilepath)
+        ws = wb.active
+        blueFill = PatternFill(
+            start_color="9DC3E6", fill_type="solid"
+        )
+        greenFill = PatternFill(
+            start_color="A8D08D", fill_type="solid"
+        )
+        yellowFill = PatternFill(
+            start_color="FFD965", fill_type="solid"
+        )
+
+        ws['A1'].fill = blueFill
+        ws['B1'].fill = greenFill
+        ws['C1'].fill = greenFill
+        ws['D1'].fill = greenFill
+        ws['E1'].fill = yellowFill
+        
+        wb.save(join(folderpath, "manifest.xlsx"))
 
     return manifest_files_structure
 
@@ -1809,6 +1874,23 @@ def create_high_level_manifest_files_existing_bf(soda_json_structure, bf, ds, my
             manifestfilepath = join(folderpath, 'manifest.xlsx')
             df = pd.DataFrame.from_dict(dict_folder_manifest)
             df.to_excel(manifestfilepath, index=None, header=True)
+            wb = load_workbook(manifestfilepath)
+            ws = wb.active
+            blueFill = PatternFill(
+                start_color="9DC3E6", fill_type="solid"
+            )
+            greenFill = PatternFill(
+                start_color="A8D08D", fill_type="solid"
+            )
+            yellowFill = PatternFill(
+                start_color="FFD965", fill_type="solid"
+            )
+            ws['A1'].fill = blueFill
+            ws['B1'].fill = greenFill
+            ws['C1'].fill = greenFill
+            ws['D1'].fill = greenFill
+            ws['E1'].fill = yellowFill
+            wb.save(manifestfilepath)
 
             manifest_files_structure[folder_key] = manifestfilepath
 

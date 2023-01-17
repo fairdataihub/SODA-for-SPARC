@@ -196,13 +196,12 @@ const dropHandler = async (
       var file = ev.dataTransfer.items[0].getAsFile();
       var metadataWithoutExtension = file.name.slice(0, file.name.indexOf("."));
       var extension = file.name.slice(file.name.indexOf("."));
-
       if (ev.dataTransfer.items[0].type.includes("image")) {
+        //handle dropped images for banner images
         let path = [file.path];
         handleSelectedBannerImage(path, "guided-mode");
         $("#guided-banner-image-modal").modal("show");
       }
-
       if (dataDeliverables === true) {
         let filepath = file.path;
         var award = $("#submission-sparc-award");
@@ -304,7 +303,7 @@ const dropHandler = async (
                 .css("display", "none");
             }
             if (curationMode === "guided") {
-              //Add success checkmark lottie animation inside metadata card
+              //Add success check mark lottie animation inside metadata card
               const dragDropContainer = document.getElementById(paraElement).parentElement;
               //get the value of data-code-metadata-file-type from dragDropContainer
               const metadataFileType = dragDropContainer.dataset.codeMetadataFileType;
@@ -1019,6 +1018,10 @@ const create_child_node = (
   selectedOriginalLocation,
   viewOptions
 ) => {
+  console.log(nodeName);
+  console.log(selectedOriginalLocation);
+  console.log(oldFormatNode);
+  console.log(ext);
   /*
   oldFormatNode: node in the format under "dataset-structure" key in SODA object
   nodeName: text to show for each node (name)

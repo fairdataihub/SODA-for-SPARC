@@ -1608,7 +1608,7 @@ const addFilesfunction = async (
   // check for duplicate or files with the same name
   var nonAllowedDuplicateFiles = [];
   var nonAllowedFiles = [];
-  var fileToImport = {};
+  var filesToImport = {};
   var hiddenFiles = [];
   var nonAllowedCharacterFiles = [];
   let doubleExtension = [];
@@ -1683,16 +1683,16 @@ const addFilesfunction = async (
     } else {
       if (
         JSON.stringify(currentLocation["files"]) === "{}" &&
-        JSON.stringify(fileToImport) === "{}"
+        JSON.stringify(filesToImport) === "{}"
       ) {
         //regular files object key with path, and basename
-        fileToImport[fileBase] = {
+        filesToImport[fileBase] = {
           path: filePath,
           basename: fileBase,
         };
       } else {
         //check file name in key of regular files (search for duplicate)
-        if (fileBase in fileToImport) {
+        if (fileBase in filesToImport) {
           nonAllowedDuplicateFiles.push(filePath);
           nonAllowedDuplicate = true;
           continue;
@@ -1704,19 +1704,21 @@ const addFilesfunction = async (
             continue;
           } else {
             //not in there or regular files so store?
-            fileToImport[fileBase] = {
+            filesToImport[fileBase] = {
               path: filePath,
               basename: fileBase,
             };
           }
         }
-        for (const objectKey in currentLocation["files"]) {
+        for (const importedFileName in currentLocation["files"]) {
           //tries finding duplicates with the same path
-          if (objectKey != undefined) {
+          if (importedFileName != undefined) {
             var nonAllowedDuplicate = false;
             //if file already exist in json
-            if (filePath === currentLocation["files"][objectKey]["path"]) {
-              if (currentLocation["files"][objectKey]["action"].includes("renamed") === false) {
+            if (filePath === currentLocation["files"][importedFileName]["path"]) {
+              if (
+                currentLocation["files"][importedFileName]["action"].includes("renamed") === false
+              ) {
                 //same path and has not been renamed
                 nonAllowedDuplicateFiles.push(filePath);
                 nonAllowedDuplicate = true;
@@ -1726,13 +1728,13 @@ const addFilesfunction = async (
               //file path and object key path arent the same
               //check if the file name are the same
               //if so consider it as a duplicate
-              if (fileBase === objectKey) {
+              if (fileName === importedFileName) {
                 nonAllowedDuplicateFiles.push(filePath);
                 nonAllowedDuplicate = true;
                 continue;
               } else {
                 //store in regular files
-                fileToImport[fileBase] = {
+                filesToImport[fileBase] = {
                   path: filePath,
                   basename: fileBase,
                 };
@@ -1930,14 +1932,14 @@ const addFilesfunction = async (
                     //check if the file name are the same
                     //if so consider it as a duplicate
                     //store in regular files
-                    fileToImport[file_name.substr(1, file_name.length)] = {
+                    filesToImport[file_name.substr(1, file_name.length)] = {
                       path: path_name,
                       basename: file_name.substr(1, file_name.length),
                     };
                   }
                 } else {
                   //store in regular files
-                  fileToImport[file_name.substr(1, file_name.length)] = {
+                  filesToImport[file_name.substr(1, file_name.length)] = {
                     path: path_name,
                     basename: file_name.substr(1, file_name.length),
                   };
@@ -1946,7 +1948,7 @@ const addFilesfunction = async (
             }
           } else {
             //store in regular files
-            fileToImport[file_name.substr(1, file_name.length)] = {
+            filesToImport[file_name.substr(1, file_name.length)] = {
               path: path_name,
               basename: file_name.substr(1, file_name.length),
             };
@@ -1977,7 +1979,7 @@ const addFilesfunction = async (
                     continue;
                   } else {
                     //store in regular files
-                    fileToImport[file_name] = {
+                    filesToImport[file_name] = {
                       path: path_name,
                       basename: file_name,
                     };
@@ -1990,7 +1992,7 @@ const addFilesfunction = async (
             }
           } else {
             //store in regular files
-            fileToImport[file_name] = {
+            filesToImport[file_name] = {
               path: path_name,
               basename: file_name,
             };
@@ -2098,17 +2100,18 @@ const addFilesfunction = async (
       },
     });
   }
+
   if (loadingContainer != undefined) {
     loadingContainer.style.display = "flex";
     loadingIcon.style.display = "block";
   }
   // now handle non-allowed duplicates (show message), allowed duplicates (number duplicates & append to UI),
   // and regular files (append to UI)
-  if (Object.keys(fileToImport).length > 0) {
+  if (Object.keys(filesToImport).length > 0) {
     start = 0;
     listed_count = 0;
     $("#items").empty();
-    for (let importedFile in fileToImport) {
+    for (let importedFile in filesToImport) {
       currentLocation["files"][fileToImport[importedFile]["basename"]] = {
         path: fileToImport[importedFile]["path"],
         type: "local",
@@ -2118,16 +2121,16 @@ const addFilesfunction = async (
       };
       // append "renamed" to "action" key if file is auto-renamed by UI
       var originalName = path.parse(
-        currentLocation["files"][fileToImport[importedFile]["basename"]]["path"]
+        currentLocation["files"][filesToImport[importedFile]["basename"]]["path"]
       ).base;
       if (importedFile !== originalName) {
-        currentLocation["files"][fileToImport[importedFile]["basename"]]["action"].push("renamed");
+        currentLocation["files"][filesToImport[importedFile]["basename"]]["action"].push("renamed");
       }
     }
     await listItems(currentLocation, uiItem, 500);
     getInFolder(singleUIItem, uiItem, organizeCurrentLocation, globalPathValue);
     beginScrollListen();
-    if (Object.keys(fileToImport).length > 1) {
+    if (Object.keys(filesToImport).length > 1) {
       importToast.open({
         type: "success",
         message: "Successfully Imported Files",

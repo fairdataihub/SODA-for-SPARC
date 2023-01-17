@@ -2495,11 +2495,10 @@ const generateManifestEditCard = (highLevelFolderName) => {
   `;
 };
 
-const updateManifestJson = async (highLevelFolderName, result) => {
+const updateManifestJson = async (highLvlFolderName, result) => {
   const savedHeaders = result[0];
   const savedData = result[1];
-
-  sodaJSONObj["guided-manifest-files"][highLevelFolderName] = {
+  sodaJSONObj["guided-manifest-files"][highLvlFolderName] = {
     headers: savedHeaders,
     data: savedData,
   };
@@ -2519,6 +2518,7 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
       //spreadsheet reply contained results
       await updateManifestJson(highLevelFolderName, result);
       ipcRenderer.removeAllListeners("spreadsheet-reply");
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       renderManifestCards();
     }
   });
@@ -2536,6 +2536,7 @@ const extractFilNamesFromManifestData = (manifestData) => {
   //return sorted allFileNamesinDsStructure
   return allFileNamesinDsStructure.sort();
 };
+
 const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
   const prevManifestFileNames = extractFilNamesFromManifestData(existingManifestData);
   const newManifestFileNames = extractFilNamesFromManifestData(newManifestData);
@@ -10352,6 +10353,11 @@ const renderSubjectsMetadataAsideItems = async () => {
       });
 
       document.getElementById("guided-bootbox-subject-id").value = e.target.innerText;
+      //Set the pool id field based of clicked elements data-pool-id attribute
+      document.getElementById("guided-bootbox-subject-pool-id").value =
+        e.target.getAttribute("data-pool-id");
+
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     });
   });
 };
@@ -12568,6 +12574,7 @@ $(document).ready(async () => {
   /**************************************/
   $("#guided-save-banner-image").click(async (event) => {
     $("#guided-para-dataset-banner-image-status").html("");
+
     if (guidedBfViewImportedImage.src.length > 0) {
       if (guidedFormBannerHeight.value > 511) {
         Swal.fire({
@@ -13521,15 +13528,6 @@ $(document).ready(async () => {
                 determineDatasetLocation()
               );
             } else {
-              // var appendString = "";
-              // appendString =
-              //   appendString +
-              //   '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">' +
-              //   newFolderName +
-              //   "</div></div>";
-              // $(appendString).appendTo("#items");
-
-              /// update datasetStructureJSONObj
               var currentPath = organizeDSglobalPath.value;
               var jsonPathArray = currentPath.split("/");
               var filtered = jsonPathArray.slice(1).filter(function (el) {
@@ -13699,13 +13697,13 @@ const guidedSaveParticipantInformation = () => {
   let numSubjects = $("#guided-ds-samples-no").val();
   let numSamples = $("#guided-ds-samples-no").val();
   if (numSubjects.length == 0 || numSamples.length == 0) {
-    /*Swal.fire({
-        backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
-        icon: "error",
-        text: "Please fill in all of the required participant information fields.",
-        title: "Incomplete information",
-      });*/
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      icon: "error",
+      text: "Please fill in all of the required participant information fields.",
+      title: "Incomplete information",
+    });
   } else {
     sodaJSONObj["dataset-metadata"]["description-metadata"]["numSubjects"] = numSubjects;
     sodaJSONObj["dataset-metadata"]["description-metadata"]["numSamples"] = numSamples;

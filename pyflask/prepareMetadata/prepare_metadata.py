@@ -1084,6 +1084,23 @@ def update_existing_pennsieve_manifest_files(ds_items, ps_or_token, dataset_stru
                     ws['D1'].fill = greenFill
                     ws['E1'].fill = yellowFill
                     wb.save(filepath)
+                    wb = load_workbook(filepath)
+                    ws = wb.active
+                    blueFill = PatternFill(
+                        start_color="9DC3E6", fill_type="solid"
+                    )
+                    greenFill = PatternFill(
+                        start_color="A8D08D", fill_type="solid"
+                    )
+                    yellowFill = PatternFill(
+                        start_color="FFD965", fill_type="solid"
+                    )
+                    ws['A1'].fill = blueFill
+                    ws['B1'].fill = greenFill
+                    ws['C1'].fill = greenFill
+                    ws['D1'].fill = greenFill
+                    ws['E1'].fill = yellowFill
+                    wb.save(filepath)
 
                     manifest_progress["manifest_files_uploaded"] += 1
 
