@@ -940,13 +940,11 @@ def import_bf_RC(bfaccount, bfdataset, file_type):
 
     file_type = file_type + ".txt"
 
-    ps = connect_pennsieve_client()
+    token = get_access_token()
 
-    authenticate_user_with_client(ps, bfaccount)
+    dataset_id = get_dataset_id(token, bfdataset)
 
-    dataset_id = get_dataset_id(ps, bfdataset)
-
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(ps))
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(token))
     r.raise_for_status()
 
     items = r.json()
@@ -955,7 +953,7 @@ def import_bf_RC(bfaccount, bfdataset, file_type):
         # print(item["content"]["name"])
         if item["content"]["name"] == file_type:
             item_id = item["content"]["id"]
-            url = returnFileURL(ps, item_id)
+            url = returnFileURL(token, item_id)
             r = requests.get(url)
             return {"text": r.text}
 
@@ -1206,15 +1204,15 @@ def copytree(src, dst, symlinks=False, ignore=None):
 
 
 # obtain Pennsieve S3 URL for an existing metadata file
-def returnFileURL(ps, item_id):
-    r = requests.get(f"{PENNSIEVE_URL}/packages/{item_id}/view", headers=create_request_headers(ps))
+def returnFileURL(ps_or_token, item_id):
+    r = requests.get(f"{PENNSIEVE_URL}/packages/{item_id}/view", headers=create_request_headers(ps_or_token))
     r.raise_for_status()
 
     file_details = r.json()
     file_id = file_details[0]["content"]["id"]
     # print(file_id)
     r = requests.get(
-        f"{PENNSIEVE_URL}/packages/{item_id}/files/{file_id}", headers=create_request_headers(ps)
+        f"{PENNSIEVE_URL}/packages/{item_id}/files/{file_id}", headers=create_request_headers(ps_or_token)
     )
     r.raise_for_status()
 
