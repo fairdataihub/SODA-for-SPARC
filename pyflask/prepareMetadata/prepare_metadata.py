@@ -200,11 +200,6 @@ def subscriber_metadata(ps, events_dict):
 
 def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_after_upload):
     global namespace_logger
-    ## check if agent is running in the background
-    # TODO: convert to new agent (agent_running is part of the old agent)
-    start_agent()
-
-    namespace_logger.info("Connecting to the pennsieve client")
 
     ps = connect_pennsieve_client()
 
