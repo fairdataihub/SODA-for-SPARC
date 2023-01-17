@@ -8600,7 +8600,7 @@ const openCopySubjectMetadataPopup = async () => {
         const currentSubjectOpenInView = document.getElementById("guided-bootbox-subject-id").value;
         if (currentSubjectOpenInView) {
           //If a subject was open in the UI, update it with the new metadata
-          openModifySubjectMetadataPage(currentSubjectOpenInView);
+          populateForms(currentSubjectOpenInView, "", "guided");
         }
 
         await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
@@ -8678,7 +8678,7 @@ const openCopySampleMetadataPopup = async () => {
         let wasDerivedFrom = "";
 
         //Add the data from the selected copy fro sample to cpoyFromSampleData array
-        for (var i = 1; i < samplesTableData.length; i++) {
+        for (let i = 1; i < samplesTableData.length; i++) {
           if (samplesTableData[i][1] === selectedCopyFromSample) {
             //copy all elements from matching array except the first one
             wasDerivedFrom = samplesTableData[i][2];
@@ -8698,17 +8698,10 @@ const openCopySampleMetadataPopup = async () => {
         const currentSampleSubjectOpenInView = document.getElementById(
           "guided-bootbox-subject-id-samples"
         ).value;
-        const currentSamplePoolOpenInView = document.getElementById(
-          "guided-bootbox-sample-pool-id"
-        ).value;
 
         //If a sample was open in the UI, update it with the new metadata
         if (currentSampleOpenInView) {
-          openModifySampleMetadataPage(
-            currentSampleOpenInView,
-            currentSampleSubjectOpenInView,
-            currentSamplePoolOpenInView
-          );
+          openModifySampleMetadataPage(currentSampleOpenInView, currentSampleSubjectOpenInView);
         }
         await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       }
@@ -10484,7 +10477,6 @@ const renderSamplesMetadataAsideItems = async () => {
       //clear all sample form fields
       clearAllSubjectFormFields(guidedSamplesFormDiv);
 
-      //call openModifySampleMetadataPage function on clicked item
       openModifySampleMetadataPage(
         e.target.innerText.split("/")[1],
         e.target.innerText.split("/")[0]
