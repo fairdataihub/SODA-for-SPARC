@@ -836,9 +836,10 @@ function showParentSwal(duplicateArray) {
   });
 }
 
+//creates the html for sweet alert
+
 const handleDuplicateImports = (btnId, duplicateArray, curationMode) => {
   Swal.close();
-  //creates the html for sweetalert
   const createSwalDuplicateContent = (btnId, list) => {
     if (btnId === "replace" || btnId === "skip") {
       type = "checkbox";
@@ -1551,6 +1552,7 @@ const handleDuplicateImports = (btnId, duplicateArray, curationMode) => {
     });
     //then handle the selected checkboxes
   }
+}
 };
 
 const checkForMultipleExtensions = (filename) => {
@@ -1607,6 +1609,8 @@ const addFilesfunction = async (
 
   // check for duplicate or files with the same name
   var nonAllowedDuplicateFiles = [];
+  let doubleExtension = [];
+  let tripleExtension = [];
   var nonAllowedFiles = [];
   var filesToImport = {};
   var hiddenFiles = [];
@@ -1623,14 +1627,36 @@ const addFilesfunction = async (
     let fileName = path.parse(filePath).name;
 
     //Check for nonallowed characters
-    let warningCharacterBool = warningCharacterCheck(fileName);
+    let warningCharacterBool = warningCharacterCheck(fileBase);
     if (warningCharacterBool === true) {
       nonAllowedCharacterFiles.push(filePath);
       continue;
     }
 
     //count amount of extensions
-    let extensionCount = checkForMultipleExtensions(fileName);
+    let extensionCount = checkForMultipleExtensions(fileBase);
+    if (extensionCount == 2) {
+      //double extension ask if compressed file
+      doubleExtension.push(filePath);
+      continue;
+    }
+    if (extensionCount > 2) {
+      //multiple extensions, raise warning
+      tripleExtension.push(filePath);
+      continue;
+    }
+
+    //check for non allowed files
+    //.DS_Store and Thumbs.db files are strictly not allowed
+    //Check for nonallowed characters
+    let warningCharacterBool = warningCharacterCheck(fileBase);
+    if (warningCharacterBool === true) {
+      nonAllowedCharacterFiles.push(filePath);
+      continue;
+    }
+
+    //count amount of extensions
+    let extensionCount = checkForMultipleExtensions(fileBase);
     if (extensionCount == 2) {
       //double extension ask if compressed file
       doubleExtension.push(filePath);
@@ -1685,26 +1711,26 @@ const addFilesfunction = async (
         JSON.stringify(currentLocation["files"]) === "{}" &&
         JSON.stringify(filesToImport) === "{}"
       ) {
-        //regular files object key with path, and basename
-        filesToImport[fileBase] = {
+        //if importing into a empty folder that json structure will be {}, thus import
+        filesToImport[fileName] = {
           path: filePath,
           basename: fileBase,
         };
       } else {
-        //check file name in key of regular files (search for duplicate)
-        if (fileBase in filesToImport) {
+        //check if file name in key of filesToImport (search for duplicate)
+        if (fileName in filesToImport) {
           nonAllowedDuplicateFiles.push(filePath);
           nonAllowedDuplicate = true;
           continue;
         } else {
-          //search for duplicate in currentlocation[files]
-          if (fileBase in currentLocation["files"]) {
+          //search for duplicate already imported files within current folder location
+          if (fileName in currentLocation["files"]) {
             nonAllowedDuplicateFiles.push(filePath);
             nonAllowedDuplicate = true;
             continue;
           } else {
-            //not in there or regular files so store?
-            filesToImport[fileBase] = {
+            //no duplicates and no problems with filename, thus import
+            filesToImport[fileName] = {
               path: filePath,
               basename: fileBase,
             };
@@ -1712,20 +1738,21 @@ const addFilesfunction = async (
         }
         for (const importedFileName in currentLocation["files"]) {
           //tries finding duplicates with the same path
+          //filename will be undefined when no files have been imported to the current folder location
           if (importedFileName != undefined) {
             var nonAllowedDuplicate = false;
-            //if file already exist in json
+            //if there is a filename already imported, we check the path to see if they are the same as well
             if (filePath === currentLocation["files"][importedFileName]["path"]) {
               if (
                 currentLocation["files"][importedFileName]["action"].includes("renamed") === false
               ) {
-                //same path and has not been renamed
+                //they have the same path and the already imported one has not been renamed so ask to rename this one
                 nonAllowedDuplicateFiles.push(filePath);
                 nonAllowedDuplicate = true;
                 continue;
               }
             } else {
-              //file path and object key path arent the same
+              //file path and already imported filename path arent the same
               //check if the file name are the same
               //if so consider it as a duplicate
               if (fileName === importedFileName) {
@@ -1744,6 +1771,269 @@ const addFilesfunction = async (
         }
       }
     }
+  }
+
+  //after iterating through all the files handle problem files through alerts
+  if (doubleExtension.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
+
+    await Swal.fire({
+      title:
+        "The following files have a double period, which is only allowed if they are compressed files as per SPARC Data Standards. Do you confirm that these are all compressed files?",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        doubleExtension.join("</br></br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: false,
+      showCancelButton: true,
+      confirmButtonText: "Yes, import them",
+      // denyButtonText: "Import",
+      cancelButtonText: "No, skip them",
+      didOpen: () => {
+        $(".swal-popover").popover();
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        swalContainer.style.width = "600px";
+        swal_content.style.textAlign = "justify";
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //remove slashes and place just file name in new array
+        for (let i = 0; i < doubleExtension.length; i++) {
+          if (
+            doubleExtension[i] in currentLocation["files"] ||
+            path.parse(doubleExtension[i]).base in Object.keys(filesToImport)
+          ) {
+            nonAllowedDuplicateFiles.push(fileName);
+            continue;
+          } else {
+            //not in there or regular files so store?
+            filesToImport[path.parse(doubleExtension[i]).base] = {
+              path: doubleExtension[i],
+              basename: path.parse(doubleExtension[i]).base,
+            };
+          }
+        }
+      }
+    });
+  }
+
+  if (tripleExtension.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
+    await Swal.fire({
+      title:
+        "Files should typically have one (two when they are compressed) periods in their names according to the SPARC Data Standards. The following files have three of more periods in their name and will not be imported.",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        tripleExtension.join("</br></br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: false,
+      showCancelButton: false,
+      confirmButtonText: "OK",
+      didOpen: () => {
+        $(".swal-popover").popover();
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        swalContainer.style.width = "600px";
+        swal_content.style.textAlign = "justify";
+      },
+    });
+  }
+
+  if (nonAllowedCharacterFiles.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
+    await Swal.fire({
+      title:
+        "The following files have characters (#&%+) that are typically not recommendeda as per the SPARC Data Standards. Although not forbidden to import as is, we recommend replacing those characters.",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        nonAllowedCharacterFiles.join("</br></br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Replace characters with '-'",
+      denyButtonText: "Import as is",
+      cancelButtonText: "Skip All",
+      didOpen: () => {
+        $(".swal-popover").popover();
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        let swalDenyButton = document.getElementsByClassName("swal2-deny")[0];
+        swalContainer.style.width = "600px";
+        swal_content.style.textAlign = "justify";
+        swalDenyButton.style.backgroundColor = "#086dd3";
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //replace characters
+        for (let i = 0; i < nonAllowedCharacterFiles.length; i++) {
+          let fileName = path.parse(nonAllowedCharacterFiles[i]).base;
+          let regex = /[\+&\%#]/g;
+          let replaceFile = fileName.replace(regex, "-");
+          console.log(replaceFile);
+          filesToImport[replaceFile] = {
+            path: nonAllowedCharacterFiles[i],
+            basename: replaceFile,
+          };
+        }
+      }
+      if (result.isDenied) {
+        for (let i = 0; i < nonAllowedCharacterFiles.length; i++) {
+          let fileName = nonAllowedCharacterFiles[i];
+          console.log(fileName);
+          filesToImport[fileName] = {
+            path: fileName,
+            basename: path.parse(fileName).base,
+          };
+        }
+      }
+    });
+  }
+
+  //after iterating through all the files handle problem files through alerts
+  if (doubleExtension.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
+    await Swal.fire({
+      title:
+        "The following files have a double period, which is only allowed if they are compressed files as per SPARC Data Standards. Do you confirm that these are all compressed files?",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        doubleExtension.join("</br></br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: false,
+      showCancelButton: true,
+      confirmButtonText: "Yes, import them",
+      // denyButtonText: "Import",
+      cancelButtonText: "No, skip them",
+      didOpen: () => {
+        $(".swal-popover").popover();
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        swalContainer.style.width = "600px";
+        swal_content.style.textAlign = "justify";
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //remove slashes and place just file name in new array
+        for (let i = 0; i < doubleExtension.length; i++) {
+          if (
+            doubleExtension[i] in currentLocation["files"] ||
+            path.parse(doubleExtension[i]).base in Object.keys(filesToImport)
+          ) {
+            nonAllowedDuplicateFiles.push(fileName);
+            continue;
+          } else {
+            //not in there or regular files so store?
+            filesToImport[path.parse(doubleExtension[i]).base] = {
+              path: doubleExtension[i],
+              basename: path.parse(doubleExtension[i]).base,
+            };
+          }
+        }
+      }
+    });
+  }
+
+  if (tripleExtension.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
+    await Swal.fire({
+      title:
+        "Files should typically have one (two when they are compressed) periods in their names according to the SPARC Data Standards. The following files have three of more periods in their name and will not be imported.",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        tripleExtension.join("</br></br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: false,
+      showCancelButton: false,
+      confirmButtonText: "OK",
+      didOpen: () => {
+        $(".swal-popover").popover();
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        swalContainer.style.width = "600px";
+        swal_content.style.textAlign = "justify";
+      },
+    });
+  }
+
+  if (nonAllowedCharacterFiles.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
+    await Swal.fire({
+      title:
+        "The following files have characters (#&%+) that are typically not recommendeda as per the SPARC Data Standards. Although not forbidden to import as is, we recommend replacing those characters.",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        nonAllowedCharacterFiles.join("</br></br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Replace characters with '-'",
+      denyButtonText: "Import as is",
+      cancelButtonText: "Skip All",
+      didOpen: () => {
+        $(".swal-popover").popover();
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        let swalDenyButton = document.getElementsByClassName("swal2-deny")[0];
+        swalContainer.style.width = "600px";
+        swal_content.style.textAlign = "justify";
+        swalDenyButton.style.backgroundColor = "#086dd3";
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //replace characters
+        for (let i = 0; i < nonAllowedCharacterFiles.length; i++) {
+          let fileName = path.parse(nonAllowedCharacterFiles[i]).base;
+          let regex = /[\+&\%#]/g;
+          let replaceFile = fileName.replace(regex, "-");
+          console.log(replaceFile);
+          filesToImport[replaceFile] = {
+            path: nonAllowedCharacterFiles[i],
+            basename: replaceFile,
+          };
+        }
+      }
+      if (result.isDenied) {
+        for (let i = 0; i < nonAllowedCharacterFiles.length; i++) {
+          let fileName = nonAllowedCharacterFiles[i];
+          console.log(fileName);
+          filesToImport[fileName] = {
+            path: fileName,
+            basename: path.parse(fileName).base,
+          };
+        }
+      }
+    });
   }
 
   //after iterating through all the files handle problem files through alerts

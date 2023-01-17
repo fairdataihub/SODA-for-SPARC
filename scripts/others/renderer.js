@@ -4690,7 +4690,7 @@ ipcRenderer.on("selected-folders-organize-datasets", async (event, pathElement) 
   if (irregularFolderArray.length > 0) {
     Swal.fire({
       title:
-        "The following folders contain non-allowed characters in their names. How should we handle them?",
+        "As per the SPARC Data Standards, folder names must contain only alphanumeric values 0-9, A-Z (no special characters, no empty spaces). The folders listed below don't comply with these guidlines. What would you like to do?",
       html:
         "<div style='max-height:300px; overflow-y:auto'>" +
         irregularFolderArray.join("</br>") +
@@ -4699,7 +4699,7 @@ ipcRenderer.on("selected-folders-organize-datasets", async (event, pathElement) 
       backdrop: "rgba(0,0,0, 0.4)",
       showDenyButton: true,
       showCancelButton: true,
-      confirmButtonText: "Replace forbidden characters with (-)",
+      confirmButtonText: "Replace forbidden characters with '-')",
       denyButtonText: "Remove forbidden characters",
       cancelButtonText: "Skip these folders",
       didOpen: () => {
@@ -5234,20 +5234,19 @@ const dropHelper = async (
         continue;
       }
 
-      let warningCharacterBool = warningCharacterCheck(filePath);
+      let warningCharacterBool = warningCharacterCheck(fileBase);
       // let regex = /[\+&\%#]/i;
       if (warningCharacterBool === true) {
         nonAllowedCharacterFiles.push(filePath);
         continue;
       }
 
-      let extensionCount = checkForMultipleExtensions(filePath);
+      let extensionCount = checkForMultipleExtensions(fileBase);
       if (extensionCount > 2) {
         //multiple extensions, raise warning (do not import)
         tripleExtension.push(filePath);
         continue;
       }
-
       if (extensionCount === 2) {
         //double extension ask if compressed file
         doubleExtension.push(filePath);
@@ -5845,9 +5844,9 @@ const checkIrregularNameBoolean = (folderName) => {
 };
 
 /* The following functions aim at ignore folders with irregular characters, or replace the characters with (-),
-   or remove the characters from the names.
-   All return an object in the form {"type": empty for now, will be confirmed once users click an option at the popup,
-                                     "paths": array of all the paths with special characters detected}
+  or remove the characters from the names.
+  All return an object in the form {"type": empty for now, will be confirmed once users click an option at the popup,
+  "paths": array of all the paths with special characters detected}
 */
 
 const replaceIrregularFolders = (pathElement) => {
