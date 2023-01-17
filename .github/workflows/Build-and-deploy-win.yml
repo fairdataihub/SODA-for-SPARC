@@ -1,0 +1,42 @@
+name: Build-and-deploy-win
+run-name: ${{ github.actor }} is building a Windows release for SODA
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy-on-windows:
+    runs-on: windows-latest
+
+    defaults:
+      run:
+        shell: bash -l {0}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+
+      - uses: conda-incubator/setup-miniconda@v2
+        with:
+          activate-environment: env-electron-python
+          environment-file: tools/anaconda-env/environment-Windows.yml
+          auto-activate-base: false
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "14"
+
+      - name: Install package.json modules and their dependencies
+        run: npm install --ignore-scripts
+
+      - name: Build and deploy on Windows
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm run python-onefile-build
+          npm run deploy-win
