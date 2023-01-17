@@ -2377,8 +2377,8 @@ const addFilesfunction = async (
     listed_count = 0;
     $("#items").empty();
     for (let importedFile in filesToImport) {
-      currentLocation["files"][fileToImport[importedFile]["basename"]] = {
-        path: fileToImport[importedFile]["path"],
+      currentLocation["files"][filesToImport[importedFile]["basename"]] = {
+        path: filesToImport[importedFile]["path"],
         type: "local",
         description: "",
         "additional-metadata": "",
