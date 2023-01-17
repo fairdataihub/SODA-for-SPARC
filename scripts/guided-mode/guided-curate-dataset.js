@@ -235,9 +235,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       const startingNewCuration = document
         .getElementById("guided-button-start-new-curation")
         .classList.contains("selected");
-      const startingFromExistingLocal = document
-        .getElementById("guided-button-continue-existing-local-curation")
-        .classList.contains("selected");
+      const startingFromExistingLocal = false; // Set as false for now until we implement this feature
       const resumingPennsieveDataset = document
         .getElementById("guided-button-resume-pennsieve-dataset")
         .classList.contains("selected");
