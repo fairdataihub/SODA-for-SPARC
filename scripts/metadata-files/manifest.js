@@ -441,6 +441,47 @@ const convertJSONToXlsx = (jsondata, excelfile) => {
   const greenHeaderStyle = createWorkbookStyle(wb, "a8d08d");
   const yellowHeaderStyle = createWorkbookStyle(wb, "ffd965");
   const blueHeaderStyle = createWorkbookStyle(wb, "A0C2E6");
+
+  const standardCellStyle = wb.createStyle({
+    font: {
+      bold: false,
+      color: "#000000",
+      size: 12,
+      name: "Calibri",
+    },
+  });
+
+  const wsOptions = {
+    sheetFormat: {
+      defaultColWidth: 20,
+    },
+  };
+  const ws = wb.addWorksheet("Sheet1", wsOptions);
+  const headingColumnNames = Object.keys(jsondata[0]);
+  //Write Column Title in Excel file
+  let headingColumnIndex = 1;
+  headingColumnNames.forEach((heading) => {
+    let styleObject = yellowHeaderStyle;
+    if (blueHeader.includes(heading)) styleObject = blueHeaderStyle;
+    if (yellowHeader.includes(heading)) styleObject = yellowHeaderStyle;
+    if (greenHeader.includes(heading)) styleObject = greenHeaderStyle;
+
+    ws.cell(1, headingColumnIndex++)
+      .string(heading)
+      .style(styleObject);
+  });
+  //Write Data in Excel file
+  let rowIndex = 2;
+  jsondata.forEach((record) => {
+    let columnIndex = 1;
+    Object.keys(record).forEach((columnName) => {
+      ws.cell(rowIndex, columnIndex++)
+        .string(record[columnName])
+        .style(standardCellStyle);
+    });
+    rowIndex++;
+  });
+  wb.write(excelfile);
 };
 
 var table1;
