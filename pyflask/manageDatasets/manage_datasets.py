@@ -170,7 +170,7 @@ def bf_add_account_api_key(keyname, key, secret):
         config.add_section(keyname)
         config.set(keyname, "api_token", key)
         config.set(keyname, "api_secret", secret)
-        config.set(keyname, "api_host", PENNSIEVE_URL)
+        # config.set(keyname, "api_host", PENNSIEVE_URL)
 
 
         # add the profile under the global section 
@@ -298,15 +298,15 @@ def bf_add_account_username(keyname, key, secret):
 
 
         # ensure that if the profile already exists it has an api_host entry 
-        if config.has_section(keyname):
-            config.set(keyname, "api_host", PENNSIEVE_URL)
+        # if config.has_section(keyname):
+        #     config.set(keyname, "api_host", PENNSIEVE_URL)
 
         # Add new account
         if not config.has_section(keyname):
             config.add_section(keyname)
             config.set(keyname, "api_token", key)
             config.set(keyname, "api_secret", secret)
-            config.set(keyname, "api_host", PENNSIEVE_URL)
+            # config.set(keyname, "api_host", PENNSIEVE_URL)
 
         # set profile name in global section
         if not config.has_section("global"):
@@ -443,7 +443,7 @@ def bf_get_accounts():
     sections = config.sections()
 
     if SODA_SPARC_API_KEY in sections:
-        add_api_host_to_config(config, SODA_SPARC_API_KEY, configpath)
+        # add_api_host_to_config(config, SODA_SPARC_API_KEY, configpath)
         lowercase_account_names(config, SODA_SPARC_API_KEY, configpath)
         with contextlib.suppress(Exception):
             get_access_token()
@@ -454,7 +454,7 @@ def bf_get_accounts():
             default_profile = config["global"]["default_profile"]
             if default_profile in sections:
                 print("default profile addressed")
-                add_api_host_to_config(config, default_profile, configpath)
+                # add_api_host_to_config(config, default_profile, configpath)
                 lowercase_account_names(config, default_profile, configpath)
                 try:
                     print("Getting access token")
@@ -466,7 +466,7 @@ def bf_get_accounts():
     else:
         for account in sections:
             if account != 'agent':
-                add_api_host_to_config(config, account, configpath)
+                # add_api_host_to_config(config, account, configpath)
                 with contextlib.suppress(Exception):
                     token = get_access_token()
 
@@ -832,7 +832,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
             # check if the upload has finished
             if files_uploaded == total_dataset_files:
-                print("Finished")
+                namespace_logger.info("Finished up here")
                 # namespace_logger.info("Upload complete")
                 # unsubscribe from the agent's upload messages since the upload has finished
                 ps.unsubscribe(10)
