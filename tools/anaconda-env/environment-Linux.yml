@@ -28,3 +28,4 @@ dependencies:
   - boto3 == 1.26.17
   - numpy == 1.23.0
   - pennsieve2
+  - tqdm
