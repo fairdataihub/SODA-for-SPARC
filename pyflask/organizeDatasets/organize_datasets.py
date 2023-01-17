@@ -25,6 +25,9 @@ import requests
 from permissions import bf_get_current_user_permission_agent_two, has_edit_permissions
 from utils import connect_pennsieve_client, get_dataset_id, create_request_headers, authenticate_user_with_client
 from namespaces import NamespaceEnum, get_namespace_logger
+from openpyxl.styles import PatternFill, Font
+from openpyxl import load_workbook
+
 namespace_logger = get_namespace_logger(NamespaceEnum.ORGANIZE_DATASETS)
 from authentication import get_access_token
 
@@ -364,6 +367,23 @@ def create_folder_level_manifest(jsonpath, jsondescription):
                 # Save manifest as Excel sheet
                 manifestfile = join(folderpath, "manifest.xlsx")
                 df.to_excel(manifestfile, index=None, header=True)
+                wb = load_workbook(manifestfile)
+                ws = wb.active
+                blueFill = PatternFill(
+                    start_color="9DC3E6", fill_type="solid"
+                )
+                greenFill = PatternFill(
+                    start_color="A8D08D", fill_type="solid"
+                )
+                yellowFill = PatternFill(
+                    start_color="FFD965", fill_type="solid"
+                )
+                ws['A1'].fill = blueFill
+                ws['B1'].fill = greenFill
+                ws['C1'].fill = greenFill
+                ws['D1'].fill = greenFill
+                ws['E1'].fill = yellowFill
+                wb.save(manifestfile)
                 total_dataset_size += path_size(manifestfile)
                 jsonpath[folder].append(manifestfile)
 

@@ -78,8 +78,6 @@ let introStatus = {
   samples: false,
 };
 
-
-
 //////////////////////////////////
 // App launch actions
 //////////////////////////////////
@@ -1416,6 +1414,54 @@ function sendHTTPsRequestAirtable(options, varSuccess) {
     return res;
   });
 }
+var awardObj = {};
+var globalSPARCAward = "";
+// indicate to user that airtable records are being retrieved
+const loadAwardData = async () => {
+  ///// Construct table from data
+  var awardResultArray = [];
+  ///// config and load live data from Airtable
+  var airKeyContent = parseJson(airtableConfigPath);
+  if (JSON.stringify(airKeyContent) !== "{}") {
+    var airKeyInput = airKeyContent["api-key"];
+    var airKeyName = airKeyContent["key-name"];
+    if (airKeyInput !== "" && airKeyName !== "") {
+      Airtable.configure({
+        endpointUrl: "https://" + airtableHostname,
+        apiKey: airKeyInput,
+      });
+      var base = Airtable.base("appiYd1Tz9Sv857GZ");
+      base("sparc_members")
+        .select({
+          view: "All members (ungrouped)",
+        })
+        .eachPage(
+          function page(records, fetchNextPage) {
+            records.forEach(function (record) {
+              if (record.get("Project_title") !== undefined) {
+                var awardNumber = (item = record.get("SPARC_Award_#"));
+                item = record.get("SPARC_Award_#").concat(" (", record.get("Project_title"), ")");
+                awardResultArray.push(item);
+                awardObj[awardNumber] = item;
+              }
+            }),
+              fetchNextPage();
+          },
+          function done(err) {
+            if (err) {
+              log.error(err);
+              console.log(err);
+              return;
+            } else {
+              // create set to remove duplicates
+              var awardSet = new Set(awardResultArray);
+              var resultArray = [...awardSet];
+            }
+          }
+        );
+    }
+  }
+};
 
 loadAwardData();
 
@@ -2316,55 +2362,6 @@ function addOption(selectbox, text, value) {
   opt.text = text;
   opt.value = value;
   selectbox.options.add(opt);
-}
-
-var awardObj = {};
-var globalSPARCAward = "";
-// indicate to user that airtable records are being retrieved
-function loadAwardData() {
-  ///// Construct table from data
-  var awardResultArray = [];
-  ///// config and load live data from Airtable
-  var airKeyContent = parseJson(airtableConfigPath);
-  if (JSON.stringify(airKeyContent) !== "{}") {
-    var airKeyInput = airKeyContent["api-key"];
-    var airKeyName = airKeyContent["key-name"];
-    if (airKeyInput !== "" && airKeyName !== "") {
-      Airtable.configure({
-        endpointUrl: "https://" + airtableHostname,
-        apiKey: airKeyInput,
-      });
-      var base = Airtable.base("appiYd1Tz9Sv857GZ");
-      base("sparc_members")
-        .select({
-          view: "All members (ungrouped)",
-        })
-        .eachPage(
-          function page(records, fetchNextPage) {
-            records.forEach(function (record) {
-              if (record.get("Project_title") !== undefined) {
-                var awardNumber = (item = record.get("SPARC_Award_#"));
-                item = record.get("SPARC_Award_#").concat(" (", record.get("Project_title"), ")");
-                awardResultArray.push(item);
-                awardObj[awardNumber] = item;
-              }
-            }),
-              fetchNextPage();
-          },
-          function done(err) {
-            if (err) {
-              log.error(err);
-              console.log(err);
-              return;
-            } else {
-              // create set to remove duplicates
-              var awardSet = new Set(awardResultArray);
-              var resultArray = [...awardSet];
-            }
-          }
-        );
-    }
-  }
 }
 
 //////////////// Dataset description file ///////////////////////
@@ -3923,7 +3920,7 @@ async function updateBfAccountList() {
   refreshBfTeamsList(bfListTeams);
 }
 
-async function loadDefaultAccount() {
+const loadDefaultAccount = async () => {
   let responseObject;
 
   try {
@@ -3948,7 +3945,7 @@ async function loadDefaultAccount() {
     refreshBfUsersList();
     refreshBfTeamsList(bfListTeams);
   }
-}
+};
 
 const showPrePublishingPageElements = () => {
   var selectedBfAccount = defaultBfAccount;
@@ -4149,18 +4146,21 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
         popup: "animate__animated animate__fadeOutUp animate__faster",
       },
       didOpen: () => {
+        let swal_container = document.getElementsByClassName("swal2-popup")[0];
+        swal_container.style.width = "600px";
+        swal_container.style.padding = "1.5rem";
         $(".swal2-input").attr("id", "add-new-folder-input");
         $(".swal2-confirm").attr("id", "add-new-folder-button");
         $("#add-new-folder-input").keyup(function () {
           var val = $("#add-new-folder-input").val();
-          for (var char of nonAllowedCharacters) {
-            if (val.includes(char)) {
-              Swal.showValidationMessage(
-                `The folder name cannot contains the following characters ${nonAllowedCharacters}, please enter a different name!`
-              );
-              $("#add-new-folder-button").attr("disabled", true);
-              return;
-            }
+          let folderNameCheck = checkIrregularNameBoolean(val);
+          if (folderNameCheck === true) {
+            Swal.showValidationMessage(
+              `The folder name contains non-allowed characters. To follow the SPARC Data Standards, please create a folder name with only alphanumberic characters and hyphens '-'`
+            );
+            $("#add-new-folder-button").attr("disabled", true);
+            return;
+          } else {
             $("#add-new-folder-button").attr("disabled", false);
           }
         });
@@ -4337,21 +4337,12 @@ function showFullName(ev, element, text) {
 }
 
 /// hover over a function for full name
-function hoverForFullName(ev) {
+const hoverForFullName = (ev) => {
   var fullPath = ev.innerText;
   // ev.children[1] is the child element folder_desc of div.single-item,
   // which we will put through the overflowing check in showFullName function
   showFullName(event, ev.children[1], fullPath);
-}
-
-// // If the document is clicked somewhere
-// document.addEventListener('onmouseover', function(e){
-//   if (e.target.classList.value !== "myFile") {
-//     hideFullPath()
-//   } else {
-//     hoverForPath(e)
-//   }
-// });
+};
 
 document.addEventListener("onmouseover", function (e) {
   if (e.target.classList.value === "fas fa-folder") {
@@ -4682,7 +4673,7 @@ organizeDSaddFolders.addEventListener("click", function () {
 });
 
 ipcRenderer.on("selected-folders-organize-datasets", async (event, pathElement) => {
-  var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
+  // var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
   irregularFolderArray = [];
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
@@ -4701,13 +4692,21 @@ ipcRenderer.on("selected-folders-organize-datasets", async (event, pathElement) 
       backdrop: "rgba(0,0,0, 0.4)",
       showDenyButton: true,
       showCancelButton: true,
-      confirmButtonText: "Replace characters with (-)",
-      denyButtonText: "Remove characters",
-      cancelButtonText: "Cancel",
+      confirmButtonText: "Replace forbidden characters with (-)",
+      denyButtonText: "Remove forbidden characters",
+      cancelButtonText: "Skip these folders",
       didOpen: () => {
         $(".swal-popover").popover();
+        let swalTitle = document.getElementById("swal-title");
+        swalTitle.style.textAlign = "justify";
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        let swalDenyButton = document.getElementsByClassName("swal2-deny")[0];
+        swalContainer.style.width = "600px";
+        // swalContainer.style.padding = "1.5rem";
+        swal_content.style.textAlign = "justify";
+        swalDenyButton.style.backgroundColor = "#086dd3";
       },
-      footer: footer,
     }).then(async (result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
@@ -4988,13 +4987,13 @@ const addFoldersfunction = async (action, nonallowedFolderArray, folderArray, cu
 };
 
 //// Step 3. Organize dataset: Add files or folders with drag&drop
-function allowDrop(ev) {
+const allowDrop = (ev) => {
   ev.preventDefault();
-}
+};
 
 var filesElement;
 var targetElement;
-async function drop(ev) {
+const drop = async (ev) => {
   irregularFolderArray = [];
   let renamedFolderName = "";
   let replaced = [];
@@ -5152,7 +5151,7 @@ async function drop(ev) {
       // background.remove();
     });
   }
-}
+};
 
 const dropHelper = async (
   ev1,
@@ -5188,6 +5187,10 @@ const dropHelper = async (
   var duplicateFolders = [];
   var hiddenFiles = [];
   var nonAllowedFiles = [];
+  let tripleExtension = [];
+  let doubleExtension = [];
+  let loadingIcon = document.getElementById("items_loading_container");
+  let loadingContainer = document.getElementById("loading-items-background-overlay");
 
   for (var i = 0; i < ev1.length; i++) {
     /// Get all the file information
@@ -5208,24 +5211,46 @@ const dropHelper = async (
     if (statsObj.isFile()) {
       var nonAllowedDuplicate = false;
       var originalFileName = path.parse(itemPath).base;
-      var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
-      const fileNameRegex = /[^-a-zA-z0-9]/g;
+      let filePath = itemPath;
+      let fileName = path.parse(filePath).name;
+      let fileBase = path.parse(filePath).base;
+      let slashCount = getPathSlashCount();
 
-      if (path.parse(itemPath).name.substr(0, 1) === ".") {
-        if (path.parse(itemPath).base === ".DS_Store") {
-          nonAllowedFiles.push(itemPath);
-          continue;
-        } else {
-          hiddenFiles.push(itemPath);
-          continue;
-        }
+      let forbiddenCheck = forbiddenFileCheck(filePath);
+      if (forbiddenCheck === "forbidden") {
+        nonAllowedFiles.push(filePath);
+        continue;
       }
-      if (path.parse(itemPath).base === "Thumbs.db") {
-        nonAllowedFiles.push(itemPath);
+      if (forbiddenCheck === "hidden") {
+        hiddenFiles.push(filePath);
+        continue;
+      }
+
+      let warningCharacterBool = warningCharacterCheck(filePath);
+      // let regex = /[\+&\%#]/i;
+      if (warningCharacterBool === true) {
+        nonAllowedCharacterFiles.push(filePath);
+        continue;
+      }
+
+      let extensionCount = checkForMultipleExtensions(filePath);
+      if (extensionCount > 2) {
+        //multiple extensions, raise warning (do not import)
+        tripleExtension.push(filePath);
+        continue;
+      }
+
+      if (extensionCount === 2) {
+        //double extension ask if compressed file
+        doubleExtension.push(filePath);
         continue;
       }
 
       if (slashCount === 1) {
+        if (loadingContainer != undefined) {
+          loadingContainer.style.display = "none";
+          loadingIcon.style.display = "none";
+        }
         await Swal.fire({
           icon: "error",
           html: "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
@@ -5235,41 +5260,41 @@ const dropHelper = async (
         break;
       } else {
         if (JSON.stringify(myPath["files"]) === "{}" && JSON.stringify(importedFiles) === "{}") {
-          importedFiles[path.parse(itemPath).base] = {
-            path: itemPath,
-            basename: path.parse(itemPath).base,
+          importedFiles[fileBase] = {
+            path: filePath,
+            basename: originalFileName,
           };
         } else {
           //check if fileName is in to-be-imported object keys
           if (importedFiles.hasOwnProperty(originalFileName)) {
             nonAllowedDuplicate = true;
-            nonAllowedDuplicateFiles.push(itemPath);
+            nonAllowedDuplicateFiles.push(filePath);
             continue;
           } else {
             //check if filename is in already-imported object keys
             if (myPath["files"].hasOwnProperty(originalFileName)) {
               nonAllowedDuplicate = true;
-              nonAllowedDuplicateFiles.push(itemPath);
+              nonAllowedDuplicateFiles.push(filePath);
               continue;
             } else {
               if (Object.keys(myPath["files"]).length === 0) {
                 importedFiles[originalFileName] = {
-                  path: itemPath,
+                  path: filePath,
                   basename: originalFileName,
                 };
               }
-              for (let objectKey in myPath["files"]) {
-                if (objectKey !== undefined) {
+              for (let alreadyImportedFile in myPath["files"]) {
+                if (alreadyImportedFile !== undefined) {
                   nonAllowedDuplicate = false;
                   //just checking if paths are the same
-                  if (itemPath === myPath["files"][objectKey]["path"]) {
-                    nonAllowedDuplicateFiles.push(itemPath);
+                  if (filePath === myPath["files"][alreadyImportedFile]["path"]) {
+                    nonAllowedDuplicateFiles.push(filePath);
                     nonAllowedDuplicate = true;
                     continue;
                   } else {
                     //in neither so write
                     importedFiles[originalFileName] = {
-                      path: itemPath,
+                      path: filePath,
                       basename: originalFileName,
                     };
                   }
@@ -5281,7 +5306,13 @@ const dropHelper = async (
       }
     } else if (statsObj.isDirectory()) {
       /// drop a folder
+      let folderPath = itemPath;
+
       if (slashCount === 1) {
+        if (loadingContainer != undefined) {
+          loadingContainer.style.display = "none";
+          loadingIcon.style.display = "none";
+        }
         await Swal.fire({
           icon: "error",
           text: "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
@@ -5293,7 +5324,7 @@ const dropHelper = async (
         var originalFolderName = itemName;
         var renamedFolderName = originalFolderName;
 
-        if (irregularFolderArray.includes(itemPath)) {
+        if (irregularFolderArray.includes(folderPath)) {
           if (action !== "ignore" && action !== "") {
             if (action === "remove") {
               renamedFolderName = removeIrregularFolders(itemName);
@@ -5301,7 +5332,7 @@ const dropHelper = async (
               renamedFolderName = replaceIrregularFolders(itemName);
             }
             importedFolders[renamedFolderName] = {
-              path: itemPath,
+              path: folderPath,
               "original-basename": originalFolderName,
             };
           }
@@ -5309,18 +5340,18 @@ const dropHelper = async (
           if (myPath["folders"].hasOwnProperty(originalFolderName) === true) {
             //folder is already imported
             duplicateFolders.push(itemName);
-            folderPath.push(itemPath);
+            folderPath.push(folderPath);
             continue;
           } else {
             if (importedFolders.hasOwnProperty(originalFolderName) === true) {
               //folder is already in to-be-imported list
               duplicateFolders.push(itemName);
-              folderPath.push(itemPath);
+              folderPath.push(folderPath);
               continue;
             } else {
               //folder is in neither so write
               importedFolders[originalFolderName] = {
-                path: itemPath,
+                path: folderPath,
                 "original-basename": originalFolderName,
               };
             }
@@ -5330,21 +5361,163 @@ const dropHelper = async (
     }
   }
 
-  if (hiddenFiles.length > 0) {
+  if (doubleExtension.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
+
     await Swal.fire({
       title:
-        "The following files have an unexpected name starting with a period. How should we handle them?",
+        "The following files have a double period, which is only allowed if they are compressed files as per SPARC Data Standards. Do you confirm that these are all compressed files?",
       html:
-        "<div style='max-height:300px; overflow-y:auto'>" + hiddenFiles.join("</br>") + "</div>",
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        doubleExtension.join("</br></br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: false,
+      showCancelButton: true,
+      confirmButtonText: "Yes, import them",
+      // denyButtonText: "Import",
+      cancelButtonText: "No, skip them",
+      didOpen: () => {
+        $(".swal-popover").popover();
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        swalContainer.style.width = "600px";
+        swal_content.style.textAlign = "justify";
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //remove slashes and place just file name in new array
+        for (let i = 0; i < doubleExtension.length; i++) {
+          if (
+            doubleExtension[i] in myPath["files"] ||
+            path.parse(doubleExtension[i]).base in Object.keys(importedFiles)
+          ) {
+            nonAllowedDuplicateFiles.push(doubleExtension[i]);
+            continue;
+          } else {
+            //not in there or regular files so store?
+            importedFiles[path.parse(doubleExtension[i]).base] = {
+              path: doubleExtension[i],
+              basename: path.parse(doubleExtension[i]).base,
+            };
+          }
+        }
+      }
+    });
+  }
+
+  if (tripleExtension.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
+    await Swal.fire({
+      title:
+        "Files should typically have one (two when they are compressed) periods in their names according to the SPARC Data Standards. The following files have three of more periods in their name and will not be imported.",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        tripleExtension.join("</br></br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: false,
+      showCancelButton: false,
+      confirmButtonText: "OK",
+      didOpen: () => {
+        $(".swal-popover").popover();
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        swalContainer.style.width = "600px";
+        swal_content.style.textAlign = "justify";
+      },
+    });
+  }
+
+  if (nonAllowedCharacterFiles.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
+    await Swal.fire({
+      title:
+        "The following files have characters (#&%+) that are typically not recommendeda as per the SPARC Data Standards. Although not forbidden to import as is, we recommend replacing those characters.",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        nonAllowedCharacterFiles.join("</br></br>") +
+        "</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showDenyButton: true,
       showCancelButton: true,
-      confirmButtonText: "Remove characters",
-      denyButtonText: "Continue as is",
-      cancelButtonText: "Cancel",
+      confirmButtonText: "Replace characters with '-'",
+      denyButtonText: "Import as is",
+      cancelButtonText: "Skip All",
       didOpen: () => {
         $(".swal-popover").popover();
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        let swalDenyButton = document.getElementsByClassName("swal2-deny")[0];
+        swalContainer.style.width = "600px";
+        swal_content.style.textAlign = "justify";
+        swalDenyButton.style.backgroundColor = "#086dd3";
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //replace characters
+        for (let i = 0; i < nonAllowedCharacterFiles.length; i++) {
+          let fileName = path.parse(nonAllowedCharacterFiles[i]).base;
+          // console.log(fileName);
+          let regex = /[\+&\%#]/g;
+          let replaceFile = fileName.replace(regex, "-");
+          console.log(replaceFile);
+          importedFiles[replaceFile] = {
+            path: nonAllowedCharacterFiles[i],
+            basename: replaceFile,
+          };
+        }
+      }
+      if (result.isDenied) {
+        for (let i = 0; i < nonAllowedCharacterFiles.length; i++) {
+          let fileName = nonAllowedCharacterFiles[i];
+          console.log(fileName);
+          importedFiles[fileName] = {
+            path: fileName,
+            basename: path.parse(fileName).base,
+          };
+        }
+      }
+    });
+  }
+
+  if (hiddenFiles.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
+    await Swal.fire({
+      title:
+        "The following files have an unexpected name starting with a period and are considered hidden files. As per SPARC Data Standards they are typically not recommended to be imported as hidden. How should we handle them?",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        hiddenFiles.join("</br></br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Remove period",
+      denyButtonText: "Import as is",
+      cancelButtonText: "Skip All",
+      didOpen: () => {
+        $(".swal-popover").popover();
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        swalContainer.style.width = "600px";
+        swal_content.style.textAlign = "justify";
       },
     }).then(async (result) => {
       if (result.isConfirmed) {
@@ -5440,22 +5613,35 @@ const dropHelper = async (
   }
 
   if (nonAllowedFiles.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
     await Swal.fire({
-      title: "The following files are banned as per SPARC guidelines and will not be imported",
+      title:
+        "The following files are not allowed in datasets as per the SPARC Data Standards and will thus not be imported",
       html:
         "<div style='max-height:300px; overflow-y:auto'>" +
-        nonAllowedFiles.join("</br>") +
+        nonAllowedFiles.join("</br></br>") +
         "</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showConfirmButton: true,
-      confirmButtonText: "Okay",
+      confirmButtonText: "OK",
+      didOpen: () => {
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        swalContainer.style.width = "600px";
+      },
     });
   }
 
   var listElements = showItemsAsListBootbox(duplicateFolders);
   var list = JSON.stringify(folderPath).replace(/"/g, "");
   if (duplicateFolders.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
     await Swal.fire({
       title: "Duplicate folder(s) detected",
       icon: "warning",
@@ -5640,14 +5826,11 @@ function detectIrregularFolders(folderName, pathEle) {
   }
 }
 
-function checkIrregularNameBoolean(folderName) {
-  for (var char of nonAllowedCharacters) {
-    if (folderName.includes(char)) {
-      return true;
-    }
-  }
-  return false;
-}
+const checkIrregularNameBoolean = (folderName) => {
+  //nonAllowedCharacters modified to only allow a-z A-z 0-9 and hyphen "-"
+  const nonAllowedFolderCharacters = /[^a-zA-Z0-9-]/;
+  return nonAllowedFolderCharacters.test(folderName);
+};
 
 /* The following functions aim at ignore folders with irregular characters, or replace the characters with (-),
    or remove the characters from the names.
@@ -5655,25 +5838,19 @@ function checkIrregularNameBoolean(folderName) {
                                      "paths": array of all the paths with special characters detected}
 */
 
-function replaceIrregularFolders(pathElement) {
-  var str = path.basename(pathElement);
-  for (var char of nonAllowedCharacters) {
-    if (str.includes(char)) {
-      str = str.replace(char, "-");
-    }
-  }
-  return str;
-}
+const replaceIrregularFolders = (pathElement) => {
+  const reg = /[^a-zA-Z0-9-]/g;
+  const str = path.basename(pathElement);
+  const newFolderName = str.replace(reg, "-");
+  return newFolderName;
+};
 
-function removeIrregularFolders(pathElement) {
-  var str = path.basename(pathElement);
-  for (var char of nonAllowedCharacters) {
-    if (str.includes(char)) {
-      str = str.replace(char, "");
-    }
-  }
-  return str;
-}
+const removeIrregularFolders = (pathElement) => {
+  const reg = /[^a-zA-Z0-9-]/g;
+  const str = path.basename(pathElement);
+  const newFolderName = str.replace(reg, "");
+  return newFolderName;
+};
 
 // SAVE FILE ORG
 ipcRenderer.on("save-file-organization-dialog", (event) => {
@@ -5685,6 +5862,165 @@ ipcRenderer.on("save-file-organization-dialog", (event) => {
     event.sender.send("selected-saveorganizationfile", filename);
   });
 });
+
+// displays the user selected banner image using Jimp in the edit banner image modal
+//path: array
+//curationMode: string (guided-moded) (freeform)
+const handleSelectedBannerImage = async (path, curationMode) => {
+  let imgContainer = "";
+  let imgHolder = "";
+  let paraImagePath = "";
+  let viewImportedImage = "";
+  let saveBannerImage = "";
+  let cropperOptions = "";
+  console.log(curationMode);
+  if (curationMode === "guided-mode") {
+    imgHolder = document.getElementById("guided-div-img-container-holder");
+    imgContainer = document.getElementById("guided-div-img-container");
+    viewImportedImage = guidedBfViewImportedImage;
+    paraImagePath = "#guided-para-path-image";
+    saveBannerImage = "#guided-save-banner-image";
+    cropperOptions = guidedCropOptions;
+  }
+  if (curationMode === "freeform") {
+    cropperOptions = cropOptions;
+    paraImagePath = "#para-path-image";
+    saveBannerImage = "#save-banner-image";
+    viewImportedImage = bfViewImportedImage;
+    imgHolder = document.getElementById("div-img-container-holder");
+    imgContainer = document.getElementById("div-img-container");
+  }
+
+  if (path.length > 0) {
+    let original_image_path = path[0];
+    let image_path = original_image_path;
+    let destination_image_path = require("path").join(
+      homeDirectory,
+      "SODA",
+      "banner-image-conversion"
+    );
+    let converted_image_file = require("path").join(destination_image_path, "converted-tiff.jpg");
+    let conversion_success = true;
+    imageExtension = path[0].split(".").pop();
+
+    if (imageExtension.toLowerCase() == "tiff") {
+      Swal.fire({
+        title: "Image conversion in progress!",
+        html: "Pennsieve does not support .tiff banner images. Please wait while SODA converts your image to the appropriate format required.",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showClass: {
+          popup: "animate__animated animate__fadeInDown animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp animate__faster",
+        },
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      await Jimp.read(original_image_path)
+        .then(async (file) => {
+          if (!fs.existsSync(destination_image_path)) {
+            fs.mkdirSync(destination_image_path, { recursive: true });
+          }
+
+          try {
+            if (fs.existsSync(converted_image_file)) {
+              fs.unlinkSync(converted_image_file);
+            }
+          } catch (err) {
+            conversion_success = false;
+            console.error(err);
+          }
+
+          return file.write(converted_image_file, async () => {
+            if (fs.existsSync(converted_image_file)) {
+              let stats = fs.statSync(converted_image_file);
+              let fileSizeInBytes = stats.size;
+              let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
+
+              if (fileSizeInMegabytes > 5) {
+                fs.unlinkSync(converted_image_file);
+
+                await Jimp.read(original_image_path)
+                  .then((file) => {
+                    return file.resize(1024, 1024).write(converted_image_file, () => {
+                      imgHolder.style.display = "none";
+                      imgContainer.style.display = "block";
+
+                      $(paraImagePath).html(image_path);
+                      viewImportedImage.src = converted_image_file;
+                      myCropper.destroy();
+                      myCropper = new Cropper(viewImportedImage, cropperOptions);
+                      $(saveBannerImage).css("visibility", "visible");
+                      $("body").removeClass("waiting");
+                    });
+                  })
+                  .catch((err) => {
+                    conversion_success = false;
+                    console.error(err);
+                  });
+                if (fs.existsSync(converted_image_file)) {
+                  let stats = fs.statSync(converted_image_file);
+                  let fileSizeInBytes = stats.size;
+                  let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
+
+                  if (fileSizeInMegabytes > 5) {
+                    conversion_success = false;
+                    // SHOW ERROR
+                  }
+                }
+              }
+              image_path = converted_image_file;
+              imageExtension = "jpg";
+              $(paraImagePath).html(image_path);
+              viewImportedImage.src = image_path;
+              myCropper.destroy();
+              myCropper = new Cropper(viewImportedImage, cropperOptions);
+              $(paraImagePath).css("visibility", "visible");
+            }
+          });
+        })
+        .catch((err) => {
+          conversion_success = false;
+          console.error(err);
+          Swal.fire({
+            icon: "error",
+            text: "Something went wrong",
+            confirmButtonText: "OK",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+        });
+      if (conversion_success == false) {
+        $("body").removeClass("waiting");
+        return;
+      } else {
+        Swal.close();
+      }
+    } else {
+      imgHolder.style.display = "none";
+      imgContainer.style.display = "block";
+
+      $(paraImagePath).html(image_path);
+      viewImportedImage.src = image_path;
+      myCropper.destroy();
+      myCropper = new Cropper(viewImportedImage, cropperOptions);
+
+      $(saveBannerImage).css("visibility", "visible");
+    }
+  } else {
+    if (curationMode == "freeform") {
+      if ($("#para-current-banner-img").text() === "None") {
+        $(saveBannerImage).css("visibility", "hidden");
+      } else {
+        $(saveBannerImage).css("visibility", "visible");
+      }
+    }
+  }
+};
 
 //////////////////////////////////////////////////////////////////////////////
 /////////////////// CONTEXT MENU OPTIONS FOR FOLDERS AND FILES ///////////////
@@ -6024,7 +6360,7 @@ $(document).bind("click", (event) => {
 });
 
 // sort JSON objects by keys alphabetically (folder by folder, file by file)
-function sortObjByKeys(object) {
+const sortObjByKeys = (object) => {
   console.log(object);
   const orderedFolders = {};
   const orderedFiles = {};
@@ -6049,12 +6385,19 @@ function sortObjByKeys(object) {
     type: "",
   };
   return orderedObject;
-}
+};
 
 const listItems = async (jsonObj, uiItem, amount_req, reset) => {
   //allow amount to choose how many elements to create
   //break elements into sets of 100
   const rootFolders = ["primary", "source", "derivative"];
+  const datasetPath = document.getElementById("guided-input-global-path");
+  const pathDisplay = document.getElementById("datasetPathDisplay");
+  const fileExplorerBackButton = document.getElementById("guided-button-back");
+  let hideSampleFolders = false;
+  let hideSubjectFolders = false;
+  let splitPath = datasetPath.value.split("/");
+  let fullPath = datasetPath.value;
   if (organizeDSglobalPath.id === "guided-input-global-path") {
     const splitPathCheck = (num, button) => {
       //based on the paths length we will determine if the back button should be disabled/hidden or not
@@ -6075,11 +6418,17 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     let primarySampleCapsule = document.getElementById(
       "guided-primary-samples-organization-page-capsule"
     );
+    let primaryPoolCapsule = document.getElementById(
+      "guided-primary-pools-organization-page-capsule"
+    );
     let primarySubjectCapsule = document.getElementById(
       "guided-primary-subjects-organization-page-capsule"
     );
     let sourceSampleCapsule = document.getElementById(
       "guided-source-samples-organization-page-capsule"
+    );
+    let sourcePoolCapsule = document.getElementById(
+      "guided-source-pools-organization-page-capsule"
     );
     let sourceSubjectCapsule = document.getElementById(
       "guided-source-subjects-organization-page-capsule"
@@ -6087,15 +6436,12 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     let derivativeSampleCapsule = document.getElementById(
       "guided-derivative-samples-organization-page-capsule"
     );
+    let derivativePoolCapsule = document.getElementById(
+      "guided-derivative-pools-organization-page-capsule"
+    );
     let derivativeSubjectCapsule = document.getElementById(
       "guided-derivative-subjects-organization-page-capsule"
     );
-
-    let datasetPath = document.getElementById("guided-input-global-path");
-    let pathDisplay = document.getElementById("datasetPathDisplay");
-    let fileExplorerBackButton = document.getElementById("guided-button-back");
-    let splitPath = datasetPath.value.split("/");
-    let fullPath = datasetPath.value;
 
     //remove my_dataset_folder and if any of the ROOT FOLDER names is included
     if (splitPath[0] === "My_dataset_folder") splitPath.shift();
@@ -6107,369 +6453,486 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     let trimmedPath = "";
     if (currentPageID.includes("primary")) {
       if (primarySampleCapsule.classList.contains("active")) {
-        splitPathCheck(2, fileExplorerBackButton);
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(3, fileExplorerBackButton);
+        } else {
+          splitPathCheck(2, fileExplorerBackButton);
+        }
       }
       if (primarySubjectCapsule.classList.contains("active")) {
-        splitPathCheck(1, fileExplorerBackButton);
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(2, fileExplorerBackButton);
+        } else {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        hideSampleFolders = true;
+      }
+      if (primaryPoolCapsule.classList.contains("active")) {
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        hideSubjectFolders = true;
       }
     }
     if (currentPageID.includes("source")) {
       if (sourceSubjectCapsule.classList.contains("active")) {
-        splitPathCheck(1, fileExplorerBackButton);
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(2, fileExplorerBackButton);
+        } else {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        hideSampleFolders = true;
       }
       if (sourceSampleCapsule.classList.contains("active")) {
-        splitPathCheck(2, fileExplorerBackButton);
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(3, fileExplorerBackButton);
+        } else {
+          splitPathCheck(2, fileExplorerBackButton);
+        }
+      }
+      if (sourcePoolCapsule.classList.contains("active")) {
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        hideSubjectFolders = true;
       }
     }
     if (currentPageID.includes("derivative")) {
       //check the active capsule
       if (derivativeSampleCapsule.classList.contains("active")) {
-        splitPathCheck(2, fileExplorerBackButton);
+        if (derivativeSubjectCapsule.classList.contains("active")) {
+          if (splitPath[0].includes("pool-")) {
+            splitPathCheck(2, fileExplorerBackButton);
+          } else {
+            splitPathCheck(1, fileExplorerBackButton);
+          }
+          hideSampleFolders = true;
+        }
       }
       if (derivativeSubjectCapsule.classList.contains("active")) {
+        if (derivativePoolCapsule.classList.contains("active")) {
+          if (splitPath[0].includes("pool-")) {
+            splitPathCheck(1, fileExplorerBackButton);
+          }
+          hideSubjectFolders = true;
+        }
+      }
+      if (
+        currentPageID.includes("code") ||
+        currentPageID.includes("protocol") ||
+        currentPageID.includes("docs") ||
+        currentPageID.includes("helpers")
+      ) {
+        //for code/protocols/docs we only initially display one folder lvl
         splitPathCheck(1, fileExplorerBackButton);
       }
-    }
-    if (
-      currentPageID.includes("code") ||
-      currentPageID.includes("protocol") ||
-      currentPageID.includes("docs") ||
-      currentPageID.includes("helpers")
-    ) {
-      //for code/protocols/docs we only initially display one folder lvl
-      splitPathCheck(1, fileExplorerBackButton);
-    }
 
-    for (let i = 0; i < splitPath.length; i++) {
-      if (splitPath[i] === "My_dataset_folder" || splitPath[i] === undefined) continue;
-      trimmedPath += splitPath[i] + "/";
-    }
-
-    pathDisplay.innerText = trimmedPath;
-    pathDisplay._tippy.setContent(fullPath);
-
-    //get the path of the dataset when rendering
-    //with the path you can determine whether or not to disable the back button
-  }
-
-  var appendString = "";
-  var sortedObj = sortObjByKeys(jsonObj);
-  let file_elements = [],
-    folder_elements = [];
-  let count = 0;
-  if (Object.keys(sortedObj["folders"]).length > 0) {
-    for (var item in sortedObj["folders"]) {
-      count += 1;
-      var emptyFolder = "";
-      if (!highLevelFolders.includes(item)) {
-        if (
-          JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
-          JSON.stringify(sortedObj["folders"][item]["files"]) === "{}"
-        ) {
-          emptyFolder = " empty";
-        }
+      for (let i = 0; i < splitPath.length; i++) {
+        if (splitPath[i] === "My_dataset_folder" || splitPath[i] === undefined) continue;
+        trimmedPath += splitPath[i] + "/";
       }
 
-      cloud_item = "";
-      deleted_folder = false;
+      pathDisplay.innerText = trimmedPath;
+      pathDisplay._tippy.setContent(fullPath);
 
-      if ("action" in sortedObj["folders"][item]) {
-        if (
-          sortedObj["folders"][item]["action"].includes("deleted") ||
-          sortedObj["folders"][item]["action"].includes("recursive_deleted")
-        ) {
-          emptyFolder += " deleted_folder";
-          deleted_folder = true;
-          if (sortedObj["folders"][item]["action"].includes("recursive_deleted")) {
-            emptyFolder += " recursive_deleted_file";
+      //get the path of the dataset when rendering
+      //with the path you can determine whether or not to disable the back button
+    }
+
+    var appendString = "";
+    var sortedObj = sortObjByKeys(jsonObj);
+    let file_elements = [],
+      folder_elements = [];
+    let count = 0;
+    if (Object.keys(sortedObj["folders"]).length > 0) {
+      for (var item in sortedObj["folders"]) {
+        //hide samples when on the subjects page
+        if (hideSampleFolders) {
+          let currentSampleFolder = splitPath[0];
+          let allSamples = sodaJSONObj.getAllSamplesFromSubjects();
+          let noPoolSamples = [];
+          let poolSamples = [];
+          let skipSubjectFolder = false;
+          if (allSamples.length > 1) {
+            //subjects within pools and others not
+            poolSamples = allSamples[0];
+            noPoolSamples = allSamples[1];
+            for (let i = 0; i < poolSamples.length; i++) {
+              if (item === poolSamples[i]["sampleName"]) {
+                skipSubjectFolder = true;
+                break;
+              }
+            }
+            if (skipSubjectFolder) continue;
+            for (let i = 0; i < noPoolSamples.length; i++) {
+              if (item === noPoolSamples[i]["sampleName"]) {
+                skipSubjectFolder = true;
+                break;
+              }
+            }
+            if (skipSubjectFolder) continue;
+          }
+          if (allSamples.length === 1) {
+            poolSamples = allSamples[1];
+            for (let i = 0; i < poolSamples.length; i++) {
+              if (item === poolSamples[i]["sampleName"]) {
+                skipSubjectFolder = true;
+                break;
+              }
+            }
+            if (skipSubjectFolder) continue;
           }
         }
-      }
-
-      if (sortedObj["folders"][item]["type"] == "bf") {
-        cloud_item = " pennsieve_folder";
-        if (deleted_folder) {
-          cloud_item = " pennsieve_folder_deleted";
+        if (hideSubjectFolders) {
+          //hide subject folders when displaying pool page
+          const currentPoolName = splitPath[0];
+          let currentSubjects = sodaJSONObj.getAllSubjects();
+          let poolSubjects = [];
+          let noPoolSubjects = [];
+          let skipSubjectFolder = false;
+          if (currentSubjects.length === 1) {
+            poolSubjects = currentSubjects[0];
+            for (let i = 0; i < poolSubjects.length; i++) {
+              if (item === poolSubjects[i]["subjectName"]) {
+                skipSubjectFolder = true;
+                break;
+              }
+            }
+            if (skipSubjectFolder) continue;
+          }
+          if (currentSubjects.length > 1) {
+            //some subjects in pools and some not
+            poolSubjects = currentSubjects[0];
+            noPoolSubjects = currentSubjects[1];
+            for (let i = 0; i < noPoolSubjects.length; i++) {
+              if (item === noPoolSubjects[i]["subjectName"]) {
+                skipSubjectFolder = true;
+                break;
+              }
+            }
+            if (skipSubjectFolder) continue;
+            for (let i = 0; i < poolSubjects.length; i++) {
+              if (item === poolSubjects[i]["subjectName"]) {
+                skipSubjectFolder = true;
+                break;
+              }
+            }
+          }
+          if (skipSubjectFolder) continue;
         }
-      }
-
-      if (
-        sortedObj["folders"][item]["type"] == "local" &&
-        sortedObj["folders"][item]["action"].includes("existing")
-      ) {
-        cloud_item = " local_folder";
-        if (deleted_folder) {
-          cloud_item = " local_folder_deleted";
+        count += 1;
+        var emptyFolder = "";
+        if (!highLevelFolders.includes(item)) {
+          if (
+            JSON.stringify(sortedObj["folders"][item]["folders"]) === "{}" &&
+            JSON.stringify(sortedObj["folders"][item]["files"]) === "{}"
+          ) {
+            emptyFolder = " empty";
+          }
         }
-      }
 
-      if (sortedObj["folders"][item]["action"].includes("updated")) {
-        cloud_item = " update-file";
-        let elem_creation =
-          '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
-          emptyFolder +
-          '"></h1><div class="folder_desc' +
-          cloud_item +
-          '">' +
-          item +
-          "</div></div>";
+        cloud_item = "";
+        deleted_folder = false;
 
-        // folder_elements.push(elem_creation);
-        appendString = appendString + elem_creation;
-        if (count === 100) {
-          folder_elements.push(appendString);
-          count = 0;
-          appendString = "";
-          continue;
+        if ("action" in sortedObj["folders"][item]) {
+          if (
+            sortedObj["folders"][item]["action"].includes("deleted") ||
+            sortedObj["folders"][item]["action"].includes("recursive_deleted")
+          ) {
+            emptyFolder += " deleted_folder";
+            deleted_folder = true;
+            if (sortedObj["folders"][item]["action"].includes("recursive_deleted")) {
+              emptyFolder += " recursive_deleted_file";
+            }
+          }
         }
-      } else {
-        let element_creation =
-          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
-          emptyFolder +
-          '"></h1><div class="folder_desc' +
-          cloud_item +
-          '">' +
-          item +
-          "</div></div>";
 
-        // folder_elements.push(element_creation);
-        appendString = appendString + element_creation;
-        if (count === 100) {
-          folder_elements.push(appendString);
-          count = 0;
-          appendString = "";
-          continue;
+        if (sortedObj["folders"][item]["type"] == "bf") {
+          cloud_item = " pennsieve_folder";
+          if (deleted_folder) {
+            cloud_item = " pennsieve_folder_deleted";
+          }
         }
-      }
-    }
-    if (count < 100) {
-      if (!folder_elements.includes(appendString) && appendString != "") {
-        folder_elements.push(appendString);
-        count = 0;
-      }
-    }
-  }
-  //reset count and string for file elements
-  count = 0;
-  appendString = "";
-  if (Object.keys(sortedObj["files"]).length > 0) {
-    for (var item in sortedObj["files"]) {
-      count += 1;
-      // not the auto-generated manifest
-      if (sortedObj["files"][item].length !== 1) {
-        if ("path" in sortedObj["files"][item]) {
-          var extension = path.extname(sortedObj["files"][item]["path"]).slice(1);
+
+        if (
+          sortedObj["folders"][item]["type"] == "local" &&
+          sortedObj["folders"][item]["action"].includes("existing")
+        ) {
+          cloud_item = " local_folder";
+          if (deleted_folder) {
+            cloud_item = " local_folder_deleted";
+          }
+        }
+
+        if (sortedObj["folders"][item]["action"].includes("updated")) {
+          cloud_item = " update-file";
+          let elem_creation =
+            '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+            emptyFolder +
+            '"></h1><div class="folder_desc' +
+            cloud_item +
+            '">' +
+            item +
+            "</div></div>";
+
+          // folder_elements.push(elem_creation);
+          appendString = appendString + elem_creation;
+          if (count === 100) {
+            folder_elements.push(appendString);
+            count = 0;
+            appendString = "";
+            continue;
+          }
         } else {
-          var extension = "other";
-        }
-        if (sortedObj["files"][item]["type"] == "bf") {
-          if (sortedObj["files"][item]["action"].includes("deleted")) {
-            original_file_name = item.substring(0, item.lastIndexOf("-"));
-            extension = original_file_name.split(".").pop();
-          } else {
-            extension = item.split(".").pop();
+          let element_creation =
+            '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 oncontextmenu="folderContextMenu(this)" class="myFol' +
+            emptyFolder +
+            '"></h1><div class="folder_desc' +
+            cloud_item +
+            '">' +
+            item +
+            "</div></div>";
+
+          appendString = appendString + element_creation;
+
+          // every one hundred elements created we put into one element within the array
+          if (count === 100) {
+            folder_elements.push(appendString);
+            count = 0;
+            appendString = "";
+            continue;
           }
         }
-        if (
-          ![
-            "docx",
-            "doc",
-            "pdf",
-            "txt",
-            "jpg",
-            "JPG",
-            "jpeg",
-            "JPEG",
-            "xlsx",
-            "xls",
-            "csv",
-            "png",
-            "PNG",
-          ].includes(extension)
-        ) {
+      }
+      if (count < 100) {
+        //if items to be rendered is less than 100 we push whatever we have to the array element
+        if (!folder_elements.includes(appendString) && appendString != "") {
+          folder_elements.push(appendString);
+          count = 0;
+        }
+      }
+    }
+    //reset count and string for file elements
+    count = 0;
+    appendString = "";
+    if (Object.keys(sortedObj["files"]).length > 0) {
+      for (var item in sortedObj["files"]) {
+        count += 1;
+        // not the auto-generated manifest
+        if (sortedObj["files"][item].length !== 1) {
+          if ("path" in sortedObj["files"][item]) {
+            var extension = path.extname(sortedObj["files"][item]["path"]).slice(1);
+          } else {
+            var extension = "other";
+          }
+          if (sortedObj["files"][item]["type"] == "bf") {
+            if (sortedObj["files"][item]["action"].includes("deleted")) {
+              original_file_name = item.substring(0, item.lastIndexOf("-"));
+              extension = original_file_name.split(".").pop();
+            } else {
+              extension = item.split(".").pop();
+            }
+          }
+          if (
+            ![
+              "docx",
+              "doc",
+              "pdf",
+              "txt",
+              "jpg",
+              "JPG",
+              "jpeg",
+              "JPEG",
+              "xlsx",
+              "xls",
+              "csv",
+              "png",
+              "PNG",
+            ].includes(extension)
+          ) {
+            extension = "other";
+          }
+        } else {
           extension = "other";
         }
-      } else {
-        extension = "other";
-      }
 
-      cloud_item = "";
-      deleted_file = false;
+        cloud_item = "";
+        deleted_file = false;
 
-      if ("action" in sortedObj["files"][item]) {
+        if ("action" in sortedObj["files"][item]) {
+          if (
+            sortedObj["files"][item]["action"].includes("deleted") ||
+            sortedObj["files"][item]["action"].includes("recursive_deleted")
+          ) {
+            extension += " deleted_file";
+            deleted_file = true;
+            if (sortedObj["files"][item]["action"].includes("recursive_deleted")) {
+              extension += " recursive_deleted_file";
+            }
+          }
+        }
+
+        if (sortedObj["files"][item]["type"] == "bf") {
+          cloud_item = " pennsieve_file";
+          if (deleted_file) {
+            cloud_item = " pennsieve_file_deleted";
+          }
+          let element_creation =
+            '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+            extension +
+            '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+            cloud_item +
+            '">' +
+            item +
+            "</div></div>";
+        }
+
         if (
-          sortedObj["files"][item]["action"].includes("deleted") ||
-          sortedObj["files"][item]["action"].includes("recursive_deleted")
+          sortedObj["files"][item]["type"] == "local" &&
+          sortedObj["files"][item]["action"].includes("existing")
         ) {
-          extension += " deleted_file";
-          deleted_file = true;
-          if (sortedObj["files"][item]["action"].includes("recursive_deleted")) {
-            extension += " recursive_deleted_file";
+          cloud_item = " local_file";
+          if (deleted_file) {
+            cloud_item = " local_file_deleted";
+          }
+        }
+        if (
+          sortedObj["files"][item]["type"] == "local" &&
+          sortedObj["files"][item]["action"].includes("updated")
+        ) {
+          cloud_item = " update-file";
+          if (deleted_file) {
+            cloud_item = "pennsieve_file_deleted";
+          }
+          let elem_creation =
+            '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+            extension +
+            '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+            cloud_item +
+            '">' +
+            item +
+            "</div></div>";
+
+          appendString = appendString + elem_creation;
+          if (count === 100) {
+            file_elements.push(appendString);
+            count = 0;
+            appendString = "";
+            continue;
+          }
+        } else {
+          let element_creation =
+            '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
+            extension +
+            '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
+            cloud_item +
+            '">' +
+            item +
+            "</div></div>";
+
+          appendString = appendString + element_creation;
+          if (count === 100) {
+            file_elements.push(appendString);
+            count = 0;
+            appendString = "";
+            continue;
           }
         }
       }
-
-      if (sortedObj["files"][item]["type"] == "bf") {
-        cloud_item = " pennsieve_file";
-        if (deleted_file) {
-          cloud_item = " pennsieve_file_deleted";
-        }
-        let element_creation =
-          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
-          extension +
-          '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
-          cloud_item +
-          '">' +
-          item +
-          "</div></div>";
-      }
-
-      if (
-        sortedObj["files"][item]["type"] == "local" &&
-        sortedObj["files"][item]["action"].includes("existing")
-      ) {
-        cloud_item = " local_file";
-        if (deleted_file) {
-          cloud_item = " local_file_deleted";
-        }
-      }
-      if (
-        sortedObj["files"][item]["type"] == "local" &&
-        sortedObj["files"][item]["action"].includes("updated")
-      ) {
-        cloud_item = " update-file";
-        if (deleted_file) {
-          cloud_item = "pennsieve_file_deleted";
-        }
-        let elem_creation =
-          '<div class="single-item updated-file" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
-          extension +
-          '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
-          cloud_item +
-          '">' +
-          item +
-          "</div></div>";
-
-        appendString = appendString + elem_creation;
-        if (count === 100) {
+      if (count < 100) {
+        if (!file_elements.includes(appendString) && appendString != "") {
           file_elements.push(appendString);
           count = 0;
-          appendString = "";
-          continue;
         }
-      } else {
-        let element_creation =
-          '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="myFile ' +
-          extension +
-          '" oncontextmenu="fileContextMenu(this)"  style="margin-bottom: 10px""></h1><div class="folder_desc' +
-          cloud_item +
-          '">' +
-          item +
-          "</div></div>";
-
-        appendString = appendString + element_creation;
-        if (count === 100) {
-          file_elements.push(appendString);
-          count = 0;
-          appendString = "";
-          continue;
-        }
+        // continue;
       }
     }
-    if (count < 100) {
-      if (!file_elements.includes(appendString) && appendString != "") {
-        file_elements.push(appendString);
-        count = 0;
-      }
-      // continue;
+    if (folder_elements[0] === "") {
+      folder_elements.splice(0, 1);
     }
-  }
-  if (folder_elements[0] === "") {
-    folder_elements.splice(0, 1);
-  }
-  if (file_elements[0] === "") {
-    file_elements.splice(0, 1);
-  }
-  let items = [folder_elements, file_elements];
+    if (file_elements[0] === "") {
+      file_elements.splice(0, 1);
+    }
+    let items = [folder_elements, file_elements];
 
-  if (amount_req != undefined) {
-    //add items using a different function
-    //want the initial files to be imported
-    let itemDisplay = new Promise(async (resolved) => {
-      if (reset != undefined) {
-        await add_items_to_view(items, amount_req, reset);
-        resolved();
-      } else {
-        await add_items_to_view(items, amount_req);
-        resolved();
-      }
-    });
-  } else {
-    //load everything in place
-    let itemDisplay = new Promise(async (resolved) => {
-      // $(uiItem).empty();
-      await add_items_to_view(items, 500);
-      resolved();
-    });
-  }
-
-  dragselect_area.stop();
-
-  dragselect_area = new DragSelect({
-    selectables: document.querySelectorAll(".single-item"),
-    draggability: false,
-    area: document.getElementById("items"),
-  });
-
-  dragselect_area.subscribe("callback", ({ items, event, isDragging }) => {
-    select_items(items, event, isDragging);
-  });
-
-  dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
-    select_items_ctrl(items, event, isDragging);
-  });
-  drag_event_fired = false;
-
-  //check if folder_elements is an empty object and file_elements is an empty array
-  if (folder_elements.length == 0 && file_elements.length == 0) {
-    //Fired when no folders are to be appended to the folder structure element.
-    //Gets the name of the current folder from organizeDSglobalPath and instructs the user
-    //on what to do in the empty folder.
-    let currentFolder = "";
-    let folderType;
-
-    if (organizeDSglobalPath.value == undefined) {
-      currentFolder = "My_dataset_folder";
+    if (amount_req != undefined) {
+      //add items using a different function
+      //want the initial files to be imported
+      let itemDisplay = new Promise(async (resolved) => {
+        if (reset != undefined) {
+          await add_items_to_view(items, amount_req, reset);
+          resolved();
+        } else {
+          await add_items_to_view(items, amount_req);
+          resolved();
+        }
+      });
     } else {
-      //Get the name of the folder the user is currently in.
-      currentFolder = organizeDSglobalPath.value.split("/").slice(-2)[0];
-      if (currentFolder.startsWith("sub-")) {
-        folderType = "subject";
-      }
-      if (currentFolder.startsWith("sam-")) {
-        folderType = "sample";
-      }
-      if (currentFolder.startsWith("pool-")) {
-        folderType = "pool";
-      }
+      //load everything in place
+      let itemDisplay = new Promise(async (resolved) => {
+        // $(uiItem).empty();
+        await add_items_to_view(items, 500);
+        resolved();
+      });
     }
 
-    let dragDropInstructionsText;
-    if (folderType === undefined) {
-      dragDropInstructionsText = `Drag and Drop folders and files to be included in the <b>${currentFolder}</b> folder.`;
-    }
-    if (folderType == "subject") {
-      dragDropInstructionsText = `Drag and drop folders and files associated with the subject ${currentFolder}`;
-    }
-    if (folderType === "sample") {
-      dragDropInstructionsText = `Drag and drop folders and files associated with the sample ${currentFolder}`;
-    }
-    if (folderType === "pool") {
-      dragDropInstructionsText = `Drag and drop folders and files associated with the pool ${currentFolder}`;
-    }
+    dragselect_area.stop();
 
-    $("#items").html(
-      `<div class="drag-drop-container-instructions">
+    dragselect_area = new DragSelect({
+      selectables: document.querySelectorAll(".single-item"),
+      draggability: false,
+      area: document.getElementById("items"),
+    });
+
+    dragselect_area.subscribe("callback", ({ items, event, isDragging }) => {
+      select_items(items, event, isDragging);
+    });
+
+    dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
+      select_items_ctrl(items, event, isDragging);
+    });
+    drag_event_fired = false;
+
+    //check if folder_elements is an empty object and file_elements is an empty array
+    if (folder_elements.length == 0 && file_elements.length == 0) {
+      //Fired when no folders are to be appended to the folder structure element.
+      //Gets the name of the current folder from organizeDSglobalPath and instructs the user
+      //on what to do in the empty folder.
+      let currentFolder = "";
+      let folderType;
+
+      if (organizeDSglobalPath.value == undefined) {
+        currentFolder = "My_dataset_folder";
+      } else {
+        //Get the name of the folder the user is currently in.
+        currentFolder = organizeDSglobalPath.value.split("/").slice(-2)[0];
+        if (currentFolder.startsWith("sub-")) {
+          folderType = "subject";
+        }
+        if (currentFolder.startsWith("sam-")) {
+          folderType = "sample";
+        }
+        if (currentFolder.startsWith("pool-")) {
+          folderType = "pool";
+        }
+      }
+
+      let dragDropInstructionsText;
+      if (folderType === undefined) {
+        dragDropInstructionsText = `Drag and Drop folders and files to be included in the <b>${currentFolder}</b> folder.`;
+      }
+      if (folderType == "subject") {
+        dragDropInstructionsText = `Drag and drop folders and files associated with the subject ${currentFolder}`;
+      }
+      if (folderType === "sample") {
+        dragDropInstructionsText = `Drag and drop folders and files associated with the sample ${currentFolder}`;
+      }
+      if (folderType === "pool") {
+        dragDropInstructionsText = `Drag and drop folders and files associated with the pool ${currentFolder}`;
+      }
+
+      $("#items").html(
+        `<div class="drag-drop-container-instructions">
         <div id="dragDropLottieContainer" style="height: 100px; width: 100px;"></div>
         <p class="text-center large">
           ${dragDropInstructionsText}
@@ -6480,18 +6943,19 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
           } using the buttons in the upper right corner
         </p>
       </div>`
-    );
-    const dragDropLottieContainer = document.getElementById("dragDropLottieContainer");
+      );
+      const dragDropLottieContainer = document.getElementById("dragDropLottieContainer");
 
-    dragDropLottieContainer.innerHTML = ``;
+      dragDropLottieContainer.innerHTML = ``;
 
-    let dragDropAnimation = lottie.loadAnimation({
-      container: dragDropLottieContainer,
-      animationData: dragDrop,
-      renderer: "svg",
-      loop: true,
-      autoplay: true,
-    });
+      let dragDropAnimation = lottie.loadAnimation({
+        container: dragDropLottieContainer,
+        animationData: dragDrop,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+    }
   }
 };
 
@@ -9159,3 +9623,7 @@ tippy("#datasetPathDisplay", {
   theme: "soda",
   maxWidth: "100%",
 });
+
+const createSpreadSheetWindow = async (spreadsheet) => {
+  ipcRenderer.send("spreadsheet", spreadsheet);
+};

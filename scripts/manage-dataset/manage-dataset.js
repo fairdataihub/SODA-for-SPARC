@@ -1694,7 +1694,7 @@ const displayBannerImage = async (path) => {
 $("#button-import-banner-image").click(async () => {
   $("#para-dataset-banner-image-status").html("");
   let filePaths = await ipcRenderer.invoke("open-file-dialog-import-banner-image");
-  displayBannerImage(filePaths);
+  handleSelectedBannerImage(filePaths, "freeform");
 });
 
 const uploadBannerImage = async () => {

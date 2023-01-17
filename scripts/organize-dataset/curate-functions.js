@@ -2,7 +2,7 @@ const checkDiskSpace = require("check-disk-space").default;
 
 var metadataFile = "";
 var jstreePreview = document.getElementById("div-dataset-tree-preview");
-const nonAllowedCharacters = '<>:",;[]{}^`~@/|?*$=!%&+#\\';
+const nonAllowedCharacters = '<>_:",;[]{}^`~@/|?*$=!%&+#\\';
 
 // per change event of current dataset span text
 // const confirm_click_function = () => {
@@ -169,9 +169,21 @@ const metadataFileExtensionObject = {
   code_description: [".xlsx"],
   code_parameters: [".xlsx", ".csv", ".tsv", ".json"],
   data_deliverable: [".docx", ".doc"],
+  bannerImage: [".png", ".PNG", ".jpeg", ".JPEG", ".tiff"],
 };
 
-async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeliverables = false) {
+const dropHandler = async (
+  ev,
+  paraElement,
+  metadataFile,
+  curationMode,
+  dataDeliverables = false
+) => {
+  let gettingStartedSection = false;
+  if (curationMode === "guided-getting-started") {
+    curationMode = "guided";
+    gettingStartedSection = true;
+  }
   // Prevent default behavior (Prevent file from being opened)
   ev.preventDefault();
   document.getElementById(paraElement).innerHTML = "";
@@ -184,6 +196,12 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
       var file = ev.dataTransfer.items[0].getAsFile();
       var metadataWithoutExtension = file.name.slice(0, file.name.indexOf("."));
       var extension = file.name.slice(file.name.indexOf("."));
+
+      if (ev.dataTransfer.items[0].type.includes("image")) {
+        let path = [file.path];
+        handleSelectedBannerImage(path, "guided-mode");
+        $("#guided-banner-image-modal").modal("show");
+      }
 
       if (dataDeliverables === true) {
         let filepath = file.path;
@@ -273,7 +291,7 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
           });
         }
       } else {
-        //dataDelieravles is true for the name to be however it needs to be, just check extension is doc or docx
+        //data deliverables is true for the name to be however it needs to be, just check extension is doc or docx
         if (metadataWithoutExtension === metadataFile) {
           if (metadataFileExtensionObject[metadataFile].includes(extension)) {
             document.getElementById(paraElement).innerHTML = file.path;
@@ -321,7 +339,7 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
         "<span style='color:red'>Please only drag and drop a file!</span>";
     }
   }
-}
+};
 
 const checkAvailableSpace = () => {
   const roundToHundredth = (value) => {
@@ -1180,7 +1198,19 @@ $(document).ready(function () {
       data: {},
       expand_selected_onload: true,
     },
-    plugins: ["types", "changed"],
+    plugins: ["types", "changed", "sort"],
+    sort: function (a, b) {
+      a1 = this.get_node(a);
+      b1 = this.get_node(b);
+
+      if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
+        //if the word assets is included in the icon then we can assume it is a file
+        //folder icons are under font awesome meanwhile files come from the assets folder
+        return a1.text > b1.text ? 1 : -1;
+      } else {
+        return a1.icon < b1.icon ? 1 : -1;
+      }
+    },
     types: {
       folder: {
         icon: "fas fa-folder fa-fw",
@@ -1587,7 +1617,7 @@ function moveItemsHelper(item, destination, category) {
     ["Step 3", "Move", category === "files" ? "File" : "Folder"],
     determineDatasetLocation()
   );
-};
+}
 
 const updateManifestLabelColor = (el) => {
   document.getElementById("label-manifest").style.color = el.checked
@@ -1663,7 +1693,19 @@ $(document).ready(function () {
       check_callback: true,
       data: {},
     },
-    plugins: ["types"],
+    plugins: ["types", "sort"],
+    sort: function (a, b) {
+      a1 = this.get_node(a);
+      b1 = this.get_node(b);
+
+      if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
+        //if the word assets is included in the icon then we can assume it is a file
+        //folder icons are under font awesome meanwhile files come from the assets folder
+        return a1.text > b1.text ? 1 : -1;
+      } else {
+        return a1.icon < b1.icon ? 1 : -1;
+      }
+    },
     types: {
       folder: {
         icon: "fas fa-folder fa-fw",

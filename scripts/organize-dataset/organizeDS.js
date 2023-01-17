@@ -836,10 +836,10 @@ function showParentSwal(duplicateArray) {
   });
 }
 
-function handleDuplicateImports(btnId, duplicateArray, curationMode) {
+const handleDuplicateImports = (btnId, duplicateArray, curationMode) => {
   Swal.close();
   //creates the html for sweetalert
-  function createSwalDuplicateContent(btnId, list) {
+  const createSwalDuplicateContent = (btnId, list) => {
     if (btnId === "replace" || btnId === "skip") {
       type = "checkbox";
     } else if (btnId === "rename") {
@@ -885,7 +885,7 @@ function handleDuplicateImports(btnId, duplicateArray, curationMode) {
         fieldContainer.append(para);
         fieldContainer.appendChild(input);
         container.append(fieldContainer);
-        selectAll.append(container);
+        selectAll.appendChild(container);
       } else if (type === "text") {
         //design for input fields
         input.className = "input-field-design";
@@ -901,7 +901,7 @@ function handleDuplicateImports(btnId, duplicateArray, curationMode) {
     }
     return tempFile;
     //returns array of file names or folder names
-  }
+  };
 
   //toast alert created with Notyf
   var toastUpdate = new Notyf({
@@ -1551,7 +1551,32 @@ function handleDuplicateImports(btnId, duplicateArray, curationMode) {
     });
     //then handle the selected checkboxes
   }
-}
+};
+
+const checkForMultipleExtensions = (filename) => {
+  console.log("extension count: " + filename.match(/\./g).length);
+  return filename.match(/\./g).length;
+};
+
+const forbiddenFileCheck = (filename) => {
+  if (filename === ".DS_Store" || filename === "Thumbs.db") {
+    return "forbidden";
+  }
+  if (filename.substr(0, 1) === ".") {
+    return "hidden";
+  } else {
+    return "none";
+  }
+};
+
+const warningCharacterCheck = (filename) => {
+  let regex = /[\+&\%#]/i;
+  return regex.test(filename) === true;
+};
+
+const getPathSlashCount = () => {
+  return organizeDSglobalPath.value.trim().split("/").length - 1;
+};
 
 const addFilesfunction = async (
   fileArray,
@@ -1583,33 +1608,54 @@ const addFilesfunction = async (
   // check for duplicate or files with the same name
   var nonAllowedDuplicateFiles = [];
   var nonAllowedFiles = [];
-  var regularFiles = {};
+  var fileToImport = {};
   var hiddenFiles = [];
   var nonAllowedCharacterFiles = [];
-  const fileNameRegex = /[^-a-zA-z0-9]/g;
+  let doubleExtension = [];
+  let tripleExtension = [];
   let loadingIcon = document.getElementById("items_loading_container");
   let loadingContainer = document.getElementById("loading-items-background-overlay");
 
-  for (var i = 0; i < fileArray.length; i++) {
-    var fileName = fileArray[i];
+  // loop through the files that are trying to be imported
+  for (let i = 0; i < fileArray.length; i++) {
+    let filePath = fileArray[i];
+    let fileBase = path.parse(filePath).base;
+    let fileName = path.parse(filePath).name;
 
-    if (path.parse(fileName).name.substr(0, 1) === ".") {
-      if (path.parse(fileName).name === ".DS_Store") {
-        nonAllowedFiles.push(fileName);
-        continue;
-      } else {
-        hiddenFiles.push(fileName);
-        continue;
-      }
+    //Check for nonallowed characters
+    let warningCharacterBool = warningCharacterCheck(fileName);
+    if (warningCharacterBool === true) {
+      nonAllowedCharacterFiles.push(filePath);
+      continue;
     }
 
-    if (path.parse(fileName).base === "Thumbs.db") {
-      nonAllowedFiles.push(fileName);
+    //count amount of extensions
+    let extensionCount = checkForMultipleExtensions(fileName);
+    if (extensionCount == 2) {
+      //double extension ask if compressed file
+      doubleExtension.push(filePath);
+      continue;
+    }
+    if (extensionCount > 2) {
+      //multiple extensions, raise warning
+      tripleExtension.push(filePath);
+      continue;
+    }
+
+    //check for non allowed files
+    //.DS_Store and Thumbs.db files are strictly not allowed
+    let forbiddenCheck = forbiddenFileCheck(fileName);
+    if (forbiddenCheck === "forbidden") {
+      nonAllowedFiles.push(filePath);
+      continue;
+    }
+    if (forbiddenCheck === "hidden") {
+      hiddenFiles.push(filePath);
       continue;
     }
 
     // check if dataset structure level is at high level folder
-    var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+    var slashCount = getPathSlashCount();
     if (slashCount === 1) {
       if (loadingContainer != undefined) {
         loadingContainer.style.display = "none";
@@ -1637,30 +1683,30 @@ const addFilesfunction = async (
     } else {
       if (
         JSON.stringify(currentLocation["files"]) === "{}" &&
-        JSON.stringify(regularFiles) === "{}"
+        JSON.stringify(fileToImport) === "{}"
       ) {
         //regular files object key with path, and basename
-        regularFiles[path.parse(fileName).base] = {
-          path: fileName,
-          basename: path.parse(fileName).base,
+        fileToImport[fileBase] = {
+          path: filePath,
+          basename: fileBase,
         };
       } else {
         //check file name in key of regular files (search for duplicate)
-        if (path.parse(fileName).base in regularFiles) {
-          nonAllowedDuplicateFiles.push(fileName);
+        if (fileBase in fileToImport) {
+          nonAllowedDuplicateFiles.push(filePath);
           nonAllowedDuplicate = true;
           continue;
         } else {
           //search for duplicate in currentlocation[files]
-          if (path.parse(fileName).base in currentLocation["files"]) {
-            nonAllowedDuplicateFiles.push(fileName);
+          if (fileBase in currentLocation["files"]) {
+            nonAllowedDuplicateFiles.push(filePath);
             nonAllowedDuplicate = true;
             continue;
           } else {
             //not in there or regular files so store?
-            regularFiles[path.parse(fileName).base] = {
-              path: fileName,
-              basename: path.parse(fileName).base,
+            fileToImport[fileBase] = {
+              path: filePath,
+              basename: fileBase,
             };
           }
         }
@@ -1669,10 +1715,10 @@ const addFilesfunction = async (
           if (objectKey != undefined) {
             var nonAllowedDuplicate = false;
             //if file already exist in json
-            if (fileName === currentLocation["files"][objectKey]["path"]) {
+            if (filePath === currentLocation["files"][objectKey]["path"]) {
               if (currentLocation["files"][objectKey]["action"].includes("renamed") === false) {
                 //same path and has not been renamed
-                nonAllowedDuplicateFiles.push(fileName);
+                nonAllowedDuplicateFiles.push(filePath);
                 nonAllowedDuplicate = true;
                 continue;
               }
@@ -1680,15 +1726,15 @@ const addFilesfunction = async (
               //file path and object key path arent the same
               //check if the file name are the same
               //if so consider it as a duplicate
-              if (path.parse(fileName).base === objectKey) {
-                nonAllowedDuplicateFiles.push(fileName);
+              if (fileBase === objectKey) {
+                nonAllowedDuplicateFiles.push(filePath);
                 nonAllowedDuplicate = true;
                 continue;
               } else {
                 //store in regular files
-                regularFiles[path.parse(fileName).base] = {
-                  path: fileName,
-                  basename: path.parse(fileName).base,
+                fileToImport[fileBase] = {
+                  path: filePath,
+                  basename: fileBase,
                 };
               }
             }
@@ -1698,6 +1744,138 @@ const addFilesfunction = async (
     }
   }
 
+  //after iterating through all the files handle problem files through alerts
+  if (doubleExtension.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
+
+    await Swal.fire({
+      title:
+        "The following files have a double period, which is only allowed if they are compressed files as per SPARC Data Standards. Do you confirm that these are all compressed files?",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        doubleExtension.join("</br></br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: false,
+      showCancelButton: true,
+      confirmButtonText: "Yes, import them",
+      // denyButtonText: "Import",
+      cancelButtonText: "No, skip them",
+      didOpen: () => {
+        $(".swal-popover").popover();
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        swalContainer.style.width = "600px";
+        swal_content.style.textAlign = "justify";
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //remove slashes and place just file name in new array
+        for (let i = 0; i < doubleExtension.length; i++) {
+          if (
+            doubleExtension[i] in currentLocation["files"] ||
+            path.parse(doubleExtension[i]).base in Object.keys(filesToImport)
+          ) {
+            nonAllowedDuplicateFiles.push(fileName);
+            continue;
+          } else {
+            //not in there or regular files so store?
+            filesToImport[path.parse(doubleExtension[i]).base] = {
+              path: doubleExtension[i],
+              basename: path.parse(doubleExtension[i]).base,
+            };
+          }
+        }
+      }
+    });
+  }
+
+  if (tripleExtension.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
+    await Swal.fire({
+      title:
+        "Files should typically have one (two when they are compressed) periods in their names according to the SPARC Data Standards. The following files have three of more periods in their name and will not be imported.",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        tripleExtension.join("</br></br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: false,
+      showCancelButton: false,
+      confirmButtonText: "OK",
+      didOpen: () => {
+        $(".swal-popover").popover();
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        swalContainer.style.width = "600px";
+        swal_content.style.textAlign = "justify";
+      },
+    });
+  }
+
+  if (nonAllowedCharacterFiles.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
+    await Swal.fire({
+      title:
+        "The following files have characters (#&%+) that are typically not recommendeda as per the SPARC Data Standards. Although not forbidden to import as is, we recommend replacing those characters.",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        nonAllowedCharacterFiles.join("</br></br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Replace characters with '-'",
+      denyButtonText: "Import as is",
+      cancelButtonText: "Skip All",
+      didOpen: () => {
+        $(".swal-popover").popover();
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        let swalDenyButton = document.getElementsByClassName("swal2-deny")[0];
+        swalContainer.style.width = "600px";
+        swal_content.style.textAlign = "justify";
+        swalDenyButton.style.backgroundColor = "#086dd3";
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //replace characters
+        for (let i = 0; i < nonAllowedCharacterFiles.length; i++) {
+          let fileName = path.parse(nonAllowedCharacterFiles[i]).base;
+          let regex = /[\+&\%#]/g;
+          let replaceFile = fileName.replace(regex, "-");
+          console.log(replaceFile);
+          filesToImport[replaceFile] = {
+            path: nonAllowedCharacterFiles[i],
+            basename: replaceFile,
+          };
+        }
+      }
+      if (result.isDenied) {
+        for (let i = 0; i < nonAllowedCharacterFiles.length; i++) {
+          let fileName = nonAllowedCharacterFiles[i];
+          console.log(fileName);
+          filesToImport[fileName] = {
+            path: fileName,
+            basename: path.parse(fileName).base,
+          };
+        }
+      }
+    });
+  }
+
   if (hiddenFiles.length > 0) {
     if (loadingContainer != undefined) {
       loadingContainer.style.display = "none";
@@ -1705,18 +1883,23 @@ const addFilesfunction = async (
     }
     await Swal.fire({
       title:
-        "The following files have an unexpected name starting with a period. How should we handle them?",
-      html:
-        "<div style='max-height:300px; overflow-y:auto'>" + hiddenFiles.join("</br>") + "</div>",
+        "The following files have an unexpected name starting with a period and are considered hidden files. As per SPARC Data Standards they are typically not recommended to be imported as hidden. How should we handle them?" +
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        hiddenFiles.join("</br></br>") +
+        "</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showDenyButton: true,
       showCancelButton: true,
-      confirmButtonText: "Remove characters",
-      denyButtonText: "Continue as is",
-      cancelButtonText: "Cancel",
+      confirmButtonText: "Remove period",
+      denyButtonText: "Import as is",
+      cancelButtonText: "Skip All",
       didOpen: () => {
         $(".swal-popover").popover();
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        swalContainer.style.width = "600px";
+        swal_content.style.textAlign = "justify";
       },
     }).then(async (result) => {
       if (result.isConfirmed) {
@@ -1731,13 +1914,13 @@ const addFilesfunction = async (
           let path_name = hiddenFiles[i];
 
           if (Object.keys(currentLocation["files"]).length > 0) {
-            for (const objectKey in currentLocation["files"]) {
+            for (const alreadyImportedFile in currentLocation["files"]) {
               //tries finding duplicates with the same path
-              if (objectKey != undefined) {
+              if (alreadyImportedFile != undefined) {
                 nonAllowedDuplicate = false;
-                if (file_name.substr(1, file_name.length) === objectKey) {
+                if (file_name.substr(1, file_name.length) === alreadyImportedFile) {
                   //if file already exist in json
-                  if (path_name === currentLocation["files"][objectKey]["path"]) {
+                  if (path_name === currentLocation["files"][alreadyImportedFile]["path"]) {
                     //same path and has not been renamed
                     nonAllowedDuplicateFiles.push(path_name);
                     nonAllowedDuplicate = true;
@@ -1747,14 +1930,14 @@ const addFilesfunction = async (
                     //check if the file name are the same
                     //if so consider it as a duplicate
                     //store in regular files
-                    regularFiles[file_name.substr(1, file_name.length)] = {
+                    fileToImport[file_name.substr(1, file_name.length)] = {
                       path: path_name,
                       basename: file_name.substr(1, file_name.length),
                     };
                   }
                 } else {
                   //store in regular files
-                  regularFiles[file_name.substr(1, file_name.length)] = {
+                  fileToImport[file_name.substr(1, file_name.length)] = {
                     path: path_name,
                     basename: file_name.substr(1, file_name.length),
                   };
@@ -1763,7 +1946,7 @@ const addFilesfunction = async (
             }
           } else {
             //store in regular files
-            regularFiles[file_name.substr(1, file_name.length)] = {
+            fileToImport[file_name.substr(1, file_name.length)] = {
               path: path_name,
               basename: file_name.substr(1, file_name.length),
             };
@@ -1781,20 +1964,20 @@ const addFilesfunction = async (
           let path_name = hiddenFiles[i];
 
           if (Object.keys(currentLocation["files"]).length > 0) {
-            for (const objectKey in currentLocation["files"]) {
+            for (const alreadyImportedFile in currentLocation["files"]) {
               //tries finding duplicates with the same path
-              if (objectKey != undefined) {
+              if (alreadyImportedFile != undefined) {
                 nonAllowedDuplicate = false;
                 //if file already exist in json
-                if (file_name === objectKey) {
-                  if (path_name === currentLocation["files"][objectKey]["path"]) {
+                if (file_name === alreadyImportedFile) {
+                  if (path_name === currentLocation["files"][alreadyImportedFile]["path"]) {
                     //same path and has not been renamed
                     nonAllowedDuplicateFiles.push(path_name);
                     nonAllowedDuplicate = true;
                     continue;
                   } else {
                     //store in regular files
-                    regularFiles[file_name] = {
+                    fileToImport[file_name] = {
                       path: path_name,
                       basename: file_name,
                     };
@@ -1807,7 +1990,7 @@ const addFilesfunction = async (
             }
           } else {
             //store in regular files
-            regularFiles[file_name] = {
+            fileToImport[file_name] = {
               path: path_name,
               basename: file_name,
             };
@@ -1899,15 +2082,20 @@ const addFilesfunction = async (
       loadingIcon.style.display = "none";
     }
     await Swal.fire({
-      title: "The following files are banned as per SPARC guidelines and will not be imported",
+      title:
+        "The following files are not allowed in datasets as per the SPARC Data Standards and will thus not be imported",
       html:
         "<div style='max-height:300px; overflow-y:auto'>" +
-        nonAllowedFiles.join("</br>") +
+        nonAllowedFiles.join("</br></br>") +
         "</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showConfirmButton: true,
-      confirmButtonText: "Okay",
+      confirmButtonText: "OK",
+      didOpen: () => {
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        swalContainer.style.width = "600px";
+      },
     });
   }
   if (loadingContainer != undefined) {
@@ -1916,13 +2104,13 @@ const addFilesfunction = async (
   }
   // now handle non-allowed duplicates (show message), allowed duplicates (number duplicates & append to UI),
   // and regular files (append to UI)
-  if (Object.keys(regularFiles).length > 0) {
+  if (Object.keys(fileToImport).length > 0) {
     start = 0;
     listed_count = 0;
     $("#items").empty();
-    for (var element in regularFiles) {
-      currentLocation["files"][regularFiles[element]["basename"]] = {
-        path: regularFiles[element]["path"],
+    for (let importedFile in fileToImport) {
+      currentLocation["files"][fileToImport[importedFile]["basename"]] = {
+        path: fileToImport[importedFile]["path"],
         type: "local",
         description: "",
         "additional-metadata": "",
@@ -1930,16 +2118,16 @@ const addFilesfunction = async (
       };
       // append "renamed" to "action" key if file is auto-renamed by UI
       var originalName = path.parse(
-        currentLocation["files"][regularFiles[element]["basename"]]["path"]
+        currentLocation["files"][fileToImport[importedFile]["basename"]]["path"]
       ).base;
-      if (element !== originalName) {
-        currentLocation["files"][regularFiles[element]["basename"]]["action"].push("renamed");
+      if (importedFile !== originalName) {
+        currentLocation["files"][fileToImport[importedFile]["basename"]]["action"].push("renamed");
       }
     }
     await listItems(currentLocation, uiItem, 500);
     getInFolder(singleUIItem, uiItem, organizeCurrentLocation, globalPathValue);
     beginScrollListen();
-    if (Object.keys(regularFiles).length > 1) {
+    if (Object.keys(fileToImport).length > 1) {
       importToast.open({
         type: "success",
         message: "Successfully Imported Files",

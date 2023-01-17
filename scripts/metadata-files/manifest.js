@@ -115,7 +115,19 @@ $(document).ready(function () {
       data: {},
       dblclick_toggle: false,
     },
-    plugins: ["types"],
+    plugins: ["types", "sort"],
+    sort: function (a, b) {
+      a1 = this.get_node(a);
+      b1 = this.get_node(b);
+
+      if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
+        //if the word assets is included in the icon then we can assume it is a file
+        //folder icons are under font awesome meanwhile files come from the assets folder
+        return a1.text > b1.text ? 1 : -1;
+      } else {
+        return a1.icon < b1.icon ? 1 : -1;
+      }
+    },
     types: {
       folder: {
         icon: "fas fa-folder fa-fw",
@@ -179,7 +191,19 @@ $(document).ready(function () {
       data: {},
       dblclick_toggle: false,
     },
-    plugins: ["types"],
+    plugins: ["types", "sort"],
+    sort: function (a, b) {
+      a1 = this.get_node(a);
+      b1 = this.get_node(b);
+
+      if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
+        //if the word assets is included in the icon then we can assume it is a file
+        //folder icons are under font awesome meanwhile files come from the assets folder
+        return a1.text > b1.text ? 1 : -1;
+      } else {
+        return a1.icon < b1.icon ? 1 : -1;
+      }
+    },
     types: {
       folder: {
         icon: "fas fa-folder fa-fw",
@@ -365,74 +389,59 @@ $(document).ready(function () {
   });
 });
 
-function convertJSONToXlsx(jsondata, excelfile) {
+const createWorbookStyle = (wb, color) => {
+  return wb.createStyle({
+    fill: {
+      type: "pattern",
+      patternType: "solid",
+      fgColor: color,
+    },
+    font: {
+      bold: true,
+      color: "#000000",
+      size: 12,
+      name: "Calibri",
+    },
+    border: {
+      left: {
+        style: "thin",
+        color: "#000000",
+      },
+      right: {
+        style: "thin",
+        color: "#000000",
+      },
+      top: {
+        style: "thin",
+        color: "#000000",
+      },
+      bottom: {
+        style: "thin",
+        color: "#000000",
+      },
+    },
+  });
+};
+
+const convertJSONToXlsx = (jsondata, excelfile) => {
   console.log(excelfile);
   console.log("creating new manifest files styled");
-  const requiredManifestHeaders = ["filename", "timestamp", "description", "file type"];
+  const requiredManifestHeaders = [
+    "filename",
+    "timestamp",
+    "description",
+    "file type",
+    "Additional Metadata",
+  ];
+  const blueHeader = ["filename", "File Name", "file name"];
+  const greenHeader = ["timestamp", "description", "file type"];
+  const yellowHeader = ["Additional Metadata"];
   const wb = new excel4node.Workbook();
-  // create wb style that makes the background red
-  const requiredHeaderStyle = wb.createStyle({
-    fill: {
-      type: "pattern",
-      patternType: "solid",
-      fgColor: "a8d08d",
-    },
-    font: {
-      bold: true,
-      color: "#000000",
-      size: 12,
-      name: "Calibri",
-    },
-    border: {
-      left: {
-        style: "thin",
-        color: "#000000",
-      },
-      right: {
-        style: "thin",
-        color: "#000000",
-      },
-      top: {
-        style: "thin",
-        color: "#000000",
-      },
-      bottom: {
-        style: "thin",
-        color: "#000000",
-      },
-    },
-  });
-  const optionalHeaderStyle = wb.createStyle({
-    fill: {
-      type: "pattern",
-      patternType: "solid",
-      fgColor: "ffd965",
-    },
-    font: {
-      bold: true,
-      color: "#000000",
-      size: 12,
-      name: "Calibri",
-    },
-    border: {
-      left: {
-        style: "thin",
-        color: "#000000",
-      },
-      right: {
-        style: "thin",
-        color: "#000000",
-      },
-      top: {
-        style: "thin",
-        color: "#000000",
-      },
-      bottom: {
-        style: "thin",
-        color: "#000000",
-      },
-    },
-  });
+  // create wb style that makes the background styling
+  const greenHeaderStyle = createWorkbookStyle(wb, "a8d08d");
+  const yellowHeaderStyle = createWorkbookStyle(wb, "ffd965");
+  const blueHeaderStyle = createWorkbookStyle(wb, "A0C2E6");
+
   const standardCellStyle = wb.createStyle({
     font: {
       bold: false,
@@ -452,9 +461,10 @@ function convertJSONToXlsx(jsondata, excelfile) {
   //Write Column Title in Excel file
   let headingColumnIndex = 1;
   headingColumnNames.forEach((heading) => {
-    let styleObject = requiredManifestHeaders.includes(heading)
-      ? requiredHeaderStyle
-      : optionalHeaderStyle;
+    let styleObject = yellowHeaderStyle;
+    if (blueHeader.includes(heading)) styleObject = blueHeaderStyle;
+    if (yellowHeader.includes(heading)) styleObject = yellowHeaderStyle;
+    if (greenHeader.includes(heading)) styleObject = greenHeaderStyle;
 
     ws.cell(1, headingColumnIndex++)
       .string(heading)
@@ -472,10 +482,10 @@ function convertJSONToXlsx(jsondata, excelfile) {
     rowIndex++;
   });
   wb.write(excelfile);
-}
+};
 
 var table1;
-function loadManifestFileEdits(jsondata) {
+const loadManifestFileEdits = (jsondata) => {
   let columns = Object.keys(jsondata[0]);
   let columnList = [];
   for (let i = 0; i < columns.length; i++) {
@@ -553,7 +563,7 @@ function loadManifestFileEdits(jsondata) {
       e.target.innerText = "";
       e.target.focus();
     });
-}
+};
 
 const processManifestInfo = (headers, data) => {
   let sortedArr = [];
@@ -1033,7 +1043,6 @@ async function initiate_generate_manifest_bf() {
       }
     }
   }
-
 
   console.log(sodaJSONObj);
   console.log(JSON.stringify(sodaJSONObj));
@@ -2279,7 +2288,7 @@ function checkInvalidHighLevelFolders(datasetStructure) {
 }
 
 // function to generate edited manifest files onto Pennsieve (basically just upload the local SODA Manifest Files folder to Pennsieve)
-async function generateAfterEdits() {
+const generateAfterEdits = async () => {
   let dir = path.join(homeDirectory, "SODA", "manifest_files");
   // set up sodaJSonObject
   sodaJSONObj = {
@@ -2324,7 +2333,7 @@ async function generateAfterEdits() {
 
   // generate on Pennsieve: call the function
   initiate_generate_manifest_bf();
-}
+};
 
 document.querySelector("#btn-pull-ds-manifest").addEventListener("click", (e) => {
   document.querySelector("#div-check-bf-create-manifest").style.visibility = "hidden";

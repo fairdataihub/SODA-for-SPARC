@@ -226,7 +226,7 @@
                   <h2>Start a new dataset from scratch</h2>
                 </div>
               </button>
-
+              <!--
               <button
                 class="guided--radio-button tile-button"
                 id="guided-button-continue-existing-local-curation"
@@ -308,6 +308,7 @@
                   <h2>Start from a local SPARC dataset</h2>
                 </div>
               </button>
+              -->
               <button
                 class="guided--radio-button tile-button"
                 id="guided-button-resume-pennsieve-dataset"
@@ -4403,6 +4404,9 @@
           </div>
           <div
             class="modal fade"
+            droppable="true"
+            ondrop="dropHandler(event, 'guided-para-path-image', 'bannerImage', 'guided-mode', dataDeliverables=false);"
+            ondragover="return false;"
             id="guided-banner-image-modal"
             tabindex="-1"
             role="dialog"
@@ -4415,7 +4419,11 @@
             >
               <div class="modal-content">
                 <div class="modal-header">
-                  <h4 class="modal-title" id="guided-edit_banner_image_title">
+                  <h4
+                    class="modal-title"
+                    style="margin-left: 3.5rem"
+                    id="guided-edit_banner_image_title"
+                  >
                     Add a banner image
                     <i
                       class="fas fa-info-circle popover-tooltip"
@@ -4432,13 +4440,46 @@
                     <i style="color: red; font-size: 25px" class="far fa-window-close"></i>
                   </button>
                 </div>
+                <div
+                  style="
+                    align-self: center;
+                    display: flex;
+                    flex-direction: row;
+                    font-size: large;
+                    font-weight: 700;
+                  "
+                >
+                  <p style="line-height: 15px; margin-top: 1rem; margin-right: 1rem">
+                    Drag and Drop image or click
+                  </p>
+                  <div style="display: flex; flex-direction: row; justify-content: center">
+                    <div
+                      style="
+                        display: flex;
+                        flex-direction: column;
+                        justify-content: center;
+                        align-items: center;
+                        width: 100%;
+                      "
+                    >
+                      <button
+                        id="guided-button-import-banner-image"
+                        type="button"
+                        class="btn btn-primary"
+                        style="border-radius: 4px"
+                      >
+                        Import image
+                      </button>
+                    </div>
+                  </div>
+                </div>
                 <div class="modal-body">
                   <div id="guided-div-editbanner-img" style="display: flex; flex-direction: row">
                     <div id="guided-div-img-container-holder" class="img-container">
                       Imported image will be shown here. <br />You will be able to crop it before
                       uploading.
                     </div>
-
+                    <div id="guided-image-lottie"></div>
                     <div
                       id="guided-div-img-container"
                       class="img-container"
@@ -4462,27 +4503,6 @@
                   ></p>
                 </div>
                 <div class="modal-footer" style="display: flex; justify-content: space-between">
-                  <div style="display: flex; flex-direction: row; justify-content: center">
-                    <div
-                      style="
-                        display: flex;
-                        flex-direction: column;
-                        justify-content: center;
-                        align-items: center;
-                        width: 100%;
-                      "
-                    >
-                      <button
-                        id="guided-button-import-banner-image"
-                        type="button"
-                        class="btn btn-primary"
-                        style="border-radius: 4px"
-                      >
-                        Import image
-                      </button>
-                    </div>
-                  </div>
-
                   <div class="container-cropped-image">
                     <div class="banner-image-size" style="width: 380px; text-align: center">
                       <span class="crop-image-text"
