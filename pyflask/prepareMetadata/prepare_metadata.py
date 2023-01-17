@@ -27,6 +27,9 @@ from collections import defaultdict
 import requests
 from errorHandlers import is_file_not_found_exception, is_invalid_file_exception, InvalidDeliverablesDocument
 
+from authentication import get_access_token
+
+
 from string import ascii_uppercase
 import itertools
 import tempfile
@@ -901,13 +904,11 @@ def load_existing_submission_file(filepath):
 
 # import existing metadata files except Readme and Changes from Pennsieve
 def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
-    ps = connect_pennsieve_client()
+    token = get_access_token()
 
-    authenticate_user_with_client(ps, bfaccount)
+    selected_dataset_id = get_dataset_id(token, bfdataset)
 
-    selected_dataset_id = get_dataset_id(ps, bfdataset)
-
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(ps))
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(token))
     r.raise_for_status()
 
     items = r.json()["children"]
@@ -915,7 +916,7 @@ def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
     for i in items:
         if i["content"]["name"] == file_type:
             item_id = i["content"]["id"]
-            url = returnFileURL(ps, item_id)
+            url = returnFileURL(token, item_id)
 
             if file_type == "submission.xlsx":
                 return load_existing_submission_file(url)
