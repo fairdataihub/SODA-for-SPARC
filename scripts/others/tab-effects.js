@@ -703,7 +703,7 @@ const nextPrev = (pageIndex) => {
   //     currentTab = currentTab + 1;
   //   }
   //   showParentTab(currentTab, pageIndex);
-   else {
+  else {
     // Hide the current tab:
     $(parentTabs[currentTab]).removeClass("tab-active");
     // Increase or decrease the current tab by 1:
