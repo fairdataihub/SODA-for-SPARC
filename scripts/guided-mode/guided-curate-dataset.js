@@ -5827,57 +5827,74 @@ const guidedResumeProgress = async (resumeProgressButton) => {
 
   // If the dataset is being edited on Pensieve, check to make sure the folders and files are still the same.
   if (datasetResumeJsonObj["starting-point"]?.["type"] === "bf") {
-    const nofiication = notyf.open({
-      type: "info",
-      message: `Checking to make sure the dataset structure on Pennsieve is the same as when you started editing this dataset.`,
-      duration: 30000,
-    });
-    let filesFoldersResponse = await client.post(
-      `/organize_datasets/dataset_files_and_folders`,
-      {
-        sodajsonobject: datasetResumeJsonObj,
-      },
-      { timeout: 0 }
-    );
-    let data = filesFoldersResponse.data;
-    const currentPennsieveDatasetStructure = data["soda_object"]["dataset-structure"];
-    const intitiallyPulledDatasetStructure =
-      datasetResumeJsonObj["initially-pulled-dataset-structure"];
-
-    notyf.dismiss(nofiication);
-
-    console.log("currentPennsieveDatasetStructure", currentPennsieveDatasetStructure);
-    console.log("intitiallyPulledDatasetStructure", intitiallyPulledDatasetStructure);
-
-    // check to make sure current and initially pulled dataset structures are the same
-    if (
-      JSON.stringify(currentPennsieveDatasetStructure) !==
-      JSON.stringify(intitiallyPulledDatasetStructure)
-    ) {
+    if (Object.keys(datasetResumeJsonObj["previously-uploaded-data"]).length > 0) {
       await Swal.fire({
-        icon: "error",
-        title: "Dataset structure on Pennsieve has changed",
+        icon: "info",
+        title: "Resuming a Pennsieve dataset upload that previously failed",
         html: `
+            Please note that any changes made to your dataset on Pennsieve since your last dataset upload
+            was interrupted may be overwritten.
+          `,
+        width: 500,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: `I understand`,
+        focusConfirm: true,
+        allowOutsideClick: false,
+      });
+    } else {
+      const nofiication = notyf.open({
+        type: "info",
+        message: `Checking to make sure the dataset structure on Pennsieve is the same as when you started editing this dataset.`,
+        duration: 30000,
+      });
+      let filesFoldersResponse = await client.post(
+        `/organize_datasets/dataset_files_and_folders`,
+        {
+          sodajsonobject: datasetResumeJsonObj,
+        },
+        { timeout: 0 }
+      );
+      let data = filesFoldersResponse.data;
+      const currentPennsieveDatasetStructure = data["soda_object"]["dataset-structure"];
+      notyf.dismiss(nofiication);
+
+      const intitiallyPulledDatasetStructure =
+        datasetResumeJsonObj["initially-pulled-dataset-structure"];
+
+      console.log("currentPennsieveDatasetStructure", currentPennsieveDatasetStructure);
+      console.log("intitiallyPulledDatasetStructure", intitiallyPulledDatasetStructure);
+
+      // check to make sure current and initially pulled dataset structures are the same
+      if (
+        JSON.stringify(currentPennsieveDatasetStructure) !==
+        JSON.stringify(intitiallyPulledDatasetStructure)
+      ) {
+        await Swal.fire({
+          icon: "error",
+          title: "Dataset structure on Pennsieve has changed",
+          html: `
           The dataset structure on Pennsieve has changed since you started editing this dataset.
           <br />
           <br />
           You will need to start over from the beginning. 
         `,
-        width: 500,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: `Ok`,
-        focusConfirm: true,
-        allowOutsideClick: false,
-      });
-      resumeProgressButton.removeClass("loading");
-      return;
-    } else {
-      notyf.open({
-        type: "success",
-        message: `The dataset structure on Pennsieve is the same as when you started editing this dataset.`,
-        duration: 7000,
-      });
+          width: 500,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: `Ok`,
+          focusConfirm: true,
+          allowOutsideClick: false,
+        });
+        resumeProgressButton.removeClass("loading");
+        return;
+      } else {
+        notyf.open({
+          type: "success",
+          message: `The dataset structure on Pennsieve is the same as when you started editing this dataset.`,
+          duration: 7000,
+        });
+      }
     }
   }
   sodaJSONObj = datasetResumeJsonObj;
