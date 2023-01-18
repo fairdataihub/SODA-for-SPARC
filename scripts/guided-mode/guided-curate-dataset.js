@@ -2960,6 +2960,8 @@ function guidedShowTreePreview(new_dataset_name, targetElement) {
 }
 
 const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
+  console.log(highLevelFolder);
+  console.log(subjectsOrSamples);
   //add high level folder if it does not exist
   if (!datasetStructureJSONObj["folders"][highLevelFolder]) {
     datasetStructureJSONObj["folders"][highLevelFolder] = newEmptyFolderObj();
@@ -5169,442 +5171,405 @@ const renderSamplesTable = () => {
 
 const setActiveSubPage = (pageIdToActivate) => {
   const pageElementToActivate = document.getElementById(pageIdToActivate);
+  console.log(pageElementToActivate);
 
   //create a switch statement for pageIdToActivate to load data from sodaJSONObj
   //depending on page being opened
-  switch (pageIdToActivate) {
-    case "guided-specify-subjects-page": {
-      renderSubjectsTable();
-      //remove the add subject help text
-      document.getElementById("guided-add-subject-instructions").classList.add("hidden");
-      break;
+  if (pageIdToActivate === "guided-specify-subjects-page") {
+    renderSubjectsTable();
+    //remove the add subject help text
+    document.getElementById("guided-add-subject-instructions").classList.add("hidden");
+  }
+  if (pageIdToActivate === "guided-organize-subjects-into-pools-page") {
+    const pools = sodaJSONObj.getPools();
+
+    const poolElementRows = Object.keys(pools)
+      .map((pool) => {
+        return generatePoolRowElement(pool);
+      })
+      .join("\n");
+    document.getElementById("pools-specification-table-body").innerHTML = poolElementRows;
+
+    for (const poolName of Object.keys(pools)) {
+      const newPoolSubjectsSelectElement = document.querySelector(
+        `select[name="${poolName}-subjects-selection-dropdown"]`
+      );
+      //create a select2 dropdown for the pool subjects
+      $(newPoolSubjectsSelectElement).select2({
+        placeholder: "Select subjects",
+        tags: true,
+        width: "100%",
+        closeOnSelect: false,
+        createTag: function () {
+          // Disable tagging
+          return null;
+        },
+      });
+      //update the newPoolSubjectsElement with the subjects in the pool
+      updatePoolDropdown($(newPoolSubjectsSelectElement), poolName);
+      $(newPoolSubjectsSelectElement).on("select2:open", (e) => {
+        updatePoolDropdown($(e.currentTarget), poolName);
+      });
+      $(newPoolSubjectsSelectElement).on("select2:unselect", (e) => {
+        const subjectToRemove = e.params.data.id;
+        sodaJSONObj.moveSubjectOutOfPool(subjectToRemove, poolName);
+      });
+      $(newPoolSubjectsSelectElement).on("select2:select", function (e) {
+        const selectedSubject = e.params.data.id;
+        sodaJSONObj.moveSubjectIntoPool(selectedSubject, poolName);
+      });
+    }
+  }
+  if (pageIdToActivate === "guided-specify-samples-page") {
+    renderSamplesTable();
+  }
+  if (pageIdToActivate === "guided-primary-samples-organization-page") {
+    renderSamplesHighLevelFolderAsideItems("primary");
+    guidedUpdateFolderStructure("primary", "samples");
+
+    $("#guided-file-explorer-elements").appendTo(
+      $("#guided-primary-samples-file-explorer-container")
+    );
+
+    //Hide the file explorer and show the intro
+    document.getElementById("guided-file-explorer-elements").classList.add("hidden");
+    document
+      .getElementById("guided-primary-samples-file-explorer-intro")
+      .classList.remove("hidden");
+
+    //Load the black arrow lottie animation
+    const primarySamplesFileExplorerBlackArrowLottieContainer = document.getElementById(
+      "primary-samples-file-explorer-black-arrow-lottie-container"
+    );
+    primarySamplesFileExplorerBlackArrowLottieContainer.innerHTML = "";
+    lottie.loadAnimation({
+      container: primarySamplesFileExplorerBlackArrowLottieContainer,
+      animationData: blackArrow,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+    });
+  }
+  if (pageIdToActivate === "guided-primary-subjects-organization-page") {
+    renderSubjectsHighLevelFolderAsideItems("primary");
+    guidedUpdateFolderStructure("primary", "subjects");
+    $("#guided-file-explorer-elements").appendTo(
+      $("#guided-primary-subjects-file-explorer-container")
+    );
+    //Hide the file explorer and show the intro
+    document.getElementById("guided-file-explorer-elements").classList.add("hidden");
+    document
+      .getElementById("guided-primary-subjects-file-explorer-intro")
+      .classList.remove("hidden");
+
+    //Load the black arrow lottie animation
+    const primarySubjectsFileExplorerBlackArrowLottieContainer = document.getElementById(
+      "primary-subjects-file-explorer-black-arrow-lottie-container"
+    );
+    primarySubjectsFileExplorerBlackArrowLottieContainer.innerHTML = "";
+    lottie.loadAnimation({
+      container: primarySubjectsFileExplorerBlackArrowLottieContainer,
+      animationData: blackArrow,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+    });
+  }
+  if (pageIdToActivate === "guided-primary-pools-organization-page") {
+    guidedUpdateFolderStructure("primary", "pools");
+    renderPoolsHighLevelFolderAsideItems("primary");
+    //guidedUpdateFolderStructure("primary", "pools"); Don't need because pools already generated
+    $("#guided-file-explorer-elements").appendTo(
+      $("#guided-primary-pools-file-explorer-container")
+    );
+    //Hide the file explorer and show the intro
+    hideEleShowEle("guided-file-explorer-elements", "guided-primary-pools-file-explorer-intro");
+
+    const primaryPoolsFileExplorerBlackArrowLottieContainer = document.getElementById(
+      "primary-pools-file-explorer-black-arrow-lottie-container"
+    );
+    primaryPoolsFileExplorerBlackArrowLottieContainer.innerHTML = "";
+    //Load the black arrow lottie animation
+    lottie.loadAnimation({
+      container: primaryPoolsFileExplorerBlackArrowLottieContainer,
+      animationData: blackArrow,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+    });
+  }
+  if (pageIdToActivate === "guided-source-samples-organization-page") {
+    renderSamplesHighLevelFolderAsideItems("source");
+    guidedUpdateFolderStructure("source", "samples");
+    $("#guided-file-explorer-elements").appendTo(
+      $("#guided-source-samples-file-explorer-container")
+    );
+
+    //Hide the file explorer and show the intro
+    document.getElementById("guided-file-explorer-elements").classList.add("hidden");
+    document.getElementById("guided-source-samples-file-explorer-intro").classList.remove("hidden");
+
+    //Load the black arrow lottie animation
+    const sourceSamplesFileExplorerBlackArrowLottieContainer = document.getElementById(
+      "source-samples-file-explorer-black-arrow-lottie-container"
+    );
+    sourceSamplesFileExplorerBlackArrowLottieContainer.innerHTML = "";
+    lottie.loadAnimation({
+      container: sourceSamplesFileExplorerBlackArrowLottieContainer,
+      animationData: blackArrow,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+    });
+  }
+  if (pageIdToActivate === "guided-source-subjects-organization-page") {
+    renderSubjectsHighLevelFolderAsideItems("source");
+    guidedUpdateFolderStructure("source", "subjects");
+    $("#guided-file-explorer-elements").appendTo(
+      $("#guided-source-subjects-file-explorer-container")
+    );
+    //Hide the file explorer and show the intro
+    document.getElementById("guided-file-explorer-elements").classList.add("hidden");
+    document
+      .getElementById("guided-source-subjects-file-explorer-intro")
+      .classList.remove("hidden");
+
+    //Load the black arrow lottie animation
+    const sourceSubjectsFileExplorerBlackArrowLottieContainer = document.getElementById(
+      "source-subjects-file-explorer-black-arrow-lottie-container"
+    );
+    sourceSubjectsFileExplorerBlackArrowLottieContainer.innerHTML = "";
+    lottie.loadAnimation({
+      container: sourceSubjectsFileExplorerBlackArrowLottieContainer,
+      animationData: blackArrow,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+    });
+  }
+
+  if (pageIdToActivate === "guided-source-pools-organization-page") {
+    guidedUpdateFolderStructure("source", "pools");
+    renderPoolsHighLevelFolderAsideItems("source");
+    $("#guided-file-explorer-elements").appendTo($("#guided-source-pools-file-explorer-container"));
+    //Hide the file explorer and show the intro
+    hideEleShowEle("guided-file-explorer-elements", "guided-source-pools-file-explorer-intro");
+
+    const sourcePoolsFileExplorerBlackArrowLottieContainer = document.getElementById(
+      "source-pools-file-explorer-black-arrow-lottie-container"
+    );
+    sourcePoolsFileExplorerBlackArrowLottieContainer.innerHTML = "";
+    //Load the black arrow lottie animation
+    lottie.loadAnimation({
+      container: sourcePoolsFileExplorerBlackArrowLottieContainer,
+      animationData: blackArrow,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+    });
+  }
+  if (pageIdToActivate === "guided-derivative-samples-organization-page") {
+    renderSamplesHighLevelFolderAsideItems("derivative");
+    guidedUpdateFolderStructure("derivative", "samples");
+    $("#guided-file-explorer-elements").appendTo(
+      $("#guided-derivative-samples-file-explorer-container")
+    );
+
+    //Hide the file explorer and show the intro
+    document.getElementById("guided-file-explorer-elements").classList.add("hidden");
+    document
+      .getElementById("guided-derivative-samples-file-explorer-intro")
+      .classList.remove("hidden");
+
+    //Load the black arrow lottie animation
+    const derivativeSamplesFileExplorerBlackArrowLottieContainer = document.getElementById(
+      "derivative-samples-file-explorer-black-arrow-lottie-container"
+    );
+    derivativeSamplesFileExplorerBlackArrowLottieContainer.innerHTML = "";
+    lottie.loadAnimation({
+      container: derivativeSamplesFileExplorerBlackArrowLottieContainer,
+      animationData: blackArrow,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+    });
+  }
+
+  if (pageIdToActivate === "guided-derivative-pools-organization-page") {
+    renderSubjectsHighLevelFolderAsideItems("derivative");
+    guidedUpdateFolderStructure("derivative", "subjects");
+    $("#guided-file-explorer-elements").appendTo(
+      $("#guided-derivative-subjects-file-explorer-container")
+    );
+    //Hide the file explorer and show the intro
+    document.getElementById("guided-file-explorer-elements").classList.add("hidden");
+    document
+      .getElementById("guided-derivative-subjects-file-explorer-intro")
+      .classList.remove("hidden");
+
+    //Load the black arrow lottie animation
+    const derivativeSubjectsFileExplorerBlackArrowLottieContainer = document.getElementById(
+      "derivative-subjects-file-explorer-black-arrow-lottie-container"
+    );
+    derivativeSubjectsFileExplorerBlackArrowLottieContainer.innerHTML = "";
+    lottie.loadAnimation({
+      container: derivativeSubjectsFileExplorerBlackArrowLottieContainer,
+      animationData: blackArrow,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+    });
+  }
+  if (pageIdToActivate === "guided-derivative-pools-organization-page") {
+    guidedUpdateFolderStructure("derivative", "pools");
+    renderPoolsHighLevelFolderAsideItems("derivative");
+    $("#guided-file-explorer-elements").appendTo(
+      $("#guided-derivative-pools-file-explorer-container")
+    );
+    //Hide the file explorer and show the intro
+    hideEleShowEle("guided-file-explorer-elements", "guided-derivative-pools-file-explorer-intro");
+
+    const derivativePoolsFileExplorerBlackArrowLottieContainer = document.getElementById(
+      "derivative-pools-file-explorer-black-arrow-lottie-container"
+    );
+    derivativePoolsFileExplorerBlackArrowLottieContainer.innerHTML = "";
+    //Load the black arrow lottie animation
+    lottie.loadAnimation({
+      container: derivativePoolsFileExplorerBlackArrowLottieContainer,
+      animationData: blackArrow,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+    });
+  }
+  if (pageIdToActivate === "guided-data-derivative-import-page") {
+    const dataDeliverableLottieContainer = document.getElementById(
+      "data-deliverable-lottie-container"
+    );
+    const dataDeliverableParaText = document.getElementById("guided-data-deliverable-para-text");
+
+    const importedMilestones =
+      sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-imported-milestones"];
+
+    if (importedMilestones) {
+      // set the data deliverable import lottie as complete
+      dataDeliverableLottieContainer.innerHTML = "";
+      lottie.loadAnimation({
+        container: dataDeliverableLottieContainer,
+        animationData: successCheck,
+        renderer: "svg",
+        loop: false,
+        autoplay: true,
+      });
+      dataDeliverableParaText.innerHTML =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"];
+
+      renderMilestoneSelectionTable(importedMilestones);
+      const tempSelectedMilestones =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-selected-milestones"];
+      if (tempSelectedMilestones) {
+        //Check the checkboxes for previously selected milestones
+        const milestoneDescriptionsToCheck = tempSelectedMilestones.map((milestone) => {
+          return milestone["description"];
+        });
+        for (const milestone of milestoneDescriptionsToCheck) {
+          //find the checkbox with name milestone and value of milestone
+          const milestoneCheckbox = document.querySelector(
+            `input[name="milestone"][value="${milestone}"]`
+          );
+          if (milestoneCheckbox) {
+            milestoneCheckbox.checked = true;
+          }
+        }
+      }
+      unHideAndSmoothScrollToElement("guided-div-data-deliverables-import");
+    } else {
+      //reset the submission metadata lotties and para text
+      dataDeliverableLottieContainer.innerHTML = "";
+      lottie.loadAnimation({
+        container: dataDeliverableLottieContainer,
+        animationData: dragDrop,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+      dataDeliverableParaText.innerHTML = "";
+      document.getElementById("guided-div-data-deliverables-import").classList.add("hidden");
+    }
+  }
+  if (pageIdToActivate === "guided-completion-date-selection-page") {
+    const selectedMilestoneData =
+      sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-selected-milestones"];
+
+    // get a unique set of completionDates from checkedMilestoneData
+    const uniqueCompletionDates = Array.from(
+      new Set(selectedMilestoneData.map((milestone) => milestone.completionDate))
+    );
+
+    if (uniqueCompletionDates.length === 1) {
+      //save the completion date into sodaJSONObj
+      const uniqueCompletionDate = uniqueCompletionDates[0];
+      sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] =
+        uniqueCompletionDate;
+
+      document.getElementById("guided-completion-date-container").innerHTML =
+        createCompletionDateRadioElement("completion-date", uniqueCompletionDate);
+      //check the completion date
+      document.querySelector(
+        `input[name="completion-date"][value="${uniqueCompletionDate}"]`
+      ).checked = true;
     }
 
-    case "guided-organize-subjects-into-pools-page": {
-      const pools = sodaJSONObj.getPools();
+    if (uniqueCompletionDates.length > 1) {
+      //filter value 'N/A' from uniqueCompletionDates
+      const filteredUniqueCompletionDates = uniqueCompletionDates.filter((date) => date !== "N/A");
 
-      const poolElementRows = Object.keys(pools)
-        .map((pool) => {
-          return generatePoolRowElement(pool);
+      //create a radio button for each unique date
+      const completionDateCheckMarks = filteredUniqueCompletionDates
+        .map((completionDate) => {
+          return createCompletionDateRadioElement("completion-date", completionDate);
         })
         .join("\n");
-      document.getElementById("pools-specification-table-body").innerHTML = poolElementRows;
+      document.getElementById("guided-completion-date-container").innerHTML =
+        completionDateCheckMarks;
 
-      for (const poolName of Object.keys(pools)) {
-        const newPoolSubjectsSelectElement = document.querySelector(
-          `select[name="${poolName}-subjects-selection-dropdown"]`
-        );
-        //create a select2 dropdown for the pool subjects
-        $(newPoolSubjectsSelectElement).select2({
-          placeholder: "Select subjects",
-          tags: true,
-          width: "100%",
-          closeOnSelect: false,
-          createTag: function () {
-            // Disable tagging
-            return null;
-          },
-        });
-        //update the newPoolSubjectsElement with the subjects in the pool
-        updatePoolDropdown($(newPoolSubjectsSelectElement), poolName);
-        $(newPoolSubjectsSelectElement).on("select2:open", (e) => {
-          updatePoolDropdown($(e.currentTarget), poolName);
-        });
-        $(newPoolSubjectsSelectElement).on("select2:unselect", (e) => {
-          const subjectToRemove = e.params.data.id;
-          sodaJSONObj.moveSubjectOutOfPool(subjectToRemove, poolName);
-        });
-        $(newPoolSubjectsSelectElement).on("select2:select", function (e) {
-          const selectedSubject = e.params.data.id;
-          sodaJSONObj.moveSubjectIntoPool(selectedSubject, poolName);
-        });
-      }
-      break;
-    }
-
-    case "guided-specify-samples-page": {
-      renderSamplesTable();
-      break;
-    }
-
-    case "guided-primary-samples-organization-page": {
-      renderSamplesHighLevelFolderAsideItems("primary");
-      guidedUpdateFolderStructure("primary", "samples");
-
-      $("#guided-file-explorer-elements").appendTo(
-        $("#guided-primary-samples-file-explorer-container")
-      );
-
-      //Hide the file explorer and show the intro
-      document.getElementById("guided-file-explorer-elements").classList.add("hidden");
-      document
-        .getElementById("guided-primary-samples-file-explorer-intro")
-        .classList.remove("hidden");
-
-      //Load the black arrow lottie animation
-      const primarySamplesFileExplorerBlackArrowLottieContainer = document.getElementById(
-        "primary-samples-file-explorer-black-arrow-lottie-container"
-      );
-      primarySamplesFileExplorerBlackArrowLottieContainer.innerHTML = "";
-      lottie.loadAnimation({
-        container: primarySamplesFileExplorerBlackArrowLottieContainer,
-        animationData: blackArrow,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-      break;
-    }
-
-    case "guided-primary-subjects-organization-page": {
-      renderSubjectsHighLevelFolderAsideItems("primary");
-      guidedUpdateFolderStructure("primary", "subjects");
-      $("#guided-file-explorer-elements").appendTo(
-        $("#guided-primary-subjects-file-explorer-container")
-      );
-      //Hide the file explorer and show the intro
-      document.getElementById("guided-file-explorer-elements").classList.add("hidden");
-      document
-        .getElementById("guided-primary-subjects-file-explorer-intro")
-        .classList.remove("hidden");
-
-      //Load the black arrow lottie animation
-      const primarySubjectsFileExplorerBlackArrowLottieContainer = document.getElementById(
-        "primary-subjects-file-explorer-black-arrow-lottie-container"
-      );
-      primarySubjectsFileExplorerBlackArrowLottieContainer.innerHTML = "";
-      lottie.loadAnimation({
-        container: primarySubjectsFileExplorerBlackArrowLottieContainer,
-        animationData: blackArrow,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-      break;
-    }
-
-    case "guided-primary-pools-organization-page": {
-      guidedUpdateFolderStructure("primary", "pools");
-      renderPoolsHighLevelFolderAsideItems("primary");
-      //guidedUpdateFolderStructure("primary", "pools"); Don't need because pools already generated
-      $("#guided-file-explorer-elements").appendTo(
-        $("#guided-primary-pools-file-explorer-container")
-      );
-      //Hide the file explorer and show the intro
-      hideEleShowEle("guided-file-explorer-elements", "guided-primary-pools-file-explorer-intro");
-
-      const primaryPoolsFileExplorerBlackArrowLottieContainer = document.getElementById(
-        "primary-pools-file-explorer-black-arrow-lottie-container"
-      );
-      primaryPoolsFileExplorerBlackArrowLottieContainer.innerHTML = "";
-      //Load the black arrow lottie animation
-      lottie.loadAnimation({
-        container: primaryPoolsFileExplorerBlackArrowLottieContainer,
-        animationData: blackArrow,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-      break;
-    }
-
-    case "guided-source-samples-organization-page": {
-      renderSamplesHighLevelFolderAsideItems("source");
-      guidedUpdateFolderStructure("source", "samples");
-      $("#guided-file-explorer-elements").appendTo(
-        $("#guided-source-samples-file-explorer-container")
-      );
-
-      //Hide the file explorer and show the intro
-      document.getElementById("guided-file-explorer-elements").classList.add("hidden");
-      document
-        .getElementById("guided-source-samples-file-explorer-intro")
-        .classList.remove("hidden");
-
-      //Load the black arrow lottie animation
-      const sourceSamplesFileExplorerBlackArrowLottieContainer = document.getElementById(
-        "source-samples-file-explorer-black-arrow-lottie-container"
-      );
-      sourceSamplesFileExplorerBlackArrowLottieContainer.innerHTML = "";
-      lottie.loadAnimation({
-        container: sourceSamplesFileExplorerBlackArrowLottieContainer,
-        animationData: blackArrow,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-      break;
-    }
-
-    case "guided-source-subjects-organization-page": {
-      renderSubjectsHighLevelFolderAsideItems("source");
-      guidedUpdateFolderStructure("source", "subjects");
-      $("#guided-file-explorer-elements").appendTo(
-        $("#guided-source-subjects-file-explorer-container")
-      );
-      //Hide the file explorer and show the intro
-      document.getElementById("guided-file-explorer-elements").classList.add("hidden");
-      document
-        .getElementById("guided-source-subjects-file-explorer-intro")
-        .classList.remove("hidden");
-
-      //Load the black arrow lottie animation
-      const sourceSubjectsFileExplorerBlackArrowLottieContainer = document.getElementById(
-        "source-subjects-file-explorer-black-arrow-lottie-container"
-      );
-      sourceSubjectsFileExplorerBlackArrowLottieContainer.innerHTML = "";
-      lottie.loadAnimation({
-        container: sourceSubjectsFileExplorerBlackArrowLottieContainer,
-        animationData: blackArrow,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-      break;
-    }
-
-    case "guided-source-pools-organization-page": {
-      guidedUpdateFolderStructure("source", "pools");
-      renderPoolsHighLevelFolderAsideItems("source");
-      $("#guided-file-explorer-elements").appendTo(
-        $("#guided-source-pools-file-explorer-container")
-      );
-      //Hide the file explorer and show the intro
-      hideEleShowEle("guided-file-explorer-elements", "guided-source-pools-file-explorer-intro");
-
-      const sourcePoolsFileExplorerBlackArrowLottieContainer = document.getElementById(
-        "source-pools-file-explorer-black-arrow-lottie-container"
-      );
-      sourcePoolsFileExplorerBlackArrowLottieContainer.innerHTML = "";
-      //Load the black arrow lottie animation
-      lottie.loadAnimation({
-        container: sourcePoolsFileExplorerBlackArrowLottieContainer,
-        animationData: blackArrow,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-      break;
-    }
-
-    case "guided-derivative-samples-organization-page": {
-      renderSamplesHighLevelFolderAsideItems("derivative");
-      guidedUpdateFolderStructure("derivative", "samples");
-      $("#guided-file-explorer-elements").appendTo(
-        $("#guided-derivative-samples-file-explorer-container")
-      );
-
-      //Hide the file explorer and show the intro
-      document.getElementById("guided-file-explorer-elements").classList.add("hidden");
-      document
-        .getElementById("guided-derivative-samples-file-explorer-intro")
-        .classList.remove("hidden");
-
-      //Load the black arrow lottie animation
-      const derivativeSamplesFileExplorerBlackArrowLottieContainer = document.getElementById(
-        "derivative-samples-file-explorer-black-arrow-lottie-container"
-      );
-      derivativeSamplesFileExplorerBlackArrowLottieContainer.innerHTML = "";
-      lottie.loadAnimation({
-        container: derivativeSamplesFileExplorerBlackArrowLottieContainer,
-        animationData: blackArrow,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-      break;
-    }
-
-    case "guided-derivative-subjects-organization-page": {
-      renderSubjectsHighLevelFolderAsideItems("derivative");
-      guidedUpdateFolderStructure("derivative", "subjects");
-      $("#guided-file-explorer-elements").appendTo(
-        $("#guided-derivative-subjects-file-explorer-container")
-      );
-      //Hide the file explorer and show the intro
-      document.getElementById("guided-file-explorer-elements").classList.add("hidden");
-      document
-        .getElementById("guided-derivative-subjects-file-explorer-intro")
-        .classList.remove("hidden");
-
-      //Load the black arrow lottie animation
-      const derivativeSubjectsFileExplorerBlackArrowLottieContainer = document.getElementById(
-        "derivative-subjects-file-explorer-black-arrow-lottie-container"
-      );
-      derivativeSubjectsFileExplorerBlackArrowLottieContainer.innerHTML = "";
-      lottie.loadAnimation({
-        container: derivativeSubjectsFileExplorerBlackArrowLottieContainer,
-        animationData: blackArrow,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-      break;
-    }
-
-    case "guided-derivative-pools-organization-page": {
-      guidedUpdateFolderStructure("derivative", "pools");
-      renderPoolsHighLevelFolderAsideItems("derivative");
-      $("#guided-file-explorer-elements").appendTo(
-        $("#guided-derivative-pools-file-explorer-container")
-      );
-      //Hide the file explorer and show the intro
-      hideEleShowEle(
-        "guided-file-explorer-elements",
-        "guided-derivative-pools-file-explorer-intro"
-      );
-
-      const derivativePoolsFileExplorerBlackArrowLottieContainer = document.getElementById(
-        "derivative-pools-file-explorer-black-arrow-lottie-container"
-      );
-      derivativePoolsFileExplorerBlackArrowLottieContainer.innerHTML = "";
-      //Load the black arrow lottie animation
-      lottie.loadAnimation({
-        container: derivativePoolsFileExplorerBlackArrowLottieContainer,
-        animationData: blackArrow,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-      break;
-    }
-
-    case "guided-data-derivative-import-page": {
-      const dataDeliverableLottieContainer = document.getElementById(
-        "data-deliverable-lottie-container"
-      );
-      const dataDeliverableParaText = document.getElementById("guided-data-deliverable-para-text");
-
-      const importedMilestones =
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-imported-milestones"];
-
-      if (importedMilestones) {
-        // set the data deliverable import lottie as complete
-        dataDeliverableLottieContainer.innerHTML = "";
-        lottie.loadAnimation({
-          container: dataDeliverableLottieContainer,
-          animationData: successCheck,
-          renderer: "svg",
-          loop: false,
-          autoplay: true,
-        });
-        dataDeliverableParaText.innerHTML =
-          sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"];
-
-        renderMilestoneSelectionTable(importedMilestones);
-        const tempSelectedMilestones =
-          sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-selected-milestones"];
-        if (tempSelectedMilestones) {
-          //Check the checkboxes for previously selected milestones
-          const milestoneDescriptionsToCheck = tempSelectedMilestones.map((milestone) => {
-            return milestone["description"];
-          });
-          for (const milestone of milestoneDescriptionsToCheck) {
-            //find the checkbox with name milestone and value of milestone
-            const milestoneCheckbox = document.querySelector(
-              `input[name="milestone"][value="${milestone}"]`
-            );
-            if (milestoneCheckbox) {
-              milestoneCheckbox.checked = true;
-            }
-          }
-        }
-        unHideAndSmoothScrollToElement("guided-div-data-deliverables-import");
-      } else {
-        //reset the submission metadata lotties and para text
-        dataDeliverableLottieContainer.innerHTML = "";
-        lottie.loadAnimation({
-          container: dataDeliverableLottieContainer,
-          animationData: dragDrop,
-          renderer: "svg",
-          loop: true,
-          autoplay: true,
-        });
-        dataDeliverableParaText.innerHTML = "";
-        document.getElementById("guided-div-data-deliverables-import").classList.add("hidden");
-      }
-      break;
-    }
-
-    case "guided-completion-date-selection-page": {
-      const selectedMilestoneData =
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-selected-milestones"];
-
-      // get a unique set of completionDates from checkedMilestoneData
-      const uniqueCompletionDates = Array.from(
-        new Set(selectedMilestoneData.map((milestone) => milestone.completionDate))
-      );
-
-      if (uniqueCompletionDates.length === 1) {
-        //save the completion date into sodaJSONObj
-        const uniqueCompletionDate = uniqueCompletionDates[0];
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] =
-          uniqueCompletionDate;
-
-        document.getElementById("guided-completion-date-container").innerHTML =
-          createCompletionDateRadioElement("completion-date", uniqueCompletionDate);
-        //check the completion date
-        document.querySelector(
-          `input[name="completion-date"][value="${uniqueCompletionDate}"]`
-        ).checked = true;
-      }
-
-      if (uniqueCompletionDates.length > 1) {
-        //filter value 'N/A' from uniqueCompletionDates
-        const filteredUniqueCompletionDates = uniqueCompletionDates.filter(
-          (date) => date !== "N/A"
-        );
-
-        //create a radio button for each unique date
-        const completionDateCheckMarks = filteredUniqueCompletionDates
-          .map((completionDate) => {
-            return createCompletionDateRadioElement("completion-date", completionDate);
-          })
-          .join("\n");
-        document.getElementById("guided-completion-date-container").innerHTML =
-          completionDateCheckMarks;
-
-        //If a completion date has already been selected, select it's radio button
-        const selectedCompletionDate =
-          sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"];
-        if (selectedCompletionDate) {
-          const selectedCompletionDateRadioElement = document.querySelector(
-            `input[name="completion-date"][value="${selectedCompletionDate}"]`
-          );
-          if (selectedCompletionDateRadioElement) {
-            selectedCompletionDateRadioElement.checked = true;
-          }
-        }
-      }
-      break;
-    }
-
-    case "guided-submission-metadata-page": {
-      const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-      const selectedMilestones =
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-selected-milestones"];
-
-      const completionDate =
+      //If a completion date has already been selected, select it's radio button
+      const selectedCompletionDate =
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"];
-
-      const sparcAwardInput = document.getElementById("guided-submission-sparc-award");
-      const completionDateInput = document.getElementById("guided-submission-completion-date");
-
-      guidedSubmissionTagsTagify.removeAllTags();
-
-      sparcAwardInput.value = sparcAward;
-
-      const uniqueMilestones = Array.from(
-        new Set(selectedMilestones.map((milestone) => milestone.milestone))
-      );
-      guidedSubmissionTagsTagify.addTags(uniqueMilestones);
-
-      completionDateInput.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
-      //select the completion date that was added
-      completionDateInput.value = completionDate;
-
-      break;
+      if (selectedCompletionDate) {
+        const selectedCompletionDateRadioElement = document.querySelector(
+          `input[name="completion-date"][value="${selectedCompletionDate}"]`
+        );
+        if (selectedCompletionDateRadioElement) {
+          selectedCompletionDateRadioElement.checked = true;
+        }
+      }
     }
+  }
+
+  if (pageIdToActivate === "guided-submission-metadata-page") {
+    const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+    const selectedMilestones =
+      sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-selected-milestones"];
+
+    const completionDate =
+      sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"];
+
+    const sparcAwardInput = document.getElementById("guided-submission-sparc-award");
+    const completionDateInput = document.getElementById("guided-submission-completion-date");
+
+    guidedSubmissionTagsTagify.removeAllTags();
+
+    sparcAwardInput.value = sparcAward;
+
+    const uniqueMilestones = Array.from(
+      new Set(selectedMilestones.map((milestone) => milestone.milestone))
+    );
+    guidedSubmissionTagsTagify.addTags(uniqueMilestones);
+
+    completionDateInput.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
+    //select the completion date that was added
+    completionDateInput.value = completionDate;
   }
 
   //Show target page and hide its siblings
@@ -5994,7 +5959,6 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["generate-dataset"] = {};
   sodaJSONObj["generate-dataset"]["destination"] = "bf";
   sodaJSONObj["guided-manifest-files"] = {};
-  console.log(sodaJSONObj["guided-manifest-files"]);
   sodaJSONObj["starting-point"] = {};
   sodaJSONObj["dataset-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["shared-metadata"] = {};
@@ -6474,7 +6438,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
               ]?.["folders"]?.[sample.subjectName]?.["folders"]?.[sampleName];
 
             if (sampleFolderInHighLevelFolder) {
-              if (showWarningIfSampleFoldersExist) {
+              if (!warningBeforeDeletingSampleWithFoldersSwalHasBeenShown) {
                 // Warn the user if they are deleting a sample with folders
                 // If they cancel the deletion, we return and the sample or its folders are not deleted
                 const continueWithSampleDeletion = await guidedWarnBeforeDeletingEntity(
@@ -6511,7 +6475,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
               ]?.["folders"]?.[sampleName];
 
             if (sampleFolderInHighLevelFolder) {
-              if (showWarningIfSampleFoldersExist) {
+              if (!warningBeforeDeletingSampleWithFoldersSwalHasBeenShown) {
                 // Warn the user if they are deleting a sample with folders
                 // If they cancel the deletion, we return and the sample or its folders are not deleted
                 const continueWithSampleDeletion = await guidedWarnBeforeDeletingEntity(
