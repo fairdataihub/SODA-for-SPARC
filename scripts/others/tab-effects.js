@@ -48,7 +48,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
     $(x[tabNow]).css("overflow", "auto");
   }, 1200);
 
-  var inActiveTabArray = [0, 1, 2, 3, 4, 5, 6, 7].filter((element) => {
+  var inActiveTabArray = [0, 1, 2, 3, 4, 5, 6].filter((element) => {
     return ![tabNow].includes(element);
   });
 
@@ -164,6 +164,11 @@ const showParentTab = (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == x.length - 1) {
+    let step5Bubble = document.getElementsByClassName("vertical-progress-bar-step")[4];
+    // if (step5Bubble.classList.contains("is-current")) {
+    //   step5Bubble.classList.remove("is-current");
+    // }
+    // step5Bubble.classList.add("done");
     console.log("revealing here?");
     // If in step 6, show the generate button and the preview tab
     $("#nextBtn").css("display", "none");
@@ -653,7 +658,7 @@ const nextPrev = (pageIndex) => {
   ) {
     $(parentTabs[currentTab]).removeClass("tab-active");
     if (pageIndex == 1) {
-      currentTab = currentTab + 2;
+      currentTab = currentTab + 1;
       $("#nextBtn").prop("disabled", false);
     } else {
       currentTab = currentTab - 1;
