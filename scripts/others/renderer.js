@@ -7715,12 +7715,11 @@ document.getElementById("button-generate").addEventListener("click", async funct
 
   statusText = "Please wait while we verify a few things...";
   if (dataset_destination == "Pennsieve") {
-    /// TODO: Uncomment this
-    // let supplementary_checks = await run_pre_flight_checks(false);
-    // if (!supplementary_checks) {
-    //   $("#sidebarCollapse").prop("disabled", false);
-    //   return;
-    // }
+    let supplementary_checks = await run_pre_flight_checks(false);
+    if (!supplementary_checks) {
+      $("#sidebarCollapse").prop("disabled", false);
+      return;
+    }
   }
 
   // from here you can modify
