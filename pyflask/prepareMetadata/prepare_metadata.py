@@ -243,7 +243,6 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
     subscriber_metadata_ps_client = partial(subscriber_metadata, ps)
     # subscribe for the upload to finish
     ps.subscribe(10, False, subscriber_metadata_ps_client)
-    ps.subscribe(10, False, subscriber_metadata_ps_client)
 
     # before we can remove files we need to wait for all of the Agent's threads/subprocesses to finish
     # elsewise we get an error that the file is in use and therefore cannot be deleted
