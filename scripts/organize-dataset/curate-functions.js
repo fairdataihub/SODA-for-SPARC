@@ -1896,13 +1896,13 @@ const ffOpenManifestEditSwal = async (highlevelFolderName) => {
       //spreadsheet reply contained results
       ipcRenderer.removeAllListeners("spreadsheet-reply");
       saveManifestFiles = true;
-      guidedManifestTable = result;
+      // guidedManifestTable = result;
       if (saveManifestFiles) {
         console.log(guidedManifestTable);
         //if additional metadata or description gets added for a file then add to json as well
         sodaJSONObj["manifest-files"]["auto-generated"] = true;
-        const savedHeaders = guidedManifestTable.getHeaders().split(",");
-        const savedData = guidedManifestTable.getData();
+        const savedHeaders = result[0];
+        const savedData = result[1];
         let jsonManifest = {};
         let localFolderPath = path.join(
           homeDirectory,
