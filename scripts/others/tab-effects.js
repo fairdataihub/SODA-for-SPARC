@@ -661,7 +661,7 @@ const nextPrev = (pageIndex) => {
     if (pageIndex == 1) {
       currentTab = currentTab + 2;
       $("#nextBtn").prop("disabled", false);
-      fixStepDone(4)
+      fixStepDone(4);
     } else {
       currentTab = currentTab - 1;
       // fixStepDone(4);
