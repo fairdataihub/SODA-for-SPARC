@@ -69,7 +69,7 @@ def create_request_headers(ps):
     """
     return {
             "Content-Type": "application/json",
-            "Authorization": f"Bearer {ps.getUser()['session_token']}",
+            "Authorization": f"Bearer {ps.get_user().session_token}",
     }
 
 
@@ -204,7 +204,7 @@ client.subscribe(10, False, run_sb_stop_sub)
 
 
 
-# r = requests.post(f"{PENNSIEVE_URL}/packages", headers={"Content-Type": "application/json", "Authorization": f"Bearer {client.getUser()['session_token']}",}, 
+# r = requests.post(f"{PENNSIEVE_URL}/packages", headers={"Content-Type": "application/json", "Authorization": f"Bearer {client.get_user()['session_token']}",}, 
 #                 json={
 #                     "name": "nested", 
 #                     "dataset": "N:dataset:f36a6c0a-5deb-466e-b404-bab54bc112a1", 

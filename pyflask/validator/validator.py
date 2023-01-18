@@ -1,368 +1,114 @@
-# # -*- coding: utf-8 -*-
-# # from gevent import monkey; monkey.patch_all(ssl=False)
-# from sparcur.paths import Path as SparCurPath
-# from sparcur.utils import PennsieveId
-# from sparcur.simple.validate import main as validate
-# from sparcur.simple.retrieve import main as retrieve
-# from configparser import ConfigParser
-# import gevent
-# import os
-# import os.path
-# import sys
-# import shutil
-# import yaml
-# from pathlib import Path
-# from .validatorUtils import parse
-
-# userpath = os.path.expanduser("~")
-# configpath = os.path.join(userpath, '.pennsieve', 'config.ini')
-# sodavalidatorpath = os.path.join(userpath, 'SODA', 'SODA_Validator_Dataset')
+# -*- coding: utf-8 -*-
+# from gevent import monkey; monkey.patch_all(ssl=False)
+import requests
+import time 
+from sparcur.simple.validate import main as validate
+from errorHandlers import handle_http_error
+from .validatorUtils import ( 
+    parse, 
+    create_normalized_ds_path,
+    verified_latest_export,
+    validate_validation_result
+)
+from datasets import get_dataset_by_id
 
 
-# def get_home_directory(folder):
-#     if sys.platform == "win32":
-#         return str(Path.home()) + "/AppData/Local/" + folder
-#     elif sys.platform == "linux":
-#         return str(Path.home()) + "/.config/" + folder
-#     elif sys.platform == "darwin":
-#         return str(Path.home()) + "/AppData/Local/" + folder 
+# TODO: translate export results into a format that is easier to read
+# TODO: Calibrate an ideal wait time if we keep one at all
+def validate_pennsieve_dataset_pipeline(ps_dataset_id):
 
+    """
+        Retrieves the given dataset's export results, if the export is valid and available within 1 minute of requesting the export.
+        Valid exports come from datasets that have metadata files and have a timestamp matching the given Pennsieve dataset's 'updatedAt' timestamp.
+    """
 
-# # validate a local dataset at the target directory 
-# def val_dataset_local_pipeline(ds_path):
-#     # convert the path to absolute from user's home directory
-#     joined_path = os.path.join(userpath, ds_path.strip())
+    # Constraints:
+    #    - LATEST stores the export that completed after the most recent change in dataset.
+    # Cases to handle: 
+    #    - An export in LATEST has a timestamp that does not correspond to the updatedAt timestamp for the Pennsieve dataset.
+    #    - An export does not exist at the time of requesting it.
+    #    - The export is of a failed validation run.
+    #    - An export is missing metadata files necessary to generate a path_error_report. 
+    # NOTE: the code handles/will handle the above cases in this way:
+    #    - to handle case one: ensure that #/meta/timestamp_updated matches the dataset updated time you see on the Pennsieve portal. Use a backoff to wait until they sync. [ Done ]
+    #    - to handle case two: expect 404s until the export is ready. Use a backoff to wait until it is. [ Done ]
+    #    - to handle case three: Tom will look into adding ways having the exports contain metdata that indicates if the export is a success or failure. For now not sure. [ TODO: WIP ]
+    #    - to handle case four: Check if there are metadata files in the dataset. If not then alert the user validation can only be done with metadata files present. [ Done ]
+    #    - to handle case five: If there is only a manifest file it will not generate a path_error_report ( TODO: Double check ) so if none of the listed metadata files 
+    #      exist in the dataset then return back to the user they need metadta files to get a result. [ Done ]
+        
 
-#     # check that the directory exists 
-#     valid_directory = os.path.isdir(joined_path)
-
-#     # give user an error 
-#     if not valid_directory:
-#         raise OSError(f"The given directory does not exist: {joined_path}")
-
-#     # convert to Path object for Validator to function properly
-#     norm_ds_path = Path(joined_path)
-
-#     # validate the dataset
-#     blob = validate(norm_ds_path)
-
-#     # peel out the status object 
-#     status = blob.get('status')
-
-#     # peel out the path_error_report object
-#     path_error_report = status.get('path_error_report')
-
-#     # get the errors out of the report that do not have errors in their subpaths (see function comments for the explanation)
-#     parsed_path_error_report = parse(path_error_report)
-
-#     return parsed_path_error_report
-
-# local_sparc_dataset_location = str(Path.home()) + "/files/sparc-datasets"
-# sparc_organization_id = "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
-# parent_folder = SparCurPath(local_sparc_dataset_location).expanduser()
-
-
-
-
-
-
-# # for gevent
-# local_dataset_folder_path = ""
-# validation_json = {}
-
-# # config file locations
-# orthauth_path = SparCurPath(get_home_directory("orthauth")).expanduser()
-# orthauth_path_secrets = SparCurPath(get_home_directory("orthauth") + '/secrets.yaml').expanduser()
-# pyontutils_path = SparCurPath(get_home_directory("pyontutils")).expanduser()
-# pyontutils_path_config = SparCurPath(get_home_directory("pyontutils") + '/config.yaml').expanduser()
-
-# # min template for orthauth config file
-# orthauth_path_secrets_min_template = {
-#     "pennsieve": {
-#         "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0": { 
-#              "key": "", 
-#              "secret": ""
-#             }
-#         }
-#     }
-
-# # min template for pyontutils config file
-# pyontutils_config = {
-#     'auth-stores': {
-#         'secrets': {
-#             'path': '{:user-config-path}/orthauth/secrets.yaml'
-#             }
-#         },
-#     'auth-variables': {
-#         'curies': None,
-#         'git-local-base': None,
-#         'git-remote-base': None,
-#         'google-api-creds-file': None,
-#         'google-api-service-account-file': None,
-#         'google-api-store-file': None,
-#         'google-api-store-file-readonly': None,
-#         'nifstd-checkout-ok': None,
-#         'ontology-local-repo': None,
-#         'ontology-org': None,
-#         'ontology-repo': None,
-#         'patch-config': None,
-#         'resources': None,
-#         'scigraph-api': "https://scigraph.olympiangods.org/scigraph",
-#         'scigraph-api-key': None,
-#         'scigraph-graphload': None,
-#         'scigraph-services': None,
-#         'zip-location': None
-#         }
-#     }
-
-# # If orthauth yaml file doesn't exist, or isn't valid
-# # delete it and create a fresh copy with the specified Pennsieve account
-# def add_orthauth_yaml(ps_account):
-#     os.chmod(orthauth_path, 0o0700) # might not be required
-
-#     config = ConfigParser()
-#     if os.path.exists(configpath):
-#         config.read(configpath)
-
-#     yml_obj = orthauth_path_secrets_min_template.copy()
-
-#     yml_obj["pennsieve"][sparc_organization_id]["key"] = config[ps_account]["api_token"]
-#     yml_obj["pennsieve"][sparc_organization_id]["secret"] = config[ps_account]["api_secret"]
-
-#     # delete pre-existing file
-#     if os.path.exists(orthauth_path_secrets):
-#         os.remove(orthauth_path_secrets)
-
-#     # write yaml object to the secrets file.
-#     with open(orthauth_path_secrets, 'w') as file:
-#         yaml.dump(yml_obj, file)
-
-#     os.chmod(orthauth_path_secrets, 0o0600) # required for the validator
-
-#     return "Valid"
-
-# # Check that all the keys are accounted for
-# def check_prerequisites(ps_account):
-#     ## pyontutils config
-#     if not os.path.exists(pyontutils_path):
-#         pyontutils_path.mkdir(parents = True, exist_ok = True)
-
-#     with open(pyontutils_path_config, 'w') as file:
-#         yaml.dump(pyontutils_config, file)
+    # get the timestamp marking the latest change made to the given pennsieve dataset
+    updated_at_timestamp = get_dataset_by_id(ps_dataset_id)["content"]["updatedAt"]
     
-#     # orthauth config folder path
-#     if not os.path.exists(orthauth_path):
-#         orthauth_path.mkdir(parents = True, exist_ok = True)
+    # 1. get the pennsieve export object for the given dataset
+    export = request_pennsieve_export(ps_dataset_id, updated_at_timestamp)
 
-#     # Create yaml if doesn't exist
-#     if os.path.exists(orthauth_path_secrets):
-#         with open(orthauth_path_secrets) as file:
-#             yml_obj = yaml.full_load(file)
-
-#             if "pennsieve" in yml_obj:
-#                 if sparc_organization_id in yml_obj["pennsieve"]:
-#                     if "key" in yml_obj["pennsieve"][sparc_organization_id]:
-#                         if "secret" in yml_obj["pennsieve"][sparc_organization_id]:
-#                             return "Valid"
-
-#     return add_orthauth_yaml(ps_account)
-
-# # This pipeline first retrieves a datset to a local folder 
-# # and then validates the local dataset
-# def validate_dataset_pipeline(ps_account, ps_dataset):
-#     # return
-#     # global local_dataset_folder_path
-#     # global validation_json
-
-#     check_prerequisites(ps_account)
-
-#     sparc_dataset_id = ps_dataset
-#     sparc_dataset_uuid = sparc_dataset_id.replace("N:dataset:", "")
-
-#     try:
-#         organization = PennsieveId(sparc_organization_id)
-#         sparc_dataset = PennsieveId(sparc_dataset_id)
-#     except Exception as e:
-#         raise e
-
-#     # create dataset folder for the retrieve
-#     if not os.path.exists(parent_folder):
-#         parent_folder.mkdir(parents = True, exist_ok = True)
-
-#     # local_dataset_folder_path = retrieve(id = sparc_dataset, dataset_id = sparc_dataset, project_id = organization, parent_parent_path = parent_folder)
+    # 2. validate the export
+    validate_validation_result(export)
     
+    # 3. get the status of the export
+    status = export.get('status')
 
-#     # def temp_retrieve_function(sparc_dataset, organization, parent_folder):
-#     #     global local_dataset_folder_path
-#     #     gevent.sleep(0)
-#     #     local_dataset_folder_path = retrieve(id = sparc_dataset, dataset_id = sparc_dataset, project_id = organization, parent_parent_path = parent_folder)
-#     #     gevent.sleep(0)
-    
-#     # gev = []
-#     # try:
-#     #     # retrieve the dataset from Pennsive. --check for heartbeat errors here
-#     #     if organization != "" and sparc_dataset != "":
-#     #         gevent.sleep(0)
-#     #         gev.append(gevent.spawn(temp_retrieve_function, sparc_dataset, organization, parent_folder))
-#     #         gevent.sleep(0)
-#     #         gevent.joinall(gev) 
-#     #         gevent.sleep(0)
-#     #         try:
-#     #             gev[0].get()
-#     #         except Exception as e:
-#     #             raise e
-#     #     else:
-#     #         raise Exception("Retrieve Errror")
-#     # except Exception as e:
-#     #     raise e
+    # 4. get the path error report from the status
+    path_error_report = status.get('path_error_report')
 
-#     validation_json = {}
-#     validation_json = validate(local_dataset_folder_path)
+    # 5. get the errors out of the report that do not have errors in their subpaths (see function comments for the explanation)
+    return parse(path_error_report)
 
+def request_pennsieve_export(ps_dataset_id, dataset_latest_updated_at_timestamp):
+    """ 
+    Retrieves the latest export for a particular users dataset, if available within 1 minute of
+    requesting the export. 
+    """
 
-#     # def temp_validate_function(local_dataset_folder_path):
-#     #     global validation_json
-#     #     gevent.sleep(0)
-#     #     validation_json = validate(local_dataset_folder_path)
-#     #     gevent.sleep(0)
+    # remove the N:dataset text from the UUID
+    ps_dataset_id_trimmed = ps_dataset_id.replace("N:dataset:", "")
 
-#     # local_dataset_folder_path = r"/home/dev/files/sparc-datasets/2f4afec4-6e4d-4c20-b913-8e115fc8631b/Acute effects of gastric electrical stimulation (GES) settings on neural activity accessed with functional magnetic resonance maging (fMRI) in rats"
+    for backoff_time in range(0, 51, 10):
+        # wait for the backoff time 
+        time.sleep(backoff_time)
 
-#     # try:
-#     #     gevent.sleep(0)
-#     #     gev.append(gevent.spawn(temp_validate_function, local_dataset_folder_path))
-#     #     gevent.sleep(0)
-#     #     gevent.joinall(gev) 
-#     #     gevent.sleep(0)
-#     #     try:
-#     #         gev[0].get()
-#     #     except Exception as e:
-#     #         raise e
-#     # except Exception as e:
-#     #     raise e
+        try:
+            # retrieve the exports json file for the given dataset
+            r = requests.get(f"https://cassava.ucsd.edu/sparc/datasets/{ps_dataset_id_trimmed}/LATEST/curation-export.json")
 
-#     try:
-#         path_error_report = validation_json["status"]["path_error_report"]
-#     except Exception as e:
-#         path_error_report = validation_json["status"]
+            r.raise_for_status()
 
-#     # path_error_report = validation_json["status"]["path_error_report"]
-#     # path_error_report = {}
-#     # blob = json.dumps(validation_json, indent=4, sort_keys=True, default=str)
+            export = r.json()
 
-#     # Delete the local dataset. 
-#     # FUTURE: Look into setting an expiration date for this one.
-#     dir_path = SparCurPath(local_sparc_dataset_location + '/' + sparc_dataset_uuid).expanduser()
-#     try:
-#         shutil.rmtree(dir_path)
-#     except OSError as e:
-#         # no folder present
-#         print("Error: %s : %s" % (dir_path, e.strerror))
+            # check if the LATEST export file is the one corresponding to the most recent change in the dataset
+            if verified_latest_export(export, dataset_latest_updated_at_timestamp):
+                return export
 
-#     # return the error report. We can deal with the validation on the front end.
-#     return path_error_report
+        except requests.exceptions.HTTPError as e:
+            # if on the last request and we get an HTTP error show the user the error
+            if backoff_time == 50:
+                return handle_http_error(e)
 
-#     # global local_dataset_folder_path
-#     # global validation_json
+    # a pennsieve export for the given dataset does not exist yet; or there is not one that matches the most recent change in the dataset
+    return None
 
-#     # check_prerequisites(ps_account)
+def validate_local_dataset_pipeline(ds_path):
 
-#     # sparc_dataset_id = ps_dataset
-#     # sparc_dataset_uuid = sparc_dataset_id.replace("N:dataset:", "")
+    norm_ds_path = create_normalized_ds_path(ds_path)
 
-#     # try:
-#     #     organization = PennsieveId(sparc_organization_id)
-#     #     sparc_dataset = PennsieveId(sparc_dataset_id)
-#     # except Exception as e:
-#     #     raise e
+    # validate the dataset
+    blob = validate(norm_ds_path)
 
-#     # # create dataset folder for the retrieve
-#     # if not os.path.exists(parent_folder):
-#     #     parent_folder.mkdir(parents = True, exist_ok = True)
+    validate_validation_result(blob)
 
-#     # def temp_retrieve_function(sparc_dataset, organization, parent_folder):
-#     #     global local_dataset_folder_path
-#     #     local_dataset_folder_path = retrieve(id = sparc_dataset, dataset_id = sparc_dataset, project_id = organization, parent_parent_path = parent_folder)
-#     #     return
-    
-#     # gev = []
-#     # try:
-#     #     # retrieve the dataset from Pennsive. --check for heartbeat errors here
-#     #     if organization != "" and sparc_dataset != "":
-#     #         gevent.sleep(0)
-#     #         # gev.append(gevent.spawn(temp_retrieve_function, sparc_dataset, organization, parent_folder))
-#     #         local_dataset_folder_path = retrieve(id = sparc_dataset, dataset_id = sparc_dataset, project_id = organization, parent_parent_path = parent_folder)
-#     #         # gevent.sleep(0)
-#     #         # gevent.joinall(gev) 
-#     #         # gevent.sleep(0)
-#     #         # try:
-#     #         #     gev[0].get()
-#     #         # except Exception as e:
-#     #         #     raise e
-#     #     else:
-#     #         raise Exception("Retrieve Errror")
+    # peel out the status object 
+    status = blob.get('status')
 
-#     #     return str(local_dataset_folder_path)
-#     # except Exception as e:
-#     #     raise e
+    # peel out the path_error_report object
+    path_error_report = status.get('path_error_report')
+
+    # get the errors out of the report that do not have errors in their subpaths (see function comments for the explanation)
+    return parse(path_error_report)
 
 
 
 
 
 
-
-
-
-# def val_dataset_pipeline(ps_account, ps_dataset):
-#     global validation_json
-
-#     # sparc_dataset_id = ps_dataset
-#     # sparc_dataset_uuid = sparc_dataset_id.replace("N:dataset:", "")
-
-#     validation_json = {}
-#     def temp_validate_function(local_dataset_folder):
-#         global validation_json
-#         # validation_json = validate(local_dataset_folder)
-
-#     # local_dataset_folder_path = r"/home/dev/files/sparc-datasets/2f4afec4-6e4d-4c20-b913-8e115fc8631b/Acute effects of gastric electrical stimulation (GES) settings on neural activity accessed with functional magnetic resonance maging (fMRI) in rats"
-#     gev = []
-#     try:
-#         gevent.sleep(0)
-#         gev.append(gevent.spawn(temp_validate_function, Path(sodavalidatorpath)))
-#         # validation_json = validate(local_dataset_folder_path)
-#         gevent.sleep(0)
-#         gevent.joinall(gev) 
-#         # gevent.sleep(0)
-#         try:
-#             gev[0].get()
-#         except Exception as e:
-#             raise e
-#     except Exception as e:
-#         raise e
-
-#     try:
-#         path_error_report = validation_json["status"]["path_error_report"]
-#     except Exception as e:
-#         path_error_report = validation_json["status"]
-#     # path_error_report = {}
-#     # blob = json.dumps(validation_json, indent=4, sort_keys=True, default=str)
-
-#     # dir_path = Path(sodavalidatorpath)
-#     # try:
-#     #     shutil.rmtree(dir_path)
-#     # except OSError as e:
-#     #     # no folder present
-#     #     print("Error: %s : %s" % (dir_path, e.strerror))
-
-#     # Delete the local dataset. 
-#     # FUTURE: Look into setting an expiration date for this one.
-#     # dir_path = SparCurPath(local_sparc_dataset_location + '/' + sparc_dataset_uuid).expanduser()
-#     # try:
-#     #     shutil.rmtree(dir_path)
-#     # except OSError as e:
-#     #     # no folder present
-#     #     print("Error: %s : %s" % (dir_path, e.strerror))
-
-#     # return the error report. We can deal with the validation on the front end.
-#     return path_error_report

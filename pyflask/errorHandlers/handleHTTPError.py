@@ -3,7 +3,6 @@ from flask import abort
 
 def handle_http_error(e):
     prefix, suffix = get_prefix_suffix(e)    
-
     if "400" in prefix:    
         abort(400, suffix)
     if "401" in prefix:

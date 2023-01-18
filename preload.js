@@ -416,11 +416,11 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               $("#current_sparc_consortium_status").text("None");
               $("#sparc-consortium-share-btn").hide();
               $("#sparc-consortium-unshare-btn").hide();
-              const gettingStartedPennsieveBtn = document.getElementById(
-                "getting-started-pennsieve-account"
-              );
-              gettingStartedPennsieveBtn.children[0].style.display = "none";
-              gettingStartedPennsieveBtn.children[1].style.display = "flex";
+              // const gettingStartedPennsieveBtn = document.getElementById(
+              // "getting-started-pennsieve-account"
+              // );
+              // gettingStartedPennsieveBtn.children[0].style.display = "none";
+              // gettingStartedPennsieveBtn.children[1].style.display = "flex";
 
               showHideDropdownButtons("account", "show");
               confirm_click_account_function();

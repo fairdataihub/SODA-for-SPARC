@@ -28,9 +28,10 @@ from flask import abort
 import requests
 from datetime import datetime, timezone
 from permissions import bf_get_current_user_permission_agent_two
-from utils import authenticate_user_with_client, connect_pennsieve_client, get_dataset_id, create_request_headers
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
+from utils import authenticate_user_with_client, connect_pennsieve_client, get_dataset_id, create_request_headers, TZLOCAL
+from manifest import create_high_level_manifest_files_existing_bf_starting_point, create_high_level_manifest_files, get_auto_generated_manifest_files
 
 from pysodaUtils import (
     check_forbidden_characters_bf,
@@ -249,9 +250,7 @@ TEMPLATE_PATH = DEV_TEMPLATE_PATH if exists(DEV_TEMPLATE_PATH) else PROD_TEMPLAT
 
 PENNSIEVE_URL = "https://api.pennsieve.io"
 
-### Internal functions
-def TZLOCAL():
-    return datetime.now(timezone.utc).astimezone().tzinfo
+
 
 
 def open_file(file_path):
@@ -842,171 +841,7 @@ manifest_sparc = ["manifest.xlsx", "manifest.csv"]
 manifest_folder_path = join(userpath, "SODA", "manifest_files")
 
 
-def create_high_level_manifest_files(soda_json_structure):
-    """
-    Function to create manifest files for each high-level SPARC folder.
 
-    Args:
-        soda_json_structure: soda dict with information about the dataset to be generated/modified
-    Action:
-        manifest_files_structure: dict including the local path of the manifest files
-    """
-    double_extensions = [
-        ".ome.tiff",
-        ".ome.tif",
-        ".ome.tf2,",
-        ".ome.tf8",
-        ".ome.btf",
-        ".ome.xml",
-        ".brukertiff.gz",
-        ".mefd.gz",
-        ".moberg.gz",
-        ".nii.gz",
-        ".mgh.gz",
-        ".tar.gz",
-        ".bcl.gz",
-    ]
-
-    try:
-
-        def get_name_extension(file_name):
-            double_ext = False
-            for ext in double_extensions:
-                if file_name.find(ext) != -1:
-                    double_ext = True
-                    break
-
-            ext = ""
-            name = ""
-
-            if double_ext == False:
-                name = os.path.splitext(file_name)[0]
-                ext = os.path.splitext(file_name)[1]
-            else:
-                ext = (
-                    os.path.splitext(os.path.splitext(file_name)[0])[1]
-                    + os.path.splitext(file_name)[1]
-                )
-                name = os.path.splitext(os.path.splitext(file_name)[0])[0]
-            return name, ext
-
-        def recursive_manifest_builder(
-            my_folder, my_relative_path, dict_folder_manifest
-        ):
-            if "files" in my_folder.keys():
-                for file_key, file in my_folder["files"].items():
-                    gevent.sleep(0)
-                    dict_folder_manifest = file_manifest_entry(
-                        file_key, file, my_relative_path, dict_folder_manifest
-                    )
-
-            if "folders" in my_folder.keys():
-                for folder_key, folder in my_folder["folders"].items():
-                    if my_relative_path:
-                        relative_path = my_relative_path + "/" + folder_key
-                    else:
-                        relative_path = folder_key
-                    dict_folder_manifest = recursive_manifest_builder(
-                        folder, relative_path, dict_folder_manifest
-                    )
-
-            return dict_folder_manifest
-
-        def file_manifest_entry(file_key, file, relative_path, dict_folder_manifest):
-            # filename
-            if relative_path:
-                filename = relative_path + "/" + file_key
-            else:
-                filename = file_key
-            dict_folder_manifest["filename"].append(filename)
-            # timestamp
-            file_type = file["type"]
-            if file_type == "local":
-                file_path = file["path"]
-                filepath = pathlib.Path(file_path)
-                mtime = filepath.stat().st_mtime
-                lastmodtime = datetime.fromtimestamp(mtime).astimezone(local_timezone)
-                dict_folder_manifest["timestamp"].append(
-                    lastmodtime.isoformat().replace(".", ",").replace("+00:00", "Z")
-                )
-            elif file_type == "bf":
-                dict_folder_manifest["timestamp"].append(file["timestamp"])
-            # description
-            if "description" in file.keys():
-                dict_folder_manifest["description"].append(file["description"])
-            else:
-                dict_folder_manifest["description"].append("")
-            # file type
-            fileextension = ""
-            name_split = splitext(file_key)
-            if name_split[1] == "":
-                fileextension = "None"
-            else:
-                unused_file_name, fileextension = get_name_extension(file_key)
-                # fileextension = name_split[1]
-            dict_folder_manifest["file type"].append(fileextension)
-            # addtional metadata
-            if "additional-metadata" in file.keys():
-                dict_folder_manifest["Additional Metadata"].append(
-                    file["additional-metadata"]
-                )
-            else:
-                dict_folder_manifest["Additional Metadata"].append("")
-
-            return dict_folder_manifest
-
-        # create local folder to save manifest files temporarly (delete any existing one first)
-        shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
-        makedirs(manifest_folder_path)
-
-        dataset_structure = soda_json_structure["dataset-structure"]
-        local_timezone = TZLOCAL()
-        manifest_files_structure = {}
-        for folder_key, folder in dataset_structure["folders"].items():
-            # Initialize dict where manifest info will be stored
-            dict_folder_manifest = {}
-            dict_folder_manifest["filename"] = []
-            dict_folder_manifest["timestamp"] = []
-            dict_folder_manifest["description"] = []
-            dict_folder_manifest["file type"] = []
-            dict_folder_manifest["Additional Metadata"] = []
-
-            relative_path = ""
-            dict_folder_manifest = recursive_manifest_builder(
-                folder, relative_path, dict_folder_manifest
-            )
-
-            # create high-level folder at the temporary location
-            folderpath = join(manifest_folder_path, folder_key)
-            makedirs(folderpath)
-
-            # save manifest file
-            manifestfilepath = join(folderpath, "manifest.xlsx")
-            df = pd.DataFrame.from_dict(dict_folder_manifest)
-            df.to_excel(manifestfilepath, index=None, header=True)
-            wb = load_workbook(manifestfilepath)
-            ws = wb.active
-            blueFill = PatternFill(
-                start_color="9DC3E6", fill_type="solid"
-            )
-            greenFill = PatternFill(
-                start_color="A8D08D", fill_type="solid"
-            )
-            yellowFill = PatternFill(
-                start_color="FFD965", fill_type="solid"
-            )
-            ws['A1'].fill = blueFill
-            ws['B1'].fill = greenFill
-            ws['C1'].fill = greenFill
-            ws['D1'].fill = greenFill
-            ws['E1'].fill = yellowFill
-            wb.save(manifestfilepath)
-            manifest_files_structure[folder_key] = manifestfilepath
-
-        return manifest_files_structure
-
-    except Exception as e:
-        raise e
 
 
 def check_JSON_size(jsonStructure):
@@ -1050,7 +885,7 @@ def check_JSON_size(jsonStructure):
                             total_dataset_size += getsize(metadata_path)
 
         if "manifest-files" in jsonStructure.keys():
-            manifest_files_structure = create_high_level_manifest_files(jsonStructure)
+            manifest_files_structure = create_high_level_manifest_files(jsonStructure, manifest_folder_path)
             for key in manifest_files_structure.keys():
                 manifestpath = manifest_files_structure[key]
                 if isfile(manifestpath):
@@ -1169,7 +1004,7 @@ def generate_dataset_locally(soda_json_structure):
             namespace_logger.info("generate_dataset_locally (optional) step 4 handling manifest-files")
             main_curate_progress_message = "Preparing manifest files"
             manifest_files_structure = create_high_level_manifest_files(
-                soda_json_structure
+                soda_json_structure, manifest_folder_path
             )
             for key in manifest_files_structure.keys():
                 manifestpath = manifest_files_structure[key]
@@ -1301,208 +1136,10 @@ double_extensions = [
     ".bcl.gz",
 ]
 
-def get_name_extension(file_name):
-    double_ext = False
-    for ext in double_extensions:
-        if file_name.find(ext) != -1:
-            double_ext = True
-            break
-
-    ext = ""
-    name = ""
-
-    if double_ext == False:
-        name = os.path.splitext(file_name)[0]
-        ext = os.path.splitext(file_name)[1]
-    else:
-        ext = (
-            os.path.splitext(os.path.splitext(file_name)[0])[1]
-            + os.path.splitext(file_name)[1]
-        )
-        name = os.path.splitext(os.path.splitext(file_name)[0])[0]
-    return name, ext
 
 
-def create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, high_level_folders=["code", "derivative", "docs", "primary", "protocol", "source" ], manifest_progress={}):
-    """
-    Function to create manifest files for each high-level SPARC folder for an existing Pennsieve dataset.
-    Args:
-        soda_json_structure: soda dict with information about the dataset to be generated/modified
-        high_level_folders: (optional) list of high-level folders to generate manifests for. Defaults to all primary folders.
-        manifest_progress: (optional) dictionary with information about the progress of the manifest generation. Defaults to empty dictionary.
-    Action:
-        manifest_files_structure: dict including the local path of the manifest files
-    """
-    high_level_folders_present = []
-    manifest_files_structure = {}
-    local_timezone = TZLOCAL()
 
-    global namespace_logger
-    def color_headers(val):
-        namespace_logger.info(val)
-        namespace_logger.info("above is val")
-        """Colors headers"""
-        if(val == "filename"):
-            return 'background-color: #9DC3E6'
-        elif(val == "timestamp" or val == "description" or val == "file type"):
-            return 'background-color: #A8D08D'
-        elif(val == "Additional Metadata"):
-            return 'background-color: #A8D08D'
-        else:
-            return '';
 
-    namespace_logger.info("create_high_level_manifest_files_existing_bf_starting_point step 1")
-
-    def color_headers(val):
-        namespace_logger.info(val)
-        namespace_logger.info("above is val")
-        """Colors headers"""
-        if(val == "filename"):
-            return 'background-color: #9DC3E6'
-        elif(val == "timestamp" or val == "description" or val == "file type"):
-            return 'background-color: #A8D08D'
-        elif(val == "Additional Metadata"):
-            return 'background-color: #A8D08D'
-        else:
-            return '';
-
-    def recursive_folder_traversal(folder, dict_folder_manifest):
-        if "files" in folder.keys():
-            for item in list(folder["files"]):
-                relative_file_name = ""
-                i = 1
-                while i < len(folder["files"][item]["folderpath"]):
-                    relative_file_name += folder["files"][item]["folderpath"][i] + "/"
-                    i += 1
-                relative_file_name += item
-                relative_file_name.replace("\\", "/")
-                dict_folder_manifest["filename"].append(relative_file_name)
-                unused_file_name, file_extension = get_name_extension(item)
-                if file_extension == "":
-                    file_extension = "None"
-                dict_folder_manifest["file type"].append(file_extension)
-
-                if "type" in folder["files"][item].keys():
-                    if folder["files"][item]["type"] == "bf":
-                        dict_folder_manifest["timestamp"].append(
-                            folder["files"][item]["timestamp"]
-                        )
-                    elif folder["files"][item]["type"] == "local":
-                        file_path = folder["files"][item]["path"]
-                        filepath = pathlib.Path(file_path)
-                        mtime = filepath.stat().st_mtime
-                        lastmodtime = datetime.fromtimestamp(mtime).astimezone(
-                            local_timezone
-                        )
-
-                        tm = lastmodtime.isoformat().replace(".", ",").replace("+00:00", "Z")
-                        dict_folder_manifest["timestamp"].append(tm)
-                else:
-                    dict_folder_manifest["timestamp"].append("")
-
-                if "description" in folder["files"][item].keys():
-                    dict_folder_manifest["description"].append(
-                        folder["files"][item]["description"]
-                    )
-                else:
-                    dict_folder_manifest["description"].append("")
-
-                if "additional-metadata" in folder["files"][item].keys():
-                    dict_folder_manifest["Additional Metadata"].append(
-                        folder["files"][item]["additional-metadata"]
-                    )
-                else:
-                    dict_folder_manifest["Additional Metadata"].append("")
-
-        if "folders" in folder.keys():
-            for item in list(folder["folders"]):
-                recursive_folder_traversal(
-                    folder["folders"][item], dict_folder_manifest
-                )
-
-        return
-
-    dataset_structure = soda_json_structure["dataset-structure"]
-
-    # create local folder to save manifest files temporarily if the existing files are stale (i.e. not from updating existing manfiest files)
-    if len(high_level_folders) == 6:
-        shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
-        makedirs(manifest_folder_path)
-
-    for high_level_folder in list(dataset_structure["folders"]):
-        namespace_logger.info(high_level_folder)
-
-        # do not overwrite an existing manifest file 
-        if high_level_folder not in high_level_folders:
-            continue
-        
-        print("HIGH LEVEL FOLDER BELOW")
-        print(high_level_folder)
-        print(dataset_structure["folders"][high_level_folder])
-        if dataset_structure["folders"][high_level_folder]["files"] == {} and dataset_structure["folders"][high_level_folder]["folders"] == {}:
-            print("EMPTY FOLDER CONTINUING")
-            continue
-        print(dataset_structure["folders"][high_level_folder]["files"])
-        print(dataset_structure["folders"][high_level_folder]["folders"])
-        print("-" * 30)
-
-        high_level_folders_present.append(high_level_folder)
-
-        folderpath = join(manifest_folder_path, high_level_folder)
-        makedirs(folderpath)
-        manifestfilepath = join(folderpath, "manifest.xlsx")
-
-        # Initialize dict where manifest info will be stored
-        dict_folder_manifest = {}
-        dict_folder_manifest["filename"] = []
-        dict_folder_manifest["timestamp"] = []
-        dict_folder_manifest["description"] = []
-        dict_folder_manifest["file type"] = []
-        dict_folder_manifest["Additional Metadata"] = []
-
-        recursive_folder_traversal(
-            dataset_structure["folders"][high_level_folder], dict_folder_manifest
-        )
-        print("#" * 30)
-        print("BELOW DICT FOLDER MANIFEST")
-        print(dict_folder_manifest)
-        print("*" * 30)
-
-        df = pd.DataFrame.from_dict(dict_folder_manifest)
-        namespace_logger.info(df)
-        # df.style.applymap(color_headers)
-        df.to_excel(manifestfilepath, index=None, header=True)
-        wb = load_workbook(manifestfilepath)
-        ws = wb.active
-        blueFill = PatternFill(
-            start_color="9DC3E6", fill_type="solid"
-        )
-        greenFill = PatternFill(
-            start_color="A8D08D", fill_type="solid"
-        )
-        yellowFill = PatternFill(
-            start_color="FFD965", fill_type="solid"
-        )
-        ws['A1'].fill = blueFill
-        ws['B1'].fill = greenFill
-        ws['C1'].fill = greenFill
-        ws['D1'].fill = greenFill
-        ws['E1'].fill = yellowFill
-
-        wb.save(manifestfilepath)
-
-        # update the progress of manifest file generation
-        print("#"*30)
-        print("MANIFEST PROGRESS BELOW")
-        print(manifest_progress)
-        if manifest_progress != {}:
-            print(manifest_progress["manifest_files_uploaded"]) 
-            manifest_progress["manifest_files_uploaded"] += 1
-        
-        # add the path to the manifest into the structure
-        manifest_files_structure[high_level_folder] = manifestfilepath
-
-    return manifest_files_structure
 
 
 def create_high_level_manifest_files_existing_bf(
@@ -1937,34 +1574,7 @@ def create_high_level_manifest_files_existing_bf(
         raise e
 
 
-def create_high_level_manifest_files_existing_local_starting_point(dataset_path):
-    soda_manifest_folder_path = join(userpath, "SODA", "manifest_files")
 
-    if dataset_path != "":
-        for high_level_fol in listdir(dataset_path):
-
-            if high_level_fol in [
-                "primary",
-                "derivative",
-                "docs",
-                "code",
-                "source",
-                "protocol",
-            ]:
-                onlyfiles = [
-                    join(dataset_path, high_level_fol, f)
-                    for f in listdir(join(dataset_path, high_level_fol))
-                    if isfile(join(dataset_path, high_level_fol, f))
-                ]
-
-                for file in onlyfiles:
-
-                    p = pathlib.Path(file)
-                    # create high-level folder at the temporary location
-                    folderpath = join(soda_manifest_folder_path, high_level_fol)
-                    if p.stem == "manifest":
-                        # make copy from this manifest path to folderpath
-                        shutil.copyfile(file, join(folderpath, p.name))
 
 
 def generate_relative_path(x, y):
@@ -2385,7 +1995,12 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
     # 9. Run the original code to upload any new files added to the dataset.
     namespace_logger.info("bf_update_existing_dataset step 9 run the bf_generate_new_dataset code to upload any new files added to the dataset")
     if "manifest-files" in soda_json_structure.keys():
-        soda_json_structure["manifest-files"] = {"destination": "bf"}
+        if "auto-generated" in soda_json_structure["manifest-files"].keys():
+            soda_json_structure["manifest-files"] = {"destination": "bf", "auto-generated": True}
+        else:
+            soda_json_structure["manifest-files"] = {"destination": "bf"}
+
+
 
     soda_json_structure["generate-dataset"] = {
         "destination": "bf",
@@ -2445,6 +2060,63 @@ bytes_uploaded_per_file = {}
 total_bytes_uploaded = {"value": 0}
 current_files_in_subscriber_session = 0
 
+def cleanup_dataset_root(selected_dataset, my_tracking_folder, ps):
+    """
+    Remove any duplicate files we uploaded to the user's Pennsieve dataset. This happens because the Pennsieve agent does not currently support
+    setting a destination folder for the first file used to create a manifest file. The Pennsieve client is also not updated to support removing
+    files from the pennsieve manifest. So maybe we should instead make a subprocess call to the Pennsieve agent and remove the first entry in the 
+    manifest file? Time to test! Fear: The subprocess call will not work for a built Mac version. Actually I need to test a built Mac version again it has
+    been some time. Lets make sure this stuff works. If not then ouch cant do it until we are all up to date with the agent and client - a thing for 
+    which there are multiple issues open with the Pennsieve team. No because that doesnt work in the Agent either. lol :<)
+    
+    """
+
+    time.sleep(30)
+
+    METADATA_FILES_SPARC = [
+        "submission.xlsx",
+        "submission.csv",
+        "submission.json",
+        "dataset_description.xlsx",
+        "dataset_description.csv",
+        "dataset_description.json",
+        "subjects.xlsx",
+        "subjects.csv",
+        "subjects.json",
+        "samples.xlsx",
+        "samples.csv",
+        "samples.json",
+        "README.txt",
+        "CHANGES.txt",
+        "code_description.xlsx",
+        "inputs_metadata.xlsx",
+        "outputs_metadata.xlsx",
+    ]
+
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset}", headers=create_request_headers(ps))
+    r.raise_for_status()
+
+    print(r.json())
+
+    children = r.json()["children"]
+
+    files_to_delete = []
+
+    # remove any file from children that is not part of the root tracking folder and is not a metadata file
+    for child in children:
+        if child["content"]["packageType"] != "Collection" and child["content"]["name"] not in my_tracking_folder["children"]["files"].keys() and child["content"]["name"] not in METADATA_FILES_SPARC:
+            files_to_delete.append(child["content"]["id"])
+
+    print(f"files to delete: {files_to_delete}")
+
+    # delete the files
+    r = requests.post(f"{PENNSIEVE_URL}/data/delete", headers=create_request_headers(ps), json={"things": files_to_delete})
+    r.raise_for_status()
+
+bytes_uploaded_per_file = {}
+total_bytes_uploaded = {"value": 0}
+current_files_in_subscriber_session = 0
+
 def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
     global namespace_logger
@@ -2458,7 +2130,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
     global current_size_of_uploaded_files
     global total_files
     global total_bytes_uploaded # current number of bytes uploaded to Pennsieve in the current session
-    global client 
+    global client
     global files_uploaded
     global total_dataset_files
     global current_files_in_subscriber_session
@@ -2466,17 +2138,14 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
     total_files = 0
     total_dataset_files = 0
-    total_metadata_files = 0 
+    total_metadata_files = 0
     total_manifest_files = 0
     main_curation_uploaded_files = 0
     total_bytes_uploaded = {"value": 0}
     files_uploaded = 0
-    
+
     uploaded_folder_counter = 0
     current_size_of_uploaded_files = 0
-
-    namespace_logger.info("The incoming object is: ")
-    namespace_logger.info(soda_json_structure)
 
     try:
 
@@ -2595,7 +2264,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             ps_folder_children = my_tracking_folder["children"] #ds (dataset)
 
             # print("PS FOLDER CHILDREN: ", ps_folder_children)
-            
+
 
             if "folders" in my_folder.keys():
                 for folder_key, folder in my_folder["folders"].items():
@@ -2615,7 +2284,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
             # TODO: Test replacing metadata files from new -> Merge -> Replace onto Existing dataset to see if this stops it from working.
             if "files" in my_folder.keys() and my_tracking_folder["content"]["id"].find("N:dataset") == -1: 
-                    
+
                 print("In files")
                 # delete files to be deleted
                 (
@@ -2790,8 +2459,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             """
             Monitors the progress of a subscriber and unsubscribes once the upload finishes. 
             """
-            global files_uploaded 
-            global total_bytes_uploaded 
+            global files_uploaded
+            global total_bytes_uploaded
             global current_files_in_subscriber_session
             global bytes_uploaded_per_file
             global main_curation_uploaded_files
@@ -2802,10 +2471,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 total_bytes_to_upload = events_dict["upload_status"].total
                 current_bytes_uploaded = events_dict["upload_status"].current
 
-                
                 namespace_logger.info(f"The bytes uploaded for the current file ({file_id}): {current_bytes_uploaded}")
                 namespace_logger.info(f"The total bytes needed to upload for the file({file_id}): {total_bytes_to_upload}")
-
 
                 # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
                 previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
@@ -2899,15 +2566,19 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     metadata_path = file["path"]
                     if isfile(metadata_path):
                         initial_name = splitext(basename(metadata_path))[0]
-                        if existing_file_option == "replace":
-                            if initial_name in my_bf_existing_files_name:
-                                my_file = ds['children']['files'][file_key]
-                                # delete the file from Pennsieve
-                                r = requests.post(f"{PENNSIEVE_URL}/data/delete", json={"things": [my_file['content']['id']]}, headers=create_request_headers(ps))
-                                r.raise_for_status()
-                        if existing_file_option == "skip":
-                            if initial_name in my_bf_existing_files_name:
-                                continue
+                        if (
+                            existing_file_option == "replace"
+                            and initial_name in my_bf_existing_files_name
+                        ):
+                            my_file = ds['children']['files'][file_key]
+                            # delete the file from Pennsieve
+                            r = requests.post(f"{PENNSIEVE_URL}/data/delete", json={"things": [my_file['content']['id']]}, headers=create_request_headers(ps))
+                            r.raise_for_status()
+                        if (
+                            existing_file_option == "skip"
+                            and initial_name in my_bf_existing_files_name
+                        ):
+                            continue
 
                         list_upload_metadata_files.append(metadata_path)
                         main_total_generate_dataset_size += getsize(metadata_path)
@@ -2918,34 +2589,45 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         list_upload_manifest_files = []
         if "manifest-files" in soda_json_structure.keys():
             namespace_logger.info("bf_generate_new_dataset (optional) step 4 create manifest list")
-
-            # prepare manifest files
-            if soda_json_structure["starting-point"]["type"] == "bf":
-                print("Manifest first option is executing")
-                manifest_files_structure = (
-                    create_high_level_manifest_files_existing_bf_starting_point(
-                        soda_json_structure
-                    )
-                )
-            else:
-                if (
-                    soda_json_structure["generate-dataset"]["destination"] == "bf"
-                    and "dataset-name" not in soda_json_structure["generate-dataset"]
-                ):
-                    # generating dataset on an existing bf dataset - account for existing files and manifest files
-                    # TODO: implement with new agent
-                    print("Manifest second option is executing")
+            print(soda_json_structure["manifest-files"])
+            # create local folder to save manifest files temporarly (delete any existing one first)
+            if "auto-generated" in soda_json_structure["manifest-files"]:
+                if soda_json_structure["manifest-files"]["auto-generated"] == True:
+                    print("CORRECT")
                     manifest_files_structure = (
-                        create_high_level_manifest_files_existing_bf(
-                            soda_json_structure, ps, ds, tracking_json_structure
+                        get_auto_generated_manifest_files(soda_json_structure)
+                    )
+            else:
+                # prepare manifest files
+                if soda_json_structure["starting-point"]["type"] == "bf":
+                    print("Manifest first option is executing")
+                    # get auto generated manifest file
+                    manifest_files_structure = (
+                        create_high_level_manifest_files_existing_bf_starting_point(
+                            soda_json_structure, 
+                            manifest_folder_path
                         )
                     )
                 else:
-                    # generating on new bf
-                    # NOTE: No translation work is required in this case. 
-                    manifest_files_structure = create_high_level_manifest_files(
-                        soda_json_structure
-                    )
+                    if (
+                        soda_json_structure["generate-dataset"]["destination"] == "bf"
+                        and "dataset-name" not in soda_json_structure["generate-dataset"]
+                    ):
+                        # generating dataset on an existing bf dataset - account for existing files and manifest files
+                        # TODO: implement with new agent
+                        print("Manifest second option is executing")
+                        # get auto generated manifest file
+                        manifest_files_structure = (
+                            create_high_level_manifest_files_existing_bf(
+                                soda_json_structure, ps, ds, tracking_json_structure
+                            )
+                        )
+                    else:
+                        # generating on new bf
+                        # NOTE: No translation work is required in this case. 
+                        manifest_files_structure = create_high_level_manifest_files(
+                            soda_json_structure, manifest_folder_path
+                        )
 
             # add manifest files to list after deleting existing ones
             list_upload_manifest_files = []
@@ -3018,20 +2700,21 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                         folder_name = relative_path[relative_path.index("/"):]
                     except ValueError as e:
                         folder_name = relative_path
-                    
+
                     loc = get_agent_installation_location()
-                    # skip the first file as it has already been uploaded
+                    # skio the first file as it has already been uploaded
                     for file_path in list_file_paths:
                         namespace_logger.info(f"File path is: {file_path}")
                         #print("Queing file for upload")
+                        namespace_logger.info(f"File path is: {file_path}")
                         # subprocess call to the pennsieve agent to add the files to the manifest
-                        subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), file_path, "-t", folder_name[1:]]) # drop the / to avoid duplicates due to a Pennsieve bug
+                        subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), file_path, "-t", folder_name[1:]])
 
             bytes_uploaded_per_file = {}
             total_bytes_uploaded = {"value": 0}
             current_files_in_subscriber_session = total_dataset_files
-            files_uploaded = 0
-
+            file_uploaded = 0
+            
             # upload the manifest files
             ps.manifest.upload(manifest_id)
 
@@ -3054,7 +2737,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             manifest_id = manifest_data.manifest_id
 
             loc = get_agent_installation_location()
-        
+
             # add the files to the manifest
             for manifest_path in list_upload_metadata_files[1:]:
                 # subprocess call to the pennsieve agent to add the files to the manifest
@@ -3078,7 +2761,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             # # start the agent
             # start_agent()
 
-            # create the manifest
             ps_folder = list_upload_manifest_files[0][1]
             manifest_data = ps.manifest.create(list_upload_manifest_files[0][0][0], ps_folder)
             manifest_id = manifest_data.manifest_id
@@ -3108,11 +2790,12 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
             ps.subscribe(10, False, monitor_subscriber_progress)
 
-
+        #wait a few memoments
         # before we can remove files we need to wait for all of the Agent's threads/subprocesses to finish
         # elsewise we get an error that the file is in use and therefore cannot be deleted
         time.sleep(1)
 
+        # stop_agent()
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
 
     except Exception as e:
@@ -3239,6 +2922,98 @@ def bf_check_dataset_files_validity(soda_json_structure, ps):
     return error
 
 
+def clean_json_structure(soda_json_structure):
+    global namespace_logger
+    namespace_logger.info("Cleaning json structure")
+        # Delete any files on Pennsieve that have been marked as deleted
+    def recursive_file_delete(folder):
+        if "files" in folder.keys():
+            for item in list(folder["files"]):
+                if "deleted" in folder["files"][item]["action"]:
+                    # remove the file from the soda json structure
+                    del folder["files"][item]
+                    # namespace_logger.info("File value after deletion: " + str(folder["files"][item]))
+
+        for item in list(folder["folders"]):
+            recursive_file_delete(folder["folders"][item])
+        return
+
+    # Delete any files on Pennsieve that have been marked as deleted
+    def metadata_file_delete(soda_json_structure):
+        if "metadata-files" in soda_json_structure.keys():
+            folder = soda_json_structure["metadata-files"]
+            for item in list(folder):
+                if "deleted" in folder[item]["action"]:
+                    del folder[item]
+        return
+
+    # Rename any files that exist on Pennsieve
+    def recursive_file_rename(folder):
+        if "files" in folder.keys():
+            for item in list(folder["files"]):
+                # if item in ["manifest.xlsx", "manifest.csv"]:
+                #     continue
+                if (
+                    "renamed" in folder["files"][item]["action"]
+                    and folder["files"][item]["type"] == "bf"
+                ):
+                    continue
+                    # r = requests.put(f"{PENNSIEVE_URL}/packages/{folder['files'][item]['path']}?updateStorage=true", json={"name": item}, headers=create_request_headers(ps))
+                    # r.raise_for_status()
+
+        for item in list(folder["folders"]):
+            recursive_file_rename(folder["folders"][item])
+
+        return
+
+
+    def recursive_folder_delete(folder):
+        """
+        Delete any stray folders that exist on Pennsieve
+        Only top level files are deleted since the api deletes any
+        files and folders that exist inside.
+        """
+
+        print("FOLDER TO DELETE IS: ", folder)
+
+        for item in list(folder["folders"]):
+            if folder["folders"][item]["type"] == "bf":
+                if "deleted" in folder["folders"][item]["action"]:
+                    del folder["folders"][item]
+                else:
+                    recursive_folder_delete(folder["folders"][item])
+            else:
+                recursive_folder_delete(folder["folders"][item])
+        return
+
+    main_keys = soda_json_structure.keys()
+    dataset_structure = soda_json_structure["dataset-structure"]
+
+    if ("dataset-structure" not in main_keys and "metadata-files" not in main_keys):
+        abort(400, "Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset.")
+
+    if "generate-dataset" in main_keys:
+        # Check that local files/folders exist
+        try:
+            if error := check_local_dataset_files_validity(soda_json_structure):
+                abort(400, error)
+            # check that dataset is not empty after removing all the empty files and folders
+            if not soda_json_structure["dataset-structure"]["folders"] and "metadata-files" not in soda_json_structure:
+                abort(400, "Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset.")
+        except Exception as e:
+            raise e
+
+    if "starting-point" in main_keys:
+        if soda_json_structure["starting-point"]["type"] == "bf" or soda_json_structure["starting-point"]["type"] == "local":
+            # remove deleted files and folders from the json
+            recursive_file_delete(dataset_structure)
+            recursive_folder_delete(dataset_structure)
+            soda_json_structure["dataset-structure"] = dataset_structure
+
+    # here will be clean up the soda json object before creating the manifest file cards
+    return {"soda_json_structure": soda_json_structure}
+
+
 def main_curate_function(soda_json_structure):
 
     global namespace_logger
@@ -3316,6 +3091,7 @@ def main_curate_function(soda_json_structure):
             )
             accountname = soda_json_structure["bf-account-selected"]["account-name"]
             print("Trying to connect")
+            print(accountname)
             ps = connect_pennsieve_client()
             print("Connected with ps")
             authenticate_user_with_client(ps, accountname)
@@ -3595,7 +3371,7 @@ def generate_manifest_file_locally(generate_purpose, soda_json_structure):
     manifest_destination = soda_json_structure["manifest-files"]["local-destination"]
 
     recursive_item_path_create(dataset_structure, [])
-    create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure)
+    create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, manifest_folder_path)
 
     if generate_purpose == "edit-manifest":
         manifest_destination = os.path.join(manifest_destination, "SODA Manifest Files")
@@ -3615,6 +3391,8 @@ def generate_manifest_file_locally(generate_purpose, soda_json_structure):
 
 
 def guided_generate_manifest_file_data(dataset_structure_obj):
+    # modify this function here to handle paths from pennsieve
+    # create path using bfpath key from json object
 
     local_timezone = TZLOCAL()
 
@@ -3655,35 +3433,34 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
     def guided_recursive_folder_traversal(folder, hlf_data_array, ds_struct_path):
         if "files" in folder.keys():
             for item in list(folder["files"]):
+
                 file_manifest_template_data = []
                 local_path_to_file = folder["files"][item]["path"].replace("\\", "/")
+                item_description = folder["files"][item]["description"]
+                item_additional_info = folder["files"][item]["additional-metadata"]
 
-                # If the file was pulled from pennsieve, set the path to the file to the pennsieve path
-                # Else, set path to os.path.basename(local_path_to_file)
-                if folder["files"][item]["type"] == "bf":
-                    file_name = item
-                    # get the timestamp from folder["files"][item]["timestamp"] and convert to an
-                    timestamp_entry = folder["files"][item]["timestamp"]
-                else:
-                    file_name = os.path.basename(local_path_to_file)
-                    file_path = pathlib.Path(local_path_to_file)
-                    mtime = file_path.stat().st_mtime
-                    last_mod_time = datetime.fromtimestamp(mtime, tz=local_timezone).fromtimestamp(mtime).astimezone(
-                        local_timezone
-                    )
-                    timestamp_entry = last_mod_time.isoformat().replace(".", ",")[:-6] + "Z"
-
+                # The name of the file eg "file.txt"
+                
+                file_name = os.path.basename(local_path_to_file)
                 filename_entry = "/".join(ds_struct_path) + "/" + file_name
+                
+
                 # The extension of the file eg ".txt"
                 file_type_entry = get_name_extension(file_name)
 
                 # The timestamp of the file on the user's local machine
-                
+                file_path = pathlib.Path(local_path_to_file)
+                mtime = file_path.stat().st_mtime
+                last_mod_time = datetime.fromtimestamp(mtime, tz=local_timezone).fromtimestamp(mtime).astimezone(
+                    local_timezone
+                )
+                timestamp_entry = last_mod_time.isoformat().replace(".", ",").replace("+00:00", "Z")
+
                 file_manifest_template_data.append(filename_entry)
                 file_manifest_template_data.append(timestamp_entry)
-                file_manifest_template_data.append("")
+                file_manifest_template_data.append(item_description)
                 file_manifest_template_data.append(file_type_entry)
-                file_manifest_template_data.append("")
+                file_manifest_template_data.append(item_additional_info)
 
                 hlf_data_array.append(file_manifest_template_data)
 
@@ -3696,8 +3473,58 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
                 relative_structure_path.pop()
         return
 
+    def pennsieve_recursive_folder_traversal(folder, hlf_data_array, ds_struct_path):
+        if "files" in folder.keys():
+            for item in list(folder["files"]):
+                file_manifest_template_data = []
+                item_description = folder["files"][item]["description"]
+                item_additional_info = folder["files"][item]["additional-metadata"]
+                file_name = ""
+                if folder["files"][item]["type"] == "bf": 
+                    file_name = os.path.basename(item)
+                    timestamp_entry = folder["files"][item]["timestamp"]
+                else:
+                    local_path_to_file = folder["files"][item]["path"].replace("\\", "/")
+                    file_name = os.path.basename(local_path_to_file)
+                    file_path = pathlib.Path(local_path_to_file)
+                    mtime = file_path.stat().st_mtime
+                    last_mod_time = datetime.fromtimestamp(mtime, tz=local_timezone).fromtimestamp(mtime).astimezone(local_timezone)
+                    timestamp_entry = last_mod_time.isoformat().replace(".", ",").replace("+00:00", "Z")
+
+                
+                filename_entry = "/".join(ds_struct_path) + "/" + file_name
+                file_type_entry = get_name_extension(file_name)
+
+                file_manifest_template_data.append(filename_entry)
+                file_manifest_template_data.append(timestamp_entry)
+                file_manifest_template_data.append(item_description)
+                file_manifest_template_data.append(file_type_entry)
+                file_manifest_template_data.append(item_additional_info)
+                # extra column key is an object of all extra columns of a manifest
+                # key will be the column header and value will be the value of the column+row 
+                # (from the excel) (now in the form of a dict)
+                if "extra_columns" in folder["files"][item]:
+                    for key in folder["files"][item]["extra_columns"]:
+                        file_manifest_template_data.append(folder["files"][item]["extra_columns"][key])
+                        if key not in standard_manifest_columns:
+                            # add column name to manifest column names array
+                            standard_manifest_columns.append(key)
+
+                hlf_data_array.append(file_manifest_template_data)
+
+        if "folders" in folder.keys():
+            for item in list(folder["folders"]):
+                relative_structure_path.append(item)
+                pennsieve_recursive_folder_traversal(
+                    folder["folders"][item], hlf_data_array, relative_structure_path
+                )
+                relative_structure_path.pop()
+        return
+
     # Initialize the array that the manifest data will be added to.
     hlf_manifest_data = {}
+    # any additional columns created by the user will be appended with the high level folder when found
+    standard_manifest_columns = ["filename", "timestamp", "description", "file type", "Additional Metadata"]
 
 
     # Loop through each high level folder and create a manifest data array for each.
@@ -3706,15 +3533,13 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
 
         # create an array to keep track of the path to the obj being recursed over
         relative_structure_path = []
- 
-        hlf_data_array.append([
-        "filename",
-        "timestamp",
-        "description",
-        "file type",
-        "Additional Metadata",
-        ])
-        guided_recursive_folder_traversal(dataset_structure_obj["folders"][high_level_folder], hlf_data_array, relative_structure_path)
+        hlf_data_array.append(standard_manifest_columns)
+
+        if "bfpath" in dataset_structure_obj["folders"][high_level_folder]:
+            # means the json is from a pennsieve dataset
+            pennsieve_recursive_folder_traversal(dataset_structure_obj["folders"][high_level_folder], hlf_data_array, relative_structure_path)
+        else:
+            guided_recursive_folder_traversal(dataset_structure_obj["folders"][high_level_folder], hlf_data_array, relative_structure_path)
         hlf_manifest_data[high_level_folder] = hlf_data_array
 
     return hlf_manifest_data

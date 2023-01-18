@@ -5,7 +5,7 @@ from enum import Enum
 # namespaces enums
 class NamespaceEnum(Enum):
     MANAGE_DATASETS = "manage_datasets"
-    # VALIDATE_DATASET = "validate_dataset"
+    VALIDATE_DATASET = "validator"
     CURATE_DATASETS = "curate_datasets"
     DISSEMINATE_DATASETS = "disseminate_datasets"
     PREPARE_METADATA = "prepare_metadata"
@@ -15,6 +15,7 @@ class NamespaceEnum(Enum):
     USER = "user"
     DATASETS = "datasets"
     COLLECTIONS = "collections"
+    SKELETON_DATASET = "skeleton_dataset"
 
 # namespaces dictionary that is given a namespace name as a key and returns the corresponding namespace object as a value
 namespaces = { }
@@ -27,8 +28,8 @@ def configure_namespaces():
     manage_datasets_namespace = Namespace(NamespaceEnum.MANAGE_DATASETS.value, description='Routes for handling manage datsets functionality')
     namespaces[NamespaceEnum.MANAGE_DATASETS] = manage_datasets_namespace
 
-    # validate_dataset_namespace = Namespace(NamespaceEnum.VALIDATE_DATASET.value, description='Routes for handling validate dataset functionality')
-    # namespaces[NamespaceEnum.VALIDATE_DATASET] = validate_dataset_namespace
+    validate_dataset_namespace = Namespace(NamespaceEnum.VALIDATE_DATASET.value, description='Routes for handling validate dataset functionality')
+    namespaces[NamespaceEnum.VALIDATE_DATASET] = validate_dataset_namespace
 
     curate_datasets_namespace = Namespace(NamespaceEnum.CURATE_DATASETS.value, description='Routes for handling dataset curation')
     namespaces[NamespaceEnum.CURATE_DATASETS] = curate_datasets_namespace
@@ -56,6 +57,9 @@ def configure_namespaces():
 
     collections_namespace = Namespace(NamespaceEnum.COLLECTIONS.value, description='Routes for handling collections')
     namespaces[NamespaceEnum.COLLECTIONS] = collections_namespace
+
+    skeleton_dataset_namespace = Namespace(NamespaceEnum.SKELETON_DATASET.value, description='Routes for creating skeleton datasets used for Validation')
+    namespaces[NamespaceEnum.SKELETON_DATASET] = skeleton_dataset_namespace
 
 
 

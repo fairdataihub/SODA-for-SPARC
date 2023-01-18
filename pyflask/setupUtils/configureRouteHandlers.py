@@ -1,6 +1,6 @@
 from apis import (
     manage_datasets_resource, 
-    # # validate_dataset_resource, 
+    validate_dataset_resource, 
     curate_datasets_resource, 
     disseminate_datasets_resource, 
     prepare_metadata_resource, 
@@ -10,6 +10,7 @@ from apis import (
     user_resource,
     datasets_resource,
     collections_resource,
+    skeleton_dataset_resource
 )
 
 def configureRouteHandlers(api):
@@ -18,7 +19,7 @@ def configureRouteHandlers(api):
     """
     # api.add_namespace(version_resource)
     api.add_namespace(manage_datasets_resource)
-    # api.add_namespace(validate_dataset_resource)
+    api.add_namespace(validate_dataset_resource)
     api.add_namespace(curate_datasets_resource)
     api.add_namespace(disseminate_datasets_resource)
     api.add_namespace(prepare_metadata_resource)
@@ -28,3 +29,4 @@ def configureRouteHandlers(api):
     api.add_namespace(user_resource)
     api.add_namespace(datasets_resource)
     api.add_namespace(collections_resource)
+    api.add_namespace(skeleton_dataset_resource)

@@ -768,7 +768,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     global upload_folder_count
     global namespace_logger
     global files_uploaded
-    global total_files_to_upload 
+    global total_files_to_upload
     global total_bytes_uploaded
 
     files_uploaded = 0
@@ -895,7 +895,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
     # select the dataset 
     try:
-        ps.use_dataset(bfdataset)
+        ps.use_dataset(selected_dataset_id)
         namespace_logger.info("Used the dataset")
     except Exception as e:
         print("FAASFSF")
