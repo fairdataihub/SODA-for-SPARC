@@ -1803,7 +1803,7 @@ const addFilesfunction = async (
       loadingContainer.style.display = "none";
       loadingIcon.style.display = "none";
     }
-    console.log("First file check")
+    console.log("First file check");
     await Swal.fire({
       title:
         "Files should typically have one (two when they are compressed) periods in their names according to the SPARC Data Standards. The following files have three of more periods in their name and will not be imported.",
