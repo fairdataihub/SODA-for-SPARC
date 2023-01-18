@@ -996,6 +996,8 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         temp_name += item_name
                     else:
                         temp_name = item_name
+                    
+                    # print(manifest)
                     if len(manifest.keys()) > 0:
                         extra_columns = False
                         if len(manifest.keys()) > 5:
@@ -1004,6 +1006,8 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                             extra_columns = True
                             extra_columns_dict = dict(itertools.islice(manifest.items(), 5, len(manifest)))
                         if "filename" in manifest:
+                            if "/" not in temp_name:
+                                temp_name = "/" + temp_name
                             if temp_name in manifest["filename"].values():
                                 location_index = list(manifest["filename"].values()).index(
                                     temp_name
@@ -1167,6 +1171,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                     package_name = items["content"]["name"]
                     package_id = items["content"]["id"]
                     if package_name in manifest_sparc:
+                        print("manifest-file found")
                         # item is manifest
                         r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=headers)
                         r.raise_for_status()
