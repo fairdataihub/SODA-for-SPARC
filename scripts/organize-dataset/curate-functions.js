@@ -1879,48 +1879,29 @@ const renderFFManifestCards = () => {
 };
 
 const ffOpenManifestEditSwal = async (highlevelFolderName) => {
+  let saveManifestFiles = false;
+  let guidedManifestTable = [];
   // Function for when user wants to edit the manifest cards
   const existingManifestData = sodaCopy["manifest-files"]?.[highlevelFolderName];
+  // const existingManifestData = sodaJSONObj["guided-manifest-files"][highLevelFolderName];
+  //send manifest data to main.js to then send to child window
+  ipcRenderer.invoke("spreadsheet", existingManifestData);
 
-  let manifestFileHeaders = existingManifestData["headers"];
-  let manifestFileData = existingManifestData["data"];
-
-  let ffManifestTable;
-
-  const readOnlyHeaders = ["filename", "file type", "timestamp", "file name"];
-
-  const { value: saveManifestFiles } = await Swal.fire({
-    title:
-      "<span style='font-size: 18px !important;'>Edit the manifest file below: </span> <br><span style='font-size: 13px; font-weight: 500'> Tip: Double click on a cell to edit it.<span>",
-    html: "<div id='ffm-div-manifest-edit'></div>",
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    showConfirmButton: true,
-    confirmButtonText: "Confirm",
-    showCancelButton: true,
-    width: "90%",
-    customClass: "swal-large",
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    didOpen: () => {
-      Swal.hideLoading();
-      const manifestSpreadsheetContainer = document.getElementById("ffm-div-manifest-edit");
-      guidedManifestTable = jspreadsheet(manifestSpreadsheetContainer, {
-        tableOverflow: true,
-        data: manifestFileData,
-        columns: manifestFileHeaders.map((header) => {
-          return {
-            readOnly: readOnlyHeaders.includes(header) ? true : false,
-            type: "text",
-            title: header,
-            width: 200,
-          };
-        }),
-      });
-    },
+  //upon receiving a reply of the spreadsheet, handle accordingly
+  ipcRenderer.on("spreadsheet-reply", async (event, result) => {
+    if (!result || result === "") {
+      ipcRenderer.removeAllListeners("spreadsheet-reply");
+      return;
+    } else {
+      //spreadsheet reply contained results
+      ipcRenderer.removeAllListeners("spreadsheet-reply");
+      saveManifestFiles = true;
+      guidedManifestTable = result;
+    }
   });
 
   if (saveManifestFiles) {
+    console.log(guidedManifestTable);
     //if additional metadata or description gets added for a file then add to json as well
     sodaJSONObj["manifest-files"]["auto-generated"] = true;
     const savedHeaders = guidedManifestTable.getHeaders().split(",");
