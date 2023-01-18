@@ -8,7 +8,7 @@ var allParentStepsJSON = {
   "organize-dataset": "organize-dataset-tab",
   "metadata-files": "metadata-files-tab",
   "manifest-file": "manifest-file-tab",
-  "validate-dataset": "validate-dataset-tab",
+  // "validate-dataset": "validate-dataset-tab",
   "generate-dataset": "generate-dataset-tab",
 };
 
@@ -643,10 +643,11 @@ const nextPrev = (pageIndex) => {
   ) {
     $(parentTabs[currentTab]).removeClass("tab-active");
     console.log("It happens here?");
-    currentTab = currentTab - 1;
+    currentTab = currentTab - 2;
     showParentTab(currentTab, pageIndex);
     $("#nextBtn").prop("disabled", false);
   } else if (
+    // HERE BOOO
     parentTabs[currentTab].id === "manifest-file-tab" &&
     sodaJSONObj["starting-point"]["type"] == "bf"
   ) {
@@ -688,20 +689,21 @@ const nextPrev = (pageIndex) => {
     }
     $("#nextBtn").prop("disabled", true);
     showParentTab(currentTab, pageIndex);
-  } else if (
-    parentTabs[currentTab].id === "validate-dataset-tab" &&
-    sodaJSONObj["starting-point"]["type"] === "bf"
-  ) {
-    console.log(currentTab);
-    if (pageIndex === -1) {
-      currentTab = currentTab - 2;
-      // fixStepDone(5);
-      // $("#nextBtn").prop("disabled", true);
-    } else {
-      currentTab = currentTab + 1;
-    }
-    showParentTab(currentTab, pageIndex);
-  } else {
+  }
+  // } else if (
+  //   parentTabs[currentTab].id === "validate-dataset-tab" &&
+  //   sodaJSONObj["starting-point"]["type"] === "bf"
+  // ) {
+  //   console.log(currentTab);
+  //   if (pageIndex === -1) {
+  //     currentTab = currentTab - 2;
+  //     // fixStepDone(5);
+  //     // $("#nextBtn").prop("disabled", true);
+  //   } else {
+  //     currentTab = currentTab + 1;
+  //   }
+  //   showParentTab(currentTab, pageIndex);
+   else {
     // Hide the current tab:
     $(parentTabs[currentTab]).removeClass("tab-active");
     // Increase or decrease the current tab by 1:
