@@ -3442,8 +3442,10 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
                 # The name of the file eg "file.txt"
                 
                 file_name = os.path.basename(local_path_to_file)
-                filename_entry = "/".join(ds_struct_path) + "/" + file_name
-                
+                if len(ds_struct_path) > 0:
+                    filename_entry = "/".join(ds_struct_path) + "/" + file_name
+                else:
+                    filename_entry = file_name
 
                 # The extension of the file eg ".txt"
                 file_type_entry = get_name_extension(file_name)

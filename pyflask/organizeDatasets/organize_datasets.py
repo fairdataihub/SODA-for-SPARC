@@ -1000,8 +1000,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                     # print(manifest)
                     if len(manifest.keys()) > 0:
                         extra_columns = False
-                        if "/" not in temp_name:
-                            temp_name = "/" + temp_name
                         if len(manifest.keys()) > 5:
                             # extra columns are in the manifest
                             # if length of keys is greater than 5 than extra custom columns were made
