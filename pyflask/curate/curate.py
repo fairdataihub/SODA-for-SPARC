@@ -763,10 +763,6 @@ def check_local_dataset_files_validity(soda_json_structure):
             file = my_folder["files"][file_key]
             # if file_key in ["manifest.xlsx", "manifest.csv"]:
                 # continue
-            print("#" * 30)
-            print(file)
-            print(file_key)
-            print("file info above")
             file_type = file["type"]
             if file_type == "local":
                 file_path = file["path"]
@@ -3125,6 +3121,8 @@ def main_curate_function(soda_json_structure):
             main_curate_status = "Done"
             raise e
 
+        namespace_logger.info("main_curate_function step 1.3.1")
+
         # Check that local files/folders exist
         try:
             if error := check_local_dataset_files_validity(soda_json_structure):
@@ -3139,6 +3137,8 @@ def main_curate_function(soda_json_structure):
         except Exception as e:
             main_curate_status = "Done"
             raise e
+        
+        namespace_logger.info("main_curate_function step 1.3.2")
         # Check that bf files/folders exist
         generate_option = soda_json_structure["generate-dataset"]["generate-option"]
         if generate_option == "existing-bf":
