@@ -2657,17 +2657,13 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         # set the dataset 
         ps.use_dataset(ds["content"]["id"])
 
-
-        namespace_logger.info("Uploading files now")
-        namespace_logger.info(f"TOTAL FILES TO UPLOAD: {total_dataset_files}")
-        namespace_logger.info(f"TOTAL SIZE OF FILES TO UPLOAD: {main_total_generate_dataset_size}")
+        main_curate_progress_message = ("Queuing dataset files for upload with the Pennsieve Agent...")
 
         # create a manifest - IMP: We use a single file to start with since creating a manifest requires a file path.  We need to remove this at the end. 
         if len(list_upload_files) > 0:
             first_file_local_path = list_upload_files[0][0][0]
             first_relative_path = list_upload_files[0][6]
             folder_name = first_relative_path[first_relative_path.index("/"):]
-            namespace_logger.info(f"First file added to manifest at this folder name {folder_name}")
             manifest_data = ps.manifest.create(first_file_local_path, folder_name[1:])
             manifest_id = manifest_data.manifest_id
 
@@ -2676,9 +2672,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
             # there are files to add to the manifest if there are more than one file in the first folder or more than one folder
             if len(list_upload_files[0][0]) > 1 or len(list_upload_files) > 1:
-                namespace_logger.info("Made it into list of files correctly")
                 for folderInformation in list_upload_files:
-                    # main_curate_progress_message = "In file one"
                     list_file_paths = folderInformation[0]
                     bf_folder = folderInformation[1]
                     list_projected_names = folderInformation[2]
@@ -2686,10 +2680,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     list_final_names = folderInformation[4]
                     tracking_folder = folderInformation[5]
                     relative_path = folderInformation[6]
-
-                    # namespace_logger.info(list_projected_names)
-                    # namespace_logger.info(list_desired_names)
-                    # namespace_logger.info(list_final_names)
 
                     # TODO: Reimpelement using the client once the Pensieve team updates the client's protocol buffers
                     # ps.manifest.add(manifest_id, list_upload, targetBasePath="/code")
@@ -2704,9 +2694,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     loc = get_agent_installation_location()
                     # skio the first file as it has already been uploaded
                     for file_path in list_file_paths:
-                        namespace_logger.info(f"File path is: {file_path}")
-                        #print("Queing file for upload")
-                        namespace_logger.info(f"File path is: {file_path}")
                         # subprocess call to the pennsieve agent to add the files to the manifest
                         subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), file_path, "-t", folder_name[1:]])
 
