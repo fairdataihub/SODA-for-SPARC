@@ -7366,6 +7366,12 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
               }
             }
 
+            console.log(JSON.stringify(sodaJSONObj));
+            console.log(root_folder_path);
+            console.log(irregularFolderArray);
+            console.log(replaced);
+            console.log("before call");
+
             try {
               let importLocalDatasetResponse = await client.post(
                 `/organize_datasets/datasets/import`,

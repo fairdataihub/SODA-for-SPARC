@@ -3451,6 +3451,16 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
                 file_manifest_template_data.append(file_type_entry)
                 file_manifest_template_data.append(item_additional_info)
 
+                # extra column key is an object of all extra columns of a manifest
+                # key will be the column header and value will be the value of the column+row 
+                # (from the excel) (now in the form of a dict)
+                if "extra_columns" in folder["files"][item]:
+                    for key in folder["files"][item]["extra_columns"]:
+                        file_manifest_template_data.append(folder["files"][item]["extra_columns"][key])
+                        if key not in standard_manifest_columns:
+                            # add column name to manifest column names array
+                            standard_manifest_columns.append(key)
+
                 hlf_data_array.append(file_manifest_template_data)
 
         if "folders" in folder.keys():
