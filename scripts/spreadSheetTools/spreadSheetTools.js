@@ -64,6 +64,25 @@ document.addEventListener("DOMContentLoaded", function () {
         },
       });
 
+      let toolBar = document.getElementsByClassName("jexcel_toolbar")[0];
+      console.log(toolBar);
+      toolBar.innerHTML = "";
+      toolBar.innerHTML = `
+        <div style="
+        margin-right: 1rem;
+        margin-left: 6px;
+        "><i class="jexcel_toolbar_item material-icons" data-k="undefined" data-v="undefined" id="undefined">undo</i><p style="
+        margin: 0;
+        /* vertical-align: 1rem; */
+        font-size: 14px;
+        ">Undo</p></div>
+        <div><i class="jexcel_toolbar_item material-icons" data-k="undefined" data-v="undefined" id="undefined">redo</i><p style="
+        margin: 0;
+        font-size: 14px;
+        vertical-align: 1;
+        ">Redo</p></div>
+      `;
+
       //create event listener for saving and exiting
       saveAndExitManifest.addEventListener("click", () => {
         //extract headers and data
