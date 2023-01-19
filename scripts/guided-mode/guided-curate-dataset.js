@@ -11830,7 +11830,7 @@ $(document).ready(async () => {
       await guidedAddDatasetBannerImage(guidedBfAccount, guidedDatasetName, guidedBannerImagePath);
       await guidedAddDatasetLicense(guidedBfAccount, guidedDatasetName, guidedLicense);
       await guidedAddDatasetTags(guidedBfAccount, guidedDatasetName, guidedTags);
-      await guidedAddPiOwner(guidedBfAccount, guidedDatasetName, guidedPIOwner);
+      // await guidedAddPiOwner(guidedBfAccount, guidedDatasetName, guidedPIOwner);
       await guidedAddUserPermissions(guidedBfAccount, guidedDatasetName, guidedUsers);
       await guidedAddTeamPermissions(guidedBfAccount, guidedDatasetName, guidedTeams);
 
