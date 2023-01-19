@@ -2032,7 +2032,6 @@ def normalize_tracking_folder(tracking_folder):
 
         # replace the non-normalized children structure with the normalized children structure
         tracking_folder["children"] = temp_children
-        print("Added children folder and files")
 
 
 def build_create_folder_request(folder_name, folder_parent_id, dataset_id):
@@ -2161,21 +2160,13 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             my_bf_existing_folders_name = []
             my_bf_existing_folders = []
 
-            print("IN RECURSIVE CREATE FOLDER FOR BF")
-            # print(my_folder)
-            print("\n")
-            print(my_tracking_folder)
-            print("\n")
-
             # TODO: Place in better spot - We need to populate the folder with their children as we go so we can tell if a folder exists for not. IMP for the existing flow when replacing or merging. 
             if len(my_tracking_folder["children"]["folders"]) == 0:
                 # get the folders children - if at the root of the dataset do not since this is included when originally GETTING and blah blah
-                print(my_tracking_folder["content"]["id"])
                 if(my_tracking_folder["content"]["id"].find("N:dataset") == -1):
                     # do nothing 
                     r = requests.get(f"{PENNSIEVE_URL}/packages/{my_tracking_folder['content']['id']}", headers=create_request_headers(ps), json={"include": "files"})
                     r.raise_for_status()
-                    print(r.json())
                     ps_folder = r.json()
                     normalize_tracking_folder(ps_folder)
                     my_tracking_folder["children"] = ps_folder["children"]
@@ -2183,22 +2174,18 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             # create/replace/skip folder
             if "folders" in my_folder.keys():
                 for folder_key, folder in my_folder["folders"].items():
-                    print("EXISTING FOLDER OPTION: ", existing_folder_option)
                     if existing_folder_option == "skip":
                         if folder_key not in my_tracking_folder["children"]["folders"]:
-                            print(f"Making a new folder since {folder_key} is not in tracking folder")
                             r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json=build_create_folder_request(folder_key, my_tracking_folder['content']['id'], ds['content']['id']))
                             r.raise_for_status()
                             ps_folder = r.json()
                             normalize_tracking_folder(ps_folder)
                         else:
-                            print(f"Not creating a new folder since {folder_key} is in tracking folder")
                             ps_folder = my_tracking_folder["children"]["folders"][folder_key]
                             normalize_tracking_folder(ps_folder)
                             #ontinue
 
                     elif existing_folder_option == "create-duplicate":
-                        #print("Creating a code folder")
                         # TODO: change this so that when dealing with nested folders, it creates the folders in the correct place not just the dataset root. 
                         r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json=build_create_folder_request(folder_key, my_tracking_folder['content']['id'], ds['content']['id']))
                         r.raise_for_status()
@@ -2653,7 +2640,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         # set the dataset 
         ps.use_dataset(ds["content"]["id"])
 
-        main_curate_progress_message = ("Queuing dataset files for upload with the Pennsieve Agent...")
+        main_curate_progress_message = ("Queuing dataset files for upload with the Pennsieve Agent..." + "<br>" + "This may take some time.")
 
         # create a manifest - IMP: We use a single file to start with since creating a manifest requires a file path.  We need to remove this at the end. 
         if len(list_upload_files) > 0:
@@ -2666,6 +2653,8 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             # remove the item just added to the manifest 
             list_upload_files[0][0].pop(0)
 
+            loc = get_agent_installation_location()
+
             # there are files to add to the manifest if there are more than one file in the first folder or more than one folder
             if len(list_upload_files[0][0]) > 1 or len(list_upload_files) > 1:
                 for folderInformation in list_upload_files:
@@ -2677,8 +2666,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     tracking_folder = folderInformation[5]
                     relative_path = folderInformation[6]
 
-                    # TODO: Reimpelement using the client once the Pensieve team updates the client's protocol buffers
-                    # ps.manifest.add(manifest_id, list_upload, targetBasePath="/code")
+                    
 
                     # get the substring from the string relative_path that starts at the index of the / and contains the rest of the string
                     # this is the folder name
@@ -2687,11 +2675,12 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     except ValueError as e:
                         folder_name = relative_path
 
-                    loc = get_agent_installation_location()
                     # skio the first file as it has already been uploaded
                     for file_path in list_file_paths:
                         # subprocess call to the pennsieve agent to add the files to the manifest
-                        subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), file_path, "-t", folder_name[1:]])
+                        # subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), file_path, "-t", folder_name[1:]])
+                        # TODO: Reimpelement using the client once the Pensieve team updates the client's protocol buffers
+                        ps.manifest.add(file_path, folder_name[1:], manifest_id)
 
             bytes_uploaded_per_file = {}
             total_bytes_uploaded = {"value": 0}
