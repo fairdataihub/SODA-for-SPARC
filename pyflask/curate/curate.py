@@ -2454,9 +2454,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 total_bytes_to_upload = events_dict["upload_status"].total
                 current_bytes_uploaded = events_dict["upload_status"].current
 
-                namespace_logger.info(f"The bytes uploaded for the current file ({file_id}): {current_bytes_uploaded}")
-                namespace_logger.info(f"The total bytes needed to upload for the file({file_id}): {total_bytes_to_upload}")
-
                 # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
                 previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
 
@@ -2468,7 +2465,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 if previous_bytes_uploaded == total_bytes_to_upload:
                     previous_bytes_uploaded = 0 
 
-                namespace_logger.info(f"The previous bytes uploaded for the current file ({file_id}): {previous_bytes_uploaded}")
 
                 # calculate the additional amount of bytes that have just been uploaded for the given file id
                 total_bytes_uploaded["value"] += current_bytes_uploaded - previous_bytes_uploaded
@@ -2477,15 +2473,12 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
                 # check if the given file has finished uploading
                 if current_bytes_uploaded == total_bytes_to_upload and  file_id != "":
-                    print("File uploaded")
                     files_uploaded += 1
                     main_curation_uploaded_files += 1
-                    namespace_logger.info("Files Uploaded: " + str(files_uploaded) + "/" + str(current_files_in_subscriber_session))
                     
 
                 # check if the upload has finished
                 if files_uploaded == current_files_in_subscriber_session:
-                    print("Finished")
                     namespace_logger.info("Upload complete")
                     # unsubscribe from the agent's upload messages since the upload has finished
                     ps.unsubscribe(10)
