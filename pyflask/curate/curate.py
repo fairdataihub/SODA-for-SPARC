@@ -2469,8 +2469,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 # calculate the additional amount of bytes that have just been uploaded for the given file id
                 total_bytes_uploaded["value"] += current_bytes_uploaded - previous_bytes_uploaded
 
-                namespace_logger.info(total_bytes_uploaded["value"])
-
                 # check if the given file has finished uploading
                 if current_bytes_uploaded == total_bytes_to_upload and  file_id != "":
                     files_uploaded += 1
