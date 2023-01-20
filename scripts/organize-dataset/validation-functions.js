@@ -5,7 +5,6 @@
 const validateOrganizedDataset = async () => {
   let sodaJSONObject = await getFormattedSodaJSON();
 
-
   let skeletonDatasetResponse;
   try {
     skeletonDatasetResponse = await client.post(

@@ -2436,7 +2436,6 @@ $("#button-submit-dataset").click(async () => {
   organizeDatasetButton.style = "background-color: #f6f6f6";
   organzieDatasetButtonDiv.className = "disabled-animated-div";
 
-
   let supplementary_checks = await run_pre_flight_checks(false);
   if (!supplementary_checks) {
     return;

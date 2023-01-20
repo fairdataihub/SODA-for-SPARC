@@ -723,7 +723,6 @@ async function initiate_generate_manifest_bf() {
     }
   }
 
-
   let curationResponse;
   try {
     curationResponse = await client.post(
@@ -1680,7 +1679,6 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
       let moveFinishedBool;
       let manifestGenerationDirectory;
       if (originalDataset !== finalManifestGenerationPath) {
-
         // Move manifest files to the local dataset
         [moveFinishedBool, manifestGenerationDirectory] = await moveManifestFilesPreview(
           dir,
@@ -1981,7 +1979,6 @@ const generateAfterEdits = async () => {
     "if-existing-files": "replace",
     "generate-option": "new",
   };
-
 
   // move the generated manifest files to the user selected location for preview
   if (pennsievePreview) {
