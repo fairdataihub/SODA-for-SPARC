@@ -47,7 +47,7 @@ function userErrorMessage(error) {
     // The request was made but no response was received
     // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
     // http.ClientRequest in node.js
-    console.error(error)
+    console.error(error);
     errorMessage =
       "The server did not respond to the request. Please try again later or contact the soda team at help@fairdataihub.org if this issue persits.";
   } else {

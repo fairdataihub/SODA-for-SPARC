@@ -31,7 +31,6 @@ const guidedMovePennsieveFolder = (movedFolderName, folderJSONPath, newFolderJSO
     return;
   }
 
-
   folderJSONPath["action"] = ["existing", "moved"];
   addMovedRecursively(folderJSONPath);
   newFolderJSONPath["folders"][movedFolderName] = folderJSONPath;

@@ -438,7 +438,6 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
   const basepath = app.getAppPath();
   const resourcesPath = process.resourcesPath;
 
-
   // set the templates path
   try {
     await client.put("prepare_metadata/template_paths", {
@@ -450,7 +449,6 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
     ipcRenderer.send("track-event", "Error", "Setting Templates Path");
     return;
   }
-
 
   ipcRenderer.send("track-event", "Success", "Setting Templates Path");
 });
@@ -525,7 +523,6 @@ const run_pre_flight_checks = async (check_update = true) => {
       },
     });
 
-
     // TODO: Especially test this part cuz its getting tricky in the conversion
     if (result) {
       await openDropdownPrompt(null, "bf");
@@ -539,7 +536,6 @@ const run_pre_flight_checks = async (check_update = true) => {
   // Check for an installed Pennsieve agent
   await wait(500);
   [agent_installed, agent_version] = await check_agent_installed();
-
 
   // If no agent is installed, download the latest agent from Github and link to their docs for installation instructions if needed.
   if (!agent_installed) {
@@ -620,7 +616,6 @@ const run_pre_flight_checks = async (check_update = true) => {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     });
-
 
     if (result) {
       try {
@@ -868,7 +863,6 @@ const check_agent_installed = async () => {
     log.warn("Pennsieve agent not found");
     return [false, userErrorMessage(error)];
   }
-
 
   let { agent_version } = responseObject.data;
 
@@ -7568,7 +7562,6 @@ const checkEmptyFilesAndFolders = async (sodaJSONObj) => {
     $("#sidebarCollapse").prop("disabled", false);
     return;
   }
-
 
   let { data } = emptyFilesFoldersResponse;
 

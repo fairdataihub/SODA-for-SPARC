@@ -1986,7 +1986,6 @@ const ffmCreateManifest = async (sodaJson) => {
     delete sodaCopy["manifest-files"]["destination"];
   }
 
-
   try {
     // used for imported local datasets and pennsieve datasets
     // filters out deleted files/folders before creating manifest data again

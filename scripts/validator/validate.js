@@ -590,7 +590,6 @@ document.querySelector("#scicrunch button").addEventListener("click", async func
       confirmButtonText: "OK",
     });
   }
-
 });
 
 // observer for the selected dataset label in the dataset selection card in question 2
