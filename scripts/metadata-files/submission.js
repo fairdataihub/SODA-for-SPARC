@@ -718,7 +718,6 @@ async function generateSubmissionHelper(uploadBFBoolean) {
     }
   }
 
-  console.log("BEFORE SUBMISSION");
   let datasetName = $("#bf_dataset_load_submission").text().trim();
   client
     .post(
@@ -736,7 +735,6 @@ async function generateSubmissionHelper(uploadBFBoolean) {
       }
     )
     .then((res) => {
-      console.log("AFTER RES");
       if (uploadBFBoolean) {
         var successMessage =
           "Successfully generated the submission.xlsx file on your Pennsieve dataset.";

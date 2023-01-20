@@ -1018,10 +1018,6 @@ const create_child_node = (
   selectedOriginalLocation,
   viewOptions
 ) => {
-  console.log(nodeName);
-  console.log(selectedOriginalLocation);
-  console.log(oldFormatNode);
-  console.log(ext);
   /*
   oldFormatNode: node in the format under "dataset-structure" key in SODA object
   nodeName: text to show for each node (name)
@@ -1536,9 +1532,6 @@ const moveItems = async (ev, category) => {
 };
 
 function moveItemsHelper(item, destination, category) {
-  console.log("item: ", item);
-  console.log("destination: ", destination);
-  console.log("category: ", category);
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   var selectedNodeList = destination.split("/").slice(1);
@@ -1898,7 +1891,6 @@ const ffOpenManifestEditSwal = async (highlevelFolderName) => {
       saveManifestFiles = true;
       // guidedManifestTable = result;
       if (saveManifestFiles) {
-        console.log(guidedManifestTable);
         //if additional metadata or description gets added for a file then add to json as well
         sodaJSONObj["manifest-files"]["auto-generated"] = true;
         const savedHeaders = result[0];
@@ -1994,7 +1986,6 @@ const ffmCreateManifest = async (sodaJson) => {
     delete sodaCopy["manifest-files"]["destination"];
   }
 
-  console.log(sodaCopy);
 
   try {
     // used for imported local datasets and pennsieve datasets
@@ -2009,13 +2000,11 @@ const ffmCreateManifest = async (sodaJson) => {
     // response does not format in JSON format so need to format ' with "
     let regex = /'/gm;
     let formattedResponse = response.replace(regex, '"');
-    console.log(response);
     let capitalTPosition = formattedResponse.search("True");
     if (capitalTPosition != -1) {
       formattedResponse = formattedResponse.replace("True", "true");
     }
 
-    console.log(formattedResponse);
     let json_structure = JSON.parse(formattedResponse);
     sodaCopy = json_structure;
     datasetStructCopy = sodaCopy["dataset-structure"];
@@ -2116,7 +2105,6 @@ $("#generate-manifest-curate").change(async function () {
       };
     }
 
-    console.log(sodaJSONObj["manifest-files"]);
     await ffmCreateManifest(sodaJSONObj);
     // For the back end to know the manifest files have been created in $HOME/SODA/manifest-files/<highLvlFolder>
     sodaJSONObj["manifest-files"]["auto-generated"] = true;

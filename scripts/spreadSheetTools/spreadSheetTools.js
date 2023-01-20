@@ -65,7 +65,6 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       let toolBar = document.getElementsByClassName("jexcel_toolbar")[0];
-      console.log(toolBar);
       toolBar.innerHTML = "";
       toolBar.innerHTML = `
         <div style="

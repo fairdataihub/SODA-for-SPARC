@@ -214,7 +214,6 @@ function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
           copnsole.log(organizeCurrentLocation);
           var filtered = getGlobalPath(organizeCurrentLocation);
           var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
-          console.log(myPath);
 
           $("div.single-item.selected-item > .folder_desc").each(function (index, current_element) {
             itemToDelete = $(current_element).text();
@@ -1555,7 +1554,6 @@ const handleDuplicateImports = (btnId, duplicateArray, curationMode) => {
 };
 
 const checkForMultipleExtensions = (filename) => {
-  console.log("extension count: " + filename.match(/\./g).length);
   return filename.match(/\./g).length;
 };
 
@@ -1803,7 +1801,6 @@ const addFilesfunction = async (
       loadingContainer.style.display = "none";
       loadingIcon.style.display = "none";
     }
-    console.log("First file check");
     await Swal.fire({
       title:
         "Files should typically have one (two when they are compressed) periods in their names according to the SPARC Data Standards. The following files have three of more periods in their name and will not be imported.",
@@ -1861,7 +1858,6 @@ const addFilesfunction = async (
           let fileName = path.parse(nonAllowedCharacterFiles[i]).base;
           let regex = /[\+&\%#]/g;
           let replaceFile = fileName.replace(regex, "-");
-          console.log(replaceFile);
           filesToImport[replaceFile] = {
             path: nonAllowedCharacterFiles[i],
             basename: replaceFile,
@@ -1871,7 +1867,6 @@ const addFilesfunction = async (
       if (result.isDenied) {
         for (let i = 0; i < nonAllowedCharacterFiles.length; i++) {
           let fileName = nonAllowedCharacterFiles[i];
-          console.log(fileName);
           filesToImport[fileName] = {
             path: fileName,
             basename: path.parse(fileName).base,

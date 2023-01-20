@@ -428,7 +428,6 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
   }
 
   log.info("Done with startup");
-  console.log("DONE WITH STARTUP");
 
   // check integrity of all the core systems
   await run_pre_flight_checks();
@@ -439,7 +438,6 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
   const basepath = app.getAppPath();
   const resourcesPath = process.resourcesPath;
 
-  console.log("SENDING TEMPLATE PATHS REQUEST");
 
   // set the templates path
   try {
@@ -453,7 +451,6 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
     return;
   }
 
-  console.log("TEMPLATE PATHS REQUEST SUCCESSFUL");
 
   ipcRenderer.send("track-event", "Success", "Setting Templates Path");
 });
@@ -468,7 +465,6 @@ ipcRenderer.on("checkForAnnouncements", (event, index) => {
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 const run_pre_flight_checks = async (check_update = true) => {
   log.info("Running pre flight checks");
-  console.log("Preflight checks");
   let connection_response = "";
   let agent_installed_response = "";
   let agent_version_response = "";
@@ -503,7 +499,6 @@ const run_pre_flight_checks = async (check_update = true) => {
   // TODO: Start the agent here or while determining installation and agent version.
 
   // Check for an API key pair first. Calling the agent check without a config file, causes it to crash.
-  console.log("API KEYSSS");
   account_present = await check_api_key();
 
   // TODO: Reimplement this section to work with the new agent
@@ -530,26 +525,21 @@ const run_pre_flight_checks = async (check_update = true) => {
       },
     });
 
-    console.log(result);
 
     // TODO: Especially test this part cuz its getting tricky in the conversion
     if (result) {
-      console.log("Should open dropdown prmpt");
       await openDropdownPrompt(null, "bf");
       return false;
     } else {
-      console.log("Here instead");
       return true;
     }
   }
 
   // an account is present
-  console.log("Checking the new agent.");
   // Check for an installed Pennsieve agent
   await wait(500);
   [agent_installed, agent_version] = await check_agent_installed();
 
-  console.log("Agent installed version response: ", agent_version);
 
   // If no agent is installed, download the latest agent from Github and link to their docs for installation instructions if needed.
   if (!agent_installed) {
@@ -631,7 +621,6 @@ const run_pre_flight_checks = async (check_update = true) => {
       },
     });
 
-    console.log("Result: ", result);
 
     if (result) {
       try {
@@ -673,7 +662,6 @@ const run_pre_flight_checks = async (check_update = true) => {
   });
 
   await checkForAnnouncements("announcements");
-  console.log("Returning from preflight checks");
   return true;
 };
 
@@ -827,9 +815,7 @@ const check_api_key = async () => {
   }
 
   try {
-    console.log("Here before account list in api key check");
     responseObject = await client.get("manage_datasets/bf_account_list");
-    console.log("After api key check");
   } catch (e) {
     notyf.dismiss(notification);
     notyf.open({
@@ -883,7 +869,6 @@ const check_agent_installed = async () => {
     return [false, userErrorMessage(error)];
   }
 
-  console.log(responseObject);
 
   let { agent_version } = responseObject.data;
 
@@ -918,7 +903,6 @@ const check_agent_installed_version = async (agent_version) => {
     log.warn(`Current agent version: ${agent_version}`);
     log.warn(`Latest agent version: ${latest_agent_version}`);
   } else {
-    console.log("We have the latest agent version");
     notyf.dismiss(notification);
     notyf.open({
       type: "success",
@@ -940,7 +924,6 @@ const get_latest_agent_version = async () => {
 
   let releases = releasesResponse.data;
   let release = releases[0];
-  console.log(release);
   let latest_agent_version = release.tag_name;
 
   if (process.platform == "darwin") {
@@ -967,8 +950,6 @@ const get_latest_agent_version = async () => {
     reverseSwalButtons = false;
     release.assets.forEach((asset, index) => {
       let file_name = asset.name;
-      console.log(file_name);
-      console.log(path.extname(file_name));
       if (path.extname(file_name) == ".deb") {
         browser_download_url = asset.browser_download_url;
       }
@@ -978,9 +959,6 @@ const get_latest_agent_version = async () => {
   if (browser_download_url == undefined || latest_agent_version == undefined) {
     throw new Error("Trouble getting the latest agent version.");
   }
-
-  console.log(browser_download_url);
-  console.log(latest_agent_version);
 
   return [browser_download_url, latest_agent_version];
 };
@@ -1454,7 +1432,6 @@ const loadAwardData = async () => {
             if (err) {
               log.error(err);
               console.log(err);
-              console.log("error here");
               return;
             } else {
               // create set to remove duplicates
@@ -3099,10 +3076,8 @@ const guidedCropOptions = {
   viewMode: 1,
   responsive: true,
   crop: function (event) {
-    console.log(event);
     var data = event.detail;
     let image_height = Math.round(data.height);
-    console.log(image_height);
 
     guidedFormBannerHeight.value = image_height;
 
@@ -3167,13 +3142,8 @@ const setupPublicationOptionsPopover = () => {
 };
 
 const submitReviewDatasetCheck = async (res) => {
-  console.log(res);
-  console.log(res["publishing_status"]);
-  console.log(res["review_request_status"]);
   let reviewstatus = res["review_request_status"];
   let publishingStatus = res["publishing_status"];
-  // console.log(reviewStatus);
-  // console.log(publishingStatus);
   if (res["publishing_status"] === "PUBLISH_IN_PROGRESS") {
     Swal.fire({
       icon: "error",
@@ -3266,7 +3236,6 @@ const submitReviewDatasetCheck = async (res) => {
         if (checkedRadioButton === "embargo-date-check") {
           // set the embargoDate variable if so
           embargoReleaseDate = $("#tui-date-picker-target").val();
-          console.log(embargoReleaseDate);
         }
       },
     });
@@ -3293,7 +3262,6 @@ const submitReviewDatasetCheck = async (res) => {
       },
     });
     // submit the dataset for review with the given embargoReleaseDate
-    console.log(embargoReleaseDate);
     await submitReviewDataset(embargoReleaseDate);
   } else {
     // status is NOT_PUBLISHED
@@ -3356,7 +3324,6 @@ const submitReviewDatasetCheck = async (res) => {
         if (checkedRadioButton === "embargo-date-check") {
           // set the embargoDate variable if so
           embargoReleaseDate = $("#tui-date-picker-target").val();
-          console.log(embargoReleaseDate);
         }
       },
     });
@@ -3383,7 +3350,6 @@ const submitReviewDatasetCheck = async (res) => {
     });
 
     // submit the dataset for review with the given embargoReleaseDate
-    console.log(embargoReleaseDate);
     await submitReviewDataset(embargoReleaseDate);
   }
 };
@@ -3403,8 +3369,6 @@ ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
 });
 
 const submitReviewDataset = async (embargoReleaseDate) => {
-  console.log("within submit review dataset");
-  console.log(embargoReleaseDate);
   $("#para-submit_prepublishing_review-status").text("");
   bfRefreshPublishingDatasetStatusBtn.disabled = true;
   var selectedBfAccount = defaultBfAccount;
@@ -3605,9 +3569,6 @@ function withdrawDatasetSubmission() {
 const withdrawDatasetCheck = async (res) => {
   let reviewstatus = res["publishing_status"];
   let requestStatus = res["review_request_status"];
-  console.log(requestStatus);
-  console.log(res);
-  console.log("here");
   if (requestStatus != "requested") {
     Swal.fire({
       icon: "error",
@@ -3985,9 +3946,7 @@ const showPublishingStatus = async (callback) => {
     if (selectedBfDataset === "None") {
       resolve();
     } else {
-      console.log(selectedBfDataset);
       try {
-        console.log("before call");
         let get_publishing_status = await client.get(
           `/disseminate_datasets/datasets/${selectedBfDataset}/publishing_status`,
           {
@@ -3997,7 +3956,6 @@ const showPublishingStatus = async (callback) => {
           }
         );
         let res = get_publishing_status.data;
-        console.log(res);
 
         try {
           //update the dataset's publication status and display
@@ -4437,7 +4395,6 @@ async function showDefaultBFAccount() {
   try {
     let bf_default_acc_req = await client.get("manage_datasets/bf_default_account_load");
     let accounts = bf_default_acc_req.data.defaultAccounts;
-    console.log("Result is: ", bf_default_acc_req.data);
     if (accounts.length > 0) {
       var myitemselect = accounts[0];
       defaultBfAccount = myitemselect;
@@ -5204,8 +5161,6 @@ const dropHelper = async (
     /// Get all the file information
     var itemPath = ev1[i].path;
     var itemName = path.parse(itemPath).base;
-    console.log(itemPath);
-    console.log(itemName);
     var duplicate = false;
     var statsObj = fs.statSync(itemPath);
     // check for duplicate or files with the same name
@@ -5478,10 +5433,8 @@ const dropHelper = async (
         //replace characters
         for (let i = 0; i < nonAllowedCharacterFiles.length; i++) {
           let fileName = path.parse(nonAllowedCharacterFiles[i]).base;
-          // console.log(fileName);
           let regex = /[\+&\%#]/g;
           let replaceFile = fileName.replace(regex, "-");
-          console.log(replaceFile);
           importedFiles[replaceFile] = {
             path: nonAllowedCharacterFiles[i],
             basename: replaceFile,
@@ -5491,7 +5444,6 @@ const dropHelper = async (
       if (result.isDenied) {
         for (let i = 0; i < nonAllowedCharacterFiles.length; i++) {
           let fileName = nonAllowedCharacterFiles[i];
-          console.log(fileName);
           importedFiles[fileName] = {
             path: fileName,
             basename: path.parse(fileName).base,
@@ -5885,7 +5837,6 @@ const handleSelectedBannerImage = async (path, curationMode) => {
   let viewImportedImage = "";
   let saveBannerImage = "";
   let cropperOptions = "";
-  console.log(curationMode);
   if (curationMode === "guided-mode") {
     imgHolder = document.getElementById("guided-div-img-container-holder");
     imgContainer = document.getElementById("guided-div-img-container");
@@ -6400,8 +6351,6 @@ const sortObjByKeys = (object) => {
 };
 
 const listItems = async (jsonObj, uiItem, amount_req, reset) => {
-  console.log(jsonObj);
-  console.log("listing items");
   //allow amount to choose how many elements to create
   //break elements into sets of 100
   const rootFolders = ["primary", "source", "derivative"];
@@ -7366,12 +7315,6 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
               }
             }
 
-            console.log(JSON.stringify(sodaJSONObj));
-            console.log(root_folder_path);
-            console.log(irregularFolderArray);
-            console.log(replaced);
-            console.log("before call");
-
             try {
               let importLocalDatasetResponse = await client.post(
                 `/organize_datasets/datasets/import`,
@@ -7626,7 +7569,6 @@ const checkEmptyFilesAndFolders = async (sodaJSONObj) => {
     return;
   }
 
-  console.log("Finished checking for empty files and folders");
 
   let { data } = emptyFilesFoldersResponse;
 
@@ -7880,7 +7822,6 @@ async function initiate_generate() {
 
   if ($("#generate-manifest-curate")[0].checked) {
     sodaJSONObj["manifest-files"]["auto-generated"] = true;
-    console.log("setting destination status to auto generated");
   }
 
   //dissmisButton.addEventListener("click", dismiss('status-bar-curate-progress'));
@@ -7889,7 +7830,6 @@ async function initiate_generate() {
       if (sodaJSONObj["manifest-files"]["auto-generated"] === true) {
         delete_imported_manifest();
       }
-      console.log(sodaJSONObj["manifest-files"]["destination"]);
     } else {
       if (sodaJSONObj["manifest-files"]["destination"] === "generate-dataset") {
         manifest_files_requested = true;
@@ -7914,8 +7854,6 @@ async function initiate_generate() {
   dataset_name = nameDestinationPair[0];
   dataset_destination = nameDestinationPair[1];
 
-  console.log("BEFORE CURATION");
-  console.log(JSON.stringify(sodaJSONObj));
   client
     .post(
       `/curate_datasets/curation`,
@@ -8145,12 +8083,10 @@ async function initiate_generate() {
     }
 
     if (main_curate_status === "Done") {
-      console.log("Finished uploading now");
       $("#sidebarCollapse").prop("disabled", false);
       log.info("Done curate track");
       statusBarClone.remove();
       sparc_container.style.display = "inline";
-      console.log("Successful boolean status is: ", successful);
       if (successful === true) {
         organizeDataset_option_buttons.style.display = "flex";
         organizeDataset.disabled = false;
@@ -8179,13 +8115,11 @@ async function initiate_generate() {
 
     // if a new Pennsieve dataset was generated log it once to the dataset id to name mapping
     let generated_dataset_id = data["generated_dataset_id"];
-    if (!loggedDatasetNameToIdMapping) console.log("generated_dataset_id: ", generated_dataset_id);
     if (
       !loggedDatasetNameToIdMapping &&
       generated_dataset_id !== null &&
       generated_dataset_id !== undefined
     ) {
-      console.log("Dataset ID to name mapping logged");
       ipcRenderer.send(
         "track-event",
         "Dataset ID to Dataset Name Map",
@@ -8425,7 +8359,6 @@ const curation_consortium_check = async (mode = "") => {
       },
     });
     let res = bf_account_details_req.data;
-    console.log(res);
     let organization_id = res["organization_id"];
     if (organization_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0") {
       $("#current_curation_team_status").text("None");
@@ -9133,7 +9066,6 @@ function logGeneralOperationsForAnalytics(category, analyticsPrefix, granularity
  */
 const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   // check that a dataset name or id is provided
-  // console.log(datasetN)
   if (!datasetIdOrName || datasetIdOrName === "") {
     throw new Error(
       "Error: Must provide a valid dataset to log status of pre-publishing checklist items from."
@@ -9414,7 +9346,6 @@ $("#validate_dataset_bttn").on("click", async () => {
 
 //function used to scale banner images
 const scaleBannerImage = async (imagePath) => {
-  console.log(imagePath);
   try {
     let imageScaled = await client.post(
       `/manage_datasets/scale_image`,

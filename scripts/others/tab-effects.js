@@ -36,7 +36,6 @@ const showParentTab = (tabNow, nextOrPrev) => {
   // This function will display the specified tab of the form ...
   var x = document.getElementsByClassName("parent-tabs");
   fixStepIndicator(tabNow);
-  console.log("fixed tab indicator");
   if (tabNow === 0) {
     fixStepDone(tabNow);
   } else {
@@ -90,7 +89,6 @@ const showParentTab = (tabNow, nextOrPrev) => {
     $("#nextBtn").prop("disabled", false);
   }
   if (tabNow == 4) {
-    console.log("just create here");
     if (document.getElementById("generate-manifest-curate").checked) {
       // need to run manifest creation
       ffmCreateManifest(sodaJSONObj);
@@ -115,7 +113,6 @@ const showParentTab = (tabNow, nextOrPrev) => {
     ) {
       $("#nextBtn").prop("disabled", false);
     } else {
-      console.log("revealing here?");
       $("#nextBtn").prop("disabled", true);
     }
   }
@@ -169,7 +166,6 @@ const showParentTab = (tabNow, nextOrPrev) => {
     //   step5Bubble.classList.remove("is-current");
     // }
     // step5Bubble.classList.add("done");
-    console.log("revealing here?");
     // If in step 6, show the generate button and the preview tab
     $("#nextBtn").css("display", "none");
 
@@ -558,9 +554,6 @@ const nextPrev = (pageIndex) => {
     });
     // check if required metadata files are included
   } else if (pageIndex === 1 && parentTabs[currentTab].id === "metadata-files-tab") {
-    console.log("true help me 1321here");
-    console.log(pageIndex);
-    console.log(parentTabs[currentTab].id);
     var requiredFiles = ["submission", "dataset_description", "subjects", "README"];
     let missingFiles = [];
     var withoutExtMetadataArray = [];
@@ -572,7 +565,6 @@ const nextPrev = (pageIndex) => {
     }
 
     if (Object.keys(sodaJSONObj["metadata-files"]).length > 0) {
-      console.log("true help me here");
       Object.keys(sodaJSONObj["metadata-files"]).forEach((element) => {
         let file_name = path.parse(element).name;
         if (!element.includes("-DELETED")) {
@@ -625,9 +617,6 @@ const nextPrev = (pageIndex) => {
           // Increase or decrease the current tab by 1:
           currentTab = currentTab + pageIndex;
           // Display the correct tab:
-          console.log("It happens here?");
-          console.log(currentTab);
-          console.log(pageIndex);
           showParentTab(currentTab, pageIndex);
         }
       });
@@ -637,9 +626,6 @@ const nextPrev = (pageIndex) => {
       // Increase or decrease the current tab by 1:
       currentTab = currentTab + pageIndex;
       // Display the correct tab:
-      console.log("It happens here?");
-      console.log(currentTab);
-      console.log(pageIndex);
       showParentTab(currentTab, pageIndex);
     }
   } else if (
@@ -647,7 +633,6 @@ const nextPrev = (pageIndex) => {
     sodaJSONObj["starting-point"]["type"] == "bf"
   ) {
     $(parentTabs[currentTab]).removeClass("tab-active");
-    console.log("It happens here?");
     currentTab = currentTab - 2;
     showParentTab(currentTab, pageIndex);
     $("#nextBtn").prop("disabled", false);
@@ -673,7 +658,6 @@ const nextPrev = (pageIndex) => {
     (sodaJSONObj["starting-point"]["type"] === "new" ||
       sodaJSONObj["starting-point"]["type"] === "local")
   ) {
-    console.log("It happens here?");
     $(parentTabs[currentTab]).removeClass("tab-active");
     currentTab = currentTab + pageIndex;
     $("#Question-generate-dataset").show();
@@ -1244,7 +1228,6 @@ const create_json_object_include_manifest = (action, sodaJSONObj, root_folder_pa
     "inputs_metadata.xlsx",
     "outputs_metadata.xlsx",
   ];
-  console.log("?");
   sodaJSONObj["dataset-structure"] = { folders: {} };
   let stats = "";
   // Get high level folders and metadata files first
@@ -1696,8 +1679,6 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
 
     let sodaObject = {};
     let manifestErrorMessage = [];
-    console.log(sodaJSONObj);
-    console.log("Before reponse ^");
     try {
       let data = await bf_request_and_populate_dataset(
         sodaJSONObj,
@@ -1706,9 +1687,6 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
       );
       sodaObject = data.soda_object;
       manifestErrorMessage = data.manifest_error_message;
-      console.log("After response");
-      console.log(sodaObject);
-      console.log(manifestErrorMessage);
     } catch (err) {
       Swal.fire({
         icon: "error",
@@ -2902,7 +2880,6 @@ const recursive_remove_local_deleted_files = (dataset_folder) => {
 // Step 6: Generate dataset
 // update JSON object after users finish Generate dataset step
 const updateJSONStructureGenerate = (progress = false, sodaJSONObj) => {
-  console.log(sodaJSONObj);
   let starting_point = sodaJSONObj["starting-point"]["type"];
   if (sodaJSONObj["starting-point"]["type"] == "bf") {
     sodaJSONObj["generate-dataset"] = {
@@ -3172,7 +3149,6 @@ const exitCurate = async (resetProgressTabs, start_over = false) => {
 
 const wipeOutCurateProgress = async () => {
   // set SODA json object back
-  console.log("resetting the sodajson object");
   sodaJSONObj = {
     "starting-point": { type: "" },
     "dataset-structure": {},

@@ -89,7 +89,6 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
   let bfDataset = document.getElementById(`bf_dataset_load_${fileType}`).innerText.trim();
   if (uploadBFBoolean) {
     //pass in only CHANGES or README (the extension .txt is added in the backend)
-    console.log(upperCaseLetters);
     try {
       let upload_rc_file = await client.post(
         "/prepare_metadata/readme_changes_file",
@@ -516,7 +515,6 @@ const getRC = async (type) => {
   log.info(`Getting ${type} file for dataset ${datasetName}`);
 
   //pass in only CHANGES or README (the extension .txt is added in the backend)
-  console.log(path.parse(type).name);
   try {
     let import_rc_file = await client.get(`/prepare_metadata/readme_changes_file`, {
       params: {

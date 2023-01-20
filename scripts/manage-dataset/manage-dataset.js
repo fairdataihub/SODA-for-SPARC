@@ -1455,8 +1455,6 @@ $("#edit_banner_image_button").click(async () => {
   if ($("#para-current-banner-img").text() === "None") {
     //Do nothing... regular import
   } else {
-    console.log(img_src);
-    console.log(img_base64);
     let img_src = $("#current-banner-img").attr("src");
     let img_base64 = await getBase64(img_src); // encode image to base64
 
@@ -1468,7 +1466,6 @@ $("#edit_banner_image_button").click(async () => {
 
     // Look for the security token in the URL. If this this doesn't exist, something went wrong with the aws bucket link.
     let position = img_src.search("X-Amz-Security-Token");
-    console.log(position);
 
     if (position != -1) {
       // The image url will be before the security token
@@ -1644,7 +1641,6 @@ const displayBannerImage = async (path) => {
               image_path = converted_image_file;
               imageExtension = "jpg";
               $("#para-path-image").html(image_path);
-              console.log(image_path);
               bfViewImportedImage.src = image_path;
               myCropper.destroy();
               myCropper = new Cropper(bfViewImportedImage, cropOptions);
@@ -1674,7 +1670,6 @@ const displayBannerImage = async (path) => {
       document.getElementById("div-img-container").style.display = "block";
 
       $("#para-path-image").html(image_path);
-      console.log(image_path);
       bfViewImportedImage.src = image_path;
       myCropper.destroy();
       myCropper = new Cropper(bfViewImportedImage, cropOptions);
@@ -1724,7 +1719,6 @@ const uploadBannerImage = async () => {
     if (image_file_size < 5 * 1024 * 1024) {
       let selectedBfAccount = defaultBfAccount;
       let selectedBfDataset = defaultBfDataset;
-      console.log(imagePath);
 
       try {
         let bf_add_banner = await client.put(
@@ -1740,7 +1734,6 @@ const uploadBannerImage = async () => {
           }
         );
         let res = bf_add_banner.data.message;
-        console.log(res);
         $("#para-dataset-banner-image-status").html(res);
 
         showCurrentBannerImage();
@@ -1798,7 +1791,6 @@ const uploadBannerImage = async () => {
       //final size is greater than 5mb so compress image here (image already created and stored in temp file)
       let scaledImagePath = await scaleBannerImage(imagePath); //scaled image will be in temp folder
       let image_file_size = fs.statSync(scaledImagePath)["size"]; //update size for analytics
-      console.log(scaledImagePath);
       try {
         let uploadBannerImage = await client.put(
           `/manage_datasets/bf_banner_image`,
@@ -2000,7 +1992,6 @@ const showCurrentBannerImage = async () => {
       myCropper.destroy();
     } else {
       document.getElementById("para-current-banner-img").innerHTML = "";
-      console.log(res);
       bfCurrentBannerImg.src = res;
     }
     $("#banner_image_loader").hide();
@@ -2445,11 +2436,9 @@ $("#button-submit-dataset").click(async () => {
   organizeDatasetButton.style = "background-color: #f6f6f6";
   organzieDatasetButtonDiv.className = "disabled-animated-div";
 
-  console.log("About to run preflight checks");
 
   let supplementary_checks = await run_pre_flight_checks(false);
   if (!supplementary_checks) {
-    console.log("Supplementat checks failed");
     return;
   }
 
@@ -2509,7 +2498,6 @@ $("#button-submit-dataset").click(async () => {
       }
     )
     .then(async () => {
-      console.log("Dataset is uploading");
       $("#upload_local_dataset_progress_div")[0].scrollIntoView({
         behavior: "smooth",
         block: "start",
@@ -2673,9 +2661,6 @@ $("#button-submit-dataset").click(async () => {
         totalFileSize = progressData["total_file_size"];
         let uploadedFileSize = progressData["upload_file_size"];
         let fileUploadStatus = progressData["files_uploaded_status"];
-
-        console.log("statusMessage: " + submitprintstatus);
-        console.log("completionStatus: " + completionStatus);
 
         if (submitprintstatus === "Uploading") {
           $("#div-progress-submit").css("display", "block");

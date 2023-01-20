@@ -12,7 +12,6 @@ Note: Some frontend elements of the workflow are in the renderer.js file as well
 // Main functions
 const disseminatePublish = async () => {
   // check that the user completed all pre-publishing checklist items for the given dataset
-  console.log(allPrepublishingChecklistItemsCompleted());
   if (!allPrepublishingChecklistItemsCompleted()) {
     // alert the user they must complete all checklist items before beginning the prepublishing process
     Swal.fire({
@@ -50,7 +49,6 @@ const disseminatePublish = async () => {
   });
 
   // begin the dataset publishing flow
-  console.log(submitReviewDatasetCheck);
   await showPublishingStatus(submitReviewDatasetCheck);
 };
 
@@ -68,7 +66,6 @@ const disseminateShowPublishingStatus = (callback, account, dataset) => {
       var nothing;
     } else {
       $("#para-submit_prepublishing_review-status").text("");
-      console.log("where is function");
       showPublishingStatus("noClear");
     }
   }

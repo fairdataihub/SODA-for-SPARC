@@ -6,7 +6,6 @@ const guidedModifyPennsieveFolder = (folderJSONPath, action) => {
   //Actions can be "delete"  or "restore"
 
   if (!folderJSONPath) {
-    console.log("The folder path does not exist");
     return;
   }
   if (action === "delete") {
@@ -26,20 +25,16 @@ const guidedModifyPennsieveFolder = (folderJSONPath, action) => {
 
 const guidedMovePennsieveFolder = (movedFolderName, folderJSONPath, newFolderJSONPath) => {
   if (!folderJSONPath) {
-    console.log("The folder path does not exist");
     return;
   }
   if (!newFolderJSONPath) {
-    console.log("The new parent folder path does not exist");
     return;
   }
 
-  console.log("this needs to be deleted outside of this function", folderJSONPath);
 
   folderJSONPath["action"] = ["existing", "moved"];
   addMovedRecursively(folderJSONPath);
   newFolderJSONPath["folders"][movedFolderName] = folderJSONPath;
-  console.log(newFolderJSONPath["folders"]);
 };
 const checkIfPoolsFoldersAreCorrect = (poolFolderPath) => {
   const poolFolders = Object.keys(poolFolderPath["folders"]);
@@ -49,7 +44,6 @@ const checkIfPoolsFoldersAreCorrect = (poolFolderPath) => {
   const poolSubjectFolders = poolFolders.filter((folder) => {
     folder.startsWith("sub-");
   });
-  console.log(poolSubjectFolders);
   for (const subjectFolder of poolSubjectFolders) {
     checkIfSubjectsFoldersAreCorrect(poolFolderPath["folders"][subjectFolder]);
   }
@@ -66,7 +60,6 @@ const checkIfPoolsFoldersAreCorrect = (poolFolderPath) => {
 };
 const checkIfSubjectsFoldersAreCorrect = (subjectFolderPath) => {
   const subjectFolders = Object.keys(subjectFolderPath["folders"]);
-  console.log(subjectFolders.map((folder) => folder.startsWith("sam-")));
   const invalidSubjectFolders = subjectFolders.filter((folder) => {
     !folder.startsWith("sam-");
   });
@@ -86,13 +79,11 @@ const guidedCheckHighLevelFoldersForImproperFiles = (datasetStructure) => {
   for (hlf of guidedHighLevelFolders) {
     if (datasetStructure["folders"][hlf]) {
       const hlfFolders = Object.keys(datasetStructure["folders"][hlf]["folders"]);
-      console.log(hlfFolders);
       //filter out hlfFolders that do not start with pool- or sub-
       const invalidBaseFolders = hlfFolders.filter((folder) => {
         return !folder.startsWith("pool-") && !folder.startsWith("sub-");
       });
 
-      console.log(invalidBaseFolders);
       for (const invalidBaseFolder of invalidBaseFolders) {
         invalidFolders.push(invalidBaseFolder);
       }
@@ -107,7 +98,6 @@ const guidedCheckHighLevelFoldersForImproperFiles = (datasetStructure) => {
     }
   }
   if (invalidFolders.length > 0 && invalidFiles.length > 0) {
-    console.log("no invalid folders or files found in the guided base folders");
   }
   return [invalidFolders, invalidFiles];
 };
@@ -412,7 +402,6 @@ const savePageChanges = async (pageBeingLeftID) => {
             samplesTableData.slice(1)
           );
 
-          console.log(datasetSubSamStructure);
           if (!objectsHaveSameKeys(metadataSubSamStructure, datasetSubSamStructure)) {
             errorArray.push({
               type: "notyf",
@@ -421,7 +410,6 @@ const savePageChanges = async (pageBeingLeftID) => {
             throw errorArray;
           }
         } else {
-          console.log("resetting subjects and samples table data");
           subjectsTableData = [];
           samplesTableData = [];
           extractPoolSubSamStructureFromDataset(datasetStructureJSONObj);
@@ -472,7 +460,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
       const currentDatasetName = sodaJSONObj["digital-metadata"]["name"];
-      console.log(currentDatasetName);
       if (currentDatasetName) {
         // Update the progress file path name and banner image path if needed
         if (datasetNameInput !== currentDatasetName) {
@@ -1562,11 +1549,6 @@ const createGuidedStructureFromSubSamMetadata = (subjectsMetadataRows, samplesMe
     const sampleID = sample[1];
     const poolID = sample[3];
     if (poolID !== "") {
-      console.log("no pool id");
-      console.log(subjectID);
-      console.log(sampleID);
-      console.log(poolID);
-      console.log(poolSubSamStructure["pools"]);
       poolSubSamStructure["pools"][poolID][subjectID][sampleID] = {};
     } else {
       poolSubSamStructure["subjects"][subjectID][sampleID] = {};
@@ -2172,7 +2154,6 @@ const guidedTransitionFromDatasetNameSubtitlePage = () => {
 const saveGuidedProgress = async (guidedProgressFileName) => {
   //return if guidedProgressFileName is not a strnig greater than 0
   if (typeof guidedProgressFileName !== "string" || guidedProgressFileName.length === 0) {
-    console.log("Dataset does not have a name therefore not saveable");
     return;
   }
   //Destination: HOMEDIR/SODA/Guided-Progress
@@ -2527,18 +2508,13 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
 const extractFileNamesFromManifestData = (manifestData) => {
   let allFileNamesinDsStructure = [];
   for (const highLevelFolder of Object.keys(manifestData)) {
-    console.log(manifestData[highLevelFolder]);
-    console.log(highLevelFolder);
     if (highLevelFolder === "auto-generated" || highLevelFolder === "destination") {
       continue;
     }
-    // console.log(highLevelFolder);
     for (const row of manifestData[highLevelFolder]["data"]) {
-      console.log(row);
       allFileNamesinDsStructure.push(row[0]);
     }
   }
-  // console.log(allFileNamesinDsStructure.sort());
   //return sorted allFileNamesinDsStructure
   return allFileNamesinDsStructure.sort();
 };
@@ -2546,12 +2522,9 @@ const extractFileNamesFromManifestData = (manifestData) => {
 const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
   const prevManifestFileNames = extractFileNamesFromManifestData(existingManifestData);
   const newManifestFileNames = extractFileNamesFromManifestData(newManifestData);
-  console.log(newManifestFileNames);
-  console.log(prevManifestFileNames);
 
   if (JSON.stringify(existingManifestData) === JSON.stringify(newManifestData)) {
     //All files have remained the same, no need to diff check
-    console.log("are the same");
     return existingManifestData;
   }
 
@@ -2559,12 +2532,10 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
 
   // Create a hash table for the existing manifest data
   const existingManifestDataHashTable = {};
-  console.log(existingManifestData);
   for (const highLevelFolderName in existingManifestData) {
     const existingManifestDataHeaders = existingManifestData[highLevelFolderName]["headers"];
     const existingManifestDataData = existingManifestData[highLevelFolderName]["data"];
 
-    console.log(existingManifestDataData);
     for (const row of existingManifestDataData) {
       const fileObj = {};
       const fileName = row[0];
@@ -2608,7 +2579,6 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
           newManifestReturnObj["data"].push(row);
         }
         returnObj[highLevelFolder] = newManifestReturnObj;
-        console.log(returnObj[highLevelFolder]);
       }
     }
   }
@@ -2651,13 +2621,10 @@ document
         { timeout: 0 }
       );
       let response = cleanJson.data.soda_json_structure;
-      console.log(response);
       // response does not format in JSON format so need to format ' with "
       let regex = /'/gm;
       let formattedResponse = JSON.parse(response.replace(regex, '"'));
-      console.log(formattedResponse);
       const formattedDatasetStructure = formattedResponse["dataset-structure"];
-      console.log(formattedDatasetStructure);
       // Retrieve the manifest data to be used to generate the manifest files
       const res = await client.post(
         `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
@@ -2667,7 +2634,6 @@ document
         { timeout: 0 }
       );
       const manifestRes = res.data;
-      console.log(manifestRes);
       //loop through each of the high level folders and store their manifest headers and data
       //into the sodaJSONObj
 
@@ -2960,8 +2926,6 @@ function guidedShowTreePreview(new_dataset_name, targetElement) {
 }
 
 const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
-  console.log(highLevelFolder);
-  console.log(subjectsOrSamples);
   //add high level folder if it does not exist
   if (!datasetStructureJSONObj["folders"][highLevelFolder]) {
     datasetStructureJSONObj["folders"][highLevelFolder] = newEmptyFolderObj();
@@ -3849,7 +3813,6 @@ const openPage = async (targetPageID) => {
             },
           });
           let res = import_metadata.data;
-          console.log(res);
           const sparcAwardRes = res?.["SPARC Award number"];
 
           //If the SPARC Award number was found, click the manual button and fill the SPARC Award number
@@ -4063,7 +4026,6 @@ const openPage = async (targetPageID) => {
 
           // guidedLoadDescriptionStudyInformation
           let studyInformation = metadata_import.data["Study information"];
-          console.log(studyInformation);
           if (
             studyInformation[0][0] === "Study purpose" &&
             studyInformation[1][0] === "Study data collection" &&
@@ -4101,7 +4063,6 @@ const openPage = async (targetPageID) => {
             const studyAcknowledgements = awardInformation[1]
               .slice(1)
               .filter((acknowledgement) => acknowledgement !== "");
-            console.log(studyAcknowledgements);
 
             sodaJSONObj["dataset-metadata"]["description-metadata"]["contributor-information"] = {
               funding: studyFunding,
@@ -5171,7 +5132,6 @@ const renderSamplesTable = () => {
 
 const setActiveSubPage = (pageIdToActivate) => {
   const pageElementToActivate = document.getElementById(pageIdToActivate);
-  console.log(pageElementToActivate);
 
   //create a switch statement for pageIdToActivate to load data from sodaJSONObj
   //depending on page being opened
@@ -5827,9 +5787,6 @@ const guidedResumeProgress = async (resumeProgressButton) => {
       const intitiallyPulledDatasetStructure =
         datasetResumeJsonObj["initially-pulled-dataset-structure"];
 
-      console.log("currentPennsieveDatasetStructure", currentPennsieveDatasetStructure);
-      console.log("intitiallyPulledDatasetStructure", intitiallyPulledDatasetStructure);
-
       // check to make sure current and initially pulled dataset structures are the same
       if (
         JSON.stringify(currentPennsieveDatasetStructure) !==
@@ -6399,7 +6356,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
 
               if (folderImportedFromPennsieve(subjectFolderInHighLevelFolder)) {
                 guidedModifyPennsieveFolder(subjectFolderInHighLevelFolder, "delete");
-                console.log(subjectFolderInHighLevelFolder);
               } else {
                 delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName];
               }

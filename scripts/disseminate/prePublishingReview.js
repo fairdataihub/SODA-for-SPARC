@@ -120,9 +120,7 @@ const showPrePublishingStatus = async (inPrePublishing = false) => {
   // run the validation checks on each pre-publishing checklist item
   let statuses;
   try {
-    console.log(defaultBfDataset);
     statuses = await getPrepublishingChecklistStatuses(defaultBfDataset);
-    console.log(statuses);
   } catch (error) {
     clientError(error);
     if (inPrePublishing) {

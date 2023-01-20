@@ -3,7 +3,6 @@ Purpose: An abstraction layer between the client and making HTTP requests via Ax
 */
 
 const getUserInformation = async () => {
-  console.log(defaultBfAccount);
   let userResponse = await client.get(`/user`, {
     params: {
       pennsieve_account: defaultBfAccount,
@@ -11,7 +10,6 @@ const getUserInformation = async () => {
   });
 
   let user = userResponse.data;
-  console.log(user);
   return user;
 };
 
@@ -22,7 +20,6 @@ const getUserInformation = async () => {
  */
 const getDataset = async (datasetId) => {
   let datasetResponse = await client.get(`/datasets/${datasetId}`);
-  console.log(datasetId);
   return datasetResponse.data;
 };
 
@@ -172,7 +169,6 @@ const submitDatasetForPublication = async (
   embargoReleaseDate,
   publicationType
 ) => {
-  console.log("sending request");
   // request that the dataset be sent in for publication/publication review
   await client.post(
     `/disseminate_datasets/datasets/${datasetName}/publication/request`,
@@ -290,7 +286,6 @@ const uploadNewTags = async (account, dataset, tags) => {
 const removeCollectionTags = async (account, dataset, tags) => {
   //remove collection names from a dataset with their given IDs
   //PARAMS: tags = list of collection IDs
-  console.log(tags);
   try {
     let removedTags = await client.delete(
       `datasets/${dataset}/collections?selected_account=${account}`,
@@ -307,7 +302,6 @@ const removeCollectionTags = async (account, dataset, tags) => {
 const uploadCollectionTags = async (account, dataset, tags) => {
   //upload tags that have already been created on Pennsieve
   //PARAMS: tags = list of collection IDs
-  console.log(tags);
   try {
     let uploadedTags = await client.put(
       `datasets/${dataset}/collections`,
@@ -320,7 +314,6 @@ const uploadCollectionTags = async (account, dataset, tags) => {
         },
       }
     );
-    console.log(uploadedTags.data);
     return uploadedTags.data;
   } catch (error) {
     clientError(error);

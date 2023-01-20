@@ -591,7 +591,6 @@ document.querySelector("#scicrunch button").addEventListener("click", async func
     });
   }
 
-  console.log("Congrats that worked!");
 });
 
 // observer for the selected dataset label in the dataset selection card in question 2
@@ -750,9 +749,6 @@ const setCurationTeamAsManagers = async () => {
   } catch (error) {
     clientError(error);
   }
-
-  console.log("Curation team has management permissions");
-  console.log("The dataset ID to look for is: ", defaultBfDatasetId);
 };
 
 const removeCurationTeamAsManagers = async () => {
@@ -777,9 +773,6 @@ const removeCurationTeamAsManagers = async () => {
   } catch (error) {
     clientError(error);
   }
-
-  console.log("Curation team does not have management permissions");
-  console.log("The dataset ID to look for is: ", defaultBfDatasetId);
 };
 
 document.querySelector("#click-me").addEventListener("click", async () => {
