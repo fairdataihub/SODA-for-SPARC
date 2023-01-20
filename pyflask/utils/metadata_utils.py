@@ -16,14 +16,12 @@ def returnFileURL(ps, item_id):
 
     file_details = r.json()
     file_id = file_details[0]["content"]["id"]
-    # print(file_id)
     r = requests.get(
         f"{PENNSIEVE_URL}/packages/{item_id}/files/{file_id}", headers=create_request_headers(ps)
     )
     r.raise_for_status()
 
     file_url_info = r.json()
-    # print(file_url_info)
     return file_url_info["url"]
 
 

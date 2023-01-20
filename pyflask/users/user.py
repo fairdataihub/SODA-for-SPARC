@@ -53,7 +53,6 @@ def get_user(selected_account):
 
     return r.json()
   except Exception as e:
-    print(e);
     raise Exception(e) from e
 
 

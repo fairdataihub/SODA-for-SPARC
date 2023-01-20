@@ -225,7 +225,6 @@ class DatasetDescriptionFile(Resource):
     def post(self):
         data = self.parser_dataset_description_file.parse_args()
 
-        print(data)
 
         dataset_str = data.get('dataset_str')
         filepath = data.get('filepath')
@@ -416,7 +415,6 @@ class SamplesFile(Resource):
         filepath = data.get('filepath')
         ui_fields = data.get('ui_fields')
 
-        print(ui_fields)
 
         if file_type != 'samples.xlsx':
             api.abort(400, "Error: The type parameter must be samples.")

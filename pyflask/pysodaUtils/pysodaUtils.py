@@ -20,10 +20,8 @@ def get_agent_installation_location():
     elif sys.platform in ["win32", "cygwin"]:
         win_path = os.path.normpath("C:\Program Files (x86)\Pennsieve\pennsieve.exe")
         if exists(win_path): 
-            print("Path exists")
             return win_path
         else:
-            print("Non x86 path path")
             return os.path.normpath("C:\Program Files\Pennsieve\pennsieve.exe")
 
 
@@ -67,7 +65,6 @@ def get_agent_version():
     # start the agent if it is not running
     start_agent()
 
-    print("Agent started")
 
     command = [get_agent_installation_location(), "version"]
 
@@ -79,10 +76,6 @@ def get_agent_version():
         version = result.stdout
 
         version = version.decode()
-
-        print(version.find("Error"))
-
-        print(version)
     
     # decode the response 
     version = version.strip()
@@ -97,10 +90,8 @@ def agent_up_to_date():
     # search string for 1.2.2
     # TODO: Improve agent version parsing to check for Agent Version and CLI Version separately. Both need to match.
     if "1.2.2" in v:
-        print("Agent is up to date")
         return True
     else:
-        print("Agent is not up to date")
         return False
 
 

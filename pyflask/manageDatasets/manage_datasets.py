@@ -449,17 +449,13 @@ def bf_get_accounts():
             get_access_token()
             return SODA_SPARC_API_KEY.lower()
     elif "global" in sections:
-        print("Here global in sections")
         if "default_profile" in config["global"]:
             default_profile = config["global"]["default_profile"]
             if default_profile in sections:
-                print("default profile addressed")
                 # add_api_host_to_config(config, default_profile, configpath)
                 lowercase_account_names(config, default_profile, configpath)
                 try:
-                    print("Getting access token")
                     get_access_token()
-                    print("Access token success")
                     return default_profile.lower()
                 except Exception as e:
                     print(e)
@@ -483,8 +479,6 @@ def bf_get_accounts():
                         lowercase_account_names(config, account, configpath)
                         
                         return account.lower()
-    print("Returning empty string")
-    namespace_logger.info("Returning empty string?")
     return ""
 
 
@@ -795,9 +789,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         global files_uploaded
         global total_bytes_uploaded
 
-        print("In callback")
-        print(events_dict)
-
         if events_dict["type"] == 1:  # upload status: file_id, total, current, worker_id
             #logging.debug("UPLOAD STATUS: " + str(events_dict["upload_status"]))
             file_id = events_dict["upload_status"].file_id
@@ -808,7 +799,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
             namespace_logger.info(total_bytes_to_upload)
             namespace_logger.info(current_bytes_uploaded)
 
-            # print(events_dict)
 
             
             # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
@@ -824,7 +814,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
             # check if the given file has finished uploading
             if current_bytes_uploaded == total_bytes_to_upload and file_id != "":
-                print("File uploaded")
                 files_uploaded += 1
                 # main_curation_uploaded_files += 1
                 namespace_logger.info("Files Uploaded: " + str(files_uploaded) + "/" + str(total_dataset_files))
@@ -898,7 +887,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         ps.use_dataset(selected_dataset_id)
         namespace_logger.info("Used the dataset")
     except Exception as e:
-        print("FAASFSF")
         submitdatastatus = "Done"
         did_fail = True
         did_upload = False
@@ -938,7 +926,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         error_message = "Could not create manifest file for this dataset"
         abort(500, e)
     
-    print("Created manifest")
 
     # upload the dataset
     try:
@@ -948,7 +935,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         start_submit = 1
         manifest_id = manifest_data.manifest_id
         ps.manifest.upload(manifest_id)
-        print("Uploading the files")
         ps.subscribe(10, False, monitor_subscriber_progress)
         namespace_logger.info("Upload complete now no more messages")
         submitdatastatus = "Done"
@@ -1608,7 +1594,6 @@ def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_pat
             shutil.rmtree(image_folder, ignore_errors=True)
         return {"message": "Uploaded!"}
     except Exception as e:
-        print(e)
         raise Exception(e)
 
 

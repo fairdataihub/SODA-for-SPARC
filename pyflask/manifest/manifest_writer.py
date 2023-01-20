@@ -80,12 +80,10 @@ def update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level
                     filepath = join(
                         manifest_path, folder_name, "manifest.xlsx"
                     )
-                    # print(filepath)
 
                     high_level_folders.remove(folder_name)
 
                     updated_manifest_dict = update_existing_pennsieve_manifest_file(dataset_structure["folders"][folder_name], manifest_df)
-                    # print(updated_manifest_dict)
 
                     if not exists(join(manifest_path, folder_name)):
                         # create the path
@@ -119,8 +117,6 @@ def update_existing_pennsieve_manifest_file(high_level_folder, manifest_df):
 
     # convert the old manifest into a dictionary to optimize the lookup time
     old_manifest_dict = {x: manifest_df[x].values.tolist() for x in manifest_df}
-    print(old_manifest_dict)
-    print("#"*30)
     # old_manifest_dict = {x:manifest_df[x].values.tolist() for x in manifest_df}
 
     # create a mapping of filename to the idx of the row in the old_manidest_dict
@@ -297,7 +293,6 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
 
         # update the progress of manifest file generation
         if manifest_progress != {}:
-            print(manifest_progress["manifest_files_uploaded"]) 
             manifest_progress["manifest_files_uploaded"] += 1
         
         # add the path to the manifest into the structure

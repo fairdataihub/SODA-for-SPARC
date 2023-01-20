@@ -725,8 +725,6 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
         templateHeaderList = samplesTemplateHeaderList
 
     importedHeaderList = list(subjects_df.columns.values)
-    print(importedHeaderList)
-    print("#" * 30)
 
     transpose = []
     for header in templateHeaderList:
@@ -737,11 +735,7 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
             column.extend([""] * len(subjects_df))
         transpose.append(column)
 
-    # print(header)
     for header in importedHeaderList:
-        print("$" * 40)
-        print(header)
-        print("$" * 40)
 
         if header.lower() in templateHeaderList:
             continue
@@ -752,9 +746,6 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
             column.extend([""] * len(subjects_df))
         transpose.append(column)
 
-    print(transpose)
-    print("#" * 30)
-    print(ui_fields)
     sortMatrix = sortedSubjectsTableData(transpose, ui_fields)
 
     return {"sample_file_rows": transposeMatrix(sortMatrix)} if type in ["samples.xlsx", "samples"] else {"subject_file_rows": transposeMatrix(sortMatrix)}
@@ -934,7 +925,6 @@ def import_bf_RC(bfaccount, bfdataset, file_type):
     items = r.json()
 
     for item in items["children"]:
-        # print(item["content"]["name"])
         if item["content"]["name"] == file_type:
             item_id = item["content"]["id"]
             url = returnFileURL(token, item_id)
@@ -967,9 +957,7 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
 
     high_level_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
     # convert the string into a json object/dictionary
-    print(type(soda_json_structure))
     if(str(type(soda_json_structure)) == "<class 'str'>"):
-        print("type")
         soda_json_structure = json.loads(soda_json_structure);
         
     dataset_structure = soda_json_structure["dataset-structure"]
@@ -977,10 +965,7 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
     # get the count of the total number of high level folders in soda_json_structure
     for folder in list(dataset_structure["folders"]):
         if folder in high_level_folders:
-            print("#" * 30)
             if dataset_structure["folders"][folder]["files"] == {} and dataset_structure["folders"][folder]["folders"] == {}:
-                print("folder is not empty" )
-                # print(dataset_structure["folders"][folder])
                 manifest_progress["total_manifest_files"] += 1
 
     # create the path to the dataset files and folders on Pennsieve and add them to the dataset structure stored in soda_json_structure
