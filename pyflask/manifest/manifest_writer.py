@@ -302,26 +302,15 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
     
 
 def recursive_item_path_create(folder, path):
-    print("*" * 30)
-    print("within recursive item path create")
     if "files" in folder.keys():
         for item in list(folder["files"]):
-            print("///////")
-            print("file within folderbelow")
-            print(item)
             if "folderpath" not in folder["files"][item]:
                 folder["files"][item]["folderpath"] = path[:]
-                print(path[:])
 
     if "folders" in folder.keys():
-        print("#" * 30)
-        print("fodlers within recursive create")
         for item in list(folder["folders"]):
-            print("///////")
-            print(item)
             if "folderpath" not in folder["folders"][item]:
                 folder["folders"][item]["folderpath"] = path[:]
-                print(path[:])
                 folder["folders"][item]["folderpath"].append(item)
             recursive_item_path_create(
                 folder["folders"][item], folder["folders"][item]["folderpath"][:]
