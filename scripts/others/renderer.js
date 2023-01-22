@@ -7847,6 +7847,11 @@ async function initiate_generate() {
   dataset_name = nameDestinationPair[0];
   dataset_destination = nameDestinationPair[1];
 
+  if (dataset_destination == "Pennsieve" || dataset_destination == "bf") {
+    // create a dataset upload session
+    datasetUploadSession.startSession();
+  }
+
   client
     .post(
       `/curate_datasets/curation`,
@@ -7874,6 +7879,27 @@ async function initiate_generate() {
         false
       );
 
+      if (dataset_destination == "bf" || dataset_destination == "Pennsieve") {
+        // log the difference again to Google Analytics
+        let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          PrepareDatasetsAnalyticsPrefix.CURATE + "- Step 7 - Generate - Dataset - Number of Files",
+          `${datasetUploadSession.id}`,
+          finalFilesCount
+        );
+
+        let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          PrepareDatasetsAnalyticsPrefix.CURATE + " - Step 7 - Generate - Dataset - Size",
+          `${datasetUploadSession.id}`,
+          differenceInBytes
+        );
+      }
+
       //Allow guided_mode_view to be clicked again
       document.getElementById("guided_mode_view").style.pointerEvents = "";
 
@@ -7895,6 +7921,39 @@ async function initiate_generate() {
 
       clientError(error);
       let emessage = userErrorMessage(error);
+
+      if (dataset_destination == "bf" || dataset_destination == "Pennsieve") {
+        // log the difference again to Google Analytics
+        let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          PrepareDatasetsAnalyticsPrefix.CURATE + "- Step 7 - Generate - Dataset - Number of Files",
+          `${datasetUploadSession.id}`,
+          finalFilesCount
+        );
+
+        let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          PrepareDatasetsAnalyticsPrefix.CURATE + " - Step 7 - Generate - Dataset - Size",
+          `${datasetUploadSession.id}`,
+          differenceInBytes
+        );
+      }
+
+      // log the curation errors to Google Analytics
+      logCurationErrorsToAnalytics(
+        0,
+        0,
+        dataset_destination,
+        main_total_generate_dataset_size,
+        increaseInFileSize,
+        datasetUploadSession,
+        false
+      );
+
       organizeDataset_option_buttons.style.display = "flex";
       organizeDataset.disabled = false;
       organizeDataset.className = "content-button is-selected";
@@ -7948,17 +8007,6 @@ async function initiate_generate() {
         clientError(error);
         emessage = userErrorMessage(error);
       }
-
-      // log the curation errors to Google Analytics
-      logCurationErrorsToAnalytics(
-        0,
-        0,
-        dataset_destination,
-        main_total_generate_dataset_size,
-        increaseInFileSize,
-        datasetUploadSession,
-        false
-      );
     });
 
   // Progress tracking function for main curate
@@ -8123,7 +8171,38 @@ async function initiate_generate() {
       // don't log this again for the current upload session
       loggedDatasetNameToIdMapping = true;
     }
+
+    // if doing a pennsieve upload log as we go ( as well as at the end in failure or success case )
+    if (dataset_destination == "Pennsieve" || dataset_destination == "bf") {
+      logProgressToAnalytics(total_files_uploaded, main_generated_dataset_size);
+    }
   }
+
+  let bytesOnPreviousLogPage = 0;
+  let filesOnPreviousLogPage = 0;
+  const logProgressToAnalytics = (files, bytes) => {
+    // log every 500 files -- will log on success/failure as well so if there are less than 500 files we will log what we uploaded ( all in success case and some of them in failure case )
+    if (fles >= filesOnPreviousLogPage + 500) {
+      filesOnPreviousLogPage += 500;
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        PrepareDatasetsAnalyticsPrefix.CURATE + "- Step 7 - Generate - Dataset - Number of Files",
+        `${datasetUploadSession.id}`,
+        500
+      );
+
+      let differenceInBytes = bytes - bytesOnPreviousLogPage;
+      bytesOnPreviousLogPage = bytes;
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        PrepareDatasetsAnalyticsPrefix.CURATE + " - Step 7 - Generate - Dataset - Size",
+        `${datasetUploadSession.id}`,
+        differenceInBytes
+      );
+    }
+  };
 } // end initiate_generate
 
 const show_curation_shortcut = () => {
