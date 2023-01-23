@@ -3129,27 +3129,22 @@ const cleanUpEmptyGuidedStructureFolders = async (
 
       //loop through samplesInPools and add samples with empty folders to samplesWithEmptyFolders
       for (const sample of samplesInPools) {
-        const sampleFolderContents =
+        const sampleFolder =
           datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName][
             "folders"
           ][sample.subjectName]["folders"][sample.sampleName];
-        if (
-          Object.keys(sampleFolderContents.folders).length === 0 &&
-          Object.keys(sampleFolderContents.files).length === 0
-        ) {
+
+        if (sampleFolder && folderIsEmpty(sampleFolder)) {
           samplesWithEmptyFolders.push(sample);
         }
       }
       //loop through samplesOutsidePools and add samples with empty folders to samplesWithEmptyFolders
       for (const sample of samplesOutsidePools) {
-        const sampleFolderContents =
+        const sampleFolder =
           datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName][
             "folders"
           ][sample.sampleName];
-        if (
-          Object.keys(sampleFolderContents.folders).length === 0 &&
-          Object.keys(sampleFolderContents.files).length === 0
-        ) {
+        if (sampleFolder && folderIsEmpty(sampleFolder)) {
           samplesWithEmptyFolders.push(sample);
         }
       }
@@ -3176,7 +3171,7 @@ const cleanUpEmptyGuidedStructureFolders = async (
           confirmButtonText: `Continue without adding ${highLevelFolder} data to all samples`,
           allowOutsideClick: false,
         });
-        //If the user indicates they do not have any subjects, skip to source folder
+
         if (result.isConfirmed) {
           //delete empty samples from the datasetStructureJSONObj
           for (sample of samplesWithEmptyFolders) {
@@ -3206,14 +3201,11 @@ const cleanUpEmptyGuidedStructureFolders = async (
     if (boolCleanUpAllGuidedStructureFolders === true) {
       //Delete folders for pools
       for (const subject of subjectsInPools) {
-        const subjectFolderContents =
+        const subjectFolder =
           datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
             "folders"
           ][subject.subjectName];
-        if (
-          Object.keys(subjectFolderContents.folders).length === 0 &&
-          Object.keys(subjectFolderContents.files).length === 0
-        ) {
+        if (subjectFolder && folderIsEmpty(subjectFolder)) {
           delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
             "folders"
           ][subject.subjectName];
@@ -3222,12 +3214,9 @@ const cleanUpEmptyGuidedStructureFolders = async (
 
       //Delete all folders for subjects outside of pools
       for (const subject of subjectsOutsidePools) {
-        const subjectFolderContents =
+        const subjectFolder =
           datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.subjectName];
-        if (
-          Object.keys(subjectFolderContents.folders).length === 0 &&
-          Object.keys(subjectFolderContents.files).length === 0
-        ) {
+        if (subjectFolder && folderIsEmpty(subjectFolder)) {
           delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
             subject.subjectName
           ];
@@ -3237,22 +3226,15 @@ const cleanUpEmptyGuidedStructureFolders = async (
       //Delete all pools with empty folders
       const pools = sodaJSONObj.getPools();
       for (const pool of Object.keys(pools)) {
-        const poolFolderContents =
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
-        if (
-          Object.keys(poolFolderContents.folders).length === 0 &&
-          Object.keys(poolFolderContents.files).length === 0
-        ) {
+        const poolFolder = datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+        if (poolFolder && folderIsEmpty(poolFolder)) {
           delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
         }
       }
 
       //Delete the high level folder if no folders or files were added
-      const highLevelFolderContents = datasetStructureJSONObj["folders"][highLevelFolder];
-      if (
-        Object.keys(highLevelFolderContents.folders).length === 0 &&
-        Object.keys(highLevelFolderContents.files).length === 0
-      ) {
+      const hlfRoot = datasetStructureJSONObj["folders"][highLevelFolder];
+      if (hlfRoot && folderIsEmpty(hlfRoot)) {
         delete datasetStructureJSONObj["folders"][highLevelFolder];
       }
 
@@ -3262,26 +3244,20 @@ const cleanUpEmptyGuidedStructureFolders = async (
 
       //loop through subjectsInPools and add subjects with empty folders to subjectsWithEmptyFolders
       for (const subject of subjectsInPools) {
-        const subjectFolderContents =
+        const subjectFolder =
           datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
             "folders"
           ][subject.subjectName];
-        if (
-          Object.keys(subjectFolderContents.folders).length === 0 &&
-          Object.keys(subjectFolderContents.files).length === 0
-        ) {
+        if (subjectFolder && folderIsEmpty(subjectFolder)) {
           subjectsWithEmptyFolders.push(subject);
         }
       }
 
       //loop through subjectsOutsidePools and add subjects with empty folders to subjectsWithEmptyFolders
       for (const subject of subjectsOutsidePools) {
-        const subjectFolderContents =
+        const subjectFolder =
           datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.subjectName];
-        if (
-          Object.keys(subjectFolderContents.folders).length === 0 &&
-          Object.keys(subjectFolderContents.files).length === 0
-        ) {
+        if (subjectFolder && folderIsEmpty(subjectFolder)) {
           subjectsWithEmptyFolders.push(subject);
         }
       }
@@ -3320,12 +3296,8 @@ const cleanUpEmptyGuidedStructureFolders = async (
           //Delete all pools with empty folders
           const pools = sodaJSONObj.getPools();
           for (const pool of Object.keys(pools)) {
-            const poolFolderContents =
-              datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
-            if (
-              Object.keys(poolFolderContents.folders).length === 0 &&
-              Object.keys(poolFolderContents.files).length === 0
-            ) {
+            const poolFolder = datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+            if (poolFolder && folderIsEmpty(poolFolder)) {
               delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
             }
           }
@@ -3335,12 +3307,8 @@ const cleanUpEmptyGuidedStructureFolders = async (
         //Delete all pools with empty folders
         const pools = sodaJSONObj.getPools();
         for (const pool of Object.keys(pools)) {
-          const poolFolderContents =
-            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
-          if (
-            Object.keys(poolFolderContents.folders).length === 0 &&
-            Object.keys(poolFolderContents.files).length === 0
-          ) {
+          const poolFolder = datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+          if (poolFolder && folderIsEmpty(poolFolder)) {
             delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
           }
         }
@@ -3354,9 +3322,8 @@ const cleanUpEmptyGuidedStructureFolders = async (
     if (boolCleanUpAllGuidedStructureFolders === true) {
       //Delete all pools with empty folders
       for (const pool of Object.keys(pools)) {
-        const poolFolderContents =
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
-        if (folderIsEmpty(poolFolderContents)) {
+        const poolFolder = datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+        if (poolFolder && folderIsEmpty(poolFolder)) {
           delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
         }
       }
@@ -3364,9 +3331,8 @@ const cleanUpEmptyGuidedStructureFolders = async (
       const poolsWithNoDataFiles = [];
 
       for (const pool of Object.keys(pools)) {
-        const poolFolderContents =
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
-        if (folderIsEmpty(poolFolderContents)) {
+        const poolFolder = datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+        if (poolFolder && folderIsEmpty(poolFolder)) {
           poolsWithNoDataFiles.push(pool);
         }
       }
