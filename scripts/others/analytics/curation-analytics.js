@@ -327,7 +327,7 @@ const logCurationSuccessToAnalytics = async (
     );
 
     // log files and bytes uploaded for local dataset generation
-    if (dataset_destionation == "Local") {
+    if (dataset_destination == "Local") {
       // local logging
       // log the dataset name as a label. Rationale: Easier to get all unique datasets touched when keeping track of the local dataset's name upon creation in a log.
       ipcRenderer.send(
@@ -380,7 +380,7 @@ const logCurationSuccessToAnalytics = async (
   } else {
     // Free Form Mode
     // for tracking the total size of all the "saved", "new", "local", "pennsieve" datasets by category
-    if (dataset_destionation !== "Pennsieve" && dataset_destionation !== "bf") {
+    if (dataset_destination !== "Pennsieve" && dataset_destination !== "bf") {
       ipcRenderer.send(
         "track-event",
         "Success",

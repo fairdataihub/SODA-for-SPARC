@@ -8182,7 +8182,7 @@ async function initiate_generate() {
   let filesOnPreviousLogPage = 0;
   const logProgressToAnalytics = (files, bytes) => {
     // log every 500 files -- will log on success/failure as well so if there are less than 500 files we will log what we uploaded ( all in success case and some of them in failure case )
-    if (fles >= filesOnPreviousLogPage + 500) {
+    if (files >= filesOnPreviousLogPage + 500) {
       filesOnPreviousLogPage += 500;
       ipcRenderer.send(
         "track-event",
