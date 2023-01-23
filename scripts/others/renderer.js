@@ -7835,6 +7835,7 @@ async function initiate_generate() {
 
   // track the amount of files that have been uploaded/generated
   let uploadedFiles = 0;
+  let uploadedBytes = 0;
   let increaseInFileSize = 0;
   let generated_dataset_id = undefined;
   // when generating a new dataset we need to add its ID to the ID -> Name mapping
@@ -7933,7 +7934,7 @@ async function initiate_generate() {
           finalFilesCount
         );
 
-        let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
+        let differenceInBytes = uploadedBytes - bytesOnPreviousLogPage;
         ipcRenderer.send(
           "track-event",
           "Success",
@@ -8078,6 +8079,10 @@ async function initiate_generate() {
     var main_generated_dataset_size = data["main_generated_dataset_size"];
     var elapsed_time_formatted = data["elapsed_time_formatted"];
     let total_files_uploaded = data["total_files_uploaded"];
+
+    // used for logging in the error case ( inside /curation's catch block )
+    uploadedFiles = total_files_uploaded;
+    uploadedBytes = main_generated_dataset_size;
 
     if (start_generate === 1) {
       var value = (main_generated_dataset_size / main_total_generate_dataset_size) * 100;
