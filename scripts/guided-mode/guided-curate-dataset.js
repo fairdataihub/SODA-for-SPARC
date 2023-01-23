@@ -12017,6 +12017,25 @@ $(document).ready(async () => {
         $("#sidebarCollapse").prop("disabled", false);
         log.info("Completed curate function");
 
+        // log the difference again to Google Analytics
+        let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Guided Mode - Generate - Dataset - Number of Files",
+          `${datasetUploadSession.id}`,
+          finalFilesCount
+        );
+
+        let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Guided Mode - Generate - Dataset - Size",
+          `${datasetUploadSession.id}`,
+          differenceInBytes
+        );
+
         // log relevant curation details about the dataset generation/Upload to Google Analytics
         logCurationSuccessToAnalytics(
           manifest_files_requested,
@@ -12065,6 +12084,26 @@ $(document).ready(async () => {
       })
       .catch(async (error) => {
         clientError(error);
+
+        // log the difference again to Google Analytics
+        let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Guided Mode - Generate - Dataset - Number of Files",
+          `${datasetUploadSession.id}`,
+          finalFilesCount
+        );
+
+        let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Guided Mode - Generate - Dataset - Size",
+          `${datasetUploadSession.id}`,
+          differenceInBytes
+        );
+
         let emessage = userErrorMessage(error);
         try {
           let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
@@ -12140,6 +12179,7 @@ $(document).ready(async () => {
       const main_generated_dataset_size = data["main_generated_dataset_size"];
       const elapsed_time_formatted = data["elapsed_time_formatted"];
       const totalUploadedFiles = data["total_files_uploaded"];
+      uploadedFiles = totalUploadedFiles;
 
       if (start_generate === 1) {
         $("#guided-progress-bar-new-curate").css("display", "block");
@@ -12178,6 +12218,9 @@ $(document).ready(async () => {
           "Elapsed time": `${elapsed_time_formatted}`,
         });
       }
+
+      logProgressToAnalytics(totalUploadedFiles, main_generated_dataset_size);
+
       //If the curate function is complete, clear the interval
       if (main_curate_status === "Done") {
         $("#sidebarCollapse").prop("disabled", false);
@@ -12195,6 +12238,32 @@ $(document).ready(async () => {
     // we need to do this only once
     // TODO: Reintegrate
     let loggedDatasetNameToIdMapping = false;
+
+    let bytesOnPreviousLogPage = 0;
+    let filesOnPreviousLogPage = 0;
+    const logProgressToAnalytics = (files, bytes) => {
+      // log every 500 files -- will log on success/failure as well so if there are less than 500 files we will log what we uploaded ( all in success case and some of them in failure case )
+      if (files >= filesOnPreviousLogPage + 500) {
+        filesOnPreviousLogPage += 500;
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          PrepareDatasetsAnalyticsPrefix.CURATE + "- Step 7 - Generate - Dataset - Number of Files",
+          `${datasetUploadSession.id}`,
+          500
+        );
+
+        let differenceInBytes = bytes - bytesOnPreviousLogPage;
+        bytesOnPreviousLogPage = bytes;
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          PrepareDatasetsAnalyticsPrefix.CURATE + " - Step 7 - Generate - Dataset - Size",
+          `${datasetUploadSession.id}`,
+          differenceInBytes
+        );
+      }
+    };
   };
 
   $("#guided-add-subject-button").on("click", () => {
