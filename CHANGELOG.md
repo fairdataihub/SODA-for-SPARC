@@ -9,14 +9,25 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Feature additions:
 
-- Freeform Mode: ADD NEW STUFF FOR FFM HERE!!!!!!!!!!!!!!
+- SODA now imports manifests with any extra columns other than the standard (file name, timestamp, description, file type, additional metadata)
+- Manifest files are now edited through a new window rather than a pop up.
+- JStree that displays dataset file structure now lists folders first then files alphanumerically.
+- Lazy Loading was added to editable manifest for large datasets.
+- SODA has new file standards for uploading. Files with
+- Freeform Mode: Manifest generator added to Organize Datasets.
 - Guided Mode: Added the ability to edit an existing dataset on Pennsieve.
+  <<<<<<< HEAD
+- Guided Mode: Banner Images can be drag and dropped to be imported.
+- Guided Mode: File navigation is now only showing user file structure necessary to them rather the entire dataset structure.
+- # Manifests files have a new template styling.
 - SODA for SPARC uses the new Pennsieve Agent for uploading dataset files.
 - SODA for SPARC uses the Pennsieve API for communication with Pennsieve.
+  > > > > > > > b03ead3c21aeb1d1474e58989bce02b8ac62615b
 
 ## Bug fixes:
 
 - Guided Mode: Fixed subjects and samples metadata not properly copying over when extra fields were added.
+- Guided Mode:
 
 ## v.9.4.1 - 2022-11-04
 
