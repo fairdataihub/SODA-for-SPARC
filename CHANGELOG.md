@@ -9,37 +9,36 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Feature additions:
 
-- SODA now imports manifests with any extra columns other than the standard (file name, timestamp, description, file type, additional metadata)
-- Manifest files are now edited through a new window rather than a pop up.
-- JStree that displays dataset file structure now lists folders first then files alphanumerically.
-- Lazy Loading was added to editable manifest for large datasets.
-- SODA has new file standards for uploading. Files with
-- Freeform Mode: Manifest generator added to Organize Datasets.
-- Guided Mode: Added the ability to edit an existing dataset on Pennsieve.
-  <<<<<<< HEAD
-- Guided Mode: Banner Images can be drag and dropped to be imported.
-- Guided Mode: File navigation is now only showing user file structure necessary to them rather the entire dataset structure.
-- # Manifests files have a new template styling.
+- SODA for SPARC imports users' non-standard manifest columns (file name, timestamp, description, file type, additional metadata) app wide.
+- SODA for SPARC has new file standards for uploading to match the SDS.
 - SODA for SPARC uses the new Pennsieve Agent for uploading dataset files.
 - SODA for SPARC uses the Pennsieve API for communication with Pennsieve.
-  > > > > > > > b03ead3c21aeb1d1474e58989bce02b8ac62615b
+- Manifest files are now edited through a new window rather than a pop up.
+- Manifests files have a new template styling that matches the SDS.
+- SODA for SPARC's tree view displays of users' dataset structures now list folders first then files alphanumerically.
+- Freeform Mode: The Organize Datasets feature's manifest file generator has been overhauled.
+- Guided Mode: Added the ability to edit an existing dataset on Pennsieve.
+- Guided Mode: Banner Images can be drag and dropped to be imported.
+- Guided Mode: File navigation is now only showing user file structure necessary to them rather the entire dataset structure.
 
 ## Bug fixes:
 
+- Lazy Loading was added to editable manifest for large datasets.
 - Guided Mode: Fixed subjects and samples metadata not properly copying over when extra fields were added.
-- Guided Mode:
-
-## v.9.4.1 - 2022-11-04
-
-## Bug fixes:
-
-- Manual Windows build creation to fix an issue with the back-end not connectiong on Windows.
+- Lazy Loading was added to editable manifest for large datasets to prevent slowing down SODA.
 
 ## Known Issues:
 
 - Freeform Mode:
   - The transition to the generate step in the Organize Datasets feature is slowed when working with large datasets.
   - Uploading large amounts of very small files ( <= 1kb ) will sometimes cause the upload to pause or crash. It is best to restart the upload when this happens.
+- When working with large datasets and trying to auto generate manifest files to edit. It can take some time and with no status indicator on the progress. (To be added)
+
+## v.9.4.1 - 2022-11-04
+
+## Bug fixes:
+
+- Manual Windows build creation to fix an issue with the back-end not connectiong on Windows.
 
 ## v.9.4.0 - 2022-11-02
 
