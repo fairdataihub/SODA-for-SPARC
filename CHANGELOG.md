@@ -9,11 +9,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Feature additions:
 
-- SODA now imports manifests with any extra columns other than the standard (file name, timestamp, description, file type, additional metadata)
+- SODA for SPARC now imports manifests with any extra columns other than the standard (file name, timestamp, description, file type, additional metadata)
 - Manifest files are now edited through a new window rather than a pop up.
 - JStree that displays dataset file structure now lists folders first then files alphanumerically.
-- SODA has new file standards for uploading. Files with 
+- SODA for SPARC has new file standards for uploading. Files with 
+- SODA for SPARC uses the new Pennsieve Agent for uploading dataset files.
+- SODA for SPARC uses the Pennsieve API for communication with Pennsieve.
 - Freeform Mode: Manifest generator added to Organize Datasets.
+- Freeform Mode: Manifest generator added to Organize Datasets.
+- Guided Mode: Added the ability to edit an existing dataset on Pennsieve.
+- Guided Mode: Banner Images can be drag and dropped to be imported.
+- Guided Mode: File navigation is now only showing user file structure necessary to them rather the entire dataset structure.
+- Manifests files have a new template styling.
+- SODA for SPARC has new file standards for uploading. Files with
 - Guided Mode: Added the ability to edit an existing dataset on Pennsieve.
 - Guided Mode: Banner Images can be drag and dropped to be imported.
 - Guided Mode: File navigation is now only showing user file structure necessary to them rather the entire dataset structure.
@@ -23,6 +31,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Bug fixes:
 
+- Lazy Loading was added to editable manifest for large datasets.
 - Guided Mode: Fixed subjects and samples metadata not properly copying over when extra fields were added.
 - Lazy Loading was added to editable manifest for large datasets to prevent slowing down SODA.
 
