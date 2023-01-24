@@ -11978,8 +11978,6 @@ $(document).ready(async () => {
         { timeout: 0 }
       )
       .then(async (curationRes) => {
-        console.log("Uploaded files value is this: ", uploadedFiles);
-        console.log("FIles on previous log page is this: ", filesOnPreviousLogPage);
         $("#sidebarCollapse").prop("disabled", false);
         log.info("Completed curate function");
 
