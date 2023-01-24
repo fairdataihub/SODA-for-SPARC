@@ -654,7 +654,13 @@ const run_pre_flight_checks = async (check_update = true) => {
     message: "You're all set!",
   });
 
-  await checkForAnnouncements("announcements");
+  let nodeStorage = new JSONStorage(app.getPath("userData"));
+  launchAnnouncement = nodeStorage.getItem("announcements");
+  if (launchAnnouncement) {
+    await checkForAnnouncements("announcements");
+    launchAnnouncement = false;
+    nodeStorage.setItem("announcements", false);
+  }
   return true;
 };
 
