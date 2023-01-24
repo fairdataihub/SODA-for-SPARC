@@ -384,7 +384,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           extractPoolSubSamStructureFromDataset(datasetStructureJSONObj);
 
         const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
-        if (subjectsInPools.length === 0 || subjectsOutsidePools.length === 0) {
+        if (subjectsInPools.length === 0 && subjectsOutsidePools.length === 0) {
           errorArray.push({
             type: "notyf",
             message:
