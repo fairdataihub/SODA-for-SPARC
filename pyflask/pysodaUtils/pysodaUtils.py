@@ -43,7 +43,18 @@ def start_agent():
 
     command = [get_agent_installation_location(), "agent"]
 
-    return subprocess.run(command, check=True)
+
+    res =  subprocess.run(command, shell=True, capture_output=True)
+    if res.stderr:
+        raise subprocess.CalledProcessError(
+        returncode = res.returncode,
+        cmd = res.args,
+        stderr = res.stderr
+        )
+
+    return 
+        
+
 
 def stop_agent():
     """
@@ -55,7 +66,7 @@ def stop_agent():
 
     command = [get_agent_installation_location(), "agent", "stop"]
 
-    return subprocess.run(command, check=True)
+    return subprocess.run(command)
 
 
 def get_agent_version():
