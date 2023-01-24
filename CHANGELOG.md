@@ -9,12 +9,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Feature additions:
 
-- Guided Mode: NEW STUFF FOR GUIDED MODE
-- Freeform Mode: NEW STUFF FOR FF MODE
+- Freeform Mode: ADD NEW STUFF FOR FFM HERE!!!!!!!!!!!!!!
+- Guided Mode: Added the ability to edit an existing dataset on Pennsieve.
 
 ## Bug fixes:
 
-- NEVER
+- Guided Mode: Fixed subjects and samples metadata not properly copying over when extra fields were added.
 
 ## v.9.4.1 - 2022-11-04
 
