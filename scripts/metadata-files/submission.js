@@ -648,6 +648,11 @@ localReadmeBtn.addEventListener(
 
 async function generateSubmissionHelper(uploadBFBoolean) {
   if (uploadBFBoolean) {
+    // Run pre-flight checks before uploading the submission file to Pennsieve
+    const supplementary_checks = await run_pre_flight_checks(false);
+    if (!supplementary_checks) {
+      return;
+    }
     var { value: continueProgress } = await Swal.fire({
       title:
         "Any existing submission.xlsx file in the high-level folder of the selected dataset will be replaced.",
