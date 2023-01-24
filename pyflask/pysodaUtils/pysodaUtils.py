@@ -70,13 +70,13 @@ def get_agent_version():
 
     version = ""
 
-    while version.find("Error") != -1 or version == "":
+    while "Error" in version or not version:
         result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
         version = result.stdout
 
         version = version.decode()
-    
+
     # decode the response 
     version = version.strip()
 
@@ -86,13 +86,10 @@ def get_agent_version():
 def agent_up_to_date():
     
     v = get_agent_version()
-    
+
     # search string for 1.2.2
     # TODO: Improve agent version parsing to check for Agent Version and CLI Version separately. Both need to match.
-    if "1.2.2" in v:
-        return True
-    else:
-        return False
+    return "1.2.2" in v
 
 
 

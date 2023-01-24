@@ -325,32 +325,33 @@ def create_high_level_manifest_files_existing_local_starting_point(dataset_path,
     """
    #  soda_manifest_folder_path = join(userpath, "SODA", "manifest_files")
 
-    if dataset_path != "":
-        for high_level_fol in listdir(dataset_path):
+    if dataset_path == "":
+        return
+    for high_level_fol in listdir(dataset_path):
 
-            if high_level_fol in [
-                "primary",
-                "derivative",
-                "docs",
-                "code",
-                "source",
-                "protocol",
-            ]:
-                onlyfiles = [
-                    join(dataset_path, high_level_fol, f)
-                    for f in listdir(join(dataset_path, high_level_fol))
-                    if isfile(join(dataset_path, high_level_fol, f))
-                ]
+        if high_level_fol in [
+            "primary",
+            "derivative",
+            "docs",
+            "code",
+            "source",
+            "protocol",
+        ]:
+            onlyfiles = [
+                join(dataset_path, high_level_fol, f)
+                for f in listdir(join(dataset_path, high_level_fol))
+                if isfile(join(dataset_path, high_level_fol, f))
+            ]
 
-                for file in onlyfiles:
-                    p = pathlib.Path(file)
-                    # create high-level folder at the temporary location
-                    folderpath = join(manifest_path, high_level_fol)
-                    if p.stem == "manifest":
-                        if not exists(folderpath):
-                            makedirs(folderpath)
-                        # make copy from this manifest path to folderpath
-                        shutil.copyfile(file, join(folderpath, p.name))
+            for file in onlyfiles:
+                p = pathlib.Path(file)
+                # create high-level folder at the temporary location
+                folderpath = join(manifest_path, high_level_fol)
+                if p.stem == "manifest":
+                    if not exists(folderpath):
+                        makedirs(folderpath)
+                    # make copy from this manifest path to folderpath
+                    shutil.copyfile(file, join(folderpath, p.name))
 
 
 def create_high_level_manifest_files(soda_json_structure, manifest_path):
@@ -424,10 +425,7 @@ def create_high_level_manifest_files(soda_json_structure, manifest_path):
 
         def file_manifest_entry(file_key, file, relative_path, dict_folder_manifest):
             # filename
-            if relative_path:
-                filename = relative_path + "/" + file_key
-            else:
-                filename = file_key
+            filename = relative_path + "/" + file_key if relative_path else file_key
             dict_folder_manifest["filename"].append(filename)
             # timestamp
             file_type = file["type"]

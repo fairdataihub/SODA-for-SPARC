@@ -116,5 +116,4 @@ def remove_collection_names(account, dataset, tags):
         # result = ps._api._del(f"/datasets/{str(dataset_id)}/collections/{str(tagid)}")
         # statusResponses.append(result)
 
-    result = dict({"collection": "Collection removed"})
-    return result
+    return dict({"collection": "Collection removed"})
