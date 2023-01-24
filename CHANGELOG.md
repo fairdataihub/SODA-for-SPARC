@@ -35,6 +35,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Guided Mode: Fixed subjects and samples metadata not properly copying over when extra fields were added.
 - Lazy Loading was added to editable manifest for large datasets to prevent slowing down SODA.
 
+## Known Issues:
+
+- When working with large datasets and trying to auto generate manifest files to edit. It can take some time and with no status indicator on the progress. (To be added)
+
 ## v.9.4.1 - 2022-11-04
 
 ## Bug fixes:
