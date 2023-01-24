@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - SODA for SPARC now imports manifests with any extra columns other than the standard (file name, timestamp, description, file type, additional metadata)
 - Manifest files are now edited through a new window rather than a pop up.
 - JStree that displays dataset file structure now lists folders first then files alphanumerically.
-- SODA for SPARC has new file standards for uploading. Files with 
+- SODA for SPARC has new file standards for uploading. Files with
 - SODA for SPARC uses the new Pennsieve Agent for uploading dataset files.
 - SODA for SPARC uses the Pennsieve API for communication with Pennsieve.
 - Freeform Mode: Manifest generator added to Organize Datasets.
