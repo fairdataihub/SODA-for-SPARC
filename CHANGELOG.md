@@ -11,6 +11,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Freeform Mode: ADD NEW STUFF FOR FFM HERE!!!!!!!!!!!!!!
 - Guided Mode: Added the ability to edit an existing dataset on Pennsieve.
+- SODA for SPARC uses the new Pennsieve Agent for uploading dataset files.
+- SODA for SPARC uses the Pennsieve API for communication with Pennsieve.
 
 ## Bug fixes:
 
