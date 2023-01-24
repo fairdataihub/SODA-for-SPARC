@@ -57,6 +57,12 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
   }
   var upperCaseLetters = fileType.toUpperCase() + ".txt";
   if (uploadBFBoolean) {
+    // Run pre-flight checks before uploading the changes or readme file to Pennsieve
+    const supplementary_checks = await run_pre_flight_checks(false);
+    if (!supplementary_checks) {
+      return;
+    }
+
     var { value: continueProgress } = await Swal.fire({
       title: `Any existing ${upperCaseLetters} file in the high-level folder of the selected dataset will be replaced.`,
       text: "Are you sure you want to continue?",
