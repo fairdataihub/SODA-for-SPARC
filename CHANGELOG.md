@@ -16,9 +16,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - SODA has new file standards for uploading. Files with 
 - Freeform Mode: Manifest generator added to Organize Datasets.
 - Guided Mode: Added the ability to edit an existing dataset on Pennsieve.
+<<<<<<< HEAD
 - Guided Mode: Banner Images can be drag and dropped to be imported.
 - Guided Mode: File navigation is now only showing user file structure necessary to them rather the entire dataset structure.
 - Manifests files have a new template styling.
+=======
+- SODA for SPARC uses the new Pennsieve Agent for uploading dataset files.
+- SODA for SPARC uses the Pennsieve API for communication with Pennsieve.
+>>>>>>> b03ead3c21aeb1d1474e58989bce02b8ac62615b
 
 ## Bug fixes:
 
@@ -30,6 +35,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Bug fixes:
 
 - Manual Windows build creation to fix an issue with the back-end not connectiong on Windows.
+
+## Known Issues:
+
+- Freeform Mode:
+  - The transition to the generate step in the Organize Datasets feature is slowed when working with large datasets.
+  - Uploading large amounts of very small files ( <= 1kb ) will sometimes cause the upload to pause or crash. It is best to restart the upload when this happens.
 
 ## v.9.4.0 - 2022-11-02
 
