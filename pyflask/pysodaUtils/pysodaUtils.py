@@ -44,15 +44,7 @@ def start_agent():
     command = [get_agent_installation_location(), "agent"]
 
 
-    res =  subprocess.run(command, shell=True, capture_output=True)
-    if res.stderr:
-        raise subprocess.CalledProcessError(
-        returncode = res.returncode,
-        cmd = res.args,
-        stderr = res.stderr
-        )
-
-    return 
+    return subprocess.run(command, check=True)
         
 
 
