@@ -415,7 +415,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
         await Swal.fire({
           icon: "info",
-          title: "Begining Pennsieve Dataset edit session",
+          title: "Beginning Pennsieve Dataset edit session",
           html: `
             Note: it is imperative that you do not manually make any changes to your dataset folders and files
             directly on Pennsieve while working on this dataset on SODA.
@@ -1424,7 +1424,7 @@ const renderSideBar = (activePage) => {
             const pageWithErrorName = document.getElementById(page).getAttribute("data-page-name");
             await openPage(page);
             await Swal.fire({
-              title: `An error occured on an intermediate page: ${pageWithErrorName}`,
+              title: `An error occurred on an intermediate page: ${pageWithErrorName}`,
               html: `Please address the issues before continuing to ${pageToNaviatetoName}:
                 <br />
                 <br />
