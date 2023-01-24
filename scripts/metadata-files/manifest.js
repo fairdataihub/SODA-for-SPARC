@@ -54,6 +54,316 @@ function openFolder(generationLocation) {
   }
 }
 
+$(document).ready(function () {
+  ipcRenderer.on("selected-local-dataset-manifest-purpose", (event, folderPath) => {
+    if (folderPath.length > 0) {
+      if (folderPath !== null) {
+        document.getElementById("input-manifest-local-folder-dataset").placeholder = folderPath[0];
+        localDatasetFolderPath = folderPath[0];
+        $("#div-confirm-manifest-local-folder-dataset").css("display", "flex");
+        $($("#div-confirm-manifest-local-folder-dataset button")[0]).show();
+      } else {
+        document.getElementById("input-manifest-local-folder-dataset").placeholder = "Browse here";
+        localDatasetFolderPath = "";
+        $("#div-confirm-manifest-local-folder-dataset").hide();
+        $("#Question-prepare-manifest-2").nextAll().removeClass("show").removeClass("prev");
+      }
+    } else {
+      document.getElementById("input-manifest-local-folder-dataset").placeholder = "Browse here";
+      localDatasetFolderPath = "";
+      $("#div-confirm-manifest-local-folder-dataset").hide();
+      $("#Question-prepare-manifest-2").nextAll().removeClass("show").removeClass("prev");
+    }
+  });
+
+  ipcRenderer.on("selected-local-dataset-manifest-generate-purpose", (event, folderPath) => {
+    if (folderPath.length <= 0 || folderPath === null) {
+      document.getElementById("input-manifest-local-gen-location").placeholder = "Browse here";
+      return;
+    }
+
+    document.getElementById("input-manifest-local-gen-location").placeholder = folderPath[0];
+  });
+
+  $("#bf_dataset_create_manifest").on("DOMSubtreeModified", function () {
+    if ($("#bf_dataset_create_manifest").text().trim() !== "None") {
+      $("#div-check-bf-create-manifest").css("display", "flex");
+      $($("#div-check-bf-create-manifest").children()[0]).show();
+    } else {
+      $("#div-check-bf-create-manifest").css("display", "none");
+    }
+    $("#Question-prepare-manifest-3").nextAll().removeClass("show").removeClass("prev");
+  });
+
+  $(jstreePreviewManifest).on("open_node.jstree", function (event, data) {
+    data.instance.set_type(data.node, "folder open");
+  });
+  $(guidedJsTreePreviewManifest).on("open_node.jstree", function (event, data) {
+    data.instance.set_type(data.node, "folder open");
+  });
+
+  $(jstreePreviewManifest).on("close_node.jstree", function (event, data) {
+    data.instance.set_type(data.node, "folder closed");
+  });
+  $(guidedJsTreePreviewManifest).on("close_node.jstree", function (event, data) {
+    data.instance.set_type(data.node, "folder closed");
+  });
+
+  $(jstreePreviewManifest).jstree({
+    core: {
+      check_callback: true,
+      data: {},
+      dblclick_toggle: false,
+    },
+    plugins: ["types"],
+    types: {
+      folder: {
+        icon: "fas fa-folder fa-fw",
+      },
+      "folder open": {
+        icon: "fas fa-folder-open fa-fw",
+      },
+      "folder closed": {
+        icon: "fas fa-folder fa-fw",
+      },
+      "file xlsx": {
+        icon: "./assets/img/excel-file.png",
+      },
+      "file xls": {
+        icon: "./assets/img/excel-file.png",
+      },
+      "file png": {
+        icon: "./assets/img/png-file.png",
+      },
+      "file PNG": {
+        icon: "./assets/img/png-file.png",
+      },
+      "file pdf": {
+        icon: "./assets/img/pdf-file.png",
+      },
+      "file txt": {
+        icon: "./assets/img/txt-file.png",
+      },
+      "file csv": {
+        icon: "./assets/img/csv-file.png",
+      },
+      "file CSV": {
+        icon: "./assets/img/csv-file.png",
+      },
+      "file DOC": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file DOCX": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file docx": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file doc": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file jpeg": {
+        icon: "./assets/img/jpeg-file.png",
+      },
+      "file JPEG": {
+        icon: "./assets/img/jpeg-file.png",
+      },
+      "file other": {
+        icon: "./assets/img/other-file.png",
+      },
+    },
+  });
+  $(guidedJsTreePreviewManifest).jstree({
+    core: {
+      check_callback: true,
+      data: {},
+      dblclick_toggle: false,
+    },
+    plugins: ["types"],
+    types: {
+      folder: {
+        icon: "fas fa-folder fa-fw",
+      },
+      "folder open": {
+        icon: "fas fa-folder-open fa-fw",
+      },
+      "folder closed": {
+        icon: "fas fa-folder fa-fw",
+      },
+      "file xlsx": {
+        icon: "./assets/img/excel-file.png",
+      },
+      "file xls": {
+        icon: "./assets/img/excel-file.png",
+      },
+      "file png": {
+        icon: "./assets/img/png-file.png",
+      },
+      "file PNG": {
+        icon: "./assets/img/png-file.png",
+      },
+      "file pdf": {
+        icon: "./assets/img/pdf-file.png",
+      },
+      "file txt": {
+        icon: "./assets/img/txt-file.png",
+      },
+      "file csv": {
+        icon: "./assets/img/csv-file.png",
+      },
+      "file CSV": {
+        icon: "./assets/img/csv-file.png",
+      },
+      "file DOC": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file DOCX": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file docx": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file doc": {
+        icon: "./assets/img/doc-file.png",
+      },
+      "file jpeg": {
+        icon: "./assets/img/jpeg-file.png",
+      },
+      "file JPEG": {
+        icon: "./assets/img/jpeg-file.png",
+      },
+      "file other": {
+        icon: "./assets/img/other-file.png",
+      },
+    },
+  });
+
+  var jsonManifest = {};
+
+  $(jstreePreviewManifest).on("select_node.jstree", function (evt, data) {
+    if (data.node.text === "manifest.xlsx") {
+      // Show loading popup
+      Swal.fire({
+        title: `Loading the manifest file.`,
+        html: "Please wait...",
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+      var parentFolderName = $("#" + data.node.parent + "_anchor").text();
+      var localFolderPath = path.join(homeDirectory, "SODA", "manifest_files", parentFolderName);
+      var selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
+      jsonManifest = excelToJson({
+        sourceFile: selectedManifestFilePath,
+        columnToKey: {
+          "*": "{{columnHeader}}",
+        },
+      })["Sheet1"];
+      Swal.fire({
+        title:
+          "<span style='font-size: 18px !important;'>Edit the manifest file below: </span> <br><span style='font-size: 13px; font-weight: 500'> Tip: Double click on a cell to edit it.<span>",
+        html: "<div id='div-manifest-edit'></div>",
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        showConfirmButton: true,
+        confirmButtonText: "Confirm",
+        showCancelButton: true,
+        width: "90%",
+        // height: "80%",
+        customClass: "swal-large",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        didOpen: () => {
+          Swal.hideLoading();
+        },
+      }).then((result) => {
+        $(jstreePreviewManifest).jstree().deselect_all(true);
+        // sort the updated json object (since users might have added new columns)
+        let manifestHeaders = table1.getHeaders().split(",");
+        let manifestEntries = table1.getData();
+        let sortedJSON = processManifestInfo(manifestHeaders, manifestEntries);
+        // // write this new json to existing manifest.json file
+        jsonManifest = JSON.stringify(sortedJSON);
+        // convert manifest.json to existing manifest.xlsx file
+        convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
+      });
+      loadManifestFileEdits(jsonManifest);
+    }
+  });
+  $(guidedJsTreePreviewManifest).on("select_node.jstree", function (evt, data) {
+    if (data.node.text === "manifest.xlsx") {
+      // Show loading popup
+      Swal.fire({
+        title: `Loading the manifest file.`,
+        html: "Please wait...",
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+      var parentFolderName = $("#" + data.node.parent + "_anchor").text();
+      var localFolderPath = path.join(
+        homeDirectory,
+        "SODA",
+        "Guided-Manifest-Files",
+        sodaJSONObj["digital-metadata"]["name"],
+        parentFolderName
+      );
+      var selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
+      jsonManifest = excelToJson({
+        sourceFile: selectedManifestFilePath,
+        columnToKey: {
+          "*": "{{columnHeader}}",
+        },
+      })["Sheet1"];
+      Swal.fire({
+        title:
+          "<span style='font-size: 18px !important;'>Edit the manifest file below: </span> <br><span style='font-size: 13px; font-weight: 500'> Tip: Double click on a cell to edit it.<span>",
+        html: "<div id='div-manifest-edit'></div>",
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        showConfirmButton: true,
+        confirmButtonText: "Confirm",
+        showCancelButton: true,
+        width: "90%",
+        // height: "80%",
+        customClass: "swal-large",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        didOpen: () => {
+          Swal.hideLoading();
+        },
+      }).then((result) => {
+        $(jstreePreviewManifest).jstree().deselect_all(true);
+        // sort the updated json object (since users might have added new columns)
+        let manifestHeaders = table1.getHeaders().split(",");
+        let manifestEntries = table1.getData();
+        let sortedJSON = processManifestInfo(manifestHeaders, manifestEntries);
+        // // write this new json to existing manifest.json file
+        jsonManifest = JSON.stringify(sortedJSON);
+        // convert manifest.json to existing manifest.xlsx file
+        convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
+      });
+      loadManifestFileEdits(jsonManifest);
+    }
+  });
+});
+
 // function that removes hidden class from js element by id and smooth scrolls to it
 const unHideAndSmoothScrollToElement = (id) => {
   elementToUnhideAndScrollTo = document.getElementById(id);
