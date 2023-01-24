@@ -11978,8 +11978,8 @@ $(document).ready(async () => {
         { timeout: 0 }
       )
       .then(async (curationRes) => {
-        main_total_generate_dataset_size = curationRes["main_total_generate_dataset_size"];
-        uploadedFiles = curationRes["main_curation_uploaded_files"];
+        console.log("Uploaded files value is this: ", uploadedFiles);
+        console.log("FIles on previous log page is this: ", filesOnPreviousLogPage);
         $("#sidebarCollapse").prop("disabled", false);
         log.info("Completed curate function");
 
@@ -12214,7 +12214,7 @@ $(document).ready(async () => {
         ipcRenderer.send(
           "track-event",
           "Success",
-          PrepareDatasetsAnalyticsPrefix.CURATE + "- Step 7 - Generate - Dataset - Number of Files",
+          "Guided Mode - Generate - Dataset - Number of Files",
           `${datasetUploadSession.id}`,
           500
         );
@@ -12224,7 +12224,7 @@ $(document).ready(async () => {
         ipcRenderer.send(
           "track-event",
           "Success",
-          PrepareDatasetsAnalyticsPrefix.CURATE + " - Step 7 - Generate - Dataset - Size",
+          "Guided Mode - Generate - Dataset - Size",
           `${datasetUploadSession.id}`,
           differenceInBytes
         );
