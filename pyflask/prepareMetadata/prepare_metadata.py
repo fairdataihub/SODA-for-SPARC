@@ -974,7 +974,7 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
     high_level_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
 
     # handle updating any existing manifest files on Pennsieve
-    update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level_folders, manifest_progress, manifest_folder_path)
+    update_existing_pennsieve_manifest_files(token, soda_json_structure, high_level_folders, manifest_progress, manifest_folder_path)
 
     # create manifest files from scratch for any high level folders that don't have a manifest file on Pennsieve
     create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, manifest_folder_path, high_level_folders, manifest_progress)
