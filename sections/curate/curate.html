@@ -717,7 +717,7 @@
                     >Which existing Pennsieve dataset would you like to
                     use?</label
                   >
-                  <div class="field" style="margin: 15px auto; width: 450px">
+                  <div class="field" style="margin: 15px auto; width: 550px">
                     <div
                       style="
                         display: flex;
@@ -1293,7 +1293,7 @@
                       box-shadow: none !important;
                       border: none;
                       overflow-y: auto;
-                      max-height: 400px;
+                      max-height: 392px !important;
                     "
                   ></div>
                   <!-- "data" is jstree html element -->
@@ -3273,6 +3273,7 @@
                 text-align: center;
                 font-weight: 600;
                 margin-top: 20px;
+                padding-bottom: 0;
               "
             >
               Step 5: Request manifest files
@@ -3281,20 +3282,17 @@
                 class="github-wiki-link"
                 href="https://docs.sodaforsparc.io/docs/prepare-dataset/step-5"
               >
-                <!-- <img
-                    class="nav-video"
-                    src="assets/img/documentation-icon.png"
-                  /> -->
               </a>
               <br /><br />
             </h3>
+
             <div id="manifestUpload">
               <h5
                 style="text-align: center; color: var(--color); font-size: 17px"
               >
                 Would you like SODA to auto-generate your manifest files?
               </h5>
-              <div style="height: 150px; text-align: center; margin: 100px">
+              <div style="height: 150px; text-align: center;">
                 <div
                   style="margin-top: 30px; margin-bottom: 50px"
                   id="pulse-manifest-checkbox"
@@ -3326,7 +3324,7 @@
                     Yes
                   </label>
                 </div>
-                <div>
+                <div style="display: flex; flex-direction: column; justify-content: center">
                   <a
                     id="button-generate-manifest-locally"
                     data-content="Use this button to generate and view the manifest file locally"
@@ -3337,35 +3335,14 @@
                   >
                     Create a copy of the Manifest files locally to review.
                   </a>
-                  <!-- <div
-                    class="coming-soon-div"
-                    data-content="Use this button to generate and view the manifest file locally"
-                    rel="popover"
-                    data-placement="right"
-                    data-trigger="hover"
-                    style="width: 230px;margin: auto;"
-                  >
-                    <button
-                      id="button-generate-manifest-locally"
-                      style="
-                        cursor: pointer;
-                        border-radius: 8px;
-                        width: 210px;
-                        height: 40px;
-                        background: var(--color-light-green);
-                        color: #fff;
-                        font-weight: 600;
-                        border: none;
-                        font-size: 14px;
-                      "
-                    >
-                      Generate manifest locally
-                    </button>
-                  </div> -->
+                  <div id="ffm-container-manifest-file-cards" style="display: flex; flex-direction: column; justify-content: center; align-items: center"></div>
                 </div>
               </div>
             </div>
           </div>
+
+
+
 
           <!-- 6. Generate dataset -->
           <div
@@ -4453,7 +4430,8 @@
             </div>
           </div>
 
-          <!-- 7. Preview dataset -->
+
+          <!-- 8. Preview dataset -->
           <div
             class="parent-tabs"
             id="preview-dataset-tab"

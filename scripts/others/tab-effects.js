@@ -8,6 +8,7 @@ var allParentStepsJSON = {
   "organize-dataset": "organize-dataset-tab",
   "metadata-files": "metadata-files-tab",
   "manifest-file": "manifest-file-tab",
+  // "validate-dataset": "validate-dataset-tab",
   "generate-dataset": "generate-dataset-tab",
 };
 
@@ -46,7 +47,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
     $(x[tabNow]).css("overflow", "auto");
   }, 1200);
 
-  var inActiveTabArray = [0, 1, 2, 3, 4, 5, 6, 7].filter((element) => {
+  var inActiveTabArray = [0, 1, 2, 3, 4, 5, 6].filter((element) => {
     return ![tabNow].includes(element);
   });
 
@@ -87,6 +88,15 @@ const showParentTab = (tabNow, nextOrPrev) => {
     }
     $("#nextBtn").prop("disabled", false);
   }
+  if (tabNow == 4) {
+    if (document.getElementById("generate-manifest-curate").checked) {
+      // need to run manifest creation
+      ffmCreateManifest(sodaJSONObj);
+    } else {
+      document.getElementById("ffm-container-manifest-file-cards").innerHTML = "";
+    }
+  }
+
   if (tabNow == 5) {
     // Disable the continue button if a destination has not been selected
     // Used when traversing back and forth between tabs
@@ -151,6 +161,11 @@ const showParentTab = (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == x.length - 1) {
+    let step5Bubble = document.getElementsByClassName("vertical-progress-bar-step")[4];
+    // if (step5Bubble.classList.contains("is-current")) {
+    //   step5Bubble.classList.remove("is-current");
+    // }
+    // step5Bubble.classList.add("done");
     // If in step 6, show the generate button and the preview tab
     $("#nextBtn").css("display", "none");
 
@@ -448,18 +463,21 @@ const checkHighLevelFoldersInput = () => {
   return checked;
 };
 
-// function associated with the Back/Continue buttons
-const nextPrev = (n) => {
-  var x = document.getElementsByClassName("parent-tabs");
+// function associated with the Back/Continue buttons of FreeForm Mode
+// in the Organize dataset section of the app.
+// Perform events or actions (such as update sodaJSONObj) based off the state of the Organize Datasets section
+// currently being displayed after pressing the Continue button/back button.
+const nextPrev = (pageIndex) => {
+  // var x = document.getElementsByClassName("parent-tabs");
+  let parentTabs = document.getElementsByClassName("parent-tabs");
 
-  if (n == -1 && x[currentTab].id === "getting-started-tab") {
+  if (pageIndex == -1 && parentTabs[currentTab].id === "getting-started-tab") {
     let event = new CustomEvent("custom-back", {
       detail: {
         target: { dataset: { section: "main_tabs" }, classList: ["someclass"] },
       },
     });
-    // $("#sidebarCollapse").click();
-    // forceActionSidebar("show");
+
     document.body.dispatchEvent(event);
     if ($("#nextBtn").prop("disabled") === true) {
       nextBtnDisabledVariable = true;
@@ -470,16 +488,19 @@ const nextPrev = (n) => {
   }
 
   // update JSON structure
-  updateOverallJSONStructure(x[currentTab].id);
+  updateOverallJSONStructure(parentTabs[currentTab].id);
 
   // reset datasetStructureObject["files"] back to {},
   // and delete ui preview-added manifest files
-  if (x[currentTab].id === "high-level-folders-tab") {
+  if (parentTabs[currentTab].id === "high-level-folders-tab") {
     $("#items").empty();
     $("#items").append(already_created_elem);
     getInFolder(".single-item", "#items", dataset_path, datasetStructureJSONObj);
   }
-  if (x[currentTab].id === "high-level-folders-tab" || x[currentTab].id === "metadata-files-tab") {
+  if (
+    parentTabs[currentTab].id === "high-level-folders-tab" ||
+    parentTabs[currentTab].id === "metadata-files-tab"
+  ) {
     organizeLandingUIEffect();
     // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
     if ("files" in datasetStructureJSONObj) {
@@ -499,8 +520,8 @@ const nextPrev = (n) => {
   }
 
   if (
-    n === 1 &&
-    x[currentTab].id === "organize-dataset-tab" &&
+    pageIndex === 1 &&
+    parentTabs[currentTab].id === "organize-dataset-tab" &&
     sodaJSONObj["dataset-structure"] === { folders: {} }
   ) {
     Swal.fire({
@@ -520,19 +541,19 @@ const nextPrev = (n) => {
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        $(x[currentTab]).removeClass("tab-active");
+        $(parentTabs[currentTab]).removeClass("tab-active");
         // Increase or decrease the current tab by 1:
-        currentTab = currentTab + n;
+        currentTab = currentTab + pageIndex;
         // For step 1,2,3, check for High level folders input to disable Continue button
         if (currentTab === 1 || currentTab === 2 || currentTab === 3) {
           highLevelFoldersDisableOptions();
         }
         // Display the correct tab:
-        showParentTab(currentTab, n);
+        showParentTab(currentTab, pageIndex);
       }
     });
     // check if required metadata files are included
-  } else if (n === 1 && x[currentTab].id === "metadata-files-tab") {
+  } else if (pageIndex === 1 && parentTabs[currentTab].id === "metadata-files-tab") {
     var requiredFiles = ["submission", "dataset_description", "subjects", "README"];
     let missingFiles = [];
     var withoutExtMetadataArray = [];
@@ -592,52 +613,53 @@ const nextPrev = (n) => {
       }).then((result) => {
         if (result.isConfirmed) {
           // Hide the current tab:
-          $(x[currentTab]).removeClass("tab-active");
+          $(parentTabs[currentTab]).removeClass("tab-active");
           // Increase or decrease the current tab by 1:
-          currentTab = currentTab + n;
+          currentTab = currentTab + pageIndex;
           // Display the correct tab:
-          showParentTab(currentTab, n);
+          showParentTab(currentTab, pageIndex);
         }
       });
     } else {
       // Hide the current tab:
-      $(x[currentTab]).removeClass("tab-active");
+      $(parentTabs[currentTab]).removeClass("tab-active");
       // Increase or decrease the current tab by 1:
-      currentTab = currentTab + n;
+      currentTab = currentTab + pageIndex;
       // Display the correct tab:
-      showParentTab(currentTab, n);
+      showParentTab(currentTab, pageIndex);
     }
   } else if (
-    x[currentTab].id === "preview-dataset-tab" &&
+    parentTabs[currentTab].id === "preview-dataset-tab" &&
     sodaJSONObj["starting-point"]["type"] == "bf"
   ) {
-    $(x[currentTab]).removeClass("tab-active");
-
+    $(parentTabs[currentTab]).removeClass("tab-active");
     currentTab = currentTab - 2;
-    showParentTab(currentTab, n);
+    showParentTab(currentTab, pageIndex);
     $("#nextBtn").prop("disabled", false);
   } else if (
-    x[currentTab].id === "manifest-file-tab" &&
+    // HERE BOOO
+    parentTabs[currentTab].id === "manifest-file-tab" &&
     sodaJSONObj["starting-point"]["type"] == "bf"
   ) {
-    // cj -skip step 6
-    $(x[currentTab]).removeClass("tab-active");
-    if (n == -1) {
-      currentTab = currentTab + n;
-      $("#nextBtn").prop("disabled", false);
-    } else {
+    // skip step 6 ( options irrelevant for existing bf/pennsieve workflow)
+    $(parentTabs[currentTab]).removeClass("tab-active");
+    if (pageIndex == 1) {
       currentTab = currentTab + 2;
+      $("#nextBtn").prop("disabled", false);
       fixStepDone(4);
+    } else {
+      currentTab = currentTab - 1;
+      // fixStepDone(4);
       $("#nextBtn").prop("disabled", true);
     }
-    showParentTab(currentTab, n);
+    showParentTab(currentTab, pageIndex);
   } else if (
-    x[currentTab].id === "manifest-file-tab" &&
+    parentTabs[currentTab].id === "manifest-file-tab" &&
     (sodaJSONObj["starting-point"]["type"] === "new" ||
       sodaJSONObj["starting-point"]["type"] === "local")
   ) {
-    $(x[currentTab]).removeClass("tab-active");
-    currentTab = currentTab + n;
+    $(parentTabs[currentTab]).removeClass("tab-active");
+    currentTab = currentTab + pageIndex;
     $("#Question-generate-dataset").show();
     $("#Question-generate-dataset").children().show();
     $("#Question-generate-dataset-generate-div").hide();
@@ -657,35 +679,47 @@ const nextPrev = (n) => {
       $("#generate-dataset-replace-existing").children().hide();
     }
     $("#nextBtn").prop("disabled", true);
-    showParentTab(currentTab, n);
-  } else {
+    showParentTab(currentTab, pageIndex);
+  }
+  // } else if (
+  //   parentTabs[currentTab].id === "validate-dataset-tab" &&
+  //   sodaJSONObj["starting-point"]["type"] === "bf"
+  // ) {
+  //   console.log(currentTab);
+  //   if (pageIndex === -1) {
+  //     currentTab = currentTab - 2;
+  //     // fixStepDone(5);
+  //     // $("#nextBtn").prop("disabled", true);
+  //   } else {
+  //     currentTab = currentTab + 1;
+  //   }
+  //   showParentTab(currentTab, pageIndex);
+  else {
     // Hide the current tab:
-    $(x[currentTab]).removeClass("tab-active");
+    $(parentTabs[currentTab]).removeClass("tab-active");
     // Increase or decrease the current tab by 1:
-    currentTab = currentTab + n;
+    currentTab = currentTab + pageIndex;
     // For step 1,2,3, check for High level folders input to disable Continue button
     if (currentTab === 1 || currentTab === 2 || currentTab === 3) {
       highLevelFoldersDisableOptions();
     }
     // Display the correct tab:
-    showParentTab(currentTab, n);
+    showParentTab(currentTab, pageIndex);
   }
 };
 
-const fixStepIndicator = (n) => {
+const fixStepIndicator = (pageIndex) => {
   // This function removes the "is-current" class of all steps...
-  var i,
-    x = document.getElementsByClassName("vertical-progress-bar-step");
-  for (i = 0; i < x.length; i++) {
-    x[i].className = x[i].className.replace(" is-current", "");
+  let progressSteps = document.getElementsByClassName("vertical-progress-bar-step");
+  for (let step of progressSteps) {
+    step.className = step.className.replace(" is-current", "");
   }
-  //... and adds the "active" class to the current step:
-  x[n].className += " is-current";
+  progressSteps[pageIndex].className += " is-current";
 };
 
-const fixStepDone = (n) => {
-  var x = document.getElementsByClassName("vertical-progress-bar-step");
-  $(x[n]).addClass("done");
+const fixStepDone = (pageIndex) => {
+  let progressSteps = document.getElementsByClassName("vertical-progress-bar-step");
+  $(progressSteps[pageIndex]).addClass("done");
 };
 
 //// High level folders check mark effect
@@ -1607,7 +1641,7 @@ const verify_sparc_folder = (root_folder_path, type) => {
 };
 
 // function similar to transitionSubQuestions, but for buttons
-async function transitionSubQuestionsButton(ev, currentDiv, parentDiv, button, category) {
+const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, category) => {
   /*
     ev: the button being clicked
     currentDiv: current option-card (question)
@@ -1855,7 +1889,7 @@ async function transitionSubQuestionsButton(ev, currentDiv, parentDiv, button, c
       $("#nextBtn").prop("disabled", true);
     }
   }
-}
+};
 
 const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, category) => {
   let continueProgressRC = true;
@@ -2845,7 +2879,7 @@ const recursive_remove_local_deleted_files = (dataset_folder) => {
 
 // Step 6: Generate dataset
 // update JSON object after users finish Generate dataset step
-const updateJSONStructureGenerate = (progress = false) => {
+const updateJSONStructureGenerate = (progress = false, sodaJSONObj) => {
   let starting_point = sodaJSONObj["starting-point"]["type"];
   if (sodaJSONObj["starting-point"]["type"] == "bf") {
     sodaJSONObj["generate-dataset"] = {
@@ -2853,6 +2887,7 @@ const updateJSONStructureGenerate = (progress = false) => {
       "generate-option": "existing-bf",
     };
   }
+
   if (sodaJSONObj["starting-point"]["type"] == "local") {
     var localDestination = require("path").dirname(sodaJSONObj["starting-point"]["local-path"]);
     var newDatasetName = require("path").basename(sodaJSONObj["starting-point"]["local-path"]);
@@ -2874,8 +2909,10 @@ const updateJSONStructureGenerate = (progress = false) => {
       delete sodaJSONObj["bf-dataset-selected"];
     }
     sodaJSONObj["starting-point"]["type"] = "new";
+    // TODO: Do not delete local files if user is in validation step and not in initiate_generate step (validator-phase-4-simple)
     recursive_remove_local_deleted_files(sodaJSONObj["dataset-structure"]);
   }
+
   if (sodaJSONObj["starting-point"]["type"] == "new") {
     if ($('input[name="generate-1"]:checked').length > 0) {
       if ($('input[name="generate-1"]:checked')[0].id === "generate-local-desktop") {
@@ -3194,7 +3231,7 @@ const updateJSONObjectProgress = () => {
   updateJSONStructureMetadataFiles();
   updateJSONStructureManifest();
   updateJSONStructureDSstructure();
-  updateJSONStructureGenerate(true);
+  updateJSONStructureGenerate(true, sodaJSONObj);
 };
 
 const saveSODAJSONProgress = (progressFileName) => {

@@ -1,37 +1,492 @@
+const folderImportedFromPennsieve = (folderJSONPath) => {
+  return folderJSONPath.type === "bf";
+};
+
+const guidedModifyPennsieveFolder = (folderJSONPath, action) => {
+  //Actions can be "delete"  or "restore"
+
+  if (!folderJSONPath) {
+    return;
+  }
+  if (action === "delete") {
+    if (!folderJSONPath["action"].includes("deleted")) {
+      folderJSONPath["action"].push("deleted");
+    }
+
+    recursive_mark_sub_files_deleted(folderJSONPath, "delete");
+  }
+  if (action === "restore") {
+    folderJSONPath["action"] = folderJSONPath["action"].filter(
+      (action) => action !== "recursive_deleted" || action !== "deleted"
+    );
+    recursive_mark_sub_files_deleted(folderJSONPath, "restore");
+  }
+};
+
+const guidedMovePennsieveFolder = (movedFolderName, folderJSONPath, newFolderJSONPath) => {
+  if (!folderJSONPath) {
+    return;
+  }
+  if (!newFolderJSONPath) {
+    return;
+  }
+
+  folderJSONPath["action"] = ["existing", "moved"];
+  addMovedRecursively(folderJSONPath);
+  newFolderJSONPath["folders"][movedFolderName] = folderJSONPath;
+};
+const checkIfPoolsFoldersAreCorrect = (poolFolderPath) => {
+  const poolFolders = Object.keys(poolFolderPath["folders"]);
+  const invalidPoolFolders = poolFolders.filter((folder) => {
+    !folder.startsWith("sub-");
+  });
+  const poolSubjectFolders = poolFolders.filter((folder) => {
+    folder.startsWith("sub-");
+  });
+  for (const subjectFolder of poolSubjectFolders) {
+    checkIfSubjectsFoldersAreCorrect(poolFolderPath["folders"][subjectFolder]);
+  }
+
+  for (const invalidPoolFolder of invalidPoolFolders) {
+    invalidFolders.push(invalidPoolFolder);
+  }
+
+  //Push all files in the pools to invalid files since the user should not have files in the pool folders
+  const poolFiles = Object.keys(poolFolderPath["files"]);
+  for (const poolFile of poolFiles) {
+    invalidFiles.push(poolFile);
+  }
+};
+const checkIfSubjectsFoldersAreCorrect = (subjectFolderPath) => {
+  const subjectFolders = Object.keys(subjectFolderPath["folders"]);
+  const invalidSubjectFolders = subjectFolders.filter((folder) => {
+    !folder.startsWith("sam-");
+  });
+
+  for (const invalidSubjectFolder of invalidSubjectFolders) {
+    invalidFolders.push(invalidSubjectFolder);
+  }
+  const subjectFiles = Object.keys(subjectFolderPath["files"]);
+  for (const subjectFile of subjectFiles) {
+    invalidFiles.push(subjectFile);
+  }
+};
+const guidedCheckHighLevelFoldersForImproperFiles = (datasetStructure) => {
+  const invalidFolders = [];
+  const invalidFiles = [];
+
+  for (hlf of guidedHighLevelFolders) {
+    if (datasetStructure["folders"][hlf]) {
+      const hlfFolders = Object.keys(datasetStructure["folders"][hlf]["folders"]);
+      //filter out hlfFolders that do not start with pool- or sub-
+      const invalidBaseFolders = hlfFolders.filter((folder) => {
+        return !folder.startsWith("pool-") && !folder.startsWith("sub-");
+      });
+
+      for (const invalidBaseFolder of invalidBaseFolders) {
+        invalidFolders.push(invalidBaseFolder);
+      }
+
+      const hlfFiles = Object.keys(datasetStructure["folders"][hlf]["files"]);
+      const invalidBaseFiles = hlfFiles.filter((file) => {
+        return !file.startsWith("manifest");
+      });
+      for (const invalidBaseFile of invalidBaseFiles) {
+        invalidFiles.push(invalidBaseFile);
+      }
+    }
+  }
+  if (invalidFolders.length > 0 && invalidFiles.length > 0) {
+  }
+  return [invalidFolders, invalidFiles];
+};
+
+document.getElementById("guided-button-has-code-data").addEventListener("click", () => {
+  const codeFolder = datasetStructureJSONObj["folders"]["code"];
+  if (codeFolder) {
+    if (folderImportedFromPennsieve(codeFolder)) {
+      // If the protocol folder is imported from Pennsieve, unmark it as deleted and update the UI
+      guidedModifyPennsieveFolder(codeFolder, "restore");
+      updateFolderStructureUI(highLevelFolderPageData.code);
+    }
+  }
+});
+document.getElementById("guided-button-has-protocol-data").addEventListener("click", () => {
+  const protocolFolder = datasetStructureJSONObj["folders"]["protocol"];
+  if (protocolFolder) {
+    if (folderImportedFromPennsieve(protocolFolder)) {
+      // If the protocol folder is imported from Pennsieve, unmark it as deleted and update the UI
+      guidedModifyPennsieveFolder(protocolFolder, "restore");
+      updateFolderStructureUI(highLevelFolderPageData.protocol);
+    }
+  }
+});
+document.getElementById("guided-button-has-docs-data").addEventListener("click", () => {
+  const docsFolder = datasetStructureJSONObj["folders"]["docs"];
+  if (docsFolder) {
+    if (folderImportedFromPennsieve(docsFolder)) {
+      // If the protocol folder is imported from Pennsieve, unmark it as deleted and update the UI
+      guidedModifyPennsieveFolder(docsFolder, "restore");
+      updateFolderStructureUI(highLevelFolderPageData.docs);
+    }
+  }
+});
+
+const guidedSetNavLoadingState = (loadingState) => {
+  //depending on the boolean loading state will determine whether or not
+  //to disable the primary and sub buttons along with the nav menu
+  const subBackButton = document.getElementById("guided-button-sub-page-back");
+  const subContinueButton = document.getElementById("guided-button-sub-page-continue");
+  const subSaveAndExitButton = document.getElementById("guided-button-sub-page-save-and-exit");
+
+  const mainBackButton = document.getElementById("guided-back-button");
+  const mainContinueButton = document.getElementById("guided-next-button");
+  const saveAndExitButton = document.getElementById("guided-button-save-and-exit");
+
+  const navItems = document.querySelectorAll(".guided--nav-bar-section-page");
+
+  if (loadingState === true) {
+    subBackButton.disabled = true;
+    subContinueButton.disabled = true;
+    subSaveAndExitButton.disabled = true;
+    mainBackButton.disabled = true;
+    mainContinueButton.disabled = true;
+    saveAndExitButton.disabled = true;
+    mainBackButton.classList.add("loading");
+    mainContinueButton.classList.add("loading");
+
+    navItems.forEach((nav) => {
+      nav.classList.add("disabled-nav");
+    });
+  }
+
+  if (loadingState === false) {
+    subBackButton.disabled = false;
+    subContinueButton.disabled = false;
+    subSaveAndExitButton.disabled = false;
+    mainBackButton.disabled = false;
+    mainContinueButton.disabled = false;
+    mainBackButton.classList.remove("loading");
+    mainContinueButton.classList.remove("loading");
+    saveAndExitButton.disabled = false;
+
+    navItems.forEach((nav) => {
+      nav.classList.remove("disabled-nav");
+    });
+  }
+};
+
+const objectsHaveSameKeys = (...objects) => {
+  const allKeys = objects.reduce((keys, object) => keys.concat(Object.keys(object)), []);
+  const union = new Set(allKeys);
+  return objects.every((object) => union.size === Object.keys(object).length);
+};
+
 const savePageChanges = async (pageBeingLeftID) => {
+  // This function is used by both the navigation bar and the side buttons,
+  // and whenever it is being called, we know that the user is trying to save the changes on the current page.
+  // this function is async because we sometimes need to make calls to validate data before the page is ready to be left.
+  guidedSetNavLoadingState(true);
+
   const errorArray = [];
   try {
     //save changes to the current page
-    if (pageBeingLeftID === "guided-dataset-starting-point-tab") {
-      const buttonNoGuidedCurateSelected = document
-        .getElementById("guided-button-guided-dataset-structuring")
+
+    const getGuidedProgressFileNames = () => {
+      return fs
+        .readdirSync(guidedProgressFilePath)
+        .map((progressFileName) => progressFileName.replace(".json", ""));
+    };
+
+    const updateGuidedDatasetName = (newDatasetName) => {
+      const previousDatasetName = sodaJSONObj["digital-metadata"]["name"];
+
+      //update old progress file with new dataset name
+      const oldProgressFilePath = `${guidedProgressFilePath}/${previousDatasetName}.json`;
+      const newProgressFilePath = `${guidedProgressFilePath}/${newDatasetName}.json`;
+      fs.renameSync(oldProgressFilePath, newProgressFilePath);
+
+      const bannerImagePathToUpdate = sodaJSONObj["digital-metadata"]["banner-image-path"];
+      if (bannerImagePathToUpdate) {
+        const newBannerImagePath = bannerImagePathToUpdate.replace(
+          previousDatasetName,
+          newDatasetName
+        );
+        //Rename the old banner image folder to the new dataset name
+        fs.renameSync(bannerImagePathToUpdate, newBannerImagePath);
+        //change the banner image path in the JSON obj
+        sodaJSONObj["digital-metadata"]["banner-image-path"] = newBannerImagePath;
+      }
+      sodaJSONObj["digital-metadata"]["name"] = newDatasetName;
+    };
+
+    if (pageBeingLeftID === "guided-intro-page-tab") {
+      const startingNewCuration = document
+        .getElementById("guided-button-start-new-curation")
         .classList.contains("selected");
-      const buttonYesImportExistingSelected = document
-        .getElementById("guided-button-import-existing-dataset-structure")
+      const startingFromExistingLocal = false; // Set as false for now until we implement this feature
+      const resumingPennsieveDataset = document
+        .getElementById("guided-button-resume-pennsieve-dataset")
         .classList.contains("selected");
 
-      if (!buttonNoGuidedCurateSelected && !buttonYesImportExistingSelected) {
+      if (!startingNewCuration && !startingFromExistingLocal && !resumingPennsieveDataset) {
         errorArray.push({
           type: "notyf",
           message: "Please select a dataset start location",
         });
         throw errorArray;
       }
-
-      if (buttonNoGuidedCurateSelected) {
-        sodaJSONObj["guided-options"]["dataset-start-location"] = "guided-curate";
+      if (startingNewCuration) {
         sodaJSONObj["starting-point"]["type"] = "new";
-      }
+        sodaJSONObj["generate-dataset"]["generate-option"] = "new";
 
-      if (buttonYesImportExistingSelected) {
-        sodaJSONObj["guided-options"]["dataset-start-location"] = "import-existing";
+        guidedUnSkipPage("guided-subjects-folder-tab");
+        guidedUnSkipPage("guided-primary-data-organization-tab");
+        guidedUnSkipPage("guided-source-data-organization-tab");
+        guidedUnSkipPage("guided-derivative-data-organization-tab");
+        guidedUnSkipPage("guided-code-folder-tab");
+        guidedUnSkipPage("guided-protocol-folder-tab");
+        guidedUnSkipPage("guided-docs-folder-tab");
+      }
+      if (startingFromExistingLocal) {
         sodaJSONObj["starting-point"]["type"] = "local";
       }
+      if (resumingPennsieveDataset) {
+        if (
+          !document
+            .getElementById("guided-panel-pennsieve-dataset-import-loading")
+            .classList.contains("hidden")
+        ) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please wait for your datasets on Pennsieve to load",
+          });
+          throw errorArray;
+        }
+
+        const selectedPennsieveDatasetToResume = $(
+          "#guided-select-pennsieve-dataset-to-resume option:selected"
+        );
+        // Get the text currently in the dropdown
+        const selectedPennsieveDataset = selectedPennsieveDatasetToResume[0].innerHTML;
+        // Get the value of the dropdown (the dataset ID)
+        const selectedPennsieveDatasetID = selectedPennsieveDatasetToResume.val();
+        if (!selectedPennsieveDatasetID) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please select a dataset on Pennsieve to resume from the dropdown above",
+          });
+          throw errorArray;
+        }
+
+        sodaJSONObj["starting-point"]["type"] = "bf";
+        sodaJSONObj["generate-dataset"]["generate-option"] = "existing-bf";
+        sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] = selectedPennsieveDatasetID;
+        sodaJSONObj["digital-metadata"]["name"] = selectedPennsieveDataset;
+
+        //Pull the dataset folders and files from Pennsieve\
+        sodaJSONObj["bf-dataset-selected"] = {};
+        sodaJSONObj["bf-dataset-selected"]["dataset-name"] = selectedPennsieveDataset;
+        sodaJSONObj["bf-account-selected"]["account-name"] = defaultBfAccount;
+
+        const importProgressCircle = document.querySelector(
+          "#guided_loading_pennsieve_dataset-organize"
+        );
+        importProgressCircle.classList.remove("hidden");
+
+        try {
+          let data = await bf_request_and_populate_dataset(sodaJSONObj, importProgressCircle, true);
+          // Save a copy of the dataset structure used to make sure the user doesn't change it
+          // on future progress continuations
+          sodaJSONObj["initially-pulled-dataset-structure"] = JSON.parse(
+            JSON.stringify(data["soda_object"]["dataset-structure"])
+          );
+
+          datasetStructureJSONObj = data["soda_object"]["dataset-structure"];
+        } catch (error) {
+          console.log(error);
+          errorArray.push({
+            type: "notyf",
+            message: "Error pulling dataset folders and files from Pennsieve",
+          });
+          throw errorArray;
+        }
+
+        // Datasets pulled into Guided Mode should only have pool-folders or sub-folders inside of the primary, source,
+        // and derivative high level folders. If this is not the case with the pulled dataset, reject it.
+        const [invalidFolders, invalidFiles] =
+          guidedCheckHighLevelFoldersForImproperFiles(datasetStructureJSONObj);
+
+        if (invalidFolders.length > 0 || invalidFiles.length > 0) {
+          if (invalidFolders.length > 0) {
+            errorArray.push({
+              type: "notyf",
+              message:
+                "Your primary, source, and derivative folders must only contain pool-folders or sub-folders when resuming a Pennsieve dataset",
+            });
+          }
+          if (invalidFiles.length > 0) {
+            errorArray.push({
+              type: "notyf",
+              message:
+                "Your primary, source, and derivative folders must be empty besides the pool-folders or sub-folders",
+            });
+          }
+          throw errorArray;
+        }
+
+        //Fetch subjects and sample metadata and set subjectsTableData and sampleTableData
+        try {
+          let subjectsMetadataResponse = await client.get(
+            `/prepare_metadata/import_metadata_file`,
+            {
+              params: {
+                selected_account: defaultBfAccount,
+                selected_dataset: sodaJSONObj["digital-metadata"]["name"],
+                file_type: "subjects.xlsx",
+                ui_fields: Array.from(
+                  document
+                    .getElementById("guided-form-add-a-subject")
+                    .querySelectorAll(".subjects-form-entry")
+                )
+                  .map((field) => field.name.toLowerCase())
+                  .toString(),
+              },
+            }
+          );
+          // Set subjectsTableData as the res
+          subjectsTableData = subjectsMetadataResponse.data.subject_file_rows;
+        } catch (error) {
+          console.log("Unable to fetch subjects metadata" + error);
+        }
+        try {
+          let samplesMetadataResponse = await client.get(`/prepare_metadata/import_metadata_file`, {
+            params: {
+              file_type: "samples.xlsx",
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["name"],
+              ui_fields: Array.from(
+                document
+                  .getElementById("guided-form-add-a-sample")
+                  .querySelectorAll(".samples-form-entry")
+              )
+                .map((field) => field.name.toLowerCase())
+                .toString(),
+            },
+          });
+          // Set the samplesTableData as the samples metadata response
+          samplesTableData = samplesMetadataResponse.data.sample_file_rows;
+        } catch (error) {
+          console.log("Unable to fetch samples metadata" + error);
+        }
+
+        const datasetSubSamStructure =
+          extractPoolSubSamStructureFromDataset(datasetStructureJSONObj);
+
+        const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+        if (subjectsInPools.length === 0 && subjectsOutsidePools.length === 0) {
+          errorArray.push({
+            type: "notyf",
+            message:
+              "Your dataset must have at least one subject to resume from Pennsieve using Guided Mode",
+          });
+          throw errorArray;
+        }
+
+        // If subjectsTableData was found, check if the subject/sample metadata has the same structure as the
+        // dataset structure. If subject and sample metadata were not found, reset it and we'll add the metadata later
+        if (subjectsTableData.length > 1 && samplesTableData.length > 1) {
+          const metadataSubSamStructure = createGuidedStructureFromSubSamMetadata(
+            subjectsTableData.slice(1),
+            samplesTableData.slice(1)
+          );
+
+          if (!objectsHaveSameKeys(metadataSubSamStructure, datasetSubSamStructure)) {
+            errorArray.push({
+              type: "notyf",
+              message: "The subjects and samples metadata do not have the same keys",
+            });
+            throw errorArray;
+          }
+        } else {
+          subjectsTableData = [];
+          samplesTableData = [];
+          extractPoolSubSamStructureFromDataset(datasetStructureJSONObj);
+        }
+        await Swal.fire({
+          icon: "info",
+          title: "Begining Pennsieve Dataset edit session",
+          html: `
+            Note: it is imperative that you do not manually make any changes to your dataset folders and files
+            directly on Pennsieve while working on this dataset on SODA.
+            <br />
+            <br />
+            If you do, all saved changes that you have made on SODA will be lost and you will have to start over.
+          `,
+          width: 500,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: `Got it!`,
+          focusConfirm: true,
+          allowOutsideClick: false,
+        });
+      }
+
+      //Skip this page becausae we should not come back to it
+      guidedSkipPage("guided-intro-page-tab");
     }
 
-    if (pageBeingLeftID === "guided-prepare-helpers-tab") {
-      // This is where we save data to the sodaJSONObj
-      // Take a look at logic around here to see how to save data to the sodaJSONObj
+    if (pageBeingLeftID === "guided-name-subtitle-tab") {
+      let datasetNameInput = document.getElementById("guided-dataset-name-input").value.trim();
+      let datasetSubtitleInput = document
+        .getElementById("guided-dataset-subtitle-input")
+        .value.trim();
+
+      //Throw error if no dataset name or subtitle were added
+      if (!datasetNameInput) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please enter a dataset name.",
+        });
+      }
+      if (!datasetSubtitleInput) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please enter a dataset subtitle.",
+        });
+      }
+      if (errorArray.length > 0) {
+        throw errorArray;
+      }
+      const currentDatasetName = sodaJSONObj["digital-metadata"]["name"];
+      if (currentDatasetName) {
+        // Update the progress file path name and banner image path if needed
+        if (datasetNameInput !== currentDatasetName) {
+          const currentProgressFileNames = getGuidedProgressFileNames();
+          if (currentProgressFileNames.includes(datasetNameInput)) {
+            errorArray.push({
+              type: "notyf",
+              message: `Unable to change dataset name to: ${datasetNameInput}. A dataset with that name already exists.`,
+            });
+            throw errorArray;
+          }
+          updateGuidedDatasetName(datasetNameInput);
+          sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
+        } else {
+          sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
+        }
+      } else {
+        const currentProgressFileNames = getGuidedProgressFileNames();
+        if (currentProgressFileNames.includes(datasetNameInput)) {
+          errorArray.push({
+            type: "notyf",
+            message: `A progress file already exists for the dataset: ${datasetNameInput}. Please enter a different dataset name.`,
+          });
+          throw errorArray;
+        }
+        sodaJSONObj["digital-metadata"]["name"] = datasetNameInput;
+        sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
+      }
     }
 
     if (pageBeingLeftID === "guided-source-folder-tab") {
@@ -89,15 +544,19 @@ const savePageChanges = async (pageBeingLeftID) => {
           });
           throw errorArray;
         }
-        $("#guided-add-code-metadata-tab").attr("data-skip-page", "false");
+        guidedUnSkipPage("guided-add-code-metadata-tab");
       }
       if (guidedButtonUserNoCodeData.classList.contains("selected")) {
         if (
           Object.keys(codeFolder.folders).length === 0 &&
           Object.keys(codeFolder.files).length === 0
         ) {
-          delete datasetStructureJSONObj["folders"]["code"];
-          $("#guided-add-code-metadata-tab").attr("data-skip-page", "true");
+          if (folderImportedFromPennsieve(codeFolder)) {
+            guidedModifyPennsieveFolder(codeFolder, "delete");
+          } else {
+            delete datasetStructureJSONObj["folders"]["code"];
+          }
+          guidedSkipPage("guided-add-code-metadata-tab");
         } else {
           const { value: deleteCodeFolderWithData } = await Swal.fire({
             title: "Delete code folder?",
@@ -111,9 +570,14 @@ const savePageChanges = async (pageBeingLeftID) => {
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
           });
+
           if (deleteCodeFolderWithData) {
-            delete datasetStructureJSONObj["folders"]["code"];
-            $("#guided-add-code-metadata-tab").attr("data-skip-page", "true");
+            if (folderImportedFromPennsieve(codeFolder)) {
+              guidedModifyPennsieveFolder(codeFolder, "delete");
+            } else {
+              delete datasetStructureJSONObj["folders"]["code"];
+            }
+            guidedSkipPage("guided-add-code-metadata-tab");
           } else {
             guidedButtonUserHasCodeData.click();
           }
@@ -158,7 +622,11 @@ const savePageChanges = async (pageBeingLeftID) => {
           Object.keys(protocolFolder.folders).length === 0 &&
           Object.keys(protocolFolder.files).length === 0
         ) {
-          delete datasetStructureJSONObj["folders"]["protocol"];
+          if (folderImportedFromPennsieve(protocolFolder)) {
+            guidedModifyPennsieveFolder(protocolFolder, "delete");
+          } else {
+            delete datasetStructureJSONObj["folders"]["protocol"];
+          }
         } else {
           const { value: deleteProtocolFolderWithData } = await Swal.fire({
             title: "Delete protocol folder?",
@@ -173,7 +641,11 @@ const savePageChanges = async (pageBeingLeftID) => {
             backdrop: "rgba(0,0,0, 0.4)",
           });
           if (deleteProtocolFolderWithData) {
-            delete datasetStructureJSONObj["folders"]["protocol"];
+            if (folderImportedFromPennsieve(protocolFolder)) {
+              guidedModifyPennsieveFolder(protocolFolder, "delete");
+            } else {
+              delete datasetStructureJSONObj["folders"]["protocol"];
+            }
           } else {
             guidedButtonUserHasProtocolData.click();
           }
@@ -214,7 +686,11 @@ const savePageChanges = async (pageBeingLeftID) => {
           Object.keys(docsFolder.folders).length === 0 &&
           Object.keys(docsFolder.files).length === 0
         ) {
-          delete datasetStructureJSONObj["folders"]["docs"];
+          if (folderImportedFromPennsieve(docsFolder)) {
+            guidedModifyPennsieveFolder(docsFolder, "delete");
+          } else {
+            delete datasetStructureJSONObj["folders"]["docs"];
+          }
         } else {
           const { value: deleteDocsFolderWithData } = await Swal.fire({
             title: "Delete docs folder?",
@@ -229,25 +705,18 @@ const savePageChanges = async (pageBeingLeftID) => {
             backdrop: "rgba(0,0,0, 0.4)",
           });
           if (deleteDocsFolderWithData) {
-            delete datasetStructureJSONObj["folders"]["docs"];
+            if (folderImportedFromPennsieve(docsFolder)) {
+              guidedModifyPennsieveFolder(docsFolder, "delete");
+            } else {
+              delete datasetStructureJSONObj["folders"]["docs"];
+            }
           } else {
             guidedButtonUserHasDocsData.click();
           }
         }
       }
     }
-    if (pageBeingLeftID === "guided-folder-importation-tab") {
-      if (
-        !$("#guided-input-destination-getting-started-locally").val() ||
-        $("#guided-input-destination-getting-started-locally").val() === "Browse here"
-      ) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please select the location of your local datset",
-        });
-        throw errorArray;
-      }
-    }
+
     if (pageBeingLeftID === "guided-create-subjects-metadata-tab") {
       //Save the subject metadata from the subject currently being modified
       addSubject("guided");
@@ -381,30 +850,6 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-designate-permissions-tab") {
-      const buttonYesAddAdditionalPermissions = document.getElementById(
-        "guided-button-add-additional-permissions"
-      );
-      const buttonNoNoAdditionalPermissions = document.getElementById(
-        "guided-button-no-additional-permissions"
-      );
-
-      if (
-        !buttonYesAddAdditionalPermissions.classList.contains("selected") &&
-        !buttonNoNoAdditionalPermissions.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "notyf",
-          message:
-            "Please indicate if you would like to add additional Pennsieve permissions to your dataset",
-        });
-        throw errorArray;
-      }
-
-      if (buttonNoNoAdditionalPermissions.classList.contains("selected")) {
-        //If the user had added additional permissions, remove them
-        sodaJSONObj["digital-metadata"]["user-permissions"] = [];
-        sodaJSONObj["digital-metadata"]["team-permissions"] = [];
-      }
     }
 
     if (pageBeingLeftID === "guided-add-description-tab") {
@@ -465,6 +910,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
       setGuidedLicense("Creative Commons Attribution (CC-BY)");
     }
+    /*
     if (pageBeingLeftID === "guided-dataset-generate-location-tab") {
       const buttonGenerateLocally = document.getElementById(
         "guided-button-generate-dataset-locally"
@@ -498,6 +944,8 @@ const savePageChanges = async (pageBeingLeftID) => {
         sodaJSONObj["generate-dataset"]["destination"] = "bf";
       }
     }
+    */
+    /*
     if (pageBeingLeftID === "guided-dataset-generate-destination-tab") {
       const buttonGenerateOnExistingPennsieveDataset = document.getElementById(
         "guided-button-pennsieve-generate-existing"
@@ -537,6 +985,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         sodaJSONObj["generate-dataset"]["destination"] = "bf";
       }
     }
+    */
 
     if (pageBeingLeftID === "guided-folder-structure-preview-tab") {
       //if folders and files in datasetStruture json obj are empty, warn the user
@@ -547,8 +996,8 @@ const savePageChanges = async (pageBeingLeftID) => {
         const { value: continueProgress } = await Swal.fire({
           title: `No folders or files have been added to your dataset.`,
           html: `You can go back and add folders and files to your dataset, however, if
-          you choose to generate your dataset on the final step, no folders or files will be
-          added to your target destination.`,
+            you choose to generate your dataset on the final step, no folders or files will be
+            added to your target destination.`,
           allowEscapeKey: false,
           allowOutsideClick: false,
           heightAuto: false,
@@ -685,6 +1134,49 @@ const savePageChanges = async (pageBeingLeftID) => {
         delete sodaJSONObj["dataset-metadata"]["shared-metadata"]["imported-sparc-award"];
       }
     }
+
+    if (pageBeingLeftID === "guided-create-submission-metadata-tab") {
+      const userIsAddingSubmissionMetadataManually = document
+        .getElementById("guided-button-enter-submission-metadata-manually")
+        .classList.contains("selected");
+
+      if (userIsAddingSubmissionMetadataManually) {
+        const award = document.getElementById("guided-submission-sparc-award-manual").value;
+        const milestones = getTagsFromTagifyElement(guidedSubmissionTagsTagifyManual);
+        const completionDate = document.getElementById(
+          "guided-submission-completion-date-manual"
+        ).value;
+
+        if (award === "") {
+          errorArray.push({
+            type: "notyf",
+            message: "Please add a SPARC award number to your submission metadata",
+          });
+        }
+        if (completionDate === "Select a completion date") {
+          errorArray.push({
+            type: "notyf",
+            message: "Please add a completion date to your submission metadata",
+          });
+        }
+        if (milestones.length === 0) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please add at least one milestone to your submission metadata",
+          });
+        }
+        if (errorArray.length > 0) {
+          throw errorArray;
+        }
+
+        // save the award string to JSONObj to be shared with other award inputs
+        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = award;
+        //Save the data and milestones to the sodaJSONObj
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = milestones;
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = completionDate;
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["submission-data-entry"] = "manual";
+      }
+    }
     if (pageBeingLeftID === "guided-contributors-tab") {
       // Make sure the user has added at least one contributor
       const contributors = sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
@@ -713,24 +1205,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
 
       if (buttonYesUserHasProtocols.classList.contains("selected")) {
-        let protocols = [];
-
-        const protocolFields = document.querySelectorAll(".guided-protocol-field-container");
-        //loop through protocol fields and get protocol values
-        const protocolFieldsArray = Array.from(protocolFields);
-        protocolFieldsArray.forEach((protocolField) => {
-          const protocolUrlInput = protocolField.dataset.protocolUrl;
-          const protocolDescriptionInput = protocolField.dataset.protocolDescription;
-          const protocolType = protocolField.dataset.protocolType;
-
-          const protocolObj = {
-            link: protocolUrlInput,
-            type: protocolType,
-            relation: "isProtocolFor",
-            description: protocolDescriptionInput,
-          };
-          protocols.push(protocolObj);
-        });
+        const protocols = sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
 
         if (protocols.length === 0) {
           errorArray.push({
@@ -739,7 +1214,16 @@ const savePageChanges = async (pageBeingLeftID) => {
           });
           throw errorArray;
         }
-        sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = protocols;
+
+        const unFairProtocols = protocols.filter((protocol) => protocol["isFair"] === false);
+        if (unFairProtocols.length > 0) {
+          errorArray.push({
+            type: "notyf",
+            message:
+              "Some of your protocols are missing data. Please edit all invalid rows in the table.",
+          });
+          throw errorArray;
+        }
       }
 
       if (buttonNoDelayProtocolEntry.classList.contains("selected")) {
@@ -776,17 +1260,28 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
     }
   } catch (error) {
+    guidedSetNavLoadingState(false);
     throw error;
   }
+
+  guidedSetNavLoadingState(false);
 };
+
+document
+  .getElementById("guided-button-import-data-deliverables")
+  .addEventListener("click", async () => {
+    //Open the page and leave the sub-page hydration to the sub-page function
+    //after waiting for call stack to finish
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    openSubPageNavigation("guided-create-submission-metadata-tab");
+  });
 
 const getNonSkippedGuidedModePages = (parentElementToGetChildrenPagesFrom) => {
   let allChildPages = Array.from(
     parentElementToGetChildrenPagesFrom.querySelectorAll(".guided--page")
   );
   const nonSkippedChildPages = allChildPages.filter((page) => {
-    //filter out pages with not null data-skipped-page attribute and data-skip-page attribute is not true
-    return !page.getAttribute("data-skip-page") || page.getAttribute("data-skip-page") != "true";
+    return page.dataset.skipPage != "true";
   });
 
   return nonSkippedChildPages;
@@ -897,7 +1392,7 @@ const renderSideBar = (activePage) => {
   );
   for (const guidedNavBarSectionPage of guidedNavBarSectionPages) {
     guidedNavBarSectionPage.addEventListener("click", async (event) => {
-      const currentPageUserIsLeaving = CURRENT_PAGE.attr("id");
+      const currentPageUserIsLeaving = CURRENT_PAGE.id;
       const pageToNavigateTo = guidedNavBarSectionPage.getAttribute("data-target-page");
       const pageToNaviatetoName = document
         .getElementById(pageToNavigateTo)
@@ -951,7 +1446,7 @@ const renderSideBar = (activePage) => {
         //All pages have been validated. Open the target page.
         await openPage(pageToNavigateTo);
       } catch (error) {
-        const pageWithErrorName = CURRENT_PAGE.data("pageName");
+        const pageWithErrorName = CURRENT_PAGE.dataset.pageName;
         const { value: continueWithoutSavingCurrPageChanges } = await Swal.fire({
           title: "The current page was not able to be saved",
           html: `The following error${
@@ -1018,6 +1513,205 @@ const updateDatasetUploadProgressTable = (progressObject) => {
     `;
   //insert adjustStatusElement at the end of datasetUploadTablebody
   datasetUploadTableBody.insertAdjacentHTML("beforeend", uploadStatusElement);
+};
+
+const createGuidedStructureFromSubSamMetadata = (subjectsMetadataRows, samplesMetadataRows) => {
+  const poolSubSamStructure = {
+    pools: {},
+    subjects: {},
+  };
+
+  const datasetPools = [
+    ...new Set(
+      subjectsMetadataRows
+        .map((subjectDataArray) => subjectDataArray[1])
+        .filter((pool) => pool !== "")
+    ),
+  ];
+
+  for (const pool of datasetPools) {
+    poolSubSamStructure["pools"][pool] = {};
+  }
+
+  for (const subject of subjectsMetadataRows) {
+    const subjectID = subject[0];
+    const poolID = subject[1];
+    if (poolID !== "") {
+      poolSubSamStructure["pools"][poolID][subjectID] = {};
+    } else {
+      poolSubSamStructure["subjects"][subjectID] = {};
+    }
+  }
+
+  for (const sample of samplesMetadataRows) {
+    const subjectID = sample[0];
+    const sampleID = sample[1];
+    const poolID = sample[3];
+    if (poolID !== "") {
+      poolSubSamStructure["pools"][poolID][subjectID][sampleID] = {};
+    } else {
+      poolSubSamStructure["subjects"][subjectID][sampleID] = {};
+    }
+  }
+  return poolSubSamStructure;
+};
+
+const extractPoolSubSamStructureFromMetadata = async () => {
+  if (datasetSubjectsMetadata && datasetSamplesMetadata) {
+    poolSubSamStructure = createGuidedStructureFromSubSamMetadata(
+      datasetSubjectsMetadata.slice(1),
+      datasetSamplesMetadata.slice(1)
+    );
+  }
+
+  return [datasetSubjectsMetadata, datasetSamplesMetadata, poolSubSamStructure];
+};
+// This function extracts the pool, subject, and sample structure from an imported dataset
+// and adds the pools, subjects, and samples to the guided mode structure if they exist.
+// This function also handles setting the button config options, for example, if the function
+// detects that there's primary subject data in the dataset, the yes button will be selected.
+const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
+  const guidedFoldersInDataset = guidedHighLevelFolders.filter((folder) =>
+    Object.keys(datasetStructure["folders"]).includes(folder)
+  );
+  const nonGuidedFoldersInDataset = nonGuidedHighLevelFolders.filter((folder) =>
+    Object.keys(datasetStructure["folders"]).includes(folder)
+  );
+
+  const addedSubjects = [];
+  const subjectsMovedIntoPools = [];
+  const addedPools = [];
+  const addedSamples = [];
+
+  // Loop through prim, src, and deriv if they exist in the datasetStructure
+  for (const hlf of guidedFoldersInDataset) {
+    //Get the names of the subfolders directly in the hlf
+    const hlfFolderNames = Object.keys(datasetStructure["folders"][hlf]["folders"]);
+    const subjectFoldersInBase = hlfFolderNames.filter((folder) => folder.startsWith("sub-"));
+    const poolFoldersInBase = hlfFolderNames.filter((folder) => folder.startsWith("pool-"));
+
+    // Loop through any folders starting with sub- in the hlf
+    for (const subjectFolder of subjectFoldersInBase) {
+      if (!addedSubjects.includes(subjectFolder)) {
+        try {
+          sodaJSONObj.addSubject(subjectFolder);
+          addedSubjects.push(subjectFolder);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      // Get the names of the subfolders directly in the subject folder
+      const potentialSampleFolderNames = Object.keys(
+        datasetStructure["folders"][hlf]["folders"][subjectFolder]["folders"]
+      );
+      const sampleFoldersInSubject = potentialSampleFolderNames.filter((folder) =>
+        folder.startsWith("sam-")
+      );
+      if (sampleFoldersInSubject.length > 0) {
+        sodaJSONObj["button-config"][`dataset-contains-${hlf}-sample-data`] = "yes";
+      }
+      // Loop through any folders starting with sam- in the subject folder
+      for (const sampleFolder of sampleFoldersInSubject) {
+        if (!addedSamples.includes(sampleFolder)) {
+          try {
+            sodaJSONObj.addSampleToSubject(sampleFolder, null, subjectFolder);
+            addedSamples.push(sampleFolder);
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      }
+    }
+
+    if (subjectFoldersInBase.length > 0) {
+      sodaJSONObj["button-config"][`dataset-contains-${hlf}-subject-data`] = "yes";
+    }
+
+    // Loop through any folders starting with pool- in the hlf
+    for (const poolFolder of poolFoldersInBase) {
+      if (!addedPools.includes(poolFolder)) {
+        try {
+          sodaJSONObj.addPool(poolFolder);
+          addedPools.push(poolFolder);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      // Get the names of the subfolders directly in the pool folder
+      const potentialSubjectFolderNames = Object.keys(
+        datasetStructure["folders"][hlf]["folders"][poolFolder]["folders"]
+      );
+      const subjectFoldersInPool = potentialSubjectFolderNames.filter((folder) =>
+        folder.startsWith("sub-")
+      );
+
+      if (subjectFoldersInPool.length > 0) {
+        sodaJSONObj["button-config"][`dataset-contains-${hlf}-subject-data`] = "yes";
+      }
+      // Loop through any folders starting with sub- in the pool folder
+      for (const subjectFolder of subjectFoldersInPool) {
+        if (!addedSubjects.includes(subjectFolder)) {
+          try {
+            sodaJSONObj.addSubject(subjectFolder);
+            addedSubjects.push(subjectFolder);
+          } catch (error) {
+            console.log(error);
+          }
+        }
+
+        if (!subjectsMovedIntoPools.includes(subjectFolder)) {
+          try {
+            sodaJSONObj.moveSubjectIntoPool(subjectFolder, poolFolder);
+            subjectsMovedIntoPools.push(subjectFolder);
+          } catch (error) {
+            console.log(error);
+          }
+        }
+
+        const potentialSampleFolderNames = Object.keys(
+          datasetStructure["folders"][hlf]["folders"][poolFolder]["folders"][subjectFolder][
+            "folders"
+          ]
+        );
+        const sampleFoldersInSubject = potentialSampleFolderNames.filter((folder) =>
+          folder.startsWith("sam-")
+        );
+        if (sampleFoldersInSubject.length > 0) {
+          sodaJSONObj["button-config"][`dataset-contains-${hlf}-sample-data`] = "yes";
+        }
+        // Loop through any folders starting with sam- in the subject folder
+        for (const sampleFolder of sampleFoldersInSubject) {
+          if (!addedSamples.includes(sampleFolder)) {
+            try {
+              sodaJSONObj.addSampleToSubject(sampleFolder, poolFolder, subjectFolder);
+              addedSamples.push(sampleFolder);
+            } catch (error) {
+              console.log(error);
+            }
+          }
+        }
+      }
+    }
+
+    if (poolFoldersInBase.length > 0) {
+      sodaJSONObj["button-config"][`dataset-contains-${hlf}-pool-data`] = "yes";
+    }
+  }
+
+  for (const hlf of nonGuidedFoldersInDataset) {
+    sodaJSONObj["button-config"][`dataset-contains-${hlf}-data`] = "yes";
+  }
+  if (addedSubjects.length > 0) {
+    sodaJSONObj["button-config"]["dataset-contains-subjects"] = "yes";
+  }
+  if (addedPools.length > 0) {
+    sodaJSONObj["button-config"]["dataset-contains-pools"] = "yes";
+  }
+  if (addedSamples.length > 0) {
+    sodaJSONObj["button-config"]["dataset-contains-samples"] = "yes";
+  }
+
+  return sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"];
 };
 
 const guidedLockSideBar = () => {
@@ -1235,58 +1929,62 @@ for (const infoDropdown of Array.from(infoDropdowns)) {
   });
 }
 
-const guidedSaveAndExit = async (exitPoint) => {
-  if (exitPoint === "main-nav" || exitPoint === "sub-nav") {
-    const { value: returnToGuidedHomeScreen } = await Swal.fire({
-      title: "Are you sure?",
-      text: `Exiting Guided Mode will discard any changes you have made on the
+const guidedSaveAndExit = async () => {
+  if (!sodaJSONObj["digital-metadata"]["name"]) {
+    // If a progress file has not been created, then we don't need to save anything
+    guidedTransitionToHome();
+    return;
+  }
+  const { value: returnToGuidedHomeScreen } = await Swal.fire({
+    title: "Are you sure?",
+    text: `Exiting Guided Mode will discard any changes you have made on the
       current page. You will be taken back to the homescreen, where you will be able
       to continue the current dataset you are curating which will be located under datasets
       in progress.`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Exit guided mode",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0,0.4)",
-    });
-    if (returnToGuidedHomeScreen) {
-      guidedUnLockSideBar();
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-      openPage("guided-prepare-helpers-tab");
-      hideSubNavAndShowMainNav("back");
-      $("#guided-button-dataset-intro-back").click();
-      $("#guided-button-dataset-intro-back").click();
-    }
-  } else if (exitPoint === "intro") {
-    const { value: returnToGuidedHomeScreen } = await Swal.fire({
-      title: "Are you sure?",
-      text: `Transitioning from guided mode to free form mode will cause you to lose
-        the progress you have made on the current page. You will still be able to continue
-        curating your current dataset by selecting its card on the guided mode homepage.`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "Exit guided mode",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0,0.4)",
-    });
-    if (returnToGuidedHomeScreen) {
-      guidedUnLockSideBar();
-      const guidedIntroPage = document.getElementById("guided-intro-page");
-      const guidedDatasetNameSubtitlePage = document.getElementById("guided-new-dataset-info");
+    icon: "warning",
+    showCancelButton: true,
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+    confirmButtonText: "Exit guided mode",
+    heightAuto: false,
+    backdrop: "rgba(0,0,0,0.4)",
+  });
+  if (returnToGuidedHomeScreen) {
+    const currentPageID = CURRENT_PAGE.id;
 
-      if (!guidedIntroPage.classList.contains("hidden")) {
-        //click past the intro page
-        $("#guided-button-dataset-intro-back").click();
-      } else if (!guidedDatasetNameSubtitlePage.classList.contains("hidden")) {
-        //click past the dataset name/subtitle page and intro page
-        $("#guided-button-dataset-intro-back").click();
-        $("#guided-button-dataset-intro-back").click();
+    try {
+      await savePageChanges(currentPageID);
+    } catch (error) {
+      const pageWithErrorName = CURRENT_PAGE.dataset.pageName;
+
+      const { value: continueWithoutSavingCurrPageChanges } = await Swal.fire({
+        title: "The current page was not able to be saved before exiting",
+        html: `The following error${
+          error.length > 1 ? "s" : ""
+        } occurred when attempting to save the ${pageWithErrorName} page:
+            <br />
+            <br />
+            <ul>
+              ${error.map((error) => `<li class="text-left">${error.message}</li>`).join("")}
+            </ul>
+            <br />
+            Would you like to exit without saving the changes to the current page?`,
+        icon: "info",
+        showCancelButton: true,
+        confirmButtonText: "Yes, exit without saving",
+        cancelButtonText: "No, address errors before saving",
+        focusCancel: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        width: 700,
+      });
+      if (continueWithoutSavingCurrPageChanges) {
+        guidedTransitionToHome();
+      } else {
+        return;
       }
     }
+    guidedTransitionToHome();
   }
 };
 
@@ -1324,7 +2022,7 @@ const enableElementById = (id) => {
   elementToEnable.style.opacity = "1";
   elementToEnable.style.pointerEvents = "auto";
 };
-const switchElementVisibility = (elementIdToHide, elementIdToShow) => {
+const hideEleShowEle = (elementIdToHide, elementIdToShow) => {
   elementToHide = document.getElementById(elementIdToHide);
   elementToShow = document.getElementById(elementIdToShow);
   elementToHide.classList.add("hidden");
@@ -1346,10 +2044,6 @@ const hideSubNavAndShowMainNav = (navButtonToClick) => {
   }
 };
 
-const showMainNav = () => {
-  $("#guided-footer-div").css("display", "flex");
-};
-
 const scrollToBottomOfGuidedBody = () => {
   const elementToScrollTo = document.querySelector(".guided--body");
   elementToScrollTo.scrollTop = elementToScrollTo.scrollHeight;
@@ -1361,69 +2055,56 @@ const getOpenSubPageInPage = (pageID) => {
   return openSubPage.id;
 };
 
+const getNonSkippedGuidedModeSubPages = (parentElementID) => {
+  let childSubPages = Array.from(
+    document.getElementById(parentElementID).querySelectorAll(".sub-page")
+  );
+  const nonSkippedChildSubPages = childSubPages
+    .filter((page) => {
+      return page.dataset.skipPage != "true";
+    })
+    .map((page) => page.id);
+
+  return nonSkippedChildSubPages;
+};
+
 const openSubPageNavigation = (pageBeingNavigatedTo) => {
   //Get the id of the page that's currently open and might need a refresh
-  const openSubPageID = getOpenSubPageInPage(pageBeingNavigatedTo);
+  const nonSkippedSubPages = getNonSkippedGuidedModeSubPages(pageBeingNavigatedTo);
+  const completedSubPages = nonSkippedSubPages.filter((page) => {
+    return sodaJSONObj["completed-tabs"].includes(page);
+  });
+
+  // If the sub-pages have already been completed, go to the last one
+  // If not, go to the first one
+  let subPageIDtoOpen;
+  if (completedSubPages.length > 0) {
+    subPageIDtoOpen = completedSubPages[completedSubPages.length - 1];
+  } else {
+    subPageIDtoOpen = nonSkippedSubPages[0];
+  }
+
   //Refresh data on the open sub-page
-  setActiveSubPage(openSubPageID);
+  setActiveSubPage(subPageIDtoOpen);
   //Hide the footer div while user is in sub-page navigation
   $("#guided-footer-div").hide();
   //Show the sub-page navigation footer
   $("#guided-sub-page-navigation-footer-div").css("display", "flex");
 };
 
-const guidedTransitionFromHome = () => {
+const guidedTransitionFromHome = async () => {
   //Hide the home screen
   document.getElementById("guided-home").classList.add("hidden");
-  //Hide the header and footer for the dataset name/subtitle page
-  $("#guided-header-div").hide();
-  $("#guided-footer-div").hide();
+  document.getElementById("curation-preparation-parent-tab").classList.remove("hidden");
+  document.getElementById("guided-header-div").classList.remove("hidden");
 
-  //Show the guided mode starting container
-  document.getElementById("guided-mode-starting-container").classList.remove("hidden");
+  //Hide all guided pages (first one will be unHidden automatically)
+  const guidedPages = document.querySelectorAll(".guided--page");
+  guidedPages.forEach((page) => {
+    page.classList.add("hidden");
+  });
 
-  //hide the name+subtitle page and show the intro page
-  switchElementVisibility("guided-new-dataset-info", "guided-intro-page");
-  //Reset name, subtitle, and subtitle char count
-  document.getElementById("guided-dataset-name-input").value = "";
-  document.getElementById("guided-dataset-subtitle-input").value = "";
-  document.getElementById("guided-subtitle-char-count").innerHTML = `255 characters remaining`;
-
-  guidedLockSideBar();
-
-  //Show the intro footer
-  document.getElementById("guided-footer-intro").classList.remove("hidden");
-};
-
-const guidedTransitionToHome = () => {
-  guidedPrepareHomeScreen();
-  document.getElementById("guided-home").classList.remove("hidden");
-  $("#guided-header-div").hide();
-  $("#guided-footer-div").hide();
-  document.getElementById("guided-mode-starting-container").classList.add("hidden");
-
-  //get element with id "sidebarCollapse"
-  const sidebar = document.getElementById("sidebarCollapse");
-  if (sidebar.classList.contains("active")) {
-    sidebar.click();
-  }
-};
-
-const guidedTransitionFromDatasetNameSubtitlePage = () => {
-  //Hide dataset name and subtitle parent tab
-  document.getElementById("guided-mode-starting-container").classList.add("hidden");
-  //hide the intro footer
-  document.getElementById("guided-footer-intro").classList.add("hidden");
-
-  //Show the dataset structure page
-  $("#prepare-dataset-parent-tab").css("display", "flex");
-  $("#guided-header-div").css("display", "flex");
-  $("#guided-footer-div").css("display", "flex");
-
-  //Set the current page to the guided curation page
-  CURRENT_PAGE = $("#guided-prepare-helpers-tab");
-
-  openPage("guided-prepare-helpers-tab");
+  CURRENT_PAGE = document.getElementById("guided-intro-page-tab");
 
   //reset sub-page navigation (Set the first sub-page to be the active sub-page
   //for all pages with sub-pages)
@@ -1434,27 +2115,54 @@ const guidedTransitionFromDatasetNameSubtitlePage = () => {
     const firstSubPage = pageCapsule.querySelector(".guided--capsule-sub-page");
     setActiveSubPage(firstSubPage.id.replace("-capsule", ""));
   }
+
+  guidedResetSkippedPages();
+
+  guidedLockSideBar();
 };
 
-const saveGuidedProgress = (guidedProgressFileName) => {
+const guidedTransitionToHome = () => {
+  guidedUnLockSideBar();
+  guidedPrepareHomeScreen();
+  document.getElementById("guided-home").classList.remove("hidden");
+  // Hide all of the parent tabs
+  const guidedParentTabs = Array.from(document.querySelectorAll(".guided--parent-tab"));
+  for (const guidedParentTab of guidedParentTabs) {
+    guidedParentTab.classList.add("hidden");
+  }
+  CURRENT_PAGE = undefined;
+
+  //Hide guided headers and footers
+  document.getElementById("guided-header-div").classList.add("hidden");
+  $("#guided-footer-div").hide();
+  $("#guided-sub-page-navigation-footer-div").hide();
+};
+
+const guidedTransitionFromDatasetNameSubtitlePage = () => {
+  //Hide dataset name and subtitle parent tab
+  document.getElementById("curation-preparation-parent-tab").classList.add("hidden");
+  //hide the intro footer
+  document.getElementById("guided-footer-intro").classList.add("hidden");
+
+  //Show the dataset structure page
+  $("#prepare-dataset-parent-tab").css("display", "flex");
+  $("#guided-header-div").css("display", "flex");
+  $("#guided-footer-div").css("display", "flex");
+};
+
+const saveGuidedProgress = async (guidedProgressFileName) => {
   //return if guidedProgressFileName is not a strnig greater than 0
   if (typeof guidedProgressFileName !== "string" || guidedProgressFileName.length === 0) {
-    throw "saveGuidedProgress: guidedProgressFileName must be a string greater than 0";
+    return;
   }
   //Destination: HOMEDIR/SODA/Guided-Progress
   sodaJSONObj["last-modified"] = new Date();
-
-  //If the user is past the intro/name+subtitle page, save the current page to be resumed later
-  if (CURRENT_PAGE) {
-    sodaJSONObj["page-before-exit"] = CURRENT_PAGE.attr("id");
-  }
 
   try {
     //create Guided-Progress folder if one does not exist
     fs.mkdirSync(guidedProgressFilePath, { recursive: true });
   } catch (error) {
     log.error(error);
-    console.log(error);
   }
   var guidedFilePath = path.join(guidedProgressFilePath, guidedProgressFileName + ".json");
 
@@ -1721,7 +2429,7 @@ const renderProgressCards = (progressFileJSONdata) => {
   });
 };
 
-const renderManifestCards = () => {
+const renderManifestCards = async () => {
   const guidedManifestData = sodaJSONObj["guided-manifest-files"];
   const highLevelFoldersWithManifestData = Object.keys(guidedManifestData);
 
@@ -1767,66 +2475,41 @@ const generateManifestEditCard = (highLevelFolderName) => {
   `;
 };
 
-const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
-  const existingManifestData = sodaJSONObj["guided-manifest-files"][highLevelFolderName];
-
-  let manifestFileHeaders = existingManifestData["headers"];
-  let manifestFileData = existingManifestData["data"];
-
-  let guidedManifestTable;
-
-  const readOnlyHeaders = ["filename", "file type", "timestamp"];
-
-  const { value: saveManifestFiles } = await Swal.fire({
-    title:
-      "<span style='font-size: 18px !important;'>Edit the manifest file below: </span> <br><span style='font-size: 13px; font-weight: 500'> Tip: Double click on a cell to edit it.<span>",
-    html: "<div id='guided-div-manifest-edit'></div>",
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    showConfirmButton: true,
-    confirmButtonText: "Confirm",
-    showCancelButton: true,
-    width: "90%",
-    customClass: "swal-large",
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    didOpen: () => {
-      Swal.hideLoading();
-      const manifestSpreadsheetContainer = document.getElementById("guided-div-manifest-edit");
-      guidedManifestTable = jspreadsheet(manifestSpreadsheetContainer, {
-        tableOverflow: true,
-        data: manifestFileData,
-        columns: manifestFileHeaders.map((header) => {
-          return {
-            readOnly: readOnlyHeaders.includes(header) ? true : false,
-            type: "text",
-            title: header,
-            width: 200,
-          };
-        }),
-      });
-    },
-  });
-
-  if (saveManifestFiles) {
-    const savedHeaders = guidedManifestTable.getHeaders().split(",");
-    const savedData = guidedManifestTable.getData();
-
-    sodaJSONObj["guided-manifest-files"][highLevelFolderName] = {
-      headers: savedHeaders,
-      data: savedData,
-    };
-
-    //Save the sodaJSONObj with the new manifest file
-    saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-    //Rerender the manifest cards
-    renderManifestCards();
-  }
+const updateManifestJson = async (highLvlFolderName, result) => {
+  const savedHeaders = result[0];
+  const savedData = result[1];
+  sodaJSONObj["guided-manifest-files"][highLvlFolderName] = {
+    headers: savedHeaders,
+    data: savedData,
+  };
 };
 
-const extractFilNamesFromManifestData = (manifestData) => {
+const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
+  const existingManifestData = sodaJSONObj["guided-manifest-files"][highLevelFolderName];
+  //send manifest data to main.js to then send to child window
+  ipcRenderer.invoke("spreadsheet", existingManifestData);
+
+  //upon receiving a reply of the spreadsheet, handle accordingly
+  ipcRenderer.on("spreadsheet-reply", async (event, result) => {
+    if (!result || result === "") {
+      ipcRenderer.removeAllListeners("spreadsheet-reply");
+      return;
+    } else {
+      //spreadsheet reply contained results
+      await updateManifestJson(highLevelFolderName, result);
+      ipcRenderer.removeAllListeners("spreadsheet-reply");
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      renderManifestCards();
+    }
+  });
+};
+
+const extractFileNamesFromManifestData = (manifestData) => {
   let allFileNamesinDsStructure = [];
   for (const highLevelFolder of Object.keys(manifestData)) {
+    if (highLevelFolder === "auto-generated" || highLevelFolder === "destination") {
+      continue;
+    }
     for (const row of manifestData[highLevelFolder]["data"]) {
       allFileNamesinDsStructure.push(row[0]);
     }
@@ -1834,16 +2517,17 @@ const extractFilNamesFromManifestData = (manifestData) => {
   //return sorted allFileNamesinDsStructure
   return allFileNamesinDsStructure.sort();
 };
-const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
-  const prevManifestFileNames = extractFilNamesFromManifestData(existingManifestData);
-  const newManifestFileNames = extractFilNamesFromManifestData(newManifestData);
 
-  if (JSON.stringify(prevManifestFileNames) === JSON.stringify(newManifestFileNames)) {
+const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
+  const prevManifestFileNames = extractFileNamesFromManifestData(existingManifestData);
+  const newManifestFileNames = extractFileNamesFromManifestData(newManifestData);
+
+  if (JSON.stringify(existingManifestData) === JSON.stringify(newManifestData)) {
     //All files have remained the same, no need to diff check
     return existingManifestData;
   }
 
-  const numImmutableManifestDataCols = 3;
+  const numImmutableManifestDataCols = 2;
 
   // Create a hash table for the existing manifest data
   const existingManifestDataHashTable = {};
@@ -1863,7 +2547,6 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
       existingManifestDataHashTable[fileName] = fileObj;
     }
   }
-
   let returnObj = {};
 
   for (const highLevelFolder of Object.keys(newManifestData)) {
@@ -1898,15 +2581,20 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
       }
     }
   }
-
   return returnObj;
 };
+
+document
+  .getElementById("guided-button-resume-pennsieve-dataset")
+  .addEventListener("click", async () => {
+    renderGuidedResumePennsieveDatasetSelectionDropdown();
+  });
 
 document
   .getElementById("guided-button-auto-generate-manifest-files")
   .addEventListener("click", async () => {
     //Wait for current call stack to finish
-    await new Promise((r) => setTimeout(r, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
 
     const manifestFilesCardsContainer = document.getElementById(
       "guided-container-manifest-file-cards"
@@ -1922,11 +2610,25 @@ document
     scrollToBottomOfGuidedBody();
 
     try {
+      const sodaCopy = { ...sodaJSONObj };
+      delete sodaCopy["generate-dataset"];
+      sodaCopy["metadata-files"] = {};
+      sodaCopy["dataset-structure"] = datasetStructureJSONObj;
+      const cleanJson = await client.post(
+        `/curate_datasets/clean-dataset`,
+        { soda_json_structure: sodaCopy },
+        { timeout: 0 }
+      );
+      let response = cleanJson.data.soda_json_structure;
+      // response does not format in JSON format so need to format ' with "
+      let regex = /'/gm;
+      let formattedResponse = JSON.parse(response.replace(regex, '"'));
+      const formattedDatasetStructure = formattedResponse["dataset-structure"];
       // Retrieve the manifest data to be used to generate the manifest files
       const res = await client.post(
         `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
         {
-          dataset_structure_obj: datasetStructureJSONObj,
+          dataset_structure_obj: formattedDatasetStructure,
         },
         { timeout: 0 }
       );
@@ -1960,7 +2662,7 @@ document
 
       sodaJSONObj["guided-manifest-files"] = updatedManifestData;
       // Save the sodaJSONObj with the new manifest files
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (err) {
       console.log(err);
       clientError(err);
@@ -1968,8 +2670,42 @@ document
     }
 
     //Rerender the manifest cards
-    renderManifestCards();
+    await renderManifestCards();
   });
+
+$("#guided-select-pennsieve-dataset-to-resume").selectpicker();
+const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
+  const loadingDiv = document.getElementById("guided-panel-pennsieve-dataset-import-loading");
+  const pennsieveDatasetSelectDiv = document.getElementById(
+    "guided-panel-pennsieve-dataset-select"
+  );
+  //Show the loading Div and hide the dropdown div while the datasets the user has access to are being retrieved
+  loadingDiv.classList.remove("hidden");
+  pennsieveDatasetSelectDiv.classList.add("hidden");
+
+  const datasetSelectionSelectPicker = $("#guided-select-pennsieve-dataset-to-resume");
+  datasetSelectionSelectPicker.empty();
+
+  let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
+    params: {
+      selected_account: defaultBfAccount,
+    },
+  });
+  const datasets = responseObject.data.datasets;
+  //Add the datasets to the select picker
+  datasetSelectionSelectPicker.append(
+    `<option value="" selected>Select a dataset on Pennsieve to resume</option>`
+  );
+  for (const dataset of datasets) {
+    datasetSelectionSelectPicker.append(`<option value="${dataset.id}">${dataset.name}</option>`);
+  }
+  datasetSelectionSelectPicker.selectpicker("refresh");
+
+  //Hide the loading div and show the dropdown div
+  loadingDiv.classList.add("hidden");
+  pennsieveDatasetSelectDiv.classList.remove("hidden");
+  scrollToBottomOfGuidedBody();
+};
 
 $("#guided-sparc-award-dropdown").selectpicker();
 
@@ -2006,9 +2742,9 @@ const renderGuidedAwardSelectionDropdown = () => {
 
 document
   .getElementById("guided-button-refresh-sparc-award-dropdown")
-  .addEventListener("click", () => {
+  .addEventListener("click", async () => {
     //call update the awardObj
-    loadAwardData();
+    await loadAwardData();
     //Update the dropdown
     renderGuidedAwardSelectionDropdown();
     //Notify the user that the dropdown has been updated
@@ -2045,11 +2781,6 @@ const setActiveCapsule = (targetPageID) => {
   $(".guided--capsule").removeClass("active");
   let targetCapsuleID = targetPageID.replace("-tab", "-capsule");
   let targetCapsule = $(`#${targetCapsuleID}`);
-  //check if targetCapsule parent has the class guided--capsule-container-branch
-  if (targetCapsule.parent().hasClass("guided--capsule-container-branch")) {
-    $(".guided--capsule-container-branch").hide();
-    targetCapsule.parent().css("display", "flex");
-  }
   targetCapsule.addClass("active");
 };
 setActiveProgressionTab = (targetPageID) => {
@@ -2058,38 +2789,6 @@ setActiveProgressionTab = (targetPageID) => {
   let targetProgressionTabID = targetPageParentID.replace("parent-tab", "progression-tab");
   let targetProgressionTab = $(`#${targetProgressionTabID}`);
   targetProgressionTab.addClass("selected-tab");
-};
-const handlePageBranching = (selectedCardElement) => {
-  //hide capsule containers for page branches that are not selected
-  const capsuleContainerID = selectedCardElement
-    .attr("id")
-    .replace("card", "branch-capsule-container");
-  $(".guided--capsule-container-branch").hide();
-  $(`#${capsuleContainerID}`).css("display", "flex");
-
-  //handle skip pages following card
-  if (selectedCardElement.data("branch-pages-group-class")) {
-    const branchPagesGroupClass = selectedCardElement.attr("data-branch-pages-group-class");
-    $(`.${branchPagesGroupClass}`).attr("data-skip-page", "true");
-    const pageBranchToRemoveSkip = selectedCardElement.attr("id").replace("card", "branch-page");
-    $(`.${pageBranchToRemoveSkip}`).attr("data-skip-page", "false");
-  }
-
-  selectedCardElement.siblings().removeClass("checked");
-  selectedCardElement.siblings().addClass("non-selected");
-  selectedCardElement.removeClass("non-selected");
-  selectedCardElement.addClass("checked");
-
-  const tabPanelId = selectedCardElement.attr("id").replace("card", "panel");
-  const tabPanel = $(`#${tabPanelId}`);
-  //checks to see if clicked card has a panel, if so, hides siblings and smooth scrolls to it
-  if (tabPanel.length != 0) {
-    tabPanel.siblings().hide();
-    tabPanel.css("display", "flex");
-    tabPanel[0].scrollIntoView({
-      behavior: "smooth",
-    });
-  }
 };
 
 const guidedResetProgressVariables = () => {
@@ -2107,6 +2806,7 @@ const guidedPrepareHomeScreen = async () => {
     fs.mkdirSync(guidedProgressFilePath, { recursive: true });
   }
 
+  //Reset the "Datasets in progress" and "Datasets uploaded to Pennsieve buttons"
   resetGuidedRadioButtons("guided-div-dataset-cards-radio-buttons");
 
   const datasetCardsRadioButtonsContainer = document.getElementById(
@@ -2116,9 +2816,6 @@ const guidedPrepareHomeScreen = async () => {
   const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
   //render progress resumption cards from progress file array on first page of guided mode
   if (guidedSavedProgressFiles.length != 0) {
-    // $("#guided-continue-curation-header").text(
-    //   "Or continue curating a previously started dataset below."
-    // );
     datasetCardsRadioButtonsContainer.classList.remove("hidden");
     const progressFileData = await getAllProgressFileData(guidedSavedProgressFiles);
     renderProgressCards(progressFileData);
@@ -2143,36 +2840,18 @@ const guidedPrepareHomeScreen = async () => {
 function guidedShowTreePreview(new_dataset_name, targetElement) {
   const dsJsonObjCopy = JSON.parse(JSON.stringify(datasetStructureJSONObj));
 
-  //Add the Readme file to the preview if it exists in JSON
-  if (sodaJSONObj["dataset-metadata"]["README"]) {
-    dsJsonObjCopy["files"]["README.txt"] = {
-      action: ["new"],
-      path: "",
-      type: "local",
-    };
-  }
-
-  //Add the Subjects metadata file to the preview if at least one subject has been added
-  if (subjectsTableData.length > 0) {
-    dsJsonObjCopy["files"]["subjects.xlsx"] = {
-      action: ["new"],
-      path: "",
-      type: "local",
-    };
-  }
-
-  //Add the Samples metadata file to the preview if at least one sample has been added
-  if (samplesTableData.length > 0) {
-    dsJsonObjCopy["files"]["samples.xlsx"] = {
-      action: ["new"],
-      path: "",
-      type: "local",
-    };
-  }
-
   //Add the code_description metadata file to the preview if the code_description path has been declared
   if (sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"]) {
     dsJsonObjCopy["files"]["code_description.xlsx"] = {
+      action: ["new"],
+      path: "",
+      type: "local",
+    };
+  }
+
+  //Add the dataset_description metadata file to the preview if the dataset_description page has been completed
+  if (sodaJSONObj["completed-tabs"].includes("guided-create-description-metadata-tab")) {
+    dsJsonObjCopy["files"]["dataset_description.xlsx"] = {
       action: ["new"],
       path: "",
       type: "local",
@@ -2188,18 +2867,36 @@ function guidedShowTreePreview(new_dataset_name, targetElement) {
     };
   }
 
-  //Add the submission metadata file to the preview if the submission metadata page has been completed
-  if (sodaJSONObj["completed-tabs"].includes("guided-create-submission-metadata-tab")) {
-    dsJsonObjCopy["files"]["submission.xlsx"] = {
+  //Add the Readme file to the preview if it exists in JSON
+  if (sodaJSONObj["dataset-metadata"]["README"]) {
+    dsJsonObjCopy["files"]["README.txt"] = {
       action: ["new"],
       path: "",
       type: "local",
     };
   }
 
-  //Add the dataset_description metadata file to the preview if the dataset_description page has been completed
-  if (sodaJSONObj["completed-tabs"].includes("guided-create-description-metadata-tab")) {
-    dsJsonObjCopy["files"]["dataset_description.xlsx"] = {
+  //Add the Samples metadata file to the preview if at least one sample has been added
+  if (samplesTableData.length > 0) {
+    dsJsonObjCopy["files"]["samples.xlsx"] = {
+      action: ["new"],
+      path: "",
+      type: "local",
+    };
+  }
+
+  //Add the Subjects metadata file to the preview if at least one subject has been added
+  if (subjectsTableData.length > 0) {
+    dsJsonObjCopy["files"]["subjects.xlsx"] = {
+      action: ["new"],
+      path: "",
+      type: "local",
+    };
+  }
+
+  //Add the submission metadata file to the preview if the submission metadata page has been completed
+  if (sodaJSONObj["completed-tabs"].includes("guided-create-submission-metadata-tab")) {
+    dsJsonObjCopy["files"]["submission.xlsx"] = {
       action: ["new"],
       path: "",
       type: "local",
@@ -2230,23 +2927,13 @@ function guidedShowTreePreview(new_dataset_name, targetElement) {
 const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
   //add high level folder if it does not exist
   if (!datasetStructureJSONObj["folders"][highLevelFolder]) {
-    datasetStructureJSONObj["folders"][highLevelFolder] = {
-      folders: {},
-      files: {},
-      type: "",
-      action: [],
-    };
+    datasetStructureJSONObj["folders"][highLevelFolder] = newEmptyFolderObj();
   }
   //Add pools to the datsetStructuresJSONObj if they don't exist
   const pools = Object.keys(sodaJSONObj.getPools());
   for (const pool of pools) {
     if (!datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool]) {
-      datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool] = {
-        folders: {},
-        files: {},
-        type: "",
-        action: [],
-      };
+      datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool] = newEmptyFolderObj();
     }
   }
   if (subjectsOrSamples === "subjects") {
@@ -2260,22 +2947,13 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
       ) {
         datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName]["folders"][
           subject.subjectName
-        ] = {
-          folders: {},
-          files: {},
-          type: "",
-          action: [],
-        };
+        ] = newEmptyFolderObj();
       }
     }
     for (subject of subjectsOutsidePools) {
       if (!datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.subjectName]) {
-        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.subjectName] = {
-          folders: {},
-          files: {},
-          type: "",
-          action: [],
-        };
+        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.subjectName] =
+          newEmptyFolderObj();
       }
     }
   }
@@ -2289,12 +2967,8 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
        * If not, add it.
        */
       if (!datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName]) {
-        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName] = {
-          folders: {},
-          files: {},
-          type: "",
-          action: [],
-        };
+        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName] =
+          newEmptyFolderObj();
       }
       /**
        * Check to see if the sample's subject is in the datasetStructureJSONObj.
@@ -2307,12 +2981,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
       ) {
         datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName]["folders"][
           sample.subjectName
-        ] = {
-          folders: {},
-          files: {},
-          type: "",
-          action: [],
-        };
+        ] = newEmptyFolderObj();
       }
       /**
        * Check to see if the sample's folder is in the datasetStructureJSONObj.
@@ -2325,12 +2994,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
       ) {
         datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName]["folders"][
           sample.subjectName
-        ]["folders"][sample.sampleName] = {
-          folders: {},
-          files: {},
-          type: "",
-          action: [],
-        };
+        ]["folders"][sample.sampleName] = newEmptyFolderObj();
       }
     }
     for (sample of samplesOutsidePools) {
@@ -2339,12 +3003,8 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
        * If not, add it.
        */
       if (!datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName]) {
-        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName] = {
-          folders: {},
-          files: {},
-          type: "",
-          action: [],
-        };
+        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName] =
+          newEmptyFolderObj();
       }
       /**
        * Check to see if the sample's folder is in the datasetStructureJSONObj.
@@ -2357,15 +3017,87 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
       ) {
         datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName][
           "folders"
-        ][sample.sampleName] = {
-          folders: {},
-          files: {},
-          type: "",
-          action: [],
-        };
+        ][sample.sampleName] = newEmptyFolderObj();
       }
     }
   }
+};
+
+const guidedResetSkippedPages = () => {
+  const pagesThatShouldAlwaysBeskipped = [
+    "guided-dataset-generation-tab",
+    "guided-structure-folder-tab",
+    "guided-dataset-dissemination-tab",
+  ];
+  for (const page of pagesThatShouldAlwaysBeskipped) {
+    guidedSkipPage(page);
+  }
+
+  // Reset parent pages
+  const parentPagesToResetSkip = Array.from(document.querySelectorAll(".guided--page"))
+    .map((page) => page.id)
+    .filter((pageID) => !pagesThatShouldAlwaysBeskipped.includes(pageID));
+
+  for (const pageID of parentPagesToResetSkip) {
+    guidedUnSkipPage(pageID);
+  }
+  // Reset sub pages
+  const subPagesToResetSkip = Array.from(document.querySelectorAll(".sub-page")).map(
+    (page) => page.id
+  );
+  for (const subPageID of subPagesToResetSkip) {
+    guidedUnSkipPage(subPageID);
+  }
+};
+
+const guidedSkipPage = (pageId) => {
+  const page = document.getElementById(pageId);
+  page.dataset.skipPage = "true";
+
+  //Hide the parent page or sub page capsule
+  if (page.classList.contains("guided--page")) {
+    // replace -tab with -capsule  in pageId string
+    const pagesCapsule = pageId.replace("-tab", "-capsule");
+    document.getElementById(pagesCapsule).classList.add("hidden");
+  }
+  if (page.classList.contains("sub-page")) {
+    const subPagesCapsule = `${pageId}-capsule`;
+    document.getElementById(subPagesCapsule).classList.add("hidden");
+  }
+
+  // add the page to sodaJSONObj array if it isn't there already
+  if (!sodaJSONObj["skipped-pages"].includes(pageId)) {
+    sodaJSONObj["skipped-pages"].push(pageId);
+  }
+};
+
+guidedUnSkipPage = (pageId) => {
+  const page = document.getElementById(pageId);
+  page.dataset.skipPage = "false";
+
+  //Show the parent page or sub page capsule
+  if (page.classList.contains("guided--page")) {
+    // replace -tab with -capsule  in pageId string
+    const pagesCapsule = pageId.replace("-tab", "-capsule");
+    document.getElementById(pagesCapsule).classList.remove("hidden");
+  }
+  if (page.classList.contains("sub-page")) {
+    const subPagesCapsule = `${pageId}-capsule`;
+    document.getElementById(subPagesCapsule).classList.remove("hidden");
+  }
+  // remove the page from sodaJSONObj array if it is there
+  if (sodaJSONObj["skipped-pages"].includes(pageId)) {
+    sodaJSONObj["skipped-pages"].splice(sodaJSONObj["skipped-pages"].indexOf(pageId), 1);
+  }
+};
+
+const loadGuidedSkippedPages = () => {};
+const folderIsEmpty = (folder) => {
+  return Object.keys(folder.folders).length === 0 && Object.keys(folder.files).length === 0;
+};
+
+const folderHasNoFiles = (folder) => {
+  return Object.keys(folder.files).length === 0;
 };
 
 const cleanUpEmptyGuidedStructureFolders = async (
@@ -2373,158 +3105,6 @@ const cleanUpEmptyGuidedStructureFolders = async (
   subjectsOrSamples,
   boolCleanUpAllGuidedStructureFolders
 ) => {
-  if (subjectsOrSamples === "subjects") {
-    //Remove subjects from datsetStructuresJSONObj if they don't exist
-    const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
-
-    if (boolCleanUpAllGuidedStructureFolders === true) {
-      //Delete folders for pools
-      for (const subject of subjectsInPools) {
-        const subjectFolderContents =
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
-            "folders"
-          ][subject.subjectName];
-        if (
-          Object.keys(subjectFolderContents.folders).length === 0 &&
-          Object.keys(subjectFolderContents.files).length === 0
-        ) {
-          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
-            "folders"
-          ][subject.subjectName];
-        }
-      }
-
-      //Delete all folders for subjects outside of pools
-      for (const subject of subjectsOutsidePools) {
-        const subjectFolderContents =
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.subjectName];
-        if (
-          Object.keys(subjectFolderContents.folders).length === 0 &&
-          Object.keys(subjectFolderContents.files).length === 0
-        ) {
-          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-            subject.subjectName
-          ];
-        }
-      }
-
-      //Delete all pools with empty folders
-      const pools = sodaJSONObj.getPools();
-      for (const pool of Object.keys(pools)) {
-        const poolFolderContents =
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
-        if (
-          Object.keys(poolFolderContents.folders).length === 0 &&
-          Object.keys(poolFolderContents.files).length === 0
-        ) {
-          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
-        }
-      }
-
-      //Delete the high level folder if no folders or files were added
-      const highLevelFolderContents = datasetStructureJSONObj["folders"][highLevelFolder];
-      if (
-        Object.keys(highLevelFolderContents.folders).length === 0 &&
-        Object.keys(highLevelFolderContents.files).length === 0
-      ) {
-        delete datasetStructureJSONObj["folders"][highLevelFolder];
-      }
-
-      return true;
-    } else {
-      const subjectsWithEmptyFolders = [];
-
-      //loop through subjectsInPools and add subjects with empty folders to subjectsWithEmptyFolders
-      for (const subject of subjectsInPools) {
-        const subjectFolderContents =
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
-            "folders"
-          ][subject.subjectName];
-        if (
-          Object.keys(subjectFolderContents.folders).length === 0 &&
-          Object.keys(subjectFolderContents.files).length === 0
-        ) {
-          subjectsWithEmptyFolders.push(subject);
-        }
-      }
-
-      //loop through subjectsOutsidePools and add subjects with empty folders to subjectsWithEmptyFolders
-      for (const subject of subjectsOutsidePools) {
-        const subjectFolderContents =
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.subjectName];
-        if (
-          Object.keys(subjectFolderContents.folders).length === 0 &&
-          Object.keys(subjectFolderContents.files).length === 0
-        ) {
-          subjectsWithEmptyFolders.push(subject);
-        }
-      }
-
-      if (subjectsWithEmptyFolders.length > 0) {
-        let result = await Swal.fire({
-          heightAuto: false,
-          backdrop: "rgba(0,0,0,0.4)",
-          icon: "warning",
-          title: "Missing data",
-          html: `${highLevelFolder} data was not added to the following subjects:<br /><br />
-            <ul>
-              ${subjectsWithEmptyFolders
-                .map((subject) => `<li class="text-left">${subject.subjectName}</li>`)
-                .join("")}
-            </ul>`,
-          reverseButtons: true,
-          showCancelButton: true,
-          cancelButtonColor: "#6e7881",
-          cancelButtonText: `Finish adding ${highLevelFolder} data to subjects`,
-          confirmButtonText: `Continue without adding ${highLevelFolder} data to all subjects`,
-        });
-        if (result.isConfirmed) {
-          for (subject of subjectsWithEmptyFolders) {
-            if (subject.poolName) {
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                subject.poolName
-              ]["folders"][subject.subjectName];
-            } else {
-              console.log(
-                datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.subjectName]
-              );
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                subject.subjectName
-              ];
-            }
-          }
-          //Delete all pools with empty folders
-          const pools = sodaJSONObj.getPools();
-          for (const pool of Object.keys(pools)) {
-            const poolFolderContents =
-              datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
-            if (
-              Object.keys(poolFolderContents.folders).length === 0 &&
-              Object.keys(poolFolderContents.files).length === 0
-            ) {
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
-            }
-          }
-          return true;
-        }
-      } else {
-        //Delete all pools with empty folders
-        const pools = sodaJSONObj.getPools();
-        for (const pool of Object.keys(pools)) {
-          const poolFolderContents =
-            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
-          if (
-            Object.keys(poolFolderContents.folders).length === 0 &&
-            Object.keys(poolFolderContents.files).length === 0
-          ) {
-            delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
-          }
-        }
-        return true;
-      }
-    }
-  }
-
   if (subjectsOrSamples === "samples") {
     //Get samples to check if their folders are
     const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
@@ -2549,27 +3129,22 @@ const cleanUpEmptyGuidedStructureFolders = async (
 
       //loop through samplesInPools and add samples with empty folders to samplesWithEmptyFolders
       for (const sample of samplesInPools) {
-        const sampleFolderContents =
+        const sampleFolder =
           datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName][
             "folders"
           ][sample.subjectName]["folders"][sample.sampleName];
-        if (
-          Object.keys(sampleFolderContents.folders).length === 0 &&
-          Object.keys(sampleFolderContents.files).length === 0
-        ) {
+
+        if (sampleFolder && folderIsEmpty(sampleFolder)) {
           samplesWithEmptyFolders.push(sample);
         }
       }
       //loop through samplesOutsidePools and add samples with empty folders to samplesWithEmptyFolders
       for (const sample of samplesOutsidePools) {
-        const sampleFolderContents =
+        const sampleFolder =
           datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName][
             "folders"
           ][sample.sampleName];
-        if (
-          Object.keys(sampleFolderContents.folders).length === 0 &&
-          Object.keys(sampleFolderContents.files).length === 0
-        ) {
+        if (sampleFolder && folderIsEmpty(sampleFolder)) {
           samplesWithEmptyFolders.push(sample);
         }
       }
@@ -2594,8 +3169,9 @@ const cleanUpEmptyGuidedStructureFolders = async (
           cancelButtonColor: "#6e7881",
           cancelButtonText: `Finish adding ${highLevelFolder} data to samples`,
           confirmButtonText: `Continue without adding ${highLevelFolder} data to all samples`,
+          allowOutsideClick: false,
         });
-        //If the user indicates they do not have any subjects, skip to source folder
+
         if (result.isConfirmed) {
           //delete empty samples from the datasetStructureJSONObj
           for (sample of samplesWithEmptyFolders) {
@@ -2603,7 +3179,8 @@ const cleanUpEmptyGuidedStructureFolders = async (
               delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
                 sample.poolName
               ]["folders"][sample.subjectName]["folders"][sample.sampleName];
-            } else {
+            }
+            if (!sample.poolName) {
               delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
                 sample.subjectName
               ]["folders"][sample.sampleName];
@@ -2613,6 +3190,189 @@ const cleanUpEmptyGuidedStructureFolders = async (
         }
       } else {
         return true;
+      }
+    }
+  }
+
+  if (subjectsOrSamples === "subjects") {
+    //Remove subjects from datsetStructuresJSONObj if they don't exist
+    const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+
+    if (boolCleanUpAllGuidedStructureFolders === true) {
+      //Delete folders for pools
+      for (const subject of subjectsInPools) {
+        const subjectFolder =
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
+            "folders"
+          ][subject.subjectName];
+        if (subjectFolder && folderIsEmpty(subjectFolder)) {
+          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
+            "folders"
+          ][subject.subjectName];
+        }
+      }
+
+      //Delete all folders for subjects outside of pools
+      for (const subject of subjectsOutsidePools) {
+        const subjectFolder =
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.subjectName];
+        if (subjectFolder && folderIsEmpty(subjectFolder)) {
+          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+            subject.subjectName
+          ];
+        }
+      }
+
+      //Delete all pools with empty folders
+      const pools = sodaJSONObj.getPools();
+      for (const pool of Object.keys(pools)) {
+        const poolFolder = datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+        if (poolFolder && folderIsEmpty(poolFolder)) {
+          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+        }
+      }
+
+      //Delete the high level folder if no folders or files were added
+      const hlfRoot = datasetStructureJSONObj["folders"][highLevelFolder];
+      if (hlfRoot && folderIsEmpty(hlfRoot)) {
+        delete datasetStructureJSONObj["folders"][highLevelFolder];
+      }
+
+      return true;
+    } else {
+      const subjectsWithEmptyFolders = [];
+
+      //loop through subjectsInPools and add subjects with empty folders to subjectsWithEmptyFolders
+      for (const subject of subjectsInPools) {
+        const subjectFolder =
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
+            "folders"
+          ][subject.subjectName];
+        if (subjectFolder && folderIsEmpty(subjectFolder)) {
+          subjectsWithEmptyFolders.push(subject);
+        }
+      }
+
+      //loop through subjectsOutsidePools and add subjects with empty folders to subjectsWithEmptyFolders
+      for (const subject of subjectsOutsidePools) {
+        const subjectFolder =
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.subjectName];
+        if (subjectFolder && folderIsEmpty(subjectFolder)) {
+          subjectsWithEmptyFolders.push(subject);
+        }
+      }
+
+      if (subjectsWithEmptyFolders.length > 0) {
+        let result = await Swal.fire({
+          heightAuto: false,
+          backdrop: "rgba(0,0,0,0.4)",
+          icon: "warning",
+          title: "Missing data",
+          html: `${highLevelFolder} data was not added to the following subjects:<br /><br />
+            <ul>
+              ${subjectsWithEmptyFolders
+                .map((subject) => `<li class="text-left">${subject.subjectName}</li>`)
+                .join("")}
+            </ul>`,
+          reverseButtons: true,
+          showCancelButton: true,
+          cancelButtonColor: "#6e7881",
+          cancelButtonText: `Finish adding ${highLevelFolder} data to subjects`,
+          confirmButtonText: `Continue without adding ${highLevelFolder} data to all subjects`,
+          allowOutsideClick: false,
+        });
+        if (result.isConfirmed) {
+          for (subject of subjectsWithEmptyFolders) {
+            if (subject.poolName) {
+              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                subject.poolName
+              ]["folders"][subject.subjectName];
+            } else {
+              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                subject.subjectName
+              ];
+            }
+          }
+          //Delete all pools with empty folders
+          const pools = sodaJSONObj.getPools();
+          for (const pool of Object.keys(pools)) {
+            const poolFolder = datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+            if (poolFolder && folderIsEmpty(poolFolder)) {
+              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+            }
+          }
+          return true;
+        }
+      } else {
+        //Delete all pools with empty folders
+        const pools = sodaJSONObj.getPools();
+        for (const pool of Object.keys(pools)) {
+          const poolFolder = datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+          if (poolFolder && folderIsEmpty(poolFolder)) {
+            delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+          }
+        }
+        return true;
+      }
+    }
+  }
+  if (subjectsOrSamples === "pools") {
+    //Get pools to check if their folders are
+    const pools = sodaJSONObj.getPools();
+    if (boolCleanUpAllGuidedStructureFolders === true) {
+      //Delete all pools with empty folders
+      for (const pool of Object.keys(pools)) {
+        const poolFolder = datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+        if (poolFolder && folderIsEmpty(poolFolder)) {
+          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+        }
+      }
+    } else {
+      const poolsWithNoDataFiles = [];
+
+      for (const pool of Object.keys(pools)) {
+        const poolFolder = datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+        if (poolFolder && folderIsEmpty(poolFolder)) {
+          poolsWithNoDataFiles.push(pool);
+        }
+      }
+
+      // If metadata files have been added to every pool, no action needed
+      if (poolsWithNoDataFiles.length === 0) {
+        return true;
+      }
+
+      if (poolsWithNoDataFiles.length > 0) {
+        let result = await Swal.fire({
+          heightAuto: false,
+          backdrop: "rgba(0,0,0,0.4)",
+          icon: "warning",
+          title: "Missing data",
+          html: `
+          ${highLevelFolder} data was not added to the following pools:
+          <br />
+          <br />
+          <ul>
+            ${poolsWithNoDataFiles.map((pool) => `<li class="text-left">${pool}</li>`).join("")}
+          </ul>
+        `,
+          reverseButtons: true,
+          showCancelButton: true,
+          cancelButtonColor: "#6e7881",
+          cancelButtonText: `Finish adding ${highLevelFolder} data to pools`,
+          confirmButtonText: `Continue without adding ${highLevelFolder} data to all pools`,
+          allowOutsideClick: false,
+        });
+        if (result.isConfirmed) {
+          for (const pool of poolsWithNoDataFiles) {
+            delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][pool];
+          }
+          //Empty pool folders have been deleted, return true
+          return true;
+        } else {
+          //User has chosen to finish adding data to pools, return false
+          return false;
+        }
       }
     }
   }
@@ -2652,87 +3412,6 @@ const updateGuidedRadioButtonsFromJSON = (parentPageID) => {
   }
 };
 
-const guidedLoadDescriptionDatasetInformation = () => {
-  const descriptionMetadata =
-    sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"];
-
-  guidedDatasetKeywordsTagify.removeAllTags();
-
-  if (descriptionMetadata) {
-    //check the checkbox for the study type where name is dataset-relation
-    const studyType = descriptionMetadata["type"];
-    const studyTypeRadioButton = document.querySelector(
-      `input[name='dataset-relation'][value='${studyType}']`
-    );
-    if (studyTypeRadioButton) {
-      studyTypeRadioButton.checked = true;
-    }
-    guidedDatasetKeywordsTagify.addTags(descriptionMetadata["keywords"]);
-  } else {
-    //reset the study type checkboxes
-    const studyTypeRadioButtons = document.querySelectorAll("input[name='dataset-relation']");
-    for (const studyTypeRadioButton of studyTypeRadioButtons) {
-      studyTypeRadioButton.checked = false;
-    }
-  }
-};
-
-const guidedLoadDescriptionStudyInformation = () => {
-  const studyPurposeInput = document.getElementById("guided-ds-study-purpose");
-  const studyDataCollectionInput = document.getElementById("guided-ds-study-data-collection");
-  const studyPrimaryConclusionInput = document.getElementById("guided-ds-study-primary-conclusion");
-  const studyCollectionTitleInput = document.getElementById("guided-ds-study-collection-title");
-
-  //reset dataset descript tags
-  guidedStudyOrganSystemsTagify.removeAllTags();
-  guidedStudyApproachTagify.removeAllTags();
-  guidedStudyTechniquesTagify.removeAllTags();
-
-  const studyInformationMetadata =
-    sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"];
-
-  if (studyInformationMetadata) {
-    studyPurposeInput.value = studyInformationMetadata["study purpose"];
-    studyDataCollectionInput.value = studyInformationMetadata["study data collection"];
-    studyPrimaryConclusionInput.value = studyInformationMetadata["study primary conclusion"];
-    studyCollectionTitleInput.value = studyInformationMetadata["study collection title"];
-
-    guidedStudyOrganSystemsTagify.addTags(studyInformationMetadata["study organ system"]);
-    guidedStudyApproachTagify.addTags(studyInformationMetadata["study approach"]);
-    guidedStudyTechniquesTagify.addTags(studyInformationMetadata["study technique"]);
-  } else {
-    //reset the inputs
-    studyPurposeInput.value = "";
-    studyDataCollectionInput.value = "";
-    studyPrimaryConclusionInput.value = "";
-    studyCollectionTitleInput.value = "";
-    guidedStudyOrganSystemsTagify.removeAllTags();
-    guidedStudyApproachTagify.removeAllTags();
-    guidedStudyTechniquesTagify.removeAllTags();
-  }
-};
-
-const guidedLoadDescriptionContributorInformation = () => {
-  const acknowledgementsInput = document.getElementById("guided-ds-acknowledgements");
-  const contributorInformationMetadata =
-    sodaJSONObj["dataset-metadata"]["description-metadata"]["contributor-information"];
-
-  guidedOtherFundingsourcesTagify.removeAllTags();
-
-  if (contributorInformationMetadata) {
-    acknowledgementsInput.value = contributorInformationMetadata["acknowledgment"];
-    //Add tags besides the sparc award
-    guidedOtherFundingsourcesTagify.addTags(
-      contributorInformationMetadata["funding"].filter((fudingSource) => {
-        return fudingSource !== sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-      })
-    );
-  } else {
-    acknowledgementsInput.value = "";
-    guidedOtherFundingsourcesTagify.removeAllTags();
-  }
-};
-
 const guidedResetUserTeamPermissionsDropdowns = () => {
   $("#guided_bf_list_users_and_teams").val("Select individuals or teams to grant permissions to");
   $("#guided_bf_list_users_and_teams").selectpicker("refresh");
@@ -2754,8 +3433,8 @@ function copyLink(link) {
 }
 
 const validatePageArray = async (arrayOfPagesToCheck) => {
-  const x = getNonSkippedGuidedModePages(document);
-  for (const page of x) {
+  const nonSkippedPages = getNonSkippedGuidedModePages(document);
+  for (const page of nonSkippedPages) {
     try {
       await checkIfPageIsValid(page.id);
     } catch (error) {
@@ -2774,15 +3453,69 @@ const checkIfPageIsValid = async (pageID) => {
   }
 };
 
+// Function that checks if the page needs to be updated from Pennsieve
+// This function will be return true if the user is updating a dataset from Pennsieve and
+// the page has not yet been saved
+const pageNeedsUpdateFromPennsieve = (pageID) => {
+  // Add the pages-fetched-from-pennsieve array to the sodaJSONObj if it does not exist
+  if (!sodaJSONObj["pages-fetched-from-pennsieve"]) {
+    sodaJSONObj["pages-fetched-from-pennsieve"] = [];
+  }
+
+  return (
+    sodaJSONObj?.["button-config"]?.["curation-starting-point"] === "pennsieve" &&
+    !sodaJSONObj["pages-fetched-from-pennsieve"].includes(pageID) &&
+    !sodaJSONObj["completed-tabs"].includes(pageID)
+  );
+};
+
+// Function that allows the user to retry fetching the page if any errors occur
+// while pulling from Pennsieve. Ultimately, this function just tries to re-open the page
+const guidedShowOptionalRetrySwal = async (errorMessage) => {
+  const { value: retry } = await Swal.fire({
+    icon: "error",
+    title: "Error fetching page data from Pennsieve",
+    html: `
+      <b>Error message:</b> ${errorMessage}
+      <br />
+      <br />
+      Would you like to retry fetching the page data from Pennsieve?
+    `,
+    width: 700,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    showCancelButton: true,
+    confirmButtonText: "Retry",
+    cancelButtonText: "Enter manually",
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+  });
+  if (retry) {
+    const currentPageId = CURRENT_PAGE.id;
+    await openPage(currentPageId);
+  }
+};
+
 //Main function that prepares individual pages based on the state of the sodaJSONObj
 //The general flow is to check if there is values for the keys relevant to the page
 //If the keys exist, extract the data from the sodaJSONObj and populate the page
 //If the keys do not exist, reset the page (inputs, tables etc.) to the default state
 const openPage = async (targetPageID) => {
+  //NOTE: 2 Bottom back buttons (one handles sub pages, and the other handles main pages)
+  //Back buttons should be disabled and the function setLoading should be (set as false?)
+
+  // This function is used by both the navigation bar and the side buttons,
+  // and whenever it is being called, we know that the user is trying to navigate to a new page
+  // this function is async because we sometimes need to fetch data before the page is ready to be opened
+
   let itemsContainer = document.getElementById("items-guided-container");
   if (itemsContainer.classList.contains("border-styling")) {
     itemsContainer.classList.remove("border-styling");
   }
+  guidedSetNavLoadingState(true);
+
+  //when the promise completes there is a catch for error handling
+  //upon resolving it will set navLoadingstate to false
   try {
     //reset the radio buttons for the page being navigated to
     resetGuidedRadioButtons(targetPageID);
@@ -2794,6 +3527,7 @@ const openPage = async (targetPageID) => {
 
     //Hide the high level progress steps and green pills if the user is on the before getting started page
     if (targetPageID === "guided-prepare-helpers-tab") {
+      //validate the api key and adjust icon accordingly
       document.getElementById("structure-dataset-capsule-container").classList.add("hidden");
       document.querySelector(".guided--progression-tab-container").classList.add("hidden");
     } else {
@@ -2820,39 +3554,53 @@ const openPage = async (targetPageID) => {
       $("#guided-back-button").css("visibility", "visible");
     }
 
-    if (targetPageID === "guided-prepare-helpers-tab") {
-      //Hide the new dataset and existings local dataset capsule containers because
-      //We do now know what the user wants to do yet
-      $("#guided-curate-new-dataset-branch-capsule-container").hide();
-      $("#guided-curate-existing-local-dataset-branch-capsule-container").hide();
-      const dataDeliverableButton = document.getElementById("getting-started-data-deliverable-btn");
-      const airTableGettingStartedBtn = document.getElementById(
-        "getting-started-button-import-sparc-award"
+    if (targetPageID === "guided-intro-page-tab") {
+      // Hide the pennsieve dataset import progress circle
+      const importProgressCircle = document.querySelector(
+        "#guided_loading_pennsieve_dataset-organize"
       );
-      const importedDataDeliverable =
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"];
+      importProgressCircle.classList.add("hidden");
+    }
 
-      if (importedDataDeliverable) {
-        dataDeliverableButton.children[0].style.display = "none";
-        dataDeliverableButton.children[1].style.display = "flex";
-      } else {
-        dataDeliverableButton.children[0].style.display = "flex";
-        dataDeliverableButton.children[1].style.display = "none";
+    if (targetPageID === "guided-name-subtitle-tab") {
+      const datasetNameInput = document.getElementById("guided-dataset-name-input");
+      const datasetSubtitleInput = document.getElementById("guided-dataset-subtitle-input");
+      datasetNameInput.value = "";
+      datasetSubtitleInput.value = "";
+
+      const datasetName = getGuidedDatasetName();
+      if (datasetName) {
+        datasetNameInput.value = datasetName;
       }
 
-      var airKeyContent = parseJson(airtableConfigPath);
-      if (Object.keys(airKeyContent).length != 0) {
-        //This is where we update the UI for the helper page
-        airTableGettingStartedBtn.children[1].style.display = "none";
-        airTableGettingStartedBtn.children[0].style.display = "flex";
-        // This auto selects the airtable button within
-        // the SPARC Award number page
-        // document.getElementById("guided-button-import-sparc-award").click();
+      if (pageNeedsUpdateFromPennsieve("guided-name-subtitle-tab")) {
+        try {
+          //Try to get the dataset name from Pennsieve
+          //If the request fails, the subtitle input will remain blank
+          const datasetSubtitle = await api.getDatasetSubtitle(
+            defaultBfAccount,
+            sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
+          );
+          datasetSubtitleInput.value = datasetSubtitle;
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-name-subtitle-tab");
+        } catch (error) {
+          clientError(error);
+          const emessage = error.response.data.message;
+          await guidedShowOptionalRetrySwal(emessage);
+        }
       } else {
-        //This is where we reset the UI for the helper page
-        airTableGettingStartedBtn.children[1].style.display = "flex";
-        airTableGettingStartedBtn.children[0].style.display = "none";
+        //Update subtitle from JSON
+        const datasetSubtitle = getGuidedDatasetSubtitle();
+        if (datasetSubtitle) {
+          datasetSubtitleInput.value = datasetSubtitle;
+        }
       }
+
+      //Set the characters remaining counter
+      countCharacters(
+        document.getElementById("guided-dataset-subtitle-input"),
+        document.getElementById("guided-subtitle-char-count")
+      );
     }
 
     if (targetPageID === "guided-subjects-folder-tab") {
@@ -2867,13 +3615,8 @@ const openPage = async (targetPageID) => {
     if (targetPageID === "guided-derivative-data-organization-tab") {
       openSubPageNavigation(targetPageID);
     }
-
-    if (targetPageID === "guided-protocol-folder-tab") {
-      //Append the guided-file-explorer element to the derivative folder organization container
-      $("#guided-file-explorer-elements").appendTo($("#guided-user-has-protocol-data"));
-      //Remove hidden class from file explorer element in case it was hidden
-      //when showing the intro for prim/src/deriv organization
-      document.getElementById("guided-file-explorer-elements").classList.remove("hidden");
+    if (targetPageID === "guided-create-submission-metadata-tab") {
+      openSubPageNavigation(targetPageID);
     }
 
     if (targetPageID === "guided-code-folder-tab") {
@@ -2881,12 +3624,7 @@ const openPage = async (targetPageID) => {
       const codeFolder = datasetStructureJSONObj["folders"]["code"];
       if (!codeFolder) {
         //create a docs folder
-        datasetStructureJSONObj["folders"]["code"] = {
-          folders: {},
-          files: {},
-          type: "",
-          action: [],
-        };
+        datasetStructureJSONObj["folders"]["code"] = newEmptyFolderObj();
       }
       //Append the guided-file-explorer element to the docs folder organization container
       $("#guided-file-explorer-elements").appendTo($("#guided-user-has-code-data"));
@@ -2902,12 +3640,7 @@ const openPage = async (targetPageID) => {
       const protocolFolder = datasetStructureJSONObj["folders"]["protocol"];
       if (!protocolFolder) {
         //create a docs folder
-        datasetStructureJSONObj["folders"]["protocol"] = {
-          folders: {},
-          files: {},
-          type: "",
-          action: [],
-        };
+        datasetStructureJSONObj["folders"]["protocol"] = newEmptyFolderObj();
       }
       //Append the guided-file-explorer element to the docs folder organization container
       $("#guided-file-explorer-elements").appendTo($("#guided-user-has-protocol-data"));
@@ -2923,12 +3656,7 @@ const openPage = async (targetPageID) => {
       const docsFolder = datasetStructureJSONObj["folders"]["docs"];
       if (!docsFolder) {
         //create a docs folder
-        datasetStructureJSONObj["folders"]["docs"] = {
-          folders: {},
-          files: {},
-          type: "",
-          action: [],
-        };
+        datasetStructureJSONObj["folders"]["docs"] = newEmptyFolderObj();
       }
       //Append the guided-file-explorer element to the docs folder organization container
       $("#guided-file-explorer-elements").appendTo($("#guided-user-has-docs-data"));
@@ -2945,7 +3673,19 @@ const openPage = async (targetPageID) => {
           check_callback: true,
           data: {},
         },
-        plugins: ["types"],
+        plugins: ["types", "sort"],
+        sort: function (a, b) {
+          a1 = this.get_node(a);
+          b1 = this.get_node(b);
+
+          if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
+            //if the word assets is included in the icon then we can assume it is a file
+            //folder icons are under font awesome meanwhile files come from the assets folder
+            return a1.text > b1.text ? 1 : -1;
+          } else {
+            return a1.icon < b1.icon ? 1 : -1;
+          }
+        },
         types: {
           folder: {
             icon: "fas fa-folder fa-fw",
@@ -3025,114 +3765,407 @@ const openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-airtable-award-tab") {
-      const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-
       const sparcAwardInput = document.getElementById("guided-input-sparc-award");
+      sparcAwardInput.value = "";
+
+      if (pageNeedsUpdateFromPennsieve("guided-airtable-award-tab")) {
+        try {
+          let import_metadata = await client.get(`/prepare_metadata/import_metadata_file`, {
+            params: {
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+              file_type: "submission.xlsx",
+            },
+          });
+          let res = import_metadata.data;
+          const sparcAwardRes = res?.["SPARC Award number"];
+
+          //If the SPARC Award number was found, click the manual button and fill the SPARC Award number
+          if (sparcAwardRes) {
+            document.getElementById("guided-button-enter-sparc-award-manually").click();
+
+            sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = sparcAwardRes;
+          }
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-airtable-award-tab");
+        } catch (error) {
+          clientError(error);
+          const emessage = error.response.data.message;
+          await guidedShowOptionalRetrySwal(emessage);
+        }
+      }
+      const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
       //If a sparc award exists, set the sparc award input
-      //If not, reset the input
       if (sparcAward) {
         sparcAwardInput.value = sparcAward;
-      } else {
-        sparcAwardInput.value = "";
       }
     }
 
     if (targetPageID === "guided-create-submission-metadata-tab") {
-      let submission_metadata = sodaJSONObj["dataset-metadata"]["submission-metadata"];
+      //Reset manual submission metadata UI
 
-      let dataDeliverableLottieContainer = document.getElementById(
-        "data-deliverable-lottie-container"
-      );
-      let dataDeliverableParaText = document.getElementById("guided-data-deliverable-para-text");
+      if (pageNeedsUpdateFromPennsieve("guided-create-submission-metadata-tab")) {
+        try {
+          let import_metadata = await client.get(`/prepare_metadata/import_metadata_file`, {
+            params: {
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+              file_type: "submission.xlsx",
+            },
+          });
+          $("#guided-button-enter-submission-metadata-manually").click();
+          let res = import_metadata.data;
 
-      if (Object.keys(submission_metadata).length > 0) {
-        if (submission_metadata["filepath"]) {
-          dataDeliverableLottieContainer.innerHTML = "";
-          lottie.loadAnimation({
-            container: dataDeliverableLottieContainer,
-            animationData: successCheck,
-            renderer: "svg",
-            loop: false,
-            autoplay: true,
-          });
-          dataDeliverableParaText.innerHTML = submission_metadata["filepath"];
-        } else {
-          //reset the code metadata lotties and para text
-          dataDeliverableLottieContainer.innerHTML = "";
-          lottie.loadAnimation({
-            container: dataDeliverableLottieContainer,
-            animationData: dragDrop,
-            renderer: "svg",
-            loop: true,
-            autoplay: true,
-          });
-          dataDeliverableParaText.innerHTML = "";
+          const sparcAwardRes = res["SPARC Award number"];
+          const pennsieveMileStones = res["Milestone achieved"];
+          const pennsieveCompletionDate = res["Milestone completion date"];
+
+          if (sparcAwardRes) {
+            sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = sparcAwardRes;
+          }
+
+          if (pennsieveMileStones) {
+            sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] =
+              pennsieveMileStones;
+          }
+          if (pennsieveCompletionDate != undefined) {
+            sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] =
+              pennsieveCompletionDate;
+          }
+
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-submission-metadata-tab");
+        } catch (error) {
+          clientError(error);
+          const emessage = error.response.data.message;
+          await guidedShowOptionalRetrySwal(emessage);
         }
-      } else {
-        //reset the code metadata lotties and para text
-        dataDeliverableLottieContainer.innerHTML = "";
-        lottie.loadAnimation({
-          container: dataDeliverableLottieContainer,
-          animationData: dragDrop,
-          renderer: "svg",
-          loop: true,
-          autoplay: true,
-        });
-        dataDeliverableParaText.innerHTML = "";
       }
-
-      const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+      //Reset the manual submission metadata UI
       const sparcAwardInputManual = document.getElementById("guided-submission-sparc-award-manual");
-      //If a sparc award exists, set the sparc award manual input
-      //If not, reset the input
-      if (sparcAward) {
-        sparcAwardInputManual.value = sparcAward;
-      } else {
-        //If no sparc award exists, reset the inputs
-        sparcAwardInputManual.value = "";
-      }
-
-      const milestones = sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
+      sparcAwardInputManual.value = "";
       guidedSubmissionTagsTagifyManual.removeAllTags();
-
-      //If milestones exist, add the tags to the milestone tagify element
-      if (milestones) {
-        guidedSubmissionTagsTagifyManual.addTags(milestones);
-      }
-
-      const completionDate =
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"];
       const completionDateInputManual = document.getElementById(
         "guided-submission-completion-date-manual"
       );
-      //If completion date exists, set the completion date input
-      //If not, reset the input
       completionDateInputManual.innerHTML = `
-        <option value="Select a completion date">Select a completion date</option>
-        <option value="Enter my own date">Enter my own date</option>
-        <option value="N/A">N/A</option>
-      `;
-      if (completionDate) {
-        completionDateInputManual.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
-        //select the completion date that was added
-        completionDateInputManual.value = completionDate;
+          <option value="Select a completion date">Select a completion date</option>
+          <option value="Enter my own date">Enter my own date</option>
+          <option value="">N/A</option>
+        `;
+
+      //Update the UI if their respective keys exist in the sodaJSONObj
+      const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+      if (sparcAward) {
+        sparcAwardInputManual.value = sparcAward;
+      }
+      const milestones = sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
+      if (milestones) {
+        guidedSubmissionTagsTagifyManual.addTags(milestones);
+      }
+      const completionDate =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"];
+
+      if (completionDate === "") {
+        completionDateInputManual.value = "";
+      } else {
+        if (completionDate) {
+          completionDateInputManual.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
+          //select the completion date that was added
+          completionDateInputManual.value = completionDate;
+        }
       }
 
-      //Open the page and leave the sub-page hydration to the sub-page function
-      openSubPageNavigation(targetPageID);
+      //Click the manual submission metadata button because it's likely best for the user
+      document.getElementById("guided-button-enter-submission-metadata-manually").click();
     }
     if (targetPageID === "guided-contributors-tab") {
+      if (pageNeedsUpdateFromPennsieve("guided-contributors-tab")) {
+        try {
+          let metadata_import = await client.get(`/prepare_metadata/import_metadata_file`, {
+            params: {
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+              file_type: "dataset_description.xlsx",
+            },
+          });
+          let contributorData = metadata_import.data["Contributor information"];
+          //Filter out returned rows that only contain empty srings (first name is checked)
+          const currentContributorFullNames = getContributorFullNames();
+          contributorData = contributorData = contributorData.filter((row) => {
+            return row[0] !== "" && !currentContributorFullNames.includes(row[0]);
+          });
+
+          // Loop through the contributorData array besides the first row (which is the header)
+          for (let i = 1; i < contributorData.length; i++) {
+            const contributorArray = contributorData[i];
+            // split the name into first and last name with the first name being the first element and last name being the rest of the elements
+            const contributorFullName = contributorArray[0];
+            const contributorFirstName = contributorFullName.split(" ")[1].trim();
+            const contributorLastName = contributorFullName.split(" ")[0].trim();
+            const contributorID = contributorArray[1];
+            const contributorAffiliation = contributorArray[2].split(", ");
+            const contributorRoles = contributorArray[3].split(", ");
+            try {
+              addContributor(
+                contributorFirstName,
+                contributorLastName,
+                contributorID,
+                contributorAffiliation,
+                contributorRoles
+              );
+            } catch (error) {
+              console.log(error);
+            }
+          }
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-contributors-tab");
+        } catch (error) {
+          clientError(error);
+          const emessage = error.response.data.message;
+          await guidedShowOptionalRetrySwal(emessage);
+        }
+      }
+
       renderDatasetDescriptionContributorsTable();
     }
     if (targetPageID === "guided-protocols-tab") {
+      if (pageNeedsUpdateFromPennsieve("guided-protocols-tab")) {
+        try {
+          let metadata_import = await client.get(`/prepare_metadata/import_metadata_file`, {
+            params: {
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+              file_type: "dataset_description.xlsx",
+            },
+          });
+          let relatedInformationData = metadata_import.data["Related information"];
+          const protocolsFromPennsieve = relatedInformationData.filter(
+            (relatedInformationArray) => {
+              return (
+                relatedInformationArray[1] === "IsProtocolFor" && relatedInformationArray[2] !== ""
+              );
+            }
+          );
+
+          for (const protocol of protocolsFromPennsieve) {
+            const protocolLink = protocol[2];
+            const protocolDescription = protocol[0];
+            const protocolType = protocol[3];
+            try {
+              addGuidedProtocol(protocolLink, protocolDescription, protocolType);
+            } catch (error) {
+              console.log(error);
+            }
+          }
+          // Click the yes protocol button if protocols were imported
+          if (protocolsFromPennsieve.length > 0) {
+            document.getElementById("guided-button-user-has-protocols").click();
+          }
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-protocols-tab");
+        } catch (error) {
+          clientError(error);
+          const emessage = error.response.data.message;
+          await guidedShowOptionalRetrySwal(emessage);
+        }
+      }
       renderProtocolsTable();
-      //Click the manual button because we don't currently allow protocols.io import
-      $("#guided-section-enter-protocols-manually").click();
     }
     if (targetPageID === "guided-create-description-metadata-tab") {
+      if (pageNeedsUpdateFromPennsieve("guided-create-description-metadata-tab")) {
+        try {
+          let metadata_import = await client.get(`/prepare_metadata/import_metadata_file`, {
+            params: {
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+              file_type: "dataset_description.xlsx",
+            },
+          });
+          // guidedLoadDescriptionDatasetInformation
+          let basicInformation = metadata_import.data["Basic information"];
+          if (basicInformation[0][0] === "Type" && basicInformation[3][0] === "Keywords") {
+            const studyType = basicInformation[0][1];
+            const studyKeywords = basicInformation[3].slice(1).filter((keyword) => keyword !== "");
+            sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"] = {
+              type: studyType,
+              keywords: studyKeywords,
+            };
+          }
+
+          // guidedLoadDescriptionStudyInformation
+          let studyInformation = metadata_import.data["Study information"];
+          if (
+            studyInformation[0][0] === "Study purpose" &&
+            studyInformation[1][0] === "Study data collection" &&
+            studyInformation[2][0] === "Study primary conclusion" &&
+            studyInformation[3][0] === "Study organ system" &&
+            studyInformation[4][0] === "Study approach" &&
+            studyInformation[5][0] === "Study technique" &&
+            studyInformation[6][0] === "Study collection title"
+          ) {
+            const studyPurpose = studyInformation[0][1];
+            const studyDataCollection = studyInformation[1][1];
+            const studyPrimaryConclusion = studyInformation[2][1];
+            const studyOrganSystem = studyInformation[3][1];
+            const studyApproach = studyInformation[4][1];
+            const studyTechnique = studyInformation[5][1];
+            const studyCollectionTitle = studyInformation[6][1];
+            sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"] = {
+              "study purpose": studyPurpose,
+              "study data collection": studyDataCollection,
+              "study primary conclusion": studyPrimaryConclusion,
+              "study organ system": studyOrganSystem,
+              "study approach": studyApproach,
+              "study technique": studyTechnique,
+              "study collection title": studyCollectionTitle,
+            };
+          }
+
+          // guidedLoadDescriptionStudyDesign
+          let awardInformation = metadata_import.data["Award information"];
+          if (
+            awardInformation[0][0] === "Funding" &&
+            awardInformation[1][0] === "Acknowledgments"
+          ) {
+            const studyFunding = awardInformation[1].slice(1).filter((funding) => funding !== "");
+            const studyAcknowledgements = awardInformation[1]
+              .slice(1)
+              .filter((acknowledgement) => acknowledgement !== "");
+
+            sodaJSONObj["dataset-metadata"]["description-metadata"]["contributor-information"] = {
+              funding: studyFunding,
+              acknowledgment: studyAcknowledgements,
+            };
+          }
+          // Add  the related Links
+          let relatedInformationData = metadata_import.data["Related information"];
+
+          // Filter out invalid Links and protocol links
+          const additionalLinksFromPennsieve = relatedInformationData
+            .slice(1)
+            .filter((relatedInformationArray) => {
+              return (
+                relatedInformationArray[0] !== "" &&
+                relatedInformationArray[1] != "IsProtocolFor" &&
+                relatedInformationArray[2] !== "" &&
+                relatedInformationArray[3] !== ""
+              );
+            });
+          const currentAddtionalLinks = getGuidedAdditionalLinks();
+          for (const link of additionalLinksFromPennsieve) {
+            const additionalLinkDescription = link[0];
+            const additionalLinkRelation = link[1];
+            const additionalLinkLink = link[2];
+            const additionalLinkType = link[3];
+            // If the ink has already been added, delete it and add the updated data
+            // from Pennsieve
+            if (currentAddtionalLinks.includes(additionalLinkLink)) {
+              deleteAdditionalLink(additionalLinkLink);
+            }
+            sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"].push({
+              link: additionalLinkLink,
+              relation: additionalLinkRelation,
+              description: additionalLinkDescription,
+              type: additionalLinkType,
+              isFair: true,
+            });
+          }
+          sodaJSONObj["pages-fetched-from-pennsieve"].push(
+            "guided-create-description-metadata-tab"
+          );
+        } catch (error) {
+          clientError(error);
+          const emessage = error.response.data.message;
+          await guidedShowOptionalRetrySwal(emessage);
+        }
+      }
+      const guidedLoadDescriptionDatasetInformation = () => {
+        const descriptionMetadata =
+          sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"];
+
+        guidedDatasetKeywordsTagify.removeAllTags();
+
+        if (descriptionMetadata) {
+          //check the checkbox for the study type where name is dataset-relation
+          const studyType = descriptionMetadata["type"];
+          const studyTypeRadioButton = document.querySelector(
+            `input[name='dataset-relation'][value='${studyType}']`
+          );
+          if (studyTypeRadioButton) {
+            studyTypeRadioButton.checked = true;
+          }
+          guidedDatasetKeywordsTagify.addTags(descriptionMetadata["keywords"]);
+        } else {
+          //reset the study type checkboxes
+          const studyTypeRadioButtons = document.querySelectorAll("input[name='dataset-relation']");
+          for (const studyTypeRadioButton of studyTypeRadioButtons) {
+            studyTypeRadioButton.checked = false;
+          }
+        }
+      };
       guidedLoadDescriptionDatasetInformation();
+
+      const guidedLoadDescriptionStudyInformation = () => {
+        const studyPurposeInput = document.getElementById("guided-ds-study-purpose");
+        const studyDataCollectionInput = document.getElementById("guided-ds-study-data-collection");
+        const studyPrimaryConclusionInput = document.getElementById(
+          "guided-ds-study-primary-conclusion"
+        );
+        const studyCollectionTitleInput = document.getElementById(
+          "guided-ds-study-collection-title"
+        );
+
+        //reset dataset descript tags
+        guidedStudyOrganSystemsTagify.removeAllTags();
+        guidedStudyApproachTagify.removeAllTags();
+        guidedStudyTechniquesTagify.removeAllTags();
+
+        const studyInformationMetadata =
+          sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"];
+
+        if (studyInformationMetadata) {
+          studyPurposeInput.value = studyInformationMetadata["study purpose"];
+          studyDataCollectionInput.value = studyInformationMetadata["study data collection"];
+          studyPrimaryConclusionInput.value = studyInformationMetadata["study primary conclusion"];
+          studyCollectionTitleInput.value = studyInformationMetadata["study collection title"];
+
+          guidedStudyOrganSystemsTagify.addTags(studyInformationMetadata["study organ system"]);
+          guidedStudyApproachTagify.addTags(studyInformationMetadata["study approach"]);
+          guidedStudyTechniquesTagify.addTags(studyInformationMetadata["study technique"]);
+        } else {
+          //reset the inputs
+          studyPurposeInput.value = "";
+          studyDataCollectionInput.value = "";
+          studyPrimaryConclusionInput.value = "";
+          studyCollectionTitleInput.value = "";
+          guidedStudyOrganSystemsTagify.removeAllTags();
+          guidedStudyApproachTagify.removeAllTags();
+          guidedStudyTechniquesTagify.removeAllTags();
+        }
+      };
       guidedLoadDescriptionStudyInformation();
+
+      const guidedLoadDescriptionContributorInformation = () => {
+        const acknowledgementsInput = document.getElementById("guided-ds-acknowledgements");
+        const contributorInformationMetadata =
+          sodaJSONObj["dataset-metadata"]["description-metadata"]["contributor-information"];
+
+        guidedOtherFundingsourcesTagify.removeAllTags();
+
+        if (contributorInformationMetadata) {
+          acknowledgementsInput.value = contributorInformationMetadata["acknowledgment"];
+          //Add tags besides the sparc award
+          guidedOtherFundingsourcesTagify.addTags(
+            contributorInformationMetadata["funding"].filter((fudingSource) => {
+              return (
+                fudingSource !== sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"]
+              );
+            })
+          );
+        } else {
+          acknowledgementsInput.value = "";
+          guidedOtherFundingsourcesTagify.removeAllTags();
+        }
+      };
       guidedLoadDescriptionContributorInformation();
+
       renderAdditionalLinksTable();
       document.getElementById("SPARC-award-other-funding-label").innerHTML =
         sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
@@ -3183,8 +4216,97 @@ const openPage = async (targetPageID) => {
       }
     }
     if (targetPageID === "guided-banner-image-tab") {
+      if (pageNeedsUpdateFromPennsieve("guided-banner-image-tab")) {
+        // If the fetch fails, (they don't have a banner image yet)
+        const datasetName = sodaJSONObj["digital-metadata"]["name"];
+        const datasetID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+
+        try {
+          // pass in the id in case the name of the dataset has been
+          // changed from the original Pennsieve dataset name
+          let res = await api.getDatasetBannerImageURL(defaultBfAccount, datasetID);
+          if (res != "No banner image") {
+            //Banner is returned as an s3 bucket url but image needs to be converted as
+            //base64 to save and write to users local system
+
+            let img_base64 = await getBase64(res); // encode image to base64
+            let guided_img_url = res;
+            let imageType = "";
+            let fullBase64Image = "";
+            let position = guided_img_url.search("X-Amz-Security-Token");
+
+            if (position != -1) {
+              // The image url will be before the security token
+              let new_img_src = guided_img_url.substring(0, position - 1);
+              let new_position = new_img_src.lastIndexOf("."); //
+
+              if (new_position != -1) {
+                imageExtension = new_img_src.substring(new_position + 1);
+
+                if (imageExtension.toLowerCase() == "png") {
+                  fullBase64Image = "data:image/png;base64," + img_base64;
+                  imageType = "png";
+                } else if (
+                  imageExtension.toLowerCase() == "jpeg" ||
+                  imageExtension.toLowerCase() == "jpg"
+                ) {
+                  fullBase64Image = "data:image/jpg;base64," + img_base64;
+                  imageType = "jpg";
+                } else {
+                  log.error(`An error happened: ${guided_img_url}`);
+                  Swal.fire({
+                    icon: "error",
+                    text: "An error occurred when importing the image. Please try again later.",
+                    showConfirmButton: "OK",
+                    backdrop: "rgba(0,0,0, 0.4)",
+                    heightAuto: false,
+                  });
+
+                  logGeneralOperationsForAnalytics(
+                    "Error",
+                    ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
+                    AnalyticsGranularity.ALL_LEVELS,
+                    ["Importing Banner Image"]
+                  );
+                }
+              }
+            }
+
+            let imageFolder = path.join(homeDirectory, "SODA", "guided-banner-images");
+            let buf = new Buffer(img_base64, "base64");
+
+            if (!fs.existsSync(imageFolder)) {
+              //create SODA/guided-banner-images if it doesn't exist
+              fs.mkdirSync(imageFolder, { recursive: true });
+            }
+            let imagePath = path.join(imageFolder, `${datasetName}.` + imageType);
+            //store file at imagePath destination
+            fs.writeFileSync(imagePath, buf);
+            //save imagePath to sodaJson
+            sodaJSONObj["digital-metadata"]["banner-image-path"] = imagePath;
+
+            //add image to modal and display image on main banner import page
+            $("#guided-image-banner").attr("src", fullBase64Image);
+            $("#guided-para-path-image").html(imagePath);
+            document.getElementById("guided-div-img-container-holder").style.display = "none";
+            document.getElementById("guided-div-img-container").style.display = "block";
+
+            //set new cropper for imported image
+            myCropper.destroy();
+            myCropper = new Cropper(guidedBfViewImportedImage, guidedCropOptions);
+
+            $("#guided-save-banner-image").css("visibility", "visible");
+          }
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-banner-image-tab");
+        } catch (error) {
+          clientError(error);
+          const emessage = error.response.data.message;
+          await guidedShowOptionalRetrySwal(emessage);
+        }
+      }
       if (sodaJSONObj["digital-metadata"]["banner-image-path"]) {
-        guidedShowBannerImagePreview(sodaJSONObj["digital-metadata"]["banner-image-path"]);
+        //added extra param to function to prevent modification of URL
+        guidedShowBannerImagePreview(sodaJSONObj["digital-metadata"]["banner-image-path"], true);
       } else {
         //reset the banner image page
         $("#guided-button-add-banner-image").html("Add banner image");
@@ -3192,24 +4314,165 @@ const openPage = async (targetPageID) => {
       }
     }
     if (targetPageID === "guided-designate-permissions-tab") {
-      //Get the user information of the user that is currently curating
-      const user = await api.getUserInformation();
+      if (pageNeedsUpdateFromPennsieve("guided-designate-permissions-tab")) {
+        try {
+          const sparcUsersReq = await client.get(
+            `manage_datasets/bf_get_users?selected_account=${defaultBfAccount}`
+          );
+          const sparcTeamsReq = await client.get(
+            `manage_datasets/bf_get_teams?selected_account=${defaultBfAccount}`
+          );
 
-      const loggedInUserString = `${user["firstName"]} ${user["lastName"]} (${user["email"]})`;
-      const loggedInUserUUID = user["id"];
-      const loggedInUserName = `${user["firstName"]} ${user["lastName"]}`;
+          //Returns an array of strings with the user's name and role
+          const currentDatasetPermissions = await api.getDatasetPermissions(
+            defaultBfAccount,
+            sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
+          );
 
-      const loggedInUserPiObj = {
-        userString: loggedInUserString,
-        UUID: loggedInUserUUID,
-        name: loggedInUserName,
-      };
-      setGuidedDatasetPiOwner(loggedInUserPiObj);
+          const sparcUsers = sparcUsersReq.data.users;
+          const sparcTeams = sparcTeamsReq.data.teams;
+
+          let sparcUsersDivided = [];
+
+          //sparc users results needs to be formatted
+          sparcUsers.forEach((element) => {
+            //first two elements of this array will just be an email with no name
+            sparcUsersDivided.push(element.split(" !|**|!"));
+          });
+
+          const permissions = await api.getDatasetPermissions(
+            defaultBfAccount,
+            sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
+          );
+
+          //Filter out the integration user
+          const filteredPermissions = permissions.filter((permission) => {
+            return !permission.includes("Integration User");
+          });
+
+          let partialUserDetails = [];
+          let finalTeamPermissions = [];
+          let piOwner = [];
+          //const filteredPermissions = ['User: Jacob Clark , role: owner', 'User: Christopher Marroquin , role: viewer', 'User: Dorian Portillo , role: editor']
+          //Store fetched users and team members and store in soda json
+          // going to need the UUID of user permissions
+          //Fetch or do we already have the info?
+
+          //so check for PI owner as well
+          for (const userPermission of filteredPermissions) {
+            // Will include teams and users
+            let userRoleSplit = userPermission.split(",");
+            // Will look like:
+            // ['User: John Doe ', ' role: owner']
+            // need to split above
+            let nameSplit = userRoleSplit[0].split(":"); // will appear as ['Team', ' DRC Team']
+            let roleSplit = userRoleSplit[1].split(":"); // will appear as [' role', ' Viewer']
+            let userName = nameSplit[1].trim();
+            let userPermiss = roleSplit[1].trim();
+            let teamOrUser = nameSplit[0].trim().toLowerCase();
+
+            if (teamOrUser === "team") {
+              finalTeamPermissions.push({
+                UUID: userName,
+                permission: userPermiss,
+                teamString: userName,
+                permissionSource: "Pennsieve",
+                deleteFromPennsieve: false,
+              });
+            } else {
+              partialUserDetails.push({
+                permission: userPermiss,
+                userName: userName,
+              });
+            }
+          }
+          // After loop use the array of objects to find the UUID and email
+          let finalUserPermissions = [];
+
+          partialUserDetails.map((object) => {
+            sparcUsersDivided.forEach((element) => {
+              if (element[0].includes(object["userName"])) {
+                // name was found now get UUID
+                let userEmailSplit = element[0].split(" (");
+                if (object["permission"] === "owner") {
+                  //set for pi owner
+                  piOwner.push({
+                    UUID: object.permission,
+                    name: userEmailSplit[0],
+                    userString: element[0],
+                    permissionSource: "Pennsieve",
+                    deleteFromPennsieve: false,
+                  });
+                  //update PI owner key
+                } else {
+                  finalUserPermissions.push({
+                    UUID: element[1],
+                    permission: object.permission,
+                    userName: userEmailSplit[0],
+                    userString: element[0],
+                    permissonSource: "Pennsieve",
+                    deleteFromPennsieve: false,
+                  });
+                }
+              }
+            });
+          });
+
+          sodaJSONObj["digital-metadata"]["team-permissions"] = finalTeamPermissions;
+          sodaJSONObj["digital-metadata"]["user-permissions"] = finalUserPermissions;
+          sodaJSONObj["digital-metadata"]["pi-owner"] = piOwner[0];
+
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-designate-permissions-tab");
+        } catch (error) {
+          clientError(error);
+          const emessage = error.response.data.message;
+          await guidedShowOptionalRetrySwal(emessage);
+        }
+      }
+
+      //If the PI owner is empty, set the PI owner to the user that is currently curating
+      if (Object.keys(sodaJSONObj["digital-metadata"]["pi-owner"]).length === 0) {
+        //Get the user information of the user that is currently curating
+        const user = await api.getUserInformation();
+
+        const loggedInUserString = `${user["firstName"]} ${user["lastName"]} (${user["email"]})`;
+        const loggedInUserUUID = user["id"];
+        const loggedInUserName = `${user["firstName"]} ${user["lastName"]}`;
+        const loggedInUserPiObj = {
+          userString: loggedInUserString,
+          UUID: loggedInUserUUID,
+          name: loggedInUserName,
+        };
+        setGuidedDatasetPiOwner(loggedInUserPiObj);
+      }
 
       renderPermissionsTable();
       guidedResetUserTeamPermissionsDropdowns();
     }
     if (targetPageID === "guided-add-description-tab") {
+      if (pageNeedsUpdateFromPennsieve("guided-add-description-tab")) {
+        const description = await api.getDatasetReadme(
+          defaultBfAccount,
+          sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
+        );
+        const parsedDescription = createParsedReadme(description);
+        sodaJSONObj["digital-metadata"]["description"]["study-purpose"] = parsedDescription[
+          "study purpose"
+        ]
+          ? parsedDescription["study purpose"].replace(/\r?\n|\r/g, "").trim()
+          : "";
+        sodaJSONObj["digital-metadata"]["description"]["data-collection"] = parsedDescription[
+          "data collection"
+        ]
+          ? parsedDescription["data collection"].replace(/\r?\n|\r/g, "").trim()
+          : "";
+        sodaJSONObj["digital-metadata"]["description"]["primary-conclusion"] = parsedDescription[
+          "primary conclusion"
+        ]
+          ? parsedDescription["primary conclusion"].replace(/\r?\n|\r/g, "").trim()
+          : "";
+      }
+
       const studyPurposeInput = document.getElementById("guided-pennsieve-study-purpose");
       const studyDataCollectionInput = document.getElementById(
         "guided-pennsieve-study-data-collection"
@@ -3241,6 +4504,21 @@ const openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-add-tags-tab") {
+      if (pageNeedsUpdateFromPennsieve("guided-add-tags-tab")) {
+        try {
+          const currentDatasetID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+          const tagsReq = await client.get(`/manage_datasets/datasets/${currentDatasetID}/tags`, {
+            params: { selected_account: defaultBfAccount },
+          });
+          const tags = tagsReq.data.tags;
+          sodaJSONObj["digital-metadata"]["dataset-tags"] = tags;
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-add-tags-tab");
+        } catch (error) {
+          clientError(error);
+          const emessage = error.response.data.message;
+          await guidedShowOptionalRetrySwal(emessage);
+        }
+      }
       const descriptionMetadata =
         sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"];
       const datasetTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
@@ -3259,6 +4537,25 @@ const openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-assign-license-tab") {
+      if (pageNeedsUpdateFromPennsieve("guided-assign-license-tab")) {
+        try {
+          const licenseReq = await client.get(`/manage_datasets/bf_license`, {
+            params: {
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+            },
+          });
+          const license = licenseReq.data.license;
+          if (license === "Creative Commons Attribution") {
+            sodaJSONObj["digital-metadata"]["license"] = "Creative Commons Attribution";
+          }
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-assign-license-tab");
+        } catch (error) {
+          clientError(error);
+          const emessage = error.response.data.message;
+          await guidedShowOptionalRetrySwal(emessage);
+        }
+      }
       const licenseCheckbox = document.getElementById("guided-license-checkbox");
       if (sodaJSONObj["digital-metadata"]["license"]) {
         licenseCheckbox.checked = true;
@@ -3267,6 +4564,7 @@ const openPage = async (targetPageID) => {
       }
     }
 
+    /*
     if (targetPageID === "guided-dataset-generate-location-tab") {
       const currentAccountText = document.getElementById("guided-bf-account");
       const currentAccountDetailsText = document.getElementById("guided-account-details");
@@ -3291,7 +4589,9 @@ const openPage = async (targetPageID) => {
         currentAccountDetailsText.innerHTML = "None";
       }
     }
+    */
 
+    /*
     if (targetPageID === "guided-dataset-generate-destination-tab") {
       const datasetName = sodaJSONObj["digital-metadata"]["name"];
 
@@ -3301,6 +4601,7 @@ const openPage = async (targetPageID) => {
 
       confirmDatasetGenerationNameinput.value = datasetName;
     }
+    */
 
     if (targetPageID === "guided-dataset-generation-confirmation-tab") {
       //Set the inner text of the generate/retry pennsieve dataset button depending on
@@ -3311,7 +4612,10 @@ const openPage = async (targetPageID) => {
       const reviewGenerateButtionTextElement = document.getElementById(
         "review-generate-button-text"
       );
-      if (sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]) {
+      if (
+        sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] &&
+        !sodaJSONObj["starting-point"]["type"] === "bf"
+      ) {
         const generateButtonText = "Resume Pennsieve upload in progress";
         generateOrRetryDatasetUploadButton.innerHTML = generateButtonText;
         reviewGenerateButtionTextElement.innerHTML = generateButtonText;
@@ -3429,7 +4733,19 @@ const openPage = async (targetPageID) => {
           check_callback: true,
           data: {},
         },
-        plugins: ["types"],
+        plugins: ["types", "sort"],
+        sort: function (a, b) {
+          a1 = this.get_node(a);
+          b1 = this.get_node(b);
+
+          if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
+            //if the word assets is included in the icon then we can assume it is a file
+            //folder icons are under font awesome meanwhile files come from the assets folder
+            return a1.text > b1.text ? 1 : -1;
+          } else {
+            return a1.icon < b1.icon ? 1 : -1;
+          }
+        },
         types: {
           folder: {
             icon: "fas fa-folder fa-fw",
@@ -3513,20 +4829,20 @@ const openPage = async (targetPageID) => {
         : subjectsProtocolContainer.classList.add("hidden");
 
       document.getElementById("guided-bootbox-subject-protocol-title").innerHTML = `
-        <option value="">No protocols associated with this sample</option>
-        ${protocols
-          .map((protocol) => {
-            return `
-              <option
-                value="${protocol.description}"
-                data-protocol-link="${protocol.link}"
-              >
-                ${protocol.description}
-              </option>
-            `;
-          })
-          .join("\n")}))
-      `;
+          <option value="">No protocols associated with this sample</option>
+          ${protocols
+            .map((protocol) => {
+              return `
+                <option
+                  value="${protocol.description}"
+                  data-protocol-link="${protocol.link}"
+                >
+                  ${protocol.description}
+                </option>
+              `;
+            })
+            .join("\n")}))
+        `;
 
       document.getElementById("guided-bootbox-subject-protocol-location").innerHTML = `
         <option value="">No protocols associated with this sample</option>
@@ -3543,7 +4859,7 @@ const openPage = async (targetPageID) => {
           })
           .join("\n")}))
       `;
-      renderSubjectsMetadataAsideItems();
+      await renderSubjectsMetadataAsideItems();
       const subjectsMetadataBlackArrowLottieContainer = document.getElementById(
         "subjects-metadata-black-arrow-lottie-container"
       );
@@ -3555,7 +4871,7 @@ const openPage = async (targetPageID) => {
         loop: true,
         autoplay: true,
       });
-      switchElementVisibility("guided-form-add-a-subject", "guided-form-add-a-subject-intro");
+      hideEleShowEle("guided-form-add-a-subject", "guided-form-add-a-subject-intro");
     }
 
     if (targetPageID === "guided-create-samples-metadata-tab") {
@@ -3563,7 +4879,7 @@ const openPage = async (targetPageID) => {
       document.getElementById("guided-accordian-custom-fields-samples").innerHTML = "";
       document.getElementById("guided-bootbox-subject-id-samples").value = "";
       document.getElementById("guided-bootbox-sample-id").value = "";
-      renderSamplesMetadataAsideItems();
+      await renderSamplesMetadataAsideItems();
       const samplesMetadataBlackArrowLottieContainer = document.getElementById(
         "samples-metadata-black-arrow-lottie-container"
       );
@@ -3575,7 +4891,7 @@ const openPage = async (targetPageID) => {
         loop: true,
         autoplay: true,
       });
-      switchElementVisibility("guided-form-add-a-sample", "guided-form-add-a-sample-intro");
+      hideEleShowEle("guided-form-add-a-sample", "guided-form-add-a-sample-intro");
 
       // Hide the samples protocol section if no protocols have been attached to the dataset
       const samplesProtocolContainer = document.getElementById("guided-container-samples-protocol");
@@ -3616,6 +4932,25 @@ const openPage = async (targetPageID) => {
       }
     }
     if (targetPageID === "guided-create-readme-metadata-tab") {
+      if (pageNeedsUpdateFromPennsieve("guided-create-readme-metadata-tab")) {
+        try {
+          let readme_import = await client.get(`/prepare_metadata/readme_changes_file`, {
+            params: {
+              file_type: "README",
+
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+            },
+          });
+          let readme_text = readme_import.data.text;
+          sodaJSONObj["dataset-metadata"]["README"] = readme_text;
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-readme-metadata-tab");
+        } catch (error) {
+          clientError(error);
+          const emessage = error.response.data.message;
+          await guidedShowOptionalRetrySwal(emessage);
+        }
+      }
       const readMeTextArea = document.getElementById("guided-textarea-create-readme");
 
       const readMe = sodaJSONObj["dataset-metadata"]["README"];
@@ -3687,9 +5022,9 @@ const openPage = async (targetPageID) => {
       guidedSetCurationTeamUI(sharedWithSPARCCurationTeam);
     }
 
-    let currentParentTab = CURRENT_PAGE.parent();
-    let targetPage = $(`#${targetPageID}`);
-    let targetPageParentTab = targetPage.parent();
+    let currentParentTab = CURRENT_PAGE.closest(".guided--parent-tab");
+    let targetPage = document.getElementById(targetPageID);
+    let targetPageParentTab = targetPage.closest(".guided--parent-tab");
 
     //Set all capsules to grey and set capsule of page being traversed to green
     setActiveCapsule(targetPageID);
@@ -3697,31 +5032,67 @@ const openPage = async (targetPageID) => {
     renderSideBar(targetPageID);
 
     const guidedBody = document.getElementById("guided-body");
-
     //Check to see if target element has the same parent as current sub step
-    if (currentParentTab.attr("id") === targetPageParentTab.attr("id")) {
-      CURRENT_PAGE.hide();
+    if (currentParentTab.id === targetPageParentTab.id) {
+      CURRENT_PAGE.classList.add("hidden");
       CURRENT_PAGE = targetPage;
-      CURRENT_PAGE.css("display", "flex");
+      CURRENT_PAGE.classList.remove("hidden");
       //smooth scroll to top of guidedBody
       guidedBody.scrollTo({
         top: 0,
         behavior: "smooth",
       });
     } else {
-      CURRENT_PAGE.hide();
-      currentParentTab.hide();
-      targetPageParentTab.show();
+      CURRENT_PAGE.classList.add("hidden");
+      currentParentTab.classList.add("hidden");
+      targetPageParentTab.classList.remove("hidden");
       CURRENT_PAGE = targetPage;
-      CURRENT_PAGE.css("display", "flex");
+      CURRENT_PAGE.classList.remove("hidden");
       //smooth scroll to top of guidedBody
       guidedBody.scrollTo({
         top: 0,
       });
     }
+    // Set the last opened page and save it
+    sodaJSONObj["page-before-exit"] = targetPageID;
+    await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
   } catch (error) {
+    guidedSetNavLoadingState(false);
     console.log(error);
+    throw error;
   }
+
+  guidedSetNavLoadingState(false);
+};
+
+const renderSubjectsTable = () => {
+  const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+  //Combine sample data from subjects in and out of pools
+  const subjects = [...subjectsInPools, ...subjectsOutsidePools];
+  const subjectElementRows = subjects
+    .map((subject) => {
+      return generateSubjectRowElement(subject.subjectName);
+    })
+    .join("\n");
+  document.getElementById("subject-specification-table-body").innerHTML = subjectElementRows;
+};
+
+const renderSamplesTable = () => {
+  const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+  //Combine sample data from subjects in and out of pools
+  let subjects = [...subjectsInPools, ...subjectsOutsidePools];
+
+  //Create the HTML for the subjects
+  const subjectSampleAdditionTables = subjects
+    .map((subject) => {
+      return renderSubjectSampleAdditionTable(subject);
+    })
+    .join("\n");
+
+  const subjectSampleAdditionTableContainer = document.getElementById(
+    "guided-div-add-samples-tables"
+  );
+  subjectSampleAdditionTableContainer.innerHTML = subjectSampleAdditionTables;
 };
 
 const setActiveSubPage = (pageIdToActivate) => {
@@ -3729,390 +5100,401 @@ const setActiveSubPage = (pageIdToActivate) => {
 
   //create a switch statement for pageIdToActivate to load data from sodaJSONObj
   //depending on page being opened
-  switch (pageIdToActivate) {
-    case "guided-specify-subjects-page": {
-      const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
-      //Combine sample data from subjects in and out of pools
-      let subjects = [...subjectsInPools, ...subjectsOutsidePools];
-      const subjectElementRows = subjects
-        .map((subject) => {
-          return generateSubjectRowElement(subject.subjectName);
-        })
-        .join("\n");
-      document.getElementById("subject-specification-table-body").innerHTML = subjectElementRows;
-      //remove the add subject help text
-      document.getElementById("guided-add-subject-instructions").classList.add("hidden");
-      break;
-    }
+  if (pageIdToActivate === "guided-specify-subjects-page") {
+    renderSubjectsTable();
+    //remove the add subject help text
+    document.getElementById("guided-add-subject-instructions").classList.add("hidden");
+  }
+  if (pageIdToActivate === "guided-organize-subjects-into-pools-page") {
+    const pools = sodaJSONObj.getPools();
 
-    case "guided-organize-subjects-into-pools-page": {
-      const pools = sodaJSONObj.getPools();
+    const poolElementRows = Object.keys(pools)
+      .map((pool) => {
+        return generatePoolRowElement(pool);
+      })
+      .join("\n");
+    document.getElementById("pools-specification-table-body").innerHTML = poolElementRows;
 
-      const poolElementRows = Object.keys(pools)
-        .map((pool) => {
-          return generatePoolRowElement(pool);
-        })
-        .join("\n");
-      document.getElementById("pools-specification-table-body").innerHTML = poolElementRows;
-
-      for (const poolName of Object.keys(pools)) {
-        const newPoolSubjectsSelectElement = document.querySelector(
-          `select[name="${poolName}-subjects-selection-dropdown"]`
-        );
-        //create a select2 dropdown for the pool subjects
-        $(newPoolSubjectsSelectElement).select2({
-          placeholder: "Select subjects",
-          tags: true,
-          width: "100%",
-          closeOnSelect: false,
-          createTag: function () {
-            // Disable tagging
-            return null;
-          },
-        });
-        //update the newPoolSubjectsElement with the subjects in the pool
-        updatePoolDropdown($(newPoolSubjectsSelectElement), poolName);
-        $(newPoolSubjectsSelectElement).on("select2:open", (e) => {
-          updatePoolDropdown($(e.currentTarget), poolName);
-        });
-        $(newPoolSubjectsSelectElement).on("select2:unselect", (e) => {
-          const subjectToRemove = e.params.data.id;
-          sodaJSONObj.moveSubjectOutOfPool(subjectToRemove, poolName);
-        });
-        $(newPoolSubjectsSelectElement).on("select2:select", function (e) {
-          const selectedSubject = e.params.data.id;
-          sodaJSONObj.moveSubjectIntoPool(selectedSubject, poolName);
-        });
-      }
-      break;
-    }
-
-    case "guided-specify-samples-page": {
-      const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
-      //Combine sample data from subjects in and out of pools
-      let subjects = [...subjectsInPools, ...subjectsOutsidePools];
-
-      //Create the HTML for the subjects
-      const subjectSampleAdditionTables = subjects
-        .map((subject) => {
-          return renderSubjectSampleAdditionTable(subject);
-        })
-        .join("\n");
-
-      //Add the subject sample addition elements to the DOM
-      const subjectSampleAdditionTableContainer = document.getElementById(
-        "guided-div-add-samples-tables"
+    for (const poolName of Object.keys(pools)) {
+      const newPoolSubjectsSelectElement = document.querySelector(
+        `select[name="${poolName}-subjects-selection-dropdown"]`
       );
-
-      subjectSampleAdditionTableContainer.innerHTML = subjectSampleAdditionTables;
-      break;
+      //create a select2 dropdown for the pool subjects
+      $(newPoolSubjectsSelectElement).select2({
+        placeholder: "Select subjects",
+        tags: true,
+        width: "100%",
+        closeOnSelect: false,
+        createTag: function () {
+          // Disable tagging
+          return null;
+        },
+      });
+      //update the newPoolSubjectsElement with the subjects in the pool
+      updatePoolDropdown($(newPoolSubjectsSelectElement), poolName);
+      $(newPoolSubjectsSelectElement).on("select2:open", (e) => {
+        updatePoolDropdown($(e.currentTarget), poolName);
+      });
+      $(newPoolSubjectsSelectElement).on("select2:unselect", (e) => {
+        const subjectToRemove = e.params.data.id;
+        sodaJSONObj.moveSubjectOutOfPool(subjectToRemove, poolName);
+      });
+      $(newPoolSubjectsSelectElement).on("select2:select", function (e) {
+        const selectedSubject = e.params.data.id;
+        sodaJSONObj.moveSubjectIntoPool(selectedSubject, poolName);
+      });
     }
+  }
+  if (pageIdToActivate === "guided-specify-samples-page") {
+    renderSamplesTable();
+  }
+  if (pageIdToActivate === "guided-primary-samples-organization-page") {
+    renderSamplesHighLevelFolderAsideItems("primary");
+    guidedUpdateFolderStructure("primary", "samples");
 
-    case "guided-primary-samples-organization-page": {
-      //If the user indicated they have no samples, skip this page
-      //and go to primary subject data organization page
-      if (
-        document.getElementById("guided-primary-samples-organization-page").dataset.skipSubPage ===
-        "true"
-      ) {
-        setActiveSubPage("guided-primary-subjects-organization-page");
-        return;
-      }
+    $("#guided-file-explorer-elements").appendTo(
+      $("#guided-primary-samples-file-explorer-container")
+    );
 
-      renderSamplesHighLevelFolderAsideItems("primary");
-      guidedUpdateFolderStructure("primary", "samples");
+    //Hide the file explorer and show the intro
+    document.getElementById("guided-file-explorer-elements").classList.add("hidden");
+    document
+      .getElementById("guided-primary-samples-file-explorer-intro")
+      .classList.remove("hidden");
 
-      $("#guided-file-explorer-elements").appendTo(
-        $("#guided-primary-samples-file-explorer-container")
-      );
+    //Load the black arrow lottie animation
+    const primarySamplesFileExplorerBlackArrowLottieContainer = document.getElementById(
+      "primary-samples-file-explorer-black-arrow-lottie-container"
+    );
+    primarySamplesFileExplorerBlackArrowLottieContainer.innerHTML = "";
+    lottie.loadAnimation({
+      container: primarySamplesFileExplorerBlackArrowLottieContainer,
+      animationData: blackArrow,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+    });
+  }
+  if (pageIdToActivate === "guided-primary-subjects-organization-page") {
+    renderSubjectsHighLevelFolderAsideItems("primary");
+    guidedUpdateFolderStructure("primary", "subjects");
+    $("#guided-file-explorer-elements").appendTo(
+      $("#guided-primary-subjects-file-explorer-container")
+    );
+    //Hide the file explorer and show the intro
+    document.getElementById("guided-file-explorer-elements").classList.add("hidden");
+    document
+      .getElementById("guided-primary-subjects-file-explorer-intro")
+      .classList.remove("hidden");
 
-      //Hide the file explorer and show the intro
-      document.getElementById("guided-file-explorer-elements").classList.add("hidden");
-      document
-        .getElementById("guided-primary-samples-file-explorer-intro")
-        .classList.remove("hidden");
+    //Load the black arrow lottie animation
+    const primarySubjectsFileExplorerBlackArrowLottieContainer = document.getElementById(
+      "primary-subjects-file-explorer-black-arrow-lottie-container"
+    );
+    primarySubjectsFileExplorerBlackArrowLottieContainer.innerHTML = "";
+    lottie.loadAnimation({
+      container: primarySubjectsFileExplorerBlackArrowLottieContainer,
+      animationData: blackArrow,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+    });
+  }
+  if (pageIdToActivate === "guided-primary-pools-organization-page") {
+    guidedUpdateFolderStructure("primary", "pools");
+    renderPoolsHighLevelFolderAsideItems("primary");
+    //guidedUpdateFolderStructure("primary", "pools"); Don't need because pools already generated
+    $("#guided-file-explorer-elements").appendTo(
+      $("#guided-primary-pools-file-explorer-container")
+    );
+    //Hide the file explorer and show the intro
+    hideEleShowEle("guided-file-explorer-elements", "guided-primary-pools-file-explorer-intro");
 
-      //Load the black arrow lottie animation
-      const primarySamplesFileExplorerBlackArrowLottieContainer = document.getElementById(
-        "primary-samples-file-explorer-black-arrow-lottie-container"
-      );
-      primarySamplesFileExplorerBlackArrowLottieContainer.innerHTML = "";
+    const primaryPoolsFileExplorerBlackArrowLottieContainer = document.getElementById(
+      "primary-pools-file-explorer-black-arrow-lottie-container"
+    );
+    primaryPoolsFileExplorerBlackArrowLottieContainer.innerHTML = "";
+    //Load the black arrow lottie animation
+    lottie.loadAnimation({
+      container: primaryPoolsFileExplorerBlackArrowLottieContainer,
+      animationData: blackArrow,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+    });
+  }
+  if (pageIdToActivate === "guided-source-samples-organization-page") {
+    renderSamplesHighLevelFolderAsideItems("source");
+    guidedUpdateFolderStructure("source", "samples");
+    $("#guided-file-explorer-elements").appendTo(
+      $("#guided-source-samples-file-explorer-container")
+    );
+
+    //Hide the file explorer and show the intro
+    document.getElementById("guided-file-explorer-elements").classList.add("hidden");
+    document.getElementById("guided-source-samples-file-explorer-intro").classList.remove("hidden");
+
+    //Load the black arrow lottie animation
+    const sourceSamplesFileExplorerBlackArrowLottieContainer = document.getElementById(
+      "source-samples-file-explorer-black-arrow-lottie-container"
+    );
+    sourceSamplesFileExplorerBlackArrowLottieContainer.innerHTML = "";
+    lottie.loadAnimation({
+      container: sourceSamplesFileExplorerBlackArrowLottieContainer,
+      animationData: blackArrow,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+    });
+  }
+  if (pageIdToActivate === "guided-source-subjects-organization-page") {
+    renderSubjectsHighLevelFolderAsideItems("source");
+    guidedUpdateFolderStructure("source", "subjects");
+    $("#guided-file-explorer-elements").appendTo(
+      $("#guided-source-subjects-file-explorer-container")
+    );
+    //Hide the file explorer and show the intro
+    document.getElementById("guided-file-explorer-elements").classList.add("hidden");
+    document
+      .getElementById("guided-source-subjects-file-explorer-intro")
+      .classList.remove("hidden");
+
+    //Load the black arrow lottie animation
+    const sourceSubjectsFileExplorerBlackArrowLottieContainer = document.getElementById(
+      "source-subjects-file-explorer-black-arrow-lottie-container"
+    );
+    sourceSubjectsFileExplorerBlackArrowLottieContainer.innerHTML = "";
+    lottie.loadAnimation({
+      container: sourceSubjectsFileExplorerBlackArrowLottieContainer,
+      animationData: blackArrow,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+    });
+  }
+
+  if (pageIdToActivate === "guided-source-pools-organization-page") {
+    guidedUpdateFolderStructure("source", "pools");
+    renderPoolsHighLevelFolderAsideItems("source");
+    $("#guided-file-explorer-elements").appendTo($("#guided-source-pools-file-explorer-container"));
+    //Hide the file explorer and show the intro
+    hideEleShowEle("guided-file-explorer-elements", "guided-source-pools-file-explorer-intro");
+
+    const sourcePoolsFileExplorerBlackArrowLottieContainer = document.getElementById(
+      "source-pools-file-explorer-black-arrow-lottie-container"
+    );
+    sourcePoolsFileExplorerBlackArrowLottieContainer.innerHTML = "";
+    //Load the black arrow lottie animation
+    lottie.loadAnimation({
+      container: sourcePoolsFileExplorerBlackArrowLottieContainer,
+      animationData: blackArrow,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+    });
+  }
+  if (pageIdToActivate === "guided-derivative-samples-organization-page") {
+    renderSamplesHighLevelFolderAsideItems("derivative");
+    guidedUpdateFolderStructure("derivative", "samples");
+    $("#guided-file-explorer-elements").appendTo(
+      $("#guided-derivative-samples-file-explorer-container")
+    );
+
+    //Hide the file explorer and show the intro
+    document.getElementById("guided-file-explorer-elements").classList.add("hidden");
+    document
+      .getElementById("guided-derivative-samples-file-explorer-intro")
+      .classList.remove("hidden");
+
+    //Load the black arrow lottie animation
+    const derivativeSamplesFileExplorerBlackArrowLottieContainer = document.getElementById(
+      "derivative-samples-file-explorer-black-arrow-lottie-container"
+    );
+    derivativeSamplesFileExplorerBlackArrowLottieContainer.innerHTML = "";
+    lottie.loadAnimation({
+      container: derivativeSamplesFileExplorerBlackArrowLottieContainer,
+      animationData: blackArrow,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+    });
+  }
+
+  if (pageIdToActivate === "guided-derivative-pools-organization-page") {
+    renderSubjectsHighLevelFolderAsideItems("derivative");
+    guidedUpdateFolderStructure("derivative", "subjects");
+    $("#guided-file-explorer-elements").appendTo(
+      $("#guided-derivative-subjects-file-explorer-container")
+    );
+    //Hide the file explorer and show the intro
+    document.getElementById("guided-file-explorer-elements").classList.add("hidden");
+    document
+      .getElementById("guided-derivative-subjects-file-explorer-intro")
+      .classList.remove("hidden");
+
+    //Load the black arrow lottie animation
+    const derivativeSubjectsFileExplorerBlackArrowLottieContainer = document.getElementById(
+      "derivative-subjects-file-explorer-black-arrow-lottie-container"
+    );
+    derivativeSubjectsFileExplorerBlackArrowLottieContainer.innerHTML = "";
+    lottie.loadAnimation({
+      container: derivativeSubjectsFileExplorerBlackArrowLottieContainer,
+      animationData: blackArrow,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+    });
+  }
+  if (pageIdToActivate === "guided-derivative-pools-organization-page") {
+    guidedUpdateFolderStructure("derivative", "pools");
+    renderPoolsHighLevelFolderAsideItems("derivative");
+    $("#guided-file-explorer-elements").appendTo(
+      $("#guided-derivative-pools-file-explorer-container")
+    );
+    //Hide the file explorer and show the intro
+    hideEleShowEle("guided-file-explorer-elements", "guided-derivative-pools-file-explorer-intro");
+
+    const derivativePoolsFileExplorerBlackArrowLottieContainer = document.getElementById(
+      "derivative-pools-file-explorer-black-arrow-lottie-container"
+    );
+    derivativePoolsFileExplorerBlackArrowLottieContainer.innerHTML = "";
+    //Load the black arrow lottie animation
+    lottie.loadAnimation({
+      container: derivativePoolsFileExplorerBlackArrowLottieContainer,
+      animationData: blackArrow,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+    });
+  }
+  if (pageIdToActivate === "guided-data-derivative-import-page") {
+    const dataDeliverableLottieContainer = document.getElementById(
+      "data-deliverable-lottie-container"
+    );
+    const dataDeliverableParaText = document.getElementById("guided-data-deliverable-para-text");
+
+    const importedMilestones =
+      sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-imported-milestones"];
+
+    if (importedMilestones) {
+      // set the data deliverable import lottie as complete
+      dataDeliverableLottieContainer.innerHTML = "";
       lottie.loadAnimation({
-        container: primarySamplesFileExplorerBlackArrowLottieContainer,
-        animationData: blackArrow,
+        container: dataDeliverableLottieContainer,
+        animationData: successCheck,
         renderer: "svg",
-        loop: true,
+        loop: false,
         autoplay: true,
       });
-      break;
-    }
+      dataDeliverableParaText.innerHTML =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"];
 
-    case "guided-primary-subjects-organization-page": {
-      renderSubjectsHighLevelFolderAsideItems("primary");
-      guidedUpdateFolderStructure("primary", "subjects");
-      $("#guided-file-explorer-elements").appendTo(
-        $("#guided-primary-subjects-file-explorer-container")
-      );
-      //Hide the file explorer and show the intro
-      document.getElementById("guided-file-explorer-elements").classList.add("hidden");
-      document
-        .getElementById("guided-primary-subjects-file-explorer-intro")
-        .classList.remove("hidden");
-
-      //Load the black arrow lottie animation
-      const primarySubjectsFileExplorerBlackArrowLottieContainer = document.getElementById(
-        "primary-subjects-file-explorer-black-arrow-lottie-container"
-      );
-      primarySubjectsFileExplorerBlackArrowLottieContainer.innerHTML = "";
-      lottie.loadAnimation({
-        container: primarySubjectsFileExplorerBlackArrowLottieContainer,
-        animationData: blackArrow,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-      break;
-    }
-
-    case "guided-source-samples-organization-page": {
-      //If the user indicated they have no samples, skip this page
-      //and go to source subject data organization page
-      if (
-        document.getElementById("guided-source-samples-organization-page").dataset.skipSubPage ===
-        "true"
-      ) {
-        setActiveSubPage("guided-source-subjects-organization-page");
-        return;
-      }
-
-      renderSamplesHighLevelFolderAsideItems("source");
-      guidedUpdateFolderStructure("source", "samples");
-      $("#guided-file-explorer-elements").appendTo(
-        $("#guided-source-samples-file-explorer-container")
-      );
-
-      //Hide the file explorer and show the intro
-      document.getElementById("guided-file-explorer-elements").classList.add("hidden");
-      document
-        .getElementById("guided-source-samples-file-explorer-intro")
-        .classList.remove("hidden");
-
-      //Load the black arrow lottie animation
-      const sourceSamplesFileExplorerBlackArrowLottieContainer = document.getElementById(
-        "source-samples-file-explorer-black-arrow-lottie-container"
-      );
-      sourceSamplesFileExplorerBlackArrowLottieContainer.innerHTML = "";
-      lottie.loadAnimation({
-        container: sourceSamplesFileExplorerBlackArrowLottieContainer,
-        animationData: blackArrow,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-      break;
-    }
-
-    case "guided-source-subjects-organization-page": {
-      renderSubjectsHighLevelFolderAsideItems("source");
-      guidedUpdateFolderStructure("source", "subjects");
-      $("#guided-file-explorer-elements").appendTo(
-        $("#guided-source-subjects-file-explorer-container")
-      );
-      //Hide the file explorer and show the intro
-      document.getElementById("guided-file-explorer-elements").classList.add("hidden");
-      document
-        .getElementById("guided-source-subjects-file-explorer-intro")
-        .classList.remove("hidden");
-
-      //Load the black arrow lottie animation
-      const sourceSubjectsFileExplorerBlackArrowLottieContainer = document.getElementById(
-        "source-subjects-file-explorer-black-arrow-lottie-container"
-      );
-      sourceSubjectsFileExplorerBlackArrowLottieContainer.innerHTML = "";
-      lottie.loadAnimation({
-        container: sourceSubjectsFileExplorerBlackArrowLottieContainer,
-        animationData: blackArrow,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-      break;
-    }
-
-    case "guided-derivative-samples-organization-page": {
-      //If the user indicated they have no samples, skip this page
-      //and go to derivative subject data organization page
-      if (
-        document.getElementById("guided-derivative-samples-organization-page").dataset
-          .skipSubPage === "true"
-      ) {
-        setActiveSubPage("guided-derivative-subjects-organization-page");
-        return;
-      }
-
-      renderSamplesHighLevelFolderAsideItems("derivative");
-      guidedUpdateFolderStructure("derivative", "samples");
-      $("#guided-file-explorer-elements").appendTo(
-        $("#guided-derivative-samples-file-explorer-container")
-      );
-
-      //Hide the file explorer and show the intro
-      document.getElementById("guided-file-explorer-elements").classList.add("hidden");
-      document
-        .getElementById("guided-derivative-samples-file-explorer-intro")
-        .classList.remove("hidden");
-
-      //Load the black arrow lottie animation
-      const derivativeSamplesFileExplorerBlackArrowLottieContainer = document.getElementById(
-        "derivative-samples-file-explorer-black-arrow-lottie-container"
-      );
-      derivativeSamplesFileExplorerBlackArrowLottieContainer.innerHTML = "";
-      lottie.loadAnimation({
-        container: derivativeSamplesFileExplorerBlackArrowLottieContainer,
-        animationData: blackArrow,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-      break;
-    }
-
-    case "guided-derivative-subjects-organization-page": {
-      renderSubjectsHighLevelFolderAsideItems("derivative");
-      guidedUpdateFolderStructure("derivative", "subjects");
-      $("#guided-file-explorer-elements").appendTo(
-        $("#guided-derivative-subjects-file-explorer-container")
-      );
-      //Hide the file explorer and show the intro
-      document.getElementById("guided-file-explorer-elements").classList.add("hidden");
-      document
-        .getElementById("guided-derivative-subjects-file-explorer-intro")
-        .classList.remove("hidden");
-
-      //Load the black arrow lottie animation
-      const derivativeSubjectsFileExplorerBlackArrowLottieContainer = document.getElementById(
-        "derivative-subjects-file-explorer-black-arrow-lottie-container"
-      );
-      derivativeSubjectsFileExplorerBlackArrowLottieContainer.innerHTML = "";
-      lottie.loadAnimation({
-        container: derivativeSubjectsFileExplorerBlackArrowLottieContainer,
-        animationData: blackArrow,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-      break;
-    }
-
-    case "guided-data-derivative-import-page": {
-      const importedMilestones =
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-imported-milestones"];
-
-      if (importedMilestones) {
-        renderMilestoneSelectionTable(importedMilestones);
-        const tempSelectedMilestones =
-          sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-selected-milestones"];
-        if (tempSelectedMilestones) {
-          //Check the checkboxes for previously selected milestones
-          const milestoneDescriptionsToCheck = tempSelectedMilestones.map((milestone) => {
-            return milestone["description"];
-          });
-          for (const milestone of milestoneDescriptionsToCheck) {
-            //find the checkbox with name milestone and value of milestone
-            const milestoneCheckbox = document.querySelector(
-              `input[name="milestone"][value="${milestone}"]`
-            );
-            if (milestoneCheckbox) {
-              milestoneCheckbox.checked = true;
-            }
-          }
-        }
-        unHideAndSmoothScrollToElement("guided-div-data-deliverables-import");
-      } else {
-        document.getElementById("guided-div-data-deliverables-import").classList.add("hidden");
-      }
-      break;
-    }
-
-    case "guided-completion-date-selection-page": {
-      const selectedMilestoneData =
+      renderMilestoneSelectionTable(importedMilestones);
+      const tempSelectedMilestones =
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-selected-milestones"];
-
-      // get a unique set of completionDates from checkedMilestoneData
-      const uniqueCompletionDates = Array.from(
-        new Set(selectedMilestoneData.map((milestone) => milestone.completionDate))
-      );
-
-      if (uniqueCompletionDates.length === 1) {
-        //save the completion date into sodaJSONObj
-        const uniqueCompletionDate = uniqueCompletionDates[0];
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] =
-          uniqueCompletionDate;
-
-        document.getElementById("guided-completion-date-container").innerHTML =
-          createCompletionDateRadioElement("completion-date", uniqueCompletionDate);
-        //check the completion date
-        document.querySelector(
-          `input[name="completion-date"][value="${uniqueCompletionDate}"]`
-        ).checked = true;
-      }
-
-      if (uniqueCompletionDates.length > 1) {
-        //filter value 'N/A' from uniqueCompletionDates
-        const filteredUniqueCompletionDates = uniqueCompletionDates.filter(
-          (date) => date !== "N/A"
-        );
-
-        //create a radio button for each unique date
-        const completionDateCheckMarks = filteredUniqueCompletionDates
-          .map((completionDate) => {
-            return createCompletionDateRadioElement("completion-date", completionDate);
-          })
-          .join("\n");
-        document.getElementById("guided-completion-date-container").innerHTML =
-          completionDateCheckMarks;
-
-        //If a completion date has already been selected, select it's radio button
-        const selectedCompletionDate =
-          sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"];
-        if (selectedCompletionDate) {
-          const selectedCompletionDateRadioElement = document.querySelector(
-            `input[name="completion-date"][value="${selectedCompletionDate}"]`
+      if (tempSelectedMilestones) {
+        //Check the checkboxes for previously selected milestones
+        const milestoneDescriptionsToCheck = tempSelectedMilestones.map((milestone) => {
+          return milestone["description"];
+        });
+        for (const milestone of milestoneDescriptionsToCheck) {
+          //find the checkbox with name milestone and value of milestone
+          const milestoneCheckbox = document.querySelector(
+            `input[name="milestone"][value="${milestone}"]`
           );
-          if (selectedCompletionDateRadioElement) {
-            selectedCompletionDateRadioElement.checked = true;
+          if (milestoneCheckbox) {
+            milestoneCheckbox.checked = true;
           }
         }
       }
-      break;
+      unHideAndSmoothScrollToElement("guided-div-data-deliverables-import");
+    } else {
+      //reset the submission metadata lotties and para text
+      dataDeliverableLottieContainer.innerHTML = "";
+      lottie.loadAnimation({
+        container: dataDeliverableLottieContainer,
+        animationData: dragDrop,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+      dataDeliverableParaText.innerHTML = "";
+      document.getElementById("guided-div-data-deliverables-import").classList.add("hidden");
+    }
+  }
+  if (pageIdToActivate === "guided-completion-date-selection-page") {
+    const selectedMilestoneData =
+      sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-selected-milestones"];
+
+    // get a unique set of completionDates from checkedMilestoneData
+    const uniqueCompletionDates = Array.from(
+      new Set(selectedMilestoneData.map((milestone) => milestone.completionDate))
+    );
+
+    if (uniqueCompletionDates.length === 1) {
+      //save the completion date into sodaJSONObj
+      const uniqueCompletionDate = uniqueCompletionDates[0];
+      sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] =
+        uniqueCompletionDate;
+
+      document.getElementById("guided-completion-date-container").innerHTML =
+        createCompletionDateRadioElement("completion-date", uniqueCompletionDate);
+      //check the completion date
+      document.querySelector(
+        `input[name="completion-date"][value="${uniqueCompletionDate}"]`
+      ).checked = true;
     }
 
-    case "guided-submission-metadata-page": {
-      const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-      const selectedMilestones =
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-selected-milestones"];
+    if (uniqueCompletionDates.length > 1) {
+      //filter value 'N/A' from uniqueCompletionDates
+      const filteredUniqueCompletionDates = uniqueCompletionDates.filter((date) => date !== "N/A");
 
-      const completionDate =
+      //create a radio button for each unique date
+      const completionDateCheckMarks = filteredUniqueCompletionDates
+        .map((completionDate) => {
+          return createCompletionDateRadioElement("completion-date", completionDate);
+        })
+        .join("\n");
+      document.getElementById("guided-completion-date-container").innerHTML =
+        completionDateCheckMarks;
+
+      //If a completion date has already been selected, select it's radio button
+      const selectedCompletionDate =
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"];
-
-      const sparcAwardInput = document.getElementById("guided-submission-sparc-award");
-      const completionDateInput = document.getElementById("guided-submission-completion-date");
-
-      guidedSubmissionTagsTagify.removeAllTags();
-
-      sparcAwardInput.value = sparcAward;
-
-      const uniqueMilestones = Array.from(
-        new Set(selectedMilestones.map((milestone) => milestone.milestone))
-      );
-      guidedSubmissionTagsTagify.addTags(uniqueMilestones);
-
-      completionDateInput.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
-      //select the completion date that was added
-      completionDateInput.value = completionDate;
-
-      break;
+      if (selectedCompletionDate) {
+        const selectedCompletionDateRadioElement = document.querySelector(
+          `input[name="completion-date"][value="${selectedCompletionDate}"]`
+        );
+        if (selectedCompletionDateRadioElement) {
+          selectedCompletionDateRadioElement.checked = true;
+        }
+      }
     }
+  }
+
+  if (pageIdToActivate === "guided-submission-metadata-page") {
+    const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+    const selectedMilestones =
+      sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-selected-milestones"];
+
+    const completionDate =
+      sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"];
+
+    const sparcAwardInput = document.getElementById("guided-submission-sparc-award");
+    const completionDateInput = document.getElementById("guided-submission-completion-date");
+
+    guidedSubmissionTagsTagify.removeAllTags();
+
+    sparcAwardInput.value = sparcAward;
+
+    const uniqueMilestones = Array.from(
+      new Set(selectedMilestones.map((milestone) => milestone.milestone))
+    );
+    guidedSubmissionTagsTagify.addTags(uniqueMilestones);
+
+    completionDateInput.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
+    //select the completion date that was added
+    completionDateInput.value = completionDate;
   }
 
   //Show target page and hide its siblings
@@ -4139,6 +5521,7 @@ const setActiveSubPage = (pageIdToActivate) => {
       siblingCapsule.classList.remove("active");
     }
   }
+  // renderSideBar(CURRENT_PAGE.id);
 };
 
 const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
@@ -4150,15 +5533,7 @@ const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
 const setGuidedProgressBarValue = (value) => {
   $("#guided-progress-bar-new-curate").attr("value", value);
 };
-function makeid(length) {
-  var result = "";
-  var characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  var charactersLength = characters.length;
-  for (var i = 0; i < length; i++) {
-    result += characters.charAt(Math.floor(Math.random() * charactersLength));
-  }
-  return result;
-}
+
 const isNumberBetween = (number, minVal, maxVal) => {
   return !isNaN(parseFloat(number)) && isFinite(number) && number >= minVal && number <= maxVal;
 };
@@ -4213,53 +5588,6 @@ const validateInput = (inputElementToValidate) => {
       }
     }
   }
-  if (inputID === "guided-number-of-subjects-input") {
-    let numSubjects = inputElementToValidate.val().trim();
-    if (numSubjects !== "") {
-      if (isNumberBetween(numSubjects, 1, 1000)) {
-        removeAlertMessageIfExists(inputElementToValidate);
-        $("#guided-same-amount-samples-form").css("display", "flex");
-        inputIsValid = true;
-      } else {
-        generateAlertMessage(inputElementToValidate);
-        $("#guided-same-amount-samples-form").hide();
-      }
-    } else {
-      $("#guided-same-amount-samples-form").hide();
-    }
-  }
-  if (inputID === "guided-number-of-samples-input") {
-    let numSamples = inputElementToValidate.val().trim();
-    if (numSamples !== "") {
-      if (isNumberBetween(numSamples, 1, 1000)) {
-        removeAlertMessageIfExists(inputElementToValidate);
-        $("#guided-button-generate-subjects-table").show();
-
-        inputIsValid = true;
-      } else {
-        generateAlertMessage(inputElementToValidate);
-        $("#guided-button-generate-subjects-table").hide();
-      }
-    } else {
-      $("#guided-button-generate-subjects-table").hide();
-    }
-  }
-  if (inputID === "guided-number-of-samples-input") {
-    let numSamples = inputElementToValidate.val().trim();
-    if (numSamples !== "") {
-      if (isNumberBetween(numSamples, 1, 1000)) {
-        removeAlertMessageIfExists(inputElementToValidate);
-        $("#guided-button-generate-subjects-table").show();
-
-        inputIsValid = true;
-      } else {
-        generateAlertMessage(inputElementToValidate);
-        $("#guided-button-generate-subjects-table").hide();
-      }
-    } else {
-      $("#guided-button-generate-subjects-table").hide();
-    }
-  }
   return inputIsValid;
 };
 
@@ -4277,6 +5605,16 @@ const openEditGuidedDatasetSwal = async (datasetName) => {
     to modify, select ${datasetName} from the dataset selection drop-down, and edit the data in Free-Form mode.`,
     confirmButtonText: "OK",
   });
+};
+
+//function that creates a new folder object
+const newEmptyFolderObj = () => {
+  return {
+    folders: {},
+    files: {},
+    type: "virtual",
+    action: ["new"],
+  };
 };
 
 const patchPreviousGuidedModeVersions = () => {
@@ -4305,17 +5643,6 @@ const patchPreviousGuidedModeVersions = () => {
         subjectsTableData[i].splice(6, 0, "");
       }
     }
-  }
-
-  const resetGuidedManifestFiles = () => {
-    sodaJSONObj["guided-manifest-files"] = {};
-  };
-
-  //Update manifest files key from old key ("manifest-files") to new key ("guided-manifest-files")
-  if (sodaJSONObj["manifest-files"]) {
-    resetGuidedManifestFiles();
-    delete sodaJSONObj["manifest-files"];
-    forceUserToRestartFromFirstPage = true;
   }
 
   let oldManifestFileHeaders = false;
@@ -4354,6 +5681,10 @@ const patchPreviousGuidedModeVersions = () => {
     forceUserToRestartFromFirstPage = true;
   }
 
+  if (!sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"]) {
+    sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = [];
+  }
+
   return forceUserToRestartFromFirstPage;
 };
 
@@ -4383,8 +5714,77 @@ const guidedResumeProgress = async (resumeProgressButton) => {
       return;
     }
   }
-  sodaJSONObj = datasetResumeJsonObj;
 
+  // If the dataset is being edited on Pensieve, check to make sure the folders and files are still the same.
+  if (datasetResumeJsonObj["starting-point"]?.["type"] === "bf") {
+    if (Object.keys(datasetResumeJsonObj["previously-uploaded-data"]).length > 0) {
+      await Swal.fire({
+        icon: "info",
+        title: "Resuming a Pennsieve dataset upload that previously failed",
+        html: `
+            Please note that any changes made to your dataset on Pennsieve since your last dataset upload
+            was interrupted may be overwritten.
+          `,
+        width: 500,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: `I understand`,
+        focusConfirm: true,
+        allowOutsideClick: false,
+      });
+    } else {
+      const nofiication = notyf.open({
+        type: "info",
+        message: `Checking to make sure the dataset structure on Pennsieve is the same as when you started editing this dataset.`,
+        duration: 30000,
+      });
+      let filesFoldersResponse = await client.post(
+        `/organize_datasets/dataset_files_and_folders`,
+        {
+          sodajsonobject: datasetResumeJsonObj,
+        },
+        { timeout: 0 }
+      );
+      let data = filesFoldersResponse.data;
+      const currentPennsieveDatasetStructure = data["soda_object"]["dataset-structure"];
+      notyf.dismiss(nofiication);
+
+      const intitiallyPulledDatasetStructure =
+        datasetResumeJsonObj["initially-pulled-dataset-structure"];
+
+      // check to make sure current and initially pulled dataset structures are the same
+      if (
+        JSON.stringify(currentPennsieveDatasetStructure) !==
+        JSON.stringify(intitiallyPulledDatasetStructure)
+      ) {
+        await Swal.fire({
+          icon: "error",
+          title: "Dataset structure on Pennsieve has changed",
+          html: `
+          The dataset structure on Pennsieve has changed since you started editing this dataset.
+          <br />
+          <br />
+          You will need to start over from the beginning. 
+        `,
+          width: 500,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: `Ok`,
+          focusConfirm: true,
+          allowOutsideClick: false,
+        });
+        resumeProgressButton.removeClass("loading");
+        return;
+      } else {
+        notyf.open({
+          type: "success",
+          message: `The dataset structure on Pennsieve is the same as when you started editing this dataset.`,
+          duration: 7000,
+        });
+      }
+    }
+  }
+  sodaJSONObj = datasetResumeJsonObj;
   attachGuidedMethodsToSodaJSONObj();
 
   datasetStructureJSONObj = sodaJSONObj["saved-datset-structure-json-obj"];
@@ -4401,7 +5801,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   //If a patch was applied that requires the user to restart from the first page,
   //then force the user to restart from the first page
   if (forceStartFromFirstPage) {
-    pageToReturnTo = "guided-prepare-helpers-tab";
+    pageToReturnTo = "guided-name-subtitle-tab";
   }
 
   //If the dataset was successfully uploaded, send the user to the share with curation team
@@ -4413,18 +5813,16 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   // So the user has to confirm their Pennsieve account before uploading
   delete sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
 
+  // Save the skipped pages in a temp variable since guidedTransitionFromHome will remove them
+  const prevSessionSkikppedPages = [...sodaJSONObj["skipped-pages"]];
   guidedTransitionFromHome();
-  //Set the dataset name and subtitle input values using the
-  //previously saved dataset name and subtitle
-  document.getElementById("guided-dataset-name-input").value =
-    datasetResumeJsonObj["digital-metadata"]["name"];
-  document.getElementById("guided-dataset-subtitle-input").value =
-    datasetResumeJsonObj["digital-metadata"]["subtitle"];
-
-  guidedTransitionFromDatasetNameSubtitlePage();
+  // Reskip the pages from a previous session
+  for (const pageID of prevSessionSkikppedPages) {
+    guidedSkipPage(pageID);
+  }
 
   //Hide the before getting started page so it doesn't flash when resuming progress
-  $("#guided-prepare-helpers-tab").css("display", "none");
+  document.getElementById("guided-intro-page-tab").classList.add("hidden");
 
   if (pageToReturnTo) {
     //Hide the sub-page navigation and show the main page navigation footer
@@ -4481,8 +5879,8 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["bf-account-selected"] = {};
   sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
   sodaJSONObj["generate-dataset"] = {};
+  sodaJSONObj["generate-dataset"]["destination"] = "bf";
   sodaJSONObj["guided-manifest-files"] = {};
-  sodaJSONObj["metadata-files"] = {};
   sodaJSONObj["starting-point"] = {};
   sodaJSONObj["dataset-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["shared-metadata"] = {};
@@ -4490,7 +5888,6 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"] = {};
   sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"] = {};
   sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["subjects"] = {};
-  sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["samples"] = {};
   sodaJSONObj["dataset-metadata"]["subject-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["sample-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["submission-metadata"] = {};
@@ -4498,6 +5895,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["dataset-metadata"]["code-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"] = [];
   sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] = [];
+  sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = [];
   sodaJSONObj["dataset-metadata"]["README"] = "";
   sodaJSONObj["dataset-metadata"]["CHANGES"] = "";
   sodaJSONObj["digital-metadata"] = {};
@@ -4510,37 +5908,47 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["skipped-pages"] = [];
   sodaJSONObj["last-modified"] = "";
   sodaJSONObj["button-config"] = {};
-  sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] = false;
+  sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] = "false";
   datasetStructureJSONObj = { folders: {}, files: {} };
 };
+const guidedHighLevelFolders = ["primary", "source", "derivative"];
+const nonGuidedHighLevelFolders = ["code", "protocol", "docs"];
+
+const guidedWarnBeforeDeletingEntity = async (entityType, entityName) => {
+  let warningMessage;
+  if (entityType === "pool") {
+    warningMessage = `Are you sure you want to delete the pool '${entityName}'? After deleting this pool, all subject folders will be moved directly into their high level folders.`;
+  }
+  if (entityType === "subject") {
+    warningMessage = `Are you sure you want to delete the subject '${entityName}'? ${entityName} has folders and files associated with it, and if you continue with the deletion, the folders and files will be deleted as well.`;
+  }
+  if (entityType === "sample") {
+    warningMessage = `Are you sure you want to delete the sample '${entityName}'? ${entityName} has folders and files associated with it, and if you continue with the deletion, the folders and files will be deleted as well.`;
+  }
+
+  const continueWithDeletion = await Swal.fire({
+    icon: "warning",
+    title: "Are you sure?",
+    html: warningMessage,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    showCancelButton: true,
+    focusCancel: true,
+    confirmButtonText: `Delete ${entityType}`,
+    cancelButtonText: "Cancel deletion",
+    reverseButtons: reverseSwalButtons,
+  });
+
+  return continueWithDeletion.isConfirmed;
+};
+
 const attachGuidedMethodsToSodaJSONObj = () => {
-  const guidedHighLevelFolders = ["primary", "source", "derivative"];
-
-  sodaJSONObj.getAllSubjects = function () {
-    let subjectsInPools = [];
-    let subjectsOutsidePools = [];
-
-    for (const [poolName, pool] of Object.entries(
-      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"]
-    )) {
-      for (const [subjectName, subjectData] of Object.entries(pool)) {
-        subjectsInPools.push({
-          subjectName: subjectName,
-          poolName: poolName,
-          samples: Object.keys(subjectData),
-        });
-      }
+  sodaJSONObj.addPool = function (poolName) {
+    if (this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName]) {
+      throw new Error("Pool names must be unique.");
     }
 
-    for (const [subjectName, subjectData] of Object.entries(
-      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
-    )) {
-      subjectsOutsidePools.push({
-        subjectName: subjectName,
-        samples: Object.keys(subjectData),
-      });
-    }
-    return [subjectsInPools, subjectsOutsidePools];
+    this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName] = {};
   };
   sodaJSONObj.addSubject = function (subjectName) {
     //check if subject with the same name already exists
@@ -4552,13 +5960,83 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     }
     this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName] = {};
   };
-  sodaJSONObj.renameSubject = function (prevSubjectName, newSubjectName) {
-    const [subjectsInPools, subjectsOutsidePools] = this.getAllSubjects();
-    const subjects = [...subjectsInPools, ...subjectsOutsidePools];
+  sodaJSONObj.addSampleToSubject = function (sampleName, subjectPoolName, subjectName) {
+    const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
+    //Combine sample data from samples in and out of pools
+    let samples = [...samplesInPools, ...samplesOutsidePools];
 
+    //Check samples already added and throw an error if a sample with the sample name already exists.
+    for (const sample of samples) {
+      if (sample.sampleName === sampleName) {
+        throw new Error(
+          `Sample names must be unique. \n${sampleName} already exists in ${sample.subjectName}`
+        );
+      }
+    }
+
+    if (subjectPoolName) {
+      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][subjectPoolName][
+        subjectName
+      ][sampleName] = {};
+    } else {
+      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName][
+        sampleName
+      ] = {};
+    }
+  };
+
+  sodaJSONObj.renamePool = function (prevPoolName, newPoolName) {
+    //check if name already exists
+    if (prevPoolName != newPoolName) {
+      if (this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][newPoolName]) {
+        throw new Error("Pool names must be unique.");
+      }
+
+      //Rename the pool folder in the datasetStructureJSONObj
+      for (const highLevelFolder of guidedHighLevelFolders) {
+        const prevNamePoolInHighLevelFolder =
+          datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[prevPoolName];
+
+        if (prevNamePoolInHighLevelFolder) {
+          if (folderImportedFromPennsieve(prevNamePoolInHighLevelFolder)) {
+            if (!prevNamePoolInHighLevelFolder["action"].includes["renamed"]) {
+              prevNamePoolInHighLevelFolder["action"].push("renamed");
+            }
+          }
+
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][newPoolName] =
+            prevNamePoolInHighLevelFolder;
+          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][prevPoolName];
+        }
+      }
+
+      //Rename the pool in the pool-subject-sample-structure
+      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][newPoolName] =
+        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][prevPoolName];
+      delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][prevPoolName];
+
+      //Rename the pool in the subjectsTableData
+      for (const subjectDataArray of subjectsTableData.slice(1)) {
+        if (subjectDataArray[1] === prevPoolName) {
+          subjectDataArray[1] = newPoolName;
+        }
+      }
+
+      //Rename the pool in the samplesTableData
+      for (const sampleDataArray of samplesTableData.slice(1)) {
+        if (sampleDataArray[3] === prevPoolName) {
+          sampleDataArray[3] = newPoolName;
+        }
+      }
+    }
+  };
+  sodaJSONObj.renameSubject = function (prevSubjectName, newSubjectName) {
     if (prevSubjectName === newSubjectName) {
       return;
     }
+
+    const [subjectsInPools, subjectsOutsidePools] = this.getAllSubjects();
+    const subjects = [...subjectsInPools, ...subjectsOutsidePools];
 
     //Throw an error if the subject name that the user is changing the old subject name
     //to already exists
@@ -4570,6 +6048,29 @@ const attachGuidedMethodsToSodaJSONObj = () => {
       if (subject.subjectName === prevSubjectName) {
         //if the subject is in a pool
         if (subject.poolName) {
+          //Rename the subjects folders in the datasetStructJSONObj
+          for (const highLevelFolder of guidedHighLevelFolders) {
+            const prevNameSubjectFolderInHighLevelFolder =
+              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+                subject.poolName
+              ]?.["folders"]?.[prevSubjectName];
+
+            if (prevNameSubjectFolderInHighLevelFolder) {
+              if (folderImportedFromPennsieve(prevNameSubjectFolderInHighLevelFolder)) {
+                if (!prevNameSubjectFolderInHighLevelFolder["action"].includes["renamed"]) {
+                  prevNameSubjectFolderInHighLevelFolder["action"].push("renamed");
+                }
+              }
+              datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
+                "folders"
+              ][newSubjectName] = prevNameSubjectFolderInHighLevelFolder;
+
+              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                subject.poolName
+              ]["folders"][prevSubjectName];
+            }
+          }
+          //Update the pool-sub-sam structure to reflect the subject name change
           this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][subject.poolName][
             newSubjectName
           ] =
@@ -4579,212 +6080,146 @@ const attachGuidedMethodsToSodaJSONObj = () => {
           delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
             subject.poolName
           ][prevSubjectName];
-
-          //Rename the subjects folders in the datasetStructJSONObj
+        } else {
+          //Rename the subjects folders in the datasetStructeJSONObj
           for (const highLevelFolder of guidedHighLevelFolders) {
-            if (
+            const prevNameSubjectFolderInHighLevelFolder =
               datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
-                subject.poolName
-              ]?.["folders"]?.[prevSubjectName]
-            ) {
-              datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
-                "folders"
-              ][newSubjectName] =
-                datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
-                  "folders"
-                ][prevSubjectName];
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                subject.poolName
-              ]["folders"][prevSubjectName];
+                prevSubjectName
+              ];
+
+            if (prevNameSubjectFolderInHighLevelFolder) {
+              if (folderImportedFromPennsieve(prevNameSubjectFolderInHighLevelFolder)) {
+                if (!prevNameSubjectFolderInHighLevelFolder["action"].includes["renamed"]) {
+                  prevNameSubjectFolderInHighLevelFolder["action"].push("renamed");
+                }
+
+                datasetStructureJSONObj["folders"][highLevelFolder]["folders"][newSubjectName] =
+                  prevNameSubjectFolderInHighLevelFolder;
+
+                delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                  prevSubjectName
+                ];
+              }
             }
           }
-        } else {
-          //if the subject is not in a pool
+
+          //Update the pool-sub-sam structure to reflect the subject name change
           this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][newSubjectName] =
             this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][prevSubjectName];
           delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
             prevSubjectName
           ];
+        }
+        //Update the subjects name in the subjects metadata if it exists
+        for (let i = 1; i < subjectsTableData.length; i++) {
+          if (subjectsTableData[i][0] === prevSubjectName) {
+            subjectsTableData[i][0] = newSubjectName;
+          }
+        }
 
-          //Rename the subjects folders in the datasetStructeJSONObj
-          for (const highLevelFolder of guidedHighLevelFolders) {
-            if (
-              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
-                prevSubjectName
-              ]
-            ) {
-              datasetStructureJSONObj["folders"][highLevelFolder]["folders"][newSubjectName] =
-                datasetStructureJSONObj["folders"][highLevelFolder]["folders"][prevSubjectName];
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                prevSubjectName
-              ];
+        //Update the subjects name for all samples the subject had
+        for (let i = 1; i < samplesTableData.length; i++) {
+          if (samplesTableData[i][0] === prevSubjectName) {
+            samplesTableData[i][0] = newSubjectName;
+          }
+        }
+      }
+    }
+  };
+  sodaJSONObj.renameSample = function (prevSampleName, newSampleName) {
+    const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
+    //Combine sample data from samples in and out of pools
+    let samples = [...samplesInPools, ...samplesOutsidePools];
+
+    if (prevSampleName != newSampleName) {
+      //Check samples already added and throw an error if a sample with the sample name already exists.
+      for (const sample of samples) {
+        if (sample.sampleName === newSampleName) {
+          throw new Error(
+            `Sample names must be unique. \n${newSampleName} already exists in ${sample.subjectName}`
+          );
+        }
+      }
+
+      //find the sample and rename it
+      for (const sample of samples) {
+        if (sample.sampleName === prevSampleName) {
+          if (sample.poolName) {
+            //Rename the samples folders in the datasetStructeJSONObj
+            for (const highLevelFolder of guidedHighLevelFolders) {
+              const prevNameSampleFolderInHighLevelFolder =
+                datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+                  sample.poolName
+                ]?.["folders"]?.[sample.subjectName]?.["folders"]?.[prevSampleName];
+
+              if (prevNameSampleFolderInHighLevelFolder) {
+                if (folderImportedFromPennsieve(prevNameSampleFolderInHighLevelFolder)) {
+                  if (!prevNameSampleFolderInHighLevelFolder["action"].includes["renamed"]) {
+                    prevNameSampleFolderInHighLevelFolder["action"].push("renamed");
+                  }
+                }
+
+                datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName][
+                  "folders"
+                ][sample.subjectName]["folders"][newSampleName] =
+                  prevNameSampleFolderInHighLevelFolder;
+                delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                  sample.poolName
+                ]["folders"][sample.subjectName]["folders"][prevSampleName];
+              }
             }
-          }
-        }
-      }
-    }
 
-    //Rename the subject's entry in the subjectsTableData
-    for (const subjectDataArray of subjectsTableData.slice(1)) {
-      if (subjectDataArray[0] === prevSubjectName) {
-        subjectDataArray[0] = newSubjectName;
-      }
-    }
-  };
-  sodaJSONObj.deleteSubject = function (subjectName) {
-    const [subjectsInPools, subjectsOutsidePools] = this.getAllSubjects();
-    const subjects = [...subjectsInPools, ...subjectsOutsidePools];
-    for (const subject of subjects) {
-      if (subject.subjectName === subjectName) {
-        //if the subject is in a pool
-        if (subject.poolName) {
-          delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-            subject.poolName
-          ][subjectName];
+            //Update the pool-sub-sam structure to reflect the sample name change
+            this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][sample.poolName][
+              sample.subjectName
+            ][newSampleName] =
+              this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][sample.poolName][
+                sample.subjectName
+              ][prevSampleName];
+            delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+              sample.poolName
+            ][sample.subjectName][prevSampleName];
+          } else {
+            //Rename the samples folders in the datasetStructeJSONObj
+            for (const highLevelFolder of guidedHighLevelFolders) {
+              const prevNameSampleFolderInHighLevelFolder =
+                datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+                  sample.subjectName
+                ]?.["folders"]?.[prevSampleName];
 
-          //Delete the subjects folders in the datasetStructeJSONObj
-          for (const highLevelFolder of guidedHighLevelFolders) {
-            if (
-              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
-                subject.poolName
-              ]?.["folders"]?.[subjectName]
-            ) {
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                subject.poolName
-              ]["folders"][subjectName];
+              if (prevNameSampleFolderInHighLevelFolder) {
+                if (folderImportedFromPennsieve(prevNameSampleFolderInHighLevelFolder)) {
+                  if (!prevNameSampleFolderInHighLevelFolder["action"].includes["renamed"]) {
+                    prevNameSampleFolderInHighLevelFolder["action"].push("renamed");
+                  }
+                }
+
+                datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName][
+                  "folders"
+                ][newSampleName] = prevNameSampleFolderInHighLevelFolder;
+                delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                  sample.subjectName
+                ]["folders"][prevSampleName];
+              }
             }
-          }
-        } else {
-          //if the subject is not in a pool
-          delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
 
-          //Delete the subjects folders in the datasetStructeJSONObj
-          for (const highLevelFolder of guidedHighLevelFolders) {
-            if (
-              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName]
-            ) {
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName];
+            this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+              sample.subjectName
+            ][newSampleName] =
+              this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+                sample.subjectName
+              ][prevSampleName];
+            delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+              sample.subjectName
+            ][prevSampleName];
+          }
+
+          //Update the samples name in the samples metadata if it exists
+          for (let i = 1; i < samplesTableData.length; i++) {
+            if (samplesTableData[i][1] === prevSampleName) {
+              samplesTableData[i][1] = newSampleName;
             }
-          }
-        }
-      }
-    }
-
-    //remove the subject's subject metadata
-    subjectsTableData = subjectsTableData.filter((subject) => {
-      return subject[0] !== subjectName;
-    });
-  };
-  sodaJSONObj.getSubjectsOutsidePools = function () {
-    let subjectsNotInPools = Object.keys(
-      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
-    );
-    return /*subjectsInPools.concat(*/ subjectsNotInPools /*)*/;
-  };
-  sodaJSONObj.getSubjectsInPools = function () {
-    return this["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
-  };
-  sodaJSONObj.moveSubjectIntoPool = function (subjectName, poolName) {
-    this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName][subjectName] =
-      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
-    delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
-
-    //Move the subjects folders in the datasetStructeJSONObj
-    for (const highLevelFolder of guidedHighLevelFolders) {
-      if (datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName]) {
-        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]["folders"][
-          subjectName
-        ] = datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName];
-        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName];
-      }
-    }
-
-    //Add the pool name to the subjectsTableData if if an entry exists
-    for (const subjectDataArray of subjectsTableData.slice(1)) {
-      if (subjectDataArray[0] === subjectName) {
-        subjectDataArray[1] = poolName;
-      }
-    }
-  };
-  sodaJSONObj.moveSubjectOutOfPool = function (subjectName, poolName) {
-    this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName] =
-      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName][subjectName];
-    delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName][
-      subjectName
-    ];
-
-    //Copy the subject folders from the pool into the root of the high level folder
-    for (const highLevelFolder of guidedHighLevelFolders) {
-      if (
-        datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
-          "folders"
-        ]?.[subjectName]
-      ) {
-        datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName] =
-          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]["folders"][
-            subjectName
-          ];
-        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]["folders"][
-          subjectName
-        ];
-      }
-    }
-
-    //Remove the pool from the subject's entry in the subjectsTableData
-    for (const subjectDataArray of subjectsTableData) {
-      if (subjectDataArray[0] === subjectName) {
-        subjectDataArray[1] = "";
-      }
-    }
-
-    //Remove the sample from the samplesTableData
-    for (const sampleDataArray of samplesTableData) {
-      if (sampleDataArray[0] === subjectName) {
-        sampleDataArray[3] = "";
-      }
-    }
-  };
-  sodaJSONObj.addPool = function (poolName) {
-    if (this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName]) {
-      throw new Error("Pool names must be unique.");
-    }
-
-    this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName] = {};
-  };
-  sodaJSONObj.renamePool = function (prevPoolName, newPoolName) {
-    //check if name already exists
-    if (prevPoolName != newPoolName) {
-      if (this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][newPoolName]) {
-        throw new Error("Pool names must be unique.");
-      }
-
-      if (this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][prevPoolName]) {
-        this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][newPoolName] =
-          this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][prevPoolName];
-        delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][prevPoolName];
-
-        //Rename the pool folder in the datasetStructureJSONObj
-        for (const highLevelFolder of guidedHighLevelFolders) {
-          if (
-            datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[prevPoolName]
-          ) {
-            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][newPoolName] =
-              datasetStructureJSONObj["folders"][highLevelFolder]["folders"][prevPoolName];
-            delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][prevPoolName];
-          }
-        }
-
-        //Rename the pool in the subjectsTableData
-        for (const subjectDataArray of subjectsTableData.slice(1)) {
-          if (subjectDataArray[1] === prevPoolName) {
-            subjectDataArray[1] = newPoolName;
-          }
-        }
-
-        //Rename the pool in the samplesTableData
-        for (const sampleDataArray of samplesTableData.slice(1)) {
-          if (sampleDataArray[3] === prevPoolName) {
-            sampleDataArray[3] = newPoolName;
           }
         }
       }
@@ -4802,13 +6237,291 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     }
 
     for (const highLevelFolder of guidedHighLevelFolders) {
-      if (datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]) {
-        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName];
+      const poolInHighLevelFolder =
+        datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[poolName];
+
+      if (poolInHighLevelFolder) {
+        if (folderImportedFromPennsieve(poolInHighLevelFolder)) {
+          guidedModifyPennsieveFolder(poolInHighLevelFolder, "delete");
+        } else {
+          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName];
+        }
       }
     }
 
     //delete the pool after copying the subjects back into subjects
     delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName];
+  };
+  sodaJSONObj.deleteSubject = async function (subjectName) {
+    const [subjectsInPools, subjectsOutsidePools] = this.getAllSubjects();
+    const subjects = [...subjectsInPools, ...subjectsOutsidePools];
+    for (const subject of subjects) {
+      // Variable to track if the user has been warned about deleting a subject with folders
+      let warningBeforeDeletingSubjectWithFoldersSwalHasBeenShown = false;
+
+      if (subject.subjectName === subjectName) {
+        //if the subject is in a pool
+        if (subject.poolName) {
+          //Delete the subjects folders in the datasetStructeJSONObj
+          for (const highLevelFolder of guidedHighLevelFolders) {
+            const subjectFolderInHighLevelFolder =
+              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+                subject.poolName
+              ]?.["folders"]?.[subjectName];
+
+            if (subjectFolderInHighLevelFolder) {
+              if (!warningBeforeDeletingSubjectWithFoldersSwalHasBeenShown) {
+                // Warn the user if they are deleting a subject with folders
+                // If they cancel the deletion, we return and the subject or its folders are not deleted
+                const continueWithSubjectDeletion = await guidedWarnBeforeDeletingEntity(
+                  "subject",
+                  subjectName
+                );
+                if (continueWithSubjectDeletion) {
+                  warningBeforeDeletingSubjectWithFoldersSwalHasBeenShown = true;
+                } else {
+                  return;
+                }
+              }
+
+              if (folderImportedFromPennsieve(subjectFolderInHighLevelFolder)) {
+                guidedModifyPennsieveFolder(subjectFolderInHighLevelFolder, "delete");
+              } else {
+                delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                  subject.poolName
+                ]["folders"][subjectName];
+              }
+            }
+          }
+
+          delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+            subject.poolName
+          ][subjectName];
+        } else {
+          //if the subject is not in a pool
+          //Delete the subjects folders in the datasetStructeJSONObj
+          for (const highLevelFolder of guidedHighLevelFolders) {
+            const subjectFolderInHighLevelFolder =
+              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName];
+
+            if (subjectFolderInHighLevelFolder) {
+              if (!warningBeforeDeletingSubjectWithFoldersSwalHasBeenShown) {
+                // Warn the user if they are deleting a subject with folders
+                // If they cancel the deletion, we return and the subject or its folders are not deleted
+                const continueWithSubjectDeletion = await guidedWarnBeforeDeletingEntity(
+                  "subject",
+                  subjectName
+                );
+                if (continueWithSubjectDeletion) {
+                  warningBeforeDeletingSubjectWithFoldersSwalHasBeenShown = true;
+                } else {
+                  return;
+                }
+              }
+
+              if (folderImportedFromPennsieve(subjectFolderInHighLevelFolder)) {
+                guidedModifyPennsieveFolder(subjectFolderInHighLevelFolder, "delete");
+              } else {
+                delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName];
+              }
+            }
+          }
+          delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
+        }
+        // delete the subject's samples
+        for (const sample of subject.samples) {
+          await sodaJSONObj.deleteSample(sample.sampleName, false);
+        }
+      }
+    }
+    for (let i = 1; i < subjectsTableData.length; i++) {
+      if (subjectsTableData[i][0] === subjectName) {
+        subjectsTableData.splice(i, 1);
+      }
+    }
+  };
+  sodaJSONObj.deleteSample = async function (sampleName, showWarningIfSampleFoldersExist) {
+    const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
+    //Combine sample data from samples in and out of pools
+    let samples = [...samplesInPools, ...samplesOutsidePools];
+
+    for (const sample of samples) {
+      // Variable to track if the user has been warned about deleting a subject with folders
+      let warningBeforeDeletingSampleWithFoldersSwalHasBeenShown = false;
+
+      if (sample.sampleName === sampleName) {
+        if (sample.poolName) {
+          //Delete the samples folder in the datasetStructureJSONObj
+          for (const highLevelFolder of guidedHighLevelFolders) {
+            const sampleFolderInHighLevelFolder =
+              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+                sample.poolName
+              ]?.["folders"]?.[sample.subjectName]?.["folders"]?.[sampleName];
+
+            if (sampleFolderInHighLevelFolder) {
+              if (!warningBeforeDeletingSampleWithFoldersSwalHasBeenShown) {
+                // Warn the user if they are deleting a sample with folders
+                // If they cancel the deletion, we return and the sample or its folders are not deleted
+                const continueWithSampleDeletion = await guidedWarnBeforeDeletingEntity(
+                  "sample",
+                  sampleName
+                );
+                if (continueWithSampleDeletion) {
+                  warningBeforeDeletingSampleWithFoldersSwalHasBeenShown = true;
+                } else {
+                  return;
+                }
+              }
+
+              if (folderImportedFromPennsieve(sampleFolderInHighLevelFolder)) {
+                guidedModifyPennsieveFolder(sampleFolderInHighLevelFolder, "delete");
+              } else {
+                delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                  sample.poolName
+                ]["folders"][sample.subjectName]["folders"][sampleName];
+              }
+            }
+          }
+
+          // Remove the sample from the guided structure
+          delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
+            sample.poolName
+          ][sample.subjectName][sampleName];
+        } else {
+          //Delete the samples folder in the datasetStructureJSONObj
+          for (const highLevelFolder of guidedHighLevelFolders) {
+            const sampleFolderInHighLevelFolder =
+              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+                sample.subjectName
+              ]?.["folders"]?.[sampleName];
+
+            if (sampleFolderInHighLevelFolder) {
+              if (!warningBeforeDeletingSampleWithFoldersSwalHasBeenShown) {
+                // Warn the user if they are deleting a sample with folders
+                // If they cancel the deletion, we return and the sample or its folders are not deleted
+                const continueWithSampleDeletion = await guidedWarnBeforeDeletingEntity(
+                  "sample",
+                  sampleName
+                );
+                if (continueWithSampleDeletion) {
+                  warningBeforeDeletingSampleWithFoldersSwalHasBeenShown = true;
+                } else {
+                  return;
+                }
+              }
+
+              if (folderImportedFromPennsieve(sampleFolderInHighLevelFolder)) {
+                guidedModifyPennsieveFolder(sampleFolderInHighLevelFolder, "delete");
+              } else {
+                delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+                  sample.poolName
+                ]["folders"][sample.subjectName]["folders"][sampleName];
+              }
+            }
+          }
+
+          // Remove the sample from the guided structure
+          delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+            sample.subjectName
+          ][sampleName];
+        }
+      }
+    }
+
+    // Remove the sample from the samples metadata
+    for (let i = 1; i < samplesTableData.length; i++) {
+      if (samplesTableData[i][1] === sampleName) {
+        samplesTableData.splice(i, 1);
+      }
+    }
+  };
+
+  sodaJSONObj.moveSubjectIntoPool = function (subjectName, poolName) {
+    //Move the subjects folders in the datasetStructeJSONObj
+    for (const highLevelFolder of guidedHighLevelFolders) {
+      const subjectFolderOutsidePool =
+        datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName];
+
+      if (subjectFolderOutsidePool) {
+        // If the target folder doesn't exist, create it
+        if (!datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]) {
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName] =
+            newEmptyFolderObj();
+        }
+
+        if (folderImportedFromPennsieve(subjectFolderOutsidePool)) {
+          guidedMovePennsieveFolder(
+            subjectName,
+            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName],
+            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]
+          );
+        } else {
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]["folders"][
+            subjectName
+          ] = subjectFolderOutsidePool;
+        }
+        // Delete the subject folder outside the pool
+        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName];
+      }
+    }
+
+    //Add the pool name to the subjectsTableData if if an entry exists
+    for (const subjectDataArray of subjectsTableData.slice(1)) {
+      if (subjectDataArray[0] === subjectName) {
+        subjectDataArray[1] = poolName;
+      }
+    }
+
+    this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName][subjectName] =
+      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
+    delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName];
+  };
+  sodaJSONObj.moveSubjectOutOfPool = function (subjectName, poolName) {
+    //Copy the subject folders from the pool into the root of the high level folder
+    for (const highLevelFolder of guidedHighLevelFolders) {
+      const subjectFolderInPoolFolder =
+        datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
+          "folders"
+        ]?.[subjectName];
+      if (subjectFolderInPoolFolder) {
+        if (folderImportedFromPennsieve(subjectFolderInPoolFolder)) {
+          guidedMovePennsieveFolder(
+            subjectName,
+            datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]["folders"][
+              subjectName
+            ],
+            datasetStructureJSONObj["folders"][highLevelFolder]
+          );
+        } else {
+          datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName] =
+            subjectFolderInPoolFolder;
+        }
+        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]["folders"][
+          subjectName
+        ];
+      }
+    }
+
+    //Remove the pool from the subject's entry in the subjectsTableData
+    for (let i = 1; i < subjectsTableData.length; i++) {
+      if (subjectsTableData[i][0] === subjectName) {
+        subjectsTableData[i][1] = "";
+      }
+    }
+
+    //Remove the pool from the samples that belong to the subject
+    for (let i = 1; i < samplesTableData.length; i++) {
+      if (samplesTableData[i][0] === subjectName) {
+        samplesTableData[i][3] = "";
+      }
+    }
+
+    //Remove the subject from the pool in the guided structures
+    this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName] =
+      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName][subjectName];
+    delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName][
+      subjectName
+    ];
   };
   sodaJSONObj.getPools = function () {
     return this["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
@@ -4818,7 +6531,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
       this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][poolName]
     );
   };
-
   sodaJSONObj.getAllSamplesFromSubjects = function () {
     let samplesInPools = [];
     let samplesOutsidePools = [];
@@ -4851,169 +6563,6 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     }
     return [samplesInPools, samplesOutsidePools];
   };
-
-  sodaJSONObj.addSampleToSubject = function (sampleName, subjectPoolName, subjectName) {
-    const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
-    //Combine sample data from samples in and out of pools
-    let samples = [...samplesInPools, ...samplesOutsidePools];
-
-    //Check samples already added and throw an error if a sample with the sample name already exists.
-    for (const sample of samples) {
-      if (sample.sampleName === sampleName) {
-        throw new Error(
-          `Sample names must be unique. \n${sampleName} already exists in ${sample.subjectName}`
-        );
-      }
-    }
-
-    if (subjectPoolName) {
-      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][subjectPoolName][
-        subjectName
-      ][sampleName] = {};
-    } else {
-      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][subjectName][
-        sampleName
-      ] = {};
-    }
-  };
-  sodaJSONObj.renameSample = function (prevSampleName, newSampleName) {
-    const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
-    //Combine sample data from samples in and out of pools
-    let samples = [...samplesInPools, ...samplesOutsidePools];
-
-    if (prevSampleName != newSampleName) {
-      //Check samples already added and throw an error if a sample with the sample name already exists.
-      for (const sample of samples) {
-        if (sample.sampleName === newSampleName) {
-          throw new Error(
-            `Sample names must be unique. \n${newSampleName} already exists in ${sample.subjectName}`
-          );
-        }
-      }
-
-      //find the sample and rename it
-      for (const sample of samples) {
-        if (sample.sampleName === prevSampleName) {
-          //Rename the sample's sample metadata
-          for (const sampleMetadataRow of samplesTableData.slice(1)) {
-            if (sampleMetadataRow[1] === prevSampleName) {
-              sampleMetadataRow[1] = newSampleName;
-            }
-          }
-
-          if (sample.poolName) {
-            this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][sample.poolName][
-              sample.subjectName
-            ][newSampleName] =
-              this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][sample.poolName][
-                sample.subjectName
-              ][prevSampleName];
-            delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-              sample.poolName
-            ][sample.subjectName][prevSampleName];
-
-            //Rename the samples folders in the datasetStructeJSONObj
-            for (const highLevelFolder of guidedHighLevelFolders) {
-              if (
-                datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
-                  sample.poolName
-                ]?.["folders"]?.[sample.subjectName]?.["folders"]?.[prevSampleName]
-              ) {
-                datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName][
-                  "folders"
-                ][sample.subjectName]["folders"][newSampleName] =
-                  datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName][
-                    "folders"
-                  ][sample.subjectName]["folders"][prevSampleName];
-                delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                  sample.poolName
-                ]["folders"][sample.subjectName]["folders"][prevSampleName];
-              }
-            }
-          } else {
-            this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
-              sample.subjectName
-            ][newSampleName] =
-              this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
-                sample.subjectName
-              ][prevSampleName];
-            delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
-              sample.subjectName
-            ][prevSampleName];
-            //Rename the samples folders in the datasetStructeJSONObj
-            for (const highLevelFolder of guidedHighLevelFolders) {
-              if (
-                datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
-                  sample.subjectName
-                ]?.["folders"]?.[prevSampleName]
-              ) {
-                datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName][
-                  "folders"
-                ][newSampleName] =
-                  datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                    sample.subjectName
-                  ]["folders"][prevSampleName];
-                delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                  sample.subjectName
-                ]["folders"][prevSampleName];
-              }
-            }
-          }
-        }
-      }
-    }
-  };
-
-  sodaJSONObj.deleteSample = function (sampleName) {
-    const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
-    //Combine sample data from samples in and out of pools
-    let samples = [...samplesInPools, ...samplesOutsidePools];
-
-    for (const sample of samples) {
-      if (sample.sampleName === sampleName) {
-        //remove the sample's sample metadata
-        samplesTableData = samplesTableData.filter((sampleDataArray) => {
-          return sampleDataArray[1] !== sample.sampleName;
-        });
-
-        if (sample.poolName) {
-          delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-            sample.poolName
-          ][sample.subjectName][sampleName];
-
-          //Delete the samples folder in the datasetStructureJSONObj
-          for (const highLevelFolder of guidedHighLevelFolders) {
-            if (
-              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
-                sample.poolName
-              ]?.["folders"]?.[sample.subjectName]?.["folders"]?.[sampleName]
-            ) {
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                sample.poolName
-              ]["folders"][sample.subjectName]["folders"][sampleName];
-            }
-          }
-        } else {
-          delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
-            sample.subjectName
-          ][sampleName];
-
-          //Delete the samples folder in the datasetStructureJSONObj
-          for (const highLevelFolder of guidedHighLevelFolders) {
-            if (
-              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
-                sample.subjectName
-              ]?.["folders"]?.[sampleName]
-            ) {
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                sample.subjectName
-              ]["folders"][sampleName];
-            }
-          }
-        }
-      }
-    }
-  };
   sodaJSONObj.getAllSubjects = function () {
     let subjectsInPools = [];
     let subjectsOutsidePools = [];
@@ -5040,34 +6589,14 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     }
     return [subjectsInPools, subjectsOutsidePools];
   };
-
-  sodaJSONObj.updatePrimaryDatasetStructure = function () {
-    //Add pool keys to primary dataset structure
-    for (const pool of Object.keys(
-      this["dataset-metadata"]["pool-subject-sample-structure"]["pools"]
-    )) {
-      if (datasetStructureJSONObj["folders"]["primary"]["folders"][pool]) {
-        datasetStructureJSONObj["folders"]["primary"]["folders"][pool] = {
-          folders: {},
-          files: {},
-          type: "",
-          action: [],
-        };
-      }
-    }
-    //Add sample keys to primary dataset structure
-    for (const sample of Object.keys(
-      this["dataset-metadata"]["pool-subject-sample-structure"]["samples"]
-    )) {
-      if (datasetStructureJSONObj["folders"]["primary"]["folders"][sample]) {
-        datasetStructureJSONObj["folders"]["primary"]["folders"][sample] = {
-          folders: {},
-          files: {},
-          type: "",
-          action: [],
-        };
-      }
-    }
+  sodaJSONObj.getSubjectsOutsidePools = function () {
+    let subjectsNotInPools = Object.keys(
+      this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"]
+    );
+    return subjectsNotInPools;
+  };
+  sodaJSONObj.getSubjectsInPools = function () {
+    return this["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
   };
 };
 
@@ -5078,21 +6607,18 @@ const highLevelFolderPageData = {
     contentsText:
       "Your primary should contain lorem ipsum foo bar random instructional text will go here",
     pathSuffix: "primary/",
-    backPageId: "guided-primary-folder-tab",
   },
   source: {
     headerText: "Virtually structure your source folder in the interface below.",
     contentsText:
       "Your source folder should contain lorem ipsum foo bar random instructional text will go here",
     pathSuffix: "source/",
-    backPageId: "guided-source-folder-tab",
   },
   derivative: {
     headerText: "Virtually structure your derivative folder in the interface below.",
     contentsText:
       "Your derivative folder should contain lorem ipsum foo bar random instructional text will go here",
     pathSuffix: "derivative/",
-    backPageId: "guided-derivative-folder-tab",
   },
   code: {
     headerText: "Provide the code data associated with your dataset in the interface below",
@@ -5100,7 +6626,6 @@ const highLevelFolderPageData = {
     as you would like to have them in your dataset when it is generated (note that none of
     your original data will be modified).<br />`,
     pathSuffix: "code/",
-    backPageId: "guided-code-folder-tab",
   },
   protocol: {
     headerText: "Provide the protocol data associated with your dataset in the interface below",
@@ -5108,7 +6633,6 @@ const highLevelFolderPageData = {
     as you would like to have them in your dataset when it is generated (note that none of
     your original data will be modified).`,
     pathSuffix: "protocol/",
-    backPageId: "guided-protocol-folder-tab",
   },
   docs: {
     headerText: "Provide docs data associated with your dataset in the interface below",
@@ -5116,7 +6640,6 @@ const highLevelFolderPageData = {
     as you would like to have them in your dataset when it is generated (note that none of
     your original data will be modified).`,
     pathSuffix: "docs/",
-    backPageId: "guided-docs-folder-tab",
   },
 };
 const generateHighLevelFolderSubFolderPageData = (
@@ -5126,7 +6649,6 @@ const generateHighLevelFolderSubFolderPageData = (
 ) => {
   const customPageData = {
     pathSuffix: `${highLevelFolderName}/${pathSuffix}`,
-    backPageId: `guided-${sampleOrSubject}-folder-tab`,
   };
   return customPageData;
 };
@@ -5154,13 +6676,6 @@ const updateFolderStructureUI = (pageDataObj) => {
     structureFolderContentsElement.classList.add("hidden");
   }
 
-  // if (fileExplorer.classList.contains("file-explorer-transition")) {
-  // }
-  // fileExplorer.style.webkitAnimation = "";
-  setTimeout(function () {
-    fileExplorer.classList.add("file-explorer-transition");
-  }, 200);
-
   $("#guided-input-global-path").val(`My_dataset_folder/${pageDataObj.pathSuffix}`);
   var filtered = getGlobalPath(organizeDSglobalPath);
   organizeDSglobalPath.value = filtered.slice(0, filtered.length).join("/") + "/";
@@ -5180,19 +6695,20 @@ const updateFolderStructureUI = (pageDataObj) => {
   listItems(myPath, "#items", 500, (reset = true));
   getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
 };
-//Description metadata functions
-const editAdditionalLink = (clickedEditLinkButton) => {
-  const tr = clickedEditLinkButton.parentNode.parentNode;
-};
 
-const deleteAdditionalLink = (clickedDeleteLinkButton) => {
-  const tr = clickedDeleteLinkButton.parentNode.parentNode;
-  const linkNameToDelete = tr.querySelector(".link-name-cell").innerHTML.trim();
+const getGuidedAdditionalLinks = () => {
+  return sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"].map(
+    (link) => link.link
+  );
+};
+//Description metadata functions
+
+const deleteAdditionalLink = (linkName) => {
   const additionalLinks =
     sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"];
   //filter additional links to remove the one to be deleted
   const filteredAdditionalLinks = additionalLinks.filter((link) => {
-    return link.link != linkNameToDelete;
+    return link.link != linkName;
   });
   sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"] =
     filteredAdditionalLinks;
@@ -5215,7 +6731,7 @@ const generateadditionalLinkRowElement = (link, linkType, linkRelation) => {
         <button
           type="button"
           class="btn btn-danger btn-sm"
-          onclick="deleteAdditionalLink(this)"
+          onclick="deleteAdditionalLink('${link}')"
         >   
           Delete link
         </button>
@@ -5389,12 +6905,18 @@ const fetchContributorDataFromAirTable = async () => {
       return [];
     }
   } catch (error) {
-    console.log(error);
     //If there is an error, return an empty array since no contributor data was fetched.
     return [];
   }
 };
 
+const getContributorFullNames = () => {
+  return sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"].map(
+    (contributor) => {
+      return contributor.conName;
+    }
+  );
+};
 const addContributor = (
   contributorFirstName,
   contributorLastName,
@@ -5411,8 +6933,8 @@ const addContributor = (
     contributorLastName: contributorLastName,
     conName: `${contributorFirstName} ${contributorLastName}`,
     conID: contributorORCID,
-    conAffliation: contributorAffiliationsArray.map((affiliation) => affiliation.value),
-    conRole: contributorRolesArray.map((role) => role.value),
+    conAffliation: contributorAffiliationsArray,
+    conRole: contributorRolesArray,
   });
 };
 
@@ -5466,7 +6988,6 @@ const getContributorByOrcid = (orcid) => {
 };
 
 const verifyOrcidID = (event) => {
-  // console.log(event.value);
   let userInput = event.value;
   //17 chars
   if (userInput.length > 17) {
@@ -5474,7 +6995,6 @@ const verifyOrcidID = (event) => {
       //verify every four characters forward if they are a number
       let afterLink = userInput.substr(18);
     }
-    // console.log(userInput.substr(17));
     //char 18 will be after the forward slash
   }
 };
@@ -5682,7 +7202,7 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
             const checkDigit = result === 10 ? "X" : String(result);
 
             if (checkDigit !== contributorOrcid.substr(-1)) {
-              Swal.showValidationMessage("ORCID is not valid");
+              Swal.showValidationMessage("ORCID iD does not exist");
             } else {
               try {
                 editContributorByOrcid(
@@ -5723,6 +7243,9 @@ const openGuidedAddContributorSwal = async () => {
       return contributor.conID;
     });
 
+    // fetch contributors from AirTable using the sparc award specified
+    // If any of the contributors in the dataset are found,
+    // they will be added to a dropdown at the top of the swal
     let contributorData = await fetchContributorDataFromAirTable();
 
     //Filter out contributors that have already been added
@@ -5732,7 +7255,7 @@ const openGuidedAddContributorSwal = async () => {
 
     // If contributor data is returned from airtable, add a select option for each contributor with
     // a returned first and last name
-    if (contributorData.length > 0) {
+    /*if (contributorData.length > 0) {
       addContributorTitle =
         "Select a contributor from the dropdown below or add their information manually.";
       contributorAdditionHeader = `
@@ -5783,10 +7306,10 @@ const openGuidedAddContributorSwal = async () => {
           ${contributorOptions}
         </select>
       `;
-    } else {
-      contributorAdditionHeader = ``;
-      addContributorTitle = "Enter the contributor's information below.";
-    }
+    } else {*/
+    contributorAdditionHeader = ``;
+    addContributorTitle = "Enter the contributor's information below.";
+    //}
   } catch (error) {
     console.log(error);
   }
@@ -5794,7 +7317,7 @@ const openGuidedAddContributorSwal = async () => {
   let affiliationTagify;
   let contributorRolesTagify;
 
-  const { value: newContributorData } = await Swal.fire({
+  await Swal.fire({
     allowOutsideClick: false,
     allowEscapeKey: false,
     backdrop: "rgba(0,0,0, 0.4)",
@@ -5915,7 +7438,7 @@ const openGuidedAddContributorSwal = async () => {
       });
       createDragSort(contributorRolesTagify);
 
-      $("#guided-dd-contributor-dropdown").selectpicker({
+      /*$("#guided-dd-contributor-dropdown").selectpicker({
         style: "guided--select-picker",
       });
       $("#guided-dd-contributor-dropdown").selectpicker("refresh");
@@ -5941,15 +7464,15 @@ const openGuidedAddContributorSwal = async () => {
 
         contributorRolesTagify.removeAllTags();
         contributorRolesTagify.addTags(selectedRoles.split());
-      });
+      });*/
     },
 
-    preConfirm: (inputValue) => {
+    preConfirm: () => {
       const contributorFirstName = document.getElementById("guided-contributor-first-name").value;
       const contributorLastName = document.getElementById("guided-contributor-last-name").value;
       const contributorOrcid = document.getElementById("guided-contributor-orcid").value;
-      const contributorAffiliations = affiliationTagify.value;
-      const contributorRoles = contributorRolesTagify.value;
+      const contributorAffiliations = affiliationTagify.value.map((item) => item.value);
+      const contributorRoles = contributorRolesTagify.value.map((item) => item.value);
 
       if (
         !contributorFirstName ||
@@ -5984,7 +7507,7 @@ const openGuidedAddContributorSwal = async () => {
             const checkDigit = result === 10 ? "X" : String(result);
 
             if (checkDigit !== contributorOrcid.substr(-1)) {
-              Swal.showValidationMessage("ORCID is not valid");
+              Swal.showValidationMessage("ORCID iD does not exist");
             } else {
               try {
                 addContributor(
@@ -6012,7 +7535,22 @@ const openGuidedAddContributorSwal = async () => {
   });
 };
 
+const contributorDataIsValid = (contributorObj) => {
+  if (
+    contributorObj.conAffliation.length > 0 &&
+    contributorObj.conID &&
+    contributorObj.conRole.length > 0 &&
+    contributorObj.contributorFirstName &&
+    contributorObj.contributorLastName
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 const generateContributorTableRow = (contributorObj) => {
+  const contributorObjIsValid = contributorDataIsValid(contributorObj);
   const contributorFullName = contributorObj["conName"];
   const contributorOrcid = contributorObj["conID"];
   const contributorRoleString = contributorObj["conRole"].join(", ");
@@ -6024,6 +7562,13 @@ const generateContributorTableRow = (contributorObj) => {
       </td>
       <td class="middle aligned">
         ${contributorRoleString}
+      </td>
+       <td class="middle aligned collapsing text-center">
+        ${
+          contributorObjIsValid
+            ? `<span class="badge badge-pill badge-success">Valid</span>`
+            : `<span class="badge badge-pill badge-warning">Missing Fields</span>`
+        }
       </td>
       <td class="middle aligned collapsing text-center">
         <button
@@ -6058,7 +7603,7 @@ const renderDatasetDescriptionContributorsTable = () => {
   if (contributors.length === 0) {
     contributorsTableHTML = `
       <tr>
-        <td colspan="4">
+        <td colspan="5">
           <div style="margin-right:.5rem" class="alert alert-warning guided--alert" role="alert">
             No contributors have been added to your dataset. To add a contributor, click the "Add a new contributor" button below.
           </div>
@@ -6127,7 +7672,6 @@ const addContributorField = () => {
       class="guided--input guided-orcid-input"
       type="text"
       placeholder="Enter ORCID here"
-      onkeyup="validateInput($(this))"
     />
     <label class="guided--form-label required mt-md">Affiliation(s): </label>
     <input class="guided-contributor-affiliation-input"
@@ -6194,25 +7738,76 @@ const addContributorField = () => {
   createDragSort(tagify);
   smoothScrollToElement(newlyAddedContributorField);
 };
+const getGuidedProtocolLinks = () => {
+  try {
+    return sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"].map(
+      (protocol) => protocol.link
+    );
+  } catch (error) {
+    // return an empty array if the protocol array doesn't exist yet
+    return [];
+  }
+};
 
-const addProtocolField = async () => {
-  const protocolsContainer = document.getElementById("protocols-container");
-  const values = await openProtocolSwal();
-  if (values) {
-    let firstProtocol = protocolsContainer.children[0];
-    if (firstProtocol.id === "protocolAlert") {
-      firstProtocol.remove();
-    }
-    const newProtocolField = generateProtocolField(values[0], values[1], values[3]);
-    //add sweet alert here
-    protocolsContainer.insertAdjacentHTML("beforeend", newProtocolField);
-    //scroll to the new element
-    scrollToBottomOfGuidedBody();
+const protocolObjIsFair = (protocolLink, protocoldescription) => {
+  return protocolLink.length > 0 && protocoldescription.length > 0;
+};
+
+const addGuidedProtocol = (link, description, type) => {
+  const currentProtocolLinks = getGuidedProtocolLinks();
+
+  if (currentProtocolLinks.includes(link)) {
+    throw new Error("Protocol link already exists");
+  }
+
+  const isFair = protocolObjIsFair(link, description);
+
+  //add the new protocol to the JSONObj
+  sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = [
+    ...sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"],
+    {
+      link: link,
+      type: type,
+      relation: "IsProtocolFor",
+      description: description,
+      isFair: isFair,
+    },
+  ];
+};
+const editGuidedProtocol = (oldLink, newLink, description, type) => {
+  const currentProtocolLinks = sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
+  //find the index of the protocol to be edited
+  const protocolIndex = currentProtocolLinks.findIndex((protocol) => protocol.link === oldLink);
+
+  const isFair = protocolObjIsFair(newLink, description);
+
+  //replace the protocol at the index with the new protocol
+  sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"][protocolIndex] = {
+    link: newLink,
+    type: type,
+    relation: "IsProtocolFor",
+    description: description,
+    isFair: isFair,
+  };
+};
+
+const determineIfLinkIsDOIorURL = (link) => {
+  // returns either "DOI" or "URL" or "neither"
+  if (doiRegex.declared({ exact: true }).test(link) === true) {
+    return "DOI";
+  }
+  if (validator.isURL(link) != true) {
+    return "neither";
+  }
+  if (link.includes("doi")) {
+    return "DOI";
+  } else {
+    return "URL";
   }
 };
 
 const openProtocolSwal = async (protocolElement) => {
-  //pass in name of url and check within soda json
+  // True if adding a new protocol, false if editing an existing protocol
   let protocolURL = "";
   let protocolDescription = "";
   if (protocolElement) {
@@ -6237,58 +7832,45 @@ const openProtocolSwal = async (protocolElement) => {
       $(".swal-popover").popover();
     },
     preConfirm: () => {
-      var link = $("#DD-protocol-link").val();
-      let protocolLink = "";
+      const link = $("#DD-protocol-link").val();
+      const protocolDescription = $("#DD-protocol-description").val();
       if (link === "") {
         Swal.showValidationMessage(`Please enter a link!`);
-      } else {
-        if (doiRegex.declared({ exact: true }).test(link) === true) {
-          protocolLink = "DOI";
-        } else {
-          //check if link is valid
-          if (validator.isURL(link) != true) {
-            Swal.showValidationMessage(`Please enter a valid link`);
-          } else {
-            //link is valid url and check for 'doi' in link
-            if (link.includes("doi")) {
-              protocolLink = "DOI";
-            } else {
-              protocolLink = "URL";
-            }
-          }
-        }
+        return;
       }
-      if ($("#DD-protocol-description").val() === "") {
+      if (protocolDescription === "") {
         Swal.showValidationMessage(`Please enter a short description!`);
+        return;
       }
-      var duplicate = checkLinkDuplicate(
-        $("#DD-protocol-link").val(),
-        document.getElementById("protocol-link-table-dd")
-      );
-      if (duplicate) {
-        Swal.showValidationMessage(
-          "Duplicate protocol. The protocol you entered is already added."
-        );
+      let protocolType = determineIfLinkIsDOIorURL(link);
+      if (protocolType === "neither") {
+        Swal.showValidationMessage(`Please enter a valid URL or DOI!`);
+        return;
       }
-      return [
-        $("#DD-protocol-link").val(),
-        protocolLink,
-        "IsProtocolFor",
-        $("#DD-protocol-description").val(),
-      ];
+
+      try {
+        if (!protocolElement) {
+          // Add the protocol
+          addGuidedProtocol(link, protocolDescription, protocolType);
+        } else {
+          // Edit the existing protocol
+          const protocolToEdit = protocolElement.dataset.protocolUrl;
+          editGuidedProtocol(protocolToEdit, link, protocolDescription, protocolType);
+        }
+        renderProtocolsTable();
+      } catch (error) {
+        Swal.showValidationMessage(error);
+      }
     },
   });
-  if (values) {
-    if (protocolElement) {
-      protocolElement.dataset.protocolUrl = values[0];
-      protocolElement.children[0].innerText = values[0];
-      protocolElement.dataset.protocolType = values[1];
-      protocolElement.children[1].innerText = values[1];
-      protocolElement.dataset.protocolDescription = values[3];
-    } else {
-      return values;
-    }
-  }
+};
+
+const guidedDeleteProtocol = (protocolElement) => {
+  const linkToDelete = protocolElement.dataset.protocolUrl;
+  sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = sodaJSONObj[
+    "dataset-metadata"
+  ]["description-metadata"]["protocols"].filter((protocol) => protocol.link !== linkToDelete);
+  renderProtocolsTable();
 };
 
 const removeProtocolField = (protocolElement) => {
@@ -6323,36 +7905,48 @@ const removeProtocolField = (protocolElement) => {
   }
 };
 
+const protocolRowIsValid = (url, description, type) => {
+  return url && description && type;
+};
+
 //TODO: handle new blank protocol fields (when parameter are blank)
-const generateProtocolField = (protocolUrl, protocolType, protocolDescription) => {
+const generateProtocolField = (protocolUrl, protocolType, protocolDescription, isFair) => {
   return `
     <tr 
       class="guided-protocol-field-container"
-      data-protocol-url="${protocolUrl}"
-      data-protocol-description="${protocolDescription}"
-      data-protocol-type="${protocolType}"
     >
-      <td class="middle aligned collapsing link-name-cell" style="color: black">
+      <td class="middle aligned link-name-cell" >
         ${protocolUrl}
       </td>
-      <td class="middle aligned collapsing link-name-cell" style="color: black">
-        ${protocolType}
+      <td class="middle aligned">
+        ${protocolDescription}
       </td>
-      <td class="middle aligned collapsing link-name-cell">
+      <td class="middle aligned collapsing text-center">
+        ${
+          isFair
+            ? `<span class="badge badge-pill badge-success">Valid</span>`
+            : `<span class="badge badge-pill badge-warning">Missing Fields</span>`
+        }
+      </td>
+      <td class="middle aligned collapsing text-center">
         <button
           type="button"
           class="btn btn-sm"
           style="color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);"
-          onclick="openProtocolSwal(this.parentElement.parentElement)"
+          data-protocol-url="${protocolUrl}"
+          data-protocol-description="${protocolDescription}"
+          onclick="openProtocolSwal(this)"
         >
         View/Edit
         </button>
       </td>
-      <td class="middle aligned collapsing link-name-cell">
+      <td class="middle aligned collapsing text-center">
         <button
           type="button"
-          class="btn btn-danger btn-sm" 
-          onclick=removeProtocolField(this.parentElement.parentElement)
+          class="btn btn-danger btn-sm"
+          data-protocol-url="${protocolUrl}"
+          data-protocol-description="${protocolDescription}"
+          onclick="guidedDeleteProtocol(this)"
         >
         Delete
         </button>
@@ -6379,7 +7973,12 @@ const renderProtocolsTable = () => {
 
   const protocolElements = protocols
     .map((protocol) => {
-      return generateProtocolField(protocol["link"], protocol["type"], protocol["description"]);
+      return generateProtocolField(
+        protocol["link"],
+        protocol["type"],
+        protocol["description"],
+        protocol["isFair"]
+      );
     })
     .join("\n");
   protocolsContainer.innerHTML = protocolElements;
@@ -6564,12 +8163,15 @@ const openAddAdditionLinkSwal = async () => {
       const link = $("#guided-other-link").val();
       if (link === "") {
         Swal.showValidationMessage(`Please enter a link.`);
+        return;
       }
       if ($("#guided-other-link-relation").val() === "Select") {
         Swal.showValidationMessage(`Please select a link relation.`);
+        return;
       }
       if ($("#guided-other-description").val() === "") {
         Swal.showValidationMessage(`Please enter a short description.`);
+        return;
       }
       var duplicate = checkLinkDuplicate(link, document.getElementById("other-link-table-dd"));
       if (duplicate) {
@@ -6599,6 +8201,7 @@ const openAddAdditionLinkSwal = async () => {
       relation: relation,
       description: description,
       type: linkType,
+      isFair: true,
     });
     renderAdditionalLinksTable();
   }
@@ -6775,27 +8378,7 @@ const guidedLoadSubjectMetadataIfExists = (subjectMetadataId) => {
   }
 };
 
-const guidedLoadSampleMetadataIfExists = (sampleMetadataId, subjectMetadataId) => {
-  //loop through all samplesTableData elemenents besides the first one
-  for (let i = 1; i < samplesTableData.length; i++) {
-    if (
-      samplesTableData[i][0] === subjectMetadataId &&
-      samplesTableData[i][1] === sampleMetadataId
-    ) {
-      //if the id matches, load the metadata into the form
-      populateFormsSamples(subjectMetadataId, sampleMetadataId, "", "guided");
-      return;
-    }
-  }
-};
-const openModifySubjectMetadataPage = (subjectMetadataID) => {
-  guidedLoadSubjectMetadataIfExists(subjectMetadataID);
-};
-const openModifySampleMetadataPage = (
-  sampleMetadataID,
-  sampleMetadataSubjectID,
-  sampleMetadataPoolID
-) => {
+const openModifySampleMetadataPage = (sampleMetadataID, samplesSubjectID) => {
   //Get all samples from the dataset and add all other samples to the was derived from dropdown
   const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
   //Combine sample data from samples in and out of pools
@@ -6845,11 +8428,16 @@ const openModifySampleMetadataPage = (
       .join("\n")}))
   `;
 
-  guidedLoadSampleMetadataIfExists(sampleMetadataID, sampleMetadataSubjectID);
-
-  document.getElementById("guided-bootbox-sample-id").value = sampleMetadataID;
-  document.getElementById("guided-bootbox-subject-id-samples").value = sampleMetadataSubjectID;
-  document.getElementById("guided-bootbox-sample-pool-id").value = sampleMetadataPoolID;
+  for (let i = 1; i < samplesTableData.length; i++) {
+    if (
+      samplesTableData[i][0] === samplesSubjectID &&
+      samplesTableData[i][1] === sampleMetadataID
+    ) {
+      //if the id matches, load the metadata into the form
+      populateFormsSamples(samplesSubjectID, sampleMetadataID, "", "guided");
+      return;
+    }
+  }
 };
 
 const openCopySubjectMetadataPopup = async () => {
@@ -6906,7 +8494,7 @@ const openCopySubjectMetadataPopup = async () => {
       confirmButtonColor: "Copy",
       focusCancel: true,
     })
-    .then((result) => {
+    .then(async (result) => {
       if (result.isConfirmed) {
         const selectedCopyFromSubject = $("input[name='copy-from']:checked").val();
         //loop through checked copy-to checkboxes and return the value of the checkbox element if checked
@@ -6937,10 +8525,10 @@ const openCopySubjectMetadataPopup = async () => {
         const currentSubjectOpenInView = document.getElementById("guided-bootbox-subject-id").value;
         if (currentSubjectOpenInView) {
           //If a subject was open in the UI, update it with the new metadata
-          openModifySubjectMetadataPage(currentSubjectOpenInView);
+          populateForms(currentSubjectOpenInView, "", "guided");
         }
 
-        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+        await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       }
     });
 };
@@ -7000,7 +8588,7 @@ const openCopySampleMetadataPopup = async () => {
       confirmButtonText: "Copy",
       focusCancel: true,
     })
-    .then((result) => {
+    .then(async (result) => {
       if (result.isConfirmed) {
         const selectedCopyFromSample = $("input[name='copy-from']:checked").val();
         //loop through checked copy-to checkboxes and return the value of the checkbox element if checked
@@ -7015,7 +8603,7 @@ const openCopySampleMetadataPopup = async () => {
         let wasDerivedFrom = "";
 
         //Add the data from the selected copy fro sample to cpoyFromSampleData array
-        for (var i = 1; i < samplesTableData.length; i++) {
+        for (let i = 1; i < samplesTableData.length; i++) {
           if (samplesTableData[i][1] === selectedCopyFromSample) {
             //copy all elements from matching array except the first one
             wasDerivedFrom = samplesTableData[i][2];
@@ -7035,19 +8623,12 @@ const openCopySampleMetadataPopup = async () => {
         const currentSampleSubjectOpenInView = document.getElementById(
           "guided-bootbox-subject-id-samples"
         ).value;
-        const currentSamplePoolOpenInView = document.getElementById(
-          "guided-bootbox-sample-pool-id"
-        ).value;
 
         //If a sample was open in the UI, update it with the new metadata
         if (currentSampleOpenInView) {
-          openModifySampleMetadataPage(
-            currentSampleOpenInView,
-            currentSampleSubjectOpenInView,
-            currentSamplePoolOpenInView
-          );
+          openModifySampleMetadataPage(currentSampleOpenInView, currentSampleSubjectOpenInView);
         }
-        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+        await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       }
     });
 };
@@ -7295,7 +8876,6 @@ const openSubjectRenameInput = (subjectNameEditButton) => {
         value=${prevSubjectInput}
         placeholder="Enter subject ID and press enter"
         onkeyup="specifySubject(event, $(this))"
-        data-input-set="guided-subjects-folder-tab"
         data-alert-message="Subject IDs may not contain spaces or special characters"
         data-alert-type="danger"
         data-prev-name="${prevSubjectName}"
@@ -7319,7 +8899,6 @@ const openPoolRenameInput = (poolNameEditButton) => {
         value=${prevPoolInput}
         placeholder="Enter new pool ID"
         onkeyup="specifyPool(event, $(this))"
-        data-input-set="guided-pools-folder-tab"
         data-alert-message="Pool IDs may not contain spaces or special characters"
         data-alert-type="danger"
         data-prev-name="${prevPoolName}"
@@ -7380,7 +8959,6 @@ const generateSubjectSpecificationRowElement = () => {
             name="guided-subject-id"
             placeholder="Enter subject ID and press enter"
             onkeyup="specifySubject(event, $(this))"
-            data-input-set="guided-subjects-folder-tab"
             data-alert-message="Subject IDs may not contain spaces or special characters"
             data-alert-type="danger"
             style="margin-right: 5px;"
@@ -7466,7 +9044,6 @@ const generateSampleSpecificationRowElement = () => {
             name="guided-sample-id"
             placeholder="Enter sample ID and press enter"
             onkeyup="specifySample(event, $(this))"
-            data-input-set="guided-samples-folder-tab"
             data-alert-message="Sample IDs may not contain spaces or special characters"
             data-alert-type="danger"
             style="margin-right: 5px;"
@@ -7676,7 +9253,6 @@ const generatePoolSpecificationRowElement = () => {
           name="guided-pool-id"
           placeholder="Enter pool ID"
           onkeyup="specifyPool(event, $(this))"
-          data-input-set="guided-subjects-folder-tab"
           data-alert-message="Pool IDs may not contain spaces or special characters"
           data-alert-type="danger"
           style="width: 100%;"
@@ -7720,35 +9296,24 @@ const addPoolTableRow = () => {
   }
 };
 
-//Deletes the entered subject folder from dsJSONObj and updates UI
-const deleteSubjectFolder = (subjectDeleteButton) => {
-  const subjectIdCellToDelete = subjectDeleteButton.closest("tr");
-  const subjectIdToDelete = subjectIdCellToDelete.find(".subject-id").text();
-  //delete the table row element in the UI
-  subjectIdCellToDelete.remove();
-  //Update subject table row indices
-  updateGuidedTableIndices("subject-table-index");
-  //delete the subject folder from sodaJSONobj
-  delete sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][subjectIdToDelete];
-  //delete the subject folder from the dataset structure obj
-  delete datasetStructureJSONObj["folders"]["primary"]["folders"][subjectIdToDelete];
-};
 //deletes subject from jsonObj and UI
-const deleteSubject = (subjectDeleteButton) => {
+const deleteSubject = async (subjectDeleteButton) => {
   const subjectIdCellToDelete = subjectDeleteButton.closest("tr");
   const subjectIdToDelete = subjectIdCellToDelete.find(".subject-id").text();
 
   //Check to see if a subject has been added to the element
   //if it has, delete the subject from the pool-sub-sam structure
   if (subjectIdToDelete) {
-    sodaJSONObj.deleteSubject(subjectIdToDelete);
+    await sodaJSONObj.deleteSubject(subjectIdToDelete);
   }
 
-  //delete the table row element in the UI
-  subjectIdCellToDelete.remove();
+  //Rerender the subjects table
+  renderSubjectsTable();
+
   //remove the add subject help text
   document.getElementById("guided-add-subject-instructions").classList.add("hidden");
 };
+
 const deletePool = (poolDeleteButton) => {
   const poolIdCellToDelete = poolDeleteButton.closest("tr");
   const poolIdToDelete = poolIdCellToDelete.find(".pool-id").text();
@@ -7758,125 +9323,21 @@ const deletePool = (poolDeleteButton) => {
   removeAlertMessageIfExists($("#pools-table"));
 };
 
-const deleteSample = (sampleDeleteButton) => {
+const deleteSample = async (sampleDeleteButton) => {
   const sampleIdCellToDelete = sampleDeleteButton.closest("tr");
   const sampleIdToDelete = sampleIdCellToDelete.find(".sample-id").text();
 
   //Check to see if a sample has been added to the element
   //if it has, delete the sample from the pool-sub-sam structure
   if (sampleIdToDelete) {
-    sodaJSONObj.deleteSample(sampleIdToDelete);
+    await sodaJSONObj.deleteSample(sampleIdToDelete, true);
   }
 
-  //delete the table row element in the UI
-  sampleIdCellToDelete.remove();
+  //Rerender the samples table
+  renderSamplesTable();
 };
 
 //SAMPLE TABLE FUNCTIONS
-
-$("#guided-button-generate-samples-table").on("click", () => {
-  let numSubjectRowsToCreate = parseInt($("#guided-number-of-samples-input").val());
-  let subjectsTableBody = document.getElementById("samples-table-body");
-
-  $("#number-of-samples-prompt").hide();
-  $("#samples-table").css("display", "flex");
-});
-
-const createSampleFolder = (event, sampleNameInput) => {
-  if (event.which == 13) {
-    try {
-      const sampleName = sampleNameInput.val().trim();
-      const sampleNameElement = `
-        <div class="space-between">
-          <span class="sample-id">${sampleName}</span>
-          <i
-            class="far fa-edit jump-back"
-            style="cursor: pointer"
-            onclick="openSampleRenameInput($(this))"
-          >
-          </i>
-        </div>
-      `;
-      const sampleIdCellToAddNameTo = sampleNameInput.parent();
-      const sampleParentSubjectName = sampleNameInput
-        .closest("tbody")
-        .siblings()
-        .find(".sample-table-name")
-        .text()
-        .trim();
-      let sampleNameArray = [];
-      //Add all existing sample names to anarray
-      Object.keys(datasetStructureJSONObj["folders"]["primary"]["folders"]).map((subjectName) => {
-        let samplesInSubject = Object.keys(
-          datasetStructureJSONObj["folders"]["primary"]["folders"][subjectName]["folders"]
-        );
-        Array.prototype.push.apply(sampleNameArray, samplesInSubject);
-      });
-      //Throw error if entered sample name is duplicate
-      if (sampleNameArray.includes(sampleName)) {
-        //Change input back to the previous name but throw an error to abort following logic
-        if (sampleNameInput.attr("data-prev-name") === sampleName) {
-          sampleIdCellToAddNameTo.html(sampleNameElement);
-        }
-        throw new Error("Sample name already exists");
-      }
-
-      if (sampleName.length > 0) {
-        if (subSamInputIsValid(sampleName)) {
-          removeAlertMessageIfExists(sampleNameInput);
-          //Add sample to sodaJSONobj
-          sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
-            sampleParentSubjectName
-          ].push(sampleName);
-
-          sampleIdCellToAddNameTo.html(sampleNameElement);
-
-          sampleTargetFolder = getRecursivePath(
-            ["primary", sampleParentSubjectName],
-            datasetStructureJSONObj
-          ).folders;
-          //Check to see if input has prev-name data attribute
-          //Added when renaming sample
-          if (sampleNameInput.attr("data-prev-name")) {
-            //get the name of the sample being renamed
-            const sampleFolderToRename = sampleNameInput.attr("data-prev-name");
-            //Remove old sample in sodaJSONobj
-            sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
-              sampleParentSubjectName
-            ] = sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"][
-              sampleParentSubjectName
-            ].filter((sample) => {
-              return sample !== sampleFolderToRename;
-            });
-
-            //create a temp copy of the folder to be renamed
-            copiedFolderToRename = sampleTargetFolder[sampleFolderToRename];
-            //set the copied obj from the prev name to the new obj name
-            sampleTargetFolder[sampleName] = copiedFolderToRename;
-            //delete the temp copy of the folder that was renamed
-            delete sampleTargetFolder[sampleFolderToRename];
-          } else {
-            //Create an empty folder for the new sample
-            sampleTargetFolder[sampleName] = {
-              folders: {},
-              files: {},
-              type: "",
-              action: [],
-            };
-          }
-        } else {
-          generateAlertMessage(sampleNameInput);
-        }
-      }
-    } catch (error) {
-      notyf.open({
-        duration: "3000",
-        type: "error",
-        message: error,
-      });
-    }
-  }
-};
 const openSampleRenameInput = (subjectNameEditButton) => {
   const sampleIdCellToRename = subjectNameEditButton.closest("td");
   const prevSampleName = sampleIdCellToRename.find(".sample-id").text();
@@ -7891,7 +9352,6 @@ const openSampleRenameInput = (subjectNameEditButton) => {
         name="guided-sample-id"
         placeholder="Enter new sample ID"
         onkeyup="specifySample(event, $(this))"
-        data-input-set="guided-samples-folder-tab"
         data-alert-message="Sample IDs may not contain spaces or special characters"
         data-alert-type="danger"
         data-prev-name="${prevSampleName}"
@@ -7900,6 +9360,71 @@ const openSampleRenameInput = (subjectNameEditButton) => {
     </div>
   `;
   sampleIdCellToRename.html(sampleRenameElement);
+};
+
+const removePennsievePermission = (clickedPermissionRemoveButton) => {
+  let permissionElementToRemove = clickedPermissionRemoveButton.closest("tr");
+  let permissionEntityType = permissionElementToRemove.attr("data-entity-type");
+  let permissionNameToRemove = permissionElementToRemove.find(".permission-name-cell").text();
+  let permissionTypeToRemove = permissionElementToRemove.find(".permission-type-cell").text();
+
+  if (permissionElementToRemove.prevObject[0].classList.contains("btn-danger")) {
+    permissionElementToRemove.prevObject[0].style.display = "none";
+    permissionElementToRemove.prevObject[0].nextElementSibling.style.display = "inline-block";
+    // add removeFromPennsieve css
+    permissionElementToRemove.prevObject[0].parentElement.parentElement.children[0].classList.add(
+      "removeFromPennsieve"
+    );
+    permissionElementToRemove.prevObject[0].parentElement.parentElement.children[0].style.opacity =
+      "0.5";
+    permissionElementToRemove.prevObject[0].parentElement.parentElement.children[1].style.opacity =
+      "0.5";
+
+    if (permissionEntityType === "user") {
+      const currentUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
+      for (let i = 0; i < currentUsers.length; i++) {
+        if (currentUsers[i]["userString"] === permissionNameToRemove) {
+          currentUsers[i]["deleteFromPennsieve"] = true;
+        }
+      }
+    }
+    if (permissionEntityType === "team") {
+      const currentTeams = sodaJSONObj["digital-metadata"]["team-permissions"];
+      for (let i = 0; i < currentTeams.length; i++) {
+        if (currentTeams[i]["teamString"] === permissionNameToRemove) {
+          currentTeams[i]["deleteFromPennsieve"] = true;
+        }
+      }
+    }
+  } else {
+    //restore was triggered
+    permissionElementToRemove.prevObject[0].style.display = "none";
+    permissionElementToRemove.prevObject[0].previousElementSibling.style.display = "inline-block";
+    // remove removeFromPennsieve css
+    permissionElementToRemove.prevObject[0].parentElement.parentElement.children[0].classList.remove(
+      "removeFromPennsieve"
+    );
+    permissionElementToRemove.prevObject[0].parentElement.parentElement.children[0].style.opacity =
+      "1";
+    permissionElementToRemove.prevObject[0].parentElement.parentElement.children[1].style.opacity =
+      "1";
+    if (permissionEntityType === "user") {
+      const currentUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
+      for (let i = 0; i < currentUsers.length; i++) {
+        if (currentUsers[i]["userString"] === permissionNameToRemove) {
+          currentUsers[i]["deleteFromPennsieve"] = false;
+        }
+      }
+    }
+    if (permissionEntityType === "team") {
+      const currentTeams = sodaJSONObj["digital-metadata"]["team-permissions"];
+      for (let i = 0; i < currentTeams.length; i++) {
+        if (currentTeams[i]["teamString"] === permissionNameToRemove) {
+          currentTeams[i]["deleteFromPennsieve"] = false;
+        }
+      }
+    }
+  }
 };
 
 const removePermission = (clickedPermissionRemoveButton) => {
@@ -7955,16 +9480,42 @@ const createPermissionsTableRowElement = (entityType, name, permission) => {
       <td class="middle aligned permission-name-cell">${name}</td>
       <td class="middle aligned remove-left-border permission-type-cell">${permission}</td>
       <td class="middle aligned text-center remove-left-border" style="width: 20px">
-        <i
-        class="far fa-trash-alt"
-        style="color: red; cursor: pointer"
-        onclick="removePermission($(this))"
-        ></i>
+        <button type="button" class="btn btn-danger btn-sm" onclick="removePermission($(this))">Delete</button>
       </td>
     </tr>
   `;
 };
+
+const createPennsievePermissionsTableRowElement = (entityType, name, permission, deleted) => {
+  if (deleted) {
+    return `
+    <tr class="fromPennsieve" data-entity-type=${entityType}>
+      <td style="opacity: 0.5" class="middle aligned permission-name-cell">${name}</td>
+      <td style="opacity: 0.5" class="middle aligned remove-left-border permission-type-cell">${permission}</td>
+      <td class="middle aligned text-center remove-left-border" style="width: 20px">
+        <button type="button" style="display: none" class="btn btn-danger btn-sm" onclick="removePennsievePermission($(this))">Delete</button>
+        <button type="button" class="btn btn-sm" style="display: inline-block;color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);" onclick="removePennsievePermission($(this))">Restore</button>
+      </td>
+    </tr>
+  `;
+  } else {
+    return `
+      <tr class="fromPennsieve" data-entity-type=${entityType}>
+        <td class="middle aligned permission-name-cell">${name}</td>
+        <td class="middle aligned remove-left-border permission-type-cell">${permission}</td>
+        <td class="middle aligned text-center remove-left-border" style="width: 20px">
+          <button type="button" class="btn btn-danger btn-sm" onclick="removePennsievePermission($(this))">Delete</button>
+          <button type="button" class="btn btn-sm" style="display: none;color: white; background-color: var(--color-light-green); border-color: var(--color-light-green);" onclick="removePennsievePermission($(this))">Restore</button>
+        </td>
+      </tr>
+    `;
+  }
+};
 const renderPermissionsTable = () => {
+  // when rendering permissions we will need to check if the permission was fetched from pennsieve
+  // we will then create a different table element that will behave differently
+  // visually showing user that the permission will be deleted upon upload
+  // along with restore option and role modification
   let permissionsTableElements = [];
   const owner = sodaJSONObj["digital-metadata"]["pi-owner"]["userString"];
   const users = sodaJSONObj["digital-metadata"]["user-permissions"];
@@ -7972,18 +9523,48 @@ const renderPermissionsTable = () => {
   permissionsTableElements.push(createPermissionsTableRowElement("owner", owner, "owner"));
 
   for (user of users) {
-    permissionsTableElements.push(
-      createPermissionsTableRowElement(
-        user.loggedInUser ? "loggedInUser" : "user",
-        user["userString"],
-        user["permission"]
-      )
-    );
+    if (user?.["permissonSource"]) {
+      // user was pull from pennsieve, create pennsieve element
+      if (user?.["deleteFromPennsieve"] === true) {
+        permissionsTableElements.push(
+          createPennsievePermissionsTableRowElement(
+            user.loggedInUser ? "loggedInUser" : "user",
+            user.userString,
+            user.permission,
+            true
+          )
+        );
+      } else {
+        permissionsTableElements.push(
+          createPennsievePermissionsTableRowElement(
+            user.loggedInUser ? "loggedInUser" : "user",
+            user.userString,
+            user.permission,
+            false
+          )
+        );
+      }
+    } else {
+      permissionsTableElements.push(
+        createPermissionsTableRowElement(
+          user.loggedInUser ? "loggedInUser" : "user",
+          user["userString"],
+          user["permission"]
+        )
+      );
+    }
   }
   for (team of teams) {
-    permissionsTableElements.push(
-      createPermissionsTableRowElement("team", team["teamString"], team["permission"])
-    );
+    if (team?.["permissionSource"]) {
+      //team was pulled from Pennsieve, create Pennsieve element
+      permissionsTableElements.push(
+        createPennsievePermissionsTableRowElement("team", team["teamString"], team["permission"])
+      );
+    } else {
+      permissionsTableElements.push(
+        createPermissionsTableRowElement("team", team["teamString"], team["permission"])
+      );
+    }
   }
 
   let permissionsTable = permissionsTableElements.join("\n");
@@ -8024,56 +9605,6 @@ $("#guided-button-no-source-data").on("click", () => {
         //User cancels
         //reset button UI to how it was before the user clicked no source files
         $("#guided-button-has-source-data").click();
-      }
-    });
-  }
-});
-
-/*********** Derivative page functions ***********/
-$("#guided-button-has-derivative-data").on("click", () => {
-  if (datasetStructureJSONObj["folders"]["derivative"] == undefined)
-    datasetStructureJSONObj["folders"]["derivative"] = {
-      folders: {},
-      files: {},
-      type: "",
-      action: [],
-    };
-  $("#guided-file-explorer-elements").appendTo($("#guided-user-has-derivative-data"));
-  updateFolderStructureUI(highLevelFolderPageData.derivative);
-});
-$("#guided-button-no-derivative-data").on("click", () => {
-  //ask user to confirm they would like to delete derivative folder if it exists
-  if (datasetStructureJSONObj["folders"]["derivative"] != undefined) {
-    Swal.fire({
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-      title:
-        "Reverting your decision will wipe out any changes you have made to the derivative folder.",
-      text: "Are you sure you would like to delete your derivative folder progress?",
-      icon: "warning",
-      showConfirmButton: true,
-      confirmButtonText: "Delete",
-      confirmButtonColor: "#3085d6 !important",
-      showCancelButton: true,
-      focusCancel: true,
-      reverseButtons: reverseSwalButtons,
-      heightAuto: false,
-      customClass: "swal-wide",
-      backdrop: "rgba(0,0,0, 0.4)",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        //User agrees to delete derivative folder
-        delete datasetStructureJSONObj["folders"]["derivative"];
-      } else {
-        //User cancels
-        //reset button UI to how it was before the user clicked no derivative files
-        $("#guided-button-has-derivative-data").click();
       }
     });
   }
@@ -8185,55 +9716,6 @@ $("#guided-submission-completion-date-manual").change(function () {
 /////////////////////////////////////////////////////////
 //////////       GUIDED OBJECT ACCESSORS       //////////
 /////////////////////////////////////////////////////////
-const setOrUpdateGuidedDatasetName = (newDatasetName) => {
-  return new Promise((resolve, reject) => {
-    const previousDatasetName = sodaJSONObj["digital-metadata"]["name"];
-    //If updataing the dataset, update the old banner image path with a new one
-    if (previousDatasetName) {
-      //If previousDatasetName is equal to the newDatasetName, we don't need to update any progress files
-      if (previousDatasetName === newDatasetName) {
-        resolve("No changes made to dataset name");
-      }
-
-      //get names of existing progress saves
-      const existingProgressNames = fs.readdirSync(guidedProgressFilePath);
-      //Remove '.json' from each element in existingProgressNames
-      existingProgressNames.forEach((element, index) => {
-        existingProgressNames[index] = element.replace(".json", "");
-      });
-      //check if dataset name is already in use
-      if (existingProgressNames.includes(newDatasetName)) {
-        reject(
-          "An existing progress file already exists with that name. Please choose a different name."
-        );
-      }
-
-      //update old progress file with new dataset name
-      const oldProgressFilePath = `${guidedProgressFilePath}/${previousDatasetName}.json`;
-      const newProgressFilePath = `${guidedProgressFilePath}/${newDatasetName}.json`;
-      fs.renameSync(oldProgressFilePath, newProgressFilePath);
-
-      const bannerImagePathToUpdate = sodaJSONObj["digital-metadata"]["banner-image-path"];
-      if (bannerImagePathToUpdate) {
-        const newBannerImagePath = bannerImagePathToUpdate.replace(
-          previousDatasetName,
-          datasetName
-        );
-        //Rename the old banner image folder to the new dataset name
-        fs.renameSync(bannerImagePathToUpdate, newBannerImagePath);
-        //change the banner image path in the JSON obj
-        sodaJSONObj["digital-metadata"]["banner-image-path"] = newBannerImagePath;
-      }
-      sodaJSONObj["digital-metadata"]["name"] = newDatasetName;
-      saveGuidedProgress(newDatasetName);
-      resolve("Dataset name updated");
-    } else {
-      sodaJSONObj["digital-metadata"]["name"] = newDatasetName;
-      saveGuidedProgress(newDatasetName);
-      resolve("Dataset name updated");
-    }
-  });
-};
 
 const getExistingPennsieveDatasetNames = async () => {
   // get the access token so the user can access the Pennsieve api
@@ -8271,26 +9753,39 @@ const getGuidedDatasetSubtitle = () => {
   return sodaJSONObj["digital-metadata"]["subtitle"];
 };
 
-const guidedShowBannerImagePreview = (imagePath) => {
+const guidedShowBannerImagePreview = (imagePath, imported) => {
   const bannerImagePreviewelement = document.getElementById("guided-banner-image-preview");
 
-  // bannerImagePreviewelement.innerHTML = '';
   if (bannerImagePreviewelement.childElementCount > 0) {
+    //remove old banner image
     bannerImagePreviewelement.removeChild(bannerImagePreviewelement.firstChild);
   }
+  if (imported) {
+    //if imported = true then add imagepath without cachebreaker
+    let guidedbannerImageElem = document.createElement("img");
 
-  let date = new Date();
-  let guidedbannerImageElem = document.createElement("img");
-  //imagePath + cachebreakeer at the end to update image every time
-  guidedbannerImageElem.src = imagePath + "?" + date.getMilliseconds();
-  guidedbannerImageElem.alt = "Preview of banner image";
-  guidedbannerImageElem.style = "max-height: 300px";
+    guidedbannerImageElem.src = imagePath;
+    guidedbannerImageElem.alt = "Preview of banner image";
+    guidedbannerImageElem.style = "max-height: 300px";
 
-  bannerImagePreviewelement.appendChild(guidedbannerImageElem);
+    bannerImagePreviewelement.appendChild(guidedbannerImageElem);
 
-  // bannerImagePreviewelement.innerHTML = guidedBannerImageElement;
-  $("#guided-banner-image-preview-container").show();
-  $("#guided-button-add-banner-image").html("Edit banner image");
+    $("#guided-banner-image-preview-container").show();
+    $("#guided-button-add-banner-image").html("Edit banner image");
+  } else {
+    let date = new Date();
+    let guidedbannerImageElem = document.createElement("img");
+
+    //imagePath + cachebreakeer at the end to update image every time
+    guidedbannerImageElem.src = imagePath + "?" + date.getMilliseconds();
+    guidedbannerImageElem.alt = "Preview of banner image";
+    guidedbannerImageElem.style = "max-height: 300px";
+
+    bannerImagePreviewelement.appendChild(guidedbannerImageElem);
+
+    $("#guided-banner-image-preview-container").show();
+    $("#guided-button-add-banner-image").html("Edit banner image");
+  }
 };
 const setGuidedBannerImage = (croppedImagePath) => {
   sodaJSONObj["digital-metadata"]["banner-image-path"] = croppedImagePath;
@@ -8439,7 +9934,7 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
         `guided-${highLevelFolderName}-samples-file-explorer-intro`
       );
       if (!introElement.classList.contains("hidden")) {
-        switchElementVisibility(
+        hideEleShowEle(
           `guided-${highLevelFolderName}-samples-file-explorer-intro`,
           "guided-file-explorer-elements"
         );
@@ -8462,37 +9957,13 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
         pathSuffix
       );
 
-      if (sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] == false) {
-        $("#items").html(`
-          <div
-            class="single-item ds-selectable"
-            id="guided-sample-data-folder"
-            onmouseover="hoverForFullName(this)"
-            onmouseleave="hideFullName()"
-          >
-            <h1 oncontextmenu="folderContextMenu(this)" class="myFol empty"></h1>
-            <div class="folder_desc">Sample data folder</div>
-          </div>
-          <div
-            class="single-item ds-selectable"
-            id="guided-sample-data-file"
-            onmouseover="hoverForFullName(this)"
-            onmouseleave="hideFullName()"
-          >
-            <h1
-              class="myFile xlsx"
-              oncontextmenu="fileContextMenu(this)"
-              style="margin-bottom: 10px"
-            ></h1>
-            <div class="folder_desc">Sample data file.xlsx</div>
-          </div>
-        `);
+      if (sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] == "false") {
         //right click the second child in #items jqeury
         introJs()
           .setOptions({
             steps: [
               {
-                element: document.querySelector(".primary-selection-aside-item"),
+                element: document.querySelector(".selection-aside-item"),
                 intro: "Select the different samples here to specify data files for each of them.",
               },
               {
@@ -8530,7 +10001,7 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
             disableInteraction: false,
           })
           .onbeforeexit(function () {
-            sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] = true;
+            sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] = "true";
             //reUpdate the file explorer
             updateFolderStructureUI(samplePageData);
           })
@@ -8590,7 +10061,7 @@ const renderSubjectsHighLevelFolderAsideItems = (highLevelFolderName) => {
         `guided-${highLevelFolderName}-subjects-file-explorer-intro`
       );
       if (!introElement.classList.contains("hidden")) {
-        switchElementVisibility(
+        hideEleShowEle(
           `guided-${highLevelFolderName}-subjects-file-explorer-intro`,
           "guided-file-explorer-elements"
         );
@@ -8614,22 +10085,67 @@ const renderSubjectsHighLevelFolderAsideItems = (highLevelFolderName) => {
       );
       updateFolderStructureUI(samplePageData);
     });
-    //add hover event that changes the background color to black
-    item.addEventListener("mouseover", (e) => {
-      e.target.style.backgroundColor = "whitesmoke";
-    });
-    item.addEventListener("mouseout", (e) => {
-      e.target.style.backgroundColor = "";
+  });
+};
+
+const renderPoolsHighLevelFolderAsideItems = (highLevelFolderName) => {
+  const asideElement = document.getElementById(`guided-${highLevelFolderName}-pools-aside`);
+  asideElement.innerHTML = "";
+  const pools = Object.keys(sodaJSONObj.getPools());
+
+  const poolItems = pools
+    .map((pool) => {
+      return `
+          <a 
+            class="${highLevelFolderName}-selection-aside-item selection-aside-item"
+            style="align-self: center; width: 97%; direction: ltr;"
+            data-path-suffix="${pool}"
+          >${pool}</a>
+        `;
+    })
+    .join("\n");
+
+  //Add the subjects to the DOM
+  asideElement.innerHTML = poolItems;
+
+  //add click event to each sample item
+  const selectionAsideItems = document.querySelectorAll(
+    `a.${highLevelFolderName}-selection-aside-item`
+  );
+  selectionAsideItems.forEach((item) => {
+    item.addEventListener("click", (e) => {
+      //Hide intro and show subject folder explorer if intro is open
+      hideEleShowEle(
+        `guided-${highLevelFolderName}-pools-file-explorer-intro`,
+        "guided-file-explorer-elements"
+      );
+
+      //add selected class to clicked element
+      e.target.classList.add("is-selected");
+      //remove selected class from all other elements
+      selectionAsideItems.forEach((item) => {
+        if (item != e.target) {
+          item.classList.remove("is-selected");
+        }
+      });
+      //get the path prefix from the clicked item
+      const pathSuffix = e.target.dataset.pathSuffix;
+
+      const poolPageData = generateHighLevelFolderSubFolderPageData(
+        "pool",
+        highLevelFolderName,
+        pathSuffix
+      );
+      updateFolderStructureUI(poolPageData);
     });
   });
 };
 
-const renderSubjectsMetadataAsideItems = () => {
+const renderSubjectsMetadataAsideItems = async () => {
   const asideElement = document.getElementById(`guided-subjects-metadata-aside`);
   asideElement.innerHTML = "";
 
   const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
-
   //Combine sample data from subjects in and out of pools
   let subjects = [...subjectsInPools, ...subjectsOutsidePools];
 
@@ -8640,15 +10156,13 @@ const renderSubjectsMetadataAsideItems = () => {
     subjectMetadataCopyButton.classList.add("hidden");
   }
 
-  const subjectsFormEntries = guidedSubjectsFormDiv.querySelectorAll(".subjects-form-entry");
-  //Create an array of subjectFormEntries name attribute
-  const subjectsFormNames = [...subjectsFormEntries].map((entry) => {
-    return entry.name;
-  });
+  const subjectsFormNames = [...guidedSubjectsFormDiv.querySelectorAll(".subjects-form-entry")].map(
+    (entry) => {
+      return entry.name;
+    }
+  );
 
   if (subjectsTableData.length == 0) {
-    //Get items with class "subjects-form-entry" from subjectsForDiv
-
     subjectsTableData[0] = subjectsFormNames;
     for (const subject of subjects) {
       const subjectDataArray = [];
@@ -8680,11 +10194,27 @@ const renderSubjectsMetadataAsideItems = () => {
       }
     }
 
+    // If the subject is in the table but not in the subjects array, remove it
+    const subjectNames = subjects.map((subject) => subject.subjectName);
+    for (let i = 1; i < subjectsTableData.length; i++) {
+      if (!subjectNames.includes(subjectsTableData[i][0])) {
+        subjectsTableData.splice(i, 1);
+      }
+    }
+
     //If custom fields have been added to the subjectsTableData, create a field for each custom field
     //added
-    for (let i = 0; i < subjectsTableData[0].length; i++) {
-      if (!subjectsFormNames.includes(subjectsTableData[0][i])) {
-        addCustomHeader("subjects", subjectsTableData[0][i], "guided");
+    // There are 27 standard fields for subjects so if there are more headers than that, there exists additional information
+    if (subjectsTableData[0].length > 27) {
+      for (let i = 27; i < subjectsTableData[0].length; i++) {
+        if (
+          !subjectsFormNames.includes(
+            subjectsTableData[0][i].charAt(0).toUpperCase() + subjectsTableData[0][i].slice(1)
+          ) ||
+          !subjectsFormNames.includes(subjectsTableData[0][i])
+        ) {
+          addCustomHeader("subjects", subjectsTableData[0][i], "guided");
+        }
       }
     }
   }
@@ -8693,10 +10223,11 @@ const renderSubjectsMetadataAsideItems = () => {
   const subjectItems = subjects
     .map((subject) => {
       return `
-          <a 
+          <div 
             class="subjects-metadata-aside-item selection-aside-item"
-            data-pool-id="${subject.poolName ? subject.poolName : ""}"
-          ><span class="subject-metadata-id">${subject.subjectName}</span></a>
+          >
+            ${subject.subjectName}
+          </div>
         `;
     })
     .join("\n");
@@ -8705,25 +10236,25 @@ const renderSubjectsMetadataAsideItems = () => {
   asideElement.innerHTML = subjectItems;
 
   //add click event to each subject item
-  const selectionAsideItems = document.querySelectorAll(`a.subjects-metadata-aside-item`);
-  selectionAsideItems.forEach((item) => {
-    item.addEventListener("click", (e) => {
+  const selectionAsideItems = document.querySelectorAll(`div.subjects-metadata-aside-item`);
+  selectionAsideItems.forEach(async (item) => {
+    item.addEventListener("click", async (e) => {
       //Hide intro and show metadata fields if intro is open
       const introElement = document.getElementById("guided-form-add-a-subject-intro");
       if (!introElement.classList.contains("hidden")) {
-        switchElementVisibility("guided-form-add-a-subject-intro", "guided-form-add-a-subject");
+        hideEleShowEle("guided-form-add-a-subject-intro", "guided-form-add-a-subject");
       }
       //Save the subject metadata from the previous subject being worked on
       previousSubject = document.getElementById("guided-bootbox-subject-id").value;
       //check to see if previousSubject is empty
       if (previousSubject) {
         addSubject("guided");
+        await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       }
 
       clearAllSubjectFormFields(guidedSubjectsFormDiv);
 
-      //call openModifySubjectMetadataPage function on clicked item
-      openModifySubjectMetadataPage(e.target.innerText);
+      populateForms(e.target.innerText, "", "guided");
 
       //add selected class to clicked element
       e.target.classList.add("is-selected");
@@ -8739,24 +10270,19 @@ const renderSubjectsMetadataAsideItems = () => {
       document.getElementById("guided-bootbox-subject-pool-id").value =
         e.target.getAttribute("data-pool-id");
 
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-    });
-    //add hover event that changes the background color
-    item.addEventListener("mouseover", (e) => {
-      e.target.style.backgroundColor = "whitesmoke";
-    });
-    item.addEventListener("mouseout", (e) => {
-      e.target.style.backgroundColor = "";
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     });
   });
 };
-const renderSamplesMetadataAsideItems = () => {
+
+const renderSamplesMetadataAsideItems = async () => {
   const asideElement = document.getElementById(`guided-samples-metadata-aside`);
   asideElement.innerHTML = "";
 
   const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
   //Combine sample data from samples in and out of pools
   let samples = [...samplesInPools, ...samplesOutsidePools];
+  const sampleNames = samples.map((sample) => sample.sampleName);
 
   const sampleMetadataCopyButton = document.getElementById("guided-button-sample-metadata-copy");
   if (samples.length > 1) {
@@ -8811,11 +10337,26 @@ const renderSamplesMetadataAsideItems = () => {
     }
   }
 
+  // If the subject is in the table but not in the subjects array, remove it
+  for (let i = 1; i < samplesTableData.length; i++) {
+    if (!sampleNames.includes(samplesTableData[i][1])) {
+      samplesTableData.splice(i, 1);
+    }
+  }
+
   //If custom fields have been added to the samplesTableData, create a field for each custom field
   //added
-  for (let i = 0; i < samplesTableData[0].length; i++) {
-    if (!samplesFormNames.includes(samplesTableData[0][i])) {
-      addCustomHeader("samples", samplesTableData[0][i], "guided");
+  // Samples metadata have 19 standard fields to fill, if the sample has more then additional fields are included
+  if (samplesTableData[0].length > 19) {
+    for (let i = 19; i < samplesTableData[0].length; i++) {
+      if (
+        !samplesFormNames.includes(samplesTableData[0][i]) ||
+        !samplesFormNames.includes(
+          samplesTableData[0][i].charAt(0).toUpperCase() + samplesTableData[0][i].slice(1)
+        )
+      ) {
+        addCustomHeader("samples", samplesTableData[0][i], "guided");
+      }
     }
   }
 
@@ -8823,16 +10364,13 @@ const renderSamplesMetadataAsideItems = () => {
   const sampleItems = samples
     .map((sample) => {
       return `
-        <a
+        <div
           class="samples-metadata-aside-item selection-aside-item"
           data-samples-subject-name="${sample.subjectName}"
-          data-samples-pool-id="${sample.poolName ? sample.poolName : ""}"
         >
-          <span class="sample-metadata-id">
           ${sample.subjectName}/${sample.sampleName}
-          </span>
-        </a>
-        `;
+        </div>
+      `;
     })
     .join("\n");
 
@@ -8840,13 +10378,13 @@ const renderSamplesMetadataAsideItems = () => {
   asideElement.innerHTML = sampleItems;
 
   //add click event to each sample item
-  const selectionAsideItems = document.querySelectorAll(`a.samples-metadata-aside-item`);
-  selectionAsideItems.forEach((item) => {
-    item.addEventListener("click", (e) => {
+  const selectionAsideItems = document.querySelectorAll(`div.samples-metadata-aside-item`);
+  selectionAsideItems.forEach(async (item) => {
+    item.addEventListener("click", async (e) => {
       //Hide intro and show metadata fields if intro is open
       const introElement = document.getElementById("guided-form-add-a-sample-intro");
       if (!introElement.classList.contains("hidden")) {
-        switchElementVisibility("guided-form-add-a-sample-intro", "guided-form-add-a-sample");
+        hideEleShowEle("guided-form-add-a-sample-intro", "guided-form-add-a-sample");
       }
 
       previousSample = document.getElementById("guided-bootbox-sample-id").value;
@@ -8854,6 +10392,7 @@ const renderSamplesMetadataAsideItems = () => {
       //check to see if previousSample is empty
       if (previousSample) {
         addSample("guided");
+        await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       }
 
       //add selected class to clicked element
@@ -8864,226 +10403,60 @@ const renderSamplesMetadataAsideItems = () => {
           item.classList.remove("is-selected");
         }
       });
-      //Get sample's subject and pool from rendered HTML
-      const samplesSubject = e.target.getAttribute("data-samples-subject-name");
-      const samplesPool = e.target.getAttribute("data-samples-pool-id");
-
-      //Set the subject id field based of clicked elements data-subject-id attribute
-      document.getElementById("guided-bootbox-subject-id-samples").value = samplesSubject;
-
-      //Set the pool id field based of clicked elements data-pool-id attribute
-      document.getElementById("guided-bootbox-sample-pool-id").value = samplesPool;
 
       //clear all sample form fields
       clearAllSubjectFormFields(guidedSamplesFormDiv);
 
-      //call openModifySampleMetadataPage function on clicked item
-      openModifySampleMetadataPage(e.target.innerText.split("/")[1], samplesSubject, samplesPool);
+      openModifySampleMetadataPage(
+        e.target.innerText.split("/")[1],
+        e.target.innerText.split("/")[0]
+      );
 
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-    });
-
-    item.addEventListener("mouseover", (e) => {
-      e.target.style.backgroundColor = "whitesmoke";
-    });
-    item.addEventListener("mouseout", (e) => {
-      e.target.style.backgroundColor = "";
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     });
   });
 };
 
 $(document).ready(async () => {
-  $("#guided-button-start-new-curate").on("click", () => {
+  $("#guided-button-start-new-curate").on("click", async () => {
+    guidedCreateSodaJSONObj();
+    attachGuidedMethodsToSodaJSONObj();
     guidedTransitionFromHome();
-  });
-
-  $("#guided-button-dataset-intro-back").on("click", () => {
-    const guidedIntroPage = document.getElementById("guided-intro-page");
-    const guidedDatasetNameSubtitlePage = document.getElementById("guided-new-dataset-info");
-    if (!guidedIntroPage.classList.contains("hidden")) {
-      //remove text from dataset name and subtitle inputs
-      document.getElementById("guided-dataset-name-input").value = "";
-      document.getElementById("guided-dataset-subtitle-input").value = "";
-
-      switchElementVisibility("guided-mode-starting-container", "guided-home");
-      //hide the intro footer
-      document.getElementById("guided-footer-intro").classList.add("hidden");
-      guidedPrepareHomeScreen();
-    } else if (!guidedDatasetNameSubtitlePage.classList.contains("hidden")) {
-      switchElementVisibility("guided-new-dataset-info", "guided-intro-page");
-    }
-  });
-  $("#guided-button-dataset-intro-next").on("click", async function () {
-    const guidedIntroPage = document.getElementById("guided-intro-page");
-    const guidedDatasetNameSubtitlePage = document.getElementById("guided-new-dataset-info");
-
-    if (!guidedIntroPage.classList.contains("hidden")) {
-      switchElementVisibility("guided-intro-page", "guided-new-dataset-info");
-    } else if (!guidedDatasetNameSubtitlePage.classList.contains("hidden")) {
-      let errorArray = [];
-
-      try {
-        $(this).addClass("loading");
-
-        let datasetNameInput = document.getElementById("guided-dataset-name-input").value.trim();
-        let datasetSubtitleInput = document
-          .getElementById("guided-dataset-subtitle-input")
-          .value.trim();
-        if (!datasetNameInput) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please enter a dataset name.",
-          });
-        }
-        if (!datasetSubtitleInput) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please enter a dataset subtitle.",
-          });
-        }
-        if (errorArray.length > 0) {
-          throw errorArray;
-        }
-
-        if (Object.keys(sodaJSONObj).length === 0) {
-          //get names of existing progress saves
-          const existingProgressNames = fs.readdirSync(guidedProgressFilePath);
-          //Remove '.json' from each element in existingProgressNames
-          existingProgressNames.forEach((element, index) => {
-            existingProgressNames[index] = element.replace(".json", "");
-          });
-          //check if dataset name is already in use
-          if (existingProgressNames.includes(datasetNameInput)) {
-            errorArray.push({
-              type: "notyf",
-              message:
-                "An existing progress file already exists with that name. Please choose a different name.",
-            });
-            throw errorArray;
-          }
-
-          guidedCreateSodaJSONObj();
-          attachGuidedMethodsToSodaJSONObj();
-
-          await setOrUpdateGuidedDatasetName(datasetNameInput);
-          setGuidedDatasetSubtitle(datasetSubtitleInput);
-          saveGuidedProgress(datasetNameInput);
-        } else {
-          //updating current progress file
-          try {
-            await setOrUpdateGuidedDatasetName(datasetNameInput);
-          } catch (error) {
-            errorArray.push({
-              type: "notyf",
-              message: error,
-            });
-            throw errorArray;
-          }
-          setGuidedDatasetSubtitle(datasetSubtitleInput);
-          saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-        }
-        $(this).removeClass("loading");
-
-        resetGuidedRadioButtons("guided-dataset-starting-point-tab");
-        guidedTransitionFromDatasetNameSubtitlePage();
-      } catch (error) {
-        errorArray.map((error) => {
-          if (error.type === "notyf") {
-            notyf.open({
-              duration: "4000",
-              type: "error",
-              message: error.message,
-            });
-          }
-        });
-        $(this).removeClass("loading");
-      }
-      $(this).removeClass("loading");
-    }
-  });
-  $("#guided-modify-dataset-name-subtitle").on("click", async () => {
-    let errorArray = [];
-    try {
-      const datasetName = getGuidedDatasetName();
-      const datasetSubtitle = getGuidedDatasetSubtitle();
-
-      if (datasetName === datasetNameInputValue && datasetSubtitle === datasetSubtitleInputValue) {
-        //If not changes were made to the name or subtitle, exit the page
-        guidedTransitionFromDatasetNameSubtitlePage();
-        return;
-      }
-
-      if (datasetName != datasetNameInputValue) {
-        //check if dataset name is already in use
-        const existingProgressFileNames = fs.readdirSync(guidedProgressFilePath);
-        //Get the name of the progress files without the file type
-        const existingProgressDatasetNames = existingProgressFileNames.map((fileName) => {
-          return fileName.split(".")[0];
-        });
-        if (existingProgressDatasetNames.includes(datasetNameInputValue)) {
-          const result = await Swal.fire({
-            title: "An existing progress file with this name already exists",
-            text: "Would you like to overwrite it? This will replace existing data saved under the old progress file with your current progress.",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, overwrite existing file",
-            cancelButtonText: "No, cancel",
-          });
-          if (result.isConfirmed) {
-            setOrUpdateGuidedDatasetName(datasetNameInputValue);
-            setGuidedDatasetSubtitle(datasetSubtitleInputValue);
-            saveGuidedProgress(datasetNameInputValue);
-          }
-        } else {
-          setOrUpdateGuidedDatasetName(datasetNameInputValue);
-
-          setGuidedDatasetSubtitle(datasetSubtitleInputValue);
-          saveGuidedProgress(datasetNameInputValue);
-        }
-      } else {
-        setGuidedDatasetSubtitle(datasetSubtitleInputValue);
-        saveGuidedProgress(datasetNameInputValue);
-      }
-      //transition out of dataset name/subtitle page
-      guidedTransitionFromDatasetNameSubtitlePage();
-    } catch (error) {
-      errorArray.map((error) => {
-        if (error.type === "notyf") {
-          notyf.open({
-            duration: "4000",
-            type: "error",
-            message: error.message,
-          });
-        }
-        errorArray = [];
-      });
-    }
-  });
-
-  //WHEN STRUCTURING FOLDER GUIDED
-  $("#guided-button-import-existing-dataset-structure").on("click", () => {
-    //Hide proper capsules and apply proper skip pages
-    $("#guided-curate-new-dataset-branch-capsule-container").hide();
-    $("#guided-curate-existing-local-dataset-branch-capsule-container").css("display", "flex");
-    $(".guided-curate-existing-local-dataset-branch-page").attr("data-skip-page", "false");
-    $(".guided-curate-new-dataset-branch-page").attr("data-skip-page", "true");
-  });
-  //WHEN IMPORTING LOCAL STRUCTURE
-  $("#guided-button-guided-dataset-structuring").on("click", () => {
-    //Hide proper capsules and apply proper skip pages
-    $("#guided-curate-existing-local-dataset-branch-capsule-container").hide();
-    $("#guided-curate-new-dataset-branch-capsule-container").css("display", "flex");
-
-    $(".guided-curate-new-dataset-branch-page").attr("data-skip-page", "false");
-    $(".guided-curate-existing-local-dataset-branch-page").attr("data-skip-page", "true");
-  });
-  $("#guided-structure-new-dataset").on("click", () => {
-    $("#guided-next-button").click();
-  });
-  $("#guided-import-existing-dataset").on("click", () => {
-    $("#guided-next-button").click();
+    guidedUnSkipPage("guided-intro-page-tab");
+    await openPage("guided-intro-page-tab");
+    /*introJs()
+      .setOptions({
+        steps: [
+          {
+            title: "Welcome to Guided Mode!",
+            intro: "This is a quick tutorial to get you comfortable with Guided Mode's navigation.",
+          },
+          {
+            element: document.querySelector(".guided--nav-bar-section"),
+            intro: `Navigating between individual pages is easy with the navigation bar. To navigate to a page, click on the page's name.
+            <br />
+            <br />
+            <b>Note:</b> The navigation bar only allows you to navigate to pages that have already been completed.`,
+          },
+          {
+            element: document.getElementById("guided-footer-div"),
+            intro: `The bottom navigation row allows you to navigate between pages.
+            <br />
+            <br />
+            <b>Note:</b> Your dataset's progress is saved automatically when clicking "Save and Continue" or "Save and Exit", and can be
+            resumed on the Guided Mode home page (even if you close out of the SODA application).`,
+          },
+          {
+            element: document.querySelector(".guided--progression-tab-container"),
+            intro: "Your current step in the curation process is displayed here.",
+          },
+        ],
+        tooltipClass: "guided--tooltip-intro-js",
+        exitOnEsc: false,
+        exitOnOverlayClick: false,
+        disableInteraction: false,
+      })
+      .start();*/
   });
 
   $("#guided-button-add-permission-user-or-team").on("click", function () {
@@ -9234,7 +10607,19 @@ $(document).ready(async () => {
       check_callback: true,
       data: {},
     },
-    plugins: ["types"],
+    plugins: ["types", "sort"],
+    sort: function (a, b) {
+      a1 = this.get_node(a);
+      b1 = this.get_node(b);
+
+      if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
+        //if the word assets is included in the icon then we can assume it is a file
+        //folder icons are under font awesome meanwhile files come from the assets folder
+        return a1.text > b1.text ? 1 : -1;
+      } else {
+        return a1.icon < b1.icon ? 1 : -1;
+      }
+    },
     types: {
       folder: {
         icon: "fas fa-folder fa-fw",
@@ -9312,12 +10697,6 @@ $(document).ready(async () => {
     );
   });
 
-  //card click hanndler that displays the card's panel using the card's id prefix
-  //e.g. clicking a card with id "foo-bar-card" will display the panel with the id "foo-bar-panel"
-  $(".guided--card-container > div").on("click", function () {
-    handlePageBranching($(this));
-  });
-
   document
     .getElementById("guided-bootbox-sample-protocol-title")
     .addEventListener("change", function () {
@@ -9355,141 +10734,19 @@ $(document).ready(async () => {
   // function for importing a banner image if one already exists
   $("#guided-button-add-banner-image").click(async () => {
     $("#guided-banner-image-modal").modal("show");
+    myCropper.destroy();
+    myCropper = new Cropper(guidedBfViewImportedImage, guidedCropOptions);
   });
 
   // Action when user click on "Import image" button for banner image
   $("#guided-button-import-banner-image").click(async () => {
     $("#guided-para-dataset-banner-image-status").html("");
     let filePaths = await ipcRenderer.invoke("open-file-dialog-import-banner-image");
-    guidedHandleSelectedBannerImage(filePaths);
+    handleSelectedBannerImage(filePaths, "guided-mode");
   });
   /////////////////////////////////////////////////////////
   //////////    GUIDED IPC RENDERER LISTENERS    //////////
   /////////////////////////////////////////////////////////
-
-  const guidedHandleSelectedBannerImage = async (path) => {
-    if (path.length > 0) {
-      let original_image_path = path[0];
-      let image_path = original_image_path;
-      let destination_image_path = require("path").join(
-        homeDirectory,
-        "SODA",
-        "banner-image-conversion"
-      );
-      let converted_image_file = require("path").join(destination_image_path, "converted-tiff.jpg");
-      let conversion_success = true;
-      imageExtension = path[0].split(".").pop();
-
-      if (imageExtension.toLowerCase() == "tiff") {
-        Swal.fire({
-          title: "Image conversion in progress!",
-          html: "Pennsieve does not support .tiff banner images. Please wait while SODA converts your image to the appropriate format required.",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          showClass: {
-            popup: "animate__animated animate__fadeInDown animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__fadeOutUp animate__faster",
-          },
-          didOpen: () => {
-            Swal.showLoading();
-          },
-        });
-
-        await Jimp.read(original_image_path)
-          .then(async (file) => {
-            if (!fs.existsSync(destination_image_path)) {
-              fs.mkdirSync(destination_image_path, { recursive: true });
-            }
-
-            try {
-              if (fs.existsSync(converted_image_file)) {
-                fs.unlinkSync(converted_image_file);
-              }
-            } catch (err) {
-              conversion_success = false;
-              console.error(err);
-            }
-
-            return file.write(converted_image_file, async () => {
-              if (fs.existsSync(converted_image_file)) {
-                let stats = fs.statSync(converted_image_file);
-                let fileSizeInBytes = stats.size;
-                let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
-
-                if (fileSizeInMegabytes > 5) {
-                  fs.unlinkSync(converted_image_file);
-
-                  await Jimp.read(original_image_path)
-                    .then((file) => {
-                      return file.resize(1024, 1024).write(converted_image_file, () => {
-                        document.getElementById("div-img-container-holder").style.display = "none";
-                        document.getElementById("div-img-container").style.display = "block";
-
-                        $("#para-path-image").html(image_path);
-                        guidedBfViewImportedImage.src = converted_image_file;
-                        myCropper.destroy();
-                        myCropper = new Cropper(guidedBfViewImportedImage, guidedCropOptions);
-                        $("#save-banner-image").css("visibility", "visible");
-                        $("body").removeClass("waiting");
-                      });
-                    })
-                    .catch((err) => {
-                      conversion_success = false;
-                      console.error(err);
-                    });
-                  if (fs.existsSync(converted_image_file)) {
-                    let stats = fs.statSync(converted_image_file);
-                    let fileSizeInBytes = stats.size;
-                    let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
-
-                    if (fileSizeInMegabytes > 5) {
-                      conversion_success = false;
-                      // SHOW ERROR
-                    }
-                  }
-                }
-                image_path = converted_image_file;
-                imageExtension = "jpg";
-                $("#para-path-image").html(image_path);
-                guidedBfViewImportedImage.src = image_path;
-                myCropper.destroy();
-                myCropper = new Cropper(guidedBfViewImportedImage, guidedCropOptions);
-                $("#save-banner-image").css("visibility", "visible");
-              }
-            });
-          })
-          .catch((err) => {
-            conversion_success = false;
-            console.error(err);
-            Swal.fire({
-              icon: "error",
-              text: "Something went wrong",
-              confirmButtonText: "OK",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-            });
-          });
-        if (conversion_success == false) {
-          $("body").removeClass("waiting");
-          return;
-        } else {
-          Swal.close();
-        }
-      } else {
-        document.getElementById("guided-div-img-container-holder").style.display = "none";
-        document.getElementById("guided-div-img-container").style.display = "block";
-
-        $("#guided-para-path-image").html(image_path);
-        guidedBfViewImportedImage.src = image_path;
-        myCropper.destroy();
-        myCropper = new Cropper(guidedBfViewImportedImage, guidedCropOptions);
-
-        $("#guided-save-banner-image").css("visibility", "visible");
-      }
-    }
-  };
 
   $("#guided-input-destination-getting-started-locally").on("click", () => {
     ipcRenderer.send("guided-open-file-dialog-local-destination-curate");
@@ -9535,7 +10792,7 @@ $(document).ready(async () => {
         // so new metadata can be uploaded to the newly created dataset
         // (This would happen if the user deleted the dataset on Pennsieve)
         sodaJSONObj["previously-uploaded-data"] = {};
-        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+        await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       }
     }
 
@@ -9566,7 +10823,7 @@ $(document).ready(async () => {
       //Save the dataset ID generated by pennsieve so the dataset is not re-uploaded when the user
       //resumes progress after failing an upload
       sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] = createdDatasetsID;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
       return createdDatasetsID;
     } catch (error) {
@@ -9641,7 +10898,7 @@ $(document).ready(async () => {
       datasetSubtitleUploadText.innerHTML = `Successfully added dataset subtitle: ${datasetSubtitle}`;
       guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "success");
       sodaJSONObj["previously-uploaded-data"]["subtitle"] = datasetSubtitle;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       console.error(error);
       let emessage = userErrorMessage(error);
@@ -9668,7 +10925,7 @@ $(document).ready(async () => {
 
     descriptionArray.push("**Study Purpose:** " + studyPurpose + "\n\n");
     descriptionArray.push("**Data Collection:** " + dataCollection + "\n\n");
-    descriptionArray.push("**Data Conclusion:** " + dataConclusion + "\n\n");
+    descriptionArray.push("**Primary Conclusion:** " + dataConclusion + "\n\n");
 
     const description = descriptionArray.join("");
 
@@ -9690,7 +10947,7 @@ $(document).ready(async () => {
       datasetDescriptionUploadText.innerHTML = `Successfully added dataset description!`;
       guidedUploadStatusIcon("guided-dataset-description-upload-status", "success");
       sodaJSONObj["previously-uploaded-data"]["description"] = description;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       datasetDescriptionUploadText.innerHTML = "Failed to add a dataset description.";
       guidedUploadStatusIcon("guided-dataset-description-upload-status", "error");
@@ -9729,7 +10986,7 @@ $(document).ready(async () => {
       datasetBannerImageUploadText.innerHTML = `Successfully added dataset banner image!`;
       guidedUploadStatusIcon("guided-dataset-banner-image-upload-status", "success");
       sodaJSONObj["previously-uploaded-data"]["banner-image-path"] = bannerImagePath;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       console.error(error);
       let emessage = userErrorMessage(error);
@@ -9767,7 +11024,7 @@ $(document).ready(async () => {
       datasetLicenseUploadText.innerHTML = `Successfully added dataset license: ${datasetLicense}`;
       guidedUploadStatusIcon("guided-dataset-license-upload-status", "success");
       sodaJSONObj["previously-uploaded-data"]["license"] = datasetLicense;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       console.error(error);
       let emessage = userErrorMessage(error);
@@ -9817,7 +11074,7 @@ $(document).ready(async () => {
         datasetPiOwnerUploadText.innerHTML = `Successfully added PI: ${piOwnerObj["name"]}`;
         guidedUploadStatusIcon("guided-dataset-pi-owner-upload-status", "success");
         sodaJSONObj["previously-uploaded-data"]["pi-owner"] = piOwnerObj;
-        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+        await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
       } catch (error) {
         console.error(error);
         let emessage = userErrorMessage(error);
@@ -9858,12 +11115,13 @@ $(document).ready(async () => {
       datasetTagsUploadText.innerHTML = `Successfully added dataset tags: ${tags.join(", ")}`;
       guidedUploadStatusIcon("guided-dataset-tags-upload-status", "success");
       sodaJSONObj["previously-uploaded-data"]["tags"] = tags;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       datasetTagsUploadText.innerHTML = "Failed to add dataset tags.";
       guidedUploadStatusIcon("guided-dataset-tags-upload-status", "error");
     }
   };
+
   const guidedGrantUserPermission = async (
     bfAccount,
     datasetName,
@@ -9871,21 +11129,37 @@ $(document).ready(async () => {
     userUUID,
     selectedRole
   ) => {
-    log.info("Adding a permission for a user on a dataset");
-
-    const userPermissionUploadElement = `
-        <tr id="guided-dataset-${userUUID}-permissions-upload-tr" class="permissions-upload-tr">
-          <td class="middle aligned" id="guided-dataset-${userUUID}-permissions-upload-text">
-            Granting ${userName} ${selectedRole} permissions...
-          </td>
-          <td class="middle aligned text-center collapsing border-left-0 p-0">
-            <div
-              class="guided--container-upload-status"
-              id="guided-dataset-${userUUID}-permissions-upload-status"
-            ></div>
-          </td>
-        </tr>
-      `;
+    let userPermissionUploadElement = "";
+    if (selectedRole === "remove current permissions") {
+      log.info("Removing a permission for a user on a dataset");
+      userPermissionUploadElement = `
+      <tr id="guided-dataset-${userUUID}-permissions-upload-tr" class="permissions-upload-tr">
+        <td class="middle aligned" id="guided-dataset-${userUUID}-permissions-upload-text">
+          Removing permissions for: ${userName}
+        </td>
+        <td class="middle aligned text-center collapsing border-left-0 p-0">
+          <div
+            class="guided--container-upload-status"
+            id="guided-dataset-${userUUID}-permissions-upload-status"
+          ></div>
+        </td>
+      </tr>
+    `;
+    } else {
+      log.info("Adding a permission for a user on a dataset");
+      userPermissionUploadElement = `
+      <tr id="guided-dataset-${userUUID}-permissions-upload-tr" class="permissions-upload-tr">
+        <td class="middle aligned" id="guided-dataset-${userUUID}-permissions-upload-text">
+          Granting ${userName} ${selectedRole} permissions...
+        </td>
+        <td class="middle aligned text-center collapsing border-left-0 p-0">
+          <div
+            class="guided--container-upload-status"
+            id="guided-dataset-${userUUID}-permissions-upload-status"
+          ></div>
+        </td>
+      </tr>`;
+    }
 
     //apend the upload element to the end of the table body
     document
@@ -9913,12 +11187,23 @@ $(document).ready(async () => {
           },
         }
       );
-      guidedUploadStatusIcon(`guided-dataset-${userUUID}-permissions-upload-status`, "success");
-      userPermissionUploadStatusText.innerHTML = `${selectedRole} permissions granted to user: ${userName}`;
-      log.info(`${selectedRole} permissions granted to ${userName}`);
+
+      if (selectedRole === "remove current permissions") {
+        guidedUploadStatusIcon(`guided-dataset-${userUUID}-permissions-upload-status`, "success");
+        userPermissionUploadStatusText.innerHTML = `${selectedRole} permissions removed for user: ${userName}`;
+        log.info(`${selectedRole} permissions granted to ${userName}`);
+      } else {
+        guidedUploadStatusIcon(`guided-dataset-${userUUID}-permissions-upload-status`, "success");
+        userPermissionUploadStatusText.innerHTML = `${selectedRole} permissions granted to user: ${userName}`;
+        log.info(`${selectedRole} permissions granted to ${userName}`);
+      }
     } catch (error) {
       guidedUploadStatusIcon(`guided-dataset-${userUUID}-permissions-upload-status`, "error");
-      userPermissionUploadStatusText.innerHTML = `Failed to grant ${selectedRole} permissions to ${userName}`;
+      if (selectedRole === "remove current permissions") {
+        userPermissionUploadStatusText.innerHTML = `Failed to remove permissions for ${userName}`;
+      } else {
+        userPermissionUploadStatusText.innerHTML = `Failed to grant ${selectedRole} permissions to ${userName}`;
+      }
       log.error(error);
       console.error(error);
       let emessage = userError(error);
@@ -9929,13 +11214,23 @@ $(document).ready(async () => {
   const guidedAddUserPermissions = async (bfAccount, datasetName, userPermissionsArray) => {
     //filter user permissions with loggedInUser key
     const promises = userPermissionsArray.map((userPermission) => {
-      return guidedGrantUserPermission(
-        bfAccount,
-        datasetName,
-        userPermission.userName,
-        userPermission.UUID,
-        userPermission.permission
-      );
+      if (userPermission?.["deleteFromPennsieve"] === true) {
+        return guidedGrantUserPermission(
+          bfAccount,
+          datasetName,
+          userPermission.userName,
+          userPermission.UUID,
+          "remove current permissions"
+        );
+      } else {
+        return guidedGrantUserPermission(
+          bfAccount,
+          datasetName,
+          userPermission.userName,
+          userPermission.UUID,
+          userPermission.permission
+        );
+      }
     });
     const result = await Promise.allSettled(promises);
   };
@@ -9947,7 +11242,23 @@ $(document).ready(async () => {
     teamString,
     selectedRole
   ) => {
-    const teamPermissionUploadElement = `
+    let teamPermissionUploadElement = "";
+    if (selectedRole === "remove current permissions") {
+      teamPermissionUploadElement = `
+        <tr id="guided-dataset-${teamString}-permissions-upload-tr" class="permissions-upload-tr">
+          <td class="middle aligned" id="guided-dataset-${teamString}-permissions-upload-text">
+            Remove permissions from: ${teamString}.
+          </td>
+          <td class="middle aligned text-center collapsing border-left-0 p-0">
+            <div
+              class="guided--container-upload-status"
+              id="guided-dataset-${teamString}-permissions-upload-status"
+            ></div>
+          </td>
+        </tr>
+      `;
+    } else {
+      teamPermissionUploadElement = `
       <tr id="guided-dataset-${teamString}-permissions-upload-tr" class="permissions-upload-tr">
         <td class="middle aligned" id="guided-dataset-${teamString}-permissions-upload-text">
           Granting ${teamString} ${selectedRole} permissions.
@@ -9960,6 +11271,7 @@ $(document).ready(async () => {
         </td>
       </tr>
     `;
+    }
 
     //apend the upload element to the end of the table body
     document
@@ -9987,11 +11299,20 @@ $(document).ready(async () => {
         }
       );
       guidedUploadStatusIcon(`guided-dataset-${teamString}-permissions-upload-status`, "success");
-      teamPermissionUploadStatusText.innerHTML = `${selectedRole} permissions granted to team: ${teamString}`;
-      log.info(`${selectedRole} permissions granted to ${teamString}`);
+      if (selectedRole === "remove current permissions") {
+        teamPermissionUploadStatusText.innerHTML = `Permissions removed from team: ${teamString}`;
+        log.info(`Permissions remove from: ${teamString}`);
+      } else {
+        teamPermissionUploadStatusText.innerHTML = `${selectedRole} permissions granted to team: ${teamString}`;
+        log.info(`${selectedRole} permissions granted to ${teamString}`);
+      }
     } catch (error) {
+      if (selectedRole === "remove current permissions") {
+        teamPermissionUploadStatusText.innerHTML = `Failed to remove permissions for ${teamString}`;
+      } else {
+        teamPermissionUploadStatusText.innerHTML = `Failed to grant ${selectedRole} permissions to ${teamString}`;
+      }
       guidedUploadStatusIcon(`guided-dataset-${teamString}-permissions-upload-status`, "error");
-      teamPermissionUploadStatusText.innerHTML = `Failed to grant ${selectedRole} permissions to ${teamString}`;
       log.error(error);
       console.error(error);
       let emessage = userError(error);
@@ -10001,104 +11322,26 @@ $(document).ready(async () => {
 
   const guidedAddTeamPermissions = async (bfAccount, datasetName, teamPermissionsArray) => {
     const promises = teamPermissionsArray.map((teamPermission) => {
-      return guidedGrantTeamPermission(
-        bfAccount,
-        datasetName,
-        teamPermission.UUID,
-        teamPermission.teamString,
-        teamPermission.permission
-      );
+      if (teamPermission?.["deleteFromPennsieve"] === true) {
+        return guidedGrantTeamPermission(
+          bfAccount,
+          datasetName,
+          teamPermission.UUID,
+          teamPermission.teamString,
+          "remove current permissions"
+        );
+      } else {
+        return guidedGrantTeamPermission(
+          bfAccount,
+          datasetName,
+          teamPermission.UUID,
+          teamPermission.teamString,
+          teamPermission.permission
+        );
+      }
     });
     const result = await Promise.allSettled(promises);
   };
-
-  $("#guided-button-preview-folder-structure").on("click", () => {
-    Swal.fire({
-      title: "Dataset folder structure preview",
-      width: 800,
-      html: `<div id="guided-folder-structure-preview" style="display: block; width: 100%;"></div>`,
-    });
-    var folderStructurePreview = document.getElementById("guided-folder-structure-preview");
-
-    $(folderStructurePreview).jstree({
-      core: {
-        check_callback: true,
-        data: {},
-      },
-      plugins: ["types"],
-      types: {
-        folder: {
-          icon: "fas fa-folder fa-fw",
-        },
-        "folder open": {
-          icon: "fas fa-folder-open fa-fw",
-        },
-        "folder closed": {
-          icon: "fas fa-folder fa-fw",
-        },
-        "file xlsx": {
-          icon: "./assets/img/excel-file.png",
-        },
-        "file xls": {
-          icon: "./assets/img/excel-file.png",
-        },
-        "file png": {
-          icon: "./assets/img/png-file.png",
-        },
-        "file PNG": {
-          icon: "./assets/img/png-file.png",
-        },
-        "file pdf": {
-          icon: "./assets/img/pdf-file.png",
-        },
-        "file txt": {
-          icon: "./assets/img/txt-file.png",
-        },
-        "file csv": {
-          icon: "./assets/img/csv-file.png",
-        },
-        "file CSV": {
-          icon: "./assets/img/csv-file.png",
-        },
-        "file DOC": {
-          icon: "./assets/img/doc-file.png",
-        },
-        "file DOCX": {
-          icon: "./assets/img/doc-file.png",
-        },
-        "file docx": {
-          icon: "./assets/img/doc-file.png",
-        },
-        "file doc": {
-          icon: "./assets/img/doc-file.png",
-        },
-        "file jpeg": {
-          icon: "./assets/img/jpeg-file.png",
-        },
-        "file JPEG": {
-          icon: "./assets/img/jpeg-file.png",
-        },
-        "file other": {
-          icon: "./assets/img/other-file.png",
-        },
-      },
-    });
-    $(folderStructurePreview).on("open_node.jstree", function (event, data) {
-      data.instance.set_type(data.node, "folder open");
-    });
-    $(folderStructurePreview).on("close_node.jstree", function (event, data) {
-      data.instance.set_type(data.node, "folder closed");
-    });
-    guidedShowTreePreview(sodaJSONObj["digital-metadata"]["name"], folderStructurePreview);
-
-    const folderPage = CURRENT_PAGE.attr("id");
-    if (folderPage === "guided-subjects-folder-tab") {
-      //open jsTree to correct folder
-      $(folderStructurePreview)
-        .jstree(true)
-        .open_node($(folderStructurePreview).jstree(true).get_node("#"));
-    }
-  });
 
   //const add_dataset_permission = async();
 
@@ -10139,7 +11382,7 @@ $(document).ready(async () => {
       guidedUploadStatusIcon("guided-subjects-metadata-upload-status", "success");
       subjectsMetadataUploadText.innerHTML = `Subjects metadata successfully uploaded`;
       sodaJSONObj["previously-uploaded-data"]["subjects-metadata"] = subjectsTableData;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       guidedUploadStatusIcon("guided-subjects-metadata-upload-status", "error");
       subjectsMetadataUploadText.innerHTML = `Failed to upload subjects metadata`;
@@ -10181,7 +11424,7 @@ $(document).ready(async () => {
       guidedUploadStatusIcon("guided-samples-metadata-upload-status", "success");
       samplesMetadataUploadText.innerHTML = `Samples metadata successfully uploaded`;
       sodaJSONObj["previously-uploaded-data"]["samples-metadata"] = samplesTableData;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       guidedUploadStatusIcon("guided-samples-metadata-upload-status", "error");
       samplesMetadataUploadText.innerHTML = `Failed to upload samples metadata`;
@@ -10225,7 +11468,7 @@ $(document).ready(async () => {
       guidedUploadStatusIcon("guided-submission-metadata-upload-status", "success");
       submissionMetadataUploadText.innerHTML = `Submission metadata successfully uploaded`;
       sodaJSONObj["previously-uploaded-data"]["submission-metadata"] = submissionMetadataJSON;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       guidedUploadStatusIcon("guided-submission-metadata-upload-status", "error");
       submissionMetadataUploadText.innerHTML = `Failed to upload submission metadata`;
@@ -10295,7 +11538,7 @@ $(document).ready(async () => {
         contributorInformation,
         additionalLinks,
       };
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       guidedUploadStatusIcon("guided-dataset-description-metadata-upload-status", "error");
       datasetDescriptionMetadataUploadText.innerHTML = `Failed to upload dataset description metadata`;
@@ -10377,7 +11620,7 @@ $(document).ready(async () => {
       datasetDescriptionMetadataUploadText.innerHTML = `${readmeORchanges.toUpperCase()} metadata successfully uploaded`;
       sodaJSONObj["previously-uploaded-data"][`${readmeORchanges}-metadata`] =
         readmeOrChangesMetadata;
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       guidedUploadStatusIcon(`guided-${readmeORchanges}-metadata-upload-status`, "error");
       datasetDescriptionMetadataUploadText.innerHTML = `Failed to upload ${readmeORchanges.toUpperCase()} metadata`;
@@ -10462,6 +11705,8 @@ $(document).ready(async () => {
 
       const guidedAdditionalLinks =
         sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"];
+      const guidedProtocols = sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
+      const allDatasetLinks = [...guidedAdditionalLinks, ...guidedProtocols];
 
       //README and CHANGES Metadata variables
       const guidedReadMeMetadata = sodaJSONObj["dataset-metadata"]["README"];
@@ -10506,15 +11751,13 @@ $(document).ready(async () => {
       await guidedAddDatasetBannerImage(guidedBfAccount, guidedDatasetName, guidedBannerImagePath);
       await guidedAddDatasetLicense(guidedBfAccount, guidedDatasetName, guidedLicense);
       await guidedAddDatasetTags(guidedBfAccount, guidedDatasetName, guidedTags);
-      await guidedAddPiOwner(guidedBfAccount, guidedDatasetName, guidedPIOwner);
+      // await guidedAddPiOwner(guidedBfAccount, guidedDatasetName, guidedPIOwner);
       await guidedAddUserPermissions(guidedBfAccount, guidedDatasetName, guidedUsers);
       await guidedAddTeamPermissions(guidedBfAccount, guidedDatasetName, guidedTeams);
 
       //Display the Dataset metadata upload table
       unHideAndSmoothScrollToElement("guided-div-dataset-metadata-upload-status-table");
 
-      // clear the Pennsieve Queue for dataset metadata generation (added to Renderer side for Mac users that are unable to clear the queue on the Python side)
-      clearQueue();
       //set timeout for 2 seconds
       await new Promise((r) => setTimeout(r, 2000));
 
@@ -10545,7 +11788,7 @@ $(document).ready(async () => {
         guidedDatasetInformation,
         guidedStudyInformation,
         guidedContributorInformation,
-        guidedAdditionalLinks
+        allDatasetLinks
       );
 
       let readMeMetadataRes = await guidedUploadREADMEorCHANGESMetadata(
@@ -10579,7 +11822,6 @@ $(document).ready(async () => {
       //Upload the dataset files
       const mainCurationResponse = await guidedUploadDatasetToPennsieve();
     } catch (error) {
-      console.log(error);
       clientError(error);
       let emessage = userErrorMessage(error);
       //make an unclosable sweet alert that forces the user to close out of the app
@@ -10668,7 +11910,6 @@ $(document).ready(async () => {
       fs.emptyDirSync(guidedManifestFilePath);
 
       const guidedManifestData = sodaJSONObj["guided-manifest-files"];
-
       for (const [highLevelFolder, manifestData] of Object.entries(guidedManifestData)) {
         let manifestJSON = processManifestInfo(
           guidedManifestData[highLevelFolder]["headers"],
@@ -10683,7 +11924,6 @@ $(document).ready(async () => {
         });
 
         convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
-
         datasetStructureJSONObj["folders"][highLevelFolder]["files"]["manifest.xlsx"] = {
           action: ["new"],
           path: manifestPath,
@@ -10713,7 +11953,6 @@ $(document).ready(async () => {
     let dataset_destination;
 
     if (sodaJSONObj["generate-dataset"]["destination"] == "bf") {
-      sodaJSONObj["generate-dataset"]["generate-option"] = "new";
       //Replace files and folders since guided mode always uploads to an existing Pennsieve dataset
       sodaJSONObj["generate-dataset"]["if-existing"] = "merge";
       sodaJSONObj["generate-dataset"]["if-existing-files"] = "skip";
@@ -10730,9 +11969,6 @@ $(document).ready(async () => {
       datasetUploadSession.startSession();
     }
 
-    // clear the Pennsieve Queue (added to Renderer side for Mac users that are unable to clear the queue on the Python side)
-    clearQueue();
-
     client
       .post(
         `/curate_datasets/curation`,
@@ -10742,10 +11978,27 @@ $(document).ready(async () => {
         { timeout: 0 }
       )
       .then(async (curationRes) => {
-        main_total_generate_dataset_size = curationRes["main_total_generate_dataset_size"];
-        uploadedFiles = curationRes["main_curation_uploaded_files"];
         $("#sidebarCollapse").prop("disabled", false);
         log.info("Completed curate function");
+
+        // log the difference again to Google Analytics
+        let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Guided Mode - Generate - Dataset - Number of Files",
+          `${datasetUploadSession.id}`,
+          finalFilesCount
+        );
+
+        let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Guided Mode - Generate - Dataset - Size",
+          `${datasetUploadSession.id}`,
+          differenceInBytes
+        );
 
         // log relevant curation details about the dataset generation/Upload to Google Analytics
         logCurationSuccessToAnalytics(
@@ -10769,7 +12022,7 @@ $(document).ready(async () => {
           sodaJSONObj["digital-metadata"]["name"];
 
         // Save the sodaJSONObj after a successful upload
-        saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+        await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
         //Display the click next text
         document
@@ -10795,6 +12048,26 @@ $(document).ready(async () => {
       })
       .catch(async (error) => {
         clientError(error);
+
+        // log the difference again to Google Analytics
+        let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Guided Mode - Generate - Dataset - Number of Files",
+          `${datasetUploadSession.id}`,
+          finalFilesCount
+        );
+
+        let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Guided Mode - Generate - Dataset - Size",
+          `${datasetUploadSession.id}`,
+          differenceInBytes
+        );
+
         let emessage = userErrorMessage(error);
         try {
           let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
@@ -10808,16 +12081,10 @@ $(document).ready(async () => {
           clientError(error);
         }
 
-        // wait to see if the uploaded files or size will grow once the client has time to ask for the updated information
-        // if they stay zero that means nothing was uploaded
-        if (uploadedFiles === 0 || uploadedFilesSize === 0) {
-          await wait(2000);
-        }
-
         // log the curation errors to Google Analytics
         logCurationErrorsToAnalytics(
-          uploadedFiles,
-          uploadedFilesSize,
+          0,
+          0,
           dataset_destination,
           main_total_generate_dataset_size,
           increaseInFileSize,
@@ -10852,6 +12119,7 @@ $(document).ready(async () => {
         app.showExitPrompt = false;
         app.quit();
       });
+
     const guidedUpdateUploadStatus = async () => {
       let mainCurationProgressResponse;
       try {
@@ -10874,6 +12142,8 @@ $(document).ready(async () => {
       main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
       const main_generated_dataset_size = data["main_generated_dataset_size"];
       const elapsed_time_formatted = data["elapsed_time_formatted"];
+      const totalUploadedFiles = data["total_files_uploaded"];
+      uploadedFiles = totalUploadedFiles;
 
       if (start_generate === 1) {
         $("#guided-progress-bar-new-curate").css("display", "block");
@@ -10903,6 +12173,7 @@ $(document).ready(async () => {
             "Upload status": `${main_curate_progress_message}`,
             "Percent uploaded": `${percentOfDatasetUploaded.toFixed(2)}%`,
             "Elapsed time": `${elapsed_time_formatted}`,
+            "Files Uploaded": `${totalUploadedFiles}`,
           });
         }
       } else {
@@ -10911,6 +12182,9 @@ $(document).ready(async () => {
           "Elapsed time": `${elapsed_time_formatted}`,
         });
       }
+
+      logProgressToAnalytics(totalUploadedFiles, main_generated_dataset_size);
+
       //If the curate function is complete, clear the interval
       if (main_curate_status === "Done") {
         $("#sidebarCollapse").prop("disabled", false);
@@ -10926,73 +12200,34 @@ $(document).ready(async () => {
 
     // when generating a new dataset we need to add its ID to the ID -> Name mapping
     // we need to do this only once
+    // TODO: Reintegrate
     let loggedDatasetNameToIdMapping = false;
 
-    // if uploading to Pennsieve set an interval that gets the amount of files that have been uploaded
-    // and their aggregate size; starts for local dataset generation as well. Provides easy way to track amount of
-    // files copied and their aggregate size.
-    // IMP: This handles tracking a session that tracking a session that had a successful Pennsieve upload.
-    //      therefore it is unnecessary to have logs for Session ID tracking in the "api_main_curate" success block
-    // IMP: Two reasons this exists:
-    //    1. Pennsieve Agent can freeze. This prevents us from logging. So we log a Pennsieve dataset upload session as it happens.
-    //    2. Local dataset generation and Pennsieve dataset generation can fail. Having access to how many files and their aggregate size for logging at error time is valuable data.
-    const checkForBucketUpload = async () => {
-      // ask the server for the amount of files uploaded in the current session
-      // nothing to log for uploads where a user is solely deleting files in this section
+    let bytesOnPreviousLogPage = 0;
+    let filesOnPreviousLogPage = 0;
+    const logProgressToAnalytics = (files, bytes) => {
+      // log every 500 files -- will log on success/failure as well so if there are less than 500 files we will log what we uploaded ( all in success case and some of them in failure case )
+      if (files >= filesOnPreviousLogPage + 500) {
+        filesOnPreviousLogPage += 500;
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Guided Mode - Generate - Dataset - Number of Files",
+          `${datasetUploadSession.id}`,
+          500
+        );
 
-      let mainCurationDetailsResponse;
-      try {
-        mainCurationDetailsResponse = await client.get(`/curate_datasets/curation/upload_details`);
-      } catch (error) {
-        clientError(error);
-        clearInterval(timerCheckForBucketUpload);
-        return;
-      }
-
-      let { data } = mainCurationDetailsResponse;
-
-      // check if the amount of successfully uploaded files has increased
-      if (
-        data["main_curation_uploaded_files"] > 0 &&
-        data["uploaded_folder_counter"] > foldersUploaded
-      ) {
-        previousUploadedFileSize = uploadedFilesSize;
-        uploadedFiles = data["main_curation_uploaded_files"];
-        uploadedFilesSize = data["current_size_of_uploaded_files"];
-        foldersUploaded = data["uploaded_folder_counter"];
-
-        // log the increase in the file size
-        increaseInFileSize = uploadedFilesSize - previousUploadedFileSize;
-
-        // log the aggregate file count and size values when uploading to Pennsieve
-        if (dataset_destination === "bf" || dataset_destination === "Pennsieve") {
-          // use the session id as the label -- this will help with aggregating the number of files uploaded per session
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            "Guided Mode - Generate - Dataset - Number of Files",
-            `${datasetUploadSession.id}`,
-            uploadedFiles
-          );
-
-          // use the session id as the label -- this will help with aggregating the size of the given upload session
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            "Guided Mode - Generate - Dataset - Size",
-            `${datasetUploadSession.id}`,
-            increaseInFileSize
-          );
-        }
-      }
-
-      //stop the inteval when the upload is complete
-      if (main_curate_status === "Done") {
-        clearInterval(timerCheckForBucketUpload);
+        let differenceInBytes = bytes - bytesOnPreviousLogPage;
+        bytesOnPreviousLogPage = bytes;
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          "Guided Mode - Generate - Dataset - Size",
+          `${datasetUploadSession.id}`,
+          differenceInBytes
+        );
       }
     };
-
-    let timerCheckForBucketUpload = setInterval(checkForBucketUpload, 1000);
   };
 
   $("#guided-add-subject-button").on("click", () => {
@@ -11276,7 +12511,7 @@ $(document).ready(async () => {
       }
     }*/
 
-    openPage("guided-dataset-generation-tab");
+    await openPage("guided-dataset-generation-tab");
     guidedPennsieveDatasetUpload();
   });
 
@@ -11319,6 +12554,7 @@ $(document).ready(async () => {
   /**************************************/
   $("#guided-save-banner-image").click(async (event) => {
     $("#guided-para-dataset-banner-image-status").html("");
+
     if (guidedBfViewImportedImage.src.length > 0) {
       if (guidedFormBannerHeight.value > 511) {
         Swal.fire({
@@ -11400,18 +12636,34 @@ $(document).ready(async () => {
     }
   });
 
+  const getNextPageNotSkipped = (currentPageID) => {
+    const parentContainer = document.getElementById(currentPageID).closest(".guided--parent-tab");
+    const siblingPages = getNonSkippedGuidedModePages(parentContainer).map((page) => page.id);
+
+    const currentPageIndex = siblingPages.indexOf(currentPageID);
+    if (currentPageIndex != siblingPages.length - 1) {
+      return document.getElementById(siblingPages[currentPageIndex + 1]);
+    } else {
+      const nextParentContainer = parentContainer.nextElementSibling;
+      return getNonSkippedGuidedModePages(nextParentContainer)[0];
+    }
+  };
+
   //next button click handler
   $("#guided-next-button").on("click", async function () {
     //Get the ID of the current page to handle actions on page leave (next button pressed)
-    pageBeingLeftID = CURRENT_PAGE.attr("id");
-    //remove blue pulse
-    $(this).removeClass("pulse-blue");
-    //add a bootstrap loader to the next button
-    $(this).addClass("loading");
-    let errorArray = [];
+    pageBeingLeftID = CURRENT_PAGE.id;
+
+    if (pageBeingLeftID === "guided-dataset-generation-tab") {
+      guidedUnSkipPage("guided-dataset-dissemination-tab");
+      await openPage("guided-dataset-dissemination-tab");
+      return;
+    }
 
     try {
       await savePageChanges(pageBeingLeftID);
+      //Save progress onto local storage with the dataset name as the key
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
 
       //Mark page as completed in JSONObj so we know what pages to load when loading local saves
       //(if it hasn't already been marked complete)
@@ -11419,773 +12671,683 @@ $(document).ready(async () => {
         sodaJSONObj["completed-tabs"].push(pageBeingLeftID);
       }
 
-      //Save progress onto local storage with the dataset name as the key
-      saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-
-      const getNextPageNotSkipped = (startingPage) => {
-        //Check if param element's following element is undefined
-        //(usually the case when the element is the last element in it's container)
-        if (startingPage.next().attr("id") != undefined) {
-          //if not, check if it has the data-attribute skip-page
-          //if so, recurse back until a page without the skip-page attribute is found
-          let nextPage = startingPage.next();
-          if (nextPage.attr("data-skip-page") && nextPage.attr("data-skip-page") == "true") {
-            return getNextPageNotSkipped(nextPage);
-          } else {
-            //element is valid and not to be skipped
-            return nextPage;
-          }
-        } else {
-          //previous element was the last element in the container.
-          //go to the next page-set and return the first page to be transitioned to.
-          nextPage = startingPage.parent().next().children(".guided--page").first();
-          if (nextPage.attr("data-skip-page") && nextPage.attr("data-skip-page") == "true") {
-            return getNextPageNotSkipped(nextPage);
-          } else {
-            //element is valid and not to be skipped
-            return nextPage;
-          }
-        }
-      };
-
       //NAVIGATE TO NEXT PAGE + CHANGE ACTIVE TAB/SET ACTIVE PROGRESSION TAB
       //if more tabs in parent tab, go to next tab and update capsule
-      let targetPage = getNextPageNotSkipped(CURRENT_PAGE);
-      let targetPageID = targetPage.attr("id");
+      let targetPage = getNextPageNotSkipped(CURRENT_PAGE.id);
+      let targetPageID = targetPage.id;
 
-      openPage(targetPageID);
+      await openPage(targetPageID);
     } catch (error) {
       log.error(error);
+      console.log(error);
       error.map((error) => {
         // get the total number of words in error.message
         if (error.type === "notyf") {
           notyf.open({
-            duration: "5500",
+            duration: "7000",
             type: "error",
             message: error.message,
           });
         }
       });
     }
-    $(this).removeClass("loading");
   });
+
+  const getPrevPageNotSkipped = (currentPageID) => {
+    const parentContainer = document.getElementById(currentPageID).closest(".guided--parent-tab");
+    const siblingPages = getNonSkippedGuidedModePages(parentContainer).map((page) => page.id);
+    const currentPageIndex = siblingPages.indexOf(currentPageID);
+    if (currentPageIndex != 0) {
+      return document.getElementById(siblingPages[currentPageIndex - 1]);
+    } else {
+      const prevParentContainer = parentContainer.previousElementSibling;
+      const prevParentContainerPages = getNonSkippedGuidedModePages(prevParentContainer);
+      return prevParentContainerPages[prevParentContainerPages.length - 1];
+    }
+  };
 
   //back button click handler
   $("#guided-back-button").on("click", () => {
-    pageBeingLeftID = CURRENT_PAGE.attr("id");
-
-    if (pageBeingLeftID === "guided-prepare-helpers-tab") {
-      //Hide dataset name and subtitle parent tab
-      document.getElementById("guided-mode-starting-container").classList.remove("hidden");
-
-      switchElementVisibility("guided-intro-page", "guided-new-dataset-info");
-
-      //show the intro footer
-      document.getElementById("guided-footer-intro").classList.remove("hidden");
-
-      //Show the dataset structure page
-      $("#prepare-dataset-parent-tab").hide();
-      $("#guided-header-div").hide();
-      $("#guided-footer-div").hide();
-
-      //Set the dataset name and subtitle with the values from jsonObj
-      const datasetName = getGuidedDatasetName();
-      const datasetSubtitle = getGuidedDatasetSubtitle();
-      const datasetNameInputElement = document.getElementById("guided-dataset-name-input");
-      const datasetSubtitleInputElement = document.getElementById("guided-dataset-subtitle-input");
-      const datasetSubtitleCharacterCountText = document.getElementById(
-        "guided-subtitle-char-count"
-      );
-      datasetNameInputElement.value = datasetName;
-      datasetSubtitleInputElement.value = datasetSubtitle;
-      datasetSubtitleCharacterCountText.innerHTML = `${
-        255 - datasetSubtitle.length
-      } characters remaining`;
-
-      CURRENT_PAGE = null;
-
+    pageBeingLeftID = CURRENT_PAGE.id;
+    // If the user is on the first two pages, Save and Exit if they try to go back again
+    if (
+      pageBeingLeftID === "guided-intro-page-tab" ||
+      pageBeingLeftID === "guided-name-subtitle-tab"
+    ) {
+      guidedSaveAndExit();
       return;
     }
 
-    const getPrevPageNotSkipped = (startingPage) => {
-      //Check if param element's following element is undefined
-      //(usually the case when the element is the last element in it's container)
-      if (!startingPage.prev().hasClass("guided--capsule-container")) {
-        //if not, check if it has the data-attribute skip-page
-        //if so, recurse back until a page without the skip-page attribute is found
-        let prevPage = startingPage.prev();
-        if (prevPage.attr("data-skip-page") && prevPage.attr("data-skip-page") == "true") {
-          return getPrevPageNotSkipped(prevPage);
-        } else {
-          //element is valid and not to be skipped
-          return prevPage;
-        }
-      } else {
-        //previous element was the last element in the container.
-        //go to the next page-set and return the first page to be transitioned to.
-        prevPage = startingPage.parent().prev().children(".guided--page").last();
-        if (prevPage.attr("data-skip-page") && prevPage.attr("data-skip-page") == "true") {
-          return getPrevPageNotSkipped(prevPage);
-        } else {
-          //element is valid and not to be skipped
-          return prevPage;
-        }
-      }
-    };
-    let targetPage = getPrevPageNotSkipped(CURRENT_PAGE);
-    let targetPageID = targetPage.attr("id");
+    const targetPage = getPrevPageNotSkipped(CURRENT_PAGE.id);
+    const targetPageID = targetPage.id;
     openPage(targetPageID);
   });
+
+  const saveSubPageChanges = async (openSubPageID) => {
+    guidedSetNavLoadingState(true);
+    const errorArray = [];
+    try {
+      // temp logic that clicks the next button if the user is on the submission metadata page:
+
+      if (openSubPageID === "guided-specify-subjects-page") {
+        const buttonYesSubjects = document.getElementById("guided-button-add-subjects-table");
+        const buttonNoSubjects = document.getElementById("guided-button-no-subjects");
+        if (
+          !buttonYesSubjects.classList.contains("selected") &&
+          !buttonNoSubjects.classList.contains("selected")
+        ) {
+          errorArray.push({
+            type: "error",
+            message: "Please indicate if your dataset contains subjects.",
+          });
+          throw errorArray;
+        }
+        if (buttonYesSubjects.classList.contains("selected")) {
+          //Get the count of all subjects in and outside of pools
+          const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+          const subjectsCount = [...subjectsInPools, ...subjectsOutsidePools].length;
+
+          //Check to see if any subjects were added, and if not, disallow the user
+          //from progressing until they add at least one subject or select that they do not
+          if (subjectsCount === 0) {
+            errorArray.push({
+              type: "error",
+              message:
+                "Please add at least one subject or indicate that your dataset does not contain subjects.",
+            });
+            throw errorArray;
+          }
+
+          guidedUnSkipPage("guided-organize-subjects-into-pools-page");
+          guidedUnSkipPage("guided-specify-samples-page");
+
+          guidedUnSkipPage("guided-primary-data-organization-tab");
+          guidedUnSkipPage("guided-source-data-organization-tab");
+          guidedUnSkipPage("guided-derivative-data-organization-tab");
+
+          guidedUnSkipPage("guided-create-subjects-metadata-tab");
+          guidedUnSkipPage("guided-create-samples-metadata-tab");
+        }
+
+        if (buttonNoSubjects.classList.contains("selected")) {
+          guidedSkipPage("guided-organize-subjects-into-pools-page");
+          guidedSkipPage("guided-specify-samples-page");
+
+          guidedSkipPage("guided-primary-data-organization-tab");
+          guidedSkipPage("guided-source-data-organization-tab");
+          guidedSkipPage("guided-derivative-data-organization-tab");
+
+          guidedSkipPage("guided-create-subjects-metadata-tab");
+          guidedSkipPage("guided-create-samples-metadata-tab");
+        }
+      }
+
+      if (openSubPageID === "guided-organize-subjects-into-pools-page") {
+        const buttonYesPools = document.getElementById(
+          "guided-button-organize-subjects-into-pools"
+        );
+        const buttonNoPools = document.getElementById("guided-button-no-pools");
+        if (
+          !buttonYesPools.classList.contains("selected") &&
+          !buttonNoPools.classList.contains("selected")
+        ) {
+          errorArray.push({
+            type: "error",
+            message: "Please indicate if you would like to organize your subjects into pools.",
+          });
+          throw errorArray;
+        }
+
+        if (buttonYesPools.classList.contains("selected")) {
+          const pools = sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
+
+          //Check to see if any pools were added, and if not, disallow the user
+          //from progressing until they add at least one pool or select that they do not
+          //have any pools
+          if (Object.keys(pools).length === 0) {
+            errorArray.push({
+              type: "error",
+              message:
+                "Please add at least one pool or indicate that your dataset does not contain pools.",
+            });
+            throw errorArray;
+          }
+          //delete empty pools
+          for (const pool of Object.keys(pools)) {
+            if (
+              Object.keys(
+                sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"][pool]
+              ).length === 0
+            ) {
+              errorArray.push({
+                type: "error",
+                message:
+                  "Empty data pools are not allowed. Please add at least one subject to each pool or delete the empty pool.",
+              });
+              throw errorArray;
+            }
+          }
+
+          //Unkip the pool data organization pages
+          guidedUnSkipPage(`guided-primary-pools-organization-page`);
+          guidedUnSkipPage(`guided-source-pools-organization-page`);
+          guidedUnSkipPage(`guided-derivative-pools-organization-page`);
+        }
+
+        if (buttonNoPools.classList.contains("selected")) {
+          //If any pools exist, delete them
+          const pools = sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
+          for (const pool of Object.keys(pools)) {
+            sodaJSONObj.deletePool(pool);
+          }
+
+          //Skip the pool data organization pages
+          guidedSkipPage(`guided-primary-pools-organization-page`);
+          guidedSkipPage(`guided-source-pools-organization-page`);
+          guidedSkipPage(`guided-derivative-pools-organization-page`);
+        }
+      }
+
+      if (openSubPageID === "guided-specify-samples-page") {
+        const buttonYesSamples = document.getElementById("guided-button-add-samples-tables");
+        const buttonNoSamples = document.getElementById("guided-button-no-samples");
+        if (
+          !buttonYesSamples.classList.contains("selected") &&
+          !buttonNoSamples.classList.contains("selected")
+        ) {
+          errorArray.push({
+            type: "error",
+            message: "Please indicate if your dataset's subjects have samples.",
+          });
+          throw errorArray;
+        }
+        if (buttonYesSamples.classList.contains("selected")) {
+          const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
+          //Combine sample data from samples in and out of pools
+          const samplesCount = [...samplesInPools, ...samplesOutsidePools].length;
+          //Check to see if any samples were added, and if not, disallow the user
+          //from progressing until they add at least one sample or select that they do not
+          //have any samples
+          if (samplesCount === 0) {
+            errorArray.push({
+              type: "error",
+              message:
+                "Please add at least one sample or indicate that your dataset does not contain samples.",
+            });
+            throw errorArray;
+          }
+
+          //Unskip the sample data organization pages
+          guidedUnSkipPage(`guided-primary-samples-organization-page`);
+          guidedUnSkipPage(`guided-source-samples-organization-page`);
+          guidedUnSkipPage(`guided-derivative-samples-organization-page`);
+        }
+        if (buttonNoSamples.classList.contains("selected")) {
+          //Skip the sample data organization pages
+          guidedSkipPage(`guided-primary-samples-organization-page`);
+          guidedSkipPage(`guided-source-samples-organization-page`);
+          guidedSkipPage(`guided-derivative-samples-organization-page`);
+        }
+      }
+
+      if (openSubPageID === "guided-primary-samples-organization-page") {
+        const buttonYesPrimarySampleData = document.getElementById(
+          "guided-button-add-sample-primary-data"
+        );
+        const buttonNoPrimarySampleData = document.getElementById(
+          "guided-button-no-sample-primary-data"
+        );
+        if (
+          !buttonYesPrimarySampleData.classList.contains("selected") &&
+          !buttonNoPrimarySampleData.classList.contains("selected")
+        ) {
+          errorArray.push({
+            type: "error",
+            message: "Please indicate if you have primary data to add to your samples.",
+          });
+          throw errorArray;
+        }
+
+        if (buttonYesPrimarySampleData.classList.contains("selected")) {
+          const continueWithoutAddingPrimaryDataToAllSamples =
+            await cleanUpEmptyGuidedStructureFolders("primary", "samples", false);
+          if (!continueWithoutAddingPrimaryDataToAllSamples) {
+            errorArray.push({
+              type: "info",
+              message: "Please add primary data to all samples before continuing.",
+            });
+            throw errorArray;
+          }
+        }
+        if (buttonNoPrimarySampleData.classList.contains("selected")) {
+          await cleanUpEmptyGuidedStructureFolders("primary", "samples", true);
+        }
+      }
+
+      if (openSubPageID === "guided-primary-subjects-organization-page") {
+        const buttonYesPrimarySubjectData = document.getElementById(
+          "guided-button-add-subject-primary-data"
+        );
+        const buttonNoPrimarySubjectData = document.getElementById(
+          "guided-button-no-subject-primary-data"
+        );
+        if (
+          !buttonYesPrimarySubjectData.classList.contains("selected") &&
+          !buttonNoPrimarySubjectData.classList.contains("selected")
+        ) {
+          errorArray.push({
+            type: "error",
+            message: "Please indicate if you have primary data to add to your subjects.",
+          });
+          throw errorArray;
+        }
+        if (buttonYesPrimarySubjectData.classList.contains("selected")) {
+          const continueWithoutAddingPrimaryDataToAllSubjects =
+            await cleanUpEmptyGuidedStructureFolders("primary", "subjects", false);
+          if (!continueWithoutAddingPrimaryDataToAllSubjects) {
+            errorArray.push({
+              type: "info",
+              message: "Please add primary data to all subjects before continuing.",
+            });
+            throw errorArray;
+          }
+        }
+        if (buttonNoPrimarySubjectData.classList.contains("selected")) {
+          await cleanUpEmptyGuidedStructureFolders("primary", "subjects", true);
+        }
+      }
+
+      if (openSubPageID === "guided-primary-pools-organization-page") {
+        const buttonYesPrimaryPoolData = document.getElementById(
+          "guided-button-add-pool-primary-data"
+        );
+        const buttonNoPrimaryPoolData = document.getElementById(
+          "guided-button-no-pool-primary-data"
+        );
+        if (
+          !buttonYesPrimaryPoolData.classList.contains("selected") &&
+          !buttonNoPrimaryPoolData.classList.contains("selected")
+        ) {
+          errorArray.push({
+            type: "error",
+            message: "Please indicate if you have primary data to add to your pools.",
+          });
+          throw errorArray;
+        }
+        if (buttonYesPrimaryPoolData.classList.contains("selected")) {
+          const continueWithoutAddingPrimaryDataToAllPools =
+            await cleanUpEmptyGuidedStructureFolders("primary", "pools", false);
+          if (!continueWithoutAddingPrimaryDataToAllPools) {
+            errorArray.push({
+              type: "info",
+              message: "Please add primary data to all pools before continuing.",
+            });
+            throw errorArray;
+          }
+        }
+        if (buttonNoPrimaryPoolData.classList.contains("selected")) {
+          await cleanUpEmptyGuidedStructureFolders("primary", "pools", true);
+        }
+      }
+
+      if (openSubPageID === "guided-source-samples-organization-page") {
+        const buttonYesSourceSampleData = document.getElementById(
+          "guided-button-add-sample-source-data"
+        );
+        const buttonNoSourceSampleData = document.getElementById(
+          "guided-button-no-sample-source-data"
+        );
+        if (
+          !buttonYesSourceSampleData.classList.contains("selected") &&
+          !buttonNoSourceSampleData.classList.contains("selected")
+        ) {
+          errorArray.push({
+            type: "error",
+            message: "Please indicate if you have source data to add to your samples.",
+          });
+          throw errorArray;
+        }
+
+        if (buttonYesSourceSampleData.classList.contains("selected")) {
+          const continueWithoutAddingSourceDataToAllSamples =
+            await cleanUpEmptyGuidedStructureFolders("source", "samples", false);
+          if (!continueWithoutAddingSourceDataToAllSamples) {
+            errorArray.push({
+              type: "info",
+              message: "Please add source data to all samples before continuing.",
+            });
+            throw errorArray;
+          }
+        }
+        if (buttonNoSourceSampleData.classList.contains("selected")) {
+          await cleanUpEmptyGuidedStructureFolders("source", "samples", true);
+        }
+      }
+
+      if (openSubPageID === "guided-source-subjects-organization-page") {
+        const buttonYesSourceSubjectData = document.getElementById(
+          "guided-button-add-subject-source-data"
+        );
+        const buttonNoSourceSubjectData = document.getElementById(
+          "guided-button-no-subject-source-data"
+        );
+        if (
+          !buttonYesSourceSubjectData.classList.contains("selected") &&
+          !buttonNoSourceSubjectData.classList.contains("selected")
+        ) {
+          errorArray.push({
+            type: "error",
+            message: "Please indicate if you have source data to add to your subjects.",
+          });
+          throw errorArray;
+        }
+
+        if (buttonYesSourceSubjectData.classList.contains("selected")) {
+          const continueWithoutAddingSourceDataToAllSubjects =
+            await cleanUpEmptyGuidedStructureFolders("source", "subjects", false);
+          if (!continueWithoutAddingSourceDataToAllSubjects) {
+            errorArray.push({
+              type: "info",
+              message: "Please add source data to all subjects before continuing.",
+            });
+            throw errorArray;
+          }
+        }
+        if (buttonNoSourceSubjectData.classList.contains("selected")) {
+          await cleanUpEmptyGuidedStructureFolders("source", "subjects", true);
+        }
+      }
+
+      if (openSubPageID === "guided-source-pools-organization-page") {
+        const buttonYesSourcePoolData = document.getElementById(
+          "guided-button-add-pool-source-data"
+        );
+        const buttonNoSourcePoolData = document.getElementById("guided-button-no-pool-source-data");
+        if (
+          !buttonYesSourcePoolData.classList.contains("selected") &&
+          !buttonNoSourcePoolData.classList.contains("selected")
+        ) {
+          errorArray.push({
+            type: "error",
+            message: "Please indicate if you have source data to add to your pools.",
+          });
+          throw errorArray;
+        }
+        if (buttonYesSourcePoolData.classList.contains("selected")) {
+          const continueWithoutAddingSourceDataToAllPools =
+            await cleanUpEmptyGuidedStructureFolders("source", "pools", false);
+          if (!continueWithoutAddingSourceDataToAllPools) {
+            errorArray.push({
+              type: "info",
+              message: "Please add source data to all pools before continuing.",
+            });
+            throw errorArray;
+          }
+        }
+        if (buttonNoSourcePoolData.classList.contains("selected")) {
+          await cleanUpEmptyGuidedStructureFolders("source", "pools", true);
+        }
+      }
+
+      if (openSubPageID === "guided-derivative-samples-organization-page") {
+        const buttonYesDerivativeSampleData = document.getElementById(
+          "guided-button-add-sample-derivative-data"
+        );
+        const buttonNoDerivativeSampleData = document.getElementById(
+          "guided-button-no-sample-derivative-data"
+        );
+        if (
+          !buttonYesDerivativeSampleData.classList.contains("selected") &&
+          !buttonNoDerivativeSampleData.classList.contains("selected")
+        ) {
+          errorArray.push({
+            type: "error",
+            message: "Please indicate if you have derivative data to add to your samples.",
+          });
+          throw errorArray;
+        }
+        if (buttonYesDerivativeSampleData.classList.contains("selected")) {
+          const continueWithoutAddingDerivativeDataToAllSamples =
+            await cleanUpEmptyGuidedStructureFolders("derivative", "samples", false);
+          if (!continueWithoutAddingDerivativeDataToAllSamples) {
+            errorArray.push({
+              type: "info",
+              message: "Please add derivative data to all samples before continuing.",
+            });
+            throw errorArray;
+          }
+        }
+        if (buttonNoDerivativeSampleData.classList.contains("selected")) {
+          await cleanUpEmptyGuidedStructureFolders("derivative", "samples", true);
+        }
+      }
+
+      if (openSubPageID === "guided-derivative-subjects-organization-page") {
+        const buttonYesDerivativeSubjectData = document.getElementById(
+          "guided-button-add-subject-derivative-data"
+        );
+        const buttonNoDerivativeSubjectData = document.getElementById(
+          "guided-button-no-subject-derivative-data"
+        );
+        if (
+          !buttonYesDerivativeSubjectData.classList.contains("selected") &&
+          !buttonNoDerivativeSubjectData.classList.contains("selected")
+        ) {
+          errorArray.push({
+            type: "error",
+            message: "Please indicate if you have derivative data to add to your subjects.",
+          });
+          throw errorArray;
+        }
+        if (buttonYesDerivativeSubjectData.classList.contains("selected")) {
+          const continueWithoutAddingDerivativeDataToAllSubjects =
+            await cleanUpEmptyGuidedStructureFolders("derivative", "subjects", false);
+          if (!continueWithoutAddingDerivativeDataToAllSubjects) {
+            errorArray.push({
+              type: "info",
+              message: "Please add derivative data to all subjects before continuing.",
+            });
+            throw errorArray;
+          }
+        }
+        if (buttonNoDerivativeSubjectData.classList.contains("selected")) {
+          await cleanUpEmptyGuidedStructureFolders("derivative", "subjects", true);
+        }
+      }
+
+      if (openSubPageID === "guided-derivative-pools-organization-page") {
+        const buttonYesDerivativePoolData = document.getElementById(
+          "guided-button-add-pool-derivative-data"
+        );
+        const buttonNoDerivativePoolData = document.getElementById(
+          "guided-button-no-pool-derivative-data"
+        );
+        if (
+          !buttonYesDerivativePoolData.classList.contains("selected") &&
+          !buttonNoDerivativePoolData.classList.contains("selected")
+        ) {
+          errorArray.push({
+            type: "error",
+            message: "Please indicate if you have derivative data to add to your pools.",
+          });
+          throw errorArray;
+        }
+        if (buttonYesDerivativePoolData.classList.contains("selected")) {
+          const continueWithoutAddingPrimaryDataToAllPools =
+            await cleanUpEmptyGuidedStructureFolders("derivative", "pools", false);
+          if (!continueWithoutAddingPrimaryDataToAllPools) {
+            errorArray.push({
+              type: "info",
+              message: "Please add derivative data to all pools before continuing.",
+            });
+            throw errorArray;
+          }
+        }
+        if (buttonNoDerivativePoolData.classList.contains("selected")) {
+          await cleanUpEmptyGuidedStructureFolders("derivative", "pools", true);
+        }
+      }
+
+      if (openSubPageID === "guided-data-derivative-import-page") {
+        const checkedMilestoneData = getCheckedMilestones();
+        if (checkedMilestoneData.length === 0) {
+          errorArray.push({
+            type: "error",
+            message: "Please select at least one milestone",
+          });
+          throw errorArray;
+        }
+
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-selected-milestones"] =
+          checkedMilestoneData;
+      }
+
+      if (openSubPageID === "guided-completion-date-selection-page") {
+        const selectedCompletionDate = document.querySelector(
+          "input[name='completion-date']:checked"
+        );
+        if (!selectedCompletionDate) {
+          errorArray.push({
+            type: "error",
+            message: "Please select a completion date",
+          });
+          throw errorArray;
+        }
+
+        const completionDate = selectedCompletionDate.value;
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = completionDate;
+      }
+
+      if (openSubPageID === "guided-submission-metadata-page") {
+        const award = $("#guided-submission-sparc-award").val();
+        const date = $("#guided-submission-completion-date").val();
+        const milestones = getTagsFromTagifyElement(guidedSubmissionTagsTagify);
+
+        if (award === "") {
+          errorArray.push({
+            type: "error",
+            message: "Please add a SPARC award number to your submission metadata",
+          });
+        }
+        if (date === "Enter my own date") {
+          errorArray.push({
+            type: "error",
+            message: "Please add a completion date to your submission metadata",
+          });
+        }
+        if (milestones.length === 0) {
+          errorArray.push({
+            type: "error",
+            message: "Please add at least one milestone to your submission metadata",
+          });
+        }
+        if (errorArray.length > 0) {
+          throw errorArray;
+        }
+        // save the award string to JSONObj to be shared with other award inputs
+        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = award;
+        //Save the data and milestones to the sodaJSONObj
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = milestones;
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = date;
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["submission-data-entry"] = "import";
+      }
+
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+    } catch (error) {
+      guidedSetNavLoadingState(false);
+      throw error;
+    }
+    guidedSetNavLoadingState(false);
+  };
 
   //sub page next button click handler
   $("#guided-button-sub-page-continue").on("click", async () => {
     //Get the id of the parent page that's currently open
-    const currentParentPageID = CURRENT_PAGE.attr("id");
+    const currentParentPageID = CURRENT_PAGE.id;
+
+    if (currentParentPageID === "guided-create-submission-metadata-tab") {
+      if (
+        document
+          .getElementById("guided-button-enter-submission-metadata-manually")
+          .classList.contains("selected")
+      ) {
+        document.getElementById("guided-next-button").click();
+        return;
+      }
+    }
+
     //Get the id of the sub-page that's currently open
     const openSubPageID = getOpenSubPageInPage(currentParentPageID);
 
-    switch (currentParentPageID) {
-      case "guided-subjects-folder-tab": {
-        switch (openSubPageID) {
-          case "guided-specify-subjects-page": {
-            const buttonYesSubjects = document.getElementById("guided-button-add-subjects-table");
-            const buttonNoSubjects = document.getElementById("guided-button-no-subjects");
-            if (
-              !buttonYesSubjects.classList.contains("selected") &&
-              !buttonNoSubjects.classList.contains("selected")
-            ) {
-              notyf.open({
-                duration: "5000",
-                type: "error",
-                message: "Please indicate if your dataset contains subjects.",
-              });
-              return;
-            }
-            if (buttonYesSubjects.classList.contains("selected")) {
-              //Get the count of all subjects in and outside of pools
-              const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
-              const subjectsCount = [...subjectsInPools, ...subjectsOutsidePools].length;
+    try {
+      await saveSubPageChanges(openSubPageID);
 
-              //Check to see if any subjects were added, and if not, disallow the user
-              //from progressing until they add at least one subject or select that they do not
-              if (subjectsCount === 0) {
-                notyf.open({
-                  duration: "5000",
-                  type: "error",
-                  message:
-                    "Please add at least one subject or indicate that your dataset does not contain subjects.",
-                });
-                return;
-              }
-
-              $(".guided-subject-sample-data-addition-page").attr("data-skip-page", "false");
-              setActiveSubPage("guided-organize-subjects-into-pools-page");
-            }
-            if (buttonNoSubjects.classList.contains("selected")) {
-              $(".guided-subject-sample-data-addition-page").attr("data-skip-page", "true");
-              //If there's no subjects (and samples), delete the primary, source, and derivative folders
-              for (const folder of ["primary", "source", "derivative"]) {
-                if (datasetStructureJSONObj["folders"][folder]) {
-                  delete datasetStructureJSONObj["folders"][folder];
-                }
-              }
-              hideSubNavAndShowMainNav("next");
-            }
-
-            break;
-          }
-
-          case "guided-organize-subjects-into-pools-page": {
-            const buttonYesPools = document.getElementById(
-              "guided-button-organize-subjects-into-pools"
-            );
-            const buttonNoPools = document.getElementById("guided-button-no-pools");
-            if (
-              !buttonYesPools.classList.contains("selected") &&
-              !buttonNoPools.classList.contains("selected")
-            ) {
-              notyf.open({
-                duration: "5000",
-                type: "error",
-                message: "Please indicate if you would like to organize your subjects into pools.",
-              });
-              return;
-            }
-
-            if (buttonYesPools.classList.contains("selected")) {
-              const pools =
-                sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"];
-
-              //Check to see if any pools were added, and if not, disallow the user
-              //from progressing until they add at least one pool or select that they do not
-              //have any pools
-              if (Object.keys(pools).length === 0) {
-                notyf.open({
-                  duration: "5000",
-                  type: "error",
-                  message:
-                    "Please add at least one pool or indicate that your dataset does not contain pools.",
-                });
-                return;
-              }
-              //delete empty pools
-              for (const pool of Object.keys(pools)) {
-                if (
-                  Object.keys(
-                    sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"][pool]
-                  ).length === 0
-                ) {
-                  delete sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-                    pool
-                  ];
-                }
-              }
-            }
-
-            setActiveSubPage("guided-specify-samples-page");
-            break;
-          }
-
-          case "guided-specify-samples-page": {
-            const buttonYesSamples = document.getElementById("guided-button-add-samples-tables");
-            const buttonNoSamples = document.getElementById("guided-button-no-samples");
-            if (
-              !buttonYesSamples.classList.contains("selected") &&
-              !buttonNoSamples.classList.contains("selected")
-            ) {
-              notyf.open({
-                duration: "5000",
-                type: "error",
-                message: "Please indicate if your dataset's subjects have samples.",
-              });
-              return;
-            }
-            if (buttonYesSamples.classList.contains("selected")) {
-              const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
-              //Combine sample data from samples in and out of pools
-              const samplesCount = [...samplesInPools, ...samplesOutsidePools].length;
-              //Check to see if any samples were added, and if not, disallow the user
-              //from progressing until they add at least one sample or select that they do not
-              //have any samples
-              if (samplesCount === 0) {
-                notyf.open({
-                  duration: "5000",
-                  type: "error",
-                  message:
-                    "Please add at least one sample or indicate that your dataset does not contain samples.",
-                });
-                return;
-              }
-
-              document
-                .getElementById("guided-primary-samples-organization-page")
-                .setAttribute("data-skip-sub-page", "false");
-              document
-                .getElementById("guided-source-samples-organization-page")
-                .setAttribute("data-skip-sub-page", "false");
-              document
-                .getElementById("guided-derivative-samples-organization-page")
-                .setAttribute("data-skip-sub-page", "false");
-              hideSubNavAndShowMainNav("next");
-            }
-
-            if (buttonNoSamples.classList.contains("selected")) {
-              //add skip-sub-page attribute to element
-              document
-                .getElementById("guided-primary-samples-organization-page")
-                .setAttribute("data-skip-sub-page", "true");
-              document
-                .getElementById("guided-source-samples-organization-page")
-                .setAttribute("data-skip-sub-page", "true");
-              document
-                .getElementById("guided-derivative-samples-organization-page")
-                .setAttribute("data-skip-sub-page", "true");
-
-              hideSubNavAndShowMainNav("next");
-            }
-
-            break;
-          }
-        }
-        break;
+      if (!sodaJSONObj["completed-tabs"].includes(openSubPageID)) {
+        sodaJSONObj["completed-tabs"].push(openSubPageID);
       }
+      //Get an array of all the sub pages that are children of the parent page
+      const nonSkippedSiblingPages = getNonSkippedSubPages(currentParentPageID);
 
-      case "guided-primary-data-organization-tab": {
-        switch (openSubPageID) {
-          case "guided-primary-samples-organization-page": {
-            const buttonYesPrimarySampleData = document.getElementById(
-              "guided-button-add-sample-primary-data"
-            );
-            const buttonNoPrimarySampleData = document.getElementById(
-              "guided-button-no-sample-primary-data"
-            );
-            if (
-              !buttonYesPrimarySampleData.classList.contains("selected") &&
-              !buttonNoPrimarySampleData.classList.contains("selected")
-            ) {
-              notyf.open({
-                duration: "5000",
-                type: "error",
-                message: "Please indicate if you have primary data to add to your samples.",
-              });
-              return;
-            }
-            if (buttonYesPrimarySampleData.classList.contains("selected")) {
-              const continueWithoutAddingPrimaryDataToAllSamples =
-                await cleanUpEmptyGuidedStructureFolders("primary", "samples", false);
-              if (continueWithoutAddingPrimaryDataToAllSamples) {
-                setActiveSubPage("guided-primary-subjects-organization-page");
-              }
-            }
-            if (buttonNoPrimarySampleData.classList.contains("selected")) {
-              const continueAfterDeletingAllPrimarySampleFolders =
-                await cleanUpEmptyGuidedStructureFolders("primary", "samples", true);
-              if (continueAfterDeletingAllPrimarySampleFolders) {
-                setActiveSubPage("guided-primary-subjects-organization-page");
-              }
-            }
-            break;
-          }
-
-          case "guided-primary-subjects-organization-page": {
-            const buttonYesPrimarySubjectData = document.getElementById(
-              "guided-button-add-subject-primary-data"
-            );
-            const buttonNoPrimarySubjectData = document.getElementById(
-              "guided-button-no-subject-primary-data"
-            );
-            if (
-              !buttonYesPrimarySubjectData.classList.contains("selected") &&
-              !buttonNoPrimarySubjectData.classList.contains("selected")
-            ) {
-              notyf.open({
-                duration: "5000",
-                type: "error",
-                message: "Please indicate if you have primary data to add to your subjects.",
-              });
-              return;
-            }
-            if (buttonYesPrimarySubjectData.classList.contains("selected")) {
-              const continueWithoutAddingPrimaryDataToAllSubjects =
-                await cleanUpEmptyGuidedStructureFolders("primary", "subjects", false);
-              if (continueWithoutAddingPrimaryDataToAllSubjects) {
-                hideSubNavAndShowMainNav("next");
-              }
-            }
-            if (buttonNoPrimarySubjectData.classList.contains("selected")) {
-              const continueAfterDeletingAllPrimaryPoolsAndSubjects =
-                await cleanUpEmptyGuidedStructureFolders("primary", "subjects", true);
-              if (continueAfterDeletingAllPrimaryPoolsAndSubjects) {
-                hideSubNavAndShowMainNav("next");
-              }
-            }
-
-            break;
-          }
-        }
-        break;
+      // Get the index of the sub-page that's currently open
+      const openSubPageIndex = nonSkippedSiblingPages.indexOf(openSubPageID);
+      if (openSubPageIndex < nonSkippedSiblingPages.length - 1) {
+        //If the sub-page that's currently open is not the last sub-page in the parent page
+        //Get the id of the next sub-page and open it
+        const nextSubPageID = nonSkippedSiblingPages[openSubPageIndex + 1];
+        setActiveSubPage(nextSubPageID);
+      } else {
+        hideSubNavAndShowMainNav("next");
       }
-
-      case "guided-source-data-organization-tab": {
-        switch (openSubPageID) {
-          case "guided-source-samples-organization-page": {
-            const buttonYesSourceSampleData = document.getElementById(
-              "guided-button-add-sample-source-data"
-            );
-            const buttonNoSourceSampleData = document.getElementById(
-              "guided-button-no-sample-source-data"
-            );
-            if (
-              !buttonYesSourceSampleData.classList.contains("selected") &&
-              !buttonNoSourceSampleData.classList.contains("selected")
-            ) {
-              notyf.open({
-                duration: "5000",
-                type: "error",
-                message: "Please indicate if you have source data to add to your samples.",
-              });
-              return;
-            }
-            if (buttonYesSourceSampleData.classList.contains("selected")) {
-              const continueWithoutAddingSourceDataToAllSamples =
-                await cleanUpEmptyGuidedStructureFolders("source", "samples", false);
-              if (continueWithoutAddingSourceDataToAllSamples) {
-                setActiveSubPage("guided-source-subjects-organization-page");
-              }
-            }
-            if (buttonNoSourceSampleData.classList.contains("selected")) {
-              const continueAfterDeletingAllSourceSampleFolders =
-                await cleanUpEmptyGuidedStructureFolders("source", "samples", true);
-              if (continueAfterDeletingAllSourceSampleFolders) {
-                setActiveSubPage("guided-source-subjects-organization-page");
-              }
-            }
-            break;
-          }
-
-          case "guided-source-subjects-organization-page": {
-            const buttonYesSourceSubjectData = document.getElementById(
-              "guided-button-add-subject-source-data"
-            );
-            const buttonNoSourceSubjectData = document.getElementById(
-              "guided-button-no-subject-source-data"
-            );
-            if (
-              !buttonYesSourceSubjectData.classList.contains("selected") &&
-              !buttonNoSourceSubjectData.classList.contains("selected")
-            ) {
-              notyf.open({
-                duration: "5000",
-                type: "error",
-                message: "Please indicate if you have source data to add to your subjects.",
-              });
-              return;
-            }
-            if (buttonYesSourceSubjectData.classList.contains("selected")) {
-              const continueWithoutAddingSourceDataToAllSubjects =
-                await cleanUpEmptyGuidedStructureFolders("source", "subjects", false);
-              if (continueWithoutAddingSourceDataToAllSubjects) {
-                hideSubNavAndShowMainNav("next");
-              }
-            }
-            if (buttonNoSourceSubjectData.classList.contains("selected")) {
-              const continueAfterDeletingAllSourcePoolsAndSubjects =
-                await cleanUpEmptyGuidedStructureFolders("source", "subjects", true);
-              if (continueAfterDeletingAllSourcePoolsAndSubjects) {
-                hideSubNavAndShowMainNav("next");
-              }
-            }
-            break;
-          }
-        }
-        break;
-      }
-
-      case "guided-derivative-data-organization-tab": {
-        switch (openSubPageID) {
-          case "guided-derivative-samples-organization-page": {
-            const buttonYesDerivativeSampleData = document.getElementById(
-              "guided-button-add-sample-derivative-data"
-            );
-            const buttonNoDerivativeSampleData = document.getElementById(
-              "guided-button-no-sample-derivative-data"
-            );
-            if (
-              !buttonYesDerivativeSampleData.classList.contains("selected") &&
-              !buttonNoDerivativeSampleData.classList.contains("selected")
-            ) {
-              notyf.open({
-                duration: "5000",
-                type: "error",
-                message: "Please indicate if you have derivative data to add to your samples.",
-              });
-              return;
-            }
-            if (buttonYesDerivativeSampleData.classList.contains("selected")) {
-              const continueWithoutAddingDerivativeDataToAllSamples =
-                await cleanUpEmptyGuidedStructureFolders("derivative", "samples", false);
-              if (continueWithoutAddingDerivativeDataToAllSamples) {
-                setActiveSubPage("guided-derivative-subjects-organization-page");
-              }
-            }
-            if (buttonNoDerivativeSampleData.classList.contains("selected")) {
-              const continueAfterDeletingAllDerivativeSampleFolders =
-                await cleanUpEmptyGuidedStructureFolders("derivative", "samples", true);
-              if (continueAfterDeletingAllDerivativeSampleFolders) {
-                setActiveSubPage("guided-derivative-subjects-organization-page");
-              }
-            }
-            break;
-          }
-
-          case "guided-derivative-subjects-organization-page": {
-            const buttonYesDerivativeSubjectData = document.getElementById(
-              "guided-button-add-subject-derivative-data"
-            );
-            const buttonNoDerivativeSubjectData = document.getElementById(
-              "guided-button-no-subject-derivative-data"
-            );
-            if (
-              !buttonYesDerivativeSubjectData.classList.contains("selected") &&
-              !buttonNoDerivativeSubjectData.classList.contains("selected")
-            ) {
-              notyf.open({
-                duration: "5000",
-                type: "error",
-                message: "Please indicate if you have derivative data to add to your subjects.",
-              });
-              return;
-            }
-            if (buttonYesDerivativeSubjectData.classList.contains("selected")) {
-              const continueWithoutAddingDerivativeDataToAllSubjects =
-                await cleanUpEmptyGuidedStructureFolders("derivative", "subjects", false);
-              if (continueWithoutAddingDerivativeDataToAllSubjects) {
-                hideSubNavAndShowMainNav("next");
-              }
-            }
-            if (buttonNoDerivativeSubjectData.classList.contains("selected")) {
-              const continueAfterDeletingAllDerivativePoolsAndSubjects =
-                await cleanUpEmptyGuidedStructureFolders("derivative", "subjects", true);
-              if (continueAfterDeletingAllDerivativePoolsAndSubjects) {
-                hideSubNavAndShowMainNav("next");
-              }
-            }
-            break;
-          }
-        }
-        break;
-      }
-
-      case "guided-create-submission-metadata-tab": {
-        const buttonYesImportDataDerivatives = document.getElementById(
-          "guided-button-import-data-deliverables"
-        );
-        const buttonNoEnterSubmissionDataManually = document.getElementById(
-          "guided-button-enter-submission-metadata-manually"
-        );
-        if (
-          !buttonYesImportDataDerivatives.classList.contains("selected") &&
-          !buttonNoEnterSubmissionDataManually.classList.contains("selected")
-        ) {
-          notyf.open({
-            duration: "5000",
-            type: "error",
-            message: "Please indicate if you would like to import milestone data.",
-          });
-          break;
-        }
-
-        if (buttonYesImportDataDerivatives.classList.contains("selected")) {
-          switch (openSubPageID) {
-            case "guided-data-derivative-import-page": {
-              if (buttonYesImportDataDerivatives.classList.contains("selected")) {
-                const checkedMilestoneData = getCheckedMilestones();
-                //if user does not select any milestones, show error message
-                if (checkedMilestoneData.length === 0) {
-                  notyf.error("Please select at least one milestone");
-                  return;
-                }
-
-                sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-selected-milestones"] =
-                  checkedMilestoneData;
-                setActiveSubPage("guided-completion-date-selection-page");
-              }
-              if (buttonNoEnterSubmissionDataManually.classList.contains("selected")) {
-                //skip to submission metadata page where user can enter milestones
-                //and completion date manually
-                setActiveSubPage("guided-submission-metadata-page");
-              }
-              break;
-            }
-            case "guided-completion-date-selection-page": {
-              const selectedCompletionDate = document.querySelector(
-                "input[name='completion-date']:checked"
-              );
-              if (!selectedCompletionDate) {
-                notyf.error("Please select a completion date");
-                return;
-              }
-
-              const completionDate = selectedCompletionDate.value;
-              sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] =
-                completionDate;
-              setActiveSubPage("guided-submission-metadata-page");
-              break;
-            }
-            case "guided-submission-metadata-page": {
-              const award = $("#guided-submission-sparc-award").val();
-              const date = $("#guided-submission-completion-date").val();
-              const milestones = getTagsFromTagifyElement(guidedSubmissionTagsTagify);
-              //validate submission metadata
-              if (award === "") {
-                notyf.error("Please add a SPARC award number to your submission metadata");
-                return;
-              }
-              if (date === "Enter my own date") {
-                notyf.error("Please add a completion date to your submission metadata");
-                return;
-              }
-              if (milestones.length === 0) {
-                notyf.error("Please add at least one milestone to your submission metadata");
-                return;
-              }
-              // save the award string to JSONObj to be shared with other award inputs
-              sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = award;
-              //Save the data and milestones to the sodaJSONObj
-              sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = milestones;
-              sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = date;
-              sodaJSONObj["dataset-metadata"]["submission-metadata"]["submission-data-entry"] =
-                "import";
-
-              hideSubNavAndShowMainNav("next");
-              break;
-            }
-          }
-        }
-        if (buttonNoEnterSubmissionDataManually.classList.contains("selected")) {
-          const award = $("#guided-submission-sparc-award-manual").val();
-          const date = $("#guided-submission-completion-date-manual").val();
-          const milestones = getTagsFromTagifyElement(guidedSubmissionTagsTagifyManual);
-          //validate manually entered submission metadata
-          if (award === "") {
-            notyf.error("Please add a SPARC award number to your submission metadata");
-            return;
-          }
-          if (date === "Enter my own date") {
-            notyf.error("Please add a completion date to your submission metadata");
-            return;
-          }
-          if (milestones.length === 0) {
-            notyf.error("Please add at least one milestone to your submission metadata");
-            return;
-          }
-          // save the award string to JSONObj to be shared with other award inputs
-          sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = award;
-          //Save the data and milestones to the sodaJSONObj
-          sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = milestones;
-          sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = date;
-          sodaJSONObj["dataset-metadata"]["submission-metadata"]["submission-data-entry"] =
-            "manual";
-
-          hideSubNavAndShowMainNav("next");
-        }
-        break;
-        break;
-      }
+    } catch (error) {
+      console.log(error);
+      log.error(error);
+      error.map((error) => {
+        notyf.open({
+          duration: "5500",
+          type: error.type,
+          message: error.message,
+        });
+      });
     }
-    //Save progress onto local storage with the dataset name as the key
-    saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
   });
+
+  const getNonSkippedSubPages = (parentPageID) => {
+    return Array.from(document.getElementById(parentPageID).querySelectorAll(".sub-page"))
+      .filter((subPage) => subPage.dataset.skipPage !== "true")
+      .map((subPage) => subPage.id);
+  };
 
   //sub page back button click handler
   $("#guided-button-sub-page-back").on("click", () => {
     //Get the id of the parent page that's currently open
-    currentParentPageID = CURRENT_PAGE.attr("id");
+    const currentParentPageID = CURRENT_PAGE.id;
+
+    if (currentParentPageID === "guided-create-submission-metadata-tab") {
+      if (
+        document
+          .getElementById("guided-button-enter-submission-metadata-manually")
+          .classList.contains("selected")
+      ) {
+        document.getElementById("guided-back-button").click();
+        return;
+      }
+    }
+
     //Get the id of the sub-page that's currently open
     const openSubPageID = getOpenSubPageInPage(currentParentPageID);
 
-    switch (currentParentPageID) {
-      case "guided-subjects-folder-tab": {
-        switch (openSubPageID) {
-          case "guided-specify-subjects-page": {
-            hideSubNavAndShowMainNav("back");
-            break;
-          }
+    const nonSkippedSiblingPages = getNonSkippedSubPages(currentParentPageID);
 
-          case "guided-organize-subjects-into-pools-page": {
-            setActiveSubPage("guided-specify-subjects-page");
-            break;
-          }
+    // Get the index of the sub-page that's currently open
+    const openSubPageIndex = nonSkippedSiblingPages.indexOf(openSubPageID);
 
-          case "guided-specify-samples-page": {
-            setActiveSubPage("guided-organize-subjects-into-pools-page");
-            break;
-          }
-        }
-        break;
-      }
-
-      case "guided-primary-data-organization-tab": {
-        switch (openSubPageID) {
-          case "guided-primary-samples-organization-page": {
-            hideSubNavAndShowMainNav("back");
-            break;
-          }
-
-          case "guided-primary-subjects-organization-page": {
-            if (
-              document.getElementById("guided-primary-samples-organization-page").dataset
-                .skipSubPage === "true"
-            ) {
-              hideSubNavAndShowMainNav("back");
-              break;
-            }
-            setActiveSubPage("guided-primary-samples-organization-page");
-            break;
-          }
-        }
-        break;
-      }
-
-      case "guided-source-data-organization-tab": {
-        switch (openSubPageID) {
-          case "guided-source-samples-organization-page": {
-            hideSubNavAndShowMainNav("back");
-            break;
-          }
-
-          case "guided-source-subjects-organization-page": {
-            setActiveSubPage("guided-source-samples-organization-page");
-            break;
-          }
-        }
-        break;
-      }
-
-      case "guided-derivative-data-organization-tab": {
-        switch (openSubPageID) {
-          case "guided-derivative-samples-organization-page": {
-            hideSubNavAndShowMainNav("back");
-            break;
-          }
-
-          case "guided-derivative-subjects-organization-page": {
-            setActiveSubPage("guided-derivative-samples-organization-page");
-            break;
-          }
-        }
-        break;
-      }
-
-      case "guided-create-submission-metadata-tab": {
-        const buttonYesImportDataDerivatives = document.getElementById(
-          "guided-button-import-data-deliverables"
-        );
-        const buttonNoEnterSubmissionDataManually = document.getElementById(
-          "guided-button-enter-submission-metadata-manually"
-        );
-        if (
-          !buttonYesImportDataDerivatives.classList.contains("selected") &&
-          !buttonNoEnterSubmissionDataManually.classList.contains("selected")
-        ) {
-          hideSubNavAndShowMainNav("back");
-          break;
-        }
-        if (buttonYesImportDataDerivatives.classList.contains("selected")) {
-          switch (openSubPageID) {
-            case "guided-data-derivative-import-page": {
-              hideSubNavAndShowMainNav("back");
-              break;
-            }
-            case "guided-completion-date-selection-page": {
-              setActiveSubPage("guided-data-derivative-import-page");
-              break;
-            }
-            case "guided-submission-metadata-page": {
-              if (
-                document
-                  .getElementById("guided-button-import-data-deliverables")
-                  .classList.contains("selected")
-              ) {
-                setActiveSubPage("guided-completion-date-selection-page");
-              }
-
-              if (
-                document
-                  .getElementById("guided-button-enter-submission-metadata-manually")
-                  .classList.contains("selected")
-              ) {
-                setActiveSubPage("guided-data-derivative-import-page");
-              }
-              break;
-            }
-          }
-        }
-        if (buttonNoEnterSubmissionDataManually.classList.contains("selected")) {
-          hideSubNavAndShowMainNav("back");
-        }
-        break;
-      }
+    if (openSubPageIndex > 0) {
+      //If the sub-page that's currently open is not the first sub-page in the parent page
+      //Get the id of the previous sub-page and open it
+      const previousSubPageID = nonSkippedSiblingPages[openSubPageIndex - 1];
+      setActiveSubPage(previousSubPageID);
+    } else {
+      hideSubNavAndShowMainNav("back");
     }
   });
 
@@ -12229,7 +13391,9 @@ $(document).ready(async () => {
   const guidedDatasetKeyWordsInput = document.getElementById("guided-ds-dataset-keywords");
   guidedDatasetKeywordsTagify = new Tagify(guidedDatasetKeyWordsInput, {
     duplicates: false,
+    maxTags: 5,
   });
+
   createDragSort(guidedDatasetKeywordsTagify);
 
   const guidedStudyApproachInput = document.getElementById("guided-ds-study-approach");
@@ -12291,18 +13455,21 @@ $(document).ready(async () => {
           popup: "animate__animated animate__fadeOutUp animate__faster",
         },
         didOpen: () => {
+          let swal_container = document.getElementsByClassName("swal2-popup")[0];
+          swal_container.style.width = "600px";
+          swal_container.style.padding = "1.5rem";
           $(".swal2-input").attr("id", "add-new-folder-input");
           $(".swal2-confirm").attr("id", "add-new-folder-button");
           $("#add-new-folder-input").keyup(function () {
             var val = $("#add-new-folder-input").val();
-            for (var char of nonAllowedCharacters) {
-              if (val.includes(char)) {
-                Swal.showValidationMessage(
-                  `The folder name cannot contains the following characters ${nonAllowedCharacters}, please enter a different name!`
-                );
-                $("#add-new-folder-button").attr("disabled", true);
-                return;
-              }
+            let folderNameCheck = checkIrregularNameBoolean(val);
+            if (folderNameCheck === true) {
+              Swal.showValidationMessage(
+                `The folder name contains non-allowed characters. To follow SPARC Data Standards, please create a folder name with only alphanumberic characters and hyphens '-'`
+              );
+              $("#add-new-folder-button").attr("disabled", true);
+              return;
+            } else {
               $("#add-new-folder-button").attr("disabled", false);
             }
           });
@@ -12341,15 +13508,6 @@ $(document).ready(async () => {
                 determineDatasetLocation()
               );
             } else {
-              // var appendString = "";
-              // appendString =
-              //   appendString +
-              //   '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">' +
-              //   newFolderName +
-              //   "</div></div>";
-              // $(appendString).appendTo("#items");
-
-              /// update datasetStructureJSONObj
               var currentPath = organizeDSglobalPath.value;
               var jsonPathArray = currentPath.split("/");
               var filtered = jsonPathArray.slice(1).filter(function (el) {
@@ -12359,12 +13517,7 @@ $(document).ready(async () => {
               var myPath = getRecursivePath(filtered, datasetStructureJSONObj);
               // update Json object with new folder created
               var renamedNewFolder = newFolderName;
-              myPath["folders"][renamedNewFolder] = {
-                folders: {},
-                files: {},
-                type: "virtual",
-                action: ["new"],
-              };
+              myPath["folders"][renamedNewFolder] = newEmptyFolderObj();
 
               listItems(myPath, "#items", 500, (reset = true));
               getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
@@ -12406,252 +13559,6 @@ $(document).ready(async () => {
   $("#guided-import-folder").on("click", () => {
     ipcRenderer.send("open-folders-organize-datasets-dialog");
   });
-});
-
-const currentAccount = (account, userDetails) => {
-  return `
-<div style="
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  margin-top: 15px;
-  height: auto;
-  box-shadow: 0px 0px 10px #d5d5d5;
-  padding: 15px 25px;
-  border-radius: 5px;"
->
-    <div style="
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;"
-    >
-      <div class="card-container manage-dataset">
-        <div style="display: flex">
-          <h5 class="card-left" style="
-              text-align: right;
-              color: #808080;
-              font-size: 15px;
-              padding-right: 5px;
-            ">
-            Current account:
-          </h5>
-          <div class="md-change-current-account" style="margin-left: 10px; display: flex; justify-content: space-between;">
-            <h5 class="card-right bf-account-span" style="
-                color: #000;
-                font-weight: 600;
-                margin-left: 4px;
-                font-size: 15px;
-                width: fit-content;
-              " id="getting-started-account">${defaultBfAccount}</h5>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div style="
-        display: flex;
-        flex-direction: row;
-        margin-bottom: 15px;"
-    >
-      <div class="card-container manage-dataset">
-        <div>
-          <h5 class="card-left" style="
-              text-align: right;
-              color: #808080;
-              font-size: 15px;
-              padding-right: 20px;
-            ">
-            Account details:
-          </h5>
-          <h5 class="card-right bf-account-details-span" style="
-              color: #000;
-              font-weight: 600;
-              margin-left: 15px;
-              font-size: 15px;
-            " id="account-info-getting-started">${defaultAccountDetails}</h5>
-        </div>
-      </div>
-    </div>
-</div>
-`;
-};
-
-const dataDeliverableTitle = `
-Drag and Drop your data deliverable
-`;
-
-const dataDeliverableMessage = `
-<div style="margin-top: 1.5rem;">
-<div class="guided--container-file-import" droppable="true" ondrop="dropHandler(event, 'guided-data-deliverable-para-text', 'DataDeliverablesDocument', 'guided-getting-started', dataDeliverables=true);" ondragover="return false;">
-  <div class="guided--file-import" data-code-metadata-file-type="data_deliverable" style="min-height: 333px; width: 550px;">
-    <div id="swal-data-deliverable" class="code-metadata-lottie-container" style="height: 100px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300" preserveAspectRatio="xMidYMid meet" style="width: 100%; height: 100%; transform: translate3d(0px, 0px, 0px); content-visibility: visible;"><defs><clipPath id="__lottie_element_791"><rect width="300" height="300" x="0" y="0"></rect></clipPath></defs><g clip-path="url(#__lottie_element_791)"><g transform="matrix(1,0,0,1,99,36.82099914550781)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M12,65.67900085449219 C12,65.67900085449219 12,59.67900085449219 12,59.67900085449219"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 13.893 13.893" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M12,45.7859992980957 C12,45.7859992980957 12,24.94700050354004 12,24.94700050354004"></path></g><g opacity="1" transform="matrix(1,0,0,1,15,15)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-3,3 C-3,3 -3,-3 -3,-3 C-3,-3 3,-3 3,-3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 10.909 10.909" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M28.909000396728516,12 C28.909000396728516,12 132.5449981689453,12 132.5449981689453,12"></path></g><g opacity="1" transform="matrix(1,0,0,1,141,15)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-3,-3 C-3,-3 3,-3 3,-3 C3,-3 3,3 3,3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 10.909 10.909" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M144,28.909000396728516 C144,28.909000396728516 144,132.54600524902344 144,132.54600524902344"></path></g><g opacity="1" transform="matrix(1,0,0,1,141,141)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M3,-3 C3,-3 3,3 3,3 C3,3 -3,3 -3,3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 11.333 11.333" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M126.66699981689453,144 C126.66699981689453,144 109.66699981689453,144 109.66699981689453,144"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M104,144 C104,144 98,144 98,144"></path></g></g><g transform="matrix(1,0,0,1,122.58927917480469,49.94279098510742)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,60.5620002746582,60.5620002746582)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="10" d=" M35.5620002746582,-35.5620002746582 C35.5620002746582,-35.5620002746582 -35.5620002746582,-23.679000854492188 -35.5620002746582,-23.679000854492188 C-35.5620002746582,-23.679000854492188 -10.25100040435791,-10.25100040435791 -10.25100040435791,-10.25100040435791 C-10.25100040435791,-10.25100040435791 -35.20399856567383,14.70300006866455 -35.20399856567383,14.70300006866455 C-35.20399856567383,14.70300006866455 -15.003999710083008,34.90299987792969 -15.003999710083008,34.90299987792969 C-15.003999710083008,34.90299987792969 9.949000358581543,9.949999809265137 9.949000358581543,9.949999809265137 C9.949000358581543,9.949999809265137 23.679000854492188,35.5620002746582 23.679000854492188,35.5620002746582 C23.679000854492188,35.5620002746582 35.5620002746582,-35.5620002746582 35.5620002746582,-35.5620002746582z"></path></g></g><g transform="matrix(1,0,0,1,102.64799499511719,40.451995849609375)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,74.48500061035156,74.48500061035156)"><path stroke-linecap="round" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-66,0 C-66,-33 -66,-66 -66,-66 C-66,-66 66,-66 66,-66 C66,-66 66,66 66,66 C66,66 66,66 66,66 C66,66 -66,66 -66,66 C-66,66 -66,33 -66,0"></path></g></g></g></svg></div>
-    <div style="display: flex;">
-      <p class="guided--help-text text-center" style="/* width: 284px; *//* display: flex; *//* flex-direction: row; */">
-        Drag and Drop</p>
-        <p style="margin-left: 4px; font-weight: 600;">
-          Data Deliverables document
-        </p>
-    </div>
-    <p class="guided--help-text text-center mt-sm mb-sm">
-      OR
-    </p>
-    <button class="ui primary basic button" onclick="openDDDimport('guided')" style="margin-top: 2rem !important;">
-      <i class="fas fa-file-import" style="margin-right: 7px"></i>Import Data Deliverables document
-    </button>
-    <p class="guided--help-text small text-center mt-sm" id="guided-data-deliverable-para-text" style="max-width: 240px; overflow-wrap: break-word"></p>
-  </div>
-</div>
-</div>
-`;
-
-const showDataDeliverableDropDown = async () => {
-  const dataDeliverableButton = document.getElementById("getting-started-data-deliverable-btn");
-
-  await Swal.fire({
-    title: dataDeliverableTitle,
-    html: dataDeliverableMessage,
-    showCancelButton: true,
-    showConfirmButton: false,
-    focusCancel: true,
-    cancelButtonText: "Cancel",
-    confirmButtonText: "Continue",
-    reverseButtons: reverseSwalButtons,
-    backdrop: "rgba(0,0,0, 0.4)",
-    heightAuto: false,
-    allowOutsideClick: false,
-    showClass: {
-      popup: "animate__animated animate__zoomIn animate__faster",
-    },
-    hideClass: {
-      popup: "animate__animated animate__zoomOut animate__faster",
-    },
-    didOpen: () => {
-      let swal_container = document.getElementsByClassName("swal2-popup")[0];
-      let swal_actions = document.getElementsByClassName("swal2-actions")[0];
-      let swal_content = document.getElementsByClassName("swal2-content")[0];
-      let DDLottie = document.getElementById("swal-data-deliverable");
-      let swal_header = document.getElementsByClassName("swal2-header")[0];
-      swal_header.remove();
-      DDLottie.innerHTML = "";
-      swal_container.style.width = "43rem";
-      swal_actions.style.marginTop = "-2px";
-      swal_actions.style.marginBottom = "-7px";
-
-      let ddFilePath = sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"];
-      if (ddFilePath) {
-        //append file path
-        let firstItem = swal_content.children[0];
-        let paragraph = document.createElement("p");
-        let paragraph2 = document.createElement("p");
-        paragraph2.innerText =
-          "To replace the current Data Deliverables just drop in or select a new one.";
-
-        paragraph2.style.marginBottom = "1rem";
-        paragraph.style.marginTop = "1rem";
-        paragraph.style.fontWeight = "700";
-        paragraph.innerText = "File Path: " + ddFilePath;
-        if (firstItem.children[0].id === "getting-started-filepath") {
-          firstItem.children[0].remove();
-          firstItem.children[firstItem.childElementCount - 1].remove();
-        }
-        firstItem.append(paragraph2);
-        firstItem.prepend(paragraph);
-        dataDeliverableButton.children[0].style.display = "none";
-        dataDeliverableButton.children[1].style.display = "flex";
-        lottie.loadAnimation({
-          container: DDLottie,
-          animationData: successCheck,
-          renderer: "svg",
-          loop: true,
-          autoplay: true,
-        });
-        document.getElementById("guided-button-import-data-deliverables").click();
-      } else {
-        lottie.loadAnimation({
-          container: DDLottie,
-          animationData: dragDrop,
-          renderer: "svg",
-          loop: true,
-          autoplay: true,
-        });
-      }
-    },
-    showClass: {
-      popup: "animate__animated animate__fadeInDown animate__faster",
-    },
-    hideClass: {
-      popup: "animate__animated animate__fadeOutUp animate__faster",
-    },
-  });
-  if (sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"]) {
-    dataDeliverableButton.children[0].style.display = "none";
-    dataDeliverableButton.children[1].style.display = "flex";
-  } else {
-    dataDeliverableButton.children[0].style.display = "flex";
-    dataDeliverableButton.children[1].style.display = "none";
-  }
-};
-
-const currentUserDropdown = async () => {
-  const pennsieveDetails = await Swal.fire({
-    title: "Current Pennsieve Details",
-    html: currentAccount(defaultBfAccount, $("#para-account-detail-curate").text()),
-    showCancelButton: true,
-    // showConfirmButton: false,
-    // focusCancel: true,
-    cancelButtonText: "Cancel",
-    confirmButtonText: "Change Account",
-    reverseButtons: reverseSwalButtons,
-    backdrop: "rgba(0,0,0, 0.4)",
-    heightAuto: false,
-    allowOutsideClick: false,
-    showClass: {
-      popup: "animate__animated animate__zoomIn animate__faster",
-    },
-    hideClass: {
-      popup: "animate__animated animate__zoomOut animate__faster",
-    },
-    didOpen: () => {
-      let swal_container = document.getElementsByClassName("swal2-popup")[0];
-      let swal_actions = document.getElementsByClassName("swal2-actions")[0];
-      // let DDLottie = document.getElementById("swal-data-deliverable");
-      let swal_header = document.getElementsByClassName("swal2-header")[0];
-      swal_header.style.borderBottom = "3px solid var(--color-bg-plum)";
-      swal_header.style.marginTop = "-1rem";
-      swal_header.style.padding = ".5rem";
-      // DDLottie.innerHTML = "";
-      swal_container.style.width = "43rem";
-      swal_actions.style.marginTop = "12px";
-      swal_actions.style.marginBottom = "-7px";
-    },
-    showClass: {
-      popup: "animate__animated animate__fadeInDown animate__faster",
-    },
-    hideClass: {
-      popup: "animate__animated animate__fadeOutUp animate__faster",
-    },
-  });
-
-  if (pennsieveDetails.isConfirmed) {
-    await openDropdownPrompt(this, "bf");
-  }
-};
-
-const pennsieveButton = document.getElementById("getting-started-pennsieve-account");
-const dataDeliverableButton = document.getElementById("getting-started-data-deliverable-btn");
-const airTableButton = document.getElementById("getting-started-button-import-sparc-award");
-
-airTableButton.addEventListener("click", async () => {
-  await helpSPARCAward("submission", "guided--getting-started");
-});
-dataDeliverableButton.addEventListener("click", async () => {
-  await showDataDeliverableDropDown();
-});
-pennsieveButton.addEventListener("click", async () => {
-  if (!defaultBfAccount) {
-    await openDropdownPrompt(this, "bf");
-  } else {
-    await currentUserDropdown();
-  }
 });
 
 const guidedSaveDescriptionDatasetInformation = () => {
@@ -12770,13 +13677,13 @@ const guidedSaveParticipantInformation = () => {
   let numSubjects = $("#guided-ds-samples-no").val();
   let numSamples = $("#guided-ds-samples-no").val();
   if (numSubjects.length == 0 || numSamples.length == 0) {
-    /*Swal.fire({
-        backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
-        icon: "error",
-        text: "Please fill in all of the required participant information fields.",
-        title: "Incomplete information",
-      });*/
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      icon: "error",
+      text: "Please fill in all of the required participant information fields.",
+      title: "Incomplete information",
+    });
   } else {
     sodaJSONObj["dataset-metadata"]["description-metadata"]["numSubjects"] = numSubjects;
     sodaJSONObj["dataset-metadata"]["description-metadata"]["numSamples"] = numSamples;

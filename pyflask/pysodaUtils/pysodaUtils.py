@@ -1,42 +1,99 @@
-from pennsieve.api.agent import (
-    agent_cmd,
-    agent_cmd,
-    AgentError,
-    socket_address
-)
 import subprocess
-from websocket import create_connection
-import socket
-import errno
 import re
+import sys
+from os.path import exists 
+import os
 
 
-def clear_queue():
 
-    command = [agent_cmd(), "upload-status", "--cancel-all"]
+
+def get_agent_installation_location():
+    """
+        Get the location of the Pennsieve agent installation for Darwin, Linux, and Windows. 
+    """
+    if sys.platform == "darwin":
+        return "/usr/local/bin/pennsieve"
+
+    elif sys.platform.startswith("linux"):
+        return "/usr/local/bin/pennsieve"
+
+    elif sys.platform in ["win32", "cygwin"]:
+        win_path = os.path.normpath("C:\Program Files (x86)\Pennsieve\pennsieve.exe")
+        if exists(win_path): 
+            return win_path
+        else:
+            return os.path.normpath("C:\Program Files\Pennsieve\pennsieve.exe")
+
+
+
+def check_agent_installation():
+    """
+    Check if the Pennsieve agent is installed on the computer. 
+    """
+    return exists(get_agent_installation_location())
+        
+
+
+def start_agent():
+    """
+    Start the Pennsieve agent. IMP: Run if agent exists.
+    """
+    if not check_agent_installation(): 
+        raise FileNotFoundError("Pennsieve agent not installed. Please install the agent before running this function.")
+
+    command = [get_agent_installation_location(), "agent"]
+
+    return subprocess.run(command, check=True)
+
+def stop_agent():
+    """
+    Stops the Pennsieve agent if it is running.
+    """
+
+    if not check_agent_installation(): 
+        raise FileNotFoundError("Pennsieve agent not installed. Please install the agent before running this function.")
+
+    command = [get_agent_installation_location(), "agent", "stop"]
 
     return subprocess.run(command, check=True)
 
 
-def agent_running():
-    listen_port = 11235
+def get_agent_version():
+    """
+        Get the version of the Pennsieve agent installed on the computer.
+    """
+    # start the agent if it is not running
+    start_agent()
 
-    try:
-        # x = "ws://127.0.0.1:11235"
-        # create_connection(x).close()
-        # CHANGE BACK
-        create_connection(socket_address(listen_port)).close()
 
-    except socket.error as e:
+    command = [get_agent_installation_location(), "version"]
 
-        if e.errno == errno.ECONNREFUSED:  # ConnectionRefusedError for Python 3
-            return True
-        else:
-            raise e
+    version = ""
+
+    while version.find("Error") != -1 or version == "":
+        result = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        version = result.stdout
+
+        version = version.decode()
+    
+    # decode the response 
+    version = version.strip()
+
+    return { 'agent_version': version }
+
+
+def agent_up_to_date():
+    
+    v = get_agent_version()
+    
+    # search string for 1.2.2
+    # TODO: Improve agent version parsing to check for Agent Version and CLI Version separately. Both need to match.
+    if "1.2.2" in v:
+        return True
     else:
-        raise AgentError(
-            "The Pennsieve agent is already running. Learn more about how to solve the issue <a href='https://github.com/bvhpatel/SODA/wiki/The-Pennsieve-agent-is-already-running' target='_blank'>here</a>."
-        )
+        return False
+
 
 
 forbidden_characters = '<>:"/\|?*'
@@ -68,17 +125,3 @@ def check_forbidden_characters_bf(my_string):
     regex = re.compile(f"[{forbidden_characters_bf}]")
     return regex.search(my_string) is not None or "\\" in r"%r" % my_string
 
-    
-def bf_dataset_size():
-    """
-    Function to get storage size of a dataset on Pennsieve
-    """
-    global bf
-    global myds
-
-    try:
-        selected_dataset_id = myds.id
-        bf_response = bf._api._get(f"/datasets/{str(selected_dataset_id)}")
-        return bf_response["storage"] if "storage" in bf_response.keys() else 0
-    except Exception as e:
-        raise e

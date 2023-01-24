@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - staging
 
 jobs:
   deploy-on-windows:
@@ -29,7 +30,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: "14"
+          node-version: "16"
 
       - name: Install package.json modules and their dependencies
         run: npm install --ignore-scripts

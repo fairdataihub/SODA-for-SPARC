@@ -2,25 +2,25 @@ const checkDiskSpace = require("check-disk-space").default;
 
 var metadataFile = "";
 var jstreePreview = document.getElementById("div-dataset-tree-preview");
-const nonAllowedCharacters = '<>:",;[]{}^`~@/|?*$=!%&+#\\';
+const nonAllowedCharacters = '<>_:",;[]{}^`~@/|?*$=!%&+#\\';
 
 // per change event of current dataset span text
-function confirm_click_function() {
-  let temp = $(".bf-dataset-span").html();
-  if ($(".bf-dataset-span").html() == "None" || $(".bf-dataset-span").html() == "") {
-    $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "none");
-    $("#para-review-dataset-info-disseminate").text("None");
-  } else {
-    $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "flex");
-    if ($($(this).parents().find(".field").find(".synced-progress")).length) {
-      if ($($(this).parents().find(".field").find(".synced-progress")).css("display") === "none") {
-        $(".confirm-button").click();
-      }
-    } else {
-      $(".confirm-button").click();
-    }
-  }
-}
+// const confirm_click_function = () => {
+//   let temp = $(".bf-dataset-span").html();
+//   if ($(".bf-dataset-span").html() == "None" || $(".bf-dataset-span").html() == "") {
+//     $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "none");
+//     $("#para-review-dataset-info-disseminate").text("None");
+//   } else {
+//     $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "flex");
+//     if ($($(this).parents().find(".field").find(".synced-progress")).length) {
+//       if ($($(this).parents().find(".field").find(".synced-progress")).css("display") === "none") {
+//         $(".confirm-button").click();
+//       }
+//     } else {
+//       $(".confirm-button").click();
+//     }
+//   }
+// };
 
 // Event listeners for opening the dropdown prompt
 document
@@ -169,13 +169,20 @@ const metadataFileExtensionObject = {
   code_description: [".xlsx"],
   code_parameters: [".xlsx", ".csv", ".tsv", ".json"],
   data_deliverable: [".docx", ".doc"],
+  bannerImage: [".png", ".PNG", ".jpeg", ".JPEG", ".tiff"],
 };
 
-async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeliverables = false) {
-  var gettingStartedSection = false;
+const dropHandler = async (
+  ev,
+  paraElement,
+  metadataFile,
+  curationMode,
+  dataDeliverables = false
+) => {
+  let gettingStartedSection = false;
   if (curationMode === "guided-getting-started") {
     curationMode = "guided";
-    var gettingStartedSection = true;
+    gettingStartedSection = true;
   }
   // Prevent default behavior (Prevent file from being opened)
   ev.preventDefault();
@@ -189,7 +196,12 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
       var file = ev.dataTransfer.items[0].getAsFile();
       var metadataWithoutExtension = file.name.slice(0, file.name.indexOf("."));
       var extension = file.name.slice(file.name.indexOf("."));
-
+      if (ev.dataTransfer.items[0].type.includes("image")) {
+        //handle dropped images for banner images
+        let path = [file.path];
+        handleSelectedBannerImage(path, "guided-mode");
+        $("#guided-banner-image-modal").modal("show");
+      }
       if (dataDeliverables === true) {
         let filepath = file.path;
         var award = $("#submission-sparc-award");
@@ -267,43 +279,6 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
               loop: true,
               autoplay: true,
             });
-
-            if (gettingStartedSection === true) {
-              const DDLottie = document.getElementById("swal-data-deliverable");
-              DDLottie.innerHTML = "";
-              lottie.loadAnimation({
-                container: DDLottie,
-                animationData: successCheck,
-                renderer: "svg",
-                loop: true,
-                autoplay: true,
-              });
-              let swal_actions = document.getElementsByClassName("swal2-actions")[0];
-              swal_actions.children[1].style.display = "flex";
-              let swal_content = document.getElementsByClassName("swal2-content")[0];
-
-              let ddFilePath = sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"];
-              if (ddFilePath) {
-                //append file path
-                let firstItem = swal_content.children[0];
-                let paragraph = document.createElement("p");
-                let paragraph2 = document.createElement("p");
-                paragraph.id = "getting-started-filepath";
-                paragraph2.innerText =
-                  "To replace the current Data Deliverables just drop in or select a new one.";
-                paragraph2.style.marginBottom = "1rem";
-                paragraph.style.marginTop = "1rem";
-                paragraph.style.fontWeight = "700";
-                paragraph.innerText = "File Path: " + ddFilePath;
-                if (firstItem.children[0].id === "getting-started-filepath") {
-                  firstItem.children[0].remove();
-                  firstItem.children[firstItem.childElementCount - 1].remove();
-                }
-                firstItem.append(paragraph2);
-                firstItem.prepend(paragraph);
-                document.getElementById("guided-button-import-data-deliverables").click();
-              }
-            }
           }
         } catch (error) {
           clientError(error);
@@ -315,7 +290,7 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
           });
         }
       } else {
-        //dataDelieravles is true for the name to be however it needs to be, just check extension is doc or docx
+        //data deliverables is true for the name to be however it needs to be, just check extension is doc or docx
         if (metadataWithoutExtension === metadataFile) {
           if (metadataFileExtensionObject[metadataFile].includes(extension)) {
             document.getElementById(paraElement).innerHTML = file.path;
@@ -328,7 +303,7 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
                 .css("display", "none");
             }
             if (curationMode === "guided") {
-              //Add success checkmark lottie animation inside metadata card
+              //Add success check mark lottie animation inside metadata card
               const dragDropContainer = document.getElementById(paraElement).parentElement;
               //get the value of data-code-metadata-file-type from dragDropContainer
               const metadataFileType = dragDropContainer.dataset.codeMetadataFileType;
@@ -363,7 +338,7 @@ async function dropHandler(ev, paraElement, metadataFile, curationMode, dataDeli
         "<span style='color:red'>Please only drag and drop a file!</span>";
     }
   }
-}
+};
 
 const checkAvailableSpace = () => {
   const roundToHundredth = (value) => {
@@ -655,7 +630,7 @@ const importGenerateDatasetStep = async (object) => {
 };
 
 // check metadata files
-function populateMetadataProgress(populateBoolean, metadataFileName, localPath) {
+const populateMetadataProgress = (populateBoolean, metadataFileName, localPath) => {
   var metadataButtonsArray = $(".metadata-button.button-generate-dataset");
   var correspondingMetadataParaElement = {
     submission: ["para-submission-file-path", metadataButtonsArray[0]],
@@ -692,7 +667,7 @@ function populateMetadataProgress(populateBoolean, metadataFileName, localPath) 
       $(paraElement[1]).removeClass("done");
     }
   }
-}
+};
 
 //////////////////////// Main Import progress function
 let missing_dataset_files = [];
@@ -868,20 +843,20 @@ const recursive_remove_missing_file = (item_path, dataset_folder) => {
   }
 };
 
-function removeOptions(selectbox) {
-  var i;
-  for (i = selectbox.options.length - 1; i >= 0; i--) {
-    selectbox.remove(i);
-  }
-}
+// const removeOptions = (selectbox) => {
+//   var i;
+//   for (i = selectbox.options.length - 1; i >= 0; i--) {
+//     selectbox.remove(i);
+//   }
+// };
 //
 // Function to add options to dropdown list
-function addOption(selectbox, text, value) {
-  var opt = document.createElement("OPTION");
-  opt.text = text;
-  opt.value = value;
-  selectbox.options.add(opt);
-}
+// const addOption = (selectbox, text, value) => {
+//   var opt = document.createElement("OPTION");
+//   opt.text = text;
+//   opt.value = value;
+//   selectbox.options.add(opt);
+// };
 
 // function to load Progress dropdown
 const importOrganizeProgressPrompt = () => {
@@ -998,7 +973,7 @@ $("#select-permission-list-2").change((e) => {
   }
 });
 
-function checkPrevDivForConfirmButton(category) {
+const checkPrevDivForConfirmButton = (category) => {
   if (category === "account") {
     if (!$("#Question-generate-dataset-BF-account").hasClass("prev")) {
       $("#div-bf-account-btns").css("display", "flex");
@@ -1030,9 +1005,9 @@ function checkPrevDivForConfirmButton(category) {
       $("#button-confirm-bf-dataset-getting-started").hide();
     }
   }
-}
+};
 
-function create_child_node(
+const create_child_node = (
   oldFormatNode,
   nodeName,
   type,
@@ -1042,7 +1017,7 @@ function create_child_node(
   disabledState,
   selectedOriginalLocation,
   viewOptions
-) {
+) => {
   /*
   oldFormatNode: node in the format under "dataset-structure" key in SODA object
   nodeName: text to show for each node (name)
@@ -1186,15 +1161,15 @@ function create_child_node(
     }
   }
   return newFormatNode;
-}
+};
 
-function recursiveExpandNodes(object) {
-  // var newFormatNode = {"text": nodeName,
-  // "state": {"opened": openedState, "selected": selectedState},
-  // "children": [], "type": type + ext}
-  if (object.state.selected) {
-  }
-}
+// function recursiveExpandNodes(object) {
+//   // var newFormatNode = {"text": nodeName,
+//   // "state": {"opened": openedState, "selected": selectedState},
+//   // "children": [], "type": type + ext}
+//   if (object.state.selected) {
+//   }
+// }
 
 // var selected = false;
 var selectedPath;
@@ -1222,7 +1197,19 @@ $(document).ready(function () {
       data: {},
       expand_selected_onload: true,
     },
-    plugins: ["types", "changed"],
+    plugins: ["types", "changed", "sort"],
+    sort: function (a, b) {
+      a1 = this.get_node(a);
+      b1 = this.get_node(b);
+
+      if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
+        //if the word assets is included in the icon then we can assume it is a file
+        //folder icons are under font awesome meanwhile files come from the assets folder
+        return a1.text > b1.text ? 1 : -1;
+      } else {
+        return a1.icon < b1.icon ? 1 : -1;
+      }
+    },
     types: {
       folder: {
         icon: "fas fa-folder fa-fw",
@@ -1628,15 +1615,15 @@ function moveItemsHelper(item, destination, category) {
   );
 }
 
-function updateManifestLabelColor(el) {
+const updateManifestLabelColor = (el) => {
   document.getElementById("label-manifest").style.color = el.checked
     ? "var(--color-light-green)"
     : "#303030";
   document.getElementById("label-manifest").style.fontWeight = el.checked ? "bold" : "normal";
-}
+};
 
 // helper functions to add "moved" to leaf nodes a.k.a files
-function addMovedRecursively(object) {
+const addMovedRecursively = (object) => {
   Object.keys(object["files"]).forEach((key) => {
     var file = object["files"][key];
     if ("action" in file) {
@@ -1669,7 +1656,7 @@ function addMovedRecursively(object) {
       addMovedRecursively(folder);
     }
   });
-}
+};
 
 $(document).ready(function () {
   $(".button-display-details").click(function () {
@@ -1702,7 +1689,19 @@ $(document).ready(function () {
       check_callback: true,
       data: {},
     },
-    plugins: ["types"],
+    plugins: ["types", "sort"],
+    sort: function (a, b) {
+      a1 = this.get_node(a);
+      b1 = this.get_node(b);
+
+      if (a1.icon == b1.icon || (a1.icon.includes("assets") && b1.icon.includes("assets"))) {
+        //if the word assets is included in the icon then we can assume it is a file
+        //folder icons are under font awesome meanwhile files come from the assets folder
+        return a1.text > b1.text ? 1 : -1;
+      } else {
+        return a1.icon < b1.icon ? 1 : -1;
+      }
+    },
     types: {
       folder: {
         icon: "fas fa-folder fa-fw",
@@ -1770,14 +1769,14 @@ $(jstreePreview).on("close_node.jstree", function (event, data) {
   data.instance.set_type(data.node, "folder closed");
 });
 
-function showTreeViewPreview(
+const showTreeViewPreview = (
   disabledBoolean,
   selectedBoolean,
   manifestFileBoolean,
   new_dataset_name,
   previewDiv,
   datasetStructure
-) {
+) => {
   if (manifestFileBoolean) {
     if (manifestFileCheck.checked) {
       addManifestFilesForTreeView();
@@ -1799,24 +1798,26 @@ function showTreeViewPreview(
   );
   $(previewDiv).jstree(true).settings.core.data = jsTreePreviewDataManifest;
   $(previewDiv).jstree(true).refresh();
-}
+};
 
 // if checked
-function addManifestFilesForTreeView() {
+const addManifestFilesForTreeView = () => {
   for (var key in datasetStructureJSONObj["folders"]) {
     if (highLevelFolders.includes(key)) {
       var fileKey = datasetStructureJSONObj["folders"][key]["files"];
-      if (!("manifest.xlsx" in fileKey)) {
+      let folderAmount = Object.keys(datasetStructureJSONObj["folders"][key]["folders"]).length;
+      let fileAmount = Object.keys(datasetStructureJSONObj["folders"][key]["files"]).length;
+      if (!("manifest.xlsx" in fileKey) && (folderAmount > 0 || fileAmount > 0)) {
         fileKey["manifest.xlsx"] = {
           forTreeview: true,
         };
       }
     }
   }
-}
+};
 
 // if unchecked
-function revertManifestForTreeView() {
+const revertManifestForTreeView = () => {
   for (var key in datasetStructureJSONObj["folders"]) {
     if (highLevelFolders.includes(key)) {
       var fileKey = datasetStructureJSONObj["folders"][key]["files"];
@@ -1825,36 +1826,318 @@ function revertManifestForTreeView() {
       }
     }
   }
-}
+};
 
-$("#generate-manifest-curate").change(function () {
+const generateFFManifestEditCard = (highLevelFolderName) => {
+  return `
+  <div class="guided--dataset-card">        
+    <div class="guided--dataset-card-body shrink">
+      <div class="guided--dataset-card-row">
+        <h1 class="guided--text-dataset-card">
+          <span class="manifest-folder-name">${highLevelFolderName}</span>
+        </h1>
+      </div>
+    </div>
+    <div class="guided--container-dataset-card-center">
+      <button
+        class="ui primary button guided--button-footer"
+        style="
+          background-color: var(--color-light-green) !important;
+          width: 280px !important;
+          margin: 4px;
+        "
+        onClick="ffOpenManifestEditSwal('${highLevelFolderName}')"
+      >
+        Preview/Edit ${highLevelFolderName} manifest file
+      </button>
+    </div>
+  </div>
+`;
+};
+
+const renderFFManifestCards = () => {
+  const manifestData = sodaCopy["manifest-files"];
+  const highLevelFoldersWithManifestData = Object.keys(manifestData);
+
+  const manifestCards = highLevelFoldersWithManifestData
+    .map((highLevelFolder) => {
+      return generateFFManifestEditCard(highLevelFolder);
+    })
+    .join("\n");
+
+  const manifestFilesCardsContainer = document.getElementById("ffm-container-manifest-file-cards");
+  manifestFilesCardsContainer.innerHTML = manifestCards;
+
+  smoothScrollToElement(manifestFilesCardsContainer);
+};
+
+const ffOpenManifestEditSwal = async (highlevelFolderName) => {
+  let saveManifestFiles = false;
+  let guidedManifestTable = [];
+  // Function for when user wants to edit the manifest cards
+  const existingManifestData = sodaCopy["manifest-files"]?.[highlevelFolderName];
+  // const existingManifestData = sodaJSONObj["guided-manifest-files"][highLevelFolderName];
+  //send manifest data to main.js to then send to child window
+  ipcRenderer.invoke("spreadsheet", existingManifestData);
+
+  //upon receiving a reply of the spreadsheet, handle accordingly
+  ipcRenderer.on("spreadsheet-reply", async (event, result) => {
+    if (!result || result === "") {
+      ipcRenderer.removeAllListeners("spreadsheet-reply");
+      return;
+    } else {
+      //spreadsheet reply contained results
+      ipcRenderer.removeAllListeners("spreadsheet-reply");
+      saveManifestFiles = true;
+      // guidedManifestTable = result;
+      if (saveManifestFiles) {
+        //if additional metadata or description gets added for a file then add to json as well
+        sodaJSONObj["manifest-files"]["auto-generated"] = true;
+        const savedHeaders = result[0];
+        const savedData = result[1];
+        let jsonManifest = {};
+        let localFolderPath = path.join(
+          homeDirectory,
+          "SODA",
+          "manifest_files",
+          highlevelFolderName
+        );
+        let selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
+        if (!fs.existsSync(localFolderPath)) {
+          fs.mkdirSync(localFolderPath);
+          fs.closeSync(fs.openSync(selectedManifestFilePath, "w"));
+        }
+        jsonManifest = excelToJson({
+          sourceFile: selectedManifestFilePath,
+          columnToKey: {
+            "*": "{{columnHeader}}",
+          },
+        })["Sheet1"];
+
+        let sortedJSON = processManifestInfo(savedHeaders, savedData);
+        jsonManifest = JSON.stringify(sortedJSON);
+        convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
+        //Update the metadata in json object
+        for (let i = 0; i < savedData.length; i++) {
+          let fileName = savedData[i][0];
+          let cleanedFileName = "";
+          let fileNameSplit = fileName.split("/");
+          let description = savedData[i][2];
+          let additionalMetadata = savedData[i][4];
+          if (fileNameSplit[0] === "") {
+            //not in a subfolder
+            cleanedFileName = fileNameSplit[1];
+            sodaCopy["dataset-structure"]["folders"][highlevelFolderName]["files"][cleanedFileName][
+              "description"
+            ] = description;
+            sodaJSONObj["dataset-structure"]["folders"][highlevelFolderName]["files"][
+              cleanedFileName
+            ]["description"];
+            sodaCopy["dataset-structure"]["folders"][highlevelFolderName]["files"][cleanedFileName][
+              "additional-metadata"
+            ] = additionalMetadata;
+            sodaJSONObj["dataset-structure"]["folders"][highlevelFolderName]["files"][
+              cleanedFileName
+            ]["additional-metadata"] = additionalMetadata;
+          } else {
+            // is in a subfolder so search for it and update metadata
+            // need to add description and additional metadata to original sodaJSONObj
+            let folderDepthCopy = sodaCopy["dataset-structure"]["folders"][highlevelFolderName];
+            let folderDepthReal = sodaJSONObj["dataset-structure"]["folders"][highlevelFolderName];
+            for (let j = 0; j < fileNameSplit.length; j++) {
+              if (j === fileNameSplit.length - 1) {
+                folderDepthCopy["files"][fileNameSplit[j]]["description"] = description;
+                folderDepthReal["files"][fileNameSplit[j]]["description"] = description;
+                folderDepthCopy["files"][fileNameSplit[j]]["additional-metadata"] =
+                  additionalMetadata;
+                folderDepthReal["files"][fileNameSplit[j]]["additional-metadata"] =
+                  additionalMetadata;
+              } else {
+                folderDepthCopy = folderDepthCopy["folders"][fileNameSplit[j]];
+                folderDepthReal = folderDepthReal["folders"][fileNameSplit[j]];
+              }
+            }
+          }
+        }
+
+        sodaCopy["manifest-files"][highlevelFolderName] = {
+          headers: savedHeaders,
+          data: savedData,
+        };
+      }
+
+      //Rerender the manifest cards
+      renderFFManifestCards();
+    }
+  });
+};
+
+// Function takes in original sodaJSONObj and creates a copy of it to modify to manifest edits
+// Manifest edits will create
+const ffmCreateManifest = async (sodaJson) => {
+  await new Promise((r) => setTimeout(r, 0));
+  //create a copy of the sodajson object
+  sodaCopy = sodaJson;
+  datasetStructCopy = sodaCopy["dataset-structure"];
+  if ("auto-generated" in sodaCopy["manifest-files"]) {
+    delete sodaCopy["manifest-files"]["auto-generated"];
+  }
+  if ("destination" in sodaCopy["manifest-files"]) {
+    delete sodaCopy["manifest-files"]["destination"];
+  }
+
+  try {
+    // used for imported local datasets and pennsieve datasets
+    // filters out deleted files/folders before creating manifest data again
+    const cleanJson = await client.post(
+      `/curate_datasets/clean-dataset`,
+      { soda_json_structure: sodaCopy },
+      { timeout: 0 }
+    );
+
+    let response = cleanJson.data.soda_json_structure;
+    // response does not format in JSON format so need to format ' with "
+    let regex = /'/gm;
+    let formattedResponse = response.replace(regex, '"');
+    let capitalTPosition = formattedResponse.search("True");
+    if (capitalTPosition != -1) {
+      formattedResponse = formattedResponse.replace("True", "true");
+    }
+
+    let json_structure = JSON.parse(formattedResponse);
+    sodaCopy = json_structure;
+    datasetStructCopy = sodaCopy["dataset-structure"];
+  } catch (e) {
+    clientError(e);
+    console.log(e);
+  }
+
+  //manifest will still include pennsieve or locally imported files
+  // deleted to prevent from showing up as manifest card
+  if (sodaCopy["manifest-files"]?.["destination"]) {
+    delete sodaCopy["manifest-files"]["destination"];
+  }
+
+  // create manifest data of all high level folders
+  try {
+    const res = await client.post(
+      `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
+      {
+        dataset_structure_obj: datasetStructCopy,
+      },
+      { timeout: 0 }
+    );
+
+    // loop through each of the high level folders and create excel sheet in case no edits are made
+    // will be auto generated and ready for upload
+    const manifestRes = res.data;
+    let newManifestData = {};
+    for (const [highLevelFolderName, manifestFileData] of Object.entries(manifestRes)) {
+      if (manifestFileData.length > 1) {
+        const manifestHeader = manifestFileData.shift();
+        newManifestData[highLevelFolderName] = {
+          headers: manifestHeader,
+          data: manifestFileData,
+        };
+        // Will create an excel sheet of the manifest files in case they receive no edits
+        let jsonManifest = {};
+        let manifestFolder = path.join(homeDirectory, "SODA", "manifest_files");
+        let localFolderPath = path.join(manifestFolder, highLevelFolderName);
+        let selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
+        // create manifest folders if they don't exist
+        if (!fs.existsSync(manifestFolder)) {
+          fs.mkdirSync(manifestFolder);
+        }
+        if (!fs.existsSync(localFolderPath)) {
+          fs.mkdirSync(localFolderPath);
+          fs.closeSync(fs.openSync(selectedManifestFilePath, "w"));
+        }
+        jsonManifest = excelToJson({
+          sourceFile: selectedManifestFilePath,
+          columnToKey: {
+            "*": "{{columnHeader}}",
+          },
+        })["Sheet1"];
+
+        let sortedJSON = processManifestInfo(manifestHeader, manifestFileData);
+        jsonManifest = JSON.stringify(sortedJSON);
+        convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
+      }
+    }
+
+    // Check if manifest data is different from what exists already (if previous data exists)
+    const existingManifestData = sodaCopy["manifest-files"];
+    let updatedManifestData;
+
+    if (existingManifestData) {
+      updatedManifestData = diffCheckManifestFiles(newManifestData, existingManifestData);
+    } else {
+      updatedManifestData = newManifestData;
+    }
+    // manifest data will be stored in sodaCopy to be reused for manifest edits/regenerating cards
+    // sodaJSONObj will remain the same and only have 'additonal-metadata' and 'description' data
+    sodaCopy["manifest-files"] = updatedManifestData;
+
+    // below needs to be added added before the main_curate_function begins
+    sodaJSONObj["manifest-files"] = {
+      "auto-generated": true,
+      destination: "generate-dataset",
+    };
+  } catch (err) {
+    clientError(err);
+    console.log(err);
+    userError(err);
+  }
+  renderFFManifestCards();
+};
+
+$("#generate-manifest-curate").change(async function () {
   if (this.checked) {
     $("#button-generate-manifest-locally").show();
+    //display manifest generator UI here
+    $("#ffm-manifest-generator").show();
+    // create the manifest of the high level folders within sodaJSONObj
+    if ("manifest-files" in sodaJSONObj === false) {
+      sodaJSONObj["manifest-files"] = {
+        "auto-generated": true,
+        destination: "generate-dataset",
+      };
+    }
+
+    await ffmCreateManifest(sodaJSONObj);
+    // For the back end to know the manifest files have been created in $HOME/SODA/manifest-files/<highLvlFolder>
+    sodaJSONObj["manifest-files"]["auto-generated"] = true;
   } else {
     $("#button-generate-manifest-locally").hide();
+    $("#ffm-manifest-generator").hide();
+    document.getElementById("ffm-container-manifest-file-cards").innerHTML = "";
+    if (sodaJSONObj["manifest-files"]?.["destination"]) {
+      delete sodaJSONObj["manifest-files"]["destination"];
+    }
+    if (sodaJSONObj["manifest-files"]?.["auto-generated"]) {
+      delete sodaJSONObj["manifest-files"]["auto-generated"];
+    }
   }
 });
 
-function determineDatasetDestination(dataset_name, dataset_destination) {
-  // determine if the dataset is being uploaded to Pennsieve or being generated locally
-  if ("bf-dataset-selected" in sodaJSONObj) {
-    dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-    dataset_destination = "Pennsieve";
-  } else if ("generate-dataset" in sodaJSONObj) {
-    if ("destination" in sodaJSONObj["generate-dataset"]) {
-      let destination = sodaJSONObj["generate-dataset"]["destination"];
-      if (destination == "local") {
-        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-        dataset_destination = "Local";
-      }
-      if (destination == "bf") {
-        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-        dataset_destination = "Pennsieve";
-      }
-    }
-  }
+// const determineDatasetDestination = (dataset_name, dataset_destination) => {
+//   // determine if the dataset is being uploaded to Pennsieve or being generated locally
+//   if ("bf-dataset-selected" in sodaJSONObj) {
+//     dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+//     dataset_destination = "Pennsieve";
+//   } else if ("generate-dataset" in sodaJSONObj) {
+//     if ("destination" in sodaJSONObj["generate-dataset"]) {
+//       let destination = sodaJSONObj["generate-dataset"]["destination"];
+//       if (destination == "local") {
+//         dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+//         dataset_destination = "Local";
+//       }
+//       if (destination == "bf") {
+//         dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+//         dataset_destination = "Pennsieve";
+//       }
+//     }
+//   }
 
-  return [dataset_name, dataset_destination];
-}
-
-// module.exports = {determineDatasetDestination}
+//   return [dataset_name, dataset_destination];
+// };

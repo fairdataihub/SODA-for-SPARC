@@ -2097,7 +2097,7 @@ async function addCustomField(type, curationMode) {
   }
 }
 
-function addCustomHeader(type, customHeaderValue, curationMode) {
+const addCustomHeader = (type, customHeaderValue, curationMode) => {
   let curationModeSelectorPrefix = "";
   if (curationMode == "guided") {
     curationModeSelectorPrefix = "guided-";
@@ -2169,7 +2169,7 @@ function addCustomHeader(type, customHeaderValue, curationMode) {
       }
     }
   }
-}
+};
 
 function deleteCustomField(ev, customField, category, curationMode) {
   // category 0 => subjects;

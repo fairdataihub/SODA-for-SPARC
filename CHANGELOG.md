@@ -5,11 +5,30 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.10.0.0 - 2023-01-24
+
+## Feature additions:
+
+- Freeform Mode: ADD NEW STUFF FOR FFM HERE!!!!!!!!!!!!!!
+- Guided Mode: Added the ability to edit an existing dataset on Pennsieve.
+- SODA for SPARC uses the new Pennsieve Agent for uploading dataset files.
+- SODA for SPARC uses the Pennsieve API for communication with Pennsieve.
+
+## Bug fixes:
+
+- Guided Mode: Fixed subjects and samples metadata not properly copying over when extra fields were added.
+
 ## v.9.4.1 - 2022-11-04
 
 ## Bug fixes:
 
 - Manual Windows build creation to fix an issue with the back-end not connectiong on Windows.
+
+## Known Issues:
+
+- Freeform Mode:
+  - The transition to the generate step in the Organize Datasets feature is slowed when working with large datasets.
+  - Uploading large amounts of very small files ( <= 1kb ) will sometimes cause the upload to pause or crash. It is best to restart the upload when this happens.
 
 ## v.9.4.0 - 2022-11-02
 

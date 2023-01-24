@@ -61,7 +61,7 @@ const trackPennsieveImportProgress = async (progressContainer, hide) => {
  *    "manifest_error_message": ""
  * }
  */
-var bf_request_and_populate_dataset = async (
+const bf_request_and_populate_dataset = async (
   sodaJSONObj,
   progressContainer = undefined,
   hide = true
@@ -81,7 +81,7 @@ var bf_request_and_populate_dataset = async (
     let data = filesFoldersResponse.data;
 
     ipcRenderer.send("track-event", "Success", "Retrieve Dataset - Pennsieve", defaultBfDatasetId);
-
+    console.log(data);
     return data;
   } catch (error) {
     importError = true;

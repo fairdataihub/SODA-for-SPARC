@@ -57,6 +57,12 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
   }
   var upperCaseLetters = fileType.toUpperCase() + ".txt";
   if (uploadBFBoolean) {
+    // Run pre-flight checks before uploading the changes or readme file to Pennsieve
+    const supplementary_checks = await run_pre_flight_checks(false);
+    if (!supplementary_checks) {
+      return;
+    }
+
     var { value: continueProgress } = await Swal.fire({
       title: `Any existing ${upperCaseLetters} file in the high-level folder of the selected dataset will be replaced.`,
       text: "Are you sure you want to continue?",
@@ -88,6 +94,7 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
   var textValue = $(`#textarea-create-${fileType}`).val().trim();
   let bfDataset = document.getElementById(`bf_dataset_load_${fileType}`).innerText.trim();
   if (uploadBFBoolean) {
+    //pass in only CHANGES or README (the extension .txt is added in the backend)
     try {
       let upload_rc_file = await client.post(
         "/prepare_metadata/readme_changes_file",
@@ -513,6 +520,7 @@ const getRC = async (type) => {
 
   log.info(`Getting ${type} file for dataset ${datasetName}`);
 
+  //pass in only CHANGES or README (the extension .txt is added in the backend)
   try {
     let import_rc_file = await client.get(`/prepare_metadata/readme_changes_file`, {
       params: {

@@ -225,7 +225,6 @@ class DatasetDescriptionFile(Resource):
     def post(self):
         data = self.parser_dataset_description_file.parse_args()
 
-        print(data)
 
         dataset_str = data.get('dataset_str')
         filepath = data.get('filepath')
@@ -416,7 +415,6 @@ class SamplesFile(Resource):
         filepath = data.get('filepath')
         ui_fields = data.get('ui_fields')
 
-        print(ui_fields)
 
         if file_type != 'samples.xlsx':
             api.abort(400, "Error: The type parameter must be samples.")
@@ -588,14 +586,17 @@ class GenerateManifestFilesPennsieve(Resource):
                     "selected_dataset": "The dataset that the user wants to generate manifest files for"})
     # @api.marshal_with(model_generate_manifest_locally_response, False, 200)
     def post(self):
+        # data = request.get_json()
+        # selected_account = request.args.get("selected_account", "An account wasn't provided")
+        # selected_dataset = request.args.get("selected_dataset", "An dataset name wasn't provided")
+        # soda_json_object = request.args.get("soda_json_object", "An soda json object wasn't provided")
         data = request.get_json()
 
+        soda_json_object = data.get("soda_json_object")
         selected_account = data.get("selected_account")
         selected_dataset = data.get("selected_dataset")
-        soda_json_object = data.get("soda_json_object")
-
         if not selected_account or not selected_dataset or not soda_json_object:
-            api.abort(400, "Error: To generate manifest files for Pennsieve provide a selected_account, selected_dataset, and soda_json_object.")
+            api.abort(400, str(selected_account + selected_dataset + soda_json_object))
 
         try:
             return import_bf_manifest_file(soda_json_object, selected_account, selected_dataset)

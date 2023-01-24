@@ -664,6 +664,12 @@ async function generateDatasetDescription() {
 
 const generateDDFile = async (uploadBFBoolean) => {
   if (uploadBFBoolean) {
+    // Run pre-flight checks before uploading the dataset_description file to Pennsieve
+    const supplementary_checks = await run_pre_flight_checks(false);
+    if (!supplementary_checks) {
+      return;
+    }
+
     var { value: continueProgress } = await Swal.fire({
       title:
         "Any existing dataset_description.xlsx file in the high-level folder of the selected dataset will be replaced.",
@@ -1146,7 +1152,6 @@ const helpSPARCAward = async (filetype, curationMode) => {
       currentMilestonesInTextArea = $("#selected-milestone-1");
     }
     currentMilestonesInTextArea = $("#selected-milestone-1");
-
     if (res[0] && curationMode != "guided--getting-started") {
       var keyname = res[1];
       var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'submission\', '${curationMode}')" style="font-weight:500;text-decoration: underline"><svg class="svg-change-current-account bi bi-pencil-fill" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" viewBox="0 0 16 16">
@@ -2404,7 +2409,7 @@ function addNewRow(table) {
   }
 }
 
-function addAirtableAccountInsideSweetalert(keyword, curationMode) {
+const addAirtableAccountInsideSweetalert = async (keyword, curationMode) => {
   // var name = $("#bootbox-airtable-key-name").val();
   var name = "SODA-Airtable";
   var key = $("#bootbox-airtable-key").val();
@@ -2439,7 +2444,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
         hideClass: {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
-      }).then((result) => {
+      }).then(async (result) => {
         if (result.isConfirmed) {
           const optionsSparcTable = {
             hostname: airtableHostname,
@@ -2448,7 +2453,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
             headers: { Authorization: `Bearer ${key}` },
           };
           var sparcTableSuccess;
-          https.get(optionsSparcTable, (res) => {
+          https.get(optionsSparcTable, async (res) => {
             if (res.statusCode === 200) {
               /// updating api key in SODA's storage
               createMetadataDir();
@@ -2464,7 +2469,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
               $("#current-airtable-account").html(name);
               // $("#bootbox-airtable-key-name").val("");
               $("#bootbox-airtable-key").val("");
-              loadAwardData();
+              await loadAwardData();
               // ddNoAirtableMode("Off");
               Swal.fire({
                 title: "Successfully connected. Loading your Airtable account...",
@@ -2555,7 +2560,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
         headers: { Authorization: `Bearer ${key}` },
       };
       let sparcTableSuccess;
-      https.get(optionsSparcTable, (res) => {
+      https.get(optionsSparcTable, async (res) => {
         if (res.statusCode === 200) {
           /// updating api key in SODA's storage
           createMetadataDir();
@@ -2567,7 +2572,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
 
           $("#current-airtable-account").html(name);
           $("#bootbox-airtable-key").val("");
-          loadAwardData();
+          await loadAwardData();
           Swal.fire({
             title: "Successfully connected. Loading your Airtable account...",
             timer: 3000,
@@ -2656,7 +2661,7 @@ function addAirtableAccountInsideSweetalert(keyword, curationMode) {
       });
     }
   }
-}
+};
 
 function importExistingDDFile() {
   var filePath = $("#existing-dd-file-destination").prop("placeholder");

@@ -368,6 +368,11 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           let key_name = result.value.name;
           let apiKey = result.value.key;
           let apiSecret = result.value.secret;
+
+          // lowercase the key_name the user provided
+          // this is to prevent an issue caused by the pennsiev agent
+          // wherein it fails to validate an account if it is not lowercase
+          key_name = key_name.toLowerCase();
           //needs to be replaced
           try {
             await client.put(`/manage_datasets/account/username`, {
@@ -406,11 +411,11 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               $("#current_sparc_consortium_status").text("None");
               $("#sparc-consortium-share-btn").hide();
               $("#sparc-consortium-unshare-btn").hide();
-              const gettingStartedPennsieveBtn = document.getElementById(
-                "getting-started-pennsieve-account"
-              );
-              gettingStartedPennsieveBtn.children[0].style.display = "none";
-              gettingStartedPennsieveBtn.children[1].style.display = "flex";
+              // const gettingStartedPennsieveBtn = document.getElementById(
+              // "getting-started-pennsieve-account"
+              // );
+              // gettingStartedPennsieveBtn.children[0].style.display = "none";
+              // gettingStartedPennsieveBtn.children[1].style.display = "flex";
 
               showHideDropdownButtons("account", "show");
               confirm_click_account_function();

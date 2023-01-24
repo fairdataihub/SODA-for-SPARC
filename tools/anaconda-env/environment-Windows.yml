@@ -3,27 +3,32 @@ channels:
   - defaults
   - conda-forge
 dependencies:
-  - python = 3.9.7
-  - nodejs = 16.14.2
-  - pywin32 = 303
-  - git = 2.20.1
-  - setuptools=58.0.4
-  - pip
-  - pip:
-      - futures == 3.1.1
-      - chardet == 4.0.0
-      - pandas == 1.4.2
-      - openpyxl == 3.0.9
-      - pennsieve == 6.1.2
-      - configparser == 4.0.2
-      - python-docx == 0.8.10
-      - xlrd == 2.0.1
-      - biopython == 1.79
-      - gevent == 21.12.0
-      - flask == 2.0.2
-      - werkzeug == 2.0.2
-      - flask_restx
-      - protobuf == 3.20.0
-      - PyInstaller == 4.7
-      - opencv-python == 4.5.3.56
-      - certifi == 2021.10.8
+- python = 3.9.7
+- nodejs = 16.14.2
+- pywin32 = 303
+- git = 2.20.1
+- setuptools=58.0.4
+- pip
+- pip:
+  - futures == 3.1.1
+  - chardet == 4.0.0
+  - pandas == 1.4.2
+  - openpyxl == 3.0.9
+  - grpcio
+  - tqdm
+  - configparser == 4.0.2
+  - python-docx == 0.8.10
+  - xlrd == 2.0.1
+  - biopython == 1.79
+  - gevent == 21.12.0
+  - flask == 2.0.2
+  - werkzeug == 2.0.2
+  - flask_restx
+  - PyInstaller == 4.7
+  - opencv-python == 4.5.3.56
+  - certifi == 2021.10.8
+  - requests
+  - boto3 
+  - numpy == 1.23.0
+  - protobuf == 4.21.12
+  - pennsieve2 == 0.1.1

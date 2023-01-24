@@ -2,6 +2,10 @@ from flask_restx import Resource, fields, reqparse
 from namespaces import NamespaceEnum, get_namespace
 from flask import request
 import json
+from os.path import (
+    expanduser,
+    join,
+)
 
 from curate import (
     create_folder_level_manifest,
@@ -11,10 +15,12 @@ from curate import (
     generate_manifest_file_locally,
     guided_generate_manifest_file_data,
     check_JSON_size,
-    main_curate_function_upload_details,
-    create_high_level_manifest_files_existing_local_starting_point,
+    clean_json_structure
 )
+
+from manifest import create_high_level_manifest_files_existing_local_starting_point
 from errorHandlers.notBadRequestException import notBadRequestException
+userpath = expanduser("~")
 
 api = get_namespace(NamespaceEnum.CURATE_DATASETS)
 
@@ -42,14 +48,36 @@ class CheckEmptyFilesFolders(Resource):
         except Exception as e:
             api.abort(500, str(e))
 
+model_clean_dataset = api.model("DatasetCleanup", {
+    "soda_json_structure": fields.String(description="JSON structure of the SODA dataset")
+})
 
+@api.route("/clean-dataset")
+class Curation(Resource):
+    @api.doc(responses={500: "There was an internal server error", 400: "Bad request", 403: "Forbidden"}, description="Given a sodajson object, clean up the dataset structure for imported datasets that have been modified")
+    @api.marshal_with(model_clean_dataset)
+    def post(self):
+        data = request.get_json()
+
+        if "soda_json_structure" not in data:
+            api.abort(400, "Missing parameter: soda_json_structure")
+
+        soda_json_structure = data["soda_json_structure"]
+        api.logger.info("/clean-dataset POST request")
+
+        try:
+            return clean_json_structure(soda_json_structure)
+        except Exception as e:
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e
 
 
 
 model_main_curation_function_response = api.model( "MainCurationFunctionResponse", {
     "main_curate_progress_message": fields.String(description="Progress message from the main curation function"),
     "main_total_generate_dataset_size": fields.String(description="Total size of the dataset"),
-    "main_curation_uploaded_files": fields.Integer(description="Number of files that are being generated. ")
+    "main_curation_uploaded_files": fields.Integer(description="Number of files that are being generated. "), 
 })
 
 @api.route("/curation")
@@ -87,6 +115,8 @@ model_curation_progress_response = api.model( "CurationProgressResponse", {
     "main_total_generate_dataset_size": fields.Integer(description="Total size of the dataset"),
     "main_generated_dataset_size": fields.Integer(description="Size of the dataset that has been generated thus far"),
     "elapsed_time_formatted": fields.String(description="Elapsed time of the main curation function"),
+    "total_files_uploaded": fields.Integer(description="Number of files that have been uploaded"),
+    "generated_dataset_id": fields.String(description="Generated dataset ID"),
 })
 
 @api.route("/curation/progress")
@@ -114,16 +144,6 @@ model_curation_file_details_response = api.model( "CurationFileDetailsResponse",
     "generated_dataset_id": fields.String(description="ID of the dataset that has been generated. ")
 })
 
-@api.route("/curation/upload_details")
-class CurationFileDetails(Resource):
-    
-        @api.marshal_with(model_curation_file_details_response, False, 200)
-        @api.doc(responses={500: 'There was an internal server error'}, description="Function frequently called by front end to help keep track of the amount of files that have been successfully uploaded to Pennsieve, and the size of the uploaded files. Also tells us how many files have been copied (double usage of both variables) to a destination folder for local dataset generation.")
-        def get(self):
-            try:
-                return main_curate_function_upload_details()
-            except Exception as e:
-                api.abort(500, str(e))
 
 
 
@@ -147,7 +167,7 @@ class GenerateManifestFiles(Resource):
         filepath = data.get("filepath")
 
         try:
-            return create_high_level_manifest_files_existing_local_starting_point(filepath)
+            return create_high_level_manifest_files_existing_local_starting_point(filepath, join(userpath, "SODA", "manifest_files"))
         except Exception as e:
             api.abort(500, str(e))
 

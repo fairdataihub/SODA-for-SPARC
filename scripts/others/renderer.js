@@ -78,47 +78,6 @@ let introStatus = {
   samples: false,
 };
 
-/**
- * Clear the Pennsieve Agent's upload queue. Should be run after pre_rlight_checks have passed.
- *
- */
-const clearQueue = () => {
-  // determine OS
-  const os = require("os");
-  const platform = os.platform();
-  let pennsievePath;
-
-  if (platform === "darwin") {
-    pennsievePath = "/usr/local/opt/pennsieve/bin/pennsieve";
-  } else if (platform === "win32") {
-    pennsievePath = "C:\\Program Files\\PennSieve\\pennsieve.exe";
-  } else {
-    // linux pennsieve path
-    pennsievePath = "/usr/local/bin/pennsieve";
-  }
-
-  //* clear the Pennsieve Queue
-  const child = require("child_process").spawnSync(
-    pennsievePath,
-    ["upload-status", "--cancel-all"],
-    { timeout: 4000 }
-  );
-
-  //* check if there was an error in the subprocess that prevented it from launching
-  if (child.error !== undefined) {
-    console.error(child.error);
-    log.error(child.error);
-    return;
-  }
-
-  //* if Pennsieve had an error outputed to the console log it for debugging
-  if (child.stderr !== null && child.stderr.length > 0) {
-    console.error(child.stderr.toString("utf8"));
-    log.error(child.stderr.toString("utf8"));
-    return;
-  }
-};
-
 //////////////////////////////////
 // App launch actions
 //////////////////////////////////
@@ -321,6 +280,17 @@ const notyf = new Notyf({
       duration: 3000,
     },
     {
+      type: "info",
+      background: "#13716D",
+      icon: {
+        className: "fas fa-info-circle",
+        tagName: "i",
+        color: "white",
+      },
+      duration: 3000,
+    },
+
+    {
       type: "app_update_warning",
       background: "#fa8c16",
       icon: {
@@ -491,212 +461,201 @@ ipcRenderer.on("checkForAnnouncements", (event, index) => {
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 const run_pre_flight_checks = async (check_update = true) => {
   log.info("Running pre flight checks");
-  return new Promise(async (resolve) => {
-    let connection_response = "";
-    let agent_installed_response = "";
-    let agent_version_response = "";
-    let account_present = false;
-    let nodeStorage = new JSONStorage(app.getPath("userData"));
+  let connection_response = "";
+  let agent_installed_response = "";
+  let agent_version_response = "";
+  let account_present = false;
 
-    // Check the internet connection and if available check the rest.
-    connection_response = await check_internet_connection();
+  // Check the internet connection and if available check the rest.
+  connection_response = await check_internet_connection();
 
-    if (!connection_response) {
-      await Swal.fire({
-        title: "No Internet Connection",
-        icon: "success",
-        text: "It appears that your computer is not connected to the internet. You may continue, but you will not be able to use features of SODA related to Pennsieve and especially none of the features located under the 'Manage Datasets' section.",
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: "I understand",
-        showConfirmButton: true,
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          // Do nothing
-        }
-      });
-      return resolve(false);
+  if (!connection_response) {
+    await Swal.fire({
+      title: "No Internet Connection",
+      icon: "success",
+      text: "It appears that your computer is not connected to the internet. You may continue, but you will not be able to use features of SODA related to Pennsieve and especially none of the features located under the 'Manage Datasets' section.",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "I understand",
+      showConfirmButton: true,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
+    return false;
+  }
+
+  // TODO: Remove? Test first.
+  await wait(500);
+
+  // TODO: Start the agent here or while determining installation and agent version.
+
+  // Check for an API key pair first. Calling the agent check without a config file, causes it to crash.
+  account_present = await check_api_key();
+
+  // TODO: Reimplement this section to work with the new agent
+  if (!account_present) {
+    if (check_update) {
+      checkNewAppVersion();
+    }
+
+    // If there is no API key pair, show the warning and let them add a key. Messages are dissmisable.
+    let { value: result } = await Swal.fire({
+      icon: "warning",
+      text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connected to Pennsieve. Would you like to do it now?",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Yes",
+      showCancelButton: true,
+      reverseButtons: reverseSwalButtons,
+      cancelButtonText: "I'll do it later",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
+    // TODO: Especially test this part cuz its getting tricky in the conversion
+    if (result) {
+      await openDropdownPrompt(null, "bf");
+      return false;
     } else {
-      await wait(500);
+      return true;
+    }
+  }
 
-      // Check for an API key pair first. Calling the agent check without a config file, causes it to crash.
-      account_present = await check_api_key();
-      if (account_present) {
-        // Check for an installed Pennsieve agent
-        await wait(500);
-        [agent_installed_response, agent_version_response] = await check_agent_installed();
-        // If no agent is installed, download the latest agent from Github and link to their docs for installation instrucations if needed.
-        if (!agent_installed_response) {
-          Swal.fire({
-            icon: "error",
-            title: "Pennsieve Agent error!",
-            html: agent_version_response,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            showCancelButton: true,
-            reverseButtons: reverseSwalButtons,
-            confirmButtonText: "Download now",
-            cancelButtonText: "Skip for now",
-          }).then(async (result) => {
-            if (result.isConfirmed) {
-              try {
-                let [browser_download_url, latest_agent_version] = await get_latest_agent_version();
-                shell.openExternal(browser_download_url);
-                shell.openExternal("https://docs.pennsieve.io/v1/docs/the-pennsieve-agent");
-              } catch (e) {
-                await Swal.fire({
-                  icon: "error",
-                  text: "We are unable to get the latest version of the Pennsieve Agent. Please try again later. If this issue persists please contact the SODA team at help@fairdataihub.org",
-                  heightAuto: false,
-                  backdrop: "rgba(0,0,0, 0.4)",
-                  showCancelButton: true,
-                  confirmButtonText: "Ok",
-                  showClass: {
-                    popup: "animate__animated animate__zoomIn animate__faster",
-                  },
-                  hideClass: {
-                    popup: "animate__animated animate__zoomOut animate__faster",
-                  },
-                });
-              }
-            }
-          });
-          resolve(false);
-        } else {
-          await wait(500);
-          // Check the installed agent version. We aren't enforcing the min limit yet but is the python version starts enforcing it, we might have to.
-          let browser_download_url,
-            latest_agent_version = "";
-          try {
-            [browser_download_url, latest_agent_version] = await check_agent_installed_version(
-              agent_version_response
-            );
-          } catch (e) {
-            notyf.dismiss(notification);
-            notyf.open({
-              type: "error",
-              message: "Unable to verify that your Pennsieve Agent is up to date.",
-            });
-            log.error("Unable to verify that your Pennsieve Agent is up to date.");
-            console.log(error);
-            log.error(error);
-            return resolve(false);
-          }
-          if (browser_download_url != "") {
-            Swal.fire({
-              icon: "warning",
-              text: "It appears that you are not running the latest version of the Pensieve Agent. We recommend that you update your software and restart SODA for the best experience.",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              showCancelButton: true,
-              confirmButtonText: "Download now",
-              cancelButtonText: "Skip for now",
-              reverseButtons: reverseSwalButtons,
-              showClass: {
-                popup: "animate__animated animate__zoomIn animate__faster",
-              },
-              hideClass: {
-                popup: "animate__animated animate__zoomOut animate__faster",
-              },
-            }).then(async (result) => {
-              if (result.isConfirmed) {
-                try {
-                  // If there is a newer agent version, download the latest agent from Github and link to their docs for installation instrucations if needed.
-                  [browser_download_url, latest_agent_version] = await get_latest_agent_version();
-                  shell.openExternal(browser_download_url);
-                  shell.openExternal("https://docs.pennsieve.io/v1/docs/the-pennsieve-agent");
-                } catch (e) {
-                  console.log(e);
-                  log.error(e);
-                  await Swal.fire({
-                    icon: "error",
-                    text: "We are unable to get the latest version of the Pennsieve Agent. Please try again later. If this issue persists please contact the SODA team at help@fairdataihub.org",
-                    heightAuto: false,
-                    backdrop: "rgba(0,0,0, 0.4)",
-                    showCancelButton: true,
-                    confirmButtonText: "Ok",
-                    showClass: {
-                      popup: "animate__animated animate__zoomIn animate__faster",
-                    },
-                    hideClass: {
-                      popup: "animate__animated animate__zoomOut animate__faster",
-                    },
-                  });
-                }
-                resolve(false);
-              }
-              if (result.isDismissed) {
-                if (check_update) {
-                  checkNewAppVersion();
-                }
-                await wait(500);
-                notyf.open({
-                  type: "final",
-                  message: "You're all set!",
-                });
-                if (launchAnnouncement) {
-                  await checkForAnnouncements("announcements");
-                  nodeStorage.setItem("announcements", false);
-                  launchAnnouncement = false;
-                }
-                resolve(true);
-              }
-            });
-          } else {
-            if (check_update) {
-              checkNewAppVersion();
-            }
-            await wait(500);
-            notyf.open({
-              type: "final",
-              message: "You're all set!",
-            });
-            if (launchAnnouncement) {
-              await checkForAnnouncements("announcements");
-              nodeStorage.setItem("announcements", false);
-              launchAnnouncement = false;
-            }
-            resolve(true);
-          }
-        }
-      } else {
-        if (check_update) {
-          checkNewAppVersion();
-        }
-        // If there is no API key pair, show the warning and let them add a key. Messages are dissmisable.
-        Swal.fire({
-          icon: "warning",
-          text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connected to Pennsieve. Would you like to do it now?",
+  // an account is present
+  // Check for an installed Pennsieve agent
+  await wait(500);
+  [agent_installed, agent_version] = await check_agent_installed();
+
+  // If no agent is installed, download the latest agent from Github and link to their docs for installation instructions if needed.
+  if (!agent_installed) {
+    let { value: result } = await Swal.fire({
+      icon: "error",
+      title: "Pennsieve Agent error!",
+      text: "It seems you have not downloaded the Pennsieve Agent, or that you have the old Pennsieve Agent installed. It is highly recommended that you download the new Pennsieve Agent in order to use all of SODA's features.",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showCancelButton: true,
+      reverseButtons: reverseSwalButtons,
+      confirmButtonText: "Download now",
+      cancelButtonText: "Skip for now",
+    });
+
+    if (result) {
+      try {
+        let [browser_download_url, latest_agent_version] = await get_latest_agent_version();
+        shell.openExternal(browser_download_url);
+        shell.openExternal("https://docs.pennsieve.io/docs/uploading-files-programmatically");
+      } catch (e) {
+        await Swal.fire({
+          icon: "error",
+          text: "We are unable to get the latest version of the Pennsieve Agent. Please try again later. If this issue persists please contact the SODA team at help@fairdataihub.org",
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: "Yes",
           showCancelButton: true,
-          reverseButtons: reverseSwalButtons,
-          cancelButtonText: "I'll do it later",
+          confirmButtonText: "Ok",
           showClass: {
             popup: "animate__animated animate__zoomIn animate__faster",
           },
           hideClass: {
             popup: "animate__animated animate__zoomOut animate__faster",
           },
-        }).then(async (result) => {
-          if (result.isConfirmed) {
-            await openDropdownPrompt(null, "bf");
-            resolve(false);
-          } else {
-            resolve(true);
-          }
         });
-        resolve(false);
       }
     }
+    return false;
+  }
+
+  // TODO: Check if we still need this wait
+  await wait(500);
+  // Check the installed agent version. We aren't enforcing the min limit yet but is the python version starts enforcing it, we might have to.
+  let browser_download_url,
+    latest_agent_version = "";
+
+  try {
+    [browser_download_url, latest_agent_version] = await check_agent_installed_version(
+      agent_version
+    );
+  } catch (e) {
+    // notyf.dismiss(notification);
+    notyf.open({
+      type: "error",
+      message: "Unable to verify that your Pennsieve Agent is up to date.",
+    });
+    log.error("Unable to verify that your Pennsieve Agent is up to date.");
+    console.log(error);
+    log.error(error);
+    return false;
+  }
+
+  // The agent is not up to date. Ask the user if they would like to update it.
+  if (browser_download_url) {
+    let { value: result } = await Swal.fire({
+      icon: "warning",
+      text: "It appears that you are not running the latest version of the Pensieve Agent. We recommend that you update your software and restart SODA for the best experience.",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showCancelButton: true,
+      confirmButtonText: "Download now",
+      cancelButtonText: "Skip for now",
+      reverseButtons: reverseSwalButtons,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
+    if (result) {
+      try {
+        // If there is a newer agent version, download the latest agent from Github and link to their docs for installation instrucations if needed.
+        [browser_download_url, latest_agent_version] = await get_latest_agent_version();
+        shell.openExternal(browser_download_url);
+        shell.openExternal("https://docs.pennsieve.io/docs/uploading-files-programmatically");
+      } catch (e) {
+        console.log(e);
+        log.error(e);
+        await Swal.fire({
+          icon: "error",
+          text: "We are unable to get the latest version of the Pennsieve Agent. Please try again later. If this issue persists please contact the SODA team at help@fairdataihub.org",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          showCancelButton: true,
+          confirmButtonText: "Ok",
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        });
+      }
+      return false;
+    }
+  }
+
+  if (check_update) {
+    checkNewAppVersion();
+  }
+
+  await wait(500);
+
+  notyf.open({
+    type: "final",
+    message: "You're all set!",
   });
+
+  await checkForAnnouncements("announcements");
+  return true;
 };
 
 // Check if the Pysoda server is live
@@ -879,6 +838,7 @@ const check_api_key = async () => {
   }
 };
 
+// return the agent version or an error if the agent is not installed
 const check_agent_installed = async () => {
   let notification = null;
   notification = notyf.open({
@@ -922,9 +882,11 @@ const check_agent_installed_version = async (agent_version) => {
   await wait(800);
   let latest_agent_version = "";
   let browser_download_url = "";
+
+  // IMP: error in subfunction is handled by caller
   [browser_download_url, latest_agent_version] = await get_latest_agent_version();
 
-  if (latest_agent_version != agent_version) {
+  if (agent_version.indexOf(latest_agent_version) === -1) {
     notyf.dismiss(notification);
     notyf.open({
       type: "warning",
@@ -944,47 +906,53 @@ const check_agent_installed_version = async (agent_version) => {
   return [browser_download_url, latest_agent_version];
 };
 
-const get_latest_agent_version = () => {
-  return new Promise((resolve, reject) => {
-    $.getJSON("https://api.github.com/repos/Pennsieve/agent/releases")
-      .done((release_res) => {
-        let release = release_res[0];
-        let latest_agent_version = release.tag_name;
-        if (process.platform == "darwin") {
-          reverseSwalButtons = true;
-          release.assets.forEach((asset, index) => {
-            let file_name = asset.name;
-            if (path.extname(file_name) == ".pkg") {
-              browser_download_url = asset.browser_download_url;
-            }
-          });
-        }
-        if (process.platform == "win32") {
-          reverseSwalButtons = false;
-          release.assets.forEach((asset, index) => {
-            let file_name = asset.name;
-            if (path.extname(file_name) == ".msi" || path.extname(file_name) == ".exe") {
-              browser_download_url = asset.browser_download_url;
-            }
-          });
-        }
-        if (process.platform == "linux") {
-          reverseSwalButtons = false;
-          release.assets.forEach((asset, index) => {
-            let file_name = asset.name;
-            if (path.extname(file_name) == ".deb") {
-              browser_download_url = asset.browser_download_url;
-            }
-          });
-        }
+const get_latest_agent_version = async () => {
+  let browser_download_url = undefined;
 
-        resolve([browser_download_url, latest_agent_version]);
-      })
-      .fail((error) => {
-        console.log("Request failed: " + error);
-        reject();
-      });
-  });
+  // let the error raise up to the caller if one occurs
+  let releasesResponse = await axios.get(
+    "https://api.github.com/repos/Pennsieve/pennsieve-agent/releases"
+  );
+
+  let releases = releasesResponse.data;
+  let release = releases[0];
+  let latest_agent_version = release.tag_name;
+
+  if (process.platform == "darwin") {
+    reverseSwalButtons = true;
+    release.assets.forEach((asset, index) => {
+      let file_name = asset.name;
+      if (path.extname(file_name) == ".pkg") {
+        browser_download_url = asset.browser_download_url;
+      }
+    });
+  }
+
+  if (process.platform == "win32") {
+    reverseSwalButtons = false;
+    release.assets.forEach((asset, index) => {
+      let file_name = asset.name;
+      if (path.extname(file_name) == ".msi" || path.extname(file_name) == ".exe") {
+        browser_download_url = asset.browser_download_url;
+      }
+    });
+  }
+
+  if (process.platform == "linux") {
+    reverseSwalButtons = false;
+    release.assets.forEach((asset, index) => {
+      let file_name = asset.name;
+      if (path.extname(file_name) == ".deb") {
+        browser_download_url = asset.browser_download_url;
+      }
+    });
+  }
+
+  if (browser_download_url == undefined || latest_agent_version == undefined) {
+    throw new Error("Trouble getting the latest agent version.");
+  }
+
+  return [browser_download_url, latest_agent_version];
 };
 
 const checkNewAppVersion = () => {
@@ -1125,6 +1093,8 @@ const manifestStatus = document.querySelector("#generate-manifest");
 // Manage datasets //
 var myitem;
 var datasetList = [];
+var sodaCopy = {};
+var datasetStructCopy = {};
 const bfUploadRefreshDatasetBtn = document.getElementById("button-upload-refresh-dataset-list");
 
 const pathSubmitDataset = document.querySelector("#selected-local-dataset-submit");
@@ -1165,6 +1135,7 @@ const bfListTeams = document.querySelector("#bf_list_teams");
 const bfListRolesTeam = document.querySelector("#bf_list_roles_team");
 const bfAddPermissionTeamBtn = document.getElementById("button-add-permission-team");
 // Guided mode dropdowns
+const guidedBfListUsersPi = document.querySelector("#guided_bf_list_users_pi");
 const guidedBfListUsersAndTeams = document.querySelector("#guided_bf_list_users_and_teams");
 
 //Pennsieve dataset status
@@ -1415,6 +1386,58 @@ function sendHTTPsRequestAirtable(options, varSuccess) {
   });
 }
 
+var awardObj = {};
+var globalSPARCAward = "";
+// indicate to user that airtable records are being retrieved
+const loadAwardData = async () => {
+  ///// Construct table from data
+  var awardResultArray = [];
+  let result = false;
+  ///// config and load live data from Airtable
+  var airKeyContent = parseJson(airtableConfigPath);
+  if (JSON.stringify(airKeyContent) !== "{}") {
+    var airKeyInput = airKeyContent["api-key"];
+    var airKeyName = airKeyContent["key-name"];
+    if (airKeyInput !== "" && airKeyName !== "") {
+      Airtable.configure({
+        endpointUrl: "https://" + airtableHostname,
+        apiKey: airKeyInput,
+      });
+      var base = Airtable.base("appiYd1Tz9Sv857GZ");
+      base("sparc_members")
+        .select({
+          view: "All members (ungrouped)",
+        })
+        .eachPage(
+          function page(records, fetchNextPage) {
+            records.forEach(function (record) {
+              if (record.get("Project_title") !== undefined) {
+                var awardNumber = (item = record.get("SPARC_Award_#"));
+                item = record.get("SPARC_Award_#").concat(" (", record.get("Project_title"), ")");
+                awardResultArray.push(item);
+                awardObj[awardNumber] = item;
+              }
+            }),
+              fetchNextPage();
+          },
+          function done(err) {
+            if (err) {
+              log.error(err);
+              console.log(err);
+              return;
+            } else {
+              // create set to remove duplicates
+              var awardSet = new Set(awardResultArray);
+              var resultArray = [...awardSet];
+              result = true;
+            }
+          }
+        );
+      return result;
+    }
+  }
+};
+
 loadAwardData();
 
 /////////////////////// Download Metadata Templates ////////////////////////////
@@ -1560,6 +1583,11 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
 
 async function generateSubjectsFileHelper(uploadBFBoolean) {
   if (uploadBFBoolean) {
+    // Run pre-flight checks before uploading the subjects file to Pennsieve
+    const supplementary_checks = await run_pre_flight_checks(false);
+    if (!supplementary_checks) {
+      return;
+    }
     var { value: continueProgress } = await Swal.fire({
       title:
         "Any existing subjects.xlsx file in the high-level folder of the selected dataset will be replaced.",
@@ -1722,6 +1750,11 @@ ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) 
 
 async function generateSamplesFileHelper(uploadBFBoolean) {
   if (uploadBFBoolean) {
+    // Run pre-flight checks before uploading the samples file to Pennsieve
+    const supplementary_checks = await run_pre_flight_checks(false);
+    if (!supplementary_checks) {
+      return;
+    }
     var { value: continueProgress } = await Swal.fire({
       title:
         "Any existing samples.xlsx file in the high-level folder of the selected dataset will be replaced.",
@@ -2314,55 +2347,6 @@ function addOption(selectbox, text, value) {
   opt.text = text;
   opt.value = value;
   selectbox.options.add(opt);
-}
-
-var awardObj = {};
-var globalSPARCAward = "";
-// indicate to user that airtable records are being retrieved
-function loadAwardData() {
-  ///// Construct table from data
-  var awardResultArray = [];
-  ///// config and load live data from Airtable
-  var airKeyContent = parseJson(airtableConfigPath);
-  if (JSON.stringify(airKeyContent) !== "{}") {
-    var airKeyInput = airKeyContent["api-key"];
-    var airKeyName = airKeyContent["key-name"];
-    if (airKeyInput !== "" && airKeyName !== "") {
-      Airtable.configure({
-        endpointUrl: "https://" + airtableHostname,
-        apiKey: airKeyInput,
-      });
-      var base = Airtable.base("appiYd1Tz9Sv857GZ");
-      base("sparc_members")
-        .select({
-          view: "All members (ungrouped)",
-        })
-        .eachPage(
-          function page(records, fetchNextPage) {
-            records.forEach(function (record) {
-              if (record.get("Project_title") !== undefined) {
-                var awardNumber = (item = record.get("SPARC_Award_#"));
-                item = record.get("SPARC_Award_#").concat(" (", record.get("Project_title"), ")");
-                awardResultArray.push(item);
-                awardObj[awardNumber] = item;
-              }
-            }),
-              fetchNextPage();
-          },
-          function done(err) {
-            if (err) {
-              log.error(err);
-              console.log(err);
-              return;
-            } else {
-              // create set to remove duplicates
-              var awardSet = new Set(awardResultArray);
-              var resultArray = [...awardSet];
-            }
-          }
-        );
-    }
-  }
 }
 
 //////////////// Dataset description file ///////////////////////
@@ -3159,10 +3143,10 @@ const setupPublicationOptionsPopover = () => {
   });
 };
 
-async function submitReviewDatasetCheck(res) {
-  var reviewstatus = res[0];
-  var publishingStatus = res[1];
-  if (publishingStatus === "PUBLISH_IN_PROGRESS") {
+const submitReviewDatasetCheck = async (res) => {
+  let reviewstatus = res["review_request_status"];
+  let publishingStatus = res["publishing_status"];
+  if (res["publishing_status"] === "PUBLISH_IN_PROGRESS") {
     Swal.fire({
       icon: "error",
       title: "Your dataset is currently being published. Please wait until it is completed.",
@@ -3177,7 +3161,7 @@ async function submitReviewDatasetCheck(res) {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     });
-  } else if (reviewstatus === "requested") {
+  } else if (res["review_request_status"] === "requested") {
     Swal.fire({
       icon: "error",
       title: "Cannot submit the dataset for review at this time!",
@@ -3192,7 +3176,7 @@ async function submitReviewDatasetCheck(res) {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     });
-  } else if (publishingStatus === "PUBLISH_SUCCEEDED") {
+  } else if (res["publishing_status"] === "PUBLISH_SUCCEEDED") {
     // embargo release date represents the time a dataset that has been reviewed for publication becomes public
     // user sets this value in the UI otherwise it stays an empty string
     let embargoReleaseDate = "";
@@ -3283,7 +3267,6 @@ async function submitReviewDatasetCheck(res) {
     await submitReviewDataset(embargoReleaseDate);
   } else {
     // status is NOT_PUBLISHED
-
     // embargo release date represents the time a dataset that has been reviewed for publication becomes public
     // user sets this value in the UI otherwise it stays an empty string
     let embargoReleaseDate = "";
@@ -3371,7 +3354,7 @@ async function submitReviewDatasetCheck(res) {
     // submit the dataset for review with the given embargoReleaseDate
     await submitReviewDataset(embargoReleaseDate);
   }
-}
+};
 
 ipcRenderer.on("warning-publish-dataset-selection", (event, index) => {
   if (index === 0) {
@@ -3387,7 +3370,7 @@ ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
   $("#submit_prepublishing_review-spinner").hide();
 });
 
-async function submitReviewDataset(embargoReleaseDate) {
+const submitReviewDataset = async (embargoReleaseDate) => {
   $("#para-submit_prepublishing_review-status").text("");
   bfRefreshPublishingDatasetStatusBtn.disabled = true;
   var selectedBfAccount = defaultBfAccount;
@@ -3426,7 +3409,7 @@ async function submitReviewDataset(embargoReleaseDate) {
     try {
       // exclude the user's selected files from publication
       //check res
-      await api.updateDatasetExcludedFiles(defaultBfDatasetId, files);
+      await api.updateDatasetExcludedFiles(defaultBfAccount, selectedBfDataset, files);
     } catch (error) {
       clientError(error);
       // log the error
@@ -3533,7 +3516,7 @@ async function submitReviewDataset(embargoReleaseDate) {
     "",
     "individual-question post-curation"
   );
-}
+};
 
 // //Withdraw dataset from review
 function withdrawDatasetSubmission() {
@@ -3585,9 +3568,10 @@ function withdrawDatasetSubmission() {
   });
 }
 
-async function withdrawDatasetCheck(res) {
-  var reviewstatus = res["publishing_status"];
-  if (reviewstatus !== "requested") {
+const withdrawDatasetCheck = async (res) => {
+  let reviewstatus = res["publishing_status"];
+  let requestStatus = res["review_request_status"];
+  if (requestStatus != "requested") {
     Swal.fire({
       icon: "error",
       title: "Your dataset is not currently under review!",
@@ -3638,9 +3622,9 @@ async function withdrawDatasetCheck(res) {
       await withdrawReviewDataset();
     }
   }
-}
+};
 
-async function withdrawReviewDataset() {
+const withdrawReviewDataset = async () => {
   bfWithdrawReviewDatasetBtn.disabled = true;
   var selectedBfAccount = $("#current-bf-account").text();
   var selectedBfDataset = $(".bf-dataset-span")
@@ -3716,7 +3700,7 @@ async function withdrawReviewDataset() {
       ["Withdraw dataset"]
     );
   }
-}
+};
 
 //////////////////////////////////
 // Helper functions
@@ -3907,7 +3891,7 @@ async function updateBfAccountList() {
   refreshBfTeamsList(bfListTeams);
 }
 
-async function loadDefaultAccount() {
+const loadDefaultAccount = async () => {
   let responseObject;
 
   try {
@@ -3922,10 +3906,6 @@ async function loadDefaultAccount() {
 
   if (accounts.length > 0) {
     var myitemselect = accounts[0];
-    const guidedPennsieveAccount = document.getElementById("getting-started-pennsieve-account");
-    svgElements = guidedPennsieveAccount.children;
-    svgElements[0].style.display = "none";
-    svgElements[1].style.display = "flex";
     defaultBfAccount = myitemselect;
 
     $("#current-bf-account").text(myitemselect);
@@ -3936,7 +3916,7 @@ async function loadDefaultAccount() {
     refreshBfUsersList();
     refreshBfTeamsList(bfListTeams);
   }
-}
+};
 
 const showPrePublishingPageElements = () => {
   var selectedBfAccount = defaultBfAccount;
@@ -3954,8 +3934,9 @@ const showPrePublishingPageElements = () => {
   $(".pre-publishing-continue-container").hide();
 };
 
-async function showPublishingStatus(callback) {
+const showPublishingStatus = async (callback) => {
   return new Promise(async function (resolve, reject) {
+    console.log(callback);
     if (callback == "noClear") {
       var nothing;
     }
@@ -3969,7 +3950,12 @@ async function showPublishingStatus(callback) {
     } else {
       try {
         let get_publishing_status = await client.get(
-          `/disseminate_datasets/datasets/${selectedBfDataset}/publishing_status?selected_account=${selectedBfAccount}`
+          `/disseminate_datasets/datasets/${selectedBfDataset}/publishing_status`,
+          {
+            params: {
+              selected_account: selectedBfAccount,
+            },
+          }
         );
         let res = get_publishing_status.data;
 
@@ -4017,11 +4003,11 @@ async function showPublishingStatus(callback) {
       }
     }
   });
-}
+};
 
 function publishStatusOutputConversion(res) {
-  var reviewStatus = res["publishing_status"];
-  var publishStatus = res["review_request_status"];
+  var reviewStatus = res["review_request_status"];
+  var publishStatus = res["publishing_status"];
 
   var outputMessage = "";
   if (reviewStatus === "draft" || reviewStatus === "cancelled") {
@@ -4128,18 +4114,21 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
         popup: "animate__animated animate__fadeOutUp animate__faster",
       },
       didOpen: () => {
+        let swal_container = document.getElementsByClassName("swal2-popup")[0];
+        swal_container.style.width = "600px";
+        swal_container.style.padding = "1.5rem";
         $(".swal2-input").attr("id", "add-new-folder-input");
         $(".swal2-confirm").attr("id", "add-new-folder-button");
         $("#add-new-folder-input").keyup(function () {
           var val = $("#add-new-folder-input").val();
-          for (var char of nonAllowedCharacters) {
-            if (val.includes(char)) {
-              Swal.showValidationMessage(
-                `The folder name cannot contains the following characters ${nonAllowedCharacters}, please enter a different name!`
-              );
-              $("#add-new-folder-button").attr("disabled", true);
-              return;
-            }
+          let folderNameCheck = checkIrregularNameBoolean(val);
+          if (folderNameCheck === true) {
+            Swal.showValidationMessage(
+              `The folder name contains non-allowed characters. To follow the SPARC Data Standards, please create a folder name with only alphanumberic characters and hyphens '-'`
+            );
+            $("#add-new-folder-button").attr("disabled", true);
+            return;
+          } else {
             $("#add-new-folder-button").attr("disabled", false);
           }
         });
@@ -4316,21 +4305,12 @@ function showFullName(ev, element, text) {
 }
 
 /// hover over a function for full name
-function hoverForFullName(ev) {
+const hoverForFullName = (ev) => {
   var fullPath = ev.innerText;
   // ev.children[1] is the child element folder_desc of div.single-item,
   // which we will put through the overflowing check in showFullName function
   showFullName(event, ev.children[1], fullPath);
-}
-
-// // If the document is clicked somewhere
-// document.addEventListener('onmouseover', function(e){
-//   if (e.target.classList.value !== "myFile") {
-//     hideFullPath()
-//   } else {
-//     hoverForPath(e)
-//   }
-// });
+};
 
 document.addEventListener("onmouseover", function (e) {
   if (e.target.classList.value === "fas fa-folder") {
@@ -4660,7 +4640,7 @@ organizeDSaddFolders.addEventListener("click", function () {
 });
 
 ipcRenderer.on("selected-folders-organize-datasets", async (event, pathElement) => {
-  var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
+  // var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
   irregularFolderArray = [];
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
@@ -4670,7 +4650,7 @@ ipcRenderer.on("selected-folders-organize-datasets", async (event, pathElement) 
   if (irregularFolderArray.length > 0) {
     Swal.fire({
       title:
-        "The following folders contain non-allowed characters in their names. How should we handle them?",
+        "As per the SPARC Data Standards, folder names must contain only alphanumeric values 0-9, A-Z (no special characters, no empty spaces). The folders listed below don't comply with these guidlines. What would you like to do?",
       html:
         "<div style='max-height:300px; overflow-y:auto'>" +
         irregularFolderArray.join("</br>") +
@@ -4679,13 +4659,21 @@ ipcRenderer.on("selected-folders-organize-datasets", async (event, pathElement) 
       backdrop: "rgba(0,0,0, 0.4)",
       showDenyButton: true,
       showCancelButton: true,
-      confirmButtonText: "Replace characters with (-)",
-      denyButtonText: "Remove characters",
-      cancelButtonText: "Cancel",
+      confirmButtonText: "Replace forbidden characters with '-')",
+      denyButtonText: "Remove forbidden characters",
+      cancelButtonText: "Skip these folders",
       didOpen: () => {
         $(".swal-popover").popover();
+        let swalTitle = document.getElementById("swal-title");
+        swalTitle.style.textAlign = "justify";
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        let swalDenyButton = document.getElementsByClassName("swal2-deny")[0];
+        swalContainer.style.width = "600px";
+        // swalContainer.style.padding = "1.5rem";
+        swal_content.style.textAlign = "justify";
+        swalDenyButton.style.backgroundColor = "#086dd3";
       },
-      footer: footer,
     }).then(async (result) => {
       /* Read more about isConfirmed, isDenied below */
       if (result.isConfirmed) {
@@ -4966,13 +4954,13 @@ const addFoldersfunction = async (action, nonallowedFolderArray, folderArray, cu
 };
 
 //// Step 3. Organize dataset: Add files or folders with drag&drop
-function allowDrop(ev) {
+const allowDrop = (ev) => {
   ev.preventDefault();
-}
+};
 
 var filesElement;
 var targetElement;
-async function drop(ev) {
+const drop = async (ev) => {
   irregularFolderArray = [];
   let renamedFolderName = "";
   let replaced = [];
@@ -5130,7 +5118,7 @@ async function drop(ev) {
       // background.remove();
     });
   }
-}
+};
 
 const dropHelper = async (
   ev1,
@@ -5166,6 +5154,10 @@ const dropHelper = async (
   var duplicateFolders = [];
   var hiddenFiles = [];
   var nonAllowedFiles = [];
+  let tripleExtension = [];
+  let doubleExtension = [];
+  let loadingIcon = document.getElementById("items_loading_container");
+  let loadingContainer = document.getElementById("loading-items-background-overlay");
 
   for (var i = 0; i < ev1.length; i++) {
     /// Get all the file information
@@ -5180,28 +5172,50 @@ const dropHelper = async (
         break;
       }
     }
+    let slashCount = getPathSlashCount();
     /// check for File duplicate
     if (statsObj.isFile()) {
       var nonAllowedDuplicate = false;
       var originalFileName = path.parse(itemPath).base;
-      var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
-      const fileNameRegex = /[^-a-zA-z0-9]/g;
+      let filePath = itemPath;
+      let fileName = path.parse(filePath).name;
+      let fileBase = path.parse(filePath).base;
+      let slashCount = getPathSlashCount();
 
-      if (path.parse(itemPath).name.substr(0, 1) === ".") {
-        if (path.parse(itemPath).base === ".DS_Store") {
-          nonAllowedFiles.push(itemPath);
-          continue;
-        } else {
-          hiddenFiles.push(itemPath);
-          continue;
-        }
+      let forbiddenCheck = forbiddenFileCheck(filePath);
+      if (forbiddenCheck === "forbidden") {
+        nonAllowedFiles.push(filePath);
+        continue;
       }
-      if (path.parse(itemPath).base === "Thumbs.db") {
-        nonAllowedFiles.push(itemPath);
+      if (forbiddenCheck === "hidden") {
+        hiddenFiles.push(filePath);
+        continue;
+      }
+
+      let warningCharacterBool = warningCharacterCheck(fileBase);
+      // let regex = /[\+&\%#]/i;
+      if (warningCharacterBool === true) {
+        nonAllowedCharacterFiles.push(filePath);
+        continue;
+      }
+
+      let extensionCount = checkForMultipleExtensions(fileBase);
+      if (extensionCount > 2) {
+        //multiple extensions, raise warning (do not import)
+        tripleExtension.push(filePath);
+        continue;
+      }
+      if (extensionCount === 2) {
+        //double extension ask if compressed file
+        doubleExtension.push(filePath);
         continue;
       }
 
       if (slashCount === 1) {
+        if (loadingContainer != undefined) {
+          loadingContainer.style.display = "none";
+          loadingIcon.style.display = "none";
+        }
         await Swal.fire({
           icon: "error",
           html: "<p>This interface is only for including files in the SPARC folders. If you are trying to add SPARC metadata file(s), you can do so in the next Step.</p>",
@@ -5211,41 +5225,41 @@ const dropHelper = async (
         break;
       } else {
         if (JSON.stringify(myPath["files"]) === "{}" && JSON.stringify(importedFiles) === "{}") {
-          importedFiles[path.parse(itemPath).base] = {
-            path: itemPath,
-            basename: path.parse(itemPath).base,
+          importedFiles[fileBase] = {
+            path: filePath,
+            basename: originalFileName,
           };
         } else {
           //check if fileName is in to-be-imported object keys
           if (importedFiles.hasOwnProperty(originalFileName)) {
             nonAllowedDuplicate = true;
-            nonAllowedDuplicateFiles.push(itemPath);
+            nonAllowedDuplicateFiles.push(filePath);
             continue;
           } else {
             //check if filename is in already-imported object keys
             if (myPath["files"].hasOwnProperty(originalFileName)) {
               nonAllowedDuplicate = true;
-              nonAllowedDuplicateFiles.push(itemPath);
+              nonAllowedDuplicateFiles.push(filePath);
               continue;
             } else {
               if (Object.keys(myPath["files"]).length === 0) {
                 importedFiles[originalFileName] = {
-                  path: itemPath,
+                  path: filePath,
                   basename: originalFileName,
                 };
               }
-              for (let objectKey in myPath["files"]) {
-                if (objectKey !== undefined) {
+              for (let alreadyImportedFile in myPath["files"]) {
+                if (alreadyImportedFile !== undefined) {
                   nonAllowedDuplicate = false;
                   //just checking if paths are the same
-                  if (itemPath === myPath["files"][objectKey]["path"]) {
-                    nonAllowedDuplicateFiles.push(itemPath);
+                  if (filePath === myPath["files"][alreadyImportedFile]["path"]) {
+                    nonAllowedDuplicateFiles.push(filePath);
                     nonAllowedDuplicate = true;
                     continue;
                   } else {
                     //in neither so write
                     importedFiles[originalFileName] = {
-                      path: itemPath,
+                      path: filePath,
                       basename: originalFileName,
                     };
                   }
@@ -5257,7 +5271,13 @@ const dropHelper = async (
       }
     } else if (statsObj.isDirectory()) {
       /// drop a folder
+      let folderPath = itemPath;
+
       if (slashCount === 1) {
+        if (loadingContainer != undefined) {
+          loadingContainer.style.display = "none";
+          loadingIcon.style.display = "none";
+        }
         await Swal.fire({
           icon: "error",
           text: "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
@@ -5269,7 +5289,7 @@ const dropHelper = async (
         var originalFolderName = itemName;
         var renamedFolderName = originalFolderName;
 
-        if (irregularFolderArray.includes(itemPath)) {
+        if (irregularFolderArray.includes(folderPath)) {
           if (action !== "ignore" && action !== "") {
             if (action === "remove") {
               renamedFolderName = removeIrregularFolders(itemName);
@@ -5277,7 +5297,7 @@ const dropHelper = async (
               renamedFolderName = replaceIrregularFolders(itemName);
             }
             importedFolders[renamedFolderName] = {
-              path: itemPath,
+              path: folderPath,
               "original-basename": originalFolderName,
             };
           }
@@ -5285,18 +5305,18 @@ const dropHelper = async (
           if (myPath["folders"].hasOwnProperty(originalFolderName) === true) {
             //folder is already imported
             duplicateFolders.push(itemName);
-            folderPath.push(itemPath);
+            folderPath.push(folderPath);
             continue;
           } else {
             if (importedFolders.hasOwnProperty(originalFolderName) === true) {
               //folder is already in to-be-imported list
               duplicateFolders.push(itemName);
-              folderPath.push(itemPath);
+              folderPath.push(folderPath);
               continue;
             } else {
               //folder is in neither so write
               importedFolders[originalFolderName] = {
-                path: itemPath,
+                path: folderPath,
                 "original-basename": originalFolderName,
               };
             }
@@ -5306,21 +5326,160 @@ const dropHelper = async (
     }
   }
 
-  if (hiddenFiles.length > 0) {
+  if (doubleExtension.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
+
     await Swal.fire({
       title:
-        "The following files have an unexpected name starting with a period. How should we handle them?",
+        "The following files have a double period, which is only allowed if they are compressed files as per SPARC Data Standards. Do you confirm that these are all compressed files?",
       html:
-        "<div style='max-height:300px; overflow-y:auto'>" + hiddenFiles.join("</br>") + "</div>",
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        doubleExtension.join("</br></br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: false,
+      showCancelButton: true,
+      confirmButtonText: "Yes, import them",
+      // denyButtonText: "Import",
+      cancelButtonText: "No, skip them",
+      didOpen: () => {
+        $(".swal-popover").popover();
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        swalContainer.style.width = "600px";
+        swal_content.style.textAlign = "justify";
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //remove slashes and place just file name in new array
+        for (let i = 0; i < doubleExtension.length; i++) {
+          if (
+            doubleExtension[i] in myPath["files"] ||
+            path.parse(doubleExtension[i]).base in Object.keys(importedFiles)
+          ) {
+            nonAllowedDuplicateFiles.push(doubleExtension[i]);
+            continue;
+          } else {
+            //not in there or regular files so store?
+            importedFiles[path.parse(doubleExtension[i]).base] = {
+              path: doubleExtension[i],
+              basename: path.parse(doubleExtension[i]).base,
+            };
+          }
+        }
+      }
+    });
+  }
+
+  if (tripleExtension.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
+    await Swal.fire({
+      title:
+        "Files should typically have one (two when they are compressed) periods in their names according to the SPARC Data Standards. The following files have three of more periods in their name and will not be imported.",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        tripleExtension.join("</br></br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: false,
+      showCancelButton: false,
+      confirmButtonText: "OK",
+      didOpen: () => {
+        $(".swal-popover").popover();
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        swalContainer.style.width = "600px";
+        swal_content.style.textAlign = "justify";
+      },
+    });
+  }
+
+  if (nonAllowedCharacterFiles.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
+    await Swal.fire({
+      title:
+        "The following files have characters (#&%+) that are typically not recommendeda as per the SPARC Data Standards. Although not forbidden to import as is, we recommend replacing those characters.",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        nonAllowedCharacterFiles.join("</br></br>") +
+        "</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showDenyButton: true,
       showCancelButton: true,
-      confirmButtonText: "Remove characters",
-      denyButtonText: "Continue as is",
-      cancelButtonText: "Cancel",
+      confirmButtonText: "Replace characters with '-'",
+      denyButtonText: "Import as is",
+      cancelButtonText: "Skip All",
       didOpen: () => {
         $(".swal-popover").popover();
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        let swalDenyButton = document.getElementsByClassName("swal2-deny")[0];
+        swalContainer.style.width = "600px";
+        swal_content.style.textAlign = "justify";
+        swalDenyButton.style.backgroundColor = "#086dd3";
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //replace characters
+        for (let i = 0; i < nonAllowedCharacterFiles.length; i++) {
+          let fileName = path.parse(nonAllowedCharacterFiles[i]).base;
+          let regex = /[\+&\%#]/g;
+          let replaceFile = fileName.replace(regex, "-");
+          importedFiles[replaceFile] = {
+            path: nonAllowedCharacterFiles[i],
+            basename: replaceFile,
+          };
+        }
+      }
+      if (result.isDenied) {
+        for (let i = 0; i < nonAllowedCharacterFiles.length; i++) {
+          let fileName = nonAllowedCharacterFiles[i];
+          importedFiles[fileName] = {
+            path: fileName,
+            basename: path.parse(fileName).base,
+          };
+        }
+      }
+    });
+  }
+
+  if (hiddenFiles.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
+    await Swal.fire({
+      title:
+        "The following files have an unexpected name starting with a period and are considered hidden files. As per SPARC Data Standards they are typically not recommended to be imported as hidden. How should we handle them?",
+      html:
+        "<div style='max-height:300px; overflow-y:auto'>" +
+        hiddenFiles.join("</br></br>") +
+        "</div>",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: "Remove period",
+      denyButtonText: "Import as is",
+      cancelButtonText: "Skip All",
+      didOpen: () => {
+        $(".swal-popover").popover();
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        let swal_content = document.getElementsByClassName("swal2-content")[0];
+        swalContainer.style.width = "600px";
+        swal_content.style.textAlign = "justify";
       },
     }).then(async (result) => {
       if (result.isConfirmed) {
@@ -5416,22 +5575,35 @@ const dropHelper = async (
   }
 
   if (nonAllowedFiles.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
     await Swal.fire({
-      title: "The following files are banned as per SPARC guidelines and will not be imported",
+      title:
+        "The following files are not allowed in datasets as per the SPARC Data Standards and will thus not be imported",
       html:
         "<div style='max-height:300px; overflow-y:auto'>" +
-        nonAllowedFiles.join("</br>") +
+        nonAllowedFiles.join("</br></br>") +
         "</div>",
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       showConfirmButton: true,
-      confirmButtonText: "Okay",
+      confirmButtonText: "OK",
+      didOpen: () => {
+        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
+        swalContainer.style.width = "600px";
+      },
     });
   }
 
   var listElements = showItemsAsListBootbox(duplicateFolders);
   var list = JSON.stringify(folderPath).replace(/"/g, "");
   if (duplicateFolders.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
     await Swal.fire({
       title: "Duplicate folder(s) detected",
       icon: "warning",
@@ -5477,6 +5649,10 @@ const dropHelper = async (
     }
     var listElements = showItemsAsListBootbox(baseName);
     var list = JSON.stringify(nonAllowedDuplicateFiles).replace(/"/g, "");
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
     await Swal.fire({
       title: "Duplicate file(s) detected",
       icon: "warning",
@@ -5616,40 +5792,31 @@ function detectIrregularFolders(folderName, pathEle) {
   }
 }
 
-function checkIrregularNameBoolean(folderName) {
-  for (var char of nonAllowedCharacters) {
-    if (folderName.includes(char)) {
-      return true;
-    }
-  }
-  return false;
-}
+const checkIrregularNameBoolean = (folderName) => {
+  //nonAllowedCharacters modified to only allow a-z A-z 0-9 and hyphen "-"
+  const nonAllowedFolderCharacters = /[^a-zA-Z0-9-]/;
+  return nonAllowedFolderCharacters.test(folderName);
+};
 
 /* The following functions aim at ignore folders with irregular characters, or replace the characters with (-),
-   or remove the characters from the names.
-   All return an object in the form {"type": empty for now, will be confirmed once users click an option at the popup,
-                                     "paths": array of all the paths with special characters detected}
+  or remove the characters from the names.
+  All return an object in the form {"type": empty for now, will be confirmed once users click an option at the popup,
+  "paths": array of all the paths with special characters detected}
 */
 
-function replaceIrregularFolders(pathElement) {
-  var str = path.basename(pathElement);
-  for (var char of nonAllowedCharacters) {
-    if (str.includes(char)) {
-      str = str.replace(char, "-");
-    }
-  }
-  return str;
-}
+const replaceIrregularFolders = (pathElement) => {
+  const reg = /[^a-zA-Z0-9-]/g;
+  const str = path.basename(pathElement);
+  const newFolderName = str.replace(reg, "-");
+  return newFolderName;
+};
 
-function removeIrregularFolders(pathElement) {
-  var str = path.basename(pathElement);
-  for (var char of nonAllowedCharacters) {
-    if (str.includes(char)) {
-      str = str.replace(char, "");
-    }
-  }
-  return str;
-}
+const removeIrregularFolders = (pathElement) => {
+  const reg = /[^a-zA-Z0-9-]/g;
+  const str = path.basename(pathElement);
+  const newFolderName = str.replace(reg, "");
+  return newFolderName;
+};
 
 // SAVE FILE ORG
 ipcRenderer.on("save-file-organization-dialog", (event) => {
@@ -5661,6 +5828,164 @@ ipcRenderer.on("save-file-organization-dialog", (event) => {
     event.sender.send("selected-saveorganizationfile", filename);
   });
 });
+
+// displays the user selected banner image using Jimp in the edit banner image modal
+//path: array
+//curationMode: string (guided-moded) (freeform)
+const handleSelectedBannerImage = async (path, curationMode) => {
+  let imgContainer = "";
+  let imgHolder = "";
+  let paraImagePath = "";
+  let viewImportedImage = "";
+  let saveBannerImage = "";
+  let cropperOptions = "";
+  if (curationMode === "guided-mode") {
+    imgHolder = document.getElementById("guided-div-img-container-holder");
+    imgContainer = document.getElementById("guided-div-img-container");
+    viewImportedImage = guidedBfViewImportedImage;
+    paraImagePath = "#guided-para-path-image";
+    saveBannerImage = "#guided-save-banner-image";
+    cropperOptions = guidedCropOptions;
+  }
+  if (curationMode === "freeform") {
+    cropperOptions = cropOptions;
+    paraImagePath = "#para-path-image";
+    saveBannerImage = "#save-banner-image";
+    viewImportedImage = bfViewImportedImage;
+    imgHolder = document.getElementById("div-img-container-holder");
+    imgContainer = document.getElementById("div-img-container");
+  }
+
+  if (path.length > 0) {
+    let original_image_path = path[0];
+    let image_path = original_image_path;
+    let destination_image_path = require("path").join(
+      homeDirectory,
+      "SODA",
+      "banner-image-conversion"
+    );
+    let converted_image_file = require("path").join(destination_image_path, "converted-tiff.jpg");
+    let conversion_success = true;
+    imageExtension = path[0].split(".").pop();
+
+    if (imageExtension.toLowerCase() == "tiff") {
+      Swal.fire({
+        title: "Image conversion in progress!",
+        html: "Pennsieve does not support .tiff banner images. Please wait while SODA converts your image to the appropriate format required.",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showClass: {
+          popup: "animate__animated animate__fadeInDown animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp animate__faster",
+        },
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      await Jimp.read(original_image_path)
+        .then(async (file) => {
+          if (!fs.existsSync(destination_image_path)) {
+            fs.mkdirSync(destination_image_path, { recursive: true });
+          }
+
+          try {
+            if (fs.existsSync(converted_image_file)) {
+              fs.unlinkSync(converted_image_file);
+            }
+          } catch (err) {
+            conversion_success = false;
+            console.error(err);
+          }
+
+          return file.write(converted_image_file, async () => {
+            if (fs.existsSync(converted_image_file)) {
+              let stats = fs.statSync(converted_image_file);
+              let fileSizeInBytes = stats.size;
+              let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
+
+              if (fileSizeInMegabytes > 5) {
+                fs.unlinkSync(converted_image_file);
+
+                await Jimp.read(original_image_path)
+                  .then((file) => {
+                    return file.resize(1024, 1024).write(converted_image_file, () => {
+                      imgHolder.style.display = "none";
+                      imgContainer.style.display = "block";
+
+                      $(paraImagePath).html(image_path);
+                      viewImportedImage.src = converted_image_file;
+                      myCropper.destroy();
+                      myCropper = new Cropper(viewImportedImage, cropperOptions);
+                      $(saveBannerImage).css("visibility", "visible");
+                      $("body").removeClass("waiting");
+                    });
+                  })
+                  .catch((err) => {
+                    conversion_success = false;
+                    console.error(err);
+                  });
+                if (fs.existsSync(converted_image_file)) {
+                  let stats = fs.statSync(converted_image_file);
+                  let fileSizeInBytes = stats.size;
+                  let fileSizeInMegabytes = fileSizeInBytes / (1000 * 1000);
+
+                  if (fileSizeInMegabytes > 5) {
+                    conversion_success = false;
+                    // SHOW ERROR
+                  }
+                }
+              }
+              image_path = converted_image_file;
+              imageExtension = "jpg";
+              $(paraImagePath).html(image_path);
+              viewImportedImage.src = image_path;
+              myCropper.destroy();
+              myCropper = new Cropper(viewImportedImage, cropperOptions);
+              $(paraImagePath).css("visibility", "visible");
+            }
+          });
+        })
+        .catch((err) => {
+          conversion_success = false;
+          console.error(err);
+          Swal.fire({
+            icon: "error",
+            text: "Something went wrong",
+            confirmButtonText: "OK",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
+        });
+      if (conversion_success == false) {
+        $("body").removeClass("waiting");
+        return;
+      } else {
+        Swal.close();
+      }
+    } else {
+      imgHolder.style.display = "none";
+      imgContainer.style.display = "block";
+
+      $(paraImagePath).html(image_path);
+      viewImportedImage.src = image_path;
+      myCropper.destroy();
+      myCropper = new Cropper(viewImportedImage, cropperOptions);
+
+      $(saveBannerImage).css("visibility", "visible");
+    }
+  } else {
+    if (curationMode == "freeform") {
+      if ($("#para-current-banner-img").text() === "None") {
+        $(saveBannerImage).css("visibility", "hidden");
+      } else {
+        $(saveBannerImage).css("visibility", "visible");
+      }
+    }
+  }
+};
 
 //////////////////////////////////////////////////////////////////////////////
 /////////////////// CONTEXT MENU OPTIONS FOR FOLDERS AND FILES ///////////////
@@ -6000,7 +6325,8 @@ $(document).bind("click", (event) => {
 });
 
 // sort JSON objects by keys alphabetically (folder by folder, file by file)
-function sortObjByKeys(object) {
+const sortObjByKeys = (object) => {
+  console.log(object);
   const orderedFolders = {};
   const orderedFiles = {};
   /// sort the files in objects
@@ -6024,12 +6350,20 @@ function sortObjByKeys(object) {
     type: "",
   };
   return orderedObject;
-}
+};
 
 const listItems = async (jsonObj, uiItem, amount_req, reset) => {
   //allow amount to choose how many elements to create
   //break elements into sets of 100
   const rootFolders = ["primary", "source", "derivative"];
+  const datasetPath = document.getElementById("guided-input-global-path");
+  const pathDisplay = document.getElementById("datasetPathDisplay");
+  const fileExplorerBackButton = document.getElementById("guided-button-back");
+  let hideSampleFolders = false;
+  let hideSubjectFolders = false;
+  let splitPath = datasetPath.value.split("/");
+  let fullPath = datasetPath.value;
+
   if (organizeDSglobalPath.id === "guided-input-global-path") {
     const splitPathCheck = (num, button) => {
       //based on the paths length we will determine if the back button should be disabled/hidden or not
@@ -6044,7 +6378,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
       }
     };
 
-    let currentPageID = CURRENT_PAGE.attr("id");
+    let currentPageID = CURRENT_PAGE.id;
     //capsules need to determine if sample or subjects section
     //subjects initially display two folder levels meanwhile samples will initially only show one folder level
     let primarySampleCapsule = document.getElementById(
@@ -6053,24 +6387,28 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     let primarySubjectCapsule = document.getElementById(
       "guided-primary-subjects-organization-page-capsule"
     );
+    let primaryPoolCapsule = document.getElementById(
+      "guided-primary-pools-organization-page-capsule"
+    );
     let sourceSampleCapsule = document.getElementById(
       "guided-source-samples-organization-page-capsule"
     );
     let sourceSubjectCapsule = document.getElementById(
       "guided-source-subjects-organization-page-capsule"
     );
+    let sourcePoolCapsule = document.getElementById(
+      "guided-source-pools-organization-page-capsule"
+    );
+
     let derivativeSampleCapsule = document.getElementById(
       "guided-derivative-samples-organization-page-capsule"
     );
     let derivativeSubjectCapsule = document.getElementById(
       "guided-derivative-subjects-organization-page-capsule"
     );
-
-    let datasetPath = document.getElementById("guided-input-global-path");
-    let pathDisplay = document.getElementById("datasetPathDisplay");
-    let fileExplorerBackButton = document.getElementById("guided-button-back");
-    let splitPath = datasetPath.value.split("/");
-    let fullPath = datasetPath.value;
+    let derivativePoolCapsule = document.getElementById(
+      "guided-derivative-pools-organization-page-capsule"
+    );
 
     //remove my_dataset_folder and if any of the ROOT FOLDER names is included
     if (splitPath[0] === "My_dataset_folder") splitPath.shift();
@@ -6078,31 +6416,75 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     //remove the last element in array is it is always ''
     splitPath.pop();
 
-    //get 2 last lvls of the folder path
     let trimmedPath = "";
     if (currentPageID.includes("primary")) {
       if (primarySampleCapsule.classList.contains("active")) {
-        splitPathCheck(2, fileExplorerBackButton);
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(3, fileExplorerBackButton);
+        } else {
+          splitPathCheck(2, fileExplorerBackButton);
+        }
       }
       if (primarySubjectCapsule.classList.contains("active")) {
-        splitPathCheck(1, fileExplorerBackButton);
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(2, fileExplorerBackButton);
+        } else {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        hideSampleFolders = true;
+      }
+      if (primaryPoolCapsule.classList.contains("active")) {
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        hideSubjectFolders = true;
       }
     }
     if (currentPageID.includes("source")) {
       if (sourceSubjectCapsule.classList.contains("active")) {
-        splitPathCheck(1, fileExplorerBackButton);
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(2, fileExplorerBackButton);
+        } else {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        hideSampleFolders = true;
       }
       if (sourceSampleCapsule.classList.contains("active")) {
-        splitPathCheck(2, fileExplorerBackButton);
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(3, fileExplorerBackButton);
+        } else {
+          splitPathCheck(2, fileExplorerBackButton);
+        }
+      }
+      if (sourcePoolCapsule.classList.contains("active")) {
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        hideSubjectFolders = true;
       }
     }
     if (currentPageID.includes("derivative")) {
       //check the active capsule
-      if (derivativeSampleCapsule.classList.contains("active")) {
-        splitPathCheck(2, fileExplorerBackButton);
-      }
       if (derivativeSubjectCapsule.classList.contains("active")) {
-        splitPathCheck(1, fileExplorerBackButton);
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(2, fileExplorerBackButton);
+        } else {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        hideSampleFolders = true;
+      }
+      if (derivativeSampleCapsule.classList.contains("active")) {
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(3, fileExplorerBackButton);
+        } else {
+          splitPathCheck(2, fileExplorerBackButton);
+        }
+      }
+      if (derivativePoolCapsule.classList.contains("active")) {
+        if (splitPath[0].includes("pool-")) {
+          splitPathCheck(1, fileExplorerBackButton);
+        }
+        hideSubjectFolders = true;
       }
     }
     if (
@@ -6120,11 +6502,9 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
       trimmedPath += splitPath[i] + "/";
     }
 
+    //append path to tippy and display path to the file explorer
     pathDisplay.innerText = trimmedPath;
     pathDisplay._tippy.setContent(fullPath);
-
-    //get the path of the dataset when rendering
-    //with the path you can determine whether or not to disable the back button
   }
 
   var appendString = "";
@@ -6132,8 +6512,85 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
   let file_elements = [],
     folder_elements = [];
   let count = 0;
+
+  //start creating folder elements to be rendered
   if (Object.keys(sortedObj["folders"]).length > 0) {
     for (var item in sortedObj["folders"]) {
+      //hide samples when on the subjects page
+      if (hideSampleFolders) {
+        let currentSampleFolder = splitPath[0];
+        let allSamples = sodaJSONObj.getAllSamplesFromSubjects();
+        let noPoolSamples = [];
+        let poolSamples = [];
+        let skipSubjectFolder = false;
+        if (allSamples.length > 1) {
+          //subjects within pools and others not
+          poolSamples = allSamples[0];
+          noPoolSamples = allSamples[1];
+          for (let i = 0; i < poolSamples.length; i++) {
+            if (item === poolSamples[i]["sampleName"]) {
+              skipSubjectFolder = true;
+              break;
+            }
+          }
+          if (skipSubjectFolder) continue;
+          for (let i = 0; i < noPoolSamples.length; i++) {
+            if (item === noPoolSamples[i]["sampleName"]) {
+              skipSubjectFolder = true;
+              break;
+            }
+          }
+          if (skipSubjectFolder) continue;
+        }
+        if (allSamples.length === 1) {
+          poolSamples = allSamples[1];
+          for (let i = 0; i < poolSamples.length; i++) {
+            if (item === poolSamples[i]["sampleName"]) {
+              skipSubjectFolder = true;
+              break;
+            }
+          }
+          if (skipSubjectFolder) continue;
+        }
+      }
+      if (hideSubjectFolders) {
+        //hide subject folders when displaying pool page
+        const currentPoolName = splitPath[0];
+        let currentSubjects = sodaJSONObj.getAllSubjects();
+        let poolSubjects = [];
+        let noPoolSubjects = [];
+        let skipSubjectFolder = false;
+        if (currentSubjects.length === 1) {
+          poolSubjects = currentSubjects[0];
+          for (let i = 0; i < poolSubjects.length; i++) {
+            if (item === poolSubjects[i]["subjectName"]) {
+              skipSubjectFolder = true;
+              break;
+            }
+          }
+          if (skipSubjectFolder) continue;
+        }
+        if (currentSubjects.length > 1) {
+          //some subjects in pools and some not
+          poolSubjects = currentSubjects[0];
+          noPoolSubjects = currentSubjects[1];
+          for (let i = 0; i < noPoolSubjects.length; i++) {
+            if (item === noPoolSubjects[i]["subjectName"]) {
+              skipSubjectFolder = true;
+              break;
+            }
+          }
+          if (skipSubjectFolder) continue;
+          for (let i = 0; i < poolSubjects.length; i++) {
+            if (item === poolSubjects[i]["subjectName"]) {
+              skipSubjectFolder = true;
+              break;
+            }
+          }
+        }
+        if (skipSubjectFolder) continue;
+      }
+
       count += 1;
       var emptyFolder = "";
       if (!highLevelFolders.includes(item)) {
@@ -6189,9 +6646,9 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
           item +
           "</div></div>";
 
-        // folder_elements.push(elem_creation);
         appendString = appendString + elem_creation;
         if (count === 100) {
+          //every one hundred elements created we put it into one element within the array
           folder_elements.push(appendString);
           count = 0;
           appendString = "";
@@ -6207,9 +6664,9 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
           item +
           "</div></div>";
 
-        // folder_elements.push(element_creation);
         appendString = appendString + element_creation;
         if (count === 100) {
+          //every one hundred elements created we put it into one element within the array
           folder_elements.push(appendString);
           count = 0;
           appendString = "";
@@ -6218,6 +6675,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
       }
     }
     if (count < 100) {
+      //if items to be rendered is less than 100 we push whatever we have to the array element
       if (!folder_elements.includes(appendString) && appendString != "") {
         folder_elements.push(appendString);
         count = 0;
@@ -6424,15 +6882,23 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
       if (currentFolder.startsWith("sam-")) {
         folderType = "sample";
       }
+      if (currentFolder.startsWith("pool-")) {
+        folderType = "pool";
+      }
     }
 
     let dragDropInstructionsText;
     if (folderType === undefined) {
       dragDropInstructionsText = `Drag and Drop folders and files to be included in the <b>${currentFolder}</b> folder.`;
-    } else if (folderType == "subject") {
+    }
+    if (folderType == "subject") {
       dragDropInstructionsText = `Drag and drop folders and files associated with the subject ${currentFolder}`;
-    } else if (folderType === "sample") {
+    }
+    if (folderType === "sample") {
       dragDropInstructionsText = `Drag and drop folders and files associated with the sample ${currentFolder}`;
+    }
+    if (folderType === "pool") {
+      dragDropInstructionsText = `Drag and drop folders and files associated with the pool ${currentFolder}`;
     }
 
     $("#items").html(
@@ -7085,23 +7551,54 @@ const divGenerateProgressBar = document.getElementById("div-new-curate-meter-pro
 const generateProgressBar = document.getElementById("progress-bar-new-curate");
 var progressStatus = document.getElementById("para-new-curate-progress-bar-status");
 
-document.getElementById("button-generate").addEventListener("click", async function () {
-  $($($(this).parent()[0]).parents()[0]).removeClass("tab-active");
-  document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
-  document.getElementById("para-please-wait-new-curate").innerHTML = "";
-  document.getElementById("prevBtn").style.display = "none";
-  document.getElementById("start-over-btn").style.display = "none";
-  document.getElementById("div-vertical-progress-bar").style.display = "none";
-  document.getElementById("div-generate-comeback").style.display = "none";
-  document.getElementById("generate-dataset-progress-tab").style.display = "flex";
-  $("#sidebarCollapse").prop("disabled", false);
+const checkEmptyFilesAndFolders = async (sodaJSONObj) => {
+  let emptyFilesFoldersResponse;
+  try {
+    emptyFilesFoldersResponse = await client.post(
+      `/curate_datasets/empty_files_and_folders`,
+      {
+        soda_json_structure: sodaJSONObj,
+      },
+      { timeout: 0 }
+    );
+  } catch (error) {
+    clientError(error);
+    let emessage = userErrorMessage(error);
+    document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
+      "<span style='color: red;'> Error: " + emessage + "</span>";
+    document.getElementById("para-please-wait-new-curate").innerHTML = "";
+    $("#sidebarCollapse").prop("disabled", false);
+    return;
+  }
 
-  // updateJSON structure after Generate dataset tab
-  updateJSONStructureGenerate();
+  let { data } = emptyFilesFoldersResponse;
+
+  log.info("Continue with curate");
+  let errorMessage = "";
+  error_files = data["empty_files"];
+  //bring duplicate outside
+  error_folders = data["empty_folders"];
+
+  if (error_files.length > 0) {
+    var error_message_files = backend_to_frontend_warning_message(error_files);
+    errorMessage += error_message_files;
+  }
+
+  if (error_folders.length > 0) {
+    var error_message_folders = backend_to_frontend_warning_message(error_folders);
+    errorMessage += error_message_folders;
+  }
+
+  return errorMessage;
+};
+
+const setSodaJSONStartingPoint = (sodaJSONObj) => {
   if (sodaJSONObj["starting-point"]["type"] === "local") {
     sodaJSONObj["starting-point"]["type"] = "new";
   }
+};
 
+const setDatasetNameAndDestination = (sodaJSONObj) => {
   let dataset_name = "";
   let dataset_destination = "";
 
@@ -7121,6 +7618,45 @@ document.getElementById("button-generate").addEventListener("click", async funct
       }
     }
   }
+
+  return [dataset_name, dataset_destination];
+};
+
+const deleteTreeviewFiles = (sodaJSONObj) => {
+  // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
+  if ("files" in sodaJSONObj["dataset-structure"]) {
+    sodaJSONObj["dataset-structure"]["files"] = {};
+  }
+  // delete manifest files added for treeview
+  for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
+    if (
+      "manifest.xlsx" in sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
+      sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"][
+        "forTreeview"
+      ]
+    ) {
+      delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];
+    }
+  }
+};
+
+document.getElementById("button-generate").addEventListener("click", async function () {
+  $($($(this).parent()[0]).parents()[0]).removeClass("tab-active");
+  document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
+  document.getElementById("para-please-wait-new-curate").innerHTML = "";
+  document.getElementById("prevBtn").style.display = "none";
+  document.getElementById("start-over-btn").style.display = "none";
+  document.getElementById("div-vertical-progress-bar").style.display = "none";
+  document.getElementById("div-generate-comeback").style.display = "none";
+  document.getElementById("generate-dataset-progress-tab").style.display = "flex";
+  $("#sidebarCollapse").prop("disabled", false);
+
+  // updateJSON structure after Generate dataset tab
+  updateJSONStructureGenerate(false, sodaJSONObj);
+
+  setSodaJSONStartingPoint(sodaJSONObj);
+
+  let [dataset_name, dataset_destination] = setDatasetNameAndDestination(sodaJSONObj);
 
   generateProgressBar.value = 0;
 
@@ -7143,59 +7679,10 @@ document.getElementById("button-generate").addEventListener("click", async funct
 
   progressBarNewCurate.value = 0;
 
-  // delete datasetStructureObject["files"] value (with metadata files (if any)) that was added only for the Preview tree view
-  if ("files" in sodaJSONObj["dataset-structure"]) {
-    sodaJSONObj["dataset-structure"]["files"] = {};
-  }
-  // delete manifest files added for treeview
-  for (var highLevelFol in sodaJSONObj["dataset-structure"]["folders"]) {
-    if (
-      "manifest.xlsx" in sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
-      sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"][
-        "forTreeview"
-      ]
-    ) {
-      delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];
-    }
-  }
-
-  let emptyFilesFoldersResponse;
-  try {
-    emptyFilesFoldersResponse = await client.post(
-      `/curate_datasets/empty_files_and_folders`,
-      {
-        soda_json_structure: sodaJSONObj,
-      },
-      { timeout: 0 }
-    );
-  } catch (error) {
-    clientError(error);
-    let emessage = userErrorMessage(error);
-    document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
-      "<span style='color: red;'> Error: " + emessage + "</span>";
-    document.getElementById("para-please-wait-new-curate").innerHTML = "";
-    $("#sidebarCollapse").prop("disabled", false);
-    return;
-  }
-
-  let { data } = emptyFilesFoldersResponse;
+  deleteTreeviewFiles(sodaJSONObj);
 
   document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
-  log.info("Continue with curate");
-  let errorMessage = "";
-  error_files = data["empty_files"];
-  //bring duplicate outside
-  error_folders = data["empty_folders"];
-
-  if (error_files.length > 0) {
-    var error_message_files = backend_to_frontend_warning_message(error_files);
-    errorMessage += error_message_files;
-  }
-
-  if (error_folders.length > 0) {
-    var error_message_folders = backend_to_frontend_warning_message(error_folders);
-    errorMessage += error_message_folders;
-  }
+  let errorMessage = await checkEmptyFilesAndFolders(sodaJSONObj);
 
   if (errorMessage) {
     errorMessage += "Would you like to continue?";
@@ -7262,9 +7749,6 @@ var uploadComplete = new Notyf({
     },
   ],
 });
-
-//const remote = require("electron").remote;
-//child.setPosition(position[0], position[1]);
 
 // Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
 async function initiate_generate() {
@@ -7337,9 +7821,17 @@ async function initiate_generate() {
     document.getElementById("sidebarCollapse").click();
   }
 
+  if ($("#generate-manifest-curate")[0].checked) {
+    sodaJSONObj["manifest-files"]["auto-generated"] = true;
+  }
+
   //dissmisButton.addEventListener("click", dismiss('status-bar-curate-progress'));
   if ("manifest-files" in sodaJSONObj) {
-    if ("destination" in sodaJSONObj["manifest-files"]) {
+    if ("auto-generated" in sodaJSONObj["manifest-files"]) {
+      if (sodaJSONObj["manifest-files"]["auto-generated"] === true) {
+        delete_imported_manifest();
+      }
+    } else {
       if (sodaJSONObj["manifest-files"]["destination"] === "generate-dataset") {
         manifest_files_requested = true;
         delete_imported_manifest();
@@ -7351,11 +7843,13 @@ async function initiate_generate() {
 
   // track the amount of files that have been uploaded/generated
   let uploadedFiles = 0;
-  let uploadedFilesSize = 0;
-  let foldersUploaded = 0;
-  let previousUploadedFileSize = 0;
+  let uploadedBytes = 0;
   let increaseInFileSize = 0;
   let generated_dataset_id = undefined;
+  // when generating a new dataset we need to add its ID to the ID -> Name mapping
+  // we need to do this only once
+  // TODO: Integrate into modified analytics tracking
+  let loggedDatasetNameToIdMapping = false;
 
   // determine where the dataset will be generated/uploaded
   let nameDestinationPair = determineDatasetDestination();
@@ -7366,9 +7860,6 @@ async function initiate_generate() {
     // create a dataset upload session
     datasetUploadSession.startSession();
   }
-
-  // clear the Pennsieve Queue (added to Renderer side for Mac users that are unable to clear the queue on the Python side)
-  clearQueue();
 
   client
     .post(
@@ -7396,6 +7887,28 @@ async function initiate_generate() {
         uploadedFiles,
         false
       );
+
+      if (dataset_destination == "bf" || dataset_destination == "Pennsieve") {
+        // log the difference again to Google Analytics
+        let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          PrepareDatasetsAnalyticsPrefix.CURATE + "- Step 7 - Generate - Dataset - Number of Files",
+          `${datasetUploadSession.id}`,
+          finalFilesCount
+        );
+
+        let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          PrepareDatasetsAnalyticsPrefix.CURATE + " - Step 7 - Generate - Dataset - Size",
+          `${datasetUploadSession.id}`,
+          differenceInBytes
+        );
+      }
+
       //Allow guided_mode_view to be clicked again
       document.getElementById("guided_mode_view").style.pointerEvents = "";
 
@@ -7417,6 +7930,39 @@ async function initiate_generate() {
 
       clientError(error);
       let emessage = userErrorMessage(error);
+
+      if (dataset_destination == "bf" || dataset_destination == "Pennsieve") {
+        // log the difference again to Google Analytics
+        let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          PrepareDatasetsAnalyticsPrefix.CURATE + "- Step 7 - Generate - Dataset - Number of Files",
+          `${datasetUploadSession.id}`,
+          finalFilesCount
+        );
+
+        let differenceInBytes = uploadedBytes - bytesOnPreviousLogPage;
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          PrepareDatasetsAnalyticsPrefix.CURATE + " - Step 7 - Generate - Dataset - Size",
+          `${datasetUploadSession.id}`,
+          differenceInBytes
+        );
+      }
+
+      // log the curation errors to Google Analytics
+      logCurationErrorsToAnalytics(
+        0,
+        0,
+        dataset_destination,
+        main_total_generate_dataset_size,
+        increaseInFileSize,
+        datasetUploadSession,
+        false
+      );
+
       organizeDataset_option_buttons.style.display = "flex";
       organizeDataset.disabled = false;
       organizeDataset.className = "content-button is-selected";
@@ -7470,31 +8016,13 @@ async function initiate_generate() {
         clientError(error);
         emessage = userErrorMessage(error);
       }
-
-      // wait to see if the uploaded files or size will grow once the client has time to ask for the updated information
-      // if they stay zero that means nothing was uploaded
-      if (uploadedFiles === 0 || uploadedFilesSize === 0) {
-        await wait(2000);
-      }
-
-      // log the curation errors to Google Analytics
-      logCurationErrorsToAnalytics(
-        uploadedFiles,
-        uploadedFilesSize,
-        dataset_destination,
-        main_total_generate_dataset_size,
-        increaseInFileSize,
-        datasetUploadSession,
-        false
-      );
     });
 
   // Progress tracking function for main curate
-  var countDone = 0;
-  var timerProgress = setInterval(main_progressfunction, 1000);
+  var timerProgress = setInterval(mainProgressFunction, 50);
   var successful = false;
 
-  async function main_progressfunction() {
+  async function mainProgressFunction() {
     let mainCurationProgressResponse;
     try {
       mainCurationProgressResponse = await client.get(`/curate_datasets/curation/progress`);
@@ -7558,42 +8086,48 @@ async function initiate_generate() {
     main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
     var main_generated_dataset_size = data["main_generated_dataset_size"];
     var elapsed_time_formatted = data["elapsed_time_formatted"];
+    let total_files_uploaded = data["total_files_uploaded"];
+
+    // used for logging in the error case ( inside /curation's catch block )
+    uploadedFiles = total_files_uploaded;
+    uploadedBytes = main_generated_dataset_size;
 
     if (start_generate === 1) {
+      var value = (main_generated_dataset_size / main_total_generate_dataset_size) * 100;
+      generateProgressBar.value = value;
+      statusMeter.value = value;
+      if (main_total_generate_dataset_size < displaySize) {
+        var totalSizePrint = main_total_generate_dataset_size.toFixed(2) + " B";
+      } else if (main_total_generate_dataset_size < displaySize * displaySize) {
+        var totalSizePrint = (main_total_generate_dataset_size / displaySize).toFixed(2) + " KB";
+      } else if (main_total_generate_dataset_size < displaySize * displaySize * displaySize) {
+        var totalSizePrint =
+          (main_total_generate_dataset_size / displaySize / displaySize).toFixed(2) + " MB";
+      } else {
+        var totalSizePrint =
+          (main_total_generate_dataset_size / displaySize / displaySize / displaySize).toFixed(2) +
+          " GB";
+      }
+      var progressMessage = "";
+      var statusProgressMessage = "";
+      progressMessage += main_curate_progress_message + "<br>";
+      statusProgressMessage += "Progress: " + value.toFixed(2) + "%" + "<br>";
+      statusProgressMessage += "Elapsed time: " + elapsed_time_formatted + "<br>";
+      progressMessage +=
+        "Progress: " + value.toFixed(2) + "%" + " (total size: " + totalSizePrint + ") " + "<br>";
+      progressMessage += "Elapsed time: " + elapsed_time_formatted + "<br>";
+      progressMessage += "Total files uploaded: " + total_files_uploaded + "<br>";
+      progressStatus.innerHTML = progressMessage;
+      statusText.innerHTML = statusProgressMessage;
       divGenerateProgressBar.style.display = "block";
+
       if (main_curate_progress_message.includes("Success: COMPLETED!")) {
+        clearInterval(timerProgress);
         generateProgressBar.value = 100;
         statusMeter.value = 100;
         progressStatus.innerHTML = main_curate_status + smileyCan;
         statusText.innerHTML = main_curate_status + smileyCan;
         successful = true;
-      } else {
-        var value = (main_generated_dataset_size / main_total_generate_dataset_size) * 100;
-        generateProgressBar.value = value;
-        statusMeter.value = value;
-        if (main_total_generate_dataset_size < displaySize) {
-          var totalSizePrint = main_total_generate_dataset_size.toFixed(2) + " B";
-        } else if (main_total_generate_dataset_size < displaySize * displaySize) {
-          var totalSizePrint = (main_total_generate_dataset_size / displaySize).toFixed(2) + " KB";
-        } else if (main_total_generate_dataset_size < displaySize * displaySize * displaySize) {
-          var totalSizePrint =
-            (main_total_generate_dataset_size / displaySize / displaySize).toFixed(2) + " MB";
-        } else {
-          var totalSizePrint =
-            (main_total_generate_dataset_size / displaySize / displaySize / displaySize).toFixed(
-              2
-            ) + " GB";
-        }
-        var progressMessage = "";
-        var statusProgressMessage = "";
-        progressMessage += main_curate_progress_message + "<br>";
-        statusProgressMessage += "Progress: " + value.toFixed(2) + "%" + "<br>";
-        statusProgressMessage += "Elapsed time: " + elapsed_time_formatted + "<br>";
-        progressMessage +=
-          "Progress: " + value.toFixed(2) + "%" + " (total size: " + totalSizePrint + ") " + "<br>";
-        progressMessage += "Elapsed time: " + elapsed_time_formatted + "<br>";
-        progressStatus.innerHTML = progressMessage;
-        statusText.innerHTML = statusProgressMessage;
       }
     } else {
       statusText.innerHTML =
@@ -7604,106 +8138,37 @@ async function initiate_generate() {
 
     if (main_curate_status === "Done") {
       $("#sidebarCollapse").prop("disabled", false);
-      countDone++;
-      if (countDone > 1) {
-        log.info("Done curate track");
-        statusBarClone.remove();
-        sparc_container.style.display = "inline";
-        if (successful === true) {
-          organizeDataset_option_buttons.style.display = "flex";
-          organizeDataset.disabled = false;
-          organizeDataset.className = "content-button is-selected";
-          organizeDataset.style = "background-color: #fff";
-          uploadLocally.disabled = false;
-          uploadLocally.className = "content-button is-selected";
-          uploadLocally.style = "background-color: #fff";
-          uploadComplete.open({
-            type: "success",
-            message: "Dataset created successfully",
-          });
-        } else {
-          //enable buttons anyways
-          organizeDataset_option_buttons.style.display = "flex";
-          organizeDataset.disabled = false;
-          organizeDataset.className = "content-button is-selected";
-          organizeDataset.style = "background-color: #fff";
-          uploadLocally.disabled = false;
-          uploadLocally.className = "content-button is-selected";
-          uploadLocally.style = "background-color: #fff";
-        }
-        // then show the sidebar again
-        // forceActionSidebar("show");
-        clearInterval(timerProgress);
-        // electron.powerSaveBlocker.stop(prevent_sleep_id)
+      log.info("Done curate track");
+      statusBarClone.remove();
+      sparc_container.style.display = "inline";
+      if (successful === true) {
+        organizeDataset_option_buttons.style.display = "flex";
+        organizeDataset.disabled = false;
+        organizeDataset.className = "content-button is-selected";
+        organizeDataset.style = "background-color: #fff";
+        uploadLocally.disabled = false;
+        uploadLocally.className = "content-button is-selected";
+        uploadLocally.style = "background-color: #fff";
+        uploadComplete.open({
+          type: "success",
+          message: "Dataset created successfully",
+        });
+      } else {
+        //enable buttons anyways
+        organizeDataset_option_buttons.style.display = "flex";
+        organizeDataset.disabled = false;
+        organizeDataset.className = "content-button is-selected";
+        organizeDataset.style = "background-color: #fff";
+        uploadLocally.disabled = false;
+        uploadLocally.className = "content-button is-selected";
+        uploadLocally.style = "background-color: #fff";
       }
-    }
-  }
-
-  // when generating a new dataset we need to add its ID to the ID -> Name mapping
-  // we need to do this only once
-  let loggedDatasetNameToIdMapping = false;
-
-  // if uploading to Pennsieve set an interval that gets the amount of files that have been uploaded
-  // and their aggregate size; starts for local dataset generation as well. Provides easy way to track amount of
-  // files copied and their aggregate size.
-  // IMP: This handles tracking a session that tracking a session that had a successful Pennsieve upload.
-  //      therefore it is unnecessary to have logs for Session ID tracking in the "api_main_curate" success block
-  // IMP: Two reasons this exists:
-  //    1. Pennsieve Agent can freeze. This prevents us from logging. So we log a Pennsieve dataset upload session as it happens.
-  //    2. Local dataset generation and Pennsieve dataset generation can fail. Having access to how many files and their aggregate size for logging at error time is valuable data.
-  const checkForBucketUpload = async () => {
-    // ask the server for the amount of files uploaded in the current session
-    // nothing to log for uploads where a user is solely deleting files in this section
-
-    let mainCurationDetailsResponse;
-    try {
-      mainCurationDetailsResponse = await client.get(`/curate_datasets/curation/upload_details`);
-    } catch (error) {
-      clientError(error);
-      clearInterval(timerCheckForBucketUpload);
-      return;
+      // then show the sidebar again
+      // forceActionSidebar("show");
     }
 
-    let { data } = mainCurationDetailsResponse;
-
-    // check if the amount of successfully uploaded files has increased
-    if (
-      data["main_curation_uploaded_files"] > 0 &&
-      data["uploaded_folder_counter"] > foldersUploaded
-    ) {
-      previousUploadedFileSize = uploadedFilesSize;
-      uploadedFiles = data["main_curation_uploaded_files"];
-      uploadedFilesSize = data["current_size_of_uploaded_files"];
-      foldersUploaded = data["uploaded_folder_counter"];
-
-      // log the increase in the file size
-      increaseInFileSize = uploadedFilesSize - previousUploadedFileSize;
-
-      // log the aggregate file count and size values when uploading to Pennsieve
-      if (dataset_destination === "bf" || dataset_destination === "Pennsieve") {
-        // use the session id as the label -- this will help with aggregating the number of files uploaded per session
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          PrepareDatasetsAnalyticsPrefix.CURATE +
-            " - Step 7 - Generate - Dataset - Number of Files",
-          `${datasetUploadSession.id}`,
-          uploadedFiles
-        );
-
-        // use the session id as the label -- this will help with aggregating the size of the given upload session
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          PrepareDatasetsAnalyticsPrefix.CURATE + " - Step 7 - Generate - Dataset - Size",
-          `${datasetUploadSession.id}`,
-          increaseInFileSize
-        );
-      }
-    }
-
-    generated_dataset_id = data["generated_dataset_id"];
     // if a new Pennsieve dataset was generated log it once to the dataset id to name mapping
+    let generated_dataset_id = data["generated_dataset_id"];
     if (
       !loggedDatasetNameToIdMapping &&
       generated_dataset_id !== null &&
@@ -7720,13 +8185,37 @@ async function initiate_generate() {
       loggedDatasetNameToIdMapping = true;
     }
 
-    //stop the inteval when the upload is complete
-    if (main_curate_status === "Done") {
-      clearInterval(timerCheckForBucketUpload);
+    // if doing a pennsieve upload log as we go ( as well as at the end in failure or success case )
+    if (dataset_destination == "Pennsieve" || dataset_destination == "bf") {
+      logProgressToAnalytics(total_files_uploaded, main_generated_dataset_size);
+    }
+  }
+
+  let bytesOnPreviousLogPage = 0;
+  let filesOnPreviousLogPage = 0;
+  const logProgressToAnalytics = (files, bytes) => {
+    // log every 500 files -- will log on success/failure as well so if there are less than 500 files we will log what we uploaded ( all in success case and some of them in failure case )
+    if (files >= filesOnPreviousLogPage + 500) {
+      filesOnPreviousLogPage += 500;
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        PrepareDatasetsAnalyticsPrefix.CURATE + "- Step 7 - Generate - Dataset - Number of Files",
+        `${datasetUploadSession.id}`,
+        500
+      );
+
+      let differenceInBytes = bytes - bytesOnPreviousLogPage;
+      bytesOnPreviousLogPage = bytes;
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        PrepareDatasetsAnalyticsPrefix.CURATE + " - Step 7 - Generate - Dataset - Size",
+        `${datasetUploadSession.id}`,
+        differenceInBytes
+      );
     }
   };
-
-  let timerCheckForBucketUpload = setInterval(checkForBucketUpload, 1000);
 } // end initiate_generate
 
 const show_curation_shortcut = () => {
@@ -7955,11 +8444,6 @@ const curation_consortium_check = async (mode = "") => {
       },
     });
     let res = bf_account_details_req.data;
-
-    let acc_details = res["account_details"];
-    // remove html tags from response
-    acc_details = acc_details.replace(/<[^>]*>?/gm, "");
-
     let organization_id = res["organization_id"];
     if (organization_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0") {
       $("#current_curation_team_status").text("None");
@@ -8684,7 +9168,7 @@ const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
   // set the subtitle's status
   statuses.subtitle = description && description.length ? true : false;
 
-  let readme = await api.getDatasetReadme(defaultBfAccount, defaultBfDatasetId);
+  let readme = await api.getDatasetReadme(defaultBfAccount, datasetIdOrName);
 
   // set the readme's status
   statuses.readme = readme && readme.length >= 1 ? true : false;
@@ -8949,7 +9433,7 @@ $("#validate_dataset_bttn").on("click", async () => {
 const scaleBannerImage = async (imagePath) => {
   try {
     let imageScaled = await client.post(
-      `/manage_datasets/bf_banner_image/scale_image`,
+      `/manage_datasets/scale_image`,
       {
         image_file_path: imagePath,
       },
@@ -9206,3 +9690,7 @@ tippy("#datasetPathDisplay", {
   theme: "soda",
   maxWidth: "100%",
 });
+
+const createSpreadSheetWindow = async (spreadsheet) => {
+  ipcRenderer.send("spreadsheet", spreadsheet);
+};

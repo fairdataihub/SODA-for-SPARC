@@ -364,29 +364,137 @@ $(document).ready(function () {
   });
 });
 
-function convertJSONToXlsx(jsondata, excelfile) {
+// function that removes hidden class from js element by id and smooth scrolls to it
+const unHideAndSmoothScrollToElement = (id) => {
+  elementToUnhideAndScrollTo = document.getElementById(id);
+  elementToUnhideAndScrollTo.classList.remove("hidden");
+  elementToUnhideAndScrollTo.scrollIntoView({
+    behavior: "smooth",
+  });
+};
+
+const smoothScrollToElement = (idOrElement) => {
+  //check if idOrElement is an element
+  if (typeof idOrElement === "string") {
+    elementToScrollTo = document.getElementById(id);
+    elementToScrollTo.scrollIntoView({
+      behavior: "smooth",
+    });
+  } else {
+    idOrElement.scrollIntoView({
+      behavior: "smooth",
+    });
+  }
+};
+
+const processManifestInfo = (headers, data) => {
+  let sortedArr = [];
+  // sort json data by appending ordered entries (by columns) to each object's element
+  for (let i = 0; i < data.length; i++) {
+    let temp = {};
+    for (let j = 0; j < headers.length; j++) {
+      let header = headers[j];
+      temp[header] = data[i][j];
+    }
+    sortedArr.push(temp);
+  }
+  return sortedArr;
+};
+
+const createWorkbookStyle = (wb, color) => {
+  return wb.createStyle({
+    fill: {
+      type: "pattern",
+      patternType: "solid",
+      fgColor: color,
+    },
+    font: {
+      bold: true,
+      color: "#000000",
+      size: 12,
+      name: "Calibri",
+    },
+    border: {
+      left: {
+        style: "thin",
+        color: "#000000",
+      },
+      right: {
+        style: "thin",
+        color: "#000000",
+      },
+      top: {
+        style: "thin",
+        color: "#000000",
+      },
+      bottom: {
+        style: "thin",
+        color: "#000000",
+      },
+    },
+  });
+};
+
+const convertJSONToXlsx = (jsondata, excelfile) => {
+  const requiredManifestHeaders = [
+    "filename",
+    "timestamp",
+    "description",
+    "file type",
+    "Additional Metadata",
+  ];
+  const blueHeader = ["filename", "File Name", "file name"];
+  const greenHeader = ["timestamp", "description", "file type"];
+  const yellowHeader = ["Additional Metadata"];
   const wb = new excel4node.Workbook();
-  const ws = wb.addWorksheet("Sheet1");
+  // create wb style that makes the background styling
+  const greenHeaderStyle = createWorkbookStyle(wb, "a8d08d");
+  const yellowHeaderStyle = createWorkbookStyle(wb, "ffd965");
+  const blueHeaderStyle = createWorkbookStyle(wb, "A0C2E6");
+  const standardCellStyle = wb.createStyle({
+    font: {
+      bold: false,
+      color: "#000000",
+      size: 12,
+      name: "Calibri",
+    },
+  });
+
+  const wsOptions = {
+    sheetFormat: {
+      defaultColWidth: 20,
+    },
+  };
+  const ws = wb.addWorksheet("Sheet1", wsOptions);
   const headingColumnNames = Object.keys(jsondata[0]);
   //Write Column Title in Excel file
   let headingColumnIndex = 1;
   headingColumnNames.forEach((heading) => {
-    ws.cell(1, headingColumnIndex++).string(heading);
+    let styleObject = yellowHeaderStyle;
+    if (blueHeader.includes(heading)) styleObject = blueHeaderStyle;
+    if (yellowHeader.includes(heading)) styleObject = yellowHeaderStyle;
+    if (greenHeader.includes(heading)) styleObject = greenHeaderStyle;
+
+    ws.cell(1, headingColumnIndex++)
+      .string(heading)
+      .style(styleObject);
   });
   //Write Data in Excel file
   let rowIndex = 2;
   jsondata.forEach((record) => {
     let columnIndex = 1;
     Object.keys(record).forEach((columnName) => {
-      ws.cell(rowIndex, columnIndex++).string(record[columnName]);
+      ws.cell(rowIndex, columnIndex++)
+        .string(record[columnName])
+        .style(standardCellStyle);
     });
     rowIndex++;
   });
   wb.write(excelfile);
-}
+};
 
 var table1;
-function loadManifestFileEdits(jsondata) {
+const loadManifestFileEdits = (jsondata) => {
   let columns = Object.keys(jsondata[0]);
   let columnList = [];
   for (let i = 0; i < columns.length; i++) {
@@ -464,27 +572,13 @@ function loadManifestFileEdits(jsondata) {
       e.target.innerText = "";
       e.target.focus();
     });
-}
-
-const processManifestInfo = (headers, data) => {
-  let sortedArr = [];
-  // sort json data by appending ordered entries (by columns) to each object's element
-  for (let i = 0; i < data.length; i++) {
-    let temp = {};
-    for (let j = 0; j < headers.length; j++) {
-      let header = headers[j];
-      temp[header] = data[i][j];
-    }
-    sortedArr.push(temp);
-  }
-  return sortedArr;
 };
 
 var localDatasetFolderPath = "";
 var finalManifestGenerationPath = "";
 let pennsievePreview = false;
 
-async function generateManifestPrecheck(manifestEditBoolean, ev) {
+const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
   // if doing a local generation ( but not as part of the Pennsieve preview flow ) make sure the input
   // that indicates where the manifest files will be generated is not empty
   if (
@@ -587,21 +681,9 @@ async function generateManifestPrecheck(manifestEditBoolean, ev) {
   await generateManifest("", type, manifestEditBoolean, ev);
 
   return;
-}
+};
 
-async function generateManifest(action, type, manifestEditBoolean, ev) {
-  // Swal.fire({
-  //   title: "Reviewing the dataset structure.",
-  //   html: "Please wait...",
-  //   allowEscapeKey: false,
-  //   allowOutsideClick: false,
-  //   showConfirmButton: false,
-  //   heightAuto: false,
-  //   backdrop: "rgba(0,0,0, 0.4)",
-  //   didOpen: () => {
-  //     Swal.showLoading();
-  //   },
-  // }).then((result) => { });
+const generateManifest = async (action, type, manifestEditBoolean, ev) => {
   // Case 1: Local dataset
   if (type === "local") {
     if (finalManifestGenerationPath === "") {
@@ -646,7 +728,6 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
           generateAfterEdits();
           return;
         }
-
         logMetadataForAnalytics(
           "Success",
           MetadataAnalyticsPrefix.MANIFEST,
@@ -660,7 +741,6 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
         if (manifestEditBoolean) {
           localDatasetFolderPath = $("#input-manifest-local-folder-dataset").attr("placeholder");
         }
-
         create_json_object(action, sodaJSONObj, localDatasetFolderPath);
         datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
         populate_existing_folders(datasetStructureJSONObj);
@@ -753,7 +833,6 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
           $("#div-confirm-manifest-local-folder-dataset").hide();
           return;
         }
-
         generateManifestHelper();
         initiate_generate_manifest_local(manifestEditBoolean, localDatasetFolderPath);
       }
@@ -768,7 +847,7 @@ async function generateManifest(action, type, manifestEditBoolean, ev) {
       extractBFDatasetForManifestFile(false, defaultBfAccount, defaultBfDataset, ev);
     }
   }
-}
+};
 
 async function generateManifestHelper() {
   updateJSONStructureManifestGenerate();
@@ -807,7 +886,7 @@ async function generateManifestHelper() {
   }
 }
 
-async function generateManifestPreview(e) {
+const generateManifestPreview = async (e) => {
   // open a file dialog so the user can select their dataset folder
   let folderPath = await ipcRenderer.invoke("open-manifest-preview-location");
 
@@ -818,7 +897,7 @@ async function generateManifestPreview(e) {
   await generateManifestPrecheck(true, e);
 
   Swal.close();
-}
+};
 
 /**
  *  Before a user uploads their manifest files to Pennsieve or generates them locally remove empty custom  columns.
@@ -954,8 +1033,6 @@ async function initiate_generate_manifest_bf() {
     }
   }
 
-  // clear the pennsieve queue
-  clearQueue();
   let curationResponse;
   try {
     curationResponse = await client.post(
@@ -1356,10 +1433,10 @@ async function extractBFDatasetForManifestFile(editBoolean, bfaccount, bfdataset
 
     let continueProgressEmptyFolder = await checkEmptySubFolders(sodaJSONObj["dataset-structure"]);
 
+    continueProgressEmptyFolder = true;
     if (!continueProgressEmptyFolder) {
       hideProgressContainer(progressContainer);
       spanManifest.style.display = "none";
-
       Swal.fire({
         title: "Failed to generate the manifest files.",
         text: "The dataset contains one or more empty folder(s). Per SPARC guidelines, a dataset must not contain any empty folders. Please remove them before generating the manifest files.",
@@ -1502,7 +1579,7 @@ function extractBFManifestFile() {
   return new Promise((resolve, reject) => {
     client
       .post(
-        "/prepare_metadata/manifest_files/pennsieve",
+        `/prepare_metadata/manifest_files/pennsieve`,
         {
           soda_json_object: sodaJSONObj,
           selected_account: defaultBfAccount,
@@ -1513,6 +1590,7 @@ function extractBFManifestFile() {
         }
       )
       .then((res) => {
+        console.log(res);
         resolve(res);
       })
       .catch((err) => {
@@ -1731,7 +1809,7 @@ function checkEmptySubFolders(datasetStructure) {
 // helper function 1: First, generate manifest file folder locally
 // Parameter: dataset structure object
 // Return: manifest file folder path
-async function generateManifestFolderLocallyForEdit(ev) {
+const generateManifestFolderLocallyForEdit = async (ev) => {
   var type = "local";
   if ($('input[name="generate-manifest-1"]:checked').prop("id") === "generate-manifest-from-Penn") {
     type = "bf";
@@ -1796,7 +1874,6 @@ async function generateManifestFolderLocallyForEdit(ev) {
     sodaJSONObj["bf-dataset-selected"] = {};
     sodaJSONObj["generate-dataset"] = {};
     continueProgressEmptyFolder = await checkEmptySubFolders(sodaJSONObj["dataset-structure"]);
-
     if (continueProgressEmptyFolder === false) {
       Swal.fire({
         title: "Failed to generate the manifest files.",
@@ -1817,7 +1894,6 @@ async function generateManifestFolderLocallyForEdit(ev) {
       }).then((result) => {});
       return;
     }
-
     createManifestLocally("local", true, "");
   } else {
     // Case 2: bf dataset
@@ -1825,7 +1901,7 @@ async function generateManifestFolderLocallyForEdit(ev) {
     sodaJSONObj["bf-dataset-selected"] = { "dataset-name": defaultBfDataset };
     extractBFDatasetForManifestFile(true, defaultBfAccount, defaultBfDataset, ev);
   }
-}
+};
 
 async function createManifestLocally(type, editBoolean, originalDataset) {
   var generatePath = "";
@@ -2002,7 +2078,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
 // (so users can choose which manifest file to add additional metadata to)
 // Parameter: dataset structure object
 // Return tree
-function loadDSTreePreviewManifest(datasetStructure) {
+const loadDSTreePreviewManifest = (datasetStructure) => {
   // return tree view
   // upon clicking on a node, if node == manifest, feed the actual path of that manifest file -> UI library xspreadsheet
   // -> popup opens up with loaded info from such manifest.xlsx file.
@@ -2016,7 +2092,7 @@ function loadDSTreePreviewManifest(datasetStructure) {
     jstreePreviewManifest,
     datasetStructure
   );
-}
+};
 
 function showTreeViewPreviewManifestEdits(
   disabledBoolean,
@@ -2188,7 +2264,7 @@ function checkInvalidHighLevelFolders(datasetStructure) {
 }
 
 // function to generate edited manifest files onto Pennsieve (basically just upload the local SODA Manifest Files folder to Pennsieve)
-async function generateAfterEdits() {
+const generateAfterEdits = async () => {
   let dir = path.join(homeDirectory, "SODA", "manifest_files");
   // set up sodaJSonObject
   sodaJSONObj = {
@@ -2227,10 +2303,9 @@ async function generateAfterEdits() {
     });
     return;
   }
-
   // generate on Pennsieve: call the function
   initiate_generate_manifest_bf();
-}
+};
 
 document.querySelector("#btn-pull-ds-manifest").addEventListener("click", (e) => {
   document.querySelector("#div-check-bf-create-manifest").style.visibility = "hidden";

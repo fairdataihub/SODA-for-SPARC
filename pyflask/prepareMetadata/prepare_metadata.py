@@ -2,11 +2,9 @@
 
 ### Import required python modules
 
-from gevent import monkey
-
-monkey.patch_all()
 import platform
 import os
+import time
 from os.path import (
     isdir,
     join,
@@ -18,10 +16,19 @@ import pandas as pd
 import csv
 import shutil
 import numpy as np
+import json
+from functools import partial
+from pennsieve2.pennsieve import Pennsieve
+#from pennsieve import Pennsieve
+from manageDatasets import bf_dataset_account
+from utils import ( connect_pennsieve_client, authenticate_user_with_client, get_dataset_id, create_request_headers, column_check, returnFileURL)
+from permissions import has_edit_permissions, bf_get_current_user_permission_agent_two
 from collections import defaultdict
-from pennsieve import Pennsieve
 import requests
 from errorHandlers import is_file_not_found_exception, is_invalid_file_exception, InvalidDeliverablesDocument
+
+from authentication import get_access_token
+
 
 from string import ascii_uppercase
 import itertools
@@ -33,12 +40,8 @@ from docx import Document
 
 from flask import abort 
 
-from manageDatasets import (
-    bf_get_current_user_permission,
-)
-from curate import create_high_level_manifest_files_existing_bf_starting_point, get_name_extension
-
-from pysodaUtils import agent_running
+from pysodaUtils import stop_agent, start_agent
+from manifest import update_existing_pennsieve_manifest_files, create_high_level_manifest_files_existing_bf_starting_point, recursive_item_path_create
 
 from namespaces import NamespaceEnum, get_namespace_logger
 namespace_logger = get_namespace_logger(NamespaceEnum.CURATE_DATASETS)
@@ -46,6 +49,8 @@ namespace_logger = get_namespace_logger(NamespaceEnum.CURATE_DATASETS)
 userpath = expanduser("~")
 METADATA_UPLOAD_BF_PATH = join(userpath, "SODA", "METADATA")
 TEMPLATE_PATH = ""
+PENNSIEVE_URL = "https://api.pennsieve.io"
+manifest_folder_path = join(userpath, "SODA", "manifest_files")
 
 ### Sets the TEMPLATE_PATH using SODA-for-SPARC's basepath so that the prepare_metadata section can find
 ### the templates stored in file_templates direcotory
@@ -151,8 +156,12 @@ def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, val_arr
 
     wb.save(destination)
 
+    wb.close()
+
     # calculate the size of the metadata file
     size = getsize(destination)
+
+    
 
     ## if generating directly on Pennsieve, then call upload function and then delete the destination path
     if upload_boolean:
@@ -177,41 +186,72 @@ def upload_RC_file(text_string, file_type, bfaccount, bfdataset):
     return { "size": size, "filepath": file_path }
 
 
-def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_after_upload):
-    ## check if agent is running in the background
-    agent_running()
+def subscriber_metadata(ps, events_dict):
+    if events_dict["type"] == 1:
+        fileid = events_dict["upload_status"].file_id
+        total_bytes_to_upload = events_dict["upload_status"].total
+        current_bytes_uploaded = events_dict["upload_status"].current
+        namespace_logger.info("File upload progress: " + str(current_bytes_uploaded) + "/" + str(total_bytes_to_upload))
+        namespace_logger.info("For file: " + fileid)
+        if current_bytes_uploaded == total_bytes_to_upload and fileid != "":
+            namespace_logger.info("File upload complete")
+            ps.unsubscribe(10)
 
-    try:
-        bf = Pennsieve(bfaccount)
-    except Exception:
-        abort(400, "Please select a valid Pennsieve account.")
+def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_after_upload):
+    global namespace_logger
+
+
+    namespace_logger.info("Connecting to the pennsieve client")
+    
+    ps = connect_pennsieve_client()
+    authenticate_user_with_client(ps, bfaccount)
     
     # check that the Pennsieve dataset is valid
-    try:
-        myds = bf.get_dataset(bfdataset)
-    except Exception:
-        abort(400, "Please select a valid Pennsieve dataset.")
-
-
+    selected_dataset_id = get_dataset_id(ps, bfdataset)
     # check that the user has permissions for uploading and modifying the dataset
-    role = bf_get_current_user_permission(bf, myds)
-    if role not in ["owner", "manager", "editor"]:
-        abort(403, "You don't have permissions for uploading to this Pennsieve dataset.")
-
+    if not has_edit_permissions(ps, selected_dataset_id):
+        abort(403, "You do not have permissions to edit this dataset.")
+    headers = create_request_headers(ps)
     # handle duplicates on Pennsieve: first, obtain the existing file ID
-    for i in range(len(myds.items)):
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
+    r.raise_for_status()
+    items = r.json()
+    for item in items["children"]:
+        if item["content"]["name"] == file_type:
+            item_id = item["content"]["id"]
+            jsonfile = {
+                "things": [item_id]
+            }
+            # then, delete it using Pennsieve method delete(id)\vf = Pennsieve()
+            r = requests.post(f"{PENNSIEVE_URL}/data/delete",json=jsonfile, headers=headers)
+            r.raise_for_status()
+    try:
+        namespace_logger.info("Pre use_ds and manfiest create")
+        # create a new manifest for the metadata file
+        ps.use_dataset(selected_dataset_id)
+        manifest = ps.manifest.create(file_path)
+        m_id = manifest.manifest_id
+    except Exception as e:
+        error_message = "Could not create manifest file for this dataset"
+        abort(500, error_message)
+    namespace_logger.info("Finished pennsieve setup and created manifest")
+    
+    # upload the manifest file
+    # ps.manifest.upload(m_id)
+    ps.manifest.upload(m_id)
+    # create a subscriber function with ps attached so it can be used to unusbscribe
+    subscriber_metadata_ps_client = partial(subscriber_metadata, ps)
+    # subscribe for the upload to finish
+    ps.subscribe(10, False, subscriber_metadata_ps_client)
 
-        if myds.items[i].name == file_type:
+    # before we can remove files we need to wait for all of the Agent's threads/subprocesses to finish
+    # elsewise we get an error that the file is in use and therefore cannot be deleted
+    time.sleep(5)
 
-            item_id = myds.items[i].id
-
-            # then, delete it using Pennsieve method delete(id)
-            bf.delete(item_id)
-
-    myds.upload(file_path)
-    # delete the local file that was created for the purpose of uploading to Pennsieve
+    # # delete the local file that was created for the purpose of uploading to Pennsieve
     if delete_after_upload:
         os.remove(file_path)
+
 
 def excel_columns(start_index=0):
     """
@@ -220,7 +260,6 @@ def excel_columns(start_index=0):
     single_letter = list(ascii_uppercase[start_index:])
     two_letter = [a + b for a, b in itertools.product(ascii_uppercase, ascii_uppercase)]
     return single_letter + two_letter
-  
 
 def rename_headers(workbook, max_len, start_index):
     """
@@ -229,9 +268,7 @@ def rename_headers(workbook, max_len, start_index):
 
     columns_list = excel_columns(start_index=start_index)
     if max_len >= start_index:
-
         workbook[columns_list[0] + "1"] = "Value"
-
         for i, column in zip(range(2, max_len + 1), columns_list[1:]):
 
             workbook[column + "1"] = f"Value {str(i)}"
@@ -246,7 +283,6 @@ def rename_headers(workbook, max_len, start_index):
             cell.font = font
 
     else:
-
         delete_range = len(columns_list) - max_len
         workbook.delete_cols(4 + max_len, delete_range)
 
@@ -531,8 +567,8 @@ def save_subjects_file(upload_boolean, bfaccount, bfdataset, filepath, datastruc
         )
     else:
         refinedDatastructure = transposeMatrix(sortMatrix)
-    #
-    # # 1. delete rows using delete_rows(index, amount=2) -- description and example rows
+    
+    # 1. delete rows using delete_rows(index, amount=2) -- description and example rows
     # ws1.delete_rows(2, 2)
     # delete all optional columns first (from the template)
     ws1.delete_cols(12, 18)
@@ -642,9 +678,7 @@ def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastruct
     return {"size": size}
 
 
-# check for non-empty fields (cells)
-def column_check(x):
-    return "unnamed" not in x.lower()
+
 
 
 # import an existing subjects/samples files from an excel file
@@ -702,6 +736,7 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
         transpose.append(column)
 
     for header in importedHeaderList:
+
         if header.lower() in templateHeaderList:
             continue
         column = [header]
@@ -844,23 +879,19 @@ def load_existing_submission_file(filepath):
 
 # import existing metadata files except Readme and Changes from Pennsieve
 def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
-    try: 
-        bf = Pennsieve(bfaccount)
-    except Exception:
-        abort(400, "Please select a valid Pennsieve account.")
+    token = get_access_token()
 
-    try: 
-        myds = bf.get_dataset(bfdataset)
-    except Exception:
-        abort(400, "Please select a valid Pennsieve dataset.")
-    
+    selected_dataset_id = get_dataset_id(token, bfdataset)
 
-    for i in range(len(myds.items)):
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(token))
+    r.raise_for_status()
 
-        if myds.items[i].name == file_type:
+    items = r.json()["children"]
 
-            item_id = myds.items[i].id
-            url = returnFileURL(bf, item_id)
+    for i in items:
+        if i["content"]["name"] == file_type:
+            item_id = i["content"]["id"]
+            url = returnFileURL(token, item_id)
 
             if file_type == "submission.xlsx":
                 return load_existing_submission_file(url)
@@ -884,25 +915,21 @@ def import_bf_RC(bfaccount, bfdataset, file_type):
 
     file_type = file_type + ".txt"
 
-    try:
-        bf = Pennsieve(bfaccount)
-    except Exception:
-        abort(400, "Please select a valid Pennsieve account.")
+    token = get_access_token()
 
-    try:
-        myds = bf.get_dataset(bfdataset)
-    except Exception:
-        abort(400, "Please select a valid Pennsieve dataset.")
+    dataset_id = get_dataset_id(token, bfdataset)
 
-    for i in range(len(myds.items)):
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(token))
+    r.raise_for_status()
 
-        if myds.items[i].name == file_type:
+    items = r.json()
 
-            item_id = myds.items[i].id
-            url = returnFileURL(bf, item_id)
-
-            response = requests.get(url)
-            return {"text": response.text}
+    for item in items["children"]:
+        if item["content"]["name"] == file_type:
+            item_id = item["content"]["id"]
+            url = returnFileURL(token, item_id)
+            r = requests.get(url)
+            return {"text": r.text}
 
     abort (400, f"No {file_type} file was found at the root of the dataset provided.")
 
@@ -915,25 +942,31 @@ manifest_progress = {
     "finished": False
 }
 
-# TODO: NOTE: ESSENTIAL: Remove the manifest_file even if the user does not generate before pulling again.
+# TODO: NOTE: ESSENTIAL: Remove the manifest_file even if the user does not generate before pulling again.f
 def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
     # reset the progress tracking information
     global manifest_progress
+    global manifest_folder_path
     manifest_progress["finished"] = False
     manifest_progress["total_manifest_files"] = 0
     manifest_progress["manifest_files_uploaded"] = 0
 
-    bf = Pennsieve(bfaccount)
-    myds = bf.get_dataset(bfdataset)
+    token = get_access_token()
+
+    dataset_id = get_dataset_id(token, bfdataset)
 
     high_level_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
-
+    # convert the string into a json object/dictionary
+    if(str(type(soda_json_structure)) == "<class 'str'>"):
+        soda_json_structure = json.loads(soda_json_structure);
+        
     dataset_structure = soda_json_structure["dataset-structure"]
 
     # get the count of the total number of high level folders in soda_json_structure
     for folder in list(dataset_structure["folders"]):
         if folder in high_level_folders:
-            manifest_progress["total_manifest_files"] += 1
+            if dataset_structure["folders"][folder]["files"] == {} and dataset_structure["folders"][folder]["folders"] == {}:
+                manifest_progress["total_manifest_files"] += 1
 
     # create the path to the dataset files and folders on Pennsieve and add them to the dataset structure stored in soda_json_structure
     recursive_item_path_create(dataset_structure, [])
@@ -941,134 +974,17 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
     high_level_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
 
     # handle updating any existing manifest files on Pennsieve
-    update_existing_pennsieve_manifest_files(myds, bf, dataset_structure, high_level_folders)
+    update_existing_pennsieve_manifest_files(token, soda_json_structure, high_level_folders, manifest_progress, manifest_folder_path)
 
     # create manifest files from scratch for any high level folders that don't have a manifest file on Pennsieve
-    create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, high_level_folders, manifest_progress)
+    create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, manifest_folder_path, high_level_folders, manifest_progress)
 
     # finished with the manifest generation process
     manifest_progress["finished"] = True
 
     no_manifest_boolean = False
+    return {"message": "Finished"}
 
-
-def update_existing_pennsieve_manifest_files(myds, bf, dataset_structure, high_level_folders):
-    global manifest_progress
-    # handle updating any existing manifest files on Pennsieve
-    for i in range(len(myds.items)):
-        if myds.items[i].name in [
-            "code",
-            "derivative",
-            "docs",
-            "primary",
-            "protocol",
-            "source",
-        ]:
-            for j in range(len(myds.items[i])):
-                if myds.items[i][j].name == "manifest.xlsx":
-
-                    if not exists(join(manifest_folder_path, myds.items[i].name)):
-                        # create the path
-                        os.makedirs(join(manifest_folder_path, myds.items[i].name))
-
-                    item_id = myds.items[i][j].id
-                    url = returnFileURL(bf, item_id)
-
-                    manifest_df = pd.read_excel(
-                        url, engine="openpyxl", usecols=column_check, header=0
-                    )
-
-                    filepath = join(
-                        manifest_folder_path, myds.items[i].name, "manifest.xlsx"
-                    )
-
-                    high_level_folders.remove(myds.items[i].name)
-
-                    updated_manifest_dict = update_existing_pennsieve_manifest_file(dataset_structure["folders"][myds.items[i].name], manifest_df)
-
-                    if not exists(join(manifest_folder_path, myds.items[i].name)):
-                        # create the path
-                        os.makedirs(join(manifest_folder_path, myds.items[i].name))
-
-                    new_manifest = pd.DataFrame.from_dict(updated_manifest_dict)
-                    new_manifest.to_excel(filepath, index=False)
-
-                    manifest_progress["manifest_files_uploaded"] += 1
-
-                    no_manifest_boolean = True
-
-                    # break because we only need to read the "manifest.xlsx" file in each high level folder.
-                    break
-
-
-def update_existing_pennsieve_manifest_file(high_level_folder, manifest_df):
-    """
-        Given a high level folder and the existing manifest file therein, create a new updated manifest file. 
-        This manifest file needs to have files that only exist in the high level folder. Additionally, it needs to 
-        retain any custom metadata that the user has added to the old manifest file for entries that still exist. 
-    """
-
-    new_manifest_dict = {'filename': [], 'timestamp': [], 'description': [], 'file type': [], 'Additional Metadata': []}
-    SET_COLUMNS = ['filename', 'timestamp', 'description', 'file type', 'Additional Metadata']
-    for column in manifest_df.columns: 
-        if column not in new_manifest_dict:
-            new_manifest_dict[column] = []
-            SET_COLUMNS.append(column)
-
-    # convert the old manifest into a dictionary to optimize the lookup time
-    old_manifest_dict = {x:manifest_df[x].values.tolist() for x in manifest_df}
-
-    # create a mapping of filename to the idx of the row in the old_manidest_dict
-    filename_idx_map = {x:i for i, x in enumerate(manifest_df['filename'])}
-
-    # traverse through the high level folder items
-    update_existing_pennsieve_manifest_file_helper(high_level_folder, old_manifest_dict, new_manifest_dict, filename_idx_map, manifest_columns=SET_COLUMNS)
-
-    # write the new manifest_df to the correct location as an excel file 
-    return new_manifest_dict
-
-
-def update_existing_pennsieve_manifest_file_helper(folder, old_manifest_dict, new_manifest_dict, filename_idx_map, manifest_columns):
-    """
-        Traverse through each high level folder in the dataset and update the new manifest data frame.
-    """
-
-    if "files" in folder.keys():
-        for file in list(folder["files"]):
-            file_path = remove_high_level_folder_from_path(folder["files"][file]["folderpath"]) + f"{file}"
-
-            # select the row in the old manifest file that has the same file path as the file in the current folder
-            # rationale: this means the file still exists in the user's dataset
-            row_idx = filename_idx_map.get(file_path, None)
-
-            if row_idx is None:
-                for key in new_manifest_dict.keys():
-                    if key == "filename":
-                        new_manifest_dict["filename"].append(file_path)   
-                    elif key == "timestamp":
-                        new_manifest_dict["timestamp"].append(folder["files"][file]["timestamp"]), 
-                    elif key == "description": 
-                        new_manifest_dict["description"].append(folder["files"][file].get("description", ""))
-                    elif key == "file type":
-                        unused_file_name, file_extension = get_name_extension(file)
-                        new_manifest_dict["file type"].append(file_extension), 
-                    elif key == "Additional Metadata":
-                        new_manifest_dict["Additional Metadata"].append(folder["files"][file].get("additional-metadata", ""))
-                    else:
-                        new_manifest_dict[key].append("")
-                    
-
-            else:
-                # add the existing rows to the new manifest dictionary's arrays
-                # TODO: Confirm it adds NULL/NaN if the value is empty
-                for column in manifest_columns:
-                    new_manifest_dict[column].append(old_manifest_dict[column][row_idx])
-
-    if "folders" in folder.keys():
-        for current_folder in list(folder["folders"]):
-            update_existing_pennsieve_manifest_file_helper(folder["folders"][current_folder], old_manifest_dict, new_manifest_dict, filename_idx_map, manifest_columns)
-
-    return 
 
 
 def manifest_creation_progress():
@@ -1078,18 +994,13 @@ def manifest_creation_progress():
     global manifest_progress
 
     return {
-            "manifest_files_uploaded": manifest_progress["manifest_files_uploaded"], 
-            "total_manifest_files": manifest_progress["total_manifest_files"],
-            "finished": manifest_progress["finished"]
-           }
+        "manifest_files_uploaded": manifest_progress["manifest_files_uploaded"], 
+        "total_manifest_files": manifest_progress["total_manifest_files"],
+        "finished": manifest_progress["finished"]
+    }
 
 
-def remove_high_level_folder_from_path(paths):
-    """
-        Remove the high level folder from the path. This is necessary because the high level folder is not included in the manifest file name entry.
-    """
 
-    return "" if len(paths) == 1 else "/".join(paths[1:]) + "/"
 
 
 
@@ -1106,35 +1017,9 @@ def copytree(src, dst, symlinks=False, ignore=None):
             shutil.copy2(s, d)
 
 
-# obtain Pennsieve S3 URL for an existing metadata file
-def returnFileURL(bf_object, item_id):
-
-    file_details = bf_object._api._get(f"/packages/{str(item_id)}/view")
-    file_id = file_details[0]["content"]["id"]
-    file_url_info = bf_object._api._get(
-        f"/packages/{str(item_id)}/files/{str(file_id)}"
-    )
 
 
-    return file_url_info["url"]
 
-
-def recursive_item_path_create(folder, path):
-    if "files" in folder.keys():
-        for item in list(folder["files"]):
-            if "folderpath" not in folder["files"][item]:
-                folder["files"][item]["folderpath"] = path[:]
-
-    if "folders" in folder.keys():
-        for item in list(folder["folders"]):
-            if "folderpath" not in folder["folders"][item]:
-                folder["folders"][item]["folderpath"] = path[:]
-                folder["folders"][item]["folderpath"].append(item)
-            recursive_item_path_create(
-                folder["folders"][item], folder["folders"][item]["folderpath"][:]
-            )
-
-    return
 
 
 ## import an existing local or Pennsieve dataset_description.xlsx file
@@ -1306,8 +1191,8 @@ def drop_manifest_empty_columns(manifest_file_location):
     for high_level_folder in high_level_folders:
         # read the folder's excel file 
         manifest_df = pd.read_excel(
-                        os.path.join(manifest_file_location, high_level_folder, "manifest.xlsx"), engine="openpyxl", usecols=column_check, header=0
-                    )
+            os.path.join(manifest_file_location, high_level_folder, "manifest.xlsx"), engine="openpyxl", usecols=column_check, header=0
+        )
         custom_columns = []
 
         # get the custom columns from the data frame
@@ -1329,5 +1214,23 @@ def drop_manifest_empty_columns(manifest_file_location):
         edited_manifest_df = pd.DataFrame.from_dict(manifest_dict)
 
         # save the data frame to the manifest folder as an excel file
-        edited_manifest_df.to_excel(os.path.join(manifest_file_location, high_level_folder, "manifest.xlsx"), index=False)
+        save_location = os.path.join(manifest_file_location, high_level_folder, "manifest.xlsx")
+        edited_manifest_df.to_excel(save_location, index=False)
+        wb = load_workbook(save_location)
+        ws = wb.active
+        blueFill = PatternFill(
+            start_color="9DC3E6", fill_type="solid"
+        )
+        greenFill = PatternFill(
+            start_color="A8D08D", fill_type="solid"
+        )
+        yellowFill = PatternFill(
+            start_color="FFD965", fill_type="solid"
+        )
+        ws['A1'].fill = blueFill
+        ws['B1'].fill = greenFill
+        ws['C1'].fill = greenFill
+        ws['D1'].fill = greenFill
+        ws['E1'].fill = yellowFill
+        wb.save(save_location)
 
