@@ -24,6 +24,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Manual Windows build creation to fix an issue with the back-end not connectiong on Windows.
 
+## Known Issues:
+
+- Freeform Mode:
+  - The transition to the generate step in the Organize Datasets feature is slowed when working with large datasets.
+  - Uploading large amounts of very small files ( <= 1kb ) will sometimes cause the upload to pause or crash. It is best to restart the upload when this happens.
+
 ## v.9.4.0 - 2022-11-02
 
 ## Feature additions:
