@@ -1,5 +1,5 @@
 name: Build-and-deploy-win
-run-name: ${{ github.actor }} is building a Windows release for SODAz
+run-name: ${{ github.actor }} is building a Windows release for SODA
 
 on:
   push:
