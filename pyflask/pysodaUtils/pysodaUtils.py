@@ -4,7 +4,7 @@ import sys
 from os.path import exists 
 import os
 from namespaces import NamespaceEnum, get_namespace_logger
-namespace_logger = get_namespace_logger(NamespaceEnum.PYSODA_UTILS)
+namespace_logger = get_namespace_logger(NamespaceEnum.MANAGE_DATASETS)
 
 
 
@@ -37,6 +37,7 @@ def start_agent():
     """
     Start the Pennsieve agent. IMP: Run if agent exists.
     """
+    global namespace_logger
     if not check_agent_installation(): 
         raise FileNotFoundError("Pennsieve agent not installed. Please install the agent before running this function.")
         
