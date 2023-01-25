@@ -49,7 +49,10 @@
     "win": {
       "asar": false,
       "target": "nsis",
-      "icon": "assets/app-icon/win/icon.ico"
+      "icon": "assets/app-icon/win/icon.ico",
+      "publish": [
+        "github"
+      ]
     },
     "mac": {
       "asar": true,
@@ -71,6 +74,9 @@
           "from": "./file_templates",
           "to": "./file_templates"
         }
+      ],
+      "publish": [
+        "github"
       ]
     },
     "linux": {
@@ -85,6 +91,9 @@
           "from": "./file_templates",
           "to": "./file_templates"
         }
+      ],
+      "publish": [
+        "github"
       ]
     },
     "nsis": {
