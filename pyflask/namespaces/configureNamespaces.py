@@ -16,6 +16,8 @@ class NamespaceEnum(Enum):
     DATASETS = "datasets"
     COLLECTIONS = "collections"
     SKELETON_DATASET = "skeleton_dataset"
+    PYSODA_UTILS = "pysoda_utils"
+
 
 # namespaces dictionary that is given a namespace name as a key and returns the corresponding namespace object as a value
 namespaces = { }
@@ -60,6 +62,9 @@ def configure_namespaces():
 
     skeleton_dataset_namespace = Namespace(NamespaceEnum.SKELETON_DATASET.value, description='Routes for creating skeleton datasets used for Validation')
     namespaces[NamespaceEnum.SKELETON_DATASET] = skeleton_dataset_namespace
+
+    pysoda_utils_namespace = Namespace(NamespaceEnum.PYSODA_UTILS.value, description='Utility functions for pysoda')
+    namespaces[NamespaceEnum.PYSODA_UTILS] = pysoda_utils_namespace
 
 
 

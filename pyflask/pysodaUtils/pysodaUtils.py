@@ -3,7 +3,8 @@ import re
 import sys
 from os.path import exists 
 import os
-
+from namespaces import NamespaceEnum, get_namespace_logger
+namespace_logger = get_namespace_logger(NamespaceEnum.PYSODA_UTILS)
 
 
 
@@ -38,11 +39,14 @@ def start_agent():
     """
     if not check_agent_installation(): 
         raise FileNotFoundError("Pennsieve agent not installed. Please install the agent before running this function.")
-
-    command = [get_agent_installation_location(), "agent"]
-
-    return subprocess.run(command, check=True)
-
+        
+    namespace_logger.info("Starting Pennsieve agent...")
+    try:
+        command = [get_agent_installation_location(), "agent", "start"]
+        return subprocess.run(command, check=True)
+    except subprocess.CalledProcessError as e:
+        namespace_logger.info("Error starting Pennsieve agent: {}".format(e))
+    
 def stop_agent():
     """
     Stops the Pennsieve agent if it is running.
