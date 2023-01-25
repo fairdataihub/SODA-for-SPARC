@@ -49,10 +49,7 @@
     "win": {
       "asar": false,
       "target": "nsis",
-      "icon": "assets/app-icon/win/icon.ico",
-      "publish": [
-        "github"
-      ]
+      "icon": "assets/app-icon/win/icon.ico"
     },
     "mac": {
       "asar": true,
@@ -74,9 +71,6 @@
           "from": "./file_templates",
           "to": "./file_templates"
         }
-      ],
-      "publish": [
-        "github"
       ]
     },
     "linux": {
@@ -91,9 +85,6 @@
           "from": "./file_templates",
           "to": "./file_templates"
         }
-      ],
-      "publish": [
-        "github"
       ]
     },
     "nsis": {
@@ -177,7 +168,7 @@
     "commitizen": "^4.2.5",
     "cz-conventional-changelog": "^3.3.0",
     "electron": "19.0.0",
-    "electron-builder": "^23.6.0",
+    "electron-builder": "^23.3.0",
     "electron-packager": "^14.0.6",
     "electron-rebuild": "^1.11.0",
     "husky": "^8.0.1",
