@@ -11732,7 +11732,6 @@ $(document).ready(async () => {
 
       // set the templates path
       if (!supplementary_checks) {
-        $("#sidebarCollapse").prop("disabled", false);
         return;
       }
 
