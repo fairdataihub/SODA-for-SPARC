@@ -163,6 +163,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == x.length - 1) {
+    console.log("TabNow on last page")
     let step5Bubble = document.getElementsByClassName("vertical-progress-bar-step")[4];
     // if (step5Bubble.classList.contains("is-current")) {
     //   step5Bubble.classList.remove("is-current");
@@ -635,7 +636,7 @@ const nextPrev = (pageIndex) => {
     sodaJSONObj["starting-point"]["type"] == "bf"
   ) {
     $(parentTabs[currentTab]).removeClass("tab-active");
-    currentTab = currentTab - 2;
+    currentTab = currentTab - 1;
     showParentTab(currentTab, pageIndex);
     $("#nextBtn").prop("disabled", false);
   } else if (
@@ -682,20 +683,14 @@ const nextPrev = (pageIndex) => {
     }
     $("#nextBtn").prop("disabled", true);
     showParentTab(currentTab, pageIndex);
+  } else if (parentTabs[currentTab].id === "validate-dataset-tab" && sodaJSONObj["starting-point"]["type"] == "bf" && pageIndex === -1) {
+    // if moving backwards fron the validate step 
+      $(parentTabs[currentTab]).removeClass("tab-active");
+      // skip step 6 ( options irrelevant for existing bf/pennsieve workflow)
+      currentTab = currentTab - 2;
+      showParentTab(currentTab, pageIndex);
+      $("#nextBtn").prop("disabled", false);
   }
-  // } else if (
-  //   parentTabs[currentTab].id === "validate-dataset-tab" &&
-  //   sodaJSONObj["starting-point"]["type"] === "bf"
-  // ) {
-  //   console.log(currentTab);
-  //   if (pageIndex === -1) {
-  //     currentTab = currentTab - 2;
-  //     // fixStepDone(5);
-  //     // $("#nextBtn").prop("disabled", true);
-  //   } else {
-  //     currentTab = currentTab + 1;
-  //   }
-  //   showParentTab(currentTab, pageIndex);
   else {
     // Hide the current tab:
     $(parentTabs[currentTab]).removeClass("tab-active");
