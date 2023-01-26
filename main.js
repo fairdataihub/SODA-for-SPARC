@@ -320,6 +320,7 @@ function initialize() {
         }
         if (announcementsLaunch == true || announcementsLaunch == undefined) {
           checkForAnnouncements();
+          nodeStorage.setItem("announcements", false);
         }
         run_pre_flight_checks();
         autoUpdater.checkForUpdatesAndNotify();
