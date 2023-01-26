@@ -95,8 +95,7 @@
       "installerIcon": "assets/app-icon/win/icon.ico"
     },
     "publish": {
-      "provider": "github",
-      "repo": "https://github.com/fairdataihub/SODA-for-SPARC.git"
+      "provider": "github"
     }
   },
   "keywords": [],
