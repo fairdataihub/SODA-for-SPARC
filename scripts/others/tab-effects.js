@@ -18,7 +18,7 @@ var currentTab = 0; // Current tab is set to be the first tab (0)
 const delay = 250;
 
 const showParentTab = (tabNow, nextOrPrev) => {
-  console.log("TabNow is " + tabNow)
+  console.log("TabNow is " + tabNow);
   $("#nextBtn").prop("disabled", true);
   // check to show Save progress btn (only after step 2)
   if (tabNow >= 2) {
@@ -99,7 +99,6 @@ const showParentTab = (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == 5) {
-    
     // Disable the continue button if a destination has not been selected
     // Used when traversing back and forth between tabs
     if (
