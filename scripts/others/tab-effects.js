@@ -465,10 +465,15 @@ const checkHighLevelFoldersInput = () => {
   return checked;
 };
 
-// function associated with the Back/Continue buttons of FreeForm Mode
-// in the Organize dataset section of the app.
-// Perform events or actions (such as update sodaJSONObj) based off the state of the Organize Datasets section
-// currently being displayed after pressing the Continue button/back button.
+/**
+ * 
+ * @param {number} pageIndex - 1 for next, -1 for previous
+ * @returns 
+ * Associated with the Back/Continue buttons of FreeForm Mode
+ * in the Organize dataset section of the app. Moves to the next or previous page/tab. 
+ * Also performs events or actions (such as update sodaJSONObj) based off the state of the Organize Datasets section
+ * currently being displayed after pressing the Continue button/back button.
+ */
 const nextPrev = (pageIndex) => {
   // var x = document.getElementsByClassName("parent-tabs");
   let parentTabs = document.getElementsByClassName("parent-tabs");
@@ -639,7 +644,6 @@ const nextPrev = (pageIndex) => {
     showParentTab(currentTab, pageIndex);
     $("#nextBtn").prop("disabled", false);
   } else if (
-    // HERE BOOO
     parentTabs[currentTab].id === "manifest-file-tab" &&
     sodaJSONObj["starting-point"]["type"] == "bf"
   ) {
