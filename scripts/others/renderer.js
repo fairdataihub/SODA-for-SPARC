@@ -172,7 +172,7 @@ document.getElementById("getting_starting_tab").click();
 
 let launchAnnouncement = false;
 ipcRenderer.on("checkForAnnouncements", (event, index) => {
-  console.log("received from main")
+  console.log("received from main");
   launchAnnouncement = true;
   let nodeStorage = new JSONStorage(app.getPath("userData"));
   nodeStorage.setItem("announcements", false);
