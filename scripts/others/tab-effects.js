@@ -162,7 +162,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == x.length - 1) {
-    console.log("TabNow on last page")
+    console.log("TabNow on last page");
     let step5Bubble = document.getElementsByClassName("vertical-progress-bar-step")[4];
     // if (step5Bubble.classList.contains("is-current")) {
     //   step5Bubble.classList.remove("is-current");
@@ -466,11 +466,11 @@ const checkHighLevelFoldersInput = () => {
 };
 
 /**
- * 
+ *
  * @param {number} pageIndex - 1 for next, -1 for previous
- * @returns 
+ * @returns
  * Associated with the Back/Continue buttons of FreeForm Mode
- * in the Organize dataset section of the app. Moves to the next or previous page/tab. 
+ * in the Organize dataset section of the app. Moves to the next or previous page/tab.
  * Also performs events or actions (such as update sodaJSONObj) based off the state of the Organize Datasets section
  * currently being displayed after pressing the Continue button/back button.
  */
@@ -686,15 +686,18 @@ const nextPrev = (pageIndex) => {
     }
     $("#nextBtn").prop("disabled", true);
     showParentTab(currentTab, pageIndex);
-  } else if (parentTabs[currentTab].id === "validate-dataset-tab" && sodaJSONObj["starting-point"]["type"] == "bf" && pageIndex === -1) {
-    // if moving backwards fron the validate step 
-      $(parentTabs[currentTab]).removeClass("tab-active");
-      // skip step 6 ( options irrelevant for existing bf/pennsieve workflow)
-      currentTab = currentTab - 2;
-      showParentTab(currentTab, pageIndex);
-      $("#nextBtn").prop("disabled", false);
-  }
-  else {
+  } else if (
+    parentTabs[currentTab].id === "validate-dataset-tab" &&
+    sodaJSONObj["starting-point"]["type"] == "bf" &&
+    pageIndex === -1
+  ) {
+    // if moving backwards fron the validate step
+    $(parentTabs[currentTab]).removeClass("tab-active");
+    // skip step 6 ( options irrelevant for existing bf/pennsieve workflow)
+    currentTab = currentTab - 2;
+    showParentTab(currentTab, pageIndex);
+    $("#nextBtn").prop("disabled", false);
+  } else {
     // Hide the current tab:
     $(parentTabs[currentTab]).removeClass("tab-active");
     // Increase or decrease the current tab by 1:
