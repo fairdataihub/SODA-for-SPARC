@@ -8,7 +8,7 @@ var allParentStepsJSON = {
   "organize-dataset": "organize-dataset-tab",
   "metadata-files": "metadata-files-tab",
   "manifest-file": "manifest-file-tab",
-  // "validate-dataset": "validate-dataset-tab",
+  "validate-dataset": "validate-dataset-tab",
   "generate-dataset": "generate-dataset-tab",
 };
 
@@ -47,7 +47,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
     $(x[tabNow]).css("overflow", "auto");
   }, 1200);
 
-  var inActiveTabArray = [0, 1, 2, 3, 4, 5, 6].filter((element) => {
+  var inActiveTabArray = [0, 1, 2, 3, 4, 5, 6, 7].filter((element) => {
     return ![tabNow].includes(element);
   });
 
