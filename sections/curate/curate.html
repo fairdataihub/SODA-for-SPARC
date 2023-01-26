@@ -3352,95 +3352,8 @@
             </div>
           </div>
 
-          <!-- 6. Validate dataset -->
-          <div  
-          class="parent-tabs"
-          id="validate-dataset-tab"
-          style="display: flex; flex-direction: column;"
-        >
-          <h3
-          class="question-title"
-          style="
-            color: black;
-            font-size: 15px;
-            text-align: center;
-            font-weight: 600;
-            margin-top: 20px;
-          "
-        >
-          Step 6: Validate Dataset
-          <a
-            style="padding: 0px 0px 0px 5px"
-            class="github-wiki-link"
-            href="https://docs.sodaforsparc.io/docs/prepare-dataset/step-5"
-          >
-          </a>
-          <br /><br />
-        </h3>
 
-        <!--Some random stuff here woo woo -->
-        <div style="display: flex; flex-direction: column;">
-          <h5
-            style="text-align: center; color: var(--color); font-size: 17px"
-          >
-            Run the validator before generating your dataset to ensure your dataset follows the SPARC Dataset Structure.
-          </h5>
-          <button 
-            style="color: var(--color); font-size:17px; align-self: center; margin-top: 100px;" 
-            id="organize--button-validate-dataset"
-            onclick="validateOrganizedDataset()">
-              Validate Dataset
-          </button>
-
-          <!-- Table to store validation results for the user -->
-          <div class="grouped fields">
-            <div
-              id="organize--table-validation-errors"
-              style="
-                visibility: hidden;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                margin-top: 50px;
-              "
-            >
-              <label style="font-size: 17px; color: var(--color-bg-plum)">
-                Validation Errors
-              </label>
-              <div
-                style="
-                  border-radius: 0.5rem;
-                  margin-top: 5px;
-                  width: 550px;
-                  align-self: center;
-                "
-              >
-                <p class="tip-content">
-                  The path column indicates where the errors occurred in your
-                  dataset. The message column provides an explanation of what
-                  the errors are. For updated validation results re-run
-                  validation by pressing the 'Validate Dataset' button.
-                </p>
-              </div>
-
-              <table class="ui celled padded table" style="width: 800px;">
-                <thead>
-                  <tr>
-                    <th>Path</th>
-                    <th>Message</th>
-                    <!-- <th>Fix Here</th> -->
-                  </tr>
-                </thead>
-                <tbody></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-        <!--End of step 7-->
-          </div>
-
-
-          <!-- 7. Generate dataset -->
+          <!-- 6. Generate dataset -->
           <div
             class="parent-tabs"
             id="generate-dataset-tab"
@@ -4526,6 +4439,93 @@
             </div>
           </div>
 
+
+          <!-- 7. Validate dataset -->
+          <div  
+          class="parent-tabs"
+          id="validate-dataset-tab"
+          style="display: flex; flex-direction: column;"
+        >
+          <h3
+          class="question-title"
+          style="
+            color: black;
+            font-size: 15px;
+            text-align: center;
+            font-weight: 600;
+            margin-top: 20px;
+          "
+        >
+          Step 7: Validate Dataset
+          <a
+            style="padding: 0px 0px 0px 5px"
+            class="github-wiki-link"
+            href="https://docs.sodaforsparc.io/docs/prepare-dataset/step-5"
+          >
+          </a>
+          <br /><br />
+        </h3>
+
+        <!--Some random stuff here woo woo -->
+        <div style="display: flex; flex-direction: column;">
+          <h5
+            style="text-align: center; color: var(--color); font-size: 17px"
+          >
+            Run the validator before generating your dataset to ensure your dataset follows the SPARC Dataset Structure.
+          </h5>
+          <button 
+            style="color: var(--color); font-size:17px; align-self: center; margin-top: 100px;" 
+            id="organize--button-validate-dataset"
+            onclick="validateOrganizedDataset()">
+              Validate Dataset
+          </button>
+
+          <!-- Table to store validation results for the user -->
+          <div class="grouped fields">
+            <div
+              id="organize--table-validation-errors"
+              style="
+                visibility: hidden;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin-top: 50px;
+              "
+            >
+              <label style="font-size: 17px; color: var(--color-bg-plum)">
+                Validation Errors
+              </label>
+              <div
+                style="
+                  border-radius: 0.5rem;
+                  margin-top: 5px;
+                  width: 550px;
+                  align-self: center;
+                "
+              >
+                <p class="tip-content">
+                  The path column indicates where the errors occurred in your
+                  dataset. The message column provides an explanation of what
+                  the errors are. For updated validation results re-run
+                  validation by pressing the 'Validate Dataset' button.
+                </p>
+              </div>
+
+              <table class="ui celled padded table" style="width: 800px;">
+                <thead>
+                  <tr>
+                    <th>Path</th>
+                    <th>Message</th>
+                    <!-- <th>Fix Here</th> -->
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!--End of step 7-->
+          </div>
 
           
           <!-- 8. Preview dataset -->
