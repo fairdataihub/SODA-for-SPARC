@@ -47,11 +47,17 @@
       "!docs/"
     ],
     "win": {
+      "publish": [
+        "github"
+      ],
       "asar": false,
       "target": "nsis",
       "icon": "assets/app-icon/win/icon.ico"
     },
     "mac": {
+      "publish": [
+        "github"
+      ],
       "asar": true,
       "target": [
         "dmg",
@@ -74,6 +80,9 @@
       ]
     },
     "linux": {
+      "publish": [
+        "github"
+      ],
       "asar": true,
       "target": "AppImage",
       "icon": "assets/app-icon/png/icon.png",
@@ -93,10 +102,6 @@
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
       "installerIcon": "assets/app-icon/win/icon.ico"
-    },
-    "publish": {
-      "provider": "github",
-      "repository": "https://github.com/fairdataihub/SODA-for-SPARC.git"
     }
   },
   "keywords": [],
@@ -168,7 +173,7 @@
     "commitizen": "^4.2.5",
     "cz-conventional-changelog": "^3.3.0",
     "electron": "19.0.0",
-    "electron-builder": "22.10.5",
+    "electron-builder": "^23.3.0",
     "electron-packager": "^14.0.6",
     "electron-rebuild": "^1.11.0",
     "husky": "^8.0.1",
