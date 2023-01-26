@@ -47,11 +47,6 @@
       "!docs/"
     ],
     "win": {
-      "asar": false,
-      "target": "nsis",
-      "icon": "assets/app-icon/win/icon.ico"
-    },
-   "win": {
       "publish": [
         "github"
       ],
@@ -66,7 +61,22 @@
       "asar": true,
       "target": [
         "dmg",
-@@ -74,6 +80,9 @@
+        "zip"
+      ],
+      "icon": "assets/app-icon/png/icon.png",
+      "darkModeSupport": false,
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "entitlements.mac.inherit.plist",
+      "entitlementsInherit": "entitlements.mac.inherit.plist",
+      "extraResources": [
+        {
+          "from": "./pyflaskdist/app"
+        },
+        {
+          "from": "./file_templates",
+          "to": "./file_templates"
+        }
       ]
     },
     "linux": {
@@ -76,14 +86,22 @@
       "asar": true,
       "target": "AppImage",
       "icon": "assets/app-icon/png/icon.png",
-@@ -93,10 +102,6 @@
+      "extraResources": [
+        {
+          "from": "./pyflaskdist/app"
+        },
+        {
+          "from": "./file_templates",
+          "to": "./file_templates"
+        }
+      ]
+    },
+    "nsis": {
+      "createDesktopShortcut": "always",
+      "oneClick": false,
       "perMachine": false,
       "allowToChangeInstallationDirectory": true,
       "installerIcon": "assets/app-icon/win/icon.ico"
-    },
-    "publish": {
-      "provider": "github",
-      "repository": "https://github.com/fairdataihub/SODA-for-SPARC.git"
     }
   },
   "keywords": [],
@@ -155,7 +173,7 @@
     "commitizen": "^4.2.5",
     "cz-conventional-changelog": "^3.3.0",
     "electron": "19.0.0",
-    "electron-builder": "^22.10.5",
+    "electron-builder": "^23.3.0",
     "electron-packager": "^14.0.6",
     "electron-rebuild": "^1.11.0",
     "husky": "^8.0.1",
