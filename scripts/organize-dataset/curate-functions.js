@@ -1995,16 +1995,7 @@ const ffmCreateManifest = async (sodaJson) => {
       { timeout: 0 }
     );
 
-    let response = cleanJson.data.soda_json_structure;
-    // response does not format in JSON format so need to format ' with "
-    let regex = /'/gm;
-    let formattedResponse = response.replace(regex, '"');
-    let capitalTPosition = formattedResponse.search("True");
-    if (capitalTPosition != -1) {
-      formattedResponse = formattedResponse.replace("True", "true");
-    }
-
-    let json_structure = JSON.parse(formattedResponse);
+    let json_structure = cleanJson.data.soda_json_structure;
     sodaCopy = json_structure;
     datasetStructCopy = sodaCopy["dataset-structure"];
   } catch (e) {
