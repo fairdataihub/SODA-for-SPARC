@@ -363,6 +363,7 @@ const api = {
   uploadCollectionTags,
   removeCollectionTags,
   uploadNewTags,
+  performUserActions
 };
 
 module.exports = api;
