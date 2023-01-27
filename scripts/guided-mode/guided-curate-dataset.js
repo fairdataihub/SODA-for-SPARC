@@ -2620,10 +2620,7 @@ document
         { timeout: 0 }
       );
       let response = cleanJson.data.soda_json_structure;
-      // response does not format in JSON format so need to format ' with "
-      let regex = /'/gm;
-      let formattedResponse = JSON.parse(response.replace(regex, '"'));
-      const formattedDatasetStructure = formattedResponse["dataset-structure"];
+      const formattedDatasetStructure = response["dataset-structure"];
       // Retrieve the manifest data to be used to generate the manifest files
       const res = await client.post(
         `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
