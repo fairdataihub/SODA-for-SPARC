@@ -160,7 +160,7 @@ const getFormattedSodaJSON = async () => {
       hideClass: {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
-    })
+    });
   }
 
   return sodaJSONObjCopy;
