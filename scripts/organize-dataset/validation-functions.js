@@ -73,7 +73,7 @@ const validateOrganizedDataset = async () => {
   // await Swal.fire({
   //   title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
   //   text: hasValidationErrors
-  //     ? `Please fix the errors listed in the table below. 
+  //     ? `Please fix the errors listed in the table below.
   //              That your dataset passes validation before it is shared with the SPARC Curation Consortium is highly encouraged.`
   //     : `Your dataset conforms to the SPARC Dataset Structure. Continue to the next step to upload your dataset.`,
   //   allowEscapeKey: true,
@@ -127,7 +127,7 @@ const getFormattedSodaJSON = async () => {
   //       We do use timestamps I believe but this shouldnt cause issue. Will test.
   let sodaJSONObjCopy = JSON.parse(JSON.stringify(sodaJSONObj));
 
-  // update the copy of the json structure to get its state post generation initialization 
+  // update the copy of the json structure to get its state post generation initialization
   updateJSONStructureGenerate(false, sodaJSONObjCopy);
 
   setSodaJSONStartingPoint(sodaJSONObjCopy);
@@ -136,11 +136,12 @@ const getFormattedSodaJSON = async () => {
 
   if (dataset_destination == "Pennsieve" && "bf" === sodaJSONObjCopy["starting-point"]["type"]) {
     // handle renaming, moving, and deleting files and folders
-    let cleanCopyResponse = await client.post("/curate_datasets/clean-dataset", { soda_json_structure: sodaJSONObjCopy})
-    sodaJSONObjCopy = cleanCopyResponse.data.soda_json_structure
-    console.log(sodaJSONObjCopy)
+    let cleanCopyResponse = await client.post("/curate_datasets/clean-dataset", {
+      soda_json_structure: sodaJSONObjCopy,
+    });
+    sodaJSONObjCopy = cleanCopyResponse.data.soda_json_structure;
+    console.log(sodaJSONObjCopy);
   }
-
 
   document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
   let errorMessage = await checkEmptyFilesAndFolders(sodaJSONObjCopy);
