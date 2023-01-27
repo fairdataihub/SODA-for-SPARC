@@ -141,20 +141,14 @@ const getFormattedSodaJSON = async () => {
     console.log(sodaJSONObjCopy)
   }
 
-
-  document.getElementById("para-please-wait-new-curate").innerHTML = "Please wait...";
   let errorMessage = await checkEmptyFilesAndFolders(sodaJSONObjCopy);
 
   if (errorMessage) {
-    errorMessage += "Would you like to continue?";
-    errorMessage = "<div style='text-align: left'>" + errorMessage + "</div>";
     Swal.fire({
-      icon: "warning",
-      html: errorMessage,
-      showCancelButton: true,
-      cancelButtonText: "No, I want to review my files",
-      focusCancel: true,
-      confirmButtonText: "Yes, Continue",
+      icon: "error",
+      title: "Empty Files or Folders Detected",
+      text: "Cannot validate a dataset with empty files or folders.",
+      confirmButtonText: "Ok",
       backdrop: "rgba(0,0,0, 0.4)",
       reverseButtons: reverseSwalButtons,
       heightAuto: false,
@@ -164,15 +158,7 @@ const getFormattedSodaJSON = async () => {
       hideClass: {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        initiate_generate();
-      } else {
-        $("#sidebarCollapse").prop("disabled", false);
-        document.getElementById("para-please-wait-new-curate").innerHTML = "Return to make changes";
-        document.getElementById("div-generate-comeback").style.display = "flex";
-      }
-    });
+    })
   }
 
   return sodaJSONObjCopy;
