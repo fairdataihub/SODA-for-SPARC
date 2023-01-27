@@ -5,16 +5,12 @@ const api = require("../others/api/api");
 // Validate the dataset that has just been organized in Organize Dataset Step 6: Validate Dataset
 // TODO: Pennsieve vs local considerations for result parsing and error handling
 const validateOrganizedDataset = async () => {
-
   let sodaJSONObjCopy = JSON.parse(JSON.stringify(sodaJSONObj));
   formatForDatasetGeneration(sodaJSONObjCopy);
 
-
   if (sodaJSONObjCopy["starting-point"]["type"] === "bf") {
-    await api.performUserActions(sodaJSONObjCopy)
+    await api.performUserActions(sodaJSONObjCopy);
   }
-
-
 
   // let skeletonDatasetResponse;
   // try {
@@ -126,10 +122,7 @@ const validateOrganizedDataset = async () => {
   //   .scrollIntoView({ behavior: "smooth" });
 };
 
-
 {
-
-
   if (dataset_destination == "Pennsieve" && "bf" === sodaJSONObjCopy["starting-point"]["type"]) {
   }
 
@@ -154,18 +147,17 @@ const validateOrganizedDataset = async () => {
   }
 
   return sodaJSONObjCopy;
-};
-
+}
 
 /**
  * @param {Object} sodaJSONObj - The global soda json object or a copy of it
- * 
- * Formats the soda json object based off the user state in the Organize Datasets workflow. 
+ *
+ * Formats the soda json object based off the user state in the Organize Datasets workflow.
  * Once formatted, it can be used for generating a dataset in the /curate or /skeleton_dataset endpoint.
  */
 const formatForDatasetGeneration = (sodaJSONObj) => {
-    // update the copy of the json structure to get its state post generation initialization
-    updateJSONStructureGenerate(false, sodaJSONObj);
+  // update the copy of the json structure to get its state post generation initialization
+  updateJSONStructureGenerate(false, sodaJSONObj);
 
-    setSodaJSONStartingPoint(sodaJSONObj);
-}
+  setSodaJSONStartingPoint(sodaJSONObj);
+};
