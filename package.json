@@ -159,7 +159,8 @@
     "universal-analytics": "^0.4.23",
     "uuid": "^8.3.1",
     "v8-compile-cache": "^2.3.0",
-    "validator": "^13.7.0"
+    "validator": "^13.7.0",
+    "win-node-env": "^0.4.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",

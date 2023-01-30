@@ -435,7 +435,7 @@ autoUpdater.on("update-downloaded", () => {
 
 ipcMain.on("restart_app", async () => {
   user_restart_confirmed = true;
-  nodeStorage.removeItem("announcements");
+  nodeStorage.setItem("announcements", true);
   log.info("quitAndInstall");
   autoUpdater.quitAndInstall();
 });
