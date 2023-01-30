@@ -2399,6 +2399,8 @@ const logFilesForUpload = (upload_folder_path) => {
 };
 
 $("#button-submit-dataset").click(async () => {
+  // make the button unclickable until the preflight checks fail or pass
+  $("#button-submit-dataset").attr("disabled", true);
   $("#para-please-wait-manage-dataset").html("Please wait while we verify a few things...");
   let progressSubmit = document.getElementById("div-progress-submit");
   let navContainer = document.getElementById("nav-items");
@@ -2440,8 +2442,11 @@ $("#button-submit-dataset").click(async () => {
   if (!supplementary_checks) {
     // hide the progress bar as an upload will not occur yet
     $("#upload_local_dataset_progress_div").hide();
+    $("#button-submit-dataset").attr("disabled", false);
     return;
   }
+
+  $("#button-submit-dataset").attr("disabled", false);
 
   $("#upload_local_dataset_progress_div").show();
 
