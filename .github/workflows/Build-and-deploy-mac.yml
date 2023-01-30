@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - staging
+      - bump-electron-builder
 
 jobs:
   deploy-on-mac:
