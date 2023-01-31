@@ -22,6 +22,10 @@ def parse(error_path_report):
       del user_errors[k]
       continue 
 
+    if prefix.find("id") != -1:
+      del user_errors[k]
+      continue
+
     # check for a suffix indicator in the prefix (aka a forward slash at the end of the prefix)
     if prefix[-1] == "/":
       # if so remove the suffix and check if the resulting prefix is an existing path key
