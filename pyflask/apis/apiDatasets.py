@@ -174,4 +174,6 @@ class ValidationResults(Resource):
       try:
           return val_dataset_local_pipeline(dataset_path)
       except Exception as e:
-          api.abort(500, str(e))
+          if notBadRequestException(e):
+            api.abort(500, str(e))
+          raise e

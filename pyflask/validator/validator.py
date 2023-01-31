@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 # from gevent import monkey; monkey.patch_all(ssl=False)
+from flask_restx import abort
 from sparcur.paths import Path as SparCurPath
 from sparcur.simple.validate import main as validate
 from configparser import ConfigParser
@@ -42,12 +43,19 @@ def val_dataset_local_pipeline(ds_path):
     # validate the dataset
     blob = validate(norm_ds_path)
 
-    # write the blob to a file
-    with open("validation.json", "w") as file:
+    # write the blob to a file for the user to view if they would like
+    with open(f'{userpath}/SODA/validation.json', "w") as file:
         yaml.dump(blob, file)
+
+    if 'status' not in blob:
+        raise abort(400, "Validation did not return a status object")
         
     # peel out the status object 
     status = blob.get('status')
+
+    # check that the status object has a path_error_report object
+    if 'path_error_report' not in status:
+        raise abort(400, "Validation did not return a path_error_report object")
 
     # peel out the path_error_report object
     path_error_report = status.get('path_error_report')
