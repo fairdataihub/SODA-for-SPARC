@@ -1,6 +1,6 @@
 // Purpose: Logic for Organize Dataset Step 7: Validate Dataset
 
-const api = require("../others/api/api");
+// const api = require("../others/api/api");
 
 // Validate the dataset that has just been organized in Organize Dataset Step 6: Validate Dataset
 // TODO: Pennsieve vs local considerations for result parsing and error handling
@@ -122,32 +122,32 @@ const validateOrganizedDataset = async () => {
   //   .scrollIntoView({ behavior: "smooth" });
 };
 
-{
-  if (dataset_destination == "Pennsieve" && "bf" === sodaJSONObjCopy["starting-point"]["type"]) {
-  }
+// {
+//   if (dataset_destination == "Pennsieve" && "bf" === sodaJSONObjCopy["starting-point"]["type"]) {
+//   }
 
-  let errorMessage = await checkEmptyFilesAndFolders(sodaJSONObjCopy);
+//   let errorMessage = await checkEmptyFilesAndFolders(sodaJSONObjCopy);
 
-  if (errorMessage) {
-    Swal.fire({
-      icon: "error",
-      title: "Empty Files or Folders Detected",
-      text: "Cannot validate a dataset with empty files or folders.",
-      confirmButtonText: "Ok",
-      backdrop: "rgba(0,0,0, 0.4)",
-      reverseButtons: reverseSwalButtons,
-      heightAuto: false,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
-  }
+//   if (errorMessage) {
+//     Swal.fire({
+//       icon: "error",
+//       title: "Empty Files or Folders Detected",
+//       text: "Cannot validate a dataset with empty files or folders.",
+//       confirmButtonText: "Ok",
+//       backdrop: "rgba(0,0,0, 0.4)",
+//       reverseButtons: reverseSwalButtons,
+//       heightAuto: false,
+//       showClass: {
+//         popup: "animate__animated animate__zoomIn animate__faster",
+//       },
+//       hideClass: {
+//         popup: "animate__animated animate__zoomOut animate__faster",
+//       },
+//     });
+//   }
 
-  return sodaJSONObjCopy;
-}
+//   return sodaJSONObjCopy;
+// }
 
 /**
  * @param {Object} sodaJSONObj - The global soda json object or a copy of it
