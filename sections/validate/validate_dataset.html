@@ -92,18 +92,25 @@
               </div>
 
               <div
-                class="option-card radio-button"
+                class="option-card radio-button popover-tooltip"
                 data-current="validate_dataset-question-1"
                 id="validate_dataset-1-pennsieve"
                 data-next="validate_dataset-question-2"
+                rel="popover"
+                data-placement="right"
+                data-html="true"
+                data-trigger="hover"
+                data-content="Coming Soon"
                 style="
                   max-width: 180px;
                   height: 220px !important;
                   width: 180px !important;
                   margin-top: 25px;
+                  background: #f6f6f6;
+                  cursor: default;
                 "
               >
-                <div class="card-head">
+                <div class="card-head" style="pointer-events: none">
                   <div class="folder-checkbox">
                     <input
                       class="folder-input-check"
@@ -114,7 +121,7 @@
                     <label for="validate-1-Pennsieve"></label>
                   </div>
                 </div>
-                <div class="card-body">
+                <div class="card-body" style="pointer-events: none">
                   <i class="far fa-save" style="color: var(--color-bg-orange)"></i>
                   <h2>I want to validate a Pennsieve dataset</h2>
                 </div>
