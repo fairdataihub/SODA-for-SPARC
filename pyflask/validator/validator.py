@@ -45,7 +45,7 @@ def val_dataset_local_pipeline(ds_path):
 
     # write the blob to a file for the user to view if they would like
     with open(f'{userpath}/SODA/validation.json', "w") as file:
-        yaml.dump(blob, file)
+        file.write(str(blob))
 
     if 'status' not in blob:
         raise abort(400, f"Validation did not return a status object. Cannot give a cleaned report. To view the raw report, please see the validation.json file in your SODA folder at {userpath}/SODA/validation.json")
