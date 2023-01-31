@@ -107,10 +107,12 @@ const validateLocalDataset = async () => {
   // this works because the returned validation results are in an Object Literal. If the returned object is changed this will break (e.g., an array will have a length property as well)
   let hasValidationErrors = Object.getOwnPropertyNames(errors).length >= 1;
 
+  let SODADirectory = path.join(os.homedir(), "SODA");
+
   Swal.fire({
     title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
     text: hasValidationErrors
-      ? `Please fix the errors listed in the table below to pass validation.`
+      ? `Please fix the errors listed in the table below to pass validation. If you would like to see your raw error report, navigate to ${SODADirectory}/validation.json.`
       : `Your dataset conforms to the SPARC Dataset Structure.`,
     allowEscapeKey: true,
     allowOutsideClick: false,
