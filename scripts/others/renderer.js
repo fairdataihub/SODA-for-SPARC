@@ -170,6 +170,14 @@ overview_observer.observe(over_view_section, {
 });
 document.getElementById("getting_starting_tab").click();
 
+let launchAnnouncement = false;
+ipcRenderer.on("checkForAnnouncements", (event, index) => {
+  console.log("received from main");
+  launchAnnouncement = true;
+  let nodeStorage = new JSONStorage(app.getPath("userData"));
+  nodeStorage.setItem("announcements", false);
+});
+
 //////////////////////////////////
 // Connect to Python back-end
 //////////////////////////////////
@@ -404,12 +412,14 @@ const startupServerAndApiCheck = async () => {
     app.exit();
   }
 
-  let nodeStorage = new JSONStorage(app.getPath("userData"));
-  launchAnnouncement = nodeStorage.getItem("announcements");
+  // let nodeStorage = new JSONStorage(app.getPath("userData"));
+  // launchAnnouncement = nodeStorage.getItem("announcements");
+  console.log(launchAnnouncement);
   if (launchAnnouncement) {
-    nodeStorage.setItem("announcements", false);
+    // nodeStorage.setItem("announcements", false);
     await checkForAnnouncements("announcements");
     launchAnnouncement = false;
+    nodeStorage.setItem("announcements", false);
   }
 
   apiVersionChecked = true;
@@ -451,13 +461,6 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
   }
 
   ipcRenderer.send("track-event", "Success", "Setting Templates Path");
-});
-
-let launchAnnouncement = false;
-ipcRenderer.on("checkForAnnouncements", (event, index) => {
-  launchAnnouncement = true;
-  let nodeStorage = new JSONStorage(app.getPath("userData"));
-  nodeStorage.setItem("announcements", false);
 });
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
@@ -656,7 +659,14 @@ const run_pre_flight_checks = async (check_update = true) => {
     message: "You're all set!",
   });
 
-  await checkForAnnouncements("announcements");
+  // let nodeStorage = new JSONStorage(app.getPath("userData"));
+  // launchAnnouncement = nodeStorage.getItem("announcements");
+  console.log(launchAnnouncement);
+  if (launchAnnouncement) {
+    // nodeStorage.setItem("announcements", false);
+    await checkForAnnouncements("announcements");
+    launchAnnouncement = false;
+  }
   return true;
 };
 

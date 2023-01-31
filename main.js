@@ -320,6 +320,7 @@ function initialize() {
         }
         if (announcementsLaunch == true || announcementsLaunch == undefined) {
           checkForAnnouncements();
+          nodeStorage.setItem("announcements", false);
         }
         run_pre_flight_checks();
         autoUpdater.checkForUpdatesAndNotify();
@@ -435,7 +436,7 @@ autoUpdater.on("update-downloaded", () => {
 
 ipcMain.on("restart_app", async () => {
   user_restart_confirmed = true;
-  nodeStorage.removeItem("announcements");
+  nodeStorage.setItem("announcements", true);
   log.info("quitAndInstall");
   autoUpdater.quitAndInstall();
 });

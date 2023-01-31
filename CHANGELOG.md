@@ -5,38 +5,40 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.10.0.1 - 2023-01-30
+
+## Bug fixes:
+
+- Fixed an issue causing the server to not connect on Windows.
+
 ## v.10.0.0 - 2023-01-24
 
 ## Feature additions:
 
-- SODA for SPARC now imports manifests with any extra columns other than the standard (file name, timestamp, description, file type, additional metadata)
+- SODA for SPARC imports users' non-standard manifest columns (file name, timestamp, description, file type, additional metadata) app wide.
+- SODA for SPARC has new file standards for uploading to match the SDS.
+- SODA for SPARC uses the new Pennsieve Agent for uploading dataset files.
+- SODA for SPARC uses the Pennsieve API for communication with Pennsieve.
 - Manifest files are now edited through a new window rather than a pop up.
-- JStree that displays dataset file structure now lists folders first then files alphanumerically.
-- SODA for SPARC has new file standards for uploading. Files with
-- SODA for SPARC uses the new Pennsieve Agent for uploading dataset files.
-- SODA for SPARC uses the Pennsieve API for communication with Pennsieve.
-- Freeform Mode: Manifest generator added to Organize Datasets.
-- Freeform Mode: Manifest generator added to Organize Datasets.
+- Manifests files have a new template styling that matches the SDS.
+- SODA for SPARC's tree view displays of users' dataset structures now list folders first then files alphanumerically.
+- Freeform Mode: The Organize Datasets feature's manifest file generator has been overhauled.
 - Guided Mode: Added the ability to edit an existing dataset on Pennsieve.
 - Guided Mode: Banner Images can be drag and dropped to be imported.
 - Guided Mode: File navigation is now only showing user file structure necessary to them rather the entire dataset structure.
-- Manifests files have a new template styling.
-- SODA for SPARC has new file standards for uploading. Files with
-- Guided Mode: Added the ability to edit an existing dataset on Pennsieve.
-- Guided Mode: Banner Images can be drag and dropped to be imported.
-- Guided Mode: File navigation is now only showing user file structure necessary to them rather the entire dataset structure.
-- SODA for SPARC uses the new Pennsieve Agent for uploading dataset files.
-- SODA for SPARC uses the Pennsieve API for communication with Pennsieve.
-- Manifests files have a new template styling.
 
 ## Bug fixes:
 
+- Lazy Loading was added to editable manifest for large datasets.
 - Lazy Loading was added to editable manifest for large datasets.
 - Guided Mode: Fixed subjects and samples metadata not properly copying over when extra fields were added.
 - Lazy Loading was added to editable manifest for large datasets to prevent slowing down SODA.
 
 ## Known Issues:
 
+- Freeform Mode:
+  - The transition to the generate step in the Organize Datasets feature is slowed when working with large datasets.
+  - Uploading large amounts of very small files ( <= 1kb ) will sometimes cause the upload to pause or crash. It is best to restart the upload when this happens.
 - When working with large datasets and trying to auto generate manifest files to edit. It can take some time and with no status indicator on the progress. (To be added)
 
 ## v.9.4.1 - 2022-11-04
@@ -44,12 +46,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Bug fixes:
 
 - Manual Windows build creation to fix an issue with the back-end not connectiong on Windows.
-
-## Known Issues:
-
-- Freeform Mode:
-  - The transition to the generate step in the Organize Datasets feature is slowed when working with large datasets.
-  - Uploading large amounts of very small files ( <= 1kb ) will sometimes cause the upload to pause or crash. It is best to restart the upload when this happens.
 
 ## v.9.4.0 - 2022-11-02
 
