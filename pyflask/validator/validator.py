@@ -48,7 +48,7 @@ def create_validation_error_message(base_message, ds_path):
     if not has_required_metadata_files(ds_path):
         error_message += "Please make sure that you have the required metadata files in your dataset."
     error_message += f"To view the raw report, please see the validation.json file in your SODA folder at {userpath}/SODA/validation.json"
-
+    return error_message
 
 def get_home_directory(folder):
     if sys.platform == "win32":
