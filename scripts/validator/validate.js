@@ -125,8 +125,10 @@ const validateLocalDataset = async () => {
     return;
   }
 
+  let tbody = document.querySelector("#validation-errors-container tbody");
+  console.log(tbody);
   // display errors onto the page
-  displayValidationErrors(errors);
+  displayValidationErrors(errors, tbody);
 
   // show the validation errors to the user
   document.querySelector("#validation-errors-container").style.visibility = "visible";
