@@ -93,8 +93,7 @@ def val_dataset_local_pipeline(ds_path):
     return parsed_path_error_report
 
 
-# TODO Rename this here and in `val_dataset_local_pipeline`
-def incomplete_validation_error_message(base_message, ds_path):
+def create_validation_error_message(base_message, ds_path):
     error_message = base_message
     if not has_required_metadata_files(ds_path):
         error_message += "Please make sure that you have the required metadata files in your dataset."
