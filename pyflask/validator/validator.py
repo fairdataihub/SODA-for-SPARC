@@ -16,6 +16,34 @@ configpath = os.path.join(userpath, '.pennsieve', 'config.ini')
 sodavalidatorpath = os.path.join(userpath, 'SODA', 'SODA_Validator_Dataset')
 
 
+
+def has_required_metadata_files(ds_path):
+    """
+    Checks that the dataset has the required metadata files. These are: dataset_description.xlsx, 
+    subjects.xlsx, samples.xlsx, and submission.xlsx. 
+    """
+
+    REQUIRED_METADATA_FILES = {
+        "submission": False, 
+        "dataset_description": False,
+        "subjects": False,
+        "samples": False,
+    }
+
+    EXTENSIONS = [".xlsx", ".csv", ".json"]
+
+    # read the files at the top level directory at the given path 
+    files = os.listdir(os.path.join(userpath, ds_path.strip()))
+
+    for file in files:
+        if file in REQUIRED_METADATA_FILES and Path(file).suffix in EXTENSIONS:
+            REQUIRED_METADATA_FILES[file] = True
+            
+
+    # return True if all the required metadata files are present
+    return all(REQUIRED_METADATA_FILES.values())
+
+
 def get_home_directory(folder):
     if sys.platform == "win32":
         return str(Path.home()) + "/AppData/Local/" + folder
@@ -47,15 +75,14 @@ def val_dataset_local_pipeline(ds_path):
     with open(f'{userpath}/SODA/validation.json', "w") as file:
         file.write(str(blob))
 
-    if 'status' not in blob:
-        raise abort(400, f"Validation did not return a status object. Cannot give a cleaned report. To view the raw report, please see the validation.json file in your SODA folder at {userpath}/SODA/validation.json")
-        
+    if 'status' not in blob or 'path_error_report' not in blob['status']:
+        msg = create_validation_error_message(
+            "Incomplete validation. Cannot give a cleaned report.",
+            ds_path,
+        )
+        abort(400, msg)
     # peel out the status object 
     status = blob.get('status')
-
-    # check that the status object has a path_error_report object
-    if 'path_error_report' not in status:
-        raise abort(400, f"Validation did not return a path_error_report object. Cannot give a cleaned report. To view the raw report, please see the validation.json file in your SODA folder at {userpath}/SODA/validation.json")
 
     # peel out the path_error_report object
     path_error_report = status.get('path_error_report')
@@ -64,6 +91,14 @@ def val_dataset_local_pipeline(ds_path):
     parsed_path_error_report = parse(path_error_report)
 
     return parsed_path_error_report
+
+
+# TODO Rename this here and in `val_dataset_local_pipeline`
+def incomplete_validation_error_message(base_message, ds_path):
+    error_message = base_message
+    if not has_required_metadata_files(ds_path):
+        error_message += "Please make sure that you have the required metadata files in your dataset."
+    error_message += f"To view the raw report, please see the validation.json file in your SODA folder at {userpath}/SODA/validation.json"
 
 
 local_sparc_dataset_location = str(Path.home()) + "/files/sparc-datasets"
