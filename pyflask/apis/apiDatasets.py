@@ -1,6 +1,7 @@
 from flask_restx import Resource, reqparse, fields
 from namespaces import get_namespace, NamespaceEnum
 from errorHandlers import notBadRequestException, handle_http_error
+from validator import val_dataset_local_pipeline
 import platform 
 import subprocess
 import os
@@ -151,4 +152,26 @@ class OpenDataset(Resource):
 
           return "SUCCESS"
         except Exception as e:
+          api.abort(500, str(e))
+
+
+
+
+@api.route('/<string:dataset_name>/validation_results')
+class ValidationResults(Resource):
+  validator_parser = reqparse.RequestParser(bundle_errors=True)
+  validator_parser.add_argument('path', type=str, required=True, help='Location of the dataset', location="json")
+  
+  @api.doc(response={200: "Success", 400: "Bad Request", 500: "Internal Server Error"}, description="Validate a dataset", params={"dataset_path": "Path to the dataset"})
+  def post(self, dataset_name):
+      data = self.validator_parser.parse_args()
+
+      dataset_path = data.get("path")
+
+      if dataset_path is None:
+          api.abort(400, "Missing dataset_path parameter")
+
+      try:
+          return val_dataset_local_pipeline(dataset_path)
+      except Exception as e:
           api.abort(500, str(e))

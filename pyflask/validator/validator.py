@@ -57,7 +57,6 @@ def val_dataset_local_pipeline(ds_path):
 
     return parsed_path_error_report
 
-val_dataset_local_pipeline("/Users/aaronm/Desktop/gen-new-one")
 
 local_sparc_dataset_location = str(Path.home()) + "/files/sparc-datasets"
 sparc_organization_id = "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
