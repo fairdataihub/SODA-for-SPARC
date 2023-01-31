@@ -169,7 +169,7 @@ class ValidationResults(Resource):
       dataset_path = data.get("path")
 
       if dataset_path is None:
-          api.abort(400, "Missing dataset_path parameter")
+          api.abort(400, "Missing path parameter")
 
       try:
           return val_dataset_local_pipeline(dataset_path)

@@ -48,14 +48,14 @@ def val_dataset_local_pipeline(ds_path):
         yaml.dump(blob, file)
 
     if 'status' not in blob:
-        raise abort(400, "Validation did not return a status object")
+        raise abort(400, f"Validation did not return a status object. Cannot give a cleaned report. To view the raw report, please see the validation.json file in your SODA folder at {userpath}/SODA/validation.json")
         
     # peel out the status object 
     status = blob.get('status')
 
     # check that the status object has a path_error_report object
     if 'path_error_report' not in status:
-        raise abort(400, "Validation did not return a path_error_report object")
+        raise abort(400, f"Validation did not return a path_error_report object. Cannot give a cleaned report. To view the raw report, please see the validation.json file in your SODA folder at {userpath}/SODA/validation.json")
 
     # peel out the path_error_report object
     path_error_report = status.get('path_error_report')
