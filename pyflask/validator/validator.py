@@ -43,6 +43,12 @@ def has_required_metadata_files(ds_path):
     # return True if all the required metadata files are present
     return all(REQUIRED_METADATA_FILES.values())
 
+def create_validation_error_message(base_message, ds_path):
+    error_message = base_message
+    if not has_required_metadata_files(ds_path):
+        error_message += "Please make sure that you have the required metadata files in your dataset."
+    error_message += f"To view the raw report, please see the validation.json file in your SODA folder at {userpath}/SODA/validation.json"
+
 
 def get_home_directory(folder):
     if sys.platform == "win32":
@@ -92,12 +98,6 @@ def val_dataset_local_pipeline(ds_path):
 
     return parsed_path_error_report
 
-
-def create_validation_error_message(base_message, ds_path):
-    error_message = base_message
-    if not has_required_metadata_files(ds_path):
-        error_message += "Please make sure that you have the required metadata files in your dataset."
-    error_message += f"To view the raw report, please see the validation.json file in your SODA folder at {userpath}/SODA/validation.json"
 
 
 local_sparc_dataset_location = str(Path.home()) + "/files/sparc-datasets"
