@@ -306,8 +306,9 @@ const savePageChanges = async (pageBeingLeftID) => {
         } catch (error) {
           console.log(error);
           errorArray.push({
-            type: "notyf",
-            message: "Error pulling dataset folders and files from Pennsieve",
+            type: "swal",
+            title: "Error pulling dataset from Pennsieve",
+            message: `Error message: ${userErrorMessage(error)}`,
           });
           throw errorArray;
         }
@@ -318,20 +319,16 @@ const savePageChanges = async (pageBeingLeftID) => {
           guidedCheckHighLevelFoldersForImproperFiles(datasetStructureJSONObj);
 
         if (invalidFolders.length > 0 || invalidFiles.length > 0) {
-          if (invalidFolders.length > 0) {
-            errorArray.push({
-              type: "notyf",
-              message:
-                "Your primary, source, and derivative folders must only contain pool-folders or sub-folders when resuming a Pennsieve dataset",
-            });
-          }
-          if (invalidFiles.length > 0) {
-            errorArray.push({
-              type: "notyf",
-              message:
-                "Your primary, source, and derivative folders must be empty besides the pool-folders or sub-folders",
-            });
-          }
+          errorArray.push({
+            type: "swal",
+            title: "This dataset is not eligible to be edited via Guided Mode",
+            message: `
+              Your primary, source, and derivative folders must only contain pool- folders or sub- folders when resuming a Pennsieve dataset via Guided Mode
+              <br />
+              <br />
+              Please remove any folders or files that are not pool- folders or sub- folders from your primary, source, and derivative folders and try again.
+            `,
+          });
           throw errorArray;
         }
 
@@ -386,16 +383,21 @@ const savePageChanges = async (pageBeingLeftID) => {
         const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
         if (subjectsInPools.length === 0 && subjectsOutsidePools.length === 0) {
           errorArray.push({
-            type: "notyf",
-            message:
-              "Your dataset must have at least one subject to resume from Pennsieve using Guided Mode",
+            type: "swal",
+            title: "This dataset is not eligible to be edited via Guided Mode",
+            message: `
+              Your dataset must have at least one subject to resume from Pennsieve using Guided Mode
+              <br />
+              <br />
+              If you would like to edit your dataset folders and files, please use the organize dataset feature in Free Form Mode.
+            `,
           });
           throw errorArray;
         }
 
         // If subjectsTableData was found, check if the subject/sample metadata has the same structure as the
         // dataset structure. If subject and sample metadata were not found, reset it and we'll add the metadata later
-        if (subjectsTableData.length > 1 && samplesTableData.length > 1) {
+        if (subjectsTableData.length > 1) {
           const metadataSubSamStructure = createGuidedStructureFromSubSamMetadata(
             subjectsTableData.slice(1),
             samplesTableData.slice(1)
@@ -403,15 +405,21 @@ const savePageChanges = async (pageBeingLeftID) => {
 
           if (!objectsHaveSameKeys(metadataSubSamStructure, datasetSubSamStructure)) {
             errorArray.push({
-              type: "notyf",
-              message: "The subjects and samples metadata do not have the same keys",
+              type: "swal",
+              title: "This dataset is not eligible to be edited via Guided Mode",
+              message: `
+                Your dataset's structure does not align with your dataset's subject and sample metadata.
+                <br />
+                <br />
+                Please ensure your subject and sample metadata files match the structure of your dataset folders and try again.
+              `,
             });
             throw errorArray;
           }
         } else {
+          // If the subjectsTableData or samplesTableData was not found, reset it and we'll add the metadata later
           subjectsTableData = [];
           samplesTableData = [];
-          extractPoolSubSamStructureFromDataset(datasetStructureJSONObj);
         }
         await Swal.fire({
           icon: "info",
@@ -486,34 +494,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
         sodaJSONObj["digital-metadata"]["name"] = datasetNameInput;
         sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitleInput;
-      }
-    }
-
-    if (pageBeingLeftID === "guided-source-folder-tab") {
-      if (
-        !$("#guided-button-has-source-data").hasClass("selected") &&
-        !$("#guided-button-no-source-data").hasClass("selected")
-      ) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please indicate if your dataset contains source data",
-        });
-        throw errorArray;
-      }
-    }
-    if (pageBeingLeftID === "guided-derivative-folder-tab") {
-      if (
-        //check if divs with the buttons with IDs guided-button-has-derivative-data and guided-button-no-derivative-data have the class selected
-        !document
-          .getElementById("guided-button-has-derivative-data")
-          .classList.contains("selected") &&
-        !document.getElementById("guided-button-no-derivative-data").classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please indicate if your dataset contains derivative data",
-        });
-        throw errorArray;
       }
     }
 
@@ -1261,6 +1241,7 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
   } catch (error) {
     guidedSetNavLoadingState(false);
+    console.log(error);
     throw error;
   }
 
@@ -2675,6 +2656,10 @@ document
 
 $("#guided-select-pennsieve-dataset-to-resume").selectpicker();
 const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
+  // First hide the error div if it is showing
+  const errorDiv = document.getElementById("guided-panel-pennsieve-dataset-import-error");
+  errorDiv.classList.add("hidden");
+
   const loadingDiv = document.getElementById("guided-panel-pennsieve-dataset-import-loading");
   const pennsieveDatasetSelectDiv = document.getElementById(
     "guided-panel-pennsieve-dataset-select"
@@ -2685,26 +2670,35 @@ const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
 
   const datasetSelectionSelectPicker = $("#guided-select-pennsieve-dataset-to-resume");
   datasetSelectionSelectPicker.empty();
+  try {
+    let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
+      params: {
+        selected_account: defaultBfAccount,
+      },
+    });
+    const datasets = responseObject.data.datasets;
+    //Add the datasets to the select picker
+    datasetSelectionSelectPicker.append(
+      `<option value="" selected>Select a dataset on Pennsieve to resume</option>`
+    );
+    for (const dataset of datasets) {
+      datasetSelectionSelectPicker.append(`<option value="${dataset.id}">${dataset.name}</option>`);
+    }
+    datasetSelectionSelectPicker.selectpicker("refresh");
 
-  let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
-    params: {
-      selected_account: defaultBfAccount,
-    },
-  });
-  const datasets = responseObject.data.datasets;
-  //Add the datasets to the select picker
-  datasetSelectionSelectPicker.append(
-    `<option value="" selected>Select a dataset on Pennsieve to resume</option>`
-  );
-  for (const dataset of datasets) {
-    datasetSelectionSelectPicker.append(`<option value="${dataset.id}">${dataset.name}</option>`);
+    //Hide the loading div and show the dropdown div
+    loadingDiv.classList.add("hidden");
+    pennsieveDatasetSelectDiv.classList.remove("hidden");
+    scrollToBottomOfGuidedBody();
+  } catch (error) {
+    // Show the error div and hide the dropdown and loading divs
+    errorDiv.classList.remove("hidden");
+    loadingDiv.classList.add("hidden");
+    pennsieveDatasetSelectDiv.classList.add("hidden");
+    clientError(error);
+    document.getElementById("guided-pennsieve-dataset-import-error-message").innerHTML =
+      userErrorMessage(error);
   }
-  datasetSelectionSelectPicker.selectpicker("refresh");
-
-  //Hide the loading div and show the dropdown div
-  loadingDiv.classList.add("hidden");
-  pennsieveDatasetSelectDiv.classList.remove("hidden");
-  scrollToBottomOfGuidedBody();
 };
 
 $("#guided-sparc-award-dropdown").selectpicker();
@@ -3091,6 +3085,10 @@ guidedUnSkipPage = (pageId) => {
   }
 };
 
+const pageIsSkipped = (pageId) => {
+  return sodaJSONObj["skipped-pages"].includes(pageId);
+};
+
 const loadGuidedSkippedPages = () => {};
 const folderIsEmpty = (folder) => {
   return Object.keys(folder.folders).length === 0 && Object.keys(folder.files).length === 0;
@@ -3472,25 +3470,26 @@ const pageNeedsUpdateFromPennsieve = (pageID) => {
 // Function that allows the user to retry fetching the page if any errors occur
 // while pulling from Pennsieve. Ultimately, this function just tries to re-open the page
 const guidedShowOptionalRetrySwal = async (errorMessage) => {
-  const { value: retry } = await Swal.fire({
-    icon: "error",
-    title: "Error fetching page data from Pennsieve",
+  const { value: addDataManually } = await Swal.fire({
+    icon: "info",
+    title: "Your dataset is missing a required component",
     html: `
-      <b>Error message:</b> ${errorMessage}
+      ${errorMessage}
       <br />
       <br />
-      Would you like to retry fetching the page data from Pennsieve?
+      You may either add the data in SODA or retry fetching the data from Pennsieve
     `,
     width: 700,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     showCancelButton: true,
-    confirmButtonText: "Retry",
-    cancelButtonText: "Enter manually",
+    confirmButtonText: "Add data in SODA",
+    cancelButtonText: "Retry",
     allowOutsideClick: false,
     allowEscapeKey: false,
   });
-  if (retry) {
+
+  if (addDataManually) {
     const currentPageId = CURRENT_PAGE.id;
     await openPage(currentPageId);
   }
@@ -3587,6 +3586,9 @@ const openPage = async (targetPageID) => {
           clientError(error);
           const emessage = error.response.data.message;
           await guidedShowOptionalRetrySwal(emessage);
+          // If the user chooses not to retry re-fetching the page data, mark the page as fetched
+          // so the the fetch does not occur again
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-name-subtitle-tab");
         }
       } else {
         //Update subtitle from JSON
@@ -3667,6 +3669,18 @@ const openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-folder-structure-preview-tab") {
+      // TODO: move the file base guided high level folder deletion to their specific pages
+      // Delete the high level folders if they are empty
+      // They could possibly be empty if the user did not add any subject data
+      // These will be added back safely when the user traverses back to the high level folder's page
+      for (const folder of guidedHighLevelFolders) {
+        const rootFolderPath = datasetStructureJSONObj["folders"][folder];
+
+        if (rootFolderPath && folderIsEmpty(rootFolderPath)) {
+          delete datasetStructureJSONObj["folders"][folder];
+        }
+      }
+
       const folderStructurePreview = document.getElementById("guided-folder-structure-review");
       $(folderStructurePreview).jstree({
         core: {
@@ -3791,6 +3805,9 @@ const openPage = async (targetPageID) => {
           clientError(error);
           const emessage = error.response.data.message;
           await guidedShowOptionalRetrySwal(emessage);
+          // If the user chooses not to retry re-fetching the page data, mark the page as fetched
+          // so the the fetch does not occur again
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-airtable-award-tab");
         }
       }
       const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
@@ -3837,6 +3854,9 @@ const openPage = async (targetPageID) => {
           clientError(error);
           const emessage = error.response.data.message;
           await guidedShowOptionalRetrySwal(emessage);
+          // If the user chooses not to retry re-fetching the page data, mark the page as fetched
+          // so the the fetch does not occur again
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-submission-metadata-tab");
         }
       }
       //Reset the manual submission metadata UI
@@ -3921,6 +3941,9 @@ const openPage = async (targetPageID) => {
           clientError(error);
           const emessage = error.response.data.message;
           await guidedShowOptionalRetrySwal(emessage);
+          // If the user chooses not to retry re-fetching the page data, mark the page as fetched
+          // so the the fetch does not occur again
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-contributors-tab");
         }
       }
 
@@ -3964,6 +3987,9 @@ const openPage = async (targetPageID) => {
           clientError(error);
           const emessage = error.response.data.message;
           await guidedShowOptionalRetrySwal(emessage);
+          // If the user chooses not to retry re-fetching the page data, mark the page as fetched
+          // so the the fetch does not occur again
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-protocols-tab");
         }
       }
       renderProtocolsTable();
@@ -4074,6 +4100,11 @@ const openPage = async (targetPageID) => {
           clientError(error);
           const emessage = error.response.data.message;
           await guidedShowOptionalRetrySwal(emessage);
+          // If the user chooses not to retry re-fetching the page data, mark the page as fetched
+          // so the the fetch does not occur again
+          sodaJSONObj["pages-fetched-from-pennsieve"].push(
+            "guided-create-description-metadata-tab"
+          );
         }
       }
       const guidedLoadDescriptionDatasetInformation = () => {
@@ -4302,6 +4333,9 @@ const openPage = async (targetPageID) => {
           clientError(error);
           const emessage = error.response.data.message;
           await guidedShowOptionalRetrySwal(emessage);
+          // If the user chooses not to retry re-fetching the page data, mark the page as fetched
+          // so the the fetch does not occur again
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-banner-image-tab");
         }
       }
       if (sodaJSONObj["digital-metadata"]["banner-image-path"]) {
@@ -4427,6 +4461,9 @@ const openPage = async (targetPageID) => {
           clientError(error);
           const emessage = error.response.data.message;
           await guidedShowOptionalRetrySwal(emessage);
+          // If the user chooses not to retry re-fetching the page data, mark the page as fetched
+          // so the the fetch does not occur again
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-designate-permissions-tab");
         }
       }
 
@@ -4456,21 +4493,21 @@ const openPage = async (targetPageID) => {
           sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
         );
         const parsedDescription = createParsedReadme(description);
-        sodaJSONObj["digital-metadata"]["description"]["study-purpose"] = parsedDescription[
-          "study purpose"
-        ]
-          ? parsedDescription["study purpose"].replace(/\r?\n|\r/g, "").trim()
-          : "";
-        sodaJSONObj["digital-metadata"]["description"]["data-collection"] = parsedDescription[
-          "data collection"
-        ]
-          ? parsedDescription["data collection"].replace(/\r?\n|\r/g, "").trim()
-          : "";
-        sodaJSONObj["digital-metadata"]["description"]["primary-conclusion"] = parsedDescription[
-          "primary conclusion"
-        ]
-          ? parsedDescription["primary conclusion"].replace(/\r?\n|\r/g, "").trim()
-          : "";
+        if (parsedDescription["study purpose"]) {
+          sodaJSONObj["digital-metadata"]["description"]["study-purpose"] = parsedDescription[
+            "study purpose"
+          ].replace(/\r?\n|\r/g, "");
+        }
+        if (parsedDescription["data collection"]) {
+          sodaJSONObj["digital-metadata"]["description"]["data-collection"] = parsedDescription[
+            "data collection"
+          ].replace(/\r?\n|\r/g, "");
+        }
+        if (parsedDescription["primary conclusion"]) {
+          sodaJSONObj["digital-metadata"]["description"]["primary-conclusion"] = parsedDescription[
+            "primary conclusion"
+          ].replace(/\r?\n|\r/g, "");
+        }
       }
 
       const studyPurposeInput = document.getElementById("guided-pennsieve-study-purpose");
@@ -4487,15 +4524,15 @@ const openPage = async (targetPageID) => {
       const descriptionMetadata = sodaJSONObj["digital-metadata"]["description"];
 
       if (Object.keys(descriptionMetadata).length > 0) {
-        studyPurposeInput.value = descriptionMetadata["study-purpose"];
-        studyDataCollectionInput.value = descriptionMetadata["data-collection"];
-        studyPrimaryConclusionInput.value = descriptionMetadata["primary-conclusion"];
+        studyPurposeInput.value = descriptionMetadata["study-purpose"] ?? "";
+        studyDataCollectionInput.value = descriptionMetadata["data-collection"] ?? "";
+        studyPrimaryConclusionInput.value = descriptionMetadata["primary-conclusion"] ?? "";
       } else if (studyInformationFromDescriptionMetadata) {
-        studyPurposeInput.value = studyInformationFromDescriptionMetadata["study purpose"];
+        studyPurposeInput.value = studyInformationFromDescriptionMetadata["study purpose"] ?? "";
         studyDataCollectionInput.value =
-          studyInformationFromDescriptionMetadata["study data collection"];
+          studyInformationFromDescriptionMetadata["study data collection"] ?? "";
         studyPrimaryConclusionInput.value =
-          studyInformationFromDescriptionMetadata["study primary conclusion"];
+          studyInformationFromDescriptionMetadata["study primary conclusion"] ?? "";
       } else {
         studyPurposeInput.value = "";
         studyDataCollectionInput.value = "";
@@ -4517,6 +4554,9 @@ const openPage = async (targetPageID) => {
           clientError(error);
           const emessage = error.response.data.message;
           await guidedShowOptionalRetrySwal(emessage);
+          // If the user chooses not to retry re-fetching the page data, mark the page as fetched
+          // so the the fetch does not occur again
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-add-tags-tab");
         }
       }
       const descriptionMetadata =
@@ -4554,6 +4594,9 @@ const openPage = async (targetPageID) => {
           clientError(error);
           const emessage = error.response.data.message;
           await guidedShowOptionalRetrySwal(emessage);
+          // If the user chooses not to retry re-fetching the page data, mark the page as fetched
+          // so the the fetch does not occur again
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-assign-license-tab");
         }
       }
       const licenseCheckbox = document.getElementById("guided-license-checkbox");
@@ -4949,6 +4992,9 @@ const openPage = async (targetPageID) => {
           clientError(error);
           const emessage = error.response.data.message;
           await guidedShowOptionalRetrySwal(emessage);
+          // If the user chooses not to retry re-fetching the page data, mark the page as fetched
+          // so the the fetch does not occur again
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-readme-metadata-tab");
         }
       }
       const readMeTextArea = document.getElementById("guided-textarea-create-readme");
@@ -5287,6 +5333,32 @@ const setActiveSubPage = (pageIdToActivate) => {
     //Load the black arrow lottie animation
     lottie.loadAnimation({
       container: sourcePoolsFileExplorerBlackArrowLottieContainer,
+      animationData: blackArrow,
+      renderer: "svg",
+      loop: true,
+      autoplay: true,
+    });
+  }
+
+  if (pageIdToActivate === "guided-derivative-subjects-organization-page") {
+    renderSubjectsHighLevelFolderAsideItems("derivative");
+    guidedUpdateFolderStructure("derivative", "subjects");
+    $("#guided-file-explorer-elements").appendTo(
+      $("#guided-derivative-subjects-file-explorer-container")
+    );
+    //Hide the file explorer and show the intro
+    document.getElementById("guided-file-explorer-elements").classList.add("hidden");
+    document
+      .getElementById("guided-derivative-subjects-file-explorer-intro")
+      .classList.remove("hidden");
+
+    //Load the black arrow lottie animation
+    const sourceSubjectsFileExplorerBlackArrowLottieContainer = document.getElementById(
+      "derivative-subjects-file-explorer-black-arrow-lottie-container"
+    );
+    sourceSubjectsFileExplorerBlackArrowLottieContainer.innerHTML = "";
+    lottie.loadAnimation({
+      container: sourceSubjectsFileExplorerBlackArrowLottieContainer,
       animationData: blackArrow,
       renderer: "svg",
       loop: true,
@@ -6414,8 +6486,8 @@ const attachGuidedMethodsToSodaJSONObj = () => {
                 guidedModifyPennsieveFolder(sampleFolderInHighLevelFolder, "delete");
               } else {
                 delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                  sample.poolName
-                ]["folders"][sample.subjectName]["folders"][sampleName];
+                  sample.subjectName
+                ]["folders"][sampleName];
               }
             }
           }
@@ -10276,6 +10348,7 @@ const renderSubjectsMetadataAsideItems = async () => {
 };
 
 const renderSamplesMetadataAsideItems = async () => {
+  console.log("renderSamplesMetadataAsideItems");
   const asideElement = document.getElementById(`guided-samples-metadata-aside`);
   asideElement.innerHTML = "";
 
@@ -11760,14 +11833,20 @@ $(document).ready(async () => {
       //set timeout for 2 seconds
       await new Promise((r) => setTimeout(r, 2000));
 
-      if (guidedSubjectsMetadata.length > 0) {
+      if (
+        guidedSubjectsMetadata.length > 0 &&
+        !pageIsSkipped("guided-create-subjects-metadata-tab")
+      ) {
         await guidedUploadSubjectsMetadata(
           guidedBfAccount,
           guidedDatasetName,
           guidedSubjectsMetadata
         );
       }
-      if (guidedSamplesMetadata.length > 0) {
+      if (
+        guidedSamplesMetadata.length > 0 &&
+        !pageIsSkipped("guided-create-samples-metadata-tab")
+      ) {
         await guidedUploadSamplesMetadata(
           guidedBfAccount,
           guidedDatasetName,
@@ -12688,6 +12767,20 @@ $(document).ready(async () => {
             message: error.message,
           });
         }
+
+        if (error.type === "swal") {
+          Swal.fire({
+            icon: "info",
+            title: error.title,
+            html: error.message,
+            width: 600,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            confirmButtonText: `OK`,
+            focusConfirm: true,
+            allowOutsideClick: false,
+          });
+        }
       });
     }
   });
@@ -12880,12 +12973,18 @@ $(document).ready(async () => {
           guidedUnSkipPage(`guided-primary-samples-organization-page`);
           guidedUnSkipPage(`guided-source-samples-organization-page`);
           guidedUnSkipPage(`guided-derivative-samples-organization-page`);
+
+          //Unskip the samples metadata page
+          guidedUnSkipPage(`guided-create-samples-metadata-tab`);
         }
         if (buttonNoSamples.classList.contains("selected")) {
           //Skip the sample data organization pages
           guidedSkipPage(`guided-primary-samples-organization-page`);
           guidedSkipPage(`guided-source-samples-organization-page`);
           guidedSkipPage(`guided-derivative-samples-organization-page`);
+
+          //Skip the samples metadata page
+          guidedSkipPage(`guided-create-samples-metadata-tab`);
         }
       }
 
