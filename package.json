@@ -14,6 +14,7 @@
     "deploy-linux": "electron-builder build --linux --publish always",
     "python-onefile-build": "python -m PyInstaller --onefile --clean ./pyflask/app.py --distpath ./pyflaskdist",
     "python-onefile-build-validator": "python -m PyInstaller --onefile --clean ./pyflask/app.py --distpath ./pyflaskdist --additional-hooks-dir ./pyflask/validator/hooks",
+    "python-onefile-build-validator-mac": "python -m PyInstaller --onefile --clean ./pyflask/app.py --distpath ./pyflaskdist --additional-hooks-dir ./pyflask/validator/hooks --add-data '../../opt/anaconda3/envs/env-electron-python/share:share' ",
     "postinstall": "electron-builder install-app-deps",
     "format": "prettier --ignore-path .gitignore --ignore-path .prettierignore \"./**/*.+(html|css|js|md|yml)\" --write",
     "commit": "cz",
