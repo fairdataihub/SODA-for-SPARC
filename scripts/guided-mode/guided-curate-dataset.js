@@ -279,11 +279,6 @@ const savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
 
-        sodaJSONObj["starting-point"]["type"] = "bf";
-        sodaJSONObj["generate-dataset"]["generate-option"] = "existing-bf";
-        sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] = selectedPennsieveDatasetID;
-        sodaJSONObj["digital-metadata"]["name"] = selectedPennsieveDataset;
-
         //Pull the dataset folders and files from Pennsieve\
         sodaJSONObj["bf-dataset-selected"] = {};
         sodaJSONObj["bf-dataset-selected"]["dataset-name"] = selectedPennsieveDataset;
@@ -421,6 +416,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           subjectsTableData = [];
           samplesTableData = [];
         }
+
         await Swal.fire({
           icon: "info",
           title: "Begining Pennsieve Dataset edit session",
@@ -438,6 +434,12 @@ const savePageChanges = async (pageBeingLeftID) => {
           focusConfirm: true,
           allowOutsideClick: false,
         });
+
+        // Set the json options for resuming a pennsieve dataset from Pennsieve
+        sodaJSONObj["starting-point"]["type"] = "bf";
+        sodaJSONObj["generate-dataset"]["generate-option"] = "existing-bf";
+        sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] = selectedPennsieveDatasetID;
+        sodaJSONObj["digital-metadata"]["name"] = selectedPennsieveDataset;
       }
 
       //Skip this page becausae we should not come back to it
