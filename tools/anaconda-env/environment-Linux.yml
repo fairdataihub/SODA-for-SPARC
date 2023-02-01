@@ -29,3 +29,4 @@ dependencies:
   - tqdm
   - protobuf == 4.21.12
   - pennsieve2 == 0.1.1
+  - certifi==2022.12.7
