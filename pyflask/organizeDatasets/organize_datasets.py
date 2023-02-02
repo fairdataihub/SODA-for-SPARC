@@ -31,6 +31,7 @@ from namespaces import NamespaceEnum, get_namespace_logger
 from openpyxl.styles import PatternFill, Font
 from openpyxl import load_workbook
 
+
 import json
 namespace_logger = get_namespace_logger(NamespaceEnum.ORGANIZE_DATASETS)
 from authentication import get_access_token
@@ -879,6 +880,27 @@ def monitor_local_json_progress():
     }
 
 
+def set_certs_path(soda_base_path, soda_resources_path):
+    """
+    Sets the CERTS_PATH using SODA-for-SPARC's basepath so that the prepare_metadata section can find
+    the templates stored in file_templates direcotory.
+    """
+    global CERTS_PATH
+
+
+    # once pysoda has been packaged with pyinstaller
+    # it creates an archive that slef extracts to an OS-specific temp directory.
+    # Due to this we can no longer use a relative path from the pysoda directory to the file_templates folder.
+    # When running in dev mode this also works
+    CERTS_PATH = join(soda_base_path, "pennsieve-io-chain.pem")
+
+    # check if os is Darwin/Linux
+    if platform.system() in ["Darwin", "Linux"] and not exists(CERTS_PATH):
+        # we are in production and we need to use the Resources folder for the file_templates folder
+        CERTS_PATH = join(soda_resources_path, "pennsieve-io-chain.pem")
+
+
+
 
 def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     global namespace_logger
@@ -1097,6 +1119,8 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
     # START
 
+    namespace_logger.info("Getting account name")
+
     error = []
 
     # check that the Pennsieve account is valid
@@ -1118,6 +1142,8 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     selected_dataset_id = get_dataset_id(token, bf_dataset_name)
 
 
+    namespace_logger.info(f"Fetched the dataset id: {selected_dataset_id}")
+
     # check that the user has permission to edit this dataset
     try:
         role = bf_get_current_user_permission_agent_two(selected_dataset_id, token)["role"]
@@ -1127,6 +1153,8 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
             raise Exception("You don't have permissions for uploading to this Pennsieve dataset")
     except Exception as e:
         abort(401, "You do not have permissions to edit upload this Pennsieve dataset.")
+
+    namespace_logger.info(f"User has these permissions: {role}")
 
     # surface layer of dataset is pulled. then go through through the children to get information on subfolders
     manifest_dict = {}
@@ -1140,16 +1168,25 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     # headers for making requests to Pennsieve's api
     headers = create_request_headers(token)
 
+    namespace_logger.info("Fetching dataset root folders and files")
+
     # root of dataset is pulled here
     # root_children is the files and folders within root
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers, verify=False)
     r.raise_for_status()
     root_folder = r.json()
 
+    namespace_logger.info(f"root_folder fetched: {root_folder}")
+
+
+    namespace_logger.info("Fetching dataset root's packages type counts")
+
     # root's packages 
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/packageTypeCounts", headers=headers, verify=False)
     r.raise_for_status()
     packages_list = r.json()
+
+    namespace_logger.info(f"root_folder's packages fetched: {packages_list}")
 
     # root's children files
     for count in packages_list.values():
@@ -1188,9 +1225,13 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
             collection_id = soda_json_structure["dataset-structure"]["folders"][folder][
                 "path"
             ]
+
+            namespace_logger.info(f"Fetching {folder} folder's children")
             r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}", headers=headers)
             r.raise_for_status()
             subfolder = r.json()
+
+            namespace_logger.info(f"{folder} folder's children fetched: {subfolder}")
 
             children_content = subfolder["children"]
             manifest_dict[folder] = {}
@@ -1199,6 +1240,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                     # check subfolders surface to see if manifest files exist to then use within recursive_subfolder_check
                     package_name = items["content"]["name"]
                     package_id = items["content"]["id"]
+                    namespace_logger.info(f"Fetching {package_name} package's children")
                     if package_name in manifest_sparc:
                         # item is manifest
                         r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=headers)
@@ -1210,17 +1252,27 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         r.raise_for_status()
                         manifest_url = r.json()["url"]
 
+                        namespace_logger.info(f"Manifest url from {package_id}/{file_id} is: {manifest_url}")
+
                         df = ""
                         try:
+                            namespace_logger.info("Reading manifest file with: ")
                             if package_name.lower() == "manifest.xlsx":
+                                namespace_logger.info(f"pd.read_excel")
                                 df = pd.read_excel(manifest_url, engine="openpyxl")
+                                namespace_logger.info(f"pd.read_excel success")
                                 df = df.fillna("")
                             else:
+                                namespace_logger.info(f"pd.read_csv")
                                 df = pd.read_csv(manifest_url)
+                                namespace_logger.info(f"pd.read_csv success")
+
                                 df = df.fillna("")
                             # 
                             manifest_dict[folder].update(df.to_dict())
                         except Exception as e:
+                            namespace_logger.info(f"Error reading manifest file: {e}")
+                            namespace_logger.info(items)
                             manifest_error_message.append(
                                 items["parent"]["content"]["name"]
                             )
