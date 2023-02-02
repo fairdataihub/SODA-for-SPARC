@@ -3,7 +3,8 @@ from organizeDatasets import (
     create_soda_json_object_backend,
     monitor_local_json_progress,
     monitor_pennsieve_json_progress,
-    import_pennsieve_dataset
+    import_pennsieve_dataset,
+    set_certs_path
 )
 
 from namespaces import NamespaceEnum, get_namespace
@@ -145,5 +146,15 @@ class ImportDatasetPennsieveProgress(Resource):
     def get(self):
         try: 
             return monitor_pennsieve_json_progress()
+        except Exception as e:
+            api.abort(500, str(e))
+
+
+@api.route('/certs_path')
+class CertsPath(Resource):
+    @api.doc(responses={200: "Success", 500: "Internal Server Error"}, description="Returns the path to the certs directory.")
+    def get(self):
+        try: 
+            return set_certs_path()
         except Exception as e:
             api.abort(500, str(e))
