@@ -30,6 +30,7 @@ from utils import connect_pennsieve_client, get_dataset_id, create_request_heade
 from namespaces import NamespaceEnum, get_namespace_logger
 from openpyxl.styles import PatternFill, Font
 from openpyxl import load_workbook
+from utils import load_manifest_to_dataframe
 
 import json
 namespace_logger = get_namespace_logger(NamespaceEnum.ORGANIZE_DATASETS)
@@ -878,20 +879,6 @@ def monitor_local_json_progress():
         "create_soda_json_completed": create_soda_json_completed
     }
 
-
-def load_manifest_to_dataframe(node_id, type, ps_or_token):
-    """
-    Given a manifests package id and its storage type - excel or csv - returns a pandas dataframe.
-    IMP: Pass in the pennsieve token or pennsieve object to ps_or_token for authentication.
-    """
-    payload = {"data": {"nodeIds": [node_id]}}
-    headers = { "Content-Type" : "application/json" }
-    # headers = create_request_headers(ps_or_token)
-    r = requests.post(f"https://api.pennsieve.io/zipit/?api_key={ps_or_token}", json=payload, headers=headers)
-    if type == "csv":
-        return pd.read_csv(r.content, engine="openpyxl")
-    else:
-        return pd.read_excel(r.content, engine="openpyxl")
 
 
 
