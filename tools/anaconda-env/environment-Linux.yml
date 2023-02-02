@@ -11,7 +11,7 @@ dependencies:
 - pip
 - pip:
   - chardet == 4.0.0
-  - pandas == 1.4.2
+  - pandas == 1.5.3
   - openpyxl == 3.0.3
   - configparser == 4.0.2
   - python-docx == 0.8.10
