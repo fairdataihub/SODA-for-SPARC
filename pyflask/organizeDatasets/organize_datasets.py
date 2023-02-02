@@ -1142,12 +1142,12 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
     # root of dataset is pulled here
     # root_children is the files and folders within root
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers, verify=False)
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
     r.raise_for_status()
     root_folder = r.json()
 
     # root's packages 
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/packageTypeCounts", headers=headers, verify=False)
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/packageTypeCounts", headers=headers)
     r.raise_for_status()
     packages_list = r.json()
 
@@ -1188,7 +1188,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
             collection_id = soda_json_structure["dataset-structure"]["folders"][folder][
                 "path"
             ]
-            r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}", headers=headers, verify=False)
+            r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}", headers=headers)
             r.raise_for_status()
             subfolder = r.json()
 
@@ -1201,12 +1201,12 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                     package_id = items["content"]["id"]
                     if package_name in manifest_sparc:
                         # item is manifest
-                        r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=headers, verify=False)
+                        r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=headers)
                         r.raise_for_status()
                         file_details = r.json()
 
                         file_id = file_details[0]["content"]["id"]
-                        r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/files/{file_id}", headers=headers, verify=False)
+                        r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/files/{file_id}", headers=headers)
                         r.raise_for_status()
                         manifest_url = r.json()["url"]
 
