@@ -1247,7 +1247,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
                             
                             if package_name.lower() == "manifest.xlsx":
-                                ssl._create_default_https_context = ssl._create_unverified_context
+                                # ssl._create_default_https_context = ssl._create_unverified_context
                                 namespace_logger.info(f"pd.read_excel")
                                 # df = None 
                                 # with fs3fs.open(manifest_url) as f:
@@ -1270,7 +1270,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                                 items["content"]["name"]
                             )
                             # set the ssl context back to default
-                            ssl._create_default_https_context = ssl.
+                            # ssl._create_default_https_context = ssl.
                 subfolder_section = soda_json_structure["dataset-structure"]["folders"][
                     folder
                 ]
