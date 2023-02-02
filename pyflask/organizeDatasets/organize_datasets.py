@@ -1119,8 +1119,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
     # START
 
-    namespace_logger.info("Getting account name")
-
     error = []
 
     # check that the Pennsieve account is valid
@@ -1128,8 +1126,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         bf_account_name = soda_json_structure["bf-account-selected"]["account-name"]
     except Exception as e:
         raise e 
-
-    namespace_logger.info(f"bf_account_name: {bf_account_name}")
 
     token = get_access_token()
 
@@ -1142,8 +1138,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     selected_dataset_id = get_dataset_id(token, bf_dataset_name)
 
 
-    namespace_logger.info(f"Fetched the dataset id: {selected_dataset_id}")
-
     # check that the user has permission to edit this dataset
     try:
         role = bf_get_current_user_permission_agent_two(selected_dataset_id, token)["role"]
@@ -1154,7 +1148,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     except Exception as e:
         abort(401, "You do not have permissions to edit upload this Pennsieve dataset.")
 
-    namespace_logger.info(f"User has these permissions: {role}")
 
     # surface layer of dataset is pulled. then go through through the children to get information on subfolders
     manifest_dict = {}
@@ -1168,7 +1161,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     # headers for making requests to Pennsieve's api
     headers = create_request_headers(token)
 
-    namespace_logger.info("Fetching dataset root folders and files")
 
     # root of dataset is pulled here
     # root_children is the files and folders within root
@@ -1176,17 +1168,11 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     r.raise_for_status()
     root_folder = r.json()
 
-    namespace_logger.info(f"root_folder fetched: {root_folder}")
-
-
-    namespace_logger.info("Fetching dataset root's packages type counts")
-
     # root's packages 
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/packageTypeCounts", headers=headers, verify=False)
     r.raise_for_status()
     packages_list = r.json()
 
-    namespace_logger.info(f"root_folder's packages fetched: {packages_list}")
 
     # root's children files
     for count in packages_list.values():
@@ -1226,12 +1212,9 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                 "path"
             ]
 
-            namespace_logger.info(f"Fetching {folder} folder's children")
             r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}", headers=headers)
             r.raise_for_status()
             subfolder = r.json()
-
-            namespace_logger.info(f"{folder} folder's children fetched: {subfolder}")
 
             children_content = subfolder["children"]
             manifest_dict[folder] = {}
@@ -1240,7 +1223,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                     # check subfolders surface to see if manifest files exist to then use within recursive_subfolder_check
                     package_name = items["content"]["name"]
                     package_id = items["content"]["id"]
-                    namespace_logger.info(f"Fetching {package_name} package's children")
                     if package_name in manifest_sparc:
                         # item is manifest
                         r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=headers)
