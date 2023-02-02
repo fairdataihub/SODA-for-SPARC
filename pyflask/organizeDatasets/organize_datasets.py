@@ -902,6 +902,20 @@ def set_certs_path(soda_base_path, soda_resources_path):
         CERTS_PATH = join(soda_resources_path, "pennsieve-io-chain.pem")
 
 
+def load_manifest_to_dataframe(node_id, type, ps_or_token):
+    """
+    Given a manifests package id and its storage type - excel or csv - returns a pandas dataframe.
+    IMP: Pass in the pennsieve token or pennsieve object to ps_or_token for authentication.
+    """
+    payload = {"data": {"nodeIds": [node_id]}}
+    headers = { "Content-Type" : "application/json" }
+    # headers = create_request_headers(ps_or_token)
+    r = requests.post(f"https://api.pennsieve.io/zipit/?api_key={ps_or_token}", json=payload, headers=headers)
+    if type == "csv":
+        return pd.read_csv(r.content, engine="openpyxl")
+    else:
+        return pd.read_excel(r.content, engine="openpyxl")
+
 
 
 def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
@@ -1235,31 +1249,19 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/files/{file_id}", headers=headers)
                         r.raise_for_status()
                         manifest_url = r.json()["url"]
-                        p = r.json()
-                        namespace_logger.info(p)
-
                         namespace_logger.info(f"Manifest url from {package_id}/{file_id} is: {manifest_url}")
 
                         df = ""
-                        try:
-                            namespace_logger.info("Reading manifest file with: ")
-                            import ssl
-
-                            
+                        try:                            
                             if package_name.lower() == "manifest.xlsx":
-                                # ssl._create_default_https_context = ssl._create_unverified_context
-                                namespace_logger.info(f"pd.read_excel")
-                                # df = None 
-                                # with fs3fs.open(manifest_url) as f:
-                                df = pd.read_excel(manifest_url, engine="openpyxl", storage_options={"verify": False})
-                                #df = pd.read_excel(manifest_url, engine="openpyxl")
-                                namespace_logger.info(f"pd.read_excel success")
+                                namespace_logger.info("pd.read_excel")
+                                df = load_manifest_to_dataframe(package_id, "excel", token)
+                                namespace_logger.info("pd.read_excel success")
                                 df = df.fillna("")
                             else:
                                 namespace_logger.info(f"pd.read_csv")
-                                df = pd.read_csv(manifest_url)
+                                df = load_manifest_to_dataframe(package_id, "csv", token)
                                 namespace_logger.info(f"pd.read_csv success")
-
                                 df = df.fillna("")
                             # 
                             manifest_dict[folder].update(df.to_dict())
