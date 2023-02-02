@@ -30,9 +30,6 @@ from utils import connect_pennsieve_client, get_dataset_id, create_request_heade
 from namespaces import NamespaceEnum, get_namespace_logger
 from openpyxl.styles import PatternFill, Font
 from openpyxl import load_workbook
-import s3fs
-
-fs3fs = s3fs.S3FileSystem(anon=False)
 
 import json
 namespace_logger = get_namespace_logger(NamespaceEnum.ORGANIZE_DATASETS)
