@@ -30,7 +30,9 @@ from utils import connect_pennsieve_client, get_dataset_id, create_request_heade
 from namespaces import NamespaceEnum, get_namespace_logger
 from openpyxl.styles import PatternFill, Font
 from openpyxl import load_workbook
+import s3fs
 
+fs3fs = s3fs.S3FileSystem(anon=False)
 
 import json
 namespace_logger = get_namespace_logger(NamespaceEnum.ORGANIZE_DATASETS)
@@ -1233,15 +1235,24 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/files/{file_id}", headers=headers)
                         r.raise_for_status()
                         manifest_url = r.json()["url"]
+                        p = r.json()
+                        namespace_logger.info(p)
 
                         namespace_logger.info(f"Manifest url from {package_id}/{file_id} is: {manifest_url}")
 
                         df = ""
                         try:
                             namespace_logger.info("Reading manifest file with: ")
+                            import ssl
+
+                            
                             if package_name.lower() == "manifest.xlsx":
+                                ssl._create_default_https_context = ssl._create_unverified_context
                                 namespace_logger.info(f"pd.read_excel")
-                                df = pd.read_excel(manifest_url, engine="openpyxl")
+                                # df = None 
+                                # with fs3fs.open(manifest_url) as f:
+                                df = pd.read_excel(manifest_url, engine="openpyxl", storage_options={"verify": False})
+                                #df = pd.read_excel(manifest_url, engine="openpyxl")
                                 namespace_logger.info(f"pd.read_excel success")
                                 df = df.fillna("")
                             else:
@@ -1258,6 +1269,8 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                             manifest_error_message.append(
                                 items["content"]["name"]
                             )
+                            # set the ssl context back to default
+                            ssl._create_default_https_context = ssl.
                 subfolder_section = soda_json_structure["dataset-structure"]["folders"][
                     folder
                 ]
