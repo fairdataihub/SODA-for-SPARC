@@ -1231,20 +1231,15 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         df = ""
                         try:                            
                             if package_name.lower() == "manifest.xlsx":
-                                namespace_logger.info("pd.read_excel")
                                 df = load_manifest_to_dataframe(package_id, "excel", token)
-                                namespace_logger.info("pd.read_excel success")
                                 df = df.fillna("")
                             else:
-                                namespace_logger.info(f"pd.read_csv")
                                 df = load_manifest_to_dataframe(package_id, "csv", token)
-                                namespace_logger.info(f"pd.read_csv success")
                                 df = df.fillna("")
                             # 
                             manifest_dict[folder].update(df.to_dict())
                         except Exception as e:
                             namespace_logger.info(f"Error reading manifest file: {e}")
-                            namespace_logger.info(items)
                             manifest_error_message.append(
                                 items["content"]["name"]
                             )
