@@ -413,11 +413,8 @@ def save_ds_description_file(
 ):
     source = join(TEMPLATE_PATH, "dataset_description.xlsx")
 
-    if upload_boolean:
-        destination = join(METADATA_UPLOAD_BF_PATH, "dataset_description.xlsx")
+    destination = join(METADATA_UPLOAD_BF_PATH, "dataset_description.xlsx") if upload_boolean else filepath
 
-    else:
-        destination = filepath
 
     shutil.copyfile(source, destination)
 
@@ -900,7 +897,7 @@ def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
                 return load_existing_submission_file(url, item_id, token)
 
             elif file_type == "dataset_description.xlsx":
-                return load_existing_DD_file("bf", url)
+                return load_existing_DD_file("bf", url, item_id, token)
 
             elif file_type == "subjects.xlsx":
                 return convert_subjects_samples_file_to_df("subjects", url, ui_fields)
@@ -1026,7 +1023,7 @@ def copytree(src, dst, symlinks=False, ignore=None):
 
 
 ## import an existing local or Pennsieve dataset_description.xlsx file
-def load_existing_DD_file(import_type, filepath):
+def load_existing_DD_file(import_type, filepath, item_id=None, token=None):
 
     ### the following block of code converts .xlsx file into .csv for better performance from Pandas.
     ### Currently pandas' read_excel is super slow - could take minutes.
@@ -1035,13 +1032,10 @@ def load_existing_DD_file(import_type, filepath):
 
     if import_type == "bf":
         try:
-
-            DD_df = pd.read_excel(
-                filepath, engine="openpyxl", usecols=column_check, header=0
-            )
-
-        except:
-            raise Exception(
+            DD_df = load_manifest_to_dataframe(item_id, "excel", token, column_check, 0)
+        except Exception as e:
+            namespace_logger.info(e)
+            raise Exception from e (
                 "SODA cannot read this submission.xlsx file. If you are trying to retrieve a submission.xlsx file from Pennsieve, please make sure you are signed in with your Pennsieve account on SODA."
             )
 

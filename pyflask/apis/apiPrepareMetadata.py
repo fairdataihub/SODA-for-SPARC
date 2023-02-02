@@ -198,7 +198,7 @@ class DatasetDescriptionFile(Resource):
         import_type = data.get('import_type')
 
         try:
-            return load_existing_DD_file(import_type, filepath)
+            return load_existing_DD_file(import_type, filepath, None, None)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))
