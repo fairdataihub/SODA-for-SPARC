@@ -1274,7 +1274,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                             namespace_logger.info(f"Error reading manifest file: {e}")
                             namespace_logger.info(items)
                             manifest_error_message.append(
-                                items["parent"]["content"]["name"]
+                                items["content"]["name"]
                             )
                 subfolder_section = soda_json_structure["dataset-structure"]["folders"][
                     folder
