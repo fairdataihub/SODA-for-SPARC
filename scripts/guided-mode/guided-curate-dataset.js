@@ -181,7 +181,11 @@ const objectsHaveSameKeys = (...objects) => {
   const union = new Set(allKeys);
   return objects.every((object) => union.size === Object.keys(object).length);
 };
-
+const getGuidedProgressFileNames = () => {
+  return fs
+    .readdirSync(guidedProgressFilePath)
+    .map((progressFileName) => progressFileName.replace(".json", ""));
+};
 const savePageChanges = async (pageBeingLeftID) => {
   // This function is used by both the navigation bar and the side buttons,
   // and whenever it is being called, we know that the user is trying to save the changes on the current page.
@@ -191,12 +195,6 @@ const savePageChanges = async (pageBeingLeftID) => {
   const errorArray = [];
   try {
     //save changes to the current page
-
-    const getGuidedProgressFileNames = () => {
-      return fs
-        .readdirSync(guidedProgressFilePath)
-        .map((progressFileName) => progressFileName.replace(".json", ""));
-    };
 
     const updateGuidedDatasetName = (newDatasetName) => {
       const previousDatasetName = sodaJSONObj["digital-metadata"]["name"];
@@ -279,11 +277,25 @@ const savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
 
+        const currentProgressFileNames = getGuidedProgressFileNames();
+        if (currentProgressFileNames.includes(selectedPennsieveDataset)) {
+          errorArray.push({
+            type: "swal",
+            title: "You already have a progress file for this dataset",
+            message: `
+              To resume progress saved in SODA for this dataset, please go back to the main page and click "continue curating" on the dataset you want to resume.
+              <br />
+              <br />
+              If you would like to restart your progress and edit the dataset as it is on Pennsieve, go back to the main menu and click "delete progress file" on the dataset you want to restart.
+            `,
+          });
+          throw errorArray;
+        }
+
         //Pull the dataset folders and files from Pennsieve\
         sodaJSONObj["bf-dataset-selected"] = {};
         sodaJSONObj["bf-dataset-selected"]["dataset-name"] = selectedPennsieveDataset;
         sodaJSONObj["bf-account-selected"]["account-name"] = defaultBfAccount;
-
         const importProgressCircle = document.querySelector(
           "#guided_loading_pennsieve_dataset-organize"
         );
@@ -11807,7 +11819,6 @@ $(document).ready(async () => {
 
       // set the templates path
       if (!supplementary_checks) {
-        $("#sidebarCollapse").prop("disabled", false);
         return;
       }
 
