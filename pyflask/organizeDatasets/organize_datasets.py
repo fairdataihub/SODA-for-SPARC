@@ -1134,7 +1134,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     # check that the user has permission to edit this dataset
     try:
         role = bf_get_current_user_permission_agent_two(selected_dataset_id, token)["role"]
-        namespace_logger.info(f"role: {role}")
         if role not in ["owner", "manager", "editor"]:
             curatestatus = "Done"
             raise Exception("You don't have permissions for uploading to this Pennsieve dataset")
@@ -1226,7 +1225,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/files/{file_id}", headers=headers)
                         r.raise_for_status()
                         manifest_url = r.json()["url"]
-                        namespace_logger.info(f"Manifest url from {package_id}/{file_id} is: {manifest_url}")
 
                         df = ""
                         try:                            
