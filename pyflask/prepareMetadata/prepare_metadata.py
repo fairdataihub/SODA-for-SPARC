@@ -21,7 +21,7 @@ from functools import partial
 from pennsieve2.pennsieve import Pennsieve
 #from pennsieve import Pennsieve
 from manageDatasets import bf_dataset_account
-from utils import ( connect_pennsieve_client, authenticate_user_with_client, get_dataset_id, create_request_headers, column_check, returnFileURL)
+from utils import ( connect_pennsieve_client, authenticate_user_with_client, get_dataset_id, create_request_headers, column_check, returnFileURL, load_manifest_to_dataframe)
 from permissions import has_edit_permissions, bf_get_current_user_permission_agent_two
 from collections import defaultdict
 import requests
@@ -811,12 +811,15 @@ def checkEmptyColumn(column):
 
 
 ## load/import an existing local or Pennsieve submission.xlsx file
-def load_existing_submission_file(filepath):
+def load_existing_submission_file(filepath, item_id=None, token=None):
 
     try:
-        DD_df = pd.read_excel(
-            filepath, engine="openpyxl", usecols=column_check, header=0
-        )
+        if filepath:
+            DD_df = pd.read_excel(
+                filepath, engine="openpyxl", usecols=column_check, header=0
+            )
+        else:
+            DD_df = load_manifest_to_dataframe(item_id, "excel", token, column_check, 0)
 
     except Exception as e:
         if is_file_not_found_exception(e):
@@ -894,7 +897,7 @@ def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
             url = returnFileURL(token, item_id)
 
             if file_type == "submission.xlsx":
-                return load_existing_submission_file(url)
+                return load_existing_submission_file(url, item_id, token)
 
             elif file_type == "dataset_description.xlsx":
                 return load_existing_DD_file("bf", url)
