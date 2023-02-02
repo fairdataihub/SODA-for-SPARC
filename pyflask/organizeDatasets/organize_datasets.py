@@ -1142,12 +1142,12 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
     # root of dataset is pulled here
     # root_children is the files and folders within root
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers, verify=False)
     r.raise_for_status()
     root_folder = r.json()
 
     # root's packages 
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/packageTypeCounts", headers=headers)
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/packageTypeCounts", headers=headers, verify=False)
     r.raise_for_status()
     packages_list = r.json()
 
