@@ -879,26 +879,6 @@ def monitor_local_json_progress():
     }
 
 
-def set_certs_path(soda_base_path, soda_resources_path):
-    """
-    Sets the CERTS_PATH using SODA-for-SPARC's basepath so that the prepare_metadata section can find
-    the templates stored in file_templates direcotory.
-    """
-    global CERTS_PATH
-
-
-    # once pysoda has been packaged with pyinstaller
-    # it creates an archive that slef extracts to an OS-specific temp directory.
-    # Due to this we can no longer use a relative path from the pysoda directory to the file_templates folder.
-    # When running in dev mode this also works
-    CERTS_PATH = join(soda_base_path, "pennsieve-io-chain.pem")
-
-    # check if os is Darwin/Linux
-    if platform.system() in ["Darwin", "Linux"] and not exists(CERTS_PATH):
-        # we are in production and we need to use the Resources folder for the file_templates folder
-        CERTS_PATH = join(soda_resources_path, "pennsieve-io-chain.pem")
-
-
 def load_manifest_to_dataframe(node_id, type, ps_or_token):
     """
     Given a manifests package id and its storage type - excel or csv - returns a pandas dataframe.
