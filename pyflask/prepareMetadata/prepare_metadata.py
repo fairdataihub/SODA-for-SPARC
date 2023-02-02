@@ -679,11 +679,13 @@ def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastruct
 
 
 # import an existing subjects/samples files from an excel file
-def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
-
-    subjects_df = pd.read_excel(
-        filepath, engine="openpyxl", usecols=column_check, header=0
-    )
+def convert_subjects_samples_file_to_df(type, filepath, ui_fields, item_id=None, token=None):
+    if item_id is not None: 
+        subjects_df = load_manifest_to_dataframe(item_id, "excel", token, column_check, 0)
+    else:
+        subjects_df = pd.read_excel(
+            filepath, engine="openpyxl", usecols=column_check, header=0
+        )
     subjects_df = subjects_df.dropna(axis=0, how="all")
     subjects_df = subjects_df.replace(np.nan, "", regex=True)
     subjects_df = subjects_df.applymap(str)
@@ -900,10 +902,10 @@ def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
                 return load_existing_DD_file("bf", url, item_id, token)
 
             elif file_type == "subjects.xlsx":
-                return convert_subjects_samples_file_to_df("subjects", url, ui_fields)
+                return convert_subjects_samples_file_to_df("subjects", url, ui_fields, item_id, token)
 
             elif file_type == "samples.xlsx":
-                return convert_subjects_samples_file_to_df("samples", url, ui_fields)
+                return convert_subjects_samples_file_to_df("samples", url, ui_fields, item_id, token)
 
     abort(400, 
         f"No {file_type} file was found at the root of the dataset provided."
