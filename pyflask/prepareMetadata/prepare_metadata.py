@@ -238,11 +238,17 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
     
     # upload the manifest file
     # ps.manifest.upload(m_id)
-    ps.manifest.upload(m_id)
-    # create a subscriber function with ps attached so it can be used to unusbscribe
-    subscriber_metadata_ps_client = partial(subscriber_metadata, ps)
-    # subscribe for the upload to finish
-    ps.subscribe(10, False, subscriber_metadata_ps_client)
+    try: 
+        ps.manifest.upload(m_id)
+        # create a subscriber function with ps attached so it can be used to unusbscribe
+        subscriber_metadata_ps_client = partial(subscriber_metadata, ps)
+        # subscribe for the upload to finish
+        ps.subscribe(10, False, subscriber_metadata_ps_client)
+    except Exception as e:
+        namespace_logger.error("Error uploading dataset files")
+        namespace_logger.error(e)
+        raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please try reinstalling the Pennsieve Agent.")
+
 
     # before we can remove files we need to wait for all of the Agent's threads/subprocesses to finish
     # elsewise we get an error that the file is in use and therefore cannot be deleted
