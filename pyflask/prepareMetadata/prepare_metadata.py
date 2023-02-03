@@ -802,7 +802,7 @@ def checkEmptyColumn(column):
 def load_existing_submission_file(filepath, item_id=None, token=None):
 
     try:
-        if filepath:
+        if item_id is None:
             DD_df = pd.read_excel(
                 filepath, engine="openpyxl", usecols=column_check, header=0
             )
