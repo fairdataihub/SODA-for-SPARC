@@ -750,17 +750,6 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields, item_id=None,
     return {"sample_file_rows": transposeMatrix(sortMatrix)} if type in ["samples.xlsx", "samples"] else {"subject_file_rows": transposeMatrix(sortMatrix)}
 
 
-### function to read existing Pennsieve manifest files and load info into a dictionary
-def convert_manifest_to_dict(url):
-
-    manifest_df = pd.read_excel(url, engine="openpyxl", usecols=column_check, header=0)
-    manifest_df = manifest_df.dropna(axis=0, how="all")
-    manifest_df = manifest_df.replace(np.nan, "", regex=True)
-    manifest_df = manifest_df.applymap(str)
-
-    return manifest_df.to_dict()
-
-
 def checkEmptyColumn(column):
     for element in column:
         if element:
