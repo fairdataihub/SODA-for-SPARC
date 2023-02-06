@@ -45,5 +45,5 @@ jobs:
           appleId: ${{ secrets.APPLE_ID }}
           appleIdPassword: ${{ secrets.APPLE_PASSWORD }}
         run: |
-          python-onefile-build-validator-mac
+          npm run python-onefile-build-validator-mac
           npm run deploy-mac
