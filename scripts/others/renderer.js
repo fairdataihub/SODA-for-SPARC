@@ -491,18 +491,24 @@ const stopPennsieveAgent = async () => {
     "No Pennsieve Agent running",
   ];
   return new Promise((resolve, reject) => {
-    const agentStopSpawn = spawn("pennsieve", ["agent", "stop"]);
-    agentStopSpawn.stdout.on("data", (data) => {
-      console.log("data", data.toString());
-      // if the data output contains a substring of the successful messages, resolve the promise
-      if (successfulStopStdOut.some((msg) => data.toString().includes(msg))) {
-        console.log("resolving true");
-        resolve();
-      }
-    });
-    agentStopSpawn.stderr.on("data", (data) => {
-      reject(new Error(data.toString()));
-    });
+    try {
+      const agentStopSpawn = spawn("pennsieve", ["agent", "stop"]);
+      agentStopSpawn.stdout.on("data", (data) => {
+        console.log("data", data.toString());
+        // if the data output contains a substring of the successful messages, resolve the promise
+        if (successfulStopStdOut.some((msg) => data.toString().includes(msg))) {
+          console.log("resolving true");
+          resolve();
+        }
+      });
+      agentStopSpawn.stderr.on("data", (data) => {
+        console.log(data.toString());
+        reject(new Error(data.toString()));
+      });
+    } catch (e) {
+      console.log(e);
+      reject(e);
+    }
   });
 };
 
