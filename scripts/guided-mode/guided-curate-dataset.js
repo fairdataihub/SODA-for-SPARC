@@ -11814,13 +11814,6 @@ $(document).ready(async () => {
         ipcRenderer.send("track-event", "Error", "Setting Templates Path");
         throw "Error setting templates path";
       }
-      //Run ple flight checks to ensure SODA is prepared to upload to Pennsieve
-      let supplementary_checks = await run_pre_flight_checks(false);
-
-      // set the templates path
-      if (!supplementary_checks) {
-        return;
-      }
 
       //Display the Pennsieve metadata upload table
       unHideAndSmoothScrollToElement("guided-div-pennsieve-metadata-upload-status-table");
@@ -12537,72 +12530,11 @@ $(document).ready(async () => {
   });
 
   $("#guided-generate-dataset-button").on("click", async function () {
-    // If no agent is installed, download the latest agent from Github and link to their docs for installation instrucations if needed.
-    const [agent_installed_response, agent_version_response] = await check_agent_installed();
-    if (!agent_installed_response) {
-      Swal.fire({
-        icon: "error",
-        title: "Pennsieve Agent error!",
-        html: agent_version_response,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: "Download now",
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          try {
-            let [browser_download_url, latest_agent_version] = await get_latest_agent_version();
-            shell.openExternal(browser_download_url);
-            shell.openExternal("https://docs.pennsieve.io/v1/docs/the-pennsieve-agent");
-          } catch (e) {
-            await Swal.fire({
-              icon: "error",
-              text: "We are unable to get the latest version of the Pennsieve Agent. Please try again later. If this issue persists please contact the SODA team at help@fairdataihub.org",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              showCancelButton: true,
-              confirmButtonText: "Ok",
-              showClass: {
-                popup: "animate__animated animate__zoomIn animate__faster",
-              },
-              hideClass: {
-                popup: "animate__animated animate__zoomOut animate__faster",
-              },
-            });
-          }
-        }
-      });
+    //run pre flight checks and abort if any fail
+    let supplementary_checks = await run_pre_flight_checks(false);
+    if (!supplementary_checks) {
       return;
     }
-    /*
-    const allNonSkippedPages = getNonSkippedGuidedModePages(document).map((element) => element.id);
-
-    //If the user is skipping forward with the nav bar, pages between current page and target page
-    //Need to be validated. If they're going backwards, the for loop below will not be ran.
-    for (const page of allNonSkippedPages) {
-      try {
-        await checkIfPageIsValid(page);
-      } catch (error) {
-        await openPage(page);
-        await Swal.fire({
-          title: "An error occurred while ensuring your dataset is ready to be uploaded",
-          html: `You must fix the following errors generating your:
-              <br />
-              <br />
-              <ul>
-                ${error.map((error) => `<li class="text-left">${error.message}</li>`).join("")}
-              </ul>
-            `,
-          icon: "error",
-          confirmButtonText: "Fix the errors on this page",
-          focusConfirm: true,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          width: 500,
-        });
-        return;
-      }
-    }*/
-
     await openPage("guided-dataset-generation-tab");
     guidedPennsieveDatasetUpload();
   });
