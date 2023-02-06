@@ -4,7 +4,7 @@ run-name: ${{ github.actor }} is building a MAC release for SODA
 on:
   push:
     branches:
-      - main
+      - validator-phase-4-jan
 
 jobs:
   deploy-on-mac:
@@ -45,5 +45,5 @@ jobs:
           appleId: ${{ secrets.APPLE_ID }}
           appleIdPassword: ${{ secrets.APPLE_PASSWORD }}
         run: |
-          npm run python-onefile-build
+          python-onefile-build-validator-mac
           npm run deploy-mac
