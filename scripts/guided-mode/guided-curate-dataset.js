@@ -11716,6 +11716,7 @@ $(document).ready(async () => {
   };
 
   const guidedPennsieveDatasetUpload = async () => {
+    guidedSetNavLoadingState(true);
     try {
       const guidedBfAccount = defaultBfAccount;
       const guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
@@ -11937,6 +11938,7 @@ $(document).ready(async () => {
       app.showExitPrompt = false;
       app.quit();
     }
+    guidedSetNavLoadingState(false);
   };
   const openGuidedDatasetRenameSwal = async () => {
     const currentDatasetUploadName = sodaJSONObj["digital-metadata"]["name"];
