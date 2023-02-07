@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Bug fixes:
 
 - Fixed an issue causing Guided Mode dataset imports to reject when proper criteria are met.
+- Fixed an issue causing the Pennsieve Agent to not start up properly
 - Fixed an issue on Mac and Linux where importing a dataset with manifest files present would cause the import to fail.
 - Fixed an issue on Mac and Linux where importing metadata files would fail.
 
