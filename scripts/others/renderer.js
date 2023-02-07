@@ -581,7 +581,7 @@ const startPennsieveAgentAndCheckVersion = async () => {
       const { value: result } = await Swal.fire({
         icon: "error",
         title: "Pennsieve Agent Not Found",
-        text: "It looks like the Pennsieve Agent is not installed on your computer. Please download the latest version of the Pennsieve Agent and install it on your computer. Once you have installed the Pennsieve Agent, please restart SODA.",
+        text: "It looks like the Pennsieve Agent is not installed on your computer. Please download the latest version of the Pennsieve Agent and install it. Once you have installed the Pennsieve Agent, please restart SODA.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showCancelButton: true,
