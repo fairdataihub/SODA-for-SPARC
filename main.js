@@ -316,7 +316,6 @@ function initialize() {
           mainWindow.reload();
           mainWindow.focus();
           nodeStorage.setItem("firstlaunch", false);
-          run_pre_flight_checks();
         }
         if (announcementsLaunch == true || announcementsLaunch == undefined) {
           checkForAnnouncements();
