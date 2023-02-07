@@ -131,7 +131,7 @@ def create(soda_json_structure):
 
     create_skeleton(soda_json_structure["dataset-structure"], path)
 
-    
+
 
     # Add the metadata files to the root of the skeleton dataset 
     if "metadata-files" in soda_json_structure:
@@ -145,9 +145,6 @@ def create(soda_json_structure):
             else:
                 # get the file location from the user's computer
                 file_location = props["path"]
-
-            # create the file at the root of the skeleton dataset 
-            shutil.copyfile(file_location, os.path.join(path, metadata_file_name))
 
 
     return {"path_to_skeleton_dataset": path}
