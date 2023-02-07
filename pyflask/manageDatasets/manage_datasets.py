@@ -170,16 +170,9 @@ def bf_add_account_api_key(keyname, key, secret):
         config.add_section(keyname)
         config.set(keyname, "api_token", key)
         config.set(keyname, "api_secret", secret)
-        # config.set(keyname, "api_host", PENNSIEVE_URL)
-
-
-        # add the profile under the global section 
-        if config.has_section("global"):
-            config.set("global", "default_profile", keyname)
-        else:
+        if not config.has_section("global"):
             config.add_section("global")
-            config.set("global", "default_profile", keyname)
-
+        config.set("global", "default_profile", keyname)
         with open(configpath, "w") as configfile:
             config.write(configfile)
 
@@ -388,10 +381,7 @@ def check_forbidden_characters_bf(my_string):
         True: presence of forbidden character(s)
     """
     regex = re.compile(f"[{forbidden_characters_bf}]")
-    if regex.search(my_string) == None and "\\" not in r"%r" % my_string:
-        return False
-    else:
-        return True
+    return regex.search(my_string) is not None or "\\" in r"%r" % my_string
 
 
 
@@ -576,11 +566,11 @@ def in_sparc_organization(token):
 
     # add the sparc consortium as the organization name if the user is a member of the consortium
     organizations = r.json()
-    for org in organizations["organizations"]:
-        if org["organization"]["id"] == "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
-            return True 
-    
-    return False
+    return any(
+        org["organization"]["id"]
+        == "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
+        for org in organizations["organizations"]
+    )
 
 
 
@@ -656,11 +646,7 @@ def create_new_dataset(datasetname, accountname):
         datasetname = datasetname.strip()
 
         if check_forbidden_characters_bf(datasetname):
-            error = (
-                "A Pennsieve dataset name cannot contain any of the following characters: "
-                + forbidden_characters_bf
-                + "<br>"
-            )
+            error = f"A Pennsieve dataset name cannot contain any of the following characters: {forbidden_characters_bf}<br>"
             abort(400, error)
 
         if not datasetname or datasetname.isspace():
@@ -674,11 +660,10 @@ def create_new_dataset(datasetname, accountname):
         for ds in datasets:
             if ds["content"]["name"] == datasetname:
                 abort(400, "Dataset name already exists")
-        else:
-            r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(token), json={"name": datasetname})
-            r.raise_for_status()
-            ds_id = r.json()['content']['id']
-            return {"id": ds_id}
+        r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(token), json={"name": datasetname})
+        r.raise_for_status()
+        ds_id = r.json()['content']['id']
+        return {"id": ds_id}
 
     except Exception as e:
         raise e
@@ -800,7 +785,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
             namespace_logger.info(current_bytes_uploaded)
 
 
-            
+
             # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
             previous_bytes_uploaded = bytes_uploaded_per_file.get(file_id, 0)
 
@@ -816,8 +801,10 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
             if current_bytes_uploaded == total_bytes_to_upload and file_id != "":
                 files_uploaded += 1
                 # main_curation_uploaded_files += 1
-                namespace_logger.info("Files Uploaded: " + str(files_uploaded) + "/" + str(total_dataset_files))
-                # namespace_logger.info("Total Bytes
+                namespace_logger.info(
+                    f"Files Uploaded: {files_uploaded}/{total_dataset_files}"
+                )
+                            # namespace_logger.info("Total Bytes
 
             # check if the upload has finished
             if files_uploaded == total_dataset_files:
@@ -825,6 +812,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
                 # namespace_logger.info("Upload complete")
                 # unsubscribe from the agent's upload messages since the upload has finished
                 ps.unsubscribe(10)
+
 
 
     # check if the local dataset folder exists
@@ -838,7 +826,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         abort(400, error_message)
 
     total_file_size = 1
-   
+
 
     # initialize the Pennsieve client 
     try:
@@ -925,7 +913,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         did_upload = False
         error_message = "Could not create manifest file for this dataset"
         abort(500, e)
-    
+
 
     # upload the dataset
     try:
@@ -1136,7 +1124,7 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
                 team_name = list_dataset_permission_teams[i]["name"]
                 team_role = list_dataset_permission_teams[i]["role"]
                 list_dataset_permission_first_last_role.append(
-                    "Team: " + team_name + ", role: " + team_role
+                    f"Team: {team_name}, role: {team_role}"
                 )
                 team_id = list_dataset_permission_teams[i]["id"]
                 team_ids.append({"team_id": team_id, "team_role": team_role})
@@ -1150,13 +1138,10 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
         if type(list_dataset_permission_organizations) is dict:
             organization_keys = list(list_dataset_permission_organizations.keys())
             if "role" in organization_keys:
-                organization_name = list_dataset_permission_organizations["name"]
                 organization_role = list_dataset_permission_organizations["role"]
+                organization_name = list_dataset_permission_organizations["name"]
                 list_dataset_permission_first_last_role.append(
-                    "Organization: "
-                    + organization_name
-                    + ", role: "
-                    + organization_role
+                    f"Organization: {organization_name}, role: {organization_role}"
                 )
         else:
             for i in range(len(list_dataset_permission_organizations)):
@@ -1164,13 +1149,10 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
                     list_dataset_permission_organizations[i].keys()
                 )
                 if "role" in organization_keys:
-                    organization_name = list_dataset_permission_organizations[i]["name"]
                     organization_role = list_dataset_permission_organizations[i]["role"]
+                    organization_name = list_dataset_permission_organizations[i]["name"]
                     list_dataset_permission_first_last_role.append(
-                        "Organization: "
-                        + organization_name
-                        + ", role: "
-                        + organization_role
+                        f"Organization: {organization_name}, role: {organization_role}"
                     )
 
         return {"permissions": list_dataset_permission_first_last_role, "team_ids": team_ids}
@@ -1217,7 +1199,7 @@ def bf_add_permission(
                 user_present = True
                 break
         if user_present == False:
-            error = error + "Please select a valid user" + "<br>"
+            error = f"{error}Please select a valid user<br>"
             c += 1
     except Exception as e:
         raise e
@@ -1228,12 +1210,12 @@ def bf_add_permission(
         "owner",
         "remove current permissions",
     ]:
-        error = error + "Please select a valid role" + "<br>"
+        error = f"{error}Please select a valid role<br>"
         c += 1
 
     if c > 0:
         abort(400, error)
-    
+
     try:
         # check that currently logged in user is a manager or a owner of the selected dataset (only manager and owner can change dataset permission)
         r = requests.get(f"{PENNSIEVE_URL}/user", headers=headers)
