@@ -173,7 +173,6 @@ document.getElementById("getting_starting_tab").click();
 
 let launchAnnouncement = false;
 ipcRenderer.on("checkForAnnouncements", (event, index) => {
-  console.log("received from main");
   launchAnnouncement = true;
   let nodeStorage = new JSONStorage(app.getPath("userData"));
   nodeStorage.setItem("announcements", false);
@@ -415,7 +414,6 @@ const startupServerAndApiCheck = async () => {
 
   // let nodeStorage = new JSONStorage(app.getPath("userData"));
   // launchAnnouncement = nodeStorage.getItem("announcements");
-  console.log(launchAnnouncement);
   if (launchAnnouncement) {
     // nodeStorage.setItem("announcements", false);
     await checkForAnnouncements("announcements");
@@ -780,7 +778,6 @@ const run_pre_flight_checks = async (check_update = true) => {
 
   // let nodeStorage = new JSONStorage(app.getPath("userData"));
   // launchAnnouncement = nodeStorage.getItem("announcements");
-  console.log(launchAnnouncement);
   if (launchAnnouncement) {
     // nodeStorage.setItem("announcements", false);
     await checkForAnnouncements("announcements");

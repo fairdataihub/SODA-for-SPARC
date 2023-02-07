@@ -10362,7 +10362,6 @@ const renderSubjectsMetadataAsideItems = async () => {
 };
 
 const renderSamplesMetadataAsideItems = async () => {
-  console.log("renderSamplesMetadataAsideItems");
   const asideElement = document.getElementById(`guided-samples-metadata-aside`);
   asideElement.innerHTML = "";
 
