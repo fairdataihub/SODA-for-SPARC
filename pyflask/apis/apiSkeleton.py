@@ -29,6 +29,8 @@ class SkeletonDataset(Resource):
 
         sodajsonobject = data["sodajsonobject"]
 
+        api.logger.info(f"Creating skeleton dataset structure {sodajsonobject}")
+
         # create the skeleton dataset structure in the ~/SODA/skeleton directory
         try:
             return create(sodajsonobject)
