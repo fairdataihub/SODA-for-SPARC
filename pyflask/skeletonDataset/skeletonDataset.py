@@ -5,12 +5,10 @@ Works within Organize Datasets to allow a user to validate their dataset before 
 """
 
 import os
-from posixpath import expanduser
 import shutil
 from xml.dom import InvalidStateErr
-from pathlib import Path
-from sparcur.simple.validate import main as validate
 import copy
+from os.path import expanduser
 from .skeletonDatasetUtils import import_bf_metadata_files_skeleton, import_manifest_files_skeleton
 from pennsieve2.pennsieve import Pennsieve
 from manifest import ManifestBuilderBase, ManifestBuilder
@@ -158,141 +156,6 @@ def create(soda_json_structure, selected_account, selected_dataset, pennsieve_pi
 
     return {"path_to_skeleton_dataset": path}
 
-    # run the validator on the skeleton
-    # norm_ds_path = Path(path)
-
-    # # validate the dataset
-    # blob = validate(norm_ds_path) 
-
-    # # write the blob to validation.txt in the current directory
-    # with open("validation.txt", "w") as f:
-    #     f.write(str(blob))
-
-    # validate_validation_result(blob)
-
-    # # peel out the status object 
-    # status = blob.get('status')
-
-    # # peel out the path_error_report object
-    # path_error_report = status.get('path_error_report')
-
-    # get the errors out of the report that do not have errors in their subpaths (see function comments for the explanation)
-    # print(parse(path_error_report))
-
-
-soda_json_structure = {
-    "starting-point": {
-        "type": "new"
-    },
-    "dataset-structure": {
-        "folders": {
-            "code": {
-                "folders": {
-                    "nested": {
-                        "folders": {},
-                        "files": {
-                            "subjects.xlsx": {
-                                "path": "{{path_to_test_files}}/subjects.xlsx",
-                                "type": "local",
-                                "description": "",
-                                "additional-metadata": "",
-                                "action": [
-                                    "new", "updated"
-                                ]
-                            } 
-                        },
-                        "type": "bf",
-                        "action": ["existing"], 
-                        "path": "N:collection:d8ea5d4b-67d9-475e-91c9-9b203ade23a0"
-                    }
-                },
-                "files": {
-                    "code_description.xlsx": {
-                        "path": "N:package:9e20b5c7-b03e-4ac5-b564-c20cd7e7e161",
-                        "type": "bf",
-                        "description": "",
-                        "additional-metadata": "",
-                        "action": [
-                            "existing"
-                        ]
-                    }, 
-                    "subjects.xlsx": {
-                        "path": "N:package:e5f7027c-983d-4ef5-bfab-49ec561fe1ee",
-                        "type": "bf",
-                        "description": "",
-                        "additional-metadata": "",
-                        "action": [
-                            "existing"
-                        ]
-                    }
-                },
-                "type": "bf",
-                "action": [],
-                "path": "N:collection:b52b05be-4aec-4540-a4c8-5a6d04229dbe"
-            }, 
-            "primary": {
-                "folders": {},
-                "files": {
-                    "code_description.xlsx": {
-                        "path": "N:package:ee8c3d56-fa40-4a03-bd61-f1be95b9ff50",
-                        "type": "bf",
-                        "description": "",
-                        "additional-metadata": "",
-                        "action": [
-                            "existing"
-                        ]
-                    }, 
-                    "subjects.xlsx": {
-                        "path": "N:package:4d9d9dd5-06e4-48c2-a471-c2d3f133f324",
-                        "type": "bf",
-                        "description": "",
-                        "additional-metadata": "",
-                        "action": [
-                            "existing"
-                        ]
-                    }, 
-                    "submission.xlsx": {
-                        "path": "{{path_to_test_files}}/submission.xlsx",
-                        "type": "local",
-                        "description": "",
-                        "additional-metadata": "",
-                        "action": [
-                            "new"
-                        ]
-                    }
-                },
-                "type": "",
-                "action": [], 
-                "path": "N:collection:127b61fb-db00-4eba-a0f0-33828f536c9f"
-            }
-        },
-        "files": {}
-    },
-    "metadata-files": {
-        "subjects.xlsx": { 
-            "action": ["new"],
-            "destination": "generate-dataset",
-            "path": "/home/cmarroquin/Desktop/subjects.xlsx",  
-            "type": "local"
-        }
-    },
-    "generate-dataset": {
-        "destination": "bf",
-        "generate-option": "existing-bf",
-        "dataset-name": "974-files",
-        "if-existing": "create-duplicate",
-        "if-existing-files": "create-duplicate"
-    },
-    "bf-account-selected": {
-        "account-name": "soda"
-    }, 
-    "bf-dataset-selected": {
-                "dataset-name": "974-files"
-            }
-}
-
-
-# create(soda_json_structure, "", "", False)
 
 
 
