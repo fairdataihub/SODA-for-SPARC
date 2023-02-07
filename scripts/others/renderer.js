@@ -484,7 +484,7 @@ const getPennsieveAgentPath = () => {
   }
 };
 
-const stopPennsieveAgent = async () => {
+const stopPennsieveAgent = async (pathToPennsieveAgent) => {
   console.log("stopPennsieveAgent");
   const successfulStopStdOut = [
     "Pennsieve Agent successfully stopped",
@@ -492,7 +492,7 @@ const stopPennsieveAgent = async () => {
   ];
   return new Promise((resolve, reject) => {
     try {
-      const agentStopSpawn = spawn("pennsieve", ["agent", "stop"]);
+      const agentStopSpawn = spawn(pathToPennsieveAgent, ["agent", "stop"]);
       agentStopSpawn.stdout.on("data", (data) => {
         console.log("data", data.toString());
         // if the data output contains a substring of the successful messages, resolve the promise
@@ -598,7 +598,7 @@ const startPennsieveAgentAndGetVersion = async () => {
   }
 
   try {
-    await stopPennsieveAgent();
+    await stopPennsieveAgent(agentPath);
   } catch (error) {
     console.log("Error stopping Pennsieve agent: ", error);
   }
