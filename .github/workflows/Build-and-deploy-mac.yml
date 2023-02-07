@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - main
-      - pennsieve-agent-child-process
 
 jobs:
   deploy-on-mac:
