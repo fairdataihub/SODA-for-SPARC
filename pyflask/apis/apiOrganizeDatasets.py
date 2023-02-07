@@ -40,6 +40,8 @@ class BfGetDatasetFilesFolders(Resource):
     def post(self):
         data = request.get_json()
 
+        api.logger.info("In the test route")
+
         if "sodajsonobject" not in data:
             api.abort(400, "Missing parameter: sodajsonobject")
 
@@ -147,3 +149,4 @@ class ImportDatasetPennsieveProgress(Resource):
             return monitor_pennsieve_json_progress()
         except Exception as e:
             api.abort(500, str(e))
+

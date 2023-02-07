@@ -7,6 +7,7 @@ from os import makedirs, remove, listdir
 from datetime import datetime
 import pathlib
 import shutil 
+from utils import load_manifest_to_dataframe
 
 import pandas as pd
 import requests 
@@ -71,11 +72,9 @@ def update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level
                         remove(join(manifest_folder, "manifest.xlsx"))
 
                     item_id = j["content"]["nodeId"]
-                    url = returnFileURL(ps, item_id)
+                    # url = returnFileURL(ps, item_id)
 
-                    manifest_df = pd.read_excel(
-                        url, engine="openpyxl", usecols=column_check, header=0
-                    )
+                    manifest_df = load_manifest_to_dataframe(item_id, "excel", ps, column_check, 0)
 
                     filepath = join(
                         manifest_path, folder_name, "manifest.xlsx"

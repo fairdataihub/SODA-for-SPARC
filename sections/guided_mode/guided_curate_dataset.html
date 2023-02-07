@@ -333,27 +333,28 @@
               Click "Save and Continue" to start curating a new dataset from scratch
             </h2>
           </div>
-          <!--
-          <div class="guided--section" id="guided-section-import-local-dataset">
-            <h1 class="guided--text-sub-step">Where is your dataset located?</h1>
-            <div class="field" style="display: flex; justify-content: center; width: 100%">
-              <input
-                class="form-control"
-                style="width: 600px !important; cursor: pointer"
-                id="guided-input-destination-getting-started-locally"
-                type="text"
-                readonly
-                placeholder="Browse here"
-              />
-            </div>
-            <p
-              class="hidden"
-              style="color: red; width: 500px; text-align: left; margin: auto"
-              id="guided-input-destination-getting-started-locally-warning-message"
-            ></p>
-          </div>
-          -->
+
           <div class="guided--section" id="guided-section-select-pennsieve-dataset-to-resume">
+            <div class="guided--panel mt-0" id="guided-panel-pennsieve-dataset-import-error">
+              <label class="guided--form-label centered mb-sm mt-lg"
+                >There was an error importing datasets from Pennsieve
+              </label>
+              <p class="guided--help-text" style="margin-top: 1em">
+                <b>Error message: </b
+                ><span id="guided-pennsieve-dataset-import-error-message"></span>
+              </p>
+              <button
+                class="ui positive button"
+                style="
+                  background-color: var(--color-light-green) !important;
+                  width: 300px !important;
+                "
+                onclick="renderGuidedResumePennsieveDatasetSelectionDropdown()"
+              >
+                Retry fetching datasets from Pennsieve
+              </button>
+            </div>
+
             <div class="guided--panel mt-0" id="guided-panel-pennsieve-dataset-import-loading">
               <div class="lds-roller">
                 <div></div>
@@ -1110,7 +1111,7 @@
             <h1 class="guided--text-sub-step">Source data for subjects and samples</h1>
             <p class="guided--help-text">
               Source data refers to unaltered, raw files from an experiment. For example, this may
-              include the “truly” raw k-space data for a Magnetic Resonance (MR) image that has not
+              include the "truly" raw k-space data for a Magnetic Resonance (MR) image that has not
               yet been reconstructed (in this case, the reconstructed DICOM or NIFTI files would be
               found within the primary folder).
             </p>

@@ -8,10 +8,6 @@ authors:
   family-names: Patel
   given-names: Bhavesh
 - affiliation: FAIR Data Innovations Hub
-  email: tno@calmi2.org
-  family-names: Ngo
-  given-names: Tram
-- affiliation: FAIR Data Innovations Hub
   email: ssoundarajan@calmi2.org
   family-names: Soundarajan
   given-names: Sanjay
@@ -28,11 +24,11 @@ authors:
   family-names: Portillo
   given-names: Dorian
 cff-version: 1.2.0
-date-released: '2022-11-02'
+date-released: '2023-01-26'
 identifiers:
 - description: DOI for this software's record on Zenodo
   type: doi
-  value: 10.5281/zenodo.7275186
+  value: 10.5281/zenodo.7574397
 keywords:
 - SPARC
 - FAIR
@@ -49,4 +45,4 @@ repository-code: https://github.com/fairdataihub/SODA-for-SPARC
 title: SODA (Software to Organize Data Automatically) for SPARC
 type: software
 url: https://fairdataihub.org/
-version: 9.4.0
+version: 10.0.0

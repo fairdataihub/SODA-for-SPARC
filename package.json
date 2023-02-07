@@ -94,6 +94,10 @@
         {
           "from": "./file_templates",
           "to": "./file_templates"
+        },
+        {
+          "from": "./pennsieve-io-chain.pem",
+          "to": "./pennsieve-io-chain.pem"
         }
       ]
     },

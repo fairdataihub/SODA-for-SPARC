@@ -30,6 +30,7 @@ from utils import connect_pennsieve_client, get_dataset_id, create_request_heade
 from namespaces import NamespaceEnum, get_namespace_logger
 from openpyxl.styles import PatternFill, Font
 from openpyxl import load_workbook
+from utils import load_manifest_to_dataframe
 
 import json
 namespace_logger = get_namespace_logger(NamespaceEnum.ORGANIZE_DATASETS)
@@ -880,6 +881,7 @@ def monitor_local_json_progress():
 
 
 
+
 def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     global namespace_logger
     high_level_sparc_folders = [
@@ -1105,8 +1107,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     except Exception as e:
         raise e 
 
-    namespace_logger.info(f"bf_account_name: {bf_account_name}")
-
     token = get_access_token()
 
     # check that the Pennsieve dataset is valid
@@ -1121,12 +1121,12 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     # check that the user has permission to edit this dataset
     try:
         role = bf_get_current_user_permission_agent_two(selected_dataset_id, token)["role"]
-        namespace_logger.info(f"role: {role}")
         if role not in ["owner", "manager", "editor"]:
             curatestatus = "Done"
             raise Exception("You don't have permissions for uploading to this Pennsieve dataset")
     except Exception as e:
         abort(401, "You do not have permissions to edit upload this Pennsieve dataset.")
+
 
     # surface layer of dataset is pulled. then go through through the children to get information on subfolders
     manifest_dict = {}
@@ -1140,6 +1140,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     # headers for making requests to Pennsieve's api
     headers = create_request_headers(token)
 
+
     # root of dataset is pulled here
     # root_children is the files and folders within root
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
@@ -1150,6 +1151,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/packageTypeCounts", headers=headers)
     r.raise_for_status()
     packages_list = r.json()
+
 
     # root's children files
     for count in packages_list.values():
@@ -1188,6 +1190,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
             collection_id = soda_json_structure["dataset-structure"]["folders"][folder][
                 "path"
             ]
+
             r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}", headers=headers)
             r.raise_for_status()
             subfolder = r.json()
@@ -1211,19 +1214,21 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         manifest_url = r.json()["url"]
 
                         df = ""
-                        try:
+                        try:                            
                             if package_name.lower() == "manifest.xlsx":
-                                df = pd.read_excel(manifest_url, engine="openpyxl")
+                                df = load_manifest_to_dataframe(package_id, "excel", token)
                                 df = df.fillna("")
                             else:
-                                df = pd.read_csv(manifest_url)
+                                df = load_manifest_to_dataframe(package_id, "csv", token)
                                 df = df.fillna("")
                             # 
                             manifest_dict[folder].update(df.to_dict())
                         except Exception as e:
+                            namespace_logger.info(f"Error reading manifest file: {e}")
                             manifest_error_message.append(
-                                items["parent"]["content"]["name"]
+                                items["content"]["name"]
                             )
+
                 subfolder_section = soda_json_structure["dataset-structure"]["folders"][
                     folder
                 ]
