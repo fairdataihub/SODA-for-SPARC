@@ -2646,11 +2646,16 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             file_uploaded = 0
             
             # upload the manifest files
-            ps.manifest.upload(manifest_id)
+            try: 
+                ps.manifest.upload(manifest_id)
 
-            main_curate_progress_message = ("Uploading data files...")
+                main_curate_progress_message = ("Uploading data files...")
 
-            ps.subscribe(10, False, monitor_subscriber_progress)
+                ps.subscribe(10, False, monitor_subscriber_progress)
+            except Exception as e:
+                namespace_logger.error("Error uploading dataset files")
+                namespace_logger.error(e)
+                raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a href='https://docs.sodaforsparc.io/docs/next/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
 
 
             
@@ -2678,10 +2683,15 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             files_uploaded = 0
 
             # upload the manifest 
-            ps.manifest.upload(manifest_id)
+            try:
+                ps.manifest.upload(manifest_id)
 
-            # subscribe to the manifest upload so we wait until it has finished uploading before moving on
-            ps.subscribe(10, False, monitor_subscriber_progress)
+                # subscribe to the manifest upload so we wait until it has finished uploading before moving on
+                ps.subscribe(10, False, monitor_subscriber_progress)
+            except Exception as e:
+                namespace_logger.error("Error uploading metadata files")
+                namespace_logger.error(e)
+                raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a href='https://docs.sodaforsparc.io/docs/next/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
 
 
         namespace_logger.info("Finished uploading metadata files")
@@ -2714,10 +2724,15 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
             namespace_logger.info(f"Uploading {total_manifest_files} manifest files to Pennsieve.")
 
-            # upload the manifest 
-            ps.manifest.upload(manifest_id)
+            try: 
+                # upload the manifest 
+                ps.manifest.upload(manifest_id)
 
-            ps.subscribe(10, False, monitor_subscriber_progress)
+                ps.subscribe(10, False, monitor_subscriber_progress)
+            except Exception as e:
+                namespace_logger.error("Error uploading manifest files")
+                namespace_logger.error(e)
+                raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a href='https://docs.sodaforsparc.io/docs/next/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
 
         #wait a few memoments
         # before we can remove files we need to wait for all of the Agent's threads/subprocesses to finish

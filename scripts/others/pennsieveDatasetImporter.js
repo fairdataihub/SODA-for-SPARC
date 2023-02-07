@@ -81,7 +81,6 @@ const bf_request_and_populate_dataset = async (
     let data = filesFoldersResponse.data;
 
     ipcRenderer.send("track-event", "Success", "Retrieve Dataset - Pennsieve", defaultBfDatasetId);
-    console.log(data);
     return data;
   } catch (error) {
     importError = true;
