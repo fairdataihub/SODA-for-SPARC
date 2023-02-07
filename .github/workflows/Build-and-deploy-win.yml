@@ -4,7 +4,8 @@ run-name: ${{ github.actor }} is building a Windows release for SODA
 on:
   push:
     branches:
-      - do-not-trigger
+      - main
+      - pennsieve-agent-child-process
 
 jobs:
   deploy-on-windows:
