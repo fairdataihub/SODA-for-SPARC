@@ -146,6 +146,9 @@ def create(soda_json_structure):
                 # get the file location from the user's computer
                 file_location = props["path"]
 
+                # copy the file to the skeleton dataset 
+                shutil.copy(file_location, path)
+
 
     return {"path_to_skeleton_dataset": path}
 
