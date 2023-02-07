@@ -2,6 +2,7 @@ import os.path
 import pandas as pd
 from pennsieve2.pennsieve import Pennsieve
 import requests
+from utils import create_request_headers
 
 #from utils import create_request_headers
 
@@ -11,22 +12,6 @@ HIGH_LEVEL_FOLDERS = ["primary", "code", "derivative", "docs", "source", "protoc
 PENNSIEVE_URL = "https://api.pennsieve.io"
 path = os.path.join(os.path.expanduser("~"), "SODA", "skeleton")
 
-def create_request_headers(ps_or_token):
-    """
-    Creates necessary HTTP headers for making Pennsieve API requests.
-    Input: 
-        ps: Pennsieve object for a user that has been authenticated
-    """
-    if type(ps_or_token) == str:
-        return {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {ps_or_token}",
-        }
-    
-    return {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {ps_or_token.getUser()['session_token']}",
-    }
 
 # obtain Pennsieve S3 URL for an existing metadata file
 def returnFileURL(ps, item_id):
@@ -101,7 +86,7 @@ def import_metadata(url, filename):
 # import existing metadata files except Readme and Changes from Pennsieve
 def import_bf_metadata_files_skeleton(bfdataset, ps):
     try: 
-        selected_dataset_id = ps.getDatasets()[bfdataset]
+        selected_dataset_id = ps.get_datasets()[bfdataset]
     except Exception as e:
         raise Exception("Please select a valid Pennsieve dataset.") from e
 
