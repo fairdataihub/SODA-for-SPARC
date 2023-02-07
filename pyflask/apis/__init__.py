@@ -9,3 +9,4 @@ from .apiStartup import api as startup_resource
 from .apiUser import api as user_resource
 from .apiDatasets import api as datasets_resource
 from .apiCollections import api as collections_resource
+from .apiSkeleton import api as skeleton_resource

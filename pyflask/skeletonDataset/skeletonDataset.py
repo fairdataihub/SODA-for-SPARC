@@ -102,7 +102,7 @@ def get_path_prefix(path):
 
 ### START OF SCRIPT ###
 
-def create(soda_json_structure, selected_account, selected_dataset, pennsieve_pipeline):
+def create(soda_json_structure):
     """
     Creates a skeleton dataset ( a set of empty data files but with valid metadata files ) of the given soda_json_structure on the local machine.
     Used for validating a user's dataset before uploading it to Pennsieve.
@@ -121,21 +121,13 @@ def create(soda_json_structure, selected_account, selected_dataset, pennsieve_pi
     # create a folder to hold the skeleton
     os.mkdir(path)
 
-    ps = None 
-
-    # create Pennsieve client if the user is validating a Pennsieve dataset  
-    if pennsieve_pipeline or soda_json_structure["generate-dataset"]["destination"] == "bf":
-        print("Creating a pennsieve client...")
-        ps = Pennsieve()
-        print("Created Pennsieve client")
-
     # create the manifest files for the skeleton dataset based off the SODA JSON object if the user requested it in the Organize Datasets 
     # workflow. Otherwise import the existing manifest files from Pennsieve if the user requested validation outside of the Organize Datasets workflow.
-    if pennsieve_pipeline:
-        import_manifest_files_skeleton(soda_json_structure, ps)
-    else:
-        mbs = ManifestBuilder(soda_json_structure, path)
-        mbs.build( ps if ps != None  else None)
+    # if pennsieve_pipeline:
+    #     import_manifest_files_skeleton(soda_json_structure, ps)
+    # else:
+    #     mbs = ManifestBuilder(soda_json_structure, path)
+    #     mbs.build( ps if ps != None  else None)
 
     create_skeleton(soda_json_structure["dataset-structure"], path)
 
