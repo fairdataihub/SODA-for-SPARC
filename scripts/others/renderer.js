@@ -486,16 +486,16 @@ const stopPennsieveAgent = async (pathToPennsieveAgent) => {
     try {
       const agentStopSpawn = spawn(pathToPennsieveAgent, ["agent", "stop"]);
       agentStopSpawn.stdout.on("data", (data) => {
-        console.log(data.toString());
+        log.info(data.toString());
         resolve();
       });
       agentStopSpawn.stderr.on("data", (data) => {
-        console.log(data.toString());
+        log.info(data.toString());
         reject(new Error(data.toString()));
       });
-    } catch (e) {
-      console.log(e);
-      reject(e);
+    } catch (error) {
+      log.info(error);
+      reject(error);
     }
   });
 };
@@ -505,16 +505,15 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
     try {
       const agentStartSpawn = spawn(pathToPennsieveAgent, ["agent", "start"]);
       agentStartSpawn.stdout.on("data", (data) => {
-        console.log("data", data.toString());
-        console.log("Pennsieve agent successfully started");
-        // if the data output contains a substring of the successful messages, resolve the promise
+        log.info(data.toString());
         resolve();
       });
       agentStartSpawn.stderr.on("data", (data) => {
+        log.info(data.toString());
         reject(new Error(data.toString()));
       });
     } catch (error) {
-      console.log(error);
+      log.error(error);
       reject(error);
     }
   });
@@ -534,6 +533,7 @@ const getPennsieveAgentVersion = async (pathToPennsieveAgent) => {
 
       const agentVersionSpawn = execFile(pathToPennsieveAgent, ["version"]);
       agentVersionSpawn.stdout.on("data", (data) => {
+        log.info(data.toString());
         const versionResult = {};
         const regex = /(\w+ Version)\s*:\s*(\S+)/g;
         let match;
@@ -548,10 +548,11 @@ const getPennsieveAgentVersion = async (pathToPennsieveAgent) => {
       });
       agentVersionSpawn.stderr.on("data", (data) => {
         clearTimeout(versionCheckTimeout);
+        log.info(data.toString());
         reject(new Error(data.toString()));
       });
     } catch (error) {
-      console.log(error);
+      log.error(error);
       reject(error);
     }
   });
@@ -583,6 +584,7 @@ const startPennsieveAgentAndCheckVersion = async () => {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
       });
+      log.error(error);
       reject(error);
     }
 
@@ -607,6 +609,7 @@ const startPennsieveAgentAndCheckVersion = async () => {
         shell.openExternal(browser_download_url);
         shell.openExternal("https://docs.pennsieve.io/docs/uploading-files-programmatically");
       }
+      log.error(error);
       reject(error);
     }
 
@@ -617,14 +620,14 @@ const startPennsieveAgentAndCheckVersion = async () => {
     } catch (error) {
       // If the agent is not running then we can ignore this error
       // But it shouldn't throw if the agent is running or not
-      console.log("Error stopping Pennsieve agent: ", error);
+      log.error(error);
     }
 
     // Start the Pennsieve agent
     try {
       await startPennsieveAgent(agentPath);
     } catch (error) {
-      console.log("Error starting Pennsieve agent: ", error);
+      log.error(error);
       reject(error);
     }
 
@@ -634,7 +637,7 @@ const startPennsieveAgentAndCheckVersion = async () => {
       pennsieveAgentVersionObj = await getPennsieveAgentVersion(agentPath);
       pennsieveAgentVersion = pennsieveAgentVersionObj["Agent Version"];
     } catch (error) {
-      console.log(error);
+      log.error(error);
       reject(error);
     }
 
@@ -759,7 +762,8 @@ const run_pre_flight_checks = async (check_update = true) => {
       type: "error",
       message: "Unable to start the Pennsieve Agent.",
     });
-    console.log(error);
+    log.error(error);
+
     return false;
   }
 
