@@ -524,22 +524,38 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
 
 const getPennsieveAgentVersion = async (pathToPennsieveAgent) => {
   return new Promise((resolve, reject) => {
-    const agentVersionSpawn = execFile(pathToPennsieveAgent, ["version"]);
-    agentVersionSpawn.stdout.on("data", (data) => {
-      const versionResult = {};
-      const regex = /(\w+ Version)\s*:\s*(\S+)/g;
-      let match;
-      while ((match = regex.exec(data)) !== null) {
-        versionResult[match[1]] = match[2];
-      }
-      // If we were able to extract the version from the stdout, resolve the promise
-      if (versionResult["Agent Version"]) {
-        resolve(versionResult);
-      }
-    });
-    agentVersionSpawn.stderr.on("data", (data) => {
-      reject(new Error(data.toString()));
-    });
+    try {
+      // Timeout if the agent was not able to be retrieved within 7 seconds
+      const versionCheckTimeout = setTimeout(() => {
+        reject(
+          new Error(
+            "Timeout Error: The agent version was not able to be verified in the allotted time"
+          )
+        );
+      }, 7000);
+
+      const agentVersionSpawn = execFile(pathToPennsieveAgent, ["version"]);
+      agentVersionSpawn.stdout.on("data", (data) => {
+        const versionResult = {};
+        const regex = /(\w+ Version)\s*:\s*(\S+)/g;
+        let match;
+        while ((match = regex.exec(data)) !== null) {
+          versionResult[match[1]] = match[2];
+        }
+        // If we were able to extract the version from the stdout, resolve the promise
+        if (versionResult["Agent Version"]) {
+          clearTimeout(versionCheckTimeout);
+          resolve(versionResult);
+        }
+      });
+      agentVersionSpawn.stderr.on("data", (data) => {
+        clearTimeout(versionCheckTimeout);
+        reject(new Error(data.toString()));
+      });
+    } catch (error) {
+      console.log(error);
+      reject(error);
+    }
   });
 };
 
@@ -611,7 +627,7 @@ const startPennsieveAgentAndCheckVersion = async () => {
       await startPennsieveAgent(agentPath);
     } catch (error) {
       console.log("Error starting Pennsieve agent: ", error);
-      reject();
+      reject(error);
     }
 
     // Get the version of the Pennsieve agent
@@ -627,7 +643,7 @@ const startPennsieveAgentAndCheckVersion = async () => {
     if (pennsieveAgentVersion !== latest_agent_version) {
       let { value: result } = await Swal.fire({
         icon: "warning",
-        text: "It appears that you are not running the latest version of the Pensieve Agent. We recommend that you update your software and restart SODA for the best experience.",
+        text: "It appears that you are not running the latest version of the Pensieve Agent. Please download the latest version of the Pennsieve Agent and install it. Once you have installed the Pennsieve Agent, please restart SODA.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showCancelButton: true,
