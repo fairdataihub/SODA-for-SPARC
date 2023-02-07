@@ -11816,7 +11816,6 @@ $(document).ready(async () => {
         throw "Error setting templates path";
       }
 
-
       //Display the Pennsieve metadata upload table
       unHideAndSmoothScrollToElement("guided-div-pennsieve-metadata-upload-status-table");
 
