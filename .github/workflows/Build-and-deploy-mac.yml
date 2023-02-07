@@ -4,7 +4,8 @@ run-name: ${{ github.actor }} is building a MAC release for SODA
 on:
   push:
     branches:
-      - import_debugging
+      - main
+      - pennsieve-agent-child-process
 
 jobs:
   deploy-on-mac:
