@@ -12,34 +12,34 @@ const validateOrganizedDataset = async () => {
     await api.performUserActions(sodaJSONObjCopy);
   }
 
-  // let skeletonDatasetResponse;
-  // try {
-  //   skeletonDatasetResponse = await client.post(
-  //     "/skeleton_dataset/",
-  //     {
-  //       sodajsonobject: sodaJSONObject,
-  //       selected_account: defaultBfAccount,
-  //       selected_dataset: defaultBfDataset,
-  //     },
-  //     {
-  //       timeout: 0,
-  //     }
-  //   );
-  // } catch (error) {
-  //   clientError(error);
-  //   await Swal.fire({
-  //     title: "Could not validate your dataset.",
-  //     message: `SODA has encountered the following problem: ${userErrorMessage(error)}`,
-  //     allowEscapeKey: true,
-  //     allowOutsideClick: false,
-  //     heightAuto: false,
-  //     backdrop: "rgba(0,0,0, 0.4)",
-  //     timerProgressBar: false,
-  //     showConfirmButton: true,
-  //     icon: hasValidationErrors ? "error" : "success",
-  //   });
-  //   return;
-  // }
+  let skeletonDatasetResponse;
+  try {
+    skeletonDatasetResponse = await client.post(
+      "/skeleton_dataset/",
+      {
+        sodajsonobject: sodaJSONObjCopy,
+        selected_account: defaultBfAccount,
+        selected_dataset: defaultBfDataset,
+      },
+      {
+        timeout: 0,
+      }
+    );
+  } catch (error) {
+    clientError(error);
+    await Swal.fire({
+      title: "Could not validate your dataset.",
+      message: `SODA has encountered the following problem: ${userErrorMessage(error)}`,
+      allowEscapeKey: true,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      showConfirmButton: true,
+      icon: hasValidationErrors ? "error" : "success",
+    });
+    return;
+  }
 
   // let pathToSkeletonDataset = skeletonDatasetResponse.data["path_to_skeleton_dataset"];
 
