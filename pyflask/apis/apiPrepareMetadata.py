@@ -198,7 +198,7 @@ class DatasetDescriptionFile(Resource):
         import_type = data.get('import_type')
 
         try:
-            return load_existing_DD_file(import_type, filepath)
+            return load_existing_DD_file(import_type, filepath, None, None)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))
@@ -339,7 +339,7 @@ class SubjectsFile(Resource):
         ui_fields = metadata_string_to_list(ui_fields)
 
         try:
-            return convert_subjects_samples_file_to_df(file_type, filepath, ui_fields)
+            return convert_subjects_samples_file_to_df(file_type, filepath, ui_fields, None, None)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))
@@ -428,7 +428,7 @@ class SamplesFile(Resource):
             ui_fields = list(map(str.strip, ui_fields.strip('][').replace("'", '').replace('"', '').split(',')))
 
         try:
-            return convert_subjects_samples_file_to_df(file_type, filepath, ui_fields)
+            return convert_subjects_samples_file_to_df(file_type, filepath, ui_fields, None, None)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))

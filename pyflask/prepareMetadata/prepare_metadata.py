@@ -21,7 +21,7 @@ from functools import partial
 from pennsieve2.pennsieve import Pennsieve
 #from pennsieve import Pennsieve
 from manageDatasets import bf_dataset_account
-from utils import ( connect_pennsieve_client, authenticate_user_with_client, get_dataset_id, create_request_headers, column_check, returnFileURL)
+from utils import ( connect_pennsieve_client, authenticate_user_with_client, get_dataset_id, create_request_headers, column_check, returnFileURL, load_manifest_to_dataframe)
 from permissions import has_edit_permissions, bf_get_current_user_permission_agent_two
 from collections import defaultdict
 import requests
@@ -238,11 +238,17 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
     
     # upload the manifest file
     # ps.manifest.upload(m_id)
-    ps.manifest.upload(m_id)
-    # create a subscriber function with ps attached so it can be used to unusbscribe
-    subscriber_metadata_ps_client = partial(subscriber_metadata, ps)
-    # subscribe for the upload to finish
-    ps.subscribe(10, False, subscriber_metadata_ps_client)
+    try: 
+        ps.manifest.upload(m_id)
+        # create a subscriber function with ps attached so it can be used to unusbscribe
+        subscriber_metadata_ps_client = partial(subscriber_metadata, ps)
+        # subscribe for the upload to finish
+        ps.subscribe(10, False, subscriber_metadata_ps_client)
+    except Exception as e:
+        namespace_logger.error("Error uploading dataset files")
+        namespace_logger.error(e)
+        raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a href='https://docs.sodaforsparc.io/docs/next/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
+
 
     # before we can remove files we need to wait for all of the Agent's threads/subprocesses to finish
     # elsewise we get an error that the file is in use and therefore cannot be deleted
@@ -413,11 +419,8 @@ def save_ds_description_file(
 ):
     source = join(TEMPLATE_PATH, "dataset_description.xlsx")
 
-    if upload_boolean:
-        destination = join(METADATA_UPLOAD_BF_PATH, "dataset_description.xlsx")
+    destination = join(METADATA_UPLOAD_BF_PATH, "dataset_description.xlsx") if upload_boolean else filepath
 
-    else:
-        destination = filepath
 
     shutil.copyfile(source, destination)
 
@@ -682,11 +685,13 @@ def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastruct
 
 
 # import an existing subjects/samples files from an excel file
-def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
-
-    subjects_df = pd.read_excel(
-        filepath, engine="openpyxl", usecols=column_check, header=0
-    )
+def convert_subjects_samples_file_to_df(type, filepath, ui_fields, item_id=None, token=None):
+    if item_id is not None: 
+        subjects_df = load_manifest_to_dataframe(item_id, "excel", token, column_check, 0)
+    else:
+        subjects_df = pd.read_excel(
+            filepath, engine="openpyxl", usecols=column_check, header=0
+        )
     subjects_df = subjects_df.dropna(axis=0, how="all")
     subjects_df = subjects_df.replace(np.nan, "", regex=True)
     subjects_df = subjects_df.applymap(str)
@@ -751,17 +756,6 @@ def convert_subjects_samples_file_to_df(type, filepath, ui_fields):
     return {"sample_file_rows": transposeMatrix(sortMatrix)} if type in ["samples.xlsx", "samples"] else {"subject_file_rows": transposeMatrix(sortMatrix)}
 
 
-### function to read existing Pennsieve manifest files and load info into a dictionary
-def convert_manifest_to_dict(url):
-
-    manifest_df = pd.read_excel(url, engine="openpyxl", usecols=column_check, header=0)
-    manifest_df = manifest_df.dropna(axis=0, how="all")
-    manifest_df = manifest_df.replace(np.nan, "", regex=True)
-    manifest_df = manifest_df.applymap(str)
-
-    return manifest_df.to_dict()
-
-
 def checkEmptyColumn(column):
     for element in column:
         if element:
@@ -811,12 +805,15 @@ def checkEmptyColumn(column):
 
 
 ## load/import an existing local or Pennsieve submission.xlsx file
-def load_existing_submission_file(filepath):
+def load_existing_submission_file(filepath, item_id=None, token=None):
 
     try:
-        DD_df = pd.read_excel(
-            filepath, engine="openpyxl", usecols=column_check, header=0
-        )
+        if item_id is None:
+            DD_df = pd.read_excel(
+                filepath, engine="openpyxl", usecols=column_check, header=0
+            )
+        else:
+            DD_df = load_manifest_to_dataframe(item_id, "excel", token, column_check, 0)
 
     except Exception as e:
         if is_file_not_found_exception(e):
@@ -894,16 +891,16 @@ def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
             url = returnFileURL(token, item_id)
 
             if file_type == "submission.xlsx":
-                return load_existing_submission_file(url)
+                return load_existing_submission_file(url, item_id, token)
 
             elif file_type == "dataset_description.xlsx":
-                return load_existing_DD_file("bf", url)
+                return load_existing_DD_file("bf", url, item_id, token)
 
             elif file_type == "subjects.xlsx":
-                return convert_subjects_samples_file_to_df("subjects", url, ui_fields)
+                return convert_subjects_samples_file_to_df("subjects", url, ui_fields, item_id, token)
 
             elif file_type == "samples.xlsx":
-                return convert_subjects_samples_file_to_df("samples", url, ui_fields)
+                return convert_subjects_samples_file_to_df("samples", url, ui_fields, item_id, token)
 
     abort(400, 
         f"No {file_type} file was found at the root of the dataset provided."
@@ -1023,7 +1020,7 @@ def copytree(src, dst, symlinks=False, ignore=None):
 
 
 ## import an existing local or Pennsieve dataset_description.xlsx file
-def load_existing_DD_file(import_type, filepath):
+def load_existing_DD_file(import_type, filepath, item_id=None, token=None):
 
     ### the following block of code converts .xlsx file into .csv for better performance from Pandas.
     ### Currently pandas' read_excel is super slow - could take minutes.
@@ -1032,13 +1029,10 @@ def load_existing_DD_file(import_type, filepath):
 
     if import_type == "bf":
         try:
-
-            DD_df = pd.read_excel(
-                filepath, engine="openpyxl", usecols=column_check, header=0
-            )
-
-        except:
-            raise Exception(
+            DD_df = load_manifest_to_dataframe(item_id, "excel", token, column_check, 0)
+        except Exception as e:
+            namespace_logger.info(e)
+            raise Exception from e (
                 "SODA cannot read this submission.xlsx file. If you are trying to retrieve a submission.xlsx file from Pennsieve, please make sure you are signed in with your Pennsieve account on SODA."
             )
 

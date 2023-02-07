@@ -934,8 +934,14 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         # initial_bfdataset_size_submit = bf_dataset_size(ps, selected_dataset_id)
         start_submit = 1
         manifest_id = manifest_data.manifest_id
-        ps.manifest.upload(manifest_id)
-        ps.subscribe(10, False, monitor_subscriber_progress)
+        try: 
+            ps.manifest.upload(manifest_id)
+            ps.subscribe(10, False, monitor_subscriber_progress)
+        except Exception as e:
+            namespace_logger.error("Error uploading dataset files")
+            namespace_logger.error(e)
+            raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a href='https://docs.sodaforsparc.io/docs/next/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
+
         namespace_logger.info("Upload complete now no more messages")
         submitdatastatus = "Done"
     except Exception as e:
