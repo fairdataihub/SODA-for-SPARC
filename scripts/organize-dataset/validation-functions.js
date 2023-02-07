@@ -18,8 +18,6 @@ const validateOrganizedDataset = async () => {
       "/skeleton_dataset/",
       {
         sodajsonobject: sodaJSONObjCopy,
-        selected_account: defaultBfAccount,
-        selected_dataset: defaultBfDataset,
       },
       {
         timeout: 0,
