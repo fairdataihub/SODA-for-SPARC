@@ -131,10 +131,14 @@ def create(soda_json_structure):
 
     create_skeleton(soda_json_structure["dataset-structure"], path)
 
+    
+
     # Add the metadata files to the root of the skeleton dataset 
     if "metadata-files" in soda_json_structure:
         for metadata_file_name, props in soda_json_structure["metadata-files"].items():
             if props["type"] == "bf": 
+                selected_dataset = soda_json_structure["bf-dataset-selected"]["dataset-name"]
+                ps = Pennsieve()
                 import_bf_metadata_files_skeleton(selected_dataset, ps)
 
                 file_location = os.path.join(expanduser("~"), "SODA", "metadata_files", metadata_file_name)
