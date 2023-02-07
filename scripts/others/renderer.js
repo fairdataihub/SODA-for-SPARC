@@ -523,20 +523,19 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
 };
 
 const getPennsieveAgentVersion = async (pathToPennsieveAgent) => {
-  console.log("getPennsieveAgentVersion");
   return new Promise((resolve, reject) => {
     const agentVersionSpawn = execFile(pathToPennsieveAgent, ["version"]);
     agentVersionSpawn.stdout.on("data", (data) => {
-      console.log("data", data.toString());
       const versionResult = {};
       const regex = /(\w+ Version)\s*:\s*(\S+)/g;
       let match;
       while ((match = regex.exec(data)) !== null) {
         versionResult[match[1]] = match[2];
       }
-      console.log(versionResult);
-      console.log(JSON.stringify(versionResult));
-      resolve(versionResult);
+      // If we were able to extract the version from the stdout, resolve the promise
+      if (versionResult["Agent Version"]) {
+        resolve(versionResult);
+      }
     });
     agentVersionSpawn.stderr.on("data", (data) => {
       reject(new Error(data.toString()));
@@ -582,7 +581,7 @@ const startPennsieveAgentAndCheckVersion = async () => {
       const { value: result } = await Swal.fire({
         icon: "error",
         title: "Pennsieve Agent Not Found",
-        text: "We are unable to find the Pennsieve Agent. Please download the latest version of the Pennsieve Agent and restart SODA in order to upload data to Pennsieve.",
+        text: "It looks like the Pennsieve Agent is not installed on your computer. Please download the latest version of the Pennsieve Agent and install it on your computer. Once you have installed the Pennsieve Agent, please restart SODA.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         showCancelButton: true,
@@ -624,9 +623,6 @@ const startPennsieveAgentAndCheckVersion = async () => {
       console.log(error);
       reject(error);
     }
-
-    console.log("pennsieveAgentVersion", pennsieveAgentVersion);
-    console.log("latest_agent_version", latest_agent_version);
 
     if (pennsieveAgentVersion !== latest_agent_version) {
       let { value: result } = await Swal.fire({
