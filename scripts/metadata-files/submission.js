@@ -374,13 +374,7 @@ function onboardingSubmission() {
         .setOptions({
           steps: [
             {
-              // title: "1. Help with your SPARC Award number",
-              element: document.querySelector("#a-help-submission-Airtable"),
-              intro:
-                "Click here to connect SODA with your Airtable account and automatically retrieve your SPARC award number.",
-            },
-            {
-              // title: "2. Help with your milestone information",
+              // title: "1. Help with your milestone information",
               element: document.querySelector("#a-help-submission-milestones"),
               intro:
                 "Click here to import your Data Deliverables document for SODA to automatically retrieve your milestone and completion date.",

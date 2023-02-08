@@ -105,6 +105,7 @@ console.log("User OS:", os.type(), os.platform(), "version:", os.release());
 
 // Check current app version //
 const appVersion = app.getVersion();
+console.log(appVersion);
 log.info("Current SODA version:", appVersion);
 console.log("Current SODA version:", appVersion);
 
@@ -835,6 +836,7 @@ const apiVersionsMatch = async () => {
   }
 
   let serverAppVersion = responseObject.data.version;
+  console.log(serverAppVersion);
 
   log.info(`Server version is ${serverAppVersion}`);
 
