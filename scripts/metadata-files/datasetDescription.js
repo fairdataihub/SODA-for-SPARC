@@ -28,10 +28,7 @@ const addAdditionalLinkBtn = document.getElementById("button-ds-add-link");
 const datasetDescriptionFileDataset = document.getElementById("ds-name");
 const parentDSDropdown = document.getElementById("input-parent-ds");
 
-// Main function to check Airtable status upon loading soda
-///// config and load live data from Airtable
 var sparcAwards = [];
-var airtableRes = [];
 
 var ddDestinationPath = "";
 
@@ -78,7 +75,6 @@ $(document).ready(function () {
   //     }
   //   }
   // );
-  checkAirtableStatus("");
   ipcRenderer.on("show-missing-items-ds-description", (event, index) => {
     if (index === 0) {
       ipcRenderer.send("open-folder-dialog-save-ds-description", "dataset_description.xlsx");
@@ -297,48 +293,6 @@ function convertDropdownToTextBox(dropdown) {
     if (dropdown == "ds-description-award-list") {
       $("#SPARC-Award-raw-input-div-dd").css("display", "flex");
     }
-  }
-}
-
-/* The functions ddNoAirtableMode() and resetDDUI() is needed to track when Airtable connection status is changed within
-  a SODA session -> SODA will accordingly update what to show under Submission and DD files
-*/
-
-function ddNoAirtableMode(action) {
-  if (action == "On") {
-    noAirtable = true;
-    $("#add-other-contributors").css("display", "none");
-    convertDropdownToTextBox("ds-description-award-list");
-    convertDropdownToTextBox("ds-description-contributor-list-last-1");
-    convertDropdownToTextBox("ds-description-contributor-list-first-1");
-    $("#table-current-contributors").find("tr").slice(1).remove();
-    rowIndex = 1;
-    newRowIndex = 1;
-    var row = (document.getElementById("table-current-contributors").insertRow(rowIndex).outerHTML =
-      "<tr id='row-current-name" +
-      newRowIndex +
-      "'><td class='grab'><input id='ds-description-raw-contributor-list-last-" +
-      newRowIndex +
-      "' class='form-container-input-bf' type='text'></input></td><td class='grab'><input id='ds-description-raw-contributor-list-first-" +
-      newRowIndex +
-      "' type='text' class='form-container-input-bf'></input></td><td class='grab'><input type='text' id='input-con-ID-" +
-      newRowIndex +
-      "' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-" +
-      newRowIndex +
-      "' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-" +
-      newRowIndex +
-      "'></input></td><td class='grab'><label class='switch'><input onclick='onChangeContactLabel(" +
-      newRowIndex +
-      ")' id='ds-contact-person-" +
-      newRowIndex +
-      "' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
-      newRowIndex +
-      ")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>");
-    createConsRoleTagify("input-con-role-" + newRowIndex.toString());
-    createConsAffliationTagify("input-con-affiliation-" + newRowIndex.toString());
-  } else if (action == "Off") {
-    noAirtable = false;
-    loadAwards();
   }
 }
 
@@ -956,18 +910,6 @@ function addAdditionalLinktoTableDD(link, linkType, linkRelation, description) {
     description +
     "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_additional_link_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_additional_link_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
 }
-
-const guidedSetImportedSPARCAward = (awardString) => {
-  // save the award string to JSONObj to be shared with other award inputs
-  sodaJSONObj["dataset-metadata"]["shared-metadata"]["imported-sparc-award"] = awardString;
-
-  $("#guided-input-submission-sparc-award-import").val(awardString);
-
-  document.getElementById("guided-div-imported-SPARC-award").classList.remove("hidden");
-  //change the button text of guided-button-import-airtable-award
-  document.getElementById("guided-button-import-airtable-award").innerHTML =
-    "Edit award information from Airtable";
-};
 
 function populateSelectSPARCAward(object, id) {
   removeOptions(document.getElementById(id));
@@ -1829,46 +1771,6 @@ function grabStudyInfoEntries() {
   };
 }
 
-function showAddAirtableAccountSweetalert(keyword, curationMode) {
-  var htmlTitle = `<h4 style="text-align:center">Please enter your Airtable API key below: </h4>`;
-
-  var bootb = Swal.fire({
-    title: htmlTitle,
-    html: airtableAccountBootboxMessage,
-    showCancelButton: true,
-    focusCancel: true,
-    cancelButtonText: "Cancel",
-    confirmButtonText: "Add Account",
-    backdrop: "rgba(0,0,0, 0.4)",
-    heightAuto: false,
-    reverseButtons: reverseSwalButtons,
-    customClass: "swal-wide",
-    footer:
-      "<a href='https://docs.sodaforsparc.io/docs/prepare-metadata/connect-your-airtable-account-with-soda'  target='_blank' style='text-decoration:none'> Where do I find my Airtable API key?</a>",
-    showClass: {
-      popup: "animate__animated animate__fadeInDown animate__faster",
-    },
-    hideClass: {
-      popup: "animate__animated animate__fadeOutUp animate__faster",
-    },
-    didOpen: () => {
-      // $(".swal-popover").popover();
-      tippy("#airtable-tooltip", {
-        allowHTML: true,
-        interactive: true,
-        placement: "right",
-        theme: "light",
-        content:
-          "Note that the key will be stored locally on your computer and the SODA Team will not have access to it.",
-      });
-    },
-  }).then((result) => {
-    if (result.isConfirmed) {
-      addAirtableAccountInsideSweetalert(keyword, curationMode);
-    }
-  });
-}
-
 // adding row for contributor table
 function addNewRow(table) {
   $("#para-save-link-status").text("");
@@ -2006,134 +1908,6 @@ function addNewRow(table) {
     }
   }
 }
-
-const addAirtableAccountInsideSweetalert = async (keyword, curationMode) => {
-  // var name = $("#bootbox-airtable-key-name").val();
-  var name = "SODA-Airtable";
-  var key = $("#bootbox-airtable-key").val();
-  if (name.length === 0 || key.length === 0) {
-    var errorMessage = "<span>Please fill in both required fields to add.</span>";
-    Swal.fire({
-      icon: "error",
-      html: errorMessage,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0,0.4)",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        showAddAirtableAccountSweetalert(keyword, curationMode);
-      }
-    });
-  } else {
-    if (curationMode === "guided") {
-      const optionsSparcTable = {
-        hostname: airtableHostname,
-        port: 443,
-        path: "/v0/appiYd1Tz9Sv857GZ/sparc_members",
-        headers: { Authorization: `Bearer ${key}` },
-      };
-      let sparcTableSuccess;
-      https.get(optionsSparcTable, async (res) => {
-        if (res.statusCode === 200) {
-          /// updating api key in SODA's storage
-          createMetadataDir();
-          var content = parseJson(airtableConfigPath);
-          content["api-key"] = key;
-          content["key-name"] = name;
-          fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
-          checkAirtableStatus(keyword);
-
-          $("#current-airtable-account").html(name);
-          $("#bootbox-airtable-key").val("");
-          await loadAwardData();
-          Swal.fire({
-            title: "Successfully connected. Loading your Airtable account...",
-            timer: 3000,
-            timerProgressBar: false,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            allowEscapeKey: false,
-            allowOutsideClick: false,
-            showConfirmButton: false,
-            didOpen: () => {
-              Swal.showLoading();
-            },
-          }).then((result) => {
-            if (curationMode === "guided") {
-              document.getElementById("guided-button-import-sparc-award").click();
-            }
-            if (curationMode === "guided--getting-started") {
-              const airTableGettingStartedBtn = document.getElementById(
-                "getting-started-button-import-sparc-award"
-              );
-              airTableGettingStartedBtn.children[1].style.display = "none";
-              airTableGettingStartedBtn.children[0].style.display = "flex";
-            }
-          });
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            "Prepare Metadata - Add Airtable account",
-            "Airtable",
-            1
-          );
-        } else if (res.statusCode === 403) {
-          $("#current-airtable-account").html("None");
-          Swal.fire({
-            icon: "error",
-            text: "Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0,0.4)",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              showAddAirtableAccountSweetalert(keyword, curationMode);
-            }
-          });
-        } else {
-          log.error(res);
-          console.error(res);
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            "Prepare Metadata - Add Airtable account",
-            "Airtable",
-            1
-          );
-          Swal.fire({
-            icon: "error",
-            text: "Failed to connect to Airtable. Please check your API Key and try again!",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0,0.4)",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              showAddAirtableAccountSweetalert(keyword, curationMode);
-            }
-          });
-        }
-        res.on("error", (error) => {
-          log.error(error);
-          console.error(error);
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            "Prepare Metadata - Add Airtable account",
-            "Airtable",
-            1
-          );
-          Swal.fire({
-            icon: "error",
-            text: "Failed to connect to Airtable. Please check your API Key and try again!",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0,0.4)",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              showAddAirtableAccountSweetalert(keyword, curationMode);
-            }
-          });
-        });
-      });
-    }
-  }
-};
 
 function importExistingDDFile() {
   var filePath = $("#existing-dd-file-destination").prop("placeholder");
