@@ -1077,58 +1077,6 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
     }
 
-    if (pageBeingLeftID === "guided-airtable-award-tab") {
-      const buttonYesImportSparcAward = document.getElementById("guided-button-import-sparc-award");
-      const buttonNoEnterSparcAwardManually = document.getElementById(
-        "guided-button-enter-sparc-award-manually"
-      );
-
-      // If the user did not select if they would like to import a SPARC award,
-      // throw an error
-      if (
-        !buttonYesImportSparcAward.classList.contains("selected") &&
-        !buttonNoEnterSparcAwardManually.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please indicate if you would like to import a SPARC award",
-        });
-        throw errorArray;
-      }
-
-      if (buttonYesImportSparcAward.classList.contains("selected")) {
-        const selectedAwardFromDropdown = $("#guided-sparc-award-dropdown option:selected").val();
-
-        if (selectedAwardFromDropdown === "") {
-          errorArray.push({
-            type: "notyf",
-            message: "Please select a SPARC award option from the dropdown menu",
-          });
-          throw errorArray;
-        }
-
-        //Set the sparc award to the imported sparc award's value
-        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] =
-          selectedAwardFromDropdown;
-      }
-
-      if (buttonNoEnterSparcAwardManually.classList.contains("selected")) {
-        const sparcAwardInput = document.getElementById("guided-input-sparc-award");
-        if (sparcAwardInput.value.trim() === "") {
-          errorArray.push({
-            type: "notyf",
-            message: "Please enter a SPARC award",
-          });
-          throw errorArray;
-        }
-
-        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] =
-          sparcAwardInput.value.trim();
-        //Delete the imported SPARC award as the user entered the award manually.
-        delete sodaJSONObj["dataset-metadata"]["shared-metadata"]["imported-sparc-award"];
-      }
-    }
-
     if (pageBeingLeftID === "guided-create-submission-metadata-tab") {
       const userIsAddingSubmissionMetadataManually = document
         .getElementById("guided-button-enter-submission-metadata-manually")
@@ -2715,76 +2663,6 @@ const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
   }
 };
 
-$("#guided-sparc-award-dropdown").selectpicker();
-
-const renderGuidedAwardSelectionDropdown = () => {
-  $("#guided-sparc-award-dropdown").selectpicker("refresh");
-  const awardDropDownElements = document.getElementById("guided-sparc-award-dropdown");
-
-  //reset the options before adding new ones
-  awardDropDownElements.innerHTML = "";
-  $("#guided-sparc-award-dropdown").selectpicker("refresh");
-
-  // Append the select an award option
-  const selectAnAwardOption = document.createElement("option");
-  selectAnAwardOption.textContent = "Select an award";
-  selectAnAwardOption.value = "";
-  selectAnAwardOption.selected = true;
-  awardDropDownElements.appendChild(selectAnAwardOption);
-
-  const currentSparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-
-  for (const [val, key] of Object.entries(awardObj)) {
-    let awardElement = document.createElement("option");
-    awardElement.textContent = key;
-    awardElement.value = val;
-    if (currentSparcAward && currentSparcAward === val) {
-      awardElement.selected = true;
-    }
-
-    awardDropDownElements.appendChild(awardElement);
-  }
-
-  $("#guided-sparc-award-dropdown").selectpicker("refresh");
-};
-
-document
-  .getElementById("guided-button-refresh-sparc-award-dropdown")
-  .addEventListener("click", async () => {
-    //call update the awardObj
-    await loadAwardData();
-    //Update the dropdown
-    renderGuidedAwardSelectionDropdown();
-    //Notify the user that the dropdown has been updated
-    notyf.open({
-      duration: "4000",
-      type: "success",
-      message: "The SPARC Award dropdown was successfully updated",
-    });
-  });
-
-document.getElementById("guided-button-import-sparc-award").addEventListener("click", async () => {
-  const divToShowWhenConnected = document.getElementById("guided-div-imported-SPARC-award");
-  const divToShowWhenNotConnected = document.getElementById("guided-div-connect-airtable");
-  const guidedButtonConnectAirtableAccount = document.getElementById(
-    "guided-button-connect-airtable-account"
-  );
-  const airTableKeyObj = parseJson(airtableConfigPath);
-
-  if (Object.keys(airTableKeyObj).length === 0) {
-    //If the airtable key object is empty, show the div to connect to airtable
-    divToShowWhenConnected.classList.add("hidden");
-    divToShowWhenNotConnected.classList.remove("hidden");
-  } else {
-    const airTablePreviewText = document.getElementById("guided-current-sparc-award");
-    airTablePreviewText.innerHTML = airTableKeyObj["key-name"];
-    //If the airtable key object is not empty, show the div to select the SPARC award
-    divToShowWhenConnected.classList.remove("hidden");
-    divToShowWhenNotConnected.classList.add("hidden");
-    renderGuidedAwardSelectionDropdown();
-  }
-});
-
 const setActiveCapsule = (targetPageID) => {
   $(".guided--capsule").removeClass("active");
   let targetCapsuleID = targetPageID.replace("-tab", "-capsule");
@@ -3789,45 +3667,6 @@ const openPage = async (targetPageID) => {
         if (datasetStructureJSONObj["folders"][folder]["files"]["manifest.xlsx"]) {
           delete datasetStructureJSONObj["folders"][folder]["files"]["manifest.xlsx"];
         }
-      }
-    }
-
-    if (targetPageID === "guided-airtable-award-tab") {
-      const sparcAwardInput = document.getElementById("guided-input-sparc-award");
-      sparcAwardInput.value = "";
-
-      if (pageNeedsUpdateFromPennsieve("guided-airtable-award-tab")) {
-        try {
-          let import_metadata = await client.get(`/prepare_metadata/import_metadata_file`, {
-            params: {
-              selected_account: defaultBfAccount,
-              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-              file_type: "submission.xlsx",
-            },
-          });
-          let res = import_metadata.data;
-          const sparcAwardRes = res?.["SPARC Award number"];
-
-          //If the SPARC Award number was found, click the manual button and fill the SPARC Award number
-          if (sparcAwardRes) {
-            document.getElementById("guided-button-enter-sparc-award-manually").click();
-
-            sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = sparcAwardRes;
-          }
-          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-airtable-award-tab");
-        } catch (error) {
-          clientError(error);
-          const emessage = error.response.data.message;
-          await guidedShowOptionalRetrySwal(emessage);
-          // If the user chooses not to retry re-fetching the page data, mark the page as fetched
-          // so the the fetch does not occur again
-          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-airtable-award-tab");
-        }
-      }
-      const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-      //If a sparc award exists, set the sparc award input
-      if (sparcAward) {
-        sparcAwardInput.value = sparcAward;
       }
     }
 
