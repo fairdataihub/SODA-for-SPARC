@@ -6784,62 +6784,6 @@ const removeContributorField = (contributorDeleteButton) => {
   contributorField.remove();
 };
 
-const fetchContributorDataFromAirTable = async () => {
-  try {
-    const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-    const airTableKeyData = parseJson(airtableConfigPath);
-    if (
-      sparcAward &&
-      airTableKeyData["api-key"] &&
-      airTableKeyData["api-key"] &&
-      airTableKeyData["key-name"] !== "" &&
-      airTableKeyData["api-key"] !== ""
-    ) {
-      let contributorData = [];
-
-      const airKeyInput = airTableKeyData["api-key"];
-
-      Airtable.configure({
-        endpointUrl: "https://" + airtableHostname,
-        apiKey: airKeyInput,
-      });
-      var base = Airtable.base("appiYd1Tz9Sv857GZ");
-      await base("sparc_members")
-        .select({
-          filterByFormula: `({SPARC_Award_#} = "${sparcAward}")`,
-        })
-        .eachPage(function page(records, fetchNextPage) {
-          records.forEach(function (record) {
-            const firstName = record.get("First_name");
-            const lastName = record.get("Last_name");
-            const orcid = record.get("ORCID");
-            const affiliation = record.get("Institution");
-            const roles = record.get("Dataset_contributor_roles_for_SODA");
-
-            if (firstName !== undefined && lastName !== undefined) {
-              contributorData.push({
-                firstName: firstName,
-                lastName: lastName,
-                orcid: orcid,
-                affiliation: affiliation,
-                roles: roles,
-              });
-            }
-          }),
-            fetchNextPage();
-        });
-
-      return contributorData;
-    } else {
-      //return an empty array if the user is not connected with AirTable
-      return [];
-    }
-  } catch (error) {
-    //If there is an error, return an empty array since no contributor data was fetched.
-    return [];
-  }
-};
-
 const getContributorFullNames = () => {
   return sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"].map(
     (contributor) => {
@@ -7162,87 +7106,8 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
 };
 
 const openGuidedAddContributorSwal = async () => {
-  let contributorAdditionHeader;
-  let addContributorTitle;
-
-  try {
-    const existingContributors =
-      sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
-
-    const extingContributorOrcids = existingContributors.map((contributor) => {
-      return contributor.conID;
-    });
-
-    // fetch contributors from AirTable using the sparc award specified
-    // If any of the contributors in the dataset are found,
-    // they will be added to a dropdown at the top of the swal
-    let contributorData = await fetchContributorDataFromAirTable();
-
-    //Filter out contributors that have already been added
-    contributorData = contributorData.filter((contributor) => {
-      return !extingContributorOrcids.includes(contributor.orcid);
-    });
-
-    // If contributor data is returned from airtable, add a select option for each contributor with
-    // a returned first and last name
-    /*if (contributorData.length > 0) {
-      addContributorTitle =
-        "Select a contributor from the dropdown below or add their information manually.";
-      contributorAdditionHeader = `
-          <option
-            value=""
-            data-first-name=""
-            data-last-name=""
-            data-orcid=""
-            data-affiliation=""
-            data-roles=""
-          >
-            Select a contributor
-          </option>
-        `;
-
-      const contributorOptions = contributorData.map((contributor) => {
-        return `
-          <option
-            value="${contributor.firstName} ${contributor.lastName}"
-            data-first-name="${contributor.firstName}"
-            data-last-name="${contributor.lastName}"
-            data-orcid="${contributor.orcid ?? ""}"
-            data-affiliation="${contributor.affiliation ?? ""}"
-            data-roles="${contributor.roles ? contributor.roles.join(",") : ""}"
-          >
-            ${contributor.firstName} ${contributor.lastName}
-          </option>
-        `;
-      });
-
-      contributorAdditionHeader = `
-        <select
-          class="w-100"
-          id="guided-dd-contributor-dropdown"
-          data-live-search="true"
-          name="Dataset contributor"
-        >
-          <option
-            value=""
-            data-first-name=""
-            data-last-name=""
-            data-orcid=""
-            data-affiliation=""
-            data-roles=""
-          >
-            Select a contributor imported from AirTable
-          </option>
-          ${contributorOptions}
-        </select>
-      `;
-    } else {*/
-    contributorAdditionHeader = ``;
-    addContributorTitle = "Enter the contributor's information below.";
-    //}
-  } catch (error) {
-    console.log(error);
-  }
+  contributorAdditionHeader = ``;
+  addContributorTitle = "Enter the contributor's information below.";
 
   let affiliationTagify;
   let contributorRolesTagify;
@@ -7367,34 +7232,6 @@ const openGuidedAddContributorSwal = async () => {
         },
       });
       createDragSort(contributorRolesTagify);
-
-      /*$("#guided-dd-contributor-dropdown").selectpicker({
-        style: "guided--select-picker",
-      });
-      $("#guided-dd-contributor-dropdown").selectpicker("refresh");
-      $("#guided-dd-contributor-dropdown").on("change", function (e) {
-        const selectedFirstName = $("#guided-dd-contributor-dropdown option:selected").data(
-          "first-name"
-        );
-        const selectedLastName = $("#guided-dd-contributor-dropdown option:selected").data(
-          "last-name"
-        );
-        const selectedOrcid = $("#guided-dd-contributor-dropdown option:selected").data("orcid");
-        const selectedAffiliation = $("#guided-dd-contributor-dropdown option:selected").data(
-          "affiliation"
-        );
-        const selectedRoles = $("#guided-dd-contributor-dropdown option:selected").data("roles");
-
-        document.getElementById("guided-contributor-first-name").value = selectedFirstName;
-        document.getElementById("guided-contributor-last-name").value = selectedLastName;
-        document.getElementById("guided-contributor-orcid").value = selectedOrcid;
-
-        affiliationTagify.removeAllTags();
-        affiliationTagify.addTags(selectedAffiliation);
-
-        contributorRolesTagify.removeAllTags();
-        contributorRolesTagify.addTags(selectedRoles.split());
-      });*/
     },
 
     preConfirm: () => {
