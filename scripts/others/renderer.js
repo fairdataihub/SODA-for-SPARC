@@ -11,7 +11,6 @@ const remote = require("@electron/remote");
 const { Notyf } = require("notyf");
 const imageDataURI = require("image-data-uri");
 const log = require("electron-log");
-const Airtable = require("airtable");
 require("v8-compile-cache");
 const Tagify = require("@yaireo/tagify");
 const https = require("https");
@@ -1489,12 +1488,6 @@ var guidedDatasetTagsInput = document.getElementById("guided-tagify-dataset-tags
   // initialize Tagify on the above input node reference
   guidedDatasetTagsTagify = new Tagify(guidedDatasetTagsInput);
 createDragSort(guidedDatasetTagsTagify);
-
-///////////////////// Airtable Authentication /////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////
-
-/////// Load SPARC airtable data
-var airtableHostname = "api.airtable.com";
 
 /////////////////////// Download Metadata Templates ////////////////////////////
 templateArray = [
