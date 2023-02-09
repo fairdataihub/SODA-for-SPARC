@@ -5610,6 +5610,11 @@ const patchPreviousGuidedModeVersions = () => {
     sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = [];
   }
 
+  // If the user was on the airtable award page (does not exist anymore), send them to the create submission metadata page
+  if (sodaJSONObj["page-before-exit"] === "guided-airtable-award-tab") {
+    sodaJSONObj["page-before-exit"] = "guided-create-submission-metadata-tab";
+  }
+
   return forceUserToRestartFromFirstPage;
 };
 
