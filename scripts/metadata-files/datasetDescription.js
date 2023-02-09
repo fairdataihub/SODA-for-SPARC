@@ -940,7 +940,6 @@ function changeAward(award) {
   }).then((result) => {});
   $("#ds-description-award-input").val(award);
   $("#submission-sparc-award").val(award);
-  loadContributorInfofromAirtable(award);
 }
 
 const generateContributorRowElement = (contributorLastName, contributorFirstName) => {
@@ -992,48 +991,6 @@ const addContributorRowElement = () => {
   //insert divToAdd before the element with id="guided-add-contributor-row"
   const divAfter = document.getElementById("guided-add-contributor-row");
   divAfter.insertAdjacentHTML("beforebegin", newContributorRowElement);
-};
-
-const loadContributorInfofromAirtable = async (award) => {
-  globalContributorNameObject = {};
-  currentContributorsLastNames = [];
-  $("#contributor-table-dd tr:gt(0)").remove();
-  $("#div-contributor-table-dd").css("display", "none");
-  contributorArray = [];
-  var airKeyContent = parseJson(airtableConfigPath);
-  if (Object.keys(airKeyContent).length !== 0) {
-    var airKeyInput = airKeyContent["api-key"];
-    Airtable.configure({
-      endpointUrl: "https://" + airtableHostname,
-      apiKey: airKeyInput,
-    });
-    var base = Airtable.base("appiYd1Tz9Sv857GZ");
-    await base("sparc_members")
-      .select({
-        filterByFormula: `({SPARC_Award_#} = "${award}")`,
-      })
-      .eachPage(function page(records, fetchNextPage) {
-        records.forEach(function (record) {
-          const firstName = record.get("First_name");
-          const lastName = record.get("Last_name");
-          const email = record.get("Email");
-
-          if (firstName !== undefined && lastName !== undefined) {
-            globalContributorNameObject[lastName] = firstName;
-            currentContributorsLastNames.push(lastName);
-          }
-        }),
-          fetchNextPage();
-      });
-
-    function done(err) {
-      if (err) {
-        log.error(err);
-        console.error(err);
-        return;
-      }
-    }
-  }
 };
 
 function addContributortoTableDD(name, contactStatus) {
