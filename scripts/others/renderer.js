@@ -61,7 +61,6 @@ const { backOff } = require("exponential-backoff");
 // const electron_app = electron.app;
 const app = remote.app;
 const Clipboard = electron.clipboard;
-var noAirtable = false;
 
 var nextBtnDisabledVariable = true;
 var reverseSwalButtons = false;
@@ -1341,12 +1340,9 @@ var metadataPath = path.join(homeDirectory, "SODA", "METADATA");
 var awardFileName = "awards.json";
 var affiliationFileName = "affiliations.json";
 var milestoneFileName = "milestones.json";
-var airtableConfigFileName = "airtable-config.json";
 var protocolConfigFileName = "protocol-config.json";
-var awardPath = path.join(metadataPath, awardFileName);
 var affiliationConfigPath = path.join(metadataPath, affiliationFileName);
 var milestonePath = path.join(metadataPath, milestoneFileName);
-var airtableConfigPath = path.join(metadataPath, airtableConfigFileName);
 var progressFilePath = path.join(homeDirectory, "SODA", "Progress");
 var guidedProgressFilePath = path.join(homeDirectory, "SODA", "Guided-Progress");
 const guidedManifestFilePath = path.join(homeDirectory, "SODA", "guided_manifest_files");
@@ -1499,77 +1495,6 @@ createDragSort(guidedDatasetTagsTagify);
 
 /////// Load SPARC airtable data
 var airtableHostname = "api.airtable.com";
-
-function sendHTTPsRequestAirtable(options, varSuccess) {
-  https.get(options, (res) => {
-    if (res.statusCode === 200) {
-      varSuccess = true;
-    } else {
-      log.error(res);
-      console.error(res);
-      varSuccess = false;
-    }
-    res.on("error", (error) => {
-      log.error(error);
-      console.error(error);
-    });
-    return res;
-  });
-}
-
-var awardObj = {};
-var globalSPARCAward = "";
-// indicate to user that airtable records are being retrieved
-const loadAwardData = async () => {
-  ///// Construct table from data
-  var awardResultArray = [];
-  let result = false;
-  ///// config and load live data from Airtable
-  var airKeyContent = parseJson(airtableConfigPath);
-  if (JSON.stringify(airKeyContent) !== "{}") {
-    var airKeyInput = airKeyContent["api-key"];
-    var airKeyName = airKeyContent["key-name"];
-    if (airKeyInput !== "" && airKeyName !== "") {
-      Airtable.configure({
-        endpointUrl: "https://" + airtableHostname,
-        apiKey: airKeyInput,
-      });
-      var base = Airtable.base("appiYd1Tz9Sv857GZ");
-      base("sparc_members")
-        .select({
-          view: "All members (ungrouped)",
-        })
-        .eachPage(
-          function page(records, fetchNextPage) {
-            records.forEach(function (record) {
-              if (record.get("Project_title") !== undefined) {
-                var awardNumber = (item = record.get("SPARC_Award_#"));
-                item = record.get("SPARC_Award_#").concat(" (", record.get("Project_title"), ")");
-                awardResultArray.push(item);
-                awardObj[awardNumber] = item;
-              }
-            }),
-              fetchNextPage();
-          },
-          function done(err) {
-            if (err) {
-              log.error(err);
-              console.log(err);
-              return;
-            } else {
-              // create set to remove duplicates
-              var awardSet = new Set(awardResultArray);
-              var resultArray = [...awardSet];
-              result = true;
-            }
-          }
-        );
-      return result;
-    }
-  }
-};
-
-loadAwardData();
 
 /////////////////////// Download Metadata Templates ////////////////////////////
 templateArray = [
@@ -2526,43 +2451,6 @@ function changeAwardInputDsDescription() {
       true
     );
   }
-
-  var awardVal = $("#ds-description-award-input");
-  var airKeyContent = parseJson(airtableConfigPath);
-  if (Object.keys(airKeyContent).length !== 0) {
-    var airKeyInput = airKeyContent["api-key"];
-    Airtable.configure({
-      endpointUrl: "https://" + airtableHostname,
-      apiKey: airKeyInput,
-    });
-    var base = Airtable.base("appiYd1Tz9Sv857GZ");
-    base("sparc_members")
-      .select({
-        filterByFormula: `({SPARC_Award_#} = "${awardVal}")`,
-      })
-      .eachPage(function page(records, fetchNextPage) {
-        records.forEach(function (record) {
-          var firstName = record.get("First_name");
-          var lastName = record.get("Last_name");
-          globalContributorNameObject[lastName] = firstName;
-          currentContributorsLastNames.push(lastName);
-        }),
-          fetchNextPage();
-        var currentRowLeftID = $(
-          $($("#table-current-contributors").find("tr")[1].cells[0]).find("select")[0]
-        ).prop("id");
-        if (currentRowLeftID) {
-          cloneConNamesSelect(currentRowLeftID);
-        }
-      });
-    function done(err) {
-      if (err) {
-        log.error(err);
-        console.error(err);
-        return;
-      }
-    }
-  }
 }
 
 // on change event when users choose a contributor's last name
@@ -2581,114 +2469,6 @@ function onchangeLastNames() {
       .trigger("onchange");
   }
   $("#dd-contributor-first-name").attr("disabled", false);
-}
-
-// on change event when users choose a contributor's first name -> Load con info
-function onchangeFirstNames() {
-  var conLastname = $("#dd-contributor-last-name").val();
-  var conFirstname = $("#dd-contributor-first-name").val();
-  if (conFirstname !== "Select") {
-    loadContributorInfo(conLastname, conFirstname);
-  }
-}
-
-// Auto populate once a contributor is selected
-function loadContributorInfo(lastName, firstName) {
-  // first destroy old tagifies
-  $($("#input-con-affiliation").siblings()[0]).remove();
-  $($("#input-con-role").siblings()[0]).remove();
-
-  var tagifyRole = new Tagify(document.getElementById("input-con-role"), {
-    whitelist: [
-      "PrincipleInvestigator",
-      "Creator",
-      "CoInvestigator",
-      "DataCollector",
-      "DataCurator",
-      "DataManager",
-      "Distributor",
-      "Editor",
-      "Producer",
-      "ProjectLeader",
-      "ProjectManager",
-      "ProjectMember",
-      "RelatedPerson",
-      "Researcher",
-      "ResearchGroup",
-      "Sponsor",
-      "Supervisor",
-      "WorkPackageLeader",
-      "Other",
-    ],
-    enforceWhitelist: true,
-    dropdown: {
-      classname: "color-blue",
-      maxItems: 25,
-      enabled: 0,
-      closeOnSelect: true,
-    },
-  });
-  createDragSort(tagifyRole);
-
-  var tagifyAffliation = new Tagify(document.getElementById("input-con-affiliation"), {
-    dropdown: {
-      classname: "color-blue",
-      enabled: 0, // show the dropdown immediately on focus
-      maxItems: 25,
-      closeOnSelect: true, // keep the dropdown open after selecting a suggestion
-    },
-    whitelist: affiliationSuggestions,
-    delimiters: null,
-    duplicates: false,
-  });
-  createDragSort(tagifyAffliation);
-
-  tagifyRole.removeAllTags();
-  tagifyAffliation.removeAllTags();
-  var contactLabel = $("#ds-contact-person");
-  $(contactLabel).prop("checked", false);
-  document.getElementById("input-con-ID").value = "Loading...";
-
-  tagifyAffliation.loading(true);
-  tagifyRole.loading(true);
-
-  var airKeyContent = parseJson(airtableConfigPath);
-  var airKeyInput = airKeyContent["api-key"];
-  var airtableConfig = Airtable.configure({
-    endpointUrl: "https://" + airtableHostname,
-    apiKey: airKeyInput,
-  });
-  var base = Airtable.base("appiYd1Tz9Sv857GZ");
-  base("sparc_members")
-    .select({
-      filterByFormula: `AND({First_name} = "${firstName}", {Last_name} = "${lastName}")`,
-    })
-    .eachPage(function page(records, fetchNextPage) {
-      var conInfoObj = {};
-      records.forEach(function (record) {
-        conInfoObj["ID"] = record.get("ORCID");
-        conInfoObj["Role"] = record.get("Dataset_contributor_roles_for_SODA");
-        conInfoObj["Affiliation"] = record.get("Institution");
-      }),
-        fetchNextPage();
-
-      // if no records found, leave fields empty
-      leaveFieldsEmpty(conInfoObj["ID"], document.getElementById("input-con-ID"));
-      leaveFieldsEmpty(conInfoObj["Role"], document.getElementById("input-con-role"));
-      leaveFieldsEmpty(conInfoObj["Affiliation"], document.getElementById("input-con-affiliation"));
-
-      tagifyAffliation.addTags(conInfoObj["Affiliation"]);
-      tagifyRole.addTags(conInfoObj["Role"]);
-    }),
-    function done(err) {
-      if (err) {
-        log.error(err);
-        console.error(err);
-        return;
-      }
-    };
-  tagifyAffliation.loading(false);
-  tagifyRole.loading(false);
 }
 
 //// De-populate dataset dropdowns to clear options

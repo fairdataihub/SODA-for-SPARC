@@ -1185,8 +1185,7 @@
   transform: scaleY(1);
 }
 
-.card-container.manage-dataset div,
-.card-container.airtable div {
+.card-container.manage-dataset div {
   width: 100%;
 }
 
@@ -1198,8 +1197,7 @@
   text-align: left;
 }
 
-.card-container.manage-dataset div .card-left,
-.card-container.airtable div .card-left {
+.card-container.manage-dataset div .card-left {
   float: left;
 }
 

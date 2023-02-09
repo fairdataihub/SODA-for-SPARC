@@ -823,16 +823,6 @@ $("#cancel-reupload-DDD").click(function () {
   $("#div-confirm-select-SPARC-awards button").click();
 });
 
-// show which Airtable first div to show -< based on Airtable connection status
-function changeAirtableDiv(divHide, divShow, buttonHide, buttonShow) {
-  $("#" + divHide).css("display", "none");
-  $("#" + buttonHide).css("display", "none");
-  $("#" + divShow).css("display", "flex");
-  $("#" + buttonShow).css("display", "flex");
-  $("#" + buttonShow + " button").show();
-  $("#submission-connect-Airtable").text("Yes, let's connect");
-}
-
 // import existing Changes/README file
 function showExistingSubmissionFile(type) {
   if (
