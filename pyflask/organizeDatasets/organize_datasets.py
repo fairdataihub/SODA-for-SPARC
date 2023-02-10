@@ -623,9 +623,6 @@ def create_soda_json_object_backend(
                     create_soda_json_progress += 1
                 if entry[0:1] != "." and entry[0:8] != "manifest":
                     # no hidden files or manifest files included
-                    print(high_lvl_folder_name)
-                    print(soda_json_structure["starting-point"])
-                    print(high_lvl_folder_name in soda_json_structure["starting-point"])
                     if high_lvl_folder_name in soda_json_structure["starting-point"]:
                         if (
                             soda_json_structure["starting-point"][high_lvl_folder_name]["path"]
@@ -646,8 +643,6 @@ def create_soda_json_object_backend(
                                         extra_columns = True
                                         extra_columns_dict = dict(itertools.islice(key.items(), 5, len(key)))
                                     # description metadata
-                                    print("key: " + key["filename"] in check_path)
-                                    print("entry: " + check_path)
                                     if key["filename"] in check_path:
                                         if key["description"] != "":
                                             manifest_object["description"] = key[
