@@ -149,6 +149,11 @@ def create(soda_json_structure):
                 # copy the file to the skeleton dataset 
                 shutil.copy(file_location, path)
 
+    # Add the manifest files to the high level folders of the skeleton dataset
+    if "manifest-files" in soda_json_structure:
+      
+      print(soda_json_structure)
+
 
     return {"path_to_skeleton_dataset": path}
 

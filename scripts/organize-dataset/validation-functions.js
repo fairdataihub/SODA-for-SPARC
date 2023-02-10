@@ -44,36 +44,36 @@ const validateOrganizedDataset = async () => {
   console.log(pathToSkeletonDataset);
 
   // // call the soda api with the path to the skeleton dataset to validate the dataset
-  let validationResponse;
-  try {
-    validationResponse = await client.get(
-      "/validator/local_dataset_validation_result",
-      {
-        params: {
-          path: pathToSkeletonDataset,
-        },
-      },
-      {
-        timeout: 0,
-      }
-    );
-  } catch (error) {
-    clientError(error);
-    await Swal.fire({
-      title: "Could not validate your dataset.",
-      message: `SODA has encountered the following problem: ${userErrorMessage(error)}`,
-      allowEscapeKey: true,
-      allowOutsideClick: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      showConfirmButton: true,
-      icon: hasValidationErrors ? "error" : "success",
-    });
-  }
+  // let validationResponse;
+  // try {
+  //   validationResponse = await client.get(
+  //     "/validator/local_dataset_validation_result",
+  //     {
+  //       params: {
+  //         path: pathToSkeletonDataset,
+  //       },
+  //     },
+  //     {
+  //       timeout: 0,
+  //     }
+  //   );
+  // } catch (error) {
+  //   clientError(error);
+  //   await Swal.fire({
+  //     title: "Could not validate your dataset.",
+  //     message: `SODA has encountered the following problem: ${userErrorMessage(error)}`,
+  //     allowEscapeKey: true,
+  //     allowOutsideClick: false,
+  //     heightAuto: false,
+  //     backdrop: "rgba(0,0,0, 0.4)",
+  //     timerProgressBar: false,
+  //     showConfirmButton: true,
+  //     icon: hasValidationErrors ? "error" : "success",
+  //   });
+  // }
 
-  let errors = validationResponse.data;
-  console.log(errors);
+  // let errors = validationResponse.data;
+  // console.log(errors);
 
   // // this works because the returned validation results are in an Object Literal. If the returned object is changed this will break (e.g., an array will have a length property as well)
   // let hasValidationErrors = Object.getOwnPropertyNames(errors).length >= 1;
