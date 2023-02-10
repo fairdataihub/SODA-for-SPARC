@@ -159,8 +159,8 @@ const validateOrganizedDataset = async () => {
  */
 const formatForDatasetGeneration = (sodaJSONObj) => {
   // update the copy of the json structure to get its state post generation initialization
-  console.log('here')
+  console.log("here");
   updateJSONStructureGenerate(false, sodaJSONObj);
-  console.log('test')
+  console.log("test");
   setSodaJSONStartingPoint(sodaJSONObj);
 };
