@@ -5,6 +5,7 @@
 // Validate the dataset that has just been organized in Organize Dataset Step 6: Validate Dataset
 // TODO: Pennsieve vs local considerations for result parsing and error handling
 const validateOrganizedDataset = async () => {
+  console.log("entered");
   let sodaJSONObjCopy = JSON.parse(JSON.stringify(sodaJSONObj));
   formatForDatasetGeneration(sodaJSONObjCopy);
 
@@ -158,7 +159,8 @@ const validateOrganizedDataset = async () => {
  */
 const formatForDatasetGeneration = (sodaJSONObj) => {
   // update the copy of the json structure to get its state post generation initialization
+  console.log('here')
   updateJSONStructureGenerate(false, sodaJSONObj);
-
+  console.log('test')
   setSodaJSONStartingPoint(sodaJSONObj);
 };
