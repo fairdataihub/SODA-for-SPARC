@@ -1062,36 +1062,39 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                                 # Keep the key/value the same and add it to the updated manifest
                                 updated_manifest[manifestKey] = manifest[manifestKey]
 
-                        for manifestKey in updated_manifest.keys():
-                            # get the index of the file name in the manifest
-                            if (temp_name in updated_manifest["filename"].values()):
-                                location_index = list(updated_manifest["filename"].values()).index(
-                                    temp_name
-                                )
-                            # This is for the case where the file name in the manifest has a slash at the beginning
-                            # which is the case for files in the root folder
-                            elif ("/" + temp_name in updated_manifest["filename"].values()):
-                                location_index = list(updated_manifest["filename"].values()).index(
-                                    "/" + temp_name
-                                )
-                            else:
-                                # break out of the for loop if the file name is not in the manifest
-                                namespace_logger.info("file name not in manifest")
-                                break
+                        if "filename" in updated_manifest.keys():
+                            for manifestKey in updated_manifest.keys():
+                                # get the index of the file name in the manifest
+                                if (temp_name in updated_manifest["filename"].values()):
+                                    location_index = list(updated_manifest["filename"].values()).index(
+                                        temp_name
+                                    )
+                                # This is for the case where the file name in the manifest has a slash at the beginning
+                                # which is the case for files in the root folder
+                                elif ("/" + temp_name in updated_manifest["filename"].values()):
+                                    location_index = list(updated_manifest["filename"].values()).index(
+                                        "/" + temp_name
+                                    )
+                                else:
+                                    # break out of the for loop if the file name is not in the manifest
+                                    namespace_logger.info("file name not in manifest")
+                                    break
 
-                            # check if the key is in the required manifest headers, if it is, update the item_name value
-                            # corresponding to the key
-                            if manifestKey in defaultManifestHeadersNameMapped.values():
-                                if updated_manifest[manifestKey][location_index] != "":
-                                    subfolder_json["files"][item_name][manifestKey] = updated_manifest[manifestKey][location_index]
-                            # if the key is not in the required manifest headers, add it to the extra columns item_name value
-                            else :
-                                if updated_manifest[manifestKey][location_index] != "":
-                                    # if the extra columns key does not exist, create it
-                                    if "extra_columns" not in subfolder_json["files"][item_name]:
-                                        subfolder_json["files"][item_name]["extra_columns"] = {}
-                                    # add the key/value to the extra columns
-                                    subfolder_json["files"][item_name]["extra_columns"][manifestKey] = updated_manifest[manifestKey][location_index]
+                                # check if the key is in the required manifest headers, if it is, update the item_name value
+                                # corresponding to the key
+                                if manifestKey in defaultManifestHeadersNameMapped.values():
+                                    if updated_manifest[manifestKey][location_index] != "":
+                                        subfolder_json["files"][item_name][manifestKey] = updated_manifest[manifestKey][location_index]
+                                # if the key is not in the required manifest headers, add it to the extra columns item_name value
+                                else :
+                                    if updated_manifest[manifestKey][location_index] != "":
+                                        # if the extra columns key does not exist, create it
+                                        if "extra_columns" not in subfolder_json["files"][item_name]:
+                                            subfolder_json["files"][item_name]["extra_columns"] = {}
+                                        # add the key/value to the extra columns
+                                        subfolder_json["files"][item_name]["extra_columns"][manifestKey] = updated_manifest[manifestKey][location_index]
+                        else:
+                            namespace_logger.info("Unable to get filename from manifest")
 
 
             else:  # another subfolder found
