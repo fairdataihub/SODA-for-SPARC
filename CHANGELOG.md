@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Bug fixes:
 
-- Bug Fix
+- SODA for SPARC returns the correct Pennsieve Agent output log file instead of the outdated out.log file in the Gather Logs feature.
 
 ## v.10.0.2 - 2023-02-07
 

@@ -9373,7 +9373,7 @@ function gatherLogs() {
   let file_path = "";
   let clientLogsPath = "";
   let serverLogsPath = path.join(homedir, "SODA", "logs");
-  let logFiles = ["main.log", "renderer.log", "out.log", "api.log"];
+  let logFiles = ["main.log", "renderer.log", "agent.log", "api.log"];
 
   if (os.platform() === "darwin") {
     clientLogsPath = path.join(homedir, "/Library/Logs/SODA for SPARC/");
@@ -9438,7 +9438,7 @@ function gatherLogs() {
           for (const logFile of logFiles) {
             let logFilePath;
             let missingLog = false;
-            if (logFile === "out.log") {
+            if (logFile === "agent.log") {
               logFilePath = path.join(homedir, ".pennsieve", logFile);
               if (!fs.existsSync(logFilePath)) missingLog = true;
             } else if (logFile === "api.log") {
