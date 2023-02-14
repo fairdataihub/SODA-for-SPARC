@@ -29,7 +29,7 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version: "18"
+          node-version: "18.14.0"
 
       - name: Install package.json modules and their dependencies
         run: npm install --ignore-scripts
