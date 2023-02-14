@@ -15,25 +15,6 @@ document.querySelectorAll(".submission-change-current-ds").forEach((element) => 
   });
 });
 
-/// save airtable api key
-const addAirtableKeyBtn = document.getElementById("button-add-airtable-key");
-
-// Save grant information
-const presavedAwardArray1 = document.getElementById("select-presaved-grant-info-list");
-const addAwardBtn = document.getElementById("button-add-award");
-const deleteMilestoneBtn = document.getElementById("button-delete-milestone");
-const editMilestoneBtn = document.getElementById("button-edit-milestone");
-const addMilestoneBtn = document.getElementById("button-add-milestone");
-const deleteAwardBtn = document.getElementById("button-delete-award");
-const addNewMilestoneBtn = document.getElementById("button-default-save-milestone");
-const saveInformationBtn = document.getElementById("button-save-milestone");
-var sparcAwardEditMessage = $("#div-SPARC-edit-awards");
-
-// Prepare Submission File
-const airtableAccountBootboxMessage =
-  "<form><div class='form-group row'><label for='bootbox-airtable-key' class='col-sm-3 col-form-label'> API Key:</label><div class='col-sm-9'><input id='bootbox-airtable-key' type='text' class='form-control'/></div></div></form>";
-const generateSubmissionBtn = document.getElementById("generate-submission");
-
 function resetSubmission() {
   Swal.fire({
     backdrop: "rgba(0,0,0, 0.4)",
@@ -133,7 +114,6 @@ function resetSubmissionFields() {
       text: "Enter my own date",
     })
   );
-  checkAirtableStatus("");
 }
 
 const helpMilestoneSubmission = async (curationMode) => {
@@ -374,13 +354,7 @@ function onboardingSubmission() {
         .setOptions({
           steps: [
             {
-              // title: "1. Help with your SPARC Award number",
-              element: document.querySelector("#a-help-submission-Airtable"),
-              intro:
-                "Click here to connect SODA with your Airtable account and automatically retrieve your SPARC award number.",
-            },
-            {
-              // title: "2. Help with your milestone information",
+              // title: "1. Help with your milestone information",
               element: document.querySelector("#a-help-submission-milestones"),
               intro:
                 "Click here to import your Data Deliverables document for SODA to automatically retrieve your milestone and completion date.",
@@ -848,16 +822,6 @@ $("#cancel-reupload-DDD").click(function () {
   $("#div-confirm-select-SPARC-awards button").show();
   $("#div-confirm-select-SPARC-awards button").click();
 });
-
-// show which Airtable first div to show -< based on Airtable connection status
-function changeAirtableDiv(divHide, divShow, buttonHide, buttonShow) {
-  $("#" + divHide).css("display", "none");
-  $("#" + buttonHide).css("display", "none");
-  $("#" + divShow).css("display", "flex");
-  $("#" + buttonShow).css("display", "flex");
-  $("#" + buttonShow + " button").show();
-  $("#submission-connect-Airtable").text("Yes, let's connect");
-}
 
 // import existing Changes/README file
 function showExistingSubmissionFile(type) {

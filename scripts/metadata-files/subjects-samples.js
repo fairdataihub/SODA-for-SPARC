@@ -3142,7 +3142,7 @@ function saveProtocolInfo(token, email) {
 
 function loadExistingProtocolInfo() {
   var protocolExists = false;
-  //// config and load live data from Airtable
+  //// config and load live data from Protocol.io
   var protocolTokenContent = parseJson(protocolConfigPath);
   if (JSON.stringify(protocolTokenContent) !== "{}") {
     var protocolToken = protocolTokenContent["access-token"];

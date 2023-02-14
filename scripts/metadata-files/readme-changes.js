@@ -24,9 +24,6 @@ document.querySelectorAll(".readme-change-current-ds").forEach((element) => {
   });
 });
 
-/////// Load SPARC airtable data
-var pennsieveHostname = "https://api.pennsieve.io";
-
 // function to raise a warning for empty fields before generating changes or readme
 function generateRCFilesHelper(type) {
   var textValue = $(`#textarea-create-${type}`).val().trim();

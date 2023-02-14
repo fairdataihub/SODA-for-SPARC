@@ -119,7 +119,6 @@
     "@toast-ui/editor": "^2.5.1",
     "@yaireo/dragsort": "^1.3.1",
     "@yaireo/tagify": "^4.16.4",
-    "airtable": "^0.8.1",
     "amazon-cognito-identity-js": "^5.2.0",
     "animate.css": "^4.1.1",
     "axios": "^0.19.2",
@@ -168,8 +167,7 @@
     "universal-analytics": "^0.4.23",
     "uuid": "^8.3.1",
     "v8-compile-cache": "^2.3.0",
-    "validator": "^13.7.0",
-    "win-node-env": "^0.4.0"
+    "validator": "^13.7.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
