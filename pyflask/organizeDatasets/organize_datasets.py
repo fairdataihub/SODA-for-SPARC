@@ -1087,12 +1087,14 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                                         subfolder_json["files"][item_name][manifestKey] = updated_manifest[manifestKey][location_index]
                                 # if the key is not in the required manifest headers, add it to the extra columns item_name value
                                 else :
+                                    # if the extra columns key does not exist, create it
+                                    if "extra_columns" not in subfolder_json["files"][item_name]:
+                                        subfolder_json["files"][item_name]["extra_columns"] = {}
+                                    
                                     if updated_manifest[manifestKey][location_index] != "":
-                                        # if the extra columns key does not exist, create it
-                                        if "extra_columns" not in subfolder_json["files"][item_name]:
-                                            subfolder_json["files"][item_name]["extra_columns"] = {}
-                                        # add the key/value to the extra columns
                                         subfolder_json["files"][item_name]["extra_columns"][manifestKey] = updated_manifest[manifestKey][location_index]
+                                    else:
+                                        subfolder_json["files"][item_name]["extra_columns"][manifestKey] = ""
                         else:
                             namespace_logger.info("Unable to get filename from manifest")
 
