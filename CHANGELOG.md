@@ -9,11 +9,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Feature additions:
 
-- FA
+- Removed AirTable support. A future version will allow users to store data that was stored on AirTable locally.
 
 ## Bug fixes:
 
 - SODA for SPARC returns the correct Pennsieve Agent output log file instead of the outdated out.log file in the Gather Logs feature.
+- Fixed an issue with non-standard manifest file headers not being imported properly.
 
 ## v.10.0.2 - 2023-02-07
 
