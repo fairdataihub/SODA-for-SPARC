@@ -18,7 +18,9 @@
     "postinstall": "electron-builder install-app-deps",
     "format": "prettier --ignore-path .gitignore --ignore-path .prettierignore \"./**/*.+(html|css|js|md|yml)\" --write",
     "commit": "cz",
-    "prepare": "husky install"
+    "prepare": "run-script-os",
+    "prepare:win32": "husky install",
+    "prepare:darwin:linux": "husky install && chmod ug+x .husky/*  && chmod ug+x .git/hooks/*"
   },
   "lint-staged": {
     "./**/*.{html|css|js|md|yml}": [
@@ -169,8 +171,7 @@
     "universal-analytics": "^0.4.23",
     "uuid": "^8.3.1",
     "v8-compile-cache": "^2.3.0",
-    "validator": "^13.7.0",
-    "win-node-env": "^0.4.0"
+    "validator": "^13.7.0"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
@@ -185,7 +186,8 @@
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
     "megasanjay-devmoji": "^1.1.0",
-    "prettier": "^2.3.2"
+    "prettier": "^2.3.2",
+    "run-script-os": "^1.1.6"
   },
   "optionalDependencies": {
     "win-node-env": "^0.4.0"

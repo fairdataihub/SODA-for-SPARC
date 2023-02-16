@@ -149,6 +149,15 @@ def create(soda_json_structure):
                 # copy the file to the skeleton dataset 
                 shutil.copy(file_location, path)
 
+    # Add the manifest files to the high level folders of the skeleton dataset
+    if ("manifest-files" in soda_json_structure and "auto-generated" in soda_json_structure["manifest-files"]):
+        # auto gen'd was selected so gather the paths for the high lvl folders
+        for high_lvl_folder in soda_json_structure["dataset-structure"]["folders"].keys():
+          #for free form mode we will get manifest files from ~/SODA/manifest_files/<high_lvl_folder_name>
+          manifest_location = os.path.join(expanduser("~"), "SODA", "manifest_files", high_lvl_folder, "manifest.xlsx")
+          skeleton_path = os.path.join(path, high_lvl_folder)
+          shutil.copy(manifest_location, skeleton_path)
+
 
     return {"path_to_skeleton_dataset": path}
 

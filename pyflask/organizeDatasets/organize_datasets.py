@@ -590,7 +590,7 @@ def create_soda_json_object_backend(
 
     dataset_folder = soda_json_structure["dataset-structure"] = {"folders": {}}
 
-    def recursive_structure_create(dataset_structure, folder_path):
+    def recursive_structure_create(dataset_structure, folder_path, high_lvl_folder_name):
         global create_soda_json_progress
         # going within high level folders
         # add manifest details if manifest exists
@@ -623,27 +623,27 @@ def create_soda_json_object_backend(
                     create_soda_json_progress += 1
                 if entry[0:1] != "." and entry[0:8] != "manifest":
                     # no hidden files or manifest files included
-                    if folder_name in soda_json_structure["starting-point"]:
+                    if high_lvl_folder_name in soda_json_structure["starting-point"]:
                         if (
-                            soda_json_structure["starting-point"][folder_name]["path"]
+                            soda_json_structure["starting-point"][high_lvl_folder_name]["path"]
                             != ""
                         ):
                             # checks if there is a path to a manifest
                             manifest_path = soda_json_structure["starting-point"][
-                                folder_name
+                                high_lvl_folder_name
                             ]["path"]
                             ext_index = manifest_path.rfind(".")
                             extension = manifest_path[ext_index:]
                             if extension == ".xlsx":
                                 for key in soda_json_structure["starting-point"][
-                                    folder_name
+                                    high_lvl_folder_name
                                 ]["manifest"]:
                                     extra_columns = False
                                     if(len(key) > 5):
                                         extra_columns = True
                                         extra_columns_dict = dict(itertools.islice(key.items(), 5, len(key)))
                                     # description metadata
-                                    if key["filename"] == entry:
+                                    if key["filename"] in check_path:
                                         if key["description"] != "":
                                             manifest_object["description"] = key[
                                                 "description"
@@ -756,6 +756,7 @@ def create_soda_json_object_backend(
                         recursive_structure_create(
                             dataset_structure["folders"][modified_name][folder],
                             updated_path,
+                            high_lvl_folder_name
                         )
                 else:
                     dataset_structure["folders"][entry] = {
@@ -769,7 +770,7 @@ def create_soda_json_object_backend(
         for folder in dataset_structure["folders"]:
             updated_path = dataset_structure["folders"][folder]["path"]
             recursive_structure_create(
-                dataset_structure["folders"][folder], updated_path
+                dataset_structure["folders"][folder], updated_path, high_lvl_folder_name
             )
 
     # BEGIN
@@ -854,7 +855,7 @@ def create_soda_json_object_backend(
             json_format = excel_data.to_dict(orient="records")
             soda_json_structure["starting-point"][folder]["path"] = temp_file_path_xlsx
             soda_json_structure["starting-point"][folder]["manifest"] = json_format
-        recursive_structure_create(dataset_folder["folders"][folder], high_lvl_path)
+        recursive_structure_create(dataset_folder["folders"][folder], high_lvl_path, folder)
 
     create_soda_json_completed = 1
     return soda_json_structure
