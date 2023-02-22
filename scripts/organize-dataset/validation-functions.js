@@ -1,7 +1,5 @@
 // Purpose: Logic for Organize Dataset Step 7: Validate Dataset
 
-// const api = require("../others/api/api");
-
 // Validate the dataset that has just been organized in Organize Dataset Step 6: Validate Dataset
 // TODO: Pennsieve vs local considerations for result parsing and error handling
 const validateOrganizedDataset = async () => {
@@ -13,10 +11,10 @@ const validateOrganizedDataset = async () => {
     await api.performUserActions(sodaJSONObjCopy);
   }
 
-  let skeletonDatasetResponse;
+  let manifestJSONResponse;
   try {
-    skeletonDatasetResponse = await client.post(
-      "/skeleton_dataset/",
+    manifestJSONResponse = await client.post(
+      "/skeleton_dataset/manifest_json",
       {
         sodajsonobject: sodaJSONObjCopy,
       },
@@ -40,9 +38,9 @@ const validateOrganizedDataset = async () => {
     return;
   }
 
-  let pathToSkeletonDataset = skeletonDatasetResponse.data["path_to_skeleton_dataset"];
-  console.log(skeletonDatasetResponse);
-  console.log(pathToSkeletonDataset);
+  let manifestsJSON = manifestJSONResponse.data;
+
+  console.log(manifestsJSON);
 
   // // call the soda api with the path to the skeleton dataset to validate the dataset
   // let validationResponse;

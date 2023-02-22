@@ -12,6 +12,7 @@ from os.path import expanduser
 from .skeletonDatasetUtils import import_bf_metadata_files_skeleton, import_manifest_files_skeleton
 from pennsieve2.pennsieve import Pennsieve
 from manifest import ManifestBuilderBase, ManifestBuilder
+import pandas as pd 
 # from organizeDatasets import import_pennsieve_dataset
 
 path = os.path.join(expanduser("~"), "SODA", "skeleton")
@@ -149,19 +150,26 @@ def create(soda_json_structure):
                 # copy the file to the skeleton dataset 
                 shutil.copy(file_location, path)
 
-    # Add the manifest files to the high level folders of the skeleton dataset
-    if ("manifest-files" in soda_json_structure and "auto-generated" in soda_json_structure["manifest-files"]):
-        # auto gen'd was selected so gather the paths for the high lvl folders
-        for high_lvl_folder in soda_json_structure["dataset-structure"]["folders"].keys():
-          #for free form mode we will get manifest files from ~/SODA/manifest_files/<high_lvl_folder_name>
-          manifest_location = os.path.join(expanduser("~"), "SODA", "manifest_files", high_lvl_folder, "manifest.xlsx")
-          skeleton_path = os.path.join(path, high_lvl_folder)
-          shutil.copy(manifest_location, skeleton_path)
+
 
 
     return {"path_to_skeleton_dataset": path}
 
 
+
+def get_manifests(soda_json_structure):
+    manifests = {}
+      # Add the manifest files to the high level folders of the skeleton dataset
+    if ("manifest-files" in soda_json_structure and "auto-generated" in soda_json_structure["manifest-files"]):
+        # auto gen'd was selected so gather the paths for the high lvl folders
+        for high_lvl_folder in soda_json_structure["dataset-structure"]["folders"].keys():
+          #for free form mode we will get manifest files from ~/SODA/manifest_files/<high_lvl_folder_name>
+          manifest_location = os.path.join(expanduser("~"), "SODA", "manifest_files", high_lvl_folder, "manifest.xlsx")
+          if os.path.exists(manifest_location):
+            df = pd.read_excel(manifest_location)
+            manifests[high_lvl_folder] = df.to_json()
+
+    return manifests
 
 
 
