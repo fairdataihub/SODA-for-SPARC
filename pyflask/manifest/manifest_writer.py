@@ -166,7 +166,12 @@ def update_existing_pennsieve_manifest_file_helper(folder, old_manifest_dict, ne
                 # add the existing rows to the new manifest dictionary's arrays
                 # TODO: Confirm it adds NULL/NaN if the value is empty
                 for column in manifest_columns:
-                    new_manifest_dict[column].append(old_manifest_dict[column][row_idx])
+                    # if that column exists in the old manifest
+                    if column in old_manifest_dict:
+                        # add it to the new manifest along with its data; otherwise drop that column
+                        new_manifest_dict[column].append(old_manifest_dict[column][row_idx])
+                    else:
+                        new_manifest_dict[column].append("")
 
     if "folders" in folder.keys():
         for current_folder in list(folder["folders"]):
