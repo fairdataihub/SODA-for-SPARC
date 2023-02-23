@@ -159,16 +159,10 @@ def get_metadata_files_json(soda_json_structure):
             if props["type"] == "bf": 
                 selected_dataset = soda_json_structure["bf-dataset-selected"]["dataset-name"]
                 ps = Pennsieve()
-                import_bf_metadata_files_skeleton(selected_dataset, ps)
-
-                file_location = os.path.join(expanduser("~"), "SODA", "metadata_files", metadata_file_name)
-
-                df = pd.read_excel(file_location)
-                metadata_files[metadata_file_name] = df.to_json()
+                import_bf_metadata_files_skeleton(selected_dataset, ps, metadata_files)
             else:
                 # get the file location from the user's computer
                 file_location = props["path"]
-
                 df = pd.read_excel(file_location)
                 metadata_files[metadata_file_name] = df.to_json()
     return metadata_files

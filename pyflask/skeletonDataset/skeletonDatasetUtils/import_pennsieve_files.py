@@ -42,12 +42,8 @@ def import_xlsx_metadata(url, filename):
     global path 
 
     df = pd.read_excel( url, engine="openpyxl", usecols=column_check, header=0 )
-    
-    skeleton_root_path  = os.path.join(path, filename)
 
-    # write the metadata file to the skeleton directory's root folder
-    df.to_excel(skeleton_root_path, index=False, header=True)
-
+    return df.to_json()
 
 def import_RC_metadata(url, filename):
     """
@@ -74,9 +70,9 @@ def import_metadata(url, filename):
     """
     try:
         if filename in ["README.txt", "CHANGES.txt"]:
-            import_RC_metadata(url, filename)
+            return import_RC_metadata(url, filename)
         else:
-            import_xlsx_metadata(url, filename)
+            return import_xlsx_metadata(url, filename)
     except Exception as e:
         raise Exception(
             "SODA cannot read this file. If you are trying to retrieve a submission.xlsx file from Pennsieve, please make sure you are signed in with your Pennsieve account on SODA."
@@ -84,7 +80,7 @@ def import_metadata(url, filename):
 
 
 # import existing metadata files except Readme and Changes from Pennsieve
-def import_bf_metadata_files_skeleton(bfdataset, ps):
+def import_bf_metadata_files_skeleton(bfdataset, ps, metadata_files):
     try: 
         selected_dataset_id = ps.get_datasets()[bfdataset]
     except Exception as e:
@@ -99,7 +95,10 @@ def import_bf_metadata_files_skeleton(bfdataset, ps):
         if child["content"]["packageType"] != "Collection" and child["content"]["name"] in METADATA_FILES:
                 item_id = child["content"]["id"]
                 url = returnFileURL(ps, item_id)
-                import_metadata(url, child["content"]["name"])
+                metadata_json = import_metadata(url, child["content"]["name"])
+                metadata_files[child["content"]["name"]] = metadata_json
+
+    return metadata_files
 
 
 
