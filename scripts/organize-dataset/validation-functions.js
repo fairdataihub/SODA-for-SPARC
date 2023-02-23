@@ -42,6 +42,37 @@ const validateOrganizedDataset = async () => {
 
   console.log(manifestsJSON);
 
+  let metadataJSONResponse;
+  try {
+    metadataJSONResponse = await client.post(
+      "/skeleton_dataset/metadata_json",
+      {
+        sodajsonobject: sodaJSONObjCopy,
+      },
+      {
+        timeout: 0,
+      }
+    );
+  } catch (error) {
+    clientError(error);
+    await Swal.fire({
+      title: "Could not validate your dataset.",
+      message: `SODA has encountered the following problem: ${userErrorMessage(error)}`,
+      allowEscapeKey: true,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      showConfirmButton: true,
+      icon: hasValidationErrors ? "error" : "success",
+    });
+    return;
+  }
+
+  let metadataJSON = metadataJSONResponse.data;
+
+  console.log(metadataJSON);
+
   // // call the soda api with the path to the skeleton dataset to validate the dataset
   // let validationResponse;
   // try {

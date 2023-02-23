@@ -2,7 +2,7 @@
 from flask_restx import Resource, fields
 from flask import request
 from namespaces import get_namespace, NamespaceEnum
-from skeletonDataset import create, get_manifests
+from skeletonDataset import create, get_manifests, get_metadata_files_json
 from errorHandlers import notBadRequestException
 
 api = get_namespace(NamespaceEnum.SKELETON_DATASET)
@@ -61,3 +61,23 @@ class SkeletonDatasetManifest(Resource):
                 api.abort(500, str(e))
             raise e
 
+
+@api.route('/metadata_json')
+class SkeletonDatasetMetadata(Resource):
+
+    def post(self):
+        data = request.get_json()
+
+        if "sodajsonobject" not in data:
+            api.abort(400, "Need the SODAJSONObj to create the skeleton dataset structure")
+
+        sodajsonobject = data["sodajsonobject"]
+
+        api.logger.info(f"Creating skeleton dataset structure {sodajsonobject}")
+
+        try:
+            return get_metadata_files_json(sodajsonobject)
+        except Exception as e:
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e

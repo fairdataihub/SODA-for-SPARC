@@ -10,7 +10,7 @@ from utils import create_request_headers
 METADATA_FILES = ["submission.xlsx", "README.txt", "CHANGES.txt", "dataset_description.xlsx", "subjects.xlsx", "samples.xlsx"]
 HIGH_LEVEL_FOLDERS = ["primary", "code", "derivative", "docs", "source", "protocols"]
 PENNSIEVE_URL = "https://api.pennsieve.io"
-path = os.path.join(os.path.expanduser("~"), "SODA", "skeleton")
+path = os.path.join(os.path.expanduser("~"), "SODA", "metadata_files")
 
 
 # obtain Pennsieve S3 URL for an existing metadata file

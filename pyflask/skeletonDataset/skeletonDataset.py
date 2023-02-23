@@ -152,7 +152,8 @@ def get_manifests(soda_json_structure):
 
 
 def get_metadata_files_json(soda_json_structure):
-      # Add the metadata files to the root of the skeleton dataset 
+    metadata_files = {}
+    # Add the metadata files to the root of the skeleton dataset 
     if "metadata-files" in soda_json_structure:
         for metadata_file_name, props in soda_json_structure["metadata-files"].items():
             if props["type"] == "bf": 
@@ -161,12 +162,16 @@ def get_metadata_files_json(soda_json_structure):
                 import_bf_metadata_files_skeleton(selected_dataset, ps)
 
                 file_location = os.path.join(expanduser("~"), "SODA", "metadata_files", metadata_file_name)
+
+                df = pd.read_excel(file_location)
+                metadata_files[metadata_file_name] = df.to_json()
             else:
                 # get the file location from the user's computer
                 file_location = props["path"]
 
-                # copy the file to the skeleton dataset 
-                shutil.copy(file_location, path)
+                df = pd.read_excel(file_location)
+                metadata_files[metadata_file_name] = df.to_json()
+    return metadata_files
 
 
 
