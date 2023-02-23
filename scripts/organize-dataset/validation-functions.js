@@ -69,7 +69,7 @@ const validateOrganizedDataset = async () => {
     return;
   }
 
-  console.log("Here")
+  console.log("Here");
 
   let metadataJSON = metadataJSONResponse.data;
 
