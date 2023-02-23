@@ -145,12 +145,11 @@ async function handleSectionTrigger(event) {
   document.getElementById(sectionId).classList.add("is-shown");
 
   let showSidebarSections = [
-    "main_tabs-section",
-    "getting_started-section",
-    "guided_mode-section",
-    "help-section",
-    "documentation-section",
-    "contact-us-section",
+    "main_tabs-section",        //Free form mode
+    "getting_started-section",  //Overview page
+    "guided_mode-section",      //Guided Mode
+    "documentation-section",    //Documentation
+    "contact-us-section",       //Contact us
   ];
 
   if (showSidebarSections.includes(sectionId)) {
