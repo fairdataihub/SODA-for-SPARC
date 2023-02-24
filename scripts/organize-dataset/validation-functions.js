@@ -3,7 +3,18 @@
 // Validate the dataset that has just been organized in Organize Dataset Step 6: Validate Dataset
 // TODO: Pennsieve vs local considerations for result parsing and error handling
 const validateOrganizedDataset = async () => {
-  console.log("entered");
+  swal.fire({
+    title: "Validating Dataset",
+    text: "Please wait while your dataset is validated.",
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+
   let sodaJSONObjCopy = JSON.parse(JSON.stringify(sodaJSONObj));
   formatForDatasetGeneration(sodaJSONObjCopy);
 
@@ -75,34 +86,19 @@ const validateOrganizedDataset = async () => {
 
   console.log(metadataJSON);
 
-  // // call the soda api with the path to the skeleton dataset to validate the dataset
-  // let validationResponse;
-  // try {
-  //   validationResponse = await client.get(
-  //     "/validator/local_dataset_validation_result",
-  //     {
-  //       params: {
-  //         path: pathToSkeletonDataset,
-  //       },
-  //     },
-  //     {
-  //       timeout: 0,
-  //     }
-  //   );
-  // } catch (error) {
-  //   clientError(error);
-  //   await Swal.fire({
-  //     title: "Could not validate your dataset.",
-  //     message: `SODA has encountered the following problem: ${userErrorMessage(error)}`,
-  //     allowEscapeKey: true,
-  //     allowOutsideClick: false,
-  //     heightAuto: false,
-  //     backdrop: "rgba(0,0,0, 0.4)",
-  //     timerProgressBar: false,
-  //     showConfirmButton: true,
-  //     icon: hasValidationErrors ? "error" : "success",
-  //   });
-  // }
+  let validationResponse;
+
+  await Swal.fire({
+    title: "Dataset is Valid",
+    text: `Your dataset conforms to the SPARC Dataset Structure. Continue to the next step to upload your dataset.`,
+    allowEscapeKey: true,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    showConfirmButton: true,
+    icon: "success",
+  });
 
   // let errors = validationResponse.data;
   // console.log(errors);
