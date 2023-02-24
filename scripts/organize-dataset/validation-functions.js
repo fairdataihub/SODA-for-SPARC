@@ -1,4 +1,5 @@
 // Purpose: Logic for Organize Dataset Step 7: Validate Dataset
+const { v4: uuid } = require("uuid");
 
 // Validate the dataset that has just been organized in Organize Dataset Step 6: Validate Dataset
 // TODO: Pennsieve vs local considerations for result parsing and error handling
@@ -86,7 +87,27 @@ const validateOrganizedDataset = async () => {
 
   console.log(metadataJSON);
 
-  let validationResponse;
+  try {
+    await client.post("https://queue-validation-jobs-next.vercel.app/api/queueJob", {
+      clientUUID: uuid(),
+      dataset_structure: sodaJSONObjCopy,
+      manifests: manifestsJSON,
+      metadata_files: metadataJSON,
+    });
+  } catch (error) {
+    clientError(error);
+    await Swal.fire({
+      title: "Could not validate your dataset.",
+      allowEscapeKey: true,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      showConfirmButton: true,
+      icon: "error",
+    });
+    return;
+  }
 
   await Swal.fire({
     title: "Dataset is Valid",
