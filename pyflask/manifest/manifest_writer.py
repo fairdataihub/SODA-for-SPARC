@@ -109,10 +109,7 @@ def update_existing_pennsieve_manifest_file(high_level_folder, manifest_df):
 
     new_manifest_dict = {'filename': [], 'timestamp': [], 'description': [], 'file type': [], 'Additional Metadata': []}
     SET_COLUMNS = ['filename', 'timestamp', 'description', 'file type', 'Additional Metadata']
-    for column in manifest_df.columns: 
-        if column not in new_manifest_dict:
-            new_manifest_dict[column] = []
-            SET_COLUMNS.append(column)
+
 
     # convert the old manifest into a dictionary to optimize the lookup time
     old_manifest_dict = {x: manifest_df[x].values.tolist() for x in manifest_df}
@@ -125,6 +122,13 @@ def update_existing_pennsieve_manifest_file(high_level_folder, manifest_df):
         filename_idx_map = {x:i for i, x in enumerate(manifest_df['File Name'])}
     else:
         filename_idx_map = None
+
+    #  preserve the users custom columns should the unique filename column be present to allow for placing them in a non-arbitrary ordering
+    if filename_idx_map is not None:
+        for column in manifest_df.columns: 
+            if column not in new_manifest_dict:
+                new_manifest_dict[column] = []
+                SET_COLUMNS.append(column)
 
     # traverse through the high level folder items
     update_existing_pennsieve_manifest_file_helper(high_level_folder, old_manifest_dict, new_manifest_dict, filename_idx_map, manifest_columns=SET_COLUMNS)
