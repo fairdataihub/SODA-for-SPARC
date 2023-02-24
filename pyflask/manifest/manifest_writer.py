@@ -115,20 +115,20 @@ def update_existing_pennsieve_manifest_file(high_level_folder, manifest_df):
     old_manifest_dict = {x: manifest_df[x].values.tolist() for x in manifest_df}
     # old_manifest_dict = {x:manifest_df[x].values.tolist() for x in manifest_df}
 
+    filename_idx_map = None 
+
     # create a mapping of filename to the idx of the row in the old_manidest_dict
     if "filename" in manifest_df:
         filename_idx_map = {x:i for i, x in enumerate(manifest_df['filename'])}
     if "File Name" in manifest_df:
         filename_idx_map = {x:i for i, x in enumerate(manifest_df['File Name'])}
-    else:
-        filename_idx_map = None
 
-    #  preserve the users custom columns should the unique filename column be present to allow for placing them in a non-arbitrary ordering
-    if filename_idx_map is not None:
+    if filename_idx_map:
         for column in manifest_df.columns: 
             if column not in new_manifest_dict:
                 new_manifest_dict[column] = []
                 SET_COLUMNS.append(column)
+
 
     # traverse through the high level folder items
     update_existing_pennsieve_manifest_file_helper(high_level_folder, old_manifest_dict, new_manifest_dict, filename_idx_map, manifest_columns=SET_COLUMNS)
@@ -154,7 +154,6 @@ def update_existing_pennsieve_manifest_file_helper(folder, old_manifest_dict, ne
             else:
                 row_idx = None
 
-
             if row_idx is None:
                 for key in new_manifest_dict.keys():
                     if key == "filename":
@@ -176,12 +175,22 @@ def update_existing_pennsieve_manifest_file_helper(folder, old_manifest_dict, ne
                 # add the existing rows to the new manifest dictionary's arrays
                 # TODO: Confirm it adds NULL/NaN if the value is empty
                 for column in manifest_columns:
-                    # if that column exists in the old manifest
                     if column in old_manifest_dict:
-                        # add it to the new manifest along with its data; otherwise drop that column
                         new_manifest_dict[column].append(old_manifest_dict[column][row_idx])
                     else:
-                        new_manifest_dict[column].append("")
+                        if column == "filename":
+                            new_manifest_dict["filename"].append(file_path)   
+                        elif column == "timestamp":
+                            new_manifest_dict["timestamp"].append(folder["files"][file]["timestamp"]), 
+                        elif column == "description": 
+                            new_manifest_dict["description"].append(folder["files"][file].get("description", ""))
+                        elif column == "file type":
+                            unused_file_name, file_extension = get_name_extension(file)
+                            new_manifest_dict["file type"].append(file_extension), 
+                        elif column == "Additional Metadata":
+                            new_manifest_dict["Additional Metadata"].append(folder["files"][file].get("additional-metadata", ""))
+                        else:
+                            new_manifest_dict[column].append("")
 
     if "folders" in folder.keys():
         for current_folder in list(folder["folders"]):
