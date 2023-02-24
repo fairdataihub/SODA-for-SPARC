@@ -834,7 +834,6 @@ const apiVersionsMatch = async () => {
   }
 
   let serverAppVersion = responseObject.data.version;
-  console.log(serverAppVersion);
 
   log.info(`Server version is ${serverAppVersion}`);
 

@@ -1078,7 +1078,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                                     )
                                 else:
                                     # break out of the for loop if the file name is not in the manifest
-                                    namespace_logger.info("file name not in manifest")
                                     break
 
                                 # check if the key is in the required manifest headers, if it is, update the item_name value
@@ -1100,8 +1099,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                                     else:
                                         subfolder_json["files"][item_name]["extra_columns"][manifestKey] = ""
                         else:
-                            namespace_logger.info("Unable to get filename from manifest")
-                            namespace_logger.info(updated_manifest.keys())
                             # filename not in updated manifest so recreate standard headers if they don't exist
                             # loop through the updated manifest keys and if header matches standard header add content else recreate
                             if len(updated_manifest.keys()) > 0:
@@ -1272,7 +1269,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                             # 
                             manifest_dict[high_lvl_folder].update(df.to_dict())
                         except Exception as e:
-                            namespace_logger.info(f"Error reading manifest file: {e}")
                             manifest_error_message.append(
                                 items["content"]["name"]
                             )
