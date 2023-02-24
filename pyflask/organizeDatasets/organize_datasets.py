@@ -1054,10 +1054,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         # Go through the imported manifest keys and change the keys to the correct name
                         # For example if the key is "File Name" change it to "filename"
                         for manifestKey in manifest.keys():
-                            # namespace_logger.info(manifest.keys())
-                            # namespace_logger.info(("=" * 40)
-                            # namespace_logger.info(manifest)
-                            # namespace_logger.info("Above is the true manifest keys")
                             # Make the key lowercase
                             sterilizedKeyName = manifestKey.lower().replace(" ", "")
                             if sterilizedKeyName in defaultManifestHeadersNameMapped.keys():
@@ -1071,11 +1067,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                                 updated_manifest[manifestKey] = manifest[manifestKey]
 
                         if "filename" in updated_manifest.keys():
-                            namespace_logger.info(("$" * 40))
-                            namespace_logger.info(updated_manifest)
-                            namespace_logger.info("ABOVE IS THE UPDATED MANIFEST WITH KEYS")
-                            namespace_logger.info(updated_manifest.keys())
-                            namespace_logger.info(("$" * 40))
                             for manifestKey in updated_manifest.keys():
                                 location_index = ""
                                 # get the index of the file name in the manifest
@@ -1115,11 +1106,8 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                             # filename not in updated manifest so recreate standard headers if they don't exist
                             # loop through the updated manifest keys and if header matches standard header add content else recreate
                             if len(updated_manifest.keys()) > 0:
-                                print("loops")
-                                print(len(updated_manifest.keys()))
                                 location_index = ""
                                 for manifestKey in updated_manifest.keys():
-                                    print(manifestKey)
                                     if temp_name in updated_manifest[manifestKey].values():
                                         # file_names found
                                         location_index = list(updated_manifest[manifestKey].values()).index(
@@ -1135,14 +1123,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                                         else:
                                             if "extra_columns" not in subfolder_json["files"][item_name]:
                                                 subfolder_json["files"][item_name]["extra_columns"] = {}
-
-                                            # if updated_manifest[manifestKey][location_index] != "":
-                                            print("AS:DLLAJSDASDAS")
-                                            print(manifestKey)
-                                            print("HEREYALL")
                                             subfolder_json["files"][item_name]["extra_columns"][manifestKey] = updated_manifest[manifestKey][location_index]
-                                            # else:
-                                                # subfolder_json["files"][item_name]["extra_columns"][manifestKey] = ""
 
             else:  # another subfolder found
                 subfolder_json["folders"][item_name] = {
