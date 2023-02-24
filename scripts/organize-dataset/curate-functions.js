@@ -2058,7 +2058,7 @@ const ffmCreateManifest = async (sodaJson) => {
           fs.closeSync(fs.openSync(selectedManifestFilePath, "w"));
           console.log("uhh");
         }
-        if(!fs.existsSync(selectedManifestFilePath)) {
+        if (!fs.existsSync(selectedManifestFilePath)) {
           console.log("Manifest file does not exist");
         } else {
           jsonManifest = excelToJson({
