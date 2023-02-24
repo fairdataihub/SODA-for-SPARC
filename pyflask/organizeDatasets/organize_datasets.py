@@ -990,10 +990,10 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
             create_soda_json_progress += 1
             item_id = items["content"]["id"]
             if item_id[2:9] == "package":
-                # if it is a file name check if there are additional manifest information to attach to files
+                # is a file name check if there are additional manifest information to attach to files
                 if (
                     item_name[0:8] != "manifest"
-                ):  # manifest files are not being included json structure
+                ):  # manifest files are not being included in json structure
 
                     #verify file name first
                     if("extension" not in children_content):
@@ -1032,6 +1032,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                     else:
                         temp_name = item_name
                     
+                    namespace_logger.info("Amount of keys: " + str(len(manifest.keys())))
                     if len(manifest.keys()) > 0:
                         # Dictionary that has the required manifest headers in lowercase and without spaces as keys
                         # and the correct manifest headers as values
@@ -1050,6 +1051,10 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         # Go through the imported manifest keys and change the keys to the correct name
                         # For example if the key is "File Name" change it to "filename"
                         for manifestKey in manifest.keys():
+                            namespace_logger.info(manifest.keys())
+                            namespace_logger.info(("=" * 40))
+                            namespace_logger.info(manifest)
+                            namespace_logger.info("Above is the true manifest keys")
                             # Make the key lowercase
                             sterilizedKeyName = manifestKey.lower().replace(" ", "")
                             if sterilizedKeyName in defaultManifestHeadersNameMapped.keys():
@@ -1063,7 +1068,13 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                                 updated_manifest[manifestKey] = manifest[manifestKey]
 
                         if "filename" in updated_manifest.keys():
+                            namespace_logger.info(("$" * 40))
+                            namespace_logger.info(updated_manifest)
+                            namespace_logger.info("ABOVE IS THE UPDATED MANIFEST WITH KEYS")
+                            namespace_logger.info(updated_manifest.keys())
+                            namespace_logger.info(("$" * 40))
                             for manifestKey in updated_manifest.keys():
+                                location_index = ""
                                 # get the index of the file name in the manifest
                                 if (temp_name in updated_manifest["filename"].values()):
                                     location_index = list(updated_manifest["filename"].values()).index(
@@ -1206,8 +1217,8 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
     # manifest information is needed so it is looked for before the recursive calls are made
     if len(soda_json_structure["dataset-structure"]["folders"].keys()) != 0:
-        for folder in soda_json_structure["dataset-structure"]["folders"].keys():
-            collection_id = soda_json_structure["dataset-structure"]["folders"][folder][
+        for high_lvl_folder in soda_json_structure["dataset-structure"]["folders"].keys():
+            collection_id = soda_json_structure["dataset-structure"]["folders"][high_lvl_folder][
                 "path"
             ]
 
@@ -1216,7 +1227,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
             subfolder = r.json()
 
             children_content = subfolder["children"]
-            manifest_dict[folder] = {}
+            manifest_dict[high_lvl_folder] = {}
             if len(children_content) > 0:
                 for items in children_content:
                     # check subfolders surface to see if manifest files exist to then use within recursive_subfolder_check
@@ -1242,20 +1253,20 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                                 df = load_manifest_to_dataframe(package_id, "csv", token)
                                 df = df.fillna("")
                             # 
-                            manifest_dict[folder].update(df.to_dict())
+                            manifest_dict[high_lvl_folder].update(df.to_dict())
                         except Exception as e:
                             namespace_logger.info(f"Error reading manifest file: {e}")
                             manifest_error_message.append(
                                 items["content"]["name"]
                             )
 
-                subfolder_section = soda_json_structure["dataset-structure"]["folders"][
-                    folder
+                high_lvl_folder_dict = soda_json_structure["dataset-structure"]["folders"][
+                    high_lvl_folder
                 ]
 
-                if folder in manifest_dict:
+                if high_lvl_folder in manifest_dict:
                     createFolderStructure(
-                        subfolder_section, token, manifest_dict[folder]
+                        high_lvl_folder_dict, token, manifest_dict[high_lvl_folder]
                     )  # passing item's json and the collection ID
 
     success_message = (

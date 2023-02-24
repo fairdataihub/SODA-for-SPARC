@@ -2019,6 +2019,7 @@ const ffmCreateManifest = async (sodaJson) => {
   }
 
   // create manifest data of all high level folders
+  console.log(JSON.stringify(datasetStructCopy));
   try {
     const res = await client.post(
       `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
@@ -2031,14 +2032,18 @@ const ffmCreateManifest = async (sodaJson) => {
     // loop through each of the high level folders and create excel sheet in case no edits are made
     // will be auto generated and ready for upload
     const manifestRes = res.data;
+    console.log(JSON.stringify(manifestRes));
     let newManifestData = {};
     for (const [highLevelFolderName, manifestFileData] of Object.entries(manifestRes)) {
       if (manifestFileData.length > 1) {
         const manifestHeader = manifestFileData.shift();
+        console.log(manifestHeader);
         newManifestData[highLevelFolderName] = {
           headers: manifestHeader,
           data: manifestFileData,
         };
+        console.log(newManifestData);
+        console.log("above is the new manifest data");
         // Will create an excel sheet of the manifest files in case they receive no edits
         let jsonManifest = {};
         let manifestFolder = path.join(homeDirectory, "SODA", "manifest_files");
@@ -2051,13 +2056,20 @@ const ffmCreateManifest = async (sodaJson) => {
         if (!fs.existsSync(localFolderPath)) {
           fs.mkdirSync(localFolderPath);
           fs.closeSync(fs.openSync(selectedManifestFilePath, "w"));
+          console.log("uhh");
         }
-        jsonManifest = excelToJson({
-          sourceFile: selectedManifestFilePath,
-          columnToKey: {
-            "*": "{{columnHeader}}",
-          },
-        })["Sheet1"];
+        if(!fs.existsSync(selectedManifestFilePath)) {
+          console.log("Manifest file does not exist");
+        } else {
+          jsonManifest = excelToJson({
+            sourceFile: selectedManifestFilePath,
+            columnToKey: {
+              "*": "{{columnHeader}}",
+            },
+          })["Sheet1"];
+          console.log(jsonManifest);
+        }
+        // If file doesn't exist then that means it didn't get imported properly
 
         let sortedJSON = processManifestInfo(manifestHeader, manifestFileData);
         jsonManifest = JSON.stringify(sortedJSON);
