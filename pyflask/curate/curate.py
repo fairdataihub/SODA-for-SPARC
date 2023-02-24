@@ -2705,7 +2705,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
             if len(list_upload_manifest_files) > 1:
                 for item in list_upload_manifest_files[1:]:
-                    namespace_logger.info(item)
                     manifest_file = item[0][0]
                     ps_folder = item[1]
                     main_curate_progress_message = ( f"Uploading manifest file in {ps_folder} folder" )
