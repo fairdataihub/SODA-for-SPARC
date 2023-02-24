@@ -979,6 +979,9 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         collection_id = subfolder_json["path"]
 
         headers = create_request_headers(pennsieve_client_or_token)
+        print("ASLDKJASLKDJALSKDJALSKDJ")
+        print(collection_id)
+        print("SADLKAJSD:LKJAS:LDKj")
 
         r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}", headers=headers)
         r.raise_for_status()
@@ -1051,10 +1054,10 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         # Go through the imported manifest keys and change the keys to the correct name
                         # For example if the key is "File Name" change it to "filename"
                         for manifestKey in manifest.keys():
-                            namespace_logger.info(manifest.keys())
-                            namespace_logger.info(("=" * 40))
-                            namespace_logger.info(manifest)
-                            namespace_logger.info("Above is the true manifest keys")
+                            # namespace_logger.info(manifest.keys())
+                            # namespace_logger.info(("=" * 40)
+                            # namespace_logger.info(manifest)
+                            # namespace_logger.info("Above is the true manifest keys")
                             # Make the key lowercase
                             sterilizedKeyName = manifestKey.lower().replace(" ", "")
                             if sterilizedKeyName in defaultManifestHeadersNameMapped.keys():
@@ -1108,7 +1111,38 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                                         subfolder_json["files"][item_name]["extra_columns"][manifestKey] = ""
                         else:
                             namespace_logger.info("Unable to get filename from manifest")
+                            namespace_logger.info(updated_manifest.keys())
+                            # filename not in updated manifest so recreate standard headers if they don't exist
+                            # loop through the updated manifest keys and if header matches standard header add content else recreate
+                            if len(updated_manifest.keys()) > 0:
+                                print("loops")
+                                print(len(updated_manifest.keys()))
+                                location_index = ""
+                                for manifestKey in updated_manifest.keys():
+                                    print(manifestKey)
+                                    if temp_name in updated_manifest[manifestKey].values():
+                                        # file_names found
+                                        location_index = list(updated_manifest[manifestKey].values()).index(
+                                        temp_name
+                                        )
+                                    if ("/" + temp_name in updated_manifest[manifestKey].values()):
+                                        location_index = list(updated_manifest[manifestKey].values()).index(
+                                        "/" + temp_name
+                                        )
+                                    if location_index != "":
+                                        if manifestKey in defaultManifestHeadersNameMapped.values():
+                                            subfolder_json["files"][item_name][manifestKey] = updated_manifest[manifestKey][location_index]
+                                        else:
+                                            if "extra_columns" not in subfolder_json["files"][item_name]:
+                                                subfolder_json["files"][item_name]["extra_columns"] = {}
 
+                                            # if updated_manifest[manifestKey][location_index] != "":
+                                            print("AS:DLLAJSDASDAS")
+                                            print(manifestKey)
+                                            print("HEREYALL")
+                                            subfolder_json["files"][item_name]["extra_columns"][manifestKey] = updated_manifest[manifestKey][location_index]
+                                            # else:
+                                                # subfolder_json["files"][item_name]["extra_columns"][manifestKey] = ""
 
             else:  # another subfolder found
                 subfolder_json["folders"][item_name] = {
