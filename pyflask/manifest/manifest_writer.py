@@ -123,6 +123,8 @@ def update_existing_pennsieve_manifest_file(high_level_folder, manifest_df):
         filename_idx_map = {x:i for i, x in enumerate(manifest_df['filename'])}
     if "File Name" in manifest_df:
         filename_idx_map = {x:i for i, x in enumerate(manifest_df['File Name'])}
+    else:
+        filename_idx_map = None
 
     # traverse through the high level folder items
     update_existing_pennsieve_manifest_file_helper(high_level_folder, old_manifest_dict, new_manifest_dict, filename_idx_map, manifest_columns=SET_COLUMNS)
@@ -143,7 +145,11 @@ def update_existing_pennsieve_manifest_file_helper(folder, old_manifest_dict, ne
 
             # select the row in the old manifest file that has the same file path as the file in the current folder
             # rationale: this means the file still exists in the user's dataset
-            row_idx = filename_idx_map.get(file_path, None)
+            if filename_idx_map is not None:
+                row_idx = filename_idx_map.get(file_path, None)
+            else:
+                row_idx = None
+
 
             if row_idx is None:
                 for key in new_manifest_dict.keys():
