@@ -979,9 +979,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         collection_id = subfolder_json["path"]
 
         headers = create_request_headers(pennsieve_client_or_token)
-        print("ASLDKJASLKDJALSKDJALSKDJ")
-        print(collection_id)
-        print("SADLKAJSD:LKJAS:LDKj")
 
         r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}", headers=headers)
         r.raise_for_status()
@@ -1035,7 +1032,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                     else:
                         temp_name = item_name
                     
-                    namespace_logger.info("Amount of keys: " + str(len(manifest.keys())))
                     if len(manifest.keys()) > 0:
                         # Dictionary that has the required manifest headers in lowercase and without spaces as keys
                         # and the correct manifest headers as values
@@ -1089,7 +1085,10 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                                 # corresponding to the key
                                 if manifestKey in defaultManifestHeadersNameMapped.values():
                                     if updated_manifest[manifestKey][location_index] != "":
-                                        subfolder_json["files"][item_name][manifestKey] = updated_manifest[manifestKey][location_index]
+                                        if item_name[0:1] == "/":
+                                            subfolder_json["files"][item_name[:1]][manifestKey] = updated_manifest[manifestKey][location_index]
+                                        else:
+                                            subfolder_json["files"][item_name][manifestKey] = updated_manifest[manifestKey][location_index]
                                 # if the key is not in the required manifest headers, add it to the extra columns item_name value
                                 else :
                                     # if the extra columns key does not exist, create it
@@ -1119,7 +1118,10 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                                         )
                                     if location_index != "":
                                         if manifestKey in defaultManifestHeadersNameMapped.values():
-                                            subfolder_json["files"][item_name][manifestKey] = updated_manifest[manifestKey][location_index]
+                                            if item_name[0:1] == "/":
+                                                subfolder_json["files"][item_name[1:]][manifestKey] = updated_manifest[manifestKey][location_index]
+                                            else:
+                                                subfolder_json["files"][item_name][manifestKey] = updated_manifest[manifestKey][location_index]
                                         else:
                                             if "extra_columns" not in subfolder_json["files"][item_name]:
                                                 subfolder_json["files"][item_name]["extra_columns"] = {}
