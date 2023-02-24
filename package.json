@@ -20,7 +20,7 @@
     "prepare": "husky install"
   },
   "lint-staged": {
-    "./**/*.{html|css|js|md|yml}": [
+    "./**/*.html|css|js|md|yml": [
       "npm run format"
     ]
   },
