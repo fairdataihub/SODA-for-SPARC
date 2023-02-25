@@ -87,12 +87,15 @@ const validateOrganizedDataset = async () => {
 
   console.log(metadataJSON);
 
+  const clientUUID = uuid();
+
   try {
     await client.post("https://queue-validation-jobs-next.vercel.app/api/queueJob", {
-      clientUUID: uuid(),
+      clientUUID: clientUUID,
       dataset_structure: sodaJSONObjCopy,
       manifests: manifestsJSON,
       metadata_files: metadataJSON,
+      status: "Incomplete",
     });
   } catch (error) {
     clientError(error);
@@ -109,67 +112,101 @@ const validateOrganizedDataset = async () => {
     return;
   }
 
-  await Swal.fire({
-    title: "Dataset is Valid",
-    text: `Your dataset conforms to the SPARC Dataset Structure. Continue to the next step to upload your dataset.`,
-    allowEscapeKey: true,
-    allowOutsideClick: false,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: false,
-    showConfirmButton: true,
-    icon: "success",
-  });
+  // intervale that runs every 15 seconds
+  let interval = setInterval(async () => {
+    let checkJobsResponse;
 
-  // let errors = validationResponse.data;
-  // console.log(errors);
+    try {
+      checkJobsResponse = await client.post(
+        "https://queue-validation-jobs-next.vercel.app/api/checkForJob",
+        {
+          clientUUID: clientUUID,
+        }
+      );
+    } catch (e) {
+      clearInterval(interval);
+      clientError(e);
+      await Swal.fire({
+        title: "Could not validate your dataset",
+        text: `Please try again.`,
+        allowEscapeKey: true,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        showConfirmButton: true,
+        icon: "error",
+      });
+    }
 
-  // // this works because the returned validation results are in an Object Literal. If the returned object is changed this will break (e.g., an array will have a length property as well)
-  // let hasValidationErrors = Object.getOwnPropertyNames(errors).length >= 1;
+    let job = checkJobsResponse.data;
 
-  // await Swal.fire({
-  //   title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
-  //   text: hasValidationErrors
-  //     ? `Please fix the errors listed in the table below.
-  //              That your dataset passes validation before it is shared with the SPARC Curation Consortium is highly encouraged.`
-  //     : `Your dataset conforms to the SPARC Dataset Structure. Continue to the next step to upload your dataset.`,
-  //   allowEscapeKey: true,
-  //   allowOutsideClick: false,
-  //   heightAuto: false,
-  //   backdrop: "rgba(0,0,0, 0.4)",
-  //   timerProgressBar: false,
-  //   showConfirmButton: true,
-  //   icon: hasValidationErrors ? "error" : "success",
-  // });
+    if (job === undefined) return;
 
-  // // list the results in a table ( ideally the one used in the validate feature )
-  // if (!validationErrorsOccurred(errors)) {
-  //   return;
-  // }
+    clearInterval(interval);
 
-  // // get validation table body
-  // let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
+    console.log("Job received: ");
+    console.log(job);
 
-  // clearValidationResults(validationErrorsTable);
+    if (job.status !== "complete") {
+      await Swal.fire({
+        title: "Could not validate your dataset",
+        text: `Please try again.`,
+        allowEscapeKey: true,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        showConfirmButton: true,
+        icon: "error",
+      });
+      return;
+    }
 
-  // // display errors onto the page
-  // displayValidationErrors(
-  //   errors,
-  //   document.querySelector("#organize--table-validation-errors tbody")
-  // );
+    let report = job.report;
 
-  // // show the validation errors to the user
-  // document.querySelector("#organize--table-validation-errors").style.visibility = "visible";
+    // this works because the returned validation results are in an Object Literal. If the returned object is changed this will break (e.g., an array will have a length property as well)
+    let hasValidationErrors = Object.getOwnPropertyNames(report).length >= 1;
 
-  // // TODO:
-  // // lock the continue button if results are not valid ( for now since the validator is incomplete just show a warning message instead ) -- Maybe never lock it? WIP datasets may not be
-  // // able to pass validation? Well not really just add make things valid as you go. NO metadata equals no validation errors in any case. But in those situations the
-  // // dataset isn't even ready yet. ( validator-phase-4-simple )
+    await Swal.fire({
+      title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
+      text: hasValidationErrors
+        ? `Please fix the errors listed in the table below.
+                 That your dataset passes validation before it is shared with the SPARC Curation Consortium is highly encouraged.`
+        : `Your dataset conforms to the SPARC Dataset Structure. Continue to the next step to upload your dataset.`,
+      allowEscapeKey: true,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      showConfirmButton: true,
+      icon: hasValidationErrors ? "error" : "success",
+    });
 
-  // // scroll so that the table is in the viewport
-  // document
-  //   .querySelector("#organize--table-validation-errors")
-  //   .scrollIntoView({ behavior: "smooth" });
+    // list the results in a table ( ideally the one used in the validate feature )
+    if (!validationErrorsOccurred(report)) {
+      return;
+    }
+
+    // get validation table body
+    let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
+
+    clearValidationResults(validationErrorsTable);
+
+    // display errors onto the page
+    displayValidationErrors(
+      errors,
+      document.querySelector("#organize--table-validation-errors tbody")
+    );
+
+    // show the validation errors to the user
+    document.querySelector("#organize--table-validation-errors").style.visibility = "visible";
+
+    // scroll so that the table is in the viewport
+    document
+      .querySelector("#organize--table-validation-errors")
+      .scrollIntoView({ behavior: "smooth" });
+  }, 15000);
 };
 
 // {
