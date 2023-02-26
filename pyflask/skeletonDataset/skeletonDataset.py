@@ -9,7 +9,7 @@ import shutil
 from xml.dom import InvalidStateErr
 import copy
 from os.path import expanduser
-from .skeletonDatasetUtils import import_bf_metadata_files_skeleton, import_manifest_files_skeleton
+from .skeletonDatasetUtils import import_bf_metadata_files_skeleton, import_manifest_files_skeleton, import_bf_metadata_files_skeleton_base
 from pennsieve2.pennsieve import Pennsieve
 from manifest import ManifestBuilderBase, ManifestBuilder
 import pandas as pd 
@@ -122,15 +122,11 @@ def create(soda_json_structure):
     # create a folder to hold the skeleton
     os.mkdir(path)
 
-    # create the manifest files for the skeleton dataset based off the SODA JSON object if the user requested it in the Organize Datasets 
-    # workflow. Otherwise import the existing manifest files from Pennsieve if the user requested validation outside of the Organize Datasets workflow.
-    # if pennsieve_pipeline:
-    #     import_manifest_files_skeleton(soda_json_structure, ps)
-    # else:
-    #     mbs = ManifestBuilder(soda_json_structure, path)
-    #     mbs.build( ps if ps != None  else None)
-
     create_skeleton(soda_json_structure["dataset-structure"], path)
+
+    ps = Pennsieve()
+
+    import_bf_metadata_files_skeleton_base(soda_json_structure["bf-dataset-selected"]["dataset-name"] , ps)
 
     return {"path_to_skeleton_dataset": path}
 
