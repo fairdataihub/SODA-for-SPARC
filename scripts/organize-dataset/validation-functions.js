@@ -269,15 +269,15 @@ const displayValidationReportErrors = (validationReport, tableBody, validationEr
   });
 
   // check if there are validation errors
-  if (!validationErrorsOccurred(errors)) {
+  if (!validationErrorsOccurred(validationReport)) {
     return;
   }
 
   // display errors onto the page
-  displayValidationErrors(errors, tableBody);
+  displayValidationErrors(validationReport, tableBody);
 
   // show the validation errors to the user
-  document.querySelector(validationErrorsContainer).style.visibility = "visible";
+  validationErrorsContainer.style.visibility = "visible";
 };
 
 // {

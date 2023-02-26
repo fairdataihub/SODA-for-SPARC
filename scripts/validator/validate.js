@@ -170,7 +170,12 @@ const validatePennsieveDatasetStandAlone = async () => {
     return;
   }
 
-  displayValidationReportErrors(validationReport);
+  console.log(validationReport);
+
+  let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
+  let validationErrorsContainer = document.querySelector("#validation-errors-container");
+
+  displayValidationReportErrors(validationReport, validationErrorsTable, validationErrorsContainer);
 };
 
 /*
