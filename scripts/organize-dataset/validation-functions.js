@@ -209,6 +209,77 @@ const validateOrganizedDataset = async () => {
   }, 15000);
 };
 
+/**
+ *
+ * @returns {Promise} Validation report object
+ */
+const validatePennsieveDataset = async () => {
+  sodaJSONObj = {
+    "bf-account-selected": {
+      "account-name": {},
+    },
+    "bf-dataset-selected": {
+      "dataset-name": {},
+    },
+    "dataset-structure": {},
+    "metadata-files": {},
+    "manifest-files": {},
+    "generate-dataset": {},
+    "starting-point": {
+      type: "bf",
+    },
+  };
+
+  sodaJSONObj["bf-account-selected"]["account-name"] = $("#current-bf-account").text();
+  sodaJSONObj["bf-dataset-selected"]["dataset-name"] = $("#current-bf-dataset").text();
+
+  // import the dataset from Pennsieve
+  // TODO: Explicityly set the sodaJSONObj?
+  let datasetPopulationResponse = await bf_request_and_populate_dataset(sodaJSONObj);
+
+  sodaJSONObj = datasetPopulationResponse.soda_object;
+
+  console.log(sodaJSONObj);
+
+  // create a dataset skeleton
+  let skeletonDatasetPath = await api.createSkeletonDataset(sodaJSONObj);
+
+  // call the local validation backend function
+  let validationReport = await api.validateLocalDataset(skeletonDatasetPath);
+
+  return validationReport;
+};
+
+const displayValidationReportErrors = (validationReport, tableBody, validationErrorsContainer) => {
+  // this works because the returned validation results are in an Object Literal. If the returned object is changed this will break (e.g., an array will have a length property as well)
+  let hasValidationErrors = Object.getOwnPropertyNames(validationReport).length >= 1;
+
+  Swal.fire({
+    title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
+    text: hasValidationErrors
+      ? `Please fix the errors listed in the table below to pass validation.`
+      : `Your dataset conforms to the SPARC Dataset Structure.`,
+    allowEscapeKey: true,
+    allowOutsideClick: true,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    showConfirmButton: true,
+    icon: hasValidationErrors ? "error" : "success",
+  });
+
+  // check if there are validation errors
+  if (!validationErrorsOccurred(errors)) {
+    return;
+  }
+
+  // display errors onto the page
+  displayValidationErrors(errors, tableBody);
+
+  // show the validation errors to the user
+  document.querySelector(validationErrorsContainer).style.visibility = "visible";
+};
+
 // {
 //   if (dataset_destination == "Pennsieve" && "bf" === sodaJSONObjCopy["starting-point"]["type"]) {
 //   }

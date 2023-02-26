@@ -344,6 +344,22 @@ const performUserActions = async (formattedPennsieveSODAJSONObj) => {
   formattedPennsieveSODAJSONObj = cleanCopyResponse.data.soda_json_structure;
 };
 
+const createSkeletonDataset = async (sodaJSONObj) => {
+  const response = await client.post("/skeleton_dataset", {
+    sodajsonobject: sodaJSONObj,
+  });
+  let data = response.data;
+  console.log(data);
+  return data["path_to_skeleton_dataset"];
+};
+
+const validateLocalDataset = async (datasetPath) => {
+  const validationResponse = await client.post("/validator/local", {
+    dataset_path: datasetPath,
+  });
+  return validationResponse.data;
+};
+
 const api = {
   getUserInformation,
   getDataset,
@@ -364,6 +380,8 @@ const api = {
   removeCollectionTags,
   uploadNewTags,
   performUserActions,
+  createSkeletonDataset,
+  validateLocalDataset,
 };
 
 module.exports = api;

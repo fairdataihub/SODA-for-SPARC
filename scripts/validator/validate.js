@@ -135,10 +135,7 @@ const validateLocalDataset = async () => {
   document.querySelector("#validation-errors-container").style.visibility = "visible";
 };
 
-const validatePennsieveDataset = async () => {
-  // kicks off pipeline update listener
-  await setCurationTeamAsManagers();
-
+const validatePennsieveDatasetStandAlone = async () => {
   // get the dataset name from the dataset selection card
   let datasetName = document.querySelector("#bf_dataset_load_validator").textContent;
 
@@ -155,114 +152,25 @@ const validatePennsieveDataset = async () => {
     },
   });
 
-  let validationResponse;
-
+  let validationReport;
   try {
-    // request validation for the current pennsieve dataset
-    validationResponse = await client.get(`validator/pennsieve_dataset_validation_result`, {
-      params: {
-        selected_account: defaultBfAccount,
-        selected_dataset: defaultBfDatasetId,
-      },
-    });
-
-    // track that a local validation succeeded
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      "Prepare Datasets - Validate your dataset - Pennsieve",
-      "Pennsieve Validation",
-      1
-    );
-
-    // track that a validation (local or pennsieve) succeeded
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      "Prepare Datasets - Validate your dataset",
-      "Dataset Validation",
-      1
-    );
+    validationReport = await validatePennsieveDataset();
   } catch (err) {
-    // hide the validation errors table
-    document.querySelector("#validation-errors-container").style.visiility = "hidden";
-
-    // track that a local validation succeeded
-    ipcRenderer.send(
-      "track-event",
-      "Error",
-      "Prepare Datasets - Validate your dataset - Pennsieve",
-      "Pennsieve Validation",
-      1
-    );
-
-    // track that a validation (local or pennsieve) succeeded
-    ipcRenderer.send(
-      "track-event",
-      "Error",
-      "Prepare Datasets - Validate your dataset",
-      "Dataset Validation",
-      1
-    );
-
-    // end pipeline update listener
-    removeCurationTeamAsManagers();
-
-    // log the error
     clientError(err);
-
-    // display the error message to the user
-    let errorMessage = userErrorMessage(err);
-
     await Swal.fire({
-      title: "Validation Failed",
-      text: `${errorMessage}`,
+      title: `Could not validate your dataset`,
+      allowEscapeKey: true,
+      allowOutsideClick: true,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      showConfirmButton: true,
       icon: "error",
-      showCancelButton: false,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
     });
-
     return;
   }
 
-  removeCurationTeamAsManagers();
-
-  let errors = validationResponse.data;
-
-  // this works because the returned validation results are in an Object Literal. If the returned object is changed this will break (e.g., an array will have a length property as well)
-  let hasValidationErrors = Object.getOwnPropertyNames(errors).length >= 1;
-
-  Swal.fire({
-    title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
-    text: hasValidationErrors
-      ? `Please fix the errors listed in the table below to pass validation.`
-      : `Your dataset conforms to the SPARC Dataset Structure.`,
-    allowEscapeKey: true,
-    allowOutsideClick: true,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: false,
-    showConfirmButton: true,
-    icon: hasValidationErrors ? "error" : "success",
-  });
-
-  // check if there are validation errors
-  if (!validationErrorsOccurred(errors)) {
-    return;
-  }
-
-  // display errors onto the page
-  displayValidationErrors(errors);
-
-  // show the validation errors to the user
-  document.querySelector("#validation-errors-container").style.visibility = "visible";
+  displayValidationReportErrors(validationReport);
 };
 
 /*
@@ -548,7 +456,7 @@ document.querySelector("#run_validator_btn").addEventListener("click", async fun
 
     scrollToElement("#validation-errors-container");
   } else {
-    await validatePennsieveDataset();
+    await validatePennsieveDatasetStandAlone();
   }
 });
 
