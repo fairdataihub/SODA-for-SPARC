@@ -128,8 +128,22 @@ def create(soda_json_structure):
 
     import_bf_metadata_files_skeleton_base(soda_json_structure["bf-dataset-selected"]["dataset-name"] , ps)
 
+    get_manifests_base(soda_json_structure)
+
     return {"path_to_skeleton_dataset": path}
 
+
+
+def get_manifests_base(soda_json_structure):
+    # Add the manifest files to the high level folders of the skeleton dataset
+    if ("manifest-files" in soda_json_structure and "auto-generated" in soda_json_structure["manifest-files"]):
+        # auto gen'd was selected so gather the paths for the high lvl folders
+        for high_lvl_folder in soda_json_structure["dataset-structure"]["folders"].keys():
+          #for free form mode we will get manifest files from ~/SODA/manifest_files/<high_lvl_folder_name>
+          manifest_location = os.path.join(expanduser("~"), "SODA", "manifest_files", high_lvl_folder, "manifest.xlsx")
+          if os.path.exists(manifest_location):
+            # copy this into the skeleton dataset directory 
+            shutil.copy(manifest_location, os.path.join(path, high_lvl_folder, "manifest.xlsx"))
 
 
 def get_manifests(soda_json_structure):

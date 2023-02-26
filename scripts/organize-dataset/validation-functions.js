@@ -209,6 +209,77 @@ const validateOrganizedDataset = async () => {
   }, 15000);
 };
 
+const validateOrganizedDatasetBase = async () => {
+  swal.fire({
+    title: "Validating Dataset",
+    text: "Please wait while your dataset is validated.",
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+
+  let sodaJSONObjCopy = JSON.parse(JSON.stringify(sodaJSONObj));
+  formatForDatasetGeneration(sodaJSONObjCopy);
+
+  if (sodaJSONObjCopy["starting-point"]["type"] === "bf") {
+    await api.performUserActions(sodaJSONObjCopy);
+  }
+
+  // create a dataset skeleton
+  let skeletonDatasetPath = await api.createSkeletonDataset(sodaJSONObj);
+
+  // call the local validation backend function
+  let validationReport = await api.validateLocalDataset(skeletonDatasetPath);
+
+  let report = validationReport;
+
+  // this works because the returned validation results are in an Object Literal. If the returned object is changed this will break (e.g., an array will have a length property as well)
+  let hasValidationErrors = Object.getOwnPropertyNames(report).length >= 1;
+
+  await Swal.fire({
+    title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
+    text: hasValidationErrors
+      ? `Please fix the errors listed in the table below.
+               That your dataset passes validation before it is shared with the SPARC Curation Consortium is highly encouraged.`
+      : `Your dataset conforms to the SPARC Dataset Structure. Continue to the next step to upload your dataset.`,
+    allowEscapeKey: true,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    showConfirmButton: true,
+    icon: hasValidationErrors ? "error" : "success",
+  });
+
+  // list the results in a table ( ideally the one used in the validate feature )
+  if (!validationErrorsOccurred(report)) {
+    return;
+  }
+
+  // get validation table body
+  let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
+
+  clearValidationResults(validationErrorsTable);
+
+  // display errors onto the page
+  displayValidationErrors(
+    report,
+    document.querySelector("#organize--table-validation-errors tbody")
+  );
+
+  // show the validation errors to the user
+  document.querySelector("#organize--table-validation-errors").style.visibility = "visible";
+
+  // scroll so that the table is in the viewport
+  document
+    .querySelector("#organize--table-validation-errors")
+    .scrollIntoView({ behavior: "smooth" });
+};
+
 /**
  *
  * @returns {Promise} Validation report object
