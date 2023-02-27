@@ -2701,6 +2701,7 @@ document
 document
   .getElementById("guided-button-run-dataset-validation")
   .addEventListener("click", async () => {
+    // Aaron - This is where you can add your validation logic
     const dummy = document.getElementById("dummy-text-remove-me");
     const datasetAlreadyValidated = sodaJSONObj["dataset-validated"];
     if (datasetAlreadyValidated) {
@@ -3568,16 +3569,16 @@ const guidedShowOptionalRetrySwal = async (errorMessage) => {
 
 // Function that handles the validation state of the dataset
 // When the user goes back to before the validation tab, the dataset is no longer validated
-// This function will reset the dataset-validated value to false
+// This function will reset the dataset-validated value to false so validation will be retriggered
+// when the user goes to the validation tab
 const handleGuidedValidationState = (targetPageID) => {
-  const pagesToNotResetValidationStatusOn = [
-    "guided-dataset-validation-tab",
-    "guided-dataset-generation-confirmation-tab",
-    "guided-dataset-generation-tab",
-    "guided-dataset-dissemination-tab",
-  ];
   if (sodaJSONObj["dataset-validated"] === true) {
-    if (!pagesToNotResetValidationStatusOn.includes(targetPageID)) {
+    const nonSkippedPages = getNonSkippedGuidedModePages(document);
+    const indexOfCurrentPage = nonSkippedPages.findIndex((page) => page.id === targetPageID);
+    const indexOfValidationPage = nonSkippedPages.findIndex(
+      (page) => page.id === "guided-dataset-validation-tab"
+    );
+    if (indexOfCurrentPage < indexOfValidationPage) {
       sodaJSONObj["dataset-validated"] = false;
     }
   }
@@ -4743,24 +4744,6 @@ const openPage = async (targetPageID) => {
       confirmDatasetGenerationNameinput.value = datasetName;
     }
     */
-
-    /*if (targetPageID === "guided-dataset-validation-tab") {
-      // Logic that starts the validation will go here
-      // This logic is called whether the user hits the next button or uses the sidebar
-      const dummy = document.getElementById("dummy-text-remove-me");
-      dummy.innerHTML = "Validating dataset...";
-      try {
-        await new Promise((r) => setTimeout(r, 4000));
-        dummy.innerHTML = "Dataset validated";
-        // Uncomment the line below to test the error handling
-        // throw new Error("Test error");
-        sodaJSONObj["dataset-validated"] = true;
-      } catch (error) {
-        // Validation failed. Show a swal and have the user go back to fix stuff (or retry)
-        console.log(error);
-        sodaJSONObj["dataset-validated"] = false;
-      }
-    }*/
 
     if (targetPageID === "guided-dataset-generation-confirmation-tab") {
       //Set the inner text of the generate/retry pennsieve dataset button depending on
