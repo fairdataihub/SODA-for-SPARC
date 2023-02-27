@@ -1,104 +1,87 @@
 {
-    "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
-    "@type": "SoftwareSourceCode",
-    "license": "https://spdx.org/licenses/MIT",
-    "codeRepository": "https://github.com/fairdataihub/SODA-for-SPARC",
-    "dateCreated": "2021-10-08",
-    "datePublished": "2021-10-08",
-    "dateModified": "2023-02-24",
-    "downloadUrl": "https://fairdataihub.org/sodaforsparc",
-    "issueTracker": "https://github.com/fairdataihub/SODA-for-SPARC/issues",
-    "name": "SODA (Software to Organize Data Automatically) for SPARC",
-    "version": "10.0.2",
-    "identifier": "10.5281/zenodo.7682467",
-    "description": "Simplifying data curation for researchers funded by the NIH SPARC initiative",
-    "applicationCategory": "Scientific",
-    "releaseNotes": "# v.10.0.4 - 2023-02-24\n\n## Bug fixes:\n\n- Imported datasets with manifests that carry incorrect headers for the standard columns (filename, timestamp, description, file type, Additional Metadata) will be preserved as extra columns.\n- Auto generating manifests will preserve column headers for each individual high level folder rather than giving the same headers to all manifests.",
-    "funding": "OT2OD030213",
-    "developmentStatus": "active",
-    "isPartOf": "https://fairdataihub.org/",
-    "referencePublication": "https://doi.org/10.1101/2021.02.10.430563",
-    "funder": {
+  "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+  "@type": "SoftwareSourceCode",
+  "license": "https://spdx.org/licenses/MIT",
+  "codeRepository": "https://github.com/fairdataihub/SODA-for-SPARC",
+  "dateCreated": "2021-10-08",
+  "datePublished": "2021-10-08",
+  "dateModified": "2023-02-24",
+  "downloadUrl": "https://fairdataihub.org/sodaforsparc",
+  "issueTracker": "https://github.com/fairdataihub/SODA-for-SPARC/issues",
+  "name": "SODA (Software to Organize Data Automatically) for SPARC",
+  "version": "10.0.2",
+  "identifier": "10.5281/zenodo.7682467",
+  "description": "Simplifying data curation for researchers funded by the NIH SPARC initiative",
+  "applicationCategory": "Scientific",
+  "releaseNotes": "# v.10.0.4 - 2023-02-24\n\n## Bug fixes:\n\n- Imported datasets with manifests that carry incorrect headers for the standard columns (filename, timestamp, description, file type, Additional Metadata) will be preserved as extra columns.\n- Auto generating manifests will preserve column headers for each individual high level folder rather than giving the same headers to all manifests.",
+  "funding": "OT2OD030213",
+  "developmentStatus": "active",
+  "isPartOf": "https://fairdataihub.org/",
+  "referencePublication": "https://doi.org/10.1101/2021.02.10.430563",
+  "funder": {
+    "@type": "Organization",
+    "@name": "National Institutes of Health (NIH)"
+  },
+  "keywords": ["SPARC", "FAIR", "data", "curation", "mac", "sparc-dataset", "ubuntu", "windows"],
+  "programmingLanguage": ["JavaScript", "HTML", "Python", "CSS", "Jupyter Notebook"],
+  "operatingSystem": [
+    "Windows 10",
+    "Big Sur (macOS 11)",
+    "Catalina (macOS 10.15)",
+    "Windows 11",
+    "Ubuntu"
+  ],
+  "relatedLink": ["https://fairdataihub.org/sodaforsparc"],
+  "author": [
+    {
+      "@type": "Person",
+      "givenName": "Bhavesh",
+      "familyName": "Patel",
+      "email": "bpatel@calmi2.org",
+      "affiliation": {
         "@type": "Organization",
-        "@name": "National Institutes of Health (NIH)"
+        "name": "FAIR Data Innovations Hub"
+      }
     },
-    "keywords": [
-        "SPARC",
-        "FAIR",
-        "data",
-        "curation",
-        "mac",
-        "sparc-dataset",
-        "ubuntu",
-        "windows"
-    ],
-    "programmingLanguage": [
-        "JavaScript",
-        "HTML",
-        "Python",
-        "CSS",
-        "Jupyter Notebook"
-    ],
-    "operatingSystem": [
-        "Windows 10",
-        "Big Sur (macOS 11)",
-        "Catalina (macOS 10.15)",
-        "Windows 11",
-        "Ubuntu"
-    ],
-    "relatedLink": [
-        "https://fairdataihub.org/sodaforsparc"
-    ],
-    "author": [
-        {
-            "@type": "Person",
-            "givenName": "Bhavesh",
-            "familyName": "Patel",
-            "email": "bpatel@calmi2.org",
-            "affiliation": {
-                "@type": "Organization",
-                "name": "FAIR Data Innovations Hub"
-            }
-        },
-        {
-            "@type": "Person",
-            "givenName": "Sanjay",
-            "familyName": "Soundarajan",
-            "email": "ssoundarajan@calmi2.org",
-            "affiliation": {
-                "@type": "Organization",
-                "name": "FAIR Data Innovations Hub"
-            }
-        },
-        {
-            "@type": "Person",
-            "givenName": "Aaron",
-            "familyName": "Marroquin",
-            "email": "cmarroquin@calmi2.org",
-            "affiliation": {
-                "@type": "Organization",
-                "name": "FAIR Data Innovations Hub"
-            }
-        },
-        {
-            "@type": "Person",
-            "givenName": "Jacob",
-            "familyName": "Clark",
-            "email": "jclark@calmi2.org",
-            "affiliation": {
-                "@type": "Organization",
-                "name": "FAIR Data Innovations Hub"
-            }
-        },
-        {
-            "@type": "Person",
-            "givenName": "Dorian",
-            "familyName": "Portillo",
-            "email": "dportillo@calmi2.org",
-            "affiliation": {
-                "@type": "Organization",
-                "name": "FAIR Data Innovations Hub"
-            }
-        }
-    ]
+    {
+      "@type": "Person",
+      "givenName": "Sanjay",
+      "familyName": "Soundarajan",
+      "email": "ssoundarajan@calmi2.org",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "FAIR Data Innovations Hub"
+      }
+    },
+    {
+      "@type": "Person",
+      "givenName": "Aaron",
+      "familyName": "Marroquin",
+      "email": "cmarroquin@calmi2.org",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "FAIR Data Innovations Hub"
+      }
+    },
+    {
+      "@type": "Person",
+      "givenName": "Jacob",
+      "familyName": "Clark",
+      "email": "jclark@calmi2.org",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "FAIR Data Innovations Hub"
+      }
+    },
+    {
+      "@type": "Person",
+      "givenName": "Dorian",
+      "familyName": "Portillo",
+      "email": "dportillo@calmi2.org",
+      "affiliation": {
+        "@type": "Organization",
+        "name": "FAIR Data Innovations Hub"
+      }
+    }
+  ]
 }
