@@ -1253,6 +1253,39 @@ const savePageChanges = async (pageBeingLeftID) => {
         sodaJSONObj["dataset-metadata"]["README"] = readMe;
       }
     }
+
+    if (pageBeingLeftID === "guided-dataset-validation-tab") {
+      const guidedButtonRunValidation = document.getElementById(
+        "guided-button-run-dataset-validation"
+      );
+      const guidedButtonSkipValidation = document.getElementById(
+        "guided-button-skip-dataset-validation"
+      );
+      if (
+        !guidedButtonRunValidation.classList.contains("selected") &&
+        !guidedButtonSkipValidation.classList.contains("selected")
+      ) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please indicate if you would like to run validation on your dataset",
+        });
+        throw errorArray;
+      }
+
+      if (guidedButtonRunValidation.classList.contains("selected")) {
+        const datasetSuccessfullyValidated = sodaJSONObj["dataset-validated"];
+        if (!datasetSuccessfullyValidated) {
+          errorArray.push({
+            type: "notyf",
+            message: "This check can be removed to make validation unnecessary",
+          });
+          throw errorArray;
+        }
+      }
+      if (guidedButtonSkipValidation.classList.contains("selected")) {
+        // We don't have to do anything here.
+      }
+    }
   } catch (error) {
     guidedSetNavLoadingState(false);
     console.log(error);
@@ -2665,6 +2698,33 @@ document
     await renderManifestCards();
   });
 
+document
+  .getElementById("guided-button-run-dataset-validation")
+  .addEventListener("click", async () => {
+    const dummy = document.getElementById("dummy-text-remove-me");
+    const datasetAlreadyValidated = sodaJSONObj["dataset-validated"];
+    if (datasetAlreadyValidated) {
+      dummy.innerHTML = "Dataset already validated nothing has changed no need to revalidate";
+      return;
+    }
+    guidedSetNavLoadingState(true);
+    // Logic that starts the validation will go here
+    dummy.innerHTML = "Validating dataset...";
+    try {
+      // Simulate a long running validation
+      await new Promise((r) => setTimeout(r, 4000));
+      dummy.innerHTML = "Dataset validated";
+      // Uncomment the line below to test the error handling
+      // throw new Error("Test error");
+      sodaJSONObj["dataset-validated"] = true;
+    } catch (error) {
+      // Validation failed. Show a swal and have the user go back to fix stuff (or retry)
+      console.log(error);
+      sodaJSONObj["dataset-validated"] = false;
+    }
+    guidedSetNavLoadingState(false);
+  });
+
 $("#guided-select-pennsieve-dataset-to-resume").selectpicker();
 const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
   // First hide the error div if it is showing
@@ -3506,6 +3566,48 @@ const guidedShowOptionalRetrySwal = async (errorMessage) => {
   }
 };
 
+// Function that handles the validation state of the dataset
+// When the user goes back to before the validation tab, the dataset is no longer validated
+// This function will reset the dataset-validated value to false
+const handleGuidedValidationState = (targetPageID) => {
+  const pagesToNotResetValidationStatusOn = [
+    "guided-dataset-validation-tab",
+    "guided-dataset-generation-confirmation-tab",
+    "guided-dataset-generation-tab",
+    "guided-dataset-dissemination-tab",
+  ];
+  if (sodaJSONObj["dataset-validated"] === true) {
+    if (!pagesToNotResetValidationStatusOn.includes(targetPageID)) {
+      sodaJSONObj["dataset-validated"] = false;
+    }
+  }
+};
+
+// Function that handles the visibility of the back button
+const handleBackButtonVisibility = (targetPageID) => {
+  if (
+    targetPageID === "guided-dataset-dissemination-tab" ||
+    targetPageID === "guided-dataset-generation-tab"
+  ) {
+    $("#guided-back-button").css("visibility", "hidden");
+  } else {
+    $("#guided-back-button").css("visibility", "visible");
+  }
+};
+
+// Function that handles the visibility of the next button
+const handleNextButtonVisibility = (targetPageID) => {
+  if (
+    targetPageID === "guided-dataset-generation-confirmation-tab" ||
+    targetPageID === "guided-dataset-generation-tab" ||
+    targetPageID === "guided-dataset-dissemination-tab"
+  ) {
+    $("#guided-next-button").css("visibility", "hidden");
+  } else {
+    $("#guided-next-button").css("visibility", "visible");
+  }
+};
+
 //Main function that prepares individual pages based on the state of the sodaJSONObj
 //The general flow is to check if there is values for the keys relevant to the page
 //If the keys exist, extract the data from the sodaJSONObj and populate the page
@@ -3545,24 +3647,9 @@ const openPage = async (targetPageID) => {
       document.querySelector(".guided--progression-tab-container").classList.remove("hidden");
     }
 
-    if (
-      targetPageID === "guided-dataset-generation-confirmation-tab" ||
-      targetPageID === "guided-dataset-generation-tab" ||
-      targetPageID === "guided-dataset-dissemination-tab"
-    ) {
-      $("#guided-next-button").css("visibility", "hidden");
-    } else {
-      $("#guided-next-button").css("visibility", "visible");
-    }
-
-    if (
-      targetPageID === "guided-dataset-dissemination-tab" ||
-      targetPageID === "guided-dataset-generation-tab"
-    ) {
-      $("#guided-back-button").css("visibility", "hidden");
-    } else {
-      $("#guided-back-button").css("visibility", "visible");
-    }
+    handleNextButtonVisibility(targetPageID);
+    handleBackButtonVisibility(targetPageID);
+    handleGuidedValidationState(targetPageID);
 
     if (targetPageID === "guided-intro-page-tab") {
       // Hide the pennsieve dataset import progress circle
@@ -4656,6 +4743,24 @@ const openPage = async (targetPageID) => {
       confirmDatasetGenerationNameinput.value = datasetName;
     }
     */
+
+    /*if (targetPageID === "guided-dataset-validation-tab") {
+      // Logic that starts the validation will go here
+      // This logic is called whether the user hits the next button or uses the sidebar
+      const dummy = document.getElementById("dummy-text-remove-me");
+      dummy.innerHTML = "Validating dataset...";
+      try {
+        await new Promise((r) => setTimeout(r, 4000));
+        dummy.innerHTML = "Dataset validated";
+        // Uncomment the line below to test the error handling
+        // throw new Error("Test error");
+        sodaJSONObj["dataset-validated"] = true;
+      } catch (error) {
+        // Validation failed. Show a swal and have the user go back to fix stuff (or retry)
+        console.log(error);
+        sodaJSONObj["dataset-validated"] = false;
+      }
+    }*/
 
     if (targetPageID === "guided-dataset-generation-confirmation-tab") {
       //Set the inner text of the generate/retry pennsieve dataset button depending on
@@ -5768,6 +5873,10 @@ const patchPreviousGuidedModeVersions = () => {
     sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = [];
   }
 
+  if (!sodaJSONObj["dataset-validated"]) {
+    sodaJSONObj["dataset-validated"] = false;
+  }
+
   return forceUserToRestartFromFirstPage;
 };
 
@@ -5993,6 +6102,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["button-config"] = {};
   sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] = "false";
   datasetStructureJSONObj = { folders: {}, files: {} };
+  sodaJSONObj["dataset-validated"] = false;
 };
 const guidedHighLevelFolders = ["primary", "source", "derivative"];
 const nonGuidedHighLevelFolders = ["code", "protocol", "docs"];
