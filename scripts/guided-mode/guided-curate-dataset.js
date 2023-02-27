@@ -2040,6 +2040,8 @@ const guidedTransitionFromHome = async () => {
   document.getElementById("guided-home").classList.add("hidden");
   document.getElementById("curation-preparation-parent-tab").classList.remove("hidden");
   document.getElementById("guided-header-div").classList.remove("hidden");
+  document.getElementById("guided-button-start-new-curation").click();
+  document.getElementById("guided-next-button").click();
 
   //Hide all guided pages (first one will be unHidden automatically)
   const guidedPages = document.querySelectorAll(".guided--page");
@@ -2067,6 +2069,8 @@ const guidedTransitionFromHome = async () => {
 const guidedTransitionToHome = () => {
   guidedUnLockSideBar();
   guidedPrepareHomeScreen();
+  console.log("HERE?");
+
   document.getElementById("guided-home").classList.remove("hidden");
   // Hide all of the parent tabs
   const guidedParentTabs = Array.from(document.querySelectorAll(".guided--parent-tab"));
@@ -2695,26 +2699,34 @@ const guidedPrepareHomeScreen = async () => {
   //Reset the "Datasets in progress" and "Datasets uploaded to Pennsieve buttons"
   resetGuidedRadioButtons("guided-div-dataset-cards-radio-buttons");
 
-  const datasetCardsRadioButtonsContainer = document.getElementById(
-    "guided-div-dataset-cards-radio-buttons"
-  );
+  // const datasetCardsRadioButtonsContainer = document.getElementById(
+  //   "guided-div-dataset-cards-radio-buttons"
+  // );
 
-  const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
-  //render progress resumption cards from progress file array on first page of guided mode
-  if (guidedSavedProgressFiles.length != 0) {
-    datasetCardsRadioButtonsContainer.classList.remove("hidden");
-    const progressFileData = await getAllProgressFileData(guidedSavedProgressFiles);
-    renderProgressCards(progressFileData);
-    document.getElementById("guided-button-view-datasets-in-progress").click();
-  } else {
-    $("#guided-continue-curation-header").text("");
-    datasetCardsRadioButtonsContainer.classList.add("hidden");
-  }
+  // const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
+  // //render progress resumption cards from progress file array on first page of guided mode
+  // if (guidedSavedProgressFiles.length != 0) {
+  //   datasetCardsRadioButtonsContainer.classList.remove("hidden");
+  //   const progressFileData = await getAllProgressFileData(guidedSavedProgressFiles);
+  //   renderProgressCards(progressFileData);
+  //   document.getElementById("guided-button-view-datasets-in-progress").click();
+  // } else {
+  //   $("#guided-continue-curation-header").text("");
+  //   datasetCardsRadioButtonsContainer.classList.add("hidden");
+  // }
   //empty new-dataset-lottie-container div
   document.getElementById("new-dataset-lottie-container").innerHTML = "";
   lottie.loadAnimation({
-    container: document.querySelector("#new-dataset-lottie-container"),
+    container: document.getElementById("new-dataset-lottie-container"),
     animationData: newDataset,
+    renderer: "svg",
+    loop: true,
+    autoplay: true,
+  });
+
+  lottie.loadAnimation({
+    container: document.getElementById("edit-dataset-component-lottie"),
+    animationData: modifyDataset,
     renderer: "svg",
     loop: true,
     autoplay: true,
@@ -3270,19 +3282,19 @@ const cleanUpEmptyGuidedStructureFolders = async (
 
 const resetGuidedRadioButtons = (parentPageID) => {
   const parentPage = document.getElementById(parentPageID);
-  const guidedRadioButtons = parentPage.querySelectorAll(".guided--radio-button");
-  for (const guidedRadioButton of guidedRadioButtons) {
-    guidedRadioButton.classList.remove("selected");
-    guidedRadioButton.classList.remove("not-selected");
-    guidedRadioButton.classList.add("basic");
+  // const guidedRadioButtons = parentPage.querySelectorAll(".guided--radio-button");
+  // for (const guidedRadioButton of guidedRadioButtons) {
+  //   guidedRadioButton.classList.remove("selected");
+  //   guidedRadioButton.classList.remove("not-selected");
+  //   guidedRadioButton.classList.add("basic");
 
-    //get the data-next-element attribute
-    const elementButtonControls = guidedRadioButton.getAttribute("data-next-element");
-    if (elementButtonControls) {
-      const elementToHide = document.getElementById(elementButtonControls);
-      elementToHide.classList.add("hidden");
-    }
-  }
+  //   //get the data-next-element attribute
+  //   const elementButtonControls = guidedRadioButton.getAttribute("data-next-element");
+  //   if (elementButtonControls) {
+  //     const elementToHide = document.getElementById(elementButtonControls);
+  //     elementToHide.classList.add("hidden");
+  //   }
+  // }
 };
 const updateGuidedRadioButtonsFromJSON = (parentPageID) => {
   const parentPage = document.getElementById(parentPageID);

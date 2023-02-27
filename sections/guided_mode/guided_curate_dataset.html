@@ -69,59 +69,113 @@
     <div id="guided-body" class="guided--body">
       <div id="guided-home" class="guided--main-tab">
         <div class="guided--panel">
-          <h1 class="guided--text-sub-step">Guided Mode</h1>
-          <p class="guided--help-text" style="margin-bottom: 2rem">
-            The Guided Mode is designed to assist users in curating and sharing datasets that adhere
-            to the SPARC data standards. Its user interface guides users through each step of the
-            curation process, providing all necessary information without the need for prior
-            knowledge of the SPARC standards. Contrary to the Free Form Mode, the Guided Mode
-            interfaces are interconnected and form a cohesive workflow.
-          </p>
+          <h1 class="guided--text-sub-step">
+            Share FAIR neuromodulation-relation data and code through the SPARC data curation
+            workflow
+          </h1>
 
           <div class="justify-center" id="curate-new-home" style="align-items: center">
             <div
               class="container--dashed"
               id="guided-button-start-new-curate"
-              style="width: 800px; margin: 5px; height: 16.5rem"
+              style="
+                width: 600px;
+                height: 160px !important;
+                margin: 5px;
+                display: flex;
+                border-radius: 30px;
+                height: 16.5rem;
+                border: 1px solid #ccc;
+                flex-direction: row;
+                justify-content: space-between;
+              "
             >
-              <div id="new-dataset-lottie-container" style="height: 150px; width: 150px"></div>
-              <h2 class="guided--text-sub-step">
-                Create a new dataset from scratch or edit an existing Pennsieve dataset.
-              </h2>
+              <div
+                style="
+                  display: flex;
+                  max-width: 300px;
+                  flex-direction: column;
+                  height: 100%;
+                  justify-content: space-between;
+                "
+              >
+                <h2 class="guided--text-sub-step" style="margin-right: 2rem">
+                  Curate a new dataset
+                </h2>
+                <p style="margin-bottom: 6rem; margin-left: 2rem">
+                  I want to curate and share a new datataset as per the SPARC workflow
+                </p>
+              </div>
+              <div id="new-dataset-lottie-container" style="height: 138px; width: 182px"></div>
             </div>
-          </div>
-
-          <div
-            class="guided--panel"
-            id="continue-curating-existing"
-            style="margin-top: 20px; width: 100%"
-          >
-            <h2 class="guided--text-sub-step" id="guided-continue-curation-header"></h2>
             <div
-              class="guided--radio-button-container hidden guided--button-tab-container"
-              id="guided-div-dataset-cards-radio-buttons"
-              style="justify-content: space-evenly"
+              class="container--dashed"
+              id="guided-button-start-new-curate"
+              style="
+                width: 600px;
+                height: 160px !important;
+                margin: 5px;
+                display: flex;
+                border-radius: 30px;
+                height: 16.5rem;
+                border: 1px solid #ccc;
+                flex-direction: row;
+                justify-content: space-between;
+              "
             >
-              <button
-                class="ui button guided--radio-button guided--tab-button"
-                id="guided-button-view-datasets-in-progress"
-                data-next-element="guided-div-resume-progress-cards"
-                style="width: 250px"
+              <div
+                style="
+                  max-width: 300px;
+                  display: flex;
+                  flex-direction: column;
+                  height: 100%;
+                  justify-content: space-between;
+                "
               >
-                Datasets in progress
-              </button>
-              <button
-                class="ui button guided--radio-button guided--tab-button"
-                id="guided-button-view-datasets-uploaded"
-                data-next-element="guided-div-update-uploaded-cards"
-                style="width: 250px"
+                <h2 class="guided--text-sub-step" style="margin-right: 2rem">
+                  Resume existing dataset
+                </h2>
+                <p style="margin-bottom: 6rem; margin-left: 2rem">
+                  I want to resume working on a locally saved or Pennsieve dataset
+                </p>
+              </div>
+              <div id="existing-dataset-lottie" style="height: 138px; width: 182px"></div>
+            </div>
+            <div
+              class="container--dashed"
+              id="guided-button-start-new-curate"
+              style="
+                width: 600px;
+                height: 160px !important;
+                margin: 5px;
+                display: flex;
+                border-radius: 30px;
+                height: 16.5rem;
+                border: 1px solid #ccc;
+                flex-direction: row;
+                justify-content: space-between;
+              "
+            >
+              <div
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  height: 100%;
+                  max-width: 300px;
+                  justify-content: space-between;
+                "
               >
-                Datasets uploaded to Pennsieve
-              </button>
+                <h2 class="guided--text-sub-step" style="margin-right: 2rem">
+                  Modify Dataset Component
+                </h2>
+                <p style="margin-bottom: 6rem; margin-left: 2rem">
+                  I want to edit specific aspects of my dataset (create metadata files, add banner
+                  image, etc)
+                </p>
+              </div>
+              <div id="edit-dataset-component-lottie" style="height: 138px; width: 182px"></div>
             </div>
           </div>
-          <div class="guided--section hidden" id="guided-div-resume-progress-cards"></div>
-          <div class="guided--section hidden" id="guided-div-update-uploaded-cards"></div>
         </div>
       </div>
 
