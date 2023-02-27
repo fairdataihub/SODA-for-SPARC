@@ -990,10 +990,10 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
             create_soda_json_progress += 1
             item_id = items["content"]["id"]
             if item_id[2:9] == "package":
-                # if it is a file name check if there are additional manifest information to attach to files
+                # is a file name check if there are additional manifest information to attach to files
                 if (
                     item_name[0:8] != "manifest"
-                ):  # manifest files are not being included json structure
+                ):  # manifest files are not being included in json structure
 
                     #verify file name first
                     if("extension" not in children_content):
@@ -1064,6 +1064,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
                         if "filename" in updated_manifest.keys():
                             for manifestKey in updated_manifest.keys():
+                                location_index = ""
                                 # get the index of the file name in the manifest
                                 if (temp_name in updated_manifest["filename"].values()):
                                     location_index = list(updated_manifest["filename"].values()).index(
@@ -1077,14 +1078,16 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                                     )
                                 else:
                                     # break out of the for loop if the file name is not in the manifest
-                                    namespace_logger.info("file name not in manifest")
                                     break
 
                                 # check if the key is in the required manifest headers, if it is, update the item_name value
                                 # corresponding to the key
                                 if manifestKey in defaultManifestHeadersNameMapped.values():
                                     if updated_manifest[manifestKey][location_index] != "":
-                                        subfolder_json["files"][item_name][manifestKey] = updated_manifest[manifestKey][location_index]
+                                        if item_name[0:1] == "/":
+                                            subfolder_json["files"][item_name[:1]][manifestKey] = updated_manifest[manifestKey][location_index]
+                                        else:
+                                            subfolder_json["files"][item_name][manifestKey] = updated_manifest[manifestKey][location_index]
                                 # if the key is not in the required manifest headers, add it to the extra columns item_name value
                                 else :
                                     # if the extra columns key does not exist, create it
@@ -1096,8 +1099,30 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                                     else:
                                         subfolder_json["files"][item_name]["extra_columns"][manifestKey] = ""
                         else:
-                            namespace_logger.info("Unable to get filename from manifest")
-
+                            # filename not in updated manifest so recreate standard headers if they don't exist
+                            # loop through the updated manifest keys and if header matches standard header add content else recreate
+                            if len(updated_manifest.keys()) > 0:
+                                location_index = ""
+                                for manifestKey in updated_manifest.keys():
+                                    if temp_name in updated_manifest[manifestKey].values():
+                                        # file_names found
+                                        location_index = list(updated_manifest[manifestKey].values()).index(
+                                        temp_name
+                                        )
+                                    if ("/" + temp_name in updated_manifest[manifestKey].values()):
+                                        location_index = list(updated_manifest[manifestKey].values()).index(
+                                        "/" + temp_name
+                                        )
+                                    if location_index != "":
+                                        if manifestKey in defaultManifestHeadersNameMapped.values():
+                                            if item_name[0:1] == "/":
+                                                subfolder_json["files"][item_name[1:]][manifestKey] = updated_manifest[manifestKey][location_index]
+                                            else:
+                                                subfolder_json["files"][item_name][manifestKey] = updated_manifest[manifestKey][location_index]
+                                        else:
+                                            if "extra_columns" not in subfolder_json["files"][item_name]:
+                                                subfolder_json["files"][item_name]["extra_columns"] = {}
+                                            subfolder_json["files"][item_name]["extra_columns"][manifestKey] = updated_manifest[manifestKey][location_index]
 
             else:  # another subfolder found
                 subfolder_json["folders"][item_name] = {
@@ -1206,8 +1231,8 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
     # manifest information is needed so it is looked for before the recursive calls are made
     if len(soda_json_structure["dataset-structure"]["folders"].keys()) != 0:
-        for folder in soda_json_structure["dataset-structure"]["folders"].keys():
-            collection_id = soda_json_structure["dataset-structure"]["folders"][folder][
+        for high_lvl_folder in soda_json_structure["dataset-structure"]["folders"].keys():
+            collection_id = soda_json_structure["dataset-structure"]["folders"][high_lvl_folder][
                 "path"
             ]
 
@@ -1216,7 +1241,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
             subfolder = r.json()
 
             children_content = subfolder["children"]
-            manifest_dict[folder] = {}
+            manifest_dict[high_lvl_folder] = {}
             if len(children_content) > 0:
                 for items in children_content:
                     # check subfolders surface to see if manifest files exist to then use within recursive_subfolder_check
@@ -1242,20 +1267,19 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                                 df = load_manifest_to_dataframe(package_id, "csv", token)
                                 df = df.fillna("")
                             # 
-                            manifest_dict[folder].update(df.to_dict())
+                            manifest_dict[high_lvl_folder].update(df.to_dict())
                         except Exception as e:
-                            namespace_logger.info(f"Error reading manifest file: {e}")
                             manifest_error_message.append(
                                 items["content"]["name"]
                             )
 
-                subfolder_section = soda_json_structure["dataset-structure"]["folders"][
-                    folder
+                high_lvl_folder_dict = soda_json_structure["dataset-structure"]["folders"][
+                    high_lvl_folder
                 ]
 
-                if folder in manifest_dict:
+                if high_lvl_folder in manifest_dict:
                     createFolderStructure(
-                        subfolder_section, token, manifest_dict[folder]
+                        high_lvl_folder_dict, token, manifest_dict[high_lvl_folder]
                     )  # passing item's json and the collection ID
 
     success_message = (

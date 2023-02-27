@@ -5,6 +5,13 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.10.0.4 - 2023-02-24
+
+## Bug fixes:
+
+- Imported datasets with manifests that carry incorrect headers for the standard columns (filename, timestamp, description, file type, Additional Metadata) will be preserved as extra columns.
+- Auto generating manifests will preserve column headers for each individual high level folder rather than giving the same headers to all manifests.
+
 ## v.10.0.3 - 2023-02-14
 
 ## Feature additions:

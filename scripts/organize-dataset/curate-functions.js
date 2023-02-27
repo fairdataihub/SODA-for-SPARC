@@ -2052,12 +2052,16 @@ const ffmCreateManifest = async (sodaJson) => {
           fs.mkdirSync(localFolderPath);
           fs.closeSync(fs.openSync(selectedManifestFilePath, "w"));
         }
-        jsonManifest = excelToJson({
-          sourceFile: selectedManifestFilePath,
-          columnToKey: {
-            "*": "{{columnHeader}}",
-          },
-        })["Sheet1"];
+        if (!fs.existsSync(selectedManifestFilePath)) {
+        } else {
+          jsonManifest = excelToJson({
+            sourceFile: selectedManifestFilePath,
+            columnToKey: {
+              "*": "{{columnHeader}}",
+            },
+          })["Sheet1"];
+        }
+        // If file doesn't exist then that means it didn't get imported properly
 
         let sortedJSON = processManifestInfo(manifestHeader, manifestFileData);
         jsonManifest = JSON.stringify(sortedJSON);

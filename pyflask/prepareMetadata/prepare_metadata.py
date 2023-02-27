@@ -191,8 +191,6 @@ def subscriber_metadata(ps, events_dict):
         fileid = events_dict["upload_status"].file_id
         total_bytes_to_upload = events_dict["upload_status"].total
         current_bytes_uploaded = events_dict["upload_status"].current
-        namespace_logger.info("File upload progress: " + str(current_bytes_uploaded) + "/" + str(total_bytes_to_upload))
-        namespace_logger.info("For file: " + fileid)
         if current_bytes_uploaded == total_bytes_to_upload and fileid != "":
             namespace_logger.info("File upload complete")
             ps.unsubscribe(10)
@@ -226,7 +224,6 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
             r = requests.post(f"{PENNSIEVE_URL}/data/delete",json=jsonfile, headers=headers)
             r.raise_for_status()
     try:
-        namespace_logger.info("Pre use_ds and manfiest create")
         # create a new manifest for the metadata file
         ps.use_dataset(selected_dataset_id)
         manifest = ps.manifest.create(file_path)
@@ -234,7 +231,6 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
     except Exception as e:
         error_message = "Could not create manifest file for this dataset"
         abort(500, error_message)
-    namespace_logger.info("Finished pennsieve setup and created manifest")
     
     # upload the manifest file
     # ps.manifest.upload(m_id)
@@ -980,6 +976,7 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
     manifest_progress["finished"] = True
 
     no_manifest_boolean = False
+    
     return {"message": "Finished"}
 
 
