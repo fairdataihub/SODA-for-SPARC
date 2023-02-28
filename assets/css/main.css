@@ -1693,6 +1693,7 @@ details[open] > summary::before {
   justify-content: center;
   height: 50% !important;
   margin-top: 0rem;
+  margin-right: 3rem;
 }
 
 .about-title {

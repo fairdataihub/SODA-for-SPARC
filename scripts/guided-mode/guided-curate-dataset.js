@@ -2040,8 +2040,11 @@ const guidedTransitionFromHome = async () => {
   document.getElementById("guided-home").classList.add("hidden");
   document.getElementById("curation-preparation-parent-tab").classList.remove("hidden");
   document.getElementById("guided-header-div").classList.remove("hidden");
-  document.getElementById("guided-button-start-new-curation").click();
-  document.getElementById("guided-next-button").click();
+
+  //Remove the lotties (will be added again upon visting the home page)
+  document.getElementById("new-dataset-lottie-container").innerHTML = "";
+  document.getElementById("existing-dataset-lottie").innerHTML = "";
+  document.getElementById("edit-dataset-component-lottie").innerHTML = "";
 
   //Hide all guided pages (first one will be unHidden automatically)
   const guidedPages = document.querySelectorAll(".guided--page");
@@ -10208,9 +10211,22 @@ $(document).ready(async () => {
   $("#guided-button-start-new-curate").on("click", async () => {
     guidedCreateSodaJSONObj();
     attachGuidedMethodsToSodaJSONObj();
+
+    sodaJSONObj["starting-point"]["type"] = "new";
+    sodaJSONObj["generate-dataset"]["generate-option"] = "new";
+
+    guidedUnSkipPage("guided-subjects-folder-tab");
+    guidedUnSkipPage("guided-primary-data-organization-tab");
+    guidedUnSkipPage("guided-source-data-organization-tab");
+    guidedUnSkipPage("guided-derivative-data-organization-tab");
+    guidedUnSkipPage("guided-code-folder-tab");
+    guidedUnSkipPage("guided-protocol-folder-tab");
+    guidedUnSkipPage("guided-docs-folder-tab");
+    //Skip this page becausae we should not come back to it
+    guidedSkipPage("guided-intro-page-tab");
     guidedTransitionFromHome();
-    guidedUnSkipPage("guided-subtitle-page-tab");
-    await openPage("guided-subtitle-page-tab");
+    guidedUnSkipPage("guided-name-subtitle-tab");
+    await openPage("guided-name-subtitle-tab");
   });
 
   $("#guided-button-start-existing-curate").on("click", async () => {
