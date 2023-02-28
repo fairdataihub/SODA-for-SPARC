@@ -10233,6 +10233,11 @@ $(document).ready(async () => {
     guidedCreateSodaJSONObj();
     attachGuidedMethodsToSodaJSONObj();
     guidedTransitionFromHome();
+    //Hide Fetching Pennsieve content until card is selected
+    document
+      .getElementById("guided-section-select-pennsieve-dataset-to-resume")
+      .classList.add("hidden");
+    document.getElementById("guided-section-start-new-curation").classList.add("hidden");
     guidedUnSkipPage("guided-intro-page-tab");
     await openPage("guided-intro-page-tab");
   });
