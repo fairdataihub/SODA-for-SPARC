@@ -2981,6 +2981,7 @@ const guidedSkipPage = (pageId) => {
 };
 
 const guidedUnSkipPage = (pageId) => {
+  console.log(pageId);
   const page = document.getElementById(pageId);
   page.dataset.skipPage = "false";
 
@@ -2995,6 +2996,7 @@ const guidedUnSkipPage = (pageId) => {
     document.getElementById(subPagesCapsule).classList.remove("hidden");
   }
   // remove the page from sodaJSONObj array if it is there
+  console.log(sodaJSONObj["skipped-pages"]);
   if (sodaJSONObj["skipped-pages"].includes(pageId)) {
     sodaJSONObj["skipped-pages"].splice(sodaJSONObj["skipped-pages"].indexOf(pageId), 1);
   }
@@ -3292,20 +3294,21 @@ const cleanUpEmptyGuidedStructureFolders = async (
 };
 
 const resetGuidedRadioButtons = (parentPageID) => {
+  console.log("Reset guided radio buttons " + parentPageID);
   const parentPage = document.getElementById(parentPageID);
-  // const guidedRadioButtons = parentPage.querySelectorAll(".guided--radio-button");
-  // for (const guidedRadioButton of guidedRadioButtons) {
-  //   guidedRadioButton.classList.remove("selected");
-  //   guidedRadioButton.classList.remove("not-selected");
-  //   guidedRadioButton.classList.add("basic");
+  const guidedRadioButtons = parentPage.querySelectorAll(".guided--radio-button");
+  for (const guidedRadioButton of guidedRadioButtons) {
+    guidedRadioButton.classList.remove("selected");
+    guidedRadioButton.classList.remove("not-selected");
+    guidedRadioButton.classList.add("basic");
 
-  //   //get the data-next-element attribute
-  //   const elementButtonControls = guidedRadioButton.getAttribute("data-next-element");
-  //   if (elementButtonControls) {
-  //     const elementToHide = document.getElementById(elementButtonControls);
-  //     elementToHide.classList.add("hidden");
-  //   }
-  // }
+    //get the data-next-element attribute
+    const elementButtonControls = guidedRadioButton.getAttribute("data-next-element");
+    if (elementButtonControls) {
+      const elementToHide = document.getElementById(elementButtonControls);
+      elementToHide.classList.add("hidden");
+    }
+  }
 };
 const updateGuidedRadioButtonsFromJSON = (parentPageID) => {
   const parentPage = document.getElementById(parentPageID);
@@ -10238,17 +10241,41 @@ $(document).ready(async () => {
       .getElementById("guided-section-select-pennsieve-dataset-to-resume")
       .classList.add("hidden");
     document.getElementById("guided-section-start-new-curation").classList.add("hidden");
+
+    // guidedResetProgressVariables();
+
+    //Check if Guided-Progress folder exists. If not, create it.
+    if (!fs.existsSync(guidedProgressFilePath)) {
+      fs.mkdirSync(guidedProgressFilePath, { recursive: true });
+    }
+
+    //Reset the "Datasets in progress" and "Datasets uploaded to Pennsieve buttons"
+    // resetGuidedRadioButtons("guided-div-dataset-cards-radio-buttons");
+
+    const datasetCardsRadioButtonsContainer = document.getElementById(
+      "guided-div-dataset-cards-radio-buttons"
+    );
+
+    const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
+    //render progress resumption cards from progress file array on first page of guided mode
+    if (guidedSavedProgressFiles.length != 0) {
+      datasetCardsRadioButtonsContainer.classList.remove("hidden");
+      const progressFileData = await getAllProgressFileData(guidedSavedProgressFiles);
+      renderProgressCards(progressFileData);
+      document.getElementById("guided-button-view-datasets-in-progress").click();
+    } else {
+      $("#guided-continue-curation-header").text("");
+      datasetCardsRadioButtonsContainer.classList.add("hidden");
+    }
+
     guidedUnSkipPage("guided-intro-page-tab");
     await openPage("guided-intro-page-tab");
   });
 
-  $("#guided-button-start-modify-component").on("click", async () => {
-    // guidedCreateSodaJSONObj();
-    // attachGuidedMethodsToSodaJSONObj();
-    // guidedTransitionFromHome();
-    // guidedUnSkipPage("guided-intro-page-tab");
-    // await openPage("guided-intro-page-tab");
+  $("#guided-button-start-modify-compnent").on("click", async () => {
     //Free form mode will open through here
+    guidedTransitionFromHome();
+    directToFreeFormMode();
   });
 
   $("#guided-button-add-permission-user-or-team").on("click", function () {
