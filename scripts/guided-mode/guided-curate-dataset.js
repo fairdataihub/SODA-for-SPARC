@@ -1678,7 +1678,7 @@ const guidedLockSideBar = () => {
   // return data-parent-tab-name for each .guided--parent-tab element
 };
 
-guidedUnLockSideBar = () => {
+const guidedUnLockSideBar = () => {
   const sidebar = document.getElementById("sidebarCollapse");
   const guidedModeSection = document.getElementById("guided_mode-section");
   const guidedDatsetTab = document.getElementById("guided_curate_dataset-tab");
@@ -2725,6 +2725,14 @@ const guidedPrepareHomeScreen = async () => {
   });
 
   lottie.loadAnimation({
+    container: document.getElementById("existing-dataset-lottie"),
+    animationData: existingDataset,
+    renderer: "svg",
+    loop: true,
+    autoplay: true,
+  });
+
+  lottie.loadAnimation({
     container: document.getElementById("edit-dataset-component-lottie"),
     animationData: modifyDataset,
     renderer: "svg",
@@ -2735,7 +2743,7 @@ const guidedPrepareHomeScreen = async () => {
   guidedUnLockSideBar();
 };
 
-function guidedShowTreePreview(new_dataset_name, targetElement) {
+const guidedShowTreePreview = (new_dataset_name, targetElement) => {
   const dsJsonObjCopy = JSON.parse(JSON.stringify(datasetStructureJSONObj));
 
   //Add the code_description metadata file to the preview if the code_description path has been declared
@@ -2820,7 +2828,7 @@ function guidedShowTreePreview(new_dataset_name, targetElement) {
     const node = tree.get_node(folderName);
     tree.open_node(node);
   };
-}
+};
 
 const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
   //add high level folder if it does not exist
@@ -2969,7 +2977,7 @@ const guidedSkipPage = (pageId) => {
   }
 };
 
-guidedUnSkipPage = (pageId) => {
+const guidedUnSkipPage = (pageId) => {
   const page = document.getElementById(pageId);
   page.dataset.skipPage = "false";
 
@@ -3321,7 +3329,7 @@ const guidedResetUserTeamPermissionsDropdowns = () => {
 };
 
 let addListener = true;
-function copyLink(link) {
+const copyLink = (link) => {
   const copyIcon = document.getElementById("guided-pennsieve-copy-icon");
   Clipboard.writeText(link);
   copyIcon.classList.remove("fa-copy");
@@ -3332,7 +3340,7 @@ function copyLink(link) {
     type: "success",
     message: "Link copied!",
   });
-}
+};
 
 const validatePageArray = async (arrayOfPagesToCheck) => {
   const nonSkippedPages = getNonSkippedGuidedModePages(document);
@@ -10201,41 +10209,25 @@ $(document).ready(async () => {
     guidedCreateSodaJSONObj();
     attachGuidedMethodsToSodaJSONObj();
     guidedTransitionFromHome();
+    guidedUnSkipPage("guided-subtitle-page-tab");
+    await openPage("guided-subtitle-page-tab");
+  });
+
+  $("#guided-button-start-existing-curate").on("click", async () => {
+    guidedCreateSodaJSONObj();
+    attachGuidedMethodsToSodaJSONObj();
+    guidedTransitionFromHome();
     guidedUnSkipPage("guided-intro-page-tab");
     await openPage("guided-intro-page-tab");
-    /*introJs()
-      .setOptions({
-        steps: [
-          {
-            title: "Welcome to Guided Mode!",
-            intro: "This is a quick tutorial to get you comfortable with Guided Mode's navigation.",
-          },
-          {
-            element: document.querySelector(".guided--nav-bar-section"),
-            intro: `Navigating between individual pages is easy with the navigation bar. To navigate to a page, click on the page's name.
-            <br />
-            <br />
-            <b>Note:</b> The navigation bar only allows you to navigate to pages that have already been completed.`,
-          },
-          {
-            element: document.getElementById("guided-footer-div"),
-            intro: `The bottom navigation row allows you to navigate between pages.
-            <br />
-            <br />
-            <b>Note:</b> Your dataset's progress is saved automatically when clicking "Save and Continue" or "Save and Exit", and can be
-            resumed on the Guided Mode home page (even if you close out of the SODA application).`,
-          },
-          {
-            element: document.querySelector(".guided--progression-tab-container"),
-            intro: "Your current step in the curation process is displayed here.",
-          },
-        ],
-        tooltipClass: "guided--tooltip-intro-js",
-        exitOnEsc: false,
-        exitOnOverlayClick: false,
-        disableInteraction: false,
-      })
-      .start();*/
+  });
+
+  $("#guided-button-start-modify-component").on("click", async () => {
+    // guidedCreateSodaJSONObj();
+    // attachGuidedMethodsToSodaJSONObj();
+    // guidedTransitionFromHome();
+    // guidedUnSkipPage("guided-intro-page-tab");
+    // await openPage("guided-intro-page-tab");
+    //Free form mode will open through here
   });
 
   $("#guided-button-add-permission-user-or-team").on("click", function () {
