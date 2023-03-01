@@ -2,7 +2,7 @@
 from flask_restx import Resource, fields
 from flask import request
 from namespaces import get_namespace, NamespaceEnum
-from skeletonDataset import create, get_manifests, get_metadata_files_json
+from skeletonDataset import create, get_manifests, get_metadata_files_json, createGuidedMode
 from errorHandlers import notBadRequestException
 
 api = get_namespace(NamespaceEnum.SKELETON_DATASET)
@@ -31,9 +31,13 @@ class SkeletonDataset(Resource):
 
         api.logger.info(f"Creating skeleton dataset structure {sodajsonobject}")
 
+        
         # create the skeleton dataset structure in the ~/SODA/skeleton directory
         try:
-            return create(sodajsonobject)
+            if "guided-options" in sodajsonobject:
+                return createGuidedMode(sodajsonobject)
+            else:
+                return create(sodajsonobject)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))

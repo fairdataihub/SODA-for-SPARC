@@ -275,7 +275,7 @@ const transitionToValidateQuestionTwo = async () => {
     localSection.style = "display: flex;";
 
     // hide the confirm button
-    hideConfirmButton();
+    hideConfirmButton("local");
 
     // confirm that the input holding the local dataset path's placeholder is reset
     let input = document.querySelector("#validate-local-dataset-path");
@@ -454,7 +454,26 @@ document.querySelector("#run_validator_btn").addEventListener("click", async fun
   let validatingLocalDataset = localDatasetCard.checked;
 
   // hide the run validator button
-  hideQuestionThreeLocal();
+  // hideQuestionThreeLocal();
+
+  if (getValidationResultsCount() > 0) {
+    let reset = await userWantsToResetValidation();
+    if (!reset) {
+      return;
+    }
+
+    // get validation table body
+    let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
+    clearValidationResults(validationErrorsTable);
+
+    // hide question 3
+    // let questionThreeSection = document.querySelector("#validate_dataset-question-3");
+    // questionThreeSection.classList.remove("show");
+    // questionThreeSection.classList.remove("prev");
+
+    // hide question 4
+    // document.querySelector("#validate_dataset-question-4").classList.remove("show");
+  }
 
   if (validatingLocalDataset) {
     await validateLocalDataset();
@@ -468,7 +487,7 @@ document.querySelector("#run_validator_btn").addEventListener("click", async fun
 document
   .querySelector("#confirm-dataset-selection--validator")
   .addEventListener("click", function () {
-    hideConfirmButton();
+    hideConfirmButton("pennsieve");
 
     // transition to the next question
     transitionFreeFormMode(
@@ -598,7 +617,12 @@ const showConfirmButton = () => {
 };
 
 // TODO: Make it differentiate between local and pennsieve confirm buttons
-const hideConfirmButton = () => {
+const hideConfirmButton = (mode) => {
+  if (mode == "pennsieve") {
+    let confirmDatasetBtn = document.querySelector("#confirm-dataset-selection--validator");
+    confirmDatasetBtn.parentElement.style.display = "none";
+    return;
+  }
   // hide the confirm button
   let confirmDatasetBtn = document.querySelector("#validator-confirm-local-dataset-btn");
   confirmDatasetBtn.parentElement.style.display = "none";

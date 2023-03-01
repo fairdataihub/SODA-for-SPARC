@@ -2512,6 +2512,43 @@ const updateManifestJson = async (highLvlFolderName, result) => {
   };
 };
 
+const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
+  // if the user chose to auto-generate manifest files, create the excel files in local storage
+  // and add the paths to the manifest files in the datasetStructure object
+  if (sodaJSONObj["button-config"]["manifest-files-generated-automatically"] === "yes") {
+    /**
+     * If the user has selected to auto-generate manifest files,
+     * grab the manifest data for each high level folder, create an excel file
+     * using the manifest data, and add the excel file to the datasetStructureJSONObj
+     */
+
+    // First, empty the guided_manifest_files so we can add the new manifest files
+    fs.emptyDirSync(guidedManifestFilePath);
+
+    const guidedManifestData = sodaJSONObj["guided-manifest-files"];
+    for (const [highLevelFolder, manifestData] of Object.entries(guidedManifestData)) {
+      let manifestJSON = processManifestInfo(
+        guidedManifestData[highLevelFolder]["headers"],
+        guidedManifestData[highLevelFolder]["data"]
+      );
+      jsonManifest = JSON.stringify(manifestJSON);
+
+      const manifestPath = path.join(guidedManifestFilePath, highLevelFolder, "manifest.xlsx");
+
+      fs.mkdirSync(path.join(guidedManifestFilePath, highLevelFolder), {
+        recursive: true,
+      });
+
+      convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
+      datasetStructureJSONObj["folders"][highLevelFolder]["files"]["manifest.xlsx"] = {
+        action: ["new"],
+        path: manifestPath,
+        type: "local",
+      };
+    }
+  }
+};
+
 const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
   const existingManifestData = sodaJSONObj["guided-manifest-files"][highLevelFolderName];
   //send manifest data to main.js to then send to child window
@@ -2718,9 +2755,47 @@ document
       // Uncomment the line below to test the error handling
       // throw new Error("Test error");
       sodaJSONObj["dataset-validated"] = true;
+
+      // create the manifest files if the user auto generated manifest files at any point
+      await guidedCreateManifestFilesAndAddToDatasetStructure();
+
+      const skeletonDatasetPath = await api.createSkeletonDataset(sodaJSONObj);
+
+      let validationReport = await api.validateLocalDataset(skeletonDatasetPath);
+
+      let report = validationReport;
+
+      // list the results in a table ( ideally the one used in the validate feature )
+      if (!validationErrorsOccurred(report)) {
+        return;
+      }
+
+      // get validation table body
+      let validationErrorsTable = document.querySelector(
+        "#guided-section-dataset-validation-table tbody"
+      );
+
+      clearValidationResults(validationErrorsTable);
+
+      // display errors onto the page
+      displayValidationErrors(
+        report,
+        document.querySelector("#guided-section-dataset-validation-table tbody")
+      );
+
+      // show the validation errors to the user
+      document.querySelector("#guided-section-dataset-validation-table").style.visibility =
+        "visible";
+
+      document.querySelector("#guided--table-validation-errors").style.visibility = "visible";
+
+      // scroll so that the table is in the viewport
+      document
+        .querySelector("#guided-section-dataset-validation-table")
+        .scrollIntoView({ behavior: "smooth" });
     } catch (error) {
       // Validation failed. Show a swal and have the user go back to fix stuff (or retry)
-      console.log(error);
+      clientError(error);
       sodaJSONObj["dataset-validated"] = false;
     }
     guidedSetNavLoadingState(false);
@@ -12069,43 +12144,6 @@ $(document).ready(async () => {
       sodaJSONObj["digital-metadata"]["name"] = newDatasetName;
 
       guidedPennsieveDatasetUpload();
-    }
-  };
-
-  const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
-    // if the user chose to auto-generate manifest files, create the excel files in local storage
-    // and add the paths to the manifest files in the datasetStructure object
-    if (sodaJSONObj["button-config"]["manifest-files-generated-automatically"] === "yes") {
-      /**
-       * If the user has selected to auto-generate manifest files,
-       * grab the manifest data for each high level folder, create an excel file
-       * using the manifest data, and add the excel file to the datasetStructureJSONObj
-       */
-
-      // First, empty the guided_manifest_files so we can add the new manifest files
-      fs.emptyDirSync(guidedManifestFilePath);
-
-      const guidedManifestData = sodaJSONObj["guided-manifest-files"];
-      for (const [highLevelFolder, manifestData] of Object.entries(guidedManifestData)) {
-        let manifestJSON = processManifestInfo(
-          guidedManifestData[highLevelFolder]["headers"],
-          guidedManifestData[highLevelFolder]["data"]
-        );
-        jsonManifest = JSON.stringify(manifestJSON);
-
-        const manifestPath = path.join(guidedManifestFilePath, highLevelFolder, "manifest.xlsx");
-
-        fs.mkdirSync(path.join(guidedManifestFilePath, highLevelFolder), {
-          recursive: true,
-        });
-
-        convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
-        datasetStructureJSONObj["folders"][highLevelFolder]["files"]["manifest.xlsx"] = {
-          action: ["new"],
-          path: manifestPath,
-          type: "local",
-        };
-      }
     }
   };
 

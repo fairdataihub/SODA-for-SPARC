@@ -17,4 +17,7 @@ class ValidateDatasetLocal(Resource):
         data = self.parser.parse_args()
         ds_path = data.get("dataset_path")
 
-        return val_dataset_local_pipeline(ds_path)
+        try:
+            return val_dataset_local_pipeline(ds_path)
+        except Exception as e:
+            raise e

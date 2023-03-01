@@ -5218,6 +5218,39 @@
           </div>
           <div class="guided--section" id="guided-section-dataset-validation-table">
             <p class="guided--help-text" id="dummy-text-remove-me"></p>
+            <!--Aaron here add the validation table-->
+            <div
+              id="guided--table-validation-errors"
+              style="
+                visibility: hidden;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin-top: 50px;
+              "
+            >
+              <label style="font-size: 17px; color: var(--color-bg-plum)">
+                Validation Errors
+              </label>
+              <div style="border-radius: 0.5rem; margin-top: 5px; width: 550px; align-self: center">
+                <p class="tip-content">
+                  The path column indicates where the errors occurred in your dataset. The message
+                  column provides an explanation of what the errors are. For updated validation
+                  results re-run validation by pressing the 'Validate Dataset' button.
+                </p>
+              </div>
+
+              <table class="ui celled padded table" style="width: 800px">
+                <thead>
+                  <tr>
+                    <th>Path</th>
+                    <th>Message</th>
+                    <!-- <th>Fix Here</th> -->
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
           </div>
           <div class="guided--section" id="guided-section-skip-validation">
             <h2 class="guided--text-sub-step">

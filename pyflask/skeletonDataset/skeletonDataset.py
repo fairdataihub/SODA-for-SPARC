@@ -13,6 +13,7 @@ from .skeletonDatasetUtils import import_bf_metadata_files_skeleton, import_mani
 from pennsieve2.pennsieve import Pennsieve
 from manifest import ManifestBuilderBase, ManifestBuilder
 import pandas as pd 
+from prepareMetadata import save_submission_file, save_subjects_file, save_samples_file, save_ds_description_file, upload_RC_file
 # from organizeDatasets import import_pennsieve_dataset
 
 path = os.path.join(expanduser("~"), "SODA", "skeleton")
@@ -124,13 +125,135 @@ def create(soda_json_structure):
 
     create_skeleton(soda_json_structure["dataset-structure"], path)
 
-    ps = Pennsieve()
+    # if validating for a local dataset pull the metadata files from their source destination into the skeleton directory
+    if soda_json_structure["starting-point"]["type"] != "bf":
+       for _, file_properties in soda_json_structure["metadata-files"].items():
+          print(file_properties)
+          shutil.copy(file_properties["path"] , path)
+          print("asd")
+          
+    else:
+      ps = Pennsieve()
 
-    import_bf_metadata_files_skeleton_base(soda_json_structure["bf-dataset-selected"]["dataset-name"] , ps)
+      import_bf_metadata_files_skeleton_base(soda_json_structure["bf-dataset-selected"]["dataset-name"] , ps)
 
     get_manifests_base(soda_json_structure)
 
     return {"path_to_skeleton_dataset": path}
+
+
+def createGuidedMode(soda_json_structure):
+  dataset_structure = soda_json_structure["saved-datset-structure-json-obj"]
+
+  path = os.path.join(expanduser("~"), "SODA", "skeleton")
+
+  # check if the skeleton directory exists
+  if os.path.exists(path):
+      # remove the non-empty skeleton directory
+      shutil.rmtree(path)
+
+  # create a folder to hold the skeleton
+  os.mkdir(path)
+
+  create_skeleton(dataset_structure, path)
+
+  # create metadata files
+  create_metadata_files(soda_json_structure, path)
+
+  # copy the manifest files from the guided mode directory to the skeleton directory 
+  guided_manifest_files = os.path.join(expanduser("~"), "SODA", "guided_manifest_files")
+  for folder in dataset_structure["folders"].keys():
+     guided_manifest_files_high_level_dir = os.path.join(guided_manifest_files, folder)
+     if os.path.exists(guided_manifest_files_high_level_dir):
+        manifest_path = os.path.join(guided_manifest_files_high_level_dir, "manifest.xlsx")
+        manifest_path_destination = os.path.join(path, folder)
+        shutil.copy(manifest_path, manifest_path_destination)
+
+
+  return {"path_to_skeleton_dataset": path}
+
+
+def create_metadata_files(dataset_structure, path):
+    # get the table data for subjects and samples 
+    subject_table_data = dataset_structure["subjects-table-data"]
+    samples_table_data = dataset_structure["samples-table-data"]
+
+    if len(subject_table_data) > 0:
+      save_subjects_file(False, None, None, path + "/subjects.xlsx", subject_table_data)
+    if len(samples_table_data) > 0:
+      save_samples_file(False, None, None, path + "/samples.xlsx", samples_table_data)
+
+    guidedSparcAward = dataset_structure["dataset-metadata"]["shared-metadata"]["sparc-award"];
+    guidedMilestones = dataset_structure["dataset-metadata"]["submission-metadata"]["milestones"];
+    guidedCompletionDate = dataset_structure["dataset-metadata"]["submission-metadata"]["completion-date"];
+    guidedSubmissionMetadataJSON = [{
+       "award": guidedSparcAward,
+       "date": guidedCompletionDate,
+       "milestone": guidedMilestones[0],
+    }]
+    guidedSubmissionMetadataJSON.extend(
+        {
+            "award": "",
+            "date": "",
+            "milestone": milestone,
+        }
+        for milestone in guidedMilestones
+    )
+    save_submission_file(False, None, None, path + "/submission.xlsx", guidedSubmissionMetadataJSON)
+
+    # dataset description 
+    guidedDatasetInformation = dataset_structure["dataset-metadata"]["description-metadata"]["dataset-information"];
+
+    guidedStudyInformation = dataset_structure["dataset-metadata"]["description-metadata"]["study-information"];
+
+    guidedContributorInformation = dataset_structure["dataset-metadata"]["description-metadata"]["contributor-information"]
+    
+    if guidedSparcAward not in guidedContributorInformation["funding"]:
+      guidedContributorInformation["funding"].insert(0, guidedSparcAward);
+  
+    contributors = dataset_structure["dataset-metadata"]["description-metadata"]["contributors"];
+
+    guidedContributorInformation["contributors"] = [
+      {
+        "conAffliation": ', '.join(contributor["conAffliation"]),
+        "conID": contributor["conID"],
+        "conName": contributor["conName"],
+        "conRole": ', '.join(contributor["conRole"]),
+        "contributorFirstName": contributor["contributorFirstName"],
+        "contributorLastName": contributor["contributorLastName"],
+      } for contributor in contributors ]
+    
+
+    guidedAdditionalLinks = dataset_structure["dataset-metadata"]["description-metadata"]["additional-links"];
+    guidedProtocols = dataset_structure["dataset-metadata"]["description-metadata"]["protocols"];
+    allDatasetLinks = guidedAdditionalLinks + guidedProtocols
+
+    save_ds_description_file(False, None, None, path + "/dataset_description.xlsx", guidedDatasetInformation, guidedStudyInformation, guidedContributorInformation, allDatasetLinks)
+
+    ## README and CHANGES Metadata variables
+    guidedReadMeMetadata = dataset_structure["dataset-metadata"]["README"];
+    guidedChangesMetadata = dataset_structure["dataset-metadata"]["CHANGES"];
+
+    # create text file called readme.txt in skeleton directory 
+    file_path = os.path.join(path, "README.txt")
+
+    with open(file_path, "w") as f:
+        f.write(guidedReadMeMetadata)
+
+    file_path = os.path.join(path, "CHANGES.txt")
+    if len(guidedChangesMetadata) > 0:
+       with open(file_path, "w") as f:
+          f.write(guidedChangesMetadata)
+
+
+    ## TODO: Code description
+    # if (fs.existsSync(sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"])) {
+    #     let codeDescriptionRes = await guidedUploadCodeDescriptionMetadata(
+    #       guidedBfAccount,
+    #       guidedDatasetName,
+    #       sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"]
+    #     );
+    #   }
 
 
 

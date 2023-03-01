@@ -139,9 +139,9 @@ const validateOrganizedDataset = async () => {
       });
     }
 
-    let job = checkJobsResponse.data;
+    let data = checkJobsResponse.data;
 
-    if (job === undefined) return;
+    if (data.job === null) return;
 
     clearInterval(interval);
 
@@ -195,7 +195,7 @@ const validateOrganizedDataset = async () => {
 
     // display errors onto the page
     displayValidationErrors(
-      errors,
+      report,
       document.querySelector("#organize--table-validation-errors tbody")
     );
 
