@@ -426,6 +426,83 @@ $(document).ready(function () {
           // await updateManifestJson(highLevelFolderName, result);
           ipcRenderer.removeAllListeners("spreadsheet-reply");
           console.log(result);
+          saveManifestFiles = true;
+          // guidedManifestTable = result;
+          if (saveManifestFiles) {
+            //if additional metadata or description gets added for a file then add to json as well
+            sodaJSONObj["manifest-files"]["auto-generated"] = true;
+            const savedHeaders = result[0];
+            const savedData = result[1];
+            let jsonManifest = {};
+            let localFolderPath = path.join(
+              homeDirectory,
+              "SODA",
+              "manifest_files",
+              parentFolderName
+            );
+            let selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
+            if (!fs.existsSync(localFolderPath)) {
+              fs.mkdirSync(localFolderPath);
+              fs.closeSync(fs.openSync(selectedManifestFilePath, "w"));
+            }
+            jsonManifest = excelToJson({
+              sourceFile: selectedManifestFilePath,
+              columnToKey: {
+                "*": "{{columnHeader}}",
+              },
+            })["Sheet1"];
+    
+            let sortedJSON = processManifestInfo(savedHeaders, savedData);
+            jsonManifest = JSON.stringify(sortedJSON);
+            convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
+            //Update the metadata in json object
+            for (let i = 0; i < savedData.length; i++) {
+              let fileName = savedData[i][0];
+              let cleanedFileName = "";
+              let fileNameSplit = fileName.split("/");
+              let description = savedData[i][2];
+              let additionalMetadata = savedData[i][4];
+              if (fileNameSplit[0] === "") {
+                //not in a subfolder
+                cleanedFileName = fileNameSplit[1];
+                sodaCopy["dataset-structure"]["folders"][parentFolderName]["files"][cleanedFileName][
+                  "description"
+                ] = description;
+                sodaJSONObj["dataset-structure"]["folders"][parentFolderName]["files"][
+                  cleanedFileName
+                ]["description"];
+                sodaCopy["dataset-structure"]["folders"][parentFolderName]["files"][cleanedFileName][
+                  "additional-metadata"
+                ] = additionalMetadata;
+                sodaJSONObj["dataset-structure"]["folders"][parentFolderName]["files"][
+                  cleanedFileName
+                ]["additional-metadata"] = additionalMetadata;
+              } else {
+                // is in a subfolder so search for it and update metadata
+                // need to add description and additional metadata to original sodaJSONObj
+                let folderDepthCopy = sodaCopy["dataset-structure"]["folders"][parentFolderName];
+                let folderDepthReal = sodaJSONObj["dataset-structure"]["folders"][parentFolderName];
+                for (let j = 0; j < fileNameSplit.length; j++) {
+                  if (j === fileNameSplit.length - 1) {
+                    folderDepthCopy["files"][fileNameSplit[j]]["description"] = description;
+                    folderDepthReal["files"][fileNameSplit[j]]["description"] = description;
+                    folderDepthCopy["files"][fileNameSplit[j]]["additional-metadata"] =
+                      additionalMetadata;
+                    folderDepthReal["files"][fileNameSplit[j]]["additional-metadata"] =
+                      additionalMetadata;
+                  } else {
+                    folderDepthCopy = folderDepthCopy["folders"][fileNameSplit[j]];
+                    folderDepthReal = folderDepthReal["folders"][fileNameSplit[j]];
+                  }
+                }
+              }
+            }
+    
+            sodaCopy["manifest-files"][parentFolderName] = {
+              headers: savedHeaders,
+              data: savedData,
+            };
+          }
           // await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
           // renderManifestCards();
         }
