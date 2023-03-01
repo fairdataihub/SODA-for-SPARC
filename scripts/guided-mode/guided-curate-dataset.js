@@ -10274,8 +10274,21 @@ $(document).ready(async () => {
 
   $("#guided-button-start-modify-compnent").on("click", async () => {
     //Free form mode will open through here
-    guidedTransitionFromHome();
+    //Hide the home screen
+    // document.getElementById("guided-home").classList.add("hidden");
+    // document.getElementById("curation-preparation-parent-tab").classList.remove("hidden");
+    // document.getElementById("guided-header-div").classList.remove("hidden");
+
+    //Remove the lotties (will be added again upon visting the home page)
+    document.getElementById("new-dataset-lottie-container").innerHTML = "";
+    document.getElementById("existing-dataset-lottie").innerHTML = "";
+    document.getElementById("edit-dataset-component-lottie").innerHTML = "";
+
+    // guidedResetSkippedPages();
+
+    // guidedLockSideBar();
     directToFreeFormMode();
+    document.getElementById("guided_mode_view").classList.add("is-selected");
   });
 
   $("#guided-button-add-permission-user-or-team").on("click", function () {
@@ -12481,6 +12494,7 @@ $(document).ready(async () => {
   //back button click handler
   $("#guided-back-button").on("click", () => {
     pageBeingLeftID = CURRENT_PAGE.id;
+    console.log(pageBeingLeftID);
     // If the user is on the first two pages, Save and Exit if they try to go back again
     if (
       pageBeingLeftID === "guided-intro-page-tab" ||

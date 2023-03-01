@@ -1468,3 +1468,10 @@ h1.guided--text-sub-step {
   pointer-events: none;
   vertical-align: middle;
 }
+
+.guided-home-button-details {
+  margin-bottom: 6rem !important;
+  margin-left: 2rem;
+  font-size: 16px;
+  color: #787272 !important;
+}
