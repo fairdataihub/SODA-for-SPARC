@@ -240,6 +240,8 @@ $(document).ready(function () {
 
   var jsonManifest = {};
 
+  // I believe this is where the jstree is created
+  //TODO: modify manifest entries to use new manifest editing modal
   $(jstreePreviewManifest).on("select_node.jstree", function (evt, data) {
     if (data.node.text === "manifest.xlsx") {
       // Show loading popup
@@ -1810,6 +1812,7 @@ function checkEmptySubFolders(datasetStructure) {
 // Parameter: dataset structure object
 // Return: manifest file folder path
 const generateManifestFolderLocallyForEdit = async (ev) => {
+  //Function called by Confirm button in Prepare Metadata -> Manifest
   var type = "local";
   if ($('input[name="generate-manifest-1"]:checked').prop("id") === "generate-manifest-from-Penn") {
     type = "bf";
