@@ -505,7 +505,9 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
   ipcMain.on("spreadsheet-results", async (ev, res) => {
     //send back spreadsheet data to main window
     mainWindow.webContents.send("spreadsheet-reply", res);
-
+    console.log(res);
+    // TODO: Prevent electron from closing all child windows
+    // Close on the selected window for when multiple manifest edits are occuring
     //destroy window
     try {
       spreadSheetModal.destroy();
