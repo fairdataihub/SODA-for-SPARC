@@ -1878,6 +1878,7 @@ const ffOpenManifestEditSwal = async (highlevelFolderName) => {
   const existingManifestData = sodaCopy["manifest-files"]?.[highlevelFolderName];
   // const existingManifestData = sodaJSONObj["guided-manifest-files"][highLevelFolderName];
   //send manifest data to main.js to then send to child window
+  console.log(existingManifestData);
   ipcRenderer.invoke("spreadsheet", existingManifestData);
 
   //upon receiving a reply of the spreadsheet, handle accordingly
