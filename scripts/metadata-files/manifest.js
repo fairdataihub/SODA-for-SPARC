@@ -280,7 +280,7 @@ $(document).ready(function () {
       console.log("Has sodaJson been prepared?");
       console.log(sodaJSONObj);
       sodaCopy = sodaJSONObj;
-      datasetStructCopy = sodaCopy["dataset-structure"];
+      // datasetStructCopy = sodaCopy["dataset-structure"];
 
       if ("auto-generated" in sodaCopy["manifest-files"]) {
         delete sodaCopy["manifest-files"]["auto-generated"];
@@ -289,6 +289,7 @@ $(document).ready(function () {
         delete sodaCopy["manifest-files"]["destination"];
       }
 
+      // sodaCopy["manifest-files"] = {};
       console.log(JSON.stringify(sodaCopy))
       try {
         // used for imported local datasets and pennsieve datasets
@@ -303,10 +304,15 @@ $(document).ready(function () {
         // response does not format in JSON format so need to format ' with "
         let regex = /'/gm;
         let formattedResponse = response.replace(regex, '"');
-        let capitalTPosition = formattedResponse.search("True");
-        if (capitalTPosition != -1) {
-          formattedResponse = formattedResponse.replace("True", "true");
+        let capitalTPosition = formattedResponse.search("T");
+        while (capitalTPosition != -1) {
+          capitalTPosition = formattedResponse.search("T");
+          formattedResponse = formattedResponse.replace("T", "t");
         }
+        console.log(response);
+        console.log(capitalTPosition);
+        // if (capitalTPosition != -1) {
+        // }
     
         let json_structure = JSON.parse(formattedResponse);
         sodaCopy = json_structure;
@@ -379,11 +385,14 @@ $(document).ready(function () {
         const existingManifestData = sodaCopy["manifest-files"];
         let updatedManifestData;
 
+        console.log(newManifestData);
         if (existingManifestData) {
           updatedManifestData = diffCheckManifestFiles(newManifestData, existingManifestData);
         } else {
           updatedManifestData = newManifestData;
         }
+
+        console.log(updateManifestJson);
         // manifest data will be stored in sodaCopy to be reused for manifest edits/regenerating cards
         // sodaJSONObj will remain the same and only have 'additonal-metadata' and 'description' data
         sodaCopy["manifest-files"] = updatedManifestData;
@@ -402,7 +411,10 @@ $(document).ready(function () {
       //Create child window here
       // const existingManifestData = sodaJSONObj["guided-manifest-files"][highLevelFolderName];
       //send manifest data to main.js to then send to child window
-      ipcRenderer.invoke("spreadsheet", jsonManifest);
+      const existingManifestData = sodaCopy["manifest-files"]?.[parentFolderName];
+      console.log(existingManifestData);
+      Swal.close();
+      ipcRenderer.invoke("spreadsheet", existingManifestData);
 
       //upon receiving a reply of the spreadsheet, handle accordingly
       ipcRenderer.on("spreadsheet-reply", async (event, result) => {
@@ -411,7 +423,7 @@ $(document).ready(function () {
           return;
         } else {
           //spreadsheet reply contained results
-          await updateManifestJson(highLevelFolderName, result);
+          // await updateManifestJson(highLevelFolderName, result);
           ipcRenderer.removeAllListeners("spreadsheet-reply");
           console.log(result);
           // await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
