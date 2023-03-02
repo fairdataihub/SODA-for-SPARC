@@ -290,7 +290,7 @@ $(document).ready(function () {
       }
 
       // sodaCopy["manifest-files"] = {};
-      console.log(JSON.stringify(sodaCopy))
+      console.log(JSON.stringify(sodaCopy));
       try {
         // used for imported local datasets and pennsieve datasets
         // filters out deleted files/folders before creating manifest data again
@@ -299,7 +299,7 @@ $(document).ready(function () {
           { soda_json_structure: sodaCopy },
           { timeout: 0 }
         );
-    
+
         let response = cleanJson.data.soda_json_structure;
         // response does not format in JSON format so need to format ' with "
         let regex = /'/gm;
@@ -313,7 +313,7 @@ $(document).ready(function () {
         console.log(capitalTPosition);
         // if (capitalTPosition != -1) {
         // }
-    
+
         let json_structure = JSON.parse(formattedResponse);
         sodaCopy = json_structure;
         datasetStructCopy = sodaCopy["dataset-structure"];
@@ -321,7 +321,7 @@ $(document).ready(function () {
         clientError(e);
         console.log(e);
       }
-    
+
       //manifest will still include pennsieve or locally imported files
       // deleted to prevent from showing up as manifest card
       if (sodaCopy["manifest-files"]?.["destination"]) {
@@ -452,7 +452,7 @@ $(document).ready(function () {
                 "*": "{{columnHeader}}",
               },
             })["Sheet1"];
-    
+
             let sortedJSON = processManifestInfo(savedHeaders, savedData);
             jsonManifest = JSON.stringify(sortedJSON);
             convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
@@ -466,15 +466,15 @@ $(document).ready(function () {
               if (fileNameSplit[0] === "") {
                 //not in a subfolder
                 cleanedFileName = fileNameSplit[1];
-                sodaCopy["dataset-structure"]["folders"][parentFolderName]["files"][cleanedFileName][
-                  "description"
-                ] = description;
+                sodaCopy["dataset-structure"]["folders"][parentFolderName]["files"][
+                  cleanedFileName
+                ]["description"] = description;
                 sodaJSONObj["dataset-structure"]["folders"][parentFolderName]["files"][
                   cleanedFileName
                 ]["description"];
-                sodaCopy["dataset-structure"]["folders"][parentFolderName]["files"][cleanedFileName][
-                  "additional-metadata"
-                ] = additionalMetadata;
+                sodaCopy["dataset-structure"]["folders"][parentFolderName]["files"][
+                  cleanedFileName
+                ]["additional-metadata"] = additionalMetadata;
                 sodaJSONObj["dataset-structure"]["folders"][parentFolderName]["files"][
                   cleanedFileName
                 ]["additional-metadata"] = additionalMetadata;
@@ -492,7 +492,7 @@ $(document).ready(function () {
                     folderDepthReal["files"][fileNameSplit[j]]["additional-metadata"] =
                       additionalMetadata;
                   } else {
-                    console.log(fileNameSplit[j])
+                    console.log(fileNameSplit[j]);
                     console.log(fileNameSplit);
                     folderDepthCopy = folderDepthCopy["folders"][fileNameSplit[j]];
                     folderDepthReal = folderDepthReal["folders"][fileNameSplit[j]];
@@ -500,7 +500,7 @@ $(document).ready(function () {
                 }
               }
             }
-    
+
             sodaCopy["manifest-files"][parentFolderName] = {
               headers: savedHeaders,
               data: savedData,

@@ -524,7 +524,7 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
       // spreadSheetModal.destroy();
       console.log(modalContainer);
       console.log(modalContainer.length);
-      console.log("ASDKASDL:KJASDLKJJJJJ")
+      console.log("ASDKASDL:KJASDLKJJJJJ");
       windows.delete(spreadSheetModal);
       modalContainer[0].close();
       // spreadSheetModal.close();
