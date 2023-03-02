@@ -1,6 +1,7 @@
 const { platform } = require("os");
 
 const { copyFile, readdir } = require("fs").promises;
+let openedEdit = false;
 
 // opendropdown event listeners
 document.querySelectorAll(".manifest-change-current-account").forEach((element) => {
@@ -242,8 +243,14 @@ $(document).ready(function () {
 
   // I believe this is where the jstree is created
   //TODO: modify manifest entries to use new manifest editing modal
+
   $(jstreePreviewManifest).on("select_node.jstree", async function (evt, data) {
     if (data.node.text === "manifest.xlsx") {
+      if(openedEdit) {
+        return;
+      }
+
+      openedEdit = true;
       // Show loading popup
       Swal.fire({
         title: `Loading the manifest file.`,
@@ -419,6 +426,7 @@ $(document).ready(function () {
 
       //upon receiving a reply of the spreadsheet, handle accordingly
       ipcRenderer.on("spreadsheet-reply", async (event, result) => {
+        openedEdit = false;
         if (!result || result === "") {
           ipcRenderer.removeAllListeners("spreadsheet-reply");
           return;
@@ -458,12 +466,18 @@ $(document).ready(function () {
             jsonManifest = JSON.stringify(sortedJSON);
             convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
             //Update the metadata in json object
+            console.log(("$" * 40));
+            console.log(savedData);
+            console.log(savedHeaders);
+            // If extra columns are added preserve them into sodaJSONObj
             for (let i = 0; i < savedData.length; i++) {
               let fileName = savedData[i][0];
               let cleanedFileName = "";
               let fileNameSplit = fileName.split("/");
               let description = savedData[i][2];
               let additionalMetadata = savedData[i][4];
+              console.log(fileNameSplit[0])
+              console.log(fileNameSplit);
               if (fileNameSplit[0] === "") {
                 //not in a subfolder
                 cleanedFileName = fileNameSplit[1];
@@ -479,6 +493,14 @@ $(document).ready(function () {
                 sodaJSONObj["dataset-structure"]["folders"][parentFolderName]["files"][
                   cleanedFileName
                 ]["additional-metadata"] = additionalMetadata;
+                console.log(savedData[i].length);
+                if(savedData[i].length > 5) {
+                  //extra columns are present, ensure to preserve them in sodaJSONObj
+                  for(let extra_column_index = 5; extra_column_index < savedHeaders.length; i++) {
+                    sodaJSONObj["dataset-structure"]["folders"][parentFolderName]["files"][cleanedFileName]["extra_columns"][savedHeaders[extra_column_index]] = savedData[i][extra_column_index];
+                    console.log("preseved extra column for: "  + cleanedFileName + " : " + savedData[i][extra_column_index]);
+                  }
+                }
               } else {
                 // is in a subfolder so search for it and update metadata
                 // need to add description and additional metadata to original sodaJSONObj
@@ -492,9 +514,20 @@ $(document).ready(function () {
                       additionalMetadata;
                     folderDepthReal["files"][fileNameSplit[j]]["additional-metadata"] =
                       additionalMetadata;
+                      console.log(savedData);
+                      console.log(savedHeaders);
+                    if(savedData[i].length > 5) {
+                      //extra columns are present, ensure to preserve them in sodaJSONObj
+                      console.log(savedHeaders.length);
+                      for(let extra_column_index = 5; extra_column_index < savedHeaders.length; extra_column_index++) {
+                        // console.log(savedData[i]);
+                        // console.log(savedData[i].length);
+                        console.log(extra_column_index)
+                        folderDepthReal["files"][fileNameSplit[j]]["extra_columns"][savedHeaders[extra_column_index]] = savedData[i][extra_column_index];
+                        // console.log("preseved extra column for: "  + fileNameSplit[j] + " : " + savedData[i][extra_column_index]);
+                      }
+                    }
                   } else {
-                    console.log(fileNameSplit[j]);
-                    console.log(fileNameSplit);
                     folderDepthCopy = folderDepthCopy["folders"][fileNameSplit[j]];
                     folderDepthReal = folderDepthReal["folders"][fileNameSplit[j]];
                   }
@@ -507,8 +540,6 @@ $(document).ready(function () {
               data: savedData,
             };
           }
-          // await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-          // renderManifestCards();
         }
       });
       // Swal.fire({
@@ -2596,6 +2627,7 @@ document.querySelector(".manifest-change-current-ds").addEventListener("click", 
 document
   .querySelector("#show-manifest-gen-on-pennsieve-section-btn")
   .addEventListener("click", function () {
+    openedEdit = false;
     // show the section
     let section = document.querySelector("#manifest-gen-on-pennsieve-section");
     section.style.display = "flex";

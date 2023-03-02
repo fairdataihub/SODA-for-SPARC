@@ -486,6 +486,7 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
 
   spreadSheetModal.on("close", (e) => {
     try {
+      mainWindow.webContents.send("spreadsheet-reply", "");
       spreadSheetModal.destroy();
       // spreadSheetModal.close();
     } catch (e) {
