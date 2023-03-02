@@ -2431,23 +2431,24 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
   const existingManifestData = sodaJSONObj["guided-manifest-files"][highLevelFolderName];
   //send manifest data to main.js to then send to child window
   // TODO: Lock all other manifest buttons
-  let guidedManifestContainer = document.getElementById("guided-container-manifest-file-cards").children;
-  
+  let guidedManifestContainer = document.getElementById(
+    "guided-container-manifest-file-cards"
+  ).children;
+
   for (let i = 0; i < guidedManifestContainer.length; i++) {
     guidedManifestContainer[i].children[1].children[0].disabled = true;
-    console.log(guidedManifestContainer[i].children[1].children[0])
-    console.log(guidedManifestContainer[i].children[1].children[0].disabled)
+    console.log(guidedManifestContainer[i].children[1].children[0]);
+    console.log(guidedManifestContainer[i].children[1].children[0].disabled);
   }
 
   ipcRenderer.invoke("spreadsheet", existingManifestData);
-  
 
   //upon receiving a reply of the spreadsheet, handle accordingly
   ipcRenderer.on("spreadsheet-reply", async (event, result) => {
     for (let i = 0; i < guidedManifestContainer.length; i++) {
       guidedManifestContainer[i].children[1].children[0].disabled = false;
-      console.log(guidedManifestContainer[i].children[1].children[0])
-      console.log(guidedManifestContainer[i].children[1].children[0].disabled)
+      console.log(guidedManifestContainer[i].children[1].children[0]);
+      console.log(guidedManifestContainer[i].children[1].children[0].disabled);
     }
     if (!result || result === "") {
       ipcRenderer.removeAllListeners("spreadsheet-reply");

@@ -1881,8 +1881,8 @@ const ffOpenManifestEditSwal = async (highlevelFolderName) => {
   //Lock manifest buttons
   for (let i = 0; i < ffmManifestContainer.length; i++) {
     ffmManifestContainer[i].children[1].children[0].disabled = true;
-    console.log(ffmManifestContainer[i].children[1].children[0])
-    console.log(ffmManifestContainer[i].children[1].children[0].disabled)
+    console.log(ffmManifestContainer[i].children[1].children[0]);
+    console.log(ffmManifestContainer[i].children[1].children[0].disabled);
   }
 
   ipcRenderer.invoke("spreadsheet", existingManifestData);
@@ -1891,7 +1891,7 @@ const ffOpenManifestEditSwal = async (highlevelFolderName) => {
   ipcRenderer.on("spreadsheet-reply", async (event, result) => {
     for (let i = 0; i < ffmManifestContainer.length; i++) {
       ffmManifestContainer[i].children[1].children[0].disabled = false;
-      console.log(ffmManifestContainer[i].children[1].children[0])
+      console.log(ffmManifestContainer[i].children[1].children[0]);
     }
     if (!result || result === "") {
       ipcRenderer.removeAllListeners("spreadsheet-reply");
