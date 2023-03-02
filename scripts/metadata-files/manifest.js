@@ -414,6 +414,7 @@ $(document).ready(function () {
       const existingManifestData = sodaCopy["manifest-files"]?.[parentFolderName];
       console.log(existingManifestData);
       Swal.close();
+      // TODO: Lock all other manifest buttons
       ipcRenderer.invoke("spreadsheet", existingManifestData);
 
       //upon receiving a reply of the spreadsheet, handle accordingly
@@ -492,7 +493,7 @@ $(document).ready(function () {
                     folderDepthReal["files"][fileNameSplit[j]]["additional-metadata"] =
                       additionalMetadata;
                   } else {
-                    console.log(fileNameSplit[j])
+                    console.log(fileNameSplit[j]);
                     console.log(fileNameSplit);
                     folderDepthCopy = folderDepthCopy["folders"][fileNameSplit[j]];
                     folderDepthReal = folderDepthReal["folders"][fileNameSplit[j]];
