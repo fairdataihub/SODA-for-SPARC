@@ -321,10 +321,8 @@ document.querySelector("#validate_dataset-1-local").addEventListener("click", as
     return;
   }
 
-  let otherOptionCard = document.querySelector(
-    "#validate_dataset-1-pennsieve"
-  );
-  console.log(otherOptionCard)
+  let otherOptionCard = document.querySelector("#validate_dataset-1-pennsieve");
+  console.log(otherOptionCard);
   otherOptionCard.classList.add("non-selected");
   otherOptionCard.classList.remove("checked");
   otherOptionCard.querySelector(".folder-checkbox input").checked = false;
@@ -360,10 +358,8 @@ document
       return;
     }
 
-    let otherOptionCard = document.querySelector(
-      "#validate_dataset-1-local"
-    );
-    console.log(otherOptionCard)
+    let otherOptionCard = document.querySelector("#validate_dataset-1-local");
+    console.log(otherOptionCard);
     otherOptionCard.classList.add("non-selected");
     otherOptionCard.classList.remove("checked");
     otherOptionCard.querySelector(".folder-checkbox input").checked = false;
@@ -601,7 +597,7 @@ const undoOptionCardSelection = (activeOptionCard) => {
   let previousOptionCard = document.querySelector(
     "#validate_dataset-section .option-card.non-selected"
   );
-  console.log(previousOptionCard)
+  console.log(previousOptionCard);
   previousOptionCard.classList.remove("non-selected");
   previousOptionCard.classList.add("checked");
   previousOptionCard.querySelector(".folder-checkbox input").checked = true;
