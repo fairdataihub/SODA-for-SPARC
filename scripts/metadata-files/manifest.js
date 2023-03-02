@@ -422,6 +422,7 @@ $(document).ready(function () {
           ipcRenderer.removeAllListeners("spreadsheet-reply");
           return;
         } else {
+          // console.log(result);
           //spreadsheet reply contained results
           // await updateManifestJson(highLevelFolderName, result);
           ipcRenderer.removeAllListeners("spreadsheet-reply");
@@ -491,6 +492,8 @@ $(document).ready(function () {
                     folderDepthReal["files"][fileNameSplit[j]]["additional-metadata"] =
                       additionalMetadata;
                   } else {
+                    console.log(fileNameSplit[j])
+                    console.log(fileNameSplit);
                     folderDepthCopy = folderDepthCopy["folders"][fileNameSplit[j]];
                     folderDepthReal = folderDepthReal["folders"][fileNameSplit[j]];
                   }

@@ -204,6 +204,7 @@ let mainWindow = null;
 let user_restart_confirmed = false;
 let updatechecked = false;
 let window_reloaded = false;
+let windows = new Set();
 
 function initialize() {
   const checkForAnnouncements = () => {
@@ -289,6 +290,7 @@ function initialize() {
     };
 
     mainWindow = new BrowserWindow(windowOptions);
+    windows.add(mainWindow);
     require("@electron/remote/main").enable(mainWindow.webContents);
     mainWindow.loadURL(path.join("file://", __dirname, "/index.html"));
 
@@ -482,11 +484,20 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
     closable: true,
   };
 
+  let modalContainer = [];
   let spreadSheetModal = new BrowserWindow(windowOptions);
+  modalContainer.push(spreadSheetModal);
+  console.log(modalContainer);
+  windows.add(spreadSheetModal);
+  console.log(spreadSheetModal);
+  console.log("ASDKJASDLKJ");
+  console.log(mainWindow);
 
   spreadSheetModal.on("close", (e) => {
     try {
-      spreadSheetModal.destroy();
+      // spreadSheetModal.destroy();
+      windows.delete(spreadSheetModal);
+      spreadSheetModal.close();
       // spreadSheetModal.close();
     } catch (e) {
       console.log(e);
@@ -510,7 +521,13 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
     // Close on the selected window for when multiple manifest edits are occuring
     //destroy window
     try {
-      spreadSheetModal.destroy();
+      // spreadSheetModal.destroy();
+      console.log(modalContainer);
+      console.log(modalContainer.length);
+      console.log("ASDKASDL:KJASDLKJJJJJ")
+      windows.delete(spreadSheetModal);
+      modalContainer[0].close();
+      // spreadSheetModal.close();
     } catch (e) {
       console.log(e);
     }
