@@ -321,6 +321,14 @@ document.querySelector("#validate_dataset-1-local").addEventListener("click", as
     return;
   }
 
+  let otherOptionCard = document.querySelector(
+    "#validate_dataset-1-pennsieve"
+  );
+  console.log(otherOptionCard)
+  otherOptionCard.classList.add("non-selected");
+  otherOptionCard.classList.remove("checked");
+  otherOptionCard.querySelector(".folder-checkbox input").checked = false;
+
   // reset validation table
   let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
   clearValidationResults(validationErrorsTable);
@@ -351,6 +359,14 @@ document
       // user does not want to reset
       return;
     }
+
+    let otherOptionCard = document.querySelector(
+      "#validate_dataset-1-local"
+    );
+    console.log(otherOptionCard)
+    otherOptionCard.classList.add("non-selected");
+    otherOptionCard.classList.remove("checked");
+    otherOptionCard.querySelector(".folder-checkbox input").checked = false;
 
     // reset validation table
     let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
@@ -585,6 +601,7 @@ const undoOptionCardSelection = (activeOptionCard) => {
   let previousOptionCard = document.querySelector(
     "#validate_dataset-section .option-card.non-selected"
   );
+  console.log(previousOptionCard)
   previousOptionCard.classList.remove("non-selected");
   previousOptionCard.classList.add("checked");
   previousOptionCard.querySelector(".folder-checkbox input").checked = true;
