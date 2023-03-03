@@ -2537,6 +2537,8 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
 document
   .getElementById("guided-button-resume-pennsieve-dataset")
   .addEventListener("click", async () => {
+    //TODO: Prevent user from clicking first card after selecting as it will auto scroll page
+    //once pennsieve datasets are fetched
     renderGuidedResumePennsieveDatasetSelectionDropdown();
   });
 
@@ -2719,6 +2721,9 @@ const guidedPrepareHomeScreen = async () => {
   // }
   //empty new-dataset-lottie-container div
   document.getElementById("new-dataset-lottie-container").innerHTML = "";
+  document.getElementById("existing-dataset-lottie").innerHTML = "";
+  document.getElementById("edit-dataset-component-lottie").innerHTML = "";
+
   lottie.loadAnimation({
     container: document.getElementById("new-dataset-lottie-container"),
     animationData: newDataset,
