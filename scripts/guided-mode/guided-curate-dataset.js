@@ -1,3 +1,7 @@
+const returnToGuided = () => {
+  document.getElementById("guided_mode_view").click();
+};
+
 const folderImportedFromPennsieve = (folderJSONPath) => {
   return folderJSONPath.type === "bf";
 };
