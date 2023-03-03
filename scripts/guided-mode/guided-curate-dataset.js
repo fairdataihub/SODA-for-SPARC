@@ -1201,6 +1201,20 @@ const savePageChanges = async (pageBeingLeftID) => {
         sodaJSONObj["dataset-metadata"]["README"] = readMe;
       }
     }
+
+    if (pageBeingLeftID === "guided-create-changes-metadata-tab") {
+      const changesTextArea = document.getElementById("guided-textarea-create-changes");
+      if (changesTextArea.value.trim() === "") {
+        errorArray.push({
+          type: "notyf",
+          message: "Please enter CHANGES for your dataset",
+        });
+        throw errorArray;
+      } else {
+        const changes = readMeTextArea.value.trim();
+        sodaJSONObj["dataset-metadata"]["CHANGES"] = changes;
+      }
+    }
   } catch (error) {
     guidedSetNavLoadingState(false);
     console.log(error);
@@ -4840,6 +4854,40 @@ const openPage = async (targetPageID) => {
           });
           let readme_text = readme_import.data.text;
           sodaJSONObj["dataset-metadata"]["README"] = readme_text;
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-readme-metadata-tab");
+        } catch (error) {
+          clientError(error);
+          const emessage = error.response.data.message;
+          await guidedShowOptionalRetrySwal(emessage);
+          // If the user chooses not to retry re-fetching the page data, mark the page as fetched
+          // so the the fetch does not occur again
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-readme-metadata-tab");
+        }
+      }
+      const readMeTextArea = document.getElementById("guided-textarea-create-readme");
+
+      const readMe = sodaJSONObj["dataset-metadata"]["README"];
+
+      if (readMe) {
+        readMeTextArea.value = readMe;
+      } else {
+        readMeTextArea.value = "";
+      }
+    }
+
+    if (targetPageID === "guided-create-changes-metadata-tab") {
+      if (pageNeedsUpdateFromPennsieve("guided-create-changes-metadata-tab")) {
+        try {
+          const changes_import = await client.get(`/prepare_metadata/readme_changes_file`, {
+            params: {
+              file_type: "README",
+
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+            },
+          });
+          const changes_text = changes_import.data.text;
+          sodaJSONObj["dataset-metadata"]["CHANGES"] = changes_text;
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-readme-metadata-tab");
         } catch (error) {
           clientError(error);
