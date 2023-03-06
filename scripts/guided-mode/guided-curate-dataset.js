@@ -245,6 +245,9 @@ const savePageChanges = async (pageBeingLeftID) => {
         guidedUnSkipPage("guided-code-folder-tab");
         guidedUnSkipPage("guided-protocol-folder-tab");
         guidedUnSkipPage("guided-docs-folder-tab");
+
+        // Skip the CHANGES metadata page as this is a new dataset
+        guidedSkipPage("guided-create-changes-metadata-tab");
       }
       if (startingFromExistingLocal) {
         sodaJSONObj["starting-point"]["type"] = "local";
@@ -456,6 +459,9 @@ const savePageChanges = async (pageBeingLeftID) => {
 
       //Skip this page becausae we should not come back to it
       guidedSkipPage("guided-intro-page-tab");
+
+      // Unskip the CHANGES metadata so the user can add changes since previous publication
+      guidedUnSkipPage("guided-create-changes-metadata-tab");
     }
 
     if (pageBeingLeftID === "guided-name-subtitle-tab") {
@@ -1211,7 +1217,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         });
         throw errorArray;
       } else {
-        const changes = readMeTextArea.value.trim();
+        const changes = changesTextArea.value.trim();
         sodaJSONObj["dataset-metadata"]["CHANGES"] = changes;
       }
     }
@@ -4896,14 +4902,14 @@ const openPage = async (targetPageID) => {
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-changes-metadata-tab");
         }
       }
-      const readMeTextArea = document.getElementById("guided-textarea-create-readme");
+      const changesTextArea = document.getElementById("guided-textarea-create-changes");
 
-      const readMe = sodaJSONObj["dataset-metadata"]["README"];
+      const changes = sodaJSONObj["dataset-metadata"]["CHANGES"];
 
-      if (readMe) {
-        readMeTextArea.value = readMe;
+      if (changes) {
+        changesTextArea.value = changes;
       } else {
-        readMeTextArea.value = "";
+        changesTextArea.value = "";
       }
     }
 
@@ -11522,9 +11528,7 @@ $(document).ready(async () => {
       const guidedProtocols = sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
       const allDatasetLinks = [...guidedAdditionalLinks, ...guidedProtocols];
 
-      //README and CHANGES Metadata variables
       const guidedReadMeMetadata = sodaJSONObj["dataset-metadata"]["README"];
-      const guidedChangesMetadata = sodaJSONObj["dataset-metadata"]["CHANGES"];
 
       // get apps base path
       const basepath = app.getAppPath();
@@ -11610,14 +11614,20 @@ $(document).ready(async () => {
         guidedReadMeMetadata
       );
 
-      if (guidedChangesMetadata.length > 0) {
-        let changesMetadataRes = await guidedUploadREADMEorCHANGESMetadata(
-          guidedBfAccount,
-          guidedDatasetName,
-          "changes",
-          guidedChangesMetadata
-        );
+      // Only upload the changes metadata if the changes page has not been skipped (when the user is uploading a new dataset)
+      if (!pageIsSkipped("guided-create-changes-metadata-tab")) {
+        const changes = sodaJSONObj["dataset-metadata"]["CHANGES"];
+        if (changes && changes.length > 0) {
+          let changesMetadataRes = await guidedUploadREADMEorCHANGESMetadata(
+            guidedBfAccount,
+            guidedDatasetName,
+            "changes",
+            changes
+          );
+          console.log(changesMetadataRes);
+        }
       }
+
       if (fs.existsSync(sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"])) {
         let codeDescriptionRes = await guidedUploadCodeDescriptionMetadata(
           guidedBfAccount,
