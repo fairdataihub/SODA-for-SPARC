@@ -249,6 +249,9 @@ const savePageChanges = async (pageBeingLeftID) => {
         guidedUnSkipPage("guided-code-folder-tab");
         guidedUnSkipPage("guided-protocol-folder-tab");
         guidedUnSkipPage("guided-docs-folder-tab");
+
+        // Skip the CHANGES metadata page as this is a new dataset
+        guidedSkipPage("guided-create-changes-metadata-tab");
       }
       if (startingFromExistingLocal) {
         sodaJSONObj["starting-point"]["type"] = "local";
@@ -456,6 +459,9 @@ const savePageChanges = async (pageBeingLeftID) => {
         sodaJSONObj["generate-dataset"]["generate-option"] = "existing-bf";
         sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] = selectedPennsieveDatasetID;
         sodaJSONObj["digital-metadata"]["name"] = selectedPennsieveDataset;
+
+        // Unskip the CHANGES metadata so the user can add changes since previous publication
+        guidedUnSkipPage("guided-create-changes-metadata-tab");
       }
 
       //Skip this page becausae we should not come back to it
@@ -1203,6 +1209,20 @@ const savePageChanges = async (pageBeingLeftID) => {
       } else {
         const readMe = readMeTextArea.value.trim();
         sodaJSONObj["dataset-metadata"]["README"] = readMe;
+      }
+    }
+
+    if (pageBeingLeftID === "guided-create-changes-metadata-tab") {
+      const changesTextArea = document.getElementById("guided-textarea-create-changes");
+      if (changesTextArea.value.trim() === "") {
+        errorArray.push({
+          type: "notyf",
+          message: "Please enter CHANGES for your dataset",
+        });
+        throw errorArray;
+      } else {
+        const changes = changesTextArea.value.trim();
+        sodaJSONObj["dataset-metadata"]["CHANGES"] = changes;
       }
     }
   } catch (error) {
@@ -3396,7 +3416,7 @@ const pageNeedsUpdateFromPennsieve = (pageID) => {
 
 // Function that allows the user to retry fetching the page if any errors occur
 // while pulling from Pennsieve. Ultimately, this function just tries to re-open the page
-const guidedShowOptionalRetrySwal = async (errorMessage) => {
+const guidedShowOptionalRetrySwal = async (errorMessage, pageIdToRetryOpening) => {
   const { value: addDataManually } = await Swal.fire({
     icon: "info",
     title: "Your dataset is missing a required component",
@@ -3416,9 +3436,8 @@ const guidedShowOptionalRetrySwal = async (errorMessage) => {
     allowEscapeKey: false,
   });
 
-  if (addDataManually) {
-    const currentPageId = CURRENT_PAGE.id;
-    await openPage(currentPageId);
+  if (!addDataManually) {
+    await openPage(pageIdToRetryOpening);
   }
 };
 
@@ -3512,7 +3531,7 @@ const openPage = async (targetPageID) => {
         } catch (error) {
           clientError(error);
           const emessage = error.response.data.message;
-          await guidedShowOptionalRetrySwal(emessage);
+          await guidedShowOptionalRetrySwal(emessage, "guided-name-subtitle-tab");
           // If the user chooses not to retry re-fetching the page data, mark the page as fetched
           // so the the fetch does not occur again
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-name-subtitle-tab");
@@ -3741,7 +3760,7 @@ const openPage = async (targetPageID) => {
         } catch (error) {
           clientError(error);
           const emessage = error.response.data.message;
-          await guidedShowOptionalRetrySwal(emessage);
+          await guidedShowOptionalRetrySwal(emessage, "guided-create-submission-metadata-tab");
           // If the user chooses not to retry re-fetching the page data, mark the page as fetched
           // so the the fetch does not occur again
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-submission-metadata-tab");
@@ -3828,7 +3847,7 @@ const openPage = async (targetPageID) => {
         } catch (error) {
           clientError(error);
           const emessage = error.response.data.message;
-          await guidedShowOptionalRetrySwal(emessage);
+          await guidedShowOptionalRetrySwal(emessage, "guided-contributors-tab");
           // If the user chooses not to retry re-fetching the page data, mark the page as fetched
           // so the the fetch does not occur again
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-contributors-tab");
@@ -3874,7 +3893,7 @@ const openPage = async (targetPageID) => {
         } catch (error) {
           clientError(error);
           const emessage = error.response.data.message;
-          await guidedShowOptionalRetrySwal(emessage);
+          await guidedShowOptionalRetrySwal(emessage, "guided-protocols-tab");
           // If the user chooses not to retry re-fetching the page data, mark the page as fetched
           // so the the fetch does not occur again
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-protocols-tab");
@@ -3987,7 +4006,7 @@ const openPage = async (targetPageID) => {
         } catch (error) {
           clientError(error);
           const emessage = error.response.data.message;
-          await guidedShowOptionalRetrySwal(emessage);
+          await guidedShowOptionalRetrySwal(emessage, "guided-create-description-metadata-tab");
           // If the user chooses not to retry re-fetching the page data, mark the page as fetched
           // so the the fetch does not occur again
           sodaJSONObj["pages-fetched-from-pennsieve"].push(
@@ -4220,7 +4239,7 @@ const openPage = async (targetPageID) => {
         } catch (error) {
           clientError(error);
           const emessage = error.response.data.message;
-          await guidedShowOptionalRetrySwal(emessage);
+          await guidedShowOptionalRetrySwal(emessage, "guided-banner-image-tab");
           // If the user chooses not to retry re-fetching the page data, mark the page as fetched
           // so the the fetch does not occur again
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-banner-image-tab");
@@ -4348,7 +4367,7 @@ const openPage = async (targetPageID) => {
         } catch (error) {
           clientError(error);
           const emessage = error.response.data.message;
-          await guidedShowOptionalRetrySwal(emessage);
+          await guidedShowOptionalRetrySwal(emessage, "guided-designate-permissions-tab");
           // If the user chooses not to retry re-fetching the page data, mark the page as fetched
           // so the the fetch does not occur again
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-designate-permissions-tab");
@@ -4441,7 +4460,7 @@ const openPage = async (targetPageID) => {
         } catch (error) {
           clientError(error);
           const emessage = error.response.data.message;
-          await guidedShowOptionalRetrySwal(emessage);
+          await guidedShowOptionalRetrySwal(emessage, "guided-add-tags-tab");
           // If the user chooses not to retry re-fetching the page data, mark the page as fetched
           // so the the fetch does not occur again
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-add-tags-tab");
@@ -4481,7 +4500,7 @@ const openPage = async (targetPageID) => {
         } catch (error) {
           clientError(error);
           const emessage = error.response.data.message;
-          await guidedShowOptionalRetrySwal(emessage);
+          await guidedShowOptionalRetrySwal(emessage, "guided-assign-license-tab");
           // If the user chooses not to retry re-fetching the page data, mark the page as fetched
           // so the the fetch does not occur again
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-assign-license-tab");
@@ -4879,7 +4898,7 @@ const openPage = async (targetPageID) => {
         } catch (error) {
           clientError(error);
           const emessage = error.response.data.message;
-          await guidedShowOptionalRetrySwal(emessage);
+          await guidedShowOptionalRetrySwal(emessage, "guided-create-readme-metadata-tab");
           // If the user chooses not to retry re-fetching the page data, mark the page as fetched
           // so the the fetch does not occur again
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-readme-metadata-tab");
@@ -4893,6 +4912,39 @@ const openPage = async (targetPageID) => {
         readMeTextArea.value = readMe;
       } else {
         readMeTextArea.value = "";
+      }
+    }
+
+    if (targetPageID === "guided-create-changes-metadata-tab") {
+      if (pageNeedsUpdateFromPennsieve("guided-create-changes-metadata-tab")) {
+        try {
+          const changes_import = await client.get(`/prepare_metadata/readme_changes_file`, {
+            params: {
+              file_type: "CHANGES",
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+            },
+          });
+          const changes_text = changes_import.data.text;
+          sodaJSONObj["dataset-metadata"]["CHANGES"] = changes_text;
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-changes-metadata-tab");
+        } catch (error) {
+          clientError(error);
+          const emessage = error.response.data.message;
+          await guidedShowOptionalRetrySwal(emessage, "guided-create-changes-metadata-tab");
+          // If the user chooses not to retry re-fetching the page data, mark the page as fetched
+          // so the the fetch does not occur again
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-changes-metadata-tab");
+        }
+      }
+      const changesTextArea = document.getElementById("guided-textarea-create-changes");
+
+      const changes = sodaJSONObj["dataset-metadata"]["CHANGES"];
+
+      if (changes) {
+        changesTextArea.value = changes;
+      } else {
+        changesTextArea.value = "";
       }
     }
 
@@ -11550,9 +11602,7 @@ $(document).ready(async () => {
       const guidedProtocols = sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
       const allDatasetLinks = [...guidedAdditionalLinks, ...guidedProtocols];
 
-      //README and CHANGES Metadata variables
       const guidedReadMeMetadata = sodaJSONObj["dataset-metadata"]["README"];
-      const guidedChangesMetadata = sodaJSONObj["dataset-metadata"]["CHANGES"];
 
       // get apps base path
       const basepath = app.getAppPath();
@@ -11638,14 +11688,20 @@ $(document).ready(async () => {
         guidedReadMeMetadata
       );
 
-      if (guidedChangesMetadata.length > 0) {
-        let changesMetadataRes = await guidedUploadREADMEorCHANGESMetadata(
-          guidedBfAccount,
-          guidedDatasetName,
-          "changes",
-          guidedChangesMetadata
-        );
+      // Only upload the changes metadata if the changes page has not been skipped (when the user is uploading a new dataset)
+      if (!pageIsSkipped("guided-create-changes-metadata-tab")) {
+        const changes = sodaJSONObj["dataset-metadata"]["CHANGES"];
+        if (changes && changes.length > 0) {
+          let changesMetadataRes = await guidedUploadREADMEorCHANGESMetadata(
+            guidedBfAccount,
+            guidedDatasetName,
+            "changes",
+            changes
+          );
+          console.log(changesMetadataRes);
+        }
       }
+
       if (fs.existsSync(sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"])) {
         let codeDescriptionRes = await guidedUploadCodeDescriptionMetadata(
           guidedBfAccount,

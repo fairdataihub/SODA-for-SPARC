@@ -1917,6 +1917,7 @@
           <div class="guided--capsule" id="guided-create-samples-metadata-capsule"></div>
           <div class="guided--capsule" id="guided-add-code-metadata-capsule"></div>
           <div class="guided--capsule" id="guided-create-readme-metadata-capsule"></div>
+          <div class="guided--capsule" id="guided-create-changes-metadata-capsule"></div>
         </div>
         <div
           class="guided--page hidden"
@@ -4084,13 +4085,39 @@
                 <b>Please refrain from using markdown.</b>
               </p>
             </div>
-            <!--<button
-                id="guided-generate-readme-file"
-                class="btn_animated"
-                style="width: 200px; border: none !important"
-              >
-                Generate ReadMe file
-              </button>-->
+          </div>
+        </div>
+        <div
+          id="guided-create-changes-metadata-tab"
+          class="guided--page hidden"
+          data-page-name="CHANGES"
+        >
+          <div class="guided--section">
+            <h1 class="guided--text-sub-step">CHANGES information</h1>
+            <p class="guided--help-text">
+              SPARC datasets that have been previously published must include a CHANGES file which
+              denotes the changes made to the dataset since the previous publication.
+            </p>
+            <p class="guided--help-text">
+              You can provide that information below. SODA will use the text provided to
+              automatically create the CHANGES metadata file and include it in your dataset when it
+              is generated in the last step of this guided workflow.
+            </p>
+            <div class="guided--input-container">
+              <h2 class="guided--text-sub-step required">
+                Provide the changes since your previous publication:
+              </h2>
+              <textarea
+                class="guided--input guided--text-area-tall"
+                type="text"
+                name="guided-CHANGES-text"
+                placeholder="Draft your CHANGES here"
+                id="guided-textarea-create-changes"
+              ></textarea>
+              <p class="guided--text-input-instructions mb-0">
+                <b>Please refrain from using markdown.</b>
+              </p>
+            </div>
           </div>
         </div>
       </div>
