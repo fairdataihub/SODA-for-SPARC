@@ -478,7 +478,7 @@ def create_high_level_manifest_files(soda_json_structure, manifest_path):
                 unused_file_name, fileextension = get_name_extension(file_key)
                 # fileextension = name_split[1]
             dict_folder_manifest["file type"].append(fileextension)
-            # addtional metadata
+            # additional metadata
             if "additional-metadata" in file.keys():
                 dict_folder_manifest["Additional Metadata"].append(
                     file["additional-metadata"]

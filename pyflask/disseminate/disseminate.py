@@ -19,7 +19,7 @@ def bf_get_doi(selected_bfaccount, selected_bfdataset):
     Function to get current doi for a selected dataset
 
     Args:
-        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfaccount: name of selected Pennsieve account (string)
         selected_bfdataset: name of selected Pennsieve dataset (string)
     Return:
         Current doi or "None"
@@ -55,7 +55,7 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
     Function to reserve doi for a selected dataset
 
     Args:
-        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfaccount: name of selected Pennsieve account (string)
         selected_bfdataset: name of selected Pennsieve dataset (string)
     Return:
         Success or error message

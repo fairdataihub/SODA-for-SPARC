@@ -104,7 +104,7 @@ const getDatasetMetadataFiles = async (datasetName) => {
 
   let { metadata_files } = datasetwithChildrenResponse.data;
 
-  // return the metdata files to the client
+  // return the metadata files to the client
   return metadata_files;
 };
 

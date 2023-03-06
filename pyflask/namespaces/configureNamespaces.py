@@ -27,7 +27,7 @@ def configure_namespaces():
     Create namespaces for each pysoda file: pysoda ( now manage_datasets), prepare_metadata, etc
     """
 
-    manage_datasets_namespace = Namespace(NamespaceEnum.MANAGE_DATASETS.value, description='Routes for handling manage datsets functionality')
+    manage_datasets_namespace = Namespace(NamespaceEnum.MANAGE_DATASETS.value, description='Routes for handling manage datasets functionality')
     namespaces[NamespaceEnum.MANAGE_DATASETS] = manage_datasets_namespace
 
     # validate_dataset_namespace = Namespace(NamespaceEnum.VALIDATE_DATASET.value, description='Routes for handling validate dataset functionality')

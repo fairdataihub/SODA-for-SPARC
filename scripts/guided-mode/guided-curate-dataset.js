@@ -431,7 +431,7 @@ const savePageChanges = async (pageBeingLeftID) => {
 
         await Swal.fire({
           icon: "info",
-          title: "Begining Pennsieve Dataset edit session",
+          title: "Beginning Pennsieve Dataset edit session",
           html: `
             Note: it is imperative that you do not manually make any changes to your dataset folders and files
             directly on Pennsieve while working on this dataset on SODA.
@@ -921,7 +921,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       ) {
         errorArray.push({
           type: "notyf",
-          message: "Please indicate where you would like to genrate your dataset",
+          message: "Please indicate where you would like to generate your dataset",
         });
         throw errorArray;
       }
@@ -1367,7 +1367,7 @@ const renderSideBar = (activePage) => {
             const pageWithErrorName = document.getElementById(page).getAttribute("data-page-name");
             await openPage(page);
             await Swal.fire({
-              title: `An error occured on an intermediate page: ${pageWithErrorName}`,
+              title: `An error occurred on an intermediate page: ${pageWithErrorName}`,
               html: `Please address the issues before continuing to ${pageToNaviatetoName}:
                 <br />
                 <br />
@@ -1974,7 +1974,7 @@ const hideEleShowEle = (elementIdToHide, elementIdToShow) => {
 const hideSubNavAndShowMainNav = (navButtonToClick) => {
   $("#guided-sub-page-navigation-footer-div").hide();
   $("#guided-footer-div").css("display", "flex");
-  //show the buttons incase they were hidden
+  //show the buttons in case they were hidden
   $("#guided-next-button").show();
   $("#guided-back-button").show();
   if (navButtonToClick) {
@@ -3761,7 +3761,7 @@ const openPage = async (targetPageID) => {
             },
           });
           let contributorData = metadata_import.data["Contributor information"];
-          //Filter out returned rows that only contain empty srings (first name is checked)
+          //Filter out returned rows that only contain empty strings (first name is checked)
           const currentContributorFullNames = getContributorFullNames();
           contributorData = contributorData = contributorData.filter((row) => {
             return row[0] !== "" && !currentContributorFullNames.includes(row[0]);
@@ -10928,7 +10928,7 @@ $(document).ready(async () => {
       </tr>`;
     }
 
-    //apend the upload element to the end of the table body
+    //append the upload element to the end of the table body
     document
       .getElementById("guided-tbody-pennsieve-metadata-upload")
       .insertAdjacentHTML("beforeend", userPermissionUploadElement);
@@ -11040,7 +11040,7 @@ $(document).ready(async () => {
     `;
     }
 
-    //apend the upload element to the end of the table body
+    //append the upload element to the end of the table body
     document
       .getElementById("guided-tbody-pennsieve-metadata-upload")
       .insertAdjacentHTML("beforeend", teamPermissionUploadElement);
@@ -11896,7 +11896,7 @@ $(document).ready(async () => {
         let emessage = userErrorMessage(error);
         console.error(emessage);
         console.error(error);
-        //Clear the interval to stop the generation of new sweet alerts after intitial error
+        //Clear the interval to stop the generation of new sweet alerts after initial error
         clearInterval(timerProgress);
         throw emessage;
       }

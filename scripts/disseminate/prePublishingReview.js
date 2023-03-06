@@ -418,7 +418,7 @@ $(".pre-publishing-continue").on("click", async function () {
     defaultBfDatasetId
   );
 
-  // place the metadata files in the file viewer - found in step 3 of the pre-publishing submission worfklow
+  // place the metadata files in the file viewer - found in step 3 of the pre-publishing submission workflow
   populateFileViewer(
     metadataFiles,
     excludedFileObjects.map((fileObject) => fileObject.fileName)
@@ -551,7 +551,7 @@ const populateFileViewer = (metadataFiles, excludedFiles) => {
     div.appendChild(input);
     div.appendChild(label);
 
-    // add the struture to the file viewer
+    // add the structure to the file viewer
     fileViewer.appendChild(div);
   });
 };

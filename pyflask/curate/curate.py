@@ -1422,7 +1422,7 @@ def create_high_level_manifest_files_existing_bf(
                                 file_extension = "None"
                             dict_folder_manifest["file type"].append(file_extension)
 
-                            # addtional metadata
+                            # additional metadata
                             if "additional-metadata" in file.keys():
                                 dict_folder_manifest["Additional Metadata"].append(
                                     file["additional-metadata"]
@@ -1755,7 +1755,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
         """
         Recursively create the path for the item    # Add a new key containing the path to all the files and folders on the
         local data structure.
-        Allows us to see if the folder path of a specfic file already
+        Allows us to see if the folder path of a specific file already
         exists on Pennsieve.
         """
         
@@ -1989,7 +1989,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
 
 def normalize_tracking_folder(tracking_folder):
     """
-    Normalize the tracking folder object to be a dictonary with the shape: {files: {}, folders: {}}. 
+    Normalize the tracking folder object to be a dictionary with the shape: {files: {}, folders: {}}. 
     This shape matches our dataset structure object. Recall, the tracking folder receives information about what folders and 
     files are stored on Pennsieve. We update this as we update Pennsieve's state. 
     """

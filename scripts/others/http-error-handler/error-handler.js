@@ -4,7 +4,7 @@
  * @param {error} error - A general or Axios error object
  */
 function clientError(error) {
-  // Handles gneral errors and getting basic information from Axios errors
+  // Handles general errors and getting basic information from Axios errors
   console.error(error);
   log.error(JSON.stringify(error));
 

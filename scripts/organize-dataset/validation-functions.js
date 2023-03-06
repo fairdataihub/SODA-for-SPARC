@@ -123,7 +123,7 @@ const getFormattedSodaJSON = async () => {
   // send the soda json object to the soda api to create a skeleton dataset
   // TODO: Massage the soda_json_object to match the state it is in when it is sent to the /curate endpoint
   // TODO: Ensure no data loss with this method of creating a deep copy. Should be fine since we only use simple types.
-  //       We do use timestamps I believe but this shouldnt cause issue. Will test.
+  //       We do use timestamps I believe but this shouldn't cause issue. Will test.
   let sodaJSONObjCopy = JSON.parse(JSON.stringify(sodaJSONObj));
 
   // updateJSON structure after Generate dataset tab

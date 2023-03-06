@@ -86,7 +86,7 @@ SODA is distributed under the MIT License. See [LICENSE](https://github.com/fair
 
 ## Privacy Policy
 
-SODA uses Google Analytics to track user interactions with the application. Tracking is anonymous and no identifying personal information is collected. Tracking is implemented as part of our agreement with the SPARC program to report usage statistics for SODA. Tracking is also used to indentify errors and subsequently improve user experience. To learn more about what is tracked and how we use Google Analytics within SODA, please read our [Privacy Policy](https://github.com/fairdataihub/SODA-for-SPARC/wiki/Privacy-Policy).
+SODA uses Google Analytics to track user interactions with the application. Tracking is anonymous and no identifying personal information is collected. Tracking is implemented as part of our agreement with the SPARC program to report usage statistics for SODA. Tracking is also used to identify errors and subsequently improve user experience. To learn more about what is tracked and how we use Google Analytics within SODA, please read our [Privacy Policy](https://github.com/fairdataihub/SODA-for-SPARC/wiki/Privacy-Policy).
 
 ## Acknowledgements
 

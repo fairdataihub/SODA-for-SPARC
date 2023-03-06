@@ -1725,7 +1725,7 @@ const addFilesfunction = async (
                 continue;
               }
             } else {
-              //file path and already imported filename path arent the same
+              //file path and already imported filename path aren't the same
               //check if the file name are the same
               //if so consider it as a duplicate
               if (fileName === importedFileName) {
@@ -1926,7 +1926,7 @@ const addFilesfunction = async (
                     nonAllowedDuplicate = true;
                     continue;
                   } else {
-                    //file path and object key path arent the same
+                    //file path and object key path aren't the same
                     //check if the file name are the same
                     //if so consider it as a duplicate
                     //store in regular files
@@ -1982,7 +1982,7 @@ const addFilesfunction = async (
                       basename: file_name,
                     };
                   }
-                  //file path and object key path arent the same
+                  //file path and object key path aren't the same
                   //check if the file name are the same
                   //if so consider it as a duplicate
                 }
@@ -2150,7 +2150,7 @@ const addFilesfunction = async (
   }
 };
 
-//create intersection observ
+//create intersection observe
 let scroll_box = document.querySelector("#organize-dataset-tab");
 let item_box = document.querySelector("#items");
 let dataset_path = document.getElementById("input-global-path");

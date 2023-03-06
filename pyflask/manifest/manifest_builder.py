@@ -2,7 +2,7 @@
 Create manifest files for the skeleton dataset validation workflow. 
 
 # TODO: add the manifest file creation function here
-# NOTE: It seems that the import keeps teh manifest key value empty if the user is not creating a new manifest file and that organize datasets 
+# NOTE: It seems that the import keeps the manifest key value empty if the user is not creating a new manifest file and that organize datasets 
 # adds the generate-dataset value inside of the manifest-files key if the user is creating a new manifest file; in our case we will want to determine two things first:
 # 1. Is the user creating a new manifest file or using an old one? If creating a new one then there are existing methods to use for this that work off the soda_json_structure ( or should we update their old ones using the json structure a-la standalone to ensure nothing is missed in the validation if they are starting from Pennsieve? Hmm can be somewhat complicated on this step.)
 # 2. If using an old manifest file where are they storing it? On Pennsieve or on their local machine. Both have different import methods. 
@@ -25,7 +25,7 @@ from .manifest_writer import ManifestWriterStandaloneAlgorithm , ManifestWriterN
 class ManifestBuilderBase:
     """
     Builds manifest files for the skeleton dataset validation workflow.
-    Places them at the root of the sekected directory.
+    Places them at the root of the selected directory.
     """
     def __init__(self, soda_json_structure, path):
         self.soda_json_structure = soda_json_structure

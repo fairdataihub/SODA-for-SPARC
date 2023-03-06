@@ -585,7 +585,7 @@ document.querySelector("#scicrunch button").addEventListener("click", async func
     clientError(error);
     await Swal.fire({
       title: "Error",
-      text: "There was an error adding your scicrunch api key. Pleas try again.",
+      text: "There was an error adding your scicrunch api key. Please try again.",
       icon: "error",
       confirmButtonText: "OK",
     });

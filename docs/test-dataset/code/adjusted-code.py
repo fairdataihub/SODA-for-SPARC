@@ -349,7 +349,7 @@ def mycopyfile_with_metadata(src, dst, *, follow_symlinks=True):
 #     """
 #     Associated with 'Save' button in the SODA interface
 #     Saves the paths and associated descriptions from the interface table to a CSV file for future use
-#     Each json key (SPARC foler name) becomes a header in the CSV
+#     Each json key (SPARC folder name) becomes a header in the CSV
 
 #     Args:
 #         jsonpath: paths of all files (dictionary)
@@ -594,7 +594,7 @@ def bf_get_current_user_permission(bf, myds):
     Function to get the permission of currently logged in user for a selected dataset
 
     Args:
-        bf: logged Blackfynn acccount (dict)
+        bf: logged Blackfynn account (dict)
         myds: selected Blackfynn dataset (dict)
     Output:
         permission of current user (string)
@@ -1213,7 +1213,7 @@ def create_high_level_manifest_files(soda_json_structure):
             else:
                 fileextension = name_split[1]
             dict_folder_manifest["file type"].append(fileextension)
-            #addtional metadata
+            #additional metadata
             if "additional-metadata" in file.keys():
                 dict_folder_manifest["Additional Metadata"].append(file["additional-metadata"])
             else:
@@ -1790,7 +1790,7 @@ def create_high_level_manifest_files_existing_bf(soda_json_structure, bf, ds, my
                                 file_extension = "None"
                             dict_folder_manifest["file type"].append(file_extension)
 
-                            #addtional metadata
+                            #additional metadata
                             if "additional-metadata" in file.keys():
                                 dict_folder_manifest["Additional Metadata"].append(file["additional-metadata"])
                             else:
@@ -2008,7 +2008,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds):
 
     # Add a new key containing the path to all the files and folders on the
     # local data structure.
-    # Allows us to see if the folder path of a specfic file already
+    # Allows us to see if the folder path of a specific file already
     # exists on blackfynn.
     def recursive_item_path_create(folder, path):
         if "files" in folder.keys():

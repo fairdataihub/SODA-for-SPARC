@@ -438,7 +438,7 @@ async function disseminateConsortium(bfAcct, bfDS, share_status = "") {
         );
       } else {
         Swal.fire({
-          title: "Successully shared with Consortium!",
+          title: "Successfully shared with Consortium!",
           text: `This provided viewer permissions to Consortium members and set dataset status to "Under Embargo"`,
           icon: "success",
           showConfirmButton: true,
@@ -569,7 +569,7 @@ async function disseminateShowCurrentPermission(bfAcct, bfDS) {
 
 async function disseminiateShowCurrentDatasetStatus(callback, account, dataset) {
   if (dataset === "Select dataset") {
-    $(bfCurrentDatasetStatusProgress).css("visbility", "hidden");
+    $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
     $("#bf-dataset-status-spinner").css("display", "none");
     removeOptions(bfListDatasetStatus);
     bfListDatasetStatus.style.color = "black";
@@ -603,14 +603,14 @@ async function disseminiateShowCurrentDatasetStatus(callback, account, dataset) 
       bfListDatasetStatus.value = current_status;
       selectOptionColor(bfListDatasetStatus);
       //bfCurrentDatasetStatusProgress.style.display = "none";
-      $(bfCurrentDatasetStatusProgress).css("visbility", "hidden");
+      $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
       $("#bf-dataset-status-spinner").css("display", "none");
       if (callback !== "") {
         callback();
       }
     } catch (error) {
       clientError(error);
-      $(bfCurrentDatasetStatusProgress).css("visbility", "hidden");
+      $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
       $("#bf-dataset-status-spinner").css("display", "none");
       ipcRenderer.send(
         "track-event",

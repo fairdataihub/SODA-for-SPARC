@@ -386,7 +386,7 @@ $("#button-add-permission-pi").click(async () => {
     },
   }).then(async (result) => {
     if (result.isConfirmed) {
-      log.info("Changing PI Owner of datset");
+      log.info("Changing PI Owner of dataset");
 
       Swal.fire({
         title: "Changing PI Owner of dataset",
@@ -1243,7 +1243,7 @@ const stripRequiredSectionFromReadme = (readme, sectionName, parsedReadme = unde
   // lowercase the readme file text to avoid casing issues with pattern matching
   let mutableReadme = readme.trim().toLowerCase();
 
-  // serch for the start of the given section -- it can have one or more whitespace between the colon
+  // search for the start of the given section -- it can have one or more whitespace between the colon
   let searchRegExp = new RegExp(`[*][*]${sectionName}[ ]*:[*][*]`);
   let altSearchRegExp = new RegExp(`[*][*]${sectionName}[*][*][ ]*:`);
   let sectionIdx = mutableReadme.search(searchRegExp);
@@ -1287,7 +1287,7 @@ const stripRequiredSectionFromReadme = (readme, sectionName, parsedReadme = unde
 
 // find invalid text and strip it from a copy of the given readme string. returns the mutated readme.
 // Text is invalid in these scenarios:
-//   1. any text that occurs before an auxillary section is invalid text because we cannot assume it belongs to one of the auxillary sections below
+//   1. any text that occurs before an auxiliary section is invalid text because we cannot assume it belongs to one of the auxiliary sections below
 //   2. any text in a string where there are no sections
 const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
   // ensure the required sections have been taken out
@@ -1302,34 +1302,34 @@ const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
     throw new Error("There was a problem with reading your description file.");
   }
 
-  // search for the first occurring auxillary section -- this is a user defined section
+  // search for the first occurring auxiliary section -- this is a user defined section
   let auxillarySectionIdx = readme.search("[*][*].*[ ]*:[*][*]");
 
-  // check if there was an auxillary section found that has a colon before the markdown ends
+  // check if there was an auxiliary section found that has a colon before the markdown ends
   if (auxillarySectionIdx !== -1) {
     let auxillarySectionIdxAltFormat = readme.search("[*][*].*[ ]*[*][*][ ]*:");
-    // check if there is an auxillary section that comes before the current section that uses alternative common syntax
+    // check if there is an auxiliary section that comes before the current section that uses alternative common syntax
     if (auxillarySectionIdxAltFormat !== -1 && auxillarySectionIdx > auxillarySectionIdxAltFormat)
       auxillarySectionIdx = auxillarySectionIdxAltFormat;
   } else {
-    // no auxillary section could be found using the colon before the closing markdown sytnatx so try the alternative common syntax
+    // no auxiliary section could be found using the colon before the closing markdown sytnatx so try the alternative common syntax
     auxillarySectionIdx = readme.search("[*][*].*[ ]*[*][*][ ]*:");
   }
 
-  // check if there is an auxillary section
+  // check if there is an auxiliary section
   if (auxillarySectionIdx !== -1) {
     let curatorsSectionIdx = readme.search("(---)");
-    // check if the curator's section appears before the auxillary section that was found
+    // check if the curator's section appears before the auxiliary section that was found
     if (curatorsSectionIdx !== -1 && auxillarySectionIdx > curatorsSectionIdx)
       auxillarySectionIdx = curatorsSectionIdx;
   } else {
-    // set the auxillary section idx to the start of the curator's section idx
+    // set the auxiliary section idx to the start of the curator's section idx
     auxillarySectionIdx = readme.search("(---)");
   }
 
-  // check if there is an auxillary section
+  // check if there is an auxiliary section
   if (auxillarySectionIdx !== -1) {
-    // get the text that comes before the auxillary seciton idx
+    // get the text that comes before the auxiliary section idx
     let invalidText = readme.slice(0, auxillarySectionIdx);
 
     // if there is no invalid text then parsing is done
@@ -1347,7 +1347,7 @@ const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
     // return the readme file
     return readme;
   } else {
-    // there are no auxillary sections so the rest of the string is invalid text -- if there is any string left
+    // there are no auxiliary sections so the rest of the string is invalid text -- if there is any string left
     if (parsedReadme) {
       parsedReadme[requiredSections.invalidText] = readme;
     }
@@ -2877,7 +2877,7 @@ $("#button-submit-dataset").click(async () => {
   //       })
   //       .catch((error) => {
   //         clientError(error);
-  //         //Clear the interval to stop the generation of new sweet alerts after intitial error
+  //         //Clear the interval to stop the generation of new sweet alerts after initial error
   //         clearInterval(uploadDetailsTimer);
   //       });
 
