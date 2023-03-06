@@ -455,13 +455,13 @@ const savePageChanges = async (pageBeingLeftID) => {
         sodaJSONObj["generate-dataset"]["generate-option"] = "existing-bf";
         sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] = selectedPennsieveDatasetID;
         sodaJSONObj["digital-metadata"]["name"] = selectedPennsieveDataset;
+
+        // Unskip the CHANGES metadata so the user can add changes since previous publication
+        guidedUnSkipPage("guided-create-changes-metadata-tab");
       }
 
       //Skip this page becausae we should not come back to it
       guidedSkipPage("guided-intro-page-tab");
-
-      // Unskip the CHANGES metadata so the user can add changes since previous publication
-      guidedUnSkipPage("guided-create-changes-metadata-tab");
     }
 
     if (pageBeingLeftID === "guided-name-subtitle-tab") {
