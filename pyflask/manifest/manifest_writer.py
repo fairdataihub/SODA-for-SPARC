@@ -488,7 +488,7 @@ def create_high_level_manifest_files(soda_json_structure, manifest_path):
 
             return dict_folder_manifest
 
-        # create local folder to save manifest files temporarly (delete any existing one first)
+        # create local folder to save manifest files temporarily (delete any existing one first)
         if "auto-generated" in soda_json_structure["manifest-files"]:
             if soda_json_structure["manifest-files"]["auto-generated"] == True:
                 manifest_files_structure = (

@@ -8369,7 +8369,7 @@ const openCopySampleMetadataPopup = async () => {
         //middle of the array
         let wasDerivedFrom = "";
 
-        //Add the data from the selected copy fro sample to cpoyFromSampleData array
+        //Add the data from the selected copy from sample to copyFromSampleData array
         for (let i = 1; i < samplesTableData.length; i++) {
           if (samplesTableData[i][1] === selectedCopyFromSample) {
             //copy all elements from matching array except the first one
@@ -12100,7 +12100,7 @@ $(document).ready(async () => {
     if (textValue === "") {
       Swal.fire({
         title: "Incomplete information",
-        text: "Plase fill in the textarea.",
+        text: "Please fill in the textarea.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         icon: "error",

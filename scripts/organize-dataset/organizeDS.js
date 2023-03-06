@@ -2017,7 +2017,7 @@ const addFilesfunction = async (
     }
     var list = JSON.stringify(nonAllowedDuplicateFiles).replace(/"/g, "");
 
-    //alert giving a list of files + path that cannot be copied bc theyre duplicates
+    //alert giving a list of files + path that cannot be copied bc they're duplicates
     var listElements = showItemsAsListBootbox(baseName);
     let titleSwal = "";
     let htmlSwal = "";

@@ -1291,7 +1291,7 @@ def bf_add_permission_team(
 ):
 
     """
-    Function to add/remove permission fo a team to a selected dataset
+    Function to add/remove permission for a team to a selected dataset
 
     Args:
         selected_bfaccount: name of selected Pennsieve account (string)
