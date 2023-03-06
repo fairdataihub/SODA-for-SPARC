@@ -65,7 +65,7 @@ async function handleSectionTrigger(event) {
         '[data-next="Question-getting-started-BF-account"]'
       );
       const transitionWarningMessage = `
-        Entering Guided Mode will wipe out the progress you have made organizing your dataset.
+        Going back home will wipe out the progress you have made organizing your dataset.
         <br><br>
         ${
           buttonContinueExistingPennsieve.classList.contains("checked")
