@@ -3765,9 +3765,6 @@ const openPage = async (targetPageID) => {
           completionDateInputManual.value = completionDate;
         }
       }
-
-      //Click the manual submission metadata button because it's likely best for the user
-      document.getElementById("guided-button-enter-submission-metadata-manually").click();
     }
     if (targetPageID === "guided-contributors-tab") {
       if (pageNeedsUpdateFromPennsieve("guided-contributors-tab")) {
