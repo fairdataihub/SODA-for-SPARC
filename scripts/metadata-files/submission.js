@@ -116,6 +116,65 @@ function resetSubmissionFields() {
   );
 }
 
+const openSubmissionMultiStepSwal = async (milestoneRes) => {
+  const result = await Swal.mixin({
+    confirmButtonText: "Next",
+    showCancelButton: true,
+    width: 900,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    allowOutsideClick: false,
+  }).queue([
+    {
+      title: "Step 1",
+      text: "Enter your first name:",
+      html: `<input id="swal-input1" class="swal2-input" placeholder="Enter your first name">`,
+      inputValidator: (value) => {
+        if (!value) {
+          return "Please enter your first name";
+        }
+      },
+    },
+    {
+      title: "Step 2",
+      text: "Enter your email address:",
+      input: "email",
+      inputValidator: (value) => {
+        if (!value) {
+          return "Please enter your email address";
+        }
+      },
+    },
+    {
+      title: "Step 3",
+      text: "Loading data...",
+      onBeforeOpen: async () => {
+        // Show loading spinner
+        await Swal.showLoading();
+
+        // Simulate data retrieval
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        // Update text with retrieved data
+        Swal.update({
+          title: "Step 3",
+          text: "Enter your phone number:",
+          input: "tel",
+          inputValidator: (value) => {
+            if (!value) {
+              return "Please enter your phone number";
+            }
+          },
+        });
+      },
+    },
+  ]);
+
+  if (result.value) {
+    console.log(result);
+  }
+};
+
 const helpMilestoneSubmission = async (curationMode) => {
   var filepath = "";
   var informationJson = {};
@@ -174,11 +233,7 @@ const helpMilestoneSubmission = async (curationMode) => {
       //Handle guided mode submission data
       if (curationMode === "guided") {
         const guidedMilestoneData = res;
-        //create a string with today's date in the format xxxx/xx/xx
-        const today = new Date();
-        const todayString = `
-              ${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}
-            `;
+
         //add a custom milestone row for when the user wants to add a custom milestone
         //not included in the dataset deliverables document
         guidedMilestoneData["Not included in the Dataset Deliverables document"] = [
@@ -188,16 +243,17 @@ const helpMilestoneSubmission = async (curationMode) => {
             "Expected date of completion": "N/A",
           },
         ];
-
         //save the unselected milestones into sodaJSONObj
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-imported-milestones"] =
           guidedMilestoneData;
 
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] = filepath;
 
-        renderMilestoneSelectionTable(guidedMilestoneData);
-
         guidedSubmissionTagsTagify.settings.whitelist = [];
+
+        await openSubmissionMultiStepSwal(guidedMilestoneData);
+
+        renderMilestoneSelectionTable(guidedMilestoneData);
 
         unHideAndSmoothScrollToElement("guided-div-data-deliverables-import");
       }
@@ -294,6 +350,8 @@ const getCheckedMilestones = () => {
   });
   return checkedMilestoneData;
 };
+
+const importDataDeliverables = async (curationMode) => {};
 
 const openDDDimport = async (curationMode) => {
   let filepath = await ipcRenderer.invoke("open-file-dialog-data-deliverables");
