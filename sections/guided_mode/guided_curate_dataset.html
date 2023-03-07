@@ -2229,43 +2229,7 @@
               </div>
               <div class="guided--panel mt-md sub-page" id="guided-data-derivative-import-page">
                 <div class="guided--section">
-                  <div>
-                    <div
-                      class="guided--container-file-import"
-                      droppable="true"
-                      ondrop="dropHandler(event, 'guided-data-deliverable-para-text', 'DataDeliverablesDocument', 'guided', dataDeliverables=true);"
-                      ondragover="return false;"
-                    >
-                      <div
-                        class="guided--file-import"
-                        data-code-metadata-file-type="data_deliverable"
-                        style="min-height: 300px"
-                      >
-                        <div
-                          id="data-deliverable-lottie-container"
-                          class="code-metadata-lottie-container"
-                          style="height: 100px"
-                        ></div>
-                        <p class="guided--help-text text-center" style="max-width: 190px">
-                          Drag and Drop <br /><b>Data Deliverables document in docx format</b>
-                        </p>
-                        <p class="guided--help-text text-center mt-sm mb-sm">OR</p>
-                        <button
-                          class="ui primary basic button mt-sm"
-                          onclick="helpMilestoneSubmission('guided')"
-                          style="display: flex; align-items: center; justify-content: space-around"
-                        >
-                          <i class="fas fa-file-import" style="margin-right: 7px"></i>Import Data
-                          Deliverables document in docx format
-                        </button>
-                        <p
-                          class="guided--help-text small text-center mt-sm"
-                          id="guided-data-deliverable-para-text"
-                          style="max-width: 240px; overflow-wrap: break-word"
-                        ></p>
-                      </div>
-                    </div>
-                  </div>
+                  <div></div>
                   <div
                     class="guided--panel hidden mt-xl"
                     id="guided-div-data-deliverables-import"
@@ -2287,7 +2251,7 @@
                           <th class="center aligned">Completion date</th>
                         </tr>
                       </thead>
-                      <tbody id="milestones-table-container"></tbody>
+                      <tbody id="milestones-table-containerZZZZZ"></tbody>
                     </table>
                   </div>
                 </div>
@@ -2303,7 +2267,7 @@
                   <div class="ui form">
                     <div
                       class="grouped fields"
-                      id="guided-completion-date-container"
+                      id="guided-completion-date-containerZZZZZZ"
                       style="align-items: center"
                     ></div>
                   </div>
@@ -2359,6 +2323,41 @@
               <h2 class="guided--text-sub-step mt-0">
                 Enter your award and milestone information then click on Next
               </h2>
+              <div
+                class="guided--container-file-import"
+                droppable="true"
+                ondrop="dropHandler(event, 'guided-data-deliverable-para-text', 'DataDeliverablesDocument', 'guided', dataDeliverables=true);"
+                ondragover="return false;"
+              >
+                <div
+                  class="guided--file-import"
+                  data-code-metadata-file-type="data_deliverable"
+                  style="min-height: 300px"
+                >
+                  <div
+                    id="data-deliverable-lottie-container"
+                    class="code-metadata-lottie-container"
+                    style="height: 100px"
+                  ></div>
+                  <p class="guided--help-text text-center" style="max-width: 190px">
+                    Drag and Drop <br /><b>Data Deliverables document in docx format</b>
+                  </p>
+                  <p class="guided--help-text text-center mt-sm mb-sm">OR</p>
+                  <button
+                    class="ui primary basic button mt-sm"
+                    onclick="helpMilestoneSubmission('guided')"
+                    style="display: flex; align-items: center; justify-content: space-around"
+                  >
+                    <i class="fas fa-file-import" style="margin-right: 7px"></i>Import Data
+                    Deliverables document in docx format
+                  </button>
+                  <p
+                    class="guided--help-text small text-center mt-sm"
+                    id="guided-data-deliverable-para-text"
+                    style="max-width: 240px; overflow-wrap: break-word"
+                  ></p>
+                </div>
+              </div>
               <label class="guided--form-label mt-xl">SPARC award number:</label>
               <input
                 class="guided--input"

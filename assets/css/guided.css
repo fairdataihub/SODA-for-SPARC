@@ -210,6 +210,15 @@
   background-color: aqua;
 }
 
+.scrollable-swal-content-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  overflow-y: auto;
+}
+
 .guided--text-instructional-content {
   margin-bottom: 0.5rem;
 }

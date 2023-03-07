@@ -1240,48 +1240,51 @@ document
   });
 
 document.getElementById("testswal").addEventListener("click", async () => {
-  Swal.mixin({
+  const value = await Swal.mixin({
     input: "text",
     confirmButtonText: "Next &rarr;",
     showCancelButton: true,
-    progressSteps: ["1", "2", "3"],
-  })
-    .queue([
-      {
-        title: "Step 2",
-        text: "Select the milestones associated with this dataset:",
-        inputValidator: (value) => {
-          if (!value) {
-            return "Please enter your last name";
-          }
-        },
+    progressSteps: ["1", "2"],
+    width: 900,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    allowOutsideClick: false,
+  }).queue([
+    {
+      title: "Select the milestones associated with this dataset:",
+      html: `
+          <div class="scrollable-swal-content-container">
+        
+          </div>
+        `,
+      inputValidator: (value) => {
+        if (!value) {
+          return "Please enter your last name";
+        }
       },
-      {
-        title: "Step 3",
-        text: "Enter your phone number:",
-        input: "tel",
-        inputValidator: (value) => {
-          if (!value) {
-            return "Please enter your phone number";
-          }
-          if (!/^[0-9]{10}$/.test(value)) {
-            return "Please enter a valid 10-digit phone number";
-          }
-        },
+      onbeforeexit: () => {
+        console.log("before exit");
       },
-    ])
-    .then((result) => {
-      if (result.value) {
-        const firstName = result.value[0];
-        const lastName = result.value[1];
-        const phoneNumber = result.value[2];
-
-        // Do something with the user's input
-        console.log(
-          `First name: ${firstName}, Last name: ${lastName}, Phone number: ${phoneNumber}`
-        );
-      }
-    });
+    },
+    {
+      title: "Step 3",
+      text: "Enter your phone number:",
+      input: "tel",
+      inputValidator: (value) => {
+        if (!value) {
+          return "Please enter your phone number";
+        }
+        if (!/^[0-9]{10}$/.test(value)) {
+          return "Please enter a valid 10-digit phone number";
+        }
+      },
+    },
+  ]);
+  if (value) {
+    console.log(value);
+  } else {
+    console.log("cancelled");
+  }
 });
 
 const getNonSkippedGuidedModePages = (parentElementToGetChildrenPagesFrom) => {

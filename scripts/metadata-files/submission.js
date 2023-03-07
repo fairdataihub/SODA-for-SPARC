@@ -117,61 +117,130 @@ function resetSubmissionFields() {
 }
 
 const openSubmissionMultiStepSwal = async (milestoneRes) => {
-  const result = await Swal.mixin({
-    confirmButtonText: "Next",
+  console.log("milestoneRes", milestoneRes);
+  let milestoneData;
+  let completionDate;
+  const milestoneValues = await Swal.mixin({
+    confirmButtonText: "Next &rarr;",
     showCancelButton: true,
+    progressSteps: ["1", "2"],
     width: 900,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     allowOutsideClick: false,
   }).queue([
     {
-      title: "Step 1",
-      text: "Enter your first name:",
-      html: `<input id="swal-input1" class="swal2-input" placeholder="Enter your first name">`,
-      inputValidator: (value) => {
-        if (!value) {
-          return "Please enter your first name";
-        }
+      title: "Select the milestones associated with this dataset:",
+      html: `
+          <div class="scrollable-swal-content-container" id="milestone-selection-table-container">
+             <table
+                class="ui celled striped table"
+                id="milestones-table"
+                style="margin-bottom: 25px; width: 800px"
+              >
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Description</th>
+                    <th>Milestone</th>
+                    <th class="center aligned">Completion date</th>
+                  </tr>
+                </thead>
+                <tbody id="milestones-table-container"></tbody>
+              </table>
+        
+          </div>
+        `,
+      didOpen: () => {
+        renderMilestoneSelectionTable(milestoneRes);
+        console.log("foo");
+      },
+      preConfirm: () => {
+        const checkedMilestoneData = getCheckedMilestones();
+        checkedMilestoneData.length === 0
+          ? Swal.showValidationMessage("Please select at least one milestone")
+          : (milestoneData = checkedMilestoneData);
       },
     },
     {
-      title: "Step 2",
-      text: "Enter your email address:",
-      input: "email",
-      inputValidator: (value) => {
-        if (!value) {
-          return "Please enter your email address";
+      title: "Select the milestones associated with this dataset:",
+      html: `
+          <div class="scrollable-swal-content-container">
+            <div class="justify-center">
+              <div class="ui form">
+                <div
+                  class="grouped fields"
+                  id="guided-completion-date-container"
+                  style="align-items: center"
+                ></div>
+              </div>
+            </div>
+          </div>
+        `,
+      didOpen: () => {
+        // get a unique set of completionDates from checkedMilestoneData
+        const uniqueCompletionDates = Array.from(
+          new Set(milestoneData.map((milestone) => milestone.completionDate))
+        );
+
+        console.log(uniqueCompletionDates);
+
+        if (uniqueCompletionDates.length === 1) {
+          //save the completion date into sodaJSONObj
+          completionDate = uniqueCompletionDates[0];
+          // Add a radio button for the unique completion date
+          document.getElementById("guided-completion-date-container").innerHTML =
+            createCompletionDateRadioElement("completion-date", uniqueCompletionDate);
+          //check the completion date
+          document.querySelector(
+            `input[name="completion-date"][value="${uniqueCompletionDate}"]`
+          ).checked = true;
+        }
+
+        if (uniqueCompletionDates.length > 1) {
+          //filter value 'N/A' from uniqueCompletionDates
+          const filteredUniqueCompletionDates = uniqueCompletionDates.filter(
+            (date) => date !== "N/A"
+          );
+
+          //create a radio button for each unique date
+          const completionDateCheckMarks = filteredUniqueCompletionDates
+            .map((completionDate) => {
+              return createCompletionDateRadioElement("completion-date", completionDate);
+            })
+            .join("\n");
+          document.getElementById("guided-completion-date-container").innerHTML =
+            completionDateCheckMarks;
         }
       },
-    },
-    {
-      title: "Step 3",
-      text: "Loading data...",
-      onBeforeOpen: async () => {
-        // Show loading spinner
-        await Swal.showLoading();
-
-        // Simulate data retrieval
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-
-        // Update text with retrieved data
-        Swal.update({
-          title: "Step 3",
-          text: "Enter your phone number:",
-          input: "tel",
-          inputValidator: (value) => {
-            if (!value) {
-              return "Please enter your phone number";
-            }
-          },
-        });
+      preConfirm: () => {
+        const selectedCompletionDate = document.querySelector(
+          "input[name='completion-date']:checked"
+        );
+        if (!selectedCompletionDate) {
+          Swal.showValidationMessage("Please select a completion date");
+        } else {
+          completionDate = selectedCompletionDate.value;
+        }
       },
     },
   ]);
+  if (milestoneValues) {
+    console.log(milestoneData);
+    console.log(completionDate);
 
-  if (result.value) {
-    console.log(result);
+    const uniqueMilestones = Array.from(
+      new Set(milestoneData.map((milestone) => milestone.milestone))
+    );
+    guidedSubmissionTagsTagifyManual.removeAllTags();
+    guidedSubmissionTagsTagifyManual.addTags(uniqueMilestones);
+
+    const completionDateInput = document.getElementById("guided-submission-completion-date");
+    completionDateInput.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
+    //select the completion date that was added
+    completionDateInput.value = completionDate;
+  } else {
+    console.log("cancelled");
   }
 };
 
@@ -252,10 +321,6 @@ const helpMilestoneSubmission = async (curationMode) => {
         guidedSubmissionTagsTagify.settings.whitelist = [];
 
         await openSubmissionMultiStepSwal(guidedMilestoneData);
-
-        renderMilestoneSelectionTable(guidedMilestoneData);
-
-        unHideAndSmoothScrollToElement("guided-div-data-deliverables-import");
       }
     } catch (error) {
       clientError(error);
