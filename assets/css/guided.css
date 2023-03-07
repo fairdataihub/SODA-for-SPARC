@@ -1,10 +1,12 @@
 @import url("https://fonts.googleapis.com/css?family=Poppins:400,500,600,700");
-
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300&family=Outfit:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@300&family=Outfit:wght@400;500;600;700&family=Roboto:wght@400;500;700&display=swap");
 /* change the font to siblints of guided--body to Poppins except i elemenets */
 
-/*.guided--body *:not(i) {
+/* Fonts: Poppins, Roboto, Outfit */
+.guided--body *:not(i) {
   font-family: "Poppins", sans-serif;
-}*/
+}
 
 .guided--nav {
   min-height: 100vh;

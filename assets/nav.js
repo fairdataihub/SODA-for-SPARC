@@ -82,7 +82,7 @@ async function handleSectionTrigger(event) {
         showCancelButton: true,
         focusCancel: true,
         cancelButtonText: "Cancel",
-        confirmButtonText: "Enter Guided Mode",
+        confirmButtonText: "Go back Home",
         reverseButtons: reverseSwalButtons,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
