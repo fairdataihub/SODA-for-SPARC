@@ -1112,7 +1112,7 @@ const savePageChanges = async (pageBeingLeftID) => {
             message: "Please add a SPARC award number to your submission metadata",
           });
         }
-        if (completionDate === "Select a completion date") {
+        if (completionDate === "") {
           errorArray.push({
             type: "notyf",
             message: "Please add a completion date to your submission metadata",
@@ -1136,12 +1136,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
 
       if (datasetIsNotSparcFunded) {
-        // save all submission metadata values as N/A as we still want to upload the submission metadata file for
-        // non-sparc funded datasets, but all fields should be N/A
-        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = "N/A";
-        //Save the data and milestones to the sodaJSONObj
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = ["N/A"];
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = "N/A";
+        // We don't have to do anything here because the upload function will handle the case where the dataset is not SPARC funded
       }
     }
 
@@ -3710,6 +3705,7 @@ const openPage = async (targetPageID) => {
             },
           });
           let res = import_metadata.data;
+          console.log(res);
 
           const sparcAwardRes = res["SPARC Award number"];
           const pennsieveMileStones = res["Milestone achieved"];
@@ -3720,8 +3716,9 @@ const openPage = async (targetPageID) => {
             if (sparcAwardRes === "N/A") {
               document.getElementById("guided-button-dataset-is-not-sparc").click();
             }
-            // If the SPARC award length is greater than 4, we can assume it is a valid SPARC award
-            if (sparcAwardRes.length > 4) {
+            console.log(sparcAwardRes);
+            // If the SPARC award length is greater than 3, we can assume it is a valid SPARC award
+            if (sparcAwardRes.length > 3) {
               document.getElementById("guided-button-dataset-is-sparc").click();
             }
           }
@@ -3745,6 +3742,7 @@ const openPage = async (targetPageID) => {
           sodaJSONObj["pages-fetched-from-pennsieve"].push(targetPageID);
         }
       }
+
       //Reset the manual submission metadata UI
       const sparcAwardInputManual = document.getElementById("guided-submission-sparc-award-manual");
       sparcAwardInputManual.value = "";
@@ -3753,10 +3751,11 @@ const openPage = async (targetPageID) => {
         "guided-submission-completion-date-manual"
       );
       completionDateInputManual.innerHTML = `
-          <option value="Select a completion date">Select a completion date</option>
+          <option value="">Select a completion date</option>
           <option value="Enter my own date">Enter my own date</option>
-          <option value="">N/A</option>
+          <option value="N/A">N/A</option>
         `;
+      completionDateInputManual.value = "Select a completion date";
 
       //Update the UI if their respective keys exist in the sodaJSONObj
       const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
@@ -3765,7 +3764,7 @@ const openPage = async (targetPageID) => {
       }
       const milestones = sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
       if (milestones) {
-        if (!milestones.length === 1 && milestones[0] === "N/A") {
+        if (!(milestones.length === 1 && milestones[0] === "N/A")) {
           guidedSubmissionTagsTagifyManual.addTags(milestones);
         }
       }
@@ -3773,7 +3772,7 @@ const openPage = async (targetPageID) => {
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"];
 
       if (completionDate === "" || completionDate === "N/A") {
-        completionDateInputManual.value = "Select a completion date";
+        completionDateInputManual.value = completionDate;
       } else {
         if (completionDate) {
           completionDateInputManual.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
@@ -11519,18 +11518,33 @@ $(document).ready(async () => {
       const guidedMilestones = sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
       const guidedCompletionDate =
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"];
-      let guidedSubmissionMetadataJSON = [];
 
-      guidedSubmissionMetadataJSON.push({
-        award: guidedSparcAward,
-        date: guidedCompletionDate,
-        milestone: guidedMilestones[0],
-      });
-      for (let i = 1; i < guidedMilestones.length; i++) {
-        guidedSubmissionMetadataJSON.push({
-          award: "",
-          date: "",
-          milestone: guidedMilestones[i],
+      let guidedSubmissionMetadataArray = [];
+
+      // Variable that determines if the user selected whether or not their dataset is SPARC funded
+      // The variable should be either "yes" or "no"
+      const datasetIsSparcFunded = sodaJSONObj["button-config"]["dataset-is-sparc"];
+
+      if (datasetIsSparcFunded === "yes") {
+        guidedSubmissionMetadataArray.push({
+          award: guidedSparcAward,
+          date: guidedCompletionDate,
+          milestone: guidedMilestones[0],
+        });
+        for (let i = 1; i < guidedMilestones.length; i++) {
+          guidedSubmissionMetadataArray.push({
+            award: "",
+            date: "",
+            milestone: guidedMilestones[i],
+          });
+        }
+      }
+
+      if (datasetIsSparcFunded === "no") {
+        guidedSubmissionMetadataArray.push({
+          award: "N/A",
+          date: "N/A",
+          milestone: "N/A",
         });
       }
 
@@ -11636,7 +11650,7 @@ $(document).ready(async () => {
       let submissionMetadataRes = await guidedUploadSubmissionMetadata(
         guidedBfAccount,
         guidedDatasetName,
-        guidedSubmissionMetadataJSON
+        guidedSubmissionMetadataArray
       );
 
       let descriptionMetadataRes = await guidedUploadDatasetDescriptionMetadata(
