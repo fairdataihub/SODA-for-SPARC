@@ -3799,6 +3799,7 @@ const openPage = async (targetPageID) => {
         const dataDeliverableLottieContainer = document.getElementById(
           "data-deliverable-lottie-container"
         );
+        dataDeliverableLottieContainer.innerHTML = "";
         lottie.loadAnimation({
           container: dataDeliverableLottieContainer,
           animationData: dragDrop,

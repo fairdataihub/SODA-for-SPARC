@@ -118,6 +118,17 @@ function resetSubmissionFields() {
 
 const openSubmissionMultiStepSwal = async (milestoneRes) => {
   console.log("milestoneRes", milestoneRes);
+
+  //add a custom milestone row for when the user wants to add a custom milestone
+  //not included in the dataset deliverables document
+  milestoneRes["Not included in the Dataset Deliverables document"] = [
+    {
+      "Description of data":
+        "Select this option when the dataset you are submitting is not related to a pre-agreed milestone",
+      "Expected date of completion": "N/A",
+    },
+  ];
+
   let milestoneData;
   let completionDate;
   const milestoneValues = await Swal.mixin({
@@ -314,21 +325,10 @@ const helpMilestoneSubmission = async (curationMode) => {
 
       //Handle guided mode submission data
       if (curationMode === "guided") {
-        const guidedMilestoneData = res;
-
-        //add a custom milestone row for when the user wants to add a custom milestone
-        //not included in the dataset deliverables document
-        guidedMilestoneData["Not included in the Dataset Deliverables document"] = [
-          {
-            "Description of data":
-              "Select this option when the dataset you are submitting is not related to a pre-agreed milestone",
-            "Expected date of completion": "N/A",
-          },
-        ];
-
-        await openSubmissionMultiStepSwal(guidedMilestoneData);
+        await openSubmissionMultiStepSwal(res);
       }
     } catch (error) {
+      console.log(error);
       clientError(error);
       Swal.fire({
         backdrop: "rgba(0,0,0, 0.4)",
