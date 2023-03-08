@@ -262,8 +262,6 @@ const dropHandler = async (
 
             renderMilestoneSelectionTable(guidedMilestoneData);
 
-            guidedSubmissionTagsTagify.settings.whitelist = [];
-
             unHideAndSmoothScrollToElement("guided-div-data-deliverables-import");
 
             let dragDropContainer = document.getElementById(paraElement).parentElement;

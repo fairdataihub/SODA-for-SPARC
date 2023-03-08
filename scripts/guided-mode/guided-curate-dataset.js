@@ -1084,47 +1084,42 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-create-submission-metadata-tab") {
-      const userIsAddingSubmissionMetadataManually = document
-        .getElementById("guided-button-enter-submission-metadata-manually")
-        .classList.contains("selected");
+      const award = document.getElementById("guided-submission-sparc-award-manual").value;
+      const milestones = getTagsFromTagifyElement(guidedSubmissionTagsTagifyManual);
+      const completionDate = document.getElementById(
+        "guided-submission-completion-date-manual"
+      ).value;
 
-      if (userIsAddingSubmissionMetadataManually) {
-        const award = document.getElementById("guided-submission-sparc-award-manual").value;
-        const milestones = getTagsFromTagifyElement(guidedSubmissionTagsTagifyManual);
-        const completionDate = document.getElementById(
-          "guided-submission-completion-date-manual"
-        ).value;
-
-        if (award === "") {
-          errorArray.push({
-            type: "notyf",
-            message: "Please add a SPARC award number to your submission metadata",
-          });
-        }
-        if (completionDate === "Select a completion date") {
-          errorArray.push({
-            type: "notyf",
-            message: "Please add a completion date to your submission metadata",
-          });
-        }
-        if (milestones.length === 0) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please add at least one milestone to your submission metadata",
-          });
-        }
-        if (errorArray.length > 0) {
-          throw errorArray;
-        }
-
-        // save the award string to JSONObj to be shared with other award inputs
-        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = award;
-        //Save the data and milestones to the sodaJSONObj
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = milestones;
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = completionDate;
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["submission-data-entry"] = "manual";
+      if (award === "") {
+        errorArray.push({
+          type: "notyf",
+          message: "Please add a SPARC award number to your submission metadata",
+        });
       }
+      if (completionDate === "Select a completion date") {
+        errorArray.push({
+          type: "notyf",
+          message: "Please add a completion date to your submission metadata",
+        });
+      }
+      if (milestones.length === 0) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please add at least one milestone to your submission metadata",
+        });
+      }
+      if (errorArray.length > 0) {
+        throw errorArray;
+      }
+
+      // save the award string to JSONObj to be shared with other award inputs
+      sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = award;
+      //Save the data and milestones to the sodaJSONObj
+      sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = milestones;
+      sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = completionDate;
+      sodaJSONObj["dataset-metadata"]["submission-metadata"]["submission-data-entry"] = "manual";
     }
+
     if (pageBeingLeftID === "guided-contributors-tab") {
       // Make sure the user has added at least one contributor
       const contributors = sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
@@ -1229,63 +1224,6 @@ const savePageChanges = async (pageBeingLeftID) => {
 
   guidedSetNavLoadingState(false);
 };
-
-document
-  .getElementById("guided-button-import-data-deliverables")
-  .addEventListener("click", async () => {
-    //Open the page and leave the sub-page hydration to the sub-page function
-    //after waiting for call stack to finish
-    await new Promise((resolve) => setTimeout(resolve, 0));
-    openSubPageNavigation("guided-create-submission-metadata-tab");
-  });
-
-document.getElementById("testswal").addEventListener("click", async () => {
-  const value = await Swal.mixin({
-    input: "text",
-    confirmButtonText: "Next &rarr;",
-    showCancelButton: true,
-    progressSteps: ["1", "2"],
-    width: 900,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    allowOutsideClick: false,
-  }).queue([
-    {
-      title: "Select the milestones associated with this dataset:",
-      html: `
-          <div class="scrollable-swal-content-container">
-        
-          </div>
-        `,
-      inputValidator: (value) => {
-        if (!value) {
-          return "Please enter your last name";
-        }
-      },
-      onbeforeexit: () => {
-        console.log("before exit");
-      },
-    },
-    {
-      title: "Step 3",
-      text: "Enter your phone number:",
-      input: "tel",
-      inputValidator: (value) => {
-        if (!value) {
-          return "Please enter your phone number";
-        }
-        if (!/^[0-9]{10}$/.test(value)) {
-          return "Please enter a valid 10-digit phone number";
-        }
-      },
-    },
-  ]);
-  if (value) {
-    console.log(value);
-  } else {
-    console.log("cancelled");
-  }
-});
 
 const getNonSkippedGuidedModePages = (parentElementToGetChildrenPagesFrom) => {
   let allChildPages = Array.from(
@@ -3576,9 +3514,6 @@ const openPage = async (targetPageID) => {
     if (targetPageID === "guided-derivative-data-organization-tab") {
       openSubPageNavigation(targetPageID);
     }
-    if (targetPageID === "guided-create-submission-metadata-tab") {
-      openSubPageNavigation(targetPageID);
-    }
 
     if (targetPageID === "guided-code-folder-tab") {
       itemsContainer.classList.add("border-styling");
@@ -3740,7 +3675,7 @@ const openPage = async (targetPageID) => {
     if (targetPageID === "guided-create-submission-metadata-tab") {
       //Reset manual submission metadata UI
 
-      if (pageNeedsUpdateFromPennsieve("guided-create-submission-metadata-tab")) {
+      if (pageNeedsUpdateFromPennsieve(targetPageID)) {
         try {
           let import_metadata = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
@@ -3749,7 +3684,6 @@ const openPage = async (targetPageID) => {
               file_type: "submission.xlsx",
             },
           });
-          $("#guided-button-enter-submission-metadata-manually").click();
           let res = import_metadata.data;
 
           const sparcAwardRes = res["SPARC Award number"];
@@ -3769,14 +3703,14 @@ const openPage = async (targetPageID) => {
               pennsieveCompletionDate;
           }
 
-          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-submission-metadata-tab");
+          sodaJSONObj["pages-fetched-from-pennsieve"].push(targetPageID);
         } catch (error) {
           clientError(error);
           const emessage = error.response.data.message;
-          await guidedShowOptionalRetrySwal(emessage, "guided-create-submission-metadata-tab");
+          await guidedShowOptionalRetrySwal(emessage, targetPageID);
           // If the user chooses not to retry re-fetching the page data, mark the page as fetched
           // so the the fetch does not occur again
-          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-submission-metadata-tab");
+          sodaJSONObj["pages-fetched-from-pennsieve"].push(targetPageID);
         }
       }
       //Reset the manual submission metadata UI
@@ -3812,6 +3746,18 @@ const openPage = async (targetPageID) => {
           //select the completion date that was added
           completionDateInputManual.value = completionDate;
         }
+      }
+
+      // If all submission metadata is present, Hide the question that asks if the data deliverable document is ready
+      // and show the submission metadata inputs
+      if (sparcAward && milestones) {
+        document
+          .getElementById("guided-section-user-has-data-deliverables-question")
+          .classList.add("hidden");
+
+        document
+          .getElementById("guided-section--data-derivative-manual")
+          .classList.remove("hidden");
       }
     }
     if (targetPageID === "guided-contributors-tab") {

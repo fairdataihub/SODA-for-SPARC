@@ -1371,23 +1371,6 @@ const createDragSort = (tagify) => {
   });
 };
 
-//initialize Tagify input field for guided submission milestones
-const guidedSubmissionTagsInput = document.getElementById(
-  "guided-tagify-submission-milestone-tags-import"
-);
-
-const guidedSubmissionTagsTagify = new Tagify(guidedSubmissionTagsInput, {
-  duplicates: false,
-  delimiters: null,
-  dropdown: {
-    classname: "color-blue",
-    maxItems: Infinity,
-    enabled: 0,
-    closeOnSelect: true,
-  },
-});
-createDragSort(guidedSubmissionTagsTagify);
-
 const guidedSubmissionTagsInputManual = document.getElementById(
   "guided-tagify-submission-milestone-tags-manual"
 );

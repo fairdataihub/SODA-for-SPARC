@@ -235,7 +235,7 @@ const openSubmissionMultiStepSwal = async (milestoneRes) => {
     guidedSubmissionTagsTagifyManual.removeAllTags();
     guidedSubmissionTagsTagifyManual.addTags(uniqueMilestones);
 
-    const completionDateInput = document.getElementById("guided-submission-completion-date");
+    const completionDateInput = document.getElementById("guided-submission-completion-date-manual");
     completionDateInput.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
     //select the completion date that was added
     completionDateInput.value = completionDate;
@@ -317,8 +317,6 @@ const helpMilestoneSubmission = async (curationMode) => {
           guidedMilestoneData;
 
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] = filepath;
-
-        guidedSubmissionTagsTagify.settings.whitelist = [];
 
         await openSubmissionMultiStepSwal(guidedMilestoneData);
       }
