@@ -3754,10 +3754,25 @@ const openPage = async (targetPageID) => {
         document
           .getElementById("guided-section-user-has-data-deliverables-question")
           .classList.add("hidden");
-
         document
           .getElementById("guided-section--data-derivative-manual")
           .classList.remove("hidden");
+      } else {
+        document
+          .getElementById("guided-section-user-has-data-deliverables-question")
+          .classList.remove("hidden");
+        document.getElementById("guided-section--data-derivative-manual").classList.add("hidden");
+
+        const dataDeliverableLottieContainer = document.getElementById(
+          "data-deliverable-lottie-container"
+        );
+        lottie.loadAnimation({
+          container: dataDeliverableLottieContainer,
+          animationData: dragDrop,
+          renderer: "svg",
+          loop: true,
+          autoplay: true,
+        });
       }
     }
     if (targetPageID === "guided-contributors-tab") {

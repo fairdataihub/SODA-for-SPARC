@@ -312,11 +312,6 @@ const helpMilestoneSubmission = async (curationMode) => {
             "Expected date of completion": "N/A",
           },
         ];
-        //save the unselected milestones into sodaJSONObj
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-imported-milestones"] =
-          guidedMilestoneData;
-
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] = filepath;
 
         await openSubmissionMultiStepSwal(guidedMilestoneData);
       }
