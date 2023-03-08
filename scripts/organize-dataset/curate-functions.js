@@ -254,29 +254,7 @@ const dropHandler = async (
               },
             ];
 
-            //save the unselected milestones into sodaJSONObj
-            sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-imported-milestones"] =
-              guidedMilestoneData;
-
-            sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] = filepath;
-
-            renderMilestoneSelectionTable(guidedMilestoneData);
-
-            unHideAndSmoothScrollToElement("guided-div-data-deliverables-import");
-
-            let dragDropContainer = document.getElementById(paraElement).parentElement;
-
-            let lottieContainer = dragDropContainer.querySelector(
-              ".code-metadata-lottie-container"
-            );
-            lottieContainer.innerHTML = "";
-            lottie.loadAnimation({
-              container: lottieContainer,
-              animationData: successCheck,
-              renderer: "svg",
-              loop: true,
-              autoplay: true,
-            });
+            await openSubmissionMultiStepSwal(guidedMilestoneData);
           }
         } catch (error) {
           clientError(error);

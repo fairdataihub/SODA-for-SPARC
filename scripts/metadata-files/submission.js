@@ -190,10 +190,10 @@ const openSubmissionMultiStepSwal = async (milestoneRes) => {
           completionDate = uniqueCompletionDates[0];
           // Add a radio button for the unique completion date
           document.getElementById("guided-completion-date-container").innerHTML =
-            createCompletionDateRadioElement("completion-date", uniqueCompletionDate);
+            createCompletionDateRadioElement("completion-date", completionDate);
           //check the completion date
           document.querySelector(
-            `input[name="completion-date"][value="${uniqueCompletionDate}"]`
+            `input[name="completion-date"][value="${completionDate}"]`
           ).checked = true;
         }
 
@@ -239,6 +239,19 @@ const openSubmissionMultiStepSwal = async (milestoneRes) => {
     completionDateInput.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
     //select the completion date that was added
     completionDateInput.value = completionDate;
+
+    const sectionThatAsksIfDataDeliverablesReady = document.getElementById(
+      "guided-section-user-has-data-deliverables-question"
+    );
+    const sectionSubmissionMetadataInputs = document.getElementById(
+      "guided-section-submission-metadata-inputs"
+    );
+    const sectionDataDeliverablesImport = document.getElementById(
+      "guided-section-import-data-deliverables-document"
+    );
+    sectionThatAsksIfDataDeliverablesReady.classList.add("hidden");
+    sectionDataDeliverablesImport.classList.add("hidden");
+    sectionSubmissionMetadataInputs.classList.remove("hidden");
   } else {
     console.log("cancelled");
   }
