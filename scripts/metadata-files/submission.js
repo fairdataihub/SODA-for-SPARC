@@ -409,8 +409,6 @@ const getCheckedMilestones = () => {
   return checkedMilestoneData;
 };
 
-const importDataDeliverables = async (curationMode) => {};
-
 const openDDDimport = async (curationMode) => {
   let filepath = await ipcRenderer.invoke("open-file-dialog-data-deliverables");
   if (filepath.length > 0) {

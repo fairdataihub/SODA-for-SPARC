@@ -1084,40 +1084,65 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-create-submission-metadata-tab") {
-      const award = document.getElementById("guided-submission-sparc-award-manual").value;
-      const milestones = getTagsFromTagifyElement(guidedSubmissionTagsTagifyManual);
-      const completionDate = document.getElementById(
-        "guided-submission-completion-date-manual"
-      ).value;
+      const datasetIsSparcFunded = document
+        .getElementById("guided-button-dataset-is-sparc")
+        .classList.contains("selected");
+      const datasetIsNotSparcFunded = document
+        .getElementById("guided-button-dataset-is-not-sparc")
+        .classList.contains("selected");
 
-      if (award === "") {
+      if (!datasetIsSparcFunded && !datasetIsNotSparcFunded) {
         errorArray.push({
           type: "notyf",
-          message: "Please add a SPARC award number to your submission metadata",
+          message: "Please indicate if your dataset is SPARC funded",
         });
-      }
-      if (completionDate === "Select a completion date") {
-        errorArray.push({
-          type: "notyf",
-          message: "Please add a completion date to your submission metadata",
-        });
-      }
-      if (milestones.length === 0) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please add at least one milestone to your submission metadata",
-        });
-      }
-      if (errorArray.length > 0) {
         throw errorArray;
       }
 
-      // save the award string to JSONObj to be shared with other award inputs
-      sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = award;
-      //Save the data and milestones to the sodaJSONObj
-      sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = milestones;
-      sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = completionDate;
-      sodaJSONObj["dataset-metadata"]["submission-metadata"]["submission-data-entry"] = "manual";
+      if (datasetIsSparcFunded) {
+        const award = document.getElementById("guided-submission-sparc-award-manual").value;
+        const milestones = getTagsFromTagifyElement(guidedSubmissionTagsTagifyManual);
+        const completionDate = document.getElementById(
+          "guided-submission-completion-date-manual"
+        ).value;
+
+        if (award === "") {
+          errorArray.push({
+            type: "notyf",
+            message: "Please add a SPARC award number to your submission metadata",
+          });
+        }
+        if (completionDate === "Select a completion date") {
+          errorArray.push({
+            type: "notyf",
+            message: "Please add a completion date to your submission metadata",
+          });
+        }
+        if (milestones.length === 0) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please add at least one milestone to your submission metadata",
+          });
+        }
+        if (errorArray.length > 0) {
+          throw errorArray;
+        }
+
+        // save the award string to JSONObj to be shared with other award inputs
+        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = award;
+        //Save the data and milestones to the sodaJSONObj
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = milestones;
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = completionDate;
+      }
+
+      if (datasetIsNotSparcFunded) {
+        // save all submission metadata values as N/A as we still want to upload the submission metadata file for
+        // non-sparc funded datasets, but all fields should be N/A
+        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = "N/A";
+        //Save the data and milestones to the sodaJSONObj
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = ["N/A"];
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = "N/A";
+      }
     }
 
     if (pageBeingLeftID === "guided-contributors-tab") {
@@ -3692,6 +3717,13 @@ const openPage = async (targetPageID) => {
 
           if (sparcAwardRes) {
             sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = sparcAwardRes;
+            if (sparcAwardRes === "N/A") {
+              document.getElementById("guided-button-dataset-is-not-sparc").click();
+            }
+            // If the SPARC award length is greater than 4, we can assume it is a valid SPARC award
+            if (sparcAwardRes.length > 4) {
+              document.getElementById("guided-button-dataset-is-sparc").click();
+            }
           }
 
           if (pennsieveMileStones) {
@@ -3728,18 +3760,20 @@ const openPage = async (targetPageID) => {
 
       //Update the UI if their respective keys exist in the sodaJSONObj
       const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-      if (sparcAward) {
+      if (sparcAward && sparcAward !== "N/A") {
         sparcAwardInputManual.value = sparcAward;
       }
       const milestones = sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
       if (milestones) {
-        guidedSubmissionTagsTagifyManual.addTags(milestones);
+        if (!milestones.length === 1 && milestones[0] === "N/A") {
+          guidedSubmissionTagsTagifyManual.addTags(milestones);
+        }
       }
       const completionDate =
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"];
 
-      if (completionDate === "") {
-        completionDateInputManual.value = "";
+      if (completionDate === "" || completionDate === "N/A") {
+        completionDateInputManual.value = "Select a completion date";
       } else {
         if (completionDate) {
           completionDateInputManual.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
@@ -3750,19 +3784,19 @@ const openPage = async (targetPageID) => {
 
       // If all submission metadata is present, Hide the question that asks if the data deliverable document is ready
       // and show the submission metadata inputs
+      const sectionThatAsksIfDataDeliverablesReady = document.getElementById(
+        "guided-section-user-has-data-deliverables-question"
+      );
+      const sectionSubmissionMetadataInputs = document.getElementById(
+        "guided-section-submission-metadata-inputs"
+      );
       if (sparcAward && milestones) {
-        document
-          .getElementById("guided-section-user-has-data-deliverables-question")
-          .classList.add("hidden");
-        document
-          .getElementById("guided-section--data-derivative-manual")
-          .classList.remove("hidden");
+        sectionThatAsksIfDataDeliverablesReady.classList.add("hidden");
+        sectionSubmissionMetadataInputs.classList.remove("hidden");
       } else {
-        document
-          .getElementById("guided-section-user-has-data-deliverables-question")
-          .classList.remove("hidden");
-        document.getElementById("guided-section--data-derivative-manual").classList.add("hidden");
-
+        sectionThatAsksIfDataDeliverablesReady.classList.remove("hidden");
+        sectionSubmissionMetadataInputs.classList.add("hidden");
+        // Load the lottie animation where the user can drag and drop the data deliverable document
         const dataDeliverableLottieContainer = document.getElementById(
           "data-deliverable-lottie-container"
         );
@@ -11486,6 +11520,7 @@ $(document).ready(async () => {
       const guidedCompletionDate =
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"];
       let guidedSubmissionMetadataJSON = [];
+
       guidedSubmissionMetadataJSON.push({
         award: guidedSparcAward,
         date: guidedCompletionDate,
