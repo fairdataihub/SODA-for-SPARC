@@ -236,7 +236,8 @@ const openSubmissionMultiStepSwal = async (milestoneRes) => {
       },
     },
   ]);
-  if (milestoneValues) {
+
+  if (milestoneData && completionDate) {
     console.log(milestoneData);
     console.log(completionDate);
 
