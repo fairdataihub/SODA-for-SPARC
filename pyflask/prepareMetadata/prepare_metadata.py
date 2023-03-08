@@ -53,11 +53,11 @@ PENNSIEVE_URL = "https://api.pennsieve.io"
 manifest_folder_path = join(userpath, "SODA", "manifest_files")
 
 ### Sets the TEMPLATE_PATH using SODA-for-SPARC's basepath so that the prepare_metadata section can find
-### the templates stored in file_templates direcotory
+### the templates stored in file_templates directory
 def set_template_path(soda_base_path, soda_resources_path):
     """
     Sets the TEMPLATE_PATH using SODA-for-SPARC's basepath so that the prepare_metadata section can find
-    the templates stored in file_templates direcotory.
+    the templates stored in file_templates directory.
     """
     global TEMPLATE_PATH
 

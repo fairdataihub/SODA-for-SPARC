@@ -1310,7 +1310,7 @@ const openSidebar = (buttonElement) => {
   }
 };
 
-// Assign dragable area in the code to allow for dragging and selecting items//
+// Assign draggable area in the code to allow for dragging and selecting items//
 let drag_event_fired = false;
 let dragselect_area = new DragSelect({
   selectables: document.querySelectorAll(".single-item"),
@@ -4553,7 +4553,7 @@ ipcRenderer.on("selected-folders-organize-datasets", async (event, pathElement) 
   if (irregularFolderArray.length > 0) {
     Swal.fire({
       title:
-        "As per the SPARC Data Standards, folder names must contain only alphanumeric values 0-9, A-Z (no special characters, no empty spaces). The folders listed below don't comply with these guidlines. What would you like to do?",
+        "As per the SPARC Data Standards, folder names must contain only alphanumeric values 0-9, A-Z (no special characters, no empty spaces). The folders listed below don't comply with these guidelines. What would you like to do?",
       html:
         "<div style='max-height:300px; overflow-y:auto'>" +
         irregularFolderArray.join("</br>") +
@@ -5446,7 +5446,7 @@ const dropHelper = async (
                     nonAllowedDuplicate = true;
                     continue;
                   } else {
-                    //file path and object key path arent the same
+                    //file path and object key path aren't the same
                     //check if the file name are the same
                     //if so consider it as a duplicate
 
@@ -7976,7 +7976,7 @@ async function initiate_generate() {
       uploadLocally.className = "content-button is-selected";
       uploadLocally.style = "background-color: #fff";
       console.error(error);
-      //Clear the interval to stop the generation of new sweet alerts after intitial error
+      //Clear the interval to stop the generation of new sweet alerts after initial error
       clearInterval(timerProgress);
       return;
     }
@@ -8782,7 +8782,7 @@ function logMetadataForAnalytics(
     granularity === AnalyticsGranularity.ALL_LEVELS ||
     granularity === AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION
   ) {
-    // track every time the user wanted to generate a metadata file or everytime the user wanted to use a pre-existing metadata file
+    // track every time the user wanted to generate a metadata file or every time the user wanted to use a pre-existing metadata file
     ipcRenderer.send("track-event", `${category}`, actionName, action, 1);
   }
 

@@ -169,7 +169,7 @@ const logCurationErrorsToAnalytics = async (
   //     );
 
   //     // track that a session failed so we can answer: "How many files were uploaded in a session before failure?" and "Did any session fail?"
-  //     // the last question is analagous to "Did any uploads to Pennsieve fail?" but has the benefit of helping us answer question one;
+  //     // the last question is analogous to "Did any uploads to Pennsieve fail?" but has the benefit of helping us answer question one;
   //     // without an explicit log of a session failing with the amount of files that were attempted that this provides we couldn't answer
   //     // the first question.
   //     ipcRenderer.send(
@@ -212,7 +212,7 @@ const logCurationErrorsToAnalytics = async (
   //   );
 
   //   // track that a session failed so we can answer: "How many files were uploaded in a session before failure?" and "Did any session fail?"
-  //   // the last question is analagous to "Did any uploads to Pennsieve fail?" but has the benefit of helping us answer question one;
+  //   // the last question is analogous to "Did any uploads to Pennsieve fail?" but has the benefit of helping us answer question one;
   //   // without an explicit log of a session failing with the amount of files that were attempted that this provides we couldn't answer
   //   // the first question.
   //   ipcRenderer.send(
@@ -302,7 +302,7 @@ const logCurationSuccessToAnalytics = async (
     }
   }
 
-  // TODO: Move this to inititate generate functions
+  // TODO: Move this to initiate generate functions
   if (dataset_destination == "Pennsieve" && !guidedMode) {
     show_curation_shortcut();
   }

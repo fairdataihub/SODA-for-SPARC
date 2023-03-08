@@ -163,7 +163,7 @@ document.querySelector("#validate-local-dataset-path").addEventListener("click",
     // show confirm button found under the input
     let confirmDatasetBtn = document.querySelector("#validator-confirm-local-dataset-btn");
 
-    // set the field display property to none to remove the field margings
+    // set the field display property to none to remove the field margins
     confirmDatasetBtn.parentElement.style.display = "flex";
   }
 

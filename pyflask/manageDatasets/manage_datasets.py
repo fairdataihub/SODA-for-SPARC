@@ -1291,7 +1291,7 @@ def bf_add_permission_team(
 ):
 
     """
-    Function to add/remove permission fo a team to a selected dataset
+    Function to add/remove permission for a team to a selected dataset
 
     Args:
         selected_bfaccount: name of selected Pennsieve account (string)
@@ -1524,7 +1524,7 @@ def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
     Function to get url of current banner image associated with a selected dataset
 
     Args:
-        selected_bfaccount: name of selected Pennsieve acccount (string)
+        selected_bfaccount: name of selected Pennsieve account (string)
         selected_bfdataset: name of selected Pennsieve dataset (string)
     Return:
         url of banner image (string)

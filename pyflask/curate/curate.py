@@ -1030,7 +1030,7 @@ def generate_dataset_locally(soda_json_structure):
             main_curate_progress_message = (
                 "Copying file " + str(srcfile) + " to " + str(distfile)
             )
-            # track amount of copied files for loggin purposes
+            # track amount of copied files for logging purposes
             mycopyfile_with_metadata(srcfile, distfile)
             main_curation_uploaded_files += 1
 
@@ -1422,7 +1422,7 @@ def create_high_level_manifest_files_existing_bf(
                                 file_extension = "None"
                             dict_folder_manifest["file type"].append(file_extension)
 
-                            # addtional metadata
+                            # additional metadata
                             if "additional-metadata" in file.keys():
                                 dict_folder_manifest["Additional Metadata"].append(
                                     file["additional-metadata"]
@@ -1432,7 +1432,7 @@ def create_high_level_manifest_files_existing_bf(
 
             return dict_folder_manifest
 
-        # create local folder to save manifest files temporarly (delete any existing one first)
+        # create local folder to save manifest files temporarily (delete any existing one first)
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
         makedirs(manifest_folder_path)
 
@@ -1755,7 +1755,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
         """
         Recursively create the path for the item    # Add a new key containing the path to all the files and folders on the
         local data structure.
-        Allows us to see if the folder path of a specfic file already
+        Allows us to see if the folder path of a specific file already
         exists on Pennsieve.
         """
         
@@ -1989,7 +1989,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
 
 def normalize_tracking_folder(tracking_folder):
     """
-    Normalize the tracking folder object to be a dictonary with the shape: {files: {}, folders: {}}. 
+    Normalize the tracking folder object to be a dictionary with the shape: {files: {}, folders: {}}. 
     This shape matches our dataset structure object. Recall, the tracking folder receives information about what folders and 
     files are stored on Pennsieve. We update this as we update Pennsieve's state. 
     """
@@ -2038,8 +2038,8 @@ def cleanup_dataset_root(selected_dataset, my_tracking_folder, ps):
     setting a destination folder for the first file used to create a manifest file. The Pennsieve client is also not updated to support removing
     files from the pennsieve manifest. So maybe we should instead make a subprocess call to the Pennsieve agent and remove the first entry in the 
     manifest file? Time to test! Fear: The subprocess call will not work for a built Mac version. Actually I need to test a built Mac version again it has
-    been some time. Lets make sure this stuff works. If not then ouch cant do it until we are all up to date with the agent and client - a thing for 
-    which there are multiple issues open with the Pennsieve team. No because that doesnt work in the Agent either. lol :<)
+    been some time. Lets make sure this stuff works. If not then ouch can't do it until we are all up to date with the agent and client - a thing for 
+    which there are multiple issues open with the Pennsieve team. No because that doesn't work in the Agent either. lol :<)
     
     """
 
@@ -2530,7 +2530,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         list_upload_manifest_files = []
         if "manifest-files" in soda_json_structure.keys():
             namespace_logger.info("bf_generate_new_dataset (optional) step 4 create manifest list")
-            # create local folder to save manifest files temporarly (delete any existing one first)
+            # create local folder to save manifest files temporarily (delete any existing one first)
             if "auto-generated" in soda_json_structure["manifest-files"]:
                 if soda_json_structure["manifest-files"]["auto-generated"] == True:
                     manifest_files_structure = (
