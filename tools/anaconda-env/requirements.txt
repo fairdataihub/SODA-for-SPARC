@@ -16,7 +16,7 @@ docopt==0.6.2
 ecdsa==0.14.1
 et-xmlfile==1.1.0
 Flask==2.0.2
-flask-restx==1.0.3
+flask-restx==1.0.5
 future==0.18.2
 futures==3.1.1
 gevent==21.12.0
