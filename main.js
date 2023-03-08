@@ -468,7 +468,7 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
   const windowOptions = {
     minHeight: 450,
     width: 1120,
-    height: 500,
+    height: 550,
     center: true,
     show: true,
     icon: __dirname + "/assets/menu-icon/soda_icon.png",

@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
         tableOverflow: true,
         lazyLoading: true,
         loadingSpin: true,
-        tableHeight: "calc(100vh - 193px)",
+        tableHeight: "calc(100vh - 190px)",
         tableWidth: "calc(100vw - 23px)",
         toolbar: [
           {

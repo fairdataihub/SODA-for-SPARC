@@ -68,12 +68,15 @@
 
     <div id="guided-body" class="guided--body">
       <div id="guided-home" class="guided--main-tab">
-        <div class="guided--panel">
-          <h1 class="guided--text-sub-step">
+        <div class="guided--panel" style="margin-top: -1.2rem">
+          <h1
+            class="guided--text-sub-step"
+            style="max-width: 600px; font-size: 23px; text-align: center; margin-top: 0 !important"
+          >
             Share FAIR neuromodulation-relation data and code through the SPARC data curation
             workflow
           </h1>
-
+          <h2>What would you like to do today?</h2>
           <div class="justify-center" id="curate-new-home" style="align-items: center">
             <div class="container--dashed" id="guided-button-start-new-curate">
               <div
@@ -85,7 +88,7 @@
                   justify-content: space-between;
                 "
               >
-                <h2 class="guided--text-sub-step" style="margin-right: 5.5rem">
+                <h2 class="guided--text-sub-step" style="margin-right: 3.5rem">
                   Curate a New Dataset
                 </h2>
                 <p class="guided-home-button-details">
@@ -102,11 +105,11 @@
                   flex-direction: column;
                   height: 100%;
                   justify-content: space-between;
-                  margin-top: 1rem;
+                  margin-top: 0;
                   margin-bottom: 1rem;
                 "
               >
-                <h2 class="guided--text-sub-step" style="margin-right: 4rem">
+                <h2 class="guided--text-sub-step" style="margin-right: 1.5rem">
                   Resume Existing Dataset
                 </h2>
                 <p class="guided-home-button-details">
@@ -138,9 +141,7 @@
                   justify-content: space-between;
                 "
               >
-                <h2 class="guided--text-sub-step" style="margin-right: 2rem">
-                  Modify Dataset Component
-                </h2>
+                <h2 class="guided--text-sub-step">Modify Dataset Component</h2>
                 <p class="guided-home-button-details">
                   I want to edit specific aspects of my dataset (create metadata files, add banner
                   image, etc)
@@ -346,7 +347,7 @@
                   class="ui button guided--radio-button guided--tab-button selected"
                   id="guided-button-view-datasets-in-progress"
                   data-next-element="guided-div-resume-progress-cards"
-                  style="width: 250px"
+                  style="width: 250px; font-family: Poppins"
                 >
                   Datasets in progress
                 </button>
@@ -3485,7 +3486,7 @@
                 <div class="w-100" id="guided-accordian-custom-fields"></div>
                 <div
                   class="ui secondary submit button"
-                  style="margin: 20px"
+                  style="margin: 20px; font-family: Poppins"
                   onclick="addCustomField('subjects', 'guided')"
                 >
                   <svg
@@ -3916,7 +3917,7 @@
                 <div class="w-100" id="guided-accordian-custom-fields-samples"></div>
                 <div
                   class="ui secondary submit button"
-                  style="margin: 20px"
+                  style="margin: 20px; font-family: Poppins"
                   onclick="addCustomField('samples', 'guided')"
                 >
                   <svg
@@ -4374,7 +4375,11 @@
                 </div>
                 <div class="modal-body">
                   <div id="guided-div-editbanner-img" style="display: flex; flex-direction: row">
-                    <div id="guided-div-img-container-holder" class="img-container">
+                    <div
+                      id="guided-div-img-container-holder"
+                      class="img-container"
+                      style="padding-top: 6rem"
+                    >
                       Imported image will be shown here. <br />You will be able to crop it before
                       uploading.
                     </div>
@@ -4497,7 +4502,7 @@
               </thead>
               <tbody id="permissions-table-body"></tbody>
             </table>
-            <div class="guided--container-permissions mb-md">
+            <div class="guided--container-permissions mb-md" style="margin-top: 1rem">
               <div style="flex-grow: 1">
                 <div
                   class="field"
@@ -4558,13 +4563,13 @@
                 Designate permission
               </button>
             </div>
-            <div class="guided--info-dropdown">
+            <div class="guided--info-dropdown" style="margin-left: -1rem">
               <p class="guided--dropdown-text" data-dropdown-type="warning">
                 I don't see my team or team members
               </p>
               <i class="fas fa-chevron-right"></i>
             </div>
-            <div class="guided--info-container">
+            <div class="guided--info-container" style="margin-left: -0.5rem">
               <p class="guided--help-text mb-0">
                 Users or teams must have a Pennsieve account and have access to the SPARC Consortium
                 organization before you can grant them dataset permissions. Instructions on how to
@@ -5508,7 +5513,12 @@
             <button
               class="ui positive button guided--button-footer mt-lg"
               id="guided-button-share-dataset-with-curation-team"
-              style="background-color: var(--color-light-green) !important; width: 270px !important"
+              style="
+                background-color: var(--color-light-green) !important;
+                width: 281px !important;
+                height: 3.2rem;
+                font-family: Poppins;
+              "
               onclick="guidedModifyCurationTeamAccess('share')"
             >
               Share with SPARC Curation Team</button
@@ -5529,7 +5539,7 @@
         <button
           class="ui secondary basic button guided--button-footer"
           id="guided-back-button"
-          style="width: 200px !important"
+          style="width: 200px !important; font-family: Poppins"
         >
           <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
         </button>
@@ -5538,14 +5548,18 @@
         <button
           class="ui positive button guided--button-footer"
           id="guided-next-button"
-          style="background-color: var(--color-light-green) !important; width: 200px !important"
+          style="
+            background-color: var(--color-light-green) !important;
+            width: 200px !important;
+            font-family: Poppins;
+          "
         >
           Save and Continue
         </button>
         <button
           class="ui secondary basic button guided--button-footer guided--button-basic"
           id="guided-button-save-and-exit"
-          style="width: 150px !important"
+          style="width: 160px !important; font-family: Poppins"
           onclick="guidedSaveAndExit()"
         >
           <i class="far fa-save" style="margin-right: 10px"></i>
@@ -5558,7 +5572,7 @@
         <button
           class="ui secondary basic button guided--button-footer"
           id="guided-button-sub-page-back"
-          style="width: 130px !important"
+          style="width: 130px !important; font-family: Poppins"
         >
           <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Back
         </button>
@@ -5567,13 +5581,13 @@
         <button
           class="ui secondary basic button guided--button-footer guided--button-basic"
           id="guided-button-sub-page-continue"
-          style="width: 130px !important"
+          style="width: 130px !important; font-family: Poppins"
         >
           Next</button
         ><button
           class="ui secondary basic button guided--button-footer guided--button-basic"
           id="guided-button-sub-page-save-and-exit"
-          style="width: 150px !important"
+          style="width: 160px !important; font-family: Poppins"
           onclick="guidedSaveAndExit()"
         >
           <i class="far fa-save" style="margin-right: 10px"></i>

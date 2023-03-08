@@ -50,7 +50,7 @@
   background: var(--color-sidebar);
   border-top: 1px solid #d5d5d5;
   color: #f0f0f0;
-  font-family: "Source Sans Pro", sans-serif;
+  font-family: "Poppins", sans-serif;
   transition: all 0.25s linear;
   transform-origin: 0 50%; /* Set the transformed position of sidebar to center left side. */
 }
@@ -348,7 +348,7 @@ a[data-toggle="collapse"] {
   outline: none;
   opacity: 0.8;
   cursor: pointer;
-  font-family: "Open Sans", sans-serif;
+  font-family: "Poppins", sans-serif;
   background-size: 30px 30px;
   background-repeat: no-repeat;
   background-position: 22px center;

@@ -1,14 +1,15 @@
 /* Fonts ---------------------------- */
+@import url("https://fonts.googleapis.com/css?family=Poppins:400,500,600,700");
 
 @font-face {
-  font-family: "Montserrat", sans-serif;
+  font-family: "Poppins", sans-serif;
   /* font-family: 'Source Code Pro'; */
   font-style: normal;
   font-weight: 400;
   /* src: local('Source Code Pro'), local('SourceCodePro'), url(fonts/SourceCodePro-Regular.ttf) format('truetype'); */
 }
 
-/* Global ---------------------------- */
+/* Global CSS to Standardize the styling used throughout SODA */
 
 * {
   box-sizing: border-box;
@@ -16,7 +17,8 @@
 
 html {
   height: 100%;
-  font-family: "BlinkMacSystemFont", "Lucida Grande", "Segoe UI", Ubuntu, Cantarell, sans-serif;
+  font-family: Poppins, "BlinkMacSystemFont", "Lucida Grande", "Segoe UI", Ubuntu, Cantarell,
+    sans-serif;
   font-size: 14px;
   line-height: 1.5;
   overflow: hidden; /* Prevents rubber-band scrolling of the whole "page" */
@@ -39,26 +41,76 @@ h2,
 h3 {
   margin-top: 0;
   line-height: 1.5;
+  font-family: Poppins;
 }
 
 h1 {
   font-size: 1.5em;
   font-weight: 600;
+  font-family: Poppins;
 }
 
 h2 {
   font-size: 1.3em;
   font-weight: 600;
+  font-family: Poppins;
 }
 
 h3 {
   font-size: 1.12em;
   font-weight: 600;
+  font-family: Poppins;
 }
 
 h5 {
   font-size: 1em;
   font-weight: 600;
+  font-family: Poppins;
+}
+
+p {
+  font-family: Poppins;
+}
+
+label {
+  font-family: Poppins;
+}
+
+button {
+  font-family: Poppins;
+}
+
+a {
+  font-family: Poppins;
+}
+
+select {
+  font-family: Poppins;
+}
+
+span {
+  font-family: Poppins;
+}
+
+option {
+  font-family: Poppins;
+}
+
+textarea {
+  font-size: 15px;
+  font-family: Poppins;
+}
+
+font {
+  font-family: Poppins;
+}
+
+input {
+  font-family: Poppins !important;
+}
+
+div {
+  font-family: Poppins;
 }
 
 /* svg {

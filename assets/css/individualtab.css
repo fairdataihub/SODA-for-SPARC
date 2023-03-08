@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css?family=Poppins:400,500,600,700");
+
 .option-card {
   max-height: 160px;
   min-height: 140px;
@@ -159,6 +161,7 @@
   font-size: 14px;
   padding-left: 20px;
   padding-top: 5px;
+  margin-top: 1rem !important;
 }
 
 .card-head i {
@@ -231,6 +234,10 @@
 }
 
 .card-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  flex-direction: column;
   text-align: center;
   padding: 10px !important;
   margin-top: 10px;
@@ -306,7 +313,7 @@
   color: var(--color);
   font-size: 17px;
   margin: 20px;
-  font-family: "Raleway", sans-serif;
+  font-family: "Poppins", sans-serif;
   font-weight: 500;
 }
 
@@ -446,7 +453,7 @@
   padding-left: 5px;
   padding-top: 0;
   margin: 0 auto;
-  font-family: "Raleway", sans-serif;
+  font-family: "Poppins", sans-serif;
 }
 
 .multi-steps > li {
@@ -1760,9 +1767,13 @@ body.swal2-shown > [aria-hidden="true"] {
   display: inline-block;
   position: relative;
   z-index: 1;
-  padding: 2em;
+  padding-left: 2rem;
   padding-right: 3em;
   margin: -2em;
+}
+
+#prepublishing-checklist td {
+  vertical-align: middle;
 }
 
 #prepublishing-checklist button:hover {
