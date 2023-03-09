@@ -3718,7 +3718,7 @@ const openPage = async (targetPageID) => {
             }
             console.log(sparcAwardRes);
             // If the SPARC award length is greater than 3, we can assume it is a valid SPARC award
-            if (sparcAwardRes.length > 3) {
+            if (sparcAwardRes.length > 5) {
               document.getElementById("guided-button-dataset-is-sparc").click();
             }
           }
