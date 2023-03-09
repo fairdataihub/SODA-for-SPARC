@@ -213,7 +213,10 @@ const dropHandler = async (
             },
           });
           let res = extract_milestone.data;
-          milestoneObj = res;
+
+          // Get the SPARC award and milestone data from the response
+          const importedSparcAward = res["sparc_award"];
+          const milestoneObj = res["milestone_data"];
 
           //Handle free-form mode submission data
           if (curationMode === "free-form") {
@@ -238,47 +241,7 @@ const dropHandler = async (
 
           //Handle guided mode submission data
           if (curationMode === "guided") {
-            const guidedMilestoneData = res;
-            //create a string with today's date in the format xxxx/xx/xx
-            const today = new Date();
-            const todayString = `
-                  ${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}
-                `;
-            //add a custom milestone row for when the user wants to add a custom milestone
-            //not included in the dataset deliverables document
-            guidedMilestoneData["Not included in the Dataset Deliverables document"] = [
-              {
-                "Description of data":
-                  "Select this option when the dataset you are submitting is not related to a pre-agreed milestone",
-                "Expected date of completion": "N/A",
-              },
-            ];
-
-            //save the unselected milestones into sodaJSONObj
-            sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-imported-milestones"] =
-              guidedMilestoneData;
-
-            sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] = filepath;
-
-            renderMilestoneSelectionTable(guidedMilestoneData);
-
-            guidedSubmissionTagsTagify.settings.whitelist = [];
-
-            unHideAndSmoothScrollToElement("guided-div-data-deliverables-import");
-
-            let dragDropContainer = document.getElementById(paraElement).parentElement;
-
-            let lottieContainer = dragDropContainer.querySelector(
-              ".code-metadata-lottie-container"
-            );
-            lottieContainer.innerHTML = "";
-            lottie.loadAnimation({
-              container: lottieContainer,
-              animationData: successCheck,
-              renderer: "svg",
-              loop: true,
-              autoplay: true,
-            });
+            await openSubmissionMultiStepSwal(importedSparcAward, milestoneObj);
           }
         } catch (error) {
           clientError(error);

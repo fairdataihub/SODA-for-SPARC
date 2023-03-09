@@ -78,6 +78,22 @@ def set_template_path(soda_base_path, soda_resources_path):
 
 
 ### Import Data Deliverables document
+
+
+def import_sparc_award(filepath):
+    """
+        Import SPARC Award from Data Deliverables document
+    """
+    doc = Document(filepath)
+    ## Go through the paragraphs in the doc, and return the text of the first paragraph that contains the word "SPARC award #:"
+    ## If no paragraph contains the word "SPARC award #:", then return an empty string
+    sparc_award = ""
+    for paragraph in doc.paragraphs:
+        if "SPARC award #:" in paragraph.text:
+            sparc_award = paragraph.text.split(":")[1].strip()
+    return sparc_award
+
+
 def import_milestone(filepath):
     """
         Import Data Deliverables document

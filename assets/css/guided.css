@@ -2,9 +2,9 @@
 
 /* change the font to siblints of guided--body to Poppins except i elemenets */
 
-/*.guided--body *:not(i) {
+.guided--body *:not(i) {
   font-family: "Poppins", sans-serif;
-}*/
+}
 
 .guided--nav {
   min-height: 100vh;
@@ -208,6 +208,15 @@
   width: 500px;
   z-index: 100000;
   background-color: aqua;
+}
+
+.scrollable-swal-content-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+  overflow-y: auto;
 }
 
 .guided--text-instructional-content {
@@ -419,13 +428,12 @@
 }
 
 .guided--section {
-  padding: 12px;
-  padding-left: 0;
-  padding-right: 0;
+  padding-top: 12px;
+  padding-bottom: 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 90%;
+  width: 100%;
   max-width: 800px;
 }
 

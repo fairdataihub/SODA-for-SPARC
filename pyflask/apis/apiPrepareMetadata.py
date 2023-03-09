@@ -3,6 +3,7 @@ from prepareMetadata import (
     save_ds_description_file,
     upload_code_description_metadata,
     extract_milestone_info,
+    import_sparc_award,
     import_milestone,
     save_subjects_file,
     convert_subjects_samples_file_to_df,
@@ -535,13 +536,17 @@ class ImportMilestone(Resource):
     parser_import_milestone.add_argument('path', type=str, help='Path to the local data deliverables document', location="args")
 
     @api.expect(parser_import_milestone)
-    @api.doc(description='Import a milestone from the user\'s machine.', responses={500: "Internal Server Error", 400: "Bad Request"})
+    @api.doc(description='Import the SPARC award and milestone data from the data deliverables document', responses={500: "Internal Server Error", 400: "Bad Request"})
     def get(self):
         args = self.parser_import_milestone.parse_args()
         path = args['path']
         try:
-            data = import_milestone(path)
-            return extract_milestone_info(data)
+            milestone_import = import_milestone(path)
+            sparc_award = import_sparc_award(path)
+            return {
+                "milestone_data": extract_milestone_info(milestone_import), 
+                "sparc_award": sparc_award
+            }
         except Exception as e:
             # check if invalidDataDeliverablesDocument exception
             if type(e).__name__  == 'InvalidDataDeliverablesDocument':
