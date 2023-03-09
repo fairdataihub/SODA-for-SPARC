@@ -141,7 +141,7 @@ const openSubmissionMultiStepSwal = async (sparcAward, milestoneRes) => {
     allowOutsideClick: false,
   }).queue([
     {
-      title: "Select the milestones associated with this dataset:",
+      title: "Select the milestones associated with this submission:",
       html: `
           <div class="scrollable-swal-content-container" id="milestone-selection-table-container">
              <table
@@ -174,7 +174,7 @@ const openSubmissionMultiStepSwal = async (sparcAward, milestoneRes) => {
       },
     },
     {
-      title: "Select the milestones associated with this dataset:",
+      title: "Select the completion date associated with this submission:",
       html: `
           <div class="scrollable-swal-content-container">
             <div class="justify-center">

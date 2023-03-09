@@ -3711,12 +3711,22 @@ const openPage = async (targetPageID) => {
           const pennsieveMileStones = res["Milestone achieved"];
           const pennsieveCompletionDate = res["Milestone completion date"];
 
+          // If all submission metadata fields are empty or N/A, then we can assume the dataset is not SPARC
+          // Sorry if you have to read this but the openxyl engine replaces N/A with an empty string
+          if (
+            (sparcAwardRes.length === 0 || sparcAwardRes === "N/A") &&
+            (pennsieveMileStones.length === 0 ||
+              (pennsieveMileStones.length === 1 && pennsieveMileStones[0] === "N/A") ||
+              pennsieveMileStones[0] === "") &&
+            (pennsieveCompletionDate.length === 0 || pennsieveCompletionDate === "N/A")
+          ) {
+            document.getElementById("guided-button-dataset-is-not-sparc").click();
+          }
+
+          // If the SPARC award is not empty or N/A, then we can assume the dataset is SPARC
+          // We also check to see if the SPARC award is greater than 5 before clicking the dataset is SPARC button
           if (sparcAwardRes) {
             sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = sparcAwardRes;
-            if (sparcAwardRes === "N/A") {
-              document.getElementById("guided-button-dataset-is-not-sparc").click();
-            }
-            console.log(sparcAwardRes);
             // If the SPARC award length is greater than 3, we can assume it is a valid SPARC award
             if (sparcAwardRes.length > 5) {
               document.getElementById("guided-button-dataset-is-sparc").click();
