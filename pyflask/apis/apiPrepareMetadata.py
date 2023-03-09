@@ -541,8 +541,8 @@ class ImportMilestone(Resource):
         args = self.parser_import_milestone.parse_args()
         path = args['path']
         try:
-            sparc_award = import_sparc_award(path)
             milestone_import = import_milestone(path)
+            sparc_award = import_sparc_award(path)
             return {
                 "milestone_data": extract_milestone_info(milestone_import), 
                 "sparc_award": sparc_award

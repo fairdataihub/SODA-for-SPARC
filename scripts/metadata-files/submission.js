@@ -238,9 +238,10 @@ const openSubmissionMultiStepSwal = async (sparcAward, milestoneRes) => {
   ]);
 
   if (milestoneData && completionDate) {
-    // Fill the SPARC award input with the imported SPARC award
-    const sparcAwardInput = document.getElementById("guided-submission-sparc-award-manual");
-    sparcAwardInput.value = sparcAward;
+    // Fill the SPARC award input with the imported SPARC award if it was found (otherwise it will be an empty string)
+    if (sparcAward.length > 0) {
+      document.getElementById("guided-submission-sparc-award-manual").value = sparcAward;
+    }
 
     // Remove duplicate milestones from milestoneData and add them to the tagify input
     const uniqueMilestones = Array.from(
@@ -267,8 +268,6 @@ const openSubmissionMultiStepSwal = async (sparcAward, milestoneRes) => {
     sectionThatAsksIfDataDeliverablesReady.classList.add("hidden");
     sectionDataDeliverablesImport.classList.add("hidden");
     sectionSubmissionMetadataInputs.classList.remove("hidden");
-  } else {
-    console.log("cancelled");
   }
 };
 

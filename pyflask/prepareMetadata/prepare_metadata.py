@@ -85,14 +85,13 @@ def import_sparc_award(filepath):
         Import SPARC Award from Data Deliverables document
     """
     doc = Document(filepath)
-    ## Go through the paragraphs in the doc, and return the text of the first paragraph that contains the word "Award number"
-    ## If no paragraph contains the word "Award number", then raise an error
+    ## Go through the paragraphs in the doc, and return the text of the first paragraph that contains the word "SPARC award #:"
+    ## If no paragraph contains the word "SPARC award #:", then return an empty string
+    sparc_award = ""
     for paragraph in doc.paragraphs:
         if "SPARC award #:" in paragraph.text:
-            return paragraph.text.split(":")[1].strip()
-    raise InvalidDeliverablesDocument(
-        "Please select a valid SPARC Deliverables Document! The SPARC Award number could not be found in the document you selected."
-    )
+            sparc_award = paragraph.text.split(":")[1].strip()
+    return sparc_award
 
 
 def import_milestone(filepath):
