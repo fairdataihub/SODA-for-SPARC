@@ -78,6 +78,23 @@ def set_template_path(soda_base_path, soda_resources_path):
 
 
 ### Import Data Deliverables document
+
+
+def import_sparc_award(filepath):
+    """
+        Import SPARC Award from Data Deliverables document
+    """
+    doc = Document(filepath)
+    ## Go through the paragraphs in the doc, and return the text of the first paragraph that contains the word "Award number"
+    ## If no paragraph contains the word "Award number", then raise an error
+    for paragraph in doc.paragraphs:
+        if "SPARC award #:" in paragraph.text:
+            return paragraph.text.split(":")[1].strip()
+    raise InvalidDeliverablesDocument(
+        "Please select a valid SPARC Deliverables Document! The SPARC Award number could not be found in the document you selected."
+    )
+
+
 def import_milestone(filepath):
     """
         Import Data Deliverables document

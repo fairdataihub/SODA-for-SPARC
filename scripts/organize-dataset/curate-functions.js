@@ -213,7 +213,10 @@ const dropHandler = async (
             },
           });
           let res = extract_milestone.data;
-          milestoneObj = res;
+
+          // Get the SPARC award and milestone data from the response
+          const importedSparcAward = res["sparc_award"];
+          const milestoneObj = res["milestone_data"];
 
           //Handle free-form mode submission data
           if (curationMode === "free-form") {
@@ -238,7 +241,7 @@ const dropHandler = async (
 
           //Handle guided mode submission data
           if (curationMode === "guided") {
-            await openSubmissionMultiStepSwal(res);
+            await openSubmissionMultiStepSwal(importedSparcAward, milestoneObj);
           }
         } catch (error) {
           clientError(error);

@@ -116,7 +116,7 @@ function resetSubmissionFields() {
   );
 }
 
-const openSubmissionMultiStepSwal = async (milestoneRes) => {
+const openSubmissionMultiStepSwal = async (sparcAward, milestoneRes) => {
   console.log("milestoneRes", milestoneRes);
 
   //add a custom milestone row for when the user wants to add a custom milestone
@@ -238,20 +238,23 @@ const openSubmissionMultiStepSwal = async (milestoneRes) => {
   ]);
 
   if (milestoneData && completionDate) {
-    console.log(milestoneData);
-    console.log(completionDate);
+    // Fill the SPARC award input with the imported SPARC award
+    const sparcAwardInput = document.getElementById("guided-submission-sparc-award-manual");
+    sparcAwardInput.value = sparcAward;
 
+    // Remove duplicate milestones from milestoneData and add them to the tagify input
     const uniqueMilestones = Array.from(
       new Set(milestoneData.map((milestone) => milestone.milestone))
     );
     guidedSubmissionTagsTagifyManual.removeAllTags();
     guidedSubmissionTagsTagifyManual.addTags(uniqueMilestones);
 
+    // Add the completion date to the completion date dropdown and select it
     const completionDateInput = document.getElementById("guided-submission-completion-date-manual");
     completionDateInput.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
-    //select the completion date that was added
     completionDateInput.value = completionDate;
 
+    // Hide the milestone selection section and show the submission metadata section
     const sectionThatAsksIfDataDeliverablesReady = document.getElementById(
       "guided-section-user-has-data-deliverables-question"
     );
@@ -301,7 +304,10 @@ const helpMilestoneSubmission = async (curationMode) => {
         },
       });
       let res = extract_milestone.data;
-      milestoneObj = res;
+
+      // Get the SPARC award and milestone data from the response
+      const importedSparcAward = res["sparc_award"];
+      const milestoneObj = res["milestone_data"];
 
       //Handle free-form mode submission data
       if (curationMode === "free-form") {
@@ -326,7 +332,7 @@ const helpMilestoneSubmission = async (curationMode) => {
 
       //Handle guided mode submission data
       if (curationMode === "guided") {
-        await openSubmissionMultiStepSwal(res);
+        await openSubmissionMultiStepSwal(importedSparcAward, milestoneObj);
       }
     } catch (error) {
       console.log(error);
