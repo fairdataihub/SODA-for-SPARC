@@ -59,7 +59,10 @@ async function handleSectionTrigger(event) {
     // keys if the user has started the first step. The user must
     // be warned because Guided Mode uses shared variables and FF progress
     // must be wiped out.
-    if (Object.keys(sodaJSONObj).length > 0) {
+    //Update: Swal will only pop up if user is on organize datasets page only
+    let organizeDataset = document.getElementById("organize-section");
+    console.log(organizeDataset.classList.contains("is-shown"));
+    if (Object.keys(sodaJSONObj).length > 0 || organizeDataset.classList.contains("is-shown")) {
       //get the element with data-next="Question-getting-started-BF-account"
       const buttonContinueExistingPennsieve = document.querySelector(
         '[data-next="Question-getting-started-BF-account"]'

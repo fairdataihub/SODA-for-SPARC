@@ -653,7 +653,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             tip_content.classList.add("tip-content");
             tip_content.style.textAlign = "left";
             tip_container.style.marginTop = "1rem";
-            tip_container.style.tip_container.appendChild(tip_content);
+            tip_container.appendChild(tip_content);
             sweet_al.appendChild(tip_container);
           },
           preConfirm: () => {

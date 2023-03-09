@@ -14,7 +14,8 @@ body {
 }
 
 .save-spreadsheet {
-  margin: 1rem;
+  margin-top: 9px;
+  margin-bottom: 0px;
   height: 3rem;
   border-radius: 4px;
   background: #13716d;

@@ -1843,8 +1843,10 @@ const generateFFManifestEditCard = (highLevelFolderName) => {
         class="ui primary button guided--button-footer"
         style="
           background-color: var(--color-light-green) !important;
-          width: 280px !important;
+          width: 295px !important;
           margin: 4px;
+          height: 3rem;
+          font-size: 13px;
         "
         onClick="ffOpenManifestEditSwal('${highLevelFolderName}')"
       >

@@ -68,49 +68,13 @@ h5 {
   font-family: Poppins;
 }
 
-p {
-  font-family: Poppins;
-}
-
-label {
-  font-family: Poppins;
-}
-
-button {
-  font-family: Poppins;
-}
-
-a {
-  font-family: Poppins;
-}
-
-select {
-  font-family: Poppins;
-}
-
-span {
-  font-family: Poppins;
-}
-
-option {
-  font-family: Poppins;
-}
-
-textarea {
-  font-size: 15px;
-  font-family: Poppins;
-}
-
-font {
-  font-family: Poppins;
-}
-
-input {
+p, label, button, a, select, span, option, div, font, input {
   font-family: Poppins !important;
 }
 
-div {
+textarea {
   font-family: Poppins;
+  font-size: 15px;
 }
 
 /* svg {

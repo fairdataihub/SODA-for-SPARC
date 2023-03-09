@@ -2313,7 +2313,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
                   class="ui positive button guided--button-footer"
                   style="
                     background-color: var(--color-light-green) !important;
-                    width: 160px !important;
+                    width: 175px !important;
                     margin: 4px;
                     margin-bottom: 15px;
                   "
@@ -2327,7 +2327,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
                   class="ui positive button guided--button-footer"
                   style="
                     background-color: var(--color-light-green) !important;
-                    width: 160px !important;
+                    width: 175px !important;
                     margin: 4px;
                     margin-bottom: 15px;
                   "
@@ -10287,8 +10287,8 @@ $(document).ready(async () => {
     guidedUnSkipPage("guided-protocol-folder-tab");
     guidedUnSkipPage("guided-docs-folder-tab");
     //Skip this page becausae we should not come back to it
-    guidedSkipPage("guided-intro-page-tab");
     guidedTransitionFromHome();
+    guidedSkipPage("guided-intro-page-tab");
     guidedUnSkipPage("guided-name-subtitle-tab");
     await openPage("guided-name-subtitle-tab");
   });
