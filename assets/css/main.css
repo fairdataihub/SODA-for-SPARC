@@ -1618,8 +1618,6 @@ details[open] > summary::before {
   animation: demo-box-fade-in 0.2s cubic-bezier(0, 0.2, 0.2, 0.96);
 }
 
-
-
 .about-title {
   font-size: 17px;
   font-weight: 700;

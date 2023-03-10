@@ -63,7 +63,8 @@
   border-color: rgb(244 244 245 / var(--tw-border-opacity));
   --tw-shadow-color: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
   --tw-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000),
+    var(--tw-shadow);
 }
 
 .getting-started-buttons {
@@ -124,7 +125,6 @@
 }
 
 @media (min-height: 900px) {
-
   .getting-started-header {
     margin-top: 8rem;
   }

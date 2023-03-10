@@ -544,6 +544,26 @@ textarea {
   border: 1px solid black !important;
 }
 
+#notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 288px;
+  padding: 20px;
+  z-index: 10000000;
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+#version {
+  white-space: nowrap;
+}
+
+.hidden {
+  display: none;
+}
+
 /* Animations */
 
 .circular {
@@ -626,7 +646,6 @@ textarea {
   -o-transition: none !important;
   transition: none !important;
 }
-
 
 @-webkit-keyframes swing {
   15% {
