@@ -4726,50 +4726,19 @@
           <button
             id="start-over-btn"
             type="button"
-            class="transition-btn popover-tooltip"
+            class=" start-over-button transition-btn popover-tooltip"
             rel="popover"
             data-placement="top"
             data-trigger="hover"
             data-content="Reset your progress and go back to Step 1"
-            style="
-              background-color: #fff;
-              color: #b80d49;
-              border: 1px solid #b80d49;
-              font-weight: 600;
-              padding: 5px;
-
-              margin-left: 10px;
-              right: 10px;
-              margin-bottom: 10px;
-              width: 135px;
-            "
           >
             <i class="fas fa-sync-alt" style="margin-right: 10px"></i>Start over
           </button>
         </div>
         <div style="display: flex; flex-direction: row">
-          <!-- <button
-              id="start-over-btn"
-              type="button"
-              class="transition-btn"
-              style="
-                background-color: #fff;
-                color: #b80d49;
-                border: 1px solid #b80d49;
-                font-weight: 600;
-                padding: 5px;
-                width: 130px;
-
-                right: 10px;
-                margin-bottom: 10px;
-              "
-            >
-              <i class="fas fa-sync-alt" style="margin-right: 10px"></i>Start
-              over
-            </button> -->
           <button
             type="button"
-            class="transition-btn popover-tooltip"
+            class="ui secondary basic button save-and-exit-button transition-btn popover-tooltip"
             data-content="Save your progress and pick up from here later through Step 1 - Option 2: Continue with a previously saved progress in SODA."
             rel="popover"
             data-placement="top"
@@ -4777,16 +4746,7 @@
             id="save-progress-btn"
             onclick="saveOrganizeProgressPrompt()"
             style="
-              background: #fff;
-              color: var(--color-light-green);
-              border: 1px solid var(--color-light-green);
               padding: 8px 10px;
-              width: 135px;
-              height: 38px;
-              font-size: 14px;
-              font-weight: 600;
-              margin-right: 10px;
-              border-radius: 5px;
             "
           >
             <i class="far fa-save" style="margin-right: 10px"></i>Save progress

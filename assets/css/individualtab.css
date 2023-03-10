@@ -327,7 +327,7 @@
   background: var(--color-light-green);
   font-size: 14px;
   font-weight: 600;
-  width: 130px;
+  width: 160px;
   height: 38px;
   color: #fff;
   cursor: pointer;
@@ -1626,8 +1626,8 @@ body.swal2-shown > [aria-hidden="true"] {
 .start-over {
   cursor: pointer;
   border-radius: 5px;
-  width: 120px;
-  height: 35px;
+  width: 135px;
+  height: 38px;
   background-color: #fff;
   color: var(--color-bg-plum);
   font-weight: 600;

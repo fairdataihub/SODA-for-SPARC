@@ -937,19 +937,6 @@ h1.guided--text-sub-step {
   -webkit-transition: all 0.25s linear;
 }
 
-.guided--tile-button-icon {
-  height: 50px;
-  width: 50px;
-}
-.guided--tile-body {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-}
-
 .guided--radio-button.tile-button.selected {
   border: 1px solid var(--color-light-green);
   box-shadow: 0px 0px 3px 0px var(--color-light-green);
@@ -993,10 +980,6 @@ h1.guided--text-sub-step {
 }
 .guided--container-footer-buttons.flex-between {
   justify-content: space-between;
-}
-
-.guided--button-footer {
-  width: 120px !important;
 }
 
 .guided--button {
@@ -1060,9 +1043,7 @@ h1.guided--text-sub-step {
   overflow: auto;
 }
 
-.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
-  height: 100%;
-}
+
 .guided--hlf-selection-container {
   display: flex;
   flex-direction: column;
@@ -1121,10 +1102,6 @@ h1.guided--text-sub-step {
   align-self: center;
 }
 
-.coming-soon-div {
-  pointer-events: none;
-}
-
 .title-border {
   margin-bottom: 15px;
   border-bottom: 5px solid #b80d49;
@@ -1146,16 +1123,6 @@ h1.guided--text-sub-step {
   color: #b80d49;
   font-weight: 600;
   font-size: 1.2rem;
-}
-
-.onHoverBlueBoxShadow:hover {
-  box-shadow: 0 0 6px #b0b0b0 !important;
-  border: 1px solid #1678c2 !important;
-}
-
-.onHoverBlackBoxShadow:hover {
-  box-shadow: 0 0 6px #b0b0b0 !important;
-  border: 1px solid black !important;
 }
 
 .poolContainer {
@@ -1198,72 +1165,6 @@ h1.guided--text-sub-step {
   animation: swing 0.5s ease;
   -webkit-animation-iteration-count: 1;
   animation-iteration-count: 1;
-}
-
-@-webkit-keyframes swing {
-  15% {
-    opacity: 0;
-    -webkit-transform: translateX(-7px);
-    transform: translateX(-7px);
-  }
-  30% {
-    opacity: 0.3;
-    -webkit-transform: translateX(-7px);
-    transform: translateX(-7px);
-  }
-  50% {
-    opacity: 0.5;
-    -webkit-transform: translateX(-7px);
-    transform: translateX(-7px);
-  }
-  65% {
-    opacity: 0.65;
-    -webkit-transform: translateX(-5px);
-    transform: translateX(-5px);
-  }
-  80% {
-    opacity: 0.8;
-    -webkit-transform: translateX(0px);
-    transform: translateX(0px);
-  }
-  100% {
-    opacity: 1;
-    -webkit-transform: translateX(0);
-    transform: translateX(0);
-  }
-}
-
-@keyframes swing {
-  15% {
-    opacity: 0;
-    -webkit-transform: translateX(-7px);
-    transform: translateX(-7px);
-  }
-  30% {
-    opacity: 0.3;
-    -webkit-transform: translateX(-7px);
-    transform: translateX(-7px);
-  }
-  50% {
-    opacity: 0.5;
-    -webkit-transform: translateX(-7px);
-    transform: translateX(-7px);
-  }
-  65% {
-    opacity: 0.65;
-    -webkit-transform: translateX(-5px);
-    transform: translateX(-5px);
-  }
-  80% {
-    opacity: 0.8;
-    -webkit-transform: translateX(0px);
-    transform: translateX(0px);
-  }
-  100% {
-    opacity: 1;
-    -webkit-transform: translateX(0);
-    transform: translateX(0);
-  }
 }
 
 .asideContainer {
@@ -1365,14 +1266,6 @@ h1.guided--text-sub-step {
 .lds-roller div:nth-child(8):after {
   top: 56px;
   left: 12px;
-}
-@keyframes lds-roller {
-  0% {
-    transform: rotate(0deg);
-  }
-  100% {
-    transform: rotate(360deg);
-  }
 }
 
 .tippy-box[data-theme~="soda"] {
