@@ -68,7 +68,16 @@ h5 {
   font-family: Poppins;
 }
 
-p, label, button, a, select, span, option, div, font, input {
+p,
+label,
+button,
+a,
+select,
+span,
+option,
+div,
+font,
+input {
   font-family: Poppins !important;
 }
 
@@ -77,9 +86,342 @@ textarea {
   font-size: 15px;
 }
 
-/* svg {
-  fill: currentColor;
-} */
+
+/* Global classes for text styling */
+
+.help-text {
+  font-size: 16px;
+  max-width: 800px;
+  text-align: justify;
+}
+
+.help-text.small {
+  font-size: 13px;
+  max-width: 650px;
+}
+
+/* Dropdown classes */
+.info-container {
+  background-color: var(--color-transparent-soda-green);
+
+  margin-top: 5px;
+  padding: 10px;
+  width: 100%;
+
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+
+  text-align: justify;
+
+  border: 1px solid var(--color-light-green);
+  border-radius: 3px;
+}
+
+.info-dropdown {
+  display: flex;
+  align-self: flex-start;
+  flex-wrap: nowrap;
+  justify-content: start;
+  align-items: center;
+  cursor: pointer;
+}
+
+.info-dropdown i {
+  margin-left: 6px;
+  margin-right: 6px;
+  font-size: 12px;
+  color: #000;
+}
+
+.info-dropdown-text {
+  margin: 0px;
+  font-weight: 500;
+  font-size: 14px;
+  color: #000;
+}
+
+.info-container.help-text {
+  font-size: 14px;
+  color: hsl(0, 0%, 22%);
+}
+
+.container-open {
+  display: flex;
+  margin-bottom: 0px;
+  animation: demo-box-fade-in 0.2s cubic-bezier(0, 0.2, 0.2, 0.96);
+}
+
+.text-input-instructions {
+  font-size: 13px;
+  width: 100%;
+  padding-top: 4px;
+  padding-bottom: 5px;
+  color: dimgray !important;
+}
+
+/* Card/tile standards */
+
+.content-button {
+  width: 150px;
+  height: 150px;
+  border: none;
+  background-color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-right: 20px;
+  padding-left: 20px;
+  margin-right: 10px;
+  margin-left: 10px;
+  color: var(--color-teal);
+  opacity: 1;
+  position: relative;
+  box-shadow: 0px 0px 10px #d5d5d5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
+}
+
+.content-button p {
+  color: #222c3c;
+  font-size: 14px;
+  margin-top: 25px;
+  font-family: "Raleway", sans-serif;
+  pointer-events: none;
+}
+
+.content-button:hover {
+  outline: none;
+  box-shadow: 0px 0px 10px 0px var(--color-light-green);
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
+}
+
+.content-button:active {
+  border: 1px solid var(--color-light-green);
+  box-shadow: 0px 0px 3px 0px var(--color-light-green);
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
+}
+
+.content-button svg {
+  margin: 0 auto;
+  pointer-events: none;
+}
+
+.content-button h2,
+.tile-button h2 {
+  color: #4d4a4a;
+  font-weight: 400;
+  font-size: 14px;
+  bottom: -1em;
+  font-family: Poppins, sans-serif;
+  pointer-events: none;
+  text-align: center;
+  margin-top: 1em;
+}
+
+.button-container {
+  display: flex;
+  justify-content: center;
+}
+
+.tile-button-icon {
+  height: 50px;
+  width: 50px;
+}
+
+.tile-button-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.dataset-card {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  border: none;
+  box-shadow: 0px 0px 10px #d5d5d5;
+  margin: 10px;
+  padding: 10px;
+  position: relative;
+}
+
+.dataset-card-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 5px 10px;
+}
+
+.container-dataset-card-center {
+  display: flex;
+  flex-direction: colum;
+  align-items: center;
+}
+
+.dataset-card-body {
+  display: flex;
+  height: 80px;
+  flex-grow: 1;
+  margin: 5px;
+  margin-left: 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+}
+
+.dataset-card-body.shrink {
+  height: auto;
+}
+
+.dataset-card-row {
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+}
+
+.dataset-card-title-text {
+  margin: 0px;
+  color: black;
+  font-weight: 600;
+  font-size: 14px !important;
+}
+
+.dataset-card-subtitle-text {
+  margin: 0px;
+  color: black;
+  font-weight: 400;
+  font-size: 14px !important;
+}
+
+.dataset-card-clock-icon {
+  margin: 0px;
+  color: #999;
+  font-weight: 600;
+  font-size: 12px !important;
+  width: auto;
+}
+
+.dataset-card-date-text {
+  margin: 0px;
+  color: black;
+  font-weight: 600;
+  font-size: 14px !important;
+  margin-left: .5rem !important;
+}
+
+.dataset-card-button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: space-around;
+}
+
+.dataset-card-button-confirm {
+  background-color: var(--color-light-green) !important;
+  width: 175px !important;
+  margin: 4px;
+  margin-bottom: 15px;
+}
+
+.dataset-card-button-delete {
+  width: auto;
+  text-decoration: underline;
+  cursor: pointer;
+  margin: 0px;
+  color: black;
+  font-weight: 600;
+  font-size: 14px !important;
+}
+
+/* 
+  Helper classes (Similar to tailwind's class structure) 
+*/
+
+.grow {
+  flex-grow: 1;
+}
+
+.show {
+  pointer-events: auto;
+  visibility: visible;
+  opacity: 1;
+  z-index: 1000;
+  transform: translateX(0);
+  transition: visibility 0s 0s linear, opacity 0.36s ease-out, transform 0.36s ease-out;
+}
+
+.remove-margin-right {
+  margin-right: 0px !important;
+}
+
+.remove-left-border {
+  border-left: none !important;
+}
+.soda-green {
+  background-color: var(--color-light-green) !important;
+  color: white !important;
+}
+.required:after {
+  content: " *";
+  color: red;
+}
+.justify-center {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.mt-0 {
+  margin-top: 0px !important;
+}
+.mt-sm {
+  margin-top: 7px !important;
+}
+.mt-md {
+  margin-top: 14px !important;
+}
+.mt-lg {
+  margin-top: 20px !important;
+}
+.mt-xl {
+  margin-top: 35px !important;
+}
+.mb-sm {
+  margin-bottom: 7px !important;
+}
+.mb-md {
+  margin-bottom: 14px !important;
+}
+.mb-lg {
+  margin-bottom: 20px !important;
+}
+.space-between {
+  display: flex;
+  justify-content: space-between;
+}
+.space-around {
+  max-width: 1200px;
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+}
 
 /* Code */
 

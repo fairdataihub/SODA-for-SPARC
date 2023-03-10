@@ -1294,7 +1294,7 @@ const renderSideBar = (activePage) => {
     // Add the high level drop down to the nav bar
     const dropdDown = `
     <div class="guided--nav-bar-dropdown">
-      <p class="guided--help-text mb-0">
+      <p class="help-text mb-0">
         ${highLevelStepName}
       </p>
       <i class="fas fa-chevron-right"></i>
@@ -1864,9 +1864,9 @@ const checkIfDatasetExistsOnPennsieve = async (datasetNameOrID) => {
 // Adds the click handlers to the info drop downs in Guided Mode
 // The selectors also append the info icon before the label depending on data attributes
 // passed in the HTML
-const infoDropdowns = document.getElementsByClassName("guided--info-dropdown");
+const infoDropdowns = document.getElementsByClassName("info-dropdown");
 for (const infoDropdown of Array.from(infoDropdowns)) {
-  const infoTextElement = infoDropdown.querySelector(".guided--dropdown-text");
+  const infoTextElement = infoDropdown.querySelector(".info-dropdown-text");
   const dropdownType = infoTextElement.dataset.dropdownType;
   if (dropdownType === "info") {
     //insert the info icon before the text
@@ -2256,22 +2256,22 @@ const generateProgressCardElement = (progressFileJSONObj) => {
     Object.keys(progressFileJSONObj["previously-uploaded-data"]).length > 0;
 
   return `
-    <div class="guided--dataset-card">
+    <div class="dataset-card">
       ${progressFileImage /* banner image */}     
         
-      <div class="guided--dataset-card-body">
-        <div class="guided--dataset-card-row">
+      <div class="dataset-card-body">
+        <div class="dataset-card-row">
           <h1
-            class="guided--text-dataset-card progress-file-name progress-card-popover"
+            class="dataset-card-title-text progress-file-name progress-card-popover"
             data-tippy-content="Dataset name: ${progressFileName}"
             rel="popover"
             placement="bottom"
             data-trigger="hover"
           >${progressFileName}</h1>
         </div>
-        <div class="guided--dataset-card-row">
+        <div class="dataset-card-row">
           <h1 
-            class="guided--text-dataset-card progress-card-popover"
+            class="dataset-card-subtitle-text progress-card-popover"
             data-tippy-content="Dataset subtitle: ${progressFileSubtitle}"
             rel="popover"
             data-placement="bottom"
@@ -2285,8 +2285,8 @@ const generateProgressCardElement = (progressFileJSONObj) => {
               }
           </h1>
         </div>
-        <div class="guided--dataset-card-row">
-          <h2 class="guided--text-dataset-card-sub" style="width: auto;">
+        <div class="dataset-card-row">
+          <h2 class="dataset-card-clock-icon">
             <i
               class="fas fa-clock-o progress-card-popover"
               data-tippy-content="Last modified: ${progressFileLastModified}"
@@ -2295,7 +2295,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
               data-trigger="hover"
             ></i>
           </h2>
-          <h1 class="guided--text-dataset-card ml-sm-1">${progressFileLastModified}</h1>
+          <h1 class="dataset-card-date-text">${progressFileLastModified}</h1>
           ${
             savedUploadDataProgress
               ? `
@@ -2305,18 +2305,12 @@ const generateProgressCardElement = (progressFileJSONObj) => {
           }
         </div>
       </div>
-      <div class="guided--container-dataset-card-center">
+      <div class="dataset-card-button-container">
         ${
           progressFileJSONObj["previous-guided-upload-dataset-name"]
             ? `
                 <button
-                  class="ui positive button guided--button-footer"
-                  style="
-                    background-color: var(--color-light-green) !important;
-                    width: 175px !important;
-                    margin: 4px;
-                    margin-bottom: 15px;
-                  "
+                  class="ui positive button dataset-card-button-confirm"
                   onClick="guidedResumeProgress($(this))"
                 >
                   Edit dataset
@@ -2324,20 +2318,14 @@ const generateProgressCardElement = (progressFileJSONObj) => {
               `
             : `
                 <button
-                  class="ui positive button guided--button-footer"
-                  style="
-                    background-color: var(--color-light-green) !important;
-                    width: 175px !important;
-                    margin: 4px;
-                    margin-bottom: 15px;
-                  "
+                  class="ui positive button dataset-card-button-confirm"
                   onClick="guidedResumeProgress($(this))"
                 >
                   ${savedUploadDataProgress ? "Resume upload" : "Continue curating"}
                 </button>
               `
         }
-        <h2 class="guided--text-dataset-card" style="width: auto; text-decoration: underline; cursor: pointer;" onclick="deleteProgressCard(this)">
+        <h2 class="dataset-card-button-delete" onclick="deleteProgressCard(this)">
           <i
             class="fas fa-trash mr-sm-1"
           ></i>
@@ -2424,21 +2412,19 @@ const renderManifestCards = async () => {
 
 const generateManifestEditCard = (highLevelFolderName) => {
   return `
-    <div class="guided--dataset-card">        
-      <div class="guided--dataset-card-body shrink">
-        <div class="guided--dataset-card-row">
-          <h1 class="guided--text-dataset-card">
+    <div class="dataset-card">        
+      <div class="dataset-card-body shrink">
+        <div class="dataset-card-row">
+          <h1 class="dataset-card-title-text">
             <span class="manifest-folder-name">${highLevelFolderName}</span>
           </h1>
         </div>
       </div>
-      <div class="guided--container-dataset-card-center">
+      <div class="dataset-card-button-container">
         <button
-          class="ui primary button guided--button-footer"
+          class="ui primary button dataset-card-button-confirm"
           style="
-            background-color: var(--color-light-green) !important;
             width: 280px !important;
-            margin: 4px;
           "
           onClick="guidedOpenManifestEditSwal('${highLevelFolderName}')"
         >
@@ -8105,7 +8091,7 @@ const openAddAdditionLinkSwal = async () => {
       >Dataset relation:</label
     >
     <div style="display: flex; width:100%; align-items: center;">
-      <p class="guided--help-text m-0">
+      <p class="help-text m-0">
         Text to put here (A)?
       </p>
       <div class="form-group mx-2">
@@ -8146,7 +8132,7 @@ const openAddAdditionLinkSwal = async () => {
           <option value="Obsoletes">Obsoletes</option>
         </select>
       </div>
-          <p class="guided--help-text m-0">
+          <p class="help-text m-0">
         Text to put here (B)?
       </p>
     </div>

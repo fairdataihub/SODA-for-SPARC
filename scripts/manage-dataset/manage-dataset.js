@@ -386,7 +386,7 @@ $("#button-add-permission-pi").click(async () => {
     },
   }).then(async (result) => {
     if (result.isConfirmed) {
-      log.info("Changing PI Owner of datset");
+      log.info("Changing PI Owner of dataset");
 
       Swal.fire({
         title: "Changing PI Owner of dataset",

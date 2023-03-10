@@ -170,20 +170,20 @@
         >
           <h1 class="guided--text-sub-step">Welcome to Guided Mode!</h1>
           <div class="guided--section">
-            <p class="guided--help-text">
+            <p class="help-text">
               Guided Mode is designed to be the simplest and most efficient method of curating and
               sharing a SPARC dataset if you are starting from scratch. Guided Mode guides you
               through the entire SPARC curation and sharing process via intuitive user interfaces
               that typically only require you to provide basic inputs or answer simple questions.
             </p>
-            <div class="guided--info-dropdown">
-              <p class="guided--dropdown-text" data-dropdown-type="info">
+            <div class="info-dropdown">
+              <p class="info-dropdown-text" data-dropdown-type="info">
                 Learn more about curating and submitting SPARC datasets
               </p>
               <i class="fas fa-chevron-right"></i>
             </div>
-            <div class="guided--info-container">
-              <p class="guided--help-text">
+            <div class="info-container">
+              <p class="help-text">
                 Although not required to use Guided Mode, you can learn more about the SPARC data
                 curation and sharing process in the
                 <a href="https://docs.sparc.science/docs/data-submission-overview" target="_blank"
@@ -191,7 +191,7 @@
                 >.
               </p>
             </div>
-            <p class="guided--help-text" style="margin-top: 1em">
+            <p class="help-text" style="margin-top: 1em">
               Guided Moded is divided in four high-level sections. During the first three sections,
               you will be directed to specify the files to include in your dataset and provide
               information about your dataset. On the final section, SODA will automatically generate
@@ -213,10 +213,7 @@
                 data-button-config-value="curation-starting-point"
                 data-button-config-value-state="new"
               >
-                <div
-                  class="guided--tile-button-icon"
-                  style="width: 46px; fill: var(--color-accent)"
-                >
+                <div class="tile-button-icon" style="width: 46px; fill: var(--color-accent)">
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
                     <!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
                     <path
@@ -224,7 +221,7 @@
                     />
                   </svg>
                 </div>
-                <div class="guided--tile-body" style="margin-top: 1rem">
+                <div class="tile-button-text" style="margin-top: 1rem">
                   <h2>Continue a locally saved dataset</h2>
                 </div>
               </button>
@@ -236,7 +233,7 @@
                 data-button-config-value="curation-starting-point"
                 data-button-config-value-state="local"
               >
-                <div class="guided--tile-button-icon">
+                <div class="tile-button-icon">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -306,7 +303,7 @@
                     <g></g>
                   </svg>
                 </div>
-                <div class="guided--tile-body">
+                <div class="tile-button-text">
                   <h2>Start from a local SPARC dataset</h2>
                 </div>
               </button>
@@ -318,7 +315,7 @@
                 data-button-config-value="curation-starting-point"
                 data-button-config-value-state="pennsieve"
               >
-                <div class="guided--tile-button-icon">
+                <div class="tile-button-icon">
                   <img
                     src="assets\img\pennsieveLogo.png"
                     alt="PennsieveLogo"
@@ -326,7 +323,7 @@
                     height="50px"
                   />
                 </div>
-                <div class="guided--tile-body">
+                <div class="tile-button-text">
                   <h2>Continue an existing dataset on Pennsieve</h2>
                 </div>
               </button>
@@ -370,7 +367,7 @@
               <label class="guided--form-label centered mb-sm mt-lg"
                 >There was an error importing datasets from Pennsieve
               </label>
-              <p class="guided--help-text" style="margin-top: 1em">
+              <p class="help-text" style="margin-top: 1em">
                 <b>Error message: </b
                 ><span id="guided-pennsieve-dataset-import-error-message"></span>
               </p>
@@ -453,14 +450,14 @@
                   </div>
                 </div>
               </div>
-              <div class="guided--info-dropdown mt-lg">
-                <p class="guided--dropdown-text" data-dropdown-type="warning">
+              <div class="info-dropdown mt-lg">
+                <p class="info-dropdown-text" data-dropdown-type="warning">
                   I don't see my dataset on Pennsieve in the dropdown above
                 </p>
                 <i class="fas fa-chevron-right"></i>
               </div>
-              <div class="guided--info-container">
-                <p class="guided--help-text mb-0">
+              <div class="info-container">
+                <p class="help-text mb-0">
                   If you don't see your SPARC award in the dropdown above, your dataset either does
                   not exist on Pennsieve or you do not have Owner or Manager permissions.
                 </p>
@@ -509,7 +506,7 @@
               id="guided-dataset-subtitle-input"
               type="text"
               name="guided-dataset-subtitle"
-              placeholder="Enter datset subtitle here"
+              placeholder="Enter dataset subtitle here"
               style="height: 7.5em; padding-bottom: 20px"
               onkeyup="validateInput($(this))"
               maxlength="255"
@@ -531,25 +528,25 @@
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Before getting started</h1>
 
-            <p class="guided--help-text">
+            <p class="help-text">
               Several resources are required to curate and share a SPARC dataset. They are listed
               below so you can make sure you can have access to them before getting started.
             </p>
             <label class="guided--welcome-section-label text-center" style="margin-top: 1rem"
               >1. Pennsieve Account</label
             >
-            <p class="guided--help-text">
+            <p class="help-text">
               All SPARC datasets must be uploaded on the Pennsieve data platform. You will therefore
               need a Pennsieve account and access to the SPARC Organization on Pennsieve.
             </p>
-            <div class="guided--info-dropdown">
-              <p class="guided--dropdown-text" data-dropdown-type="warning">
+            <div class="info-dropdown">
+              <p class="info-dropdown-text" data-dropdown-type="warning">
                 I don't have a Pennsieve account
               </p>
               <i class="fas fa-chevron-right" style="transform: rotate(0deg)"></i>
             </div>
-            <div class="guided--info-container" style="width: 800px">
-              <p class="guided--help-text">
+            <div class="info-container" style="width: 800px">
+              <p class="help-text">
                 Get access to Pennsieve as well as the SPARC Consortium organization on Pennsieve by
                 filling out this
                 <a
@@ -562,21 +559,21 @@
             <label class="guided--welcome-section-label text-center" style="margin-top: 4rem"
               >2. Data Deliverables document</label
             >
-            <p class="guided--help-text">
+            <p class="help-text">
               The milestones and associated datasets as agreed between awardees and SPARC are
               summarized in a document called Data Deliverables document. Information contained in
               this document is required in one of the metadata files to be included in your dataset.
               You will therefore need access to the Data Deliverables document associated with your
               SPARC award.
             </p>
-            <div class="guided--info-dropdown">
-              <p class="guided--dropdown-text" data-dropdown-type="info">
+            <div class="info-dropdown">
+              <p class="info-dropdown-text" data-dropdown-type="info">
                 Where can I find my Data Deliverables document?
               </p>
               <i class="fas fa-chevron-right" style="transform: rotate(0deg)"></i>
             </div>
-            <div class="guided--info-container" style="margin-bottom: 1.5rem">
-              <p class="guided--help-text">
+            <div class="info-container" style="margin-bottom: 1.5rem">
+              <p class="help-text">
                 To obtain the Data Deliverables document associated with your award, simply ask your
                 PI or grant manager. Download a template of the Data Deliverables document
                 <a
@@ -613,7 +610,7 @@
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Subjects and samples</h1>
-            <p class="guided--help-text">
+            <p class="help-text">
               SPARC data is typically collected from subjects (either human or non-human) and/or
               from samples collected from such subjects (e.g., tissue samples). As per SPARC
               guidelines, a unique ID of the format sub-xxx must be assigned to each subject of a
@@ -690,7 +687,7 @@
                 class="guided--panel hidden"
                 id="guided-div-warning-before-deleting-pool-sub-sam-structure"
               >
-                <p class="guided--help-text">
+                <p class="help-text">
                   Click Next to confirm that your dataset does not contain human or non-human
                   subjects.
                 </p>
@@ -785,7 +782,7 @@
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Primary data for samples and subjects</h1>
-            <p class="guided--help-text">
+            <p class="help-text">
               In the SDS, primary data refers to all data collected from subjects and/or samples
               (e.g., time series data, tabular data, clinical imaging data, genomic, metabolomic, or
               microscopy data). The data generally have been minimally processed so they are in a
@@ -841,7 +838,7 @@
                   <h2 class="guided--text-sub-step mt-0">
                     Specify the primary data for your samples through the interface below
                   </h2>
-                  <p class="guided--help-text">
+                  <p class="help-text">
                     You can also virtually structure the data and rename files/folders as you would
                     like to have them in your dataset when it is generated (note that none of your
                     original data will be modified).
@@ -918,7 +915,7 @@
                 id="guided-warning-before-deleting-primary-samples-container"
               >
                 <div class="guided--section w-100">
-                  <p class="guided--help-text">
+                  <p class="help-text">
                     Click Next to confirm you have no primary data for your samples.
                   </p>
                 </div>
@@ -959,7 +956,7 @@
                   <h2 class="guided--text-sub-step mt-0">
                     Specify the primary data for your subjects through the interface below
                   </h2>
-                  <p class="guided--help-text">
+                  <p class="help-text">
                     You can also virtually structure the data and rename files/folders as you would
                     like to have them in your dataset when it is generated (note that none of your
                     original data will be modified).
@@ -1023,7 +1020,7 @@
                 id="guided-warning-before-deleting-primary-pools-and-subjects-container"
               >
                 <div class="guided--section w-100">
-                  <p class="guided--help-text">
+                  <p class="help-text">
                     Click Next to confirm you have no primary data for your subjects.
                   </p>
                 </div>
@@ -1063,7 +1060,7 @@
                   <h2 class="guided--text-sub-step mt-0">
                     Specify the primary data for your pools through the interface below
                   </h2>
-                  <p class="guided--help-text">
+                  <p class="help-text">
                     You can also virtually structure the data and rename files/folders as you would
                     like to have them in your dataset when it is generated (note that none of your
                     original data will be modified).
@@ -1126,7 +1123,7 @@
                 class="guided--panel"
                 id="guided-warning-before-deleting-primary-pools-data-container"
               >
-                <p class="guided--help-text">
+                <p class="help-text">
                   Click Next to confirm you have no primary data for your pools.
                 </p>
               </div>
@@ -1140,7 +1137,7 @@
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Source data for subjects and samples</h1>
-            <p class="guided--help-text">
+            <p class="help-text">
               Source data refers to unaltered, raw files from an experiment. For example, this may
               include the "truly" raw k-space data for a Magnetic Resonance (MR) image that has not
               yet been reconstructed (in this case, the reconstructed DICOM or NIFTI files would be
@@ -1196,7 +1193,7 @@
                   <h2 class="guided--text-sub-step mt-0">
                     Specify the source data for your samples through the interface below
                   </h2>
-                  <p class="guided--help-text">
+                  <p class="help-text">
                     You can also virtually structure the data and rename files/folders as you would
                     like to have them in your dataset when it is generated (note that none of your
                     original data will be modified).
@@ -1253,7 +1250,7 @@
                 id="guided-warning-before-deleting-source-samples-container"
               >
                 <div class="guided--section w-100">
-                  <p class="guided--help-text">
+                  <p class="help-text">
                     Click Next to confirm you have no source data for your samples.
                   </p>
                 </div>
@@ -1293,7 +1290,7 @@
                   <h2 class="guided--text-sub-step mt-0">
                     Specify the source data for your subjects through the interface below
                   </h2>
-                  <p class="guided--help-text">
+                  <p class="help-text">
                     You can also virtually structure the data and rename files/folders as you would
                     like to have them in your dataset when it is generated (note that none of your
                     original data will be modified).
@@ -1346,7 +1343,7 @@
                 id="guided-warning-before-deleting-source-pools-and-subjects-container"
               >
                 <div class="guided--section w-100">
-                  <p class="guided--help-text">
+                  <p class="help-text">
                     Click Next to confirm you have no source data for your subjects.
                   </p>
                 </div>
@@ -1386,7 +1383,7 @@
                   <h2 class="guided--text-sub-step mt-0">
                     Specify the source data for your pools through the interface below
                   </h2>
-                  <p class="guided--help-text">
+                  <p class="help-text">
                     You can also virtually structure the data and rename files/folders as you would
                     like to have them in your dataset when it is generated (note that none of your
                     original data will be modified).
@@ -1449,7 +1446,7 @@
                 class="guided--panel"
                 id="guided-warning-before-deleting-source-pools-data-container"
               >
-                <p class="guided--help-text">
+                <p class="help-text">
                   Click Next to confirm you have no source data for your pools.
                 </p>
               </div>
@@ -1463,7 +1460,7 @@
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Derivative data for subjects and samples</h1>
-            <p class="guided--help-text">
+            <p class="help-text">
               Derivative data is any data products derived from the original data (i.e., primary or
               source data). Derivative data includes data such as measurements from images, 3d
               reconstructions from serial sections, or file conversions.
@@ -1520,7 +1517,7 @@
                   <h2 class="guided--text-sub-step mt-0">
                     Specify the derivative data for your samples through the interface below
                   </h2>
-                  <p class="guided--help-text">
+                  <p class="help-text">
                     You can also virtually structure the data and rename files/folders as you would
                     like to have them in your dataset when it is generated (note that none of your
                     original data will be modified).
@@ -1572,7 +1569,7 @@
                 id="guided-warning-before-deleting-derivative-samples-container"
               >
                 <div class="guided--section w-100">
-                  <p class="guided--help-text">
+                  <p class="help-text">
                     Click Next to confirm you have no derivative data for your samples.
                   </p>
                 </div>
@@ -1612,7 +1609,7 @@
                   <h2 class="guided--text-sub-step mt-0">
                     Specify the derivative data for your subjects through the interface below
                   </h2>
-                  <p class="guided--help-text">
+                  <p class="help-text">
                     You can also virtually structure the data and rename files/folders as you would
                     like to have them in your dataset when it is generated (note that none of your
                     original data will be modified).
@@ -1656,7 +1653,7 @@
                 id="guided-warning-before-deleting-derivative-pools-and-subjects-container"
               >
                 <div class="guided--section w-100">
-                  <p class="guided--help-text">
+                  <p class="help-text">
                     Click Next to confirm you have no derivative data for your subjects.
                   </p>
                 </div>
@@ -1696,7 +1693,7 @@
                   <h2 class="guided--text-sub-step mt-0">
                     Specify the derivative data for your pools through the interface below
                   </h2>
-                  <p class="guided--help-text">
+                  <p class="help-text">
                     You can also virtually structure the data and rename files/folders as you would
                     like to have them in your dataset when it is generated (note that none of your
                     original data will be modified).
@@ -1759,7 +1756,7 @@
                 class="guided--panel"
                 id="guided-warning-before-deleting-derivative-pools-data-container"
               >
-                <p class="guided--help-text">
+                <p class="help-text">
                   Click Next to confirm you have no derivative data for your pools.
                 </p>
               </div>
@@ -1770,7 +1767,7 @@
         <div id="guided-code-folder-tab" class="guided--page hidden" data-page-name="Code data">
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Code data</h1>
-            <p class="guided--help-text">
+            <p class="help-text">
               In the SDS, code data refers to any code related folders and files used in the
               generation or analysis of other data in your dataset.
             </p>
@@ -1809,7 +1806,7 @@
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Protocol data</h1>
-            <p class="guided--help-text">
+            <p class="help-text">
               In the SDS, protocol data refers to supplementary folders and files to accompany the
               experimental protocols that must be submitted to protocols.io (more on that at a later
               step).
@@ -1845,7 +1842,7 @@
         <div id="guided-docs-folder-tab" class="guided--page hidden" data-page-name="Docs data">
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Docs data</h1>
-            <p class="guided--help-text">
+            <p class="help-text">
               In the SDS, docs data refers to any data to be included in your dataset that does not
               belong to any of the other five categories (primary, source, derivative, code, or
               protocol data).
@@ -1886,7 +1883,7 @@
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Folder structure review</h1>
-            <p class="guided--help-text">
+            <p class="help-text">
               The SDS compliant dataset structure shown below will be generated by SODA (during the
               last step of this process) based on the data files you specified in the previous
               steps. Review and go back to make changes if needed. Please note that all empty
@@ -1927,7 +1924,7 @@
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Manifest files</h1>
-            <p class="guided--help-text">
+            <p class="help-text">
               The SPARC guidelines require all datasets to include metadata files called manifest
               files. One manifest file must be included in each high level folder. Manifest files
               are intended to contain information about all of the data files in its high level
@@ -1949,7 +1946,7 @@
                 data-button-config-value="manifest-files-generated-automatically"
                 data-button-config-value-state="yes"
               >
-                <div class="guided--tile-button-icon">
+                <div class="tile-button-icon">
                   <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 640 512">
                     <path
                       fill="currentColor"
@@ -1957,7 +1954,7 @@
                     />
                   </svg>
                 </div>
-                <div class="guided--tile-body">
+                <div class="tile-button-text">
                   <h2>Yes, auto-generate my manifest files</h2>
                 </div>
               </button>
@@ -1973,7 +1970,7 @@
                   id="guided-button-import-manifest-files"
                   style="opacity: 0.5; cursor: default !important; pointer-events: none"
                 >
-                  <div class="guided--tile-button-icon">
+                  <div class="tile-button-icon">
                     <svg
                       height="50"
                       width="50"
@@ -2068,7 +2065,7 @@
                       </g>
                     </svg>
                   </div>
-                  <div class="guided--tile-body">
+                  <div class="tile-button-text">
                     <h2>No, I already have manifest files prepared</h2>
                   </div>
                 </button>
@@ -2078,7 +2075,7 @@
           <div class="guided--panel" id="guided-section-auto-generate-manifest-files">
             <div class="guided--section">
               <h2 class="guided--text-sub-step">Preview/Edit manifest files</h2>
-              <p class="guided--help-text">
+              <p class="help-text">
                 Click on any manifest file below if you would like to preview it or add additional
                 metadata. Note that SODA will automatically include the "filename", "timestamp", and
                 "file type" in your manifest files. Click 'Save and Continue' to move on to the next
@@ -2096,7 +2093,7 @@
         >
           <div class="guided--section" style="padding-left: 0; padding-right: 0">
             <h1 class="guided--text-sub-step">Submission metadata</h1>
-            <p class="guided--help-text">
+            <p class="help-text">
               SPARC requires all datasets to include a submission metadata file that includes
               information regarding the milestone associated with your dataset. This information
               should match exactly with the Data Deliverables document agreed between SPARC and the
@@ -2124,7 +2121,7 @@
                 data-button-config-value="data-deliverables-imported"
                 data-button-config-value-state="yes"
               >
-                <div class="guided--tile-button-icon">
+                <div class="tile-button-icon">
                   <svg
                     width="50"
                     height="50"
@@ -2142,7 +2139,7 @@
                     ></path>
                   </svg>
                 </div>
-                <div class="guided--tile-body">
+                <div class="tile-button-text">
                   <h2>Yes, import my milestone data</h2>
                 </div>
               </button>
@@ -2153,7 +2150,7 @@
                 data-button-config-value="data-deliverables-imported"
                 data-button-config-value-state="no"
               >
-                <div class="guided--tile-button-icon">
+                <div class="tile-button-icon">
                   <svg
                     width="50"
                     height="50"
@@ -2173,7 +2170,7 @@
                     </g>
                   </svg>
                 </div>
-                <div class="guided--tile-body">
+                <div class="tile-button-text">
                   <h2>No, I'll enter my milestone information manually</h2>
                 </div>
               </button>
@@ -2214,10 +2211,10 @@
                         class="code-metadata-lottie-container"
                         style="height: 100px"
                       ></div>
-                      <p class="guided--help-text text-center" style="max-width: 190px">
+                      <p class="help-text text-center" style="max-width: 190px">
                         Drag and Drop <br /><b>Data Deliverables document in docx format</b>
                       </p>
-                      <p class="guided--help-text text-center mt-sm mb-sm">OR</p>
+                      <p class="help-text text-center mt-sm mb-sm">OR</p>
                       <button
                         class="ui primary basic button mt-sm"
                         onclick="helpMilestoneSubmission('guided')"
@@ -2227,7 +2224,7 @@
                         Deliverables document in docx format
                       </button>
                       <p
-                        class="guided--help-text small text-center mt-sm"
+                        class="help-text small text-center mt-sm"
                         id="guided-data-deliverable-para-text"
                         style="max-width: 240px; overflow-wrap: break-word"
                       ></p>
@@ -2370,7 +2367,7 @@
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Contributor information</h1>
-            <p class="guided--help-text">
+            <p class="help-text">
               The dataset_description file requires all contributors that participated in the
               creation of the dataset to be listed. These individuals do not have to be authors on
               any publications describing the data, but should be acknowledged for their role in
@@ -2414,7 +2411,7 @@
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Dataset protocols</h1>
-            <p class="guided--help-text">
+            <p class="help-text">
               All SPARC dataset must have their associated protocols on
               <a target="_blank" href="https://www.protocols.io/">protocols.io</a>, a platform for
               creating structured and shareable protocols. Since protocols.io provides a convenient
@@ -2424,7 +2421,7 @@
                 >SPARC instructions for preparing protocols on protocols.io</a
               >.
             </p>
-            <p class="guided--help-text">
+            <p class="help-text">
               The dataset_description metadata file must contain information about the protocols on
               protocols.io. You can provide information about the protocols of your dataset below
               and SODA will automatically include it in the dataset_description file when it is
@@ -2444,7 +2441,7 @@
                 data-button-config-value="user-has-protocols-to-enter"
                 data-button-config-value-state="yes"
               >
-                <div class="guided--tile-button-icon">
+                <div class="tile-button-icon">
                   <svg
                     width="50"
                     height="50"
@@ -2464,7 +2461,7 @@
                     </g>
                   </svg>
                 </div>
-                <div class="guided--tile-body">
+                <div class="tile-button-text">
                   <h2>Yes, I'm ready to provide my dataset's protocols</h2>
                 </div>
               </button>
@@ -2475,7 +2472,7 @@
                 data-button-config-value="user-has-protocols-to-enter"
                 data-button-config-value-state="no"
               >
-                <div class="guided--tile-button-icon">
+                <div class="tile-button-icon">
                   <svg
                     width="50"
                     height="50"
@@ -2604,7 +2601,7 @@
                     <g></g>
                   </svg>
                 </div>
-                <div class="guided--tile-body">
+                <div class="tile-button-text">
                   <h2>No, my protocols are not ready at the moment</h2>
                 </div>
               </button>
@@ -2648,7 +2645,7 @@
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Dataset description</h1>
           </div>
-          <p class="guided--help-text">
+          <p class="help-text">
             All SPARC datasets must include a dataset_description metadata file that contain various
             information about the dataset. You have already provided some of the required
             information during the previous steps (award number, contributors, protocols, etc.). You
@@ -2866,7 +2863,7 @@
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Subjects metadata</h1>
-            <p class="guided--help-text">
+            <p class="help-text">
               All SPARC datasets involving subjects must include a subjects metadata file that
               contain various information about the subjects (species, sex, age, etc.). You can
               provide all the subjects-related information below. It is suggest to provide as much
@@ -3518,7 +3515,7 @@
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Samples metadata</h1>
-            <p class="guided--help-text">
+            <p class="help-text">
               All SPARC datasets involving samples must include a samples metadata file that contain
               various information about the samples (sample type, anatomical location, etc.). You
               can provide all the samples-related information below. It is suggest to provide as
@@ -3949,7 +3946,7 @@
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Code-related metadata</h1>
-            <p class="guided--help-text">
+            <p class="help-text">
               The code_description metadata file is required for all datasets that include
               computation modeling related code files. It contains information that describes the
               code in terms of its quality. This file is typically prepared through
@@ -3994,7 +3991,7 @@
 
           <div class="guided--section" id="guided-section-import-computational-modeling-data">
             <h2 class="guided--text-sub-step">Import the code_description metadata file</h2>
-            <p class="guided--help-text small text-center mt-sm">
+            <p class="help-text small text-center mt-sm">
               <b>The code_description file must be in .xlsx format (code_description.xlsx)</b>
             </p>
             <div
@@ -4008,10 +4005,10 @@
                   id="code-description-lottie-container"
                   class="code-metadata-lottie-container"
                 ></div>
-                <p class="guided--help-text text-center">
+                <p class="help-text text-center">
                   Drag and Drop <br /><b>code_description.xslx</b>
                 </p>
-                <p class="guided--help-text text-center mt-md mb-md">OR</p>
+                <p class="help-text text-center mt-md mb-md">OR</p>
                 <button
                   class="ui primary basic button mt-sm"
                   onclick="importMetadataFiles(this, 'code_description', ['.xlsx'], 'guided-code-description-para-text', 'guided')"
@@ -4020,7 +4017,7 @@
                   code_description.xslx
                 </button>
                 <p
-                  class="guided--help-text small text-center mt-sm"
+                  class="help-text small text-center mt-sm"
                   id="guided-code-description-para-text"
                   style="max-width: 240px; overflow-wrap: break-word"
                 ></p>
@@ -4028,7 +4025,7 @@
             </div>
           </div>
           <div class="guided--section" id="guided-section-no-computational-modeling-data">
-            <p class="guided--help-text">
+            <p class="help-text">
               Your dataset does not require a code_description.xlsx file. Click "Save and Continue"
               below.
             </p>
@@ -4041,32 +4038,32 @@
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">README information</h1>
-            <p class="guided--help-text">
+            <p class="help-text">
               All SPARC datasets must include a README file. This is a plain text file that contains
               necessary details for the reuse of the data beyond that which is captured in the other
               metadata file. Some information that should be included is:
             </p>
-            <ul class="guided--help-text">
-              <li class="guided--help-text text-left mb-2">
+            <ul class="help-text">
+              <li class="help-text text-left mb-2">
                 How would a user use the files that are provided? e.g., first open file X and then
                 look at file Y.
               </li>
-              <li class="guided--help-text text-left mb-2">
+              <li class="help-text text-left mb-2">
                 What additional details do users need to know? Are some subjects missing data?
               </li>
-              <li class="guided--help-text text-left mb-2">
+              <li class="help-text text-left mb-2">
                 Are there warnings about how to use the data or code?
               </li>
-              <li class="guided--help-text text-left mb-2">
+              <li class="help-text text-left mb-2">
                 Are there appropriate/inappropriate uses for this data?
               </li>
-              <li class="guided--help-text text-left mb-2">
+              <li class="help-text text-left mb-2">
                 Are there other places that users can go for more information? e.g., did you provide
                 a GitHub repository or are there additional papers beyond what was provided in the
                 metadata form?
               </li>
             </ul>
-            <p class="guided--help-text">
+            <p class="help-text">
               You can provide that information below. SODA will use that information to
               automatically create the README metadata file and include it in your dataset when it
               is generated in the last step of this guided workflow.
@@ -4095,11 +4092,11 @@
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">CHANGES information</h1>
-            <p class="guided--help-text">
+            <p class="help-text">
               SPARC datasets that have been previously published must include a CHANGES file which
               denotes the changes made to the dataset since the previous publication.
             </p>
-            <p class="guided--help-text">
+            <p class="help-text">
               You can provide that information below. SODA will use the text provided to
               automatically create the CHANGES metadata file and include it in your dataset when it
               is generated in the last step of this guided workflow.
@@ -4143,7 +4140,7 @@
         >
           <div class="guided--section" style="padding-left: 0; padding-right: 0">
             <h1 class="guided--text-sub-step">Pennsieve metadata</h1>
-            <p class="guided--help-text">
+            <p class="help-text">
               All SPARC datasets must be uploaded on
               <a href="https://app.pennsieve.io" target="_blank">Pennsieve</a>, a free, open source
               data management platform supported by the SPARC program. As per the SPARC data
@@ -4253,7 +4250,7 @@
         <div id="guided-banner-image-tab" class="guided--page hidden" data-page-name="Banner image">
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Banner image</h1>
-            <p class="guided--help-text">
+            <p class="help-text">
               The banner image is used as a thumbnail once the dataset is published on the SPARC
               Data portal to entice visitors to find and explore your dataset.<br /><br />To learn
               more about what an effective banner image consists of, please visit the associated
@@ -4282,19 +4279,19 @@
                 <div class="guided--file-import" data-code-metadata-file-type="bannerImage" style="min-height: 333px; width: 324px;">
                   <div id="swal-data-deliverable" class="code-metadata-lottie-container" style="height: 100px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300" preserveAspectRatio="xMidYMid meet" style="width: 100%; height: 100%; transform: translate3d(0px, 0px, 0px); content-visibility: visible;"><defs><clipPath id="__lottie_element_791"><rect width="300" height="300" x="0" y="0"></rect></clipPath></defs><g clip-path="url(#__lottie_element_791)"><g transform="matrix(1,0,0,1,99,36.82099914550781)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M12,65.67900085449219 C12,65.67900085449219 12,59.67900085449219 12,59.67900085449219"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 13.893 13.893" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M12,45.7859992980957 C12,45.7859992980957 12,24.94700050354004 12,24.94700050354004"></path></g><g opacity="1" transform="matrix(1,0,0,1,15,15)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-3,3 C-3,3 -3,-3 -3,-3 C-3,-3 3,-3 3,-3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 10.909 10.909" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M28.909000396728516,12 C28.909000396728516,12 132.5449981689453,12 132.5449981689453,12"></path></g><g opacity="1" transform="matrix(1,0,0,1,141,15)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-3,-3 C-3,-3 3,-3 3,-3 C3,-3 3,3 3,3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 10.909 10.909" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M144,28.909000396728516 C144,28.909000396728516 144,132.54600524902344 144,132.54600524902344"></path></g><g opacity="1" transform="matrix(1,0,0,1,141,141)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M3,-3 C3,-3 3,3 3,3 C3,3 -3,3 -3,3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 11.333 11.333" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M126.66699981689453,144 C126.66699981689453,144 109.66699981689453,144 109.66699981689453,144"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M104,144 C104,144 98,144 98,144"></path></g></g><g transform="matrix(1,0,0,1,122.58927917480469,49.94279098510742)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,60.5620002746582,60.5620002746582)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="10" d=" M35.5620002746582,-35.5620002746582 C35.5620002746582,-35.5620002746582 -35.5620002746582,-23.679000854492188 -35.5620002746582,-23.679000854492188 C-35.5620002746582,-23.679000854492188 -10.25100040435791,-10.25100040435791 -10.25100040435791,-10.25100040435791 C-10.25100040435791,-10.25100040435791 -35.20399856567383,14.70300006866455 -35.20399856567383,14.70300006866455 C-35.20399856567383,14.70300006866455 -15.003999710083008,34.90299987792969 -15.003999710083008,34.90299987792969 C-15.003999710083008,34.90299987792969 9.949000358581543,9.949999809265137 9.949000358581543,9.949999809265137 C9.949000358581543,9.949999809265137 23.679000854492188,35.5620002746582 23.679000854492188,35.5620002746582 C23.679000854492188,35.5620002746582 35.5620002746582,-35.5620002746582 35.5620002746582,-35.5620002746582z"></path></g></g><g transform="matrix(1,0,0,1,102.64799499511719,40.451995849609375)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,74.48500061035156,74.48500061035156)"><path stroke-linecap="round" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-66,0 C-66,-33 -66,-66 -66,-66 C-66,-66 66,-66 66,-66 C66,-66 66,66 66,66 C66,66 66,66 66,66 C66,66 -66,66 -66,66 C-66,66 -66,33 -66,0"></path></g></g></g></svg></div>
                   <div style="display: flex;">
-                    <p class="guided--help-text text-center">
+                    <p class="help-text text-center">
                       Drag and Drop</p>
                       <p style="margin-left: 5px; font-weight: 600; margin-top: .2rem;">
                         Banner Image
                       </p>
                   </div>
-                  <p class="guided--help-text text-center mt-sm mb-sm">
+                  <p class="help-text text-center mt-sm mb-sm">
                     OR
                   </p>
                   <button id="guided-button-add-banner-image" class="ui primary basic button" style="margin-top: 2rem !important;">
                     <i class="fas fa-file-import" style="margin-right: 7px"></i>Import Data Deliverables document
                   </button>
-                  <p class="guided--help-text small text-center mt-sm" id="guided-para-path-image1" style="max-width: 240px; overflow-wrap: break-word"></p>
+                  <p class="help-text small text-center mt-sm" id="guided-para-path-image1" style="max-width: 240px; overflow-wrap: break-word"></p>
                 </div>
               </div>
             </div> -->
@@ -4448,35 +4445,35 @@
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Dataset permissions</h1>
-            <p class="guided--help-text text-left">
+            <p class="help-text text-left">
               Dataset permissions control who can view, edit, or manage your dataset on Pennsieve
               before it is published. You can give permissions to your team members if you expect
               them to modify your dataset before publication.
             </p>
 
-            <div class="guided--info-dropdown">
-              <p class="guided--dropdown-text" data-dropdown-type="info">
+            <div class="info-dropdown">
+              <p class="info-dropdown-text" data-dropdown-type="info">
                 Learn more about dataset Permissions on Pennsieve
               </p>
               <i class="fas fa-chevron-right" style="transform: rotate(0deg)"></i>
             </div>
-            <div class="guided--info-container" style="margin-bottom: 1.5rem">
-              <p class="guided--help-text">Pennsieve has 3 levels of permissions for datasets:</p>
-              <ul class="guided--help-text">
-                <li class="guided--help-text text-left mb-2">
+            <div class="info-container" style="margin-bottom: 1.5rem">
+              <p class="help-text">Pennsieve has 3 levels of permissions for datasets:</p>
+              <ul class="help-text">
+                <li class="help-text text-left mb-2">
                   <b>Viewer:</b> Give this permission to collaborators who only need to view your
                   dataset.
                 </li>
 
-                <li class="guided--help-text text-left mb-2">
+                <li class="help-text text-left mb-2">
                   <b>Editor:</b> Give this permission to collaborators who only need to view your
                   dataset and upload files to it.
                 </li>
-                <li class="guided--help-text text-left mb-2">
+                <li class="help-text text-left mb-2">
                   <b>Manager:</b> Give this permission to collaborators who need full editing access
                   to your dataset (except publish the dataset).
                 </li>
-                <li class="guided--help-text text-left mb-2">
+                <li class="help-text text-left mb-2">
                   <b>Owner:</b> This permission is typically given to the Principal Investigator of
                   the award. The owner can do everything with the dataset, including publish it.
                 </li>
@@ -4485,7 +4482,7 @@
           </div>
 
           <div class="guided--section" id="guided-section-add-additional-permissions">
-            <p class="guided--help-text text-left mb-md">
+            <p class="help-text text-left mb-md">
               Current permissions are listed in the table below. To add a permission, select the
               Pennsieve user or team you would like to grant a permission to, select their role, and
               press "Designate permission". To delete a permission, click the delete icon in the
@@ -4563,14 +4560,14 @@
                 Designate permission
               </button>
             </div>
-            <div class="guided--info-dropdown" style="margin-left: -1rem">
-              <p class="guided--dropdown-text" data-dropdown-type="warning">
+            <div class="info-dropdown" style="margin-left: -1rem">
+              <p class="info-dropdown-text" data-dropdown-type="warning">
                 I don't see my team or team members
               </p>
               <i class="fas fa-chevron-right"></i>
             </div>
-            <div class="guided--info-container" style="margin-left: -0.5rem">
-              <p class="guided--help-text mb-0">
+            <div class="info-container" style="margin-left: -0.5rem">
+              <p class="help-text mb-0">
                 Users or teams must have a Pennsieve account and have access to the SPARC Consortium
                 organization before you can grant them dataset permissions. Instructions on how to
                 create a Pennsieve account and get access to the SPARC Consortium organization can
@@ -4595,7 +4592,7 @@
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Dataset description</h1>
-            <p class="guided--help-text text-left">
+            <p class="help-text text-left">
               The dataset description is a brief summary of the dataset which will allows visitors
               of the SPARC portal to gain better insights into your work and enhance your dataset's
               findability once the dataset is published on the SPARC Data portal. It can be similar
@@ -4655,7 +4652,7 @@
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Dataset tags</h1>
-            <p class="guided--help-text mb-lg">
+            <p class="help-text mb-lg">
               Dataset tags are keywords that indicate the key elements of your research. They will
               improve the findability of your dataset when it is published on the SPARC Data portal.
               The tags can be similar to the keywords you provided previously for the
@@ -4675,7 +4672,7 @@
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Sharing license:</h1>
-            <p class="guided--help-text">
+            <p class="help-text">
               As per SPARC policy, all SPARC datasets must be shared under a
               <b>Creative Commons Attribution (CC-BY)</b> license. The CC-BY license allows reusers
               to distribute, remix, adapt, and build upon the material in any medium or format, so
@@ -5033,7 +5030,7 @@
         >
           <div class="guided--section">
             <h1 class="guided--text-sub-step">Review your dataset structure and metadata</h1>
-            <p class="guided--help-text">
+            <p class="help-text">
               A summary of your dataset as it will be generated on Pennsieve can be found below. If
               you have any changes that you would like to make before you generate your dataset on
               Pennsieve, you may go back and make them. If you are ready to generate on Pennsieve,
@@ -5452,14 +5449,14 @@
             <h2 class="guided--text-sub-step">View dataset on Pennsieve</h2>
 
             <p
-              class="guided--help-text text-center"
+              class="help-text text-center"
               style="margin-bottom: 1rem; text-align: justify !important"
             >
               Review dataset on Pennsieve to ensure it has been generated as requested and all the
               data and metadata are included properly
             </p>
             <p
-              class="guided--help-text text-center"
+              class="help-text text-center"
               style="
                 font-size: large;
                 border: 2px solid var(--button-color);
@@ -5478,7 +5475,7 @@
           </div>
           <div class="guided--section">
             <h2 class="guided--text-sub-step mt-0">Editing this dataset</h2>
-            <p class="guided--help-text">
+            <p class="help-text">
               Now that your initial dataset upload via Guided Mode has been completed, modifications
               to your dataset can be made by clicking Free Form Mode in the sidebar, selecting the
               component of your dataset you would like to edit, and selecting
@@ -5490,7 +5487,7 @@
           <div class="guided--section">
             <h2 class="guided--text-sub-step mt-0">Share with the curation team</h2>
 
-            <p class="guided--help-text">
+            <p class="help-text">
               Sharing your dataset with the SPARC Curation Team will inform the Curation Team that
               your dataset is ready to be reviewed. It is then advised not to make changes to the
               dataset until the Curation Team contacts you.
@@ -5605,7 +5602,7 @@
     style="padding: 0; border-radius: 4px; height: 476px"
   >
     <h2 class="guided--text-sub-step mt-0" id="structure-folder-header"></h2>
-    <p class="guided--help-text" id="structure-folder-contents"></p>
+    <p class="help-text" id="structure-folder-contents"></p>
     <div id="items-guided-container" style="width: 100%; display: flex; flex-direction: column">
       <div
         class="guided--folder-organization-buttons-container"

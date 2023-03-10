@@ -1830,21 +1830,19 @@ const revertManifestForTreeView = () => {
 
 const generateFFManifestEditCard = (highLevelFolderName) => {
   return `
-  <div class="guided--dataset-card">        
-    <div class="guided--dataset-card-body shrink">
-      <div class="guided--dataset-card-row">
-        <h1 class="guided--text-dataset-card">
+  <div class="dataset-card">        
+    <div class="dataset-card-body shrink">
+      <div class="dataset-card-row">
+        <h1 class="dataset-card-title-text">
           <span class="manifest-folder-name">${highLevelFolderName}</span>
         </h1>
       </div>
     </div>
-    <div class="guided--container-dataset-card-center">
+    <div class="dataset-card-button-container">
       <button
-        class="ui primary button guided--button-footer"
+        class="ui primary button dataset-card-button-confirm"
         style="
-          background-color: var(--color-light-green) !important;
           width: 295px !important;
-          margin: 4px;
           height: 3rem;
           font-size: 13px;
         "
