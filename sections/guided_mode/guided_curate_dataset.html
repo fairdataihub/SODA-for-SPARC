@@ -509,16 +509,18 @@
             <div class="guided--radio-button-container">
               <button
                 class="ui positive basic button guided--radio-button"
+                id="guided-button-dataset-is-sparc-funded"
                 data-next-element="guided-section-dataset-sparc-funded"
-                data-button-config-value="dataset-is-sparc"
+                data-button-config-value="dataset-is-sparc-funded"
                 data-button-config-value-state="yes"
               >
                 Yes
               </button>
               <button
                 class="ui negative basic button guided--radio-button"
+                id="guided-button-dataset-is-not-sparc-funded"
                 data-next-element="guided-section-dataset-not-sparc-funded"
-                data-button-config-value="dataset-is-sparc"
+                data-button-config-value="dataset-is-sparc-funded"
                 data-button-config-value-state="no"
               >
                 No
@@ -527,20 +529,12 @@
           </div>
 
           <div class="guided--section hidden" id="guided-section-dataset-sparc-funded">
-            <p class="guided--help-text">
-              The Submission metadata section is only required for datasets that are funded by
-              SPARC.
-            </p>
             <h2 class="guided--text-sub-step">
               Click "Save and Continue" to confirm your dataset is not SPARC funded.
             </h2>
           </div>
 
           <div class="guided--section hidden" id="guided-section-dataset-not-sparc-funded">
-            <p class="guided--help-text">
-              The Submission metadata section is only required for datasets that are funded by
-              SPARC.
-            </p>
             <h2 class="guided--text-sub-step">
               Click "Save and Continue" to confirm your dataset is not SPARC funded.
             </h2>
@@ -2124,29 +2118,6 @@
               SPARC requires all datasets to include a submission metadata file that includes
               information regarding the milestones associated with your dataset.
             </p>
-          </div>
-          <div class="guided--section" id="guided-section-submission-sparc-or-nonsparc">
-            <h2 class="guided--text-sub-step">Is your dataset submission funded by SPARC?</h2>
-            <div class="guided--radio-button-container">
-              <button
-                class="ui positive basic button guided--radio-button"
-                id="guided-button-dataset-is-sparc"
-                data-next-element="guided-section-submission-metadata"
-                data-button-config-value="dataset-is-sparc"
-                data-button-config-value-state="yes"
-              >
-                Yes
-              </button>
-              <button
-                class="ui negative basic button guided--radio-button"
-                id="guided-button-dataset-is-not-sparc"
-                data-next-element="guided-section-non-sparc-submission-metadata"
-                data-button-config-value="dataset-is-sparc"
-                data-button-config-value-state="no"
-              >
-                No
-              </button>
-            </div>
           </div>
 
           <div class="guided--section" id="guided-section-submission-metadata">
