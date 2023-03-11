@@ -38,7 +38,11 @@ const guidedMovePennsieveFolder = (movedFolderName, folderJSONPath, newFolderJSO
 
 // Returns a boolean that indicates whether or not the user selected that the dataset is SPARC funded
 const datasetIsSparcFunded = () => {
-  return sodaJSONObj["button-config"]?.["dataset-is-sparc-funded"] === "yes";
+  // If the user has not selected this option("probably an older progress file"), return true
+  if (!sodaJSONObj["button-config"]["dataset-is-sparc-funded"]) {
+    return true;
+  }
+  return sodaJSONObj["button-config"]["dataset-is-sparc-funded"] === "yes";
 };
 
 const checkIfPoolsFoldersAreCorrect = (poolFolderPath) => {
@@ -4175,14 +4179,7 @@ const openPage = async (targetPageID) => {
 
         if (contributorInformationMetadata) {
           acknowledgementsInput.value = contributorInformationMetadata["acknowledgment"];
-          //Add tags besides the sparc award
-          guidedOtherFundingsourcesTagify.addTags(
-            contributorInformationMetadata["funding"].filter((fudingSource) => {
-              return (
-                fudingSource !== sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"]
-              );
-            })
-          );
+          guidedOtherFundingsourcesTagify.addTags(contributorInformationMetadata["funding"]);
         } else {
           acknowledgementsInput.value = "";
           guidedOtherFundingsourcesTagify.removeAllTags();
@@ -4193,6 +4190,7 @@ const openPage = async (targetPageID) => {
       renderAdditionalLinksTable();
 
       const otherFundingLabel = document.getElementById("SPARC-award-other-funding-label");
+
       if (datasetIsSparcFunded()) {
         otherFundingLabel.innerHTML = ` besides the SPARC Award: ${sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"]}`;
       } else {
@@ -11642,8 +11640,11 @@ $(document).ready(async () => {
         ...sodaJSONObj["dataset-metadata"]["description-metadata"]["contributor-information"],
       };
 
-      //add the SPARC award as the first element in the funding source array if it's not already in the funding array
-      if (!guidedContributorInformation["funding"].includes(guidedSparcAward)) {
+      // Make sure the SPARC award is the first element in the funding source array
+      if (datasetIsSparcFunded()) {
+        guidedContributorInformation["funding"] = guidedContributorInformation["funding"].filter(
+          (funding) => funding !== guidedSparcAward
+        );
         guidedContributorInformation["funding"].unshift(guidedSparcAward);
       }
 
