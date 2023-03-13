@@ -3520,7 +3520,11 @@ const openPage = async (targetPageID) => {
             defaultBfAccount,
             sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
           );
+
+          // Save the subtitle to the JSON and add it to the input
+          sodaJSONObj["digital-metadata"]["subtitle"] = datasetSubtitle;
           datasetSubtitleInput.value = datasetSubtitle;
+
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-name-subtitle-tab");
         } catch (error) {
           clientError(error);
@@ -3577,50 +3581,6 @@ const openPage = async (targetPageID) => {
           console.log(error);
         }
       }
-    }
-
-    if (targetPageID === "guided-name-subtitle-tab") {
-      const datasetNameInput = document.getElementById("guided-dataset-name-input");
-      const datasetSubtitleInput = document.getElementById("guided-dataset-subtitle-input");
-      datasetNameInput.value = "";
-      datasetSubtitleInput.value = "";
-
-      const datasetName = getGuidedDatasetName();
-      if (datasetName) {
-        datasetNameInput.value = datasetName;
-      }
-
-      if (pageNeedsUpdateFromPennsieve("guided-name-subtitle-tab")) {
-        try {
-          //Try to get the dataset name from Pennsieve
-          //If the request fails, the subtitle input will remain blank
-          const datasetSubtitle = await api.getDatasetSubtitle(
-            defaultBfAccount,
-            sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
-          );
-          datasetSubtitleInput.value = datasetSubtitle;
-          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-name-subtitle-tab");
-        } catch (error) {
-          clientError(error);
-          const emessage = error.response.data.message;
-          await guidedShowOptionalRetrySwal(emessage, "guided-name-subtitle-tab");
-          // If the user chooses not to retry re-fetching the page data, mark the page as fetched
-          // so the the fetch does not occur again
-          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-name-subtitle-tab");
-        }
-      } else {
-        //Update subtitle from JSON
-        const datasetSubtitle = getGuidedDatasetSubtitle();
-        if (datasetSubtitle) {
-          datasetSubtitleInput.value = datasetSubtitle;
-        }
-      }
-
-      //Set the characters remaining counter
-      countCharacters(
-        document.getElementById("guided-dataset-subtitle-input"),
-        document.getElementById("guided-subtitle-char-count")
-      );
     }
 
     if (targetPageID === "guided-subjects-folder-tab") {
