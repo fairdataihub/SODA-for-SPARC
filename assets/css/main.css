@@ -9,13 +9,6 @@ button:focus {
   outline: none;
 }
 
-.wide-swal {
-  width: auto !important;
-  height: auto !important;
-  justify-content: space-between;
-  display: block;
-}
-
 .checkbox-design {
   -webkit-appearance: none;
   margin: 0;
@@ -72,33 +65,9 @@ button:focus {
   justify-content: space-between;
 }
 
-.update-file:before {
-  opacity: 0.5;
-}
-
-.update-file:after {
-  content: "\f24d";
-  position: absolute;
-  top: 42px;
-  right: 24px;
-  color: var(--color-bg-plum);
-  z-index: 5;
-  font-size: 21px;
-  font-family: "Font Awesome 5 Free";
-  font-weight: 900;
-  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
-  pointer-events: none;
-}
-
 .input-name {
   color: black;
   align-self: center;
-}
-
-.selectAll-container {
-  margin-top: 5px;
-  margin-bottom: 0px;
-  margin-left: 38px;
 }
 
 .selectAll-checkbox {
@@ -114,46 +83,8 @@ button:focus {
   text-align: center;
 }
 
-.jexcel_container {
-  margin-right: 20px;
-}
-
 .checkbox-design:focus {
   outline: none;
-}
-
-.input-container {
-  display: flex;
-  justify-content: flex-end;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  margin-right: 60px;
-  margin-left: 25px;
-  align-items: start;
-  border-radius: 8px;
-  background-color: #f7f7f7;
-}
-
-.selectAll-text {
-  display: flex;
-  justify-content: space-between;
-  margin: 0;
-  margin: 10px;
-  margin-left: 38px;
-}
-
-.checkbox-container {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 10px;
-  margin-bottom: 10px;
-  margin-right: 60px;
-  margin-left: 25px;
-  border-radius: 8px;
-}
-
-.checkbox-container:hover {
-  background-color: #f7f7f7;
 }
 
 #container {
@@ -176,24 +107,6 @@ button:focus {
   border-radius: 8px;
 }
 
-.wide-swal-auto {
-  width: auto !important;
-  height: auto !important;
-  display: block;
-}
-
-.swal-button-container {
-  display: flex;
-  justify-content: center;
-  overflow: visible;
-  margin-top: 5px;
-}
-
-.caption {
-  max-height: 250px;
-  overflow-y: overlay;
-}
-
 .rename-input {
   outline: none !important;
   border-width: 0 0 1px !important;
@@ -210,16 +123,6 @@ button:focus {
 
 .rename-input::-webkit-input-placeholder {
   color: rgb(139, 139, 139);
-}
-
-.container-fluid {
-  width: 100%;
-  height: 85%;
-  padding-right: 10px;
-  padding-left: 0;
-  margin-right: auto;
-  margin-left: auto;
-  margin-top: 5px;
 }
 
 .div-organize-items {
@@ -493,156 +396,6 @@ button[data-id="guided_bf_list_users_and_teams"] {
   z-index: 1000;
 }
 
-.single-item {
-  display: inline-block;
-  text-align: center;
-  width: 120px;
-  height: 100px;
-  position: relative !important;
-  margin-right: 5px;
-  margin-top: 5px;
-  padding: 10px 0px 10px 0px;
-}
-
-.single-item.selected-item:hover {
-  border: #c0c0c0;
-  background-color: #d8d7d7;
-  transition: all 0.25s linear;
-  -webkit-transition: all 0.25s linear;
-}
-
-.single-item.selected-item:focus {
-  border: #c0c0c0;
-  background-color: #eeeaea;
-  transition: all 0.25s linear;
-  -webkit-transition: all 0.25s linear;
-}
-
-@-o-keyframes fadeIt {
-  0% {
-    background-color: #ffffff;
-  }
-
-  50% {
-    background-color: #85ceff;
-  }
-
-  100% {
-    background-color: #ffffff;
-  }
-}
-
-@keyframes fadeIt {
-  0% {
-    background-color: #ffffff;
-  }
-
-  50% {
-    background-color: #85ceff;
-  }
-
-  100% {
-    background-color: #ffffff;
-  }
-}
-
-.backgroundAnimate {
-  background-image: none !important;
-  -o-animation: fadeIt 3s ease-in-out;
-  animation: fadeIt 3s ease-in-out;
-}
-
-.ds-selected {
-  border: #c0c0c0;
-  background-color: #eeeaea;
-  /* transform: translateY(-6px); */
-}
-
-.single-item:active {
-  transform: all 3s;
-  -webkit-transform: all 3s;
-}
-
-/*Pre publishing submission flow file viewer uses .single-item but allows a user to select a file UI element.
-  When the element is selected it adds styling. This sets it up to ignore the hover effect styling once selected.
-*/
-.single-item:not(.pre-publishing-file-viewer-file-selected):hover {
-  border: #c0c0c0;
-  background-color: #f5f5f5;
-  transition: all 0.15s linear;
-  -webkit-transition: all 0.15s linear;
-}
-
-.single-item:hover + #myspan {
-  display: block;
-}
-
-.myFol {
-  width: 50px;
-  height: 50px;
-}
-
-.myFol:before {
-  content: "";
-  background: url("../img/close_folder.png") no-repeat;
-  background-size: 60px;
-  position: absolute;
-  width: 60px;
-  height: 60px;
-  margin-right: 10px;
-}
-
-.myFol.empty:before {
-  content: "";
-  background: url("../img/close_folder.png") no-repeat;
-  opacity: 0.5;
-  background-size: 60px;
-  position: absolute;
-  width: 60px;
-  height: 60px;
-  margin-right: 10px;
-}
-
-.myFol.deleted_folder:before {
-  opacity: 0.5;
-}
-
-.myFol.deleted_folder:after {
-  content: "\00D7";
-  position: absolute;
-  bottom: 30px;
-  right: 25px;
-  line-height: 1;
-  color: rgb(252, 0, 0);
-  z-index: 10;
-  font-size: 35px;
-  font-family: Poppins, helvetica, arial, sans-serif;
-  font-weight: bold;
-  pointer-events: none;
-}
-
-.folder_desc {
-  text-align: center;
-  font-size: 13px;
-  width: 110px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  user-select: none;
-  -webkit-user-select: none;
-  padding: 0px 4px 0px 4px;
-  /* word-wrap: break-word; */
-  line-height: 1.5;
-  margin-right: 5px;
-  margin-left: 5px;
-  color: black;
-  pointer-events: none;
-}
-
-.blue {
-  color: rgb(255, 165, 0, 0.8);
-}
-
 .switch {
   position: relative;
   display: inline-block;
@@ -877,15 +630,6 @@ button[data-id="guided_bf_list_users_and_teams"] {
   display: none;
 }
 
-.drag-drop-container-instructions {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  padding: 25px;
-  opacity: 0.55;
-}
-
 .file-templates-button {
   width: 160px;
   height: 160px;
@@ -963,288 +707,6 @@ button[data-id="guided_bf_list_users_and_teams"] {
 .form-group.row {
   margin-bottom: 10px;
   margin-left: 5px;
-}
-
-/* file and folder */
-.myFile {
-  width: 55px;
-  height: 55px;
-}
-
-.myFile.csv:before {
-  background: url("../img/csv-file.png");
-  content: "";
-  background-size: cover;
-  position: absolute;
-  width: 55px;
-  height: 55px;
-  margin-left: 5px;
-}
-
-.myFile.doc:before {
-  background: url("../img/doc-file.png");
-  content: "";
-  background-size: cover;
-  position: absolute;
-  width: 55px;
-  height: 55px;
-  margin-left: 5px;
-}
-
-.myFile.docx:before {
-  background: url("../img/doc-file.png");
-  content: "";
-  background-size: cover;
-  position: absolute;
-  width: 55px;
-  height: 55px;
-  margin-left: 5px;
-}
-
-.myFile.png:before {
-  background: url("../img/png-file.png");
-  content: "";
-  background-size: cover;
-  position: absolute;
-  width: 55px;
-  height: 55px;
-  margin-left: 5px;
-}
-
-.myFile.PNG:before {
-  background: url("../img/png-file.png");
-  content: "";
-  background-size: cover;
-  position: absolute;
-  width: 55px;
-  height: 55px;
-  margin-left: 5px;
-}
-
-.myFile.jpg:before {
-  background: url("../img/jpeg-file.png");
-  content: "";
-  background-size: cover;
-  position: absolute;
-  width: 55px;
-  height: 55px;
-  margin-left: 5px;
-}
-
-.myFile.jpeg:before {
-  background: url("../img/jpeg-file.png");
-  content: "";
-  background-size: cover;
-  position: absolute;
-  width: 55px;
-  height: 55px;
-  margin-left: 5px;
-}
-
-.myFile.JPEG:before {
-  background: url("../img/jpeg-file.png");
-  content: "";
-  background-size: cover;
-  position: absolute;
-  width: 55px;
-  height: 55px;
-  margin-left: 5px;
-}
-
-.myFile.pdf:before {
-  background: url("../img/pdf-file.png");
-  content: "";
-  background-size: cover;
-  position: absolute;
-  width: 55px;
-  height: 55px;
-  margin-left: 5px;
-}
-
-.myFile.txt:before {
-  background: url("../img/txt-file.png");
-  content: "";
-  background-size: cover;
-  position: absolute;
-  width: 55px;
-  height: 55px;
-  margin-left: 5px;
-}
-
-.myFile.xlsx:before {
-  background: url("../img/excel-file.png");
-  content: "";
-  background-size: cover;
-  position: absolute;
-  width: 55px;
-  height: 55px;
-  margin-left: 5px;
-}
-
-.myFile.xls:before {
-  background: url("../img/excel-file.png");
-  content: "";
-  background-size: cover;
-  position: absolute;
-  width: 55px;
-  height: 55px;
-  margin-left: 5px;
-}
-
-.myFile.other:before {
-  background: url("../img/other-file.png");
-  content: "";
-  background-size: cover;
-  position: absolute;
-  width: 55px;
-  height: 55px;
-  margin-left: 5px;
-}
-
-.myFile.deleted_file:before {
-  opacity: 0.5;
-}
-
-.myFile.deleted_file:after {
-  content: "\00D7";
-  position: absolute;
-  bottom: 26px;
-  right: 23px;
-  line-height: 1;
-  color: rgb(252, 0, 0);
-  z-index: 10;
-  font-size: 35px;
-  font-family: helvetica, arial, sans-serif;
-  font-weight: bold;
-  pointer-events: none;
-}
-
-.folder_desc.pennsieve_folder:after {
-  content: "\f0c2";
-  position: absolute;
-  bottom: 34px;
-  left: 18px;
-  color: rgb(81, 176, 240);
-  z-index: 5;
-  font-size: 21px;
-  font-family: "Font Awesome 5 Free";
-  font-weight: 900;
-  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
-  pointer-events: none;
-}
-
-.pennsieve_folder_deleted {
-  color: rgba(0, 0, 0, 0.5);
-}
-
-.folder_desc.local_folder:after {
-  content: "\f7c2";
-  position: absolute;
-  bottom: 34px;
-  left: 18px;
-  color: rgb(81, 176, 240);
-  z-index: 5;
-  font-size: 21px;
-  font-family: "Font Awesome 5 Free";
-  font-weight: 900;
-  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
-  pointer-events: none;
-}
-
-.local_folder_deleted {
-  color: rgba(0, 0, 0, 0.5);
-}
-
-.folder_desc.pennsieve_folder_deleted:after {
-  content: "\f0c2";
-  position: absolute;
-  bottom: 34px;
-  left: 18px;
-  color: rgb(185, 221, 245);
-  z-index: 5;
-  font-size: 21px;
-  font-family: "Font Awesome 5 Free";
-  font-weight: 900;
-  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
-  pointer-events: none;
-}
-
-.folder_desc.local_folder_deleted:after {
-  content: "\f7c2";
-  position: absolute;
-  bottom: 34px;
-  left: 18px;
-  color: rgb(185, 221, 245);
-  z-index: 5;
-  font-size: 21px;
-  font-family: "Font Awesome 5 Free";
-  font-weight: 900;
-  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
-  pointer-events: none;
-}
-
-.folder_desc.pennsieve_file:after {
-  content: "\f0c2";
-  position: absolute;
-  bottom: 27px;
-  left: 34px;
-  color: rgb(81, 176, 240);
-  z-index: 5;
-  font-size: 21px;
-  font-family: "Font Awesome 5 Free";
-  font-weight: 900;
-  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
-  pointer-events: none;
-}
-
-.folder_desc.local_file:after {
-  content: "\f7c2";
-  position: absolute;
-  bottom: 27px;
-  left: 34px;
-  color: rgb(81, 176, 240);
-  z-index: 5;
-  font-size: 21px;
-  font-family: "Font Awesome 5 Free";
-  font-weight: 900;
-  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
-  pointer-events: none;
-}
-
-.pennsieve_file_deleted {
-  color: rgba(0, 0, 0, 0.5);
-}
-
-.local_file_deleted {
-  color: rgba(0, 0, 0, 0.5);
-}
-
-.folder_desc.pennsieve_file_deleted:after {
-  content: "\f0c2";
-  position: absolute;
-  bottom: 27px;
-  left: 34px;
-  color: rgb(185, 221, 245);
-  z-index: 5;
-  font-size: 21px;
-  font-family: "Font Awesome 5 Free";
-  font-weight: 900;
-  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
-  pointer-events: none;
-}
-
-.folder_desc.local_file_deleted:after {
-  content: "\f7c2";
-  position: absolute;
-  bottom: 27px;
-  left: 34px;
-  color: rgb(185, 221, 245);
-  z-index: 5;
-  font-size: 21px;
-  font-family: "Font Awesome 5 Free";
-  font-weight: 900;
-  text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white;
-  pointer-events: none;
 }
 
 .menu-toggle {
@@ -1601,28 +1063,9 @@ details[open] > summary::before {
   transform: scale(0.7);
 }
 
-.details-box {
-  display: none;
-  position: relative;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
-  padding: 2em;
-  margin-top: 1rem;
-  margin-bottom: 2rem;
-  border-radius: 0.4rem;
-  background-color: #f8f8f9;
-  border-color: #f8f8f9;
-}
-
 .is-open .details-box {
   display: block;
   animation: demo-box-fade-in 0.2s cubic-bezier(0, 0.2, 0.2, 0.96);
-}
-
-.about-title {
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--color-bg-plum) !important;
-  margin-bottom: 0;
 }
 
 .ffm-return-to-guided {
@@ -1661,161 +1104,10 @@ details[open] > summary::before {
   box-shadow: 0 0 6px #b0b0b0 !important;
 }
 
-.about-container {
-  border-radius: 0.5rem;
-  margin-top: 7px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 550px;
-  margin-bottom: 3rem;
-  align-self: center;
-}
-
-.tip-content {
-  text-align: justify;
-  color: #898989 !important;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.sodaVideo-button {
-  display: flex;
-  background: white;
-  width: 14rem;
-  justify-content: center;
-  justify-self: center;
-  border-radius: 0.25rem;
-  align-items: center;
-  height: 3.5rem;
-  margin-right: 1rem;
-  color: #666666;
-  border-width: 1px;
-  border-color: var(--color-accent) !important;
-  font-family: Poppins;
-}
-
-.sodaVideo-button:hover {
-  box-shadow: 0 0 6px #b0b0b0;
-}
-
-.direct-to-doc-btn:hover {
-  box-shadow: 0 0 6px #b0b0b0;
-}
-
-.getting-started-btn:hover {
-  box-shadow: 0 0 6px #b0b0b0;
-}
-
-.direct-to-doc-btn {
-  color: #666666;
-  display: flex;
-  background: white;
-  font-weight: bold;
-  line-height: 1rem;
-  font-size: 1rem;
-  width: 18rem !important;
-  height: 3.5rem;
-  margin-right: 1rem;
-  justify-content: center;
-  align-items: center;
-  border-radius: 0.25rem;
-  border-width: 1px;
-  border-color: #b80d49;
-}
-
 @media (min-height: 1200px) {
   .getting-started-buttons {
     margin-top: -17rem !important;
   }
-}
-
-.documentation_container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  max-height: 1000px;
-}
-
-.document_container {
-  overflow-y: auto;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  display: flex;
-}
-
-.doc_container {
-  padding-right: 1.25rem;
-  padding-top: 0.5rem;
-  justify-content: center;
-  align-items: center;
-  padding: 0.75rem;
-  flex-direction: column;
-  max-width: 1024px;
-  width: 100%;
-  height: 100%;
-  display: flex;
-}
-
-.dc_con {
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  display: flex;
-}
-
-.doc_header {
-  font-weight: 700;
-  font-size: 1.875rem !important;
-  line-height: 2.25rem;
-  padding-bottom: 0.25rem;
-  margin: 0;
-  padding-top: 1.25rem;
-}
-
-.docu_divide {
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  height: 0;
-  color: inherit;
-  border-top-width: 1px;
-}
-
-.document-content {
-  align-items: center;
-  flex-direction: column;
-  width: 100%;
-  height: 57%;
-  display: flex;
-  justify-content: center;
-}
-
-.button_container_contact {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 3rem;
-}
-
-.docu-content-container {
-  margin-bottom: 1rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.documentation-lottie_style {
-  --lottie-animation-container-width: 400px;
-  --lottie-animation-container-height: 400px;
-  --lottie-animation-container-background-color: transparent;
-  width: var(--lottie-animation-container-width);
-  height: var(--lottie-animation-container-height);
-  background-color: var(--lottie-animation-container-background-color);
-  overflow: hidden;
-  margin: 0px !important;
 }
 
 .api_key-btn {
@@ -1832,65 +1124,8 @@ details[open] > summary::before {
   border: 1px solid #666666 !important;
 }
 
-.view_doc_button {
-  transition-property: all;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
-  border-width: 1px;
-  --tw-border-opacity: 1;
-  border-color: rgb(147 197 253 / var(--tw-border-opacity));
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  border-radius: 0.25rem;
-  padding-left: 1.25rem;
-  padding-right: 1.25rem;
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-  min-width: 130px;
-  font-size: 14px;
-  font-weight: 500;
-  --tw-text-opacity: 1;
-  color: rgb(17 24 39 / var(--tw-text-opacity));
-  cursor: pointer;
-  -webkit-appearance: button;
-  background-color: transparent;
-  background-image: none;
-}
-
-.document_text {
-  font-size: 1.3rem !important;
-  color: black !important;
-  font-weight: 500;
-  margin-top: 0 !important;
-}
-
 #Question-getting-started-locally-destination {
   text-align: -webkit-center;
-}
-
-.freeform-file-explorer {
-  border: 2px solid lightgray;
-  margin-top: 5px;
-  height: auto;
-  border-radius: 3px;
-}
-
-.freeform-file-explorer {
-  border: 2px solid lightgray;
-  margin-top: 5px;
-  height: auto;
-  border-radius: 3px;
-}
-
-.freeform-file-explorer-buttons {
-  display: flex;
-  margin-top: 0.5rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
-  width: 100%;
-  border-bottom: 2px solid lightgray;
 }
 
 #guided-pennsieve-copy-dataset-link {

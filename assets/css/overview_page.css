@@ -91,6 +91,10 @@
   width: 250px;
 }
 
+.getting-started-btn:hover {
+  box-shadow: 0 0 6px #b0b0b0;
+}
+
 .getting-started-btn-txt {
   margin: 0;
   font-weight: bold !important;

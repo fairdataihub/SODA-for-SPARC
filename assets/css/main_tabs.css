@@ -108,14 +108,6 @@
   overflow: auto;
 }
 
-/* #prepare_metadata_main_container, */
-/* #prepare_dataset_main_container {
-  transform: translate(-50%, -50%);
-  position: absolute;
-  top: 50%;
-  left: 50%;
-} */
-
 .flex-row-container {
   margin: auto;
   padding-bottom: 35px;

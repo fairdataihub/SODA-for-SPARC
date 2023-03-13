@@ -1,12 +1,15 @@
+/* 
+  This CSS files contains the global standards for 
+  containers, text, dropdowns, cards/tiles, animations, and helper classes 
+*/
+
 /* Fonts ---------------------------- */
 @import url("https://fonts.googleapis.com/css?family=Poppins:400,500,600,700");
 
 @font-face {
   font-family: "Poppins", sans-serif;
-  /* font-family: 'Source Code Pro'; */
   font-style: normal;
   font-weight: 400;
-  /* src: local('Source Code Pro'), local('SourceCodePro'), url(fonts/SourceCodePro-Regular.ttf) format('truetype'); */
 }
 
 /* Global CSS to Standardize the styling used throughout SODA */
@@ -86,7 +89,136 @@ textarea {
   font-size: 15px;
 }
 
+/* Containers */
+
+.container-end {
+  max-height: 90px;
+  padding: 15px;
+  padding-top: 30px;
+}
+
+.selectAll-container {
+  margin-top: 5px;
+  margin-bottom: 0px;
+  margin-left: 38px;
+}
+
+.details-box {
+  display: none;
+  position: relative;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
+  padding: 2em;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+  border-radius: 0.4rem;
+  background-color: #f8f8f9;
+  border-color: #f8f8f9;
+}
+
+.jexcel_container {
+  margin-right: 20px;
+}
+
+.input-container {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-right: 60px;
+  margin-left: 25px;
+  align-items: start;
+  border-radius: 8px;
+  background-color: #f7f7f7;
+}
+
+.about-container {
+  border-radius: 0.5rem;
+  margin-top: 7px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 550px;
+  margin-bottom: 3rem;
+  align-self: center;
+}
+
+.drag-drop-container-instructions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding: 25px;
+  opacity: 0.55;
+}
+
+.checkbox-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-right: 60px;
+  margin-left: 25px;
+  border-radius: 8px;
+}
+
+.checkbox-container:hover {
+  background-color: #f7f7f7;
+}
+
+.info-container {
+  background-color: var(--color-transparent-soda-green);
+
+  margin-top: 5px;
+  padding: 10px;
+  width: 100%;
+
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+
+  text-align: justify;
+
+  border: 1px solid var(--color-light-green);
+  border-radius: 3px;
+}
+
 /* Global classes for text styling */
+
+.question-title {
+  text-align: center;
+  color: var(--color);
+  font-size: 17px;
+  margin: 20px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+}
+
+.selectAll-text {
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  margin: 10px;
+  margin-left: 38px;
+}
+
+.caption {
+  max-height: 250px;
+  overflow-y: overlay;
+}
+
+.about-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-bg-plum) !important;
+  margin-bottom: 0;
+}
+
+.tip-content {
+  text-align: justify;
+  color: #898989 !important;
+  font-size: 12px;
+  font-weight: 700;
+}
 
 .help-text {
   font-size: 16px;
@@ -119,23 +251,15 @@ textarea {
   color: hsl(0, 0%, 22%);
 }
 
-/* Dropdown classes */
-.info-container {
-  background-color: var(--color-transparent-soda-green);
-
-  margin-top: 5px;
-  padding: 10px;
+.text-input-instructions {
+  font-size: 13px;
   width: 100%;
-
-  display: none;
-  flex-direction: column;
-  justify-content: center;
-
-  text-align: justify;
-
-  border: 1px solid var(--color-light-green);
-  border-radius: 3px;
+  padding-top: 4px;
+  padding-bottom: 5px;
+  color: dimgray !important;
 }
+
+/* Dropdown classes */
 
 .info-dropdown {
   display: flex;
@@ -151,20 +275,6 @@ textarea {
   margin-right: 6px;
   font-size: 12px;
   color: #000;
-}
-
-.container-open {
-  display: flex;
-  margin-bottom: 0px;
-  animation: demo-box-fade-in 0.2s cubic-bezier(0, 0.2, 0.2, 0.96);
-}
-
-.text-input-instructions {
-  font-size: 13px;
-  width: 100%;
-  padding-top: 4px;
-  padding-bottom: 5px;
-  color: dimgray !important;
 }
 
 /* Card/tile standards */
@@ -465,10 +575,21 @@ textarea {
 .remove-left-border {
   border-left: none !important;
 }
+
 .soda-green {
   background-color: var(--color-light-green) !important;
   color: white !important;
 }
+
+.invalid {
+  border-color: #e0b4b4 !important;
+  background: #fff6f6 !important;
+}
+
+.blue {
+  color: rgb(255, 165, 0, 0.8);
+}
+
 .required:after {
   content: " *";
   color: red;
@@ -512,10 +633,6 @@ textarea {
   display: flex;
   justify-content: space-around;
   width: 100%;
-}
-
-.swal-wide {
-  width: 500px !important;
 }
 
 .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
@@ -565,6 +682,18 @@ textarea {
 }
 
 /* Animations */
+
+.backgroundAnimate {
+  background-image: none !important;
+  -o-animation: fadeIt 3s ease-in-out;
+  animation: fadeIt 3s ease-in-out;
+}
+
+.container-open {
+  display: flex;
+  margin-bottom: 0px;
+  animation: demo-box-fade-in 0.2s cubic-bezier(0, 0.2, 0.2, 0.96);
+}
 
 .circular {
   height: 100px;
@@ -647,6 +776,246 @@ textarea {
   transition: none !important;
 }
 
+.pulse-blue {
+  box-shadow: 0 0 0 0 rgba(52, 172, 224, 1);
+  animation: pulse-blue-animation 2s infinite;
+}
+
+.spinner {
+  width: 50px;
+  height: 40px;
+  text-align: center;
+  font-size: 10px;
+  margin: 15px;
+}
+
+.spinner > div {
+  background-color: #333;
+  height: 100%;
+  width: 6px;
+  display: inline-block;
+
+  -webkit-animation: sk-stretchdelay 1.2s infinite ease-in-out;
+  animation: sk-stretchdelay 1.2s infinite ease-in-out;
+}
+
+.spinner .rect2 {
+  -webkit-animation-delay: -1.1s;
+  animation-delay: -1.1s;
+}
+
+.spinner .rect3 {
+  -webkit-animation-delay: -1s;
+  animation-delay: -1s;
+}
+
+.spinner .rect4 {
+  -webkit-animation-delay: -0.9s;
+  animation-delay: -0.9s;
+}
+
+.spinner .rect5 {
+  -webkit-animation-delay: -0.8s;
+  animation-delay: -0.8s;
+}
+
+.bi.bi-trash.custom-fields:hover {
+  animation: shakingeffect 0.4s;
+}
+
+/* 2 classes below are for the loading splash screen */
+
+.loading-soda-can {
+  /* padding: 20px 20px; */
+  width: 100px;
+  height: 100px;
+  /* margin:0 auto; */
+  animation-duration: 0.7s;
+  animation-name: loadingCan;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  position: relative;
+  margin: 0 auto;
+}
+
+.fas.fa-hand-point-left.welcome-icon-hand {
+  animation-duration: 0.7s;
+  animation-name: changeWelcomeIcon;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  position: relative;
+  color: var(--color-light-green);
+  font-size: 21px;
+  margin-right: 10px;
+}
+
+.jump-back:hover,
+.jump-back:focus,
+.jump-back:active {
+  -webkit-animation-name: jump-back-float, jump-back;
+  animation-name: jump-back-float, jump-back;
+  -webkit-animation-duration: 0.3s, 1.5s;
+  animation-duration: 0.3s, 1.5s;
+  -webkit-animation-delay: 0s, 0.3s;
+  animation-delay: 0s, 0.3s;
+  -webkit-animation-timing-function: ease-out, ease-in-out;
+  animation-timing-function: ease-out, ease-in-out;
+  -webkit-animation-iteration-count: 1, infinite;
+  animation-iteration-count: 1, infinite;
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+  -webkit-animation-direction: normal, alternate;
+  animation-direction: normal, alternate;
+}
+
+@-webkit-keyframes jump-back {
+  0% {
+    -webkit-transform: translateY(-4px);
+    transform: translateY(-4px);
+  }
+  50% {
+    -webkit-transform: translateY(-2px);
+    transform: translateY(-2px);
+  }
+  100% {
+    -webkit-transform: translateY(-4px);
+    transform: translateY(-4px);
+  }
+}
+@keyframes jump-back {
+  0% {
+    -webkit-transform: translateY(-3px);
+    transform: translateY(-3px);
+  }
+  50% {
+    -webkit-transform: translateY(-2px);
+    transform: translateY(-2px);
+  }
+  100% {
+    -webkit-transform: translateY(-3px);
+    transform: translateY(-3px);
+  }
+}
+@-webkit-keyframes jump-back-float {
+  100% {
+    -webkit-transform: translateY(-3px);
+    transform: translateY(-3px);
+  }
+}
+@keyframes jump-back-float {
+  100% {
+    -webkit-transform: translateY(-3px);
+    transform: translateY(-3px);
+  }
+}
+
+@keyframes loadingCan {
+  from {
+    bottom: -10px;
+  }
+
+  to {
+    bottom: 0px;
+  }
+}
+
+@keyframes changeWelcomeIcon {
+  from {
+    left: -15px;
+  }
+
+  to {
+    left: 0px;
+  }
+}
+
+@keyframes shakingeffect {
+  0% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  20% {
+    transform: translateY(-2px) rotate(-4deg);
+  }
+  40% {
+    transform: translateY(-2px) rotate(-2deg);
+  }
+  60% {
+    transform: translateY(2px) rotate(4deg);
+  }
+  80% {
+    transform: translateY(2px) rotate(2deg);
+  }
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+}
+
+@-webkit-keyframes sk-stretchdelay {
+  0%,
+  40%,
+  100% {
+    -webkit-transform: scaleY(0.4);
+  }
+  20% {
+    -webkit-transform: scaleY(1);
+  }
+}
+
+@keyframes sk-stretchdelay {
+  0%,
+  40%,
+  100% {
+    transform: scaleY(0.4);
+    -webkit-transform: scaleY(0.4);
+  }
+  20% {
+    transform: scaleY(1);
+    -webkit-transform: scaleY(1);
+  }
+}
+
+@keyframes pulse-blue-animation {
+  0% {
+    box-shadow: 0 0 0 0 rgba(52, 172, 224, 0.7);
+  }
+
+  50% {
+    box-shadow: 0 0 0 10px rgba(52, 172, 224, 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(52, 172, 224, 0);
+  }
+}
+
+@-o-keyframes fadeIt {
+  0% {
+    background-color: #ffffff;
+  }
+
+  50% {
+    background-color: #85ceff;
+  }
+
+  100% {
+    background-color: #ffffff;
+  }
+}
+
+@keyframes fadeIt {
+  0% {
+    background-color: #ffffff;
+  }
+
+  50% {
+    background-color: #85ceff;
+  }
+
+  100% {
+    background-color: #ffffff;
+  }
+}
+
 @-webkit-keyframes swing {
   15% {
     opacity: 0;
@@ -720,6 +1089,113 @@ textarea {
   100% {
     transform: rotate(360deg);
   }
+}
+
+/* Sweet alert (swal) classes */
+/* Use the first class below for any hide animations on sweet alert. Seems to look okay and makes the message disappear faster */
+.animate_fastest {
+  --animate-duration: 0.3s;
+}
+
+.swal-wide {
+  width: 500px !important;
+}
+
+.wide-swal {
+  width: auto !important;
+  height: auto !important;
+  justify-content: space-between;
+  display: block;
+}
+
+.wide-swal-auto {
+  width: auto !important;
+  height: auto !important;
+  display: block;
+}
+
+.swal-button-container {
+  display: flex;
+  justify-content: center;
+  overflow: visible;
+  margin-top: 5px;
+}
+
+.swal2-content .guided--form-label,
+.swal2-content .tagify__input {
+  text-align: left;
+}
+
+.swal2-actions {
+  z-index: 0 !important;
+  /* margin-top: 30px !important; */
+}
+
+.swal2-input {
+  outline: none !important;
+  border-width: 0 0 1px !important;
+  border-color: gray !important;
+  box-shadow: none !important;
+  border-radius: 0px !important;
+}
+
+.swal2-input:focus {
+  outline: none !important;
+  border-width: 0 0 2px !important;
+  border-color: #13716d !important;
+}
+
+.swal2-input::-webkit-input-placeholder {
+  color: black;
+  font-weight: bold;
+}
+
+body.swal2-shown > [aria-hidden="true"] {
+  filter: blur(1px);
+  transition: 0.1s filter linear;
+}
+
+.swal2-deny:hover {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)) !important;
+}
+
+.swal2-validation-message {
+  background: transparent !important;
+  color: red !important;
+}
+
+.swal2-footer {
+  color: #363636 !important;
+  /* justify-content: flex-end !important; */
+  /* padding-right: 20px !important; */
+}
+
+.swal2-footer a {
+  text-decoration: underline;
+  /* color: var(--color-light-green) !important; */
+}
+
+.swal-left-align {
+  text-align: left !important;
+}
+
+.swal2-title {
+  margin: 0px !important;
+  font-size: 16px !important;
+  margin-bottom: 10px !important;
+}
+
+.swal2-select {
+  min-width: 100% !important;
+  font-size: 16px !important;
+}
+
+.swal2-popup {
+  padding: 20px 5px 15px !important;
+}
+
+.swal2-confirm {
+  background-color: var(--color-light-green) !important;
 }
 
 /* Code */
