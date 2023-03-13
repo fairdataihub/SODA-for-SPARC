@@ -1255,6 +1255,10 @@ const savePageChanges = async (pageBeingLeftID) => {
         sodaJSONObj["dataset-metadata"]["CHANGES"] = changes;
       }
     }
+
+    // Save the current version of SODA as the user should be taken back to the first page when the app is updated
+    const currentAppVersion = document.getElementById("version").innerHTML;
+    sodaJSONObj["last-version-of-soda-used"] = currentAppVersion;
   } catch (error) {
     guidedSetNavLoadingState(false);
     console.log(error);
@@ -5757,7 +5761,6 @@ const patchPreviousGuidedModeVersions = () => {
   }
   if (oldManifestFileHeaders) {
     resetGuidedManifestFiles();
-    forceUserToRestartFromFirstPage = true;
   }
 
   //Add key to track status of Pennsieve uploads
@@ -5789,6 +5792,14 @@ const patchPreviousGuidedModeVersions = () => {
   // If the user was on the airtable award page (does not exist anymore), send them to the create submission metadata page
   if (sodaJSONObj["page-before-exit"] === "guided-airtable-award-tab") {
     sodaJSONObj["page-before-exit"] = "guided-create-submission-metadata-tab";
+  }
+
+  const currentSodaVersion = document.getElementById("version").innerHTML;
+  if (!sodaJSONObj["last-version-of-soda-used"]) {
+    sodaJSONObj["last-version-of-soda-used"] = currentSodaVersion;
+  }
+  if (currentSodaVersion > sodaJSONObj["last-version-of-soda-used"]) {
+    forceUserToRestartFromFirstPage = true;
   }
 
   return forceUserToRestartFromFirstPage;
