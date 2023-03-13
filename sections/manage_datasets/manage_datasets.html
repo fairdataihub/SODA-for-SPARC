@@ -176,7 +176,7 @@
                 data-alert-message='A Pennsieve dataset name cannot contain any of the following characters: " / : * ? < > \'
                 data-alert-type="danger"
               />
-              <div style="border-radius: 0.5rem; margin-top: 7px">
+              <div style="border-radius: 0.5rem; margin-top: 10px">
                 <p class="tip-content">
                   This is the field that will be displayed in public as the title of the dataset.
                   Ensure that your dataset name is different than your other dataset names and it is
@@ -451,7 +451,7 @@
                 style="font-size: 14px"
                 placeholder="Enter/select collection name"
               />
-              <div style="border-radius: 0.5rem; margin-top: 7px">
+              <div style="border-radius: 0.5rem; margin-top: 10px">
                 <p class="tip-content">
                   Note that a dataset can be added to multiple collections. Collections that the
                   dataset belongs to (if any) will appear. Click to see a list of existing
@@ -545,7 +545,7 @@
 
     <div
       id="rename_bf_dataset-tab"
-      style="overflow-y: auto; height: calc(100% - 150px); margin-left: 0px"
+      style="overflow-y: auto; height: calc(100% - 150px); margin-left: 0px; margin-top: 1rem"
     >
       <div
         class="individual-question manage-dataset show"
@@ -729,7 +729,7 @@
               data-alert-message='A Pennsieve dataset name cannot contain any of the following characters: " / : * ? < > \'
               data-alert-type="danger"
             />
-            <div style="border-radius: 0.5rem; margin-top: 7px">
+            <div style="border-radius: 0.5rem; margin-top: 10px">
               <p class="tip-content">
                 When renaming your dataset, ensure that the name is different than your other
                 dataset names and it is relatively informative.
@@ -1073,20 +1073,17 @@
               </div> -->
 
               <div
-                class="guided--info-dropdown"
-                style="margin: 1.5rem 0rem 0.1rem 9.4rem; align-self: flex-start"
+                class="info-dropdown"
+                style="margin: 1.5rem 0rem 0.1rem 10rem; align-self: flex-start"
               >
-                <p class="guided--dropdown-text" data-dropdown-type="info">
+                <p class="info-dropdown-text" data-dropdown-type="info">
                   Can't find your PI in the list?
                 </p>
                 <i class="fas fa-chevron-right" style="transform: rotate(90deg)"></i>
               </div>
 
-              <div
-                class="guided--info-container"
-                style="align-self: center; width: 550px; margin-bottom: 1rem"
-              >
-                <p class="guided--help-text">
+              <div class="info-container" style="width: 550px; margin-bottom: 1rem">
+                <p class="help-text">
                   The SPARC PI must have a Pennsieve account and have access to the SPARC
                   Organization before you can give them ownership of the dataset. Click
                   <a
@@ -1243,8 +1240,8 @@
                         style="
                           text-align: right;
                           padding-right: 8px;
-                          margin-left: 30px;
-                          width: 165px;
+                          margin-left: 23px;
+                          width: 201px;
                         "
                       >
                         Current account:
@@ -1390,7 +1387,7 @@
             <label style="font-size: 17px; color: var(--color-bg-plum)"
               >Do you want to provide permissions to another user or team?
             </label>
-            <div style="border-radius: 0.5rem; margin-top: 5px; width: 550px; align-self: center">
+            <div style="border-radius: 0.5rem; margin-top: 10px; width: 550px; align-self: center">
               <p class="tip-content">
                 Giving permissions to other members and/or team is only necessary if you need them
                 to contribute to the dataset.
@@ -1427,7 +1424,7 @@
                         fill="#13716D"
                       />
                     </svg>
-                    <h2>Add/edit user permissions</h2>
+                    <h2 style="margin-top: 1rem">Add/edit user permissions</h2>
                   </div>
                 </div>
               </div>
@@ -1466,7 +1463,7 @@
                         fill="#B80D49"
                       />
                     </svg>
-                    <h2>Add/edit team permissions</h2>
+                    <h2 style="margin-top: 1rem">Add/edit team permissions</h2>
                   </div>
                 </div>
               </div>
@@ -1486,7 +1483,7 @@
               style="font-size: 17px; color: var(--color-bg-plum); width: 100%; text-align: center"
               >Please select the user for whom you want to modify permissions:
             </label>
-            <div style="border-radius: 0.5rem; margin-top: 5px; width: 550px; align-self: center">
+            <div style="border-radius: 0.5rem; margin-top: 10px; width: 550px; align-self: center">
               <p class="tip-content">
                 See our associated
                 <a
@@ -1509,6 +1506,7 @@
                   flex-direction: row;
                   justify-content: space-around;
                   padding-bottom: 20px;
+                  margin-top: 1rem;
                 "
               >
                 <select

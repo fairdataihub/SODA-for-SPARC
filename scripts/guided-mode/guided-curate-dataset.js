@@ -1,3 +1,7 @@
+const returnToGuided = () => {
+  document.getElementById("guided_mode_view").click();
+};
+
 const folderImportedFromPennsieve = (folderJSONPath) => {
   return folderJSONPath.type === "bf";
 };
@@ -1319,7 +1323,7 @@ const renderSideBar = (activePage) => {
     // Add the high level drop down to the nav bar
     const dropdDown = `
     <div class="guided--nav-bar-dropdown">
-      <p class="guided--help-text mb-0">
+      <p class="help-text mb-0">
         ${highLevelStepName}
       </p>
       <i class="fas fa-chevron-right"></i>
@@ -1727,7 +1731,7 @@ const guidedLockSideBar = () => {
   // return data-parent-tab-name for each .guided--parent-tab element
 };
 
-guidedUnLockSideBar = () => {
+const guidedUnLockSideBar = () => {
   const sidebar = document.getElementById("sidebarCollapse");
   const guidedModeSection = document.getElementById("guided_mode-section");
   const guidedDatsetTab = document.getElementById("guided_curate_dataset-tab");
@@ -1889,9 +1893,9 @@ const checkIfDatasetExistsOnPennsieve = async (datasetNameOrID) => {
 // Adds the click handlers to the info drop downs in Guided Mode
 // The selectors also append the info icon before the label depending on data attributes
 // passed in the HTML
-const infoDropdowns = document.getElementsByClassName("guided--info-dropdown");
+const infoDropdowns = document.getElementsByClassName("info-dropdown");
 for (const infoDropdown of Array.from(infoDropdowns)) {
-  const infoTextElement = infoDropdown.querySelector(".guided--dropdown-text");
+  const infoTextElement = infoDropdown.querySelector(".info-dropdown-text");
   const dropdownType = infoTextElement.dataset.dropdownType;
   if (dropdownType === "info") {
     //insert the info icon before the text
@@ -2090,6 +2094,11 @@ const guidedTransitionFromHome = async () => {
   document.getElementById("curation-preparation-parent-tab").classList.remove("hidden");
   document.getElementById("guided-header-div").classList.remove("hidden");
 
+  //Remove the lotties (will be added again upon visting the home page)
+  document.getElementById("new-dataset-lottie-container").innerHTML = "";
+  document.getElementById("existing-dataset-lottie").innerHTML = "";
+  document.getElementById("edit-dataset-component-lottie").innerHTML = "";
+
   //Hide all guided pages (first one will be unHidden automatically)
   const guidedPages = document.querySelectorAll(".guided--page");
   guidedPages.forEach((page) => {
@@ -2116,6 +2125,8 @@ const guidedTransitionFromHome = async () => {
 const guidedTransitionToHome = () => {
   guidedUnLockSideBar();
   guidedPrepareHomeScreen();
+  console.log("HERE?");
+
   document.getElementById("guided-home").classList.remove("hidden");
   // Hide all of the parent tabs
   const guidedParentTabs = Array.from(document.querySelectorAll(".guided--parent-tab"));
@@ -2274,22 +2285,22 @@ const generateProgressCardElement = (progressFileJSONObj) => {
     Object.keys(progressFileJSONObj["previously-uploaded-data"]).length > 0;
 
   return `
-    <div class="guided--dataset-card">
+    <div class="dataset-card">
       ${progressFileImage /* banner image */}     
         
-      <div class="guided--dataset-card-body">
-        <div class="guided--dataset-card-row">
+      <div class="dataset-card-body">
+        <div class="dataset-card-row">
           <h1
-            class="guided--text-dataset-card progress-file-name progress-card-popover"
+            class="dataset-card-title-text progress-file-name progress-card-popover"
             data-tippy-content="Dataset name: ${progressFileName}"
             rel="popover"
             placement="bottom"
             data-trigger="hover"
           >${progressFileName}</h1>
         </div>
-        <div class="guided--dataset-card-row">
+        <div class="dataset-card-row">
           <h1 
-            class="guided--text-dataset-card progress-card-popover"
+            class="dataset-card-subtitle-text progress-card-popover"
             data-tippy-content="Dataset subtitle: ${progressFileSubtitle}"
             rel="popover"
             data-placement="bottom"
@@ -2303,8 +2314,8 @@ const generateProgressCardElement = (progressFileJSONObj) => {
               }
           </h1>
         </div>
-        <div class="guided--dataset-card-row">
-          <h2 class="guided--text-dataset-card-sub" style="width: auto;">
+        <div class="dataset-card-row">
+          <h2 class="dataset-card-clock-icon">
             <i
               class="fas fa-clock-o progress-card-popover"
               data-tippy-content="Last modified: ${progressFileLastModified}"
@@ -2313,7 +2324,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
               data-trigger="hover"
             ></i>
           </h2>
-          <h1 class="guided--text-dataset-card ml-sm-1">${progressFileLastModified}</h1>
+          <h1 class="dataset-card-date-text">${progressFileLastModified}</h1>
           ${
             savedUploadDataProgress
               ? `
@@ -2323,18 +2334,12 @@ const generateProgressCardElement = (progressFileJSONObj) => {
           }
         </div>
       </div>
-      <div class="guided--container-dataset-card-center">
+      <div class="dataset-card-button-container">
         ${
           progressFileJSONObj["previous-guided-upload-dataset-name"]
             ? `
                 <button
-                  class="ui positive button guided--button-footer"
-                  style="
-                    background-color: var(--color-light-green) !important;
-                    width: 160px !important;
-                    margin: 4px;
-                    margin-bottom: 15px;
-                  "
+                  class="ui positive button dataset-card-button-confirm"
                   onClick="guidedResumeProgress($(this))"
                 >
                   Edit dataset
@@ -2342,20 +2347,14 @@ const generateProgressCardElement = (progressFileJSONObj) => {
               `
             : `
                 <button
-                  class="ui positive button guided--button-footer"
-                  style="
-                    background-color: var(--color-light-green) !important;
-                    width: 160px !important;
-                    margin: 4px;
-                    margin-bottom: 15px;
-                  "
+                  class="ui positive button dataset-card-button-confirm"
                   onClick="guidedResumeProgress($(this))"
                 >
                   ${savedUploadDataProgress ? "Resume upload" : "Continue curating"}
                 </button>
               `
         }
-        <h2 class="guided--text-dataset-card" style="width: auto; text-decoration: underline; cursor: pointer;" onclick="deleteProgressCard(this)">
+        <h2 class="dataset-card-button-delete" onclick="deleteProgressCard(this)">
           <i
             class="fas fa-trash mr-sm-1"
           ></i>
@@ -2442,21 +2441,19 @@ const renderManifestCards = async () => {
 
 const generateManifestEditCard = (highLevelFolderName) => {
   return `
-    <div class="guided--dataset-card">        
-      <div class="guided--dataset-card-body shrink">
-        <div class="guided--dataset-card-row">
-          <h1 class="guided--text-dataset-card">
+    <div class="dataset-card">        
+      <div class="dataset-card-body shrink">
+        <div class="dataset-card-row">
+          <h1 class="dataset-card-title-text">
             <span class="manifest-folder-name">${highLevelFolderName}</span>
           </h1>
         </div>
       </div>
-      <div class="guided--container-dataset-card-center">
+      <div class="dataset-card-button-container">
         <button
-          class="ui primary button guided--button-footer"
+          class="ui primary button dataset-card-button-confirm"
           style="
-            background-color: var(--color-light-green) !important;
             width: 280px !important;
-            margin: 4px;
           "
           onClick="guidedOpenManifestEditSwal('${highLevelFolderName}')"
         >
@@ -2579,6 +2576,8 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
 document
   .getElementById("guided-button-resume-pennsieve-dataset")
   .addEventListener("click", async () => {
+    //TODO: Prevent user from clicking first card after selecting as it will auto scroll page
+    //once pennsieve datasets are fetched
     renderGuidedResumePennsieveDatasetSelectionDropdown();
   });
 
@@ -2744,26 +2743,45 @@ const guidedPrepareHomeScreen = async () => {
   //Reset the "Datasets in progress" and "Datasets uploaded to Pennsieve buttons"
   resetGuidedRadioButtons("guided-div-dataset-cards-radio-buttons");
 
-  const datasetCardsRadioButtonsContainer = document.getElementById(
-    "guided-div-dataset-cards-radio-buttons"
-  );
+  // const datasetCardsRadioButtonsContainer = document.getElementById(
+  //   "guided-div-dataset-cards-radio-buttons"
+  // );
 
-  const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
-  //render progress resumption cards from progress file array on first page of guided mode
-  if (guidedSavedProgressFiles.length != 0) {
-    datasetCardsRadioButtonsContainer.classList.remove("hidden");
-    const progressFileData = await getAllProgressFileData(guidedSavedProgressFiles);
-    renderProgressCards(progressFileData);
-    document.getElementById("guided-button-view-datasets-in-progress").click();
-  } else {
-    $("#guided-continue-curation-header").text("");
-    datasetCardsRadioButtonsContainer.classList.add("hidden");
-  }
+  // const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
+  // //render progress resumption cards from progress file array on first page of guided mode
+  // if (guidedSavedProgressFiles.length != 0) {
+  //   datasetCardsRadioButtonsContainer.classList.remove("hidden");
+  //   const progressFileData = await getAllProgressFileData(guidedSavedProgressFiles);
+  //   renderProgressCards(progressFileData);
+  //   document.getElementById("guided-button-view-datasets-in-progress").click();
+  // } else {
+  //   $("#guided-continue-curation-header").text("");
+  //   datasetCardsRadioButtonsContainer.classList.add("hidden");
+  // }
   //empty new-dataset-lottie-container div
   document.getElementById("new-dataset-lottie-container").innerHTML = "";
+  document.getElementById("existing-dataset-lottie").innerHTML = "";
+  document.getElementById("edit-dataset-component-lottie").innerHTML = "";
+
   lottie.loadAnimation({
-    container: document.querySelector("#new-dataset-lottie-container"),
+    container: document.getElementById("new-dataset-lottie-container"),
     animationData: newDataset,
+    renderer: "svg",
+    loop: true,
+    autoplay: true,
+  });
+
+  lottie.loadAnimation({
+    container: document.getElementById("existing-dataset-lottie"),
+    animationData: existingDataset,
+    renderer: "svg",
+    loop: true,
+    autoplay: true,
+  });
+
+  lottie.loadAnimation({
+    container: document.getElementById("edit-dataset-component-lottie"),
+    animationData: modifyDataset,
     renderer: "svg",
     loop: true,
     autoplay: true,
@@ -2772,7 +2790,7 @@ const guidedPrepareHomeScreen = async () => {
   guidedUnLockSideBar();
 };
 
-function guidedShowTreePreview(new_dataset_name, targetElement) {
+const guidedShowTreePreview = (new_dataset_name, targetElement) => {
   const dsJsonObjCopy = JSON.parse(JSON.stringify(datasetStructureJSONObj));
 
   //Add the code_description metadata file to the preview if the code_description path has been declared
@@ -2857,7 +2875,7 @@ function guidedShowTreePreview(new_dataset_name, targetElement) {
     const node = tree.get_node(folderName);
     tree.open_node(node);
   };
-}
+};
 
 const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
   //add high level folder if it does not exist
@@ -3006,7 +3024,8 @@ const guidedSkipPage = (pageId) => {
   }
 };
 
-guidedUnSkipPage = (pageId) => {
+const guidedUnSkipPage = (pageId) => {
+  console.log(pageId);
   const page = document.getElementById(pageId);
   page.dataset.skipPage = "false";
 
@@ -3021,6 +3040,7 @@ guidedUnSkipPage = (pageId) => {
     document.getElementById(subPagesCapsule).classList.remove("hidden");
   }
   // remove the page from sodaJSONObj array if it is there
+  console.log(sodaJSONObj["skipped-pages"]);
   if (sodaJSONObj["skipped-pages"].includes(pageId)) {
     sodaJSONObj["skipped-pages"].splice(sodaJSONObj["skipped-pages"].indexOf(pageId), 1);
   }
@@ -3318,6 +3338,7 @@ const cleanUpEmptyGuidedStructureFolders = async (
 };
 
 const resetGuidedRadioButtons = (parentPageID) => {
+  console.log("Reset guided radio buttons " + parentPageID);
   const parentPage = document.getElementById(parentPageID);
   const guidedRadioButtons = parentPage.querySelectorAll(".guided--radio-button");
   for (const guidedRadioButton of guidedRadioButtons) {
@@ -3358,7 +3379,7 @@ const guidedResetUserTeamPermissionsDropdowns = () => {
 };
 
 let addListener = true;
-function copyLink(link) {
+const copyLink = (link) => {
   const copyIcon = document.getElementById("guided-pennsieve-copy-icon");
   Clipboard.writeText(link);
   copyIcon.classList.remove("fa-copy");
@@ -3369,7 +3390,7 @@ function copyLink(link) {
     type: "success",
     message: "Link copied!",
   });
-}
+};
 
 const validatePageArray = async (arrayOfPagesToCheck) => {
   const nonSkippedPages = getNonSkippedGuidedModePages(document);
@@ -8165,7 +8186,7 @@ const openAddAdditionLinkSwal = async () => {
       >Dataset relation:</label
     >
     <div style="display: flex; width:100%; align-items: center;">
-      <p class="guided--help-text m-0">
+      <p class="help-text m-0">
         Text to put here (A)?
       </p>
       <div class="form-group mx-2">
@@ -8206,7 +8227,7 @@ const openAddAdditionLinkSwal = async () => {
           <option value="Obsoletes">Obsoletes</option>
         </select>
       </div>
-          <p class="guided--help-text m-0">
+          <p class="help-text m-0">
         Text to put here (B)?
       </p>
     </div>
@@ -10335,42 +10356,81 @@ $(document).ready(async () => {
   $("#guided-button-start-new-curate").on("click", async () => {
     guidedCreateSodaJSONObj();
     attachGuidedMethodsToSodaJSONObj();
+
+    sodaJSONObj["starting-point"]["type"] = "new";
+    sodaJSONObj["generate-dataset"]["generate-option"] = "new";
+
+    guidedUnSkipPage("guided-subjects-folder-tab");
+    guidedUnSkipPage("guided-primary-data-organization-tab");
+    guidedUnSkipPage("guided-source-data-organization-tab");
+    guidedUnSkipPage("guided-derivative-data-organization-tab");
+    guidedUnSkipPage("guided-code-folder-tab");
+    guidedUnSkipPage("guided-protocol-folder-tab");
+    guidedUnSkipPage("guided-docs-folder-tab");
+    //Skip this page becausae we should not come back to it
     guidedTransitionFromHome();
+    guidedSkipPage("guided-intro-page-tab");
+    guidedUnSkipPage("guided-name-subtitle-tab");
+    await openPage("guided-name-subtitle-tab");
+  });
+
+  $("#guided-button-start-existing-curate").on("click", async () => {
+    guidedCreateSodaJSONObj();
+    attachGuidedMethodsToSodaJSONObj();
+    guidedTransitionFromHome();
+    //Hide Fetching Pennsieve content until card is selected
+    document
+      .getElementById("guided-section-select-pennsieve-dataset-to-resume")
+      .classList.add("hidden");
+    document.getElementById("guided-section-start-new-curation").classList.add("hidden");
+
+    // guidedResetProgressVariables();
+
+    //Check if Guided-Progress folder exists. If not, create it.
+    if (!fs.existsSync(guidedProgressFilePath)) {
+      fs.mkdirSync(guidedProgressFilePath, { recursive: true });
+    }
+
+    //Reset the "Datasets in progress" and "Datasets uploaded to Pennsieve buttons"
+    // resetGuidedRadioButtons("guided-div-dataset-cards-radio-buttons");
+
+    const datasetCardsRadioButtonsContainer = document.getElementById(
+      "guided-div-dataset-cards-radio-buttons"
+    );
+
+    const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
+    //render progress resumption cards from progress file array on first page of guided mode
+    if (guidedSavedProgressFiles.length != 0) {
+      datasetCardsRadioButtonsContainer.classList.remove("hidden");
+      const progressFileData = await getAllProgressFileData(guidedSavedProgressFiles);
+      renderProgressCards(progressFileData);
+      document.getElementById("guided-button-view-datasets-in-progress").click();
+    } else {
+      $("#guided-continue-curation-header").text("");
+      datasetCardsRadioButtonsContainer.classList.add("hidden");
+    }
+
     guidedUnSkipPage("guided-intro-page-tab");
     await openPage("guided-intro-page-tab");
-    /*introJs()
-      .setOptions({
-        steps: [
-          {
-            title: "Welcome to Guided Mode!",
-            intro: "This is a quick tutorial to get you comfortable with Guided Mode's navigation.",
-          },
-          {
-            element: document.querySelector(".guided--nav-bar-section"),
-            intro: `Navigating between individual pages is easy with the navigation bar. To navigate to a page, click on the page's name.
-            <br />
-            <br />
-            <b>Note:</b> The navigation bar only allows you to navigate to pages that have already been completed.`,
-          },
-          {
-            element: document.getElementById("guided-footer-div"),
-            intro: `The bottom navigation row allows you to navigate between pages.
-            <br />
-            <br />
-            <b>Note:</b> Your dataset's progress is saved automatically when clicking "Save and Continue" or "Save and Exit", and can be
-            resumed on the Guided Mode home page (even if you close out of the SODA application).`,
-          },
-          {
-            element: document.querySelector(".guided--progression-tab-container"),
-            intro: "Your current step in the curation process is displayed here.",
-          },
-        ],
-        tooltipClass: "guided--tooltip-intro-js",
-        exitOnEsc: false,
-        exitOnOverlayClick: false,
-        disableInteraction: false,
-      })
-      .start();*/
+  });
+
+  $("#guided-button-start-modify-compnent").on("click", async () => {
+    //Free form mode will open through here
+    //Hide the home screen
+    // document.getElementById("guided-home").classList.add("hidden");
+    // document.getElementById("curation-preparation-parent-tab").classList.remove("hidden");
+    // document.getElementById("guided-header-div").classList.remove("hidden");
+
+    //Remove the lotties (will be added again upon visting the home page)
+    document.getElementById("new-dataset-lottie-container").innerHTML = "";
+    document.getElementById("existing-dataset-lottie").innerHTML = "";
+    document.getElementById("edit-dataset-component-lottie").innerHTML = "";
+
+    // guidedResetSkippedPages();
+
+    // guidedLockSideBar();
+    directToFreeFormMode();
+    document.getElementById("guided_mode_view").classList.add("is-selected");
   });
 
   $("#guided-button-add-permission-user-or-team").on("click", function () {
@@ -12595,6 +12655,7 @@ $(document).ready(async () => {
   //back button click handler
   $("#guided-back-button").on("click", () => {
     pageBeingLeftID = CURRENT_PAGE.id;
+    console.log(pageBeingLeftID);
     // If the user is on the first two pages, Save and Exit if they try to go back again
     if (
       pageBeingLeftID === "guided-intro-page-tab" ||

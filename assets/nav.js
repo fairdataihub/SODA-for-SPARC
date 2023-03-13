@@ -59,13 +59,16 @@ async function handleSectionTrigger(event) {
     // keys if the user has started the first step. The user must
     // be warned because Guided Mode uses shared variables and FF progress
     // must be wiped out.
-    if (Object.keys(sodaJSONObj).length > 0) {
+    //Update: Swal will only pop up if user is on organize datasets page only
+    let organizeDataset = document.getElementById("organize-section");
+    console.log(organizeDataset.classList.contains("is-shown"));
+    if (Object.keys(sodaJSONObj).length > 0 || organizeDataset.classList.contains("is-shown")) {
       //get the element with data-next="Question-getting-started-BF-account"
       const buttonContinueExistingPennsieve = document.querySelector(
         '[data-next="Question-getting-started-BF-account"]'
       );
       const transitionWarningMessage = `
-        Entering Guided Mode will wipe out the progress you have made organizing your dataset.
+        Going back home will wipe out the progress you have made organizing your dataset.
         <br><br>
         ${
           buttonContinueExistingPennsieve.classList.contains("checked")
@@ -82,7 +85,7 @@ async function handleSectionTrigger(event) {
         showCancelButton: true,
         focusCancel: true,
         cancelButtonText: "Cancel",
-        confirmButtonText: "Enter Guided Mode",
+        confirmButtonText: "Go back Home",
         reverseButtons: reverseSwalButtons,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
@@ -145,16 +148,16 @@ async function handleSectionTrigger(event) {
   document.getElementById(sectionId).classList.add("is-shown");
 
   let showSidebarSections = [
-    "main_tabs-section",
-    "getting_started-section",
-    "guided_mode-section",
-    "help-section",
-    "documentation-section",
-    "contact-us-section",
+    "main_tabs-section", //Free form mode
+    "getting_started-section", //Overview page
+    "guided_mode-section", //Guided Mode
+    "documentation-section", //Documentation
+    "contact-us-section", //Contact us
   ];
 
   if (showSidebarSections.includes(sectionId)) {
     forceActionSidebar("show");
+    console.log("HERE>");
   } else {
     forceActionSidebar("hide");
   }
