@@ -133,6 +133,7 @@
         <div class="guided--capsule-container" id="structure-dataset-capsule-container">
           <div class="guided--capsule" id="guided-intro-page-capsule"></div>
           <div class="guided--capsule" id="guided-name-subtitle-capsule"></div>
+          <div class="guided--capsule" id="guided-ask-if-submission-is-sparc-funded-capsule"></div>
           <div class="guided--capsule" id="guided-prepare-helpers-capsule"></div>
         </div>
         <div
@@ -492,6 +493,54 @@
             </p>
           </div>
         </div>
+
+        <div
+          class="guided--page hidden"
+          id="guided-ask-if-submission-is-sparc-funded-tab"
+          data-page-name="SPARC funding"
+        >
+          <div class="guided--section">
+            <h1 class="guided--text-sub-step">SPARC funding</h1>
+          </div>
+          <div class="guided--section" id="guided-section-submission-sparc-or-nonsparc">
+            <h2 class="guided--text-sub-step">
+              Is the dataset you are submitting funded by a SPARC award?
+            </h2>
+            <div class="guided--radio-button-container">
+              <button
+                class="ui positive basic button guided--radio-button"
+                id="guided-button-dataset-is-sparc-funded"
+                data-next-element="guided-section-dataset-sparc-funded"
+                data-button-config-value="dataset-is-sparc-funded"
+                data-button-config-value-state="yes"
+              >
+                Yes
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button"
+                id="guided-button-dataset-is-not-sparc-funded"
+                data-next-element="guided-section-dataset-not-sparc-funded"
+                data-button-config-value="dataset-is-sparc-funded"
+                data-button-config-value-state="no"
+              >
+                No
+              </button>
+            </div>
+          </div>
+
+          <div class="guided--section hidden" id="guided-section-dataset-sparc-funded">
+            <h2 class="guided--text-sub-step">
+              Click "Save and Continue" to confirm your dataset is not SPARC funded.
+            </h2>
+          </div>
+
+          <div class="guided--section hidden" id="guided-section-dataset-not-sparc-funded">
+            <h2 class="guided--text-sub-step">
+              Click "Save and Continue" to confirm your dataset is not SPARC funded.
+            </h2>
+          </div>
+        </div>
+
         <div
           id="guided-prepare-helpers-tab"
           class="guided--page hidden"
@@ -2070,29 +2119,6 @@
               information regarding the milestones associated with your dataset.
             </p>
           </div>
-          <div class="guided--section" id="guided-section-submission-sparc-or-nonsparc">
-            <h2 class="guided--text-sub-step">Is your dataset submission funded by SPARC?</h2>
-            <div class="guided--radio-button-container">
-              <button
-                class="ui positive basic button guided--radio-button"
-                id="guided-button-dataset-is-sparc"
-                data-next-element="guided-section-submission-metadata"
-                data-button-config-value="dataset-is-sparc"
-                data-button-config-value-state="yes"
-              >
-                Yes
-              </button>
-              <button
-                class="ui negative basic button guided--radio-button"
-                id="guided-button-dataset-is-not-sparc"
-                data-next-element="guided-section-non-sparc-submission-metadata"
-                data-button-config-value="dataset-is-sparc"
-                data-button-config-value-state="no"
-              >
-                No
-              </button>
-            </div>
-          </div>
 
           <div class="guided--section" id="guided-section-submission-metadata">
             <p class="guided--help-text">
@@ -2124,6 +2150,7 @@
                 </button>
               </div>
             </div>
+
             <div class="guided--section" id="guided-section-import-data-deliverables-document">
               <div
                 class="guided--container-file-import"
@@ -2689,7 +2716,7 @@
               <b>Example:</b> My SPARC research study
             </p>
             <label class="guided--form-label mt-xl"
-              >Funding sources besides SPARC award <span id="SPARC-award-other-funding-label"></span
+              >Funding sources<span id="SPARC-award-other-funding-label"></span
             ></label>
             <div class="demo-controls-body" style="width: 100%">
               <div class="ui input modified">
