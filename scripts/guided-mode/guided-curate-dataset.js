@@ -554,6 +554,38 @@ const savePageChanges = async (pageBeingLeftID) => {
       // If the user selected that dataset is not SPARC funded, skip the submission metadata page
       // The logic that handles the submission file is ran during uploadiyhihhihiuhihi
       if (userSelectedDatasetIsNotSparcFunded) {
+        const userSelectedTheyHaveReachedOutToCurationTeam = document
+          .getElementById("guided-button-non-sparc-user-has-contacted-sparc")
+          .classList.contains("selected");
+        const userSelectedTheyHaveNotReachedOutToCurationTeam = document
+          .getElementById("guided-button-non-sparc-user-has-not-contacted-sparc")
+          .classList.contains("selected");
+
+        if (
+          !userSelectedTheyHaveReachedOutToCurationTeam &&
+          !userSelectedTheyHaveNotReachedOutToCurationTeam
+        ) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please indicate if you have reached out to the curation team",
+          });
+          throw errorArray;
+        }
+
+        if (userSelectedTheyHaveReachedOutToCurationTeam) {
+          // We don't have to do anything here
+        }
+
+        if (userSelectedTheyHaveNotReachedOutToCurationTeam) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please reach out to the curation team before continuing the curation process",
+          });
+          throw errorArray;
+        }
+
+        // Skip the submission metadata page
+        // This can be safely skipped as the logic that handles the submission file is ran during upload
         guidedSkipPage("guided-create-submission-metadata-tab");
       }
     }

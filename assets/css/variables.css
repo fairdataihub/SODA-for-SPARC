@@ -4,7 +4,7 @@
   --color: hsl(0, 0%, 22%);
   --color-subtle: hsl(0, 0%, 44%);
   --color-strong: hsl(0, 0%, 11%);
-  --color-link: hsl(0, 0%, 22%);
+  --color-link: #0000ee;
   --color-bg: hsl(0, 0%, 96%);
   --color-sidebar: #e8e8e8;
   --color-sidebar-hyperlink-hover: #292929;

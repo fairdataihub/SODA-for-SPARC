@@ -169,41 +169,11 @@
           class="guided--page hidden"
           data-page-name="Select starting point"
         >
-          <h1 class="guided--text-sub-step">Welcome to Guided Mode!</h1>
-          <div class="guided--section">
-            <p class="help-text">
-              Guided Mode is designed to be the simplest and most efficient method of curating and
-              sharing a SPARC dataset if you are starting from scratch. Guided Mode guides you
-              through the entire SPARC curation and sharing process via intuitive user interfaces
-              that typically only require you to provide basic inputs or answer simple questions.
-            </p>
-            <div class="info-dropdown">
-              <p class="info-dropdown-text" data-dropdown-type="info">
-                Learn more about curating and submitting SPARC datasets
-              </p>
-              <i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="info-container">
-              <p class="help-text">
-                Although not required to use Guided Mode, you can learn more about the SPARC data
-                curation and sharing process in the
-                <a href="https://docs.sparc.science/docs/data-submission-overview" target="_blank"
-                  >SPARC Data Submission Overview document page</a
-                >.
-              </p>
-            </div>
-            <p class="help-text" style="margin-top: 1em">
-              Guided Moded is divided in four high-level sections. During the first three sections,
-              you will be directed to specify the files to include in your dataset and provide
-              information about your dataset. On the final section, SODA will automatically generate
-              your dataset on Pennsieve with the proper folder structure and metadata files. Note
-              that none of your local data files will ever be modified or moved.
-            </p>
-          </div>
+          <h1 class="guided--text-sub-step">Select a dataset to resume</h1>
 
           <div class="guided--section">
             <label class="guided--form-label centered mb-0"
-              >How would you like to start curating your dataset?
+              >Where is the dataset you would like to resume located?
             </label>
 
             <div class="guided--radio-button-container">
@@ -223,7 +193,7 @@
                   </svg>
                 </div>
                 <div class="tile-button-text">
-                  <h2>Continue a locally saved dataset</h2>
+                  <h2>Saved Locally</h2>
                 </div>
               </button>
               <!--
@@ -326,7 +296,7 @@
                   />
                 </div>
                 <div class="tile-button-text">
-                  <h2>Continue an existing dataset on Pennsieve</h2>
+                  <h2>On Pennsieve</h2>
                 </div>
               </button>
             </div>
@@ -510,8 +480,42 @@
 
           <div class="guided--section hidden" id="guided-section-dataset-not-sparc-funded">
             <h2 class="guided--text-sub-step">
-              Click "Save and Continue" to confirm your dataset is not SPARC funded.
+              Have you already reached out to the SPARC curation team to see if your data is
+              suitable for the SPARC Data Portal?
             </h2>
+            <div class="guided--radio-button-container">
+              <button
+                class="ui positive basic button guided--radio-button"
+                id="guided-button-non-sparc-user-has-contacted-sparc"
+                data-next-element="guided-section-non-sparc-user-has-contacted-sparc"
+                data-button-config-value="non-sparc-user-has-contacted-sparc"
+                data-button-config-value-state="yes"
+              >
+                Yes
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button"
+                id="guided-button-non-sparc-user-has-not-contacted-sparc"
+                data-next-element="guided-section-non-sparc-user-has-not-contacted-sparc"
+                data-button-config-value="non-sparc-user-has-contacted-sparc"
+                data-button-config-value-state="no"
+              >
+                No
+              </button>
+            </div>
+            <div class="guided--section" id="guided-section-non-sparc-user-has-contacted-sparc">
+              <h2 class="guided--text-sub-step">
+                Great, click "Continue" to start the curation process.
+              </h2>
+            </div>
+            <div class="guided--section" id="guided-section-non-sparc-user-has-not-contacted-sparc">
+              <p class="help-text">
+                Please contact the SPARC curation team before continuing at
+                <a href="mailto:curation@sparc.science">curation@sparc.science</a> to ensure that
+                your dataset is suitable for the SPARC platform and to maximize the impact of your
+                data.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -528,7 +532,7 @@
               below so you can make sure you can have access to them before getting started.
             </p>
             <label class="guided--welcome-section-label text-center" style="margin-top: 1rem"
-              >1. Pennsieve Account</label
+              >Pennsieve Account</label
             >
             <p class="help-text">
               All SPARC datasets must be uploaded on the Pennsieve data platform. You will therefore
@@ -552,7 +556,7 @@
               </p>
             </div>
             <label class="guided--welcome-section-label text-center" style="margin-top: 4rem"
-              >2. Data Deliverables document</label
+              >Data Deliverables document</label
             >
             <p class="help-text">
               The milestones and associated datasets as agreed between awardees and SPARC are
