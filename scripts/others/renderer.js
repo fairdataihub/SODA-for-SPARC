@@ -63,6 +63,7 @@ const Clipboard = electron.clipboard;
 
 var nextBtnDisabledVariable = true;
 var reverseSwalButtons = false;
+let organizeDSglobalPath = "";
 
 var datasetStructureJSONObj = {
   folders: {},
@@ -110,61 +111,93 @@ console.log("Current SODA version:", appVersion);
 // Here is where the splash screen lotties are created and loaded.
 // A mutation observer watches for when the overview tab element has
 // a class change to 'is-shown' to know when to load and unload the lotties
-let over_view_section = document.getElementById("getting_started-section");
-let column1 = document.getElementById("lottie1");
-let column2 = document.getElementById("lottie2");
-let column3 = document.getElementById("lottie3");
-let heart_lottie = document.getElementById("heart_lottie");
+// let over_view_section = document.getElementById("getting_started-section");
+let guidedModeSection = document.getElementById("guided_mode-section");
+document.getElementById("new-dataset-lottie-container").innerHTML = "";
+document.getElementById("existing-dataset-lottie").innerHTML = "";
+document.getElementById("edit-dataset-component-lottie").innerHTML = "";
 
-var column1_lottie = lottie.loadAnimation({
-  container: column1,
-  animationData: column1Lottie /*(json js variable, (view src/assets/lotties)*/,
-  renderer: "svg",
-  loop: true /*controls looping*/,
-  autoplay: true,
-});
-var column2_lottie = lottie.loadAnimation({
-  container: column2,
-  animationData: column2Lottie /*(json js variable, (view src/assets/lotties)*/,
-  renderer: "svg",
-  loop: true /*controls looping*/,
-  autoplay: true,
-});
-var column3_lottie = lottie.loadAnimation({
-  container: column3,
-  animationData: column3Lottie,
-  renderer: "svg",
-  loop: true,
-  autoplay: true,
-});
-var heart_container = lottie.loadAnimation({
-  container: heart_lottie,
-  animationData: heartLottie,
+var newDatasetLottie = lottie.loadAnimation({
+  container: document.getElementById("new-dataset-lottie-container"),
+  animationData: newDataset,
   renderer: "svg",
   loop: true,
   autoplay: true,
 });
 
-var overview_observer = new MutationObserver(function (mutations) {
+var existingDatasetLottie = lottie.loadAnimation({
+  container: document.getElementById("existing-dataset-lottie"),
+  animationData: existingDataset,
+  renderer: "svg",
+  loop: true,
+  autoplay: true,
+});
+
+let editDatasetLottie = lottie.loadAnimation({
+  container: document.getElementById("edit-dataset-component-lottie"),
+  animationData: modifyDataset,
+  renderer: "svg",
+  loop: true,
+  autoplay: true,
+});
+// let column1 = document.getElementById("lottie1");
+// let column2 = document.getElementById("lottie2");
+// let column3 = document.getElementById("lottie3");
+// let heart_lottie = document.getElementById("heart_lottie");
+
+// var column1_lottie = lottie.loadAnimation({
+//   container: column1,
+//   animationData: column1Lottie /*(json js variable, (view src/assets/lotties)*/,
+//   renderer: "svg",
+//   loop: true /*controls looping*/,
+//   autoplay: true,
+// });
+// var column2_lottie = lottie.loadAnimation({
+//   container: column2,
+//   animationData: column2Lottie /*(json js variable, (view src/assets/lotties)*/,
+//   renderer: "svg",
+//   loop: true /*controls looping*/,
+//   autoplay: true,
+// });
+// var column3_lottie = lottie.loadAnimation({
+//   container: column3,
+//   animationData: column3Lottie,
+//   renderer: "svg",
+//   loop: true,
+//   autoplay: true,
+// });
+// var heart_container = lottie.loadAnimation({
+//   container: heart_lottie,
+//   animationData: heartLottie,
+//   renderer: "svg",
+//   loop: true,
+//   autoplay: true,
+// });
+
+// A mutation observer (watches the classes of the given element)
+// On changes this will do some work with the lotties
+var sectionObserver = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
     var attributeValue = $(mutation.target).prop(mutation.attributeName);
 
     if (attributeValue.includes("is-shown") == true) {
       //add lotties
-      column1_lottie.play();
-      column2_lottie.play();
-      column3_lottie.play();
-      heart_container.play();
+      newDatasetLottie.play();
+      existingDatasetLottie.play();
+      editDatasetLottie.play();
+      console.log("lotties playing");
+      // heart_container.play();
     } else {
-      column1_lottie.stop();
-      column2_lottie.stop();
-      column3_lottie.stop();
-      heart_container.stop();
+      console.log("stopping lotties");
+      newDatasetLottie.stop();
+      existingDatasetLottie.stop();
+      editDatasetLottie.stop();
+      // heart_container.stop();
     }
   });
 });
 
-overview_observer.observe(over_view_section, {
+sectionObserver.observe(guidedModeSection, {
   attributes: true,
   attributeFilter: ["class"],
 });
@@ -1172,7 +1205,6 @@ const downloadDescription = document.getElementById("a-description");
 const downloadManifest = document.getElementById("a-manifest");
 
 /////// New Organize Datasets /////////////////////
-let organizeDSglobalPath = "";
 
 const organizeDSbackButton = document.getElementById("button-back");
 const organizeDSaddFiles = document.getElementById("add-files");

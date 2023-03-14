@@ -303,7 +303,7 @@ function initialize() {
     splash.loadURL(path.join("file://", __dirname, "/splash-screen.html"));
 
     //  if main window is ready to show, then destroy the splash window and show up the main window
-    mainWindow.once("ready-to-show", () => {
+    mainWindow.webContents.once("dom-ready", () => {
       setTimeout(function () {
         splash.close();
         //mainWindow.maximize();

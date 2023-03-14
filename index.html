@@ -60,14 +60,21 @@
     <link rel="import" href="sections/prepare_metadata/create_manifest.html" />
     <link rel="import" href="sections/curate/curate.html" />
     <link rel="import" href="sections/main_tabs/main_tabs.html" />
-    <link rel="import" href="sections/documentation/documentation.html" />
     <link rel="import" href="sections/validate/validate_dataset.html" />
-    <link rel="import" href="sections/contact-us/contact_us.html" />
     <link rel="import" href="sections/guided_mode/guided_curate_dataset.html" />
+    <link rel="import" href="sections/documentation/documentation.html" />
+    <link rel="import" href="sections/contact-us/contact_us.html" />
     <script src="./assets/lotties/license-lottie.js" type="text/javascript"></script>
     <script src="./assets/lotties/overview-lotties.js" type="text/javascript"></script>
     <script src="./assets/lotties/documentation-lotties.js" type="text/javascript"></script>
     <script src="./assets/lotties/contact-us-lotties.js" type="text/javascript"></script>
+    <script>
+      require("./assets/imports"); // Imports html files into app
+      // require("./assets/ex-links"); // Opens url into external chrome tab instead of in the app
+      // require("./assets/nav"); // Side navigation menu control
+      // require("./assets/demo-btns");
+      require("./assets/normalize-shortcuts"); // For normalizing shortcuts across OS
+    </script>
   </head>
 
   <body>
@@ -291,14 +298,6 @@
     <script src="node_modules/sweetalert2/dist/sweetalert2.min.js"></script>
     <script src="https://jsuites.net/v4/jsuites.js"></script>
     <script src="https://bossanova.uk/jspreadsheet/v4/jexcel.js"></script>
-
-    <script>
-      require("./assets/imports"); // Imports html files into app
-      // require("./assets/ex-links"); // Opens url into external chrome tab instead of in the app
-      // require("./assets/nav"); // Side navigation menu control
-      // require("./assets/demo-btns");
-      require("./assets/normalize-shortcuts"); // For normalizing shortcuts across OS
-    </script>
 
     <script>
       $(document).ready(() => {
