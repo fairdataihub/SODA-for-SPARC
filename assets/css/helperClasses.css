@@ -1,0 +1,89 @@
+/* 
+  This is a CSS file for Helper classes used throughout SODA 
+  (Similar to tailwind's class structure) 
+*/
+
+.hidden {
+  display: none;
+}
+
+.hide {
+  pointer-events: none;
+  visibility: hidden;
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: visibility 0s 0.12s linear, opacity 0.12s ease-in, transform 0.12s ease-in-out;
+}
+
+.show {
+  pointer-events: auto;
+  visibility: visible;
+  opacity: 1;
+  z-index: 1000;
+  transform: translateX(0);
+  transition: visibility 0s 0s linear, opacity 0.36s ease-out, transform 0.36s ease-out;
+}
+
+.grow {
+  flex-grow: 1;
+}
+
+.justify-center {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.mt-0 {
+  margin-top: 0px !important;
+}
+
+.mt-sm {
+  margin-top: 7px !important;
+}
+
+.mt-md {
+  margin-top: 14px !important;
+}
+
+.mt-lg {
+  margin-top: 20px !important;
+}
+
+.mt-xl {
+  margin-top: 35px !important;
+}
+
+.mb-sm {
+  margin-bottom: 7px !important;
+}
+
+.mb-md {
+  margin-bottom: 14px !important;
+}
+
+.mb-lg {
+  margin-bottom: 20px !important;
+}
+
+.space-between {
+  display: flex;
+  justify-content: space-between;
+}
+
+.space-around {
+  max-width: 1200px;
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+}
+
+.blue {
+  color: rgb(255, 165, 0, 0.8);
+}
+
+.invalid {
+  border-color: #e0b4b4 !important;
+  background: #fff6f6 !important;
+}

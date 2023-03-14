@@ -93,6 +93,14 @@
   border-radius: 3px;
 }
 
+.dataset-card-button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: space-around;
+}
+
 /* YouTube video frames */
 .video-container {
   position: relative;
