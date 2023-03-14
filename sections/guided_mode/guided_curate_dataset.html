@@ -160,50 +160,20 @@
       >
         <div class="guided--capsule-container" id="structure-dataset-capsule-container">
           <div class="guided--capsule" id="guided-intro-page-capsule"></div>
-          <div class="guided--capsule" id="guided-name-subtitle-capsule"></div>
           <div class="guided--capsule" id="guided-ask-if-submission-is-sparc-funded-capsule"></div>
           <div class="guided--capsule" id="guided-prepare-helpers-capsule"></div>
+          <div class="guided--capsule" id="guided-name-subtitle-capsule"></div>
         </div>
         <div
           id="guided-intro-page-tab"
           class="guided--page hidden"
           data-page-name="Select starting point"
         >
-          <h1 class="guided--text-sub-step">Welcome to Guided Mode!</h1>
-          <div class="guided--section">
-            <p class="help-text">
-              Guided Mode is designed to be the simplest and most efficient method of curating and
-              sharing a SPARC dataset if you are starting from scratch. Guided Mode guides you
-              through the entire SPARC curation and sharing process via intuitive user interfaces
-              that typically only require you to provide basic inputs or answer simple questions.
-            </p>
-            <div class="info-dropdown">
-              <p class="info-dropdown-text" data-dropdown-type="info">
-                Learn more about curating and submitting SPARC datasets
-              </p>
-              <i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="info-container">
-              <p class="help-text">
-                Although not required to use Guided Mode, you can learn more about the SPARC data
-                curation and sharing process in the
-                <a href="https://docs.sparc.science/docs/data-submission-overview" target="_blank"
-                  >SPARC Data Submission Overview document page</a
-                >.
-              </p>
-            </div>
-            <p class="help-text" style="margin-top: 1em">
-              Guided Moded is divided in four high-level sections. During the first three sections,
-              you will be directed to specify the files to include in your dataset and provide
-              information about your dataset. On the final section, SODA will automatically generate
-              your dataset on Pennsieve with the proper folder structure and metadata files. Note
-              that none of your local data files will ever be modified or moved.
-            </p>
-          </div>
+          <h1 class="guided--text-sub-step">Select a dataset to resume</h1>
 
           <div class="guided--section">
             <label class="guided--form-label centered mb-0"
-              >How would you like to start curating your dataset?
+              >Where is the dataset you would like to resume located?
             </label>
 
             <div class="guided--radio-button-container">
@@ -223,7 +193,7 @@
                   </svg>
                 </div>
                 <div class="tile-button-text">
-                  <h2>Continue a locally saved dataset</h2>
+                  <h2>Saved Locally</h2>
                 </div>
               </button>
               <!--
@@ -326,7 +296,7 @@
                   />
                 </div>
                 <div class="tile-button-text">
-                  <h2>Continue an existing dataset on Pennsieve</h2>
+                  <h2>On Pennsieve</h2>
                 </div>
               </button>
             </div>
@@ -467,70 +437,13 @@
             </div>
           </div>
         </div>
-        <div
-          id="guided-name-subtitle-tab"
-          class="guided--page hidden"
-          data-page-name="Name and subtitle"
-        >
-          <h1 class="guided--text-sub-step">Give your dataset a name and subtitle</h1>
-          <div class="guided--section">
-            <label class="guided--form-label">Dataset name: </label>
-            <input
-              class="guided--input"
-              id="guided-dataset-name-input"
-              data-alert-message="A Pennsieve dataset name cannot contain any of the following characters: /:*?'."
-              data-alert-type="danger"
-              type="text"
-              name="guided-dataset-name"
-              placeholder="Enter dataset name here"
-              onkeyup="validateInput($(this))"
-            />
-            <p class="guided--text-input-instructions mb-0">
-              Enter the desired name for your new dataset. This is the field that will be displayed
-              in public as the title of the dataset once it is published on the
-              <a href="https://sparc.science/">SPARC Data Portal</a>. Please make sure that your
-              dataset title is different than your other dataset titles and is relatively
-              informative.
-            </p>
-          </div>
-          <div class="guided--section">
-            <label class="guided--form-label">Dataset subtitle:</label>
-            <p style="height: 0px; margin: 0px">
-              <span
-                id="guided-subtitle-char-count"
-                style="position: relative; top: 100px; color: rgb(117, 107, 107)"
-              >
-                255 characters left
-              </span>
-            </p>
-            <textarea
-              class="guided--input guided--text-area"
-              id="guided-dataset-subtitle-input"
-              type="text"
-              name="guided-dataset-subtitle"
-              placeholder="Enter dataset subtitle here"
-              style="height: 7.5em; padding-bottom: 20px"
-              onkeyup="validateInput($(this))"
-              maxlength="255"
-            ></textarea>
-            <p class="guided--text-input-instructions mb-0">
-              Add two or three sentences (limit of 255 characters) that describe the content of your
-              dataset such that it is possible to differentiate it from other datasets. This field
-              will become the short description visible immediately under the title of your dataset
-              once it is published on the
-              <a href="https://sparc.science/">SPARC Data Portal</a>.
-            </p>
-          </div>
-        </div>
 
         <div
           class="guided--page hidden"
           id="guided-ask-if-submission-is-sparc-funded-tab"
           data-page-name="SPARC funding"
         >
-          <div class="guided--section">
-            <h1 class="guided--text-sub-step">SPARC funding</h1>
-          </div>
+          <h1 class="guided--text-sub-step">SPARC funding</h1>
           <div class="guided--section" id="guided-section-submission-sparc-or-nonsparc">
             <h2 class="guided--text-sub-step">
               Is the dataset you are submitting funded by a SPARC award?
@@ -565,8 +478,42 @@
 
           <div class="guided--section hidden" id="guided-section-dataset-not-sparc-funded">
             <h2 class="guided--text-sub-step">
-              Click "Save and Continue" to confirm your dataset is not SPARC funded.
+              Have you already reached out to the SPARC curation team to see if your data is
+              suitable for the SPARC Data Portal?
             </h2>
+            <div class="guided--radio-button-container">
+              <button
+                class="ui positive basic button guided--radio-button"
+                id="guided-button-non-sparc-user-has-contacted-sparc"
+                data-next-element="guided-section-non-sparc-user-has-contacted-sparc"
+                data-button-config-value="non-sparc-user-has-contacted-sparc"
+                data-button-config-value-state="yes"
+              >
+                Yes
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button"
+                id="guided-button-non-sparc-user-has-not-contacted-sparc"
+                data-next-element="guided-section-non-sparc-user-has-not-contacted-sparc"
+                data-button-config-value="non-sparc-user-has-contacted-sparc"
+                data-button-config-value-state="no"
+              >
+                No
+              </button>
+            </div>
+            <div class="guided--section" id="guided-section-non-sparc-user-has-contacted-sparc">
+              <h2 class="guided--text-sub-step">
+                Great, click "Continue" to start the curation process.
+              </h2>
+            </div>
+            <div class="guided--section" id="guided-section-non-sparc-user-has-not-contacted-sparc">
+              <p class="help-text">
+                Please contact the SPARC curation team before continuing at
+                <a href="mailto:curation@sparc.science">curation@sparc.science</a> to ensure that
+                your dataset is suitable for the SPARC platform and to maximize the impact of your
+                data.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -575,16 +522,16 @@
           class="guided--page hidden"
           data-page-name="Prepare data"
         >
-          <div class="guided--section">
-            <h1 class="guided--text-sub-step">Before getting started</h1>
+          <h1 class="guided--text-sub-step">Before getting started</h1>
 
+          <div class="guided--section">
             <p class="help-text">
               Several resources are required to curate and share a SPARC dataset. They are listed
               below so you can make sure you can have access to them before getting started.
             </p>
-            <label class="guided--welcome-section-label text-center" style="margin-top: 1rem"
-              >1. Pennsieve Account</label
-            >
+          </div>
+          <div class="guided--section">
+            <label class="guided--welcome-section-label text-center">Pennsieve Account</label>
             <p class="help-text">
               All SPARC datasets must be uploaded on the Pennsieve data platform. You will therefore
               need a Pennsieve account and access to the SPARC Organization on Pennsieve.
@@ -593,9 +540,9 @@
               <p class="info-dropdown-text" data-dropdown-type="warning">
                 I don't have a Pennsieve account
               </p>
-              <i class="fas fa-chevron-right" style="transform: rotate(0deg)"></i>
+              <i class="fas fa-chevron-right"></i>
             </div>
-            <div class="info-container" style="width: 800px">
+            <div class="info-container">
               <p class="help-text">
                 Get access to Pennsieve as well as the SPARC Consortium organization on Pennsieve by
                 filling out
@@ -606,8 +553,10 @@
                 >
               </p>
             </div>
-            <label class="guided--welcome-section-label text-center" style="margin-top: 4rem"
-              >2. Data Deliverables document</label
+          </div>
+          <div class="guided--section sparc-funded-only">
+            <label class="guided--welcome-section-label text-center"
+              >Data Deliverables document</label
             >
             <p class="help-text">
               The milestones and associated datasets as agreed between awardees and SPARC are
@@ -620,9 +569,9 @@
               <p class="info-dropdown-text" data-dropdown-type="info">
                 Where can I find my Data Deliverables document?
               </p>
-              <i class="fas fa-chevron-right" style="transform: rotate(0deg)"></i>
+              <i class="fas fa-chevron-right"></i>
             </div>
-            <div class="info-container" style="margin-bottom: 1.5rem">
+            <div class="info-container">
               <p class="help-text">
                 To obtain the Data Deliverables document associated with your award, simply ask your
                 PI or grant manager. Download a template of the Data Deliverables document
@@ -635,8 +584,75 @@
               </p>
             </div>
           </div>
+          <div class="guided--section">
+            <label class="guided--welcome-section-label text-center"
+              >ORCID iDs for all dataset contributors</label
+            >
+            <p class="help-text">
+              SPARC datasets require that all contributors have an ORCID iD. If you are not sure if
+              a contributor has an ORCID iD, you can check by searching for their name on
+              <a target="_blank" href="https://orcid.org">orcid.org</a>. <br /><br />
+              If a contributor does not have an ORCID iD, they can create one for free at
+              <a target="_blank" href="https://orcid.org/register">orcid.org/register</a>.
+            </p>
+          </div>
+        </div>
+
+        <div
+          id="guided-name-subtitle-tab"
+          class="guided--page hidden"
+          data-page-name="Name and subtitle"
+        >
+          <h1 class="guided--text-sub-step">Give your dataset a name and subtitle</h1>
+          <div class="guided--section">
+            <label class="guided--form-label">Dataset name: </label>
+            <input
+              class="guided--input"
+              id="guided-dataset-name-input"
+              data-alert-message="A Pennsieve dataset name cannot contain any of the following characters: /:*?'."
+              data-alert-type="danger"
+              type="text"
+              name="guided-dataset-name"
+              placeholder="Enter dataset name here"
+            />
+            <p class="guided--text-input-instructions mb-0">
+              Enter the desired name for your new dataset. This is the field that will be displayed
+              in public as the title of the dataset once it is published on the
+              <a href="https://sparc.science/">SPARC Data Portal</a>. Please make sure that your
+              dataset title is different than your other dataset titles and is relatively
+              informative.
+            </p>
+          </div>
+          <div class="guided--section">
+            <label class="guided--form-label">Dataset subtitle:</label>
+            <p style="height: 0px; margin: 0px">
+              <span
+                id="guided-subtitle-char-count"
+                style="position: relative; top: 100px; color: rgb(117, 107, 107)"
+              >
+                255 characters left
+              </span>
+            </p>
+            <textarea
+              class="guided--input guided--text-area"
+              id="guided-dataset-subtitle-input"
+              type="text"
+              name="guided-dataset-subtitle"
+              placeholder="Enter dataset subtitle here"
+              style="height: 7.5em; padding-bottom: 20px"
+              maxlength="255"
+            ></textarea>
+            <p class="guided--text-input-instructions mb-0">
+              Add two or three sentences (limit of 255 characters) that describe the content of your
+              dataset such that it is possible to differentiate it from other datasets. This field
+              will become the short description visible immediately under the title of your dataset
+              once it is published on the
+              <a href="https://sparc.science/">SPARC Data Portal</a>.
+            </p>
+          </div>
         </div>
       </div>
+
       <div
         id="prepare-dataset-parent-tab"
         class="guided--parent-tab hidden"
@@ -2334,7 +2350,6 @@
                   id="guided-submission-sparc-award"
                   type="text"
                   placeholder="Enter SPARC award here"
-                  onkeyup="validateInput($(this))"
                 />
                 <p class="guided--text-input-instructions mb-0">
                   The SPARC award number imported from your data deliverables document
@@ -2376,7 +2391,6 @@
               id="guided-submission-sparc-award-manual"
               type="text"
               placeholder="Enter SPARC award here"
-              onkeyup="validateInput($(this))"
             />
             <p class="guided--text-input-instructions mb-0">
               SPARC award associated with the dataset.
@@ -2871,7 +2885,6 @@
               id="guided-ds-study-collection-title"
               type="text"
               placeholder="Enter study collection title here"
-              onkeyup="validateInput($(this))"
             />
             <p class="guided--text-input-instructions mb-0">
               Title of the larger collection of which this dataset belongs.<br />
@@ -2899,7 +2912,6 @@
               type="text"
               placeholder="Enter acknowledgements here"
               style="height: 7.5em"
-              onkeyup="validateInput($(this))"
             ></textarea>
             <p class="guided--text-input-instructions mb-0">
               Acknowledgements beyond funding and contributors, if any.<br />
@@ -3000,7 +3012,6 @@
                   name="subject experimental group"
                   type="text"
                   placeholder="Enter subject experimental group here"
-                  onkeyup="validateInput($(this))"
                 />
                 <p class="guided--text-input-instructions mb-0">
                   Experimental group of the subject if assigned to in the research project.<br />
@@ -5607,7 +5618,7 @@
         <button
           class="ui secondary basic button save-and-exit-button"
           id="guided-button-save-and-exit"
-          style="width: 160px !important; font-family: Poppins"
+          style="width: 200px !important; font-family: Poppins"
           onclick="guidedSaveAndExit()"
         >
           <i class="far fa-save" style="margin-right: 10px"></i>

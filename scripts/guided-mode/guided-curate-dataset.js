@@ -256,9 +256,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         guidedUnSkipPage("guided-primary-data-organization-tab");
         guidedUnSkipPage("guided-source-data-organization-tab");
         guidedUnSkipPage("guided-derivative-data-organization-tab");
-        guidedUnSkipPage("guided-code-folder-tab");
-        guidedUnSkipPage("guided-protocol-folder-tab");
-        guidedUnSkipPage("guided-docs-folder-tab");
 
         // Skip the CHANGES metadata page as this is a new dataset
         guidedSkipPage("guided-create-changes-metadata-tab");
@@ -557,6 +554,38 @@ const savePageChanges = async (pageBeingLeftID) => {
       // If the user selected that dataset is not SPARC funded, skip the submission metadata page
       // The logic that handles the submission file is ran during uploadiyhihhihiuhihi
       if (userSelectedDatasetIsNotSparcFunded) {
+        const userSelectedTheyHaveReachedOutToCurationTeam = document
+          .getElementById("guided-button-non-sparc-user-has-contacted-sparc")
+          .classList.contains("selected");
+        const userSelectedTheyHaveNotReachedOutToCurationTeam = document
+          .getElementById("guided-button-non-sparc-user-has-not-contacted-sparc")
+          .classList.contains("selected");
+
+        if (
+          !userSelectedTheyHaveReachedOutToCurationTeam &&
+          !userSelectedTheyHaveNotReachedOutToCurationTeam
+        ) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please indicate if you have reached out to the curation team",
+          });
+          throw errorArray;
+        }
+
+        if (userSelectedTheyHaveReachedOutToCurationTeam) {
+          // We don't have to do anything here
+        }
+
+        if (userSelectedTheyHaveNotReachedOutToCurationTeam) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please reach out to the curation team before continuing the curation process",
+          });
+          throw errorArray;
+        }
+
+        // Skip the submission metadata page
+        // This can be safely skipped as the logic that handles the submission file is ran during upload
         guidedSkipPage("guided-create-submission-metadata-tab");
       }
     }
@@ -1710,25 +1739,31 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
   return sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"];
 };
 
-const guidedLockSideBar = () => {
+const guidedLockSideBar = (boolShowNavBar) => {
   const sidebar = document.getElementById("sidebarCollapse");
   const guidedModeSection = document.getElementById("guided_mode-section");
   const guidedDatsetTab = document.getElementById("guided_curate_dataset-tab");
   const guidedNav = document.getElementById("guided-nav");
+  const curationPreparationGreenPills = document.getElementById(
+    "structure-dataset-capsule-container"
+  );
 
   if (!sidebar.classList.contains("active")) {
     sidebar.click();
   }
+
   sidebar.disabled = true;
   guidedModeSection.style.marginLeft = "-70px";
-  guidedDatsetTab.style.marginLeft = "215px";
-  guidedNav.style.display = "flex";
 
-  /* *************************************************** */
-  /* ************  Build the Nav Bar !!!  ************** */
-  /* *************************************************** */
-
-  // return data-parent-tab-name for each .guided--parent-tab element
+  if (boolShowNavBar) {
+    guidedDatsetTab.style.marginLeft = "215px";
+    guidedNav.style.display = "flex";
+    curationPreparationGreenPills.classList.remove("hidden");
+  } else {
+    guidedDatsetTab.style.marginLeft = "0px";
+    guidedNav.style.display = "none";
+    curationPreparationGreenPills.classList.add("hidden");
+  }
 };
 
 const guidedUnLockSideBar = () => {
@@ -1746,6 +1781,9 @@ const guidedUnLockSideBar = () => {
   guidedDatsetTab.style.marginLeft = "";
   guidedNav.style.display = "none";
 };
+
+guidedHideSidebar = () => {};
+guidedUnHideSidebar = () => {};
 
 const guidedSetCurationTeamUI = (boolSharedWithCurationTeam) => {
   const textSharedWithCurationTeamStatus = document.getElementById(
@@ -2118,14 +2156,11 @@ const guidedTransitionFromHome = async () => {
   }
 
   guidedResetSkippedPages();
-
-  guidedLockSideBar();
 };
 
 const guidedTransitionToHome = () => {
   guidedUnLockSideBar();
   guidedPrepareHomeScreen();
-  console.log("HERE?");
 
   document.getElementById("guided-home").classList.remove("hidden");
   // Hide all of the parent tabs
@@ -3485,16 +3520,6 @@ const openPage = async (targetPageID) => {
     //Note: if other nav bar needs to be shown, it will be handled later in this function
     hideSubNavAndShowMainNav(false);
 
-    //Hide the high level progress steps and green pills if the user is on the before getting started page
-    if (targetPageID === "guided-prepare-helpers-tab") {
-      //validate the api key and adjust icon accordingly
-      document.getElementById("structure-dataset-capsule-container").classList.add("hidden");
-      document.querySelector(".guided--progression-tab-container").classList.add("hidden");
-    } else {
-      document.getElementById("structure-dataset-capsule-container").classList.remove("hidden");
-      document.querySelector(".guided--progression-tab-container").classList.remove("hidden");
-    }
-
     if (
       targetPageID === "guided-dataset-generation-confirmation-tab" ||
       targetPageID === "guided-dataset-generation-tab" ||
@@ -3514,12 +3539,59 @@ const openPage = async (targetPageID) => {
       $("#guided-back-button").css("visibility", "visible");
     }
 
+    // If the user has not saved the dataset name and subtitle, then the next button should say "Continue"
+    // as they are not really saving anything
+    // If they have saved the dataset name and subtitle, then the next button should say "Save and Continue"
+    // as their progress is saved when continuing to the next page
+    const datasetName = sodaJSONObj?.["digital-metadata"]?.["name"];
+    const nextButton = document.getElementById("guided-next-button");
+    const saveAndExitButton = document.getElementById("guided-button-save-and-exit");
+
+    if (!datasetName) {
+      nextButton.innerHTML = "Continue";
+      saveAndExitButton.innerHTML = "Return to Home Page";
+
+      guidedLockSideBar(false);
+    } else {
+      nextButton.innerHTML = "Save and Continue";
+      saveAndExitButton.innerHTML = `<i class="far fa-save" style="margin-right: 10px"></i>Save and Exit`;
+      guidedLockSideBar(true);
+    }
+
+    // Get the element with the classes .guided--progression-tab and selected-tab
+    const currentActiveProgressionTab = document.querySelector(
+      ".guided--progression-tab.selected-tab"
+    );
+    if (currentActiveProgressionTab) {
+      if (currentActiveProgressionTab.id === "curation-preparation-progression-tab") {
+      } else {
+      }
+    }
+
     if (targetPageID === "guided-intro-page-tab") {
       // Hide the pennsieve dataset import progress circle
       const importProgressCircle = document.querySelector(
         "#guided_loading_pennsieve_dataset-organize"
       );
       importProgressCircle.classList.add("hidden");
+    }
+
+    if (targetPageID === "guided-prepare-helpers-tab") {
+      const sparcFundedHelperSections = document
+        .getElementById("guided-prepare-helpers-tab")
+        .querySelectorAll(".sparc-funded-only");
+
+      if (datasetIsSparcFunded()) {
+        // If the dataset is SPARC funded, then show the SPARC funded helper sections
+        sparcFundedHelperSections.forEach((element) => {
+          element.classList.remove("hidden");
+        });
+      } else {
+        // If the dataset is not SPARC funded, then hide the SPARC funded helper sections
+        sparcFundedHelperSections.forEach((element) => {
+          element.classList.add("hidden");
+        });
+      }
     }
 
     if (targetPageID === "guided-name-subtitle-tab") {
@@ -5648,34 +5720,6 @@ const removeAlertMessageIfExists = (elementToCheck) => {
     elementToCheck.next().remove();
   }
 };
-const validateInput = (inputElementToValidate) => {
-  let inputIsValid = false;
-
-  const inputID = inputElementToValidate.attr("id");
-  if (inputID === "guided-dataset-name-input") {
-    let name = inputElementToValidate.val().trim();
-    if (name !== "") {
-      if (!check_forbidden_characters_bf(name)) {
-        removeAlertMessageIfExists(inputElementToValidate);
-        inputIsValid = true;
-      } else {
-        generateAlertMessage(inputElementToValidate);
-      }
-    }
-  }
-  if (inputID === "guided-dataset-subtitle-input") {
-    let subtitle = inputElementToValidate.val().trim();
-    if (subtitle !== "") {
-      if (subtitle.length < 257) {
-        removeAlertMessageIfExists(inputElementToValidate);
-        inputIsValid = true;
-      } else {
-        generateAlertMessage(inputElementToValidate);
-      }
-    }
-  }
-  return inputIsValid;
-};
 
 /////////////////////////////////////////////////////////
 //////////       GUIDED FORM VALIDATORS       ///////////
@@ -5933,7 +5977,6 @@ const guidedResumeProgress = async (resumeProgressButton) => {
       ? openPage("guided-dataset-generation-confirmation-tab")
       : openPage(pageToReturnTo);
   }
-  guidedLockSideBar();
 };
 
 //Add  spinner to element
@@ -6885,7 +6928,6 @@ const generateContributorField = (
               "
               type="text"
               placeholder="Enter last name here"
-              onkeyup="validateInput($(this))"
               value="${contributorLastName ? contributorLastName : ""}"
             />
           </div>
@@ -6898,7 +6940,6 @@ const generateContributorField = (
               "
               type="text"
               placeholder="Enter first name here"
-              onkeyup="validateInput($(this))"
               value="${contributorFirstName ? contributorFirstName : ""}"
             />
           </div>
@@ -6911,7 +6952,6 @@ const generateContributorField = (
           "
           type="text"
           placeholder="Enter ORCID here"
-          onkeyup="validateInput($(this))"
           value="${contributorORCID ? contributorORCID : ""}"
         />
         <label class="guided--form-label mt-md required">Affiliation(s): </label>
@@ -7326,7 +7366,7 @@ const openGuidedAddContributorSwal = async () => {
           <p class="guided--text-input-instructions mb-0 text-left">
             If your contributor does not have an ORCID, have the contributor <a
             target="_blank"
-            href="https://orcid.org"
+            href="https://orcid.org/register"
             >sign up for one on orcid.org</a
           >.
      
@@ -7589,7 +7629,6 @@ const addContributorField = () => {
           class="guided--input guided-last-name-input"
           type="text"
           placeholder="Enter last name here"
-          onkeyup="validateInput($(this))"
         />
       </div>
       <div class="guided--flex-center mt-sm" style="width: 45%">
@@ -7598,7 +7637,6 @@ const addContributorField = () => {
           class="guided--input guided-first-name-input"
           type="text"
           placeholder="Enter first name here"
-          onkeyup="validateInput($(this))"
         />
       </div>
     </div>
@@ -8170,7 +8208,6 @@ const openAddAdditionLinkSwal = async () => {
       class="guided--input guided-other-link-url-input"
       type="text"
       placeholder="Enter link URL here"
-      onkeyup="validateInput($(this))"
     />
     <label class="guided--form-label mt-lg"
       >Link description:</label
@@ -8180,7 +8217,6 @@ const openAddAdditionLinkSwal = async () => {
       type="text"
       placeholder="Enter link description here"
       style="height: 7.5em; padding-bottom: 20px"
-      onkeyup="validateInput($(this))"
     ></textarea>
     <label class="guided--form-label mt-lg"
       >Dataset relation:</label
@@ -8347,6 +8383,7 @@ const openModifySampleMetadataPage = (sampleMetadataID, samplesSubjectID) => {
       })
       .join("\n")}))
   `;
+
   document.getElementById("guided-bootbox-sample-protocol-location").innerHTML = `
     <option value="">No protocols associated with this sample</option>
     ${protocols
@@ -10364,14 +10401,12 @@ $(document).ready(async () => {
     guidedUnSkipPage("guided-primary-data-organization-tab");
     guidedUnSkipPage("guided-source-data-organization-tab");
     guidedUnSkipPage("guided-derivative-data-organization-tab");
-    guidedUnSkipPage("guided-code-folder-tab");
-    guidedUnSkipPage("guided-protocol-folder-tab");
-    guidedUnSkipPage("guided-docs-folder-tab");
+
     //Skip this page becausae we should not come back to it
     guidedTransitionFromHome();
     guidedSkipPage("guided-intro-page-tab");
     guidedUnSkipPage("guided-name-subtitle-tab");
-    await openPage("guided-name-subtitle-tab");
+    await openPage("guided-ask-if-submission-is-sparc-funded-tab");
   });
 
   $("#guided-button-start-existing-curate").on("click", async () => {
@@ -10428,7 +10463,6 @@ $(document).ready(async () => {
 
     // guidedResetSkippedPages();
 
-    // guidedLockSideBar();
     directToFreeFormMode();
     document.getElementById("guided_mode_view").classList.add("is-selected");
   });
@@ -12653,21 +12687,22 @@ $(document).ready(async () => {
   };
 
   //back button click handler
-  $("#guided-back-button").on("click", () => {
+  $("#guided-back-button").on("click", async () => {
     pageBeingLeftID = CURRENT_PAGE.id;
-    console.log(pageBeingLeftID);
-    // If the user is on the first two pages, Save and Exit if they try to go back again
-    if (
-      pageBeingLeftID === "guided-intro-page-tab" ||
-      pageBeingLeftID === "guided-name-subtitle-tab"
-    ) {
-      guidedSaveAndExit();
+    const targetPage = getPrevPageNotSkipped(pageBeingLeftID);
+
+    // If the target page when clicking the back button does not exist, then we are on the first not skipped page.
+    // In this case, we want to save and exit guided mode.
+    if (!targetPage) {
+      await guidedSaveAndExit();
       return;
     }
 
-    const targetPage = getPrevPageNotSkipped(CURRENT_PAGE.id);
+    // Get the id of the target page
     const targetPageID = targetPage.id;
-    openPage(targetPageID);
+
+    // open the target page
+    await openPage(targetPageID);
   });
 
   const saveSubPageChanges = async (openSubPageID) => {
