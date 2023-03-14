@@ -530,12 +530,6 @@ input[type="checkbox"].with-style:checked ~ label {
   display: none;
 }
 
-.filepath {
-  display: block;
-  margin: 0;
-  padding: 0.5em 1.5em;
-}
-
 textarea.outputprint {
   width: 100%;
   max-width: 100%;
@@ -671,27 +665,6 @@ table.table-save-metadata {
   cursor: pointer;
   font-size: 15px;
   width: 70%;
-}
-
-/* YouTube video frames */
-.video-container {
-  position: relative;
-  padding-bottom: 56.25%;
-  padding-top: 30px;
-  height: 0;
-  overflow: hidden;
-}
-
-.video-container iframe,
-.video-container object,
-.video-container embed {
-  margin-left: 5em;
-  margin-top: 1em;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 80%;
-  height: 80%;
 }
 /*
 .te-editor.te-tab-active {

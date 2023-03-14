@@ -1093,6 +1093,8 @@ details[open] > summary::before {
 }
 
 .ffm-return-button {
+  height: 37px !important;
+  max-height: 37px;
   width: 120px !important;
   margin-left: 1rem !important;
   margin-bottom: 3px !important;
