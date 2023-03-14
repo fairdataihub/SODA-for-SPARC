@@ -2161,7 +2161,6 @@ const guidedTransitionFromHome = async () => {
 const guidedTransitionToHome = () => {
   guidedUnLockSideBar();
   guidedPrepareHomeScreen();
-  console.log("HERE?");
 
   document.getElementById("guided-home").classList.remove("hidden");
   // Hide all of the parent tabs
