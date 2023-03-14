@@ -168,7 +168,7 @@ overview_observer.observe(over_view_section, {
   attributes: true,
   attributeFilter: ["class"],
 });
-document.getElementById("getting_starting_tab").click();
+document.getElementById("guided_mode_view").click();
 
 let launchAnnouncement = false;
 ipcRenderer.on("checkForAnnouncements", (event, index) => {
