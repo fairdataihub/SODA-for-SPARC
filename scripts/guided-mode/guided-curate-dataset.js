@@ -256,9 +256,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         guidedUnSkipPage("guided-primary-data-organization-tab");
         guidedUnSkipPage("guided-source-data-organization-tab");
         guidedUnSkipPage("guided-derivative-data-organization-tab");
-        guidedUnSkipPage("guided-code-folder-tab");
-        guidedUnSkipPage("guided-protocol-folder-tab");
-        guidedUnSkipPage("guided-docs-folder-tab");
 
         // Skip the CHANGES metadata page as this is a new dataset
         guidedSkipPage("guided-create-changes-metadata-tab");
@@ -1710,25 +1707,31 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
   return sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"];
 };
 
-const guidedLockSideBar = () => {
+const guidedLockSideBar = (boolShowNavBar) => {
   const sidebar = document.getElementById("sidebarCollapse");
   const guidedModeSection = document.getElementById("guided_mode-section");
   const guidedDatsetTab = document.getElementById("guided_curate_dataset-tab");
   const guidedNav = document.getElementById("guided-nav");
+  const curationPreparationGreenPills = document.getElementById(
+    "structure-dataset-capsule-container"
+  );
 
   if (!sidebar.classList.contains("active")) {
     sidebar.click();
   }
+
   sidebar.disabled = true;
   guidedModeSection.style.marginLeft = "-70px";
-  guidedDatsetTab.style.marginLeft = "215px";
-  guidedNav.style.display = "flex";
 
-  /* *************************************************** */
-  /* ************  Build the Nav Bar !!!  ************** */
-  /* *************************************************** */
-
-  // return data-parent-tab-name for each .guided--parent-tab element
+  if (boolShowNavBar) {
+    guidedDatsetTab.style.marginLeft = "215px";
+    guidedNav.style.display = "flex";
+    curationPreparationGreenPills.classList.remove("hidden");
+  } else {
+    guidedDatsetTab.style.marginLeft = "0px";
+    guidedNav.style.display = "none";
+    curationPreparationGreenPills.classList.add("hidden");
+  }
 };
 
 const guidedUnLockSideBar = () => {
@@ -1746,6 +1749,9 @@ const guidedUnLockSideBar = () => {
   guidedDatsetTab.style.marginLeft = "";
   guidedNav.style.display = "none";
 };
+
+guidedHideSidebar = () => {};
+guidedUnHideSidebar = () => {};
 
 const guidedSetCurationTeamUI = (boolSharedWithCurationTeam) => {
   const textSharedWithCurationTeamStatus = document.getElementById(
@@ -2118,8 +2124,6 @@ const guidedTransitionFromHome = async () => {
   }
 
   guidedResetSkippedPages();
-
-  guidedLockSideBar();
 };
 
 const guidedTransitionToHome = () => {
@@ -3485,16 +3489,6 @@ const openPage = async (targetPageID) => {
     //Note: if other nav bar needs to be shown, it will be handled later in this function
     hideSubNavAndShowMainNav(false);
 
-    //Hide the high level progress steps and green pills if the user is on the before getting started page
-    if (targetPageID === "guided-prepare-helpers-tab") {
-      //validate the api key and adjust icon accordingly
-      document.getElementById("structure-dataset-capsule-container").classList.add("hidden");
-      document.querySelector(".guided--progression-tab-container").classList.add("hidden");
-    } else {
-      document.getElementById("structure-dataset-capsule-container").classList.remove("hidden");
-      document.querySelector(".guided--progression-tab-container").classList.remove("hidden");
-    }
-
     if (
       targetPageID === "guided-dataset-generation-confirmation-tab" ||
       targetPageID === "guided-dataset-generation-tab" ||
@@ -3512,6 +3506,30 @@ const openPage = async (targetPageID) => {
       $("#guided-back-button").css("visibility", "hidden");
     } else {
       $("#guided-back-button").css("visibility", "visible");
+    }
+
+    // If the user has not saved the dataset name and subtitle, then the next button should say "Continue"
+    // as they are not really saving anything
+    // If they have saved the dataset name and subtitle, then the next button should say "Save and Continue"
+    // as their progress is saved when continuing to the next page
+    const datasetName = sodaJSONObj?.["digital-metadata"]?.["name"];
+    const nextButton = document.getElementById("guided-next-button");
+    if (!datasetName) {
+      nextButton.innerHTML = "Continue";
+      guidedLockSideBar(false);
+    } else {
+      nextButton.innerHTML = "Save and Continue";
+      guidedLockSideBar(true);
+    }
+
+    // Get the element with the classes .guided--progression-tab and selected-tab
+    const currentActiveProgressionTab = document.querySelector(
+      ".guided--progression-tab.selected-tab"
+    );
+    if (currentActiveProgressionTab) {
+      if (currentActiveProgressionTab.id === "curation-preparation-progression-tab") {
+      } else {
+      }
     }
 
     if (targetPageID === "guided-intro-page-tab") {
@@ -5933,7 +5951,6 @@ const guidedResumeProgress = async (resumeProgressButton) => {
       ? openPage("guided-dataset-generation-confirmation-tab")
       : openPage(pageToReturnTo);
   }
-  guidedLockSideBar();
 };
 
 //Add  spinner to element
@@ -10364,9 +10381,7 @@ $(document).ready(async () => {
     guidedUnSkipPage("guided-primary-data-organization-tab");
     guidedUnSkipPage("guided-source-data-organization-tab");
     guidedUnSkipPage("guided-derivative-data-organization-tab");
-    guidedUnSkipPage("guided-code-folder-tab");
-    guidedUnSkipPage("guided-protocol-folder-tab");
-    guidedUnSkipPage("guided-docs-folder-tab");
+
     //Skip this page becausae we should not come back to it
     guidedTransitionFromHome();
     guidedSkipPage("guided-intro-page-tab");
@@ -10428,7 +10443,6 @@ $(document).ready(async () => {
 
     // guidedResetSkippedPages();
 
-    // guidedLockSideBar();
     directToFreeFormMode();
     document.getElementById("guided_mode_view").classList.add("is-selected");
   });
