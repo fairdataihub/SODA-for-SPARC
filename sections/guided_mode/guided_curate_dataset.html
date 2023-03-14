@@ -160,9 +160,9 @@
       >
         <div class="guided--capsule-container" id="structure-dataset-capsule-container">
           <div class="guided--capsule" id="guided-intro-page-capsule"></div>
-          <div class="guided--capsule" id="guided-name-subtitle-capsule"></div>
           <div class="guided--capsule" id="guided-ask-if-submission-is-sparc-funded-capsule"></div>
           <div class="guided--capsule" id="guided-prepare-helpers-capsule"></div>
+          <div class="guided--capsule" id="guided-name-subtitle-capsule"></div>
         </div>
         <div
           id="guided-intro-page-tab"
@@ -467,61 +467,6 @@
             </div>
           </div>
         </div>
-        <div
-          id="guided-name-subtitle-tab"
-          class="guided--page hidden"
-          data-page-name="Name and subtitle"
-        >
-          <h1 class="guided--text-sub-step">Give your dataset a name and subtitle</h1>
-          <div class="guided--section">
-            <label class="guided--form-label">Dataset name: </label>
-            <input
-              class="guided--input"
-              id="guided-dataset-name-input"
-              data-alert-message="A Pennsieve dataset name cannot contain any of the following characters: /:*?'."
-              data-alert-type="danger"
-              type="text"
-              name="guided-dataset-name"
-              placeholder="Enter dataset name here"
-              onkeyup="validateInput($(this))"
-            />
-            <p class="guided--text-input-instructions mb-0">
-              Enter the desired name for your new dataset. This is the field that will be displayed
-              in public as the title of the dataset once it is published on the
-              <a href="https://sparc.science/">SPARC Data Portal</a>. Please make sure that your
-              dataset title is different than your other dataset titles and is relatively
-              informative.
-            </p>
-          </div>
-          <div class="guided--section">
-            <label class="guided--form-label">Dataset subtitle:</label>
-            <p style="height: 0px; margin: 0px">
-              <span
-                id="guided-subtitle-char-count"
-                style="position: relative; top: 100px; color: rgb(117, 107, 107)"
-              >
-                255 characters left
-              </span>
-            </p>
-            <textarea
-              class="guided--input guided--text-area"
-              id="guided-dataset-subtitle-input"
-              type="text"
-              name="guided-dataset-subtitle"
-              placeholder="Enter dataset subtitle here"
-              style="height: 7.5em; padding-bottom: 20px"
-              onkeyup="validateInput($(this))"
-              maxlength="255"
-            ></textarea>
-            <p class="guided--text-input-instructions mb-0">
-              Add two or three sentences (limit of 255 characters) that describe the content of your
-              dataset such that it is possible to differentiate it from other datasets. This field
-              will become the short description visible immediately under the title of your dataset
-              once it is published on the
-              <a href="https://sparc.science/">SPARC Data Portal</a>.
-            </p>
-          </div>
-        </div>
 
         <div
           class="guided--page hidden"
@@ -634,6 +579,62 @@
                 to see the expected format.
               </p>
             </div>
+          </div>
+        </div>
+
+        <div
+          id="guided-name-subtitle-tab"
+          class="guided--page hidden"
+          data-page-name="Name and subtitle"
+        >
+          <h1 class="guided--text-sub-step">Give your dataset a name and subtitle</h1>
+          <div class="guided--section">
+            <label class="guided--form-label">Dataset name: </label>
+            <input
+              class="guided--input"
+              id="guided-dataset-name-input"
+              data-alert-message="A Pennsieve dataset name cannot contain any of the following characters: /:*?'."
+              data-alert-type="danger"
+              type="text"
+              name="guided-dataset-name"
+              placeholder="Enter dataset name here"
+              onkeyup="validateInput($(this))"
+            />
+            <p class="guided--text-input-instructions mb-0">
+              Enter the desired name for your new dataset. This is the field that will be displayed
+              in public as the title of the dataset once it is published on the
+              <a href="https://sparc.science/">SPARC Data Portal</a>. Please make sure that your
+              dataset title is different than your other dataset titles and is relatively
+              informative.
+            </p>
+          </div>
+          <div class="guided--section">
+            <label class="guided--form-label">Dataset subtitle:</label>
+            <p style="height: 0px; margin: 0px">
+              <span
+                id="guided-subtitle-char-count"
+                style="position: relative; top: 100px; color: rgb(117, 107, 107)"
+              >
+                255 characters left
+              </span>
+            </p>
+            <textarea
+              class="guided--input guided--text-area"
+              id="guided-dataset-subtitle-input"
+              type="text"
+              name="guided-dataset-subtitle"
+              placeholder="Enter dataset subtitle here"
+              style="height: 7.5em; padding-bottom: 20px"
+              onkeyup="validateInput($(this))"
+              maxlength="255"
+            ></textarea>
+            <p class="guided--text-input-instructions mb-0">
+              Add two or three sentences (limit of 255 characters) that describe the content of your
+              dataset such that it is possible to differentiate it from other datasets. This field
+              will become the short description visible immediately under the title of your dataset
+              once it is published on the
+              <a href="https://sparc.science/">SPARC Data Portal</a>.
+            </p>
           </div>
         </div>
       </div>

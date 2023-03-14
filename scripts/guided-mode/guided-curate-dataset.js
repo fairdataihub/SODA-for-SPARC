@@ -10371,7 +10371,7 @@ $(document).ready(async () => {
     guidedTransitionFromHome();
     guidedSkipPage("guided-intro-page-tab");
     guidedUnSkipPage("guided-name-subtitle-tab");
-    await openPage("guided-name-subtitle-tab");
+    await openPage("guided-ask-if-submission-is-sparc-funded-tab");
   });
 
   $("#guided-button-start-existing-curate").on("click", async () => {
@@ -12653,21 +12653,22 @@ $(document).ready(async () => {
   };
 
   //back button click handler
-  $("#guided-back-button").on("click", () => {
+  $("#guided-back-button").on("click", async () => {
     pageBeingLeftID = CURRENT_PAGE.id;
-    console.log(pageBeingLeftID);
-    // If the user is on the first two pages, Save and Exit if they try to go back again
-    if (
-      pageBeingLeftID === "guided-intro-page-tab" ||
-      pageBeingLeftID === "guided-name-subtitle-tab"
-    ) {
-      guidedSaveAndExit();
+    const targetPage = getPrevPageNotSkipped(pageBeingLeftID);
+
+    // If the target page when clicking the back button does not exist, then we are on the first not skipped page.
+    // In this case, we want to save and exit guided mode.
+    if (!targetPage) {
+      await guidedSaveAndExit();
       return;
     }
 
-    const targetPage = getPrevPageNotSkipped(CURRENT_PAGE.id);
+    // Get the id of the target page
     const targetPageID = targetPage.id;
-    openPage(targetPageID);
+
+    // open the target page
+    await openPage(targetPageID);
   });
 
   const saveSubPageChanges = async (openSubPageID) => {
