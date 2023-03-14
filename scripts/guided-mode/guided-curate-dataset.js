@@ -3572,6 +3572,24 @@ const openPage = async (targetPageID) => {
       importProgressCircle.classList.add("hidden");
     }
 
+    if (targetPageID === "guided-prepare-helpers-tab") {
+      const sparcFundedHelperSections = document
+        .getElementById("guided-prepare-helpers-tab")
+        .querySelectorAll(".sparc-funded-only");
+
+      if (datasetIsSparcFunded()) {
+        // If the dataset is SPARC funded, then show the SPARC funded helper sections
+        sparcFundedHelperSections.forEach((element) => {
+          element.classList.remove("hidden");
+        });
+      } else {
+        // If the dataset is not SPARC funded, then hide the SPARC funded helper sections
+        sparcFundedHelperSections.forEach((element) => {
+          element.classList.add("hidden");
+        });
+      }
+    }
+
     if (targetPageID === "guided-name-subtitle-tab") {
       const datasetNameInput = document.getElementById("guided-dataset-name-input");
       const datasetSubtitleInput = document.getElementById("guided-dataset-subtitle-input");
@@ -7344,7 +7362,7 @@ const openGuidedAddContributorSwal = async () => {
           <p class="guided--text-input-instructions mb-0 text-left">
             If your contributor does not have an ORCID, have the contributor <a
             target="_blank"
-            href="https://orcid.org"
+            href="https://orcid.org/register"
             >sign up for one on orcid.org</a
           >.
      
