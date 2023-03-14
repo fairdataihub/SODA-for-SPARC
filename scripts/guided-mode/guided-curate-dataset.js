@@ -3546,11 +3546,16 @@ const openPage = async (targetPageID) => {
     // as their progress is saved when continuing to the next page
     const datasetName = sodaJSONObj?.["digital-metadata"]?.["name"];
     const nextButton = document.getElementById("guided-next-button");
+    const saveAndExitButton = document.getElementById("guided-button-save-and-exit");
+
     if (!datasetName) {
       nextButton.innerHTML = "Continue";
+      saveAndExitButton.innerHTML = "Return to Home Page";
+
       guidedLockSideBar(false);
     } else {
       nextButton.innerHTML = "Save and Continue";
+      saveAndExitButton.innerHTML = `<i class="far fa-save" style="margin-right: 10px"></i>Save and Exit`;
       guidedLockSideBar(true);
     }
 
