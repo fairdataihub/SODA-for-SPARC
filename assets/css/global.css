@@ -825,20 +825,6 @@ textarea {
 
 /* 2 classes below are for the loading splash screen */
 
-.loading-soda-can {
-  /* padding: 20px 20px; */
-  width: 100px;
-  height: 100px;
-  align-self: center;
-  /* margin:0 auto; */
-  animation-duration: 0.7s;
-  animation-name: loadingCan;
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
-  /* position: relative; */
-  margin: 0 auto;
-}
-
 .fas.fa-hand-point-left.welcome-icon-hand {
   animation-duration: 0.7s;
   animation-name: changeWelcomeIcon;
@@ -910,15 +896,6 @@ textarea {
   }
 }
 
-@keyframes loadingCan {
-  from {
-    bottom: -10px;
-  }
-
-  to {
-    bottom: 0px;
-  }
-}
 
 @keyframes changeWelcomeIcon {
   from {
