@@ -5698,34 +5698,6 @@ const removeAlertMessageIfExists = (elementToCheck) => {
     elementToCheck.next().remove();
   }
 };
-const validateInput = (inputElementToValidate) => {
-  let inputIsValid = false;
-
-  const inputID = inputElementToValidate.attr("id");
-  if (inputID === "guided-dataset-name-input") {
-    let name = inputElementToValidate.val().trim();
-    if (name !== "") {
-      if (!check_forbidden_characters_bf(name)) {
-        removeAlertMessageIfExists(inputElementToValidate);
-        inputIsValid = true;
-      } else {
-        generateAlertMessage(inputElementToValidate);
-      }
-    }
-  }
-  if (inputID === "guided-dataset-subtitle-input") {
-    let subtitle = inputElementToValidate.val().trim();
-    if (subtitle !== "") {
-      if (subtitle.length < 257) {
-        removeAlertMessageIfExists(inputElementToValidate);
-        inputIsValid = true;
-      } else {
-        generateAlertMessage(inputElementToValidate);
-      }
-    }
-  }
-  return inputIsValid;
-};
 
 /////////////////////////////////////////////////////////
 //////////       GUIDED FORM VALIDATORS       ///////////
@@ -6934,7 +6906,6 @@ const generateContributorField = (
               "
               type="text"
               placeholder="Enter last name here"
-              onkeyup="validateInput($(this))"
               value="${contributorLastName ? contributorLastName : ""}"
             />
           </div>
@@ -6947,7 +6918,6 @@ const generateContributorField = (
               "
               type="text"
               placeholder="Enter first name here"
-              onkeyup="validateInput($(this))"
               value="${contributorFirstName ? contributorFirstName : ""}"
             />
           </div>
@@ -6960,7 +6930,6 @@ const generateContributorField = (
           "
           type="text"
           placeholder="Enter ORCID here"
-          onkeyup="validateInput($(this))"
           value="${contributorORCID ? contributorORCID : ""}"
         />
         <label class="guided--form-label mt-md required">Affiliation(s): </label>
@@ -7638,7 +7607,6 @@ const addContributorField = () => {
           class="guided--input guided-last-name-input"
           type="text"
           placeholder="Enter last name here"
-          onkeyup="validateInput($(this))"
         />
       </div>
       <div class="guided--flex-center mt-sm" style="width: 45%">
@@ -7647,7 +7615,6 @@ const addContributorField = () => {
           class="guided--input guided-first-name-input"
           type="text"
           placeholder="Enter first name here"
-          onkeyup="validateInput($(this))"
         />
       </div>
     </div>
@@ -8219,7 +8186,6 @@ const openAddAdditionLinkSwal = async () => {
       class="guided--input guided-other-link-url-input"
       type="text"
       placeholder="Enter link URL here"
-      onkeyup="validateInput($(this))"
     />
     <label class="guided--form-label mt-lg"
       >Link description:</label
@@ -8229,7 +8195,6 @@ const openAddAdditionLinkSwal = async () => {
       type="text"
       placeholder="Enter link description here"
       style="height: 7.5em; padding-bottom: 20px"
-      onkeyup="validateInput($(this))"
     ></textarea>
     <label class="guided--form-label mt-lg"
       >Dataset relation:</label
@@ -8396,6 +8361,7 @@ const openModifySampleMetadataPage = (sampleMetadataID, samplesSubjectID) => {
       })
       .join("\n")}))
   `;
+
   document.getElementById("guided-bootbox-sample-protocol-location").innerHTML = `
     <option value="">No protocols associated with this sample</option>
     ${protocols

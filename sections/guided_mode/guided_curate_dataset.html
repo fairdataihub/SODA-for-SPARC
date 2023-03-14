@@ -443,9 +443,7 @@
           id="guided-ask-if-submission-is-sparc-funded-tab"
           data-page-name="SPARC funding"
         >
-          <div class="guided--section">
-            <h1 class="guided--text-sub-step">SPARC funding</h1>
-          </div>
+          <h1 class="guided--text-sub-step">SPARC funding</h1>
           <div class="guided--section" id="guided-section-submission-sparc-or-nonsparc">
             <h2 class="guided--text-sub-step">
               Is the dataset you are submitting funded by a SPARC award?
@@ -524,16 +522,16 @@
           class="guided--page hidden"
           data-page-name="Prepare data"
         >
-          <div class="guided--section">
-            <h1 class="guided--text-sub-step">Before getting started</h1>
+          <h1 class="guided--text-sub-step">Before getting started</h1>
 
+          <div class="guided--section">
             <p class="help-text">
               Several resources are required to curate and share a SPARC dataset. They are listed
               below so you can make sure you can have access to them before getting started.
             </p>
-            <label class="guided--welcome-section-label text-center" style="margin-top: 1rem"
-              >Pennsieve Account</label
-            >
+          </div>
+          <div class="guided--section">
+            <label class="guided--welcome-section-label text-center">Pennsieve Account</label>
             <p class="help-text">
               All SPARC datasets must be uploaded on the Pennsieve data platform. You will therefore
               need a Pennsieve account and access to the SPARC Organization on Pennsieve.
@@ -542,9 +540,9 @@
               <p class="info-dropdown-text" data-dropdown-type="warning">
                 I don't have a Pennsieve account
               </p>
-              <i class="fas fa-chevron-right" style="transform: rotate(0deg)"></i>
+              <i class="fas fa-chevron-right"></i>
             </div>
-            <div class="info-container" style="width: 800px">
+            <div class="info-container">
               <p class="help-text">
                 Get access to Pennsieve as well as the SPARC Consortium organization on Pennsieve by
                 filling out this
@@ -555,7 +553,9 @@
                 >
               </p>
             </div>
-            <label class="guided--welcome-section-label text-center" style="margin-top: 4rem"
+          </div>
+          <div class="guided--section">
+            <label class="guided--welcome-section-label text-center"
               >Data Deliverables document</label
             >
             <p class="help-text">
@@ -569,9 +569,36 @@
               <p class="info-dropdown-text" data-dropdown-type="info">
                 Where can I find my Data Deliverables document?
               </p>
-              <i class="fas fa-chevron-right" style="transform: rotate(0deg)"></i>
+              <i class="fas fa-chevron-right"></i>
             </div>
-            <div class="info-container" style="margin-bottom: 1.5rem">
+            <div class="info-container">
+              <p class="help-text">
+                To obtain the Data Deliverables document associated with your award, simply ask your
+                PI or grant manager. Download a template of the Data Deliverables document
+                <a
+                  target="_blank"
+                  href="https://github.com/fairdataihub/SODA-for-SPARC/blob/main/file_templates/DataDeliverablesDocument-template.docx?raw=true"
+                  >here</a
+                >
+                to see the expected format.
+              </p>
+            </div>
+          </div>
+          <div class="guided--section">
+            <label class="guided--welcome-section-label text-center"
+              >ORCID IDs for all dataset contributors</label
+            >
+            <p class="help-text">
+              All SPARC datasets must be uploaded on the Pennsieve data platform. You will therefore
+              need a Pennsieve account and access to the SPARC Organization on Pennsieve.
+            </p>
+            <div class="info-dropdown">
+              <p class="info-dropdown-text" data-dropdown-type="info">
+                Where can I find my Data Deliverables document?
+              </p>
+              <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="info-container">
               <p class="help-text">
                 To obtain the Data Deliverables document associated with your award, simply ask your
                 PI or grant manager. Download a template of the Data Deliverables document
@@ -602,7 +629,6 @@
               type="text"
               name="guided-dataset-name"
               placeholder="Enter dataset name here"
-              onkeyup="validateInput($(this))"
             />
             <p class="guided--text-input-instructions mb-0">
               Enter the desired name for your new dataset. This is the field that will be displayed
@@ -629,7 +655,6 @@
               name="guided-dataset-subtitle"
               placeholder="Enter dataset subtitle here"
               style="height: 7.5em; padding-bottom: 20px"
-              onkeyup="validateInput($(this))"
               maxlength="255"
             ></textarea>
             <p class="guided--text-input-instructions mb-0">
@@ -2340,7 +2365,6 @@
                   id="guided-submission-sparc-award"
                   type="text"
                   placeholder="Enter SPARC award here"
-                  onkeyup="validateInput($(this))"
                 />
                 <p class="guided--text-input-instructions mb-0">
                   The SPARC award number imported from your data deliverables document
@@ -2382,7 +2406,6 @@
               id="guided-submission-sparc-award-manual"
               type="text"
               placeholder="Enter SPARC award here"
-              onkeyup="validateInput($(this))"
             />
             <p class="guided--text-input-instructions mb-0">
               SPARC award associated with the dataset.
@@ -2877,7 +2900,6 @@
               id="guided-ds-study-collection-title"
               type="text"
               placeholder="Enter study collection title here"
-              onkeyup="validateInput($(this))"
             />
             <p class="guided--text-input-instructions mb-0">
               Title of the larger collection of which this dataset belongs.<br />
@@ -2905,7 +2927,6 @@
               type="text"
               placeholder="Enter acknowledgements here"
               style="height: 7.5em"
-              onkeyup="validateInput($(this))"
             ></textarea>
             <p class="guided--text-input-instructions mb-0">
               Acknowledgements beyond funding and contributors, if any.<br />
@@ -3006,7 +3027,6 @@
                   name="subject experimental group"
                   type="text"
                   placeholder="Enter subject experimental group here"
-                  onkeyup="validateInput($(this))"
                 />
                 <p class="guided--text-input-instructions mb-0">
                   Experimental group of the subject if assigned to in the research project.<br />
