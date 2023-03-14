@@ -328,10 +328,6 @@ button[data-id="guided_bf_list_users_and_teams"] {
   background-color: #fff;
 }
 
-.modal-content textarea {
-  font-size: 11px !important;
-}
-
 .modal-body {
   padding: 10px 10px;
   font-size: 15px;
@@ -907,22 +903,6 @@ button[data-id="guided_bf_list_users_and_teams"] {
   grid-template-rows: 50% 50%;
 }
 
-.div-display-details p {
-  font-family: Poppins;
-  margin-top: 25px;
-  margin-bottom: 5px;
-  font-size: 13px;
-}
-
-.div-display-details textarea {
-  font-family: Poppins;
-  max-height: 60px;
-  overflow-y: scroll;
-  resize: vertical;
-  width: 100%;
-  margin-top: 10px;
-}
-
 .div-display-details.show {
   transform: translateX(0);
   display: grid;
@@ -1004,12 +984,6 @@ details > summary::before {
 
 details[open] > summary::before {
   content: none;
-}
-
-.info-container {
-  align-self: center;
-  width: 573px;
-  margin-top: 1rem;
 }
 
 .info-container-wrapper {

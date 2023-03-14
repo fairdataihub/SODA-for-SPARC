@@ -134,13 +134,7 @@
   margin-bottom: 0px;
   animation: demo-box-fade-in 0.2s cubic-bezier(0, 0.2, 0.2, 0.96);
 }
-.hide {
-  pointer-events: none;
-  visibility: hidden;
-  opacity: 0;
-  transform: translateX(-20px);
-  transition: visibility 0s 0.12s linear, opacity 0.12s ease-in, transform 0.12s ease-in-out;
-}
+
 .guided--container-file-import {
   display: flex;
   flex-direction: column;
@@ -214,9 +208,6 @@
   overflow-y: auto;
 }
 
-.guided--text-instructional-content {
-  margin-bottom: 0.5rem;
-}
 .guided--container > h2 {
   margin: 0px;
 }
@@ -271,16 +262,10 @@
   opacity: 0.5;
 }
 
-.guided--text-area {
-  height: 5em;
-  resize: none;
-}
-.guided--text-area-tall {
-  height: 15em;
-}
 .guided--input:hover {
   box-shadow: rgb(231 238 236) 0px 0px 0px 2px;
 }
+
 .guided--input:focus {
   outline: 0;
   box-shadow: var(--color-light-green) 0px 0px 0px 1px;
@@ -564,49 +549,9 @@
   justify-content: center;
 }
 
-.guided--prompt-text {
-  font-size: 17px;
-  color: var(--color-bg-plum);
-  text-align: center;
-  font-weight: 700;
-  margin-bottom: 7px;
-}
-
 .guided--prompt-continue {
   color: var(--color-light-green) !important;
   margin-top: 15px !important;
-}
-
-.guided--text-sub-step {
-  display: block;
-  font-size: 18px;
-  color: rgba(0, 0, 0, 0.87);
-  text-align: center;
-  font-weight: 600;
-  margin-top: 10px !important;
-  margin-bottom: 12px;
-}
-
-h1.guided--text-sub-step {
-  font-size: 25px;
-  margin-bottom: 15px;
-}
-
-.guided--text-info {
-  display: block;
-  font-size: 15px;
-  color: var(--color-bg-plum) !important;
-  text-align: center;
-  font-weight: 700;
-  margin-top: 9px !important;
-  margin-bottom: 9px;
-}
-.guided--text-input-instructions {
-  font-size: 13px;
-  width: 100%;
-  padding-top: 4px;
-  padding-bottom: 5px;
-  color: dimgray !important;
 }
 
 .guided--label-accordion-field {
@@ -622,54 +567,11 @@ h1.guided--text-sub-step {
   text-align: right !important;
 }
 
-.guided--progress-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  align-items: center;
-}
-
-.guided--datasets-container {
-  margin-top: 5px;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: space-evenly;
-  align-items: flex-start;
-  width: 100%;
-  padding: 0px 15px;
-}
-.guided--dataset-container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  width: 100%;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  border-top: 1px solid #e6e8eb;
-  border-bottom: 1px solid #e6e8eb;
-  padding-left: 7px;
-  padding-right: 7px;
-}
-
-.guided--text-dataset-card {
-  margin: 0px;
-  color: black;
-  font-weight: 600;
-  font-size: 14px !important;
-}
 .guided--dataset-card-row {
   display: flex;
   flex-grow: 1;
   align-items: center;
   justify-content: center;
-}
-
-.guided--text-dataset-card-sub {
-  margin: 0px;
-  color: #999;
-  font-weight: 600;
-  font-size: 12px !important;
 }
 
 .guided--dataset-card {
@@ -686,17 +588,20 @@ h1.guided--text-sub-step {
   padding: 10px;
   position: relative;
 }
+
 .guided--dataset-card-title {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin: 5px 10px;
 }
+
 .guided--container-dataset-card-center {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
+
 .guided--dataset-card-body {
   display: flex;
   height: 80px;
@@ -780,7 +685,6 @@ h1.guided--text-sub-step {
   overflow-x: hidden;
   overflow-y: auto;
   margin-top: 1px;
-  /* margin-left: -10px; */
 }
 
 .guided {
@@ -790,24 +694,6 @@ h1.guided--text-sub-step {
 .guided.show {
   display: flex;
   flex-direction: column;
-}
-.container--dashed {
-  width: 600px;
-  height: 160px !important;
-  margin: 5px;
-  cursor: pointer;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  padding: 10px;
-  box-shadow: 0px 0px 10px #d5d5d5;
-  border-radius: 30px;
-  height: 16.5rem;
-}
-.container--dashed:hover {
-  box-shadow: 0px 0px 10px 0px var(--color-light-green);
 }
 
 .guided--capsule-container {
@@ -876,15 +762,6 @@ h1.guided--text-sub-step {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-.guided--help-text {
-  font-size: 16px;
-  max-width: 800px;
-  text-align: justify;
-}
-.guided--help-text.small {
-  font-size: 13px;
-  max-width: 650px;
 }
 
 .guided--radio-button {
@@ -1305,11 +1182,4 @@ h1.guided--text-sub-step {
   font-weight: bold;
   pointer-events: none;
   vertical-align: middle;
-}
-
-.guided-home-button-details {
-  margin-bottom: 6rem !important;
-  margin-left: 2rem;
-  font-size: 16px;
-  color: #787272 !important;
 }

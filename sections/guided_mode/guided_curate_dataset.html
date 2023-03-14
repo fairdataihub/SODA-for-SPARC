@@ -69,6 +69,14 @@
     <div id="guided-body" class="guided--body">
       <div id="guided-home" class="guided--main-tab">
         <div class="guided--panel" style="margin-top: -1.2rem">
+          <div class="front-page_logo">
+            <img
+              id="frontpage-logo"
+              style="width: 35%; height: 100%"
+              src="assets/img/logo-soda1024.png"
+              class="soda-can-welcome"
+            />
+          </div>
           <h1
             class="guided--text-sub-step"
             style="max-width: 600px; font-size: 23px; text-align: center; margin-top: 0 !important"
@@ -78,76 +86,37 @@
           </h1>
           <h2>What would you like to do today?</h2>
           <div class="justify-center" id="curate-new-home" style="align-items: center">
-            <div class="container--dashed" id="guided-button-start-new-curate">
-              <div
-                style="
-                  display: flex;
-                  max-width: 300px;
-                  flex-direction: column;
-                  height: 100%;
-                  justify-content: space-between;
-                "
-              >
-                <h2 class="guided--text-sub-step" style="margin-right: 3.5rem">
+            <div class="button-prompt-container" id="guided-button-start-new-curate">
+              <div class="wide-card-text-container">
+                <h2 class="wide-card-title-text" style="margin-right: 3.5rem">
                   Curate a New Dataset
                 </h2>
-                <p class="guided-home-button-details">
+                <p class="wide-card-subtitle-text">
                   I want to curate and share a new datataset as per the SPARC workflow
                 </p>
               </div>
-              <div id="new-dataset-lottie-container" style="height: 138px; width: 182px"></div>
+              <div id="new-dataset-lottie-container" class="wide-card-lottie-container"></div>
             </div>
-            <div class="container--dashed" id="guided-button-start-existing-curate">
-              <div
-                style="
-                  max-width: 300px;
-                  display: flex;
-                  flex-direction: column;
-                  height: 100%;
-                  justify-content: space-between;
-                  margin-top: 0;
-                  margin-bottom: 1rem;
-                "
-              >
-                <h2 class="guided--text-sub-step" style="margin-right: 1.5rem">
+            <div class="button-prompt-container" id="guided-button-start-existing-curate">
+              <div class="wide-card-text-container">
+                <h2 class="wide-card-title-text" style="margin-right: 1.5rem">
                   Resume Existing Dataset
                 </h2>
-                <p class="guided-home-button-details">
+                <p class="wide-card-subtitle-text">
                   I want to resume working on a Pennsieve or locally saved dataset
                 </p>
               </div>
-              <div id="existing-dataset-lottie" style="height: 138px; width: 182px"></div>
+              <div id="existing-dataset-lottie" class="wide-card-lottie-container"></div>
             </div>
-            <div
-              class="container--dashed"
-              id="guided-button-start-modify-compnent"
-              style="
-                width: 600px;
-                height: 160px !important;
-                margin: 5px;
-                display: flex;
-                border-radius: 30px;
-                height: 16.5rem;
-                flex-direction: row;
-                justify-content: space-between;
-              "
-            >
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  height: 100%;
-                  max-width: 300px;
-                  justify-content: space-between;
-                "
-              >
-                <h2 class="guided--text-sub-step">Modify Dataset Component</h2>
-                <p class="guided-home-button-details">
+            <div class="button-prompt-container" id="guided-button-start-modify-compnent">
+              <div class="wide-card-text-container">
+                <h2 class="wide-card-title-text">Modify Dataset Component</h2>
+                <p class="wide-card-subtitle-text">
                   I want to edit specific aspects of my dataset (create metadata files, add banner
                   image, etc)
                 </p>
               </div>
-              <div id="edit-dataset-component-lottie" style="height: 138px; width: 182px"></div>
+              <div id="edit-dataset-component-lottie" class="wide-card-lottie-container"></div>
             </div>
           </div>
         </div>

@@ -1,1 +1,231 @@
 /* This is a CSS file for the styling of fonts used throughout SODA */
+
+.wide-card-title-text {
+  display: block;
+  font-size: 17px;
+  color: rgba(0, 0, 0, 0.87);
+  text-align: center;
+  font-weight: 600;
+  margin-top: 10px !important;
+  margin-bottom: 12px;
+  /* margin-right: 3.5rem; */
+}
+
+.wide-card-subtitle-text {
+  margin-bottom: 6rem !important;
+  margin-left: 2rem;
+  font-size: 14px;
+  color: #787272 !important;
+}
+
+.question-title {
+  text-align: center;
+  color: var(--color);
+  font-size: 17px;
+  margin: 20px;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+}
+
+.selectAll-text {
+  display: flex;
+  justify-content: space-between;
+  margin: 0;
+  margin: 10px;
+  margin-left: 38px;
+}
+
+.caption {
+  max-height: 250px;
+  overflow-y: overlay;
+}
+
+.about-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--color-bg-plum) !important;
+  margin-bottom: 0;
+}
+
+.tip-content {
+  text-align: justify;
+  color: #898989 !important;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.help-text {
+  font-size: 16px;
+  max-width: 800px;
+  text-align: justify;
+}
+
+.help-text.small {
+  font-size: 13px;
+  max-width: 650px;
+}
+
+.about-text {
+  color: dimgray !important;
+  text-align: justify;
+  font-size: 1rem !important;
+  font-weight: 500 !important;
+  margin-top: 10px;
+}
+
+.info-dropdown-text {
+  margin: 0px;
+  font-weight: 500;
+  font-size: 14px;
+  color: #000;
+}
+
+.info-container.help-text {
+  font-size: 14px;
+  color: hsl(0, 0%, 22%);
+}
+
+.text-input-instructions {
+  font-size: 13px;
+  width: 100%;
+  padding-top: 4px;
+  padding-bottom: 5px;
+  color: dimgray !important;
+}
+
+.guided--text-sub-step {
+  display: block;
+  font-size: 18px;
+  color: rgba(0, 0, 0, 0.87);
+  text-align: center;
+  font-weight: 600;
+  margin-top: 10px !important;
+  margin-bottom: 12px;
+}
+
+.tile-button-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.dataset-card-title-text {
+  margin: 0px;
+  color: black;
+  font-weight: 600;
+  font-size: 14px !important;
+}
+
+.dataset-card-subtitle-text {
+  margin: 0px;
+  color: black;
+  font-weight: 400;
+  font-size: 14px !important;
+}
+
+.dataset-card-date-text {
+  margin: 0px;
+  color: black;
+  font-weight: 600;
+  font-size: 14px !important;
+  margin-left: 0.5rem !important;
+}
+
+.modal-content textarea {
+  font-size: 11px !important;
+}
+
+.div-display-details textarea {
+  font-family: Poppins;
+  max-height: 60px;
+  overflow-y: scroll;
+  resize: vertical;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.div-display-details p {
+  font-family: Poppins;
+  margin-top: 25px;
+  margin-bottom: 5px;
+  font-size: 13px;
+}
+
+.form-text {
+  display: block;
+  margin-top: 0.25rem;
+}
+
+/* TODO: remove the keyword guided on the classes below */
+
+h1.guided--text-sub-step {
+  font-size: 25px;
+  margin-bottom: 15px;
+}
+
+.guided--text-info {
+  display: block;
+  font-size: 15px;
+  color: var(--color-bg-plum) !important;
+  text-align: center;
+  font-weight: 700;
+  margin-top: 9px !important;
+  margin-bottom: 9px;
+}
+
+.guided--text-input-instructions {
+  font-size: 13px;
+  width: 100%;
+  padding-top: 4px;
+  padding-bottom: 5px;
+  color: dimgray !important;
+}
+
+.guided--text-instructional-content {
+  margin-bottom: 0.5rem;
+}
+
+.guided--text-area {
+  height: 5em;
+  resize: none;
+}
+
+.guided--text-area-tall {
+  height: 15em;
+}
+
+.guided--prompt-text {
+  font-size: 17px;
+  color: var(--color-bg-plum);
+  text-align: center;
+  font-weight: 700;
+  margin-bottom: 7px;
+}
+
+.guided--text-dataset-card {
+  margin: 0px;
+  color: black;
+  font-weight: 600;
+  font-size: 14px !important;
+}
+
+.guided--text-dataset-card-sub {
+  margin: 0px;
+  color: #999;
+  font-weight: 600;
+  font-size: 12px !important;
+}
+
+.guided--help-text {
+  font-size: 16px;
+  max-width: 800px;
+  text-align: justify;
+}
+
+.guided--help-text.small {
+  font-size: 13px;
+  max-width: 650px;
+}

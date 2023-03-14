@@ -179,6 +179,7 @@ let editDatasetLottie = lottie.loadAnimation({
 var sectionObserver = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
     var attributeValue = $(mutation.target).prop(mutation.attributeName);
+    console.log(mutation.target);
 
     if (attributeValue.includes("is-shown") == true) {
       //add lotties
@@ -201,6 +202,7 @@ sectionObserver.observe(guidedModeSection, {
   attributes: true,
   attributeFilter: ["class"],
 });
+
 document.getElementById("guided_mode_view").click();
 
 let launchAnnouncement = false;

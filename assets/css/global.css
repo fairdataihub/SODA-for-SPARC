@@ -89,83 +89,6 @@ textarea {
   font-size: 15px;
 }
 
-/* Global classes for text styling */
-
-.question-title {
-  text-align: center;
-  color: var(--color);
-  font-size: 17px;
-  margin: 20px;
-  font-family: "Poppins", sans-serif;
-  font-weight: 500;
-}
-
-.selectAll-text {
-  display: flex;
-  justify-content: space-between;
-  margin: 0;
-  margin: 10px;
-  margin-left: 38px;
-}
-
-.caption {
-  max-height: 250px;
-  overflow-y: overlay;
-}
-
-.about-title {
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--color-bg-plum) !important;
-  margin-bottom: 0;
-}
-
-.tip-content {
-  text-align: justify;
-  color: #898989 !important;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.help-text {
-  font-size: 16px;
-  max-width: 800px;
-  text-align: justify;
-}
-
-.help-text.small {
-  font-size: 13px;
-  max-width: 650px;
-}
-
-.about-text {
-  color: dimgray !important;
-  text-align: justify;
-  font-size: 1rem !important;
-  font-weight: 500 !important;
-  margin-top: 10px;
-}
-
-.info-dropdown-text {
-  margin: 0px;
-  font-weight: 500;
-  font-size: 14px;
-  color: #000;
-}
-
-.info-container.help-text {
-  font-size: 14px;
-  color: hsl(0, 0%, 22%);
-}
-
-.text-input-instructions {
-  font-size: 13px;
-  width: 100%;
-  padding-top: 4px;
-  padding-bottom: 5px;
-  color: dimgray !important;
-}
-
 /* Dropdown classes */
 
 .info-dropdown {
@@ -248,7 +171,6 @@ textarea {
   font-family: Poppins, sans-serif;
   pointer-events: none;
   text-align: center;
-  margin-top: 1em;
 }
 
 .button-container {
@@ -259,15 +181,6 @@ textarea {
 .tile-button-icon {
   height: 50px;
   width: 50px;
-}
-
-.tile-button-text {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-  height: 100%;
 }
 
 .dataset-card {
@@ -319,34 +232,12 @@ textarea {
   justify-content: center;
 }
 
-.dataset-card-title-text {
-  margin: 0px;
-  color: black;
-  font-weight: 600;
-  font-size: 14px !important;
-}
-
-.dataset-card-subtitle-text {
-  margin: 0px;
-  color: black;
-  font-weight: 400;
-  font-size: 14px !important;
-}
-
 .dataset-card-clock-icon {
   margin: 0px;
   color: #999;
   font-weight: 600;
   font-size: 12px !important;
   width: auto;
-}
-
-.dataset-card-date-text {
-  margin: 0px;
-  color: black;
-  font-weight: 600;
-  font-size: 14px !important;
-  margin-left: 0.5rem !important;
 }
 
 .dataset-card-button-confirm {

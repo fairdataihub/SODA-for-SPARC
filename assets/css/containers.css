@@ -2,6 +2,41 @@
 
 /* Containers */
 
+.wide-card-text-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  max-width: 300px;
+  height: 100%;
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+
+.wide-card-lottie-container {
+  height: 138px;
+  width: 182px;
+}
+
+.button-prompt-container {
+  width: 600px;
+  height: 160px !important;
+  margin: 5px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 10px;
+  box-shadow: 0px 0px 10px #d5d5d5;
+  border-radius: 30px;
+  height: 16.5rem;
+}
+
+.button-prompt-container:hover {
+  box-shadow: 0px 0px 10px 0px var(--color-light-green);
+}
+
 .container-end {
   max-height: 90px;
   padding: 15px;
@@ -120,4 +155,37 @@
   left: 0;
   width: 80%;
   height: 80%;
+}
+
+
+/* TODO: remove the keyword guided on the classes below */
+
+.guided--progress-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.guided--datasets-container {
+  margin-top: 5px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  align-items: flex-start;
+  width: 100%;
+  padding: 0px 15px;
+}
+.guided--dataset-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  border-top: 1px solid #e6e8eb;
+  border-bottom: 1px solid #e6e8eb;
+  padding-left: 7px;
+  padding-right: 7px;
 }
