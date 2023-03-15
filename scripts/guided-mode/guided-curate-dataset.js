@@ -261,6 +261,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         guidedSkipPage("guided-create-changes-metadata-tab");
       }
       if (startingFromExistingLocal) {
+        // This is not implemented yet
         sodaJSONObj["starting-point"]["type"] = "local";
       }
       if (resumingPennsieveDataset) {
@@ -2319,6 +2320,40 @@ const generateProgressCardElement = (progressFileJSONObj) => {
     progressFileJSONObj["previously-uploaded-data"] &&
     Object.keys(progressFileJSONObj["previously-uploaded-data"]).length > 0;
 
+  const datasetStartingPoint = progressFileJSONObj?.["starting-point"]?.["type"];
+
+  // True if the progress file has already been uploaded to Pennsieve
+  const alreadyUploadedToPennsieve = !!progressFileJSONObj["previous-guided-upload-dataset-name"];
+
+  const generateProgressResumptionButton = (
+    datasetStartingPoint,
+    boolAlreadyUploadedToPennsieve
+  ) => {
+    let buttonText = "";
+    let buttonClass = "";
+    if (boolAlreadyUploadedToPennsieve) {
+      buttonText = "Share with curation team";
+      buttonClass = "guided--progress-button-share";
+    } else {
+      if (datasetStartingPoint === "new") {
+        buttonText = "Resume curation";
+        buttonClass = "guided--progress-button-resume-curation";
+      }
+      if (datasetStartingPoint === "bf" || datasetStartingPoint === "pennsieve") {
+        buttonText = "Continue updating Pennsieve dataset";
+        buttonClass = "guided--progress-button-resume-pennsieve";
+      }
+    }
+    return `
+            <button
+              class="ui positive button ${buttonClass}"
+              onClick="guidedResumeProgress($(this))"
+            >
+              ${buttonText}
+            </button>
+          `;
+  };
+
   return `
     <div class="dataset-card">
       ${progressFileImage /* banner image */}     
@@ -2370,25 +2405,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
         </div>
       </div>
       <div class="dataset-card-button-container">
-        ${
-          progressFileJSONObj["previous-guided-upload-dataset-name"]
-            ? `
-                <button
-                  class="ui positive button dataset-card-button-confirm"
-                  onClick="guidedResumeProgress($(this))"
-                >
-                  Edit dataset
-                </button>
-              `
-            : `
-                <button
-                  class="ui positive button dataset-card-button-confirm"
-                  onClick="guidedResumeProgress($(this))"
-                >
-                  ${savedUploadDataProgress ? "Resume upload" : "Continue curating"}
-                </button>
-              `
-        }
+        ${generateProgressResumptionButton(datasetStartingPoint, alreadyUploadedToPennsieve)}
         <h2 class="dataset-card-button-delete" onclick="deleteProgressCard(this)">
           <i
             class="fas fa-trash mr-sm-1"
@@ -2417,42 +2434,59 @@ const renderProgressCards = (progressFileJSONdata) => {
       return !progressFileJSONobj["previous-guided-upload-dataset-name"];
     }
   );
-  //Add the progress cards that have already been uploaded to Pennsieve
-  //to their container (datasets that have the sodaJSONObj["previous-guided-upload-dataset-name"] property)
-  document.getElementById("guided-div-update-uploaded-cards").innerHTML =
-    progressDataAlreadyUploadedToPennsieve.length > 0
-      ? progressDataAlreadyUploadedToPennsieve
-          .map((progressFile) => generateProgressCardElement(progressFile))
-          .join("\n")
-      : `
-          <h2 class="guided--text-sub-step">
-            No local datasets have been uploaded to Pennsieve yet.
-          </h2>
-          <p class="guided--text-input-instructions m-0 text-center">
-            <b>Click "Datasets in progress" to view local datasets in progress.</b>
-          </p>
-        `;
 
-  //Add the progress cards that have not yet been uploaded to Pennsieve
-  //to their container (datasets that do not have the sodaJSONObj["previous-guided-upload-dataset-name"] property)
-  document.getElementById("guided-div-resume-progress-cards").innerHTML =
-    progressDataNotYetUploadedToPennsieve.length > 0
-      ? progressDataNotYetUploadedToPennsieve
-          .map((progressFile) => generateProgressCardElement(progressFile))
-          .join("\n")
-      : `
-          <h2 class="guided--text-sub-step">
-            All local datasets have been previously uploaded to Pennsieve.
-          </h2>
-          <p class="guided--text-input-instructions m-0 text-center">
-            <b>Click "Datasets uploaded to Pennsieve" to view local datasets that have already been uploaded to Pennsieve.</b>
-          </p>
-        `;
+  const progressCardsContainer = document.getElementById("guided-section-resume-progress-cards");
 
-  tippy(".progress-card-popover", {
-    allowHTML: true,
-    interactive: true,
-  });
+  if (progressDataNotYetUploadedToPennsieve.length > 0) {
+    // Add the title to the container
+    progressCardsContainer.innerHTML = `
+      <h2 class="guided--text-sub-step">
+        Select the dataset that you would like to continue working with and click "Continue"
+      </h2>
+    `;
+    //Add the progress cards that have already been uploaded to Pennsieve
+    //to their container (datasets that have the sodaJSONObj["previous-guided-upload-dataset-name"] property)
+    document.getElementById("guided-section-resume-progress-cards").innerHTML +=
+      progressDataAlreadyUploadedToPennsieve.length > 0
+        ? progressDataAlreadyUploadedToPennsieve
+            .map((progressFile) => generateProgressCardElement(progressFile))
+            .join("\n")
+        : `
+            <h2 class="guided--text-sub-step">
+              No local datasets have been uploaded to Pennsieve yet.
+            </h2>
+            <p class="guided--text-input-instructions m-0 text-center">
+              <b>Click "Datasets in progress" to view local datasets in progress.</b>
+            </p>
+          `;
+
+    //Add the progress cards that have not yet been uploaded to Pennsieve
+    //to their container (datasets that do not have the sodaJSONObj["previous-guided-upload-dataset-name"] property)
+    document.getElementById("guided-section-resume-progress-cards").innerHTML +=
+      progressDataNotYetUploadedToPennsieve.length > 0
+        ? progressDataNotYetUploadedToPennsieve
+            .map((progressFile) => generateProgressCardElement(progressFile))
+            .join("\n")
+        : `
+            <h2 class="guided--text-sub-step">
+              All local datasets have been previously uploaded to Pennsieve.
+            </h2>
+            <p class="guided--text-input-instructions m-0 text-center">
+              <b>Click "Datasets uploaded to Pennsieve" to view local datasets that have already been uploaded to Pennsieve.</b>
+            </p>
+          `;
+
+    tippy(".progress-card-popover", {
+      allowHTML: true,
+      interactive: true,
+    });
+  } else {
+    progressCardsContainer.innerHTML = `
+      <h2 class="guided--text-sub-step">
+        No Progress files found.
+      </h2>
+    `;
+  }
 };
 
 const renderManifestCards = async () => {
@@ -2774,9 +2808,6 @@ const guidedPrepareHomeScreen = async () => {
   if (!fs.existsSync(guidedProgressFilePath)) {
     fs.mkdirSync(guidedProgressFilePath, { recursive: true });
   }
-
-  //Reset the "Datasets in progress" and "Datasets uploaded to Pennsieve buttons"
-  resetGuidedRadioButtons("guided-div-dataset-cards-radio-buttons");
 
   // const datasetCardsRadioButtonsContainer = document.getElementById(
   //   "guided-div-dataset-cards-radio-buttons"
@@ -3574,6 +3605,18 @@ const openPage = async (targetPageID) => {
         "#guided_loading_pennsieve_dataset-organize"
       );
       importProgressCircle.classList.add("hidden");
+
+      //Check if Guided-Progress folder exists. If not, create it.
+      if (!fs.existsSync(guidedProgressFilePath)) {
+        fs.mkdirSync(guidedProgressFilePath, { recursive: true });
+      }
+
+      const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
+      //render progress resumption cards from progress file array on first page of guided mode
+      if (guidedSavedProgressFiles.length != 0) {
+        const progressFileData = await getAllProgressFileData(guidedSavedProgressFiles);
+        renderProgressCards(progressFileData);
+      }
     }
 
     if (targetPageID === "guided-prepare-helpers-tab") {
@@ -10413,37 +10456,6 @@ $(document).ready(async () => {
     guidedCreateSodaJSONObj();
     attachGuidedMethodsToSodaJSONObj();
     guidedTransitionFromHome();
-    //Hide Fetching Pennsieve content until card is selected
-    document
-      .getElementById("guided-section-select-pennsieve-dataset-to-resume")
-      .classList.add("hidden");
-    document.getElementById("guided-section-start-new-curation").classList.add("hidden");
-
-    // guidedResetProgressVariables();
-
-    //Check if Guided-Progress folder exists. If not, create it.
-    if (!fs.existsSync(guidedProgressFilePath)) {
-      fs.mkdirSync(guidedProgressFilePath, { recursive: true });
-    }
-
-    //Reset the "Datasets in progress" and "Datasets uploaded to Pennsieve buttons"
-    // resetGuidedRadioButtons("guided-div-dataset-cards-radio-buttons");
-
-    const datasetCardsRadioButtonsContainer = document.getElementById(
-      "guided-div-dataset-cards-radio-buttons"
-    );
-
-    const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
-    //render progress resumption cards from progress file array on first page of guided mode
-    if (guidedSavedProgressFiles.length != 0) {
-      datasetCardsRadioButtonsContainer.classList.remove("hidden");
-      const progressFileData = await getAllProgressFileData(guidedSavedProgressFiles);
-      renderProgressCards(progressFileData);
-      document.getElementById("guided-button-view-datasets-in-progress").click();
-    } else {
-      $("#guided-continue-curation-header").text("");
-      datasetCardsRadioButtonsContainer.classList.add("hidden");
-    }
 
     guidedUnSkipPage("guided-intro-page-tab");
     await openPage("guided-intro-page-tab");

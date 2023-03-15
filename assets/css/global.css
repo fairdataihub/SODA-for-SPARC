@@ -452,7 +452,24 @@ textarea {
 
 .dataset-card-button-confirm {
   background-color: var(--color-light-green) !important;
-  width: 175px !important;
+  margin: 4px;
+  margin-bottom: 15px;
+}
+
+.guided--progress-button-share {
+  background-color: #1e90ff !important;
+  margin: 4px;
+  margin-bottom: 15px;
+}
+
+.guided--progress-button-resume-curation {
+  background-color: var(--color-light-green) !important;
+  margin: 4px;
+  margin-bottom: 15px;
+}
+
+.guided--progress-button-resume-pennsieve {
+  background-color: #ff5722 !important;
   margin: 4px;
   margin-bottom: 15px;
 }
