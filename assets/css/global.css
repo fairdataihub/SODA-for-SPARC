@@ -112,75 +112,6 @@ textarea {
 
 /* Card/tile standards */
 
-.content-button {
-  width: 150px;
-  height: 150px;
-  border: none;
-  background-color: #fff;
-  font-size: 13px;
-  font-weight: 600;
-  border-radius: 5px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  padding-right: 20px;
-  padding-left: 20px;
-  margin-right: 10px;
-  margin-left: 10px;
-  color: var(--color-teal);
-  opacity: 1;
-  position: relative;
-  box-shadow: 0px 0px 10px #d5d5d5;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  transition: all 0.25s linear;
-  -webkit-transition: all 0.25s linear;
-}
-
-.content-button p {
-  color: #222c3c;
-  font-size: 14px;
-  margin-top: 25px;
-  font-family: "Raleway", sans-serif;
-  pointer-events: none;
-}
-
-.content-button:hover {
-  outline: none;
-  box-shadow: 0px 0px 10px 0px var(--color-light-green);
-  transition: all 0.25s linear;
-  -webkit-transition: all 0.25s linear;
-}
-
-.content-button:active {
-  border: 1px solid var(--color-light-green);
-  box-shadow: 0px 0px 3px 0px var(--color-light-green);
-  transition: all 0.25s linear;
-  -webkit-transition: all 0.25s linear;
-}
-
-.content-button svg {
-  margin: 0 auto;
-  pointer-events: none;
-}
-
-.content-button h2,
-.tile-button h2 {
-  color: #4d4a4a;
-  font-weight: 400;
-  font-size: 14px;
-  bottom: -1em;
-  font-family: Poppins, sans-serif;
-  pointer-events: none;
-  text-align: center;
-}
-
-.button-container {
-  display: flex;
-  justify-content: center;
-}
-
 .tile-button-icon {
   height: 50px;
   width: 50px;
@@ -205,12 +136,6 @@ textarea {
   flex-direction: column;
   align-items: center;
   margin: 5px 10px;
-}
-
-.container-dataset-card-center {
-  display: flex;
-  flex-direction: colum;
-  align-items: center;
 }
 
 .dataset-card-body {
@@ -243,73 +168,6 @@ textarea {
   width: auto;
 }
 
-.dataset-card-button-confirm {
-  background-color: var(--color-light-green) !important;
-  width: 175px !important;
-  margin: 4px;
-  margin-bottom: 15px;
-}
-
-.dataset-card-button-delete {
-  width: auto;
-  text-decoration: underline;
-  cursor: pointer;
-  margin: 0px;
-  color: black;
-  font-weight: 600;
-  font-size: 14px !important;
-}
-
-.disabled-content-button {
-  width: 150px;
-  height: 150px;
-  border: none;
-  background-color: #fff;
-  font-size: 13px;
-  font-weight: 600;
-  border-radius: 5px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  padding-right: 20px;
-  padding-left: 20px;
-  margin-right: 10px;
-  margin-left: 10px;
-  color: var(--color-teal);
-  opacity: 1;
-  position: relative;
-  box-shadow: 0px 0px 10px #d5d5d5;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  transition: all 0.25s linear;
-  -webkit-transition: all 0.25s linear;
-}
-
-.disabled-content-button h2 {
-  color: #4d4a4a;
-  font-weight: 400;
-  font-size: 14px;
-  bottom: -1em;
-  font-family: "Raleway", sans-serif;
-  pointer-events: none;
-  text-align: center;
-  margin-top: 1em;
-}
-
-.disabled-generate-button {
-  background: #f6f6f6;
-  margin: 5px;
-  width: 120px;
-  height: 40px;
-  font-size: 15px;
-  border: none !important;
-  border-radius: 8px;
-  font-weight: 600;
-  position: relative;
-  overflow: hidden;
-}
-
 .disabled-animated-div {
   padding-top: 10px;
   background: #f6f6f6;
@@ -318,38 +176,6 @@ textarea {
   height: inherit;
   border-radius: 8px;
   overflow: hidden;
-}
-
-/* Footer buttons */
-
-.save-and-exit-button {
-  width: 160px !important;
-  font-weight: 600;
-  color: var(--color-light-green) !important;
-  box-shadow: 0 0 0 1px var(--color-light-green) inset !important;
-  cursor: pointer !important;
-  background: #fff;
-}
-
-.start-over-button {
-  background-color: #fff;
-  color: #b80d49;
-  border: 1px solid #b80d49;
-  font-weight: 600;
-  padding: 5px;
-
-  margin-left: 10px;
-  right: 10px;
-  margin-bottom: 10px;
-  width: 135px;
-}
-
-.remove-margin-right {
-  margin-right: 0px !important;
-}
-
-.remove-left-border {
-  border-left: none !important;
 }
 
 .soda-green {

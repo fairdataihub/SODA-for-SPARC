@@ -108,17 +108,36 @@ console.log(appVersion);
 log.info("Current SODA version:", appVersion);
 console.log("Current SODA version:", appVersion);
 
-// Here is where the splash screen lotties are created and loaded.
+// Here is where the lotties are created and loaded for the main tabs.
 // A mutation observer watches for when the overview tab element has
 // a class change to 'is-shown' to know when to load and unload the lotties
 // let over_view_section = document.getElementById("getting_started-section");
+
+// LOTTIES FOR DOCUMENTATION AND CONTACT US PAGE
 let guidedModeSection = document.getElementById("guided_mode-section");
-document.getElementById("new-dataset-lottie-container").innerHTML = "";
-document.getElementById("existing-dataset-lottie").innerHTML = "";
-document.getElementById("edit-dataset-component-lottie").innerHTML = "";
+let docu_lottie_section = document.getElementById("documentation-section");
+let contact_section = document.getElementById("contact-us-section");
+let doc_lottie = document.getElementById("documentation-lottie");
+let contact_lottie_container = document.getElementById("contact-us-lottie");
+let madeWithLoveContainer = document.getElementById("made-with-love-lottie");
+
+// LOTTIES FOR CURATE AND SHARE PAGE
+let newDatasetLottieContainer = document.getElementById("new-dataset-lottie-container");
+let existingDatasetLottieContainer = document.getElementById("existing-dataset-lottie");
+let modifyDatasetLottieContainer = document.getElementById("edit-dataset-component-lottie")
+
+//LOTTIES FOR OVERVIEW PAGE
+// let column1 = document.getElementById("lottie1");
+// let column2 = document.getElementById("lottie2");
+// let column3 = document.getElementById("lottie3");
+// let heart_lottie = document.getElementById("heart_lottie");
+
+newDatasetLottieContainer.innerHTML = "";
+existingDatasetLottieContainer.innerHTML = "";
+modifyDatasetLottieContainer.innerHTML = "";
 
 var newDatasetLottie = lottie.loadAnimation({
-  container: document.getElementById("new-dataset-lottie-container"),
+  container: newDatasetLottieContainer,
   animationData: newDataset,
   renderer: "svg",
   loop: true,
@@ -126,7 +145,7 @@ var newDatasetLottie = lottie.loadAnimation({
 });
 
 var existingDatasetLottie = lottie.loadAnimation({
-  container: document.getElementById("existing-dataset-lottie"),
+  container: existingDatasetLottieContainer,
   animationData: existingDataset,
   renderer: "svg",
   loop: true,
@@ -134,16 +153,36 @@ var existingDatasetLottie = lottie.loadAnimation({
 });
 
 let editDatasetLottie = lottie.loadAnimation({
-  container: document.getElementById("edit-dataset-component-lottie"),
+  container: modifyDatasetLottieContainer,
   animationData: modifyDataset,
   renderer: "svg",
   loop: true,
   autoplay: true,
 });
-// let column1 = document.getElementById("lottie1");
-// let column2 = document.getElementById("lottie2");
-// let column3 = document.getElementById("lottie3");
-// let heart_lottie = document.getElementById("heart_lottie");
+
+var contact_lottie_animation = lottie.loadAnimation({
+  container: contact_lottie_container,
+  animationData: contact_lottie /*(json js variable, (view src/assets/lotties)*/,
+  renderer: "svg",
+  loop: true /*controls looping*/,
+  autoplay: true,
+});
+
+var contactHeartLottie = lottie.loadAnimation({
+  container: madeWithLoveContainer,
+  animationData: heartLottie,
+  renderer: "svg",
+  loop: true,
+  autoplay: true,
+})
+
+var documentation_lottie = lottie.loadAnimation({
+  container: doc_lottie,
+  animationData: docu_lottie /*(json js variable, (view src/assets/lotties)*/,
+  renderer: "svg",
+  loop: true /*controls looping*/,
+  autoplay: true,
+});
 
 // var column1_lottie = lottie.loadAnimation({
 //   container: column1,
@@ -198,7 +237,51 @@ var sectionObserver = new MutationObserver(function (mutations) {
   });
 });
 
+
+
+// contact_lottie_animation.pause();
+// documentation_lottie.pause();
+// contactHeartLottieLottie.pause();
+
+var documentation_lottie_observer = new MutationObserver(function (mutations) {
+  mutations.forEach(function (mutation) {
+    var attributeValue = $(mutation.target).prop(mutation.attributeName);
+    if (attributeValue.includes("is-shown") == true) {
+      //play lottie
+      documentation_lottie.play();
+    } else {
+      // stop lottie to preserve memory
+      documentation_lottie.stop();
+    }
+  });
+});
+
+var contact_us_lottie_observer = new MutationObserver(function (mutations) {
+  mutations.forEach(function (mutation) {
+    var attributeValue = $(mutation.target).prop(mutation.attributeName);
+    if (attributeValue.includes("is-shown") == true) {
+      //play lottie
+      contact_lottie_animation.play();
+      contactHeartLottie.play();
+    } else {
+      //stop lottie to preserve memory
+      contact_lottie_animation.stop();
+      contactHeartLottie.stop();
+    }
+  });
+});
+
 sectionObserver.observe(guidedModeSection, {
+  attributes: true,
+  attributeFilter: ["class"],
+});
+
+documentation_lottie_observer.observe(docu_lottie_section, {
+  attributes: true,
+  attributeFilter: ["class"],
+});
+
+contact_us_lottie_observer.observe(contact_section, {
   attributes: true,
   attributeFilter: ["class"],
 });
@@ -9546,64 +9629,9 @@ document
   .getElementById("home-button-free-form-mode-link")
   .addEventListener("click", directToFreeFormMode);
 
-let docu_lottie_section = document.getElementById("documentation-section");
-let doc_lottie = document.getElementById("documentation-lottie");
 
-let contact_section = document.getElementById("contact-us-section");
-let contact_lottie_container = document.getElementById("contact-us-lottie");
 
-var contact_lottie_animation = lottie.loadAnimation({
-  container: contact_lottie_container,
-  animationData: contact_lottie /*(json js variable, (view src/assets/lotties)*/,
-  renderer: "svg",
-  loop: true /*controls looping*/,
-  autoplay: true,
-});
-contact_lottie_animation.pause();
-var documentation_lottie = lottie.loadAnimation({
-  container: doc_lottie,
-  animationData: docu_lottie /*(json js variable, (view src/assets/lotties)*/,
-  renderer: "svg",
-  loop: true /*controls looping*/,
-  autoplay: true,
-});
-documentation_lottie.pause();
 
-var documentation_lottie_observer = new MutationObserver(function (mutations) {
-  mutations.forEach(function (mutation) {
-    var attributeValue = $(mutation.target).prop(mutation.attributeName);
-    if (attributeValue.includes("is-shown") == true) {
-      //play lottie
-      documentation_lottie.play();
-    } else {
-      // lottie.stop(documentation_lottie);
-      documentation_lottie.stop();
-    }
-  });
-});
-
-var contact_us_lottie_observer = new MutationObserver(function (mutations) {
-  mutations.forEach(function (mutation) {
-    var attributeValue = $(mutation.target).prop(mutation.attributeName);
-    if (attributeValue.includes("is-shown") == true) {
-      //play lottie
-      contact_lottie_animation.play();
-    } else {
-      contact_lottie_animation.stop();
-      // lottie.stop(contact_lottie_animation);
-    }
-  });
-});
-
-documentation_lottie_observer.observe(docu_lottie_section, {
-  attributes: true,
-  attributeFilter: ["class"],
-});
-
-contact_us_lottie_observer.observe(contact_section, {
-  attributes: true,
-  attributeFilter: ["class"],
-});
 
 tippy("#datasetPathDisplay", {
   placement: "top",
