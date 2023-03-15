@@ -7000,8 +7000,6 @@ button.bg-dark:focus {
   content: "";
 }
 
-
-
 @media (min-width: 576px) {
   .d-sm-none {
     display: none !important;
