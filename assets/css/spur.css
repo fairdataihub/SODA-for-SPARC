@@ -8185,8 +8185,6 @@ button.bg-dark:focus {
   white-space: normal;
 }
 
-
-
 .stretched-link::after {
   position: absolute;
   top: 0;
@@ -9755,7 +9753,6 @@ a.text-dark:focus {
 .text-reset {
   color: inherit !important;
 }
-
 
 @media print {
   *,

@@ -124,7 +124,7 @@ let madeWithLoveContainer = document.getElementById("made-with-love-lottie");
 // LOTTIES FOR CURATE AND SHARE PAGE
 let newDatasetLottieContainer = document.getElementById("new-dataset-lottie-container");
 let existingDatasetLottieContainer = document.getElementById("existing-dataset-lottie");
-let modifyDatasetLottieContainer = document.getElementById("edit-dataset-component-lottie")
+let modifyDatasetLottieContainer = document.getElementById("edit-dataset-component-lottie");
 
 //LOTTIES FOR OVERVIEW PAGE
 // let column1 = document.getElementById("lottie1");
@@ -174,7 +174,7 @@ var contactHeartLottie = lottie.loadAnimation({
   renderer: "svg",
   loop: true,
   autoplay: true,
-})
+});
 
 var documentation_lottie = lottie.loadAnimation({
   container: doc_lottie,
@@ -236,8 +236,6 @@ var sectionObserver = new MutationObserver(function (mutations) {
     }
   });
 });
-
-
 
 // contact_lottie_animation.pause();
 // documentation_lottie.pause();
@@ -9628,10 +9626,6 @@ document
 document
   .getElementById("home-button-free-form-mode-link")
   .addEventListener("click", directToFreeFormMode);
-
-
-
-
 
 tippy("#datasetPathDisplay", {
   placement: "top",
