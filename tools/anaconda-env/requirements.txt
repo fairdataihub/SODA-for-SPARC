@@ -35,7 +35,7 @@ opencv-python==4.5.3.56
 openpyxl==3.0.9
 pandas==1.4.2
 pefile==2022.5.30
-pennsieve2==0.1.1
+pennsieve2==0.1.2
 protobuf==4.21.12
 psutil==5.9.4
 pyasn1==0.4.8
