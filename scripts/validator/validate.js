@@ -4,6 +4,8 @@ const { handleAxiosValidationErrors } = require("./scripts/validator/axios-valid
 
 const { translatePipelineError } = require("./scripts/validator/parse-pipeline-errors.js");
 
+const { v4: uuid } = require("uuid");
+
 /*
 *******************************************************************************************************************
 // Logic for talking to the validator
@@ -27,11 +29,105 @@ const validateLocalDataset = async () => {
     },
   });
 
+  const clientUUID = uuid();
+
+  // get the dataset structure from the dataset location
+  let importLocalDatasetResponse;
+  try {
+    importLocalDatasetResponse = await client.post(
+      `/organize_datasets/datasets/import`,
+      {
+        sodajsonobject: sodaJSONObj,
+        root_folder_path: root_folder_path,
+        irregular_folders: irregularFolderArray,
+        replaced: replaced,
+      },
+      { timeout: 0 }
+    );
+  } catch (error) {
+    clientError(error);
+    await Swal.fire({
+      title: "Could not validate your dataset.",
+      message: `SODA is unable to import the selected dataset.`,
+      allowEscapeKey: true,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      showConfirmButton: true,
+      icon: "error",
+    });
+    return;
+  }
+
+  let localSodaJsonObject = importLocalDatasetResponse.data;
+
+  let manifestJSONResponse;
+  try {
+    manifestJSONResponse = await client.post(
+      "/skeleton_dataset/manifest_json",
+      {
+        sodajsonobject: localSodaJsonObject,
+      },
+      {
+        timeout: 0,
+      }
+    );
+  } catch (error) {
+    clientError(error);
+    await Swal.fire({
+      title: "Could not validate your dataset.",
+      message: `SODA is unable to import your manifest files.`,
+      allowEscapeKey: true,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      showConfirmButton: true,
+      icon: "error",
+    });
+    return;
+  }
+
+  let manifestFiles = manifestJSONResponse.data;
+
+  let metadataJSONResponse;
+  try {
+    metadataJSONResponse = await client.post(
+      "/skeleton_dataset/metadata_json",
+      {
+        sodajsonobject: localSodaJsonObject,
+      },
+      {
+        timeout: 0,
+      }
+    );
+  } catch (error) {
+    clientError(error);
+    await Swal.fire({
+      title: "Could not validate your dataset.",
+      message: `SODA is unable to import your metadata files.`,
+      allowEscapeKey: true,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      showConfirmButton: true,
+      icon: "error",
+    });
+    return;
+  }
+
+  let metadataFiles = metadataJSONResponse.data;
+
   let validationResponse;
   try {
     // send the dataset path to the validator endpoint
-    validationResponse = await client.post(`datasets/name/validation_results`, {
-      path: datasetPath,
+    validationResponse = await client.post(`http://localhost:9009/validator/validate`, {
+      clientUUID: clientUUID,
+      dataset_structure: datasetStructure,
+      metadata_files: metadataFiles,
+      manifest_files: manifestFiles,
     });
 
     // track that a local validation succeeded
