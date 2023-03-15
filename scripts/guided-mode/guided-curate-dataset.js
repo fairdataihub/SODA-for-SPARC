@@ -233,37 +233,30 @@ const savePageChanges = async (pageBeingLeftID) => {
     };
 
     if (pageBeingLeftID === "guided-intro-page-tab") {
-      const startingNewCuration = document
-        .getElementById("guided-button-start-new-curation")
+      const resumingExistingProgress = document
+        .getElementById("guided-button-resume-progress-file")
         .classList.contains("selected");
-      const startingFromExistingLocal = false; // Set as false for now until we implement this feature
+
       const resumingPennsieveDataset = document
         .getElementById("guided-button-resume-pennsieve-dataset")
         .classList.contains("selected");
 
-      if (!startingNewCuration && !startingFromExistingLocal && !resumingPennsieveDataset) {
+      if (!resumingExistingProgress && !resumingPennsieveDataset) {
         errorArray.push({
           type: "notyf",
           message: "Please select a dataset start location",
         });
         throw errorArray;
       }
-      if (startingNewCuration) {
-        sodaJSONObj["starting-point"]["type"] = "new";
-        sodaJSONObj["generate-dataset"]["generate-option"] = "new";
 
-        guidedUnSkipPage("guided-subjects-folder-tab");
-        guidedUnSkipPage("guided-primary-data-organization-tab");
-        guidedUnSkipPage("guided-source-data-organization-tab");
-        guidedUnSkipPage("guided-derivative-data-organization-tab");
+      if (resumingExistingProgress) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please click the button of the dataset you would like to resume above",
+        });
+        throw errorArray;
+      }
 
-        // Skip the CHANGES metadata page as this is a new dataset
-        guidedSkipPage("guided-create-changes-metadata-tab");
-      }
-      if (startingFromExistingLocal) {
-        // This is not implemented yet
-        sodaJSONObj["starting-point"]["type"] = "local";
-      }
       if (resumingPennsieveDataset) {
         if (
           !document
@@ -2325,6 +2318,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
   // True if the progress file has already been uploaded to Pennsieve
   const alreadyUploadedToPennsieve = !!progressFileJSONObj["previous-guided-upload-dataset-name"];
 
+  // Function to generate the button used to resume progress
   const generateProgressResumptionButton = (
     datasetStartingPoint,
     boolAlreadyUploadedToPennsieve
@@ -2332,7 +2326,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
     let buttonText = "";
     let buttonClass = "";
     if (boolAlreadyUploadedToPennsieve) {
-      buttonText = "Share with curation team";
+      buttonText = "Share with the curation team";
       buttonClass = "guided--progress-button-share";
     } else {
       if (datasetStartingPoint === "new") {
@@ -2404,7 +2398,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
           }
         </div>
       </div>
-      <div class="dataset-card-button-container">
+      <div class="dataset-card-button-container align-right">
         ${generateProgressResumptionButton(datasetStartingPoint, alreadyUploadedToPennsieve)}
         <h2 class="dataset-card-button-delete" onclick="deleteProgressCard(this)">
           <i
@@ -3568,6 +3562,14 @@ const openPage = async (targetPageID) => {
       $("#guided-back-button").css("visibility", "hidden");
     } else {
       $("#guided-back-button").css("visibility", "visible");
+    }
+
+    // Hide the Header div on the resume existing dataset page
+    const guidedProgressContainer = document.getElementById("guided-header-div");
+    if (targetPageID === "guided-intro-page-tab") {
+      guidedProgressContainer.classList.add("hidden");
+    } else {
+      guidedProgressContainer.classList.remove("hidden");
     }
 
     // If the user has not saved the dataset name and subtitle, then the next button should say "Continue"
@@ -5883,16 +5885,21 @@ const guidedResumeProgress = async (resumeProgressButton) => {
     .html();
   const datasetResumeJsonObj = await getProgressFileData(datasetNameToResume);
 
+  // Datasets successfully uploaded will have the "previous-guided-upload-dataset-name" key
+  const datasetHasAlreadyBeenSuccessfullyUploaded =
+    datasetResumeJsonObj["previous-guided-upload-dataset-name"];
+
   // If the dataset had been previously successfully uploaded, check to make sure it exists on Pennsieve still.
-  if (datasetResumeJsonObj["previous-guided-upload-dataset-name"]) {
-    const previouslyUploadedName = datasetResumeJsonObj["previous-guided-upload-dataset-name"];
+  if (datasetHasAlreadyBeenSuccessfullyUploaded) {
+    const previouslyUploadedDatasetId =
+      datasetResumeJsonObj["digital-metadata"]["pennsieve-dataset-id"];
     const datasetToResumeExistsOnPennsieve = await checkIfDatasetExistsOnPennsieve(
-      previouslyUploadedName
+      previouslyUploadedDatasetId
     );
     if (!datasetToResumeExistsOnPennsieve) {
       notyf.open({
         type: "error",
-        message: `The dataset ${previouslyUploadedName} was not found on Pennsieve therefore you can no longer modify this dataset via Guided Mode.`,
+        message: `The dataset ${datasetResumeJsonObj["previous-guided-upload-dataset-name"]} was not found on Pennsieve therefore you can no longer modify this dataset via Guided Mode.`,
         duration: 7000,
       });
       resumeProgressButton.removeClass("loading");
@@ -5900,72 +5907,74 @@ const guidedResumeProgress = async (resumeProgressButton) => {
     }
   }
 
-  // If the dataset is being edited on Pensieve, check to make sure the folders and files are still the same.
-  if (datasetResumeJsonObj["starting-point"]?.["type"] === "bf") {
-    if (Object.keys(datasetResumeJsonObj["previously-uploaded-data"]).length > 0) {
-      await Swal.fire({
-        icon: "info",
-        title: "Resuming a Pennsieve dataset upload that previously failed",
-        html: `
+  if (!datasetHasAlreadyBeenSuccessfullyUploaded) {
+    // If the dataset is being edited on Pensieve, check to make sure the folders and files are still the same.
+    if (datasetResumeJsonObj["starting-point"]?.["type"] === "bf") {
+      if (Object.keys(datasetResumeJsonObj["previously-uploaded-data"]).length > 0) {
+        await Swal.fire({
+          icon: "info",
+          title: "Resuming a Pennsieve dataset upload that previously failed",
+          html: `
             Please note that any changes made to your dataset on Pennsieve since your last dataset upload
             was interrupted may be overwritten.
           `,
-        width: 500,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: `I understand`,
-        focusConfirm: true,
-        allowOutsideClick: false,
-      });
-    } else {
-      const nofiication = notyf.open({
-        type: "info",
-        message: `Checking to make sure the dataset structure on Pennsieve is the same as when you started editing this dataset.`,
-        duration: 30000,
-      });
-      let filesFoldersResponse = await client.post(
-        `/organize_datasets/dataset_files_and_folders`,
-        {
-          sodajsonobject: datasetResumeJsonObj,
-        },
-        { timeout: 0 }
-      );
-      let data = filesFoldersResponse.data;
-      const currentPennsieveDatasetStructure = data["soda_object"]["dataset-structure"];
-      notyf.dismiss(nofiication);
+          width: 500,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: `I understand`,
+          focusConfirm: true,
+          allowOutsideClick: false,
+        });
+      } else {
+        const nofiication = notyf.open({
+          type: "info",
+          message: `Checking to make sure the dataset structure on Pennsieve is the same as when you started editing this dataset.`,
+          duration: 30000,
+        });
+        let filesFoldersResponse = await client.post(
+          `/organize_datasets/dataset_files_and_folders`,
+          {
+            sodajsonobject: datasetResumeJsonObj,
+          },
+          { timeout: 0 }
+        );
+        let data = filesFoldersResponse.data;
+        const currentPennsieveDatasetStructure = data["soda_object"]["dataset-structure"];
+        notyf.dismiss(nofiication);
 
-      const intitiallyPulledDatasetStructure =
-        datasetResumeJsonObj["initially-pulled-dataset-structure"];
+        const intitiallyPulledDatasetStructure =
+          datasetResumeJsonObj["initially-pulled-dataset-structure"];
 
-      // check to make sure current and initially pulled dataset structures are the same
-      if (
-        JSON.stringify(currentPennsieveDatasetStructure) !==
-        JSON.stringify(intitiallyPulledDatasetStructure)
-      ) {
-        await Swal.fire({
-          icon: "error",
-          title: "Dataset structure on Pennsieve has changed",
-          html: `
+        // check to make sure current and initially pulled dataset structures are the same
+        if (
+          JSON.stringify(currentPennsieveDatasetStructure) !==
+          JSON.stringify(intitiallyPulledDatasetStructure)
+        ) {
+          await Swal.fire({
+            icon: "error",
+            title: "Dataset structure on Pennsieve has changed",
+            html: `
           The dataset structure on Pennsieve has changed since you started editing this dataset.
           <br />
           <br />
           You will need to start over from the beginning. 
         `,
-          width: 500,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: `Ok`,
-          focusConfirm: true,
-          allowOutsideClick: false,
-        });
-        resumeProgressButton.removeClass("loading");
-        return;
-      } else {
-        notyf.open({
-          type: "success",
-          message: `The dataset structure on Pennsieve is the same as when you started editing this dataset.`,
-          duration: 7000,
-        });
+            width: 500,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            confirmButtonText: `Ok`,
+            focusConfirm: true,
+            allowOutsideClick: false,
+          });
+          resumeProgressButton.removeClass("loading");
+          return;
+        } else {
+          notyf.open({
+            type: "success",
+            message: `The dataset structure on Pennsieve is the same as when you started editing this dataset.`,
+            duration: 7000,
+          });
+        }
       }
     }
   }
@@ -10444,11 +10453,13 @@ $(document).ready(async () => {
     guidedUnSkipPage("guided-primary-data-organization-tab");
     guidedUnSkipPage("guided-source-data-organization-tab");
     guidedUnSkipPage("guided-derivative-data-organization-tab");
-
-    //Skip this page becausae we should not come back to it
-    guidedTransitionFromHome();
-    guidedSkipPage("guided-intro-page-tab");
     guidedUnSkipPage("guided-name-subtitle-tab");
+
+    // Skip the changes metadata tab as new datasets do not have changes metadata
+    guidedSkipPage("guided-create-changes-metadata-tab");
+
+    guidedTransitionFromHome();
+
     await openPage("guided-ask-if-submission-is-sparc-funded-tab");
   });
 

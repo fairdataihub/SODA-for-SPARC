@@ -450,6 +450,10 @@ textarea {
   justify-content: space-around;
 }
 
+.dataset-card-button-container.align-right {
+  align-items: flex-end;
+}
+
 .dataset-card-button-confirm {
   background-color: var(--color-light-green) !important;
   margin: 4px;
