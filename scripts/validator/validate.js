@@ -4,8 +4,6 @@ const { handleAxiosValidationErrors } = require("./scripts/validator/axios-valid
 
 const { translatePipelineError } = require("./scripts/validator/parse-pipeline-errors.js");
 
-const { v4: uuid } = require("uuid");
-
 /*
 *******************************************************************************************************************
 // Logic for talking to the validator
@@ -31,16 +29,33 @@ const validateLocalDataset = async () => {
 
   const clientUUID = uuid();
 
+  let localSodaJsonObject = {
+    "bf-account-selected": {
+      "account-name": {},
+    },
+    "bf-dataset-selected": {
+      "dataset-name": {},
+    },
+    "dataset-structure": {},
+    "metadata-files": {},
+    "manifest-files": {},
+    "generate-dataset": {},
+    "starting-point": {
+      type: "local",
+      "local-path": datasetPath,
+    },
+  };
+
   // get the dataset structure from the dataset location
   let importLocalDatasetResponse;
   try {
     importLocalDatasetResponse = await client.post(
       `/organize_datasets/datasets/import`,
       {
-        sodajsonobject: sodaJSONObj,
-        root_folder_path: root_folder_path,
-        irregular_folders: irregularFolderArray,
-        replaced: replaced,
+        sodajsonobject: localSodaJsonObject,
+        root_folder_path: datasetPath,
+        irregular_folders: [],
+        replaced: [],
       },
       { timeout: 0 }
     );
@@ -60,7 +75,7 @@ const validateLocalDataset = async () => {
     return;
   }
 
-  let localSodaJsonObject = importLocalDatasetResponse.data;
+  localSodaJsonObject = importLocalDatasetResponse.data;
 
   let manifestJSONResponse;
   try {
@@ -120,14 +135,19 @@ const validateLocalDataset = async () => {
 
   let metadataFiles = metadataJSONResponse.data;
 
+  console.log("metadataFiles", metadataFiles);
+  console.log("manifestFiles", manifestFiles);
+  console.log("localSodaJsonObject", localSodaJsonObject);
+  console.log("clientUUID", clientUUID);
+
   let validationResponse;
   try {
     // send the dataset path to the validator endpoint
     validationResponse = await client.post(`http://localhost:9009/validator/validate`, {
       clientUUID: clientUUID,
-      dataset_structure: datasetStructure,
+      dataset_structure: localSodaJsonObject,
       metadata_files: metadataFiles,
-      manifest_files: manifestFiles,
+      manifests: manifestFiles,
     });
 
     // track that a local validation succeeded
@@ -195,6 +215,33 @@ const validateLocalDataset = async () => {
       1
     );
 
+    return;
+  }
+
+  let validationReportData = validationResponse.data;
+
+  // write the full report to the ~/SODA/validation.txt file
+  let fullReport = validationReportData.full_report;
+  let validationReportPath = path.join(os.homedir(), "SODA", "validation.txt");
+  fs.writeFileSync(validationReportPath, fullReport);
+
+  if (validationReportData.status === "Incomplete") {
+    // An incomplete validation report happens when the validator is unable to generate
+    // a path_error_report upon validating the selected dataset.
+    await Swal.fire({
+      title: "Incomplete Validation Report",
+      text: `SODA was unable to generate a sanitized validation report. You may view your raw validation report at ~/SODA/validation.txt. If you repeatedly have this issue please contact the SPARC Curation Team for support at curation@sparc.science.`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      icon: "error",
+      showCancelButton: false,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
     return;
   }
 
