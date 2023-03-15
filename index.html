@@ -28,24 +28,24 @@
     <link rel="stylesheet" href="node_modules/tippy.js/themes/light.css" />
     <link rel="stylesheet" href="node_modules/intro.js/minified/introjs.min.css" />
     <link rel="stylesheet" href="assets/css/animations.css" />
+    <link rel="stylesheet" href="assets/css/variables.css" />
     <link rel="stylesheet" href="assets/css/helperClasses.css" />
+    <link rel="stylesheet" href="assets/css/spur.css" />
     <link rel="stylesheet" href="assets/css/buttons.css" />
-    <!-- <link rel="stylesheet" href="assets/css/"> -->
     <link rel="stylesheet" href="assets/css/fontStyling.css" />
     <link rel="stylesheet" href="assets/css/containers.css" />
+    <link rel="stylesheet" href="assets/css/folder_files.css" />
+    <!-- <link rel="stylesheet" href="assets/css/"> -->
     <link rel="stylesheet" href="assets/css/overview_page.css" />
     <link rel="stylesheet" href="assets/css/doc_contact_pages.css" />
-    <link rel="stylesheet" href="assets/css/variables.css" />
     <link rel="stylesheet" href="assets/css/nativize.css" />
     <link rel="stylesheet" href="assets/css/nav.css" />
     <link rel="stylesheet" href="assets/css/section.css" />
     <link rel="stylesheet" href="assets/css/demo.css" />
     <link rel="stylesheet" href="assets/css/individualtab.css" />
-    <link rel="stylesheet" href="assets/css/folder_files.css" />
     <link rel="stylesheet" href="assets/css/main_tabs.css" />
     <link rel="stylesheet" href="node_modules/cropperjs/dist/cropper.css" />
     <link rel="stylesheet" href="node_modules/notyf/notyf.min.css" />
-    <link rel="stylesheet" href="assets/css/spur.css" />
     <link rel="stylesheet" href="assets/css/main.css" />
     <link rel="stylesheet" href="assets/css/guided.css" />
     <link rel="stylesheet" href="assets/css/global.css" />
@@ -76,9 +76,6 @@
     <script src="./assets/lotties/contact-us-lotties.js" type="text/javascript"></script>
     <script>
       require("./assets/imports"); // Imports html files into app
-      // require("./assets/ex-links"); // Opens url into external chrome tab instead of in the app
-      // require("./assets/nav"); // Side navigation menu control
-      // require("./assets/demo-btns");
       require("./assets/normalize-shortcuts"); // For normalizing shortcuts across OS
     </script>
   </head>
@@ -277,7 +274,7 @@
 
     <nav id="guided-nav" style="display: none" class="guided--nav">
       <img class="nav-center-logo-image" src="assets/img/logo-new-green.png" />
-      <h1 class="guided--text-sub-step mb-0 mt-0">Guided Mode</h1>
+      <h1 class="text-sub-step-title mb-0 mt-0">Guided Mode</h1>
       <p
         class="guided--help-text mb-0 mt-md"
         style="border-bottom: 1px solid var(--color-light-green); margin-bottom: 1rem"
@@ -312,8 +309,7 @@
           $(this).toggleClass("active");
           $(".section").toggleClass("fullShown");
         });
-      });
-      $(document).ready(() => {
+
         $("a").on("click", function () {
           $($(this).parents()[1]).find("a").removeClass("is-selected");
           $(this).addClass("is-selected");

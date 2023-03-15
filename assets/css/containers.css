@@ -13,14 +13,14 @@
 }
 
 .wide-card-lottie-container {
-  height: 138px;
-  width: 182px;
+  height: 122px;
+  width: 160px;
 }
 
 .button-prompt-container {
   width: 600px;
-  height: 160px !important;
-  margin: 5px;
+  height: 137px !important;
+  margin: 13px;
   cursor: pointer;
   display: flex;
   flex-direction: row;

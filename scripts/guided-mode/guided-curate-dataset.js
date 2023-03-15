@@ -2390,7 +2390,7 @@ const renderProgressCards = (progressFileJSONdata) => {
           .map((progressFile) => generateProgressCardElement(progressFile))
           .join("\n")
       : `
-          <h2 class="guided--text-sub-step">
+          <h2 class="text-sub-step-title">
             No local datasets have been uploaded to Pennsieve yet.
           </h2>
           <p class="guided--text-input-instructions m-0 text-center">
@@ -2406,7 +2406,7 @@ const renderProgressCards = (progressFileJSONdata) => {
           .map((progressFile) => generateProgressCardElement(progressFile))
           .join("\n")
       : `
-          <h2 class="guided--text-sub-step">
+          <h2 class="text-sub-step-title">
             All local datasets have been previously uploaded to Pennsieve.
           </h2>
           <p class="guided--text-input-instructions m-0 text-center">
@@ -6868,7 +6868,7 @@ const generateContributorField = (
           onclick="removeContributorField(this)"
         >
         </i>
-        <h2 class="guided--text-sub-step">
+        <h2 class="text-sub-step-title">
           Enter 
           <span class="contributor-first-name">${
             contributorFirstName ? contributorFirstName : "contributor's"
@@ -7579,7 +7579,7 @@ const addContributorField = () => {
       onclick="removeContributorField(this)"
     >
     </i>
-    <h2 class="guided--text-sub-step">
+    <h2 class="text-sub-step-title">
       Enter contributor details
     </h2>
     <div class="space-between w-100">
@@ -8164,7 +8164,7 @@ const openAddAdditionLinkSwal = async () => {
       onclick="removeOtherLinkField(this)"
     >
     </i>
-    <h2 class="guided--text-sub-step">Enter link information</h2>
+    <h2 class="text-sub-step-title">Enter link information</h2>
     <label class="guided--form-label mt-lg">Link URL: </label>
     <input
       class="guided--input guided-other-link-url-input"

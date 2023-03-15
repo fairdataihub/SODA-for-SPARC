@@ -19,9 +19,11 @@
 }
 
 html {
+  font-family: Poppins, sans-serif;
+  -webkit-user-select: none; /* disable selection */
+  -webkit-user-drag: none; /* disable dragging */
+  cursor: default; /* use default cursor */
   height: 100%;
-  font-family: Poppins, "BlinkMacSystemFont", "Lucida Grande", "Segoe UI", Ubuntu, Cantarell,
-    sans-serif;
   font-size: 14px;
   line-height: 1.5;
   overflow: hidden; /* Prevents rubber-band scrolling of the whole "page" */
@@ -30,9 +32,10 @@ html {
 }
 
 body {
-  margin: 0;
+  margin: 0; /* Remove default margin */
   height: 100%;
   display: flex;
+  background: #e9edf4;
 }
 
 a {

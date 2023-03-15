@@ -1,5 +1,6 @@
 /* This is a CSS file for the styling of fonts used throughout SODA */
 
+
 .wide-card-title-text {
   display: block;
   font-size: 17px;
@@ -93,16 +94,6 @@
   color: dimgray !important;
 }
 
-.guided--text-sub-step {
-  display: block;
-  font-size: 18px;
-  color: rgba(0, 0, 0, 0.87);
-  text-align: center;
-  font-weight: 600;
-  margin-top: 10px !important;
-  margin-bottom: 12px;
-}
-
 .tile-button-text {
   display: flex;
   flex-direction: column;
@@ -159,12 +150,23 @@
   margin-top: 0.25rem;
 }
 
-/* TODO: remove the keyword guided on the classes below */
+.text-sub-step-title {
+  display: block;
+  font-size: 18px;
+  color: rgba(0, 0, 0, 0.87);
+  text-align: center;
+  font-weight: 600;
+  margin-top: 10px !important;
+  margin-bottom: 12px;
+  color: black !important;
+}
 
-h1.guided--text-sub-step {
-  font-size: 25px;
+h1.text-sub-step-title {
+  font-size: 25px !important;
   margin-bottom: 15px;
 }
+
+/* TODO: remove the keyword guided on the classes below */
 
 .guided--text-info {
   display: block;
