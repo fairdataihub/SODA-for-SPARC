@@ -87,20 +87,16 @@ const validateOrganizedDataset = async () => {
 
   const clientUUID = uuid();
 
-
   // intervale that runs every 15 seconds
   let validationReportResponse;
 
   try {
-    validationReportResponse = await client.post(
-      "http://localhost:9009/validator/validate",
-      {
-        clientUUID: clientUUID,
-        manifests: manifestsJSON,
-        metadata_files: metadataJSON,
-        dataset_structure: sodaJSONObjCopy,
-      }
-    );
+    validationReportResponse = await client.post("http://localhost:9009/validator/validate", {
+      clientUUID: clientUUID,
+      manifests: manifestsJSON,
+      metadata_files: metadataJSON,
+      dataset_structure: sodaJSONObjCopy,
+    });
   } catch (e) {
     clientError(e);
     await Swal.fire({
@@ -117,7 +113,6 @@ const validateOrganizedDataset = async () => {
   }
 
   let report = validationReportResponse.data;
-
 
   // this works because the returned validation results are in an Object Literal. If the returned object is changed this will break (e.g., an array will have a length property as well)
   let hasValidationErrors = Object.getOwnPropertyNames(report).length >= 1;
