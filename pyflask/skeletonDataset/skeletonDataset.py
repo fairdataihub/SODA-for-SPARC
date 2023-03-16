@@ -8,15 +8,20 @@ import os
 import shutil
 from xml.dom import InvalidStateErr
 import copy
+import time
 from os.path import expanduser
 from .skeletonDatasetUtils import import_bf_metadata_files_skeleton, import_manifest_files_skeleton, import_bf_metadata_files_skeleton_base
 from pennsieve2.pennsieve import Pennsieve
-from manifest import ManifestBuilderBase, ManifestBuilder
 import pandas as pd 
 from prepareMetadata import save_submission_file, save_subjects_file, save_samples_file, save_ds_description_file, upload_RC_file
-# from organizeDatasets import import_pennsieve_dataset
+from namespaces import NamespaceEnum, get_namespace_logger
+
+
 
 path = os.path.join(expanduser("~"), "SODA", "skeleton")
+
+#import the namespace_logger 
+namespace_logger = get_namespace_logger(NamespaceEnum.SKELETON_DATASET)
 
 
 def create_skeleton(dataset_structure, path):
@@ -286,7 +291,7 @@ def get_manifests(soda_json_structure):
 
 def get_metadata_files_json(soda_json_structure):
     metadata_files = {}
-    # Add the metadata files to the root of the skeleton dataset 
+    # Add the metadata files to the root of the skeleton dataset
     if "metadata-files" in soda_json_structure:
         for metadata_file_name, props in soda_json_structure["metadata-files"].items():
             if props["type"] == "bf": 
@@ -296,8 +301,15 @@ def get_metadata_files_json(soda_json_structure):
             else:
                 # get the file location from the user's computer
                 file_location = props["path"]
-                df = pd.read_excel(file_location)
-                metadata_files[metadata_file_name] = df.to_json()
+                # if file name is not readme or changes
+                if metadata_file_name in ["README.txt", "CHANGES.txt"]:
+                    # read the file and add it to the metadata_files dict
+                    with open(file_location, "r") as f:
+                        metadata_files[metadata_file_name] = f.read()
+                else:
+                  df = pd.read_excel(file_location)
+                  metadata_files[metadata_file_name] = df.to_json()
+
     return metadata_files
 
 

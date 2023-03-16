@@ -77,8 +77,6 @@ class SkeletonDatasetMetadata(Resource):
 
         sodajsonobject = data["sodajsonobject"]
 
-        api.logger.info(f"Creating skeleton dataset structure {sodajsonobject}")
-
         try:
             return get_metadata_files_json(sodajsonobject)
         except Exception as e:
