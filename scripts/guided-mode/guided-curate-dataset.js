@@ -232,40 +232,31 @@ const savePageChanges = async (pageBeingLeftID) => {
       sodaJSONObj["digital-metadata"]["name"] = newDatasetName;
     };
 
-    if (pageBeingLeftID === "guided-intro-page-tab") {
-      const startingNewCuration = document
-        .getElementById("guided-button-start-new-curation")
+    if (pageBeingLeftID === "guided-resume-existing-dataset-page") {
+      const resumingExistingProgress = document
+        .getElementById("guided-button-resume-progress-file")
         .classList.contains("selected");
-      const startingFromExistingLocal = false; // Set as false for now until we implement this feature
+
       const resumingPennsieveDataset = document
         .getElementById("guided-button-resume-pennsieve-dataset")
         .classList.contains("selected");
 
-      if (!startingNewCuration && !startingFromExistingLocal && !resumingPennsieveDataset) {
+      if (!resumingExistingProgress && !resumingPennsieveDataset) {
         errorArray.push({
           type: "notyf",
           message: "Please select a dataset start location",
         });
         throw errorArray;
       }
-      if (startingNewCuration) {
-        sodaJSONObj["starting-point"]["type"] = "new";
-        sodaJSONObj["generate-dataset"]["generate-option"] = "new";
 
-        guidedUnSkipPage("guided-subjects-folder-tab");
-        guidedUnSkipPage("guided-primary-data-organization-tab");
-        guidedUnSkipPage("guided-source-data-organization-tab");
-        guidedUnSkipPage("guided-derivative-data-organization-tab");
-        guidedUnSkipPage("guided-code-folder-tab");
-        guidedUnSkipPage("guided-protocol-folder-tab");
-        guidedUnSkipPage("guided-docs-folder-tab");
+      if (resumingExistingProgress) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please click the button of the dataset you would like to resume above",
+        });
+        throw errorArray;
+      }
 
-        // Skip the CHANGES metadata page as this is a new dataset
-        guidedSkipPage("guided-create-changes-metadata-tab");
-      }
-      if (startingFromExistingLocal) {
-        sodaJSONObj["starting-point"]["type"] = "local";
-      }
       if (resumingPennsieveDataset) {
         if (
           !document
@@ -475,7 +466,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
 
       //Skip this page becausae we should not come back to it
-      guidedSkipPage("guided-intro-page-tab");
+      guidedSkipPage("guided-resume-existing-dataset-page");
     }
 
     if (pageBeingLeftID === "guided-name-subtitle-tab") {
@@ -557,6 +548,38 @@ const savePageChanges = async (pageBeingLeftID) => {
       // If the user selected that dataset is not SPARC funded, skip the submission metadata page
       // The logic that handles the submission file is ran during uploadiyhihhihiuhihi
       if (userSelectedDatasetIsNotSparcFunded) {
+        const userSelectedTheyHaveReachedOutToCurationTeam = document
+          .getElementById("guided-button-non-sparc-user-has-contacted-sparc")
+          .classList.contains("selected");
+        const userSelectedTheyHaveNotReachedOutToCurationTeam = document
+          .getElementById("guided-button-non-sparc-user-has-not-contacted-sparc")
+          .classList.contains("selected");
+
+        if (
+          !userSelectedTheyHaveReachedOutToCurationTeam &&
+          !userSelectedTheyHaveNotReachedOutToCurationTeam
+        ) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please indicate if you have reached out to the curation team",
+          });
+          throw errorArray;
+        }
+
+        if (userSelectedTheyHaveReachedOutToCurationTeam) {
+          // We don't have to do anything here
+        }
+
+        if (userSelectedTheyHaveNotReachedOutToCurationTeam) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please reach out to the curation team before continuing the curation process",
+          });
+          throw errorArray;
+        }
+
+        // Skip the submission metadata page
+        // This can be safely skipped as the logic that handles the submission file is ran during upload
         guidedSkipPage("guided-create-submission-metadata-tab");
       }
     }
@@ -1710,25 +1733,31 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
   return sodaJSONObj["dataset-metadata"]["pool-subject-sample-structure"];
 };
 
-const guidedLockSideBar = () => {
+const guidedLockSideBar = (boolShowNavBar) => {
   const sidebar = document.getElementById("sidebarCollapse");
   const guidedModeSection = document.getElementById("guided_mode-section");
   const guidedDatsetTab = document.getElementById("guided_curate_dataset-tab");
   const guidedNav = document.getElementById("guided-nav");
+  const curationPreparationGreenPills = document.getElementById(
+    "structure-dataset-capsule-container"
+  );
 
   if (!sidebar.classList.contains("active")) {
     sidebar.click();
   }
+
   sidebar.disabled = true;
   guidedModeSection.style.marginLeft = "-70px";
-  guidedDatsetTab.style.marginLeft = "215px";
-  guidedNav.style.display = "flex";
 
-  /* *************************************************** */
-  /* ************  Build the Nav Bar !!!  ************** */
-  /* *************************************************** */
-
-  // return data-parent-tab-name for each .guided--parent-tab element
+  if (boolShowNavBar) {
+    guidedDatsetTab.style.marginLeft = "215px";
+    guidedNav.style.display = "flex";
+    curationPreparationGreenPills.classList.remove("hidden");
+  } else {
+    guidedDatsetTab.style.marginLeft = "0px";
+    guidedNav.style.display = "none";
+    curationPreparationGreenPills.classList.add("hidden");
+  }
 };
 
 const guidedUnLockSideBar = () => {
@@ -1746,6 +1775,9 @@ const guidedUnLockSideBar = () => {
   guidedDatsetTab.style.marginLeft = "";
   guidedNav.style.display = "none";
 };
+
+guidedHideSidebar = () => {};
+guidedUnHideSidebar = () => {};
 
 const guidedSetCurationTeamUI = (boolSharedWithCurationTeam) => {
   const textSharedWithCurationTeamStatus = document.getElementById(
@@ -1950,6 +1982,7 @@ const guidedSaveAndExit = async () => {
 
     try {
       await savePageChanges(currentPageID);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       const pageWithErrorName = CURRENT_PAGE.dataset.pageName;
 
@@ -2106,7 +2139,7 @@ const guidedTransitionFromHome = async () => {
     page.classList.add("hidden");
   });
 
-  CURRENT_PAGE = document.getElementById("guided-intro-page-tab");
+  CURRENT_PAGE = document.getElementById("guided-resume-existing-dataset-page");
 
   //reset sub-page navigation (Set the first sub-page to be the active sub-page
   //for all pages with sub-pages)
@@ -2119,14 +2152,11 @@ const guidedTransitionFromHome = async () => {
   }
 
   guidedResetSkippedPages();
-
-  guidedLockSideBar();
 };
 
 const guidedTransitionToHome = () => {
   guidedUnLockSideBar();
   guidedPrepareHomeScreen();
-  console.log("HERE?");
 
   document.getElementById("guided-home").classList.remove("hidden");
   // Hide all of the parent tabs
@@ -2177,6 +2207,8 @@ const saveGuidedProgress = async (guidedProgressFileName) => {
 
   //Add datasetStructureJSONObj to the sodaJSONObj and use to load the
   //datasetStructureJsonObj when progress resumed
+
+  console.log("Saving dataset structure JSON object");
   sodaJSONObj["saved-datset-structure-json-obj"] = datasetStructureJSONObj;
   sodaJSONObj["subjects-table-data"] = subjectsTableData;
   sodaJSONObj["samples-table-data"] = samplesTableData;
@@ -2285,6 +2317,41 @@ const generateProgressCardElement = (progressFileJSONObj) => {
     progressFileJSONObj["previously-uploaded-data"] &&
     Object.keys(progressFileJSONObj["previously-uploaded-data"]).length > 0;
 
+  const datasetStartingPoint = progressFileJSONObj?.["starting-point"]?.["type"];
+
+  // True if the progress file has already been uploaded to Pennsieve
+  const alreadyUploadedToPennsieve = !!progressFileJSONObj["previous-guided-upload-dataset-name"];
+
+  // Function to generate the button used to resume progress
+  const generateProgressResumptionButton = (
+    datasetStartingPoint,
+    boolAlreadyUploadedToPennsieve
+  ) => {
+    let buttonText = "";
+    let buttonClass = "";
+    if (boolAlreadyUploadedToPennsieve) {
+      buttonText = "Share with the curation team";
+      buttonClass = "guided--progress-button-share";
+    } else {
+      if (datasetStartingPoint === "new") {
+        buttonText = "Resume curation";
+        buttonClass = "guided--progress-button-resume-curation";
+      }
+      if (datasetStartingPoint === "bf" || datasetStartingPoint === "pennsieve") {
+        buttonText = "Continue updating Pennsieve dataset";
+        buttonClass = "guided--progress-button-resume-pennsieve";
+      }
+    }
+    return `
+            <button
+              class="ui positive button ${buttonClass}"
+              onClick="guidedResumeProgress($(this))"
+            >
+              ${buttonText}
+            </button>
+          `;
+  };
+
   return `
     <div class="dataset-card">
       ${progressFileImage /* banner image */}     
@@ -2335,26 +2402,8 @@ const generateProgressCardElement = (progressFileJSONObj) => {
           }
         </div>
       </div>
-      <div class="dataset-card-button-container">
-        ${
-          progressFileJSONObj["previous-guided-upload-dataset-name"]
-            ? `
-                <button
-                  class="ui positive button dataset-card-button-confirm"
-                  onClick="guidedResumeProgress($(this))"
-                >
-                  Edit dataset
-                </button>
-              `
-            : `
-                <button
-                  class="ui positive button dataset-card-button-confirm"
-                  onClick="guidedResumeProgress($(this))"
-                >
-                  ${savedUploadDataProgress ? "Resume upload" : "Continue curating"}
-                </button>
-              `
-        }
+      <div class="dataset-card-button-container align-right">
+        ${generateProgressResumptionButton(datasetStartingPoint, alreadyUploadedToPennsieve)}
         <h2 class="dataset-card-button-delete" onclick="deleteProgressCard(this)">
           <i
             class="fas fa-trash mr-sm-1"
@@ -2383,42 +2432,59 @@ const renderProgressCards = (progressFileJSONdata) => {
       return !progressFileJSONobj["previous-guided-upload-dataset-name"];
     }
   );
-  //Add the progress cards that have already been uploaded to Pennsieve
-  //to their container (datasets that have the sodaJSONObj["previous-guided-upload-dataset-name"] property)
-  document.getElementById("guided-div-update-uploaded-cards").innerHTML =
-    progressDataAlreadyUploadedToPennsieve.length > 0
-      ? progressDataAlreadyUploadedToPennsieve
-          .map((progressFile) => generateProgressCardElement(progressFile))
-          .join("\n")
-      : `
-          <h2 class="text-sub-step-title">
-            No local datasets have been uploaded to Pennsieve yet.
-          </h2>
-          <p class="guided--text-input-instructions m-0 text-center">
-            <b>Click "Datasets in progress" to view local datasets in progress.</b>
-          </p>
-        `;
 
-  //Add the progress cards that have not yet been uploaded to Pennsieve
-  //to their container (datasets that do not have the sodaJSONObj["previous-guided-upload-dataset-name"] property)
-  document.getElementById("guided-div-resume-progress-cards").innerHTML =
-    progressDataNotYetUploadedToPennsieve.length > 0
-      ? progressDataNotYetUploadedToPennsieve
-          .map((progressFile) => generateProgressCardElement(progressFile))
-          .join("\n")
-      : `
-          <h2 class="text-sub-step-title">
-            All local datasets have been previously uploaded to Pennsieve.
-          </h2>
-          <p class="guided--text-input-instructions m-0 text-center">
-            <b>Click "Datasets uploaded to Pennsieve" to view local datasets that have already been uploaded to Pennsieve.</b>
-          </p>
-        `;
+  const progressCardsContainer = document.getElementById("guided-section-resume-progress-cards");
 
-  tippy(".progress-card-popover", {
-    allowHTML: true,
-    interactive: true,
-  });
+  if (progressDataNotYetUploadedToPennsieve.length > 0) {
+    // Add the title to the container
+    progressCardsContainer.innerHTML = `
+      <h2 class="text-sub-step-title">
+        Select the dataset that you would like to continue working with and click "Continue"
+      </h2>
+    `;
+    //Add the progress cards that have already been uploaded to Pennsieve
+    //to their container (datasets that have the sodaJSONObj["previous-guided-upload-dataset-name"] property)
+    document.getElementById("guided-section-resume-progress-cards").innerHTML +=
+      progressDataAlreadyUploadedToPennsieve.length > 0
+        ? progressDataAlreadyUploadedToPennsieve
+            .map((progressFile) => generateProgressCardElement(progressFile))
+            .join("\n")
+        : `
+            <h2 class="guided--text-sub-step">
+              No local datasets have been uploaded to Pennsieve yet.
+            </h2>
+            <p class="guided--text-input-instructions m-0 text-center">
+              <b>Click "Datasets in progress" to view local datasets in progress.</b>
+            </p>
+          `;
+
+    //Add the progress cards that have not yet been uploaded to Pennsieve
+    //to their container (datasets that do not have the sodaJSONObj["previous-guided-upload-dataset-name"] property)
+    document.getElementById("guided-section-resume-progress-cards").innerHTML +=
+      progressDataNotYetUploadedToPennsieve.length > 0
+        ? progressDataNotYetUploadedToPennsieve
+            .map((progressFile) => generateProgressCardElement(progressFile))
+            .join("\n")
+        : `
+            <h2 class="text-sub-step-title">
+              All local datasets have been previously uploaded to Pennsieve.
+            </h2>
+            <p class="guided--text-input-instructions m-0 text-center">
+              <b>Click "Datasets uploaded to Pennsieve" to view local datasets that have already been uploaded to Pennsieve.</b>
+            </p>
+          `;
+
+    tippy(".progress-card-popover", {
+      allowHTML: true,
+      interactive: true,
+    });
+  } else {
+    progressCardsContainer.innerHTML = `
+      <h2 class="guided--text-sub-step">
+        No Progress files found.
+      </h2>
+    `;
+  }
 };
 
 const renderManifestCards = async () => {
@@ -2477,10 +2543,26 @@ const updateManifestJson = async (highLvlFolderName, result) => {
 const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
   const existingManifestData = sodaJSONObj["guided-manifest-files"][highLevelFolderName];
   //send manifest data to main.js to then send to child window
+  // TODO: Lock all other manifest buttons
+  let guidedManifestContainer = document.getElementById(
+    "guided-container-manifest-file-cards"
+  ).children;
+
+  for (let i = 0; i < guidedManifestContainer.length; i++) {
+    guidedManifestContainer[i].children[1].children[0].disabled = true;
+    console.log(guidedManifestContainer[i].children[1].children[0]);
+    console.log(guidedManifestContainer[i].children[1].children[0].disabled);
+  }
+
   ipcRenderer.invoke("spreadsheet", existingManifestData);
 
   //upon receiving a reply of the spreadsheet, handle accordingly
   ipcRenderer.on("spreadsheet-reply", async (event, result) => {
+    for (let i = 0; i < guidedManifestContainer.length; i++) {
+      guidedManifestContainer[i].children[1].children[0].disabled = false;
+      console.log(guidedManifestContainer[i].children[1].children[0]);
+      console.log(guidedManifestContainer[i].children[1].children[0].disabled);
+    }
     if (!result || result === "") {
       ipcRenderer.removeAllListeners("spreadsheet-reply");
       return;
@@ -2614,7 +2696,12 @@ document
       let response = cleanJson.data.soda_json_structure;
       // response does not format in JSON format so need to format ' with "
       let regex = /'/gm;
-      let formattedResponse = JSON.parse(response.replace(regex, '"'));
+      let formattedResponse = response.replace(regex, '"');
+      let capitalTPosition = formattedResponse.search("T");
+      while (capitalTPosition != -1) {
+        capitalTPosition = formattedResponse.search("T");
+        formattedResponse = formattedResponse.replace("T", "t");
+      }
       const formattedDatasetStructure = formattedResponse["dataset-structure"];
       // Retrieve the manifest data to be used to generate the manifest files
       const res = await client.post(
@@ -2700,7 +2787,6 @@ const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
     //Hide the loading div and show the dropdown div
     loadingDiv.classList.add("hidden");
     pennsieveDatasetSelectDiv.classList.remove("hidden");
-    scrollToBottomOfGuidedBody();
   } catch (error) {
     // Show the error div and hide the dropdown and loading divs
     errorDiv.classList.remove("hidden");
@@ -2740,9 +2826,6 @@ const guidedPrepareHomeScreen = async () => {
   if (!fs.existsSync(guidedProgressFilePath)) {
     fs.mkdirSync(guidedProgressFilePath, { recursive: true });
   }
-
-  //Reset the "Datasets in progress" and "Datasets uploaded to Pennsieve buttons"
-  resetGuidedRadioButtons("guided-div-dataset-cards-radio-buttons");
 
   // const datasetCardsRadioButtonsContainer = document.getElementById(
   //   "guided-div-dataset-cards-radio-buttons"
@@ -2982,6 +3065,7 @@ const guidedResetSkippedPages = () => {
     "guided-dataset-generation-tab",
     "guided-structure-folder-tab",
     "guided-dataset-dissemination-tab",
+    "guided-resume-existing-dataset-page",
   ];
   for (const page of pagesThatShouldAlwaysBeskipped) {
     guidedSkipPage(page);
@@ -3006,6 +3090,12 @@ const guidedResetSkippedPages = () => {
 
 const guidedSkipPage = (pageId) => {
   const page = document.getElementById(pageId);
+
+  // If the page no longer exists, return
+  if (!page) {
+    return;
+  }
+
   page.dataset.skipPage = "true";
 
   //Hide the parent page or sub page capsule
@@ -3026,8 +3116,13 @@ const guidedSkipPage = (pageId) => {
 };
 
 const guidedUnSkipPage = (pageId) => {
-  console.log(pageId);
   const page = document.getElementById(pageId);
+
+  // If the page no longer exists, return
+  if (!page) {
+    return;
+  }
+
   page.dataset.skipPage = "false";
 
   //Show the parent page or sub page capsule
@@ -3486,16 +3581,6 @@ const openPage = async (targetPageID) => {
     //Note: if other nav bar needs to be shown, it will be handled later in this function
     hideSubNavAndShowMainNav(false);
 
-    //Hide the high level progress steps and green pills if the user is on the before getting started page
-    if (targetPageID === "guided-prepare-helpers-tab") {
-      //validate the api key and adjust icon accordingly
-      document.getElementById("structure-dataset-capsule-container").classList.add("hidden");
-      document.querySelector(".guided--progression-tab-container").classList.add("hidden");
-    } else {
-      document.getElementById("structure-dataset-capsule-container").classList.remove("hidden");
-      document.querySelector(".guided--progression-tab-container").classList.remove("hidden");
-    }
-
     if (
       targetPageID === "guided-dataset-generation-confirmation-tab" ||
       targetPageID === "guided-dataset-generation-tab" ||
@@ -3515,12 +3600,79 @@ const openPage = async (targetPageID) => {
       $("#guided-back-button").css("visibility", "visible");
     }
 
-    if (targetPageID === "guided-intro-page-tab") {
+    // Hide the Header div on the resume existing dataset page
+    const guidedProgressContainer = document.getElementById("guided-header-div");
+    if (targetPageID === "guided-resume-existing-dataset-page") {
+      guidedProgressContainer.classList.add("hidden");
+    } else {
+      guidedProgressContainer.classList.remove("hidden");
+    }
+
+    // If the user has not saved the dataset name and subtitle, then the next button should say "Continue"
+    // as they are not really saving anything
+    // If they have saved the dataset name and subtitle, then the next button should say "Save and Continue"
+    // as their progress is saved when continuing to the next page
+    const datasetName = sodaJSONObj?.["digital-metadata"]?.["name"];
+    const nextButton = document.getElementById("guided-next-button");
+    const saveAndExitButton = document.getElementById("guided-button-save-and-exit");
+
+    if (!datasetName) {
+      nextButton.innerHTML = "Continue";
+      saveAndExitButton.innerHTML = "Return to Home Page";
+
+      guidedLockSideBar(false);
+    } else {
+      nextButton.innerHTML = "Save and Continue";
+      saveAndExitButton.innerHTML = `<i class="far fa-save" style="margin-right: 10px"></i>Save and Exit`;
+      guidedLockSideBar(true);
+    }
+
+    // Get the element with the classes .guided--progression-tab and selected-tab
+    const currentActiveProgressionTab = document.querySelector(
+      ".guided--progression-tab.selected-tab"
+    );
+    if (currentActiveProgressionTab) {
+      if (currentActiveProgressionTab.id === "curation-preparation-progression-tab") {
+      } else {
+      }
+    }
+
+    if (targetPageID === "guided-resume-existing-dataset-page") {
       // Hide the pennsieve dataset import progress circle
       const importProgressCircle = document.querySelector(
         "#guided_loading_pennsieve_dataset-organize"
       );
       importProgressCircle.classList.add("hidden");
+
+      //Check if Guided-Progress folder exists. If not, create it.
+      if (!fs.existsSync(guidedProgressFilePath)) {
+        fs.mkdirSync(guidedProgressFilePath, { recursive: true });
+      }
+
+      const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
+      //render progress resumption cards from progress file array on first page of guided mode
+      if (guidedSavedProgressFiles.length != 0) {
+        const progressFileData = await getAllProgressFileData(guidedSavedProgressFiles);
+        renderProgressCards(progressFileData);
+      }
+    }
+
+    if (targetPageID === "guided-prepare-helpers-tab") {
+      const sparcFundedHelperSections = document
+        .getElementById("guided-prepare-helpers-tab")
+        .querySelectorAll(".sparc-funded-only");
+
+      if (datasetIsSparcFunded()) {
+        // If the dataset is SPARC funded, then show the SPARC funded helper sections
+        sparcFundedHelperSections.forEach((element) => {
+          element.classList.remove("hidden");
+        });
+      } else {
+        // If the dataset is not SPARC funded, then hide the SPARC funded helper sections
+        sparcFundedHelperSections.forEach((element) => {
+          element.classList.add("hidden");
+        });
+      }
     }
 
     if (targetPageID === "guided-name-subtitle-tab") {
@@ -5649,34 +5801,6 @@ const removeAlertMessageIfExists = (elementToCheck) => {
     elementToCheck.next().remove();
   }
 };
-const validateInput = (inputElementToValidate) => {
-  let inputIsValid = false;
-
-  const inputID = inputElementToValidate.attr("id");
-  if (inputID === "guided-dataset-name-input") {
-    let name = inputElementToValidate.val().trim();
-    if (name !== "") {
-      if (!check_forbidden_characters_bf(name)) {
-        removeAlertMessageIfExists(inputElementToValidate);
-        inputIsValid = true;
-      } else {
-        generateAlertMessage(inputElementToValidate);
-      }
-    }
-  }
-  if (inputID === "guided-dataset-subtitle-input") {
-    let subtitle = inputElementToValidate.val().trim();
-    if (subtitle !== "") {
-      if (subtitle.length < 257) {
-        removeAlertMessageIfExists(inputElementToValidate);
-        inputIsValid = true;
-      } else {
-        generateAlertMessage(inputElementToValidate);
-      }
-    }
-  }
-  return inputIsValid;
-};
 
 /////////////////////////////////////////////////////////
 //////////       GUIDED FORM VALIDATORS       ///////////
@@ -5705,8 +5829,6 @@ const newEmptyFolderObj = () => {
 };
 
 const patchPreviousGuidedModeVersions = () => {
-  let forceUserToRestartFromFirstPage = false;
-
   //temp patch contributor affiliations if they are still a string (they were added in the previous version)
   const contributors = sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
   if (contributors) {
@@ -5770,21 +5892,6 @@ const patchPreviousGuidedModeVersions = () => {
   if (!sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"]) {
     sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = [];
   }
-
-  // If the user was on the airtable award page (does not exist anymore), send them to the create submission metadata page
-  if (sodaJSONObj["page-before-exit"] === "guided-airtable-award-tab") {
-    sodaJSONObj["page-before-exit"] = "guided-create-submission-metadata-tab";
-  }
-
-  const currentSodaVersion = document.getElementById("version").innerHTML;
-  if (!sodaJSONObj["last-version-of-soda-used"]) {
-    sodaJSONObj["last-version-of-soda-used"] = currentSodaVersion;
-  }
-  if (currentSodaVersion > sodaJSONObj["last-version-of-soda-used"]) {
-    forceUserToRestartFromFirstPage = true;
-  }
-
-  return forceUserToRestartFromFirstPage;
 };
 
 //Loads UI when continue curation button is pressed
@@ -5797,16 +5904,21 @@ const guidedResumeProgress = async (resumeProgressButton) => {
     .html();
   const datasetResumeJsonObj = await getProgressFileData(datasetNameToResume);
 
+  // Datasets successfully uploaded will have the "previous-guided-upload-dataset-name" key
+  const datasetHasAlreadyBeenSuccessfullyUploaded =
+    datasetResumeJsonObj["previous-guided-upload-dataset-name"];
+
   // If the dataset had been previously successfully uploaded, check to make sure it exists on Pennsieve still.
-  if (datasetResumeJsonObj["previous-guided-upload-dataset-name"]) {
-    const previouslyUploadedName = datasetResumeJsonObj["previous-guided-upload-dataset-name"];
+  if (datasetHasAlreadyBeenSuccessfullyUploaded) {
+    const previouslyUploadedDatasetId =
+      datasetResumeJsonObj["digital-metadata"]["pennsieve-dataset-id"];
     const datasetToResumeExistsOnPennsieve = await checkIfDatasetExistsOnPennsieve(
-      previouslyUploadedName
+      previouslyUploadedDatasetId
     );
     if (!datasetToResumeExistsOnPennsieve) {
       notyf.open({
         type: "error",
-        message: `The dataset ${previouslyUploadedName} was not found on Pennsieve therefore you can no longer modify this dataset via Guided Mode.`,
+        message: `The dataset ${datasetResumeJsonObj["previous-guided-upload-dataset-name"]} was not found on Pennsieve therefore you can no longer modify this dataset via Guided Mode.`,
         duration: 7000,
       });
       resumeProgressButton.removeClass("loading");
@@ -5814,72 +5926,74 @@ const guidedResumeProgress = async (resumeProgressButton) => {
     }
   }
 
-  // If the dataset is being edited on Pensieve, check to make sure the folders and files are still the same.
-  if (datasetResumeJsonObj["starting-point"]?.["type"] === "bf") {
-    if (Object.keys(datasetResumeJsonObj["previously-uploaded-data"]).length > 0) {
-      await Swal.fire({
-        icon: "info",
-        title: "Resuming a Pennsieve dataset upload that previously failed",
-        html: `
+  if (!datasetHasAlreadyBeenSuccessfullyUploaded) {
+    // If the dataset is being edited on Pensieve, check to make sure the folders and files are still the same.
+    if (datasetResumeJsonObj["starting-point"]?.["type"] === "bf") {
+      if (Object.keys(datasetResumeJsonObj["previously-uploaded-data"]).length > 0) {
+        await Swal.fire({
+          icon: "info",
+          title: "Resuming a Pennsieve dataset upload that previously failed",
+          html: `
             Please note that any changes made to your dataset on Pennsieve since your last dataset upload
             was interrupted may be overwritten.
           `,
-        width: 500,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: `I understand`,
-        focusConfirm: true,
-        allowOutsideClick: false,
-      });
-    } else {
-      const nofiication = notyf.open({
-        type: "info",
-        message: `Checking to make sure the dataset structure on Pennsieve is the same as when you started editing this dataset.`,
-        duration: 30000,
-      });
-      let filesFoldersResponse = await client.post(
-        `/organize_datasets/dataset_files_and_folders`,
-        {
-          sodajsonobject: datasetResumeJsonObj,
-        },
-        { timeout: 0 }
-      );
-      let data = filesFoldersResponse.data;
-      const currentPennsieveDatasetStructure = data["soda_object"]["dataset-structure"];
-      notyf.dismiss(nofiication);
+          width: 500,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: `I understand`,
+          focusConfirm: true,
+          allowOutsideClick: false,
+        });
+      } else {
+        const nofiication = notyf.open({
+          type: "info",
+          message: `Checking to make sure the dataset structure on Pennsieve is the same as when you started editing this dataset.`,
+          duration: 30000,
+        });
+        let filesFoldersResponse = await client.post(
+          `/organize_datasets/dataset_files_and_folders`,
+          {
+            sodajsonobject: datasetResumeJsonObj,
+          },
+          { timeout: 0 }
+        );
+        let data = filesFoldersResponse.data;
+        const currentPennsieveDatasetStructure = data["soda_object"]["dataset-structure"];
+        notyf.dismiss(nofiication);
 
-      const intitiallyPulledDatasetStructure =
-        datasetResumeJsonObj["initially-pulled-dataset-structure"];
+        const intitiallyPulledDatasetStructure =
+          datasetResumeJsonObj["initially-pulled-dataset-structure"];
 
-      // check to make sure current and initially pulled dataset structures are the same
-      if (
-        JSON.stringify(currentPennsieveDatasetStructure) !==
-        JSON.stringify(intitiallyPulledDatasetStructure)
-      ) {
-        await Swal.fire({
-          icon: "error",
-          title: "Dataset structure on Pennsieve has changed",
-          html: `
+        // check to make sure current and initially pulled dataset structures are the same
+        if (
+          JSON.stringify(currentPennsieveDatasetStructure) !==
+          JSON.stringify(intitiallyPulledDatasetStructure)
+        ) {
+          await Swal.fire({
+            icon: "error",
+            title: "Dataset structure on Pennsieve has changed",
+            html: `
           The dataset structure on Pennsieve has changed since you started editing this dataset.
           <br />
           <br />
           You will need to start over from the beginning. 
         `,
-          width: 500,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: `Ok`,
-          focusConfirm: true,
-          allowOutsideClick: false,
-        });
-        resumeProgressButton.removeClass("loading");
-        return;
-      } else {
-        notyf.open({
-          type: "success",
-          message: `The dataset structure on Pennsieve is the same as when you started editing this dataset.`,
-          duration: 7000,
-        });
+            width: 500,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            confirmButtonText: `Ok`,
+            focusConfirm: true,
+            allowOutsideClick: false,
+          });
+          resumeProgressButton.removeClass("loading");
+          return;
+        } else {
+          notyf.open({
+            type: "success",
+            message: `The dataset structure on Pennsieve is the same as when you started editing this dataset.`,
+            duration: 7000,
+          });
+        }
       }
     }
   }
@@ -5891,8 +6005,23 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   samplesTableData = sodaJSONObj["samples-table-data"];
 
   //patches the sodajsonobj if it was created in a previous version of guided mode
-  //and returns a boolean to indicate if the user should be forced to restart from the first page
-  const forceStartFromFirstPage = patchPreviousGuidedModeVersions();
+  patchPreviousGuidedModeVersions();
+
+  let forceStartFromFirstPage;
+
+  const lastVersionOfSodaUsed = sodaJSONObj["last-version-of-soda-used"];
+
+  // If the progress file does not have a last version of soda used, then force the user to restart from the first page
+  if (!lastVersionOfSodaUsed) {
+    forceStartFromFirstPage = true;
+  } else {
+    // If the progress file has a last version of soda used, then check to see if the current version of soda is greater than the last version of soda used
+    // If the current version of soda is greater than the last version of soda used, then force the user to restart from the first page
+    const currentSodaVersion = document.getElementById("version").innerHTML;
+    if (currentSodaVersion > lastVersionOfSodaUsed) {
+      forceStartFromFirstPage = true;
+    }
+  }
 
   //Return the user to the last page they exited on
   let pageToReturnTo = datasetResumeJsonObj["page-before-exit"];
@@ -5900,7 +6029,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   //If a patch was applied that requires the user to restart from the first page,
   //then force the user to restart from the first page
   if (forceStartFromFirstPage) {
-    pageToReturnTo = "guided-name-subtitle-tab";
+    pageToReturnTo = "guided-ask-if-submission-is-sparc-funded-tab";
   }
 
   //If the dataset was successfully uploaded, send the user to the share with curation team
@@ -5914,6 +6043,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
 
   // Save the skipped pages in a temp variable since guidedTransitionFromHome will remove them
   const prevSessionSkikppedPages = [...sodaJSONObj["skipped-pages"]];
+
   guidedTransitionFromHome();
   // Reskip the pages from a previous session
   for (const pageID of prevSessionSkikppedPages) {
@@ -5921,7 +6051,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   }
 
   //Hide the before getting started page so it doesn't flash when resuming progress
-  document.getElementById("guided-intro-page-tab").classList.add("hidden");
+  document.getElementById("guided-resume-existing-dataset-page").classList.add("hidden");
 
   if (pageToReturnTo) {
     //Hide the sub-page navigation and show the main page navigation footer
@@ -5934,7 +6064,6 @@ const guidedResumeProgress = async (resumeProgressButton) => {
       ? openPage("guided-dataset-generation-confirmation-tab")
       : openPage(pageToReturnTo);
   }
-  guidedLockSideBar();
 };
 
 //Add  spinner to element
@@ -6886,7 +7015,6 @@ const generateContributorField = (
               "
               type="text"
               placeholder="Enter last name here"
-              onkeyup="validateInput($(this))"
               value="${contributorLastName ? contributorLastName : ""}"
             />
           </div>
@@ -6899,7 +7027,6 @@ const generateContributorField = (
               "
               type="text"
               placeholder="Enter first name here"
-              onkeyup="validateInput($(this))"
               value="${contributorFirstName ? contributorFirstName : ""}"
             />
           </div>
@@ -6912,7 +7039,6 @@ const generateContributorField = (
           "
           type="text"
           placeholder="Enter ORCID here"
-          onkeyup="validateInput($(this))"
           value="${contributorORCID ? contributorORCID : ""}"
         />
         <label class="guided--form-label mt-md required">Affiliation(s): </label>
@@ -7195,6 +7321,7 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
           enabled: 0,
           closeOnSelect: true,
           position: "auto",
+          maxItems: Infinity,
         },
       });
       createDragSort(contributorRolesTagify);
@@ -7327,7 +7454,7 @@ const openGuidedAddContributorSwal = async () => {
           <p class="guided--text-input-instructions mb-0 text-left">
             If your contributor does not have an ORCID, have the contributor <a
             target="_blank"
-            href="https://orcid.org"
+            href="https://orcid.org/register"
             >sign up for one on orcid.org</a
           >.
      
@@ -7398,6 +7525,7 @@ const openGuidedAddContributorSwal = async () => {
           enabled: 0,
           closeOnSelect: true,
           position: "auto",
+          maxItems: Infinity,
         },
       });
       createDragSort(contributorRolesTagify);
@@ -7920,89 +8048,6 @@ const renderProtocolsTable = () => {
   protocolsContainer.innerHTML = protocolElements;
 };
 
-const renderContributorFields = (contributionMembersArray) => {
-  //loop through curationMembers object
-  let contributionMembersElements = contributionMembersArray
-    .map((contributionMember) => {
-      return generateContributorField(
-        contributionMember["contributorLastName"],
-        contributionMember["contributorFirstName"],
-        contributionMember["conID"],
-        contributionMember["conAffliation"],
-        contributionMember["conRole"]
-      );
-    })
-    .join("\n");
-
-  const contributorsContainer = document.getElementById("contributors-container");
-  contributorsContainer.innerHTML = contributionMembersElements;
-
-  //Create Affiliation(s) tagify for each contributor
-  const contributorAffiliationInputs = contributorsContainer.querySelectorAll(
-    ".guided-contributor-affiliation-input"
-  );
-  contributorAffiliationInputs.forEach((contributorAffiliationInput) => {
-    const tagify = new Tagify(contributorAffiliationInput, {
-      duplicate: false,
-    });
-    createDragSort(tagify);
-    if (contributorAffiliationInput.dataset.initialContributorAffiliation) {
-      const initialAffiliations = contributorAffiliationInput.dataset.initialContributorAffiliation;
-      const initialAffiliationsArray = initialAffiliations.split(",");
-      for (const initialAffiliation of initialAffiliationsArray) {
-        tagify.addTags([initialAffiliation]);
-      }
-    }
-  });
-
-  //create Role(s) tagify for each contributor
-  const contributorRoleInputs = contributorsContainer.querySelectorAll(
-    ".guided-contributor-role-input"
-  );
-  contributorRoleInputs.forEach((contributorRoleElement) => {
-    const tagify = new Tagify(contributorRoleElement, {
-      whitelist: [
-        "PrincipleInvestigator",
-        "Creator",
-        "CoInvestigator",
-        "DataCollector",
-        "DataCurator",
-        "DataManager",
-        "Distributor",
-        "Editor",
-        "Producer",
-        "ProjectLeader",
-        "ProjectManager",
-        "ProjectMember",
-        "RelatedPerson",
-        "Researcher",
-        "ResearchGroup",
-        "Sponsor",
-        "Supervisor",
-        "WorkPackageLeader",
-        "Other",
-      ],
-      enforceWhitelist: true,
-      dropdown: {
-        enabled: 0,
-        closeOnSelect: true,
-        position: "auto",
-      },
-    });
-    createDragSort(tagify);
-    //if contributorRoleElement has data-initial-contributors, the create a tagify for each comma split contributor role
-    if (contributorRoleElement.dataset.initialContributorRoles) {
-      const initialContributors = contributorRoleElement.dataset.initialContributorRoles;
-      const initialContributorsArray = initialContributors.split(",");
-      for (const contirubtorRole of initialContributorsArray) {
-        tagify.addTags([contirubtorRole]);
-      }
-    }
-  });
-
-  //show the contributor fields
-  unHideAndSmoothScrollToElement("guided-div-contributor-field-set");
-};
 const renderAdditionalLinksTable = () => {
   const additionalLinksTableBody = document.getElementById("additional-links-table-body");
   const additionalLinkData =
@@ -8171,7 +8216,6 @@ const openAddAdditionLinkSwal = async () => {
       class="guided--input guided-other-link-url-input"
       type="text"
       placeholder="Enter link URL here"
-      onkeyup="validateInput($(this))"
     />
     <label class="guided--form-label mt-lg"
       >Link description:</label
@@ -8181,7 +8225,6 @@ const openAddAdditionLinkSwal = async () => {
       type="text"
       placeholder="Enter link description here"
       style="height: 7.5em; padding-bottom: 20px"
-      onkeyup="validateInput($(this))"
     ></textarea>
     <label class="guided--form-label mt-lg"
       >Dataset relation:</label
@@ -8348,6 +8391,7 @@ const openModifySampleMetadataPage = (sampleMetadataID, samplesSubjectID) => {
       })
       .join("\n")}))
   `;
+
   document.getElementById("guided-bootbox-sample-protocol-location").innerHTML = `
     <option value="">No protocols associated with this sample</option>
     ${protocols
@@ -10361,58 +10405,27 @@ $(document).ready(async () => {
     sodaJSONObj["starting-point"]["type"] = "new";
     sodaJSONObj["generate-dataset"]["generate-option"] = "new";
 
-    guidedUnSkipPage("guided-subjects-folder-tab");
-    guidedUnSkipPage("guided-primary-data-organization-tab");
-    guidedUnSkipPage("guided-source-data-organization-tab");
-    guidedUnSkipPage("guided-derivative-data-organization-tab");
-    guidedUnSkipPage("guided-code-folder-tab");
-    guidedUnSkipPage("guided-protocol-folder-tab");
-    guidedUnSkipPage("guided-docs-folder-tab");
-    //Skip this page becausae we should not come back to it
     guidedTransitionFromHome();
-    guidedSkipPage("guided-intro-page-tab");
-    guidedUnSkipPage("guided-name-subtitle-tab");
-    await openPage("guided-name-subtitle-tab");
+
+    await openPage("guided-ask-if-submission-is-sparc-funded-tab");
+
+    // Skip the page where the user can resume an existing local or Pennsieve dataset
+    guidedSkipPage("guided-resume-existing-dataset-page");
+
+    //Unskip the page where the user decides if their dataset is experimental or computational
+    guidedUnSkipPage("guided-subjects-folder-tab");
+
+    // Skip the changes metadata tab as new datasets do not have changes metadata
+    guidedSkipPage("guided-create-changes-metadata-tab");
   });
 
   $("#guided-button-start-existing-curate").on("click", async () => {
     guidedCreateSodaJSONObj();
     attachGuidedMethodsToSodaJSONObj();
     guidedTransitionFromHome();
-    //Hide Fetching Pennsieve content until card is selected
-    document
-      .getElementById("guided-section-select-pennsieve-dataset-to-resume")
-      .classList.add("hidden");
-    document.getElementById("guided-section-start-new-curation").classList.add("hidden");
 
-    // guidedResetProgressVariables();
-
-    //Check if Guided-Progress folder exists. If not, create it.
-    if (!fs.existsSync(guidedProgressFilePath)) {
-      fs.mkdirSync(guidedProgressFilePath, { recursive: true });
-    }
-
-    //Reset the "Datasets in progress" and "Datasets uploaded to Pennsieve buttons"
-    // resetGuidedRadioButtons("guided-div-dataset-cards-radio-buttons");
-
-    const datasetCardsRadioButtonsContainer = document.getElementById(
-      "guided-div-dataset-cards-radio-buttons"
-    );
-
-    const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
-    //render progress resumption cards from progress file array on first page of guided mode
-    if (guidedSavedProgressFiles.length != 0) {
-      datasetCardsRadioButtonsContainer.classList.remove("hidden");
-      const progressFileData = await getAllProgressFileData(guidedSavedProgressFiles);
-      renderProgressCards(progressFileData);
-      document.getElementById("guided-button-view-datasets-in-progress").click();
-    } else {
-      $("#guided-continue-curation-header").text("");
-      datasetCardsRadioButtonsContainer.classList.add("hidden");
-    }
-
-    guidedUnSkipPage("guided-intro-page-tab");
-    await openPage("guided-intro-page-tab");
+    guidedUnSkipPage("guided-resume-existing-dataset-page");
+    await openPage("guided-resume-existing-dataset-page");
   });
 
   $("#guided-button-start-modify-compnent").on("click", async () => {
@@ -10429,7 +10442,6 @@ $(document).ready(async () => {
 
     // guidedResetSkippedPages();
 
-    // guidedLockSideBar();
     directToFreeFormMode();
     document.getElementById("guided_mode_view").classList.add("is-selected");
   });
@@ -12259,8 +12271,6 @@ $(document).ready(async () => {
     //check if contributorFields is empty
     if (otherLinkFields.length === 0) {
       notyf.error("Please add at least one other link");
-      //Add a contributor field to help the user out a lil
-      //addContributorField();
       return;
     }
 
@@ -12654,21 +12664,22 @@ $(document).ready(async () => {
   };
 
   //back button click handler
-  $("#guided-back-button").on("click", () => {
+  $("#guided-back-button").on("click", async () => {
     pageBeingLeftID = CURRENT_PAGE.id;
-    console.log(pageBeingLeftID);
-    // If the user is on the first two pages, Save and Exit if they try to go back again
-    if (
-      pageBeingLeftID === "guided-intro-page-tab" ||
-      pageBeingLeftID === "guided-name-subtitle-tab"
-    ) {
-      guidedSaveAndExit();
+    const targetPage = getPrevPageNotSkipped(pageBeingLeftID);
+
+    // If the target page when clicking the back button does not exist, then we are on the first not skipped page.
+    // In this case, we want to save and exit guided mode.
+    if (!targetPage) {
+      await guidedSaveAndExit();
       return;
     }
 
-    const targetPage = getPrevPageNotSkipped(CURRENT_PAGE.id);
+    // Get the id of the target page
     const targetPageID = targetPage.id;
-    openPage(targetPageID);
+
+    // open the target page
+    await openPage(targetPageID);
   });
 
   const saveSubPageChanges = async (openSubPageID) => {

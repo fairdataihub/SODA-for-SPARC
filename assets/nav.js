@@ -159,7 +159,6 @@ async function handleSectionTrigger(event) {
 
   if (showSidebarSections.includes(sectionId)) {
     forceActionSidebar("show");
-    console.log("HERE>");
   } else {
     forceActionSidebar("hide");
   }

@@ -1839,12 +1839,20 @@ const ffOpenManifestEditSwal = async (highlevelFolderName) => {
   let guidedManifestTable = [];
   // Function for when user wants to edit the manifest cards
   const existingManifestData = sodaCopy["manifest-files"]?.[highlevelFolderName];
-  // const existingManifestData = sodaJSONObj["guided-manifest-files"][highLevelFolderName];
-  //send manifest data to main.js to then send to child window
+
+  let ffmManifestContainer = document.getElementById("ffm-container-manifest-file-cards").children;
+  //Lock manifest buttons
+  for (let i = 0; i < ffmManifestContainer.length; i++) {
+    ffmManifestContainer[i].children[1].children[0].disabled = true;
+  }
+
   ipcRenderer.invoke("spreadsheet", existingManifestData);
 
   //upon receiving a reply of the spreadsheet, handle accordingly
   ipcRenderer.on("spreadsheet-reply", async (event, result) => {
+    for (let i = 0; i < ffmManifestContainer.length; i++) {
+      ffmManifestContainer[i].children[1].children[0].disabled = false;
+    }
     if (!result || result === "") {
       ipcRenderer.removeAllListeners("spreadsheet-reply");
       return;
@@ -1962,9 +1970,10 @@ const ffmCreateManifest = async (sodaJson) => {
     // response does not format in JSON format so need to format ' with "
     let regex = /'/gm;
     let formattedResponse = response.replace(regex, '"');
-    let capitalTPosition = formattedResponse.search("True");
-    if (capitalTPosition != -1) {
-      formattedResponse = formattedResponse.replace("True", "true");
+    let capitalTPosition = formattedResponse.search("T");
+    while (capitalTPosition != -1) {
+      capitalTPosition = formattedResponse.search("T");
+      formattedResponse = formattedResponse.replace("T", "t");
     }
 
     let json_structure = JSON.parse(formattedResponse);

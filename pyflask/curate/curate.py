@@ -761,9 +761,12 @@ def check_local_dataset_files_validity(soda_json_structure):
 
         for file_key in list(my_folder["files"].keys()):
             file = my_folder["files"][file_key]
-            # if file_key in ["manifest.xlsx", "manifest.csv"]:
-                # continue
+            if file_key in ["manifest.xlsx", "manifest.csv"]:
+                continue
+            print(file)
             file_type = file["type"]
+            print(file_type)
+            print("%" * 40)
             if file_type == "local":
                 file_path = file["path"]
                 if file["type"] == "bf":
@@ -810,7 +813,10 @@ def check_local_dataset_files_validity(soda_json_structure):
         metadata_files = soda_json_structure["metadata-files"]
         for file_key in list(metadata_files.keys()):
             file = metadata_files[file_key]
+            print(file)
             file_type = file["type"]
+            print(file_type)
+            print("$" * 40)
             if file_type == "local":
                 file_path = file["path"]
                 if not isfile(file_path):
@@ -2868,6 +2874,10 @@ def clean_json_structure(soda_json_structure):
     def recursive_file_delete(folder):
         if "files" in folder.keys():
             for item in list(folder["files"]):
+                print(item)
+                if item in ["manifest.xlsx", "manifest.csv"]:
+                    continue
+                print("asdf")
                 if "deleted" in folder["files"][item]["action"]:
                     # remove the file from the soda json structure
                     del folder["files"][item]
@@ -3437,6 +3447,9 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
                 hlf_data_array.append(standard_manifest_columns)
             for item in list(folder["files"]):
                 file_manifest_template_data = []
+                print(item)
+                if item in ["manifest.xlsx", "manifest.csv"]:
+                    continue
                 item_description = folder["files"][item]["description"]
                 item_additional_info = folder["files"][item]["additional-metadata"]
                 file_name = ""

@@ -154,6 +154,7 @@
 .dot {
   height: 30px;
   width: 30px;
+  min-width: 30px;
   margin: 5px;
   border-radius: 50%;
   border: 1px solid;
@@ -859,7 +860,7 @@
 
 .guided--welcome-section-label {
   width: 100%;
-  margin: 0 0 0.45rem 0;
+  margin: 1rem 0.45rem 0;
   color: #b80d49;
   font-weight: 600;
   font-size: 1.2rem;

@@ -685,7 +685,6 @@ const nextPrev = (pageIndex) => {
   //   parentTabs[currentTab].id === "validate-dataset-tab" &&
   //   sodaJSONObj["starting-point"]["type"] === "bf"
   // ) {
-  //   console.log(currentTab);
   //   if (pageIndex === -1) {
   //     currentTab = currentTab - 2;
   //     // fixStepDone(5);
