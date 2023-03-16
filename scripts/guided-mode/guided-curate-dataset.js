@@ -5804,8 +5804,6 @@ const newEmptyFolderObj = () => {
 };
 
 const patchPreviousGuidedModeVersions = () => {
-  let forceUserToRestartFromFirstPage = false;
-
   //temp patch contributor affiliations if they are still a string (they were added in the previous version)
   const contributors = sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
   if (contributors) {
@@ -5869,21 +5867,6 @@ const patchPreviousGuidedModeVersions = () => {
   if (!sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"]) {
     sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = [];
   }
-
-  // If the user was on the airtable award page (does not exist anymore), send them to the create submission metadata page
-  if (sodaJSONObj["page-before-exit"] === "guided-airtable-award-tab") {
-    sodaJSONObj["page-before-exit"] = "guided-create-submission-metadata-tab";
-  }
-
-  const currentSodaVersion = document.getElementById("version").innerHTML;
-  if (!sodaJSONObj["last-version-of-soda-used"]) {
-    sodaJSONObj["last-version-of-soda-used"] = currentSodaVersion;
-  }
-  if (currentSodaVersion > sodaJSONObj["last-version-of-soda-used"]) {
-    forceUserToRestartFromFirstPage = true;
-  }
-
-  return forceUserToRestartFromFirstPage;
 };
 
 //Loads UI when continue curation button is pressed
@@ -5997,8 +5980,23 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   samplesTableData = sodaJSONObj["samples-table-data"];
 
   //patches the sodajsonobj if it was created in a previous version of guided mode
-  //and returns a boolean to indicate if the user should be forced to restart from the first page
-  const forceStartFromFirstPage = patchPreviousGuidedModeVersions();
+  patchPreviousGuidedModeVersions();
+
+  let forceStartFromFirstPage;
+
+  const lastVersionOfSodaUsed = sodaJSONObj["last-version-of-soda-used"];
+
+  // If the progress file does not have a last version of soda used, then force the user to restart from the first page
+  if (!lastVersionOfSodaUsed) {
+    forceStartFromFirstPage = true;
+  } else {
+    // If the progress file has a last version of soda used, then check to see if the current version of soda is greater than the last version of soda used
+    // If the current version of soda is greater than the last version of soda used, then force the user to restart from the first page
+    const currentSodaVersion = document.getElementById("version").innerHTML;
+    if (currentSodaVersion > lastVersionOfSodaUsed) {
+      forceStartFromFirstPage = true;
+    }
+  }
 
   //Return the user to the last page they exited on
   let pageToReturnTo = datasetResumeJsonObj["page-before-exit"];
@@ -6006,7 +6004,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   //If a patch was applied that requires the user to restart from the first page,
   //then force the user to restart from the first page
   if (forceStartFromFirstPage) {
-    pageToReturnTo = "guided-name-subtitle-tab";
+    pageToReturnTo = "guided-ask-if-submission-is-sparc-funded-tab";
   }
 
   //If the dataset was successfully uploaded, send the user to the share with curation team
@@ -6020,6 +6018,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
 
   // Save the skipped pages in a temp variable since guidedTransitionFromHome will remove them
   const prevSessionSkikppedPages = [...sodaJSONObj["skipped-pages"]];
+
   guidedTransitionFromHome();
   // Reskip the pages from a previous session
   for (const pageID of prevSessionSkikppedPages) {
