@@ -1833,9 +1833,9 @@ body.swal2-shown > [aria-hidden="true"] {
 }
 
 #validate-raw-report_btn {
-  background: none!important;
+  background: none !important;
   border: none;
-  padding: 0!important;
+  padding: 0 !important;
   /*optional*/
   font-family: arial, sans-serif;
   /*input has OS specific font-family*/
@@ -1845,9 +1845,9 @@ body.swal2-shown > [aria-hidden="true"] {
 }
 
 #validate-raw-report_btn:hover {
-  background: none!important;
+  background: none !important;
   border: none;
-  padding: 0!important;
+  padding: 0 !important;
   /*optional*/
   font-family: arial, sans-serif;
   /*input has OS specific font-family*/

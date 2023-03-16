@@ -157,6 +157,15 @@ const validateOrganizedDataset = async () => {
     .scrollIntoView({ behavior: "smooth" });
 };
 
+document.querySelector("#validate-raw-report_btn").addEventListener("click", (e) => {
+  console.log("Clicked on raw report button");
+  // open the text file stored at the raw validation report path
+  let pathToRawReport = path.join(os.homedir(), "SODA", "validation.txt");
+  console.log(pathToRawReport);
+
+  shell.openPath(pathToRawReport);
+});
+
 const validateOrganizedDatasetBase = async () => {
   swal.fire({
     title: "Validating Dataset",

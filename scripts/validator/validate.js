@@ -225,12 +225,14 @@ const validateLocalDataset = async () => {
   let validationReportPath = path.join(os.homedir(), "SODA", "validation.txt");
   fs.writeFileSync(validationReportPath, fullReport);
 
+  let SODADirectory = path.join(os.homedir(), "SODA");
+
   if (validationReportData.status === "Incomplete") {
     // An incomplete validation report happens when the validator is unable to generate
     // a path_error_report upon validating the selected dataset.
     await Swal.fire({
       title: "Incomplete Validation Report",
-      text: `SODA was unable to generate a sanitized validation report. You may view your raw validation report at ~/SODA/validation.txt. If you repeatedly have this issue please contact the SPARC Curation Team for support at curation@sparc.science.`,
+      text: `SODA was unable to generate a sanitized validation report. You may view your raw validation report at ${SODADirectory}/validation.txt. If you repeatedly have this issue please contact the SPARC Curation Team for support at curation@sparc.science.`,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       icon: "error",
@@ -245,17 +247,16 @@ const validateLocalDataset = async () => {
     return;
   }
 
-  let errors = validationResponse.data;
+  // get the parsed error report since the validation has been completed
+  let errors = validationReportData.parsed_report;
 
   // this works because the returned validation results are in an Object Literal. If the returned object is changed this will break (e.g., an array will have a length property as well)
   let hasValidationErrors = Object.getOwnPropertyNames(errors).length >= 1;
 
-  let SODADirectory = path.join(os.homedir(), "SODA");
-
   Swal.fire({
     title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
     text: hasValidationErrors
-      ? `Please fix the errors listed in the table below to pass validation. If you would like to see your raw error report, navigate to ${SODADirectory}/validation.json.`
+      ? `Please fix the errors listed in the table below to pass validation. If you would like to see your raw error report, navigate to ${SODADirectory}/validation.txt.`
       : `Your dataset conforms to the SPARC Dataset Structure.`,
     allowEscapeKey: true,
     allowOutsideClick: false,
