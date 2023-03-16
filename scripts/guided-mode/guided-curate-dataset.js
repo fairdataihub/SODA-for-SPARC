@@ -1982,6 +1982,8 @@ const guidedSaveAndExit = async () => {
 
     try {
       await savePageChanges(currentPageID);
+      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+      console.log("saved successfully");
     } catch (error) {
       const pageWithErrorName = CURRENT_PAGE.dataset.pageName;
 
@@ -2205,6 +2207,8 @@ const saveGuidedProgress = async (guidedProgressFileName) => {
 
   //Add datasetStructureJSONObj to the sodaJSONObj and use to load the
   //datasetStructureJsonObj when progress resumed
+
+  console.log("Saving dataset structure JSON object");
   sodaJSONObj["saved-datset-structure-json-obj"] = datasetStructureJSONObj;
   sodaJSONObj["subjects-table-data"] = subjectsTableData;
   sodaJSONObj["samples-table-data"] = samplesTableData;
