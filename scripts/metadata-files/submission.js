@@ -117,7 +117,6 @@ function resetSubmissionFields() {
 }
 
 const openSubmissionMultiStepSwal = async (sparcAward, milestoneRes) => {
-  console.log("milestoneRes", milestoneRes);
 
   //add a custom milestone row for when the user wants to add a custom milestone
   //not included in the dataset deliverables document
@@ -164,7 +163,6 @@ const openSubmissionMultiStepSwal = async (sparcAward, milestoneRes) => {
         `,
       didOpen: () => {
         renderMilestoneSelectionTable(milestoneRes);
-        console.log("foo");
       },
       preConfirm: () => {
         const checkedMilestoneData = getCheckedMilestones();

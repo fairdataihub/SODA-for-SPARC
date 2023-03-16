@@ -466,9 +466,6 @@ $(document).ready(function () {
             jsonManifest = JSON.stringify(sortedJSON);
             convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
             //Update the metadata in json object
-            console.log("$" * 40);
-            console.log(savedData);
-            console.log(savedHeaders);
             // If extra columns are added preserve them into sodaJSONObj
             for (let i = 0; i < savedData.length; i++) {
               let fileName = savedData[i][0];
@@ -476,8 +473,7 @@ $(document).ready(function () {
               let fileNameSplit = fileName.split("/");
               let description = savedData[i][2];
               let additionalMetadata = savedData[i][4];
-              console.log(fileNameSplit[0]);
-              console.log(fileNameSplit);
+
               if (fileNameSplit[0] === "") {
                 //not in a subfolder
                 cleanedFileName = fileNameSplit[1];
@@ -522,23 +518,17 @@ $(document).ready(function () {
                       additionalMetadata;
                     folderDepthReal["files"][fileNameSplit[j]]["additional-metadata"] =
                       additionalMetadata;
-                    console.log(savedData);
-                    console.log(savedHeaders);
+
                     if (savedData[i].length > 5) {
                       //extra columns are present, ensure to preserve them in sodaJSONObj
-                      console.log(savedHeaders.length);
                       for (
                         let extra_column_index = 5;
                         extra_column_index < savedHeaders.length;
                         extra_column_index++
                       ) {
-                        // console.log(savedData[i]);
-                        // console.log(savedData[i].length);
-                        console.log(extra_column_index);
                         folderDepthReal["files"][fileNameSplit[j]]["extra_columns"][
                           savedHeaders[extra_column_index]
                         ] = savedData[i][extra_column_index];
-                        // console.log("preseved extra column for: "  + fileNameSplit[j] + " : " + savedData[i][extra_column_index]);
                       }
                     }
                   } else {
@@ -617,7 +607,6 @@ $(document).ready(function () {
           "*": "{{columnHeader}}",
         },
       })["Sheet1"];
-      console.log("TWICE?");
       // Swal.fire({
       //   title:
       //     "<span style='font-size: 18px !important;'>Edit the manifest file below: </span> <br><span style='font-size: 13px; font-weight: 500'> Tip: Double click on a cell to edit it.<span>",

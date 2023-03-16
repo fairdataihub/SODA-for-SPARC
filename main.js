@@ -506,7 +506,6 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
   ipcMain.on("spreadsheet-results", async (ev, res) => {
     //send back spreadsheet data to main window
     mainWindow.webContents.send("spreadsheet-reply", res);
-    console.log(res);
     //destroy window
     try {
       spreadSheetModal.destroy();
