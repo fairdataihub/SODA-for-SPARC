@@ -914,3 +914,129 @@
   border-color: #e0b4b4 !important;
   background: #fff6f6 !important;
 }
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+  height: 100%;
+}
+
+.coming-soon-div {
+  pointer-events: none;
+}
+
+.soda-green {
+  background-color: var(--color-light-green) !important;
+  color: white !important;
+}
+
+.required:after {
+  content: " *";
+  color: red;
+}
+
+
+/* below are classes to modify sweet alert to SODA standards */
+
+.animate_fastest {
+  --animate-duration: 0.3s;
+}
+
+.swal-wide {
+  width: 500px !important;
+}
+
+.wide-swal {
+  width: auto !important;
+  height: auto !important;
+  justify-content: space-between;
+  display: block;
+}
+
+.wide-swal-auto {
+  width: auto !important;
+  height: auto !important;
+  display: block;
+}
+
+.swal-button-container {
+  display: flex;
+  justify-content: center;
+  overflow: visible;
+  margin-top: 5px;
+}
+
+.swal2-content .guided--form-label,
+.swal2-content .tagify__input {
+  text-align: left;
+}
+
+.swal2-actions {
+  z-index: 0 !important;
+  /* margin-top: 30px !important; */
+}
+
+.swal2-input {
+  outline: none !important;
+  border-width: 0 0 1px !important;
+  border-color: gray !important;
+  box-shadow: none !important;
+  border-radius: 0px !important;
+}
+
+.swal2-input:focus {
+  outline: none !important;
+  border-width: 0 0 2px !important;
+  border-color: #13716d !important;
+}
+
+.swal2-input::-webkit-input-placeholder {
+  color: black;
+  font-weight: bold;
+}
+
+body.swal2-shown > [aria-hidden="true"] {
+  filter: blur(1px);
+  transition: 0.1s filter linear;
+}
+
+.swal2-deny:hover {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1)) !important;
+}
+
+.swal2-validation-message {
+  background: transparent !important;
+  color: red !important;
+}
+
+.swal2-footer {
+  color: #363636 !important;
+  /* justify-content: flex-end !important; */
+  /* padding-right: 20px !important; */
+}
+
+.swal2-footer a {
+  text-decoration: underline;
+  /* color: var(--color-light-green) !important; */
+}
+
+.swal-left-align {
+  text-align: left !important;
+}
+
+.swal2-title {
+  margin: 0px !important;
+  font-size: 16px !important;
+  margin-bottom: 10px !important;
+}
+
+.swal2-select {
+  min-width: 100% !important;
+  font-size: 16px !important;
+}
+
+.swal2-popup {
+  padding: 20px 5px 15px !important;
+}
+
+.swal2-confirm {
+  background-color: var(--color-light-green) !important;
+}

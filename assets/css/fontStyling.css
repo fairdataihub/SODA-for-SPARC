@@ -18,6 +18,10 @@
   color: #787272 !important;
 }
 
+.pennsieve_loading_dataset_percentage {
+  font-family: Poppins !important;
+}
+
 .question-title {
   text-align: center;
   color: var(--color);

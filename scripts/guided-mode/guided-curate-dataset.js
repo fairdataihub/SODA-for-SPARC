@@ -2085,6 +2085,7 @@ const openSubPageNavigation = (pageBeingNavigatedTo) => {
   //Hide the footer div while user is in sub-page navigation
   $("#guided-footer-div").hide();
   //Show the sub-page navigation footer
+  console.log("should appear");
   $("#guided-sub-page-navigation-footer-div").css("display", "flex");
 };
 
