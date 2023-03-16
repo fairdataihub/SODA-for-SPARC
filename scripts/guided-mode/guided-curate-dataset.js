@@ -2059,6 +2059,7 @@ const hideEleShowEle = (elementIdToHide, elementIdToShow) => {
 };
 const hideSubNavAndShowMainNav = (navButtonToClick) => {
   $("#guided-sub-page-navigation-footer-div").hide();
+  $("#guided-footer-div").removeClass("hidden");
   $("#guided-footer-div").css("display", "flex");
   //show the buttons incase they were hidden
   $("#guided-next-button").show();
@@ -2117,8 +2118,10 @@ const openSubPageNavigation = (pageBeingNavigatedTo) => {
   setActiveSubPage(subPageIDtoOpen);
   //Hide the footer div while user is in sub-page navigation
   $("#guided-footer-div").hide();
+  $("#guided-footer-div").addClass("hidden");
   //Show the sub-page navigation footer
   console.log("should appear");
+  $("#guided-sub-page-navigation-footer-div").removeClass("hidden");
   $("#guided-sub-page-navigation-footer-div").css("display", "flex");
 };
 
@@ -2168,8 +2171,10 @@ const guidedTransitionToHome = () => {
 
   //Hide guided headers and footers
   document.getElementById("guided-header-div").classList.add("hidden");
+  $("#guided-footer-div").addClass("hidden");
   $("#guided-footer-div").hide();
   $("#guided-sub-page-navigation-footer-div").hide();
+  $("#guided-sub-page-navigation-footer-div").addClass("hidden");
 };
 
 const guidedTransitionFromDatasetNameSubtitlePage = () => {

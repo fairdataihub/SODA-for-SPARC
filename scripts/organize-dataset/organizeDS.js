@@ -595,7 +595,9 @@ function renameFolder(
   }
 }
 
-function getGlobalPath(path) {
+const getGlobalPath = (path) => {
+  console.log(path);
+  console.log(path.value);
   var currentPath = path.value.trim();
   var jsonPathArray = currentPath.split("/");
   var filtered = jsonPathArray.filter(function (el) {
