@@ -117,7 +117,6 @@ function resetSubmissionFields() {
 }
 
 const openSubmissionMultiStepSwal = async (sparcAward, milestoneRes) => {
-
   //add a custom milestone row for when the user wants to add a custom milestone
   //not included in the dataset deliverables document
   milestoneRes["Not included in the Dataset Deliverables document"] = [
