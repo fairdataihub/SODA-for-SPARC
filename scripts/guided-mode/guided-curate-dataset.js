@@ -232,7 +232,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       sodaJSONObj["digital-metadata"]["name"] = newDatasetName;
     };
 
-    if (pageBeingLeftID === "guided-intro-page-tab") {
+    if (pageBeingLeftID === "guided-resume-existing-dataset-page") {
       const resumingExistingProgress = document
         .getElementById("guided-button-resume-progress-file")
         .classList.contains("selected");
@@ -466,7 +466,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
 
       //Skip this page becausae we should not come back to it
-      guidedSkipPage("guided-intro-page-tab");
+      guidedSkipPage("guided-resume-existing-dataset-page");
     }
 
     if (pageBeingLeftID === "guided-name-subtitle-tab") {
@@ -2137,7 +2137,7 @@ const guidedTransitionFromHome = async () => {
     page.classList.add("hidden");
   });
 
-  CURRENT_PAGE = document.getElementById("guided-intro-page-tab");
+  CURRENT_PAGE = document.getElementById("guided-resume-existing-dataset-page");
 
   //reset sub-page navigation (Set the first sub-page to be the active sub-page
   //for all pages with sub-pages)
@@ -3040,6 +3040,7 @@ const guidedResetSkippedPages = () => {
     "guided-dataset-generation-tab",
     "guided-structure-folder-tab",
     "guided-dataset-dissemination-tab",
+    "guided-resume-existing-dataset-page",
   ];
   for (const page of pagesThatShouldAlwaysBeskipped) {
     guidedSkipPage(page);
@@ -3064,6 +3065,12 @@ const guidedResetSkippedPages = () => {
 
 const guidedSkipPage = (pageId) => {
   const page = document.getElementById(pageId);
+
+  // If the page no longer exists, return
+  if (!page) {
+    return;
+  }
+
   page.dataset.skipPage = "true";
 
   //Hide the parent page or sub page capsule
@@ -3084,8 +3091,13 @@ const guidedSkipPage = (pageId) => {
 };
 
 const guidedUnSkipPage = (pageId) => {
-  console.log(pageId);
   const page = document.getElementById(pageId);
+
+  // If the page no longer exists, return
+  if (!page) {
+    return;
+  }
+
   page.dataset.skipPage = "false";
 
   //Show the parent page or sub page capsule
@@ -3565,7 +3577,7 @@ const openPage = async (targetPageID) => {
 
     // Hide the Header div on the resume existing dataset page
     const guidedProgressContainer = document.getElementById("guided-header-div");
-    if (targetPageID === "guided-intro-page-tab") {
+    if (targetPageID === "guided-resume-existing-dataset-page") {
       guidedProgressContainer.classList.add("hidden");
     } else {
       guidedProgressContainer.classList.remove("hidden");
@@ -3600,7 +3612,7 @@ const openPage = async (targetPageID) => {
       }
     }
 
-    if (targetPageID === "guided-intro-page-tab") {
+    if (targetPageID === "guided-resume-existing-dataset-page") {
       // Hide the pennsieve dataset import progress circle
       const importProgressCircle = document.querySelector(
         "#guided_loading_pennsieve_dataset-organize"
@@ -6015,7 +6027,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   }
 
   //Hide the before getting started page so it doesn't flash when resuming progress
-  document.getElementById("guided-intro-page-tab").classList.add("hidden");
+  document.getElementById("guided-resume-existing-dataset-page").classList.add("hidden");
 
   if (pageToReturnTo) {
     //Hide the sub-page navigation and show the main page navigation footer
@@ -10453,7 +10465,7 @@ $(document).ready(async () => {
     await openPage("guided-ask-if-submission-is-sparc-funded-tab");
 
     // Skip the page where the user can resume an existing local or Pennsieve dataset
-    guidedSkipPage("guided-intro-page-tab");
+    guidedSkipPage("guided-resume-existing-dataset-page");
 
     //Unskip the page where the user decides if their dataset is experimental or computational
     guidedUnSkipPage("guided-subjects-folder-tab");
@@ -10467,8 +10479,8 @@ $(document).ready(async () => {
     attachGuidedMethodsToSodaJSONObj();
     guidedTransitionFromHome();
 
-    guidedUnSkipPage("guided-intro-page-tab");
-    await openPage("guided-intro-page-tab");
+    guidedUnSkipPage("guided-resume-existing-dataset-page");
+    await openPage("guided-resume-existing-dataset-page");
   });
 
   $("#guided-button-start-modify-compnent").on("click", async () => {
