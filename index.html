@@ -259,14 +259,27 @@
     </nav>
 
     <nav id="guided-nav" style="display: none" class="guided--nav">
-      <img class="nav-center-logo-image" src="assets/img/logo-new-green.png" />
-      <p
-        class="guided--help-text mb-0 mt-md"
-        style="border-bottom: 1px solid var(--color-light-green); margin-bottom: 1rem"
+      <label
+        class="guided--form-label centered"
+        style="border-bottom: 1px solid var(--color-light-green); width: auto"
+      >
+        Curent dataset
+      </label>
+      <p class="help-text text-center">
+        An example of a moderately long dataset name is found here
+      </p>
+
+      <label
+        class="guided--form-label centered"
+        style="
+          border-bottom: 1px solid var(--color-light-green);
+          margin-bottom: 0.5rem;
+          width: auto;
+        "
         id="guided-page-navigation-header"
       >
-        <b>Page navigation</b>
-      </p>
+        Page navigation
+      </label>
 
       <ul id="guided-nav-items" class="guided--container-nav-items"></ul>
     </nav>

@@ -1982,7 +1982,6 @@ const guidedSaveAndExit = async () => {
 
     try {
       await savePageChanges(currentPageID);
-      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       const pageWithErrorName = CURRENT_PAGE.dataset.pageName;
 
@@ -2206,8 +2205,6 @@ const saveGuidedProgress = async (guidedProgressFileName) => {
 
   //Add datasetStructureJSONObj to the sodaJSONObj and use to load the
   //datasetStructureJsonObj when progress resumed
-
-  console.log("Saving dataset structure JSON object");
   sodaJSONObj["saved-datset-structure-json-obj"] = datasetStructureJSONObj;
   sodaJSONObj["subjects-table-data"] = subjectsTableData;
   sodaJSONObj["samples-table-data"] = samplesTableData;
@@ -2542,26 +2539,10 @@ const updateManifestJson = async (highLvlFolderName, result) => {
 const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
   const existingManifestData = sodaJSONObj["guided-manifest-files"][highLevelFolderName];
   //send manifest data to main.js to then send to child window
-  // TODO: Lock all other manifest buttons
-  let guidedManifestContainer = document.getElementById(
-    "guided-container-manifest-file-cards"
-  ).children;
-
-  for (let i = 0; i < guidedManifestContainer.length; i++) {
-    guidedManifestContainer[i].children[1].children[0].disabled = true;
-    console.log(guidedManifestContainer[i].children[1].children[0]);
-    console.log(guidedManifestContainer[i].children[1].children[0].disabled);
-  }
-
   ipcRenderer.invoke("spreadsheet", existingManifestData);
 
   //upon receiving a reply of the spreadsheet, handle accordingly
   ipcRenderer.on("spreadsheet-reply", async (event, result) => {
-    for (let i = 0; i < guidedManifestContainer.length; i++) {
-      guidedManifestContainer[i].children[1].children[0].disabled = false;
-      console.log(guidedManifestContainer[i].children[1].children[0]);
-      console.log(guidedManifestContainer[i].children[1].children[0].disabled);
-    }
     if (!result || result === "") {
       ipcRenderer.removeAllListeners("spreadsheet-reply");
       return;
@@ -2695,12 +2676,7 @@ document
       let response = cleanJson.data.soda_json_structure;
       // response does not format in JSON format so need to format ' with "
       let regex = /'/gm;
-      let formattedResponse = response.replace(regex, '"');
-      let capitalTPosition = formattedResponse.search("T");
-      while (capitalTPosition != -1) {
-        capitalTPosition = formattedResponse.search("T");
-        formattedResponse = formattedResponse.replace("T", "t");
-      }
+      let formattedResponse = JSON.parse(response.replace(regex, '"'));
       const formattedDatasetStructure = formattedResponse["dataset-structure"];
       // Retrieve the manifest data to be used to generate the manifest files
       const res = await client.post(
@@ -5316,10 +5292,19 @@ const setActiveSubPage = (pageIdToActivate) => {
     renderSubjectsTable();
     //remove the add subject help text
     document.getElementById("guided-add-subject-instructions").classList.add("hidden");
+    document.getElementById("guided-subject-pool-sample-text").innerHTML = `
+      SPARC data is typically collected from subjects (either human or non-human) and/or
+      from samples collected from such subjects (e.g., tissue samples). As per SPARC
+      guidelines, a unique ID of the format sub-xxx must be assigned to each subject of a
+      dataset and a unique ID of the format sam-xxx must be assigned to each sample from a
+      given subject.
+    `;
   }
   if (pageIdToActivate === "guided-organize-subjects-into-pools-page") {
+    document.getElementById("guided-subject-pool-sample-text").innerHTML = `
+      This is the text for pools
+    `;
     const pools = sodaJSONObj.getPools();
-
     const poolElementRows = Object.keys(pools)
       .map((pool) => {
         return generatePoolRowElement(pool);
@@ -5358,6 +5343,9 @@ const setActiveSubPage = (pageIdToActivate) => {
     }
   }
   if (pageIdToActivate === "guided-specify-samples-page") {
+    document.getElementById("guided-subject-pool-sample-text").innerHTML = `
+      This is the text for samples
+    `;
     renderSamplesTable();
   }
   if (pageIdToActivate === "guided-primary-samples-organization-page") {
@@ -5828,6 +5816,8 @@ const newEmptyFolderObj = () => {
 };
 
 const patchPreviousGuidedModeVersions = () => {
+  let forceUserToRestartFromFirstPage = false;
+
   //temp patch contributor affiliations if they are still a string (they were added in the previous version)
   const contributors = sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
   if (contributors) {
@@ -5891,6 +5881,21 @@ const patchPreviousGuidedModeVersions = () => {
   if (!sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"]) {
     sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = [];
   }
+
+  // If the user was on the airtable award page (does not exist anymore), send them to the create submission metadata page
+  if (sodaJSONObj["page-before-exit"] === "guided-airtable-award-tab") {
+    sodaJSONObj["page-before-exit"] = "guided-create-submission-metadata-tab";
+  }
+
+  const currentSodaVersion = document.getElementById("version").innerHTML;
+  if (!sodaJSONObj["last-version-of-soda-used"]) {
+    sodaJSONObj["last-version-of-soda-used"] = currentSodaVersion;
+  }
+  if (currentSodaVersion > sodaJSONObj["last-version-of-soda-used"]) {
+    forceUserToRestartFromFirstPage = true;
+  }
+
+  return forceUserToRestartFromFirstPage;
 };
 
 //Loads UI when continue curation button is pressed
@@ -6004,23 +6009,8 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   samplesTableData = sodaJSONObj["samples-table-data"];
 
   //patches the sodajsonobj if it was created in a previous version of guided mode
-  patchPreviousGuidedModeVersions();
-
-  let forceStartFromFirstPage;
-
-  const lastVersionOfSodaUsed = sodaJSONObj["last-version-of-soda-used"];
-
-  // If the progress file does not have a last version of soda used, then force the user to restart from the first page
-  if (!lastVersionOfSodaUsed) {
-    forceStartFromFirstPage = true;
-  } else {
-    // If the progress file has a last version of soda used, then check to see if the current version of soda is greater than the last version of soda used
-    // If the current version of soda is greater than the last version of soda used, then force the user to restart from the first page
-    const currentSodaVersion = document.getElementById("version").innerHTML;
-    if (currentSodaVersion > lastVersionOfSodaUsed) {
-      forceStartFromFirstPage = true;
-    }
-  }
+  //and returns a boolean to indicate if the user should be forced to restart from the first page
+  const forceStartFromFirstPage = patchPreviousGuidedModeVersions();
 
   //Return the user to the last page they exited on
   let pageToReturnTo = datasetResumeJsonObj["page-before-exit"];
@@ -6028,7 +6018,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   //If a patch was applied that requires the user to restart from the first page,
   //then force the user to restart from the first page
   if (forceStartFromFirstPage) {
-    pageToReturnTo = "guided-ask-if-submission-is-sparc-funded-tab";
+    pageToReturnTo = "guided-name-subtitle-tab";
   }
 
   //If the dataset was successfully uploaded, send the user to the share with curation team
@@ -6042,7 +6032,6 @@ const guidedResumeProgress = async (resumeProgressButton) => {
 
   // Save the skipped pages in a temp variable since guidedTransitionFromHome will remove them
   const prevSessionSkikppedPages = [...sodaJSONObj["skipped-pages"]];
-
   guidedTransitionFromHome();
   // Reskip the pages from a previous session
   for (const pageID of prevSessionSkikppedPages) {
@@ -7320,7 +7309,6 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
           enabled: 0,
           closeOnSelect: true,
           position: "auto",
-          maxItems: Infinity,
         },
       });
       createDragSort(contributorRolesTagify);
@@ -7524,7 +7512,6 @@ const openGuidedAddContributorSwal = async () => {
           enabled: 0,
           closeOnSelect: true,
           position: "auto",
-          maxItems: Infinity,
         },
       });
       createDragSort(contributorRolesTagify);
@@ -7683,6 +7670,122 @@ const renderDatasetDescriptionContributorsTable = () => {
   contributorsTable.innerHTML = contributorsTableHTML;
 };
 
+const addContributorField = () => {
+  const contributorsContainer = document.getElementById("contributors-container");
+  //create a new div to hold contributor fields
+  const newContributorField = document.createElement("div");
+  newContributorField.classList.add("guided--section");
+  newContributorField.classList.add("mt-lg");
+  newContributorField.classList.add("neumorphic");
+  newContributorField.classList.add("guided-contributor-field-container");
+  newContributorField.style.width = "100%";
+  newContributorField.style.position = "relative";
+
+  newContributorField.innerHTML = `
+    <i 
+      class="fas fa-times fa-2x"
+      style="
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        color: black;
+        cursor: pointer;
+      "
+      onclick="removeContributorField(this)"
+    >
+    </i>
+    <h2 class="guided--text-sub-step">
+      Enter contributor details
+    </h2>
+    <div class="space-between w-100">
+      <div class="guided--flex-center mt-sm" style="width: 45%">
+        <label class="guided--form-label required">Last name: </label>
+        <input
+          class="guided--input guided-last-name-input"
+          type="text"
+          placeholder="Enter last name here"
+        />
+      </div>
+      <div class="guided--flex-center mt-sm" style="width: 45%">
+        <label class="guided--form-label required">First name: </label>
+        <input
+          class="guided--input guided-first-name-input"
+          type="text"
+          placeholder="Enter first name here"
+        />
+      </div>
+    </div>
+    <label class="guided--form-label required mt-md">ORCID: </label>
+    <input
+      class="guided--input guided-orcid-input"
+      type="text"
+      placeholder="Enter ORCID here"
+    />
+    <label class="guided--form-label required mt-md">Affiliation(s): </label>
+    <input class="guided-contributor-affiliation-input"
+          contenteditable="true"
+    />
+  
+    <label class="guided--form-label required mt-md">Role(s): </label>
+    <input class="guided-contributor-role-input"
+      contenteditable="true"
+      placeholder='Type here to view and add contributor roles from the list of standard roles'
+    />
+  `;
+
+  contributorsContainer.appendChild(newContributorField);
+
+  //select the last contributor role input (the one that was just added)
+  const newlyAddedContributorField = contributorsContainer.lastChild;
+
+  //Create Affiliation(s) tagify for each contributor
+  const contributorAffiliationInput = newlyAddedContributorField.querySelector(
+    ".guided-contributor-affiliation-input"
+  );
+  const affiliationTagify = new Tagify(contributorAffiliationInput, {
+    duplicate: false,
+  });
+
+  createDragSort(affiliationTagify);
+
+  const newContributorRoleElement = newlyAddedContributorField.querySelector(
+    ".guided-contributor-role-input"
+  );
+  //Add a new tagify for the contributor role field for the new contributor field
+  const tagify = new Tagify(newContributorRoleElement, {
+    whitelist: [
+      "PrincipleInvestigator",
+      "Creator",
+      "CoInvestigator",
+      "DataCollector",
+      "DataCurator",
+      "DataManager",
+      "Distributor",
+      "Editor",
+      "Producer",
+      "ProjectLeader",
+      "ProjectManager",
+      "ProjectMember",
+      "RelatedPerson",
+      "Researcher",
+      "ResearchGroup",
+      "Sponsor",
+      "Supervisor",
+      "WorkPackageLeader",
+      "Other",
+    ],
+    enforceWhitelist: true,
+    dropdown: {
+      enabled: 0,
+      closeOnSelect: true,
+      position: "auto",
+    },
+  });
+  //scroll to the new element
+
+  createDragSort(tagify);
+  smoothScrollToElement(newlyAddedContributorField);
+};
 const getGuidedProtocolLinks = () => {
   try {
     return sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"].map(
@@ -7929,6 +8032,89 @@ const renderProtocolsTable = () => {
   protocolsContainer.innerHTML = protocolElements;
 };
 
+const renderContributorFields = (contributionMembersArray) => {
+  //loop through curationMembers object
+  let contributionMembersElements = contributionMembersArray
+    .map((contributionMember) => {
+      return generateContributorField(
+        contributionMember["contributorLastName"],
+        contributionMember["contributorFirstName"],
+        contributionMember["conID"],
+        contributionMember["conAffliation"],
+        contributionMember["conRole"]
+      );
+    })
+    .join("\n");
+
+  const contributorsContainer = document.getElementById("contributors-container");
+  contributorsContainer.innerHTML = contributionMembersElements;
+
+  //Create Affiliation(s) tagify for each contributor
+  const contributorAffiliationInputs = contributorsContainer.querySelectorAll(
+    ".guided-contributor-affiliation-input"
+  );
+  contributorAffiliationInputs.forEach((contributorAffiliationInput) => {
+    const tagify = new Tagify(contributorAffiliationInput, {
+      duplicate: false,
+    });
+    createDragSort(tagify);
+    if (contributorAffiliationInput.dataset.initialContributorAffiliation) {
+      const initialAffiliations = contributorAffiliationInput.dataset.initialContributorAffiliation;
+      const initialAffiliationsArray = initialAffiliations.split(",");
+      for (const initialAffiliation of initialAffiliationsArray) {
+        tagify.addTags([initialAffiliation]);
+      }
+    }
+  });
+
+  //create Role(s) tagify for each contributor
+  const contributorRoleInputs = contributorsContainer.querySelectorAll(
+    ".guided-contributor-role-input"
+  );
+  contributorRoleInputs.forEach((contributorRoleElement) => {
+    const tagify = new Tagify(contributorRoleElement, {
+      whitelist: [
+        "PrincipleInvestigator",
+        "Creator",
+        "CoInvestigator",
+        "DataCollector",
+        "DataCurator",
+        "DataManager",
+        "Distributor",
+        "Editor",
+        "Producer",
+        "ProjectLeader",
+        "ProjectManager",
+        "ProjectMember",
+        "RelatedPerson",
+        "Researcher",
+        "ResearchGroup",
+        "Sponsor",
+        "Supervisor",
+        "WorkPackageLeader",
+        "Other",
+      ],
+      enforceWhitelist: true,
+      dropdown: {
+        enabled: 0,
+        closeOnSelect: true,
+        position: "auto",
+      },
+    });
+    createDragSort(tagify);
+    //if contributorRoleElement has data-initial-contributors, the create a tagify for each comma split contributor role
+    if (contributorRoleElement.dataset.initialContributorRoles) {
+      const initialContributors = contributorRoleElement.dataset.initialContributorRoles;
+      const initialContributorsArray = initialContributors.split(",");
+      for (const contirubtorRole of initialContributorsArray) {
+        tagify.addTags([contirubtorRole]);
+      }
+    }
+  });
+
+  //show the contributor fields
+  unHideAndSmoothScrollToElement("guided-div-contributor-field-set");
+};
 const renderAdditionalLinksTable = () => {
   const additionalLinksTableBody = document.getElementById("additional-links-table-body");
   const additionalLinkData =
@@ -12152,6 +12338,8 @@ $(document).ready(async () => {
     //check if contributorFields is empty
     if (otherLinkFields.length === 0) {
       notyf.error("Please add at least one other link");
+      //Add a contributor field to help the user out a lil
+      //addContributorField();
       return;
     }
 
