@@ -3772,8 +3772,8 @@ const openPage = async (targetPageID) => {
             const contributorArray = contributorData[i];
             // split the name into first and last name with the first name being the first element and last name being the rest of the elements
             const contributorFullName = contributorArray[0];
-            const contributorFirstName = contributorFullName.split(" ")[1].trim();
-            const contributorLastName = contributorFullName.split(" ")[0].trim();
+            const contributorFirstName = contributorFullName.split(",")[1].trim();
+            const contributorLastName = contributorFullName.split(",")[0].trim();
             const contributorID = contributorArray[1];
             const contributorAffiliation = contributorArray[2].split(", ");
             const contributorRoles = contributorArray[3].split(", ");
@@ -6805,7 +6805,7 @@ const addContributor = (
   sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"].push({
     contributorFirstName: contributorFirstName,
     contributorLastName: contributorLastName,
-    conName: `${contributorFirstName} ${contributorLastName}`,
+    conName: `${contributorLastName}, ${contributorFirstName} `,
     conID: contributorORCID,
     conAffliation: contributorAffiliationsArray,
     conRole: contributorRolesArray,
@@ -6833,7 +6833,7 @@ const editContributorByOrcid = (
 
   contributor.contributorFirstName = contributorFirstName;
   contributor.contributorLastName = contributorLastName;
-  contributor.conName = `${contributorFirstName} ${contributorLastName}`;
+  contributor.conName = `${contributorLastName}, ${contributorFirstName} `;
   contributor.conID = newContributorOrcid;
   contributor.conAffliation = contributorAffiliationsArray.map((affiliation) => affiliation.value);
   contributor.conRole = contributorRolesArray.map((role) => role.value);
