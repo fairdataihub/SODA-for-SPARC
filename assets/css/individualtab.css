@@ -1832,7 +1832,7 @@ body.swal2-shown > [aria-hidden="true"] {
   position: relative;
 }
 
-#validate-raw-report_btn {
+.validate-raw-report_btn {
   background: none !important;
   border: none;
   padding: 0 !important;
@@ -1844,7 +1844,7 @@ body.swal2-shown > [aria-hidden="true"] {
   cursor: pointer;
 }
 
-#validate-raw-report_btn:hover {
+.validate-raw-report_btn:hover {
   background: none !important;
   border: none;
   padding: 0 !important;

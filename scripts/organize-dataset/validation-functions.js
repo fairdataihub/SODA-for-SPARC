@@ -81,8 +81,6 @@ const validateOrganizedDataset = async () => {
     return;
   }
 
-  console.log("Here");
-
   let metadataJSON = metadataJSONResponse.data;
 
   const clientUUID = uuid();
@@ -112,7 +110,35 @@ const validateOrganizedDataset = async () => {
     });
   }
 
-  let report = validationReportResponse.data;
+  let validationReportData = validationReportResponse.data;
+
+  let SODADirectory = path.join(os.homedir(), "SODA");
+  let validationReportPath = path.join(SODADirectory, "validation.txt");
+  let fullReport = validationReportData.full_report;
+  fs.writeFileSync(validationReportPath, fullReport);
+
+  if (validationReportData.status === "Incomplete") {
+    // An incomplete validation report happens when the validator is unable to generate
+    // a path_error_report upon validating the selected dataset.
+    await Swal.fire({
+      title: "Incomplete Validation Report",
+      text: `SODA was unable to generate a sanitized validation report. You may view your raw validation report at ${SODADirectory}/validation.txt. If you repeatedly have this issue please contact the SPARC Curation Team for support at curation@sparc.science.`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      icon: "error",
+      showCancelButton: false,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+    return;
+  }
+
+  // write the full report to the ~/SODA/validation.txt file
+  let report = validationReportData.parsed_report;
 
   // this works because the returned validation results are in an Object Literal. If the returned object is changed this will break (e.g., an array will have a length property as well)
   let hasValidationErrors = Object.getOwnPropertyNames(report).length >= 1;
@@ -157,11 +183,10 @@ const validateOrganizedDataset = async () => {
     .scrollIntoView({ behavior: "smooth" });
 };
 
-document.querySelector("#validate-raw-report_btn").addEventListener("click", (e) => {
+document.querySelector(".validate-raw-report_btn").addEventListener("click", (e) => {
   console.log("Clicked on raw report button");
   // open the text file stored at the raw validation report path
   let pathToRawReport = path.join(os.homedir(), "SODA", "validation.txt");
-  console.log(pathToRawReport);
 
   shell.openPath(pathToRawReport);
 });
