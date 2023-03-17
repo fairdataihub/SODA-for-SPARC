@@ -557,6 +557,7 @@
         data-parent-tab-name="Dataset Structure"
       >
         <div class="guided--capsule-container">
+          <div class="guided--capsule" id="guided-dataset-type-selection-capsule"></div>
           <div class="guided--capsule" id="guided-subjects-folder-capsule"></div>
           <div class="guided--capsule" id="guided-primary-data-organization-capsule"></div>
           <div class="guided--capsule" id="guided-source-data-organization-capsule"></div>
@@ -565,6 +566,85 @@
           <div class="guided--capsule" id="guided-protocol-folder-capsule"></div>
           <div class="guided--capsule" id="guided-docs-folder-capsule"></div>
           <div class="guided--capsule" id="guided-folder-structure-preview-capsule"></div>
+        </div>
+
+        <div
+          class="guided--page hidden"
+          id="guided-dataset-type-selection-tab"
+          data-page-name="Dataset type"
+        >
+          <h1 class="guided--text-sub-step">Select a dataset type</h1>
+          <div class="guided--section" id="guided-section-submission-sparc-or-nonsparc">
+            <h2 class="guided--text-sub-step">
+              Is the dataset you are submitting funded by a SPARC award?
+            </h2>
+            <div class="guided--radio-button-container">
+              <button
+                class="ui positive basic button guided--radio-button"
+                id="guided-button-dataset-is-sparc-funded"
+                data-next-element="guided-section-dataset-sparc-funded"
+                data-button-config-value="dataset-is-sparc-funded"
+                data-button-config-value-state="yes"
+              >
+                Yes
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button"
+                id="guided-button-dataset-is-not-sparc-funded"
+                data-next-element="guided-section-dataset-not-sparc-funded"
+                data-button-config-value="dataset-is-sparc-funded"
+                data-button-config-value-state="no"
+              >
+                No
+              </button>
+            </div>
+          </div>
+
+          <div class="guided--section hidden" id="guided-section-dataset-sparc-funded">
+            <h2 class="guided--text-sub-step">
+              Click "Save and Continue" to confirm your dataset is funded by a SPARC award.
+            </h2>
+          </div>
+
+          <div class="guided--section hidden" id="guided-section-dataset-not-sparc-funded">
+            <h2 class="guided--text-sub-step">
+              Have you already reached out to the SPARC curation team to see if your data is
+              suitable for the SPARC Data Portal?
+            </h2>
+            <div class="guided--radio-button-container">
+              <button
+                class="ui positive basic button guided--radio-button"
+                id="guided-button-non-sparc-user-has-contacted-sparc"
+                data-next-element="guided-section-non-sparc-user-has-contacted-sparc"
+                data-button-config-value="non-sparc-user-has-contacted-sparc"
+                data-button-config-value-state="yes"
+              >
+                Yes
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button"
+                id="guided-button-non-sparc-user-has-not-contacted-sparc"
+                data-next-element="guided-section-non-sparc-user-has-not-contacted-sparc"
+                data-button-config-value="non-sparc-user-has-contacted-sparc"
+                data-button-config-value-state="no"
+              >
+                No
+              </button>
+            </div>
+            <div class="guided--section" id="guided-section-non-sparc-user-has-contacted-sparc">
+              <h2 class="guided--text-sub-step">
+                Great, click "Continue" to start the curation process.
+              </h2>
+            </div>
+            <div class="guided--section" id="guided-section-non-sparc-user-has-not-contacted-sparc">
+              <p class="help-text">
+                Please contact the SPARC curation team before continuing at
+                <a href="mailto:curation@sparc.science">curation@sparc.science</a> to ensure that
+                your dataset is suitable for the SPARC platform and to maximize the impact of your
+                data.
+              </p>
+            </div>
+          </div>
         </div>
 
         <div

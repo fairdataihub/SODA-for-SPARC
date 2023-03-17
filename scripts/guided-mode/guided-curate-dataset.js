@@ -2149,6 +2149,7 @@ const guidedTransitionFromHome = async () => {
     setActiveSubPage(firstSubPage.id.replace("-capsule", ""));
   }
 
+  //Unskip all pages besides the ones that should always be skipped
   guidedResetSkippedPages();
 };
 
@@ -10477,16 +10478,10 @@ $(document).ready(async () => {
 
     guidedTransitionFromHome();
 
-    await openPage("guided-ask-if-submission-is-sparc-funded-tab");
-
-    // Skip the page where the user can resume an existing local or Pennsieve dataset
-    guidedSkipPage("guided-resume-existing-dataset-tab");
-
-    //Unskip the page where the user decides if their dataset is experimental or computational
-    guidedUnSkipPage("guided-subjects-folder-tab");
-
     // Skip the changes metadata tab as new datasets do not have changes metadata
     guidedSkipPage("guided-create-changes-metadata-tab");
+
+    await openPage("guided-ask-if-submission-is-sparc-funded-tab");
   });
 
   $("#guided-button-start-existing-curate").on("click", async () => {
