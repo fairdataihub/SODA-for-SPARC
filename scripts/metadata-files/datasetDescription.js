@@ -28,23 +28,11 @@ const addAdditionalLinkBtn = document.getElementById("button-ds-add-link");
 const datasetDescriptionFileDataset = document.getElementById("ds-name");
 const parentDSDropdown = document.getElementById("input-parent-ds");
 
-// Main function to check Airtable status upon loading soda
-///// config and load live data from Airtable
 var sparcAwards = [];
-var airtableRes = [];
 
 var ddDestinationPath = "";
 
 $(document).ready(function () {
-  $("#add-other-contributors").on("click", function () {
-    if ($(this).text() == "Add contributors not listed above") {
-      addOtherContributors("table-current-contributors");
-      $(this).text("Cancel manual typing");
-    } else {
-      cancelOtherContributors("table-current-contributors");
-      $(this).text("Add contributors not listed above");
-    }
-  });
   // ipcRenderer.on(
   //   "selected-metadata-ds-description",
   //   (event, dirpath, filename) => {
@@ -78,7 +66,6 @@ $(document).ready(function () {
   //     }
   //   }
   // );
-  checkAirtableStatus("");
   ipcRenderer.on("show-missing-items-ds-description", (event, index) => {
     if (index === 0) {
       ipcRenderer.send("open-folder-dialog-save-ds-description", "dataset_description.xlsx");
@@ -129,77 +116,6 @@ $(document).ready(function () {
     }
   });
 });
-
-function checkAirtableStatus(keyword) {
-  var airKeyContent = parseJson(airtableConfigPath);
-  if (Object.keys(airKeyContent).length === 0) {
-    airtableRes = [false, ""];
-    $("#current-airtable-account").html("None");
-    return airtableRes;
-  } else {
-    var airKeyInput = airKeyContent["api-key"];
-    var airKeyName = airKeyContent["key-name"];
-    if (airKeyInput !== "" && airKeyName !== "") {
-      Airtable.configure({
-        endpointUrl: "https://" + airtableHostname,
-        apiKey: airKeyInput,
-      });
-      var base = Airtable.base("appiYd1Tz9Sv857GZ");
-      base("sparc_members")
-        .select({
-          view: "All members (ungrouped)",
-        })
-        .eachPage(
-          function page(records, fetchNextPage) {
-            records.forEach(function (record) {
-              if (record.get("Project_title") !== undefined) {
-                item = record.get("SPARC_Award_#").concat(" (", record.get("Project_title"), ")");
-                sparcAwards.push(item);
-              }
-            }),
-              fetchNextPage();
-          },
-          function done(err) {
-            if (err) {
-              log.error(err);
-              console.log(err);
-              $("#current-airtable-account").html("None");
-              ipcRenderer.send(
-                "track-event",
-                "Error",
-                "Prepare Metadata - Add Airtable account - Check Airtable status",
-                "Airtable",
-                1
-              );
-
-              airtableRes = [false, ""];
-              return airtableRes;
-            } else {
-              ipcRenderer.send(
-                "track-event",
-                "Success",
-                "Prepare Metadata - Add Airtable account - Check Airtable status",
-                "Airtable",
-                1
-              );
-              $("#current-airtable-account").text(airKeyName);
-              var awardSet = new Set(sparcAwards);
-              var resultArray = [...awardSet];
-              airtableRes = [true, airKeyName];
-              if (keyword === "dd") {
-                helpSPARCAward("dd", "free-form");
-              }
-              return airtableRes;
-            }
-          }
-        );
-    } else {
-      $("#current-airtable-account").text(airKeyName);
-      airtableRes = [true, airKeyName];
-      return airtableRes;
-    }
-  }
-}
 
 /* The below function is needed because
   when users add a row and then delete it, the ID for such row is deleted (row-name-2),
@@ -259,7 +175,7 @@ function checkContributorNameDuplicates(table, currentRow) {
   return duplicate;
 }
 
-// clone Last names of contributors (from a global Airtable Contributor array) to subsequent selects so we don't have to keep calling Airtable API
+// clone Last names of contributors to subsequent selects so we don't have to keep calling Airtable API
 function cloneConNamesSelect(selectLast) {
   removeOptions(document.getElementById(selectLast));
   addOption(document.getElementById(selectLast), "Select an option", "Select");
@@ -320,96 +236,12 @@ function createConsAffliationTagify(inputField) {
   createDragSort(tagify);
 }
 
-/*
-cancelOtherContributors() and addOtherContributors() are needed when users want to
-manually type Contributor names instead of choosing from the Airtable retrieved dropdown list
-*/
-
-function cancelOtherContributors(table) {
-  var rowcount = document.getElementById(table).rows.length;
-  var rowIndex = rowcount - 1;
-  var currentRow =
-    document.getElementById(table).rows[document.getElementById(table).rows.length - 1];
-  currentRow.cells[0].outerHTML =
-    "<td class='grab'><select id='ds-description-contributor-list-last-" +
-    rowIndex +
-    "' onchange='onchangeLastNames(" +
-    rowIndex +
-    ")' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td>";
-  currentRow.cells[1].outerHTML =
-    "<td class='grab'><select disabled id='ds-description-contributor-list-first-" +
-    rowIndex +
-    "' onchange='onchangeFirstNames(" +
-    rowIndex +
-    ")' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td>";
-  cloneConNamesSelect("ds-description-contributor-list-last-" + rowIndex.toString());
-}
-
-function addOtherContributors(table) {
-  var rowcount = document.getElementById(table).rows.length;
-  var rowIndex = rowcount;
-  var currentRow =
-    document.getElementById(table).rows[document.getElementById(table).rows.length - 1];
-  currentRow.cells[0].outerHTML =
-    "<td><input type='text' placeholder='Type here' contenteditable='true' id='other-contributors-last-" +
-    rowIndex +
-    "'></input></td>";
-  currentRow.cells[1].outerHTML =
-    "<td><input type='text' placeholder='Type here' contenteditable='true' id='other-contributors-first-" +
-    rowIndex +
-    "'></input></td>";
-  createConsRoleTagify("input-con-role-" + currentRow.rowIndex.toString());
-  createConsAffliationTagify("input-con-affiliation-" + currentRow.rowIndex.toString());
-}
-
 function convertDropdownToTextBox(dropdown) {
   if (document.getElementById(dropdown)) {
     $($("#" + dropdown).parents()[1]).css("display", "none");
     if (dropdown == "ds-description-award-list") {
       $("#SPARC-Award-raw-input-div-dd").css("display", "flex");
     }
-  }
-}
-
-/* The functions ddNoAirtableMode() and resetDDUI() is needed to track when Airtable connection status is changed within
-  a SODA session -> SODA will accordingly update what to show under Submission and DD files
-*/
-
-function ddNoAirtableMode(action) {
-  if (action == "On") {
-    noAirtable = true;
-    $("#add-other-contributors").css("display", "none");
-    convertDropdownToTextBox("ds-description-award-list");
-    convertDropdownToTextBox("ds-description-contributor-list-last-1");
-    convertDropdownToTextBox("ds-description-contributor-list-first-1");
-    $("#table-current-contributors").find("tr").slice(1).remove();
-    rowIndex = 1;
-    newRowIndex = 1;
-    var row = (document.getElementById("table-current-contributors").insertRow(rowIndex).outerHTML =
-      "<tr id='row-current-name" +
-      newRowIndex +
-      "'><td class='grab'><input id='ds-description-raw-contributor-list-last-" +
-      newRowIndex +
-      "' class='form-container-input-bf' type='text'></input></td><td class='grab'><input id='ds-description-raw-contributor-list-first-" +
-      newRowIndex +
-      "' type='text' class='form-container-input-bf'></input></td><td class='grab'><input type='text' id='input-con-ID-" +
-      newRowIndex +
-      "' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-" +
-      newRowIndex +
-      "' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-" +
-      newRowIndex +
-      "'></input></td><td class='grab'><label class='switch'><input onclick='onChangeContactLabel(" +
-      newRowIndex +
-      ")' id='ds-contact-person-" +
-      newRowIndex +
-      "' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
-      newRowIndex +
-      ")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>");
-    createConsRoleTagify("input-con-role-" + newRowIndex.toString());
-    createConsAffliationTagify("input-con-affiliation-" + newRowIndex.toString());
-  } else if (action == "Off") {
-    noAirtable = false;
-    loadAwards();
   }
 }
 
@@ -444,9 +276,7 @@ function resetDDUI(table) {
     newRowIndex +
     ")' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><select disabled id='ds-description-contributor-list-first-" +
     newRowIndex +
-    "' onchange='onchangeFirstNames(" +
-    newRowIndex +
-    ")'  class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><input type='text' id='input-con-ID-" +
+    "' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><input type='text' id='input-con-ID-" +
     newRowIndex +
     "' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-" +
     newRowIndex +
@@ -1028,356 +858,11 @@ function addAdditionalLinktoTableDD(link, linkType, linkRelation, description) {
     "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_additional_link_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_additional_link_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
 }
 
-const guidedSetImportedSPARCAward = (awardString) => {
-  // save the award string to JSONObj to be shared with other award inputs
-  sodaJSONObj["dataset-metadata"]["shared-metadata"]["imported-sparc-award"] = awardString;
-
-  $("#guided-input-submission-sparc-award-import").val(awardString);
-
-  document.getElementById("guided-div-imported-SPARC-award").classList.remove("hidden");
-  //change the button text of guided-button-import-airtable-award
-  document.getElementById("guided-button-import-airtable-award").innerHTML =
-    "Edit award information from Airtable";
-};
-
-const helpSPARCAward = async (filetype, curationMode) => {
-  var award = "";
-  if (filetype === "dd") {
-    var res = airtableRes;
-    if (curationMode === "free-form") {
-      $("#select-sparc-award-dd-spinner").css("display", "block");
-    }
-    if (res[0]) {
-      let keyname = res[1];
-      let swalElement = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'dd\', '${curationMode}')" style="font-weight:500;text-decoration: underline"><svg class="svg-change-current-account bi bi-pencil-fill" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" viewBox="0 0 16 16">
-      <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"></path>
-    </svg></a></span></h4><h4 style="text-align:left">Select your award: </h4><div
-        class="search-select-box"><select id="select-SPARC-award" class="w-100" data-live-search="true"style="width: 450px;border-radius: 7px;padding: 8px;"data-none-selected-text="Loading awards..."></select></div></div>`;
-      const { value: awardVal } = await Swal.fire({
-        html: swalElement,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        inputPlaceholder: "Select an award",
-        showCancelButton: true,
-        confirmButtonText: "Confirm",
-        reverseButtons: reverseSwalButtons,
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-        didOpen: () => {
-          $("#select-sparc-award-dd-spinner").css("display", "none");
-          populateSelectSPARCAward(awardObj, "select-SPARC-award");
-          $("#select-SPARC-award").selectpicker();
-          $("#select-SPARC-award").selectpicker("refresh");
-        },
-        preConfirm: () => {
-          if ($("#select-SPARC-award").val() === "Select") {
-            Swal.showValidationMessage("Please select an award.");
-          } else {
-            award = $("#select-SPARC-award").val();
-            globalSPARCAward = $("#select-SPARC-award").val();
-          }
-        },
-      });
-      if (awardVal) {
-        if (curationMode === "free-form") {
-          if (contributorArray.length !== 0) {
-            Swal.fire({
-              title: "Are you sure you want to delete all of the previous contributor information?",
-              showCancelButton: true,
-              reverseButtons: reverseSwalButtons,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              cancelButtonText: `No!`,
-              cancelButtonColor: "#f44336",
-              confirmButtonColor: "#3085d6",
-              confirmButtonText: "Yes",
-              showClass: {
-                popup: "animate__animated animate__zoomIn animate__faster",
-              },
-              hideClass: {
-                popup: "animate__animated animate__zoomOut animate__faster",
-              },
-            }).then((boolean) => {
-              if (boolean.isConfirmed) {
-                changeAward(award);
-              }
-            });
-          } else {
-            changeAward(award);
-          }
-        }
-        if (curationMode === "guided") {
-          changeAward(award, "guided");
-        }
-        if (curationMode === "guided--getting-started") {
-          //curationMode is getting-started page
-          changeAward(award, "guided");
-        }
-      }
-    } else {
-      Swal.fire({
-        title: "At this moment, SODA is not connected with your Airtable account.",
-        text: "Would you like to connect your Airtable account with SODA?",
-        showCancelButton: true,
-        reverseButtons: reverseSwalButtons,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        cancelButtonText: `No!`,
-        cancelButtonColor: "#f44336",
-        confirmButtonColor: "#3085d6",
-        confirmButtonText: "Yes",
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      }).then((boolean) => {
-        if (boolean.isConfirmed) {
-          showAddAirtableAccountSweetalert("dd", curationMode);
-        }
-      });
-      $("#select-sparc-award-dd-spinner").css("display", "none");
-    }
-  }
-  if (filetype === "submission") {
-    var res = airtableRes;
-    let currentMilestonesInTextArea = null;
-    if (curationMode == "free-form") {
-      $("#select-sparc-award-submission-spinner").css("display", "block");
-      currentMilestonesInTextArea = $("#selected-milestone-1");
-    }
-    currentMilestonesInTextArea = $("#selected-milestone-1");
-    if (res[0] && curationMode != "guided--getting-started") {
-      var keyname = res[1];
-      var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span><span style="width: 40%; text-align:right"><a onclick="showAddAirtableAccountSweetalert(\'submission\', '${curationMode}')" style="font-weight:500;text-decoration: underline"><svg class="svg-change-current-account bi bi-pencil-fill" xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="#000" viewBox="0 0 16 16">
-      <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"></path>
-    </svg></a></span></h4><h4 style="text-align:left">Select your award: </h4><div
-        class="search-select-box"><select id="select-SPARC-award-submission" class="w-100" data-live-search="true"style="width: 450px;border-radius: 7px;padding: 8px;"data-none-selected-text="Loading awards..."></select></div></div>`;
-      const { value: awardVal } = await Swal.fire({
-        html: htmlEle,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        inputPlaceholder: "Select an award",
-        focusConfirm: false,
-        focusCancel: false,
-        showCancelButton: true,
-        confirmButtonText: "Confirm",
-        footer: `
-        <div style="display: flex; width: 100%">
-        <div class="info-container" style="width: 100%">
-                <div class="demo-wrapper info-container-wrapper">
-                  <button id="airtable-information-footer" class="js-container-target demo-toggle-button info-summary">
-                    I don't see my SPARC award in the list
-                  </button>
-
-                  <div class="demo-box details-box" id="no-airtable">
-                  If you don't see your award in the list, you can add it yourself in the <a target="_blank" href="https://airtable.com/appiYd1Tz9Sv857GZ/tblFGEvUoTbbG6tJy/viwWBpydzfYQsvNFz?blocks=hide">SPARC Airtable sheet</a> then open the popup again to refresh. Alternatively, you can just add the award number manually.
-                  </div>
-                </div>
-              </div>
-        </div>`,
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-        didOpen: () => {
-          document.getElementById("airtable-information-footer").addEventListener("click", () => {
-            let dropdown = document.getElementById("no-airtable");
-            if (dropdown.style.display === "none") {
-              dropdown.style.display = "block";
-            } else {
-              dropdown.style.display = "none";
-            }
-          });
-          $("#select-sparc-award-submission-spinner").css("display", "none");
-          populateSelectSPARCAward(awardObj, "select-SPARC-award-submission");
-          $("#select-SPARC-award-submission").selectpicker();
-          $("#select-SPARC-award-submission").selectpicker("refresh");
-        },
-        preConfirm: () => {
-          if ($("#select-SPARC-award-submission").val() === "Select") {
-            Swal.showValidationMessage("Please select an award.");
-          } else {
-            award = $("#select-SPARC-award-submission").val();
-          }
-        },
-      });
-      if (awardVal) {
-        if (currentMilestonesInTextArea.val() !== "") {
-          Swal.fire({
-            title: "Are you sure you want to delete all of the previous milestone information?",
-            showCancelButton: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            cancelButtonText: `No!`,
-            cancelButtonColor: "#f44336",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "Yes",
-            showClass: {
-              popup: "animate__animated animate__zoomIn animate__faster",
-            },
-            hideClass: {
-              popup: "animate__animated animate__zoomOut animate__faster",
-            },
-          }).then((boolean) => {
-            if (boolean.isConfirmed) {
-              if (curationMode === "free-form") {
-                milestoneTagify1.removeAllTags();
-                $("#submission-sparc-award").val(award);
-                $("#ds-description-award-input").val(award);
-                document.getElementById("submission-completion-date").value = "";
-                loadContributorInfofromAirtable(award);
-              }
-              if (curationMode === "guided") {
-                guidedSetImportedSPARCAward(award);
-              }
-            }
-          });
-        } else {
-          if (curationMode === "free-form") {
-            milestoneTagify1.removeAllTags();
-            $("#submission-sparc-award").val(award);
-            $("#ds-description-award-input").val(award);
-            document.getElementById("submission-completion-date").value = "";
-          }
-
-          if (curationMode === "guided") {
-            const gettingStartedAirtable = document.getElementById(
-              "getting-started-button-import-sparc-award"
-            );
-            gettingStartedAirtable.children[1].style.display = "none";
-            gettingStartedAirtable.children[0].style.display = "flex";
-            guidedSetImportedSPARCAward(award);
-          }
-        }
-      }
-    } else if (res[0] && curationMode == "guided--getting-started") {
-      const airTableGettingStartedBtn = document.getElementById(
-        "getting-started-button-import-sparc-award"
-      );
-      airTableGettingStartedBtn.children[1].style.display = "none";
-      airTableGettingStartedBtn.children[0].style.display = "flex";
-      var keyname = res[1];
-      var htmlEle = `<div><h2>Airtable information: </h2><h4 style="text-align:left;display:flex; flex-direction: row; justify-content: space-around">Airtable keyname: <span id="span-airtable-keyname" style="font-weight:500; text-align:left">${keyname}</span></h4></div>`;
-      const { value: awardVal } = await Swal.fire({
-        html: htmlEle,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        showCancelButton: true,
-        confirmButtonText: "Change",
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-        didOpen: () => {
-          $("#select-sparc-award-submission-spinner").css("display", "none");
-        },
-      });
-      if (awardVal) {
-        if (currentMilestonesInTextArea.val() !== "") {
-          Swal.fire({
-            title: "Are you sure you want to delete all of the previous milestone information?",
-            showCancelButton: true,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            cancelButtonText: `No!`,
-            cancelButtonColor: "#f44336",
-            confirmButtonColor: "#3085d6",
-            confirmButtonText: "Yes",
-            showClass: {
-              popup: "animate__animated animate__zoomIn animate__faster",
-            },
-            hideClass: {
-              popup: "animate__animated animate__zoomOut animate__faster",
-            },
-          }).then((boolean) => {
-            if (boolean.isConfirmed) {
-              if (curationMode === "free-form") {
-                milestoneTagify1.removeAllTags();
-                $("#submission-sparc-award").val(award);
-                $("#ds-description-award-input").val(award);
-                document.getElementById("submission-completion-date").value = "";
-                loadContributorInfofromAirtable(award, "free-form");
-              }
-              if (curationMode === "guided") {
-                guidedSetImportedSPARCAward(award);
-                loadContributorInfofromAirtable(award, "guided");
-              }
-            }
-          });
-        } else {
-          if (curationMode === "free-form") {
-            milestoneTagify1.removeAllTags();
-            $("#submission-sparc-award").val(award);
-            $("#ds-description-award-input").val(award);
-            document.getElementById("submission-completion-date").value = "";
-          } else if (curationMode === "guided") {
-            const gettingStartedAirtable = document.getElementById(
-              "getting-started-button-import-sparc-award"
-            );
-            gettingStartedAirtable.children[1].style.display = "none";
-            gettingStartedAirtable.children[0].style.display = "flex";
-            guidedSetImportedSPARCAward(award);
-            loadContributorInfofromAirtable(award, "guided");
-          } else {
-            //curationMode = guided--getting-started
-            const gettingStartedAirtable = document.getElementById(
-              "getting-started-button-import-sparc-award"
-            );
-            gettingStartedAirtable.children[1].style.display = "none";
-            gettingStartedAirtable.children[0].style.display = "flex";
-            showAddAirtableAccountSweetalert("submission", "guided");
-          }
-        }
-      }
-    } else {
-      showAddAirtableAccountSweetalert("submission", curationMode);
-      // Swal.fire({
-      //   title:
-      //     "At this moment, SODA is not connected with your Airtable account.",
-      //   text: "Would you like to connect your Airtable account with SODA?",
-      //   showCancelButton: true,
-      //   heightAuto: false,
-      //   backdrop: "rgba(0,0,0, 0.4)",
-      //   cancelButtonText: `No!`,
-      //   cancelButtonColor: "#f44336",
-      //   confirmButtonColor: "#3085d6",
-      //   confirmButtonText: "Yes",
-      //   showClass: {
-      //     popup: "animate__animated animate__zoomIn animate__faster",
-      //   },
-      //   hideClass: {
-      //     popup: "animate__animated animate__zoomOut animate__faster",
-      //   },
-      // }).then((boolean) => {
-      //   if (boolean.isConfirmed) {
-      //     showAddAirtableAccountSweetalert("submission", curationMode);
-      //   }
-      // });
-      $("#select-sparc-award-submission-spinner").css("display", "none");
-    }
-  }
-};
-
 function populateSelectSPARCAward(object, id) {
   removeOptions(document.getElementById(id));
   addOption(document.getElementById(id), "Select an award", "Select");
   for (var award of Object.keys(object)) {
     addOption(document.getElementById(id), object[award], award);
-  }
-  if (globalSPARCAward.trim() !== "") {
-    if (Object.keys(object).includes(globalSPARCAward.trim())) {
-      $("#select-SPARC-award").val(globalSPARCAward.trim());
-    }
   }
 }
 
@@ -1397,7 +882,6 @@ function changeAward(award) {
   }).then((result) => {});
   $("#ds-description-award-input").val(award);
   $("#submission-sparc-award").val(award);
-  loadContributorInfofromAirtable(award);
 }
 
 const generateContributorRowElement = (contributorLastName, contributorFirstName) => {
@@ -1417,80 +901,6 @@ const generateContributorRowElement = (contributorLastName, contributorFirstName
       </td>
     </tr>
   `;
-};
-
-const addContributorRowElement = () => {
-  const newContributorRowElement = `
-    <tr>
-      <td class="middle aligned collapsing text-center">
-        <div class="ui fitted checkbox">
-          <input type="checkbox" name="contributor" checked>
-          <label></label>
-        </div>
-      </td>
-      <td class="middle aligned">
-        <input
-          class="guided--input"
-          type="text"
-          name="contributor-last-name"
-          placeholder="Enter last name"
-        />
-      </td>
-      <td class="middle aligned">
-        <input
-          class="guided--input"
-          type="text"
-          name="contributor-first-name"
-          placeholder="Enter first name"
-        />
-      </td>
-    </tr>
-  `;
-  //insert divToAdd before the element with id="guided-add-contributor-row"
-  const divAfter = document.getElementById("guided-add-contributor-row");
-  divAfter.insertAdjacentHTML("beforebegin", newContributorRowElement);
-};
-
-const loadContributorInfofromAirtable = async (award) => {
-  globalContributorNameObject = {};
-  currentContributorsLastNames = [];
-  $("#contributor-table-dd tr:gt(0)").remove();
-  $("#div-contributor-table-dd").css("display", "none");
-  contributorArray = [];
-  var airKeyContent = parseJson(airtableConfigPath);
-  if (Object.keys(airKeyContent).length !== 0) {
-    var airKeyInput = airKeyContent["api-key"];
-    Airtable.configure({
-      endpointUrl: "https://" + airtableHostname,
-      apiKey: airKeyInput,
-    });
-    var base = Airtable.base("appiYd1Tz9Sv857GZ");
-    await base("sparc_members")
-      .select({
-        filterByFormula: `({SPARC_Award_#} = "${award}")`,
-      })
-      .eachPage(function page(records, fetchNextPage) {
-        records.forEach(function (record) {
-          const firstName = record.get("First_name");
-          const lastName = record.get("Last_name");
-          const email = record.get("Email");
-
-          if (firstName !== undefined && lastName !== undefined) {
-            globalContributorNameObject[lastName] = firstName;
-            currentContributorsLastNames.push(lastName);
-          }
-        }),
-          fetchNextPage();
-      });
-
-    function done(err) {
-      if (err) {
-        log.error(err);
-        console.error(err);
-        return;
-      }
-    }
-  }
 };
 
 function addContributortoTableDD(name, contactStatus) {
@@ -1519,7 +929,7 @@ function addContributortoTableDD(name, contactStatus) {
 }
 
 var contributorElement =
-  '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><select id="dd-contributor-last-name" class="form-container-input-bf" onchange="onchangeLastNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div><div class="div-child"><label>First name </label><select id="dd-contributor-first-name" disabled class="form-container-input-bf" onchange="onchangeFirstNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div></div><div><label>ORCiD <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div><div style="margin-top:15px;display:flex;flex-direction:column"><label>Corresponding Author <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Check if the contributor is a corresponding author for the dataset. At least one and only one of the contributors should be the corresponding author." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><label class="switch" style="margin-top: 15px"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"></input><span class="slider round"></span></label></div></div> ';
+  '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><select id="dd-contributor-last-name" class="form-container-input-bf" onchange="onchangeLastNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div><div class="div-child"><label>First name </label><select id="dd-contributor-first-name" disabled class="form-container-input-bf" " style="line-height: 2"><option value="Select">Select an option</option></select></div></div><div><label>ORCiD <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div><div style="margin-top:15px;display:flex;flex-direction:column"><label>Corresponding Author <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Check if the contributor is a corresponding author for the dataset. At least one and only one of the contributors should be the corresponding author." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><label class="switch" style="margin-top: 15px"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"></input><span class="slider round"></span></label></div></div> ';
 
 var contributorElementRaw =
   '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><input id="dd-contributor-last-name" class="form-container-input-bf" style="line-height: 2"></input></div><div class="div-child"><label>First name</label><input id="dd-contributor-first-name" class="form-container-input-bf" style="line-height: 2"></input></div></div><div><label>ORCiD <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div><div style="margin-top:15px;display:flex;flex-direction:column"><label>Corresponding Author <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Check if the contributor is a corresponding author for the dataset. At least one and only one of the contributors should be the corresponding author." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><label class="switch" style="margin-top: 15px"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"></input><span class="slider round"></span></label></div></div>';
@@ -1696,7 +1106,7 @@ function showContributorSweetalert(key) {
 }
 
 var contributorElement =
-  '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><select id="dd-contributor-last-name" class="form-container-input-bf" onchange="onchangeLastNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div><div class="div-child"><label>First name </label><select id="dd-contributor-first-name" disabled class="form-container-input-bf" onchange="onchangeFirstNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div></div><div><label>ORCiD <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div><div style="margin-top:15px;display:flex;flex-direction:column"><label>Corresponding Author <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Check if the contributor is a corresponding author for the dataset. At least one and only one of the contributors should be the corresponding author." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><label class="switch" style="margin-top: 15px"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"></input><span class="slider round"></span></label></div></div> ';
+  '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><select id="dd-contributor-last-name" class="form-container-input-bf" onchange="onchangeLastNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div><div class="div-child"><label>First name </label><select id="dd-contributor-first-name" disabled class="form-container-input-bf"" style="line-height: 2"><option value="Select">Select an option</option></select></div></div><div><label>ORCiD <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div><div style="margin-top:15px;display:flex;flex-direction:column"><label>Corresponding Author <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Check if the contributor is a corresponding author for the dataset. At least one and only one of the contributors should be the corresponding author." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><label class="switch" style="margin-top: 15px"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"></input><span class="slider round"></span></label></div></div> ';
 
 var contributorElementRaw =
   '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><input id="dd-contributor-last-name" class="form-container-input-bf" style="line-height: 2"></input></div><div class="div-child"><label>First name</label><input id="dd-contributor-first-name" class="form-container-input-bf" style="line-height: 2"></input></div></div><div><label>ORCiD <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div><div style="margin-top:15px;display:flex;flex-direction:column"><label>Corresponding Author <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Check if the contributor is a corresponding author for the dataset. At least one and only one of the contributors should be the corresponding author." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><label class="switch" style="margin-top: 15px"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"></input><span class="slider round"></span></label></div></div>';
@@ -2228,49 +1638,6 @@ function grabStudyInfoEntries() {
   };
 }
 
-function showAddAirtableAccountSweetalert(keyword, curationMode) {
-  var htmlTitle = `<h4 style="text-align:center">Please enter your Airtable API key below: </h4>`;
-
-  var bootb = Swal.fire({
-    title: htmlTitle,
-    html: airtableAccountBootboxMessage,
-    showCancelButton: true,
-    focusCancel: true,
-    cancelButtonText: "Cancel",
-    confirmButtonText: "Add Account",
-    backdrop: "rgba(0,0,0, 0.4)",
-    heightAuto: false,
-    reverseButtons: reverseSwalButtons,
-    customClass: "swal-wide",
-    footer:
-      "<a href='https://docs.sodaforsparc.io/docs/prepare-metadata/connect-your-airtable-account-with-soda'  target='_blank' style='text-decoration:none'> Where do I find my Airtable API key?</a>",
-    showClass: {
-      popup: "animate__animated animate__fadeInDown animate__faster",
-    },
-    hideClass: {
-      popup: "animate__animated animate__fadeOutUp animate__faster",
-    },
-    didOpen: () => {
-      // $(".swal-popover").popover();
-      tippy("#airtable-tooltip", {
-        allowHTML: true,
-        interactive: true,
-        placement: "right",
-        theme: "light",
-        content:
-          "Note that the key will be stored locally on your computer and the SODA Team will not have access to it.",
-      });
-    },
-  }).then((result) => {
-    if (result.isConfirmed) {
-      if (curationMode === "guided--getting-started") {
-        //document.getElementById("guided-button-import-sparc-award").click();
-      }
-      addAirtableAccountInsideSweetalert(keyword, curationMode);
-    }
-  });
-}
-
 // adding row for contributor table
 function addNewRow(table) {
   $("#para-save-link-status").text("");
@@ -2331,337 +1698,30 @@ function addNewRow(table) {
     $("#table-current-contributors .contributor-add-row-button").css("display", "none");
     // check for unique row id in case users delete old rows and append new rows (same IDs!)
     var newRowIndex = checkForUniqueRowID("row-current-name", rowIndex);
-    if (noAirtable) {
-      var row = (document.getElementById(table).insertRow(rowIndex).outerHTML =
-        "<tr id='row-current-name" +
-        newRowIndex +
-        "'><td class='grab'><input id='ds-description-raw-contributor-list-last-" +
-        newRowIndex +
-        "' class='form-container-input-bf' type='text'></input></td><td class='grab'><input id='ds-description-raw-contributor-list-first-" +
-        newRowIndex +
-        "' type='text' class='form-container-input-bf'></input></td><td class='grab'><input name='id' type='text' id='input-con-ID-" +
-        newRowIndex +
-        "' contenteditable='true'></input></td><td class='grab'><input name='affiliation' id='input-con-affiliation-" +
-        newRowIndex +
-        "' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-" +
-        newRowIndex +
-        "'></input></td><td class='grab'><label class='switch'><input onclick='onChangeContactLabel(" +
-        newRowIndex +
-        ")' id='ds-contact-person-" +
-        newRowIndex +
-        "' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
-        newRowIndex +
-        ")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>");
-      createConsRoleTagify("input-con-role-" + newRowIndex.toString());
-      createConsAffliationTagify("input-con-affiliation-" + newRowIndex.toString());
-    } else {
-      if ($("#add-other-contributors").text() == "Cancel manual typing") {
-        var row = (document.getElementById(table).insertRow(rowIndex).outerHTML =
-          "<tr id='row-current-name" +
-          newRowIndex +
-          "'><td class='grab'><input placeholder='Type here' id='ds-description-raw-contributor-list-last-" +
-          newRowIndex +
-          "' class='form-container-input-bf' type='text'></input></td><td class='grab'><input placeholder='Type here' id='ds-description-raw-contributor-list-first-" +
-          newRowIndex +
-          "' type='text' class='form-container-input-bf'></input></td><td class='grab'><input type='text' id='input-con-ID-" +
-          newRowIndex +
-          "' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-" +
-          newRowIndex +
-          "' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-" +
-          newRowIndex +
-          "'></input></td><td class='grab'><label class='switch'><input onclick='onChangeContactLabel(" +
-          newRowIndex +
-          ")' id='ds-contact-person-" +
-          newRowIndex +
-          "' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
-          newRowIndex +
-          ")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>");
-        createConsRoleTagify("input-con-role-" + newRowIndex.toString());
-        createConsAffliationTagify("input-con-affiliation-" + newRowIndex.toString());
-      } else {
-        var row = (document.getElementById(table).insertRow(rowIndex).outerHTML =
-          "<tr id='row-current-name" +
-          newRowIndex +
-          "'><td class='grab'><select id='ds-description-contributor-list-last-" +
-          newRowIndex +
-          "' onchange='onchangeLastNames(" +
-          newRowIndex +
-          ")' class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><select disabled id='ds-description-contributor-list-first-" +
-          newRowIndex +
-          "' onchange='onchangeFirstNames(" +
-          newRowIndex +
-          ")' disabled class='form-container-input-bf' style='font-size:13px;line-height: 2;'><option>Select an option</option></select></td><td class='grab'><input type='text' id='input-con-ID-" +
-          newRowIndex +
-          "' contenteditable='true'></input></td><td class='grab'><input id='input-con-affiliation-" +
-          newRowIndex +
-          "' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-" +
-          newRowIndex +
-          "'></input></td><td class='grab'><label class='switch'><input onclick='onChangeContactLabel(" +
-          newRowIndex +
-          ")' id='ds-contact-person-" +
-          newRowIndex +
-          "' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
-          newRowIndex +
-          ")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>");
-        cloneConNamesSelect("ds-description-contributor-list-last-" + newRowIndex.toString());
-      }
-    }
+    var row = (document.getElementById(table).insertRow(rowIndex).outerHTML =
+      "<tr id='row-current-name" +
+      newRowIndex +
+      "'><td class='grab'><input id='ds-description-raw-contributor-list-last-" +
+      newRowIndex +
+      "' class='form-container-input-bf' type='text'></input></td><td class='grab'><input id='ds-description-raw-contributor-list-first-" +
+      newRowIndex +
+      "' type='text' class='form-container-input-bf'></input></td><td class='grab'><input name='id' type='text' id='input-con-ID-" +
+      newRowIndex +
+      "' contenteditable='true'></input></td><td class='grab'><input name='affiliation' id='input-con-affiliation-" +
+      newRowIndex +
+      "' type='text' contenteditable='true'></input></td><td class='grab'><input type='text' contenteditable='true' name='role' id='input-con-role-" +
+      newRowIndex +
+      "'></input></td><td class='grab'><label class='switch'><input onclick='onChangeContactLabel(" +
+      newRowIndex +
+      ")' id='ds-contact-person-" +
+      newRowIndex +
+      "' name='contact-person' type='checkbox' class='with-style-manifest'/><span class='slider round'></span></label></td><td><div onclick='addNewRow(\"table-current-contributors\")' class='button contributor-add-row-button' style='display:block;font-size:13px;width:40px;color:#fff;border-radius:2px;height:30px;padding:5px !important;background:dodgerblue'>Add</div><div class='ui small basic icon buttons contributor-helper-buttons' style='display:none'><button class='ui button' onclick='delete_current_con(" +
+      newRowIndex +
+      ")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>");
+    createConsRoleTagify("input-con-role-" + newRowIndex.toString());
+    createConsAffliationTagify("input-con-affiliation-" + newRowIndex.toString());
   }
 }
-
-const addAirtableAccountInsideSweetalert = async (keyword, curationMode) => {
-  // var name = $("#bootbox-airtable-key-name").val();
-  var name = "SODA-Airtable";
-  var key = $("#bootbox-airtable-key").val();
-  if (name.length === 0 || key.length === 0) {
-    var errorMessage = "<span>Please fill in both required fields to add.</span>";
-    Swal.fire({
-      icon: "error",
-      html: errorMessage,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0,0.4)",
-    }).then((result) => {
-      if (result.isConfirmed) {
-        showAddAirtableAccountSweetalert(keyword, curationMode);
-      }
-    });
-  } else {
-    if (curationMode === "free-form") {
-      Swal.fire({
-        icon: "warning",
-        title: "Connect to Airtable",
-        text: "This will erase your previous manual input under the submission and/or dataset description file(s). Would you like to continue?",
-        heightAuto: false,
-        showCancelButton: true,
-        focusCancel: true,
-        cancelButtonText: "Cancel",
-        confirmButtonText: "Yes",
-        reverseButtons: reverseSwalButtons,
-        backdrop: "rgba(0,0,0,0.4)",
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          const optionsSparcTable = {
-            hostname: airtableHostname,
-            port: 443,
-            path: "/v0/appiYd1Tz9Sv857GZ/sparc_members",
-            headers: { Authorization: `Bearer ${key}` },
-          };
-          var sparcTableSuccess;
-          https.get(optionsSparcTable, async (res) => {
-            if (res.statusCode === 200) {
-              /// updating api key in SODA's storage
-              createMetadataDir();
-              var content = parseJson(airtableConfigPath);
-              content["api-key"] = key;
-              content["key-name"] = name;
-              fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
-              checkAirtableStatus(keyword);
-              // document.getElementById(
-              //   "para-generate-description-status"
-              // ).innerHTML = "";
-              // $("#span-airtable-keyname").html(name);
-              $("#current-airtable-account").html(name);
-              // $("#bootbox-airtable-key-name").val("");
-              $("#bootbox-airtable-key").val("");
-              await loadAwardData();
-              // ddNoAirtableMode("Off");
-              Swal.fire({
-                title: "Successfully connected. Loading your Airtable account...",
-                timer: 10000,
-                timerProgressBar: false,
-                heightAuto: false,
-                backdrop: "rgba(0,0,0, 0.4)",
-                allowEscapeKey: false,
-                allowOutsideClick: false,
-                showConfirmButton: false,
-                didOpen: () => {
-                  Swal.showLoading();
-                },
-              }).then((result) => {
-                helpSPARCAward("submission", curationMode);
-              });
-              ipcRenderer.send(
-                "track-event",
-                "Success",
-                "Prepare Metadata - Add Airtable account",
-                "Airtable",
-                1
-              );
-            } else if (res.statusCode === 403) {
-              $("#current-airtable-account").html("None");
-              Swal.fire({
-                icon: "error",
-                text: "Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!",
-                heightAuto: false,
-                backdrop: "rgba(0,0,0,0.4)",
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  showAddAirtableAccountSweetalert(keyword, curationMode);
-                }
-              });
-            } else {
-              log.error(res);
-              console.error(res);
-              ipcRenderer.send(
-                "track-event",
-                "Error",
-                "Prepare Metadata - Add Airtable account",
-                "Airtable",
-                1
-              );
-              Swal.fire({
-                icon: "error",
-                text: "Failed to connect to Airtable. Please check your API Key and try again!",
-                heightAuto: false,
-                backdrop: "rgba(0,0,0,0.4)",
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  showAddAirtableAccountSweetalert(keyword, curationMode);
-                }
-              });
-            }
-            res.on("error", (error) => {
-              log.error(error);
-              console.error(error);
-              ipcRenderer.send(
-                "track-event",
-                "Error",
-                "Prepare Metadata - Add Airtable account",
-                "Airtable",
-                1
-              );
-              Swal.fire({
-                icon: "error",
-                text: "Failed to connect to Airtable. Please check your API Key and try again!",
-                heightAuto: false,
-                backdrop: "rgba(0,0,0,0.4)",
-              }).then((result) => {
-                if (result.isConfirmed) {
-                  showAddAirtableAccountSweetalert(keyword, curationMode);
-                }
-              });
-            });
-          });
-        }
-      });
-    }
-
-    if (curationMode === "guided" || curationMode === "guided--getting-started") {
-      const optionsSparcTable = {
-        hostname: airtableHostname,
-        port: 443,
-        path: "/v0/appiYd1Tz9Sv857GZ/sparc_members",
-        headers: { Authorization: `Bearer ${key}` },
-      };
-      let sparcTableSuccess;
-      https.get(optionsSparcTable, async (res) => {
-        if (res.statusCode === 200) {
-          /// updating api key in SODA's storage
-          createMetadataDir();
-          var content = parseJson(airtableConfigPath);
-          content["api-key"] = key;
-          content["key-name"] = name;
-          fs.writeFileSync(airtableConfigPath, JSON.stringify(content));
-          checkAirtableStatus(keyword);
-
-          $("#current-airtable-account").html(name);
-          $("#bootbox-airtable-key").val("");
-          await loadAwardData();
-          Swal.fire({
-            title: "Successfully connected. Loading your Airtable account...",
-            timer: 3000,
-            timerProgressBar: false,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            allowEscapeKey: false,
-            allowOutsideClick: false,
-            showConfirmButton: false,
-            didOpen: () => {
-              Swal.showLoading();
-            },
-          }).then((result) => {
-            if (curationMode === "guided") {
-              document.getElementById("guided-button-import-sparc-award").click();
-            }
-            if (curationMode === "guided--getting-started") {
-              const airTableGettingStartedBtn = document.getElementById(
-                "getting-started-button-import-sparc-award"
-              );
-              airTableGettingStartedBtn.children[1].style.display = "none";
-              airTableGettingStartedBtn.children[0].style.display = "flex";
-            }
-          });
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            "Prepare Metadata - Add Airtable account",
-            "Airtable",
-            1
-          );
-        } else if (res.statusCode === 403) {
-          $("#current-airtable-account").html("None");
-          Swal.fire({
-            icon: "error",
-            text: "Your account doesn't have access to the SPARC Airtable sheet. Please obtain access (email Dr. Charles Horn at chorn@pitt.edu)!",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0,0.4)",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              showAddAirtableAccountSweetalert(keyword, curationMode);
-            }
-          });
-        } else {
-          log.error(res);
-          console.error(res);
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            "Prepare Metadata - Add Airtable account",
-            "Airtable",
-            1
-          );
-          Swal.fire({
-            icon: "error",
-            text: "Failed to connect to Airtable. Please check your API Key and try again!",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0,0.4)",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              showAddAirtableAccountSweetalert(keyword, curationMode);
-            }
-          });
-        }
-        res.on("error", (error) => {
-          log.error(error);
-          console.error(error);
-          ipcRenderer.send(
-            "track-event",
-            "Error",
-            "Prepare Metadata - Add Airtable account",
-            "Airtable",
-            1
-          );
-          Swal.fire({
-            icon: "error",
-            text: "Failed to connect to Airtable. Please check your API Key and try again!",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0,0.4)",
-          }).then((result) => {
-            if (result.isConfirmed) {
-              showAddAirtableAccountSweetalert(keyword, curationMode);
-            }
-          });
-        });
-      });
-    }
-  }
-};
 
 function importExistingDDFile() {
   var filePath = $("#existing-dd-file-destination").prop("placeholder");
@@ -2849,9 +1909,8 @@ function loadDDFileToUI(object, file_type) {
       $("#ds-description-acknowledgments").val(arr[1]);
     } else if (arr[0] === "Funding") {
       // populate awards
-      globalSPARCAward = arr[1];
       $("#ds-description-award-input").val(arr[1]);
-      changeAward(globalSPARCAward);
+      changeAward(arr[1]);
       populateTagifyDD(otherFundingTagify, arr.splice(2));
     }
   }

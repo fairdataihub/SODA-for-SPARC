@@ -990,10 +990,10 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
             create_soda_json_progress += 1
             item_id = items["content"]["id"]
             if item_id[2:9] == "package":
-                # if it is a file name check if there are additional manifest information to attach to files
+                # is a file name check if there are additional manifest information to attach to files
                 if (
                     item_name[0:8] != "manifest"
-                ):  # manifest files are not being included json structure
+                ):  # manifest files are not being included in json structure
 
                     #verify file name first
                     if("extension" not in children_content):
@@ -1033,50 +1033,96 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         temp_name = item_name
                     
                     if len(manifest.keys()) > 0:
-                        extra_columns = False
-                        if len(manifest.keys()) > 5:
-                            # extra columns are in the manifest
-                            # if length of keys is greater than 5 than extra custom columns were made
-                            extra_columns = True
-                            extra_columns_dict = dict(itertools.islice(manifest.items(), 5, len(manifest)))
-                        if "filename" in manifest:
-                            if temp_name in manifest["filename"].values():
-                                location_index = list(manifest["filename"].values()).index(
-                                    temp_name
-                                )
-                                if manifest["description"][location_index] != "":
-                                    subfolder_json["files"][item_name][
-                                        "description"
-                                    ] = manifest["description"][location_index]
-                                if manifest["Additional Metadata"] != "":
-                                    subfolder_json["files"][item_name][
-                                        "additional-metadata"
-                                    ] = manifest["Additional Metadata"][location_index]
-                                if manifest["file type"][location_index] != "":
-                                        subfolder_json["files"][item_name]["file type"] = manifest["file type"][location_index]
-                                if extra_columns:
-                                    subfolder_json["files"][item_name]["extra_columns"] = {}
-                                    starting_manifest_index = 5
-                                    for index in extra_columns_dict.keys():
-                                        subfolder_json["files"][item_name]["extra_columns"][index] = (manifest[index][location_index])
-                                        starting_manifest_index += 1
-                        elif "File Name" in manifest:
-                            if temp_name in manifest["File Name"].values():
-                                location_index = list(manifest["File Name"].values()).index(
-                                    temp_name
-                                )
-                                if manifest["description"][location_index] != "":
-                                    subfolder_json["files"][item_name][
-                                        "description"
-                                    ] = manifest["description"][location_index]
-                                if manifest["Additional Metadata"] != "":
-                                    subfolder_json["files"][item_name][
-                                        "additional-metadata"
-                                    ] = manifest["Additional Metadata"][location_index]
-                                if manifest["file type"][location_index] != "":
-                                        subfolder_json["files"][item_name]["file type"] = manifest["file type"][location_index]
-                            # extra columns are in the manifest
+                        # Dictionary that has the required manifest headers in lowercase and without spaces as keys
+                        # and the correct manifest headers as values
+                        defaultManifestHeadersNameMapped = {
+                            "filename": "filename",
+                            "timestamp": "timestamp",
+                            "description": "description",
+                            "filetype": "file type",
+                            "additionalmetadata": "additional-metadata",
+                        }
 
+                        # Dictionary that will be used to store the correct manifest headers as keys
+                        # and the values from the manifest as values
+                        updated_manifest = {}
+
+                        # Go through the imported manifest keys and change the keys to the correct name
+                        # For example if the key is "File Name" change it to "filename"
+                        for manifestKey in manifest.keys():
+                            # Make the key lowercase
+                            sterilizedKeyName = manifestKey.lower().replace(" ", "")
+                            if sterilizedKeyName in defaultManifestHeadersNameMapped.keys():
+                                # change the key to the correct name
+                                # For example if the key name is "filetype" change it to "file type"
+                                newManifestKeyName = defaultManifestHeadersNameMapped[sterilizedKeyName]
+                                # Add the new key/value to the updated manifest
+                                updated_manifest[newManifestKeyName] = manifest[manifestKey]
+                            else:
+                                # Keep the key/value the same and add it to the updated manifest
+                                updated_manifest[manifestKey] = manifest[manifestKey]
+
+                        if "filename" in updated_manifest.keys():
+                            for manifestKey in updated_manifest.keys():
+                                location_index = ""
+                                # get the index of the file name in the manifest
+                                if (temp_name in updated_manifest["filename"].values()):
+                                    location_index = list(updated_manifest["filename"].values()).index(
+                                        temp_name
+                                    )
+                                # This is for the case where the file name in the manifest has a slash at the beginning
+                                # which is the case for files in the root folder
+                                elif ("/" + temp_name in updated_manifest["filename"].values()):
+                                    location_index = list(updated_manifest["filename"].values()).index(
+                                        "/" + temp_name
+                                    )
+                                else:
+                                    # break out of the for loop if the file name is not in the manifest
+                                    break
+
+                                # check if the key is in the required manifest headers, if it is, update the item_name value
+                                # corresponding to the key
+                                if manifestKey in defaultManifestHeadersNameMapped.values():
+                                    if updated_manifest[manifestKey][location_index] != "":
+                                        if item_name[0:1] == "/":
+                                            subfolder_json["files"][item_name[:1]][manifestKey] = updated_manifest[manifestKey][location_index]
+                                        else:
+                                            subfolder_json["files"][item_name][manifestKey] = updated_manifest[manifestKey][location_index]
+                                # if the key is not in the required manifest headers, add it to the extra columns item_name value
+                                else :
+                                    # if the extra columns key does not exist, create it
+                                    if "extra_columns" not in subfolder_json["files"][item_name]:
+                                        subfolder_json["files"][item_name]["extra_columns"] = {}
+                                    
+                                    if updated_manifest[manifestKey][location_index] != "":
+                                        subfolder_json["files"][item_name]["extra_columns"][manifestKey] = updated_manifest[manifestKey][location_index]
+                                    else:
+                                        subfolder_json["files"][item_name]["extra_columns"][manifestKey] = ""
+                        else:
+                            # filename not in updated manifest so recreate standard headers if they don't exist
+                            # loop through the updated manifest keys and if header matches standard header add content else recreate
+                            if len(updated_manifest.keys()) > 0:
+                                location_index = ""
+                                for manifestKey in updated_manifest.keys():
+                                    if temp_name in updated_manifest[manifestKey].values():
+                                        # file_names found
+                                        location_index = list(updated_manifest[manifestKey].values()).index(
+                                        temp_name
+                                        )
+                                    if ("/" + temp_name in updated_manifest[manifestKey].values()):
+                                        location_index = list(updated_manifest[manifestKey].values()).index(
+                                        "/" + temp_name
+                                        )
+                                    if location_index != "":
+                                        if manifestKey in defaultManifestHeadersNameMapped.values():
+                                            if item_name[0:1] == "/":
+                                                subfolder_json["files"][item_name[1:]][manifestKey] = updated_manifest[manifestKey][location_index]
+                                            else:
+                                                subfolder_json["files"][item_name][manifestKey] = updated_manifest[manifestKey][location_index]
+                                        else:
+                                            if "extra_columns" not in subfolder_json["files"][item_name]:
+                                                subfolder_json["files"][item_name]["extra_columns"] = {}
+                                            subfolder_json["files"][item_name]["extra_columns"][manifestKey] = updated_manifest[manifestKey][location_index]
 
             else:  # another subfolder found
                 subfolder_json["folders"][item_name] = {
@@ -1090,8 +1136,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                 for paths in subfolder_json["bfpath"]:
                     subfolder_json["folders"][item_name]["bfpath"].append(paths)
                 subfolder_json["folders"][item_name]["bfpath"].append(item_name)
-
-                # go through recursive again through subfolder
 
         if len(subfolder_json["folders"].keys()) != 0:  # there are subfolders
             for folder in subfolder_json["folders"].keys():
@@ -1187,8 +1231,8 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
     # manifest information is needed so it is looked for before the recursive calls are made
     if len(soda_json_structure["dataset-structure"]["folders"].keys()) != 0:
-        for folder in soda_json_structure["dataset-structure"]["folders"].keys():
-            collection_id = soda_json_structure["dataset-structure"]["folders"][folder][
+        for high_lvl_folder in soda_json_structure["dataset-structure"]["folders"].keys():
+            collection_id = soda_json_structure["dataset-structure"]["folders"][high_lvl_folder][
                 "path"
             ]
 
@@ -1197,7 +1241,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
             subfolder = r.json()
 
             children_content = subfolder["children"]
-            manifest_dict[folder] = {}
+            manifest_dict[high_lvl_folder] = {}
             if len(children_content) > 0:
                 for items in children_content:
                     # check subfolders surface to see if manifest files exist to then use within recursive_subfolder_check
@@ -1223,20 +1267,19 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                                 df = load_manifest_to_dataframe(package_id, "csv", token)
                                 df = df.fillna("")
                             # 
-                            manifest_dict[folder].update(df.to_dict())
+                            manifest_dict[high_lvl_folder].update(df.to_dict())
                         except Exception as e:
-                            namespace_logger.info(f"Error reading manifest file: {e}")
                             manifest_error_message.append(
                                 items["content"]["name"]
                             )
 
-                subfolder_section = soda_json_structure["dataset-structure"]["folders"][
-                    folder
+                high_lvl_folder_dict = soda_json_structure["dataset-structure"]["folders"][
+                    high_lvl_folder
                 ]
 
-                if folder in manifest_dict:
+                if high_lvl_folder in manifest_dict:
                     createFolderStructure(
-                        subfolder_section, token, manifest_dict[folder]
+                        high_lvl_folder_dict, token, manifest_dict[high_lvl_folder]
                     )  # passing item's json and the collection ID
 
     success_message = (

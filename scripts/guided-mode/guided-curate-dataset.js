@@ -1077,58 +1077,6 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
     }
 
-    if (pageBeingLeftID === "guided-airtable-award-tab") {
-      const buttonYesImportSparcAward = document.getElementById("guided-button-import-sparc-award");
-      const buttonNoEnterSparcAwardManually = document.getElementById(
-        "guided-button-enter-sparc-award-manually"
-      );
-
-      // If the user did not select if they would like to import a SPARC award,
-      // throw an error
-      if (
-        !buttonYesImportSparcAward.classList.contains("selected") &&
-        !buttonNoEnterSparcAwardManually.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please indicate if you would like to import a SPARC award",
-        });
-        throw errorArray;
-      }
-
-      if (buttonYesImportSparcAward.classList.contains("selected")) {
-        const selectedAwardFromDropdown = $("#guided-sparc-award-dropdown option:selected").val();
-
-        if (selectedAwardFromDropdown === "") {
-          errorArray.push({
-            type: "notyf",
-            message: "Please select a SPARC award option from the dropdown menu",
-          });
-          throw errorArray;
-        }
-
-        //Set the sparc award to the imported sparc award's value
-        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] =
-          selectedAwardFromDropdown;
-      }
-
-      if (buttonNoEnterSparcAwardManually.classList.contains("selected")) {
-        const sparcAwardInput = document.getElementById("guided-input-sparc-award");
-        if (sparcAwardInput.value.trim() === "") {
-          errorArray.push({
-            type: "notyf",
-            message: "Please enter a SPARC award",
-          });
-          throw errorArray;
-        }
-
-        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] =
-          sparcAwardInput.value.trim();
-        //Delete the imported SPARC award as the user entered the award manually.
-        delete sodaJSONObj["dataset-metadata"]["shared-metadata"]["imported-sparc-award"];
-      }
-    }
-
     if (pageBeingLeftID === "guided-create-submission-metadata-tab") {
       const userIsAddingSubmissionMetadataManually = document
         .getElementById("guided-button-enter-submission-metadata-manually")
@@ -2848,76 +2796,6 @@ const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
   }
 };
 
-$("#guided-sparc-award-dropdown").selectpicker();
-
-const renderGuidedAwardSelectionDropdown = () => {
-  $("#guided-sparc-award-dropdown").selectpicker("refresh");
-  const awardDropDownElements = document.getElementById("guided-sparc-award-dropdown");
-
-  //reset the options before adding new ones
-  awardDropDownElements.innerHTML = "";
-  $("#guided-sparc-award-dropdown").selectpicker("refresh");
-
-  // Append the select an award option
-  const selectAnAwardOption = document.createElement("option");
-  selectAnAwardOption.textContent = "Select an award";
-  selectAnAwardOption.value = "";
-  selectAnAwardOption.selected = true;
-  awardDropDownElements.appendChild(selectAnAwardOption);
-
-  const currentSparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-
-  for (const [val, key] of Object.entries(awardObj)) {
-    let awardElement = document.createElement("option");
-    awardElement.textContent = key;
-    awardElement.value = val;
-    if (currentSparcAward && currentSparcAward === val) {
-      awardElement.selected = true;
-    }
-
-    awardDropDownElements.appendChild(awardElement);
-  }
-
-  $("#guided-sparc-award-dropdown").selectpicker("refresh");
-};
-
-document
-  .getElementById("guided-button-refresh-sparc-award-dropdown")
-  .addEventListener("click", async () => {
-    //call update the awardObj
-    await loadAwardData();
-    //Update the dropdown
-    renderGuidedAwardSelectionDropdown();
-    //Notify the user that the dropdown has been updated
-    notyf.open({
-      duration: "4000",
-      type: "success",
-      message: "The SPARC Award dropdown was successfully updated",
-    });
-  });
-
-document.getElementById("guided-button-import-sparc-award").addEventListener("click", async () => {
-  const divToShowWhenConnected = document.getElementById("guided-div-imported-SPARC-award");
-  const divToShowWhenNotConnected = document.getElementById("guided-div-connect-airtable");
-  const guidedButtonConnectAirtableAccount = document.getElementById(
-    "guided-button-connect-airtable-account"
-  );
-  const airTableKeyObj = parseJson(airtableConfigPath);
-
-  if (Object.keys(airTableKeyObj).length === 0) {
-    //If the airtable key object is empty, show the div to connect to airtable
-    divToShowWhenConnected.classList.add("hidden");
-    divToShowWhenNotConnected.classList.remove("hidden");
-  } else {
-    const airTablePreviewText = document.getElementById("guided-current-sparc-award");
-    airTablePreviewText.innerHTML = airTableKeyObj["key-name"];
-    //If the airtable key object is not empty, show the div to select the SPARC award
-    divToShowWhenConnected.classList.remove("hidden");
-    divToShowWhenNotConnected.classList.add("hidden");
-    renderGuidedAwardSelectionDropdown();
-  }
-});
-
 const setActiveCapsule = (targetPageID) => {
   $(".guided--capsule").removeClass("active");
   let targetCapsuleID = targetPageID.replace("-tab", "-capsule");
@@ -3949,45 +3827,6 @@ const openPage = async (targetPageID) => {
         if (datasetStructureJSONObj["folders"][folder]["files"]["manifest.xlsx"]) {
           delete datasetStructureJSONObj["folders"][folder]["files"]["manifest.xlsx"];
         }
-      }
-    }
-
-    if (targetPageID === "guided-airtable-award-tab") {
-      const sparcAwardInput = document.getElementById("guided-input-sparc-award");
-      sparcAwardInput.value = "";
-
-      if (pageNeedsUpdateFromPennsieve("guided-airtable-award-tab")) {
-        try {
-          let import_metadata = await client.get(`/prepare_metadata/import_metadata_file`, {
-            params: {
-              selected_account: defaultBfAccount,
-              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-              file_type: "submission.xlsx",
-            },
-          });
-          let res = import_metadata.data;
-          const sparcAwardRes = res?.["SPARC Award number"];
-
-          //If the SPARC Award number was found, click the manual button and fill the SPARC Award number
-          if (sparcAwardRes) {
-            document.getElementById("guided-button-enter-sparc-award-manually").click();
-
-            sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = sparcAwardRes;
-          }
-          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-airtable-award-tab");
-        } catch (error) {
-          clientError(error);
-          const emessage = error.response.data.message;
-          await guidedShowOptionalRetrySwal(emessage);
-          // If the user chooses not to retry re-fetching the page data, mark the page as fetched
-          // so the the fetch does not occur again
-          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-airtable-award-tab");
-        }
-      }
-      const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-      //If a sparc award exists, set the sparc award input
-      if (sparcAward) {
-        sparcAwardInput.value = sparcAward;
       }
     }
 
@@ -5931,8 +5770,9 @@ const patchPreviousGuidedModeVersions = () => {
     sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = [];
   }
 
-  if (!sodaJSONObj["dataset-validated"]) {
-    sodaJSONObj["dataset-validated"] = false;
+  // If the user was on the airtable award page (does not exist anymore), send them to the create submission metadata page
+  if (sodaJSONObj["page-before-exit"] === "guided-airtable-award-tab") {
+    sodaJSONObj["page-before-exit"] = "guided-create-submission-metadata-tab";
   }
 
   return forceUserToRestartFromFirstPage;
@@ -7105,62 +6945,6 @@ const removeContributorField = (contributorDeleteButton) => {
   contributorField.remove();
 };
 
-const fetchContributorDataFromAirTable = async () => {
-  try {
-    const sparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-    const airTableKeyData = parseJson(airtableConfigPath);
-    if (
-      sparcAward &&
-      airTableKeyData["api-key"] &&
-      airTableKeyData["api-key"] &&
-      airTableKeyData["key-name"] !== "" &&
-      airTableKeyData["api-key"] !== ""
-    ) {
-      let contributorData = [];
-
-      const airKeyInput = airTableKeyData["api-key"];
-
-      Airtable.configure({
-        endpointUrl: "https://" + airtableHostname,
-        apiKey: airKeyInput,
-      });
-      var base = Airtable.base("appiYd1Tz9Sv857GZ");
-      await base("sparc_members")
-        .select({
-          filterByFormula: `({SPARC_Award_#} = "${sparcAward}")`,
-        })
-        .eachPage(function page(records, fetchNextPage) {
-          records.forEach(function (record) {
-            const firstName = record.get("First_name");
-            const lastName = record.get("Last_name");
-            const orcid = record.get("ORCID");
-            const affiliation = record.get("Institution");
-            const roles = record.get("Dataset_contributor_roles_for_SODA");
-
-            if (firstName !== undefined && lastName !== undefined) {
-              contributorData.push({
-                firstName: firstName,
-                lastName: lastName,
-                orcid: orcid,
-                affiliation: affiliation,
-                roles: roles,
-              });
-            }
-          }),
-            fetchNextPage();
-        });
-
-      return contributorData;
-    } else {
-      //return an empty array if the user is not connected with AirTable
-      return [];
-    }
-  } catch (error) {
-    //If there is an error, return an empty array since no contributor data was fetched.
-    return [];
-  }
-};
-
 const getContributorFullNames = () => {
   return sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"].map(
     (contributor) => {
@@ -7483,87 +7267,8 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
 };
 
 const openGuidedAddContributorSwal = async () => {
-  let contributorAdditionHeader;
-  let addContributorTitle;
-
-  try {
-    const existingContributors =
-      sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
-
-    const extingContributorOrcids = existingContributors.map((contributor) => {
-      return contributor.conID;
-    });
-
-    // fetch contributors from AirTable using the sparc award specified
-    // If any of the contributors in the dataset are found,
-    // they will be added to a dropdown at the top of the swal
-    let contributorData = await fetchContributorDataFromAirTable();
-
-    //Filter out contributors that have already been added
-    contributorData = contributorData.filter((contributor) => {
-      return !extingContributorOrcids.includes(contributor.orcid);
-    });
-
-    // If contributor data is returned from airtable, add a select option for each contributor with
-    // a returned first and last name
-    /*if (contributorData.length > 0) {
-      addContributorTitle =
-        "Select a contributor from the dropdown below or add their information manually.";
-      contributorAdditionHeader = `
-          <option
-            value=""
-            data-first-name=""
-            data-last-name=""
-            data-orcid=""
-            data-affiliation=""
-            data-roles=""
-          >
-            Select a contributor
-          </option>
-        `;
-
-      const contributorOptions = contributorData.map((contributor) => {
-        return `
-          <option
-            value="${contributor.firstName} ${contributor.lastName}"
-            data-first-name="${contributor.firstName}"
-            data-last-name="${contributor.lastName}"
-            data-orcid="${contributor.orcid ?? ""}"
-            data-affiliation="${contributor.affiliation ?? ""}"
-            data-roles="${contributor.roles ? contributor.roles.join(",") : ""}"
-          >
-            ${contributor.firstName} ${contributor.lastName}
-          </option>
-        `;
-      });
-
-      contributorAdditionHeader = `
-        <select
-          class="w-100"
-          id="guided-dd-contributor-dropdown"
-          data-live-search="true"
-          name="Dataset contributor"
-        >
-          <option
-            value=""
-            data-first-name=""
-            data-last-name=""
-            data-orcid=""
-            data-affiliation=""
-            data-roles=""
-          >
-            Select a contributor imported from AirTable
-          </option>
-          ${contributorOptions}
-        </select>
-      `;
-    } else {*/
-    contributorAdditionHeader = ``;
-    addContributorTitle = "Enter the contributor's information below.";
-    //}
-  } catch (error) {
-    console.log(error);
-  }
+  contributorAdditionHeader = ``;
+  addContributorTitle = "Enter the contributor's information below.";
 
   let affiliationTagify;
   let contributorRolesTagify;
@@ -7688,34 +7393,6 @@ const openGuidedAddContributorSwal = async () => {
         },
       });
       createDragSort(contributorRolesTagify);
-
-      /*$("#guided-dd-contributor-dropdown").selectpicker({
-        style: "guided--select-picker",
-      });
-      $("#guided-dd-contributor-dropdown").selectpicker("refresh");
-      $("#guided-dd-contributor-dropdown").on("change", function (e) {
-        const selectedFirstName = $("#guided-dd-contributor-dropdown option:selected").data(
-          "first-name"
-        );
-        const selectedLastName = $("#guided-dd-contributor-dropdown option:selected").data(
-          "last-name"
-        );
-        const selectedOrcid = $("#guided-dd-contributor-dropdown option:selected").data("orcid");
-        const selectedAffiliation = $("#guided-dd-contributor-dropdown option:selected").data(
-          "affiliation"
-        );
-        const selectedRoles = $("#guided-dd-contributor-dropdown option:selected").data("roles");
-
-        document.getElementById("guided-contributor-first-name").value = selectedFirstName;
-        document.getElementById("guided-contributor-last-name").value = selectedLastName;
-        document.getElementById("guided-contributor-orcid").value = selectedOrcid;
-
-        affiliationTagify.removeAllTags();
-        affiliationTagify.addTags(selectedAffiliation);
-
-        contributorRolesTagify.removeAllTags();
-        contributorRolesTagify.addTags(selectedRoles.split());
-      });*/
     },
 
     preConfirm: () => {

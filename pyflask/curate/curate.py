@@ -2705,7 +2705,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
             if len(list_upload_manifest_files) > 1:
                 for item in list_upload_manifest_files[1:]:
-                    namespace_logger.info(item)
                     manifest_file = item[0][0]
                     ps_folder = item[1]
                     main_curate_progress_message = ( f"Uploading manifest file in {ps_folder} folder" )
@@ -3371,6 +3370,9 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
 
     def guided_recursive_folder_traversal(folder, hlf_data_array, ds_struct_path):
         if "files" in folder.keys():
+            standard_manifest_columns = ["filename", "timestamp", "description", "file type", "Additional Metadata"]
+            if(len(hlf_data_array) < 1):
+                hlf_data_array.append(standard_manifest_columns)
             for item in list(folder["files"]):
 
                 file_manifest_template_data = []
@@ -3397,7 +3399,11 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
                 )
                 timestamp_entry = last_mod_time.isoformat().replace(".", ",").replace("+00:00", "Z")
 
-                file_manifest_template_data.append(filename_entry)
+                if(filename_entry[0:1] == "/"):
+                    file_manifest_template_data.append(filename_entry[:1])
+                else:
+                    file_manifest_template_data.append(filename_entry)
+                
                 file_manifest_template_data.append(timestamp_entry)
                 file_manifest_template_data.append(item_description)
                 file_manifest_template_data.append(file_type_entry)
@@ -3409,9 +3415,9 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
                 if "extra_columns" in folder["files"][item]:
                     for key in folder["files"][item]["extra_columns"]:
                         file_manifest_template_data.append(folder["files"][item]["extra_columns"][key])
-                        if key not in standard_manifest_columns:
+                        if key not in hlf_data_array:
                             # add column name to manifest column names array
-                            standard_manifest_columns.append(key)
+                            hlf_data_array.append(key)
 
                 hlf_data_array.append(file_manifest_template_data)
 
@@ -3426,6 +3432,9 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
 
     def pennsieve_recursive_folder_traversal(folder, hlf_data_array, ds_struct_path):
         if "files" in folder.keys():
+            standard_manifest_columns = ["filename", "timestamp", "description", "file type", "Additional Metadata"]
+            if(len(hlf_data_array) < 1):
+                hlf_data_array.append(standard_manifest_columns)
             for item in list(folder["files"]):
                 file_manifest_template_data = []
                 item_description = folder["files"][item]["description"]
@@ -3446,7 +3455,10 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
                 filename_entry = "/".join(ds_struct_path) + "/" + file_name
                 file_type_entry = get_name_extension(file_name)
 
-                file_manifest_template_data.append(filename_entry)
+                if(filename_entry[0:1] == "/"):
+                    file_manifest_template_data.append(filename_entry[1:])
+                else:
+                    file_manifest_template_data.append(filename_entry)
                 file_manifest_template_data.append(timestamp_entry)
                 file_manifest_template_data.append(item_description)
                 file_manifest_template_data.append(file_type_entry)
@@ -3457,9 +3469,9 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
                 if "extra_columns" in folder["files"][item]:
                     for key in folder["files"][item]["extra_columns"]:
                         file_manifest_template_data.append(folder["files"][item]["extra_columns"][key])
-                        if key not in standard_manifest_columns:
+                        if key not in hlf_data_array[0]:
                             # add column name to manifest column names array
-                            standard_manifest_columns.append(key)
+                            hlf_data_array[0].append(key)
 
                 hlf_data_array.append(file_manifest_template_data)
 
@@ -3475,7 +3487,6 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
     # Initialize the array that the manifest data will be added to.
     hlf_manifest_data = {}
     # any additional columns created by the user will be appended with the high level folder when found
-    standard_manifest_columns = ["filename", "timestamp", "description", "file type", "Additional Metadata"]
 
 
     # Loop through each high level folder and create a manifest data array for each.
@@ -3484,7 +3495,7 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
 
         # create an array to keep track of the path to the obj being recursed over
         relative_structure_path = []
-        hlf_data_array.append(standard_manifest_columns)
+        # hlf_data_array.append(standard_manifest_columns)
 
         if "bfpath" in dataset_structure_obj["folders"][high_level_folder]:
             # means the json is from a pennsieve dataset

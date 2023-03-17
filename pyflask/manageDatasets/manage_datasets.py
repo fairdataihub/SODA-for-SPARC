@@ -795,10 +795,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
             total_bytes_to_upload = events_dict["upload_status"].total
             current_bytes_uploaded = events_dict["upload_status"].current
 
-            namespace_logger.info(file_id)
-            namespace_logger.info(total_bytes_to_upload)
-            namespace_logger.info(current_bytes_uploaded)
-
 
             
             # get the previous bytes uploaded for the given file id - use 0 if no bytes have been uploaded for this file id yet
@@ -810,18 +806,16 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
             # calculate the additional amount of bytes that have just been uploaded for the given file id
             total_bytes_uploaded["value"] += current_bytes_uploaded - previous_bytes_uploaded
 
-            namespace_logger.info(total_bytes_uploaded)
+
 
             # check if the given file has finished uploading
             if current_bytes_uploaded == total_bytes_to_upload and file_id != "":
                 files_uploaded += 1
                 # main_curation_uploaded_files += 1
-                namespace_logger.info("Files Uploaded: " + str(files_uploaded) + "/" + str(total_dataset_files))
-                # namespace_logger.info("Total Bytes
+
 
             # check if the upload has finished
             if files_uploaded == total_dataset_files:
-                namespace_logger.info("Finished up here")
                 # namespace_logger.info("Upload complete")
                 # unsubscribe from the agent's upload messages since the upload has finished
                 ps.unsubscribe(10)
@@ -1009,7 +1003,6 @@ def submit_dataset_progress():
         elapsed_time_formatted = 0
         elapsed_time_formatted_display = "<br>" + "Initiating..." + "<br>"
 
-    namespace_logger.info(f"Total file size in upload: {total_bytes_uploaded['value']}")
         
     return {
         'progress': submitdataprogress + elapsed_time_formatted_display,
@@ -1779,8 +1772,6 @@ def get_number_of_files_and_folders_locally(filepath):
         for _ in files:
             totalFiles += 1
 
-    namespace_logger.info(f"Number of files: {str(totalFiles)}")
-    namespace_logger.info(f"Number of folders: {str(totalDir)}")
 
     return {"totalFiles": totalFiles, "totalDir": totalDir}
 
