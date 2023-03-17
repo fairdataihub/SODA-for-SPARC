@@ -604,7 +604,7 @@ const getGlobalPath = (path) => {
     return el != "";
   });
   return filtered;
-}
+};
 
 function loadFileFolder(myPath) {
   var appendString = "";
