@@ -254,7 +254,24 @@ const validatePennsieveDatasetStandAlone = async () => {
   console.log("About to import the dataset");
 
   // import the dataset from Pennsieve
-  let datasetPopulationResponse = await bf_request_and_populate_dataset(localSodaJSONObj);
+  let datasetPopulationResponse;
+  try {
+    datasetPopulationResponse = await bf_request_and_populate_dataset(localSodaJSONObj);
+  } catch (err) {
+    clientError(err);
+    await Swal.fire({
+      title: `Validation Run Failed`,
+      text: "Please try again. If this issue persists contect the SODA for SPARC team at help@fairdataihub.org",
+      allowEscapeKey: true,
+      allowOutsideClick: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      showConfirmButton: true,
+      icon: "error",
+    });
+    return;
+  }
 
   localSodaJSONObj = datasetPopulationResponse.soda_object;
 
