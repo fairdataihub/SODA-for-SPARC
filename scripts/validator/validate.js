@@ -10,6 +10,66 @@ const { translatePipelineError } = require("./scripts/validator/parse-pipeline-e
 *******************************************************************************************************************
 */
 
+const createValidationReport = async (sodaJSONObj) => {
+  const clientUUID = uuid();
+
+  let manifestJSONResponse = await client.post(
+    "/skeleton_dataset/manifest_json",
+    {
+      sodajsonobject: sodaJSONObj,
+    },
+    {
+      timeout: 0,
+    }
+  );
+
+  let manifestFiles = manifestJSONResponse.data;
+
+  let metadataJSONResponse = await client.post(
+    "/skeleton_dataset/metadata_json",
+    {
+      sodajsonobject: sodaJSONObj,
+    },
+    {
+      timeout: 0,
+    }
+  );
+
+  let metadataFiles = metadataJSONResponse.data;
+
+  console.log("metadataFiles", metadataFiles);
+  console.log("manifestFiles", manifestFiles);
+  console.log("localSodaJsonObject", sodaJSONObj);
+  console.log("clientUUID", clientUUID);
+
+  let validationResponse = await client.post(`http://localhost:9009/validator/validate`, {
+    clientUUID: clientUUID,
+    dataset_structure: sodaJSONObj,
+    metadata_files: metadataFiles,
+    manifests: manifestFiles,
+  });
+
+  // track that a local validation succeeded
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Prepare Datasets - Validate your dataset - Local",
+    "Local Validation",
+    1
+  );
+
+  // track that a validation (local or pennsieve) succeeded
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Prepare Datasets - Validate your dataset",
+    "Dataset Validation",
+    1
+  );
+
+  return validationResponse.data;
+};
+
 const validateLocalDataset = async () => {
   // grab the local dataset path from the input's placeholder attribute
   let datasetPath = document.querySelector("#validate-local-dataset-path").value;
@@ -26,8 +86,6 @@ const validateLocalDataset = async () => {
       Swal.showLoading();
     },
   });
-
-  const clientUUID = uuid();
 
   let localSodaJsonObject = {
     "bf-account-selected": {
@@ -77,148 +135,26 @@ const validateLocalDataset = async () => {
 
   localSodaJsonObject = importLocalDatasetResponse.data;
 
-  let manifestJSONResponse;
-  try {
-    manifestJSONResponse = await client.post(
-      "/skeleton_dataset/manifest_json",
-      {
-        sodajsonobject: localSodaJsonObject,
-      },
-      {
-        timeout: 0,
-      }
-    );
-  } catch (error) {
-    clientError(error);
-    await Swal.fire({
-      title: "Could not validate your dataset.",
-      message: `SODA is unable to import your manifest files.`,
-      allowEscapeKey: true,
-      allowOutsideClick: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      showConfirmButton: true,
-      icon: "error",
-    });
-    return;
-  }
-
-  let manifestFiles = manifestJSONResponse.data;
-
-  let metadataJSONResponse;
-  try {
-    metadataJSONResponse = await client.post(
-      "/skeleton_dataset/metadata_json",
-      {
-        sodajsonobject: localSodaJsonObject,
-      },
-      {
-        timeout: 0,
-      }
-    );
-  } catch (error) {
-    clientError(error);
-    await Swal.fire({
-      title: "Could not validate your dataset.",
-      message: `SODA is unable to import your metadata files.`,
-      allowEscapeKey: true,
-      allowOutsideClick: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      showConfirmButton: true,
-      icon: "error",
-    });
-    return;
-  }
-
-  let metadataFiles = metadataJSONResponse.data;
-
-  console.log("metadataFiles", metadataFiles);
-  console.log("manifestFiles", manifestFiles);
   console.log("localSodaJsonObject", localSodaJsonObject);
-  console.log("clientUUID", clientUUID);
 
-  let validationResponse;
+  let validationReportData;
   try {
-    // send the dataset path to the validator endpoint
-    validationResponse = await client.post(`http://localhost:9009/validator/validate`, {
-      clientUUID: clientUUID,
-      dataset_structure: localSodaJsonObject,
-      metadata_files: metadataFiles,
-      manifests: manifestFiles,
-    });
-
-    // track that a local validation succeeded
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      "Prepare Datasets - Validate your dataset - Local",
-      "Local Validation",
-      1
-    );
-
-    // track that a validation (local or pennsieve) succeeded
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      "Prepare Datasets - Validate your dataset",
-      "Dataset Validation",
-      1
-    );
-  } catch (err) {
-    // hide the validation errors table
-    document.querySelector("#validation-errors-container").style.visiility = "hidden";
-
-    // log the error
-    clientError(err);
-
-    // display the error message to the user
-    let errorMessage = userErrorMessage(err);
-
+    validationReportData = await createValidationReport(localSodaJsonObject);
+  } catch (error) {
+    clientError(error);
+    clientError(error);
     await Swal.fire({
-      title: "Validation Failed",
-      text: `${errorMessage}`,
+      title: "Validation Run Failed",
+      allowEscapeKey: true,
+      allowOutsideClick: false,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      showConfirmButton: true,
       icon: "error",
-      showCancelButton: false,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
     });
-
-    // reset the input field to 'Browse Here'
-    let datasetLocationInput = document.querySelector("#validate-local-dataset-path");
-
-    datasetLocationInput.value = "";
-
-    // track that a local validation failed
-    ipcRenderer.send(
-      "track-event",
-      "Error",
-      "Prepare Datasets - Validate your dataset - Local",
-      "Local Validation",
-      1
-    );
-
-    // track that a validation (local or pennsieve) failed to help with aggregating total dataset validation failures
-    ipcRenderer.send(
-      "track-event",
-      "Error",
-      "Prepare Datasets - Validate your dataset",
-      "Dataset Validation",
-      1
-    );
-
     return;
   }
-
-  let validationReportData = validationResponse.data;
 
   // write the full report to the ~/SODA/validation.txt file
   let fullReport = validationReportData.full_report;
@@ -296,13 +232,42 @@ const validatePennsieveDatasetStandAlone = async () => {
     },
   });
 
+  let localSodaJSONObj = {
+    "bf-account-selected": {
+      "account-name": {},
+    },
+    "bf-dataset-selected": {
+      "dataset-name": {},
+    },
+    "dataset-structure": {},
+    "metadata-files": {},
+    "manifest-files": {},
+    "generate-dataset": {},
+    "starting-point": {
+      type: "bf",
+    },
+  };
+
+  localSodaJSONObj["bf-account-selected"]["account-name"] = $("#current-bf-account").text();
+  localSodaJSONObj["bf-dataset-selected"]["dataset-name"] = $("#current-bf-dataset").text();
+
+  console.log("About to import the dataset");
+
+  // import the dataset from Pennsieve
+  let datasetPopulationResponse = await bf_request_and_populate_dataset(localSodaJSONObj);
+
+  localSodaJSONObj = datasetPopulationResponse.soda_object;
+
+  console.log("Imported the dataset");
+
   let validationReport;
   try {
-    validationReport = await validatePennsieveDataset();
+    validationReport = await createValidationReport(localSodaJSONObj);
   } catch (err) {
     clientError(err);
     await Swal.fire({
-      title: `Could not validate your dataset`,
+      title: `Validation Run Failed`,
+      text: "Please try again. If this issue persists contect the SODA for SPARC team at help@fairdataihub.org",
       allowEscapeKey: true,
       allowOutsideClick: true,
       heightAuto: false,
@@ -313,8 +278,6 @@ const validatePennsieveDatasetStandAlone = async () => {
     });
     return;
   }
-
-  console.log(validationReport);
 
   let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
   let validationErrorsContainer = document.querySelector("#validation-errors-container");
