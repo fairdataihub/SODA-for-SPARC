@@ -3776,6 +3776,7 @@ const openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-code-folder-tab") {
+      console.log("HERE");
       itemsContainer.classList.add("border-styling");
       const codeFolder = datasetStructureJSONObj["folders"]["code"];
       if (!codeFolder) {
@@ -6909,7 +6910,9 @@ const updateFolderStructureUI = (pageDataObj) => {
     structureFolderContentsElement.classList.add("hidden");
   }
 
+  //TODO: Figure out why this is undefined when transitioning with no subjects
   $("#guided-input-global-path").val(`My_dataset_folder/${pageDataObj.pathSuffix}`);
+  console.log($("#guided-input-global-path"));
   var filtered = getGlobalPath(organizeDSglobalPath);
   organizeDSglobalPath.value = filtered.slice(0, filtered.length).join("/") + "/";
 
@@ -12623,6 +12626,7 @@ $(document).ready(async () => {
       //if more tabs in parent tab, go to next tab and update capsule
       let targetPage = getNextPageNotSkipped(CURRENT_PAGE.id);
       let targetPageID = targetPage.id;
+      console.log(targetPageID);
 
       await openPage(targetPageID);
     } catch (error) {
@@ -12734,6 +12738,7 @@ $(document).ready(async () => {
         }
 
         if (buttonNoSubjects.classList.contains("selected")) {
+          console.log("HERE");
           guidedSkipPage("guided-organize-subjects-into-pools-page");
           guidedSkipPage("guided-specify-samples-page");
 
@@ -13234,6 +13239,7 @@ $(document).ready(async () => {
   $("#guided-button-sub-page-continue").on("click", async () => {
     //Get the id of the parent page that's currently open
     const currentParentPageID = CURRENT_PAGE.id;
+    console.log(currentParentPageID);
 
     if (currentParentPageID === "guided-create-submission-metadata-tab") {
       if (
@@ -13248,7 +13254,7 @@ $(document).ready(async () => {
 
     //Get the id of the sub-page that's currently open
     const openSubPageID = getOpenSubPageInPage(currentParentPageID);
-
+    console.log(openSubPageID);
     try {
       await saveSubPageChanges(openSubPageID);
 
@@ -13257,6 +13263,7 @@ $(document).ready(async () => {
       }
       //Get an array of all the sub pages that are children of the parent page
       const nonSkippedSiblingPages = getNonSkippedSubPages(currentParentPageID);
+      console.log(nonSkippedSiblingPages);
 
       // Get the index of the sub-page that's currently open
       const openSubPageIndex = nonSkippedSiblingPages.indexOf(openSubPageID);

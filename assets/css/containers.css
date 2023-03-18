@@ -64,7 +64,7 @@
 }
 
 .container-open {
-  display: flex;
+  display: flex !important;
   margin-bottom: 0px;
   animation: demo-box-fade-in 0.2s cubic-bezier(0, 0.2, 0.2, 0.96);
 }

@@ -894,6 +894,10 @@
   color: #fff !important;
 }
 
+.text-black {
+  color: black !important;
+}
+
 .text-primary {
   color: #3f84fc !important;
 }
