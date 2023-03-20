@@ -1829,7 +1829,7 @@ function loadContributorsToTable(array) {
         splitNames = arr[0].trim().split(" ");
       }
       var myCurrentCon = {
-        conName: splitNames[1] + ", " + splitNames[0],
+        conName: splitNames[0].trim() + ", " + splitNames[1].trim(),
         contributorFirstName: splitNames[0],
         contributorLastName: splitNames[1],
         conID: arr[1].trim(),
