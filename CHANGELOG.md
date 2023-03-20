@@ -5,6 +5,14 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.10.0.5 - 2023-03-20
+
+## Bug fixes:
+
+- GM: Contributor names in the dataset_description file will now always upload as "Last name, First name"
+- FFM: Removed the "Corresponding Authors" metadata field from dataset_description as it is no longer required per the SPARC dataset structure
+- FFM: Bug fixed causing ORCIDs to not get pulled into the dataset_description contributors UI
+
 ## v.10.0.4 - 2023-02-24
 
 ## Bug fixes:
