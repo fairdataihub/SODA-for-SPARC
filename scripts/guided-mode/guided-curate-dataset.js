@@ -5825,8 +5825,6 @@ const newEmptyFolderObj = () => {
 };
 
 const patchPreviousGuidedModeVersions = () => {
-  let forceUserToRestartFromFirstPage = false;
-
   //temp patch contributor affiliations if they are still a string (they were added in the previous version)
   const contributors = sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
   if (contributors) {
@@ -5874,7 +5872,6 @@ const patchPreviousGuidedModeVersions = () => {
 
   if (!sodaJSONObj["previously-uploaded-data"]) {
     sodaJSONObj["previously-uploaded-data"] = {};
-    forceUserToRestartFromFirstPage = true;
   }
 
   if (!sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"]) {
@@ -5883,8 +5880,6 @@ const patchPreviousGuidedModeVersions = () => {
 
   if (!sodaJSONObj["skipped-pages"]) {
     sodaJSONObj["skipped-pages"] = [];
-
-    forceUserToRestartFromFirstPage = true;
   }
 
   if (!sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"]) {
@@ -5896,15 +5891,9 @@ const patchPreviousGuidedModeVersions = () => {
     sodaJSONObj["page-before-exit"] = "guided-create-submission-metadata-tab";
   }
 
-  const currentSodaVersion = document.getElementById("version").innerHTML;
   if (!sodaJSONObj["last-version-of-soda-used"]) {
-    sodaJSONObj["last-version-of-soda-used"] = currentSodaVersion;
+    sodaJSONObj["last-version-of-soda-used"] = "10.0.4";
   }
-  if (currentSodaVersion > sodaJSONObj["last-version-of-soda-used"]) {
-    forceUserToRestartFromFirstPage = true;
-  }
-
-  return forceUserToRestartFromFirstPage;
 };
 
 //Loads UI when continue curation button is pressed
@@ -6018,16 +6007,29 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   samplesTableData = sodaJSONObj["samples-table-data"];
 
   //patches the sodajsonobj if it was created in a previous version of guided mode
-  //and returns a boolean to indicate if the user should be forced to restart from the first page
-  const forceStartFromFirstPage = patchPreviousGuidedModeVersions();
+  patchPreviousGuidedModeVersions();
 
-  //Return the user to the last page they exited on
-  let pageToReturnTo = datasetResumeJsonObj["page-before-exit"];
+  // pageToReturnTo will be set to the page the user will return to
+  let pageToReturnTo;
 
-  //If a patch was applied that requires the user to restart from the first page,
-  //then force the user to restart from the first page
-  if (forceStartFromFirstPage) {
-    pageToReturnTo = "guided-name-subtitle-tab";
+  // The last page the user left off on on a previous session
+  const usersPageBeforeExit = sodaJSONObj["page-before-exit"];
+
+  // If the last time the user worked on the progress file was in a previous version of SODA, then force the user to restart from the first page
+  const currentSodaVersion = document.getElementById("version").innerHTML;
+  const lastVersionOfSodaUsedOnProgressFile = sodaJSONObj["last-version-of-soda-used"];
+
+  if (lastVersionOfSodaUsedOnProgressFile === currentSodaVersion) {
+    const usersPageBeforeExit = datasetResumeJsonObj["page-before-exit"];
+    //Check to make sure the page still exists before returning to it
+    if (document.getElementById(usersPageBeforeExit)) {
+      pageToReturnTo = usersPageBeforeExit;
+    }
+  }
+
+  // If the user left while the upload was in progress, send the user to the upload confirmation page
+  if (usersPageBeforeExit === "guided-dataset-generation-tab") {
+    pageToReturnTo = "guided-dataset-generation-confirmation-tab";
   }
 
   //If the dataset was successfully uploaded, send the user to the share with curation team
@@ -6041,28 +6043,26 @@ const guidedResumeProgress = async (resumeProgressButton) => {
 
   // Save the skipped pages in a temp variable since guidedTransitionFromHome will remove them
   const prevSessionSkikppedPages = [...sodaJSONObj["skipped-pages"]];
+
   guidedTransitionFromHome();
   // Reskip the pages from a previous session
   for (const pageID of prevSessionSkikppedPages) {
     guidedSkipPage(pageID);
   }
 
-  //Hide the before getting started page so it doesn't flash when resuming progress
-  document.getElementById("guided-resume-existing-dataset-tab").classList.add("hidden");
-
   // Skip this page incase it was not skipped in a previous session
   guidedSkipPage("guided-resume-existing-dataset-tab");
 
-  if (pageToReturnTo) {
-    //Hide the sub-page navigation and show the main page navigation footer
-    //If the user traverses to a page that requires the sub-page navigation,
-    //the sub-page will be shown during openPage() function
-    hideSubNavAndShowMainNav(false);
+  //Hide the sub-page navigation and show the main page navigation footer
+  //If the user traverses to a page that requires the sub-page navigation,
+  //the sub-page will be shown during openPage() function
+  hideSubNavAndShowMainNav(false);
 
-    //If the last page the exited was the upload page, take them to the review page
-    pageToReturnTo === "guided-dataset-generation-tab"
-      ? openPage("guided-dataset-generation-confirmation-tab")
-      : openPage(pageToReturnTo);
+  if (pageToReturnTo) {
+    await openPage(pageToReturnTo);
+  } else {
+    const firstPage = getNonSkippedGuidedModePages(document)[0];
+    await openPage(firstPage.id);
   }
 };
 
