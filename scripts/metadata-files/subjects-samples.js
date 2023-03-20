@@ -1549,7 +1549,7 @@ async function copy_current_sample_id(ev) {
   }
 }
 
-function updateIndexForTable(table) {
+const updateIndexForTable = (table, boolUpdateIndex) => {
   // disable table to prevent further row-moving action before the updateIndexForTable finishes
 
   if (table === document.getElementById("table-subjects")) {
@@ -1559,9 +1559,11 @@ function updateIndexForTable(table) {
   }
   var rowcount = table.rows.length;
   var index = 1;
-  for (var i = 1; i < rowcount; i++) {
-    table.rows[i].cells[0].innerText = index;
-    index = index + 1;
+  if (boolUpdateIndex) {
+    for (var i = 1; i < rowcount; i++) {
+      table.rows[i].cells[0].innerText = index;
+      index = index + 1;
+    }
   }
   if (rowcount === 1) {
     table.style.display = "none";
@@ -1587,7 +1589,7 @@ function updateIndexForTable(table) {
   }
   $("#table-subjects").css("pointer-events", "auto");
   $("#table-samples").css("pointer-events", "auto");
-}
+};
 
 function updateOrderIDTable(table, json, type) {
   var length = table.rows.length;
