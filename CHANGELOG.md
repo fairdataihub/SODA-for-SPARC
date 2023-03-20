@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Bug fixes:
 
+## Feature Additions:
+
+- FFM: Contributors table emulates Guided Mode's contributors table
+
 - GM: Contributor names in the dataset_description file will now always upload as "Last name, First name"
 - FFM: Removed the "Corresponding Authors" metadata field from dataset_description as it is no longer required per the SPARC dataset structure
 - FFM: Bug fixed causing ORCIDs to not get pulled into the dataset_description contributors UI
