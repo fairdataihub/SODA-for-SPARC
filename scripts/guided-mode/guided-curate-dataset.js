@@ -7303,6 +7303,11 @@ const openGuidedAddContributorSwal = async () => {
 };
 
 const contributorDataIsValid = (contributorObj) => {
+  console.log(contributorObj.conAffliation.length > 0);
+  console.log(contributorObj.conID);
+  console.log(contributorObj.conRole.length > 0);
+  console.log(contributorObj.contributorFirstName);
+  console.log(contributorObj.contributorLastName);
   if (
     contributorObj.conAffliation.length > 0 &&
     contributorObj.conID &&

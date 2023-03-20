@@ -588,6 +588,7 @@ const generateDDFile = async (uploadBFBoolean) => {
   log.info(`Generating a dataset description file.`);
   /// call python function to save file
   try {
+    console.log(contributorObj);
     let save_ds_desc_file = await client.post(
       `/prepare_metadata/dataset_description_file`,
       {
@@ -607,6 +608,7 @@ const generateDDFile = async (uploadBFBoolean) => {
     );
 
     let res = save_ds_desc_file.data.size;
+    console.log(res);
 
     if (uploadBFBoolean) {
       var successMessage =
@@ -903,40 +905,50 @@ const generateContributorRowElement = (contributorLastName, contributorFirstName
   `;
 };
 
-function addContributortoTableDD(name, contactStatus) {
+const addContributortoTableDD = (name, contributorObject) => {
+  const contributorIsValid = contributorDataIsValid(contributorObject);
+  console.log(contributorIsValid);
+  const conRole = contributorObject.conRole;
   var conTable = document.getElementById("contributor-table-dd");
-  document.getElementById("div-contributor-table-dd").style.display = "block";
   var rowcount = conTable.rows.length;
-  /// append row to table from the bottom
   var rowIndex = rowcount;
+  /// append row to table from the bottom
   var currentRow = conTable.rows[conTable.rows.length - 1];
   // check for unique row id in case users delete old rows and append new rows (same IDs!)
   var newRowIndex = checkForUniqueRowID("row-current-con", rowIndex);
   var indexNumber = rowIndex;
-
   var conName = name;
-  var conContactPerson = contactStatus;
-  var row = (conTable.insertRow(rowIndex).outerHTML =
-    "<tr id='row-current-con" +
-    newRowIndex +
-    "' class='row-protocol'><td class='contributor-table-row'>" +
-    indexNumber +
-    "</td><td>" +
-    conName +
-    "</td><td class='contributor-table-row'>" +
-    conContactPerson +
-    "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_con_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_con_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
-}
+  // var conContactPerson = contactStatus;
 
-var contributorElement = `<div id="contributor-popup"><div style="display:flex"><div class="div-child"><label>First name </label><select id="dd-contributor-first-name" disabled class="form-container-input-bf" " style="line-height: 2"><option value="Select">Select an option</option></select></div><div style="margin-right:10px"><label>Last name</label><select id="dd-contributor-last-name" class="form-container-input-bf" onchange="onchangeLastNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div></div><div><label>ORCiD <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div><div style="margin-top:15px;display:flex;flex-direction:column"><label>Corresponding Author <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Check if the contributor is a corresponding author for the dataset. At least one and only one of the contributors should be the corresponding author." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><label class="switch" style="margin-top: 15px"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"></input><span class="slider round"></span></label></div></div> `;
+  document.getElementById("div-contributor-table-dd").style.display = "block";
+  document.getElementById("contributor-table-dd").style.display = "table";
+
+  var row = (conTable.insertRow(
+    rowIndex
+  ).outerHTML = `<tr id='row-current-con' class='row-protocol'><td class='contributor-table-row'>
+  ${conName}
+    </td><td>
+  
+    ${conRole}
+    </td><td class='contributor-table-row'>
+    ${
+      contributorIsValid
+        ? `<span class="badge badge-pill badge-success">Valid</span>`
+        : `<span class="badge badge-pill badge-warning">Missing Fields</span>`
+    }
+    </td> <td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_con_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button></div></td>
+    <td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='delete_current_con_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>`);
+};
+
+var contributorElement = `<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><select id="dd-contributor-last-name" class="form-container-input-bf" onchange="onchangeLastNames()" style="line-height: 2"><option value="Select">Select an option</option></select></div><div class="div-child"><label>First name </label><select id="dd-contributor-first-name" disabled class="form-container-input-bf" " style="line-height: 2"><option value="Select">Select an option</option></select></div></div><div><label>ORCiD <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div></div> `;
 
 var contributorElementRaw =
-  '<div id="contributor-popup"><div style="display:flex"><div class="div-child"><label>First name</label><input id="dd-contributor-first-name" class="form-container-input-bf" style="line-height: 2"></input></div><div style="margin-right:10px"><label>Last name</label><input id="dd-contributor-last-name" class="form-container-input-bf" style="line-height: 2"></input></div></div><div><label>ORCiD <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div><div style="margin-top:15px;display:flex;flex-direction:column"><label>Corresponding Author <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Check if the contributor is a corresponding author for the dataset. At least one and only one of the contributors should be the corresponding author." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><label class="switch" style="margin-top: 15px"><input id="ds-contact-person" name="contact-person" type="checkbox" class="with-style-manifest"></input><span class="slider round"></span></label></div></div>';
+  '<div id="contributor-popup"><div style="display:flex"><div style="margin-right:10px"><label>Last name</label><input id="dd-contributor-last-name" class="form-container-input-bf" style="line-height: 2"></input></div><div class="div-child"><label>First name</label><input id="dd-contributor-first-name" class="form-container-input-bf" style="line-height: 2"></input></div></div><div><label>ORCiD <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="If contributor does not have an ORCID ID, we suggest they sign up for one at <a href=\'https://orcid.org\' style=\'color: white\' target=\'_blank\'>https://orcid.org</a>" rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></label><input id="input-con-ID" class="form-container-input-bf" style="line-height: 2" contenteditable="true"></input></div><div><div style="margin: 15px 0;font-weight:600">Affiliation <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Institutional affiliation for contributor. Hit \'Enter\' on your keyboard after each entry to register it." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-affiliation" contenteditable="true"></input></div></div><div><div style="margin: 15px 0;font-weight:600">Role <i class="fas fa-info-circle tippy-tooltip" data-tippy-content="Role(s) of the contributor as per the Data Cite schema (c.f. associated dropdown list). Hit \'Enter\' after each entry to register it. Checkout the related <a href=\'https://schema.datacite.org/meta/kernel-4.3/\' target=\'_blank\' style=\'color: white\'>documentation</a> for a definition of each of these roles." rel="popover" data-html="true" data-placement="right" data-trigger="hover"></i></div><div><input id="input-con-role" contenteditable="true"></input></div></div></div>';
 
 var contributorArray = [];
 var affiliationSuggestions = [];
 
-function showContributorSweetalert(key) {
+const showContributorSweetalert = (key) => {
   var currentContributortagify;
   var currentAffliationtagify;
   if (key === false) {
@@ -1060,34 +1072,43 @@ function showContributorSweetalert(key) {
       ) {
         Swal.showValidationMessage(`Please fill in all required fields!`);
       } else {
-        var duplicateConName = checkDuplicateContributorName(firstName, lastName);
+        var duplicateConName = checkDuplicateContributorName(
+          firstName,
+          lastName,
+          $("#contributor-table-dd")
+        );
         if (!duplicateConName) {
-          if ($("#ds-contact-person").prop("checked")) {
-            var contactPersonExists = checkContactPersonStatus("add", null);
-            if (contactPersonExists) {
-              Swal.showValidationMessage(
-                "One corresponding author is already added. Only one corresponding author is allowed for a dataset."
-              );
-            } else {
-              var myCurrentCon = {
-                conName: lastName + ", " + firstName,
-                conID: $("#input-con-ID").val().trim(),
-                conAffliation: affiliationVals,
-                conRole: roleVals + ", CorrespondingAuthor",
-              };
-              contributorArray.push(myCurrentCon);
-              return [myCurrentCon.conName, "Yes"];
-            }
-          } else {
-            var myCurrentCon = {
-              conName: lastName + ", " + firstName,
-              conID: $("#input-con-ID").val().trim(),
-              conAffliation: affiliationVals,
-              conRole: roleVals,
-            };
-            contributorArray.push(myCurrentCon);
-            return [myCurrentCon.conName, "No"];
-          }
+          var myCurrentCon = {
+            conName: lastName + ", " + firstName,
+            contributorFirstName: firstName,
+            contributorLastName: lastName,
+            conID: $("#input-con-ID").val().trim(),
+            conAffliation: affiliationVals,
+            conRole: roleVals,
+          };
+          contributorArray.push(myCurrentCon);
+          return [myCurrentCon];
+          // if ($("#ds-contact-person").prop("checked")) {
+          //   contributorArray.push(myCurrentCon);
+          //   return [myCurrentCon.conName, "No"];
+          //   var contactPersonExists = checkContactPersonStatus("add", null);
+          //   // if (contactPersonExists) {
+          //   //   Swal.showValidationMessage(
+          //   //     "One corresponding author is already added. Only one corresponding author is allowed for a dataset."
+          //   //   );
+          //   // } else {
+          //   //   var myCurrentCon = {
+          //   //     conName: lastName + ", " + firstName,
+          //   //     conID: $("#input-con-ID").val().trim(),
+          //   //     conAffliation: affiliationVals,
+          //   //     conRole: roleVals + ", CorrespondingAuthor",
+          //   //   };
+          //   //   contributorArray.push(myCurrentCon);
+          //   //   return [myCurrentCon.conName, "Yes"];
+          //   // }
+          // } else {
+
+          // }
         } else {
           Swal.showValidationMessage(
             `The contributor ${lastName + ", " + firstName} is already added.`
@@ -1097,187 +1118,15 @@ function showContributorSweetalert(key) {
     },
   }).then((result) => {
     if (result.isConfirmed) {
-      addContributortoTableDD(result.value[0], result.value[1]);
+      console.log(result);
+      addContributortoTableDD(result.value[0].conName, result.value[0]);
       // memorize Affiliation info for next time as suggestions
       memorizeAffiliationInfo(affiliationSuggestions);
     }
   });
-}
+};
 
-var contributorArray = [];
-var affiliationSuggestions = [];
-
-//Curation  passed in should be "free-form" for free-form mode or "guided" for guided-mode
-function showContributorSweetalert(key) {
-  var currentContributortagify;
-  var currentAffliationtagify;
-  if (key === false) {
-    if (Object.keys(globalContributorNameObject).length !== 0) {
-      var footer =
-        "<a style='text-decoration: none !important' onclick='showContributorSweetalert(\"pass\", \"guided\")' target='_blank'>I want to add a contributor not listed above</a>";
-      var element = contributorElement;
-    } else {
-      var footer = "";
-      var element = contributorElementRaw;
-    }
-  } else if (key === "pass") {
-    var element = contributorElementRaw;
-    var footer = "";
-  }
-  Swal.fire({
-    title: "Add a contributor",
-    html: element,
-    showCancelButton: true,
-    focusCancel: true,
-    cancelButtonText: "Cancel",
-    confirmButtonText: "Add contributor",
-    width: "max-content",
-    reverseButtons: reverseSwalButtons,
-    backdrop: "rgba(0,0,0, 0.4)",
-    heightAuto: false,
-    allowOutsideClick: false,
-    footer: footer,
-    didOpen: () => {
-      $(".swal-popover").popover();
-      tippy(".tippy-tooltip", {
-        allowHTML: true,
-        interactive: true,
-        placement: "right",
-        theme: "light",
-        interactiveBorder: 30,
-      });
-      // first destroy old tagify
-      $($("#input-con-affiliation").siblings()[0]).remove();
-      $($("#input-con-role").siblings()[0]).remove();
-      /// initiate tagify for contributor roles
-      currentContributortagify = new Tagify(document.getElementById("input-con-role"), {
-        whitelist: [
-          "PrincipleInvestigator",
-          "Creator",
-          "CoInvestigator",
-          "DataCollector",
-          "DataCurator",
-          "DataManager",
-          "Distributor",
-          "Editor",
-          "Producer",
-          "ProjectLeader",
-          "ProjectManager",
-          "ProjectMember",
-          "RelatedPerson",
-          "Researcher",
-          "ResearchGroup",
-          "Sponsor",
-          "Supervisor",
-          "WorkPackageLeader",
-          "Other",
-        ],
-        dropdown: {
-          classname: "color-blue",
-          enabled: 0, // show the dropdown immediately on focus
-          maxItems: 25,
-          closeOnSelect: true, // keep the dropdown open after selecting a suggestion
-        },
-        enforceWhitelist: true,
-        duplicates: false,
-      });
-      createDragSort(currentContributortagify);
-
-      currentAffliationtagify = new Tagify(document.getElementById("input-con-affiliation"), {
-        dropdown: {
-          classname: "color-blue",
-          enabled: 0, // show the dropdown immediately on focus
-          maxItems: 25,
-          closeOnSelect: true, // keep the dropdown open after selecting a suggestion
-        },
-        whitelist: affiliationSuggestions,
-        delimiters: null,
-        duplicates: false,
-      });
-      createDragSort(currentAffliationtagify);
-
-      // load contributor names onto Select
-      if (Object.keys(globalContributorNameObject).length !== 0) {
-        if (key === false) {
-          cloneConNamesSelect("dd-contributor-last-name");
-        }
-      }
-    },
-    showClass: {
-      popup: "animate__animated animate__fadeInDown animate__faster",
-    },
-    hideClass: {
-      popup: "animate__animated animate__fadeOutUp animate__faster",
-    },
-    preConfirm: () => {
-      var affValues = grabCurrentTagifyContributor(currentAffliationtagify);
-      // store affiliation info as suggestions
-      affiliationSuggestions.push.apply(affiliationSuggestions, affValues);
-      var affSet = new Set(affiliationSuggestions);
-      var affArray = [...affSet];
-      affiliationSuggestions = affArray;
-      var affiliationVals = affValues.join(", ");
-      var roleVals = grabCurrentTagifyContributor(currentContributortagify).join(", ");
-
-      var firstName = $("#dd-contributor-first-name").val().trim();
-      var lastName = $("#dd-contributor-last-name").val().trim();
-      if (
-        $("#input-con-ID").val().trim() === "" ||
-        $("#input-con-affiliation").val().trim() === "" ||
-        $("#input-con-role").val().trim() === "" ||
-        firstName === "Select" ||
-        lastName === "Select" ||
-        firstName === "" ||
-        lastName === ""
-      ) {
-        Swal.showValidationMessage(`Please fill in all required fields!`);
-      } else {
-        var contributorTable = document.getElementById("contributor-table-dd");
-        var duplicateConName = checkDuplicateContributorName(firstName, lastName, contributorTable);
-        if (!duplicateConName) {
-          if ($("#ds-contact-person").prop("checked")) {
-            var contactPersonExists = checkContactPersonStatus("add", null);
-            if (contactPersonExists) {
-              Swal.showValidationMessage(
-                "One corresponding author is already added. Only one corresponding author is allowed for a dataset."
-              );
-            } else {
-              var myCurrentCon = {
-                conName: lastName + ", " + firstName,
-                conID: $("#input-con-ID").val().trim(),
-                conAffliation: affiliationVals,
-                conRole: roleVals + ", CorrespondingAuthor",
-              };
-              contributorArray.push(myCurrentCon);
-              return [myCurrentCon.conName, "Yes"];
-            }
-          } else {
-            var myCurrentCon = {
-              conName: lastName + ", " + firstName,
-              conID: $("#input-con-ID").val().trim(),
-              conAffliation: affiliationVals,
-              conRole: roleVals,
-            };
-            contributorArray.push(myCurrentCon);
-            return [myCurrentCon.conName, "No"];
-          }
-        } else {
-          Swal.showValidationMessage(
-            `The contributor ${lastName + ", " + firstName} is already added.`
-          );
-        }
-      }
-    },
-  }).then((result) => {
-    if (result.isConfirmed) {
-      addContributortoTableDD(result.value[0], result.value[1], "free-form");
-      // memorize Affiliation info for next time as suggestions
-      memorizeAffiliationInfo(affiliationSuggestions);
-    }
-  });
-}
-
-function delete_current_con_id(ev) {
+const delete_current_con_id = (ev) => {
   Swal.fire({
     title: "Are you sure you want to delete this contributor?",
     showCancelButton: true,
@@ -1293,33 +1142,35 @@ function delete_current_con_id(ev) {
       // 1. Delete from table
       var currentRow = $(ev).parents()[2];
       var currentRowid = $(currentRow).prop("id");
-      document.getElementById(currentRowid).outerHTML = "";
-      updateIndexForTable(document.getElementById("contributor-table-dd"));
+      console.log(currentRow);
+      console.log(currentRowid);
+      currentRow.remove();
+      updateIndexForTable(document.getElementById("contributor-table-dd"), false);
       // 2. Delete from JSON
-      var contributorName = $(currentRow)[0].cells[1].innerText;
+      var contributorName = $(currentRow)[0].cells[0].innerText;
       for (var i = 0; i < contributorArray.length; i++) {
-        if (contributorArray[i].conName === contributorName) {
+        if (contributorArray[i].conName.trim() === contributorName.trim()) {
           contributorArray.splice(i, 1);
           break;
         }
       }
     }
   });
-}
+};
 
 const edit_current_con_id = (ev) => {
   var currentContributortagify;
   var currentAffliationtagify;
   var element = contributorElementRaw;
   var currentRow = $(ev).parents()[2];
-  var name = $(currentRow)[0].cells[1].innerText;
+  var name = $(currentRow)[0].cells[0].innerText.trim();
   Swal.fire({
     text: "Edit contributor",
     html: element,
     showCancelButton: true,
     focusCancel: true,
     cancelButtonText: "Cancel",
-    confirmButtonText: "Edit",
+    confirmButtonText: "Confirm",
     width: "max-content",
     customClass: "contributor-popup",
     reverseButtons: reverseSwalButtons,
@@ -1386,10 +1237,10 @@ const edit_current_con_id = (ev) => {
       });
       createDragSort(currentAffliationtagify);
 
+      console.log(contributorArray);
       for (var contributor of contributorArray) {
         if (contributor.conName === name) {
           // add existing tags to tagifies
-          console.log(contributor);
           let splitNames = [];
 
           // Add affiliation tags
@@ -1415,11 +1266,10 @@ const edit_current_con_id = (ev) => {
             splitNames = name.split(" ");
           }
 
-          $("#dd-contributor-last-name").val(splitNames[0].trim());
           $("#dd-contributor-first-name").val(splitNames[1].trim());
-          $("#dd-contributor-last-name").attr("disabled", true);
-          $("#dd-contributor-first-name").attr("disabled", true);
-          console.log(contributor.conID);
+          $("#dd-contributor-last-name").val(splitNames[0].trim());
+          // $("#dd-contributor-last-name").attr("disabled", true);
+          // $("#dd-contributor-first-name").attr("disabled", true);
           $("#input-con-ID").val(contributor.conID);
           break;
         }
@@ -1452,9 +1302,11 @@ const edit_current_con_id = (ev) => {
         var roleVals = grabCurrentTagifyContributor(currentContributortagify).join(", ");
         var myCurrentCon = {
           conName:
-            $("#dd-contributor-first-name").val().trim() +
+            $("#dd-contributor-last-name").val().trim() +
             ", " +
-            $("#dd-contributor-last-name").val().trim(),
+            $("#dd-contributor-first-name").val().trim(),
+          contributorFirstName: $("#dd-contributor-first-name").val().trim(),
+          contributorLastName: $("#dd-contributor-last-name").val().trim(),
           conID: $("#input-con-ID").val().trim(),
           conAffliation: affiliationVals,
           conRole: roleVals,
@@ -1466,6 +1318,7 @@ const edit_current_con_id = (ev) => {
             break;
           }
         }
+        return [myCurrentCon];
         // if ($("#ds-contact-person").prop("checked")) {
         //   var contactPersonExists = checkContactPersonStatus("edit", ev);
         //   if (contactPersonExists) {
@@ -1499,9 +1352,14 @@ const edit_current_con_id = (ev) => {
       }
     },
   }).then((result) => {
+    console.log(result);
     if (result.isConfirmed) {
-      $(currentRow)[0].cells[2].innerText = result.value[1];
-      console.log(result.value[1]);
+      let conName = result.value[0].conName;
+      $(currentRow)[0].cells[0].innerText = conName;
+      $(
+        currentRow
+      )[0].cells[2].innerHTML = `<span class="badge badge-pill badge-success">Valid</span>`;
+      $(currentRow)[0].cells[1].innerText = result.value[0].conRole;
       console.log(affiliationSuggestions);
       memorizeAffiliationInfo(affiliationSuggestions);
     }
@@ -1581,13 +1439,15 @@ function checkAtLeastOneContactPerson() {
 }
 
 function checkDuplicateContributorName(first, last, contributorsTable) {
-  var contributorsTable;
+  let table = contributorsTable[0];
+  console.log(table);
+  console.log(table.rows);
 
   var duplicate = false;
-  var name = last + ", " + first;
-  var rowcount = contributorsTable.rows.length;
+  var name = first + ", " + last;
+  var rowcount = table.rows.length;
   for (var i = 1; i < rowcount; i++) {
-    var currentContributorName = contributorsTable.rows[i].cells[1].innerText;
+    var currentContributorName = table.rows[i].cells[1].innerText;
     if (currentContributorName === name) {
       duplicate = true;
       break;
@@ -1975,6 +1835,7 @@ function loadContributorsToTable(array) {
   $("#div-contributor-table-dd").css("display", "none");
 
   for (var arr of array.splice(1)) {
+    let splitNames = [];
     console.log("within loop: " + arr);
     console.log(arr[0]);
     console.log(arr[0].trim());
@@ -1983,20 +1844,27 @@ function loadContributorsToTable(array) {
     console.log(arr[3]);
 
     if (arr[0].trim() !== "") {
+      if (arr[0].trim().includes(", ")) {
+        splitNames = arr[0].trim().split(", ");
+      } else {
+        splitNames = arr[0].trim().split(" ");
+      }
       var myCurrentCon = {
-        conName: arr[0].trim(),
+        conName: splitNames[1] + ", " + splitNames[0],
+        contributorFirstName: splitNames[0],
+        contributorLastName: splitNames[1],
         conID: arr[1].trim(),
         conAffliation: arr[2].trim(),
         conRole: arr[3].trim(),
       };
       contributorArray.push(myCurrentCon);
-      var contact = "";
-      if (myCurrentCon.conRole.includes("CorrespondingAuthor")) {
-        contact = "Yes";
-      } else {
-        contact = "No";
-      }
-      addContributortoTableDD(myCurrentCon.conName, contact, "free-form");
+      // var contact = "";
+      // if (myCurrentCon.conRole.includes("CorrespondingAuthor")) {
+      //   contact = "Yes";
+      // } else {
+      //   contact = "No";
+      // }
+      addContributortoTableDD(myCurrentCon.conName, myCurrentCon);
     }
   }
 }

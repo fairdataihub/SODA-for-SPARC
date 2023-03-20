@@ -892,12 +892,13 @@
                         </font>
                         <div id="div-contributor-table-dd" style="display: none">
                           <table
-                            class="ui celled table"
-                            style="text-align: center"
+                            class="ui celled striped table"
                             id="contributor-table-dd"
+                            style="margin-bottom: 25px; width: 592px"
                           >
+                            <!-- 
+                            style for grabbed contributor row for moving contributors
                             <style>
-                              /* style for grabbed contributor row for moving contributors */
                               .grab {
                                 cursor: grab;
                               }
@@ -907,25 +908,18 @@
                               .grabCursor,
                               .grabCursor * {
                                 cursor: grabbing !important;
-                              }
-                            </style>
-                            <thead class="full-width">
+                              }</style
+                            > -->
+                            <thead>
                               <tr>
-                                <th style="width: 10%">Index</th>
-                                <th style="width: 25%">Contributor (First, Last)</th>
-                                <th style="width: 50%">Corresponding author</th>
-                                <th style="width: 15%">
-                                  <i
-                                    class="fas fa-info-circle popover-tooltip"
-                                    data-content="Click on the corresponding button to edit/delete a contributor."
-                                    rel="popover"
-                                    data-placement="right"
-                                    data-html="true"
-                                    data-trigger="hover"
-                                  ></i>
-                                </th>
+                                <th>Name</th>
+                                <th>Role(s)</th>
+                                <th class="center aligned collapsing">Status</th>
+                                <th class="center aligned collapsing">Modify</th>
+                                <th class="center aligned collapsing">Delete</th>
                               </tr>
                             </thead>
+                            <tbody id="prepare-metadata-DD-contributors-table"></tbody>
                           </table>
                         </div>
                         <div style="display: flex">
