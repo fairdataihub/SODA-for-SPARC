@@ -129,6 +129,32 @@
   border-radius: 3px;
 }
 
+.guided--container-warning-text {
+  width: 100%;
+  padding: 5px;
+  background-color: #fff44f;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  border: 1px solid var(--color-light-green);
+  border-radius: 3px;
+}
+
+.guided--container-warning {
+  background-color: var(--color-transparent-soda-green);
+  flex-direction: column;
+  justify-content: center;
+  text-align: justify;
+  border: 1px solid var(--color-light-green);
+  border-radius: 3px;
+}
+
+.guided--info-container .guided--help-text {
+  font-size: 14px;
+  color: hsl(0, 0%, 22%);
+}
+
 .container-open {
   display: flex;
   margin-bottom: 0px;
