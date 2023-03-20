@@ -6928,14 +6928,10 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
   const contributorFullName = contributorData.conName;
 
   let boolShowIncorrectFullName = false;
-  console.log(contributorFirstName);
-  console.log(contributorLastName);
 
   if (contributorFirstName.length === 0 && contributorLastName.length === 0) {
     boolShowIncorrectFullName = true;
   }
-
-  console.log(boolShowIncorrectFullName);
 
   let affiliationTagify;
   let contributorRolesTagify;
@@ -7356,11 +7352,6 @@ const openGuidedAddContributorSwal = async () => {
 };
 
 const contributorDataIsValid = (contributorObj) => {
-  console.log(contributorObj.conAffliation.length > 0);
-  console.log(contributorObj.conID);
-  console.log(contributorObj.conRole.length > 0);
-  console.log(contributorObj.contributorFirstName);
-  console.log(contributorObj.contributorLastName);
   if (
     contributorObj.conAffliation.length > 0 &&
     contributorObj.conID &&

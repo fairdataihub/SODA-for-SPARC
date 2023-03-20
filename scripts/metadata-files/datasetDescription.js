@@ -588,7 +588,6 @@ const generateDDFile = async (uploadBFBoolean) => {
   log.info(`Generating a dataset description file.`);
   /// call python function to save file
   try {
-    console.log(contributorObj);
     let save_ds_desc_file = await client.post(
       `/prepare_metadata/dataset_description_file`,
       {
@@ -608,7 +607,6 @@ const generateDDFile = async (uploadBFBoolean) => {
     );
 
     let res = save_ds_desc_file.data.size;
-    console.log(res);
 
     if (uploadBFBoolean) {
       var successMessage =
@@ -907,7 +905,6 @@ const generateContributorRowElement = (contributorLastName, contributorFirstName
 
 const addContributortoTableDD = (name, contributorObject) => {
   const contributorIsValid = contributorDataIsValid(contributorObject);
-  console.log(contributorIsValid);
   const conRole = contributorObject.conRole;
   var conTable = document.getElementById("contributor-table-dd");
   var rowcount = conTable.rows.length;
@@ -1118,7 +1115,6 @@ const showContributorSweetalert = (key) => {
     },
   }).then((result) => {
     if (result.isConfirmed) {
-      console.log(result);
       addContributortoTableDD(result.value[0].conName, result.value[0]);
       // memorize Affiliation info for next time as suggestions
       memorizeAffiliationInfo(affiliationSuggestions);
@@ -1142,8 +1138,7 @@ const delete_current_con_id = (ev) => {
       // 1. Delete from table
       var currentRow = $(ev).parents()[2];
       var currentRowid = $(currentRow).prop("id");
-      console.log(currentRow);
-      console.log(currentRowid);
+
       currentRow.remove();
       updateIndexForTable(document.getElementById("contributor-table-dd"), false);
       // 2. Delete from JSON
@@ -1237,7 +1232,6 @@ const edit_current_con_id = (ev) => {
       });
       createDragSort(currentAffliationtagify);
 
-      console.log(contributorArray);
       for (var contributor of contributorArray) {
         if (contributor.conName === name) {
           // add existing tags to tagifies
@@ -1352,7 +1346,6 @@ const edit_current_con_id = (ev) => {
       }
     },
   }).then((result) => {
-    console.log(result);
     if (result.isConfirmed) {
       let conName = result.value[0].conName;
       $(currentRow)[0].cells[0].innerText = conName;
@@ -1360,7 +1353,6 @@ const edit_current_con_id = (ev) => {
         currentRow
       )[0].cells[2].innerHTML = `<span class="badge badge-pill badge-success">Valid</span>`;
       $(currentRow)[0].cells[1].innerText = result.value[0].conRole;
-      console.log(affiliationSuggestions);
       memorizeAffiliationInfo(affiliationSuggestions);
     }
   });
@@ -1369,7 +1361,6 @@ const edit_current_con_id = (ev) => {
 const memorizeAffiliationInfo = (values) => {
   createMetadataDir();
   var content = parseJson(affiliationConfigPath);
-  console.log(content);
   content["affiliation"] = values;
   fs.writeFileSync(affiliationConfigPath, JSON.stringify(content));
 };
@@ -1440,9 +1431,6 @@ function checkAtLeastOneContactPerson() {
 
 function checkDuplicateContributorName(first, last, contributorsTable) {
   let table = contributorsTable[0];
-  console.log(table);
-  console.log(table.rows);
-
   var duplicate = false;
   var name = first + ", " + last;
   var rowcount = table.rows.length;
@@ -1659,7 +1647,6 @@ const checkBFImportDD = async () => {
       },
     });
     let res = metadata_import.data;
-    console.log(res);
     loadDDFileToUI(res, "bf");
 
     // log the import action success to analytics
@@ -1732,7 +1719,6 @@ async function loadDDfileDataframe(filePath) {
 }
 
 function loadDDFileToUI(object, file_type) {
-  console.log("check here");
   var basicInfoObj = object["Basic information"];
   var studyInfoObj = object["Study information"];
   var contributorData = object["Contributor information"];
@@ -1829,19 +1815,12 @@ function populateTagifyDD(tagify, values) {
 }
 
 function loadContributorsToTable(array) {
-  console.log(array);
   contributorArray = [];
   $("#contributor-table-dd tr:gt(0)").remove();
   $("#div-contributor-table-dd").css("display", "none");
 
   for (var arr of array.splice(1)) {
     let splitNames = [];
-    console.log("within loop: " + arr);
-    console.log(arr[0]);
-    console.log(arr[0].trim());
-    console.log(arr[1]);
-    console.log(arr[2]);
-    console.log(arr[3]);
 
     if (arr[0].trim() !== "") {
       if (arr[0].trim().includes(", ")) {
