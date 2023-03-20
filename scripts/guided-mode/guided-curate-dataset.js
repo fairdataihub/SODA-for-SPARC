@@ -6958,7 +6958,7 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
                 <p class="guided--help-text">
                   Contributor names should be in the format of "Last name, First name".
                   <br />
-                  The previous contributor name was: <b>${contributorFullName}</b>
+                  The name found on Pennsieve was: <b>${contributorFullName}</b>
                 </p>
               </div>
               `
@@ -7387,7 +7387,7 @@ const generateContributorTableRow = (contributorObj) => {
         ${
           contributorObjIsValid
             ? `<span class="badge badge-pill badge-success">Valid</span>`
-            : `<span class="badge badge-pill badge-warning">Missing Fields</span>`
+            : `<span class="badge badge-pill badge-warning">Needs Modification</span>`
         }
       </td>
       <td class="middle aligned collapsing text-center">
@@ -7627,7 +7627,7 @@ const generateProtocolField = (protocolUrl, protocolType, protocolDescription, i
         ${
           isFair
             ? `<span class="badge badge-pill badge-success">Valid</span>`
-            : `<span class="badge badge-pill badge-warning">Missing Fields</span>`
+            : `<span class="badge badge-pill badge-warning">Needs modification</span>`
         }
       </td>
       <td class="middle aligned collapsing text-center">
