@@ -1,5 +1,8 @@
-/* Nav bootstrap */
-/* toggle button */
+/* 
+  This is a CSS file that contains both navigations classes
+  The first nav is use for navigating the main tabs SODA provides
+  and the second is for navigating through through guided mode's flow
+*/
 #sidebarCollapse {
   width: 35px;
   height: 35px;
@@ -107,7 +110,7 @@ a[data-toggle="collapse"] {
   padding-right: 10px;
   padding-left: 3px;
   margin-right: 0;
-  margin-top: 40px;
+  margin-top: 30px;
 }
 
 #main-nav ul p {
@@ -441,4 +444,95 @@ a[data-toggle="collapse"] {
   margin-right: auto;
   width: 80px;
   padding-left: 0;
+}
+
+/* Guided nav classes here */
+
+.guided--nav {
+  min-height: 100vh;
+  width: 220px;
+  margin: 0px !important;
+  position: fixed;
+  background-color: var(--color-border);
+  z-index: 1001;
+  padding: 7px;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.guided--nav-bar-section {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  height: 100%;
+  border-radius: 5px;
+}
+
+.guided--nav-bar-dropdown {
+  min-height: 40px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: nowrap;
+  border-radius: 5px;
+  padding-right: 10px;
+  padding-left: 5px;
+}
+
+.guided--nav-bar-dropdown:hover {
+  cursor: pointer;
+  background-color: var(--color-transparent-soda-green);
+}
+
+.guided--nav-bar-section-page {
+  display: flex;
+  width: calc((100% - 20px));
+  justify-content: flex-start;
+  margin-left: 15px;
+  margin-top: 3px;
+  padding-left: 5px;
+}
+
+.guided--nav-bar-section-page.completed {
+  border-left: 3px solid green;
+}
+
+.guided--nav-bar-section-page.not-completed {
+  border-left: 3px solid var(--color-transparent-soda-green);
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.guided--nav-bar-section-page.active {
+  background-color: var(--color-transparent-soda-green);
+}
+
+.guided--nav-bar-section-page:hover {
+  background-color: var(--color-transparent-soda-green);
+  border-left: 5px solid var(--color-light-green);
+  cursor: pointer;
+}
+
+.guided--nav-bar-section:not(:first-child) {
+  margin-top: 15px;
+}
+
+.guided--container-nav-items {
+  width: 100%;
+  list-style: none;
+  padding-left: 0px;
+  max-height: 400px;
+  overflow-y: auto;
+  /* Make the scroll bar align with the right side of the container */
+  margin-right: -12px;
+}
+
+.disabled-nav {
+  border-left: 3px solid var(--color-transparent-soda-green);
+  pointer-events: none;
+  opacity: 0.5;
 }

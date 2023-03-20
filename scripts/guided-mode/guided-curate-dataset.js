@@ -2070,6 +2070,7 @@ const hideEleShowEle = (elementIdToHide, elementIdToShow) => {
 };
 const hideSubNavAndShowMainNav = (navButtonToClick) => {
   $("#guided-sub-page-navigation-footer-div").hide();
+  $("#guided-footer-div").removeClass("hidden");
   $("#guided-footer-div").css("display", "flex");
   //show the buttons incase they were hidden
   $("#guided-next-button").show();
@@ -2128,7 +2129,10 @@ const openSubPageNavigation = (pageBeingNavigatedTo) => {
   setActiveSubPage(subPageIDtoOpen);
   //Hide the footer div while user is in sub-page navigation
   $("#guided-footer-div").hide();
+  $("#guided-footer-div").addClass("hidden");
   //Show the sub-page navigation footer
+  console.log("should appear");
+  $("#guided-sub-page-navigation-footer-div").removeClass("hidden");
   $("#guided-sub-page-navigation-footer-div").css("display", "flex");
 };
 
@@ -2178,8 +2182,10 @@ const guidedTransitionToHome = () => {
 
   //Hide guided headers and footers
   document.getElementById("guided-header-div").classList.add("hidden");
+  $("#guided-footer-div").addClass("hidden");
   $("#guided-footer-div").hide();
   $("#guided-sub-page-navigation-footer-div").hide();
+  $("#guided-sub-page-navigation-footer-div").addClass("hidden");
 };
 
 const guidedTransitionFromDatasetNameSubtitlePage = () => {
@@ -2448,7 +2454,7 @@ const renderProgressCards = (progressFileJSONdata) => {
   if (progressDataNotYetUploadedToPennsieve.length > 0) {
     // Add the title to the container
     progressCardsContainer.innerHTML = `
-      <h2 class="guided--text-sub-step">
+      <h2 class="text-sub-step-title">
         Select the dataset that you would like to continue working with and click "Continue"
       </h2>
     `;
@@ -2476,7 +2482,7 @@ const renderProgressCards = (progressFileJSONdata) => {
             .map((progressFile) => generateProgressCardElement(progressFile))
             .join("\n")
         : `
-            <h2 class="guided--text-sub-step">
+            <h2 class="text-sub-step-title">
               All local datasets have been previously uploaded to Pennsieve.
             </h2>
             <p class="guided--text-input-instructions m-0 text-center">
@@ -3781,6 +3787,7 @@ const openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-code-folder-tab") {
+      console.log("HERE");
       itemsContainer.classList.add("border-styling");
       const codeFolder = datasetStructureJSONObj["folders"]["code"];
       if (!codeFolder) {
@@ -6911,8 +6918,11 @@ const updateFolderStructureUI = (pageDataObj) => {
     structureFolderContentsElement.classList.add("hidden");
   }
 
+  //TODO: Figure out why this is undefined when transitioning with no subjects
   $("#guided-input-global-path").val(`My_dataset_folder/${pageDataObj.pathSuffix}`);
-  var filtered = getGlobalPath(organizeDSglobalPath);
+  console.log($("#guided-input-global-path"));
+  organizeDSglobalPath = $("#guided-input-global-path")[0].value;
+  var filtered = getGlobalPath($("#guided-input-global-path")[0]);
   organizeDSglobalPath.value = filtered.slice(0, filtered.length).join("/") + "/";
 
   var myPath = datasetStructureJSONObj;
@@ -7006,7 +7016,7 @@ const generateContributorField = (
           onclick="removeContributorField(this)"
         >
         </i>
-        <h2 class="guided--text-sub-step">
+        <h2 class="text-sub-step-title">
           Enter 
           <span class="contributor-first-name">${
             contributorFirstName ? contributorFirstName : "contributor's"
@@ -7732,6 +7742,124 @@ const renderDatasetDescriptionContributorsTable = () => {
   contributorsTable.innerHTML = contributorsTableHTML;
 };
 
+const addContributorField = () => {
+  const contributorsContainer = document.getElementById("contributors-container");
+  //create a new div to hold contributor fields
+  const newContributorField = document.createElement("div");
+  newContributorField.classList.add("guided--section");
+  newContributorField.classList.add("mt-lg");
+  newContributorField.classList.add("neumorphic");
+  newContributorField.classList.add("guided-contributor-field-container");
+  newContributorField.style.width = "100%";
+  newContributorField.style.position = "relative";
+
+  newContributorField.innerHTML = `
+    <i 
+      class="fas fa-times fa-2x"
+      style="
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        color: black;
+        cursor: pointer;
+      "
+      onclick="removeContributorField(this)"
+    >
+    </i>
+    <h2 class="text-sub-step-title">
+      Enter contributor details
+    </h2>
+    <div class="space-between w-100">
+      <div class="guided--flex-center mt-sm" style="width: 45%">
+        <label class="guided--form-label required">Last name: </label>
+        <input
+          class="guided--input guided-last-name-input"
+          type="text"
+          placeholder="Enter last name here"
+          onkeyup="validateInput($(this))"
+        />
+      </div>
+      <div class="guided--flex-center mt-sm" style="width: 45%">
+        <label class="guided--form-label required">First name: </label>
+        <input
+          class="guided--input guided-first-name-input"
+          type="text"
+          placeholder="Enter first name here"
+          onkeyup="validateInput($(this))"
+        />
+      </div>
+    </div>
+    <label class="guided--form-label required mt-md">ORCID: </label>
+    <input
+      class="guided--input guided-orcid-input"
+      type="text"
+      placeholder="Enter ORCID here"
+    />
+    <label class="guided--form-label required mt-md">Affiliation(s): </label>
+    <input class="guided-contributor-affiliation-input"
+          contenteditable="true"
+    />
+  
+    <label class="guided--form-label required mt-md">Role(s): </label>
+    <input class="guided-contributor-role-input"
+      contenteditable="true"
+      placeholder='Type here to view and add contributor roles from the list of standard roles'
+    />
+  `;
+
+  contributorsContainer.appendChild(newContributorField);
+
+  //select the last contributor role input (the one that was just added)
+  const newlyAddedContributorField = contributorsContainer.lastChild;
+
+  //Create Affiliation(s) tagify for each contributor
+  const contributorAffiliationInput = newlyAddedContributorField.querySelector(
+    ".guided-contributor-affiliation-input"
+  );
+  const affiliationTagify = new Tagify(contributorAffiliationInput, {
+    duplicate: false,
+  });
+
+  createDragSort(affiliationTagify);
+
+  const newContributorRoleElement = newlyAddedContributorField.querySelector(
+    ".guided-contributor-role-input"
+  );
+  //Add a new tagify for the contributor role field for the new contributor field
+  const tagify = new Tagify(newContributorRoleElement, {
+    whitelist: [
+      "PrincipleInvestigator",
+      "Creator",
+      "CoInvestigator",
+      "DataCollector",
+      "DataCurator",
+      "DataManager",
+      "Distributor",
+      "Editor",
+      "Producer",
+      "ProjectLeader",
+      "ProjectManager",
+      "ProjectMember",
+      "RelatedPerson",
+      "Researcher",
+      "ResearchGroup",
+      "Sponsor",
+      "Supervisor",
+      "WorkPackageLeader",
+      "Other",
+    ],
+    enforceWhitelist: true,
+    dropdown: {
+      enabled: 0,
+      closeOnSelect: true,
+      position: "auto",
+    },
+  });
+  //scroll to the new element
+
+  createDragSort(tagify);
+  smoothScrollToElement(newlyAddedContributorField);
+};
 const getGuidedProtocolLinks = () => {
   try {
     return sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"].map(
@@ -8140,7 +8268,7 @@ const openAddAdditionLinkSwal = async () => {
       onclick="removeOtherLinkField(this)"
     >
     </i>
-    <h2 class="guided--text-sub-step">Enter link information</h2>
+    <h2 class="text-sub-step-title">Enter link information</h2>
     <label class="guided--form-label mt-lg">Link URL: </label>
     <input
       class="guided--input guided-other-link-url-input"
@@ -12548,6 +12676,7 @@ $(document).ready(async () => {
       //if more tabs in parent tab, go to next tab and update capsule
       let targetPage = getNextPageNotSkipped(CURRENT_PAGE.id);
       let targetPageID = targetPage.id;
+      console.log(targetPageID);
 
       await openPage(targetPageID);
     } catch (error) {
@@ -12659,6 +12788,7 @@ $(document).ready(async () => {
         }
 
         if (buttonNoSubjects.classList.contains("selected")) {
+          console.log("HERE");
           guidedSkipPage("guided-organize-subjects-into-pools-page");
           guidedSkipPage("guided-specify-samples-page");
 
@@ -13159,6 +13289,7 @@ $(document).ready(async () => {
   $("#guided-button-sub-page-continue").on("click", async () => {
     //Get the id of the parent page that's currently open
     const currentParentPageID = CURRENT_PAGE.id;
+    console.log(currentParentPageID);
 
     if (currentParentPageID === "guided-create-submission-metadata-tab") {
       if (
@@ -13173,7 +13304,7 @@ $(document).ready(async () => {
 
     //Get the id of the sub-page that's currently open
     const openSubPageID = getOpenSubPageInPage(currentParentPageID);
-
+    console.log(openSubPageID);
     try {
       await saveSubPageChanges(openSubPageID);
 
@@ -13182,6 +13313,7 @@ $(document).ready(async () => {
       }
       //Get an array of all the sub pages that are children of the parent page
       const nonSkippedSiblingPages = getNonSkippedSubPages(currentParentPageID);
+      console.log(nonSkippedSiblingPages);
 
       // Get the index of the sub-page that's currently open
       const openSubPageIndex = nonSkippedSiblingPages.indexOf(openSubPageID);

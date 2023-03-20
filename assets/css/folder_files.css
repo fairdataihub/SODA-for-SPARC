@@ -483,3 +483,9 @@
   color: black;
   pointer-events: none;
 }
+
+.filepath {
+  display: block;
+  margin: 0;
+  padding: 0.5em 1.5em;
+}

@@ -63,6 +63,7 @@ const Clipboard = electron.clipboard;
 
 var nextBtnDisabledVariable = true;
 var reverseSwalButtons = false;
+let organizeDSglobalPath = "";
 
 var datasetStructureJSONObj = {
   folders: {},
@@ -107,68 +108,183 @@ console.log(appVersion);
 log.info("Current SODA version:", appVersion);
 console.log("Current SODA version:", appVersion);
 
-// Here is where the splash screen lotties are created and loaded.
+// Here is where the lotties are created and loaded for the main tabs.
 // A mutation observer watches for when the overview tab element has
 // a class change to 'is-shown' to know when to load and unload the lotties
-let over_view_section = document.getElementById("getting_started-section");
-let column1 = document.getElementById("lottie1");
-let column2 = document.getElementById("lottie2");
-let column3 = document.getElementById("lottie3");
-let heart_lottie = document.getElementById("heart_lottie");
+// let over_view_section = document.getElementById("getting_started-section");
 
-var column1_lottie = lottie.loadAnimation({
-  container: column1,
-  animationData: column1Lottie /*(json js variable, (view src/assets/lotties)*/,
-  renderer: "svg",
-  loop: true /*controls looping*/,
-  autoplay: true,
-});
-var column2_lottie = lottie.loadAnimation({
-  container: column2,
-  animationData: column2Lottie /*(json js variable, (view src/assets/lotties)*/,
-  renderer: "svg",
-  loop: true /*controls looping*/,
-  autoplay: true,
-});
-var column3_lottie = lottie.loadAnimation({
-  container: column3,
-  animationData: column3Lottie,
+// LOTTIES FOR DOCUMENTATION AND CONTACT US PAGE
+let guidedModeSection = document.getElementById("guided_mode-section");
+let docu_lottie_section = document.getElementById("documentation-section");
+let contact_section = document.getElementById("contact-us-section");
+let doc_lottie = document.getElementById("documentation-lottie");
+let contact_lottie_container = document.getElementById("contact-us-lottie");
+let madeWithLoveContainer = document.getElementById("made-with-love-lottie");
+
+// LOTTIES FOR CURATE AND SHARE PAGE
+let newDatasetLottieContainer = document.getElementById("new-dataset-lottie-container");
+let existingDatasetLottieContainer = document.getElementById("existing-dataset-lottie");
+let modifyDatasetLottieContainer = document.getElementById("edit-dataset-component-lottie");
+
+//LOTTIES FOR OVERVIEW PAGE
+// let column1 = document.getElementById("lottie1");
+// let column2 = document.getElementById("lottie2");
+// let column3 = document.getElementById("lottie3");
+// let heart_lottie = document.getElementById("heart_lottie");
+
+newDatasetLottieContainer.innerHTML = "";
+existingDatasetLottieContainer.innerHTML = "";
+modifyDatasetLottieContainer.innerHTML = "";
+
+var newDatasetLottie = lottie.loadAnimation({
+  container: newDatasetLottieContainer,
+  animationData: newDataset,
   renderer: "svg",
   loop: true,
   autoplay: true,
 });
-var heart_container = lottie.loadAnimation({
-  container: heart_lottie,
+
+var existingDatasetLottie = lottie.loadAnimation({
+  container: existingDatasetLottieContainer,
+  animationData: existingDataset,
+  renderer: "svg",
+  loop: true,
+  autoplay: true,
+});
+
+let editDatasetLottie = lottie.loadAnimation({
+  container: modifyDatasetLottieContainer,
+  animationData: modifyDataset,
+  renderer: "svg",
+  loop: true,
+  autoplay: true,
+});
+
+var contact_lottie_animation = lottie.loadAnimation({
+  container: contact_lottie_container,
+  animationData: contact_lottie /*(json js variable, (view src/assets/lotties)*/,
+  renderer: "svg",
+  loop: true /*controls looping*/,
+  autoplay: true,
+});
+
+var contactHeartLottie = lottie.loadAnimation({
+  container: madeWithLoveContainer,
   animationData: heartLottie,
   renderer: "svg",
   loop: true,
   autoplay: true,
 });
 
-var overview_observer = new MutationObserver(function (mutations) {
+var documentation_lottie = lottie.loadAnimation({
+  container: doc_lottie,
+  animationData: docu_lottie /*(json js variable, (view src/assets/lotties)*/,
+  renderer: "svg",
+  loop: true /*controls looping*/,
+  autoplay: true,
+});
+
+// var column1_lottie = lottie.loadAnimation({
+//   container: column1,
+//   animationData: column1Lottie /*(json js variable, (view src/assets/lotties)*/,
+//   renderer: "svg",
+//   loop: true /*controls looping*/,
+//   autoplay: true,
+// });
+// var column2_lottie = lottie.loadAnimation({
+//   container: column2,
+//   animationData: column2Lottie /*(json js variable, (view src/assets/lotties)*/,
+//   renderer: "svg",
+//   loop: true /*controls looping*/,
+//   autoplay: true,
+// });
+// var column3_lottie = lottie.loadAnimation({
+//   container: column3,
+//   animationData: column3Lottie,
+//   renderer: "svg",
+//   loop: true,
+//   autoplay: true,
+// });
+// var heart_container = lottie.loadAnimation({
+//   container: heart_lottie,
+//   animationData: heartLottie,
+//   renderer: "svg",
+//   loop: true,
+//   autoplay: true,
+// });
+
+// A mutation observer (watches the classes of the given element)
+// On changes this will do some work with the lotties
+var sectionObserver = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
     var attributeValue = $(mutation.target).prop(mutation.attributeName);
+    console.log(mutation.target);
 
     if (attributeValue.includes("is-shown") == true) {
       //add lotties
-      column1_lottie.play();
-      column2_lottie.play();
-      column3_lottie.play();
-      heart_container.play();
+      newDatasetLottie.play();
+      existingDatasetLottie.play();
+      editDatasetLottie.play();
+      console.log("lotties playing");
+      // heart_container.play();
     } else {
-      column1_lottie.stop();
-      column2_lottie.stop();
-      column3_lottie.stop();
-      heart_container.stop();
+      console.log("stopping lotties");
+      newDatasetLottie.stop();
+      existingDatasetLottie.stop();
+      editDatasetLottie.stop();
+      // heart_container.stop();
     }
   });
 });
 
-overview_observer.observe(over_view_section, {
+// contact_lottie_animation.pause();
+// documentation_lottie.pause();
+// contactHeartLottieLottie.pause();
+
+var documentation_lottie_observer = new MutationObserver(function (mutations) {
+  mutations.forEach(function (mutation) {
+    var attributeValue = $(mutation.target).prop(mutation.attributeName);
+    if (attributeValue.includes("is-shown") == true) {
+      //play lottie
+      documentation_lottie.play();
+    } else {
+      // stop lottie to preserve memory
+      documentation_lottie.stop();
+    }
+  });
+});
+
+var contact_us_lottie_observer = new MutationObserver(function (mutations) {
+  mutations.forEach(function (mutation) {
+    var attributeValue = $(mutation.target).prop(mutation.attributeName);
+    if (attributeValue.includes("is-shown") == true) {
+      //play lottie
+      contact_lottie_animation.play();
+      contactHeartLottie.play();
+    } else {
+      //stop lottie to preserve memory
+      contact_lottie_animation.stop();
+      contactHeartLottie.stop();
+    }
+  });
+});
+
+sectionObserver.observe(guidedModeSection, {
   attributes: true,
   attributeFilter: ["class"],
 });
-document.getElementById("getting_starting_tab").click();
+
+documentation_lottie_observer.observe(docu_lottie_section, {
+  attributes: true,
+  attributeFilter: ["class"],
+});
+
+contact_us_lottie_observer.observe(contact_section, {
+  attributes: true,
+  attributeFilter: ["class"],
+});
+
+document.getElementById("guided_mode_view").click();
 
 let launchAnnouncement = false;
 ipcRenderer.on("checkForAnnouncements", (event, index) => {
@@ -1172,7 +1288,6 @@ const downloadDescription = document.getElementById("a-description");
 const downloadManifest = document.getElementById("a-manifest");
 
 /////// New Organize Datasets /////////////////////
-let organizeDSglobalPath = "";
 
 const organizeDSbackButton = document.getElementById("button-back");
 const organizeDSaddFiles = document.getElementById("add-files");
@@ -9511,65 +9626,6 @@ document
 document
   .getElementById("home-button-free-form-mode-link")
   .addEventListener("click", directToFreeFormMode);
-
-let docu_lottie_section = document.getElementById("documentation-section");
-let doc_lottie = document.getElementById("documentation-lottie");
-
-let contact_section = document.getElementById("contact-us-section");
-let contact_lottie_container = document.getElementById("contact-us-lottie");
-
-var contact_lottie_animation = lottie.loadAnimation({
-  container: contact_lottie_container,
-  animationData: contact_lottie /*(json js variable, (view src/assets/lotties)*/,
-  renderer: "svg",
-  loop: true /*controls looping*/,
-  autoplay: true,
-});
-contact_lottie_animation.pause();
-var documentation_lottie = lottie.loadAnimation({
-  container: doc_lottie,
-  animationData: docu_lottie /*(json js variable, (view src/assets/lotties)*/,
-  renderer: "svg",
-  loop: true /*controls looping*/,
-  autoplay: true,
-});
-documentation_lottie.pause();
-
-var documentation_lottie_observer = new MutationObserver(function (mutations) {
-  mutations.forEach(function (mutation) {
-    var attributeValue = $(mutation.target).prop(mutation.attributeName);
-    if (attributeValue.includes("is-shown") == true) {
-      //play lottie
-      documentation_lottie.play();
-    } else {
-      // lottie.stop(documentation_lottie);
-      documentation_lottie.stop();
-    }
-  });
-});
-
-var contact_us_lottie_observer = new MutationObserver(function (mutations) {
-  mutations.forEach(function (mutation) {
-    var attributeValue = $(mutation.target).prop(mutation.attributeName);
-    if (attributeValue.includes("is-shown") == true) {
-      //play lottie
-      contact_lottie_animation.play();
-    } else {
-      contact_lottie_animation.stop();
-      // lottie.stop(contact_lottie_animation);
-    }
-  });
-});
-
-documentation_lottie_observer.observe(docu_lottie_section, {
-  attributes: true,
-  attributeFilter: ["class"],
-});
-
-contact_us_lottie_observer.observe(contact_section, {
-  attributes: true,
-  attributeFilter: ["class"],
-});
 
 tippy("#datasetPathDisplay", {
   placement: "top",

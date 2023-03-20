@@ -127,16 +127,6 @@ body.waiting * {
   display: block;
   animation: demo-box-fade-in 0.2s cubic-bezier(0, 0.2, 0.2, 0.96);
 }
-@keyframes demo-box-fade-in {
-  0% {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
 
 .demo-box > p:first-child {
   margin-top: 0;
@@ -530,12 +520,6 @@ input[type="checkbox"].with-style:checked ~ label {
   display: none;
 }
 
-.filepath {
-  display: block;
-  margin: 0;
-  padding: 0.5em 1.5em;
-}
-
 textarea.outputprint {
   width: 100%;
   max-width: 100%;
@@ -671,27 +655,6 @@ table.table-save-metadata {
   cursor: pointer;
   font-size: 15px;
   width: 70%;
-}
-
-/* YouTube video frames */
-.video-container {
-  position: relative;
-  padding-bottom: 56.25%;
-  padding-top: 30px;
-  height: 0;
-  overflow: hidden;
-}
-
-.video-container iframe,
-.video-container object,
-.video-container embed {
-  margin-left: 5em;
-  margin-top: 1em;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 80%;
-  height: 80%;
 }
 /*
 .te-editor.te-tab-active {
@@ -903,63 +866,6 @@ progress.progresstrack[value]::-webkit-progress-value {
   animation: indeterminate-short 2.1s cubic-bezier(0.165, 0.84, 0.44, 1) infinite;
   -webkit-animation-delay: 1.15s;
   animation-delay: 1.15s;
-}
-
-@-webkit-keyframes indeterminate {
-  0% {
-    left: -35%;
-    right: 100%;
-  }
-  60% {
-    left: 100%;
-    right: -90%;
-  }
-  100% {
-    left: 100%;
-    right: -90%;
-  }
-}
-@keyframes indeterminate {
-  0% {
-    left: -35%;
-    right: 100%;
-  }
-  60% {
-    left: 100%;
-    right: -90%;
-  }
-  100% {
-    left: 100%;
-    right: -90%;
-  }
-}
-@-webkit-keyframes indeterminate-short {
-  0% {
-    left: -200%;
-    right: 100%;
-  }
-  60% {
-    left: 107%;
-    right: -8%;
-  }
-  100% {
-    left: 107%;
-    right: -8%;
-  }
-}
-@keyframes indeterminate-short {
-  0% {
-    left: -200%;
-    right: 100%;
-  }
-  60% {
-    left: 107%;
-    right: -8%;
-  }
-  100% {
-    left: 107%;
-    right: -8%;
-  }
 }
 
 .message-icon {

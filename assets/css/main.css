@@ -1,10 +1,5 @@
 @import url("https://fonts.googleapis.com/css?family=Poppins:400,500,600,700");
 
-body {
-  margin: 0;
-  font-family: Poppins, sans-serif;
-}
-
 button:focus {
   outline: none;
 }
@@ -326,10 +321,6 @@ button[data-id="guided_bf_list_users_and_teams"] {
 .menu.file li {
   width: 108px;
   background-color: #fff;
-}
-
-.modal-content textarea {
-  font-size: 11px !important;
 }
 
 .modal-body {
@@ -907,22 +898,6 @@ button[data-id="guided_bf_list_users_and_teams"] {
   grid-template-rows: 50% 50%;
 }
 
-.div-display-details p {
-  font-family: Poppins;
-  margin-top: 25px;
-  margin-bottom: 5px;
-  font-size: 13px;
-}
-
-.div-display-details textarea {
-  font-family: Poppins;
-  max-height: 60px;
-  overflow-y: scroll;
-  resize: vertical;
-  width: 100%;
-  margin-top: 10px;
-}
-
 .div-display-details.show {
   transform: translateX(0);
   display: grid;
@@ -952,10 +927,10 @@ button[data-id="guided_bf_list_users_and_teams"] {
 .sparc-logo {
   margin: 5px;
   position: absolute;
-  margin-left: 39px;
   width: 146px;
   padding-left: 6px;
-  bottom: 0;
+  bottom: 10px;
+  left: 39px;
 }
 
 #items_container {
@@ -1004,12 +979,6 @@ details > summary::before {
 
 details[open] > summary::before {
   content: none;
-}
-
-.info-container {
-  align-self: center;
-  width: 573px;
-  margin-top: 1rem;
 }
 
 .info-container-wrapper {
@@ -1093,6 +1062,8 @@ details[open] > summary::before {
 }
 
 .ffm-return-button {
+  height: 37px !important;
+  max-height: 37px;
   width: 120px !important;
   margin-left: 1rem !important;
   margin-bottom: 3px !important;
