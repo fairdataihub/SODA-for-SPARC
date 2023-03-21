@@ -146,6 +146,24 @@ document.getElementById("guided-button-has-docs-data").addEventListener("click",
   }
 });
 
+const setPageLoadingState = (boolLoadingState) => {
+  const guidedLoadingDiv = document.getElementById("guided-loading-div");
+  const pageParentContainers = document.querySelectorAll(".guided--parent-tab");
+
+  if (boolLoadingState === true) {
+    guidedLoadingDiv.classList.remove("hidden");
+    pageParentContainers.forEach((container) => {
+      container.classList.add("temporary-hide");
+    });
+  }
+  if (boolLoadingState === false) {
+    guidedLoadingDiv.classList.add("hidden");
+    pageParentContainers.forEach((container) => {
+      container.classList.remove("temporary-hide");
+    });
+  }
+};
+
 const guidedSetNavLoadingState = (loadingState) => {
   //depending on the boolean loading state will determine whether or not
   //to disable the primary and sub buttons along with the nav menu
@@ -187,6 +205,9 @@ const guidedSetNavLoadingState = (loadingState) => {
     navItems.forEach((nav) => {
       nav.classList.remove("disabled-nav");
     });
+
+    // Hide the lading div if the loading div was showing
+    setPageLoadingState(false);
   }
 };
 
@@ -3506,7 +3527,7 @@ const pageNeedsUpdateFromPennsieve = (pageID) => {
   }
 
   return (
-    sodaJSONObj?.["button-config"]?.["curation-starting-point"] === "pennsieve" &&
+    sodaJSONObj["starting-point"]["type"] === "bf" &&
     !sodaJSONObj["pages-fetched-from-pennsieve"].includes(pageID) &&
     !sodaJSONObj["completed-tabs"].includes(pageID)
   );
@@ -3674,6 +3695,8 @@ const openPage = async (targetPageID) => {
       }
 
       if (pageNeedsUpdateFromPennsieve("guided-name-subtitle-tab")) {
+        // Show the loading page while the page's data is being fetched from Pennsieve
+        setPageLoadingState(true);
         try {
           //Try to get the dataset name from Pennsieve
           //If the request fails, the subtitle input will remain blank
@@ -3712,6 +3735,8 @@ const openPage = async (targetPageID) => {
 
     if (targetPageID === "guided-ask-if-submission-is-sparc-funded-tab") {
       if (pageNeedsUpdateFromPennsieve(targetPageID)) {
+        // Show the loading page while the page's data is being fetched from Pennsieve
+        setPageLoadingState(true);
         try {
           const submissionMetadataRes = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
@@ -3918,6 +3943,8 @@ const openPage = async (targetPageID) => {
       //Reset manual submission metadata UI
 
       if (pageNeedsUpdateFromPennsieve(targetPageID)) {
+        // Show the loading page while the page's data is being fetched from Pennsieve
+        setPageLoadingState(true);
         try {
           let import_metadata = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
@@ -4021,6 +4048,8 @@ const openPage = async (targetPageID) => {
 
     if (targetPageID === "guided-contributors-tab") {
       if (pageNeedsUpdateFromPennsieve("guided-contributors-tab")) {
+        // Show the loading page while the page's data is being fetched from Pennsieve
+        setPageLoadingState(true);
         try {
           let metadata_import = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
@@ -4070,6 +4099,8 @@ const openPage = async (targetPageID) => {
     }
     if (targetPageID === "guided-protocols-tab") {
       if (pageNeedsUpdateFromPennsieve("guided-protocols-tab")) {
+        // Show the loading page while the page's data is being fetched from Pennsieve
+        setPageLoadingState(true);
         try {
           let metadata_import = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
@@ -4115,6 +4146,8 @@ const openPage = async (targetPageID) => {
     }
     if (targetPageID === "guided-create-description-metadata-tab") {
       if (pageNeedsUpdateFromPennsieve("guided-create-description-metadata-tab")) {
+        // Show the loading page while the page's data is being fetched from Pennsieve
+        setPageLoadingState(true);
         try {
           let metadata_import = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
@@ -4366,6 +4399,8 @@ const openPage = async (targetPageID) => {
     }
     if (targetPageID === "guided-banner-image-tab") {
       if (pageNeedsUpdateFromPennsieve("guided-banner-image-tab")) {
+        // Show the loading page while the page's data is being fetched from Pennsieve
+        setPageLoadingState(true);
         // If the fetch fails, (they don't have a banner image yet)
         const datasetName = sodaJSONObj["digital-metadata"]["name"];
         const datasetID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
@@ -4467,6 +4502,8 @@ const openPage = async (targetPageID) => {
     }
     if (targetPageID === "guided-designate-permissions-tab") {
       if (pageNeedsUpdateFromPennsieve("guided-designate-permissions-tab")) {
+        // Show the loading page while the page's data is being fetched from Pennsieve
+        setPageLoadingState(true);
         try {
           const sparcUsersReq = await client.get(
             `manage_datasets/bf_get_users?selected_account=${defaultBfAccount}`
@@ -4606,6 +4643,8 @@ const openPage = async (targetPageID) => {
     }
     if (targetPageID === "guided-add-description-tab") {
       if (pageNeedsUpdateFromPennsieve("guided-add-description-tab")) {
+        // Show the loading page while the page's data is being fetched from Pennsieve
+        setPageLoadingState(true);
         const description = await api.getDatasetReadme(
           defaultBfAccount,
           sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
@@ -4660,6 +4699,8 @@ const openPage = async (targetPageID) => {
 
     if (targetPageID === "guided-add-tags-tab") {
       if (pageNeedsUpdateFromPennsieve("guided-add-tags-tab")) {
+        // Show the loading page while the page's data is being fetched from Pennsieve
+        setPageLoadingState(true);
         try {
           const currentDatasetID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
           const tagsReq = await client.get(`/manage_datasets/datasets/${currentDatasetID}/tags`, {
@@ -4696,6 +4737,8 @@ const openPage = async (targetPageID) => {
 
     if (targetPageID === "guided-assign-license-tab") {
       if (pageNeedsUpdateFromPennsieve("guided-assign-license-tab")) {
+        // Show the loading page while the page's data is being fetched from Pennsieve
+        setPageLoadingState(true);
         try {
           const licenseReq = await client.get(`/manage_datasets/bf_license`, {
             params: {
@@ -5094,6 +5137,8 @@ const openPage = async (targetPageID) => {
     }
     if (targetPageID === "guided-create-readme-metadata-tab") {
       if (pageNeedsUpdateFromPennsieve("guided-create-readme-metadata-tab")) {
+        // Show the loading page while the page's data is being fetched from Pennsieve
+        setPageLoadingState(true);
         try {
           let readme_import = await client.get(`/prepare_metadata/readme_changes_file`, {
             params: {
@@ -5128,6 +5173,8 @@ const openPage = async (targetPageID) => {
 
     if (targetPageID === "guided-create-changes-metadata-tab") {
       if (pageNeedsUpdateFromPennsieve("guided-create-changes-metadata-tab")) {
+        // Show the loading page while the page's data is being fetched from Pennsieve
+        setPageLoadingState(true);
         try {
           const changes_import = await client.get(`/prepare_metadata/readme_changes_file`, {
             params: {
@@ -5164,38 +5211,39 @@ const openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-dataset-dissemination-tab") {
+      // Show the loading page while the page's data is being fetched from Pennsieve
+      setPageLoadingState(true);
+
       const pennsieveDatasetID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
 
-      if (pennsieveDatasetID) {
-        const pennsieveDatasetLink = document.getElementById("guided-pennsieve-dataset-link");
+      const pennsieveDatasetLink = document.getElementById("guided-pennsieve-dataset-link");
 
-        const pennsieveCopy = document.getElementById("guided-pennsieve-copy-dataset-link");
+      const pennsieveCopy = document.getElementById("guided-pennsieve-copy-dataset-link");
 
-        const copyIcon = document.getElementById("guided-pennsieve-copy-icon");
-        copyIcon.classList.remove("fa-check");
-        copyIcon.classList.add("fa-copy");
+      const copyIcon = document.getElementById("guided-pennsieve-copy-icon");
+      copyIcon.classList.remove("fa-check");
+      copyIcon.classList.add("fa-copy");
 
-        let datasetLink = `https://app.pennsieve.io/N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0/datasets/${pennsieveDatasetID}/overview`;
-        let linkIcon = `<i class="fas fa-link" style="margin-right: 0.4rem; margin-left: 0.4rem"></i>`;
+      let datasetLink = `https://app.pennsieve.io/N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0/datasets/${pennsieveDatasetID}/overview`;
+      let linkIcon = `<i class="fas fa-link" style="margin-right: 0.4rem; margin-left: 0.4rem"></i>`;
 
-        pennsieveDatasetLink.innerHTML = linkIcon + datasetLink;
-        pennsieveDatasetLink.href = datasetLink;
+      pennsieveDatasetLink.innerHTML = linkIcon + datasetLink;
+      pennsieveDatasetLink.href = datasetLink;
 
-        // TODO: removed link copied notyf until we can get it to not fire twice.
+      // TODO: removed link copied notyf until we can get it to not fire twice.
 
-        pennsieveCopy.removeEventListener(
-          "click",
-          () => {
-            copyLink(datasetLink);
-          },
-          true
-        );
-        if (addListener) {
-          pennsieveCopy.addEventListener("click", () => {
-            copyLink(datasetLink);
-          });
-          addListener = false;
-        }
+      pennsieveCopy.removeEventListener(
+        "click",
+        () => {
+          copyLink(datasetLink);
+        },
+        true
+      );
+      if (addListener) {
+        pennsieveCopy.addEventListener("click", () => {
+          copyLink(datasetLink);
+        });
+        addListener = false;
       }
 
       document.getElementById("guided-pennsieve-dataset-name").innerHTML =
@@ -5203,7 +5251,7 @@ const openPage = async (targetPageID) => {
       let bf_get_permissions = await client.get(`/manage_datasets/bf_dataset_permissions`, {
         params: {
           selected_account: defaultBfAccount,
-          selected_dataset: sodaJSONObj["digital-metadata"]["name"],
+          selected_dataset: pennsieveDatasetID,
         },
       });
       let datasetPermissions = bf_get_permissions.data.permissions;

@@ -702,6 +702,10 @@ textarea {
   display: none;
 }
 
+.temporary-hide {
+  display: none;
+}
+
 /* Animations */
 
 .backgroundAnimate {
