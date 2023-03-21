@@ -884,9 +884,9 @@ const showCurrentSubtitle = async () => {
 // Add description //
 
 const requiredSections = {
-  studyPurpose: "study purpose",
-  dataCollection: "data collection",
-  primaryConclusion: "primary conclusion",
+  studyPurpose: "Study Purpose",
+  dataCollection: "Data Collection",
+  primaryConclusion: "Primary Conclusion",
   invalidText: "invalid text",
 };
 
@@ -977,19 +977,21 @@ const showCurrentDescription = async () => {
   $("#ds-description-data-collection").val("");
   $("#ds-description-primary-conclusion").val("");
 
+  console.log(parsedReadme);
+
   // place the text into the text area for that field
   $("#ds-description-study-purpose").val(
-    parsedReadme[requiredSections.studyPurpose].replace(/\r?\n|\r/g, "")
+    parsedReadme[requiredSections.studyPurpose].trim().replace(/\r?\n|\r/g, "")
   );
 
   // place the text into the text area for that field
   $("#ds-description-data-collection").val(
-    parsedReadme[requiredSections.dataCollection].replace(/\r?\n|\r/g, "")
+    parsedReadme[requiredSections.dataCollection].trim().replace(/\r?\n|\r/g, "")
   );
 
   // place the text into the text area for that field
   $("#ds-description-primary-conclusion").val(
-    parsedReadme[requiredSections.primaryConclusion].replace(/\r?\n|\r/g, "")
+    parsedReadme[requiredSections.primaryConclusion].trim().replace(/\r?\n|\r/g, "")
   );
 
   // check if there is any invalid text remaining
@@ -1211,20 +1213,20 @@ const createParsedReadme = (readme) => {
 
   // create the return object
   const parsedReadme = {
-    "study purpose": "",
-    "data collection": "",
-    "primary conclusion": "",
+    "Study Purpose": "",
+    "Data Collection": "",
+    "Primary Conclusion": "",
     "invalid text": "",
   };
 
   // remove the "Study Purpose" section from the readme file and place its value in the parsed readme
-  mutableReadme = stripRequiredSectionFromReadme(mutableReadme, "study purpose", parsedReadme);
+  mutableReadme = stripRequiredSectionFromReadme(mutableReadme, "Study Purpose", parsedReadme);
 
   // remove the "Data Collection" section from the readme file and place its value in the parsed readme
-  mutableReadme = stripRequiredSectionFromReadme(mutableReadme, "data collection", parsedReadme);
+  mutableReadme = stripRequiredSectionFromReadme(mutableReadme, "Data Collection", parsedReadme);
 
   // search for the "Primary Conclusion" and basic variations of spacing
-  mutableReadme = stripRequiredSectionFromReadme(mutableReadme, "primary conclusion", parsedReadme);
+  mutableReadme = stripRequiredSectionFromReadme(mutableReadme, "Primary Conclusion", parsedReadme);
 
   // remove the invalid text from the readme contents
   mutableReadme = stripInvalidTextFromReadme(mutableReadme, parsedReadme);
@@ -1241,7 +1243,7 @@ const createParsedReadme = (readme) => {
 //      parsedReadme: Optional object that gets the stripped section text if provided
 const stripRequiredSectionFromReadme = (readme, sectionName, parsedReadme = undefined) => {
   // lowercase the readme file text to avoid casing issues with pattern matching
-  let mutableReadme = readme.trim().toLowerCase();
+  let mutableReadme = readme.trim();
 
   // serch for the start of the given section -- it can have one or more whitespace between the colon
   let searchRegExp = new RegExp(`[*][*]${sectionName}[ ]*:[*][*]`);
