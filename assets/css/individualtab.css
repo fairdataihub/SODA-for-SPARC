@@ -699,6 +699,7 @@
 
 .tagify__tag {
   max-width: 280px;
+  background-color: #e5e5e5;
 }
 
 .tagify__tag > div > * {
