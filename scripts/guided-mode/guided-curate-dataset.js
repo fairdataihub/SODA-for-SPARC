@@ -7450,7 +7450,7 @@ const openGuidedAddContributorSwal = async () => {
     html: `
       <div class="guided--flex-center mt-sm">
         <label class="guided--form-label centered mb-md">
-        "Enter the contributor's information below."
+          Enter the contributor's information below.
         </label>
         <div class="space-between w-100">
             <div class="guided--flex-center mt-sm" style="width: 45%">
@@ -10529,7 +10529,6 @@ $(document).ready(async () => {
 
     // Skip the changes metadata tab as new datasets do not have changes metadata
     guidedSkipPage("guided-create-changes-metadata-tab");
-
     await openPage("guided-ask-if-submission-is-sparc-funded-tab");
   });
 
