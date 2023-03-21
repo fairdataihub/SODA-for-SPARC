@@ -6921,8 +6921,8 @@ const updateFolderStructureUI = (pageDataObj) => {
   //TODO: Figure out why this is undefined when transitioning with no subjects
   $("#guided-input-global-path").val(`My_dataset_folder/${pageDataObj.pathSuffix}`);
   console.log($("#guided-input-global-path"));
-  organizeDSglobalPath = $("#guided-input-global-path")[0].value;
-  var filtered = getGlobalPath($("#guided-input-global-path")[0]);
+  organizeDSglobalPath = $("#guided-input-global-path")[0];
+  var filtered = getGlobalPath(organizeDSglobalPath);
   organizeDSglobalPath.value = filtered.slice(0, filtered.length).join("/") + "/";
 
   var myPath = datasetStructureJSONObj;
@@ -10486,7 +10486,7 @@ $(document).ready(async () => {
     await openPage("guided-resume-existing-dataset-page");
   });
 
-  $("#guided-button-start-modify-compnent").on("click", async () => {
+  $("#guided-button-start-modify-component").on("click", async () => {
     //Free form mode will open through here
     //Hide the home screen
     // document.getElementById("guided-home").classList.add("hidden");

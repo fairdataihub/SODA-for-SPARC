@@ -6504,7 +6504,9 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     }
 
     //append path to tippy and display path to the file explorer
+    console.log(trimmedPath);
     pathDisplay.innerText = trimmedPath;
+    console.log(pathDisplay);
     pathDisplay._tippy.setContent(fullPath);
   }
 

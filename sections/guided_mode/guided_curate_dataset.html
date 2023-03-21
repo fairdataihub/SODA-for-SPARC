@@ -85,7 +85,12 @@
           </h1>
           <h2 style="margin-bottom: 5px">What would you like to do today?</h2>
           <div class="justify-center align-items-center" id="curate-new-home">
-            <div class="button-prompt-container" id="guided-button-start-new-curate">
+            <div
+              class="button-prompt-container"
+              id="guided-button-start-new-curate"
+              data-section="guided_mode"
+              data-render="file-explorer"
+            >
               <div class="wide-card-text-container">
                 <h2 class="wide-card-title-text" style="margin-right: 3.5rem">
                   Curate a New Dataset
@@ -96,7 +101,12 @@
               </div>
               <div id="new-dataset-lottie-container" class="wide-card-lottie-container"></div>
             </div>
-            <div class="button-prompt-container" id="guided-button-start-existing-curate">
+            <div
+              class="button-prompt-container"
+              id="guided-button-start-existing-curate"
+              data-section="guided_mode"
+              data-render="file-explorer"
+            >
               <div class="wide-card-text-container">
                 <h2 class="wide-card-title-text" style="margin-right: 1.5rem">
                   Resume Existing Dataset
@@ -107,7 +117,7 @@
               </div>
               <div id="existing-dataset-lottie" class="wide-card-lottie-container"></div>
             </div>
-            <div class="button-prompt-container" id="guided-button-start-modify-compnent">
+            <div class="button-prompt-container" id="guided-button-start-modify-component">
               <div class="wide-card-text-container">
                 <h2 class="wide-card-title-text">Modify Dataset Component</h2>
                 <p class="wide-card-subtitle-text">
@@ -1404,7 +1414,7 @@
           </div>
 
           <div class="guided--panel" id="guided-add-sample-derivative-data">
-            <div class="guided--section"></div>
+            <!-- <div class="guided--section"></div> -->
             <div class="guided--capsule-container-sub-page">
               <div
                 class="guided--capsule-sub-page"
@@ -5434,7 +5444,7 @@
           <button
             class="ui primary basic button small remove-margin-right onHoverBlueBoxShadow"
             id="guided-import-folder"
-            style="width: 140px; margin-right: 7px !important"
+            style="width: 147px; margin-right: 7px !important"
           >
             <svg
               style="margin-right: 7px"
