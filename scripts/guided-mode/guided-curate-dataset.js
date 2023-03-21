@@ -7723,122 +7723,6 @@ const renderDatasetDescriptionContributorsTable = () => {
   contributorsTable.innerHTML = contributorsTableHTML;
 };
 
-const addContributorField = () => {
-  const contributorsContainer = document.getElementById("contributors-container");
-  //create a new div to hold contributor fields
-  const newContributorField = document.createElement("div");
-  newContributorField.classList.add("guided--section");
-  newContributorField.classList.add("mt-lg");
-  newContributorField.classList.add("neumorphic");
-  newContributorField.classList.add("guided-contributor-field-container");
-  newContributorField.style.width = "100%";
-  newContributorField.style.position = "relative";
-
-  newContributorField.innerHTML = `
-    <i 
-      class="fas fa-times fa-2x"
-      style="
-        position: absolute;
-        top: 10px;
-        right: 15px;
-        color: black;
-        cursor: pointer;
-      "
-      onclick="removeContributorField(this)"
-    >
-    </i>
-    <h2 class="guided--text-sub-step">
-      Enter contributor details
-    </h2>
-    <div class="space-between w-100">
-      <div class="guided--flex-center mt-sm" style="width: 45%">
-        <label class="guided--form-label required">Last name: </label>
-        <input
-          class="guided--input guided-last-name-input"
-          type="text"
-          placeholder="Enter last name here"
-        />
-      </div>
-      <div class="guided--flex-center mt-sm" style="width: 45%">
-        <label class="guided--form-label required">First name: </label>
-        <input
-          class="guided--input guided-first-name-input"
-          type="text"
-          placeholder="Enter first name here"
-        />
-      </div>
-    </div>
-    <label class="guided--form-label required mt-md">ORCID: </label>
-    <input
-      class="guided--input guided-orcid-input"
-      type="text"
-      placeholder="Enter ORCID here"
-    />
-    <label class="guided--form-label required mt-md">Affiliation(s): </label>
-    <input class="guided-contributor-affiliation-input"
-          contenteditable="true"
-    />
-  
-    <label class="guided--form-label required mt-md">Role(s): </label>
-    <input class="guided-contributor-role-input"
-      contenteditable="true"
-      placeholder='Type here to view and add contributor roles from the list of standard roles'
-    />
-  `;
-
-  contributorsContainer.appendChild(newContributorField);
-
-  //select the last contributor role input (the one that was just added)
-  const newlyAddedContributorField = contributorsContainer.lastChild;
-
-  //Create Affiliation(s) tagify for each contributor
-  const contributorAffiliationInput = newlyAddedContributorField.querySelector(
-    ".guided-contributor-affiliation-input"
-  );
-  const affiliationTagify = new Tagify(contributorAffiliationInput, {
-    duplicate: false,
-  });
-
-  createDragSort(affiliationTagify);
-
-  const newContributorRoleElement = newlyAddedContributorField.querySelector(
-    ".guided-contributor-role-input"
-  );
-  //Add a new tagify for the contributor role field for the new contributor field
-  const tagify = new Tagify(newContributorRoleElement, {
-    whitelist: [
-      "PrincipleInvestigator",
-      "Creator",
-      "CoInvestigator",
-      "DataCollector",
-      "DataCurator",
-      "DataManager",
-      "Distributor",
-      "Editor",
-      "Producer",
-      "ProjectLeader",
-      "ProjectManager",
-      "ProjectMember",
-      "RelatedPerson",
-      "Researcher",
-      "ResearchGroup",
-      "Sponsor",
-      "Supervisor",
-      "WorkPackageLeader",
-      "Other",
-    ],
-    enforceWhitelist: true,
-    dropdown: {
-      enabled: 0,
-      closeOnSelect: true,
-      position: "auto",
-    },
-  });
-  //scroll to the new element
-
-  createDragSort(tagify);
-  smoothScrollToElement(newlyAddedContributorField);
-};
 const getGuidedProtocolLinks = () => {
   try {
     return sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"].map(
@@ -8085,89 +7969,6 @@ const renderProtocolsTable = () => {
   protocolsContainer.innerHTML = protocolElements;
 };
 
-const renderContributorFields = (contributionMembersArray) => {
-  //loop through curationMembers object
-  let contributionMembersElements = contributionMembersArray
-    .map((contributionMember) => {
-      return generateContributorField(
-        contributionMember["contributorLastName"],
-        contributionMember["contributorFirstName"],
-        contributionMember["conID"],
-        contributionMember["conAffliation"],
-        contributionMember["conRole"]
-      );
-    })
-    .join("\n");
-
-  const contributorsContainer = document.getElementById("contributors-container");
-  contributorsContainer.innerHTML = contributionMembersElements;
-
-  //Create Affiliation(s) tagify for each contributor
-  const contributorAffiliationInputs = contributorsContainer.querySelectorAll(
-    ".guided-contributor-affiliation-input"
-  );
-  contributorAffiliationInputs.forEach((contributorAffiliationInput) => {
-    const tagify = new Tagify(contributorAffiliationInput, {
-      duplicate: false,
-    });
-    createDragSort(tagify);
-    if (contributorAffiliationInput.dataset.initialContributorAffiliation) {
-      const initialAffiliations = contributorAffiliationInput.dataset.initialContributorAffiliation;
-      const initialAffiliationsArray = initialAffiliations.split(",");
-      for (const initialAffiliation of initialAffiliationsArray) {
-        tagify.addTags([initialAffiliation]);
-      }
-    }
-  });
-
-  //create Role(s) tagify for each contributor
-  const contributorRoleInputs = contributorsContainer.querySelectorAll(
-    ".guided-contributor-role-input"
-  );
-  contributorRoleInputs.forEach((contributorRoleElement) => {
-    const tagify = new Tagify(contributorRoleElement, {
-      whitelist: [
-        "PrincipleInvestigator",
-        "Creator",
-        "CoInvestigator",
-        "DataCollector",
-        "DataCurator",
-        "DataManager",
-        "Distributor",
-        "Editor",
-        "Producer",
-        "ProjectLeader",
-        "ProjectManager",
-        "ProjectMember",
-        "RelatedPerson",
-        "Researcher",
-        "ResearchGroup",
-        "Sponsor",
-        "Supervisor",
-        "WorkPackageLeader",
-        "Other",
-      ],
-      enforceWhitelist: true,
-      dropdown: {
-        enabled: 0,
-        closeOnSelect: true,
-        position: "auto",
-      },
-    });
-    createDragSort(tagify);
-    //if contributorRoleElement has data-initial-contributors, the create a tagify for each comma split contributor role
-    if (contributorRoleElement.dataset.initialContributorRoles) {
-      const initialContributors = contributorRoleElement.dataset.initialContributorRoles;
-      const initialContributorsArray = initialContributors.split(",");
-      for (const contirubtorRole of initialContributorsArray) {
-        tagify.addTags([contirubtorRole]);
-      }
-    }
-  });
-
-  //show the contributor fields
-  unHideAndSmoothScrollToElement("guided-div-contributor-field-set");
-};
 const renderAdditionalLinksTable = () => {
   const additionalLinksTableBody = document.getElementById("additional-links-table-body");
   const additionalLinkData =
@@ -12384,8 +12185,6 @@ $(document).ready(async () => {
     //check if contributorFields is empty
     if (otherLinkFields.length === 0) {
       notyf.error("Please add at least one other link");
-      //Add a contributor field to help the user out a lil
-      //addContributorField();
       return;
     }
 
@@ -13462,6 +13261,7 @@ $(document).ready(async () => {
     ],
     duplicates: false,
     dropdown: {
+      maxItems: Infinity,
       enabled: 0,
       closeOnSelect: true,
     },
