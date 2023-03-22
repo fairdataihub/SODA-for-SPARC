@@ -11742,13 +11742,13 @@ $(document).ready(async () => {
         );
       }
 
-      let submissionMetadataRes = await guidedUploadSubmissionMetadata(
+      await guidedUploadSubmissionMetadata(
         guidedBfAccount,
         guidedDatasetName,
         guidedSubmissionMetadataArray
       );
 
-      let descriptionMetadataRes = await guidedUploadDatasetDescriptionMetadata(
+      await guidedUploadDatasetDescriptionMetadata(
         guidedBfAccount,
         guidedDatasetName,
         guidedDatasetInformation,
@@ -11757,7 +11757,7 @@ $(document).ready(async () => {
         allDatasetLinks
       );
 
-      let readMeMetadataRes = await guidedUploadREADMEorCHANGESMetadata(
+      await guidedUploadREADMEorCHANGESMetadata(
         guidedBfAccount,
         guidedDatasetName,
         "readme",
