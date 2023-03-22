@@ -484,6 +484,15 @@
   margin-bottom: 20px;
 }
 
+.guided--loading-div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+}
+
 .grow {
   flex-grow: 1;
 }
