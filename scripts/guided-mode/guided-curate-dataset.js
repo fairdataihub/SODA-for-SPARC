@@ -11585,11 +11585,16 @@ $(document).ready(async () => {
   const guidedPennsieveDatasetUpload = async () => {
     guidedSetNavLoadingState(true);
     try {
+      //Hide the upload tables
+      document.querySelectorAll(".guided-upload-table").forEach((table) => {
+        table.classList.add("hidden");
+      });
+
       const guidedBfAccount = defaultBfAccount;
       const guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
       const guidedDatasetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
       const guidedUsers = sodaJSONObj["digital-metadata"]["user-permissions"];
-      const guidedPIOwner = sodaJSONObj["digital-metadata"]["pi-owner"];
+      //const guidedPIOwner = sodaJSONObj["digital-metadata"]["pi-owner"];
       const guidedTeams = sodaJSONObj["digital-metadata"]["team-permissions"];
 
       let guidedPennsieveStudyPurpose =
