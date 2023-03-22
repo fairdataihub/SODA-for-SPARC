@@ -4156,7 +4156,7 @@ const openPage = async (targetPageID) => {
       console.log("THIS IS OPENING");
       console.log(pageNeedsUpdateFromPennsieve("guided-create-description-metadata-tab"));
       if (pageNeedsUpdateFromPennsieve("guided-create-description-metadata-tab")) {
-        console.log("THIS IS FROM PENNSIEVE")
+        console.log("THIS IS FROM PENNSIEVE");
         try {
           //TODO: Have the study information be pulled from
           // Pennsieve's dataset description rather than
