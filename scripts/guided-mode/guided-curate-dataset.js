@@ -2536,7 +2536,8 @@ const generateManifestEditCard = (highLevelFolderName) => {
         <button
           class="ui primary button dataset-card-button-confirm"
           style="
-            width: 280px !important;
+            width: 302px !important;
+            height: 40px;
           "
           onClick="guidedOpenManifestEditSwal('${highLevelFolderName}')"
         >
@@ -2700,10 +2701,12 @@ document
     scrollToBottomOfGuidedBody();
 
     try {
+      console.log(sodaJSONObj);
       const sodaCopy = { ...sodaJSONObj };
       delete sodaCopy["generate-dataset"];
       sodaCopy["metadata-files"] = {};
       sodaCopy["dataset-structure"] = datasetStructureJSONObj;
+      console.log(sodaCopy);
       const cleanJson = await client.post(
         `/curate_datasets/clean-dataset`,
         { soda_json_structure: sodaCopy },
@@ -2718,7 +2721,11 @@ document
         capitalTPosition = formattedResponse.search("T");
         formattedResponse = formattedResponse.replace("T", "t");
       }
+      formattedResponse = JSON.parse(formattedResponse);
+      console.log(formattedResponse);
+
       const formattedDatasetStructure = formattedResponse["dataset-structure"];
+      console.log(formattedDatasetStructure);
       // Retrieve the manifest data to be used to generate the manifest files
       const res = await client.post(
         `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
@@ -3530,12 +3537,14 @@ const checkIfPageIsValid = async (pageID) => {
 // the page has not yet been saved
 const pageNeedsUpdateFromPennsieve = (pageID) => {
   // Add the pages-fetched-from-pennsieve array to the sodaJSONObj if it does not exist
+  console.log(pageID);
+  console.log(sodaJSONObj["pages-fetched-from-pennsieve"]);
   if (!sodaJSONObj["pages-fetched-from-pennsieve"]) {
     sodaJSONObj["pages-fetched-from-pennsieve"] = [];
   }
 
   return (
-    sodaJSONObj?.["button-config"]?.["curation-starting-point"] === "pennsieve" &&
+    sodaJSONObj["starting-point"]["type"] === "bf" &&
     !sodaJSONObj["pages-fetched-from-pennsieve"].includes(pageID) &&
     !sodaJSONObj["completed-tabs"].includes(pageID)
   );
@@ -4144,12 +4153,18 @@ const openPage = async (targetPageID) => {
       renderProtocolsTable();
     }
     if (targetPageID === "guided-create-description-metadata-tab") {
+      console.log("THIS IS OPENING");
+      console.log(pageNeedsUpdateFromPennsieve("guided-create-description-metadata-tab"));
       if (pageNeedsUpdateFromPennsieve("guided-create-description-metadata-tab")) {
+        console.log("THIS IS FROM PENNSIEVE")
         try {
+          //TODO: Have the study information be pulled from
+          // Pennsieve's dataset description rather than
+          // the dataset_description.xlsx file
           let metadata_import = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
               selected_account: defaultBfAccount,
-              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+              selected_dataset: sodaJSONObj["bf-dataset-selected"]["dataset-name"],
               file_type: "dataset_description.xlsx",
             },
           });
@@ -4163,6 +4178,8 @@ const openPage = async (targetPageID) => {
               keywords: studyKeywords,
             };
           }
+
+          console.log(metadata_import);
 
           // guidedLoadDescriptionStudyInformation
           let studyInformation = metadata_import.data["Study information"];
@@ -10456,12 +10473,28 @@ const renderSamplesMetadataAsideItems = async () => {
 };
 
 $(document).ready(async () => {
+  const itemsContainer = document.getElementById("items");
+  const freeFormItemsContainer = document.getElementById("free-form-folder-structure-container");
+  const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
   $("#guided-button-start-new-curate").on("click", async () => {
     guidedCreateSodaJSONObj();
     attachGuidedMethodsToSodaJSONObj();
 
     sodaJSONObj["starting-point"]["type"] = "new";
     sodaJSONObj["generate-dataset"]["generate-option"] = "new";
+
+    //Transition file explorer elements to guided mode
+    organizeDSglobalPath = document.getElementById("guided-input-global-path");
+    organizeDSglobalPath.value = "";
+    dataset_path = document.getElementById("guided-input-global-path");
+    scroll_box = document.querySelector("#guided-body");
+    itemsContainer.innerHTML = "";
+    resetLazyLoading();
+    freeFormItemsContainer.classList.remove("freeform-file-explorer"); //add styling for free form mode
+    freeFormButtons.classList.remove("freeform-file-explorer-buttons");
+    $(".shared-folder-structure-element").appendTo($("#guided-folder-structure-container"));
+
+    guidedUnLockSideBar();
 
     guidedTransitionFromHome();
 
@@ -10482,21 +10515,26 @@ $(document).ready(async () => {
     attachGuidedMethodsToSodaJSONObj();
     guidedTransitionFromHome();
 
+    //Transition file explorer elements to guided mode
+    organizeDSglobalPath = document.getElementById("guided-input-global-path");
+    organizeDSglobalPath.value = "";
+    dataset_path = document.getElementById("guided-input-global-path");
+    scroll_box = document.querySelector("#guided-body");
+    itemsContainer.innerHTML = "";
+    resetLazyLoading();
+    freeFormItemsContainer.classList.remove("freeform-file-explorer"); //add styling for free form mode
+    freeFormButtons.classList.remove("freeform-file-explorer-buttons");
+    $(".shared-folder-structure-element").appendTo($("#guided-folder-structure-container"));
+
+    guidedUnLockSideBar();
+
     guidedUnSkipPage("guided-resume-existing-dataset-page");
     await openPage("guided-resume-existing-dataset-page");
   });
 
   $("#guided-button-start-modify-component").on("click", async () => {
     //Free form mode will open through here
-    //Hide the home screen
-    // document.getElementById("guided-home").classList.add("hidden");
-    // document.getElementById("curation-preparation-parent-tab").classList.remove("hidden");
-    // document.getElementById("guided-header-div").classList.remove("hidden");
-
-    //Remove the lotties (will be added again upon visting the home page)
-    document.getElementById("new-dataset-lottie-container").innerHTML = "";
-    document.getElementById("existing-dataset-lottie").innerHTML = "";
-    document.getElementById("edit-dataset-component-lottie").innerHTML = "";
+    guidedPrepareHomeScreen();
 
     // guidedResetSkippedPages();
 
