@@ -4812,6 +4812,196 @@ const openPage = async (targetPageID) => {
     }
     */
 
+    if (targetPageID === "guided-create-subjects-metadata-tab") {
+      //remove custom fields that may have existed from a previous session
+      document.getElementById("guided-accordian-custom-fields").innerHTML = "";
+      document.getElementById("guided-bootbox-subject-id").value = "";
+
+      //Add protocol titles to the protocol dropdown
+      const protocols = sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
+
+      // Hide the subjects protocol section if no protocols have been attached to the dataset
+      const subjectsProtocolContainer = document.getElementById(
+        "guided-container-subjects-protocol"
+      );
+      protocols.length > 0
+        ? subjectsProtocolContainer.classList.remove("hidden")
+        : subjectsProtocolContainer.classList.add("hidden");
+
+      document.getElementById("guided-bootbox-subject-protocol-title").innerHTML = `
+          <option value="">No protocols associated with this sample</option>
+          ${protocols
+            .map((protocol) => {
+              return `
+                <option
+                  value="${protocol.description}"
+                  data-protocol-link="${protocol.link}"
+                >
+                  ${protocol.description}
+                </option>
+              `;
+            })
+            .join("\n")}))
+        `;
+
+      document.getElementById("guided-bootbox-subject-protocol-location").innerHTML = `
+        <option value="">No protocols associated with this sample</option>
+        ${protocols
+          .map((protocol) => {
+            return `
+              <option
+                value="${protocol.link}"
+                data-protocol-description="${protocol.description}"
+              >
+                ${protocol.link}
+              </option>
+            `;
+          })
+          .join("\n")}))
+      `;
+      await renderSubjectsMetadataAsideItems();
+      const subjectsMetadataBlackArrowLottieContainer = document.getElementById(
+        "subjects-metadata-black-arrow-lottie-container"
+      );
+      subjectsMetadataBlackArrowLottieContainer.innerHTML = "";
+      lottie.loadAnimation({
+        container: subjectsMetadataBlackArrowLottieContainer,
+        animationData: blackArrow,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+      hideEleShowEle("guided-form-add-a-subject", "guided-form-add-a-subject-intro");
+    }
+
+    if (targetPageID === "guided-create-samples-metadata-tab") {
+      //remove custom fields that may have existed from a previous session
+      document.getElementById("guided-accordian-custom-fields-samples").innerHTML = "";
+      document.getElementById("guided-bootbox-subject-id-samples").value = "";
+      document.getElementById("guided-bootbox-sample-id").value = "";
+      await renderSamplesMetadataAsideItems();
+      const samplesMetadataBlackArrowLottieContainer = document.getElementById(
+        "samples-metadata-black-arrow-lottie-container"
+      );
+      samplesMetadataBlackArrowLottieContainer.innerHTML = "";
+      lottie.loadAnimation({
+        container: samplesMetadataBlackArrowLottieContainer,
+        animationData: blackArrow,
+        renderer: "svg",
+        loop: true,
+        autoplay: true,
+      });
+      hideEleShowEle("guided-form-add-a-sample", "guided-form-add-a-sample-intro");
+
+      // Hide the samples protocol section if no protocols have been attached to the dataset
+      const samplesProtocolContainer = document.getElementById("guided-container-samples-protocol");
+      sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"].length > 0
+        ? samplesProtocolContainer.classList.remove("hidden")
+        : samplesProtocolContainer.classList.add("hidden");
+    }
+    if (targetPageID === "guided-add-code-metadata-tab") {
+      const codeDescriptionPath =
+        sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"];
+
+      const codeDescriptionLottieContainer = document.getElementById(
+        "code-description-lottie-container"
+      );
+      const codeDescriptionParaText = document.getElementById("guided-code-description-para-text");
+
+      if (codeDescriptionPath) {
+        codeDescriptionLottieContainer.innerHTML = "";
+        lottie.loadAnimation({
+          container: codeDescriptionLottieContainer,
+          animationData: successCheck,
+          renderer: "svg",
+          loop: false,
+          autoplay: true,
+        });
+        codeDescriptionParaText.innerHTML = codeDescriptionPath;
+      } else {
+        //reset the code metadata lotties and para text
+        codeDescriptionLottieContainer.innerHTML = "";
+        lottie.loadAnimation({
+          container: codeDescriptionLottieContainer,
+          animationData: dragDrop,
+          renderer: "svg",
+          loop: true,
+          autoplay: true,
+        });
+        codeDescriptionParaText.innerHTML = "";
+      }
+    }
+    if (targetPageID === "guided-create-readme-metadata-tab") {
+      if (pageNeedsUpdateFromPennsieve("guided-create-readme-metadata-tab")) {
+        // Show the loading page while the page's data is being fetched from Pennsieve
+        setPageLoadingState(true);
+        try {
+          let readme_import = await client.get(`/prepare_metadata/readme_changes_file`, {
+            params: {
+              file_type: "README",
+
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+            },
+          });
+          let readme_text = readme_import.data.text;
+          sodaJSONObj["dataset-metadata"]["README"] = readme_text;
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-readme-metadata-tab");
+        } catch (error) {
+          clientError(error);
+          const emessage = error.response.data.message;
+          await guidedShowOptionalRetrySwal(emessage, "guided-create-readme-metadata-tab");
+          // If the user chooses not to retry re-fetching the page data, mark the page as fetched
+          // so the the fetch does not occur again
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-readme-metadata-tab");
+        }
+      }
+      const readMeTextArea = document.getElementById("guided-textarea-create-readme");
+
+      const readMe = sodaJSONObj["dataset-metadata"]["README"];
+
+      if (readMe) {
+        readMeTextArea.value = readMe;
+      } else {
+        readMeTextArea.value = "";
+      }
+    }
+
+    if (targetPageID === "guided-create-changes-metadata-tab") {
+      if (pageNeedsUpdateFromPennsieve("guided-create-changes-metadata-tab")) {
+        // Show the loading page while the page's data is being fetched from Pennsieve
+        setPageLoadingState(true);
+        try {
+          const changes_import = await client.get(`/prepare_metadata/readme_changes_file`, {
+            params: {
+              file_type: "CHANGES",
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+            },
+          });
+          const changes_text = changes_import.data.text;
+          sodaJSONObj["dataset-metadata"]["CHANGES"] = changes_text;
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-changes-metadata-tab");
+        } catch (error) {
+          clientError(error);
+          const emessage = error.response.data.message;
+          await guidedShowOptionalRetrySwal(emessage, "guided-create-changes-metadata-tab");
+          // If the user chooses not to retry re-fetching the page data, mark the page as fetched
+          // so the the fetch does not occur again
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-changes-metadata-tab");
+        }
+      }
+      const changesTextArea = document.getElementById("guided-textarea-create-changes");
+
+      const changes = sodaJSONObj["dataset-metadata"]["CHANGES"];
+
+      if (changes) {
+        changesTextArea.value = changes;
+      } else {
+        changesTextArea.value = "";
+      }
+    }
+
     if (targetPageID === "guided-dataset-generation-confirmation-tab") {
       //Set the inner text of the generate/retry pennsieve dataset button depending on
       //whether a dataset has bee uploaded from this progress file
@@ -5019,196 +5209,6 @@ const openPage = async (targetPageID) => {
         data.instance.set_type(data.node, "folder closed");
       });
       guidedShowTreePreview(sodaJSONObj["digital-metadata"]["name"], folderStructurePreview);
-    }
-
-    if (targetPageID === "guided-create-subjects-metadata-tab") {
-      //remove custom fields that may have existed from a previous session
-      document.getElementById("guided-accordian-custom-fields").innerHTML = "";
-      document.getElementById("guided-bootbox-subject-id").value = "";
-
-      //Add protocol titles to the protocol dropdown
-      const protocols = sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
-
-      // Hide the subjects protocol section if no protocols have been attached to the dataset
-      const subjectsProtocolContainer = document.getElementById(
-        "guided-container-subjects-protocol"
-      );
-      protocols.length > 0
-        ? subjectsProtocolContainer.classList.remove("hidden")
-        : subjectsProtocolContainer.classList.add("hidden");
-
-      document.getElementById("guided-bootbox-subject-protocol-title").innerHTML = `
-          <option value="">No protocols associated with this sample</option>
-          ${protocols
-            .map((protocol) => {
-              return `
-                <option
-                  value="${protocol.description}"
-                  data-protocol-link="${protocol.link}"
-                >
-                  ${protocol.description}
-                </option>
-              `;
-            })
-            .join("\n")}))
-        `;
-
-      document.getElementById("guided-bootbox-subject-protocol-location").innerHTML = `
-        <option value="">No protocols associated with this sample</option>
-        ${protocols
-          .map((protocol) => {
-            return `
-              <option
-                value="${protocol.link}"
-                data-protocol-description="${protocol.description}"
-              >
-                ${protocol.link}
-              </option>
-            `;
-          })
-          .join("\n")}))
-      `;
-      await renderSubjectsMetadataAsideItems();
-      const subjectsMetadataBlackArrowLottieContainer = document.getElementById(
-        "subjects-metadata-black-arrow-lottie-container"
-      );
-      subjectsMetadataBlackArrowLottieContainer.innerHTML = "";
-      lottie.loadAnimation({
-        container: subjectsMetadataBlackArrowLottieContainer,
-        animationData: blackArrow,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-      hideEleShowEle("guided-form-add-a-subject", "guided-form-add-a-subject-intro");
-    }
-
-    if (targetPageID === "guided-create-samples-metadata-tab") {
-      //remove custom fields that may have existed from a previous session
-      document.getElementById("guided-accordian-custom-fields-samples").innerHTML = "";
-      document.getElementById("guided-bootbox-subject-id-samples").value = "";
-      document.getElementById("guided-bootbox-sample-id").value = "";
-      await renderSamplesMetadataAsideItems();
-      const samplesMetadataBlackArrowLottieContainer = document.getElementById(
-        "samples-metadata-black-arrow-lottie-container"
-      );
-      samplesMetadataBlackArrowLottieContainer.innerHTML = "";
-      lottie.loadAnimation({
-        container: samplesMetadataBlackArrowLottieContainer,
-        animationData: blackArrow,
-        renderer: "svg",
-        loop: true,
-        autoplay: true,
-      });
-      hideEleShowEle("guided-form-add-a-sample", "guided-form-add-a-sample-intro");
-
-      // Hide the samples protocol section if no protocols have been attached to the dataset
-      const samplesProtocolContainer = document.getElementById("guided-container-samples-protocol");
-      sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"].length > 0
-        ? samplesProtocolContainer.classList.remove("hidden")
-        : samplesProtocolContainer.classList.add("hidden");
-    }
-    if (targetPageID === "guided-add-code-metadata-tab") {
-      const codeDescriptionPath =
-        sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"];
-
-      const codeDescriptionLottieContainer = document.getElementById(
-        "code-description-lottie-container"
-      );
-      const codeDescriptionParaText = document.getElementById("guided-code-description-para-text");
-
-      if (codeDescriptionPath) {
-        codeDescriptionLottieContainer.innerHTML = "";
-        lottie.loadAnimation({
-          container: codeDescriptionLottieContainer,
-          animationData: successCheck,
-          renderer: "svg",
-          loop: false,
-          autoplay: true,
-        });
-        codeDescriptionParaText.innerHTML = codeDescriptionPath;
-      } else {
-        //reset the code metadata lotties and para text
-        codeDescriptionLottieContainer.innerHTML = "";
-        lottie.loadAnimation({
-          container: codeDescriptionLottieContainer,
-          animationData: dragDrop,
-          renderer: "svg",
-          loop: true,
-          autoplay: true,
-        });
-        codeDescriptionParaText.innerHTML = "";
-      }
-    }
-    if (targetPageID === "guided-create-readme-metadata-tab") {
-      if (pageNeedsUpdateFromPennsieve("guided-create-readme-metadata-tab")) {
-        // Show the loading page while the page's data is being fetched from Pennsieve
-        setPageLoadingState(true);
-        try {
-          let readme_import = await client.get(`/prepare_metadata/readme_changes_file`, {
-            params: {
-              file_type: "README",
-
-              selected_account: defaultBfAccount,
-              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-            },
-          });
-          let readme_text = readme_import.data.text;
-          sodaJSONObj["dataset-metadata"]["README"] = readme_text;
-          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-readme-metadata-tab");
-        } catch (error) {
-          clientError(error);
-          const emessage = error.response.data.message;
-          await guidedShowOptionalRetrySwal(emessage, "guided-create-readme-metadata-tab");
-          // If the user chooses not to retry re-fetching the page data, mark the page as fetched
-          // so the the fetch does not occur again
-          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-readme-metadata-tab");
-        }
-      }
-      const readMeTextArea = document.getElementById("guided-textarea-create-readme");
-
-      const readMe = sodaJSONObj["dataset-metadata"]["README"];
-
-      if (readMe) {
-        readMeTextArea.value = readMe;
-      } else {
-        readMeTextArea.value = "";
-      }
-    }
-
-    if (targetPageID === "guided-create-changes-metadata-tab") {
-      if (pageNeedsUpdateFromPennsieve("guided-create-changes-metadata-tab")) {
-        // Show the loading page while the page's data is being fetched from Pennsieve
-        setPageLoadingState(true);
-        try {
-          const changes_import = await client.get(`/prepare_metadata/readme_changes_file`, {
-            params: {
-              file_type: "CHANGES",
-              selected_account: defaultBfAccount,
-              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-            },
-          });
-          const changes_text = changes_import.data.text;
-          sodaJSONObj["dataset-metadata"]["CHANGES"] = changes_text;
-          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-changes-metadata-tab");
-        } catch (error) {
-          clientError(error);
-          const emessage = error.response.data.message;
-          await guidedShowOptionalRetrySwal(emessage, "guided-create-changes-metadata-tab");
-          // If the user chooses not to retry re-fetching the page data, mark the page as fetched
-          // so the the fetch does not occur again
-          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-changes-metadata-tab");
-        }
-      }
-      const changesTextArea = document.getElementById("guided-textarea-create-changes");
-
-      const changes = sodaJSONObj["dataset-metadata"]["CHANGES"];
-
-      if (changes) {
-        changesTextArea.value = changes;
-      } else {
-        changesTextArea.value = "";
-      }
     }
 
     if (targetPageID === "guided-dataset-generation-tab") {
