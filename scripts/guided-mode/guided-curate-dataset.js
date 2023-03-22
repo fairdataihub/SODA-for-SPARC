@@ -3526,6 +3526,11 @@ const pageNeedsUpdateFromPennsieve = (pageID) => {
     sodaJSONObj["pages-fetched-from-pennsieve"] = [];
   }
 
+  // The following conditions must be met for the page to be updated from Pennsieve:
+  // 1. The user is updating a dataset from Pennsieve
+  // 2. sodaJSONObj["pages-fetched-from-pennsieve"] does not include the pageID
+  // Note: sodaJSONObj["pages-fetched-from-pennsieve"] gets the page id added to it when the page is fetched from Pennsieve to prevent duplicate page fetches
+  // 3. sodaJSONObj["completed-tabs"] does not include the pageID (The page has not been saved yet)
   return (
     sodaJSONObj["starting-point"]["type"] === "bf" &&
     !sodaJSONObj["pages-fetched-from-pennsieve"].includes(pageID) &&
