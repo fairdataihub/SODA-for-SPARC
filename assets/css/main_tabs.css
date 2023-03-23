@@ -92,15 +92,14 @@
 .main-tabs-section {
   /* display: none; */
   position: absolute;
-  top: 100px;
+  top: 70px;
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: 35px;
   padding-top: 40px;
   overflow-x: hidden;
   overflow-y: auto;
   margin-top: 1px;
-  /* margin-left: -10px; */
 }
 
 .flex-main-container {
