@@ -2287,7 +2287,7 @@ function createSpecimenTypeAutocomplete(id) {
   });
 }
 
-function createSpeciesAutocomplete(id) {
+const createSpeciesAutocomplete = (id, curationMode) => {
   // var listID = "autocomplete" + id;
   var autoCompleteJS2 = new autoComplete({
     selector: "#" + id,
@@ -2348,7 +2348,7 @@ function createSpeciesAutocomplete(id) {
 
         if (data.results.length === 0) {
           info.setAttribute("class", "no_results_species");
-          info.setAttribute("onclick", "loadTaxonomySpecies('" + data.query + "', '" + id + "')");
+          info.setAttribute("onclick", "loadTaxonomySpecies('" + data.query + "', '" + id + "', '" + curationMode + "')");
           info.innerHTML = `Find the scientific name for <strong>"${data.query}"</strong>`;
         }
         list.prepend(info);
@@ -2428,7 +2428,12 @@ function createStrain(id, type, curationMode) {
   });
 }
 
-async function loadTaxonomySpecies(commonName, destinationInput) {
+const loadTaxonomySpecies = async (commonName, destinationInput, curationMode) => {
+  let curationModeSelectorPrefix = "";
+  if(curationMode === "guided") {
+    curationModeSelectorPrefix = "guided-";
+  }
+
   Swal.fire({
     title: "Finding the scientific name for " + commonName + "...",
     html: "Please wait...",
@@ -2443,12 +2448,13 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
   try {
     let load_taxonomy_species = await client.get(`/taxonomy/species`, {
       params: {
-        animals_list: [commonName],
+        animals_list: commonName,
       },
     });
     let res = load_taxonomy_species.data;
 
     if (Object.keys(res).length === 0) {
+      Swal.close();
       Swal.fire({
         title: "Cannot find a scientific name for '" + commonName + "'",
         text: "Make sure you enter a correct species name.",
@@ -2460,8 +2466,8 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
         $("#btn-confirm-species").addClass("confirm-disabled");
       }
       if (destinationInput.includes("subject")) {
-        if ($("#bootbox-subject-species").val() === "") {
-          $("#bootbox-subject-species").css("display", "none");
+        if ($(`#${curationModeSelectorPrefix}bootbox-subject-species`).val() === "") {
+          $(`#${curationModeSelectorPrefix}bootbox-subject-species`).css("display", "none");
         }
         // set the Edit species button back to "+ Add species"
         $("#button-add-species-subject").html(
@@ -2469,8 +2475,8 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
         );
       }
       if (destinationInput.includes("sample")) {
-        if ($("#bootbox-sample-species").val() === "") {
-          $("#bootbox-sample-species").css("display", "none");
+        if ($(`#${curationModeSelectorPrefix}bootbox-sample-species`).val() === "") {
+          $(`#${curationModeSelectorPrefix}bootbox-sample-species`).css("display", "none");
         }
         // set the Edit species button back to "+ Add species"
 
@@ -2479,10 +2485,32 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
         );
       }
     } else {
+      Swal.close();
+
+      if (destinationInput.includes("subject")) {
+        $(`#${curationModeSelectorPrefix}bootbox-subject-species`).val(res[commonName]["ScientificName"]);
+        // $("#bootbox-subject-species").css("display", "inline-block");
+        switchSpeciesStrainInput("species", "edit", curationMode);
+      }
+      
+      if (destinationInput.includes("subject")) {
+        $(`#${curationModeSelectorPrefix}bootbox-sample-species`).val(res[commonName]["ScientificName"]);
+        // $(`#${curationModeSelectorPrefix}bootbox-subject-species`).css("display", "inline-block");
+        switchSpeciesStrainInput("species", "edit", curationMode);
+      }
+
       $("#" + destinationInput).val(res[commonName]["ScientificName"]);
       $("#btn-confirm-species").removeClass("confirm-disabled");
     }
   } catch (error) {
+    Swal.close();
+    Swal.fire({
+      title: "An error occurred while requesting the scientific name for '" + commonName + "'",
+      text: userErrorMessage(error),
+      icon: "error",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
     clientError(error);
   }
 }

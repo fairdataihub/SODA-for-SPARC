@@ -5,7 +5,7 @@ from .apiDisseminate import api as disseminate_datasets_resource
 from .apiPrepareMetadata import api as prepare_metadata_resource
 from .apiOrganizeDatasets import api as organize_datasets_resource
 from .apiStartup import api as startup_resource
-# from .apiTaxonomy import api as taxonomy_resource
+from .apiTaxonomy import api as taxonomy_resource
 from .apiUser import api as user_resource
 from .apiDatasets import api as datasets_resource
 from .apiCollections import api as collections_resource
