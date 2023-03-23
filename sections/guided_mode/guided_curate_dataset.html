@@ -133,7 +133,7 @@
           <div class="guided--capsule" id="guided-name-subtitle-capsule"></div>
         </div>
         <div
-          id="guided-resume-existing-dataset-page"
+          id="guided-resume-existing-dataset-tab"
           class="guided--page hidden"
           data-page-name="Select starting point"
         >
@@ -159,7 +159,7 @@
                   </svg>
                 </div>
                 <div class="tile-button-text">
-                  <h2>Saved Locally</h2>
+                  <h2>Saved in SODA</h2>
                 </div>
               </button>
 
@@ -467,17 +467,16 @@
               name="guided-dataset-name"
               placeholder="Enter dataset name here"
             />
-            <p class="guided--text-input-instructions mb-0">Enter the name of your dataset.</p>
             <div class="info-dropdown">
-              <p class="info-dropdown-text" data-dropdown-type="info">
+              <p class="info-dropdown-text mt-sm" data-dropdown-type="info">
                 What is the dataset name used for?
               </p>
               <i class="fas fa-chevron-right"></i>
             </div>
             <div class="info-container">
               <p class="help-text">
-                This is the field that will be displayed in public as the title of the dataset once
-                it is published on the
+                This field will be displayed in public as the title of the dataset once it is
+                published on the
                 <a href="https://sparc.science/">SPARC Data Portal</a>. Please make sure that your
                 dataset name is unique and relatively informative.
               </p>
@@ -503,8 +502,7 @@
               maxlength="255"
             ></textarea>
             <p class="guided--text-input-instructions mb-0">
-              Enter two or three sentences (255 characters max) that describe the content of your
-              dataset.
+              Enter two or three sentences that describe the content of your dataset.
             </p>
             <div class="info-dropdown">
               <p class="info-dropdown-text" data-dropdown-type="info">
@@ -529,6 +527,7 @@
         data-parent-tab-name="Dataset Structure"
       >
         <div class="guided--capsule-container">
+          <div class="guided--capsule" id="guided-dataset-type-selection-capsule"></div>
           <div class="guided--capsule" id="guided-subjects-folder-capsule"></div>
           <div class="guided--capsule" id="guided-primary-data-organization-capsule"></div>
           <div class="guided--capsule" id="guided-source-data-organization-capsule"></div>
@@ -538,6 +537,86 @@
           <div class="guided--capsule" id="guided-docs-folder-capsule"></div>
           <div class="guided--capsule" id="guided-folder-structure-preview-capsule"></div>
         </div>
+        <!--
+        <div
+          class="guided--page hidden"
+          id="guided-dataset-type-selection-tab"
+          data-page-name="Dataset type"
+        >
+          <h1 class="guided--text-sub-step">Select a dataset type</h1>
+          <div class="guided--section" id="guided-section-submission-sparc-or-nonsparc">
+            <h2 class="guided--text-sub-step">
+              Is the dataset you are submitting funded by a SPARC award?
+            </h2>
+            <div class="guided--radio-button-container">
+              <button
+                class="ui positive basic button guided--radio-button"
+                id="guided-button-dataset-is-sparc-funded"
+                data-next-element="guided-section-dataset-sparc-funded"
+                data-button-config-value="dataset-is-sparc-funded"
+                data-button-config-value-state="yes"
+              >
+                Yes
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button"
+                id="guided-button-dataset-is-not-sparc-funded"
+                data-next-element="guided-section-dataset-not-sparc-funded"
+                data-button-config-value="dataset-is-sparc-funded"
+                data-button-config-value-state="no"
+              >
+                No
+              </button>
+            </div>
+          </div>
+
+          <div class="guided--section hidden" id="guided-section-dataset-sparc-funded">
+            <h2 class="guided--text-sub-step">
+              Click "Save and Continue" to confirm your dataset is funded by a SPARC award.
+            </h2>
+          </div>
+
+          <div class="guided--section hidden" id="guided-section-dataset-not-sparc-funded">
+            <h2 class="guided--text-sub-step">
+              Have you already reached out to the SPARC curation team to see if your data is
+              suitable for the SPARC Data Portal?
+            </h2>
+            <div class="guided--radio-button-container">
+              <button
+                class="ui positive basic button guided--radio-button"
+                id="guided-button-non-sparc-user-has-contacted-sparc"
+                data-next-element="guided-section-non-sparc-user-has-contacted-sparc"
+                data-button-config-value="non-sparc-user-has-contacted-sparc"
+                data-button-config-value-state="yes"
+              >
+                Yes
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button"
+                id="guided-button-non-sparc-user-has-not-contacted-sparc"
+                data-next-element="guided-section-non-sparc-user-has-not-contacted-sparc"
+                data-button-config-value="non-sparc-user-has-contacted-sparc"
+                data-button-config-value-state="no"
+              >
+                No
+              </button>
+            </div>
+            <div class="guided--section" id="guided-section-non-sparc-user-has-contacted-sparc">
+              <h2 class="guided--text-sub-step">
+                Great, click "Continue" to start the curation process.
+              </h2>
+            </div>
+            <div class="guided--section" id="guided-section-non-sparc-user-has-not-contacted-sparc">
+              <p class="help-text">
+                Please contact the SPARC curation team before continuing at
+                <a href="mailto:curation@sparc.science">curation@sparc.science</a> to ensure that
+                your dataset is suitable for the SPARC platform and to maximize the impact of your
+                data.
+              </p>
+            </div>
+          </div>
+        </div>
+        -->
 
         <div
           id="guided-subjects-folder-tab"
@@ -546,7 +625,7 @@
         >
           <div class="guided--section">
             <h1 class="text-sub-step-title">Subjects and samples</h1>
-            <p class="help-text">
+            <p class="help-text" id="guided-subject-pool-sample-text">
               SPARC data is typically collected from subjects (either human or non-human) and/or
               from samples collected from such subjects (e.g., tissue samples). As per SPARC
               guidelines, a unique ID of the format sub-xxx must be assigned to each subject of a
@@ -633,8 +712,7 @@
           <div class="guided--panel sub-page hidden" id="guided-organize-subjects-into-pools-page">
             <div class="guided--section" id="guided-organize-into-pools-prompt">
               <label class="guided--form-label centered">
-                In SPARC datasets, subjects can be regrouped under pools. Would you like to organize
-                subjects into pools?
+                Would you like to organize subjects into pools?
               </label>
               <div class="guided--radio-button-container" style="margin-bottom: 7px">
                 <button
@@ -4951,7 +5029,7 @@
             <h1 class="text-sub-step-title">Generating your dataset on Pennsieve</h1>
           </div>
           <div
-            class="guided--section hidden mt-lg"
+            class="guided--section hidden mt-lg guided-upload-table"
             id="guided-div-pennsieve-metadata-upload-status-table"
           >
             <table class="ui celled striped table" style="width: 100% !important">
@@ -5067,7 +5145,7 @@
             </table>
           </div>
           <div
-            class="guided--section hidden mt-lg"
+            class="guided--section hidden mt-lg guided-upload-table"
             id="guided-div-dataset-metadata-upload-status-table"
           >
             <table class="ui celled striped table" style="width: 100% !important; margin-top: 0px">
@@ -5185,7 +5263,10 @@
               </tbody>
             </table>
           </div>
-          <div class="guided--section hidden mt-lg" id="guided-div-dataset-upload-status-table">
+          <div
+            class="guided--section hidden mt-lg guided-upload-table"
+            id="guided-div-dataset-upload-status-table"
+          >
             <table class="ui celled striped table" style="width: 100% !important">
               <thead>
                 <tr>

@@ -138,6 +138,10 @@ textarea {
   white-space: nowrap;
 }
 
+.temporary-hide {
+  display: none;
+}
+
 /* Animations */
 
 .backgroundAnimate {
