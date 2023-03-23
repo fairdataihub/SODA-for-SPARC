@@ -3210,7 +3210,8 @@ const cleanUpEmptyGuidedStructureFolders = async (
       }
 
       return true;
-    } else {
+    }
+    if (boolCleanUpAllGuidedStructureFolders === false) {
       const samplesWithEmptyFolders = [];
 
       //loop through samplesInPools and add samples with empty folders to samplesWithEmptyFolders
@@ -5046,42 +5047,6 @@ const openPage = async (targetPageID) => {
         generateOrRetryDatasetUploadButton.innerHTML = generateButtonText;
         reviewGenerateButtionTextElement.innerHTML = generateButtonText;
       }
-
-      //Reset the dataset upload UI
-      const pennsieveMetadataUploadTable = document.getElementById(
-        "guided-tbody-pennsieve-metadata-upload"
-      );
-      const pennsieveMetadataUploadTableRows = pennsieveMetadataUploadTable.children;
-      for (const row of pennsieveMetadataUploadTableRows) {
-        if (row.classList.contains("permissions-upload-tr")) {
-          //delete the row to reset permissions UI
-          row.remove();
-        } else {
-          row.classList.add("hidden");
-        }
-      }
-      document
-        .getElementById("guided-div-pennsieve-metadata-upload-status-table")
-        .classList.add("hidden");
-
-      const datasetMetadataUploadTable = document.getElementById(
-        "guided-tbody-dataset-metadata-upload"
-      );
-      const datasetMetadataUploadTableRows = datasetMetadataUploadTable.children;
-      for (const row of datasetMetadataUploadTableRows) {
-        row.classList.add("hidden");
-      }
-      document
-        .getElementById("guided-div-dataset-metadata-upload-status-table")
-        .classList.add("hidden");
-
-      document.getElementById("guided-div-dataset-upload-progress-bar").classList.add("hidden");
-
-      //reset the progress bar to 0
-      setGuidedProgressBarValue(0);
-      updateDatasetUploadProgressTable({
-        "Upload status": `Preparing dataset for upload`,
-      });
 
       const datsetName = sodaJSONObj["digital-metadata"]["name"];
       const datsetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
@@ -11608,11 +11573,6 @@ $(document).ready(async () => {
   const guidedPennsieveDatasetUpload = async () => {
     guidedSetNavLoadingState(true);
     try {
-      //Hide the upload tables
-      document.querySelectorAll(".guided-upload-table").forEach((table) => {
-        table.classList.add("hidden");
-      });
-
       const guidedBfAccount = defaultBfAccount;
       const guidedDatasetName = sodaJSONObj["digital-metadata"]["name"];
       const guidedDatasetSubtitle = sodaJSONObj["digital-metadata"]["subtitle"];
@@ -11724,10 +11684,32 @@ $(document).ready(async () => {
         throw "Error setting templates path";
       }
 
+      //Hide the upload tables
+      document.querySelectorAll(".guided-upload-table").forEach((table) => {
+        table.classList.add("hidden");
+      });
+
+      //Remove any permissions rows from the UI that may have been added from a previous upload
+      const pennsieveMetadataUploadTable = document.getElementById(
+        "guided-tbody-pennsieve-metadata-upload"
+      );
+      const pennsieveMetadataUploadTableRows = pennsieveMetadataUploadTable.children;
+      for (const row of pennsieveMetadataUploadTableRows) {
+        if (row.classList.contains("permissions-upload-tr")) {
+          console.log("Removing permissions row from UI");
+          //delete the row to reset permissions UI
+          row.remove();
+        } else {
+          row.classList.add("hidden");
+        }
+      }
+
       //Display the Pennsieve metadata upload table
       unHideAndSmoothScrollToElement("guided-div-pennsieve-metadata-upload-status-table");
 
-      let datasetUploadResponse = await guidedCreateDataset(guidedBfAccount, guidedDatasetName);
+      // Create the dataset on Pennsieve
+      await guidedCreateDataset(guidedBfAccount, guidedDatasetName);
+
       await guidedAddDatasetSubtitle(guidedBfAccount, guidedDatasetName, guidedDatasetSubtitle);
       await guidedAddDatasetDescription(
         guidedBfAccount,
@@ -11743,14 +11725,18 @@ $(document).ready(async () => {
       await guidedAddUserPermissions(guidedBfAccount, guidedDatasetName, guidedUsers);
       await guidedAddTeamPermissions(guidedBfAccount, guidedDatasetName, guidedTeams);
 
-      //Display the Dataset metadata upload table
+      // Hide the dataset metadata table rows and display the metadata upload status table
+      const datasetMetadataUploadTable = document.getElementById(
+        "guided-tbody-dataset-metadata-upload"
+      );
+      const datasetMetadataUploadTableRows = datasetMetadataUploadTable.children;
+      for (const row of datasetMetadataUploadTableRows) {
+        row.classList.add("hidden");
+      }
       unHideAndSmoothScrollToElement("guided-div-dataset-metadata-upload-status-table");
 
-      //set timeout for 2 seconds
-      await new Promise((r) => setTimeout(r, 2000));
-
       if (
-        guidedSubjectsMetadata.length > 0 &&
+        guidedSubjectsMetadata.length > 1 &&
         !pageIsSkipped("guided-create-subjects-metadata-tab")
       ) {
         await guidedUploadSubjectsMetadata(
@@ -11760,7 +11746,7 @@ $(document).ready(async () => {
         );
       }
       if (
-        guidedSamplesMetadata.length > 0 &&
+        guidedSamplesMetadata.length > 1 &&
         !pageIsSkipped("guided-create-samples-metadata-tab")
       ) {
         await guidedUploadSamplesMetadata(
@@ -11796,31 +11782,34 @@ $(document).ready(async () => {
       if (!pageIsSkipped("guided-create-changes-metadata-tab")) {
         const changes = sodaJSONObj["dataset-metadata"]["CHANGES"];
         if (changes && changes.length > 0) {
-          let changesMetadataRes = await guidedUploadREADMEorCHANGESMetadata(
+          await guidedUploadREADMEorCHANGESMetadata(
             guidedBfAccount,
             guidedDatasetName,
             "changes",
             changes
           );
-          console.log(changesMetadataRes);
         }
       }
 
       if (fs.existsSync(sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"])) {
-        let codeDescriptionRes = await guidedUploadCodeDescriptionMetadata(
+        await guidedUploadCodeDescriptionMetadata(
           guidedBfAccount,
           guidedDatasetName,
           sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"]
         );
       }
 
-      //Display the main dataset upload progress bar
+      //Reset Upload Progress Bar and then scroll to it
+      setGuidedProgressBarValue(0);
+      updateDatasetUploadProgressTable({
+        "Upload status": `Preparing dataset for upload`,
+      });
       unHideAndSmoothScrollToElement("guided-div-dataset-upload-status-table");
 
       await guidedCreateManifestFilesAndAddToDatasetStructure();
 
       //Upload the dataset files
-      const mainCurationResponse = await guidedUploadDatasetToPennsieve();
+      await guidedUploadDatasetToPennsieve();
     } catch (error) {
       clientError(error);
       let emessage = userErrorMessage(error);
