@@ -532,9 +532,9 @@ const addSpecies = async (ev, type, curationMode) => {
       switchSpeciesStrainInput("species", "edit", curationMode);
     }
   } else {
-      switchSpeciesStrainInput("species", "add", curationMode);
+    switchSpeciesStrainInput("species", "add", curationMode);
   }
-}
+};
 
 const switchSpeciesStrainInput = (type, mode, curationMode) => {
   let curationModeSelectorPrefix = "";
@@ -555,7 +555,7 @@ const switchSpeciesStrainInput = (type, mode, curationMode) => {
       "<i class='pen icon'></i>Edit"
     );
   }
-}
+};
 
 const guidedSetStrainRRID = (RRID) => {
   const rridLabel = document.getElementById("guided-strain-rrid-label");
@@ -613,7 +613,7 @@ const addStrain = async (ev, type, curationMode) => {
   } else {
     switchSpeciesStrainInput("strain", "add", curationMode);
   }
-}
+};
 
 // populate RRID
 function populateRRID(strain, type, curationMode) {

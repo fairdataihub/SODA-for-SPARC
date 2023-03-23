@@ -29,7 +29,7 @@ const clientError = (error) => {
     // The request was made but no response was received
     log.error(error.request);
   }
-}
+};
 
 /**
  * Given an error object, take the message out of the appropriate error property and present it in a readable format.
@@ -56,6 +56,6 @@ const userErrorMessage = (error) => {
   }
 
   return errorMessage;
-}
+};
 
 module.exports = { clientError, userErrorMessage };

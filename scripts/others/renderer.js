@@ -2348,7 +2348,10 @@ const createSpeciesAutocomplete = (id, curationMode) => {
 
         if (data.results.length === 0) {
           info.setAttribute("class", "no_results_species");
-          info.setAttribute("onclick", "loadTaxonomySpecies('" + data.query + "', '" + id + "', '" + curationMode + "')");
+          info.setAttribute(
+            "onclick",
+            "loadTaxonomySpecies('" + data.query + "', '" + id + "', '" + curationMode + "')"
+          );
           info.innerHTML = `Find the scientific name for <strong>"${data.query}"</strong>`;
         }
         list.prepend(info);
@@ -2368,7 +2371,7 @@ const createSpeciesAutocomplete = (id, curationMode) => {
     autoCompleteJS2.input.value = selection;
     $("#btn-confirm-species").removeClass("confirm-disabled");
   });
-}
+};
 
 function createStrain(id, type, curationMode) {
   var autoCompleteJS4 = new autoComplete({
@@ -2430,7 +2433,7 @@ function createStrain(id, type, curationMode) {
 
 const loadTaxonomySpecies = async (commonName, destinationInput, curationMode) => {
   let curationModeSelectorPrefix = "";
-  if(curationMode === "guided") {
+  if (curationMode === "guided") {
     curationModeSelectorPrefix = "guided-";
   }
 
@@ -2488,13 +2491,17 @@ const loadTaxonomySpecies = async (commonName, destinationInput, curationMode) =
       Swal.close();
 
       if (destinationInput.includes("subject")) {
-        $(`#${curationModeSelectorPrefix}bootbox-subject-species`).val(res[commonName]["ScientificName"]);
+        $(`#${curationModeSelectorPrefix}bootbox-subject-species`).val(
+          res[commonName]["ScientificName"]
+        );
         // $("#bootbox-subject-species").css("display", "inline-block");
         switchSpeciesStrainInput("species", "edit", curationMode);
       }
-      
+
       if (destinationInput.includes("subject")) {
-        $(`#${curationModeSelectorPrefix}bootbox-sample-species`).val(res[commonName]["ScientificName"]);
+        $(`#${curationModeSelectorPrefix}bootbox-sample-species`).val(
+          res[commonName]["ScientificName"]
+        );
         // $(`#${curationModeSelectorPrefix}bootbox-subject-species`).css("display", "inline-block");
         switchSpeciesStrainInput("species", "edit", curationMode);
       }
@@ -2513,7 +2520,7 @@ const loadTaxonomySpecies = async (commonName, destinationInput, curationMode) =
     });
     clientError(error);
   }
-}
+};
 
 // Function to add options to dropdown list
 function addOption(selectbox, text, value) {
