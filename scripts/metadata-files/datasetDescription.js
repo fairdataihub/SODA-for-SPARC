@@ -215,6 +215,7 @@ function createConsRoleTagify(inputField) {
     ],
     enforceWhitelist: true,
     dropdown: {
+      maxItems: Infinity,
       enabled: 1,
       closeOnSelect: true,
     },
