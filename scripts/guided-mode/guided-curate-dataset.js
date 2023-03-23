@@ -147,17 +147,40 @@ document.getElementById("guided-button-has-docs-data").addEventListener("click",
 });
 
 const setPageLoadingState = (boolLoadingState) => {
-  const guidedLoadingDiv = document.getElementById("guided-loading-div");
   const pageParentContainers = document.querySelectorAll(".guided--parent-tab");
 
   if (boolLoadingState === true) {
-    guidedLoadingDiv.classList.remove("hidden");
+    const loadingDivHtml = `
+      <div class="guided--main-tab" id="guided-loading-div">
+        <div class="guided--loading-div">
+          <div class="lds-roller">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+          Fetching data from Pennsieve...
+        </div>
+      </div>
+    `;
+    // Add the loading div as the last child of the guided-body div
+    document.getElementById("guided-body").insertAdjacentHTML("beforeend", loadingDivHtml);
+
     pageParentContainers.forEach((container) => {
       container.classList.add("temporary-hide");
     });
   }
   if (boolLoadingState === false) {
-    guidedLoadingDiv.classList.add("hidden");
+    // Remove the loading div from the dom if it exists
+    const loadingDiv = document.getElementById("guided-loading-div");
+    if (loadingDiv) {
+      loadingDiv.remove();
+    }
+
     pageParentContainers.forEach((container) => {
       container.classList.remove("temporary-hide");
     });
