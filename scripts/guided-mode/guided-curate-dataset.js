@@ -628,158 +628,6 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
     }
 
-    const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
-      const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
-      for (const subject of subjectsInPools) {
-        const poolName = subject["poolName"];
-        const subjectName = subject["subjectName"];
-        const subjectsSamplesArray = subject["samples"];
-        // First delete the sample folders if they are empty
-        for (const sample of subjectsSamplesArray) {
-          const sampleFolder =
-            datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
-              "folders"
-            ]?.[subjectName]?.["folders"]?.[sample];
-          // If the sample folder exists and is empty, delete it
-          if (sampleFolder) {
-            if (folderIsEmpty(sampleFolder)) {
-              console.log("deleting sample folder in pool cuz it was empty");
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName][
-                "folders"
-              ][subjectName]["folders"][sample];
-            }
-          }
-
-          // Then delete the subject folder if it is empty
-          const subjectFolder =
-            datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
-              "folders"
-            ]?.[subjectName];
-          if (subjectFolder) {
-            if (folderIsEmpty(subjectFolder)) {
-              console.log("deleting subject folder in pool cuz it was empty");
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName][
-                "folders"
-              ][subjectName];
-            }
-          }
-
-          // Then delete the pool folder if it is empty
-          const poolFolder =
-            datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName];
-          if (poolFolder) {
-            if (folderIsEmpty(poolFolder)) {
-              console.log("deleting pool folder cuz it was empty");
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName];
-            }
-          }
-        }
-
-        // If the sample folder exists and is empty, delete it
-      }
-      for (const subjectObject of subjectsOutsidePools) {
-        const subjectName = subjectObject["subjectName"];
-        const subjectsSamplesArray = subjectObject["samples"];
-        // First delete the sample folders if they are empty
-        for (const sample of subjectsSamplesArray) {
-          const sampleFolder =
-            datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName]?.[
-              "folders"
-            ]?.[sample];
-          // If the sample folder exists and is empty, delete it
-          if (sampleFolder) {
-            if (folderIsEmpty(sampleFolder)) {
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName][
-                "folders"
-              ][sample];
-            }
-          }
-        }
-        // Then delete the subject folder if it is empty
-        const subjectFolder =
-          datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName];
-        if (subjectFolder) {
-          if (folderIsEmpty(subjectFolder)) {
-            delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName];
-          }
-        }
-      }
-      for (const subject of subjectsInPools) {
-        const poolName = subject["poolName"];
-        const subjectName = subject["subjectName"];
-        const subjectsSamplesArray = subject["samples"];
-        // First delete the sample folders if they are empty
-        for (const sample of subjectsSamplesArray) {
-          const sampleFolder =
-            datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
-              "folders"
-            ]?.[subjectName]?.["folders"]?.[sample];
-          // If the sample folder exists and is empty, delete it
-          if (sampleFolder) {
-            if (folderIsEmpty(sampleFolder)) {
-              console.log("deleting sample folder in pool cuz it was empty");
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName][
-                "folders"
-              ][subjectName]["folders"][sample];
-            }
-          }
-
-          // Then delete the subject folder if it is empty
-          const subjectFolder =
-            datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
-              "folders"
-            ]?.[subjectName];
-          if (subjectFolder) {
-            if (folderIsEmpty(subjectFolder)) {
-              console.log("deleting subject folder in pool cuz it was empty");
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName][
-                "folders"
-              ][subjectName];
-            }
-          }
-
-          // Then delete the pool folder if it is empty
-          const poolFolder =
-            datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName];
-          if (poolFolder) {
-            if (folderIsEmpty(poolFolder)) {
-              console.log("deleting pool folder cuz it was empty");
-              delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName];
-            }
-          }
-        }
-
-        // If the sample folder exists and is empty, delete it
-      }
-      for (const subjectObject of subjectsOutsidePools) {
-        const subjectName = subjectObject["subjectName"];
-        const subjectsSamplesArray = subjectObject["samples"];
-        // First delete the sample folders if they are empty
-        for (const sample of subjectsSamplesArray) {
-          const sampleFolder =
-            datasetStructureJSONObj["folders"]?.["primary"]?.["folders"]?.[subjectName]?.[
-              "folders"
-            ]?.[sample];
-          // If the sample folder exists and is empty, delete it
-          if (sampleFolder) {
-            if (folderIsEmpty(sampleFolder)) {
-              delete datasetStructureJSONObj["folders"]["primary"]["folders"][subjectName][
-                "folders"
-              ][sample];
-            }
-          }
-        }
-        // Then delete the subject folder if it is empty
-        const subjectFolder =
-          datasetStructureJSONObj["folders"]?.["primary"]?.["folders"]?.[subjectName];
-        if (subjectFolder) {
-          if (folderIsEmpty(subjectFolder)) {
-            delete datasetStructureJSONObj["folders"]["primary"]["folders"][subjectName];
-          }
-        }
-      }
-    };
-
     if (pageBeingLeftID === "guided-primary-data-organization-tab") {
       cleanUpEmptyFoldersFromGeneratedGuidedStructure("primary");
     }
@@ -3356,7 +3204,6 @@ const pageIsSkipped = (pageId) => {
   return sodaJSONObj["skipped-pages"].includes(pageId);
 };
 
-const loadGuidedSkippedPages = () => {};
 const folderIsEmpty = (folder) => {
   return Object.keys(folder.folders).length === 0 && Object.keys(folder.files).length === 0;
 };
@@ -3643,6 +3490,158 @@ const cleanUpEmptyGuidedStructureFolders = async (
           //User has chosen to finish adding data to pools, return false
           return false;
         }
+      }
+    }
+  }
+};
+
+const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
+  const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+  for (const subject of subjectsInPools) {
+    const poolName = subject["poolName"];
+    const subjectName = subject["subjectName"];
+    const subjectsSamplesArray = subject["samples"];
+    // First delete the sample folders if they are empty
+    for (const sample of subjectsSamplesArray) {
+      const sampleFolder =
+        datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
+          "folders"
+        ]?.[subjectName]?.["folders"]?.[sample];
+      // If the sample folder exists and is empty, delete it
+      if (sampleFolder) {
+        if (folderIsEmpty(sampleFolder)) {
+          console.log("deleting sample folder in pool cuz it was empty");
+          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName][
+            "folders"
+          ][subjectName]["folders"][sample];
+        }
+      }
+
+      // Then delete the subject folder if it is empty
+      const subjectFolder =
+        datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
+          "folders"
+        ]?.[subjectName];
+      if (subjectFolder) {
+        if (folderIsEmpty(subjectFolder)) {
+          console.log("deleting subject folder in pool cuz it was empty");
+          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName][
+            "folders"
+          ][subjectName];
+        }
+      }
+
+      // Then delete the pool folder if it is empty
+      const poolFolder =
+        datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName];
+      if (poolFolder) {
+        if (folderIsEmpty(poolFolder)) {
+          console.log("deleting pool folder cuz it was empty");
+          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName];
+        }
+      }
+    }
+
+    // If the sample folder exists and is empty, delete it
+  }
+  for (const subjectObject of subjectsOutsidePools) {
+    const subjectName = subjectObject["subjectName"];
+    const subjectsSamplesArray = subjectObject["samples"];
+    // First delete the sample folders if they are empty
+    for (const sample of subjectsSamplesArray) {
+      const sampleFolder =
+        datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName]?.[
+          "folders"
+        ]?.[sample];
+      // If the sample folder exists and is empty, delete it
+      if (sampleFolder) {
+        if (folderIsEmpty(sampleFolder)) {
+          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName][
+            "folders"
+          ][sample];
+        }
+      }
+    }
+    // Then delete the subject folder if it is empty
+    const subjectFolder =
+      datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName];
+    if (subjectFolder) {
+      if (folderIsEmpty(subjectFolder)) {
+        delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subjectName];
+      }
+    }
+  }
+  for (const subject of subjectsInPools) {
+    const poolName = subject["poolName"];
+    const subjectName = subject["subjectName"];
+    const subjectsSamplesArray = subject["samples"];
+    // First delete the sample folders if they are empty
+    for (const sample of subjectsSamplesArray) {
+      const sampleFolder =
+        datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
+          "folders"
+        ]?.[subjectName]?.["folders"]?.[sample];
+      // If the sample folder exists and is empty, delete it
+      if (sampleFolder) {
+        if (folderIsEmpty(sampleFolder)) {
+          console.log("deleting sample folder in pool cuz it was empty");
+          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName][
+            "folders"
+          ][subjectName]["folders"][sample];
+        }
+      }
+
+      // Then delete the subject folder if it is empty
+      const subjectFolder =
+        datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
+          "folders"
+        ]?.[subjectName];
+      if (subjectFolder) {
+        if (folderIsEmpty(subjectFolder)) {
+          console.log("deleting subject folder in pool cuz it was empty");
+          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName][
+            "folders"
+          ][subjectName];
+        }
+      }
+
+      // Then delete the pool folder if it is empty
+      const poolFolder =
+        datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName];
+      if (poolFolder) {
+        if (folderIsEmpty(poolFolder)) {
+          console.log("deleting pool folder cuz it was empty");
+          delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName];
+        }
+      }
+    }
+
+    // If the sample folder exists and is empty, delete it
+  }
+  for (const subjectObject of subjectsOutsidePools) {
+    const subjectName = subjectObject["subjectName"];
+    const subjectsSamplesArray = subjectObject["samples"];
+    // First delete the sample folders if they are empty
+    for (const sample of subjectsSamplesArray) {
+      const sampleFolder =
+        datasetStructureJSONObj["folders"]?.["primary"]?.["folders"]?.[subjectName]?.["folders"]?.[
+          sample
+        ];
+      // If the sample folder exists and is empty, delete it
+      if (sampleFolder) {
+        if (folderIsEmpty(sampleFolder)) {
+          delete datasetStructureJSONObj["folders"]["primary"]["folders"][subjectName]["folders"][
+            sample
+          ];
+        }
+      }
+    }
+    // Then delete the subject folder if it is empty
+    const subjectFolder =
+      datasetStructureJSONObj["folders"]?.["primary"]?.["folders"]?.[subjectName];
+    if (subjectFolder) {
+      if (folderIsEmpty(subjectFolder)) {
+        delete datasetStructureJSONObj["folders"]["primary"]["folders"][subjectName];
       }
     }
   }
