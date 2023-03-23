@@ -199,7 +199,7 @@ h1.text-sub-step-title {
 }
 
 .guided--text-area-tall {
-  height: 15em;
+  height: 15em !important;
 }
 
 .guided--prompt-text {
