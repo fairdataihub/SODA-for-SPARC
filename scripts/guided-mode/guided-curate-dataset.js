@@ -10357,9 +10357,6 @@ const renderSubjectsMetadataAsideItems = async () => {
       });
 
       document.getElementById("guided-bootbox-subject-id").value = e.target.innerText;
-      //Set the pool id field based of clicked elements data-pool-id attribute
-      document.getElementById("guided-bootbox-subject-pool-id").value =
-        e.target.getAttribute("data-pool-id");
 
       await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     });
