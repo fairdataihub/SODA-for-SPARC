@@ -5534,6 +5534,9 @@ const setActiveSubPage = (pageIdToActivate) => {
     renderSubjectsTable();
     //remove the add subject help text
     document.getElementById("guided-add-subject-instructions").classList.add("hidden");
+    document.getElementById(
+      "guided-subject-pool-sample-header"
+    ).innerHTML = `Subject specification`;
     document.getElementById("guided-subject-pool-sample-text").innerHTML = `
       SPARC data is typically collected from subjects (either human or non-human) and/or
       from samples collected from such subjects (e.g., tissue samples). As per SPARC
@@ -5543,6 +5546,7 @@ const setActiveSubPage = (pageIdToActivate) => {
     `;
   }
   if (pageIdToActivate === "guided-organize-subjects-into-pools-page") {
+    document.getElementById("guided-subject-pool-sample-header").innerHTML = `Subject pooling`;
     document.getElementById("guided-subject-pool-sample-text").innerHTML = `
       In SPARC datasets, subjects can be regrouped under pools. 
     `;
@@ -5585,6 +5589,7 @@ const setActiveSubPage = (pageIdToActivate) => {
     }
   }
   if (pageIdToActivate === "guided-specify-samples-page") {
+    document.getElementById("guided-subject-pool-sample-header").innerHTML = `Sample specification`;
     document.getElementById("guided-subject-pool-sample-text").innerHTML = `
       This is the text for samples
     `;
