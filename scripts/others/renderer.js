@@ -6031,6 +6031,9 @@ const handleSelectedBannerImage = async (path, curationMode) => {
 //// helper functions for hiding/showing context menus
 function showmenu(ev, category, deleted = false) {
   //stop the real right click menu
+  console.log("align menu through here");
+  //TODO: context menu aligns correctly for free form mode
+  // Look into adding a curationMode to figure out when to align differently
   ev.preventDefault();
   var mouseX;
   let element = "";
@@ -6135,6 +6138,7 @@ function showmenu(ev, category, deleted = false) {
 
 /// options for regular sub-folders
 function folderContextMenu(event) {
+  console.log(event);
   $(".menu.reg-folder li")
     .unbind()
     .click(function () {
@@ -6247,6 +6251,7 @@ $(document).ready(function () {
 
 // Trigger action when the contexmenu is about to be shown
 $(document).bind("contextmenu", function (event) {
+  console.log("contextmenu here");
   // Avoid the real one
   event.preventDefault();
 

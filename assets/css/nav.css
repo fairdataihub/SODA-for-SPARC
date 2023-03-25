@@ -525,7 +525,7 @@ a[data-toggle="collapse"] {
   width: 100%;
   list-style: none;
   padding-left: 0px;
-  max-height: 400px;
+  max-height: 441px;
   overflow-y: auto;
   /* Make the scroll bar align with the right side of the container */
   margin-right: -12px;

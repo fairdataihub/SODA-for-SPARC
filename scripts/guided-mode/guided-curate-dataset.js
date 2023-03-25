@@ -6011,7 +6011,7 @@ function subSamInputIsValid(subSamInput) {
 }
 const generateAlertElement = (alertType, warningMessageText) => {
   return `
-      <div style="margin-right:.5rem"class="alert alert-${alertType} guided--alert" role="alert">
+      <div class="alert alert-${alertType} guided--alert mr-2" role="alert">
         ${warningMessageText}
       </div>
     `;
