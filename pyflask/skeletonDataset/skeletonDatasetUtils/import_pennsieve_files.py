@@ -77,6 +77,8 @@ def import_RC_metadata(url, filename):
     with open(final_path, "w") as f:
         f.write(r.text)
 
+    return r.text
+
 
 def import_metadata(url, filename):
     """
