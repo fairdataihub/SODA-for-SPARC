@@ -2707,14 +2707,57 @@ document
       // create the manifest files if the user auto generated manifest files at any point
       await guidedCreateManifestFilesAndAddToDatasetStructure();
 
-      const skeletonDatasetPath = await api.createSkeletonDataset(sodaJSONObj);
+      let validationReport;
+      try {
+        validationReport = createValidationReport(sodaJSONObj);
+      } catch (error) {
+        clientError(error);
+        await Swal.fire({
+          title: "Failed to Validate Your Dataset",
+          text: "Please try again. If this issue persists contect the SODA for SPARC team at help@fairdataihub.org",
+          allowEscapeKey: true,
+          allowOutsideClick: false,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          timerProgressBar: false,
+          showConfirmButton: true,
+          icon: "error",
+        });
+        return;
+      }
 
-      let validationReport = await api.validateLocalDataset(skeletonDatasetPath);
+      // write the full report to the ~/SODA/validation.txt file
+      let fullReport = validationReportData.full_report;
+      let validationReportPath = path.join(os.homedir(), "SODA", "validation.txt");
+      fs.writeFileSync(validationReportPath, fullReport);
 
-      let report = validationReport;
+      let SODADirectory = path.join(os.homedir(), "SODA");
+
+      if (validationReportData.status === "Incomplete") {
+        // An incomplete validation report happens when the validator is unable to generate
+        // a path_error_report upon validating the selected dataset.
+        await Swal.fire({
+          title: "Incomplete Validation Report",
+          text: `SODA was unable to generate a sanitized validation report. You may view your raw validation report at ${SODADirectory}/validation.txt. If you repeatedly have this issue please contact the SPARC Curation Team for support at curation@sparc.science.`,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          icon: "error",
+          showCancelButton: false,
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        });
+        return;
+      }
+
+      // get the parsed error report since the validation has been completed
+      let errors = validationReportData.parsed_report;
 
       // list the results in a table ( ideally the one used in the validate feature )
-      if (!validationErrorsOccurred(report)) {
+      if (!validationErrorsOccurred(errors)) {
         return;
       }
 
@@ -2727,7 +2770,7 @@ document
 
       // display errors onto the page
       displayValidationErrors(
-        report,
+        errors,
         document.querySelector("#guided-section-dataset-validation-table tbody")
       );
 
