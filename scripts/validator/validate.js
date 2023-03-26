@@ -42,12 +42,15 @@ const createValidationReport = async (sodaJSONObj) => {
   console.log("localSodaJsonObject", sodaJSONObj);
   console.log("clientUUID", clientUUID);
 
-  let validationResponse = await client.post(`http://localhost:9009/validator/validate`, {
-    clientUUID: clientUUID,
-    dataset_structure: sodaJSONObj,
-    metadata_files: metadataFiles,
-    manifests: manifestFiles,
-  });
+  let validationResponse = await client.post(
+    `https://validation.sodaforsparc.io/validator/validate`,
+    {
+      clientUUID: clientUUID,
+      dataset_structure: sodaJSONObj,
+      metadata_files: metadataFiles,
+      manifests: manifestFiles,
+    }
+  );
 
   // track that a local validation succeeded
   ipcRenderer.send(
@@ -144,7 +147,8 @@ const validateLocalDataset = async () => {
     clientError(error);
     clientError(error);
     await Swal.fire({
-      title: "Validation Run Failed",
+      title: "Failed to Validate Your Dataset",
+      text: "Please try again. If this issue persists contect the SODA for SPARC team at help@fairdataihub.org",
       allowEscapeKey: true,
       allowOutsideClick: false,
       heightAuto: false,
@@ -283,7 +287,7 @@ const validatePennsieveDatasetStandAlone = async () => {
   } catch (err) {
     clientError(err);
     await Swal.fire({
-      title: `Validation Run Failed`,
+      title: "Failed to Validate Your Dataset",
       text: "Please try again. If this issue persists contect the SODA for SPARC team at help@fairdataihub.org",
       allowEscapeKey: true,
       allowOutsideClick: true,
