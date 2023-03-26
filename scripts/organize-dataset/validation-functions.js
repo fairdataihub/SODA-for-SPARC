@@ -19,87 +19,20 @@ const validateOrganizedDataset = async () => {
   let sodaJSONObjCopy = JSON.parse(JSON.stringify(sodaJSONObj));
   formatForDatasetGeneration(sodaJSONObjCopy);
 
+  // if the user performed move, rename, delete on files in an imported dataset we need to perform those actions before creating the validation report;
+  // rationale for this can be found in the function definition
   if (sodaJSONObjCopy["starting-point"]["type"] === "bf") {
     await api.performUserActions(sodaJSONObjCopy);
   }
 
-  let manifestJSONResponse;
-  try {
-    manifestJSONResponse = await client.post(
-      "/skeleton_dataset/manifest_json",
-      {
-        sodajsonobject: sodaJSONObjCopy,
-      },
-      {
-        timeout: 0,
-      }
-    );
-  } catch (error) {
-    clientError(error);
-    await Swal.fire({
-      title: "Could not validate your dataset.",
-      message: `SODA has encountered the following problem: ${userErrorMessage(error)}`,
-      allowEscapeKey: true,
-      allowOutsideClick: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      showConfirmButton: true,
-      icon: hasValidationErrors ? "error" : "success",
-    });
-    return;
-  }
-
-  let manifestsJSON = manifestJSONResponse.data;
-
-  console.log(manifestsJSON);
-
-  let metadataJSONResponse;
-  try {
-    metadataJSONResponse = await client.post(
-      "/skeleton_dataset/metadata_json",
-      {
-        sodajsonobject: sodaJSONObjCopy,
-      },
-      {
-        timeout: 0,
-      }
-    );
-  } catch (error) {
-    clientError(error);
-    await Swal.fire({
-      title: "Could not validate your dataset.",
-      message: `SODA has encountered the following problem: ${userErrorMessage(error)}`,
-      allowEscapeKey: true,
-      allowOutsideClick: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      showConfirmButton: true,
-      icon: hasValidationErrors ? "error" : "success",
-    });
-    return;
-  }
-
-  let metadataJSON = metadataJSONResponse.data;
-
-  const clientUUID = uuid();
-
-  // intervale that runs every 15 seconds
   let validationReportResponse;
-
   try {
-    validationReportResponse = await client.post("http://localhost:9009/validator/validate", {
-      clientUUID: clientUUID,
-      manifests: manifestsJSON,
-      metadata_files: metadataJSON,
-      dataset_structure: sodaJSONObjCopy,
-    });
-  } catch (e) {
-    clientError(e);
+    validationReportResponse = await createValidationReport(sodaJSONObjCopy);
+  } catch (error) {
+    clientError(error);
     await Swal.fire({
-      title: "Could not validate your dataset",
-      text: `Please try again.`,
+      title: "Failed to Validate Your Dataset",
+      text: "Please try again. If this issue persists contect the SODA for SPARC team at help@fairdataihub.org",
       allowEscapeKey: true,
       allowOutsideClick: false,
       heightAuto: false,
@@ -108,6 +41,7 @@ const validateOrganizedDataset = async () => {
       showConfirmButton: true,
       icon: "error",
     });
+    return;
   }
 
   let validationReportData = validationReportResponse.data;
