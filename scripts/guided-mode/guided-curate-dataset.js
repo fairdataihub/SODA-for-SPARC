@@ -2707,9 +2707,20 @@ document
       // create the manifest files if the user auto generated manifest files at any point
       await guidedCreateManifestFilesAndAddToDatasetStructure();
 
+      let validationResponse;
       let validationReport;
       try {
-        validationReport = createValidationReport(sodaJSONObj);
+        validationResponse = await client.post(
+          `https://validation.sodaforsparc.io/validator/validate`,
+          {
+            clientUUID: uuid(),
+            dataset_structure: sodaJSONObj,
+            metadata_files: {},
+            manifests: {},
+          }
+        );
+
+        validationReport = validationResponse.data;
       } catch (error) {
         clientError(error);
         await Swal.fire({
@@ -2727,13 +2738,13 @@ document
       }
 
       // write the full report to the ~/SODA/validation.txt file
-      let fullReport = validationReportData.full_report;
+      let fullReport = validationReport.full_report;
       let validationReportPath = path.join(os.homedir(), "SODA", "validation.txt");
       fs.writeFileSync(validationReportPath, fullReport);
 
       let SODADirectory = path.join(os.homedir(), "SODA");
 
-      if (validationReportData.status === "Incomplete") {
+      if (validationReport.status === "Incomplete") {
         // An incomplete validation report happens when the validator is unable to generate
         // a path_error_report upon validating the selected dataset.
         await Swal.fire({
@@ -2754,7 +2765,7 @@ document
       }
 
       // get the parsed error report since the validation has been completed
-      let errors = validationReportData.parsed_report;
+      let errors = validationReport.parsed_report;
 
       // list the results in a table ( ideally the one used in the validate feature )
       if (!validationErrorsOccurred(errors)) {
