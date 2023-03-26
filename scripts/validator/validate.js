@@ -301,10 +301,63 @@ const validatePennsieveDatasetStandAlone = async () => {
     return;
   }
 
-  let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
-  let validationErrorsContainer = document.querySelector("#validation-errors-container");
+  // write the full report to the ~/SODA/validation.txt file
+  let fullReport = validationReport.full_report;
+  let validationReportPath = path.join(os.homedir(), "SODA", "validation.txt");
+  fs.writeFileSync(validationReportPath, fullReport);
 
-  displayValidationReportErrors(validationReport, validationErrorsTable, validationErrorsContainer);
+  let SODADirectory = path.join(os.homedir(), "SODA");
+
+  if (validationReport.status === "Incomplete") {
+    // An incomplete validation report happens when the validator is unable to generate
+    // a path_error_report upon validating the selected dataset.
+    await Swal.fire({
+      title: "Incomplete Validation Report",
+      text: `SODA was unable to generate a sanitized validation report. You may view your raw validation report at ${SODADirectory}/validation.txt. If you repeatedly have this issue please contact the SPARC Curation Team for support at curation@sparc.science.`,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      icon: "error",
+      showCancelButton: false,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+    return;
+  }
+
+  // get the parsed error report since the validation has been completed
+  let errors = validationReport.parsed_report;
+
+  // this works because the returned validation results are in an Object Literal. If the returned object is changed this will break (e.g., an array will have a length property as well)
+  let hasValidationErrors = Object.getOwnPropertyNames(errors).length >= 1;
+
+  Swal.fire({
+    title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
+    text: hasValidationErrors
+      ? `Please fix the errors listed in the table below to pass validation. If you would like to see your raw error report, navigate to ${SODADirectory}/validation.txt.`
+      : `Your dataset conforms to the SPARC Dataset Structure.`,
+    allowEscapeKey: true,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    timerProgressBar: false,
+    showConfirmButton: true,
+    icon: hasValidationErrors ? "error" : "success",
+  });
+
+  if (!validationErrorsOccurred(errors)) {
+    return;
+  }
+
+  // display errors onto the page
+  let tbody = document.querySelector("#validation-errors-container tbody");
+  displayValidationErrors(errors, tbody);
+
+  // show the validation errors to the user
+  document.querySelector("#validation-errors-container").style.visibility = "visible";
 };
 
 /*
