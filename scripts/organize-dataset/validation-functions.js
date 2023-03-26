@@ -25,9 +25,9 @@ const validateOrganizedDataset = async () => {
     await api.performUserActions(sodaJSONObjCopy);
   }
 
-  let validationReportResponse;
+  let validationReport;
   try {
-    validationReportResponse = await createValidationReport(sodaJSONObjCopy);
+    validationReport = await createValidationReport(sodaJSONObjCopy);
   } catch (error) {
     clientError(error);
     await Swal.fire({
@@ -44,14 +44,12 @@ const validateOrganizedDataset = async () => {
     return;
   }
 
-  let validationReportData = validationReportResponse.data;
-
   let SODADirectory = path.join(os.homedir(), "SODA");
   let validationReportPath = path.join(SODADirectory, "validation.txt");
-  let fullReport = validationReportData.full_report;
+  let fullReport = validationReport.full_report;
   fs.writeFileSync(validationReportPath, fullReport);
 
-  if (validationReportData.status === "Incomplete") {
+  if (validationReport.status === "Incomplete") {
     // An incomplete validation report happens when the validator is unable to generate
     // a path_error_report upon validating the selected dataset.
     await Swal.fire({
@@ -72,7 +70,7 @@ const validateOrganizedDataset = async () => {
   }
 
   // write the full report to the ~/SODA/validation.txt file
-  let report = validationReportData.parsed_report;
+  let report = validationReport.parsed_report;
 
   // this works because the returned validation results are in an Object Literal. If the returned object is changed this will break (e.g., an array will have a length property as well)
   let hasValidationErrors = Object.getOwnPropertyNames(report).length >= 1;
