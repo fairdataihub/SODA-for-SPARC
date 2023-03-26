@@ -90,6 +90,7 @@ const validateLocalDataset = async () => {
     },
   });
 
+  // setup the sodaJSONObj for the import endpoint
   let localSodaJsonObject = {
     "bf-account-selected": {
       "account-name": {},
@@ -144,7 +145,6 @@ const validateLocalDataset = async () => {
   try {
     validationReportData = await createValidationReport(localSodaJsonObject);
   } catch (error) {
-    clientError(error);
     clientError(error);
     await Swal.fire({
       title: "Failed to Validate Your Dataset",
@@ -236,6 +236,7 @@ const validatePennsieveDatasetStandAlone = async () => {
     },
   });
 
+  // create a local SODA JSON object to pass to the import endpoint
   let localSodaJSONObj = {
     "bf-account-selected": {
       "account-name": {},
