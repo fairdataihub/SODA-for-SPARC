@@ -2756,7 +2756,7 @@ document
           backdrop: "rgba(0,0,0, 0.4)",
           icon: "error",
           showCancelButton: true,
-          denyButtonText: "No",
+          cancelButtonText: "No",
           confirmButtonText: "Yes",
           showClass: {
             popup: "animate__animated animate__zoomIn animate__faster",

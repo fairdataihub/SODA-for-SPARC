@@ -167,7 +167,7 @@ const validateLocalDataset = async () => {
 
   let SODADirectory = path.join(os.homedir(), "SODA");
 
-  if (validationReportData.status === "Incomplete") {
+  if (validationReportData.status == "Incomplete") {
     // An incomplete validation report happens when the validator is unable to generate
     // a path_error_report upon validating the selected dataset.
     let viewReportResult = await Swal.fire({
@@ -179,7 +179,7 @@ const validateLocalDataset = async () => {
       backdrop: "rgba(0,0,0, 0.4)",
       icon: "error",
       showCancelButton: true,
-      denyButtonText: "No",
+      cancelButtonText: "No",
       confirmButtonText: "Yes",
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
@@ -329,7 +329,7 @@ const validatePennsieveDatasetStandAlone = async () => {
       backdrop: "rgba(0,0,0, 0.4)",
       icon: "error",
       showCancelButton: true,
-      denyButtonText: "No",
+      cancelButtonText: "No",
       confirmButtonText: "Yes",
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
