@@ -7711,44 +7711,45 @@ const handleAddContributorHeaderUI = () => {
     })
     .map((contributor) => {
       return `
-    <option
-      value="${contributor.lastName}, ${contributor.firstName}"
-      data-first-name="${contributor.firstName ?? ""}"
-      data-last-name="${contributor.lastName ?? ""}"
-      data-orcid="${contributor.ORCiD ?? ""}"
-      data-affiliation="${contributor.affiliations ?? contributor.affiliations.join(",") ?? ""}"
-      data-roles="${contributor.roles ? contributor.roles.join(",") : ""}"
-    >
-      ${contributor.lastName}, ${contributor.firstName}
-    </option>
-  `;
+        <option
+          value="${contributor.lastName}, ${contributor.firstName}"
+          data-first-name="${contributor.firstName ?? ""}"
+          data-last-name="${contributor.lastName ?? ""}"
+          data-orcid="${contributor.ORCiD ?? ""}"
+          data-affiliation="${contributor.affiliations ?? contributor.affiliations.join(",") ?? ""}"
+          data-roles="${contributor.roles ? contributor.roles.join(",") : ""}"
+        >
+          ${contributor.lastName}, ${contributor.firstName}
+        </option>
+      `;
     });
 
   return `
     <label class="guided--form-label centered mb-md">
-      Select a contributor from the dropdown below or add their information manually.
+      If the contributor has been previously added, select them from the dropdown below.
     </label>
     <select
-          class="w-100"
-          id="guided-dd-contributor-dropdown"
-          data-live-search="true"
-          name="Dataset contributor"
-        >
-          <option
-            value=""
-            data-first-name=""
-            data-last-name=""
-            data-orcid=""
-            data-affiliation=""
-            data-roles=""
-          >
-            Select a contributor imported from AirTable
-          </option>
-          ${contributorOptions}
-        </select>
+      class="w-100"
+      id="guided-stored-contributors-select"
+      data-live-search="true"
+      name="Dataset contributor"
+    >
+      <option
+        value=""
+        data-first-name=""
+        data-last-name=""
+        data-orcid=""
+        data-affiliation=""
+        data-roles=""
+      >
+        Select a saved contributor
+      </option>
+      ${contributorOptions}
+    </select>
+    <label class="guided--form-label centered mb-sm mt-md">
+      Otherwise, enter the contributor's information below.
+    </label>
   `;
-
-  console.log(locallyStoredContributorArray);
 };
 
 const openGuidedAddContributorSwal = async () => {
@@ -7759,7 +7760,7 @@ const openGuidedAddContributorSwal = async () => {
     allowOutsideClick: false,
     allowEscapeKey: false,
     backdrop: "rgba(0,0,0, 0.4)",
-    width: "800px",
+    width: "900px",
     heightAuto: false,
     // title: contributorSwalTitle,
     html: `
@@ -7874,22 +7875,22 @@ const openGuidedAddContributorSwal = async () => {
       });
       createDragSort(contributorRolesTagify);
 
-      $("#guided-dd-contributor-dropdown").selectpicker({
+      $("#guided-stored-contributors-select").selectpicker({
         style: "guided--select-picker",
       });
-      $("#guided-dd-contributor-dropdown").selectpicker("refresh");
-      $("#guided-dd-contributor-dropdown").on("change", function (e) {
-        const selectedFirstName = $("#guided-dd-contributor-dropdown option:selected").data(
+      $("#guided-stored-contributors-select").selectpicker("refresh");
+      $("#guided-stored-contributors-select").on("change", function (e) {
+        const selectedFirstName = $("#guided-stored-contributors-select option:selected").data(
           "first-name"
         );
-        const selectedLastName = $("#guided-dd-contributor-dropdown option:selected").data(
+        const selectedLastName = $("#guided-stored-contributors-select option:selected").data(
           "last-name"
         );
-        const selectedOrcid = $("#guided-dd-contributor-dropdown option:selected").data("orcid");
-        const selectedAffiliation = $("#guided-dd-contributor-dropdown option:selected").data(
+        const selectedOrcid = $("#guided-stored-contributors-select option:selected").data("orcid");
+        const selectedAffiliation = $("#guided-stored-contributors-select option:selected").data(
           "affiliation"
         );
-        const selectedRoles = $("#guided-dd-contributor-dropdown option:selected").data("roles");
+        const selectedRoles = $("#guided-stored-contributors-select option:selected").data("roles");
         document.getElementById("guided-contributor-first-name").value = selectedFirstName;
         document.getElementById("guided-contributor-last-name").value = selectedLastName;
         document.getElementById("guided-contributor-orcid").value = selectedOrcid;
