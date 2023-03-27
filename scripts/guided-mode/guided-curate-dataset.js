@@ -7328,6 +7328,7 @@ const getContributorFullNames = () => {
     }
   );
 };
+
 const addContributor = (
   contributorFullName,
   contributorORCID,
@@ -7358,6 +7359,19 @@ const addContributor = (
     conAffliation: contributorAffiliationsArray,
     conRole: contributorRolesArray,
   });
+
+  // Store the contributor locally so they can import the contributor's data in the future
+  try {
+    addOrUpdateStoredContributor(
+      contributorFirstName,
+      contributorLastName,
+      contributorORCID,
+      contributorAffiliationsArray,
+      contributorRolesArray
+    );
+  } catch (error) {
+    console.error("Failed to store contributor locally" + error);
+  }
 };
 
 const editContributorByOrcid = (
@@ -7379,12 +7393,31 @@ const editContributorByOrcid = (
     }
   }
 
+  console.log(contributorAffiliationsArray);
+
+  const affiliationValues = contributorAffiliationsArray.map((affiliation) => affiliation.value);
+  console.log(affiliationValues);
+  const roleValues = contributorRolesArray.map((role) => role.value);
+
   contributor.contributorFirstName = contributorFirstName;
   contributor.contributorLastName = contributorLastName;
   contributor.conName = `${contributorLastName}, ${contributorFirstName} `;
   contributor.conID = newContributorOrcid;
-  contributor.conAffliation = contributorAffiliationsArray.map((affiliation) => affiliation.value);
-  contributor.conRole = contributorRolesArray.map((role) => role.value);
+  contributor.conAffliation = affiliationValues;
+  contributor.conRole = roleValues;
+
+  // Update the contributor's locally stored data
+  try {
+    addOrUpdateStoredContributor(
+      contributorFirstName,
+      contributorLastName,
+      newContributorOrcid,
+      contributorAffiliationsArray,
+      contributorRolesArray
+    );
+  } catch (error) {
+    console.error("Failed to edit contributor data" + error);
+  }
 };
 
 const deleteContributor = (clickedDelContribuButton, contributorOrcid) => {
@@ -7419,31 +7452,6 @@ const verifyOrcidID = (event) => {
     }
     //char 18 will be after the forward slash
   }
-};
-
-const updateContributorByOrcid = (
-  contributorFirstName,
-  contributorLastName,
-  contributorORCID,
-  contributorAffiliationsArray,
-  contributorRolesArray
-) => {
-  const contributorsBeforeUpdate =
-    sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
-  //Delete the contributor so we can add a new one with the updated information.
-  sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] =
-    contributorsBeforeUpdate.filter((contributor) => {
-      //remove contributors with matching ORCID
-      return contributor.conID !== contributorORCID;
-    });
-
-  addContributor(
-    contributorFirstName,
-    contributorLastName,
-    contributorORCID,
-    contributorAffiliationsArray,
-    contributorRolesArray
-  );
 };
 
 const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
@@ -7677,6 +7685,71 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
   });
 };
 
+const handleAddContributorHeaderUI = () => {
+  const locallyStoredContributorArray = loadStoredContributors();
+
+  // If no stored contribturs are found, use the default header
+  if (locallyStoredContributorArray.length === 0) {
+    return `
+      <label class="guided--form-label centered mb-md">
+        Enter the contributor's information below.
+      </label>
+    `;
+  }
+
+  const contributorOptions = locallyStoredContributorArray.map((contributor) => {
+    return `
+    <option
+      value="${contributor.lastName}, ${contributor.firstName}"
+      data-first-name="${contributor.firstName ?? ""}"
+      data-last-name="${contributor.lastName ?? ""}"
+      data-orcid="${contributor.ORCiD ?? ""}"
+      data-affiliation="${contributor.affiliations ?? contributor.affiliations.join(",") ?? ""}"
+      data-roles="${contributor.roles ? contributor.roles.join(",") : ""}"
+    >
+      ${contributor.lastName}, ${contributor.firstName}
+    </option>
+  `;
+  });
+
+  return `
+    <label class="guided--form-label centered mb-md">
+      Select a contributor from the dropdown below or add their information manually.
+    </label>
+    <select
+          class="w-100"
+          id="guided-dd-contributor-dropdown"
+          data-live-search="true"
+          name="Dataset contributor"
+        >
+          <option
+            value=""
+            data-first-name=""
+            data-last-name=""
+            data-orcid=""
+            data-affiliation=""
+            data-roles=""
+          >
+            Select a contributor imported from AirTable
+          </option>
+          ${contributorOptions}
+        </select>
+    <option
+            value=""
+            data-first-name=""
+            data-last-name=""
+            data-orcid=""
+            data-affiliation=""
+            data-roles=""
+          >
+            Select a contributor
+    </option>
+
+  `;
+
+  console.log(locallyStoredContributorArray);
+};
+
 const openGuidedAddContributorSwal = async () => {
   let affiliationTagify;
   let contributorRolesTagify;
@@ -7690,9 +7763,7 @@ const openGuidedAddContributorSwal = async () => {
     // title: contributorSwalTitle,
     html: `
       <div class="guided--flex-center mt-sm">
-        <label class="guided--form-label centered mb-md">
-          Enter the contributor's information below.
-        </label>
+        ${handleAddContributorHeaderUI()}
         <div class="space-between w-100">
             <div class="guided--flex-center mt-sm" style="width: 45%">
               <label class="guided--form-label required">Last name: </label>
@@ -7801,6 +7872,31 @@ const openGuidedAddContributorSwal = async () => {
         },
       });
       createDragSort(contributorRolesTagify);
+
+      $("#guided-dd-contributor-dropdown").selectpicker({
+        style: "guided--select-picker",
+      });
+      $("#guided-dd-contributor-dropdown").selectpicker("refresh");
+      $("#guided-dd-contributor-dropdown").on("change", function (e) {
+        const selectedFirstName = $("#guided-dd-contributor-dropdown option:selected").data(
+          "first-name"
+        );
+        const selectedLastName = $("#guided-dd-contributor-dropdown option:selected").data(
+          "last-name"
+        );
+        const selectedOrcid = $("#guided-dd-contributor-dropdown option:selected").data("orcid");
+        const selectedAffiliation = $("#guided-dd-contributor-dropdown option:selected").data(
+          "affiliation"
+        );
+        const selectedRoles = $("#guided-dd-contributor-dropdown option:selected").data("roles");
+        document.getElementById("guided-contributor-first-name").value = selectedFirstName;
+        document.getElementById("guided-contributor-last-name").value = selectedLastName;
+        document.getElementById("guided-contributor-orcid").value = selectedOrcid;
+        affiliationTagify.removeAllTags();
+        affiliationTagify.addTags(selectedAffiliation);
+        contributorRolesTagify.removeAllTags();
+        contributorRolesTagify.addTags(selectedRoles.split());
+      });
     },
 
     preConfirm: () => {
