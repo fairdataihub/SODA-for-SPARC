@@ -83,13 +83,17 @@ const validateOrganizedDataset = async () => {
   if (validationReport.status === "Incomplete") {
     // An incomplete validation report happens when the validator is unable to generate
     // a path_error_report upon validating the selected dataset.
-    await Swal.fire({
-      title: "Incomplete Validation Report",
-      text: `SODA was unable to generate a sanitized validation report. You may view your raw validation report at ${SODADirectory}/validation.txt. If you repeatedly have this issue please contact the SPARC Curation Team for support at curation@sparc.science.`,
+    let viewReportResult = await Swal.fire({
+      title: "Could Not Generate a Sanitized Validation Report",
+      html: `If you repeatedly have this issue please contact the SPARC Curation Team for support at curation@sparc.science. Would you like to view your raw validation report?`,
+      allowEscapeKey: true,
+      allowOutsideClick: false,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       icon: "error",
-      showCancelButton: false,
+      showCancelButton: true,
+      denyButtonText: "No",
+      confirmButtonText: "Yes",
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -97,6 +101,11 @@ const validateOrganizedDataset = async () => {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     });
+
+    if (viewReportResult.isConfirmed) {
+      // open a shell to the raw validation report
+      shell.openPath(validationReportPath);
+    }
     return;
   }
 
