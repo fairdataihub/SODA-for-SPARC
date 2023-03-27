@@ -2,7 +2,11 @@ const storedContributorsPath = path.join(homeDirectory, "SODA", "stored-contribu
 
 // Save the contributors array to the JSON file
 const saveStoredContributors = (contributors) => {
-  fs.writeFileSync(storedContributorsPath, JSON.stringify(contributors));
+  try {
+    fs.writeFileSync(storedContributorsPath, JSON.stringify(contributors));
+  } catch (err) {
+    log.info("Error saving stored contributors file: " + err);
+  }
 };
 
 // Load the stored contributors array from the JSON file
@@ -20,6 +24,27 @@ const loadStoredContributors = () => {
 // Add a new contributor to the JSON file
 // If a contributor with the same ORCiD already exists, update the existing contributor
 function addOrUpdateStoredContributor(firstName, lastName, ORCiD, affiliationsArray, rolesArray) {
+  if (typeof firstName !== "string" || !firstName.length > 0) {
+    log.info("Attempted to add contributor with invalid first name");
+    return;
+  }
+  if (typeof lastName !== "string" || !lastName.length > 0) {
+    log.info("Attempted to add contributor with invalid last name");
+    return;
+  }
+  if (typeof ORCiD !== "string" || !ORCiD.length > 0) {
+    log.info("Attempted to add contributor with invalid ORCiD");
+    return;
+  }
+  if (!Array.isArray(affiliationsArray) || affiliationsArray.length === 0) {
+    log.info("Invalid affiliations array");
+    return;
+  }
+  if (!Array.isArray(rolesArray) || rolesArray.length === 0) {
+    log.info("Invalid roles array");
+    return;
+  }
+
   // If the stored contributors file doesn't exist, create it and write an empty array to it
   if (!fs.existsSync(storedContributorsPath)) {
     try {
@@ -29,6 +54,7 @@ function addOrUpdateStoredContributor(firstName, lastName, ORCiD, affiliationsAr
       return;
     }
   }
+
   const contributorObj = {
     firstName: firstName,
     lastName: lastName,
@@ -36,6 +62,7 @@ function addOrUpdateStoredContributor(firstName, lastName, ORCiD, affiliationsAr
     affiliations: affiliationsArray,
     roles: rolesArray,
   };
+
   const storedContributorsArray = loadStoredContributors();
 
   const existingStoredContributorWithSameORCiDIndex = storedContributorsArray.findIndex(
