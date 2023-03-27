@@ -7329,6 +7329,14 @@ const getContributorFullNames = () => {
   );
 };
 
+const getExistingContributorORCiDs = () => {
+  return sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"].map(
+    (contributor) => {
+      return contributor.conID;
+    }
+  );
+};
+
 const addContributor = (
   contributorFullName,
   contributorORCID,
@@ -7682,7 +7690,10 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
 };
 
 const handleAddContributorHeaderUI = () => {
-  const locallyStoredContributorArray = loadStoredContributors();
+  const existingContributorORCiDs = getExistingContributorORCiDs();
+  const locallyStoredContributorArray = loadStoredContributors().filter((contributor) => {
+    return !existingContributorORCiDs.includes(contributor.ORCiD);
+  });
 
   // If no stored contribturs are found, use the default header
   if (locallyStoredContributorArray.length === 0) {
@@ -7693,8 +7704,13 @@ const handleAddContributorHeaderUI = () => {
     `;
   }
 
-  const contributorOptions = locallyStoredContributorArray.map((contributor) => {
-    return `
+  const contributorOptions = locallyStoredContributorArray
+    .filter((contribturo) => {
+      // Filter out any contributors that have already been added by ORCID
+      return !existingContributorORCiDs.includes(contribturo.ORCiD);
+    })
+    .map((contributor) => {
+      return `
     <option
       value="${contributor.lastName}, ${contributor.firstName}"
       data-first-name="${contributor.firstName ?? ""}"
@@ -7706,7 +7722,7 @@ const handleAddContributorHeaderUI = () => {
       ${contributor.lastName}, ${contributor.firstName}
     </option>
   `;
-  });
+    });
 
   return `
     <label class="guided--form-label centered mb-md">
