@@ -4,6 +4,37 @@ const { v4: uuid } = require("uuid");
 // Validate the dataset that has just been organized in Organize Dataset Step 6: Validate Dataset
 // TODO: Pennsieve vs local considerations for result parsing and error handling
 const validateOrganizedDataset = async () => {
+  let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
+
+  if (validationErrorsTable.childElementCount > 0) {
+    // ask the user to confirm they want to reset their validation progress
+    let resetValidationResult = await Swal.fire({
+      icon: "warning",
+      text: "This will reset your current validation results. Do you wish to continue?",
+      heightAuto: false,
+      showCancelButton: true,
+      cancelButtonText: "No",
+      focusCancel: true,
+      confirmButtonText: "Yes",
+      backdrop: "rgba(0,0,0, 0.4)",
+      reverseButtons: reverseSwalButtons,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
+    // user does not want to reset
+    if (!resetValidationResult.isConfirmed) {
+      return;
+    }
+
+    // get validation table body
+    clearValidationResults(validationErrorsTable);
+  }
+
   swal.fire({
     title: "Validating Dataset",
     text: "Please wait while your dataset is validated.",
@@ -94,9 +125,6 @@ const validateOrganizedDataset = async () => {
   if (!validationErrorsOccurred(report)) {
     return;
   }
-
-  // get validation table body
-  let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
 
   clearValidationResults(validationErrorsTable);
 
