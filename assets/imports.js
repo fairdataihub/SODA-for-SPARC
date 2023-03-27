@@ -83,7 +83,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   await includeJavaScriptFile("./scripts/collections/collections.js");
   await includeJavaScriptFile("./scripts/others/announcements.js");
   await includeJavaScriptFile("./assets/nav.js");
-  console.log("done loading");
 });
 
 const includeJavaScriptFile = async (filePath) => {

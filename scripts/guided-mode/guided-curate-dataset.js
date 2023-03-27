@@ -7393,18 +7393,12 @@ const editContributorByOrcid = (
     }
   }
 
-  console.log(contributorAffiliationsArray);
-
-  const affiliationValues = contributorAffiliationsArray.map((affiliation) => affiliation.value);
-  console.log(affiliationValues);
-  const roleValues = contributorRolesArray.map((role) => role.value);
-
   contributor.contributorFirstName = contributorFirstName;
   contributor.contributorLastName = contributorLastName;
-  contributor.conName = `${contributorLastName}, ${contributorFirstName} `;
+  contributor.conName = `${contributorLastName}, ${contributorFirstName}`;
   contributor.conID = newContributorOrcid;
-  contributor.conAffliation = affiliationValues;
-  contributor.conRole = roleValues;
+  contributor.conAffliation = contributorAffiliationsArray;
+  contributor.conRole = contributorRolesArray;
 
   // Update the contributor's locally stored data
   try {
@@ -7616,8 +7610,10 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
       const contributorFirstName = document.getElementById("guided-contributor-first-name").value;
       const contributorLastName = document.getElementById("guided-contributor-last-name").value;
       const contributorOrcid = document.getElementById("guided-contributor-orcid").value;
-      const contributorAffiliations = affiliationTagify.value;
-      const contributorRoles = contributorRolesTagify.value;
+      const contributorAffiliations = affiliationTagify.value.map((item) => item.value);
+      const contributorRoles = contributorRolesTagify.value.map((item) => item.value);
+      console.log("asdf" + contributorAffiliations);
+      console.log("asdf" + contributorRoles);
 
       if (
         !contributorFirstName ||
@@ -7734,17 +7730,6 @@ const handleAddContributorHeaderUI = () => {
           </option>
           ${contributorOptions}
         </select>
-    <option
-            value=""
-            data-first-name=""
-            data-last-name=""
-            data-orcid=""
-            data-affiliation=""
-            data-roles=""
-          >
-            Select a contributor
-    </option>
-
   `;
 
   console.log(locallyStoredContributorArray);
@@ -7909,6 +7894,8 @@ const openGuidedAddContributorSwal = async () => {
       const contributorOrcid = document.getElementById("guided-contributor-orcid").value.trim();
       const contributorAffiliations = affiliationTagify.value.map((item) => item.value);
       const contributorRoles = contributorRolesTagify.value.map((item) => item.value);
+      console.log(contributorAffiliations);
+      console.log(contributorRoles);
 
       if (
         !contributorFirstName ||
