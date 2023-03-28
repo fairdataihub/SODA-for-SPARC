@@ -2713,7 +2713,7 @@ document
   .addEventListener("click", async () => {
     //TODO: Prevent user from clicking first card after selecting as it will auto scroll page
     //once pennsieve datasets are fetched
-    renderGuidedResumePennsieveDatasetSelectionDropdown();
+    await renderGuidedResumePennsieveDatasetSelectionDropdown();
   });
 
 document
@@ -2814,15 +2814,25 @@ $("#guided-select-pennsieve-dataset-to-resume").selectpicker();
 const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
   // First hide the error div if it is showing
   const errorDiv = document.getElementById("guided-panel-pennsieve-dataset-import-error");
-  errorDiv.classList.add("hidden");
-
+  const logInDiv = document.getElementById("guided-panel-log-in-before-resuming-pennsieve-dataset");
   const loadingDiv = document.getElementById("guided-panel-pennsieve-dataset-import-loading");
   const pennsieveDatasetSelectDiv = document.getElementById(
     "guided-panel-pennsieve-dataset-select"
   );
+  // Hide all of the divs incase they were previously shown
+  errorDiv.classList.add("hidden");
+  logInDiv.classList.add("hidden");
+  loadingDiv.classList.add("hidden");
+  pennsieveDatasetSelectDiv.classList.add("hidden");
+
+  // If the user is not logged in, show the log in div and return
+  if (!defaultBfAccount) {
+    logInDiv.classList.remove("hidden");
+    return;
+  }
+
   //Show the loading Div and hide the dropdown div while the datasets the user has access to are being retrieved
   loadingDiv.classList.remove("hidden");
-  pennsieveDatasetSelectDiv.classList.add("hidden");
 
   const datasetSelectionSelectPicker = $("#guided-select-pennsieve-dataset-to-resume");
   datasetSelectionSelectPicker.empty();

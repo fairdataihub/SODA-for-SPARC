@@ -205,6 +205,26 @@
               </button>
             </div>
 
+            <div
+              class="guided--panel mt-0"
+              id="guided-panel-log-in-before-resuming-pennsieve-dataset"
+            >
+              <h2 class="text-sub-step-title">
+                You must be logged in to Pennsieve to resume a dataset on Pennsieve
+              </h2>
+              <button
+                class="ui positive button mt-md"
+                data-reset-guided-mode-page="true"
+                onclick="openDropdownPrompt(this, 'bf')"
+                style="
+                  background-color: var(--color-light-green) !important;
+                  width: 200px !important;
+                "
+              >
+                Log in to Pennsieve
+              </button>
+            </div>
+
             <div class="guided--panel mt-0" id="guided-panel-pennsieve-dataset-import-loading">
               <div class="lds-roller">
                 <div></div>
@@ -4087,6 +4107,7 @@
                 <button
                   class="ui negative basic button guided--radio-button"
                   data-prevent-radio-handler="true"
+                  data-reset-guided-mode-page="true"
                   onclick="openDropdownPrompt(this, 'bf')"
                   style="width: 247px"
                 >
@@ -4098,7 +4119,7 @@
               <h2 class="text-sub-step-title">First, connect your Pennsieve account with SODA</h2>
               <button
                 class="ui positive button mt-md"
-                id="guided-button-pennsieve-log-in"
+                data-reset-guided-mode-page="true"
                 onclick="openDropdownPrompt(this, 'bf')"
                 style="
                   background-color: var(--color-light-green) !important;
