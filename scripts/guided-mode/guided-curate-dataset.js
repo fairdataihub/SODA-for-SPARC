@@ -3843,6 +3843,10 @@ const openPage = async (targetPageID) => {
 
       guidedLockSideBar(false);
     } else {
+      // Set the dataset name display in the side bar
+      const datasetNameDisplay = document.getElementById("guided-navbar-dataset-name-display");
+      datasetNameDisplay.innerHTML = datasetName;
+
       nextButton.innerHTML = "Save and Continue";
       saveAndExitButton.innerHTML = `<i class="far fa-save" style="margin-right: 10px"></i>Save and Exit`;
       guidedLockSideBar(true);

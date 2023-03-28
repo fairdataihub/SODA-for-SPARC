@@ -273,18 +273,20 @@
     </nav>
 
     <nav id="guided-nav" style="display: none" class="guided--nav">
+      <img style="width: 60%" src="assets/img/logo-soda1024.png" />
       <label
-        class="guided--form-label centered"
+        class="guided--form-label centered mt-lg"
         style="border-bottom: 1px solid var(--color-light-green); width: auto"
       >
         Curent dataset
       </label>
-      <p class="help-text text-center">
-        An example of a moderately long dataset name is found here
-      </p>
+      <p
+        class="help-text text-center ellipsis-after-two-lines"
+        id="guided-navbar-dataset-name-display"
+      ></p>
 
       <label
-        class="guided--form-label centered"
+        class="guided--form-label centered mt-md"
         style="
           border-bottom: 1px solid var(--color-light-green);
           margin-bottom: 0.5rem;
