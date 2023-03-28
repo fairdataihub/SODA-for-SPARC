@@ -2707,6 +2707,40 @@ document
       // create the manifest files if the user auto generated manifest files at any point
       await guidedCreateManifestFilesAndAddToDatasetStructure();
 
+      // TODO: Fine tune instead of waiting check until the manifest files exist then call the manifest generation function
+      await wait(1000);
+
+      // get the manifest files
+      let manifestJSONResponse;
+      try {
+        manifestJSONResponse = await client.post(
+          "/skeleton_dataset/manifest_json",
+          {
+            sodajsonobject: sodaJSONObj,
+          },
+          {
+            timeout: 0,
+          }
+        );
+      } catch (error) {
+        clientError(error);
+        await Swal.fire({
+          title: "Failed to Validate Your Dataset",
+          text: "Please try again. If this issue persists contect the SODA for SPARC team at help@fairdataihub.org",
+          allowEscapeKey: true,
+          allowOutsideClick: false,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          timerProgressBar: false,
+          showConfirmButton: true,
+          icon: "error",
+        });
+        return;
+      }
+
+      let manifests = manifestJSONResponse.data;
+      console.log(manifests);
+
       let validationResponse;
       let validationReport;
       try {
@@ -2716,7 +2750,7 @@ document
             clientUUID: uuid(),
             dataset_structure: sodaJSONObj,
             metadata_files: {},
-            manifests: {},
+            manifests: manifests,
           }
         );
 

@@ -276,8 +276,25 @@ def get_manifests_base(soda_json_structure):
 
 def get_manifests(soda_json_structure):
     manifests = {}
+
+    namespace_logger.info("Getting manifests")
+
+    # chceck if guided mode
+    if "guided-options" in soda_json_structure:
+        namespace_logger.info("Guided Mode detected")
+        # go through the high level folders in the dataset structure and get the manifest files
+        for folder_name, folder_information in soda_json_structure["saved-datset-structure-json-obj"]["folders"].items():
+           
+           if "manifest.xlsx" in folder_information["files"]:
+              # get the xlsx path 
+              path_man = folder_information["files"]["manifest.xlsx"]["path"]
+              namespace_logger.info("Found manifest file at: " + path_man)
+              # read the xlsx file
+              df = pd.read_excel(path_man)
+              # convert to json
+              manifests[folder_name] = df.to_json()
       # Add the manifest files to the high level folders of the skeleton dataset
-    if ("manifest-files" in soda_json_structure and "auto-generated" in soda_json_structure["manifest-files"]):
+    elif ("manifest-files" in soda_json_structure and "auto-generated" in soda_json_structure["manifest-files"]):
         # auto gen'd was selected so gather the paths for the high lvl folders
         for high_lvl_folder in soda_json_structure["dataset-structure"]["folders"].keys():
           #for free form mode we will get manifest files from ~/SODA/manifest_files/<high_lvl_folder_name>
