@@ -5534,6 +5534,9 @@ const setActiveSubPage = (pageIdToActivate) => {
     renderSubjectsTable();
     //remove the add subject help text
     document.getElementById("guided-add-subject-instructions").classList.add("hidden");
+    document.getElementById(
+      "guided-subject-pool-sample-header"
+    ).innerHTML = `Subject specification`;
     document.getElementById("guided-subject-pool-sample-text").innerHTML = `
       SPARC data is typically collected from subjects (either human or non-human) and/or
       from samples collected from such subjects (e.g., tissue samples). As per SPARC
@@ -5543,6 +5546,7 @@ const setActiveSubPage = (pageIdToActivate) => {
     `;
   }
   if (pageIdToActivate === "guided-organize-subjects-into-pools-page") {
+    document.getElementById("guided-subject-pool-sample-header").innerHTML = `Subject pooling`;
     document.getElementById("guided-subject-pool-sample-text").innerHTML = `
       In SPARC datasets, subjects can be regrouped under pools. 
     `;
@@ -5585,6 +5589,7 @@ const setActiveSubPage = (pageIdToActivate) => {
     }
   }
   if (pageIdToActivate === "guided-specify-samples-page") {
+    document.getElementById("guided-subject-pool-sample-header").innerHTML = `Sample specification`;
     document.getElementById("guided-subject-pool-sample-text").innerHTML = `
       This is the text for samples
     `;
@@ -7323,6 +7328,15 @@ const getContributorFullNames = () => {
     }
   );
 };
+
+const getExistingContributorORCiDs = () => {
+  return sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"].map(
+    (contributor) => {
+      return contributor.conID;
+    }
+  );
+};
+
 const addContributor = (
   contributorFullName,
   contributorORCID,
@@ -7353,6 +7367,19 @@ const addContributor = (
     conAffliation: contributorAffiliationsArray,
     conRole: contributorRolesArray,
   });
+
+  // Store the contributor locally so they can import the contributor's data in the future
+  try {
+    addOrUpdateStoredContributor(
+      contributorFirstName,
+      contributorLastName,
+      contributorORCID,
+      contributorAffiliationsArray,
+      contributorRolesArray
+    );
+  } catch (error) {
+    console.error("Failed to store contributor locally" + error);
+  }
 };
 
 const editContributorByOrcid = (
@@ -7376,10 +7403,23 @@ const editContributorByOrcid = (
 
   contributor.contributorFirstName = contributorFirstName;
   contributor.contributorLastName = contributorLastName;
-  contributor.conName = `${contributorLastName}, ${contributorFirstName} `;
+  contributor.conName = `${contributorLastName}, ${contributorFirstName}`;
   contributor.conID = newContributorOrcid;
-  contributor.conAffliation = contributorAffiliationsArray.map((affiliation) => affiliation.value);
-  contributor.conRole = contributorRolesArray.map((role) => role.value);
+  contributor.conAffliation = contributorAffiliationsArray;
+  contributor.conRole = contributorRolesArray;
+
+  // Update the contributor's locally stored data
+  try {
+    addOrUpdateStoredContributor(
+      contributorFirstName,
+      contributorLastName,
+      newContributorOrcid,
+      contributorAffiliationsArray,
+      contributorRolesArray
+    );
+  } catch (error) {
+    console.error("Failed to edit contributor data" + error);
+  }
 };
 
 const deleteContributor = (clickedDelContribuButton, contributorOrcid) => {
@@ -7414,31 +7454,6 @@ const verifyOrcidID = (event) => {
     }
     //char 18 will be after the forward slash
   }
-};
-
-const updateContributorByOrcid = (
-  contributorFirstName,
-  contributorLastName,
-  contributorORCID,
-  contributorAffiliationsArray,
-  contributorRolesArray
-) => {
-  const contributorsBeforeUpdate =
-    sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
-  //Delete the contributor so we can add a new one with the updated information.
-  sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] =
-    contributorsBeforeUpdate.filter((contributor) => {
-      //remove contributors with matching ORCID
-      return contributor.conID !== contributorORCID;
-    });
-
-  addContributor(
-    contributorFirstName,
-    contributorLastName,
-    contributorORCID,
-    contributorAffiliationsArray,
-    contributorRolesArray
-  );
 };
 
 const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
@@ -7603,8 +7618,10 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
       const contributorFirstName = document.getElementById("guided-contributor-first-name").value;
       const contributorLastName = document.getElementById("guided-contributor-last-name").value;
       const contributorOrcid = document.getElementById("guided-contributor-orcid").value;
-      const contributorAffiliations = affiliationTagify.value;
-      const contributorRoles = contributorRolesTagify.value;
+      const contributorAffiliations = affiliationTagify.value.map((item) => item.value);
+      const contributorRoles = contributorRolesTagify.value.map((item) => item.value);
+      console.log("asdf" + contributorAffiliations);
+      console.log("asdf" + contributorRoles);
 
       if (
         !contributorFirstName ||
@@ -7672,6 +7689,69 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
   });
 };
 
+const handleAddContributorHeaderUI = () => {
+  const existingContributorORCiDs = getExistingContributorORCiDs();
+  const locallyStoredContributorArray = loadStoredContributors().filter((contributor) => {
+    return !existingContributorORCiDs.includes(contributor.ORCiD);
+  });
+
+  // If no stored contribturs are found, use the default header
+  if (locallyStoredContributorArray.length === 0) {
+    return `
+      <label class="guided--form-label centered mb-md">
+        Enter the contributor's information below.
+      </label>
+    `;
+  }
+
+  const contributorOptions = locallyStoredContributorArray
+    .filter((contribturo) => {
+      // Filter out any contributors that have already been added by ORCID
+      return !existingContributorORCiDs.includes(contribturo.ORCiD);
+    })
+    .map((contributor) => {
+      return `
+        <option
+          value="${contributor.lastName}, ${contributor.firstName}"
+          data-first-name="${contributor.firstName ?? ""}"
+          data-last-name="${contributor.lastName ?? ""}"
+          data-orcid="${contributor.ORCiD ?? ""}"
+          data-affiliation="${contributor.affiliations ?? contributor.affiliations.join(",") ?? ""}"
+          data-roles="${contributor.roles ? contributor.roles.join(",") : ""}"
+        >
+          ${contributor.lastName}, ${contributor.firstName}
+        </option>
+      `;
+    });
+
+  return `
+    <label class="guided--form-label centered mb-md">
+      If the contributor has been previously added, select them from the dropdown below.
+    </label>
+    <select
+      class="w-100"
+      id="guided-stored-contributors-select"
+      data-live-search="true"
+      name="Dataset contributor"
+    >
+      <option
+        value=""
+        data-first-name=""
+        data-last-name=""
+        data-orcid=""
+        data-affiliation=""
+        data-roles=""
+      >
+        Select a saved contributor
+      </option>
+      ${contributorOptions}
+    </select>
+    <label class="guided--form-label centered mb-sm mt-md">
+      Otherwise, enter the contributor's information below.
+    </label>
+  `;
+};
+
 const openGuidedAddContributorSwal = async () => {
   let affiliationTagify;
   let contributorRolesTagify;
@@ -7680,14 +7760,12 @@ const openGuidedAddContributorSwal = async () => {
     allowOutsideClick: false,
     allowEscapeKey: false,
     backdrop: "rgba(0,0,0, 0.4)",
-    width: "800px",
+    width: "900px",
     heightAuto: false,
     // title: contributorSwalTitle,
     html: `
       <div class="guided--flex-center mt-sm">
-        <label class="guided--form-label centered mb-md">
-          Enter the contributor's information below.
-        </label>
+        ${handleAddContributorHeaderUI()}
         <div class="space-between w-100">
             <div class="guided--flex-center mt-sm" style="width: 45%">
               <label class="guided--form-label required">Last name: </label>
@@ -7796,6 +7874,31 @@ const openGuidedAddContributorSwal = async () => {
         },
       });
       createDragSort(contributorRolesTagify);
+
+      $("#guided-stored-contributors-select").selectpicker({
+        style: "guided--select-picker",
+      });
+      $("#guided-stored-contributors-select").selectpicker("refresh");
+      $("#guided-stored-contributors-select").on("change", function (e) {
+        const selectedFirstName = $("#guided-stored-contributors-select option:selected").data(
+          "first-name"
+        );
+        const selectedLastName = $("#guided-stored-contributors-select option:selected").data(
+          "last-name"
+        );
+        const selectedOrcid = $("#guided-stored-contributors-select option:selected").data("orcid");
+        const selectedAffiliation = $("#guided-stored-contributors-select option:selected").data(
+          "affiliation"
+        );
+        const selectedRoles = $("#guided-stored-contributors-select option:selected").data("roles");
+        document.getElementById("guided-contributor-first-name").value = selectedFirstName;
+        document.getElementById("guided-contributor-last-name").value = selectedLastName;
+        document.getElementById("guided-contributor-orcid").value = selectedOrcid;
+        affiliationTagify.removeAllTags();
+        affiliationTagify.addTags(selectedAffiliation);
+        contributorRolesTagify.removeAllTags();
+        contributorRolesTagify.addTags(selectedRoles.split());
+      });
     },
 
     preConfirm: () => {
@@ -7808,6 +7911,8 @@ const openGuidedAddContributorSwal = async () => {
       const contributorOrcid = document.getElementById("guided-contributor-orcid").value.trim();
       const contributorAffiliations = affiliationTagify.value.map((item) => item.value);
       const contributorRoles = contributorRolesTagify.value.map((item) => item.value);
+      console.log(contributorAffiliations);
+      console.log(contributorRoles);
 
       if (
         !contributorFirstName ||

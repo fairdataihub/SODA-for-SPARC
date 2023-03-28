@@ -62,6 +62,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   await includeJavaScriptFile("./assets/demo-btns.js");
   await includeJavaScriptFile("./preload.js");
   await includeJavaScriptFile("./scripts/others/renderer.js");
+  await includeJavaScriptFile("./scripts/others/contributor-storage.js");
   await includeJavaScriptFile("./scripts/others/progressContainer.js");
   await includeJavaScriptFile("./scripts/others/pennsieveDatasetImporter.js");
   await includeJavaScriptFile("./scripts/others/tab-effects.js");
@@ -82,7 +83,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   await includeJavaScriptFile("./scripts/collections/collections.js");
   await includeJavaScriptFile("./scripts/others/announcements.js");
   await includeJavaScriptFile("./assets/nav.js");
-  console.log("done loading");
 });
 
 const includeJavaScriptFile = async (filePath) => {
