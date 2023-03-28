@@ -61,6 +61,17 @@ const validateOrganizedDataset = async () => {
     validationReport = await createValidationReport(sodaJSONObjCopy);
   } catch (error) {
     clientError(error);
+    file_counter = 0;
+    folder_counter = 0;
+    get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
+    // log successful validation run to analytics
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Validation - Number of Files",
+      "Number of Files",
+      file_counter
+    );
     await Swal.fire({
       title: "Failed to Validate Your Dataset",
       text: "Please try again. If this issue persists contect the SODA for SPARC team at help@fairdataihub.org",
@@ -79,6 +90,18 @@ const validateOrganizedDataset = async () => {
   let validationReportPath = path.join(SODADirectory, "validation.txt");
   let fullReport = validationReport.full_report;
   fs.writeFileSync(validationReportPath, fullReport);
+
+  file_counter = 0;
+  folder_counter = 0;
+  get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
+  // log successful validation run to analytics
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Validation - Number of Files",
+    "Number of Files",
+    file_counter
+  );
 
   if (validationReport.status === "Incomplete") {
     // An incomplete validation report happens when the validator is unable to generate

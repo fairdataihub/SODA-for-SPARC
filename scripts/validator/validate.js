@@ -42,15 +42,12 @@ const createValidationReport = async (sodaJSONObj) => {
   console.log("localSodaJsonObject", sodaJSONObj);
   console.log("clientUUID", clientUUID);
 
-  let validationResponse = await client.post(
-    `https://validation.sodaforsparc.io/validator/validate`,
-    {
-      clientUUID: clientUUID,
-      dataset_structure: sodaJSONObj,
-      metadata_files: metadataFiles,
-      manifests: manifestFiles,
-    }
-  );
+  let validationResponse = await client.post(`http://localhost:4000/validator/validate`, {
+    clientUUID: clientUUID,
+    dataset_structure: sodaJSONObj,
+    metadata_files: metadataFiles,
+    manifests: manifestFiles,
+  });
 
   // track that a local validation succeeded
   ipcRenderer.send(
@@ -296,6 +293,17 @@ const validatePennsieveDatasetStandAlone = async () => {
     validationReport = await createValidationReport(localSodaJSONObj);
   } catch (err) {
     clientError(err);
+    file_counter = 0;
+    folder_counter = 0;
+    get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
+    // log successful validation run to analytics
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Validation - Number of Files",
+      "Number of Files",
+      file_counter
+    );
     await Swal.fire({
       title: "Failed to Validate Your Dataset",
       text: "Please try again. If this issue persists contect the SODA for SPARC team at help@fairdataihub.org",
@@ -316,6 +324,18 @@ const validatePennsieveDatasetStandAlone = async () => {
   fs.writeFileSync(validationReportPath, fullReport);
 
   let SODADirectory = path.join(os.homedir(), "SODA");
+
+  file_counter = 0;
+  folder_counter = 0;
+  get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
+  // log successful validation run to analytics
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Validation - Number of Files",
+    "Number of Files",
+    file_counter
+  );
 
   if (validationReport.status === "Incomplete") {
     // An incomplete validation report happens when the validator is unable to generate
