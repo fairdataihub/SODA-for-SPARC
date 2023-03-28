@@ -203,6 +203,14 @@
   margin-top: 1em;
 }
 
+.curate-disabled-button {
+  background: #f6f6f6;
+  background-color: #f6f6f6;
+  color: #4d4a4a;
+  overflow: hidden;
+  /* margin: 5px; */
+}
+
 .disabled-generate-button {
   background: #f6f6f6;
   margin: 5px;

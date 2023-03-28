@@ -62,10 +62,28 @@ async function handleSectionTrigger(event) {
     // be warned because Guided Mode uses shared variables and FF progress
     // must be wiped out.
     //Update: Swal will only pop up if user is on organize datasets page only
+    // Update 2: If user has not selected any of the radio buttons in step 1, then swal
+    // will not pop up
     let organizeDataset = document.getElementById("organize-section");
+    let boolRadioButtonsSelected = false;
+    let organizeDatasetRadioButtons = Array.from(
+      document.querySelectorAll(".getting-started-1st-question")
+    );
+
+    // Remove first two as they are not radio buttons
+    organizeDatasetRadioButtons = organizeDatasetRadioButtons.splice(2);
+
+    organizeDatasetRadioButtons.forEach((radioButton) => {
+      console.log(radioButton);
+      console.log(radioButton.classList.contains("checked"));
+      if (radioButton.classList.contains("checked")) {
+        boolRadioButtonsSelected = true;
+      }
+    });
 
     if (sodaJSONObj != undefined) {
-      if (Object.keys(sodaJSONObj).length > 0 || organizeDataset.classList.contains("is-shown")) {
+      console.log(boolRadioButtonsSelected);
+      if (boolRadioButtonsSelected === true) {
         //get the element with data-next="Question-getting-started-BF-account"
         const buttonContinueExistingPennsieve = document.querySelector(
           '[data-next="Question-getting-started-BF-account"]'

@@ -2401,9 +2401,161 @@ const logFilesForUpload = (upload_folder_path) => {
 };
 
 $("#button-submit-dataset").click(async () => {
+  const progressfunction = () => {
+    $("#upload_local_dataset_progress_div")[0].scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+
+    client
+      .get("/manage_datasets/datasets/upload_progress")
+      .then((progressResponse) => {
+        let progressData = progressResponse.data;
+        statusMessage = progressData["progress"];
+        completionStatus = progressData["submit_dataset_status"];
+        let submitprintstatus = progressData["submit_print_status"];
+        totalFileSize = progressData["total_file_size"];
+        let uploadedFileSize = progressData["upload_file_size"];
+        let fileUploadStatus = progressData["files_uploaded_status"];
+
+        if (submitprintstatus === "Uploading") {
+          $("#div-progress-submit").css("display", "block");
+
+          if (statusMessage.includes("Success: COMPLETED!")) {
+            progressBarUploadBf.value = 100;
+            cloneMeter.value = 100;
+
+            $("#para-please-wait-manage-dataset").html("");
+            $("#para-progress-bar-status").html(statusMessage + smileyCan);
+            cloneStatus.innerHTML = statusMessage + smileyCan;
+          } else {
+            var value = (uploadedFileSize / totalFileSize) * 100;
+
+            progressBarUploadBf.value = value;
+            cloneMeter.value = value;
+
+            if (totalFileSize < displaySize) {
+              var totalSizePrint = totalFileSize.toFixed(2) + " B";
+            } else if (totalFileSize < displaySize * displaySize) {
+              var totalSizePrint = (totalFileSize / displaySize).toFixed(2) + " KB";
+            } else if (totalFileSize < displaySize * displaySize * displaySize) {
+              var totalSizePrint = (totalFileSize / displaySize / displaySize).toFixed(2) + " MB";
+            } else {
+              var totalSizePrint =
+                (totalFileSize / displaySize / displaySize / displaySize).toFixed(2) + " GB";
+            }
+
+            $("#para-please-wait-manage-dataset").html("");
+            // cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%";
+            if (statusMessage.indexOf("<br")) {
+              let timeIndex = statusMessage.indexOf("<br");
+              let timePhrase = statusMessage.substring(timeIndex);
+              cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%" + timePhrase;
+            }
+            $("#para-progress-bar-status").html(
+              fileUploadStatus +
+                statusMessage +
+                "Progress: " +
+                value.toFixed(2) +
+                "%" +
+                " (total size: " +
+                totalSizePrint +
+                ")"
+            );
+          }
+        }
+      })
+      .catch((error) => {
+        clientError(error);
+        let emessage = userErrorMessage(error);
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET + ` - Progress track`,
+          defaultBfDatasetId
+        );
+        organizeDatasetButton.disabled = false;
+        organizeDatasetButton.className = "btn_animated generate-btn";
+        organizeDatasetButton.style =
+          "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
+        organzieDatasetButtonDiv.className = "btn_animated-inside";
+
+        $("#para-progress-bar-error-status").html(
+          "<span style='color: red;'>" + emessage + sadCan + "</span>"
+        );
+        Swal.fire({
+          icon: "error",
+          title: "An Error Occurred While Uploading Your Dataset",
+          html: "Check the error text in the Upload Local Dataset's upload page to see what went wrong.",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        }).then((result) => {
+          progressClone.remove();
+          sparc_logo.style.display = "inline";
+          if (result.isConfirmed) {
+            returnPage.click();
+          }
+        });
+      });
+
+    if (completionStatus === "Done") {
+      countDone++;
+
+      if (countDone > 1) {
+        log.info("Done submit track");
+        if (success_upload === true) {
+          organizeDatasetButton.disabled = false;
+          organizeDatasetButton.className = "btn_animated generate-btn";
+          organizeDatasetButton.style =
+            "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
+          organzieDatasetButtonDiv.className = "btn_animated-inside";
+          uploadComplete.open({
+            type: "success",
+            message: "Upload to Pennsieve completed",
+          });
+          dismissStatus(progressClone.id);
+          progressClone.remove();
+          sparc_logo.style.display = "inline";
+        }
+
+        if (statusMessage.includes("Success: COMPLETED")) {
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+              ` - Progress track`,
+            defaultBfDatasetId
+          );
+        }
+
+        clearInterval(timerProgress);
+
+        $("#para-please-wait-manage-dataset").html("");
+
+        $("#button-submit-dataset").prop("disabled", false);
+        $("#selected-local-dataset-submit").prop("disabled", false);
+
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET + ` - Progress track`,
+          defaultBfDatasetId
+        );
+      }
+    }
+  };
+
   // make the button unclickable until the preflight checks fail or pass
   $("#button-submit-dataset").attr("disabled", true);
   $("#para-please-wait-manage-dataset").html("Please wait while we verify a few things...");
+
+  // Create a clone of the progress bar for the navigation menu
   let progressSubmit = document.getElementById("div-progress-submit");
   let navContainer = document.getElementById("nav-items");
   let progressError = document.getElementById("para-progress-bar-error-status");
@@ -2416,6 +2568,8 @@ $("#button-submit-dataset").click(async () => {
   let cloneStatus = progressClone.children[2];
   var navError = progressError.cloneNode(true);
   let organizeDatasetButton = document.getElementById("button-generate");
+  let curateNewDatasetButton = document.getElementById("guided-button-start-new-curate");
+  let curateExistingDatasetButton = document.getElementById("guided-button-start-existing-curate");
   let organzieDatasetButtonDiv = organizeDatasetButton.children[0];
 
   progressClone.style =
@@ -2435,9 +2589,23 @@ $("#button-submit-dataset").click(async () => {
     returnPage.click();
   };
   progressClone.appendChild(returnButton);
+
+  // Disable the organize dataset button
+  // TODO: Disable the new curate and share buttons here
+  // TODO: Continue adding classes for disabled curate and share buttons
+  curateNewDatasetButton.disabled = true;
+  curateExistingDatasetButton.disabled = true;
   organizeDatasetButton.disabled = true;
+
+  // Change the color of the buttons to look disabled
+  curateExistingDatasetButton.className = "button-prompt-container curate-disabled-button";
+  curateNewDatasetButton.className = "button-prompt-container curate-disabled-button";
   organizeDatasetButton.className = "disabled-generate-button";
+
   organizeDatasetButton.style = "background-color: #f6f6f6";
+
+  // curateExistingDatasetButton.className = "disabled-animated-div";
+  // curateNewDatasetButton.className = "disabled-animated-div";
   organzieDatasetButtonDiv.className = "disabled-animated-div";
 
   let supplementary_checks = await run_pre_flight_checks(false);
@@ -2655,156 +2823,6 @@ $("#button-submit-dataset").click(async () => {
   var timerProgress = setInterval(progressfunction, 1000);
   let statusMessage = "Error";
 
-  function progressfunction() {
-    $("#upload_local_dataset_progress_div")[0].scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-
-    client
-      .get("/manage_datasets/datasets/upload_progress")
-      .then((progressResponse) => {
-        let progressData = progressResponse.data;
-        statusMessage = progressData["progress"];
-        completionStatus = progressData["submit_dataset_status"];
-        let submitprintstatus = progressData["submit_print_status"];
-        totalFileSize = progressData["total_file_size"];
-        let uploadedFileSize = progressData["upload_file_size"];
-        let fileUploadStatus = progressData["files_uploaded_status"];
-
-        if (submitprintstatus === "Uploading") {
-          $("#div-progress-submit").css("display", "block");
-
-          if (statusMessage.includes("Success: COMPLETED!")) {
-            progressBarUploadBf.value = 100;
-            cloneMeter.value = 100;
-
-            $("#para-please-wait-manage-dataset").html("");
-            $("#para-progress-bar-status").html(statusMessage + smileyCan);
-            cloneStatus.innerHTML = statusMessage + smileyCan;
-          } else {
-            var value = (uploadedFileSize / totalFileSize) * 100;
-
-            progressBarUploadBf.value = value;
-            cloneMeter.value = value;
-
-            if (totalFileSize < displaySize) {
-              var totalSizePrint = totalFileSize.toFixed(2) + " B";
-            } else if (totalFileSize < displaySize * displaySize) {
-              var totalSizePrint = (totalFileSize / displaySize).toFixed(2) + " KB";
-            } else if (totalFileSize < displaySize * displaySize * displaySize) {
-              var totalSizePrint = (totalFileSize / displaySize / displaySize).toFixed(2) + " MB";
-            } else {
-              var totalSizePrint =
-                (totalFileSize / displaySize / displaySize / displaySize).toFixed(2) + " GB";
-            }
-
-            $("#para-please-wait-manage-dataset").html("");
-            // cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%";
-            if (statusMessage.indexOf("<br")) {
-              let timeIndex = statusMessage.indexOf("<br");
-              let timePhrase = statusMessage.substring(timeIndex);
-              cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%" + timePhrase;
-            }
-            $("#para-progress-bar-status").html(
-              fileUploadStatus +
-                statusMessage +
-                "Progress: " +
-                value.toFixed(2) +
-                "%" +
-                " (total size: " +
-                totalSizePrint +
-                ")"
-            );
-          }
-        }
-      })
-      .catch((error) => {
-        clientError(error);
-        let emessage = userErrorMessage(error);
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET + ` - Progress track`,
-          defaultBfDatasetId
-        );
-        organizeDatasetButton.disabled = false;
-        organizeDatasetButton.className = "btn_animated generate-btn";
-        organizeDatasetButton.style =
-          "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
-        organzieDatasetButtonDiv.className = "btn_animated-inside";
-
-        $("#para-progress-bar-error-status").html(
-          "<span style='color: red;'>" + emessage + sadCan + "</span>"
-        );
-        Swal.fire({
-          icon: "error",
-          title: "An Error Occurred While Uploading Your Dataset",
-          html: "Check the error text in the Upload Local Dataset's upload page to see what went wrong.",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
-          },
-        }).then((result) => {
-          progressClone.remove();
-          sparc_logo.style.display = "inline";
-          if (result.isConfirmed) {
-            returnPage.click();
-          }
-        });
-      });
-
-    if (completionStatus === "Done") {
-      countDone++;
-
-      if (countDone > 1) {
-        log.info("Done submit track");
-        if (success_upload === true) {
-          organizeDatasetButton.disabled = false;
-          organizeDatasetButton.className = "btn_animated generate-btn";
-          organizeDatasetButton.style =
-            "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
-          organzieDatasetButtonDiv.className = "btn_animated-inside";
-          uploadComplete.open({
-            type: "success",
-            message: "Upload to Pennsieve completed",
-          });
-          dismissStatus(progressClone.id);
-          progressClone.remove();
-          sparc_logo.style.display = "inline";
-        }
-
-        if (statusMessage.includes("Success: COMPLETED")) {
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-              ` - Progress track`,
-            defaultBfDatasetId
-          );
-        }
-
-        clearInterval(timerProgress);
-
-        $("#para-please-wait-manage-dataset").html("");
-
-        $("#button-submit-dataset").prop("disabled", false);
-        $("#selected-local-dataset-submit").prop("disabled", false);
-
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET + ` - Progress track`,
-          defaultBfDatasetId
-        );
-      }
-    }
-  }
-
   let uploadErrorChildren = document.querySelector("#para-progress-bar-error-status").childNodes;
 
   //   const monitorBucketUpload = () => {
@@ -2982,7 +3000,7 @@ $("#bf_list_dataset_status").on("change", async () => {
   }
 });
 
-async function showCurrentDatasetStatus(callback) {
+const showCurrentDatasetStatus = async (callback) => {
   let selectedBfAccount = defaultBfAccount;
   let selectedBfDataset = defaultBfDataset;
 
@@ -3070,4 +3088,4 @@ async function showCurrentDatasetStatus(callback) {
     $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
     $("#bf-dataset-status-spinner").css("display", "none");
   }
-}
+};

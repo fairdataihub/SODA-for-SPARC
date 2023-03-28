@@ -2580,7 +2580,7 @@ function changeAwardInputDsDescription() {
 }
 
 // on change event when users choose a contributor's last name
-function onchangeLastNames() {
+const onchangeLastNames = () => {
   $("#dd-contributor-first-name").attr("disabled", true);
   var conLastname = $("#dd-contributor-last-name").val();
   removeOptions(document.getElementById("dd-contributor-first-name"));
@@ -2595,7 +2595,7 @@ function onchangeLastNames() {
       .trigger("onchange");
   }
   $("#dd-contributor-first-name").attr("disabled", false);
-}
+};
 
 //// De-populate dataset dropdowns to clear options
 const clearDatasetDropdowns = () => {
@@ -2608,7 +2608,7 @@ const clearDatasetDropdowns = () => {
 
 //////////////////////// Current Contributor(s) /////////////////////
 
-function delete_current_con(no) {
+const delete_current_con = (no) => {
   // after a contributor is deleted, add their name back to the contributor last name dropdown list
   if (
     $("#ds-description-contributor-list-last-" + no).length > 0 &&
@@ -2620,22 +2620,22 @@ function delete_current_con(no) {
     currentContributorsLastNames.push(deletedLastName);
   }
   document.getElementById("row-current-name" + no + "").outerHTML = "";
-}
+};
 
-function delete_link(no) {
+const delete_link = (no) => {
   document.getElementById("row-current-link" + no + "").outerHTML = "";
-}
+};
 
 //////////////////////// Article(s) and Protocol(s) /////////////////////
 
 //// function to leave fields empty if no data is found on Airtable
-function leaveFieldsEmpty(field, element) {
+const leaveFieldsEmpty = (field, element) => {
   if (field !== undefined) {
     element.value = field;
   } else {
     element.value = "";
   }
-}
+};
 
 $(currentConTable).mousedown(function (e) {
   var length = currentConTable.rows.length - 1;
@@ -2904,14 +2904,14 @@ const emptyDSInfoEntries = () => {
   return [fieldSatisfied, emptyFieldArray];
 };
 
-function emptyLinkInfo() {
+const emptyLinkInfo = () => {
   var tableCurrentLinks = document.getElementById("protocol-link-table-dd");
   var fieldSatisfied = false;
   if (tableCurrentLinks.rows.length > 1) {
     fieldSatisfied = true;
   }
   return fieldSatisfied;
-}
+};
 
 const emptyInfoEntries = (element) => {
   var fieldSatisfied = true;
@@ -2922,7 +2922,7 @@ const emptyInfoEntries = (element) => {
 };
 
 /// detect empty required fields and raise a warning
-function detectEmptyRequiredFields(funding) {
+const detectEmptyRequiredFields = (funding) => {
   /// dataset info
   var dsContent = emptyDSInfoEntries();
   var dsSatisfied = dsContent[0];
@@ -2966,7 +2966,7 @@ function detectEmptyRequiredFields(funding) {
     }
   }
   return [allFieldsSatisfied, errorMessage];
-}
+};
 
 //////////////////////////End of Ds description section ///////////////////////////////////
 //////////////// //////////////// //////////////// //////////////// ////////////////////////
@@ -6029,11 +6029,15 @@ const handleSelectedBannerImage = async (path, curationMode) => {
 //////////////////////////////////////////////////////////////////////////////
 
 //// helper functions for hiding/showing context menus
-function showmenu(ev, category, deleted = false) {
+const showmenu = (ev, category, deleted = false) => {
   //stop the real right click menu
   console.log("align menu through here");
-  //TODO: context menu aligns correctly for free form mode
-  // Look into adding a curationMode to figure out when to align differently
+  console.log(ev);
+  console.log(category);
+  console.log(deleted);
+  let guidedModeFileExporer = false;
+  let activePages = Array.from(document.querySelectorAll(".is-shown"));
+
   ev.preventDefault();
   var mouseX;
   let element = "";
@@ -6049,6 +6053,17 @@ function showmenu(ev, category, deleted = false) {
   }
 
   var mouseY = ev.pageY - 10;
+
+  activePages.forEach((page) => {
+    console.log(page.id);
+    if (page.id === "guided_mode-section") {
+      guidedModeFileExporer = true;
+      console.log("pageX: " + ev.pageX);
+      console.log("pageY: " + ev.pageY);
+      mouseX = ev.pageX - 210;
+      mouseY = ev.pageY - 10;
+    }
+  });
 
   if (category === "folder") {
     if (deleted) {
@@ -6078,7 +6093,12 @@ function showmenu(ev, category, deleted = false) {
         $(menuFolder).children("#folder-description").show();
       }
     }
+    // This is where regular folders context menu will appear
     menuFolder.style.display = "block";
+    if (guidedModeFileExporer) {
+      console.log("align menu through here");
+      // $(".menu.reg-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
+    }
     $(".menu.reg-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
   } else if (category === "high-level-folder") {
     if (deleted) {
@@ -6108,6 +6128,12 @@ function showmenu(ev, category, deleted = false) {
       }
     }
     menuHighLevelFolders.style.display = "block";
+    if (guidedModeFileExporer) {
+      console.log("align menu through here");
+      console.log(mouseX);
+      console.log(mouseY);
+      // $(".menu.high-level-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
+    }
     $(".menu.high-level-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
   } else {
     if (deleted) {
@@ -6131,10 +6157,14 @@ function showmenu(ev, category, deleted = false) {
         $(menuFile).children("#file-description").show();
       }
     }
+    console.log("mouseX: " + mouseX);
+    console.log("mouseY: " + mouseY);
+    console.log("maybe check here?");
+    // This is where the context menu for regular files will be displayed
     menuFile.style.display = "block";
     $(".menu.file").css({ top: mouseY, left: mouseX }).fadeIn("slow");
   }
-}
+};
 
 /// options for regular sub-folders
 function folderContextMenu(event) {
@@ -9634,23 +9664,23 @@ function gatherLogs() {
   });
 }
 
-function gettingStarted() {
+const gettingStarted = () => {
   let getting_started = document.getElementById("main_tabs_view");
   getting_started.click();
-}
+};
 
-function sodaVideo() {
+const sodaVideo = () => {
   document.getElementById("overview-column-1").blur();
   shell.openExternal("https://docs.sodaforsparc.io/docs/getting-started/user-interface");
-}
+};
 
-function directToDocumentation() {
+const directToDocumentation = () => {
   shell.openExternal(
     "https://docs.sodaforsparc.io/docs/getting-started/organize-and-submit-sparc-datasets-with-soda"
   );
   document.getElementById("overview-column-2").blur();
   // window.open('https://docs.sodaforsparc.io', '_blank');
-}
+};
 const directToGuidedMode = () => {
   const guidedModeLinkButton = document.getElementById("guided_mode_view");
   guidedModeLinkButton.click();
