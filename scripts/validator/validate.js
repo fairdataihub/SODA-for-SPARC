@@ -42,12 +42,15 @@ const createValidationReport = async (sodaJSONObj) => {
   console.log("localSodaJsonObject", sodaJSONObj);
   console.log("clientUUID", clientUUID);
 
-  let validationResponse = await client.post(`http://localhost:4000/validator/validate`, {
-    clientUUID: clientUUID,
-    dataset_structure: sodaJSONObj,
-    metadata_files: metadataFiles,
-    manifests: manifestFiles,
-  });
+  let validationResponse = await client.post(
+    `https://validation.sodaforsparc.io/validator/validate`,
+    {
+      clientUUID: clientUUID,
+      dataset_structure: sodaJSONObj,
+      metadata_files: metadataFiles,
+      manifests: manifestFiles,
+    }
+  );
 
   // track that a local validation succeeded
   ipcRenderer.send(
