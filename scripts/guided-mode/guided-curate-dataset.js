@@ -5550,7 +5550,7 @@ const setActiveSubPage = (pageIdToActivate) => {
     document.getElementById("guided-add-subject-instructions").classList.add("hidden");
     document.getElementById(
       "guided-subject-pool-sample-header"
-    ).innerHTML = `Subject specification`;
+    ).innerHTML = `Select a dataset type`;
     document.getElementById("guided-subject-pool-sample-text").innerHTML = `
       SPARC data is typically collected from subjects (either human or non-human) and/or
       from samples collected from such subjects (e.g., tissue samples). As per SPARC
