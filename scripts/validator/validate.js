@@ -10,6 +10,69 @@ const { translatePipelineError } = require("./scripts/validator/parse-pipeline-e
 *******************************************************************************************************************
 */
 
+const createValidationReport = async (sodaJSONObj) => {
+  const clientUUID = uuid();
+
+  let manifestJSONResponse = await client.post(
+    "/skeleton_dataset/manifest_json",
+    {
+      sodajsonobject: sodaJSONObj,
+    },
+    {
+      timeout: 0,
+    }
+  );
+
+  let manifestFiles = manifestJSONResponse.data;
+
+  let metadataJSONResponse = await client.post(
+    "/skeleton_dataset/metadata_json",
+    {
+      sodajsonobject: sodaJSONObj,
+    },
+    {
+      timeout: 0,
+    }
+  );
+
+  let metadataFiles = metadataJSONResponse.data;
+
+  console.log("metadataFiles", metadataFiles);
+  console.log("manifestFiles", manifestFiles);
+  console.log("localSodaJsonObject", sodaJSONObj);
+  console.log("clientUUID", clientUUID);
+
+  let validationResponse = await client.post(
+    `https://validation.sodaforsparc.io/validator/validate`,
+    {
+      clientUUID: clientUUID,
+      dataset_structure: sodaJSONObj,
+      metadata_files: metadataFiles,
+      manifests: manifestFiles,
+    }
+  );
+
+  // track that a local validation succeeded
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Prepare Datasets - Validate your dataset - Local",
+    "Local Validation",
+    1
+  );
+
+  // track that a validation (local or pennsieve) succeeded
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Prepare Datasets - Validate your dataset",
+    "Dataset Validation",
+    1
+  );
+
+  return validationResponse.data;
+};
+
 const validateLocalDataset = async () => {
   // grab the local dataset path from the input's placeholder attribute
   let datasetPath = document.querySelector("#validate-local-dataset-path").value;
@@ -27,49 +90,120 @@ const validateLocalDataset = async () => {
     },
   });
 
-  let validationResponse;
+  // setup the sodaJSONObj for the import endpoint
+  let localSodaJsonObject = {
+    "bf-account-selected": {
+      "account-name": {},
+    },
+    "bf-dataset-selected": {
+      "dataset-name": {},
+    },
+    "dataset-structure": {},
+    "metadata-files": {},
+    "manifest-files": {},
+    "generate-dataset": {},
+    "starting-point": {
+      type: "local",
+      "local-path": datasetPath,
+    },
+  };
+
+  // get the dataset structure from the dataset location
+  let importLocalDatasetResponse;
   try {
-    // send the dataset path to the validator endpoint
-    validationResponse = await client.get(`validator/local_dataset_validation_result`, {
-      params: {
-        path: datasetPath,
+    importLocalDatasetResponse = await client.post(
+      `/organize_datasets/datasets/import`,
+      {
+        sodajsonobject: localSodaJsonObject,
+        root_folder_path: datasetPath,
+        irregular_folders: [],
+        replaced: [],
       },
-    });
-
-    // track that a local validation succeeded
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      "Prepare Datasets - Validate your dataset - Local",
-      "Local Validation",
-      1
+      { timeout: 0 }
     );
-
-    // track that a validation (local or pennsieve) succeeded
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      "Prepare Datasets - Validate your dataset",
-      "Dataset Validation",
-      1
-    );
-  } catch (err) {
-    // hide the validation errors table
-    document.querySelector("#validation-errors-container").style.visiility = "hidden";
-
-    // log the error
-    clientError(err);
-
-    // display the error message to the user
-    let errorMessage = userErrorMessage(err);
-
+  } catch (error) {
+    clientError(error);
     await Swal.fire({
-      title: "Validation Failed",
-      text: `${errorMessage}`,
+      title: "Could not validate your dataset.",
+      message: `SODA is unable to import the selected dataset.`,
+      allowEscapeKey: true,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      showConfirmButton: true,
+      icon: "error",
+    });
+    return;
+  }
+
+  localSodaJsonObject = importLocalDatasetResponse.data;
+
+  console.log("localSodaJsonObject", localSodaJsonObject);
+
+  let validationReportData;
+  try {
+    validationReportData = await createValidationReport(localSodaJsonObject);
+  } catch (error) {
+    clientError(error);
+    file_counter = 0;
+    folder_counter = 0;
+    get_num_files_and_folders(localSodaJSONObj["dataset-structure"]);
+    // log successful validation run to analytics
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Validation - Number of Files",
+      "Number of Files",
+      file_counter
+    );
+    await Swal.fire({
+      title: "Failed to Validate Your Dataset",
+      text: "Please try again. If this issue persists contect the SODA for SPARC team at help@fairdataihub.org",
+      allowEscapeKey: true,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      showConfirmButton: true,
+      icon: "error",
+    });
+    return;
+  }
+
+  // write the full report to the ~/SODA/validation.txt file
+  let fullReport = validationReportData.full_report;
+  let validationReportPath = path.join(os.homedir(), "SODA", "validation.txt");
+  fs.writeFileSync(validationReportPath, fullReport);
+
+  let SODADirectory = path.join(os.homedir(), "SODA");
+
+  file_counter = 0;
+  folder_counter = 0;
+  get_num_files_and_folders(localSodaJSONObj["dataset-structure"]);
+  // log successful validation run to analytics
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Validation - Number of Files",
+    "Number of Files",
+    file_counter
+  );
+
+  if (validationReportData.status == "Incomplete") {
+    // An incomplete validation report happens when the validator is unable to generate
+    // a path_error_report upon validating the selected dataset.
+    let viewReportResult = await Swal.fire({
+      title: "Could Not Generate a Sanitized Validation Report",
+      html: `If you repeatedly have this issue please contact the SPARC Curation Team for support at curation@sparc.science. Would you like to view your raw validation report?`,
+      allowEscapeKey: true,
+      allowOutsideClick: false,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       icon: "error",
-      showCancelButton: false,
+      showCancelButton: true,
+      cancelButtonText: "No",
+      confirmButtonText: "Yes",
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -78,33 +212,15 @@ const validateLocalDataset = async () => {
       },
     });
 
-    // reset the input field to 'Browse Here'
-    let datasetLocationInput = document.querySelector("#validate-local-dataset-path");
-
-    datasetLocationInput.value = "";
-
-    // track that a local validation failed
-    ipcRenderer.send(
-      "track-event",
-      "Error",
-      "Prepare Datasets - Validate your dataset - Local",
-      "Local Validation",
-      1
-    );
-
-    // track that a validation (local or pennsieve) failed to help with aggregating total dataset validation failures
-    ipcRenderer.send(
-      "track-event",
-      "Error",
-      "Prepare Datasets - Validate your dataset",
-      "Dataset Validation",
-      1
-    );
-
+    if (viewReportResult.isConfirmed) {
+      // open a shell to the raw validation report
+      shell.openPath(validationReportPath);
+    }
     return;
   }
 
-  let errors = validationResponse.data;
+  // get the parsed error report since the validation has been completed
+  let errors = validationReportData.parsed_report;
 
   // this works because the returned validation results are in an Object Literal. If the returned object is changed this will break (e.g., an array will have a length property as well)
   let hasValidationErrors = Object.getOwnPropertyNames(errors).length >= 1;
@@ -112,7 +228,7 @@ const validateLocalDataset = async () => {
   Swal.fire({
     title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
     text: hasValidationErrors
-      ? `Please fix the errors listed in the table below to pass validation.`
+      ? `Please fix the errors listed in the table below to pass validation. If you would like to see your raw error report, navigate to ${SODADirectory}/validation.txt.`
       : `Your dataset conforms to the SPARC Dataset Structure.`,
     allowEscapeKey: true,
     allowOutsideClick: false,
@@ -128,16 +244,14 @@ const validateLocalDataset = async () => {
   }
 
   // display errors onto the page
-  displayValidationErrors(errors);
+  let tbody = document.querySelector("#validation-errors-container tbody");
+  displayValidationErrors(errors, tbody);
 
   // show the validation errors to the user
   document.querySelector("#validation-errors-container").style.visibility = "visible";
 };
 
-const validatePennsieveDataset = async () => {
-  // kicks off pipeline update listener
-  await setCurationTeamAsManagers();
-
+const validatePennsieveDatasetStandAlone = async () => {
   // get the dataset name from the dataset selection card
   let datasetName = document.querySelector("#bf_dataset_load_validator").textContent;
 
@@ -154,72 +268,115 @@ const validatePennsieveDataset = async () => {
     },
   });
 
-  let validationResponse;
+  // create a local SODA JSON object to pass to the import endpoint
+  let localSodaJSONObj = {
+    "bf-account-selected": {
+      "account-name": {},
+    },
+    "bf-dataset-selected": {
+      "dataset-name": {},
+    },
+    "dataset-structure": {},
+    "metadata-files": {},
+    "manifest-files": {},
+    "generate-dataset": {},
+    "starting-point": {
+      type: "bf",
+    },
+  };
 
+  localSodaJSONObj["bf-account-selected"]["account-name"] = $("#current-bf-account").text();
+  localSodaJSONObj["bf-dataset-selected"]["dataset-name"] = $("#current-bf-dataset").text();
+
+  console.log("About to import the dataset");
+
+  // import the dataset from Pennsieve
+  let datasetPopulationResponse;
   try {
-    // request validation for the current pennsieve dataset
-    validationResponse = await client.get(`validator/pennsieve_dataset_validation_result`, {
-      params: {
-        selected_account: defaultBfAccount,
-        selected_dataset: defaultBfDatasetId,
-      },
-    });
-
-    // track that a local validation succeeded
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      "Prepare Datasets - Validate your dataset - Pennsieve",
-      "Pennsieve Validation",
-      1
-    );
-
-    // track that a validation (local or pennsieve) succeeded
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      "Prepare Datasets - Validate your dataset",
-      "Dataset Validation",
-      1
-    );
+    datasetPopulationResponse = await bf_request_and_populate_dataset(localSodaJSONObj);
   } catch (err) {
-    // hide the validation errors table
-    document.querySelector("#validation-errors-container").style.visiility = "hidden";
-
-    // track that a local validation succeeded
-    ipcRenderer.send(
-      "track-event",
-      "Error",
-      "Prepare Datasets - Validate your dataset - Pennsieve",
-      "Pennsieve Validation",
-      1
-    );
-
-    // track that a validation (local or pennsieve) succeeded
-    ipcRenderer.send(
-      "track-event",
-      "Error",
-      "Prepare Datasets - Validate your dataset",
-      "Dataset Validation",
-      1
-    );
-
-    // end pipeline update listener
-    removeCurationTeamAsManagers();
-
-    // log the error
     clientError(err);
-
-    // display the error message to the user
-    let errorMessage = userErrorMessage(err);
-
     await Swal.fire({
-      title: "Validation Failed",
-      text: `${errorMessage}`,
+      title: `Validation Run Failed`,
+      text: "Please try again. If this issue persists contect the SODA for SPARC team at help@fairdataihub.org",
+      allowEscapeKey: true,
+      allowOutsideClick: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      showConfirmButton: true,
+      icon: "error",
+    });
+    return;
+  }
+
+  localSodaJSONObj = datasetPopulationResponse.soda_object;
+
+  console.log("Imported the dataset");
+
+  let validationReport;
+  try {
+    validationReport = await createValidationReport(localSodaJSONObj);
+  } catch (err) {
+    clientError(err);
+    file_counter = 0;
+    folder_counter = 0;
+    get_num_files_and_folders(localSodaJSONObj["dataset-structure"]);
+    // log successful validation run to analytics
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Validation - Number of Files",
+      "Number of Files",
+      file_counter
+    );
+    await Swal.fire({
+      title: "Failed to Validate Your Dataset",
+      text: "Please try again. If this issue persists contect the SODA for SPARC team at help@fairdataihub.org",
+      allowEscapeKey: true,
+      allowOutsideClick: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      showConfirmButton: true,
+      icon: "error",
+    });
+    return;
+  }
+
+  // write the full report to the ~/SODA/validation.txt file
+  let fullReport = validationReport.full_report;
+  let validationReportPath = path.join(os.homedir(), "SODA", "validation.txt");
+  fs.writeFileSync(validationReportPath, fullReport);
+
+  let SODADirectory = path.join(os.homedir(), "SODA");
+
+  file_counter = 0;
+  folder_counter = 0;
+  get_num_files_and_folders(localSodaJSONObj["dataset-structure"]);
+  // log successful validation run to analytics
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Validation - Number of Files",
+    "Number of Files",
+    file_counter
+  );
+
+  if (validationReport.status === "Incomplete") {
+    // An incomplete validation report happens when the validator is unable to generate
+    // a path_error_report upon validating the selected dataset.
+    let viewReportResult = await Swal.fire({
+      title: "Could Not Generate a Sanitized Validation Report",
+      html: `If you repeatedly have this issue please contact the SPARC Curation Team for support at curation@sparc.science. Would you like to view your raw validation report?`,
+      allowEscapeKey: true,
+      allowOutsideClick: false,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       icon: "error",
-      showCancelButton: false,
+      showCancelButton: true,
+      cancelButtonText: "No",
+      confirmButtonText: "Yes",
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -228,12 +385,15 @@ const validatePennsieveDataset = async () => {
       },
     });
 
+    if (viewReportResult.isConfirmed) {
+      // open a shell to the raw validation report
+      shell.openPath(validationReportPath);
+    }
     return;
   }
 
-  removeCurationTeamAsManagers();
-
-  let errors = validationResponse.data;
+  // get the parsed error report since the validation has been completed
+  let errors = validationReport.parsed_report;
 
   // this works because the returned validation results are in an Object Literal. If the returned object is changed this will break (e.g., an array will have a length property as well)
   let hasValidationErrors = Object.getOwnPropertyNames(errors).length >= 1;
@@ -241,10 +401,10 @@ const validatePennsieveDataset = async () => {
   Swal.fire({
     title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
     text: hasValidationErrors
-      ? `Please fix the errors listed in the table below to pass validation.`
+      ? `Please fix the errors listed in the table below to pass validation. If you would like to see your raw error report, navigate to ${SODADirectory}/validation.txt.`
       : `Your dataset conforms to the SPARC Dataset Structure.`,
     allowEscapeKey: true,
-    allowOutsideClick: true,
+    allowOutsideClick: false,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     timerProgressBar: false,
@@ -252,13 +412,13 @@ const validatePennsieveDataset = async () => {
     icon: hasValidationErrors ? "error" : "success",
   });
 
-  // check if there are validation errors
   if (!validationErrorsOccurred(errors)) {
     return;
   }
 
   // display errors onto the page
-  displayValidationErrors(errors);
+  let tbody = document.querySelector("#validation-errors-container tbody");
+  displayValidationErrors(errors, tbody);
 
   // show the validation errors to the user
   document.querySelector("#validation-errors-container").style.visibility = "visible";
@@ -361,7 +521,7 @@ const transitionToValidateQuestionTwo = async () => {
     localSection.style = "display: flex;";
 
     // hide the confirm button
-    hideConfirmButton();
+    hideConfirmButton("local");
 
     // confirm that the input holding the local dataset path's placeholder is reset
     let input = document.querySelector("#validate-local-dataset-path");
@@ -407,6 +567,12 @@ document.querySelector("#validate_dataset-1-local").addEventListener("click", as
     return;
   }
 
+  let otherOptionCard = document.querySelector("#validate_dataset-1-pennsieve");
+  console.log(otherOptionCard);
+  otherOptionCard.classList.add("non-selected");
+  otherOptionCard.classList.remove("checked");
+  otherOptionCard.querySelector(".folder-checkbox input").checked = false;
+
   // reset validation table
   let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
   clearValidationResults(validationErrorsTable);
@@ -437,6 +603,12 @@ document
       // user does not want to reset
       return;
     }
+
+    let otherOptionCard = document.querySelector("#validate_dataset-1-local");
+    console.log(otherOptionCard);
+    otherOptionCard.classList.add("non-selected");
+    otherOptionCard.classList.remove("checked");
+    otherOptionCard.querySelector(".folder-checkbox input").checked = false;
 
     // reset validation table
     let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
@@ -540,21 +712,40 @@ document.querySelector("#run_validator_btn").addEventListener("click", async fun
   let validatingLocalDataset = localDatasetCard.checked;
 
   // hide the run validator button
-  hideQuestionThreeLocal();
+  // hideQuestionThreeLocal();
+
+  if (getValidationResultsCount() > 0) {
+    let reset = await userWantsToResetValidation();
+    if (!reset) {
+      return;
+    }
+
+    // get validation table body
+    let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
+    clearValidationResults(validationErrorsTable);
+
+    // hide question 3
+    // let questionThreeSection = document.querySelector("#validate_dataset-question-3");
+    // questionThreeSection.classList.remove("show");
+    // questionThreeSection.classList.remove("prev");
+
+    // hide question 4
+    // document.querySelector("#validate_dataset-question-4").classList.remove("show");
+  }
 
   if (validatingLocalDataset) {
     await validateLocalDataset();
 
     scrollToElement("#validation-errors-container");
   } else {
-    await validatePennsieveDataset();
+    await validatePennsieveDatasetStandAlone();
   }
 });
 
 document
   .querySelector("#confirm-dataset-selection--validator")
   .addEventListener("click", function () {
-    hideConfirmButton();
+    hideConfirmButton("pennsieve");
 
     // transition to the next question
     transitionFreeFormMode(
@@ -565,32 +756,6 @@ document
       "individual-question validate_dataset"
     );
   });
-
-document.querySelector("#scicrunch button").addEventListener("click", async function () {
-  // get the api key from the first of two inputs field nested in the scicrunch div
-  let apiKey = document.querySelector("#scicrunch input").value;
-
-  // get the api key name from the last input element  nested in the scicrunch div
-  let apiKeyName = document.querySelector("#scicrunch input:last-of-type").value;
-
-  // send the api key and api key name as params to the server using the endpoint /validator/scicrunch [ use the axios client stored in variable 'client']
-  let response;
-  try {
-    response = await client.post("/validator/scicrunch_config", {
-      api_key: apiKey,
-      api_key_name: apiKeyName,
-      selected_account: defaultBfAccount,
-    });
-  } catch (error) {
-    clientError(error);
-    await Swal.fire({
-      title: "Error",
-      text: "There was an error adding your scicrunch api key. Pleas try again.",
-      icon: "error",
-      confirmButtonText: "OK",
-    });
-  }
-});
 
 // observer for the selected dataset label in the dataset selection card in question 2
 const questionTwoDatasetSelectionObserver = new MutationObserver(() => {
@@ -678,6 +843,7 @@ const undoOptionCardSelection = (activeOptionCard) => {
   let previousOptionCard = document.querySelector(
     "#validate_dataset-section .option-card.non-selected"
   );
+  console.log(previousOptionCard);
   previousOptionCard.classList.remove("non-selected");
   previousOptionCard.classList.add("checked");
   previousOptionCard.querySelector(".folder-checkbox input").checked = true;
@@ -696,6 +862,7 @@ const clearValidationResults = (validationTableElement) => {
 };
 
 const getValidationResultsCount = () => {
+  console.log("CHecking validation results count");
   let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
 
   // check if there are any validation results
@@ -710,7 +877,12 @@ const showConfirmButton = () => {
 };
 
 // TODO: Make it differentiate between local and pennsieve confirm buttons
-const hideConfirmButton = () => {
+const hideConfirmButton = (mode) => {
+  if (mode == "pennsieve") {
+    let confirmDatasetBtn = document.querySelector("#confirm-dataset-selection--validator");
+    confirmDatasetBtn.parentElement.style.display = "none";
+    return;
+  }
   // hide the confirm button
   let confirmDatasetBtn = document.querySelector("#validator-confirm-local-dataset-btn");
   confirmDatasetBtn.parentElement.style.display = "none";
@@ -773,11 +945,3 @@ const removeCurationTeamAsManagers = async () => {
     clientError(error);
   }
 };
-
-document.querySelector("#click-me").addEventListener("click", async () => {
-  setCurationTeamAsManagers();
-});
-
-document.querySelector("#remove-me").addEventListener("click", async () => {
-  removeCurationTeamAsManagers();
-});

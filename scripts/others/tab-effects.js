@@ -8,7 +8,7 @@ var allParentStepsJSON = {
   "organize-dataset": "organize-dataset-tab",
   "metadata-files": "metadata-files-tab",
   "manifest-file": "manifest-file-tab",
-  // "validate-dataset": "validate-dataset-tab",
+  "validate-dataset": "validate-dataset-tab",
   "generate-dataset": "generate-dataset-tab",
 };
 
@@ -18,6 +18,7 @@ var currentTab = 0; // Current tab is set to be the first tab (0)
 const delay = 250;
 
 const showParentTab = (tabNow, nextOrPrev) => {
+  console.log("TabNow is " + tabNow);
   $("#nextBtn").prop("disabled", true);
   // check to show Save progress btn (only after step 2)
   if (tabNow >= 2) {
@@ -47,7 +48,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
     $(x[tabNow]).css("overflow", "auto");
   }, 1200);
 
-  var inActiveTabArray = [0, 1, 2, 3, 4, 5, 6].filter((element) => {
+  var inActiveTabArray = [0, 1, 2, 3, 4, 5, 6, 7].filter((element) => {
     return ![tabNow].includes(element);
   });
 
@@ -161,6 +162,7 @@ const showParentTab = (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == x.length - 1) {
+    console.log("TabNow on last page");
     let step5Bubble = document.getElementsByClassName("vertical-progress-bar-step")[4];
     // if (step5Bubble.classList.contains("is-current")) {
     //   step5Bubble.classList.remove("is-current");
@@ -463,10 +465,15 @@ const checkHighLevelFoldersInput = () => {
   return checked;
 };
 
-// function associated with the Back/Continue buttons of FreeForm Mode
-// in the Organize dataset section of the app.
-// Perform events or actions (such as update sodaJSONObj) based off the state of the Organize Datasets section
-// currently being displayed after pressing the Continue button/back button.
+/**
+ *
+ * @param {number} pageIndex - 1 for next, -1 for previous
+ * @returns
+ * Associated with the Back/Continue buttons of FreeForm Mode
+ * in the Organize dataset section of the app. Moves to the next or previous page/tab.
+ * Also performs events or actions (such as update sodaJSONObj) based off the state of the Organize Datasets section
+ * currently being displayed after pressing the Continue button/back button.
+ */
 const nextPrev = (pageIndex) => {
   // var x = document.getElementsByClassName("parent-tabs");
   let parentTabs = document.getElementsByClassName("parent-tabs");
@@ -633,11 +640,10 @@ const nextPrev = (pageIndex) => {
     sodaJSONObj["starting-point"]["type"] == "bf"
   ) {
     $(parentTabs[currentTab]).removeClass("tab-active");
-    currentTab = currentTab - 2;
+    currentTab = currentTab - 1;
     showParentTab(currentTab, pageIndex);
     $("#nextBtn").prop("disabled", false);
   } else if (
-    // HERE BOOO
     parentTabs[currentTab].id === "manifest-file-tab" &&
     sodaJSONObj["starting-point"]["type"] == "bf"
   ) {
@@ -680,20 +686,18 @@ const nextPrev = (pageIndex) => {
     }
     $("#nextBtn").prop("disabled", true);
     showParentTab(currentTab, pageIndex);
-  }
-  // } else if (
-  //   parentTabs[currentTab].id === "validate-dataset-tab" &&
-  //   sodaJSONObj["starting-point"]["type"] === "bf"
-  // ) {
-  //   if (pageIndex === -1) {
-  //     currentTab = currentTab - 2;
-  //     // fixStepDone(5);
-  //     // $("#nextBtn").prop("disabled", true);
-  //   } else {
-  //     currentTab = currentTab + 1;
-  //   }
-  //   showParentTab(currentTab, pageIndex);
-  else {
+  } else if (
+    parentTabs[currentTab].id === "validate-dataset-tab" &&
+    sodaJSONObj["starting-point"]["type"] == "bf" &&
+    pageIndex === -1
+  ) {
+    // if moving backwards fron the validate step
+    $(parentTabs[currentTab]).removeClass("tab-active");
+    // skip step 6 ( options irrelevant for existing bf/pennsieve workflow)
+    currentTab = currentTab - 2;
+    showParentTab(currentTab, pageIndex);
+    $("#nextBtn").prop("disabled", false);
+  } else {
     // Hide the current tab:
     $(parentTabs[currentTab]).removeClass("tab-active");
     // Increase or decrease the current tab by 1:

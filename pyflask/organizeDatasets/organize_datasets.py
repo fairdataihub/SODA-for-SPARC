@@ -75,6 +75,26 @@ PENNSIEVE_URL = "https://api.pennsieve.io"
 from namespaces import NamespaceEnum, get_namespace_logger
 namespace_logger = get_namespace_logger(NamespaceEnum.MANAGE_DATASETS)
 
+METADATA_FILES_SPARC = [
+        "submission.xlsx",
+        "submission.csv",
+        "submission.json",
+        "dataset_description.xlsx",
+        "dataset_description.csv",
+        "dataset_description.json",
+        "subjects.xlsx",
+        "subjects.csv",
+        "subjects.json",
+        "samples.xlsx",
+        "samples.csv",
+        "samples.json",
+        "README.txt",
+        "CHANGES.txt",
+        "code_description.xlsx",
+        "inputs_metadata.xlsx",
+        "outputs_metadata.xlsx",
+    ]
+
 ### Internal functions
 def TZLOCAL():
     return datetime.now(timezone.utc).astimezone().tzinfo
@@ -579,6 +599,7 @@ def create_soda_json_object_backend(
     global create_soda_json_progress  # amount of items counted during recursion
     global create_soda_json_total_items  # counts the total items in folder
     global create_soda_json_completed  # completed progress is either 0 or 1
+    global METADATA_FILES_SPARC
 
     high_level_sparc_folders = [
         "code",
@@ -789,9 +810,12 @@ def create_soda_json_object_backend(
             if Dir[0:1] != "." and Dir[0:8] != "manifest":
                 create_soda_json_total_items += 1
         for fileName in filenames:
-            # goes through all files and does not count hidden files
-            if fileName[0:1] != ".":
+            if root == root_folder_path and fileName in METADATA_FILES_SPARC:
+                # goes through all files and does not count hidden files
                 create_soda_json_total_items += 1
+            else:
+                if fileName[0:1] != ".":
+                    create_soda_json_total_items += 1
 
     # reading high level folders
     create_soda_json_completed = 0
@@ -804,7 +828,7 @@ def create_soda_json_object_backend(
         item_path = root_folder_path + "/" + entry
         # high level folder paths
         if os.path.isfile(item_path) is True:
-            if entry[0:1] != ".":
+            if entry[0:1] != "." and entry in METADATA_FILES_SPARC:
                 # is not a hidden folder
                 create_soda_json_progress += 1
                 soda_json_structure["metadata-files"][entry] = {

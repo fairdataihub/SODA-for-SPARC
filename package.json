@@ -13,11 +13,14 @@
     "deploy-mac": "electron-builder build --mac --publish always",
     "deploy-linux": "electron-builder build --linux --publish always",
     "python-onefile-build": "python -m PyInstaller --onefile --clean ./pyflask/app.py --distpath ./pyflaskdist",
-    "python-onefile-build-validator": "python -m PyInstaller --onefile --clean ./pyflask/app.py --distpath ./pyflaskdist --additional-hooks-dir ./pyflask/validator/hooks --add-data '../../../anaconda3/envs/env-electron-python/share:share'",
+    "python-onefile-build-validator": "python -m PyInstaller --onefile --clean ./pyflask/app.py --distpath ./pyflaskdist --additional-hooks-dir ./pyflask/validator/hooks",
+    "python-onefile-build-validator-mac": "python -m PyInstaller --onefile --clean ./pyflask/app.py --distpath ./pyflaskdist --additional-hooks-dir ./pyflask/validator/hooks --add-data '../../../usr/local/miniconda/envs/env-electron-python/share:share' ",
     "postinstall": "electron-builder install-app-deps",
     "format": "prettier --ignore-path .gitignore --ignore-path .prettierignore \"./**/*.+(html|css|js|md|yml)\" --write",
     "commit": "cz",
-    "prepare": "husky install"
+    "prepare": "run-script-os",
+    "prepare:win32": "husky install",
+    "prepare:darwin:linux": "husky install && chmod ug+x .husky/*  && chmod ug+x .git/hooks/*"
   },
   "lint-staged": {
     "./**/*.html|css|js|md|yml": [
@@ -180,7 +183,8 @@
     "husky": "^8.0.1",
     "lint-staged": "^13.0.3",
     "megasanjay-devmoji": "^1.1.0",
-    "prettier": "^2.3.2"
+    "prettier": "^2.3.2",
+    "run-script-os": "^1.1.6"
   },
   "optionalDependencies": {
     "win-node-env": "^0.4.0"
