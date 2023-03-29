@@ -7181,7 +7181,69 @@ document
     ipcRenderer.send("open-file-dialog-local-destination-curate");
   });
 
+// Local dataset selected response
 ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepath) => {
+  let numb = document.getElementById("local_dataset_number");
+  let progressBar_rightSide = document.getElementById("left-side_less_than_50");
+  let progressBar_leftSide = document.getElementById("right-side_greater_than_50");
+  //create setInterval variable that will keep track of the iterated items
+  let local_progress;
+
+  // Function to get the progress of the local dataset every 500ms
+  const progressReport = async () => {
+    try {
+      let monitorProgressResponse = await client.get(
+        `/organize_datasets/datasets/import/progress`
+      );
+
+      let { data } = monitorProgressResponse;
+      percentage_amount = data["progress_percentage"].toFixed(2);
+      finished = data["create_soda_json_completed"];
+
+      numb.innerText = percentage_amount + "%";
+      if (percentage_amount <= 50) {
+        progressBar_rightSide.style.transform = `rotate(${
+          percentage_amount * 0.01 * 360
+        }deg)`;
+      } else {
+        progressBar_rightSide.style.transition = "";
+        progressBar_rightSide.classList.add("notransition");
+        progressBar_rightSide.style.transform = `rotate(180deg)`;
+        progressBar_leftSide.style.transform = `rotate(${
+          percentage_amount * 0.01 * 180
+        }deg)`;
+      }
+
+      if (finished === 1) {
+        progressBar_leftSide.style.transform = `rotate(180deg)`;
+        numb.innerText = "100%";
+        clearInterval(local_progress);
+        progressBar_rightSide.classList.remove("notransition");
+        populate_existing_folders(datasetStructureJSONObj);
+        populate_existing_metadata(sodaJSONObj);
+        $("#para-continue-location-dataset-getting-started").text(
+          "Please continue below."
+        );
+        $("#nextBtn").prop("disabled", false);
+        // log the success to analytics
+        logMetadataForAnalytics(
+          "Success",
+          PrepareDatasetsAnalyticsPrefix.CURATE,
+          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+          Actions.EXISTING,
+          Destinations.LOCAL
+        );
+        setTimeout(() => {
+          document.getElementById("loading_local_dataset").style.display = "none";
+        }, 1000);
+      }
+    } catch (error) {
+      clientError(error);
+      clearInterval(local_progress);
+    }
+  }
+
+  // Function begins here
   if (filepath.length > 0) {
     if (filepath != null) {
       sodaJSONObj["starting-point"]["local-path"] = "";
@@ -7196,11 +7258,12 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
           "local"
         );
         if (valid_dataset == true) {
-          var action = "";
+          // Reset variables
           irregularFolderArray = [];
-          var replaced = [];
-          let finished = 0;
+          let replaced = {};
+
           detectIrregularFolders(path.basename(filepath[0]), filepath[0]);
+
           var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
           if (irregularFolderArray.length > 0) {
             Swal.fire({
@@ -7222,22 +7285,24 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
               },
               footer: footer,
             }).then(async (result) => {
-              // var replaced = [];
               /* Read more about isConfirmed, isDenied below */
               if (result.isConfirmed) {
                 action = "replace";
                 if (irregularFolderArray.length > 0) {
                   for (let i = 0; i < irregularFolderArray.length; i++) {
                     renamedFolderName = replaceIrregularFolders(irregularFolderArray[i]);
-                    replaced.push(renamedFolderName);
+                    console.log(renamedFolderName);
+                    replaced[path.basename(irregularFolderArray[i])] = renamedFolderName;
                   }
                 }
               } else if (result.isDenied) {
                 action = "remove";
                 if (irregularFolderArray.length > 0) {
                   for (let i = 0; i < irregularFolderArray.length; i++) {
+                    console.log(irregularFolderArray[i]);
                     renamedFolderName = removeIrregularFolders(irregularFolderArray[i]);
-                    replaced.push(renamedFolderName);
+                    console.log(renamedFolderName);
+                    replaced[irregularFolderArray[i]] = renamedFolderName;
                   }
                 }
               } else {
@@ -7248,148 +7313,63 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
                 return;
               }
 
-              let numb = document.getElementById("local_dataset_number");
-              numb.innerText = "0%";
-              progressBar_rightSide = document.getElementById("left-side_less_than_50");
-              progressBar_leftSide = document.getElementById("right-side_greater_than_50");
+              //Reset the progress bar
               progressBar_rightSide.style.transform = `rotate(0deg)`;
               progressBar_leftSide.style.transform = `rotate(0deg)`;
-              document.getElementById("loading_local_dataset").style.display = "block";
-              sodaJSONObj["starting-point"]["local-path"] = filepath[0];
+              numb.innerText = "0%";
 
+              // Show the progress bar
+              document.getElementById("loading_local_dataset").style.display = "block";
+              
+              // Show file path to user in the input box
+              sodaJSONObj["starting-point"]["local-path"] = filepath[0];
               let root_folder_path = $("#input-destination-getting-started-locally").attr(
                 "placeholder"
               );
 
-              let local_progress = setInterval(progressReport, 500);
-              async function progressReport() {
-                try {
-                  let monitorProgressResponse = await client.get(
-                    `/organize_datasets/datasets/import/progress`
-                  );
-
-                  let { data } = monitorProgressResponse;
-                  percentage_amount = data["progress_percentage"].toFixed(2);
-                  finished = data["create_soda_json_completed"];
-
-                  progressBar_rightSide = document.getElementById("left-side_less_than_50");
-                  progressBar_leftSide = document.getElementById("right-side_greater_than_50");
-
-                  numb.innerText = percentage_amount + "%";
-                  if (percentage_amount <= 50) {
-                    progressBar_rightSide.style.transform = `rotate(${
-                      percentage_amount * 0.01 * 360
-                    }deg)`;
-                  } else {
-                    progressBar_rightSide.style.transition = "";
-                    progressBar_rightSide.classList.add("notransition");
-                    progressBar_rightSide.style.transform = `rotate(180deg)`;
-                    progressBar_leftSide.style.transform = `rotate(${
-                      percentage_amount * 0.01 * 180
-                    }deg)`;
-                  }
-
-                  if (finished === 1) {
-                    progressBar_leftSide.style.transform = `rotate(180deg)`;
-                    numb.innerText = "100%";
-                    clearInterval(local_progress);
-                    progressBar_rightSide.classList.remove("notransition");
-                    populate_existing_folders(datasetStructureJSONObj);
-                    populate_existing_metadata(sodaJSONObj);
-                    $("#para-continue-location-dataset-getting-started").text(
-                      "Please continue below."
-                    );
-                    $("#nextBtn").prop("disabled", false);
-                    // log the success to analytics
-                    logMetadataForAnalytics(
-                      "Success",
-                      PrepareDatasetsAnalyticsPrefix.CURATE,
-                      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-                      Actions.EXISTING,
-                      Destinations.LOCAL
-                    );
-                    setTimeout(() => {
-                      document.getElementById("loading_local_dataset").style.display = "none";
-                    }, 1000);
-                  }
-                } catch (error) {
-                  clientError(error);
-                  clearInterval(local_progress);
-                }
-              }
               //create setInterval variable that will keep track of the iterated items
+              local_progress = setInterval(progressReport, 500);
+
+              console.log(JSON.stringify(sodaJSONObj));
+              console.log(root_folder_path);
+              console.log(irregularFolderArray);
+              console.log(JSON.stringify(replaced));
+              try {
+                let importLocalDatasetResponse = await client.post(
+                  `/organize_datasets/datasets/import`,
+                  {
+                    sodajsonobject: sodaJSONObj,
+                    root_folder_path: root_folder_path,
+                    irregular_folders: irregularFolderArray,
+                    replaced: replaced,
+                  },
+                  { timeout: 0 }
+                );
+                let { data } = importLocalDatasetResponse;
+                sodaJSONObj = data;
+                datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+              } catch (error) {
+                clientError(error);
+                clearInterval(local_progress);
+              }
             });
           } else {
-            document.getElementById("loading_local_dataset").style.display = "block";
-            progressBar_rightSide = document.getElementById("left-side_less_than_50");
-            progressBar_leftSide = document.getElementById("right-side_greater_than_50");
+            // Reset the progress bar
             progressBar_leftSide.style.transform = `rotate(0deg)`;
             progressBar_rightSide.style.transform = `rotate(0deg)`;
-            let numb = document.getElementById("local_dataset_number");
             numb.innerText = "0%";
 
-            action = "";
+            // Show the progress bar
+            document.getElementById("loading_local_dataset").style.display = "block";
+
+            // Show file path to user in the input box
             sodaJSONObj["starting-point"]["local-path"] = filepath[0];
             let root_folder_path = $("#input-destination-getting-started-locally").attr(
               "placeholder"
             );
 
-            let percentage_amount = 0;
-            let local_progress = setInterval(progressReport, 500);
-            async function progressReport() {
-              try {
-                let monitorProgressResponse = await client.get(
-                  `/organize_datasets/datasets/import/progress`
-                );
-
-                let { data } = monitorProgressResponse;
-                percentage_amount = data["progress_percentage"].toFixed(2);
-                finished = data["create_soda_json_completed"];
-                progressBar_rightSide = document.getElementById("left-side_less_than_50");
-                progressBar_leftSide = document.getElementById("right-side_greater_than_50");
-
-                numb.innerText = percentage_amount + "%";
-                if (percentage_amount <= 50) {
-                  progressBar_rightSide.style.transform = `rotate(${
-                    percentage_amount * 0.01 * 360
-                  }deg)`;
-                } else {
-                  progressBar_rightSide.style.transition = "";
-                  progressBar_rightSide.classList.add("notransition");
-                  progressBar_rightSide.style.transform = `rotate(180deg)`;
-                  progressBar_leftSide.style.transform = `rotate(${
-                    percentage_amount * 0.01 * 180
-                  }deg)`;
-                }
-                if (finished === 1) {
-                  progressBar_leftSide.style.transform = `rotate(180deg)`;
-                  numb.innerText = "100%";
-
-                  clearInterval(local_progress);
-                  progressBar_rightSide.classList.remove("notransition");
-                  populate_existing_folders(datasetStructureJSONObj);
-                  populate_existing_metadata(sodaJSONObj);
-                  $("#para-continue-location-dataset-getting-started").text(
-                    "Please continue below."
-                  );
-                  $("#nextBtn").prop("disabled", false);
-                  // log the success to analytics
-                  logMetadataForAnalytics(
-                    "Success",
-                    PrepareDatasetsAnalyticsPrefix.CURATE,
-                    AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-                    Actions.EXISTING,
-                    Destinations.LOCAL
-                  );
-                  setTimeout(() => {
-                    document.getElementById("loading_local_dataset").style.display = "none";
-                  }, 1000);
-                }
-              } catch (error) {
-                clientError(error);
-                clearInterval(local_progress);
-              }
-            }
+            //create setInterval variable that will keep track of the iterated items
+            local_progress = setInterval(progressReport, 500);
 
             try {
               let importLocalDatasetResponse = await client.post(
@@ -7403,14 +7383,15 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
                 { timeout: 0 }
               );
               let { data } = importLocalDatasetResponse;
-              sodajsonobject = data;
-              datasetStructureJSONObj = sodajsonobject["dataset-structure"];
+              sodaJSONObj = data;
+              datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
             } catch (error) {
               clientError(error);
               clearInterval(local_progress);
             }
           }
         } else {
+          // Invalid dataset due to non-SPARC folder structure
           Swal.fire({
             icon: "warning",
             html: `This folder seem to have non-SPARC folders. Please select a folder that has a valid SPARC dataset structure.
