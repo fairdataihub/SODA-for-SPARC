@@ -5545,25 +5545,19 @@ const setActiveSubPage = (pageIdToActivate) => {
   //create a switch statement for pageIdToActivate to load data from sodaJSONObj
   //depending on page being opened
   if (pageIdToActivate === "guided-specify-subjects-page") {
+    document.getElementById("guided-section-dataset-type-text").classList.remove("hidden");
+    document.getElementById("guided-section-dataset-pools-text").classList.add("hidden");
+    document.getElementById("guided-section-dataset-samples-text").classList.add("hidden");
+
     renderSubjectsTable();
     //remove the add subject help text
     document.getElementById("guided-add-subject-instructions").classList.add("hidden");
-    document.getElementById(
-      "guided-subject-pool-sample-header"
-    ).innerHTML = `Select a dataset type`;
-    document.getElementById("guided-subject-pool-sample-text").innerHTML = `
-      SPARC data is typically collected from subjects (either human or non-human) and/or
-      from samples collected from such subjects (e.g., tissue samples). As per SPARC
-      guidelines, a unique ID of the format sub-xxx must be assigned to each subject of a
-      dataset and a unique ID of the format sam-xxx must be assigned to each sample from a
-      given subject.
-    `;
   }
   if (pageIdToActivate === "guided-organize-subjects-into-pools-page") {
-    document.getElementById("guided-subject-pool-sample-header").innerHTML = `Subject pooling`;
-    document.getElementById("guided-subject-pool-sample-text").innerHTML = `
-      In SPARC datasets, subjects can be regrouped under pools. 
-    `;
+    document.getElementById("guided-section-dataset-type-text").classList.add("hidden");
+    document.getElementById("guided-section-dataset-pools-text").classList.remove("hidden");
+    document.getElementById("guided-section-dataset-samples-text").classList.add("hidden");
+
     const pools = sodaJSONObj.getPools();
     const poolElementRows = Object.keys(pools)
       .map((pool) => {
@@ -5603,10 +5597,9 @@ const setActiveSubPage = (pageIdToActivate) => {
     }
   }
   if (pageIdToActivate === "guided-specify-samples-page") {
-    document.getElementById("guided-subject-pool-sample-header").innerHTML = `Sample specification`;
-    document.getElementById("guided-subject-pool-sample-text").innerHTML = `
-      This is the text for samples
-    `;
+    document.getElementById("guided-section-dataset-type-text").classList.add("hidden");
+    document.getElementById("guided-section-dataset-pools-text").classList.add("hidden");
+    document.getElementById("guided-section-dataset-samples-text").classList.remove("hidden");
     renderSamplesTable();
   }
   if (pageIdToActivate === "guided-primary-samples-organization-page") {

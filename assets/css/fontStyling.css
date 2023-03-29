@@ -84,7 +84,7 @@
   color: #000;
 }
 
-.info-container.help-text {
+.info-container .help-text {
   font-size: 14px;
   color: hsl(0, 0%, 22%);
 }
