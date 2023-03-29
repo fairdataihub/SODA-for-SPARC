@@ -1,8 +1,7 @@
 import os.path 
 import pandas as pd
-from pennsieve2.pennsieve import Pennsieve
 import requests
-from utils import create_request_headers
+from utils import create_request_headers, load_manifest_to_dataframe
 
 #from utils import create_request_headers
 
@@ -93,6 +92,7 @@ def import_bf_metadata_files_skeleton(bfdataset, ps, metadata_files):
     except Exception as e:
         raise Exception("Please select a valid Pennsieve dataset.") from e
 
+
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(ps))
     r.raise_for_status()
 
@@ -101,8 +101,18 @@ def import_bf_metadata_files_skeleton(bfdataset, ps, metadata_files):
     for child in dataset["children"]:
         if child["content"]["packageType"] != "Collection" and child["content"]["name"] in METADATA_FILES:
                 item_id = child["content"]["id"]
-                url = returnFileURL(ps, item_id)
-                metadata_json = import_metadata(url, child["content"]["name"])
-                metadata_files[child["content"]["name"]] = metadata_json
+                if child["content"]["name"] in ["README.txt", "CHANGES.txt"]:
+                    # make a request to the zipit service directly
+                    url = returnFileURL(ps, item_id)
+                    r = requests.get(url)
+                    metadata_files[child["content"]["name"]] = r.text
+                else:
+                    dataframe = load_manifest_to_dataframe(item_id, "xlsx", ps)
+                    metadata_json = dataframe.to_json()
+                    metadata_files[child["content"]["name"]] = metadata_json
+
+                # write the content name to a text file
+                with open(os.path.join(path, "metadata_files.txt"), "a") as f:
+                    f.write(child["content"]["name"] )
 
     return metadata_files
