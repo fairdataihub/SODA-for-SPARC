@@ -63,7 +63,7 @@ const validateOrganizedDataset = async () => {
     clientError(error);
     file_counter = 0;
     folder_counter = 0;
-    get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
+    get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
     // log successful validation run to analytics
     ipcRenderer.send(
       "track-event",
@@ -93,7 +93,7 @@ const validateOrganizedDataset = async () => {
 
   file_counter = 0;
   folder_counter = 0;
-  get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
+  get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
   // log successful validation run to analytics
   ipcRenderer.send(
     "track-event",

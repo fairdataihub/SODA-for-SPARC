@@ -2793,7 +2793,7 @@ document
 
       file_counter = 0;
       folder_counter = 0;
-      get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
+      get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
 
       console.log("File counter shows: " + file_counter + " files");
 

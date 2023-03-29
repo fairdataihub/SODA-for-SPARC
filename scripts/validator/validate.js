@@ -146,6 +146,17 @@ const validateLocalDataset = async () => {
     validationReportData = await createValidationReport(localSodaJsonObject);
   } catch (error) {
     clientError(error);
+    file_counter = 0;
+    folder_counter = 0;
+    get_num_files_and_folders(localSodaJSONObj["dataset-structure"]);
+    // log successful validation run to analytics
+    ipcRenderer.send(
+      "track-event",
+      "Error",
+      "Validation - Number of Files",
+      "Number of Files",
+      file_counter
+    );
     await Swal.fire({
       title: "Failed to Validate Your Dataset",
       text: "Please try again. If this issue persists contect the SODA for SPARC team at help@fairdataihub.org",
@@ -166,6 +177,18 @@ const validateLocalDataset = async () => {
   fs.writeFileSync(validationReportPath, fullReport);
 
   let SODADirectory = path.join(os.homedir(), "SODA");
+
+  file_counter = 0;
+  folder_counter = 0;
+  get_num_files_and_folders(localSodaJSONObj["dataset-structure"]);
+  // log successful validation run to analytics
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    "Validation - Number of Files",
+    "Number of Files",
+    file_counter
+  );
 
   if (validationReportData.status == "Incomplete") {
     // An incomplete validation report happens when the validator is unable to generate
@@ -298,7 +321,7 @@ const validatePennsieveDatasetStandAlone = async () => {
     clientError(err);
     file_counter = 0;
     folder_counter = 0;
-    get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
+    get_num_files_and_folders(localSodaJSONObj["dataset-structure"]);
     // log successful validation run to analytics
     ipcRenderer.send(
       "track-event",
@@ -330,7 +353,7 @@ const validatePennsieveDatasetStandAlone = async () => {
 
   file_counter = 0;
   folder_counter = 0;
-  get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
+  get_num_files_and_folders(localSodaJSONObj["dataset-structure"]);
   // log successful validation run to analytics
   ipcRenderer.send(
     "track-event",
