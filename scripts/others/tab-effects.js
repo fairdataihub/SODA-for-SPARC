@@ -2404,6 +2404,7 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
   }
   for (var key of Object.keys(metadataobject)) {
     let file_name = require("path").parse(key).name;
+    console.log(file_name);
     switch (file_name) {
       case "submission":
         $(".metadata-button[data-next='submissionUpload']").addClass("done");

@@ -593,7 +593,8 @@ def create_soda_json_object_backend(
     soda_json_structure, root_folder_path, irregularFolders, replaced
 ):
     """
-    Function for importing files from local machine into json structure
+    This function is meant for importing local datasets into SODA.
+    It creates a json object with the structure of the dataset.
     """
     global create_soda_json_progress  # amount of items counted during recursion
     global create_soda_json_total_items  # counts the total items in folder
@@ -624,20 +625,24 @@ def create_soda_json_object_backend(
 
         lastSlash = folder_path.rfind("/") + 1
         folder_name = folder_path[lastSlash:]
-        if folder_name in replaced:
-            folder_name = (
-                folder_path[:lastSlash]
-                + dataset_structure[folder_name]["original-name"]
-            )
-        # finds the last / in the path and that is the folder name
+
+        if folder_name in replaced.keys():
+            folder_name = replaced[folder_name]
+
+        # Check if folder is in irregular folders
         if folder_path in irregularFolders:
             index_check = irregularFolders.index(folder_path)
-            modified_name = replaced[index_check]
+            modified_name = replaced[os.path.basename(folder_path)]
             folder_path = irregularFolders[index_check]
         entries = os.listdir(folder_path)
         for entry in entries:
             gevent.sleep(0)
-            check_path = folder_path + "/" + entry
+            check_path = folder_path + "\\" + entry
+            # replace forward slashes with backslashes
+            check_path = check_path.replace("/", "\\")
+            # replace single slashes with double slashes
+            check_path = check_path.replace("\\\\", "\\")
+
             if os.path.isfile(check_path) is True:
                 # check manifest to add metadata
                 if entry[0:1] != ".":
@@ -758,7 +763,7 @@ def create_soda_json_object_backend(
                 create_soda_json_progress += 1
                 if check_path in irregularFolders:
                     index_check = irregularFolders.index(check_path)
-                    modified_name = replaced[index_check]
+                    modified_name = replaced[os.path.basename(check_path)]
 
                     dataset_structure["folders"][modified_name] = {
                         "folders": {},

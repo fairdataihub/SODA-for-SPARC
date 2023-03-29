@@ -98,8 +98,8 @@ class ImportDataset(Resource):
     parser_import_dataset = reqparse.RequestParser(bundle_errors=True)
     parser_import_dataset.add_argument('sodajsonobject', type=dict, required=True, help='The sodajsonobject filled with the bfaccount and dataset info available.', location="json")
     parser_import_dataset.add_argument('root_folder_path', type=str, required=True, help='The local path to import the dataset.', location="json")
-    parser_import_dataset.add_argument('irregular_folders', type=list, required=True, help='The name of the dataset being imported.', location="json")    
-    parser_import_dataset.add_argument('replaced', type=list, required=True, help='The name of the dataset being imported.', location="json")
+    parser_import_dataset.add_argument('irregular_folders', type=list, required=True, help='List of folder paths with nonallowed characters.', location="json")    
+    parser_import_dataset.add_argument('replaced', type=dict, required=True, help='Dictionary of folder paths with the nonallowed characters replaced as the keys value.', location="json")
     
     @api.expect(parser_import_dataset)
     @api.doc(responses={200: "Success", 500: "Internal Server Error"}, description="Import files from local machine into the soda json object.")
