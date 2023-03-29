@@ -78,12 +78,12 @@
           </div>
           <h1
             class="text-sub-step-title mt-sm mb-sm"
-            style="max-width: 600px; font-size: 20px !important"
+            style="max-width: 600px; font-size: 18px !important"
           >
             Share FAIR neuromodulation-relation data and code through the SPARC data curation
             workflow
           </h1>
-          <h2 style="margin-bottom: 5px">What would you like to do today?</h2>
+          <h2 style="margin-bottom: 5px; font-size: 16px">What would you like to do today?</h2>
           <div class="justify-center align-items-center" id="curate-new-home">
             <div class="button-prompt-container" id="guided-button-start-new-curate">
               <div class="wide-card-text-container">
@@ -134,17 +134,17 @@
         </div>
         <div
           id="guided-resume-existing-dataset-tab"
-          class="guided--page hidden"
+          class="guided--page h-100 hidden"
           data-page-name="Select starting point"
         >
           <h1 class="text-sub-step-title">Select a dataset to resume</h1>
 
-          <div class="guided--section">
+          <div class="guided--section mt-3">
             <label class="guided--form-label centered mb-4"
               >Where is the dataset you would like to resume located?
             </label>
 
-            <div class="guided--radio-button-container">
+            <div class="guided--radio-button-container mt-4">
               <button
                 class="guided--radio-button tile-button"
                 id="guided-button-resume-progress-file"
@@ -184,7 +184,11 @@
           </div>
           <div class="guided--section" id="guided-section-resume-progress-cards"></div>
 
-          <div class="guided--section" id="guided-section-select-pennsieve-dataset-to-resume">
+          <div
+            class="guided--section place-content-center"
+            id="guided-section-select-pennsieve-dataset-to-resume"
+            style="height: 76%"
+          >
             <div class="guided--panel mt-0" id="guided-panel-pennsieve-dataset-import-error">
               <label class="guided--form-label centered mb-sm mt-lg"
                 >There was an error importing datasets from Pennsieve
@@ -456,7 +460,7 @@
           <h1 class="guided--text-sub-step text-black mt-3">
             Give your dataset a name and subtitle
           </h1>
-          <div class="guided--section">
+          <div class="guided--section mt-5">
             <label class="guided--form-label">Dataset name: </label>
             <input
               class="guided--input"
@@ -4416,7 +4420,7 @@
                   height: 35px;
                   background-color: var(--color-light-green) !important;
                   padding: 0.7em 1.3em;
-                  width: 175px;
+                  width: 195px;
                   margin-right: 0px;
                 "
               >

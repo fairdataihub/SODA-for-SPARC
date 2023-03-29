@@ -2501,7 +2501,7 @@ const renderProgressCards = (progressFileJSONdata) => {
   );
 
   const progressCardsContainer = document.getElementById("guided-section-resume-progress-cards");
-
+  
   if (progressDataNotYetUploadedToPennsieve.length > 0) {
     // Add the title to the container
     progressCardsContainer.innerHTML = `
@@ -2547,7 +2547,7 @@ const renderProgressCards = (progressFileJSONdata) => {
     });
   } else {
     progressCardsContainer.innerHTML = `
-      <h2 class="guided--text-sub-step">
+      <h2 class="guided--text-sub-step mt-5">
         No Progress files found.
       </h2>
     `;
@@ -2711,8 +2711,6 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
 document
   .getElementById("guided-button-resume-pennsieve-dataset")
   .addEventListener("click", async () => {
-    //TODO: Prevent user from clicking first card after selecting as it will auto scroll page
-    //once pennsieve datasets are fetched
     renderGuidedResumePennsieveDatasetSelectionDropdown();
   });
 
@@ -2862,6 +2860,7 @@ const setActiveCapsule = (targetPageID) => {
   let targetCapsule = $(`#${targetCapsuleID}`);
   targetCapsule.addClass("active");
 };
+
 setActiveProgressionTab = (targetPageID) => {
   $(".guided--progression-tab").removeClass("selected-tab");
   let targetPageParentID = $(`#${targetPageID}`).parent().attr("id");
@@ -3664,6 +3663,7 @@ const resetGuidedRadioButtons = (parentPageID) => {
     }
   }
 };
+
 const updateGuidedRadioButtonsFromJSON = (parentPageID) => {
   const parentPage = document.getElementById(parentPageID);
   const guidedRadioButtons = parentPage.querySelectorAll(".guided--radio-button");
@@ -3872,10 +3872,8 @@ const openPage = async (targetPageID) => {
 
       const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
       //render progress resumption cards from progress file array on first page of guided mode
-      if (guidedSavedProgressFiles.length != 0) {
-        const progressFileData = await getAllProgressFileData(guidedSavedProgressFiles);
-        renderProgressCards(progressFileData);
-      }
+      const progressFileData = await getAllProgressFileData(guidedSavedProgressFiles);
+      renderProgressCards(progressFileData);
     }
 
     if (targetPageID === "guided-prepare-helpers-tab") {
@@ -7698,7 +7696,7 @@ const handleAddContributorHeaderUI = () => {
   // If no stored contribturs are found, use the default header
   if (locallyStoredContributorArray.length === 0) {
     return `
-      <label class="guided--form-label centered mb-md">
+      <label class="guided--form-label centered mb-md" style="font-size: 1em !important;">
         Enter the contributor's information below.
       </label>
     `;
@@ -7725,7 +7723,7 @@ const handleAddContributorHeaderUI = () => {
     });
 
   return `
-    <label class="guided--form-label centered mb-md">
+    <label class="guided--form-label centered mb-2" style="font-size: 1em !important;">
       If the contributor has been previously added, select them from the dropdown below.
     </label>
     <select
@@ -7746,7 +7744,7 @@ const handleAddContributorHeaderUI = () => {
       </option>
       ${contributorOptions}
     </select>
-    <label class="guided--form-label centered mb-sm mt-md">
+    <label class="guided--form-label centered mt-2" style="font-size: 1em !important;">
       Otherwise, enter the contributor's information below.
     </label>
   `;
@@ -7764,11 +7762,11 @@ const openGuidedAddContributorSwal = async () => {
     heightAuto: false,
     // title: contributorSwalTitle,
     html: `
-      <div class="guided--flex-center mt-sm">
+      <div class="guided--flex-center mb-1" style="font-size: 1em !important; height: 550px;">
         ${handleAddContributorHeaderUI()}
         <div class="space-between w-100">
             <div class="guided--flex-center mt-sm" style="width: 45%">
-              <label class="guided--form-label required">Last name: </label>
+              <label class="guided--form-label required" style="font-size: 1em !important;">Last name: </label>
               <input
                 class="guided--input"
                 id="guided-contributor-last-name"
@@ -7778,7 +7776,7 @@ const openGuidedAddContributorSwal = async () => {
               />
             </div>
             <div class="guided--flex-center mt-sm" style="width: 45%">
-              <label class="guided--form-label required">First name: </label>
+              <label class="guided--form-label required" style="font-size: 1em !important;">First name: </label>
               <input
                 class="guided--input"
                 id="guided-contributor-first-name"
@@ -7788,7 +7786,7 @@ const openGuidedAddContributorSwal = async () => {
               />
             </div>
           </div>
-          <label class="guided--form-label mt-md required">ORCID: </label>
+          <label class="guided--form-label mt-md required" style="font-size: 1em !important;">ORCID: </label>
           <input
             class="guided--input"
             id="guided-contributor-orcid"
@@ -7804,7 +7802,7 @@ const openGuidedAddContributorSwal = async () => {
           >.
      
           </p>
-          <label class="guided--form-label mt-md required">Affiliation(s): </label>
+          <label class="guided--form-label mt-md required" style="font-size: 1em !important;">Affiliation(s): </label>
           <input id="guided-contributor-affiliation-input"
             contenteditable="true"
           />
@@ -7815,7 +7813,7 @@ const openGuidedAddContributorSwal = async () => {
               Press enter after entering an institution to add it to the list.
             </b>
           </p>
-          <label class="guided--form-label mt-md required">Role(s): </label>
+          <label class="guided--form-label mt-md required" style="font-size: 1em !important;">Role(s): </label>
           <input id="guided-contributor-roles-input"
             contenteditable="true"
           />
@@ -10131,6 +10129,7 @@ const guidedShowBannerImagePreview = (imagePath, imported) => {
     bannerImagePreviewelement.appendChild(guidedbannerImageElem);
 
     $("#guided-banner-image-preview-container").show();
+    $("#guided-banner-image-preview-container").removeClass("hidden");
     $("#guided-button-add-banner-image").html("Edit banner image");
   } else {
     let date = new Date();
@@ -10144,6 +10143,7 @@ const guidedShowBannerImagePreview = (imagePath, imported) => {
     bannerImagePreviewelement.appendChild(guidedbannerImageElem);
 
     $("#guided-banner-image-preview-container").show();
+    $("#guided-banner-image-preview-container").removeClass("hidden");
     $("#guided-button-add-banner-image").html("Edit banner image");
   }
 };
@@ -10779,6 +10779,12 @@ $(document).ready(async () => {
   const freeFormItemsContainer = document.getElementById("free-form-folder-structure-container");
   const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
   $("#guided-button-start-new-curate").on("click", async () => {
+    // If element has disabled class, do nothing
+    let disabled = document.getElementById("guided-button-start-new-curate").classList.contains("curate-disabled-button");
+    if (disabled) {
+      return;
+    }
+
     guidedCreateSodaJSONObj();
     attachGuidedMethodsToSodaJSONObj();
 
@@ -10806,6 +10812,11 @@ $(document).ready(async () => {
   });
 
   $("#guided-button-start-existing-curate").on("click", async () => {
+    // If element has disabled class, do nothing
+    let disabled = document.getElementById("guided-button-start-existing-curate").classList.contains("curate-disabled-button");
+    if (disabled) {
+      return;
+    }
     guidedCreateSodaJSONObj();
     attachGuidedMethodsToSodaJSONObj();
     guidedTransitionFromHome();
@@ -10944,6 +10955,8 @@ $(document).ready(async () => {
       nextQuestionID = selectedButton.data("next-element");
       nextQuestionElement = $(`#${nextQuestionID}`);
       nextQuestionElement.removeClass("hidden");
+      console.log(nextQuestionElement);
+      console.log("should be scrolling to next question")
       //slow scroll to the next question
       //temp fix to prevent scrolling error
       const elementsToNotScrollTo = [

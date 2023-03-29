@@ -7845,6 +7845,8 @@ async function initiate_generate() {
 
   let organizeDataset = document.getElementById("organize_dataset_btn");
   let uploadLocally = document.getElementById("upload_local_dataset_btn");
+  let curateNewDatasetButton = document.getElementById("guided-button-start-new-curate");
+  let curateExistingDatasetButton = document.getElementById("guided-button-start-existing-curate");
   let organizeDataset_option_buttons = document.getElementById("div-generate-comeback");
   let statusBarContainer = document.getElementById("div-new-curate-progress");
   var statusBarClone = statusBarContainer.cloneNode(true);
@@ -7858,8 +7860,16 @@ async function initiate_generate() {
   statusMeter.setAttribute("id", "nav-progress-bar-new-curate");
   statusMeter.className = "nav-status-bar";
   statusBarClone.appendChild(returnButton);
+
+  // Disable the Organize Dataset and Upload Locally buttons
   uploadLocally.disabled = true;
   organizeDataset.disabled = true;
+  curateNewDatasetButton.disabled = true;
+  curateExistingDatasetButton.disabled = true;
+
+  // Add disabled appearance to the buttons
+  curateExistingDatasetButton.className = "button-prompt-container curate-disabled-button";
+  curateNewDatasetButton.className = "button-prompt-container curate-disabled-button";
   organizeDataset.className = "disabled-content-button";
   uploadLocally.className = "disabled-content-button";
   organizeDataset.style = "background-color: #f6f6f6;  border: #fff;";
@@ -8037,16 +8047,26 @@ async function initiate_generate() {
         false
       );
 
+      //Enable the buttons
       organizeDataset_option_buttons.style.display = "flex";
       organizeDataset.disabled = false;
+      curateExistingDatasetButton.disabled = false;
+      curateNewDatasetButton.disabled = false;
+      uploadLocally.disabled = false;
+      $("#sidebarCollapse").prop("disabled", false);
+
+      //Add the original classes back to the buttons
+      curateExistingDatasetButton.className = "button-prompt-container";
+      curateNewDatasetButton.className = "button-prompt-container";
       organizeDataset.className = "content-button is-selected";
       organizeDataset.style = "background-color: #fff";
-      $("#sidebarCollapse").prop("disabled", false);
-      document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
-        "<span style='color: red;'>" + emessage + "</span>";
-      uploadLocally.disabled = false;
       uploadLocally.className = "content-button is-selected";
       uploadLocally.style = "background-color: #fff";
+
+      document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
+        "<span style='color: red;'>" + emessage + "</span>";
+
+
       Swal.fire({
         icon: "error",
         title: "An Error Occurred While Uploading Your Dataset",
@@ -8107,13 +8127,23 @@ async function initiate_generate() {
       document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
         "<span style='color: red;'>" + emessage + "</span>";
       log.error(error);
+
+      //Enable the buttons (organize datasets, upload locally, curate existing dataset, curate new dataset)
       organizeDataset_option_buttons.style.display = "flex";
       organizeDataset.disabled = false;
+      curateExistingDatasetButton.disabled = false;
+      curateNewDatasetButton.disabled = false;
+      uploadLocally.disabled = false;
+
+      //Add the original classes back to the buttons
+      curateExistingDatasetButton.className = "button-prompt-container";
+      curateNewDatasetButton.className = "button-prompt-container";
       organizeDataset.className = "content-button is-selected";
       organizeDataset.style = "background-color: #fff";
-      uploadLocally.disabled = false;
       uploadLocally.className = "content-button is-selected";
       uploadLocally.style = "background-color: #fff";
+
+
       Swal.fire({
         icon: "error",
         title: "An Error Occurred While Uploading Your Dataset",
@@ -8139,13 +8169,23 @@ async function initiate_generate() {
           document.getElementById("generate-dataset-progress-tab").style.display = "flex";
         }
       });
+
+      //Enable the buttons (organize datasets, upload locally, curate existing dataset, curate new dataset)
       organizeDataset_option_buttons.style.display = "flex";
       organizeDataset.disabled = false;
+      uploadLocally.disabled = false;
+      curateExistingDatasetButton.disabled = false;
+      curateNewDatasetButton.disabled = false;
+
+
+      //Add the original classes back to the buttons
+      curateExistingDatasetButton.className = "button-prompt-container";
+      curateNewDatasetButton.className = "button-prompt-container";
       organizeDataset.className = "content-button is-selected";
       organizeDataset.style = "background-color: #fff";
-      uploadLocally.disabled = false;
       uploadLocally.className = "content-button is-selected";
       uploadLocally.style = "background-color: #fff";
+
       console.error(error);
       //Clear the interval to stop the generation of new sweet alerts after intitial error
       clearInterval(timerProgress);
@@ -8216,24 +8256,38 @@ async function initiate_generate() {
       statusBarClone.remove();
       sparc_container.style.display = "inline";
       if (successful === true) {
-        organizeDataset_option_buttons.style.display = "flex";
+        //Enable the buttons (organize datasets, upload locally, curate existing dataset, curate new dataset)
         organizeDataset.disabled = false;
+        curateNewDatasetButton.disabled = false;
+        curateExistingDatasetButton.disabled = false;
+        uploadLocally.disabled = false;
+        
+        // Add the original classes back to the buttons
+        organizeDataset_option_buttons.style.display = "flex";
+        curateExistingDatasetButton.className = "button-prompt-container";
+        curateNewDatasetButton.className = "button-prompt-container";
         organizeDataset.className = "content-button is-selected";
         organizeDataset.style = "background-color: #fff";
-        uploadLocally.disabled = false;
         uploadLocally.className = "content-button is-selected";
         uploadLocally.style = "background-color: #fff";
+
         uploadComplete.open({
           type: "success",
           message: "Dataset created successfully",
         });
       } else {
-        //enable buttons anyways
+        //enable buttons anyways (organize datasets, upload locally, curate existing dataset, curate new dataset)
         organizeDataset_option_buttons.style.display = "flex";
         organizeDataset.disabled = false;
+        curateNewDatasetButton.disabled = false;
+        curateExistingDatasetButton.disabled = false;
+        uploadLocally.disabled = false;
+
+        // Add the original classes back to the buttons
+        curateExistingDatasetButton.className = "button-prompt-container";
+        curateNewDatasetButton.className = "button-prompt-container";
         organizeDataset.className = "content-button is-selected";
         organizeDataset.style = "background-color: #fff";
-        uploadLocally.disabled = false;
         uploadLocally.className = "content-button is-selected";
         uploadLocally.style = "background-color: #fff";
       }

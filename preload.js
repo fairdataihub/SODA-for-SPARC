@@ -146,7 +146,7 @@ const updateDatasetList = (bfaccount) => {
 };
 
 // per change event of current dataset span text
-function confirm_click_function() {
+const confirm_click_function = () => {
   let temp = $(".bf-dataset-span").html();
   if ($(".bf-dataset-span").html() == "None" || $(".bf-dataset-span").html() == "") {
     $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "none");

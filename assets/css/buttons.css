@@ -208,11 +208,15 @@
   background-color: #f6f6f6;
   color: #4d4a4a;
   overflow: hidden;
-  /* margin: 5px; */
+  cursor: initial !important;
+}
+
+.curate-disabled-button:hover {
+  box-shadow: 0px 0px 10px #d5d5d5 !important;
 }
 
 .disabled-generate-button {
-  background: #f6f6f6;
+  background: #f6f6f6 !important;
   margin: 5px;
   width: 120px;
   height: 40px;
@@ -222,6 +226,11 @@
   font-weight: 600;
   position: relative;
   overflow: hidden;
+  cursor: initial !important;
+}
+
+.disabled-generate-button:hover {
+  box-shadow: 0px 0px 10px #d5d5d5 !important;
 }
 
 /* Footer buttons */

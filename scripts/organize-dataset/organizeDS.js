@@ -211,7 +211,7 @@ function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
         },
       }).then((result) => {
         if (result.isConfirmed) {
-          copnsole.log(organizeCurrentLocation);
+          // console.log(organizeCurrentLocation);
           var filtered = getGlobalPath(organizeCurrentLocation);
           var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
 

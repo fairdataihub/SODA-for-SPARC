@@ -824,6 +824,10 @@
   height: 100vh !important;
 }
 
+.place-content-center {
+  place-content: center !important;
+}
+
 .text-monospace {
   font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
 }

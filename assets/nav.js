@@ -42,7 +42,7 @@ async function handleSectionTrigger(event) {
     if (document.getElementById("returnButton") !== null) {
       Swal.fire({
         icon: "warning",
-        text: "You can not enter Guided Mode while an upload is in progress.",
+        text: "You cannot curate another dataset while an upload is in progress but you can still modify dataset components.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         confirmButtonText: "OK",

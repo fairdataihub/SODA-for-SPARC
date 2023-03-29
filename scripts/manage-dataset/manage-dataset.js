@@ -2591,8 +2591,6 @@ $("#button-submit-dataset").click(async () => {
   progressClone.appendChild(returnButton);
 
   // Disable the organize dataset button
-  // TODO: Disable the new curate and share buttons here
-  // TODO: Continue adding classes for disabled curate and share buttons
   curateNewDatasetButton.disabled = true;
   curateExistingDatasetButton.disabled = true;
   organizeDatasetButton.disabled = true;
@@ -2626,23 +2624,22 @@ $("#button-submit-dataset").click(async () => {
   let uploadedFolders = 0;
   let uploadedFileSize = 0;
   let previousUploadedFileSize = 0;
+  var err = false;
+  var completionStatus = "Solving";
+  var success_upload = true;
+  var selectedbfaccount = defaultBfAccount;
+  var selectedbfdataset = defaultBfDataset;
+  progressBarUploadBf.value = 0;
+  cloneMeter.value = 0;
 
   $("#para-please-wait-manage-dataset").html("Please wait...");
   $("#para-progress-bar-error-status").html("");
-
-  progressBarUploadBf.value = 0;
-  cloneMeter.value = 0;
 
   $("#button-submit-dataset").prop("disabled", true);
   $("#selected-local-dataset-submit").prop("disabled", true);
   $("#button-submit-dataset").popover("hide");
   $("#progress-bar-status").html("Preparing files ...");
 
-  var err = false;
-  var completionStatus = "Solving";
-  var success_upload = true;
-  var selectedbfaccount = defaultBfAccount;
-  var selectedbfdataset = defaultBfDataset;
 
   log.info("Files selected for upload:");
   logFilesForUpload(pathSubmitDataset.placeholder);
@@ -2734,10 +2731,18 @@ $("#button-submit-dataset").click(async () => {
       document.getElementById("para-progress-bar-error-status").innerHTML = emessage;
       success_upload = false;
       organizeDatasetButton.disabled = false;
+      curateExistingDatasetButton.disabled = false;
+      curateNewDatasetButton.disabled = false;
+
+      curateExistingDatasetButton.className = "button-prompt-container";
+      curateNewDatasetButton.className = "button-prompt-container";
       organizeDatasetButton.className = "btn_animated generate-btn";
+      organzieDatasetButtonDiv.className = "btn_animated-inside";
+
       organizeDatasetButton.style =
         "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
-      organzieDatasetButtonDiv.className = "btn_animated-inside";
+      
+      
       Swal.fire({
         icon: "error",
         title: "There was an issue uploading your dataset",
