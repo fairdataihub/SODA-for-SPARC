@@ -22,18 +22,14 @@ namespace_logger = get_namespace_logger(NamespaceEnum.SKELETON_DATASET)
 def get_manifests(soda_json_structure):
     manifests = {}
 
-    namespace_logger.info("Getting manifests")
-
     # chceck if guided mode
     if "guided-options" in soda_json_structure:
-        namespace_logger.info("Guided Mode detected")
         # go through the high level folders in the dataset structure and get the manifest files
         for folder_name, folder_information in soda_json_structure["saved-datset-structure-json-obj"]["folders"].items():
            
            if "manifest.xlsx" in folder_information["files"]:
               # get the xlsx path 
               path_man = folder_information["files"]["manifest.xlsx"]["path"]
-              namespace_logger.info("Found manifest file at: " + path_man)
               # read the xlsx file
               df = pd.read_excel(path_man)
               # convert to json

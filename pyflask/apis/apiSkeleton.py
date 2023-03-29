@@ -25,8 +25,6 @@ class SkeletonDatasetManifest(Resource):
 
         sodajsonobject = data["sodajsonobject"]
 
-        api.logger.info(f"Creating skeleton dataset structure {sodajsonobject}")
-
         try:
             return get_manifests(sodajsonobject)
         except Exception as e:
