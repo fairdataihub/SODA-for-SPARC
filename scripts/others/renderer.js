@@ -8066,7 +8066,6 @@ async function initiate_generate() {
       document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
         "<span style='color: red;'>" + emessage + "</span>";
 
-
       Swal.fire({
         icon: "error",
         title: "An Error Occurred While Uploading Your Dataset",
@@ -8143,7 +8142,6 @@ async function initiate_generate() {
       uploadLocally.className = "content-button is-selected";
       uploadLocally.style = "background-color: #fff";
 
-
       Swal.fire({
         icon: "error",
         title: "An Error Occurred While Uploading Your Dataset",
@@ -8176,7 +8174,6 @@ async function initiate_generate() {
       uploadLocally.disabled = false;
       curateExistingDatasetButton.disabled = false;
       curateNewDatasetButton.disabled = false;
-
 
       //Add the original classes back to the buttons
       curateExistingDatasetButton.className = "button-prompt-container";
@@ -8261,7 +8258,7 @@ async function initiate_generate() {
         curateNewDatasetButton.disabled = false;
         curateExistingDatasetButton.disabled = false;
         uploadLocally.disabled = false;
-        
+
         // Add the original classes back to the buttons
         organizeDataset_option_buttons.style.display = "flex";
         curateExistingDatasetButton.className = "button-prompt-container";

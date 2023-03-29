@@ -2501,7 +2501,7 @@ const renderProgressCards = (progressFileJSONdata) => {
   );
 
   const progressCardsContainer = document.getElementById("guided-section-resume-progress-cards");
-  
+
   if (progressDataNotYetUploadedToPennsieve.length > 0) {
     // Add the title to the container
     progressCardsContainer.innerHTML = `
@@ -10780,7 +10780,9 @@ $(document).ready(async () => {
   const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
   $("#guided-button-start-new-curate").on("click", async () => {
     // If element has disabled class, do nothing
-    let disabled = document.getElementById("guided-button-start-new-curate").classList.contains("curate-disabled-button");
+    let disabled = document
+      .getElementById("guided-button-start-new-curate")
+      .classList.contains("curate-disabled-button");
     if (disabled) {
       return;
     }
@@ -10813,7 +10815,9 @@ $(document).ready(async () => {
 
   $("#guided-button-start-existing-curate").on("click", async () => {
     // If element has disabled class, do nothing
-    let disabled = document.getElementById("guided-button-start-existing-curate").classList.contains("curate-disabled-button");
+    let disabled = document
+      .getElementById("guided-button-start-existing-curate")
+      .classList.contains("curate-disabled-button");
     if (disabled) {
       return;
     }
@@ -10956,7 +10960,7 @@ $(document).ready(async () => {
       nextQuestionElement = $(`#${nextQuestionID}`);
       nextQuestionElement.removeClass("hidden");
       console.log(nextQuestionElement);
-      console.log("should be scrolling to next question")
+      console.log("should be scrolling to next question");
       //slow scroll to the next question
       //temp fix to prevent scrolling error
       const elementsToNotScrollTo = [

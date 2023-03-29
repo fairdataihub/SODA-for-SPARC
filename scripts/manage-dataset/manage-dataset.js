@@ -2640,7 +2640,6 @@ $("#button-submit-dataset").click(async () => {
   $("#button-submit-dataset").popover("hide");
   $("#progress-bar-status").html("Preparing files ...");
 
-
   log.info("Files selected for upload:");
   logFilesForUpload(pathSubmitDataset.placeholder);
 
@@ -2741,8 +2740,7 @@ $("#button-submit-dataset").click(async () => {
 
       organizeDatasetButton.style =
         "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
-      
-      
+
       Swal.fire({
         icon: "error",
         title: "There was an issue uploading your dataset",

@@ -161,7 +161,7 @@ const confirm_click_function = () => {
       $(".confirm-button").click();
     }
   }
-}
+};
 
 var dropdownEventID = "";
 const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
