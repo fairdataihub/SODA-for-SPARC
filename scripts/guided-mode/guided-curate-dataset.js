@@ -4132,7 +4132,7 @@ const openPage = async (targetPageID) => {
     } else {
       $("#guided-back-button").css("visibility", "visible");
     }
-    
+
     //Hide the high level progress steps and green pills if the user is on the before getting started page
     if (targetPageID === "guided-prepare-helpers-tab") {
       //validate the api key and adjust icon accordingly
@@ -4814,7 +4814,7 @@ const openPage = async (targetPageID) => {
 
         // Reset the keywords tags and add the stored ones if they exist in the JSON
         guidedDatasetKeywordsTagify.removeAllTags();
-        if (descriptionMetadata["keywords"]) {
+        if (descriptionMetadata?.["keywords"]) {
           guidedDatasetKeywordsTagify.addTags(descriptionMetadata["keywords"]);
         }
 
