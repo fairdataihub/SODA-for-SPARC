@@ -8,7 +8,6 @@ const downloadSubjects = document.getElementById("a-subjects");
 const downloadDescription = document.getElementById("a-description");
 const downloadManifest = document.getElementById("a-manifest");
 
-
 let templateArray = [
   "submission.xlsx",
   "dataset_description.xlsx",
