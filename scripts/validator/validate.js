@@ -148,7 +148,7 @@ const validateLocalDataset = async () => {
     clientError(error);
     file_counter = 0;
     folder_counter = 0;
-    get_num_files_and_folders(localSodaJSONObj["dataset-structure"]);
+    get_num_files_and_folders(localSodaJsonObject["dataset-structure"]);
     // log successful validation run to analytics
     ipcRenderer.send(
       "track-event",
@@ -180,7 +180,7 @@ const validateLocalDataset = async () => {
 
   file_counter = 0;
   folder_counter = 0;
-  get_num_files_and_folders(localSodaJSONObj["dataset-structure"]);
+  get_num_files_and_folders(localSodaJsonObject["dataset-structure"]);
   // log successful validation run to analytics
   ipcRenderer.send(
     "track-event",
