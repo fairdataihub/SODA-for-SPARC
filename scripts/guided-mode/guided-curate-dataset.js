@@ -4498,24 +4498,48 @@ const openPage = async (targetPageID) => {
         const descriptionMetadata =
           sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"];
 
+        // Reset the keywords tags and add the stored ones if they exist in the JSON
         guidedDatasetKeywordsTagify.removeAllTags();
+        if (descriptionMetadata["keywords"]) {
+          guidedDatasetKeywordsTagify.addTags(descriptionMetadata["keywords"]);
+        }
 
-        if (descriptionMetadata) {
-          //check the checkbox for the study type where name is dataset-relation
-          const studyType = descriptionMetadata["type"];
+        const studyTypeElements = document.querySelectorAll(".study-type-element");
+
+        //Unhide the study type elements incase they were hidden
+        for (const studyTypeElement of studyTypeElements) {
+          studyTypeElement.classList.remove("hidden");
+        }
+
+        const userSpecifiedIfDatasetHasSubjects =
+          sodaJSONObj["button-config"]?.["dataset-contains-subjects"];
+
+        let studyType;
+
+        if (userSpecifiedIfDatasetHasSubjects) {
+          userSpecifiedIfDatasetHasSubjects === "yes"
+            ? (studyType = "experimental")
+            : (studyType = "computational");
+
+          for (const studyTypeElement of studyTypeElements) {
+            studyTypeElement.classList.add("hidden");
+          }
+        } else if (descriptionMetadata["type"]) {
+          studyType = descriptionMetadata["type"];
+        }
+
+        //reset the study type checkboxes
+        const studyTypeRadioButtons = document.querySelectorAll("input[name='dataset-relation']");
+        for (const studyTypeRadioButton of studyTypeRadioButtons) {
+          studyTypeRadioButton.checked = false;
+        }
+
+        //check the correct study type checkbox if the study type was determined
+        if (studyType) {
           const studyTypeRadioButton = document.querySelector(
             `input[name='dataset-relation'][value='${studyType}']`
           );
-          if (studyTypeRadioButton) {
-            studyTypeRadioButton.checked = true;
-          }
-          guidedDatasetKeywordsTagify.addTags(descriptionMetadata["keywords"]);
-        } else {
-          //reset the study type checkboxes
-          const studyTypeRadioButtons = document.querySelectorAll("input[name='dataset-relation']");
-          for (const studyTypeRadioButton of studyTypeRadioButtons) {
-            studyTypeRadioButton.checked = false;
-          }
+          studyTypeRadioButton.checked = true;
         }
       };
       guidedLoadDescriptionDatasetInformation();
@@ -10326,6 +10350,7 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
 
       if (sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] == "false") {
         //right click the second child in #items jqeury
+
         introJs()
           .setOptions({
             steps: [
