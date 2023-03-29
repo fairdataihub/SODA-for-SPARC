@@ -46,19 +46,6 @@ def import_xlsx_metadata(url, filename):
     return df.to_json()
 
 
-def import_xlsx_metadata_base(url, filename):
-    """
-    Imports an existing .xlsx metadata file from Pennsieve into the skeleton directory.
-    """
-    global path 
-
-    df = pd.read_excel( url, engine="openpyxl", usecols=column_check, header=0 )
-
-    skeleton_root_path = os.path.join(path, filename)
-
-    df.to_excel(skeleton_root_path, index=False, header=True)
-
-
 def import_RC_metadata(url, filename):
     """
     Import an existing README.txt or CHANGES.txt file from Pennsieve into the skeleton directory.
@@ -95,21 +82,6 @@ def import_metadata(url, filename):
         ) from e
     
 
-def import_metadata_base(url, filename):
-    """
-    Imports an existing metadata file from Pennsieve into the skeleton directory.
-    """
-    try:
-        if filename in ["README.txt", "CHANGES.txt"]:
-            return import_RC_metadata(url, filename)
-        else:
-            return import_xlsx_metadata_base(url, filename)
-    except Exception as e:
-        raise Exception(
-            "SODA cannot read this file. If you are trying to retrieve a submission.xlsx file from Pennsieve, please make sure you are signed in with your Pennsieve account on SODA."
-        ) from e
-
-
 # import existing metadata files except Readme and Changes from Pennsieve
 def import_bf_metadata_files_skeleton(bfdataset, ps, metadata_files):
 
@@ -134,63 +106,3 @@ def import_bf_metadata_files_skeleton(bfdataset, ps, metadata_files):
                 metadata_files[child["content"]["name"]] = metadata_json
 
     return metadata_files
-
-
-def import_bf_metadata_files_skeleton_base(bfdataset, ps):
-
-    if not os.path.exists(path):
-        os.makedirs(path)
-        
-    try: 
-        selected_dataset_id = ps.get_datasets()[bfdataset]
-    except Exception as e:
-        raise Exception("Please select a valid Pennsieve dataset.") from e
-
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(ps))
-    r.raise_for_status()
-
-    dataset = r.json()
-
-    for child in dataset["children"]:
-        if child["content"]["packageType"] != "Collection" and child["content"]["name"] in METADATA_FILES:
-                item_id = child["content"]["id"]
-                url = returnFileURL(ps, item_id)
-                import_metadata_base(url, child["content"]["name"])
-
-
-
-def import_manifest(url, path):
-    try:
-        df = pd.read_excel(
-            url, engine="openpyxl", usecols=column_check, header=0
-        )
-    except Exception as e:
-        raise Exception(
-            "SODA cannot read this file. If you are trying to retrieve a submission.xlsx file from Pennsieve, please make sure you are signed in with your Pennsieve account on SODA."
-        ) from e
-
-    # write the manifest file to the skeleton directory's root folder
-    final_path = os.path.join(path, "manifest.xlsx")
-    df.to_excel(final_path, index=False, header=True)
-
-
-def import_manifest_files_skeleton(dataset, ps):
-    for child in dataset["children"]:
-        if child["content"]["name"] in HIGH_LEVEL_FOLDERS:
-            # check the folders children
-            r = requests.get(f"{PENNSIEVE_URL}/packages/{child['content']['id']}", headers=create_request_headers(ps))
-            r.raise_for_status()
-
-            high_level_sparc_folder = r.json()
-            current_folder = child["content"]["name"]
-            
-            # for each child
-            for child in high_level_sparc_folder["children"]:
-                # check if the file is a manifest.xlsx file
-                if child['content']["name"] == "manifest.xlsx":
-                    # get the file's AWS URL 
-                    item_id = child['content']["id"]
-                    url = returnFileURL(ps, item_id)
-
-                    # write the file to the skeleton directory at the matching location in the pennsieve dataset that it was found in
-                    import_manifest(url, os.path.join(path, current_folder))
