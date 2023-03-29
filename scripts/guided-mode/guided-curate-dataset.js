@@ -958,6 +958,13 @@ const savePageChanges = async (pageBeingLeftID) => {
           });
           throw errorArray;
         }
+      } else {
+        // Store the Pennsieve account details in the sodaJSONObj to compare with the account details when the user returns to the Pennsieve intro page
+        const pennsieveIntroAccountDetailsText = document.getElementById(
+          "guided-pennsive-intro-account-details"
+        );
+        sodaJSONObj["last-confirmed-pennsieve-account-details"] =
+          pennsieveIntroAccountDetailsText.innerHTML;
       }
     }
     if (pageBeingLeftID === "guided-banner-image-tab") {
@@ -4838,7 +4845,7 @@ const openPage = async (targetPageID) => {
           for (const studyTypeElement of studyTypeElements) {
             studyTypeElement.classList.add("hidden");
           }
-        } else if (descriptionMetadata["type"]) {
+        } else if (descriptionMetadata?.["type"]) {
           studyType = descriptionMetadata["type"];
         }
 
@@ -4942,32 +4949,36 @@ const openPage = async (targetPageID) => {
         selectPennsieveAccountDiv.classList.add("hidden");
 
         const pennsieveIntroText = document.getElementById("guided-pennsive-intro-bf-account");
+        pennsieveIntroText.innerHTML = defaultBfAccount;
+
         const pennsieveIntroAccountDetailsText = document.getElementById(
           "guided-pennsive-intro-account-details"
         );
-        pennsieveIntroText.innerHTML = defaultBfAccount;
-
         setTimeout(() => {
           pennsieveIntroAccountDetailsText.scrollIntoView({
             behavior: "smooth",
             block: "start",
           });
         }, 0);
+        setPageLoadingState(true);
 
-        (async () => {
-          try {
-            let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
-              params: {
-                selected_account: defaultBfAccount,
-              },
-            });
-            let accountDetailsRes = bf_account_details_req.data.account_details;
-            pennsieveIntroAccountDetailsText.innerHTML = accountDetailsRes;
-          } catch (error) {
-            currentAccountDetailsText.innerHTML = "Error loading account details";
-            console.log(error);
+        try {
+          const bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
+            params: {
+              selected_account: defaultBfAccount,
+            },
+          });
+          const accountDetailsRes = bf_account_details_req.data.account_details;
+          pennsieveIntroAccountDetailsText.innerHTML = accountDetailsRes;
+          // If the account details are the same as the last confirmed account details, then automatically confirm the account
+          if (sodaJSONObj["last-confirmed-pennsieve-account-details"]) {
+            if (sodaJSONObj["last-confirmed-pennsieve-account-details"] === accountDetailsRes) {
+              document.getElementById("guided-confirm-pennsieve-account-button").click();
+            }
           }
-        })();
+        } catch (error) {
+          currentAccountDetailsText.innerHTML = "Error loading account details";
+        }
       }
     }
     if (targetPageID === "guided-banner-image-tab") {
