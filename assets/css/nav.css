@@ -518,14 +518,14 @@ a[data-toggle="collapse"] {
 }
 
 .guided--nav-bar-section:not(:first-child) {
-  margin-top: 15px;
+  margin-top: 5px;
 }
 
 .guided--container-nav-items {
   width: 100%;
   list-style: none;
   padding-left: 0px;
-  max-height: 441px;
+  max-height: 450px;
   overflow-y: auto;
   /* Make the scroll bar align with the right side of the container */
   margin-right: -12px;

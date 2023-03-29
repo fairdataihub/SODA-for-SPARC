@@ -417,14 +417,6 @@
   margin-top: 15px !important;
 }
 
-.guided--label-accordion-field {
-  font-size: 14px;
-  color: #090909;
-  font-weight: 600;
-  margin-top: 10px;
-  margin-bottom: 10px;
-}
-
 .progress-bar-table-left {
   width: 200px;
   text-align: right !important;
@@ -1021,4 +1013,11 @@
   font-weight: bold;
   pointer-events: none;
   vertical-align: middle;
+}
+
+.ellipsis-after-two-lines {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }

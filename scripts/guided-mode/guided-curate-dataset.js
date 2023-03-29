@@ -1887,7 +1887,7 @@ const guidedModifyCurationTeamAccess = async (action) => {
           {
             params: {
               selected_account: defaultBfAccount,
-              selected_dataset: sodaJSONObj["digital-metadata"]["name"],
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
               scope: "team",
               name: "SPARC Data Curation Team",
             },
@@ -1944,7 +1944,7 @@ const guidedModifyCurationTeamAccess = async (action) => {
           {
             params: {
               selected_account: defaultBfAccount,
-              selected_dataset: sodaJSONObj["digital-metadata"]["name"],
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
               scope: "team",
               name: "SPARC Data Curation Team",
             },
@@ -2812,15 +2812,25 @@ $("#guided-select-pennsieve-dataset-to-resume").selectpicker();
 const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
   // First hide the error div if it is showing
   const errorDiv = document.getElementById("guided-panel-pennsieve-dataset-import-error");
-  errorDiv.classList.add("hidden");
-
+  const logInDiv = document.getElementById("guided-panel-log-in-before-resuming-pennsieve-dataset");
   const loadingDiv = document.getElementById("guided-panel-pennsieve-dataset-import-loading");
   const pennsieveDatasetSelectDiv = document.getElementById(
     "guided-panel-pennsieve-dataset-select"
   );
+  // Hide all of the divs incase they were previously shown
+  errorDiv.classList.add("hidden");
+  logInDiv.classList.add("hidden");
+  loadingDiv.classList.add("hidden");
+  pennsieveDatasetSelectDiv.classList.add("hidden");
+
+  // If the user is not logged in, show the log in div and return
+  if (!defaultBfAccount) {
+    logInDiv.classList.remove("hidden");
+    return;
+  }
+
   //Show the loading Div and hide the dropdown div while the datasets the user has access to are being retrieved
   loadingDiv.classList.remove("hidden");
-  pennsieveDatasetSelectDiv.classList.add("hidden");
 
   const datasetSelectionSelectPicker = $("#guided-select-pennsieve-dataset-to-resume");
   datasetSelectionSelectPicker.empty();
@@ -3843,6 +3853,10 @@ const openPage = async (targetPageID) => {
 
       guidedLockSideBar(false);
     } else {
+      // Set the dataset name display in the side bar
+      const datasetNameDisplay = document.getElementById("guided-navbar-dataset-name-display");
+      datasetNameDisplay.innerHTML = datasetName;
+
       nextButton.innerHTML = "Save and Continue";
       saveAndExitButton.innerHTML = `<i class="far fa-save" style="margin-right: 10px"></i>Save and Exit`;
       guidedLockSideBar(true);
@@ -4482,24 +4496,48 @@ const openPage = async (targetPageID) => {
         const descriptionMetadata =
           sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"];
 
+        // Reset the keywords tags and add the stored ones if they exist in the JSON
         guidedDatasetKeywordsTagify.removeAllTags();
+        if (descriptionMetadata["keywords"]) {
+          guidedDatasetKeywordsTagify.addTags(descriptionMetadata["keywords"]);
+        }
 
-        if (descriptionMetadata) {
-          //check the checkbox for the study type where name is dataset-relation
-          const studyType = descriptionMetadata["type"];
+        const studyTypeElements = document.querySelectorAll(".study-type-element");
+
+        //Unhide the study type elements incase they were hidden
+        for (const studyTypeElement of studyTypeElements) {
+          studyTypeElement.classList.remove("hidden");
+        }
+
+        const userSpecifiedIfDatasetHasSubjects =
+          sodaJSONObj["button-config"]?.["dataset-contains-subjects"];
+
+        let studyType;
+
+        if (userSpecifiedIfDatasetHasSubjects) {
+          userSpecifiedIfDatasetHasSubjects === "yes"
+            ? (studyType = "experimental")
+            : (studyType = "computational");
+
+          for (const studyTypeElement of studyTypeElements) {
+            studyTypeElement.classList.add("hidden");
+          }
+        } else if (descriptionMetadata["type"]) {
+          studyType = descriptionMetadata["type"];
+        }
+
+        //reset the study type checkboxes
+        const studyTypeRadioButtons = document.querySelectorAll("input[name='dataset-relation']");
+        for (const studyTypeRadioButton of studyTypeRadioButtons) {
+          studyTypeRadioButton.checked = false;
+        }
+
+        //check the correct study type checkbox if the study type was determined
+        if (studyType) {
           const studyTypeRadioButton = document.querySelector(
             `input[name='dataset-relation'][value='${studyType}']`
           );
-          if (studyTypeRadioButton) {
-            studyTypeRadioButton.checked = true;
-          }
-          guidedDatasetKeywordsTagify.addTags(descriptionMetadata["keywords"]);
-        } else {
-          //reset the study type checkboxes
-          const studyTypeRadioButtons = document.querySelectorAll("input[name='dataset-relation']");
-          for (const studyTypeRadioButton of studyTypeRadioButtons) {
-            studyTypeRadioButton.checked = false;
-          }
+          studyTypeRadioButton.checked = true;
         }
       };
       guidedLoadDescriptionDatasetInformation();
@@ -5434,7 +5472,7 @@ const openPage = async (targetPageID) => {
       let bf_get_permissions = await client.get(`/manage_datasets/bf_dataset_permissions`, {
         params: {
           selected_account: defaultBfAccount,
-          selected_dataset: pennsieveDatasetID,
+          selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
         },
       });
       let datasetPermissions = bf_get_permissions.data.permissions;
@@ -5529,25 +5567,19 @@ const setActiveSubPage = (pageIdToActivate) => {
   //create a switch statement for pageIdToActivate to load data from sodaJSONObj
   //depending on page being opened
   if (pageIdToActivate === "guided-specify-subjects-page") {
+    document.getElementById("guided-section-dataset-type-text").classList.remove("hidden");
+    document.getElementById("guided-section-dataset-pools-text").classList.add("hidden");
+    document.getElementById("guided-section-dataset-samples-text").classList.add("hidden");
+
     renderSubjectsTable();
     //remove the add subject help text
     document.getElementById("guided-add-subject-instructions").classList.add("hidden");
-    document.getElementById(
-      "guided-subject-pool-sample-header"
-    ).innerHTML = `Subject specification`;
-    document.getElementById("guided-subject-pool-sample-text").innerHTML = `
-      SPARC data is typically collected from subjects (either human or non-human) and/or
-      from samples collected from such subjects (e.g., tissue samples). As per SPARC
-      guidelines, a unique ID of the format sub-xxx must be assigned to each subject of a
-      dataset and a unique ID of the format sam-xxx must be assigned to each sample from a
-      given subject.
-    `;
   }
   if (pageIdToActivate === "guided-organize-subjects-into-pools-page") {
-    document.getElementById("guided-subject-pool-sample-header").innerHTML = `Subject pooling`;
-    document.getElementById("guided-subject-pool-sample-text").innerHTML = `
-      In SPARC datasets, subjects can be regrouped under pools. 
-    `;
+    document.getElementById("guided-section-dataset-type-text").classList.add("hidden");
+    document.getElementById("guided-section-dataset-pools-text").classList.remove("hidden");
+    document.getElementById("guided-section-dataset-samples-text").classList.add("hidden");
+
     const pools = sodaJSONObj.getPools();
     const poolElementRows = Object.keys(pools)
       .map((pool) => {
@@ -5587,10 +5619,9 @@ const setActiveSubPage = (pageIdToActivate) => {
     }
   }
   if (pageIdToActivate === "guided-specify-samples-page") {
-    document.getElementById("guided-subject-pool-sample-header").innerHTML = `Sample specification`;
-    document.getElementById("guided-subject-pool-sample-text").innerHTML = `
-      This is the text for samples
-    `;
+    document.getElementById("guided-section-dataset-type-text").classList.add("hidden");
+    document.getElementById("guided-section-dataset-pools-text").classList.add("hidden");
+    document.getElementById("guided-section-dataset-samples-text").classList.remove("hidden");
     renderSamplesTable();
   }
   if (pageIdToActivate === "guided-primary-samples-organization-page") {
@@ -10319,6 +10350,7 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
 
       if (sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] == "false") {
         //right click the second child in #items jqeury
+
         introJs()
           .setOptions({
             steps: [

@@ -421,9 +421,14 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               confirm_click_account_function();
               updateBfAccountList();
 
-              // If the clicked button is the Guided Mode log in button, refresh the page to update UI
-              if (ev.getAttribute("id") === "guided-button-pennsieve-log-in") {
-                openPage("guided-pennsieve-intro-tab");
+              // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
+              // then reset the guided mode page
+              if (ev.getAttribute("data-reset-guided-mode-page") == "true") {
+                // Get the current page that the user is on in the guided mode
+                const currentPage = CURRENT_PAGE.id;
+                if (currentPage) {
+                  await openPage(currentPage);
+                }
               }
             } catch (error) {
               clientError(error);
