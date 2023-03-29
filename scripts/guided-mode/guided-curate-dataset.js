@@ -1887,7 +1887,7 @@ const guidedModifyCurationTeamAccess = async (action) => {
           {
             params: {
               selected_account: defaultBfAccount,
-              selected_dataset: sodaJSONObj["digital-metadata"]["name"],
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
               scope: "team",
               name: "SPARC Data Curation Team",
             },
@@ -1944,7 +1944,7 @@ const guidedModifyCurationTeamAccess = async (action) => {
           {
             params: {
               selected_account: defaultBfAccount,
-              selected_dataset: sodaJSONObj["digital-metadata"]["name"],
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
               scope: "team",
               name: "SPARC Data Curation Team",
             },
@@ -5450,7 +5450,7 @@ const openPage = async (targetPageID) => {
       let bf_get_permissions = await client.get(`/manage_datasets/bf_dataset_permissions`, {
         params: {
           selected_account: defaultBfAccount,
-          selected_dataset: pennsieveDatasetID,
+          selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
         },
       });
       let datasetPermissions = bf_get_permissions.data.permissions;
