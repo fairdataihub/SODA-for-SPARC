@@ -1351,6 +1351,38 @@ const savePageChanges = async (pageBeingLeftID) => {
     // Save the current version of SODA as the user should be taken back to the first page when the app is updated
     const currentAppVersion = document.getElementById("version").innerHTML;
     sodaJSONObj["last-version-of-soda-used"] = currentAppVersion;
+    if (pageBeingLeftID === "guided-dataset-validation-tab") {
+      const guidedButtonRunValidation = document.getElementById(
+        "guided-button-run-dataset-validation"
+      );
+      const guidedButtonSkipValidation = document.getElementById(
+        "guided-button-skip-dataset-validation"
+      );
+      if (
+        !guidedButtonRunValidation.classList.contains("selected") &&
+        !guidedButtonSkipValidation.classList.contains("selected")
+      ) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please indicate if you would like to run validation on your dataset",
+        });
+        throw errorArray;
+      }
+
+      if (guidedButtonRunValidation.classList.contains("selected")) {
+        const datasetSuccessfullyValidated = sodaJSONObj["dataset-validated"];
+        if (!datasetSuccessfullyValidated) {
+          errorArray.push({
+            type: "notyf",
+            message: "This check can be removed to make validation unnecessary",
+          });
+          throw errorArray;
+        }
+      }
+      if (guidedButtonSkipValidation.classList.contains("selected")) {
+        // We don't have to do anything here.
+      }
+    }
   } catch (error) {
     guidedSetNavLoadingState(false);
     console.log(error);
@@ -2608,6 +2640,43 @@ const updateManifestJson = async (highLvlFolderName, result) => {
   };
 };
 
+const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
+  // if the user chose to auto-generate manifest files, create the excel files in local storage
+  // and add the paths to the manifest files in the datasetStructure object
+  if (sodaJSONObj["button-config"]["manifest-files-generated-automatically"] === "yes") {
+    /**
+     * If the user has selected to auto-generate manifest files,
+     * grab the manifest data for each high level folder, create an excel file
+     * using the manifest data, and add the excel file to the datasetStructureJSONObj
+     */
+
+    // First, empty the guided_manifest_files so we can add the new manifest files
+    fs.emptyDirSync(guidedManifestFilePath);
+
+    const guidedManifestData = sodaJSONObj["guided-manifest-files"];
+    for (const [highLevelFolder, manifestData] of Object.entries(guidedManifestData)) {
+      let manifestJSON = processManifestInfo(
+        guidedManifestData[highLevelFolder]["headers"],
+        guidedManifestData[highLevelFolder]["data"]
+      );
+      jsonManifest = JSON.stringify(manifestJSON);
+
+      const manifestPath = path.join(guidedManifestFilePath, highLevelFolder, "manifest.xlsx");
+
+      fs.mkdirSync(path.join(guidedManifestFilePath, highLevelFolder), {
+        recursive: true,
+      });
+
+      convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
+      datasetStructureJSONObj["folders"][highLevelFolder]["files"]["manifest.xlsx"] = {
+        action: ["new"],
+        path: manifestPath,
+        type: "local",
+      };
+    }
+  }
+};
+
 const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
   const existingManifestData = sodaJSONObj["guided-manifest-files"][highLevelFolderName];
   //send manifest data to main.js to then send to child window
@@ -2806,6 +2875,197 @@ document
 
     //Rerender the manifest cards
     await renderManifestCards();
+  });
+
+document
+  .getElementById("guided-button-run-dataset-validation")
+  .addEventListener("click", async () => {
+    // Aaron - This is where you can add your validation logic
+    const dummy = document.getElementById("dummy-text-remove-me");
+    const datasetAlreadyValidated = sodaJSONObj["dataset-validated"];
+    if (datasetAlreadyValidated) {
+      dummy.innerHTML = "Dataset already validated nothing has changed no need to revalidate";
+      return;
+    }
+    guidedSetNavLoadingState(true);
+    // Logic that starts the validation will go here
+    dummy.innerHTML = "Validating dataset...";
+    try {
+      // Simulate a long running validation
+      await new Promise((r) => setTimeout(r, 4000));
+      dummy.innerHTML = "Dataset validated";
+      // Uncomment the line below to test the error handling
+      // throw new Error("Test error");
+      sodaJSONObj["dataset-validated"] = true;
+
+      // create the manifest files if the user auto generated manifest files at any point
+      await guidedCreateManifestFilesAndAddToDatasetStructure();
+
+      // TODO: Fine tune instead of waiting check until the manifest files exist then call the manifest generation function
+      await wait(1000);
+
+      // get the manifest files
+      let manifestJSONResponse;
+      try {
+        manifestJSONResponse = await client.post(
+          "/skeleton_dataset/manifest_json",
+          {
+            sodajsonobject: sodaJSONObj,
+          },
+          {
+            timeout: 0,
+          }
+        );
+      } catch (error) {
+        clientError(error);
+        await Swal.fire({
+          title: "Failed to Validate Your Dataset",
+          text: "Please try again. If this issue persists contect the SODA for SPARC team at help@fairdataihub.org",
+          allowEscapeKey: true,
+          allowOutsideClick: false,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          timerProgressBar: false,
+          showConfirmButton: true,
+          icon: "error",
+        });
+        return;
+      }
+
+      let manifests = manifestJSONResponse.data;
+      console.log(manifests);
+
+      let validationResponse;
+      let validationReport;
+      try {
+        validationResponse = await client.post(
+          `https://validation.sodaforsparc.io/validator/validate`,
+          {
+            clientUUID: uuid(),
+            dataset_structure: sodaJSONObj,
+            metadata_files: {},
+            manifests: manifests,
+          }
+        );
+
+        validationReport = validationResponse.data;
+      } catch (error) {
+        clientError(error);
+
+        file_counter = 0;
+        folder_counter = 0;
+        get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
+        // log successful validation run to analytics
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Validation - Number of Files",
+          "Number of Files",
+          file_counter
+        );
+
+        await Swal.fire({
+          title: "Failed to Validate Your Dataset",
+          text: "Please try again. If this issue persists contect the SODA for SPARC team at help@fairdataihub.org",
+          allowEscapeKey: true,
+          allowOutsideClick: false,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          timerProgressBar: false,
+          showConfirmButton: true,
+          icon: "error",
+        });
+        return;
+      }
+
+      // write the full report to the ~/SODA/validation.txt file
+      let fullReport = validationReport.full_report;
+      let validationReportPath = path.join(os.homedir(), "SODA", "validation.txt");
+      fs.writeFileSync(validationReportPath, fullReport);
+
+      let SODADirectory = path.join(os.homedir(), "SODA");
+
+      file_counter = 0;
+      folder_counter = 0;
+      get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
+
+      console.log("File counter shows: " + file_counter + " files");
+
+      // log successful validation run to analytics
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        "Validation - Number of Files",
+        "Number of Files",
+        file_counter
+      );
+
+      if (validationReport.status === "Incomplete") {
+        // An incomplete validation report happens when the validator is unable to generate
+        // a path_error_report upon validating the selected dataset.
+        let viewReportResult = await Swal.fire({
+          title: "Could Not Generate a Sanitized Validation Report",
+          html: `If you repeatedly have this issue please contact the SPARC Curation Team for support at curation@sparc.science. Would you like to view your raw validation report?`,
+          allowEscapeKey: true,
+          allowOutsideClick: false,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          icon: "error",
+          showCancelButton: true,
+          cancelButtonText: "No",
+          confirmButtonText: "Yes",
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        });
+
+        if (viewReportResult.isConfirmed) {
+          // open a shell to the raw validation report
+          shell.openPath(validationReportPath);
+        }
+        return;
+      }
+
+      // get the parsed error report since the validation has been completed
+      let errors = validationReport.parsed_report;
+
+      // list the results in a table ( ideally the one used in the validate feature )
+      if (!validationErrorsOccurred(errors)) {
+        return;
+      }
+
+      // get validation table body
+      let validationErrorsTable = document.querySelector(
+        "#guided-section-dataset-validation-table tbody"
+      );
+
+      clearValidationResults(validationErrorsTable);
+
+      // display errors onto the page
+      displayValidationErrors(
+        errors,
+        document.querySelector("#guided-section-dataset-validation-table tbody")
+      );
+
+      // show the validation errors to the user
+      document.querySelector("#guided-section-dataset-validation-table").style.visibility =
+        "visible";
+
+      document.querySelector("#guided--table-validation-errors").style.visibility = "visible";
+
+      // scroll so that the table is in the viewport
+      document
+        .querySelector("#guided-section-dataset-validation-table")
+        .scrollIntoView({ behavior: "smooth" });
+    } catch (error) {
+      // Validation failed. Show a swal and have the user go back to fix stuff (or retry)
+      clientError(error);
+      sodaJSONObj["dataset-validated"] = false;
+    }
+    guidedSetNavLoadingState(false);
   });
 
 $("#guided-select-pennsieve-dataset-to-resume").selectpicker();
@@ -3783,6 +4043,48 @@ const guidedShowOptionalRetrySwal = async (errorMessage, pageIdToRetryOpening) =
   }
 };
 
+// Function that handles the validation state of the dataset
+// When the user goes back to before the validation tab, the dataset is no longer validated
+// This function will reset the dataset-validated value to false so validation will be retriggered
+// when the user goes to the validation tab
+const handleGuidedValidationState = (targetPageID) => {
+  if (sodaJSONObj["dataset-validated"] === true) {
+    const nonSkippedPages = getNonSkippedGuidedModePages(document);
+    const indexOfCurrentPage = nonSkippedPages.findIndex((page) => page.id === targetPageID);
+    const indexOfValidationPage = nonSkippedPages.findIndex(
+      (page) => page.id === "guided-dataset-validation-tab"
+    );
+    if (indexOfCurrentPage < indexOfValidationPage) {
+      sodaJSONObj["dataset-validated"] = false;
+    }
+  }
+};
+
+// Function that handles the visibility of the back button
+const handleBackButtonVisibility = (targetPageID) => {
+  if (
+    targetPageID === "guided-dataset-dissemination-tab" ||
+    targetPageID === "guided-dataset-generation-tab"
+  ) {
+    $("#guided-back-button").css("visibility", "hidden");
+  } else {
+    $("#guided-back-button").css("visibility", "visible");
+  }
+};
+
+// Function that handles the visibility of the next button
+const handleNextButtonVisibility = (targetPageID) => {
+  if (
+    targetPageID === "guided-dataset-generation-confirmation-tab" ||
+    targetPageID === "guided-dataset-generation-tab" ||
+    targetPageID === "guided-dataset-dissemination-tab"
+  ) {
+    $("#guided-next-button").css("visibility", "hidden");
+  } else {
+    $("#guided-next-button").css("visibility", "visible");
+  }
+};
+
 //Main function that prepares individual pages based on the state of the sodaJSONObj
 //The general flow is to check if there is values for the keys relevant to the page
 //If the keys exist, extract the data from the sodaJSONObj and populate the page
@@ -3830,6 +4132,20 @@ const openPage = async (targetPageID) => {
     } else {
       $("#guided-back-button").css("visibility", "visible");
     }
+    
+    //Hide the high level progress steps and green pills if the user is on the before getting started page
+    if (targetPageID === "guided-prepare-helpers-tab") {
+      //validate the api key and adjust icon accordingly
+      document.getElementById("structure-dataset-capsule-container").classList.add("hidden");
+      document.querySelector(".guided--progression-tab-container").classList.add("hidden");
+    } else {
+      document.getElementById("structure-dataset-capsule-container").classList.remove("hidden");
+      document.querySelector(".guided--progression-tab-container").classList.remove("hidden");
+    }
+
+    handleNextButtonVisibility(targetPageID);
+    handleBackButtonVisibility(targetPageID);
+    handleGuidedValidationState(targetPageID);
 
     // Hide the Header div on the resume existing dataset page
     const guidedProgressContainer = document.getElementById("guided-header-div");
@@ -6405,6 +6721,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["button-config"] = {};
   sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] = "false";
   datasetStructureJSONObj = { folders: {}, files: {} };
+  sodaJSONObj["dataset-validated"] = false;
 };
 const guidedHighLevelFolders = ["primary", "source", "derivative"];
 const nonGuidedHighLevelFolders = ["code", "protocol", "docs"];
@@ -12368,43 +12685,6 @@ $(document).ready(async () => {
       sodaJSONObj["digital-metadata"]["name"] = newDatasetName;
 
       guidedPennsieveDatasetUpload();
-    }
-  };
-
-  const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
-    // if the user chose to auto-generate manifest files, create the excel files in local storage
-    // and add the paths to the manifest files in the datasetStructure object
-    if (sodaJSONObj["button-config"]["manifest-files-generated-automatically"] === "yes") {
-      /**
-       * If the user has selected to auto-generate manifest files,
-       * grab the manifest data for each high level folder, create an excel file
-       * using the manifest data, and add the excel file to the datasetStructureJSONObj
-       */
-
-      // First, empty the guided_manifest_files so we can add the new manifest files
-      fs.emptyDirSync(guidedManifestFilePath);
-
-      const guidedManifestData = sodaJSONObj["guided-manifest-files"];
-      for (const [highLevelFolder, manifestData] of Object.entries(guidedManifestData)) {
-        let manifestJSON = processManifestInfo(
-          guidedManifestData[highLevelFolder]["headers"],
-          guidedManifestData[highLevelFolder]["data"]
-        );
-        jsonManifest = JSON.stringify(manifestJSON);
-
-        const manifestPath = path.join(guidedManifestFilePath, highLevelFolder, "manifest.xlsx");
-
-        fs.mkdirSync(path.join(guidedManifestFilePath, highLevelFolder), {
-          recursive: true,
-        });
-
-        convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
-        datasetStructureJSONObj["folders"][highLevelFolder]["files"]["manifest.xlsx"] = {
-          action: ["new"],
-          path: manifestPath,
-          type: "local",
-        };
-      }
     }
   };
 

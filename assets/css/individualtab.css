@@ -1454,3 +1454,43 @@
   width: 300px;
   position: relative;
 }
+
+.validate-raw-report_btn {
+  background: none !important;
+  border: none;
+  padding: 0 !important;
+  /*optional*/
+  font-family: arial, sans-serif;
+  /*input has OS specific font-family*/
+  color: #069;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.validate-raw-report_btn:hover {
+  background: none !important;
+  border: none;
+  padding: 0 !important;
+  /*optional*/
+  font-family: arial, sans-serif;
+  /*input has OS specific font-family*/
+  color: #069;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+#gather-logs-btn {
+  background: var(--color-light-green);
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  width: 130px;
+  height: 38px;
+  border: none;
+  cursor: pointer !important;
+  border-radius: 4px;
+}
+
+#gather-logs-btn:hover {
+  box-shadow: 0 0 6px #b0b0b0;
+}

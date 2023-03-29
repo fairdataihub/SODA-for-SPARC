@@ -9,3 +9,5 @@ from .apiTaxonomy import api as taxonomy_resource
 from .apiUser import api as user_resource
 from .apiDatasets import api as datasets_resource
 from .apiCollections import api as collections_resource
+from .apiSkeleton import api as skeleton_resource
+from .apiValidator import api as validate_dataset_resource

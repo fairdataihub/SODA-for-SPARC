@@ -4730,6 +4730,7 @@
           <div class="guided--capsule" id="guided-dataset-generate-location-capsule"></div>
           <div class="guided--capsule" id="guided-dataset-generate-destination-capsule"></div>
           -->
+          <div class="guided--capsule" id="guided-dataset-validation-capsule"></div>
           <div class="guided--capsule" id="guided-dataset-generation-confirmation-capsule"></div>
           <div class="guided--capsule" id="guided-dataset-generation-capsule"></div>
           <div class="guided--capsule" id="guided-dataset-dissemination-capsule"></div>
@@ -5051,6 +5052,117 @@
           </div>
         </div>
         -->
+        <div
+          id="guided-dataset-validation-tab"
+          class="guided--page hidden"
+          data-page-name="Dataset validation"
+        >
+          <div class="guided--section">
+            <h1 class="guided--text-sub-step">Dataset validation</h1>
+            <p class="guided--help-text">
+              Description of what dataset validation is, and also maybe let the user know that they
+              can skip it if desired
+            </p>
+          </div>
+          <div class="guided--section">
+            <h2 class="guided--text-sub-step">
+              Would you like to validate your dataset before uploading?
+            </h2>
+            <div class="guided--radio-button-container">
+              <button
+                class="guided--radio-button tile-button"
+                id="guided-button-run-dataset-validation"
+                data-next-element="guided-section-dataset-validation-table"
+                data-button-config-value="dataset-validated"
+                data-button-config-value-state="yes"
+              >
+                <div class="guided--tile-button-icon">
+                  <svg
+                    width="48px"
+                    height="48px"
+                    viewBox="0 0 16 16"
+                    class="bi bi-clipboard-check"
+                    fill="#585858"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      fill="#13716D"
+                      d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"
+                    ></path>
+                    <path
+                      fill-rule="evenodd"
+                      fill="#B80D49"
+                      d="M9.5 1h-3a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h3a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3zm4.354 7.146a.5.5 0 0 1 0 .708l-3 3a.5.5 0 0 1-.708 0l-1.5-1.5a.5.5 0 1 1 .708-.708L7.5 9.793l2.646-2.647a.5.5 0 0 1 .708 0z"
+                    ></path>
+                  </svg>
+                </div>
+                <div class="guided--tile-body">
+                  <h2>Yes, validate dataset before uploading</h2>
+                </div></button
+              ><button
+                class="guided--radio-button tile-button"
+                id="guided-button-skip-dataset-validation"
+                data-next-element="guided-section-skip-validation"
+                data-button-config-value="dataset-validated"
+                data-button-config-value-state="no"
+              >
+                <div class="guided--tile-button-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 640 512">
+                    <path
+                      fill="currentColor"
+                      d="M320 0c17.7 0 32 14.3 32 32V96H480c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H160c-35.3 0-64-28.7-64-64V160c0-35.3 28.7-64 64-64H288V32c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H208zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H304zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H400zM264 256c0-22.1-17.9-40-40-40s-40 17.9-40 40s17.9 40 40 40s40-17.9 40-40zm152 40c22.1 0 40-17.9 40-40s-17.9-40-40-40s-40 17.9-40 40s17.9 40 40 40zM48 224H64V416H48c-26.5 0-48-21.5-48-48V272c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48v96c0 26.5-21.5 48-48 48H576V224h16z"
+                    />
+                  </svg>
+                </div>
+                <div class="guided--tile-body">
+                  <h2>No, skip validation for now</h2>
+                </div>
+              </button>
+            </div>
+          </div>
+          <div class="guided--section" id="guided-section-dataset-validation-table">
+            <p class="guided--help-text" id="dummy-text-remove-me"></p>
+            <!--Aaron here add the validation table-->
+            <div
+              id="guided--table-validation-errors"
+              style="
+                visibility: hidden;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin-top: 50px;
+              "
+            >
+              <label style="font-size: 17px; color: var(--color-bg-plum)">
+                Validation Errors
+              </label>
+              <div style="border-radius: 0.5rem; margin-top: 5px; width: 550px; align-self: center">
+                <p class="tip-content">
+                  The path column indicates where the errors occurred in your dataset. The message
+                  column provides an explanation of what the errors are. For updated validation
+                  results re-run validation by pressing the 'Validate Dataset' button.
+                </p>
+              </div>
+
+              <table class="ui celled padded table" style="width: 800px">
+                <thead>
+                  <tr>
+                    <th>Path</th>
+                    <th>Message</th>
+                    <!-- <th>Fix Here</th> -->
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+          <div class="guided--section" id="guided-section-skip-validation">
+            <h2 class="guided--text-sub-step">
+              Click "Save and Continue" to continue without validating your dataset
+            </h2>
+          </div>
+        </div>
 
         <div
           id="guided-dataset-generation-confirmation-tab"

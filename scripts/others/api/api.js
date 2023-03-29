@@ -320,6 +320,46 @@ const uploadCollectionTags = async (account, dataset, tags) => {
   }
 };
 
+/**
+ *
+ * @param {*} formattedPennsieveSODAJSONObj - A soda json object that contains an imported Pennsieve dataset that has been formatted for curation.
+ *
+ * Mutates the argument object by performing the user actions (replace, rename, move, delete) stored in the argument object.
+ * The actions stored in the argument object are reflective of user actions performed in SODA's File Viewer UIs ( found in Organize Datasets step 5, Guided Mode, etc ).
+ * IMP: These actions are performed in the /curation endpoint. However, this endpoint exists in order to provide a local copy of the argument object post mutation
+ *      without having to generate the object on Pennsieve.
+ * Use Cases For Mutated Argument: Generating manifest files in Organize & Guided Mode, generating local copies of Pennsieve datasets for Validation, etc.
+ */
+const performUserActions = async (formattedPennsieveSODAJSONObj) => {
+  let cleanCopyResponse;
+  // handle renaming, moving, replace, and deleting files and folders
+  try {
+    cleanCopyResponse = await client.post("/curate_datasets/clean-dataset", {
+      soda_json_structure: formattedPennsieveSODAJSONObj,
+    });
+  } catch (error) {
+    clientError(error);
+  }
+
+  formattedPennsieveSODAJSONObj = cleanCopyResponse.data.soda_json_structure;
+};
+
+const createSkeletonDataset = async (sodaJSONObj) => {
+  const response = await client.post("/skeleton_dataset", {
+    sodajsonobject: sodaJSONObj,
+  });
+  let data = response.data;
+  console.log(data);
+  return data["path_to_skeleton_dataset"];
+};
+
+const validateLocalDataset = async (datasetPath) => {
+  const validationResponse = await client.post("/validator/local", {
+    dataset_path: datasetPath,
+  });
+  return validationResponse.data;
+};
+
 const api = {
   getUserInformation,
   getDataset,
@@ -339,6 +379,9 @@ const api = {
   uploadCollectionTags,
   removeCollectionTags,
   uploadNewTags,
+  performUserActions,
+  createSkeletonDataset,
+  validateLocalDataset,
 };
 
 module.exports = api;

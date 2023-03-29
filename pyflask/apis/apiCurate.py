@@ -48,14 +48,10 @@ class CheckEmptyFilesFolders(Resource):
         except Exception as e:
             api.abort(500, str(e))
 
-model_clean_dataset = api.model("DatasetCleanup", {
-    "soda_json_structure": fields.String(description="JSON structure of the SODA dataset")
-})
 
 @api.route("/clean-dataset")
 class Curation(Resource):
     @api.doc(responses={500: "There was an internal server error", 400: "Bad request", 403: "Forbidden"}, description="Given a sodajson object, clean up the dataset structure for imported datasets that have been modified")
-    @api.marshal_with(model_clean_dataset)
     def post(self):
         data = request.get_json()
 

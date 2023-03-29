@@ -28,5 +28,6 @@ dependencies:
   - tqdm
   - protobuf == 4.21.12
   - pennsieve2 == 0.1.1
+  - sparcur == 0.0.1.dev5
   - certifi == 2022.12.7
   - requests == 2.28.1
