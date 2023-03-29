@@ -7192,9 +7192,7 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
   // Function to get the progress of the local dataset every 500ms
   const progressReport = async () => {
     try {
-      let monitorProgressResponse = await client.get(
-        `/organize_datasets/datasets/import/progress`
-      );
+      let monitorProgressResponse = await client.get(`/organize_datasets/datasets/import/progress`);
 
       let { data } = monitorProgressResponse;
       percentage_amount = data["progress_percentage"].toFixed(2);
@@ -7202,16 +7200,12 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
 
       numb.innerText = percentage_amount + "%";
       if (percentage_amount <= 50) {
-        progressBar_rightSide.style.transform = `rotate(${
-          percentage_amount * 0.01 * 360
-        }deg)`;
+        progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360}deg)`;
       } else {
         progressBar_rightSide.style.transition = "";
         progressBar_rightSide.classList.add("notransition");
         progressBar_rightSide.style.transform = `rotate(180deg)`;
-        progressBar_leftSide.style.transform = `rotate(${
-          percentage_amount * 0.01 * 180
-        }deg)`;
+        progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180}deg)`;
       }
 
       if (finished === 1) {
@@ -7221,9 +7215,7 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
         progressBar_rightSide.classList.remove("notransition");
         populate_existing_folders(datasetStructureJSONObj);
         populate_existing_metadata(sodaJSONObj);
-        $("#para-continue-location-dataset-getting-started").text(
-          "Please continue below."
-        );
+        $("#para-continue-location-dataset-getting-started").text("Please continue below.");
         $("#nextBtn").prop("disabled", false);
         // log the success to analytics
         logMetadataForAnalytics(
@@ -7241,7 +7233,7 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
       clientError(error);
       clearInterval(local_progress);
     }
-  }
+  };
 
   // Function begins here
   if (filepath.length > 0) {
@@ -7320,7 +7312,7 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
 
               // Show the progress bar
               document.getElementById("loading_local_dataset").style.display = "block";
-              
+
               // Show file path to user in the input box
               sodaJSONObj["starting-point"]["local-path"] = filepath[0];
               let root_folder_path = $("#input-destination-getting-started-locally").attr(
