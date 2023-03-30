@@ -2959,7 +2959,7 @@ def clean_json_structure(soda_json_structure):
             soda_json_structure["dataset-structure"] = dataset_structure
 
     # here will be clean up the soda json object before creating the manifest file cards
-    return {"soda_json_structure": json.dumps(soda_json_structure)}
+    return {"soda_json_structure": soda_json_structure}
 
 
 def main_curate_function(soda_json_structure):
