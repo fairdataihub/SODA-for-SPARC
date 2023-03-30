@@ -5,6 +5,7 @@ Works within Organize Datasets to allow a user to validate their dataset before 
 """
 
 import os
+import time
 from os.path import expanduser
 from .skeletonDatasetUtils import import_bf_metadata_files_skeleton
 from pennsieve2.pennsieve import Pennsieve
@@ -22,14 +23,16 @@ namespace_logger = get_namespace_logger(NamespaceEnum.SKELETON_DATASET)
 def get_manifests(soda_json_structure):
     manifests = {}
 
-    # chceck if guided mode
+    # check if guided mode
     if "guided-options" in soda_json_structure:
         # go through the high level folders in the dataset structure and get the manifest files
         for folder_name, folder_information in soda_json_structure["saved-datset-structure-json-obj"]["folders"].items():
-           
            if "manifest.xlsx" in folder_information["files"]:
               # get the xlsx path 
               path_man = folder_information["files"]["manifest.xlsx"]["path"]
+              # check if the file exists, if not, wait 1 second then check again
+              while not os.path.exists(path_man):
+                time.sleep(1)
               # read the xlsx file
               df = pd.read_excel(path_man)
               # convert to json
