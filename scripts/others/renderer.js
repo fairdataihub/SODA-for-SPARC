@@ -916,6 +916,7 @@ const serverIsLiveStartup = async () => {
   }
 
   let echoResponse = echoResponseObject.data;
+  console.log("server is ready res" + echoResponse);
 
   return echoResponse === "server ready" ? true : false;
 };
