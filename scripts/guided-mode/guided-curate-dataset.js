@@ -1378,7 +1378,7 @@ const savePageChanges = async (pageBeingLeftID) => {
 
       if (guidedButtonRunValidation.classList.contains("selected")) {
         const datasetSuccessfullyValidated = sodaJSONObj["dataset-validated"];
-        if (!datasetSuccessfullyValidated) {
+        if (!datasetSuccessfullyValidated === "true") {
           errorArray.push({
             type: "notyf",
             message: "This check can be removed to make validation unnecessary",
@@ -2822,6 +2822,8 @@ document
         { timeout: 0 }
       );
       let response = cleanJson.data.soda_json_structure;
+      console.log(response);
+      console.log(typeof response);
       // response does not format in JSON format so need to format ' with "
       let regex = /'/gm;
       let formattedResponse = response.replace(regex, '"');
@@ -2887,7 +2889,7 @@ document
 document
   .getElementById("guided-button-run-dataset-validation")
   .addEventListener("click", async () => {
-    const datasetAlreadyValidated = sodaJSONObj["dataset-validated"] === true;
+    const datasetAlreadyValidated = sodaJSONObj["dataset-validated"] === "true";
     if (datasetAlreadyValidated) {
       await Swal.fire({
         title: "Dataset Already Validated",
@@ -3022,9 +3024,10 @@ document
           .scrollIntoView({ behavior: "smooth" });
       }
     } catch (error) {
+      console.log(error);
       // Validation failed. Show a swal and have the user go back to fix stuff (or retry)
       clientError(error);
-      sodaJSONObj["dataset-validated"] = false;
+      sodaJSONObj["dataset-validated"] = "false";
       if (error.incompleteValidationReport) {
         let viewReportResult = await Swal.fire({
           title: "Could Not Generate a Sanitized Validation Report",
@@ -4047,14 +4050,14 @@ const guidedShowOptionalRetrySwal = async (errorMessage, pageIdToRetryOpening) =
 // This function will reset the dataset-validated value to false so validation will be retriggered
 // when the user goes to the validation tab
 const handleGuidedValidationState = (targetPageID) => {
-  if (sodaJSONObj["dataset-validated"] === true) {
+  if (sodaJSONObj["dataset-validated"] === "true") {
     const nonSkippedPages = getNonSkippedGuidedModePages(document);
     const indexOfCurrentPage = nonSkippedPages.findIndex((page) => page.id === targetPageID);
     const indexOfValidationPage = nonSkippedPages.findIndex(
       (page) => page.id === "guided-dataset-validation-tab"
     );
     if (indexOfCurrentPage < indexOfValidationPage) {
-      sodaJSONObj["dataset-validated"] = false;
+      sodaJSONObj["dataset-validated"] = "false";
     }
   }
 };
@@ -6724,7 +6727,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["button-config"] = {};
   sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] = "false";
   datasetStructureJSONObj = { folders: {}, files: {} };
-  sodaJSONObj["dataset-validated"] = false;
+  sodaJSONObj["dataset-validated"] = "false";
 };
 const guidedHighLevelFolders = ["primary", "source", "derivative"];
 const nonGuidedHighLevelFolders = ["code", "protocol", "docs"];
