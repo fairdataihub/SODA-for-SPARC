@@ -87,6 +87,8 @@ const showParentTab = (tabNow, nextOrPrev) => {
         $(".flex-row-container.code-metadata").css("display", "none");
       }
     }
+    $(".div-organize-generate-dataset.metadata").removeClass("hide");
+    $(".div-individual-metadata").removeClass("show");
     $("#nextBtn").prop("disabled", false);
   }
   if (tabNow == 4) {
@@ -476,7 +478,10 @@ const checkHighLevelFoldersInput = () => {
  */
 const nextPrev = (pageIndex) => {
   // var x = document.getElementsByClassName("parent-tabs");
+  console.log("nextPrev called");
+  console.log(pageIndex);
   let parentTabs = document.getElementsByClassName("parent-tabs");
+  console.log(parentTabs[currentTab].id);
 
   if (pageIndex == -1 && parentTabs[currentTab].id === "getting-started-tab") {
     let event = new CustomEvent("custom-back", {
@@ -863,6 +868,7 @@ const raiseWarningGettingStarted = (ev) => {
       }).then((result) => {
         if (result.isConfirmed) {
           globalGettingStarted1stQuestionBool = true;
+          wipeOutCurateProgress();
           resolve(globalGettingStarted1stQuestionBool);
         } else {
           globalGettingStarted1stQuestionBool = false;
@@ -2397,8 +2403,9 @@ const populate_existing_folders = (dataset_folders) => {
   return;
 };
 
+// This function populates the UI with the existing metadata files
 const populate_existing_metadata = (datasetStructureJSONObj) => {
-  let metadataobject = datasetStructureJSONObj["metadata-files"];
+  let metadataobject = datasetStructureJSONObj?.["metadata-files"];
   if (metadataobject == null || metadataobject == undefined) {
     return;
   }
@@ -2438,7 +2445,7 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
           $("#para-ds-description-file-path").html(
             "Using file present on Pennsieve. <br> File name: " + key
           );
-          $("#metadata-ds-description-pennsieve").css("display", "inline-block");
+          $("#metadata-ds-description-pennsieve").addClass("d-flex");
         } else if (
           metadataobject[key]["type"] == "local" &&
           metadataobject[key]["action"].includes("existing")
@@ -2459,7 +2466,7 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
           $("#para-subjects-file-path").html(
             "Using file present on Pennsieve. <br> File name: " + key
           );
-          $("#metadata-subjects-pennsieve").css("display", "inline-block");
+          $("#metadata-subjects-pennsieve").addClass("d-flex");
         } else if (
           metadataobject[key]["type"] == "local" &&
           metadataobject[key]["action"].includes("existing")
@@ -2479,7 +2486,7 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
           $("#para-samples-file-path").html(
             "Using file present on Pennsieve. <br> File name: " + key
           );
-          $("#metadata-samples-pennsieve").css("display", "inline-block");
+          $("#metadata-samples-pennsieve").addClass("d-flex");
         } else if (
           metadataobject[key]["type"] == "local" &&
           metadataobject[key]["action"].includes("existing")
@@ -2499,7 +2506,7 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
           $("#para-readme-file-path").html(
             "Using file present on Pennsieve. <br> File name: " + key
           );
-          $("#metadata-README-pennsieve").css("display", "inline-block");
+          $("#metadata-README-pennsieve").addClass("d-flex");
         } else if (
           metadataobject[key]["type"] == "local" &&
           metadataobject[key]["action"].includes("existing")
@@ -2519,7 +2526,7 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
           $("#para-changes-file-path").html(
             "Using file present on Pennsieve. <br> File name: " + key
           );
-          $("#metadata-CHANGES-pennsieve").css("display", "inline-block");
+          $("#metadata-CHANGES-pennsieve").addClass("d-flex");
         } else if (
           metadataobject[key]["type"] == "local" &&
           metadataobject[key]["action"].includes("existing")
@@ -2539,7 +2546,7 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
           $("#para-codeDescription-file-path").html(
             "Using file present on Pennsieve. <br> File name: " + key
           );
-          $("#metadata-codeDescription-pennsieve").css("display", "inline-block");
+          $("#metadata-codeDescription-pennsieve").addClass("d-flex");
         } else if (
           metadataobject[key]["type"] == "local" &&
           metadataobject[key]["action"].includes("existing")
@@ -2559,7 +2566,7 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
           $("#para-codeParamMetadata-file-path").html(
             "Using file present on Pennsieve. <br> File name: " + key
           );
-          $("#metadata-inputsMetadata-pennsieve").css("display", "inline-block");
+          $("#metadata-inputsMetadata-pennsieve").addClass("d-flex");
         } else if (
           metadataobject[key]["type"] == "local" &&
           metadataobject[key]["action"].includes("existing")
@@ -2579,7 +2586,7 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
           $("#para-outputsMetadata-file-path").html(
             "Using file present on Pennsieve. <br> File name: " + key
           );
-          $("#metadata-outputsMetadata-pennsieve").css("display", "inline-block");
+          $("#metadata-outputsMetadata-pennsieve").addClass("d-flex");
         } else if (
           metadataobject[key]["type"] == "local" &&
           metadataobject[key]["action"].includes("existing")
@@ -3170,6 +3177,7 @@ const wipeOutCurateProgress = async () => {
     .removeClass("disabled");
   $("#organize-section").find(".parent-tabs.option-card.folder-input-check").prop("checked", false);
   $(".metadata-button.button-generate-dataset").removeClass("done");
+  $(".metadata-button.button-generate-dataset").removeClass("d-flex");
   $("#organize-section input:checkbox").prop("checked", false);
   $("#organize-section input:radio").prop("checked", false);
 

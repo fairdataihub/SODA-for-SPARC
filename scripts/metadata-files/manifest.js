@@ -56,6 +56,7 @@ function openFolder(generationLocation) {
 }
 
 $(document).ready(function () {
+  let localDataSetImport = false;
   ipcRenderer.on("selected-local-dataset-manifest-purpose", (event, folderPath) => {
     if (folderPath.length > 0) {
       if (folderPath !== null) {
@@ -82,7 +83,7 @@ $(document).ready(function () {
       document.getElementById("input-manifest-local-gen-location").placeholder = "Browse here";
       return;
     }
-
+    localDataSetImport = true;
     document.getElementById("input-manifest-local-gen-location").placeholder = folderPath[0];
   });
 
@@ -308,22 +309,12 @@ $(document).ready(function () {
         );
 
         let response = cleanJson.data.soda_json_structure;
-        // response does not format in JSON format so need to format ' with "
-        // and replace T with t (happens because of how the bool true is formatted in python (True) vs javascript (true))
-        let regex = /'/gm;
-        let formattedResponse = JSON.stringify(response).replace(regex, '"');
-        let capitalTPosition = formattedResponse.search("T");
-        while (capitalTPosition != -1) {
-          capitalTPosition = formattedResponse.search("T");
-          formattedResponse = formattedResponse.replace("T", "t");
-        }
 
-        let json_structure = JSON.parse(formattedResponse);
-        sodaCopy = json_structure;
+        sodaCopy = response;
         datasetStructCopy = sodaCopy["dataset-structure"];
       } catch (e) {
         clientError(e);
-        console.log(e);
+        userErrorMessage(e);
       }
 
       //manifest will still include pennsieve or locally imported files
@@ -382,6 +373,28 @@ $(document).ready(function () {
             let sortedJSON = processManifestInfo(manifestHeader, manifestFileData);
             jsonManifest = JSON.stringify(sortedJSON);
             convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
+          }
+        }
+
+        // Check if dataset is local or pennsieve
+        // If local then we need to read the excel file and create a json object
+        if (localDataSetImport) {
+          // get the paths of the manifest files that were imported locally
+          let manifestPaths = [];
+          // loop through sodaCopy["dataset-structure"]["folders"] and get the paths of the manifest files
+          for (const [highLevelFolderName, folderData] of Object.entries(
+            sodaCopy["dataset-structure"]["folders"]
+          )) {
+            // loop through highLevelFolderName["files"] and get the paths of the manifest files
+            console.log(highLevelFolderName);
+            console.log(folderData);
+            for (const [fileName, fileData] of Object.entries(folderData["files"])) {
+              console.log(fileName);
+              console.log(fileData);
+              if (fileName.includes("manifest")) {
+                manifestPaths.push(fileData["path"]);
+              }
+            }
           }
         }
 

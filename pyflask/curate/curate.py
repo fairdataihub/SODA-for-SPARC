@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ### Import required python modules
+import json
 import requests
 import platform
 import os
@@ -2870,7 +2871,7 @@ def bf_check_dataset_files_validity(soda_json_structure, ps):
 def clean_json_structure(soda_json_structure):
     global namespace_logger
     namespace_logger.info("Cleaning json structure")
-        # Delete any files on Pennsieve that have been marked as deleted
+    # Delete any files on Pennsieve that have been marked as deleted
     def recursive_file_delete(folder):
         if "files" in folder.keys():
             for item in list(folder["files"]):
@@ -2915,7 +2916,6 @@ def clean_json_structure(soda_json_structure):
 
         return
 
-
     def recursive_folder_delete(folder):
         """
         Delete any stray folders that exist on Pennsieve
@@ -2959,7 +2959,7 @@ def clean_json_structure(soda_json_structure):
             soda_json_structure["dataset-structure"] = dataset_structure
 
     # here will be clean up the soda json object before creating the manifest file cards
-    return {"soda_json_structure": soda_json_structure}
+    return {"soda_json_structure": json.dumps(soda_json_structure)}
 
 
 def main_curate_function(soda_json_structure):
