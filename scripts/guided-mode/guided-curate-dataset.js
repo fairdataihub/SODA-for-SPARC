@@ -586,7 +586,10 @@ const savePageChanges = async (pageBeingLeftID) => {
 
       // If the user selected that the dataset is SPARC funded, unskip the submission metadata page
       if (userSelectedDatasetIsSparcFunded) {
+        // Make sure the submission metadata and validation tab are unskipped as they are required
+        // for the SPARC funded dataset flow
         guidedUnSkipPage("guided-create-submission-metadata-tab");
+        guidedUnSkipPage("guided-dataset-validation-tab");
       }
 
       // If the user selected that dataset is not SPARC funded, skip the submission metadata page
@@ -625,6 +628,8 @@ const savePageChanges = async (pageBeingLeftID) => {
         // Skip the submission metadata page
         // This can be safely skipped as the logic that handles the submission file is ran during upload
         guidedSkipPage("guided-create-submission-metadata-tab");
+        //Skip the validation page as non-spac funded datasets do not need to be validated
+        guidedUnSkipPage("guided-dataset-validation-tab");
       }
     }
 
@@ -2889,22 +2894,13 @@ document
 document
   .getElementById("guided-button-run-dataset-validation")
   .addEventListener("click", async () => {
-    // Aaron - This is where you can add your validation logic
-    const dummy = document.getElementById("dummy-text-remove-me");
     const datasetAlreadyValidated = sodaJSONObj["dataset-validated"];
     if (datasetAlreadyValidated) {
-      dummy.innerHTML = "Dataset already validated nothing has changed no need to revalidate";
-      return;
+      alert("No need to validate dataset again.");
     }
     guidedSetNavLoadingState(true);
     // Logic that starts the validation will go here
-    dummy.innerHTML = "Validating dataset...";
     try {
-      // Simulate a long running validation
-      await new Promise((r) => setTimeout(r, 4000));
-      dummy.innerHTML = "Dataset validated";
-      // Uncomment the line below to test the error handling
-      // throw new Error("Test error");
       sodaJSONObj["dataset-validated"] = true;
 
       // create the manifest files if the user auto generated manifest files at any point

@@ -482,7 +482,7 @@
           data-page-name="Name and subtitle"
         >
           <h1 class="text-sub-step-title">Dataset name and subtitle</h1>
-          <div class="guided--section mt-5">
+          <div class="guided--section">
             <label class="guided--form-label">Dataset name: </label>
             <input
               class="guided--input"
@@ -4738,329 +4738,13 @@
           <div class="guided--capsule" id="guided-dataset-dissemination-capsule"></div>
         </div>
 
-        <!--
-        <div
-          id="guided-dataset-generate-location-tab"
-          class="guided--page hidden"
-          data-page-name="Generation destination"
-        >
-          <div class="guided--section">
-            <h1 class="text-sub-step-title mt-sm">
-              Where would you like to generate your dataset?
-            </h1>
-
-            <div class="guided--radio-button-container" style="margin-bottom: 7px">
-              <div
-                class="guided-tippy-wrapper"
-                data-tippy-content="Local dataset generation coming soon"
-                rel="popover"
-                placement="bottom"
-                data-trigger="hover"
-              >
-                <button
-                  class="ui primary basic button"
-                  id="guided-button-generate-dataset-locally"
-                  style="
-                    width: 240px;
-                    opacity: 0.5;
-                    cursor: default !important;
-                    pointer-events: none !important;
-                  "
-                >
-                  Generate dataset locally
-                </button>
-              </div>
-              <button
-                class="ui primary basic button guided--radio-button"
-                id="guided-button-generate-dataset-on-pennsieve"
-                data-next-element="guided-generate-dataset-pennsieve-panel"
-                data-button-config-value="dataset-generation-location"
-                data-button-config-value-state="Pennsieve"
-                style="width: 240px"
-              >
-                Generate dataset on Pennsieve
-              </button>
-            </div>
-
-            <div id="guided-dataset-generate-location-panels" class="guided--panel">
-              <div id="guided-generate-dataset-local-panel" class="guided--panel hidden">
-                <h4 class="ui header guided--prompt-continue">
-                  Please press next to confirm you would like to generate your dataset on your
-                  computer
-                </h4>
-              </div>
-              <div id="guided-generate-dataset-pennsieve-panel" class="guided--panel hidden">
-                <div class="guided--input-container">
-                  <h2 class="text-sub-step-title">
-                    Your dataset will be uploaded to Pennsieve using the following account:
-                  </h2>
-                  <div class="guided--container-data-display" style="margin-top: 0px">
-                    <div class="guided--card-dataset-info">
-                      <div class="guided--dataset-description-container">
-                        <h5 class="guided--dataset-description">Current account:</h5>
-                      </div>
-                      <div
-                        class="guided--dataset-content-container"
-                        onclick="openDropdownPrompt(this, 'bf')"
-                      >
-                        <h5 id="guided-bf-account" class="guided--dataset-content guidedBfAccount">
-                          None
-                        </h5>
-                        <i class="far fa-edit jump-back" style="color: #000"></i>
-                      </div>
-                    </div>
-                    <div class="guided--card-dataset-info">
-                      <div class="guided--dataset-description-container">
-                        <h5 class="guided--dataset-description">Account details:</h5>
-                      </div>
-                      <div
-                        class="guided--dataset-content-container"
-                        onclick="openDropdownPrompt(this, 'bf')"
-                      >
-                        <h5
-                          class="guided--dataset-content guidedBfAccountDetails"
-                          id="guided-account-details"
-                        >
-                          None
-                        </h5>
-                        <i class="far fa-edit jump-back" style="color: #000"></i>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div
-          id="guided-dataset-generate-destination-tab"
-          class="guided--page hidden"
-          data-page-name="Pennsieve dataset selection"
-        >
-          <div class="guided--section">
-            <h1 class="text-sub-step-title mt-sm">
-              Which dataset would you like to genenerate on?
-            </h1>
-            <div class="guided--radio-button-container" style="margin-bottom: 7px">
-              <div
-                class="guided-tippy-wrapper"
-                data-tippy-content="Updating an existing dataset coming soon"
-                rel="popover"
-                placement="bottom"
-                data-trigger="hover"
-              >
-                <button
-                  class="ui primary basic button"
-                  id="guided-button-pennsieve-generate-existing"
-                  style="
-                    width: 280px;
-                    opacity: 0.5;
-                    cursor: default !important;
-                    pointer-events: none !important;
-                  "
-                >
-                  Update an existing Pennsieve dataset
-                </button>
-              </div>
-              <button
-                class="ui primary basic button guided--radio-button"
-                id="guided-button-pennsieve-generate-new"
-                data-next-element="guided-generate-dataset-new-panel"
-                data-button-config-value="pennsieve-generation-location"
-                data-button-config-value-state="new"
-                style="width: 280px"
-              >
-                Generate a new Pennsieve dataset
-              </button>
-            </div>
-            <div id="generate-dataset-destination-panels" class="guided--panel">
-              <div id="guided-generate-dataset-new-panel" class="guided--panel hidden">
-                <div class="guided--section mt-md">
-                  <label class="guided--form-label">Dataset name: </label>
-                  <input
-                    class="guided--input"
-                    id="guided-input-dataset-name"
-                    type="text"
-                    placeholder="Enter Pennsieve dataset name here"
-                  />
-                  <p class="guided--text-input-instructions mb-0">
-                    <b
-                      >The name of the dataset on Pennsieve that will be available for all to see</b
-                    >
-                  </p>
-                </div>
-              </div>
-              <div id="guided-generate-dataset-existing-panel" class="guided--panel hidden">
-                <div class="guided--section">
-                  <div class="ui form" style="width: 100%">
-                    <div class="grouped fields">
-                      <h2 class="text-sub-step-title">
-                        Which existing Pennsieve dataset would you like to use?
-                      </h2>
-                      <div class="field" style="margin: 15px auto; width: 450px">
-                        <div
-                          style="
-                            display: flex;
-                            flex-direction: column;
-                            justify-content: space-between;
-                            margin-top: 15px;
-                            height: auto;
-                            box-shadow: 0px 0px 10px #d5d5d5;
-                            padding: 15px 25px;
-                            border-radius: 5px;
-                          "
-                        >
-                          <div
-                            style="
-                              display: flex;
-                              flex-direction: row;
-                              justify-content: space-between;
-                              margin-bottom: 15px;
-                            "
-                          >
-                            <div>
-                              <h5 style="color: #808080; font-size: 15px">
-                                Current dataset:
-                                <span
-                                  style="
-                                    color: #000;
-                                    font-weight: 600;
-                                    margin-left: 8px;
-                                    font-size: 15px;
-                                  "
-                                  id="guided-current-bf-dataset-generate"
-                                  >None</span
-                                >
-                              </h5>
-                            </div>
-                            <svg
-                              class="svg-change-current-account dataset bi bi-pencil-fill"
-                              onclick="openDropdownPrompt(this, 'dataset')"
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="18"
-                              height="18"
-                              fill="#000"
-                              viewbox="0 0 16 16"
-                            >
-                              <path
-                                d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                              />
-                            </svg>
-                            <div
-                              class="ui active green inline loader small"
-                              style="display: none"
-                            ></div>
-                            <div style="display: none" id="guided-div-permission-list">
-                              <h5 style="text-align: left; color: #000; display: none">
-                                Select permissions for filtering dataset lists:
-                                <div class="tooltipnew">
-                                  <img class="info" src="assets/img/info.png" />
-                                  <span class="tooltiptext">
-                                    You will see multiple dropdown lists throughout the SODA
-                                    interface listing you Pennsieve datasets. You can filter those
-                                    lists based on your permissions on the dataset.
-                                    <br /><br />
-                                    The default filter is "All" that shows you all the datasets for
-                                    which you have permissions.
-                                    <br /><br />
-                                    See our
-                                    <a
-                                      href="https://fairdataihub.org/sodaforsparc/docs/Add-edit-permissions"
-                                      style="color: white"
-                                    >
-                                      documentation</a
-                                    >
-                                    on Pennsieve permissions for more information.
-                                  </span>
-                                </div>
-                              </h5>
-                              <div style="display: none">
-                                <select
-                                  class="my-dropdown"
-                                  style="width: 100%"
-                                  id="guided-select-permission-list"
-                                >
-                                  <option default>All</option>
-                                  <option>Owner</option>
-                                  <option>Manager</option>
-                                  <option>Editor</option>
-                                  <option>Viewer</option>
-                                </select>
-                              </div>
-                              <div
-                                id="guided-div-filter-datasets-progress"
-                                class="ui active green inline loader"
-                                style="display: none; margin: 10px auto"
-                              ></div>
-                              <p
-                                id="guided-para-filter-datasets-status"
-                                style="font-size: 14px; display: none"
-                              ></p>
-
-                              <h5
-                                style="text-align: left; color: #000; display: none"
-                                id="guided-bf-dataset-select-header"
-                              >
-                                Select your dataset
-                              </h5>
-                              <div
-                                class="search-select-box"
-                                id="guided-bf-dataset-select-div"
-                                style="display: none"
-                              >
-                                <select
-                                  class="w-100"
-                                  id="guided-curate-bf-dataset-list"
-                                  data-live-search="true"
-                                  name="Pennsieve dataset"
-                                  style="width: 450px; border-radius: 7px; padding: 8px"
-                                  data-none-selected-text="Loading datasets..."
-                                >
-                                  <option value="" disabled>Loading...</option>
-                                </select>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                        <div
-                          style="
-                            display: none;
-                            flex-direction: row;
-                            justify-content: center;
-                            margin: 10px auto;
-                          "
-                        >
-                          <button
-                            id="guided-butfton-confirm-bf-dataset"
-                            class="btn_animated"
-                            data-next="Question-generate-dataset-existing-folders-options"
-                            style="
-                              display: none;
-                              margin: 10px auto;
-                              width: 100px;
-                              border: none !important;
-                            "
-                          >
-                            Confirm
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        -->
         <div
           id="guided-dataset-validation-tab"
           class="guided--page hidden"
           data-page-name="Dataset validation"
         >
           <div class="guided--section">
-            <h1 class="guided--text-sub-step">Dataset validation</h1>
+            <h1 class="text-sub-step-title">Dataset validation</h1>
             <p class="guided--help-text">
               Use this feature to validate a dataset against the SPARC Dataset Structure (SDS). For
               now, we recommend that you fix as many errors as possible before uploading and sharing
@@ -5068,7 +4752,7 @@
             </p>
           </div>
           <div class="guided--section">
-            <h2 class="guided--text-sub-step">
+            <h2 class="text-sub-step-title">
               Would you like to validate your dataset before uploading?
             </h2>
             <div class="guided--radio-button-container">
@@ -5125,8 +4809,19 @@
             </div>
           </div>
           <div class="guided--section" id="guided-section-dataset-validation-table">
-            <p class="guided--help-text" id="dummy-text-remove-me"></p>
-            <!--Aaron here add the validation table-->
+            <div class="guided--panel mt-0" id="guided-panel-validation-loading">
+              <div class="lds-roller">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+              SODA is validating your dataset.
+            </div>
             <div
               id="guided--table-validation-errors"
               style="
