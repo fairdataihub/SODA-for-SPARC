@@ -2826,25 +2826,8 @@ document
         { timeout: 0 }
       );
       let response = cleanJson.data.soda_json_structure;
-      console.log(response);
-      console.log(typeof response);
-      // response does not format in JSON format so need to format ' with "
-      // and replace T with t (happens because of how the bool true is formatted in python (True) vs javascript (true))
-      // let regex = /'/gm;
-      console.log(response);
-      console.log(type(response));
-      // let formattedResponse = JSON.stringify(response).replace(regex, '"');
-      // let capitalTPosition = formattedResponse.search("T");
-      // while (capitalTPosition != -1) {
-      //   capitalTPosition = formattedResponse.search("T");
-      //   formattedResponse = formattedResponse.replace("T", "t");
-      // }
-      // formattedResponse = JSON.parse(formattedResponse);
-      // console.log(formattedResponse);
+      let responseDataStructure = response["dataset-structure"];
 
-      // const formattedDatasetStructure = formattedResponse["dataset-structure"];
-      // console.log(formattedDatasetStructure);
-      // Retrieve the manifest data to be used to generate the manifest files
       const res = await client.post(
         `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
         {
