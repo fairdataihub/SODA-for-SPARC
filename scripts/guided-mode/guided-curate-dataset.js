@@ -2904,9 +2904,12 @@ document
     const validationSucessNoErrorsDiv = document.getElementById(
       "guided-section-validation-success-no-errors"
     );
+    const errorDuringValidationDiv = document.getElementById("guided-section-validation-failed");
+
     validationLoadingDiv.classList.add("hidden");
     validationResultsDiv.classList.add("hidden");
     validationSucessNoErrorsDiv.classList.add("hidden");
+    errorDuringValidationDiv.classList.add("hidden");
 
     if (sodaJSONObj["dataset-validated"] === "true") {
       const errorsFromLastValidation = sodaJSONObj["dataset-validation-errors"];
@@ -2938,14 +2941,14 @@ document
         manifestJSONResponse = await client.post(
           "/skeleton_dataset/manifest_json",
           {
-            sodajsonobject: sodaJSONObjx,
+            sodajsonobject: sodaJSONObj,
           },
           {
             timeout: 0,
           }
         );
       } catch (error) {
-        throw new Error("Failed to generate manifest files");
+        throw new Error("Failed to generate manifest files1");
       }
 
       let manifests = manifestJSONResponse.data;
@@ -3002,12 +3005,11 @@ document
         file_counter
       );
 
-      validationReportStatusIncomplete = true;
-      throw new Error("Could Not Generate a Sanitized Validation Report");
-
       if (validationReport.status === "Incomplete") {
         // An incomplete validation report happens when the validator is unable to generate
         // a path_error_report upon validating the selected dataset.
+        validationReportStatusIncomplete = true;
+        throw new Error("Could Not Generate a Sanitized Validation Report");
       }
 
       // get the parsed error report since the validation has been completed
@@ -3029,6 +3031,8 @@ document
       clientError(error);
       // Hide the loading div
       validationLoadingDiv.classList.add("hidden");
+      // Show the error div
+      errorDuringValidationDiv.classList.remove("hidden");
       // Validation failed. Show a swal and have the user go back to fix stuff (or retry)
       sodaJSONObj["dataset-validated"] = "false";
       delete sodaJSONObj["dataset-validation-errors"];
