@@ -68,7 +68,7 @@ $(".button-individual-metadata.remove").click(function () {
 });
 
 // Where metadata files are imported through free form mode
-// 
+//
 $(".metadata-button").click(function () {
   metadataFile = $(this);
   $(".div-organize-generate-dataset.metadata").addClass("hide");

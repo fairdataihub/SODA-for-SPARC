@@ -382,9 +382,11 @@ $(document).ready(function () {
           // get the paths of the manifest files that were imported locally
           let manifestPaths = [];
           // loop through sodaCopy["dataset-structure"]["folders"] and get the paths of the manifest files
-          for (const [highLevelFolderName, folderData] of Object.entries(sodaCopy["dataset-structure"]["folders"])) {
+          for (const [highLevelFolderName, folderData] of Object.entries(
+            sodaCopy["dataset-structure"]["folders"]
+          )) {
             // loop through highLevelFolderName["files"] and get the paths of the manifest files
-            console.log(highLevelFolderName)
+            console.log(highLevelFolderName);
             console.log(folderData);
             for (const [fileName, fileData] of Object.entries(folderData["files"])) {
               console.log(fileName);
@@ -393,7 +395,8 @@ $(document).ready(function () {
                 manifestPaths.push(fileData["path"]);
               }
             }
-        }}
+          }
+        }
 
         // Check if manifest data is different from what exists already (if previous data exists)
         const existingManifestData = sodaCopy["manifest-files"];

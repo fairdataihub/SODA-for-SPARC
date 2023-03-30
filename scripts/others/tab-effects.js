@@ -868,7 +868,7 @@ const raiseWarningGettingStarted = (ev) => {
       }).then((result) => {
         if (result.isConfirmed) {
           globalGettingStarted1stQuestionBool = true;
-          wipeOutCurateProgress()
+          wipeOutCurateProgress();
           resolve(globalGettingStarted1stQuestionBool);
         } else {
           globalGettingStarted1stQuestionBool = false;
