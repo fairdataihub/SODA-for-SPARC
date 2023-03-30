@@ -3384,7 +3384,9 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
             if(len(hlf_data_array) < 1):
                 hlf_data_array.append(standard_manifest_columns)
             for item in list(folder["files"]):
-
+                # do not generate a manifest file entry for the manifest file itself
+                if item in ["manifest.xlsx", "manifest.csv"]:
+                    continue
                 file_manifest_template_data = []
                 local_path_to_file = folder["files"][item]["path"].replace("\\", "/")
                 item_description = folder["files"][item]["description"]
