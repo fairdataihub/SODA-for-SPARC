@@ -62,7 +62,6 @@ def get_manifests(soda_json_structure):
                 # convert to json
                 manifests[key] = df.to_json()
     elif "starting-point" in soda_json_structure and "type" in soda_json_structure["starting-point"] and soda_json_structure["starting-point"]["type"] == "bf":
-      print("Handling pennsieve flow for standalone validator or imported pennsieve datasert")
       # check if the user has manifest files in their dataset's primary folders
       # if they do, add them to the manifests dict
       token = get_access_token()
