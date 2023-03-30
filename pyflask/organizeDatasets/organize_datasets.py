@@ -637,13 +637,9 @@ def create_soda_json_object_backend(
         entries = os.listdir(folder_path)
         for entry in entries:
             gevent.sleep(0)
-            check_path = folder_path + "\\" + entry
-            # replace forward slashes with backslashes
-            check_path = check_path.replace("/", "\\")
-            # replace single slashes with double slashes
-            check_path = check_path.replace("\\\\", "\\")
+            item_path = os.path.normpath(os.path.join(folder_path, entry))
 
-            if os.path.isfile(check_path) is True:
+            if os.path.isfile(item_path) is True:
                 # check manifest to add metadata
                 if entry[0:1] != ".":
                     create_soda_json_progress += 1
@@ -669,7 +665,7 @@ def create_soda_json_object_backend(
                                         extra_columns = True
                                         extra_columns_dict = dict(itertools.islice(key.items(), 5, len(key)))
                                     # description metadata
-                                    if key["filename"] in check_path:
+                                    if key["filename"] in item_path:
                                         if key["description"] != "":
                                             manifest_object["description"] = key[
                                                 "description"
@@ -744,7 +740,7 @@ def create_soda_json_object_backend(
                     # create json
                     if "extra_columns" in manifest_object:
                         dataset_structure["files"][entry] = {
-                            "path": check_path,
+                            "path": item_path,
                             "type": "local",
                             "action": ["existing"],
                             "description": manifest_object["description"],
@@ -753,22 +749,22 @@ def create_soda_json_object_backend(
                         }
                     else:
                         dataset_structure["files"][entry] = {
-                            "path": check_path,
+                            "path": item_path,
                             "type": "local",
                             "action": ["existing"],
                             "description": manifest_object["description"],
                             "additional-metadata": manifest_object["additional-metadata"],
                         }
-            elif os.path.isdir(check_path) is True:
+            elif os.path.isdir(item_path) is True:
                 create_soda_json_progress += 1
-                if check_path in irregularFolders:
-                    index_check = irregularFolders.index(check_path)
-                    modified_name = replaced[os.path.basename(check_path)]
+                if item_path in irregularFolders:
+                    index_check = irregularFolders.index(item_path)
+                    modified_name = replaced[os.path.basename(item_path)]
 
                     dataset_structure["folders"][modified_name] = {
                         "folders": {},
                         "files": {},
-                        "path": check_path,
+                        "path": item_path,
                         "type": "local",
                         "action": ["existing"],
                         "original-name": entry,
@@ -788,7 +784,7 @@ def create_soda_json_object_backend(
                     dataset_structure["folders"][entry] = {
                         "folders": {},
                         "files": {},
-                        "path": check_path,
+                        "path": item_path,
                         "type": "local",
                         "action": ["existing"],
                     }
@@ -820,7 +816,10 @@ def create_soda_json_object_backend(
     # reading high level folders
     create_soda_json_completed = 0
     create_soda_json_progress = 0
+    namespace_logger.info(root_folder_path)
     entries = os.listdir(root_folder_path)
+    namespace_logger.info(entries)
+
 
     for entry in entries:
         # begin going through high level folders
@@ -838,6 +837,7 @@ def create_soda_json_object_backend(
                 }
             # do file work here
         elif os.path.isdir(item_path) is True:
+            namespace_logger.info("Counting a directory")
             create_soda_json_progress += 1
             # add item to soda
             if item_path in irregularFolders:
@@ -884,6 +884,7 @@ def create_soda_json_object_backend(
             json_format = excel_data.to_dict(orient="records")
             soda_json_structure["starting-point"][folder]["path"] = temp_file_path_xlsx
             soda_json_structure["starting-point"][folder]["manifest"] = json_format
+        namespace_logger.info("Creating structure for next " + folder)
         recursive_structure_create(dataset_folder["folders"][folder], high_lvl_path, folder)
 
     create_soda_json_completed = 1
