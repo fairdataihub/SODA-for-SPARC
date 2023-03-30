@@ -2983,7 +2983,7 @@ document
           "Number of Files",
           file_counter
         );
-        throw new Error("Failed to validate dataset");
+        throw new Error("Failed receive a response from the validation server");
       }
 
       // write the full report to the ~/SODA/validation.txt file
@@ -3048,12 +3048,6 @@ document
           showCancelButton: true,
           cancelButtonText: "No",
           confirmButtonText: "Yes",
-          showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
-          },
         });
 
         if (viewReportResult.isConfirmed) {
@@ -3067,11 +3061,6 @@ document
           html: `${error}`,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
-          showCancelButton: true,
-          focusCancel: true,
-          confirmButtonText: `Continue`,
-          cancelButtonText: "Retry",
-          reverseButtons: reverseSwalButtons,
         });
       }
     }
