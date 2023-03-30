@@ -10,7 +10,11 @@ from os.path import expanduser
 from .skeletonDatasetUtils import import_bf_metadata_files_skeleton
 from pennsieve2.pennsieve import Pennsieve
 import pandas as pd 
+import requests
 from namespaces import NamespaceEnum, get_namespace_logger
+from authentication import get_access_token
+from utils import get_dataset_id, create_request_headers, load_manifest_to_dataframe
+
 
 
 
@@ -46,6 +50,72 @@ def get_manifests(soda_json_structure):
           if os.path.exists(manifest_location):
             df = pd.read_excel(manifest_location)
             manifests[high_lvl_folder] = df.to_json()
+    elif "starting-point" in soda_json_structure and "type" in soda_json_structure["starting-point"] and soda_json_structure["starting-point"]["type"] == "local":
+        # we are dealing with a dataset that was imported from a local path and did not have manifest files auto-generated
+        # check if there are any manifest files in their dataset  to validate off of 
+        # if there are, add them to the manifests dict
+        starting_point_dict = soda_json_structure["starting-point"]
+        for key in starting_point_dict.keys():
+           if key in ["primary", "code", "derivative", "source", "docs", "protocol", "derivative"]:
+               # read the file as a dataframe
+                df = pd.read_excel(starting_point_dict[key]["path"])
+                # convert to json
+                manifests[key] = df.to_json()
+    elif "starting-point" in soda_json_structure and "type" in soda_json_structure["starting-point"] and soda_json_structure["starting-point"]["type"] == "bf":
+      print("Handling pennsieve flow for standalone validator or imported pennsieve datasert")
+      # check if the user has manifest files in their dataset's primary folders
+      # if they do, add them to the manifests dict
+      token = get_access_token()
+
+      # get the dataset name
+      dataset_name = soda_json_structure["bf-dataset-selected"]["dataset-name"]
+      
+      selected_dataset_id = get_dataset_id(token, dataset_name)
+
+      
+      # get the dataset id
+      # headers for making requests to Pennsieve's api
+      headers = create_request_headers(token)
+      
+      high_level_sparc_folders = [
+        "code",
+        "derivative",
+        "docs",
+        "primary",
+        "protocol",
+        "source",
+      ]
+      PENNSIEVE_URL = "https://api.pennsieve.io"
+      
+
+
+      # root of dataset is pulled here
+      # root_children is the files and folders within root
+      r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
+      r.raise_for_status()
+      root_folder = r.json()
+      root_children = root_folder["children"]
+      
+
+
+      for items in root_children:
+        item_id = items["content"]["id"]
+        item_name = items["content"]["name"]
+        if items["content"]["packageType"] == "Collection" and item_name in high_level_sparc_folders:
+          r = requests.get(f"{PENNSIEVE_URL}/packages/{item_id}", headers=headers)
+          r.raise_for_status()
+          subfolder = r.json()
+
+          # get the manifest file from the subfolder
+          for subfolder_item in subfolder["children"]:
+              if subfolder_item["content"]["name"] == "manifest.xlsx":
+                namespace_logger.info(subfolder_item)
+                # get the manifest file
+                man_id = subfolder_item["content"]["id"]
+                df = load_manifest_to_dataframe(man_id, "xlsx", token)
+                # convert to json
+                manifests[item_name] = df.to_json()
+
 
     return manifests
 
