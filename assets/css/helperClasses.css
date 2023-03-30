@@ -860,8 +860,8 @@
 
 .text-center {
   text-align: center !important;
-  margin-bottom: 0.3rem;
 }
+
 .text-center.medium {
   font-size: medium;
 }
