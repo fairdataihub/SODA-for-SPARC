@@ -2887,29 +2887,22 @@ document
 document
   .getElementById("guided-button-run-dataset-validation")
   .addEventListener("click", async () => {
-    // Aaron - This is where you can add your validation logic
-    const dummy = document.getElementById("dummy-text-remove-me");
-    const datasetAlreadyValidated = sodaJSONObj["dataset-validated"];
+    const datasetAlreadyValidated = sodaJSONObj["dataset-validated"] === true;
     if (datasetAlreadyValidated) {
-      dummy.innerHTML = "Dataset already validated nothing has changed no need to revalidate";
+      await Swal.fire({
+        title: "Dataset Already Validated",
+        text: "Your dataset has already been validated",
+      });
       return;
     }
     guidedSetNavLoadingState(true);
-    // Logic that starts the validation will go here
-    dummy.innerHTML = "Validating dataset...";
-    try {
-      // Simulate a long running validation
-      await new Promise((r) => setTimeout(r, 4000));
-      dummy.innerHTML = "Dataset validated";
-      // Uncomment the line below to test the error handling
-      // throw new Error("Test error");
-      sodaJSONObj["dataset-validated"] = true;
 
+    try {
       // create the manifest files if the user auto generated manifest files at any point
       await guidedCreateManifestFilesAndAddToDatasetStructure();
 
       // TODO: Fine tune instead of waiting check until the manifest files exist then call the manifest generation function
-      await wait(1000);
+      await wait(3000);
 
       // get the manifest files
       let manifestJSONResponse;
@@ -2925,18 +2918,10 @@ document
         );
       } catch (error) {
         clientError(error);
-        await Swal.fire({
-          title: "Failed to Validate Your Dataset",
-          text: "Please try again. If this issue persists contect the SODA for SPARC team at help@fairdataihub.org",
-          allowEscapeKey: true,
-          allowOutsideClick: false,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          timerProgressBar: false,
-          showConfirmButton: true,
-          icon: "error",
+        throw new Error({
+          incompleteValidationReport: false,
+          message: "Failed to get manifest files",
         });
-        return;
       }
 
       let manifests = manifestJSONResponse.data;
@@ -2971,26 +2956,16 @@ document
           file_counter
         );
 
-        await Swal.fire({
-          title: "Failed to Validate Your Dataset",
-          text: "Please try again. If this issue persists contect the SODA for SPARC team at help@fairdataihub.org",
-          allowEscapeKey: true,
-          allowOutsideClick: false,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          timerProgressBar: false,
-          showConfirmButton: true,
-          icon: "error",
+        throw new Error({
+          incompleteValidationReport: false,
+          message: "Failed to get validation dataset",
         });
-        return;
       }
 
       // write the full report to the ~/SODA/validation.txt file
-      let fullReport = validationReport.full_report;
-      let validationReportPath = path.join(os.homedir(), "SODA", "validation.txt");
+      const fullReport = validationReport.full_report;
+      const validationReportPath = path.join(os.homedir(), "SODA", "validation.txt");
       fs.writeFileSync(validationReportPath, fullReport);
-
-      let SODADirectory = path.join(os.homedir(), "SODA");
 
       file_counter = 0;
       folder_counter = 0;
@@ -3008,8 +2983,49 @@ document
       );
 
       if (validationReport.status === "Incomplete") {
+        throw new Error({
+          incompleteValidationReport: true,
+          message: "Incomplete validation report",
+        });
         // An incomplete validation report happens when the validator is unable to generate
         // a path_error_report upon validating the selected dataset.
+      }
+
+      // get the parsed error report since the validation has been completed
+      let errors = validationReport.parsed_report;
+      console.log(errors);
+
+      // list the results in a table ( ideally the one used in the validate feature )
+      if (validationErrorsOccurred(errors)) {
+        // get validation table body
+        let validationErrorsTable = document.querySelector(
+          "#guided-section-dataset-validation-table tbody"
+        );
+
+        clearValidationResults(validationErrorsTable);
+
+        // display errors onto the page
+        displayValidationErrors(
+          errors,
+          document.querySelector("#guided-section-dataset-validation-table tbody")
+        );
+
+        // show the validation errors to the user
+        document.querySelector("#guided-section-dataset-validation-table").style.visibility =
+          "visible";
+
+        document.querySelector("#guided--table-validation-errors").style.visibility = "visible";
+
+        // scroll so that the table is in the viewport
+        document
+          .querySelector("#guided-section-dataset-validation-table")
+          .scrollIntoView({ behavior: "smooth" });
+      }
+    } catch (error) {
+      // Validation failed. Show a swal and have the user go back to fix stuff (or retry)
+      clientError(error);
+      sodaJSONObj["dataset-validated"] = false;
+      if (error.incompleteValidationReport) {
         let viewReportResult = await Swal.fire({
           title: "Could Not Generate a Sanitized Validation Report",
           html: `If you repeatedly have this issue please contact the SPARC Curation Team for support at curation@sparc.science. Would you like to view your raw validation report?`,
@@ -3033,44 +3049,20 @@ document
           // open a shell to the raw validation report
           shell.openPath(validationReportPath);
         }
-        return;
+      } else {
+        await Swal.fire({
+          icon: "warning",
+          title: "An Error occured while validating your dataset",
+          html: `${error.message}`,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          showCancelButton: true,
+          focusCancel: true,
+          confirmButtonText: `Continue`,
+          cancelButtonText: "Retry",
+          reverseButtons: reverseSwalButtons,
+        });
       }
-
-      // get the parsed error report since the validation has been completed
-      let errors = validationReport.parsed_report;
-
-      // list the results in a table ( ideally the one used in the validate feature )
-      if (!validationErrorsOccurred(errors)) {
-        return;
-      }
-
-      // get validation table body
-      let validationErrorsTable = document.querySelector(
-        "#guided-section-dataset-validation-table tbody"
-      );
-
-      clearValidationResults(validationErrorsTable);
-
-      // display errors onto the page
-      displayValidationErrors(
-        errors,
-        document.querySelector("#guided-section-dataset-validation-table tbody")
-      );
-
-      // show the validation errors to the user
-      document.querySelector("#guided-section-dataset-validation-table").style.visibility =
-        "visible";
-
-      document.querySelector("#guided--table-validation-errors").style.visibility = "visible";
-
-      // scroll so that the table is in the viewport
-      document
-        .querySelector("#guided-section-dataset-validation-table")
-        .scrollIntoView({ behavior: "smooth" });
-    } catch (error) {
-      // Validation failed. Show a swal and have the user go back to fix stuff (or retry)
-      clientError(error);
-      sodaJSONObj["dataset-validated"] = false;
     }
     guidedSetNavLoadingState(false);
   });
