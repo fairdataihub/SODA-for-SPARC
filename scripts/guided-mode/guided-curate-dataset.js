@@ -2910,9 +2910,6 @@ document
       // create the manifest files if the user auto generated manifest files at any point
       await guidedCreateManifestFilesAndAddToDatasetStructure();
 
-      // TODO: Fine tune instead of waiting check until the manifest files exist then call the manifest generation function
-      await wait(1000);
-
       // get the manifest files
       let manifestJSONResponse;
       try {
