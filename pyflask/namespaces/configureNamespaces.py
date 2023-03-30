@@ -30,9 +30,6 @@ def configure_namespaces():
     manage_datasets_namespace = Namespace(NamespaceEnum.MANAGE_DATASETS.value, description='Routes for handling manage datsets functionality')
     namespaces[NamespaceEnum.MANAGE_DATASETS] = manage_datasets_namespace
 
-    validate_dataset_namespace = Namespace(NamespaceEnum.VALIDATE_DATASET.value, description='Routes for handling validate dataset functionality')
-    namespaces[NamespaceEnum.VALIDATE_DATASET] = validate_dataset_namespace
-
     curate_datasets_namespace = Namespace(NamespaceEnum.CURATE_DATASETS.value, description='Routes for handling dataset curation')
     namespaces[NamespaceEnum.CURATE_DATASETS] = curate_datasets_namespace
 
