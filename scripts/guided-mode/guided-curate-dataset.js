@@ -586,7 +586,10 @@ const savePageChanges = async (pageBeingLeftID) => {
 
       // If the user selected that the dataset is SPARC funded, unskip the submission metadata page
       if (userSelectedDatasetIsSparcFunded) {
+        // Make sure the submission metadata and validation tab are unskipped as they are required
+        // for the SPARC funded dataset flow
         guidedUnSkipPage("guided-create-submission-metadata-tab");
+        guidedUnSkipPage("guided-dataset-validation-tab");
       }
 
       // If the user selected that dataset is not SPARC funded, skip the submission metadata page
@@ -625,6 +628,8 @@ const savePageChanges = async (pageBeingLeftID) => {
         // Skip the submission metadata page
         // This can be safely skipped as the logic that handles the submission file is ran during upload
         guidedSkipPage("guided-create-submission-metadata-tab");
+        //Skip the validation page as non-spac funded datasets do not need to be validated
+        guidedUnSkipPage("guided-dataset-validation-tab");
       }
     }
 
@@ -2825,8 +2830,10 @@ document
       console.log(response);
       console.log(typeof response);
       // response does not format in JSON format so need to format ' with "
+      // and replace T with t (happens because of how the bool true is formatted in python (True) vs javascript (true))
       let regex = /'/gm;
-      let formattedResponse = response.replace(regex, '"');
+      console.log(response);
+      let formattedResponse = JSON.stringify(response).replace(regex, '"');
       let capitalTPosition = formattedResponse.search("T");
       while (capitalTPosition != -1) {
         capitalTPosition = formattedResponse.search("T");

@@ -32,4 +32,3 @@ dependencies:
   - numpy == 1.23.0
   - protobuf == 4.21.12
   - pennsieve2 == 0.1.1
-  - sparcur == 0.0.1.dev5

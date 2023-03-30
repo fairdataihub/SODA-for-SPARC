@@ -1968,8 +1968,9 @@ const ffmCreateManifest = async (sodaJson) => {
 
     let response = cleanJson.data.soda_json_structure;
     // response does not format in JSON format so need to format ' with "
+    // and replace T with t (happens because of how the bool true is formatted in python (True) vs javascript (true))
     let regex = /'/gm;
-    let formattedResponse = response.replace(regex, '"');
+    let formattedResponse = JSON.stringify(response).replace(regex, '"');
     let capitalTPosition = formattedResponse.search("T");
     while (capitalTPosition != -1) {
       capitalTPosition = formattedResponse.search("T");
