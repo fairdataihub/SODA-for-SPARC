@@ -1382,8 +1382,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
 
       if (guidedButtonRunValidation.classList.contains("selected")) {
-        const datasetSuccessfullyValidated = sodaJSONObj["dataset-validated"];
-        if (!datasetSuccessfullyValidated === "true") {
+        if (!sodaJSONObj["dataset-validated"] === "true") {
           errorArray.push({
             type: "notyf",
             message: "This check can be removed to make validation unnecessary",
@@ -2896,17 +2895,37 @@ document
 document
   .getElementById("guided-button-run-dataset-validation")
   .addEventListener("click", async () => {
-    const datasetAlreadyValidated = sodaJSONObj["dataset-validated"] === "true";
-    if (datasetAlreadyValidated) {
-      await Swal.fire({
-        title: "Dataset Already Validated",
-        text: "Your dataset has already been validated",
-      });
-      return;
+    //Wait for current call stack to finish so page navigation happens before this function is run
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
+    // Reset the UI for the page
+    const validationLoadingDiv = document.getElementById("guided-section-validation-loading");
+    const validationResultsDiv = document.getElementById("guided-section-validation-errors-table");
+    const validationSucessNoErrorsDiv = document.getElementById(
+      "guided-section-validation-success-no-errors"
+    );
+    validationLoadingDiv.classList.add("hidden");
+    validationResultsDiv.classList.add("hidden");
+    validationSucessNoErrorsDiv.classList.add("hidden");
+
+    if (sodaJSONObj["dataset-validated"] === "true") {
+      const errorsFromLastValidation = sodaJSONObj["dataset-validation-errors"];
+      if (errorsFromLastValidation) {
+        handleValidationTableUi(errorsFromLastValidation);
+        return;
+      }
     }
-    guidedSetNavLoadingState(true);
+
+    let validationReportStatusIncomplete = false;
+    const validationReportPath = path.join(os.homedir(), "SODA", "validation.txt");
 
     try {
+      // Lock the navigation buttons while the validation is in process
+      guidedSetNavLoadingState(true);
+
+      // Show the Loading div
+      validationLoadingDiv.classList.remove("hidden");
+
       // create the manifest files if the user auto generated manifest files at any point
       await guidedCreateManifestFilesAndAddToDatasetStructure();
 
@@ -2919,27 +2938,25 @@ document
         manifestJSONResponse = await client.post(
           "/skeleton_dataset/manifest_json",
           {
-            sodajsonobject: sodaJSONObj,
+            sodajsonobject: sodaJSONObjx,
           },
           {
             timeout: 0,
           }
         );
       } catch (error) {
-        clientError(error);
-        throw new Error({
-          incompleteValidationReport: false,
-          message: "Failed to get manifest files",
-        });
+        throw new Error("Failed to generate manifest files");
       }
 
       let manifests = manifestJSONResponse.data;
-      console.log(manifests);
+      // If the manifest files are not generated, throw an error
+      if (!manifests) {
+        throw new Error("Failed to generate manifest files");
+      }
 
-      let validationResponse;
       let validationReport;
       try {
-        validationResponse = await client.post(
+        const validationResponse = await client.post(
           `https://validation.sodaforsparc.io/validator/validate`,
           {
             clientUUID: uuid(),
@@ -2948,7 +2965,6 @@ document
             manifests: manifests,
           }
         );
-
         validationReport = validationResponse.data;
       } catch (error) {
         clientError(error);
@@ -2964,16 +2980,11 @@ document
           "Number of Files",
           file_counter
         );
-
-        throw new Error({
-          incompleteValidationReport: false,
-          message: "Failed to get validation dataset",
-        });
+        throw new Error("Failed to validate dataset");
       }
 
       // write the full report to the ~/SODA/validation.txt file
       const fullReport = validationReport.full_report;
-      const validationReportPath = path.join(os.homedir(), "SODA", "validation.txt");
       fs.writeFileSync(validationReportPath, fullReport);
 
       file_counter = 0;
@@ -2991,53 +3002,39 @@ document
         file_counter
       );
 
+      validationReportStatusIncomplete = true;
+      throw new Error("Could Not Generate a Sanitized Validation Report");
+
       if (validationReport.status === "Incomplete") {
-        throw new Error({
-          incompleteValidationReport: true,
-          message: "Incomplete validation report",
-        });
         // An incomplete validation report happens when the validator is unable to generate
         // a path_error_report upon validating the selected dataset.
       }
 
       // get the parsed error report since the validation has been completed
-      let errors = validationReport.parsed_report;
-      console.log(errors);
+      const errors = validationReport.parsed_report;
 
-      // list the results in a table ( ideally the one used in the validate feature )
-      if (validationErrorsOccurred(errors)) {
-        // get validation table body
-        let validationErrorsTable = document.querySelector(
-          "#guided-section-dataset-validation-table tbody"
-        );
+      console.log("Validation errors: ", errors);
 
-        clearValidationResults(validationErrorsTable);
+      // Hide the loading div
+      validationLoadingDiv.classList.add("hidden");
 
-        // display errors onto the page
-        displayValidationErrors(
-          errors,
-          document.querySelector("#guided-section-dataset-validation-table tbody")
-        );
+      // Displays the table with validation errors if the errors object is not empty
+      // Otherwise displays a success message
+      handleValidationTableUi(errors);
 
-        // show the validation errors to the user
-        document.querySelector("#guided-section-dataset-validation-table").style.visibility =
-          "visible";
-
-        document.querySelector("#guided--table-validation-errors").style.visibility = "visible";
-
-        // scroll so that the table is in the viewport
-        document
-          .querySelector("#guided-section-dataset-validation-table")
-          .scrollIntoView({ behavior: "smooth" });
-      }
+      sodaJSONObj["dataset-validated"] = "true";
+      sodaJSONObj["dataset-validation-errors"] = errors;
     } catch (error) {
-      console.log(error);
-      // Validation failed. Show a swal and have the user go back to fix stuff (or retry)
+      console.log("error: " + error);
       clientError(error);
+      // Hide the loading div
+      validationLoadingDiv.classList.add("hidden");
+      // Validation failed. Show a swal and have the user go back to fix stuff (or retry)
       sodaJSONObj["dataset-validated"] = "false";
-      if (error.incompleteValidationReport) {
+      delete sodaJSONObj["dataset-validation-errors"];
+      if (validationReportStatusIncomplete) {
         let viewReportResult = await Swal.fire({
-          title: "Could Not Generate a Sanitized Validation Report",
+          title: error,
           html: `If you repeatedly have this issue please contact the SPARC Curation Team for support at curation@sparc.science. Would you like to view your raw validation report?`,
           allowEscapeKey: true,
           allowOutsideClick: false,
@@ -3063,7 +3060,7 @@ document
         await Swal.fire({
           icon: "warning",
           title: "An Error occured while validating your dataset",
-          html: `${error.message}`,
+          html: `${error}`,
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
           showCancelButton: true,
@@ -4066,6 +4063,35 @@ const handleGuidedValidationState = (targetPageID) => {
     if (indexOfCurrentPage < indexOfValidationPage) {
       sodaJSONObj["dataset-validated"] = "false";
     }
+  }
+};
+
+const handleValidationTableUi = (errors) => {
+  const validationResultsDiv = document.getElementById("guided-section-validation-errors-table");
+  const validationSucessNoErrorsDiv = document.getElementById(
+    "guided-section-validation-success-no-errors"
+  );
+  validationResultsDiv.classList.add("hidden");
+  validationSucessNoErrorsDiv.classList.add("hidden");
+
+  if (!validationErrorsOccurred(errors)) {
+    // Dataset successfully validated without errors
+    validationSucessNoErrorsDiv.classList.remove("hidden");
+  } else {
+    // get validation table body
+    let validationErrorsTable = document.querySelector(
+      "#guided-section-dataset-validation-table tbody"
+    );
+    // clear the table
+    clearValidationResults(validationErrorsTable);
+    // display errors onto the page
+    displayValidationErrors(
+      errors,
+      document.querySelector("#guided-section-dataset-validation-table tbody")
+    );
+
+    // Unhide the validation errors section
+    validationResultsDiv.classList.remove("hidden");
   }
 };
 

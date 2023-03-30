@@ -4809,7 +4809,7 @@
             </div>
           </div>
           <div class="guided--section" id="guided-section-dataset-validation-table">
-            <div class="guided--panel mt-0" id="guided-panel-validation-loading">
+            <div class="guided--section" id="guided-section-validation-loading">
               <div class="lds-roller">
                 <div></div>
                 <div></div>
@@ -4822,16 +4822,7 @@
               </div>
               SODA is validating your dataset.
             </div>
-            <div
-              id="guided--table-validation-errors"
-              style="
-                visibility: hidden;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                margin-top: 50px;
-              "
-            >
+            <div class="guided--section" id="guided-section-validation-errors-table">
               <label style="font-size: 17px; color: var(--color-bg-plum)">
                 Validation Errors
               </label>
@@ -4853,6 +4844,14 @@
                 </thead>
                 <tbody></tbody>
               </table>
+            </div>
+            <div class="guided--section" id="guided-section-validation-success-no-errors">
+              <h2 class="guided--text-sub-step">
+                Dataset validation was successful and no errors were found in your dataset!
+              </h2>
+              <p class="help-text">
+                Click "Save and continue" to progress to dataset Review and generation.
+              </p>
             </div>
           </div>
           <div class="guided--section" id="guided-section-skip-validation">
