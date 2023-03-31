@@ -63,7 +63,6 @@ $(document).ready(function () {
       if (folderPath !== null) {
         localDataSetImport = true;
         fileOpenedOnce = {};
-        console.log(localDataSetImport);
         document.getElementById("input-manifest-local-folder-dataset").placeholder = folderPath[0];
         localDatasetFolderPath = folderPath[0];
         $("#div-confirm-manifest-local-folder-dataset").css("display", "flex");
@@ -248,7 +247,6 @@ $(document).ready(function () {
 
   //Event listener for the jstree to open manifest files
   $(jstreePreviewManifest).on("select_node.jstree", async function (evt, data) {
-    console.log("CLICK?");
     // Check if pennsieve option was selected to reset localDataSetImport
     if (document.getElementById("pennsieve-option-create-manifest").classList.contains("checked")) {
       localDataSetImport = false;
@@ -287,32 +285,24 @@ $(document).ready(function () {
       if (!fileOpenedOnce?.[parentFolderName]) {
         fileOpenedOnce[parentFolderName] = true;
       }
-      console.log(fileOpenedOnce);
-      console.log(parentFolderName);
-      console.log("above is the parent name");
 
       // TODO: Check if this is needed everytime
       var localFolderPath = path.join(homeDirectory, "SODA", "manifest_files", parentFolderName);
       var selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
       if (fs.existsSync(selectedManifestFilePath)) {
-        console.log("manifest file does exist");
         jsonManifest = excelToJson({
           sourceFile: selectedManifestFilePath,
           columnToKey: {
             "*": "{{columnHeader}}",
           },
         })["Sheet1"];
-        console.log(jsonManifest);
       }
 
       sodaCopy = sodaJSONObj;
       datasetStructCopy = sodaCopy["dataset-structure"];
-      console.log(sodaCopy);
 
       //Save content of manifest file to a variable to add to soda json at the end
       let originalManifestFilesValue = sodaCopy["manifest-files"];
-      console.log("preserved manifest key values below");
-      console.log(originalManifestFilesValue);
       sodaCopy["manifest-files"] = {};
 
       console.log(sodaCopy);
@@ -326,14 +316,9 @@ $(document).ready(function () {
         );
 
         let response = cleanJson.data.soda_json_structure;
-        console.log("cleaned soda json response");
-        console.log(response);
 
         sodaCopy = response;
         datasetStructCopy = sodaCopy["dataset-structure"];
-        console.log("cleaned soda json");
-        console.log(sodaCopy);
-        console.log(datasetStructCopy);
       } catch (e) {
         clientError(e);
         userErrorMessage(e);
@@ -345,8 +330,6 @@ $(document).ready(function () {
         delete sodaCopy["manifest-files"]["destination"];
       }
 
-      console.log("second end point");
-      // console.log(JSON.stringify(datasetStructCopy));
       // create manifest data of all high level folders
       try {
         const res = await client.post(
@@ -361,14 +344,11 @@ $(document).ready(function () {
         // will be auto generated and ready for upload
         const manifestRes = res.data;
         let newManifestData = {};
-        console.log("generated high lvl manifest data response");
-        console.log(manifestRes);
 
         // Format response for
         for (const [highLevelFolderName, manifestFileData] of Object.entries(manifestRes)) {
           if (manifestFileData.length > 1) {
             const manifestHeader = manifestFileData.shift();
-            console.log(manifestHeader);
             newManifestData[highLevelFolderName] = {
               headers: manifestHeader,
               data: manifestFileData,
@@ -401,7 +381,6 @@ $(document).ready(function () {
             convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
           }
         }
-        console.log(newManifestData);
 
         // Check if dataset is local or pennsieve
         // If local then we need to read the excel file and create a json object
@@ -413,9 +392,6 @@ $(document).ready(function () {
             sodaCopy["dataset-structure"]["folders"]
           )) {
             for (const [fileName, fileData] of Object.entries(folderData["files"])) {
-              // console.log(fileName);
-              // console.log(fileData);
-              console.log(fileName.substring(0, 8));
               if (fileName === "manifest.xlsx") {
                 manifestPaths.push(path.join(folderData["path"], fileName));
                 highLvlFolderNames.push(highLevelFolderName);
@@ -429,19 +405,13 @@ $(document).ready(function () {
 
             for (const manifestPath of manifestPaths) {
               let manifestData = [];
-              console.log(manifestPath);
-              // get the folder of the path
               let highLevelFolderName = path.basename(path.dirname(manifestPath));
-              console.log(highLevelFolderName);
-              // let manifestPath = path.join(manifestPath, "")
+
               if (!fs.existsSync(manifestPath)) {
                 // If manifest file doesn't exist then newManifestData will be used
                 // No old manifest to compare to
                 sodaCopy["manifest-files"][highLevelFolderName] =
                   newManifestData[highLevelFolderName];
-                console.log("manifest file doesn't exist");
-                console.log(sodaCopy["manifest-files"][highLevelFolderName]);
-                // continue;
               } else {
                 let jsonManifest = excelToJson({
                   sourceFile: manifestPath,
@@ -490,48 +460,35 @@ $(document).ready(function () {
                 for (let j = 1; j < jsonManifest["Sheet1"].length; j++) {
                   for (let i = 0; i < alphabet.length; i++) {
                     let cellEntry = jsonManifest["Sheet1"][j][alphabet[i]];
-                    // console.log(cellEntry);
                     if (cellEntry === undefined) {
                       jsonManifest["Sheet1"][j][alphabet[i]] = "";
                     }
                   }
-                  // console.log(Object.values(jsonManifest["Sheet1"][j]))
                   manifestData.push(Object.values(jsonManifest["Sheet1"][j]));
                 }
 
                 // Header and data should be formatted correctly
-                console.log(manifestHeader);
-                // console.log(jsonManifest["Sheet1"]);
-                console.log(manifestData);
 
                 let sortedJSON = processManifestInfo(manifestHeader, manifestData);
-                console.log(sortedJSON);
                 sodaCopy["manifest-files"][highLevelFolderName] = {
                   headers: manifestHeader,
                   data: manifestData,
                 };
-                console.log(sodaCopy["manifest-files"][highLevelFolderName]);
               }
             }
-            console.log(sodaCopy["manifest-files"]);
           }
         }
 
         // Check if manifest data is different from what exists already (if previous data exists)
-        console.log("sodaCopy below before adding manifest-files data to variable");
-        console.log(sodaCopy);
         const existingManifestData = sodaCopy["manifest-files"];
         let updatedManifestData;
 
-        console.log(existingManifestData);
-        console.log(newManifestData);
         if (existingManifestData) {
           updatedManifestData = diffCheckManifestFiles(newManifestData, existingManifestData);
         } else {
           updatedManifestData = newManifestData;
         }
 
-        console.log(updatedManifestData);
         // manifest data will be stored in sodaCopy to be reused for manifest edits/regenerating cards
         // sodaJSONObj will remain the same and only have 'additonal-metadata' and 'description' data
         sodaCopy["manifest-files"] = updatedManifestData;
@@ -548,7 +505,6 @@ $(document).ready(function () {
       // const existingManifestData = sodaJSONObj["guided-manifest-files"][highLevelFolderName];
       //send manifest data to main.js to then send to child window
       const existingManifestData = sodaCopy["manifest-files"]?.[parentFolderName];
-      console.log(existingManifestData);
       Swal.close();
       // TODO: Lock all other manifest buttons
       ipcRenderer.invoke("spreadsheet", existingManifestData);
@@ -561,7 +517,6 @@ $(document).ready(function () {
           ipcRenderer.removeAllListeners("spreadsheet-reply");
           return;
         } else {
-          // console.log(result);
           //spreadsheet reply contained results
           // await updateManifestJson(highLevelFolderName, result);
           ipcRenderer.removeAllListeners("spreadsheet-reply");
@@ -573,8 +528,6 @@ $(document).ready(function () {
             sodaJSONObj["manifest-files"]["auto-generated"] = true;
             const savedHeaders = result[0];
             const savedData = result[1];
-            console.log(savedData);
-            console.log(savedHeaders);
             let jsonManifest = {};
             let localFolderPath = path.join(
               homeDirectory,
@@ -596,7 +549,6 @@ $(document).ready(function () {
 
             let sortedJSON = processManifestInfo(savedHeaders, savedData);
             jsonManifest = JSON.stringify(sortedJSON);
-            console.log(jsonManifest);
             convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
             //Update the metadata in json object
             // If extra columns are added preserve them into sodaJSONObj
@@ -622,30 +574,16 @@ $(document).ready(function () {
                 sodaJSONObj["dataset-structure"]["folders"][parentFolderName]["files"][
                   cleanedFileName
                 ]["additional-metadata"] = additionalMetadata;
-                console.log(savedData[i].length);
                 if (savedHeaders[i].length > 5) {
                   //extra columns are present, ensure to preserve them in sodaJSONObj
                   for (let extra_column_index = 5; extra_column_index < savedHeaders.length; i++) {
                     let extraColumnName = savedHeaders[extra_column_index];
-                    console.log(cleanedFileName);
-                    console.log(
-                      sodaJSONObj["dataset-structure"]["folders"][parentFolderName]["files"][
-                        cleanedFileName
-                      ]
-                    );
+
                     sodaJSONObj["dataset-structure"]["folders"][parentFolderName]["files"][
                       cleanedFileName
                     ]["extra_columns"] = {
                       [extraColumnName]: [savedData[i][extra_column_index]],
                     };
-                    // ["extra_columns"][savedHeaders[extra_column_index]] =
-                    //   savedData[i][extra_column_index];
-                    console.log(
-                      "preseved extra column for: " +
-                        cleanedFileName +
-                        " : " +
-                        savedData[i][extra_column_index]
-                    );
                   }
                 }
               } else {

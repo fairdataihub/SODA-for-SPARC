@@ -2690,7 +2690,6 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
 };
 
 const extractFileNamesFromManifestData = (manifestData) => {
-  // console.log(manifestData);
   let allFileNamesinDsStructure = [];
   for (const highLevelFolder of Object.keys(manifestData)) {
     if (highLevelFolder === "auto-generated" || highLevelFolder === "destination") {
@@ -2705,10 +2704,6 @@ const extractFileNamesFromManifestData = (manifestData) => {
 };
 
 const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
-  console.log("newManifestData");
-  console.log(newManifestData);
-  console.log("existingManifestData");
-  console.log(existingManifestData);
   const prevManifestFileNames = extractFileNamesFromManifestData(existingManifestData);
   const newManifestFileNames = extractFileNamesFromManifestData(newManifestData);
 
@@ -2729,8 +2724,6 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
       const fileObj = {};
       const fileName = row[0];
       //Create a new array from row starting at index 2
-      // console.log(row);
-      // console.log(row[0]);
       const fileData = row.slice(numImmutableManifestDataCols);
       for (const [index, rowValue] of fileData.entries()) {
         const oldHeader = existingManifestDataHeaders[index + numImmutableManifestDataCols];
@@ -2802,12 +2795,11 @@ document
     scrollToBottomOfGuidedBody();
 
     try {
-      console.log(sodaJSONObj);
       const sodaCopy = { ...sodaJSONObj };
       delete sodaCopy["generate-dataset"];
       sodaCopy["metadata-files"] = {};
       sodaCopy["dataset-structure"] = datasetStructureJSONObj;
-      console.log(sodaCopy);
+
       const cleanJson = await client.post(
         `/curate_datasets/clean-dataset`,
         { soda_json_structure: sodaCopy },
@@ -4326,7 +4318,6 @@ const openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-code-folder-tab") {
-      console.log("HERE");
       itemsContainer.classList.add("border-styling");
       const codeFolder = datasetStructureJSONObj["folders"]["code"];
       if (!codeFolder) {
@@ -4689,7 +4680,6 @@ const openPage = async (targetPageID) => {
       renderProtocolsTable();
     }
     if (targetPageID === "guided-create-description-metadata-tab") {
-      console.log("THIS IS OPENING");
       console.log(pageNeedsUpdateFromPennsieve("guided-create-description-metadata-tab"));
       if (pageNeedsUpdateFromPennsieve("guided-create-description-metadata-tab")) {
         // Show the loading page while the page's data is being fetched from Pennsieve
@@ -4715,8 +4705,6 @@ const openPage = async (targetPageID) => {
               keywords: studyKeywords,
             };
           }
-
-          console.log(metadata_import);
 
           // guidedLoadDescriptionStudyInformation
           let studyInformation = metadata_import.data["Study information"];
@@ -6548,7 +6536,6 @@ const guidedResumeProgress = async (resumeProgressButton) => {
           message: `Checking to make sure the dataset structure on Pennsieve is the same as when you started editing this dataset.`,
           duration: 30000,
         });
-        console.log(JSON.stringify(datasetResumeJsonObj));
         let filesFoldersResponse = await client.post(
           `/organize_datasets/dataset_files_and_folders`,
           {
@@ -7504,7 +7491,6 @@ const updateFolderStructureUI = (pageDataObj) => {
 
   //TODO: Figure out why this is undefined when transitioning with no subjects
   $("#guided-input-global-path").val(`My_dataset_folder/${pageDataObj.pathSuffix}`);
-  console.log($("#guided-input-global-path"));
   organizeDSglobalPath = $("#guided-input-global-path")[0];
   var filtered = getGlobalPath(organizeDSglobalPath);
   organizeDSglobalPath.value = filtered.slice(0, filtered.length).join("/") + "/";
@@ -11268,8 +11254,7 @@ $(document).ready(async () => {
       nextQuestionID = selectedButton.data("next-element");
       nextQuestionElement = $(`#${nextQuestionID}`);
       nextQuestionElement.removeClass("hidden");
-      console.log(nextQuestionElement);
-      console.log("should be scrolling to next question");
+
       //slow scroll to the next question
       //temp fix to prevent scrolling error
       const elementsToNotScrollTo = [
@@ -13327,7 +13312,6 @@ $(document).ready(async () => {
       //if more tabs in parent tab, go to next tab and update capsule
       let targetPage = getNextPageNotSkipped(CURRENT_PAGE.id);
       let targetPageID = targetPage.id;
-      console.log(targetPageID);
 
       await openPage(targetPageID);
     } catch (error) {
@@ -13439,7 +13423,6 @@ $(document).ready(async () => {
         }
 
         if (buttonNoSubjects.classList.contains("selected")) {
-          console.log("HERE");
           guidedSkipPage("guided-organize-subjects-into-pools-page");
           guidedSkipPage("guided-specify-samples-page");
 
@@ -13955,7 +13938,6 @@ $(document).ready(async () => {
 
     //Get the id of the sub-page that's currently open
     const openSubPageID = getOpenSubPageInPage(currentParentPageID);
-    console.log(openSubPageID);
     try {
       await saveSubPageChanges(openSubPageID);
 
@@ -13964,7 +13946,6 @@ $(document).ready(async () => {
       }
       //Get an array of all the sub pages that are children of the parent page
       const nonSkippedSiblingPages = getNonSkippedSubPages(currentParentPageID);
-      console.log(nonSkippedSiblingPages);
 
       // Get the index of the sub-page that's currently open
       const openSubPageIndex = nonSkippedSiblingPages.indexOf(openSubPageID);

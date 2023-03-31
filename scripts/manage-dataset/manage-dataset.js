@@ -977,8 +977,6 @@ const showCurrentDescription = async () => {
   $("#ds-description-data-collection").val("");
   $("#ds-description-primary-conclusion").val("");
 
-  console.log(parsedReadme);
-
   // place the text into the text area for that field
   $("#ds-description-study-purpose").val(
     parsedReadme[requiredSections.studyPurpose].trim().replace(/\r?\n|\r/g, "")

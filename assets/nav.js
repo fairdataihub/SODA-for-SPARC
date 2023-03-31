@@ -1,6 +1,5 @@
 // this variable is here to keep track of when the Organize datasets/Continue button is enabled or disabled
 document.body.addEventListener("click", (event) => {
-  // console.log(event.target);
   if (event.target.dataset.section) {
     handleSectionTrigger(event);
   } else if (event.target.dataset.modal) {
@@ -74,15 +73,12 @@ async function handleSectionTrigger(event) {
     organizeDatasetRadioButtons = organizeDatasetRadioButtons.splice(2);
 
     organizeDatasetRadioButtons.forEach((radioButton) => {
-      console.log(radioButton);
-      console.log(radioButton.classList.contains("checked"));
       if (radioButton.classList.contains("checked")) {
         boolRadioButtonsSelected = true;
       }
     });
 
     if (sodaJSONObj != undefined) {
-      console.log(boolRadioButtonsSelected);
       if (boolRadioButtonsSelected === true) {
         //get the element with data-next="Question-getting-started-BF-account"
         const buttonContinueExistingPennsieve = document.querySelector(
