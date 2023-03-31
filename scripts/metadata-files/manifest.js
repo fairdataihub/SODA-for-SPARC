@@ -244,11 +244,11 @@ $(document).ready(function () {
 
   var jsonManifest = {};
 
-  //Event listener for the jstree to open manifest files  
+  //Event listener for the jstree to open manifest files
   $(jstreePreviewManifest).on("select_node.jstree", async function (evt, data) {
     console.log("CLICK?");
     // Check if pennsieve option was selected to reset localDataSetImport
-    if(document.getElementById("pennsieve-option-create-manifest").classList.contains("checked")){
+    if (document.getElementById("pennsieve-option-create-manifest").classList.contains("checked")) {
       localDataSetImport = false;
     }
 
@@ -256,7 +256,7 @@ $(document).ready(function () {
     // If there's already an opened manifest file, don't open another one
     if (data.node.text === "manifest.xlsx") {
       if (openedEdit) {
-        console.log("already opened")
+        console.log("already opened");
         return;
       }
 
@@ -319,7 +319,7 @@ $(document).ready(function () {
         );
 
         let response = cleanJson.data.soda_json_structure;
-        console.log("cleaned soda json response")
+        console.log("cleaned soda json response");
         console.log(response);
 
         sodaCopy = response;
@@ -354,7 +354,7 @@ $(document).ready(function () {
         console.log("generated high lvl manifest data response");
         console.log(manifestRes);
 
-        // Format response for 
+        // Format response for
         for (const [highLevelFolderName, manifestFileData] of Object.entries(manifestRes)) {
           if (manifestFileData.length > 1) {
             const manifestHeader = manifestFileData.shift();
@@ -438,12 +438,39 @@ $(document).ready(function () {
                   header: {
                     rows: 0,
                   },
-                  includeEmptyLines: true
+                  includeEmptyLines: true,
                 });
 
                 console.log(jsonManifest);
 
-                let alphabet = ["A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z"];
+                let alphabet = [
+                  "A",
+                  "B",
+                  "C",
+                  "D",
+                  "E",
+                  "F",
+                  "G",
+                  "H",
+                  "I",
+                  "J",
+                  "K",
+                  "L",
+                  "M",
+                  "N",
+                  "O",
+                  "P",
+                  "Q",
+                  "R",
+                  "S",
+                  "T",
+                  "U",
+                  "V",
+                  "W",
+                  "X",
+                  "Y",
+                  "Z",
+                ];
                 let manifestHeader = Object.values(jsonManifest["Sheet1"][0]);
 
                 alphabet = alphabet.slice(0, manifestHeader.length);
@@ -453,7 +480,7 @@ $(document).ready(function () {
                   for (let i = 0; i < alphabet.length; i++) {
                     let cellEntry = jsonManifest["Sheet1"][j][alphabet[i]];
                     // console.log(cellEntry);
-                    if(cellEntry === undefined) {
+                    if (cellEntry === undefined) {
                       jsonManifest["Sheet1"][j][alphabet[i]] = "";
                     }
                   }
@@ -480,11 +507,11 @@ $(document).ready(function () {
         }
 
         // Check if manifest data is different from what exists already (if previous data exists)
-        console.log("sodaCopy below before adding manifest-files data to variable")
+        console.log("sodaCopy below before adding manifest-files data to variable");
         console.log(sodaCopy);
         const existingManifestData = sodaCopy["manifest-files"];
         let updatedManifestData;
-        
+
         console.log(existingManifestData);
         console.log(newManifestData);
         if (existingManifestData) {
@@ -499,7 +526,7 @@ $(document).ready(function () {
         sodaCopy["manifest-files"] = updatedManifestData;
 
         // below needs to be added added before the main_curate_function begins
-        sodaJSONObj["manifest-files"] = originalManifestFilesValue
+        sodaJSONObj["manifest-files"] = originalManifestFilesValue;
       } catch (err) {
         clientError(err);
         console.log(err);
