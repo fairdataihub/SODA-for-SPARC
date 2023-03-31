@@ -57,10 +57,12 @@ function openFolder(generationLocation) {
 
 $(document).ready(function () {
   let localDataSetImport = false;
+  let fileOpenedOnce = {};
   ipcRenderer.on("selected-local-dataset-manifest-purpose", (event, folderPath) => {
     if (folderPath.length > 0) {
       if (folderPath !== null) {
         localDataSetImport = true;
+        fileOpenedOnce = {};
         console.log(localDataSetImport);
         document.getElementById("input-manifest-local-folder-dataset").placeholder = folderPath[0];
         localDatasetFolderPath = folderPath[0];
@@ -282,6 +284,10 @@ $(document).ready(function () {
       });
 
       var parentFolderName = $("#" + data.node.parent + "_anchor").text();
+      if(!fileOpenedOnce?.[parentFolderName]) {
+        fileOpenedOnce[parentFolderName] = true;
+      }
+      console.log(fileOpenedOnce);
       console.log(parentFolderName);
       console.log("above is the parent name");
 
@@ -309,6 +315,7 @@ $(document).ready(function () {
       console.log(originalManifestFilesValue);
       sodaCopy["manifest-files"] = {};
 
+      console.log(sodaCopy);
       try {
         // used for imported local datasets and pennsieve datasets
         // filters out deleted files/folders before creating manifest data again
@@ -324,6 +331,9 @@ $(document).ready(function () {
 
         sodaCopy = response;
         datasetStructCopy = sodaCopy["dataset-structure"];
+        console.log("cleaned soda json");
+        console.log(sodaCopy);
+        console.log(datasetStructCopy)
       } catch (e) {
         clientError(e);
         userErrorMessage(e);
@@ -358,6 +368,7 @@ $(document).ready(function () {
         for (const [highLevelFolderName, manifestFileData] of Object.entries(manifestRes)) {
           if (manifestFileData.length > 1) {
             const manifestHeader = manifestFileData.shift();
+            console.log(manifestHeader)
             newManifestData[highLevelFolderName] = {
               headers: manifestHeader,
               data: manifestFileData,
@@ -395,7 +406,7 @@ $(document).ready(function () {
         // Check if dataset is local or pennsieve
         // If local then we need to read the excel file and create a json object
         let highLvlFolderNames = [];
-        if (localDataSetImport) {
+        if (localDataSetImport && !fileOpenedOnce?.[parentFolderName]) {
           // get the paths of the manifest files that were imported locally
           let manifestPaths = [];
           for (const [highLevelFolderName, folderData] of Object.entries(
@@ -562,6 +573,8 @@ $(document).ready(function () {
             sodaJSONObj["manifest-files"]["auto-generated"] = true;
             const savedHeaders = result[0];
             const savedData = result[1];
+            console.log(savedData);
+            console.log(savedHeaders);
             let jsonManifest = {};
             let localFolderPath = path.join(
               homeDirectory,
@@ -583,6 +596,7 @@ $(document).ready(function () {
 
             let sortedJSON = processManifestInfo(savedHeaders, savedData);
             jsonManifest = JSON.stringify(sortedJSON);
+            console.log(jsonManifest);
             convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
             //Update the metadata in json object
             // If extra columns are added preserve them into sodaJSONObj
@@ -609,13 +623,17 @@ $(document).ready(function () {
                   cleanedFileName
                 ]["additional-metadata"] = additionalMetadata;
                 console.log(savedData[i].length);
-                if (savedData[i].length > 5) {
+                if (savedHeaders[i].length > 5) {
                   //extra columns are present, ensure to preserve them in sodaJSONObj
                   for (let extra_column_index = 5; extra_column_index < savedHeaders.length; i++) {
-                    sodaJSONObj["dataset-structure"]["folders"][parentFolderName]["files"][
-                      cleanedFileName
-                    ]["extra_columns"][savedHeaders[extra_column_index]] =
-                      savedData[i][extra_column_index];
+                    let extraColumnName = savedHeaders[extra_column_index];
+                    console.log(cleanedFileName);
+                    console.log(sodaJSONObj["dataset-structure"]["folders"][parentFolderName]["files"][cleanedFileName]);
+                    sodaJSONObj["dataset-structure"]["folders"][parentFolderName]["files"][cleanedFileName]["extra_columns"] = {
+                        [extraColumnName]: [savedData[i][extra_column_index]],
+                    }
+                    // ["extra_columns"][savedHeaders[extra_column_index]] =
+                    //   savedData[i][extra_column_index];
                     console.log(
                       "preseved extra column for: " +
                         cleanedFileName +
@@ -645,9 +663,9 @@ $(document).ready(function () {
                         extra_column_index < savedHeaders.length;
                         extra_column_index++
                       ) {
-                        folderDepthReal["files"][fileNameSplit[j]]["extra_columns"][
-                          savedHeaders[extra_column_index]
-                        ] = savedData[i][extra_column_index];
+                        folderDepthReal["files"][fileNameSplit[j]]["extra_columns"] = {
+                          [savedHeaders[extra_column_index]]: savedData[i][extra_column_index],
+                        };
                       }
                     }
                   } else {
@@ -657,6 +675,8 @@ $(document).ready(function () {
                 }
               }
             }
+
+            sodaJSONObj["manifest-files"] = originalManifestFilesValue;
 
             sodaCopy["manifest-files"][parentFolderName] = {
               headers: savedHeaders,
@@ -865,6 +885,7 @@ const convertJSONToXlsx = (jsondata, excelfile) => {
   //Write Column Title in Excel file
   let headingColumnIndex = 1;
   headingColumnNames.forEach((heading) => {
+    console.log(heading);
     let styleObject = yellowHeaderStyle;
     if (blueHeader.includes(heading)) styleObject = blueHeaderStyle;
     if (yellowHeader.includes(heading)) styleObject = yellowHeaderStyle;
@@ -879,6 +900,7 @@ const convertJSONToXlsx = (jsondata, excelfile) => {
   jsondata.forEach((record) => {
     let columnIndex = 1;
     Object.keys(record).forEach((columnName) => {
+      console.log(columnName);
       ws.cell(rowIndex, columnIndex++)
         .string(record[columnName])
         .style(standardCellStyle);
@@ -1034,6 +1056,7 @@ const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
     document.querySelector("#input-manifest-local-gen-location").placeholder !==
     document.querySelector("#input-manifest-local-folder-dataset").placeholder
   ) {
+    // A local dataset folder has been selected that is different from the destination folder for the manifest file
     localGenerationDifferentDestination = true;
   }
 
@@ -1071,7 +1094,7 @@ const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
   }).then((result) => {});
 
   // clean the manifest files by dropping empty columns ( keep the required columns even if empty )
-  await dropEmptyManifestColumns();
+  // await dropEmptyManifestColumns();
 
   await generateManifest("", type, manifestEditBoolean, ev);
 
@@ -1119,6 +1142,8 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
           Destinations.LOCAL
         );
       } else {
+        console.log("pennsieve preview");
+        console.log(pennsievePreview);
         if (pennsievePreview) {
           generateAfterEdits();
           return;
@@ -1229,6 +1254,7 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
           return;
         }
         generateManifestHelper();
+        console.log("PERCHANCE HERE")
         initiate_generate_manifest_local(manifestEditBoolean, localDatasetFolderPath);
       }
     });
@@ -1341,6 +1367,7 @@ function updateJSONStructureManifestGenerate() {
 
 async function initiate_generate_manifest_local(manifestEditBoolean, originalDataset) {
   if (manifestEditBoolean === false) {
+    console.log("HERERERERE")
     createManifestLocally("local", false, originalDataset);
   } else {
     // SODA Manifest Files folder

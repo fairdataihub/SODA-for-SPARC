@@ -3427,9 +3427,9 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
                 if "extra_columns" in folder["files"][item]:
                     for key in folder["files"][item]["extra_columns"]:
                         file_manifest_template_data.append(folder["files"][item]["extra_columns"][key])
-                        if key not in hlf_data_array:
+                        if key not in hlf_data_array[0]:
                             # add column name to manifest column names array
-                            hlf_data_array.append(key)
+                            hlf_data_array[0].append(key)
 
                 hlf_data_array.append(file_manifest_template_data)
 

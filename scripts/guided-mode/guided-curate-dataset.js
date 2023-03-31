@@ -6548,6 +6548,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
           message: `Checking to make sure the dataset structure on Pennsieve is the same as when you started editing this dataset.`,
           duration: 30000,
         });
+        console.log(JSON.stringify(datasetResumeJsonObj));
         let filesFoldersResponse = await client.post(
           `/organize_datasets/dataset_files_and_folders`,
           {
