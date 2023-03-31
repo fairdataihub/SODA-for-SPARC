@@ -723,7 +723,7 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
 
     jsonfile = {"name": renamed_dataset_name}
     try: 
-        r = requests.put(f"{PENNSIEVE_URL}/{str(selected_dataset_id)}", json=jsonfile, headers=create_request_headers(token))
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}", json=jsonfile, headers=create_request_headers(token))
         r.raise_for_status()
         return {"message": f"Dataset renamed to {renamed_dataset_name}"}
     except Exception as e:
