@@ -6476,9 +6476,10 @@ const patchPreviousGuidedModeVersions = () => {
   if (!sodaJSONObj["last-version-of-soda-used"]) {
     // This is the first time the user has used SODA since the "last-version-of-soda-used" key was added
     sodaJSONObj["last-version-of-soda-used"] = "10.0.4";
-    // If the user started a dataset after version 10.0.4, skip CHANGES metadata pages
-    const datasetStartType = sodaJSONObj["starting-point"]["type"];
-    if (datasetStartType && datasetStartType === "new") {
+  }
+  // If the user started a dataset after version 10.0.4, skip CHANGES metadata pages
+  if (!sodaJSONObj["skipped-pages"].includes("guided-create-changes-metadata-tab")) {
+    if (sodaJSONObj["starting-point"]["type"] === "new") {
       sodaJSONObj["skipped-pages"].push("guided-create-changes-metadata-tab");
     }
   }
