@@ -485,8 +485,8 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
   let spreadSheetModal = new BrowserWindow(windowOptions);
 
   spreadSheetModal.on("close", (e) => {
+    mainWindow.webContents.send("spreadsheet-reply", "");
     try {
-      mainWindow.webContents.send("spreadsheet-reply", "");
       spreadSheetModal.destroy();
       // spreadSheetModal.close();
     } catch (e) {

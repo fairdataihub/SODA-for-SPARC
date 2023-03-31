@@ -2709,6 +2709,7 @@ const guidedOpenManifestEditSwal = async (highLevelFolderName) => {
 };
 
 const extractFileNamesFromManifestData = (manifestData) => {
+  // console.log(manifestData);
   let allFileNamesinDsStructure = [];
   for (const highLevelFolder of Object.keys(manifestData)) {
     if (highLevelFolder === "auto-generated" || highLevelFolder === "destination") {
@@ -2723,6 +2724,10 @@ const extractFileNamesFromManifestData = (manifestData) => {
 };
 
 const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
+  console.log("newManifestData");
+  console.log(newManifestData);
+  console.log("existingManifestData");
+  console.log(existingManifestData);
   const prevManifestFileNames = extractFileNamesFromManifestData(existingManifestData);
   const newManifestFileNames = extractFileNamesFromManifestData(newManifestData);
 
@@ -2743,6 +2748,8 @@ const diffCheckManifestFiles = (newManifestData, existingManifestData) => {
       const fileObj = {};
       const fileName = row[0];
       //Create a new array from row starting at index 2
+      // console.log(row);
+      // console.log(row[0]);
       const fileData = row.slice(numImmutableManifestDataCols);
       for (const [index, rowValue] of fileData.entries()) {
         const oldHeader = existingManifestDataHeaders[index + numImmutableManifestDataCols];
