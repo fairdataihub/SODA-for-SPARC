@@ -629,7 +629,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         // This can be safely skipped as the logic that handles the submission file is ran during upload
         guidedSkipPage("guided-create-submission-metadata-tab");
         //Skip the validation page as non-spac funded datasets do not need to be validated
-        guidedUnSkipPage("guided-dataset-validation-tab");
+        guidedSkipPage("guided-dataset-validation-tab");
       }
     }
 
