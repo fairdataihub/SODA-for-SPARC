@@ -629,7 +629,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         // This can be safely skipped as the logic that handles the submission file is ran during upload
         guidedSkipPage("guided-create-submission-metadata-tab");
         //Skip the validation page as non-spac funded datasets do not need to be validated
-        guidedUnSkipPage("guided-dataset-validation-tab");
+        guidedSkipPage("guided-dataset-validation-tab");
       }
     }
 
@@ -6498,7 +6498,13 @@ const patchPreviousGuidedModeVersions = () => {
   }
 
   if (!sodaJSONObj["last-version-of-soda-used"]) {
+    // This is the first time the user has used SODA since the "last-version-of-soda-used" key was added
     sodaJSONObj["last-version-of-soda-used"] = "10.0.4";
+    // If the user started a dataset after version 10.0.4, skip CHANGES metadata pages
+    const datasetStartType = sodaJSONObj["starting-point"]["type"];
+    if (datasetStartType && datasetStartType === "new") {
+      sodaJSONObj["skipped-pages"].push("guided-create-changes-metadata-tab");
+    }
   }
 };
 
