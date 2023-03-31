@@ -2544,8 +2544,11 @@ const renderProgressCards = (progressFileJSONdata) => {
   );
 
   const progressCardsContainer = document.getElementById("guided-section-resume-progress-cards");
-
-  if (progressDataNotYetUploadedToPennsieve.length > 0) {
+  // If there are progress cards to display, display them
+  if (
+    progressDataNotYetUploadedToPennsieve.length > 0 ||
+    progressDataAlreadyUploadedToPennsieve.length > 0
+  ) {
     // Add the title to the container
     progressCardsContainer.innerHTML = `
       <h2 class="text-sub-step-title">
@@ -2554,36 +2557,14 @@ const renderProgressCards = (progressFileJSONdata) => {
     `;
     //Add the progress cards that have already been uploaded to Pennsieve
     //to their container (datasets that have the sodaJSONObj["previous-guided-upload-dataset-name"] property)
-    document.getElementById("guided-section-resume-progress-cards").innerHTML +=
-      progressDataAlreadyUploadedToPennsieve.length > 0
-        ? progressDataAlreadyUploadedToPennsieve
-            .map((progressFile) => generateProgressCardElement(progressFile))
-            .join("\n")
-        : `
-            <h2 class="guided--text-sub-step">
-              No local datasets have been uploaded to Pennsieve yet.
-            </h2>
-            <p class="guided--text-input-instructions m-0 text-center">
-              <b>Click "Datasets in progress" to view local datasets in progress.</b>
-            </p>
-          `;
-
+    progressCardsContainer.innerHTML += progressDataAlreadyUploadedToPennsieve
+      .map((progressFile) => generateProgressCardElement(progressFile))
+      .join("\n");
     //Add the progress cards that have not yet been uploaded to Pennsieve
     //to their container (datasets that do not have the sodaJSONObj["previous-guided-upload-dataset-name"] property)
-    document.getElementById("guided-section-resume-progress-cards").innerHTML +=
-      progressDataNotYetUploadedToPennsieve.length > 0
-        ? progressDataNotYetUploadedToPennsieve
-            .map((progressFile) => generateProgressCardElement(progressFile))
-            .join("\n")
-        : `
-            <h2 class="text-sub-step-title">
-              All local datasets have been previously uploaded to Pennsieve.
-            </h2>
-            <p class="guided--text-input-instructions m-0 text-center">
-              <b>Click "Datasets uploaded to Pennsieve" to view local datasets that have already been uploaded to Pennsieve.</b>
-            </p>
-          `;
-
+    progressCardsContainer.innerHTML += progressDataNotYetUploadedToPennsieve
+      .map((progressFile) => generateProgressCardElement(progressFile))
+      .join("\n");
     tippy(".progress-card-popover", {
       allowHTML: true,
       interactive: true,
@@ -4304,7 +4285,9 @@ const openPage = async (targetPageID) => {
             sparcAwardRes = sparcAwardRes.toLowerCase().trim();
             // If they have an external award, we can assume the submission is not SPARC funded
             if (sparcAwardRes === "external") {
+              // Select the not sparc funded button and assume the user has contacted SPARC
               document.getElementById("guided-button-dataset-is-not-sparc-funded").click();
+              document.getElementById("guided-button-non-sparc-user-has-contacted-sparc").click();
             }
             // If they have a SPARC award and the length is greater than the length of "external",
             // we can assume the submission is SPARC funded
@@ -10687,62 +10670,8 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
         pathSuffix
       );
 
-      if (sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] == "false") {
-        //right click the second child in #items jqeury
-
-        introJs()
-          .setOptions({
-            steps: [
-              {
-                element: document.querySelector(".selection-aside-item"),
-                intro: "Select the different samples here to specify data files for each of them.",
-              },
-              {
-                element: document.querySelector("#guided-button-back"),
-                intro:
-                  "To view the folders above the folder you are currently in, click the up button.",
-              },
-              {
-                element: document.querySelector("#guided-new-folder"),
-                intro:
-                  "To include a new empty folder, click the 'New folder' button. You can then specify data to be included into it.",
-              },
-              {
-                element: document.querySelector("#guided-import-folder"),
-                intro: "To import a folder from your computer, click the 'Import folder' button.",
-              },
-              {
-                element: document.querySelector("#guided-imoprt-file"),
-                intro: "To import a data file from your computer, click the 'Import file' button.",
-              },
-              {
-                element: document.getElementById("items"),
-                intro: `Folders inside your dataset are represented by the folder icon.<br /><br />
-                  To view the contents of a folder, double click the folder.<br /><br />
-                  Right clicking a folder will bring up a context menu which allows you to rename, move, or delete the folder.`,
-              },
-              {
-                element: document.getElementById("items"),
-                intro: `Files inside your dataset are represented with an icon relative to the file type.<br /><br />
-                  Right clicking a file will bring up a context menu which allows you to rename, move, or delete the file.`,
-              },
-            ],
-            exitOnEsc: false,
-            exitOnOverlayClick: false,
-            disableInteraction: false,
-          })
-          .onbeforeexit(function () {
-            sodaJSONObj["button-config"]["has-seen-file-explorer-intro"] = "true";
-            //reUpdate the file explorer
-            updateFolderStructureUI(samplePageData);
-          })
-          .start();
-      } else {
-        //render folder section in #items
-        //create an animation effect to the items box here
-        // $("#items")
-        updateFolderStructureUI(samplePageData);
-      }
+      //render folder section in #items
+      updateFolderStructureUI(samplePageData);
     });
     //add hover event that changes the background color to black
     item.addEventListener("mouseover", (e) => {
