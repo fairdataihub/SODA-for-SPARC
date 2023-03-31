@@ -20,7 +20,7 @@ let templateArray = [
 const downloadTemplates = (templateItem, destinationFolder) => {
   var templatePath = path.join(__dirname, "file_templates", templateItem);
   var destinationPath = path.join(destinationFolder, templateItem);
-  
+
   if (fs.existsSync(destinationPath)) {
     var emessage = "File '" + templateItem + "' already exists in " + destinationFolder;
     Swal.fire({
