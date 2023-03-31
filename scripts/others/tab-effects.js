@@ -1200,7 +1200,7 @@ const create_json_object = (action, sodaJSONObj, root_folder_path) => {
       sodaJSONObj["starting-point"][folder]["manifest"] = excelToJson({
         sourceFile: sodaJSONObj["starting-point"][folder]["path"],
       })["Sheet1"];
-      console.log(sodaJSONObj["starting-point"][folder]["manifest"])
+      console.log(sodaJSONObj["starting-point"][folder]["manifest"]);
     } else if (fs.existsSync(temp_file_path_csv)) {
       sodaJSONObj["starting-point"][folder]["path"] = temp_file_path_csv;
       sodaJSONObj["starting-point"][folder]["manifest"] = csvToJson
@@ -1349,8 +1349,8 @@ const recursive_structure_create = (
     ) {
       if (sodaJSONObj["starting-point"][high_level_folder]["path"] !== "") {
         extension = path.extname(sodaJSONObj["starting-point"][high_level_folder]["path"]);
-        console.log(sodaJSONObj["starting-point"][high_level_folder]["path"])
-        console.log(extension)
+        console.log(sodaJSONObj["starting-point"][high_level_folder]["path"]);
+        console.log(extension);
         if (extension == ".xlsx") {
           temp_current_file_path = current_file_path.replace(/\\/g, "/");
           root_folder_path = root_folder_path.replace(/\\/g, "/");
@@ -1358,24 +1358,24 @@ const recursive_structure_create = (
           console.log(root_folder_path);
 
           relative_path = temp_current_file_path.replace(root_folder_path + "/", "");
-          console.log(relative_path)
-          console.log(sodaJSONObj["starting-point"][high_level_folder]["manifest"])
+          console.log(relative_path);
+          console.log(sodaJSONObj["starting-point"][high_level_folder]["manifest"]);
           let manifestContent = sodaJSONObj["starting-point"][high_level_folder]["manifest"];
           let manifestHeaders = Object.values(manifestContent[0]);
           let manifestData = Object.values(manifestContent[1]);
-          console.log(manifestHeaders)
-          console.log(manifestHeaders.length)
+          console.log(manifestHeaders);
+          console.log(manifestHeaders.length);
           // console.log(Object.values(sodaJSONObj["starting-point"][high_level_folder]["manifest"])[0].length)
 
           console.log(sodaJSONObj["starting-point"][high_level_folder]["manifest"]);
           for (item in sodaJSONObj["starting-point"][high_level_folder]["manifest"]) {
             console.log(item);
             console.log(relative_path);
-            console.log(sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["A"])
-            console.log(sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["B"])
-            console.log(sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["C"])
-            console.log(sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["D"])
-            console.log(sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["E"])
+            console.log(sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["A"]);
+            console.log(sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["B"]);
+            console.log(sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["C"]);
+            console.log(sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["D"]);
+            console.log(sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["E"]);
             if (
               sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["A"] ==
               relative_path
@@ -1396,7 +1396,7 @@ const recursive_structure_create = (
               } else {
                 manifest_object["additional-metadata"] = "";
               }
-              if(manifestHeaders.length > 5) {
+              if (manifestHeaders.length > 5) {
                 //preserve extra columns
                 console.log("extra columns");
                 let extraColumnHeaders = manifestHeaders.slice(5);
@@ -1404,12 +1404,14 @@ const recursive_structure_create = (
                 console.log(extraColumnHeaders);
                 console.log(extraColumnHeaders.length);
                 console.log(extraColumnValues);
-                for(let i = 0; i < extraColumnHeaders.length; i++) {
-                  console.log(extraColumnValues[i])
-                  manifest_object["extra_columns"] = {[extraColumnHeaders[i]]: extraColumnValues[i]};
+                for (let i = 0; i < extraColumnHeaders.length; i++) {
+                  console.log(extraColumnValues[i]);
+                  manifest_object["extra_columns"] = {
+                    [extraColumnHeaders[i]]: extraColumnValues[i],
+                  };
                 }
                 // manifest_object["extra-columns"] = {
-                  // [extraColumnHeaders]: extraColumnValues
+                // [extraColumnHeaders]: extraColumnValues
                 // };
               }
             }
@@ -1448,7 +1450,7 @@ const recursive_structure_create = (
         }
       }
 
-      console.log(manifest_object)
+      console.log(manifest_object);
       dataset_folder["files"][file] = {
         path: current_file_path,
         type: "local",

@@ -284,7 +284,7 @@ $(document).ready(function () {
       });
 
       var parentFolderName = $("#" + data.node.parent + "_anchor").text();
-      if(!fileOpenedOnce?.[parentFolderName]) {
+      if (!fileOpenedOnce?.[parentFolderName]) {
         fileOpenedOnce[parentFolderName] = true;
       }
       console.log(fileOpenedOnce);
@@ -333,7 +333,7 @@ $(document).ready(function () {
         datasetStructCopy = sodaCopy["dataset-structure"];
         console.log("cleaned soda json");
         console.log(sodaCopy);
-        console.log(datasetStructCopy)
+        console.log(datasetStructCopy);
       } catch (e) {
         clientError(e);
         userErrorMessage(e);
@@ -368,7 +368,7 @@ $(document).ready(function () {
         for (const [highLevelFolderName, manifestFileData] of Object.entries(manifestRes)) {
           if (manifestFileData.length > 1) {
             const manifestHeader = manifestFileData.shift();
-            console.log(manifestHeader)
+            console.log(manifestHeader);
             newManifestData[highLevelFolderName] = {
               headers: manifestHeader,
               data: manifestFileData,
@@ -628,10 +628,16 @@ $(document).ready(function () {
                   for (let extra_column_index = 5; extra_column_index < savedHeaders.length; i++) {
                     let extraColumnName = savedHeaders[extra_column_index];
                     console.log(cleanedFileName);
-                    console.log(sodaJSONObj["dataset-structure"]["folders"][parentFolderName]["files"][cleanedFileName]);
-                    sodaJSONObj["dataset-structure"]["folders"][parentFolderName]["files"][cleanedFileName]["extra_columns"] = {
-                        [extraColumnName]: [savedData[i][extra_column_index]],
-                    }
+                    console.log(
+                      sodaJSONObj["dataset-structure"]["folders"][parentFolderName]["files"][
+                        cleanedFileName
+                      ]
+                    );
+                    sodaJSONObj["dataset-structure"]["folders"][parentFolderName]["files"][
+                      cleanedFileName
+                    ]["extra_columns"] = {
+                      [extraColumnName]: [savedData[i][extra_column_index]],
+                    };
                     // ["extra_columns"][savedHeaders[extra_column_index]] =
                     //   savedData[i][extra_column_index];
                     console.log(
@@ -1254,7 +1260,7 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
           return;
         }
         generateManifestHelper();
-        console.log("PERCHANCE HERE")
+        console.log("PERCHANCE HERE");
         initiate_generate_manifest_local(manifestEditBoolean, localDatasetFolderPath);
       }
     });
@@ -1367,7 +1373,7 @@ function updateJSONStructureManifestGenerate() {
 
 async function initiate_generate_manifest_local(manifestEditBoolean, originalDataset) {
   if (manifestEditBoolean === false) {
-    console.log("HERERERERE")
+    console.log("HERERERERE");
     createManifestLocally("local", false, originalDataset);
   } else {
     // SODA Manifest Files folder
