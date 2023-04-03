@@ -4808,29 +4808,7 @@ const openPage = async (targetPageID) => {
           guidedDatasetKeywordsTagify.addTags(descriptionMetadata["keywords"]);
         }
 
-        const studyTypeElements = document.querySelectorAll(".study-type-element");
-
-        //Unhide the study type elements incase they were hidden
-        for (const studyTypeElement of studyTypeElements) {
-          studyTypeElement.classList.remove("hidden");
-        }
-
-        const userSpecifiedIfDatasetHasSubjects =
-          sodaJSONObj["button-config"]?.["dataset-contains-subjects"];
-
-        let studyType;
-
-        if (userSpecifiedIfDatasetHasSubjects) {
-          userSpecifiedIfDatasetHasSubjects === "yes"
-            ? (studyType = "experimental")
-            : (studyType = "computational");
-
-          for (const studyTypeElement of studyTypeElements) {
-            studyTypeElement.classList.add("hidden");
-          }
-        } else if (descriptionMetadata?.["type"]) {
-          studyType = descriptionMetadata["type"];
-        }
+        const userSpecifiedStudyType = sodaJSONObj["button-config"]["dataset-type"];
 
         //reset the study type checkboxes
         const studyTypeRadioButtons = document.querySelectorAll("input[name='dataset-relation']");
@@ -4841,7 +4819,7 @@ const openPage = async (targetPageID) => {
         //check the correct study type checkbox if the study type was determined
         if (studyType) {
           const studyTypeRadioButton = document.querySelector(
-            `input[name='dataset-relation'][value='${studyType}']`
+            `input[name='dataset-relation'][value='${userSpecifiedStudyType}']`
           );
           studyTypeRadioButton.checked = true;
         }
