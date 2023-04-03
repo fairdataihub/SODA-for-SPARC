@@ -244,6 +244,7 @@ const getGuidedProgressFileNames = () => {
     .readdirSync(guidedProgressFilePath)
     .map((progressFileName) => progressFileName.replace(".json", ""));
 };
+
 const savePageChanges = async (pageBeingLeftID) => {
   // This function is used by both the navigation bar and the side buttons,
   // and whenever it is being called, we know that the user is trying to save the changes on the current page.
@@ -511,6 +512,57 @@ const savePageChanges = async (pageBeingLeftID) => {
 
       //Skip this page becausae we should not come back to it
       guidedSkipPage("guided-resume-existing-dataset-tab");
+    }
+
+    if (pageBeingLeftID === "guided-prepare-dataset-structure-tab") {
+      const buttonDatasetContainsSubjects = document.getElementById(
+        "guided-button-dataset-contains-subjects"
+      );
+      const buttonDatasetDoesNotContainSubjects = document.getElementById(
+        "guided-button-dataset-does-not-contain-subjects"
+      );
+      if (
+        !buttonDatasetContainsSubjects.classList.contains("selected") &&
+        !buttonDatasetDoesNotContainSubjects.classList.contains("selected")
+      ) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please indicate whether or not the dataset contains subjects",
+        });
+        throw errorArray;
+      }
+
+      const buttonContainsCode = document.getElementById("guided-button-dataset-contains-code");
+      const buttonDoesNotContainCode = document.getElementById(
+        "guided-button-dataset-does-not-contain-code"
+      );
+      if (
+        !buttonContainsCode.classList.contains("selected") &&
+        !buttonDoesNotContainCode.classList.contains("selected")
+      ) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please indicate whether or not the dataset contains code",
+        });
+        throw errorArray;
+      }
+
+      const buttonDatasetTypeExperimental = document.getElementById(
+        "guided-button-dataset-type-experimental"
+      );
+      const buttonDatasetTypeComputational = document.getElementById(
+        "guided-button-dataset-type-computational"
+      );
+      if (
+        !buttonDatasetTypeExperimental.classList.contains("selected") &&
+        !buttonDatasetTypeComputational.classList.contains("selected")
+      ) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please indicate whether the dataset is experimental or computational",
+        });
+        throw errorArray;
+      }
     }
 
     if (pageBeingLeftID === "guided-name-subtitle-tab") {

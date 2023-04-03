@@ -408,6 +408,7 @@
             <div class="guided--radio-button-container">
               <button
                 class="ui positive basic button guided--radio-button"
+                id="guided-button-dataset-contains-subjects"
                 data-next-element="guided-section-ask-if-dataset-contains-code"
                 data-button-config-value="dataset-contains-subjects"
                 data-button-config-value-state="yes"
@@ -416,6 +417,7 @@
               </button>
               <button
                 class="ui negative basic button guided--radio-button"
+                id="guided-button-dataset-does-not-contain-subjects"
                 data-next-element="guided-section-ask-if-dataset-contains-code"
                 data-button-config-value="dataset-contains-subjects"
                 data-button-config-value-state="no"
@@ -433,6 +435,7 @@
             <div class="guided--radio-button-container">
               <button
                 class="ui positive basic button guided--radio-button"
+                id="guided-button-dataset-contains-code"
                 data-next-element="guided-section-select-dataset-type"
                 data-button-config-value="dataset-contains-code"
                 data-button-config-value-state="yes"
@@ -441,6 +444,7 @@
               </button>
               <button
                 class="ui negative basic button guided--radio-button"
+                id="guided-button-dataset-does-not-contain-code"
                 data-next-element="guided-section-select-dataset-type"
                 data-button-config-value="dataset-contains-code"
                 data-button-config-value-state="no"
@@ -482,6 +486,7 @@
             <div class="guided--radio-button-container">
               <button
                 class="guided--radio-button tile-button"
+                id="guided-button-dataset-type-experimental"
                 data-next-element="guided-div-add-subjects-table"
                 data-button-config-value="dataset-type"
                 data-button-config-value-state="experimental"
@@ -551,7 +556,7 @@
               </button>
               <button
                 class="guided--radio-button tile-button"
-                id="guided-button-no-subjects"
+                id="guided-button-dataset-type-computational"
                 data-next-element="guided-div-warning-before-deleting-pool-sub-sam-structure"
                 data-button-config-value="dataset-type"
                 data-button-config-value-state="computational"
@@ -591,52 +596,6 @@
                   <h2>Computational</h2>
                 </div>
               </button>
-            </div>
-          </div>
-
-          <div class="guided--section hidden" id="guided-section-dataset-sparc-funded">
-            <h2 class="text-sub-step-title">
-              Click "Continue" to confirm your dataset is funded by a SPARC award.
-            </h2>
-          </div>
-
-          <div class="guided--section hidden" id="guided-section-dataset-not-sparc-funded">
-            <h2 class="text-sub-step-title">
-              Have you already reached out to the SPARC curation team to see if your data is
-              suitable for the SPARC Data Portal?
-            </h2>
-            <div class="guided--radio-button-container">
-              <button
-                class="ui positive basic button guided--radio-button"
-                id="guided-button-non-sparc-user-has-contacted-sparc"
-                data-next-element="guided-section-non-sparc-user-has-contacted-sparc"
-                data-button-config-value="non-sparc-user-has-contacted-sparc"
-                data-button-config-value-state="yes"
-              >
-                Yes
-              </button>
-              <button
-                class="ui negative basic button guided--radio-button"
-                id="guided-button-non-sparc-user-has-not-contacted-sparc"
-                data-next-element="guided-section-non-sparc-user-has-not-contacted-sparc"
-                data-button-config-value="non-sparc-user-has-contacted-sparc"
-                data-button-config-value-state="no"
-              >
-                No
-              </button>
-            </div>
-            <div class="guided--section" id="guided-section-non-sparc-user-has-contacted-sparc">
-              <h2 class="text-sub-step-title">
-                Great, click "Continue" to start the curation process.
-              </h2>
-            </div>
-            <div class="guided--section" id="guided-section-non-sparc-user-has-not-contacted-sparc">
-              <p class="help-text">
-                Please contact the SPARC curation team before continuing at
-                <a href="mailto:curation@sparc.science">curation@sparc.science</a> to ensure that
-                your dataset is suitable for the SPARC platform and to maximize the impact of your
-                data.
-              </p>
             </div>
           </div>
         </div>
