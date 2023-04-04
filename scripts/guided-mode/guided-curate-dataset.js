@@ -115,6 +115,60 @@ const guidedCheckHighLevelFoldersForImproperFiles = (datasetStructure) => {
   return [invalidFolders, invalidFiles];
 };
 
+//Add a click listener to elements with the class codeAnswerButton
+const codeAnswerButtons = document.querySelectorAll(".codeAnswerButton");
+for (const codeAnswerButton of codeAnswerButtons) {
+  codeAnswerButton.addEventListener("click", (e) => {
+    // Hide all of the sub sections (The section to be shown will be shown in this function)
+    const datasetTypeSubSections = document.getElementById("guided-section-dataset-type").children;
+    for (const datasetTypeSubSection of datasetTypeSubSections) {
+      datasetTypeSubSection.classList.add("hidden");
+    }
+
+    const codeAnswerButtonId = e.target.id;
+    const boolUserIndicatedDatasetHasSubjects = document
+      .getElementById("guided-button-dataset-contains-subjects")
+      .classList.contains("selected");
+
+    let interpredDatasetType;
+
+    console.log("boolUserIndicatedDatasetHasSubjects", boolUserIndicatedDatasetHasSubjects);
+    if (codeAnswerButtonId === "guided-button-dataset-contains-code") {
+      if (boolUserIndicatedDatasetHasSubjects) {
+        interpredDatasetType = "requires-manual-selection";
+      } else {
+        interpredDatasetType = "computational";
+      }
+    }
+    if (codeAnswerButtonId === "guided-button-dataset-does-not-contain-code") {
+      if (boolUserIndicatedDatasetHasSubjects) {
+        interpredDatasetType = "experimental";
+      } else {
+        interpredDatasetType = "selection-does-not-make-sense";
+      }
+    }
+
+    if (interpredDatasetType === "selection-does-not-make-sense") {
+      document.getElementById("guided-sub-section-configuration-error").classList.remove("hidden");
+    }
+    if (interpredDatasetType === "requires-manual-selection") {
+      document
+        .getElementById("guided-sub-section-manual-dataset-type-selection")
+        .classList.remove("hidden");
+    }
+    if (interpredDatasetType === "computational") {
+      document
+        .getElementById("guided-sub-section-computational-confirmation")
+        .classList.remove("hidden");
+    }
+    if (interpredDatasetType === "experimental") {
+      document
+        .getElementById("guided-sub-section-experimental-confirmation")
+        .classList.remove("hidden");
+    }
+  });
+}
+
 document.getElementById("guided-button-has-code-data").addEventListener("click", () => {
   const codeFolder = datasetStructureJSONObj["folders"]["code"];
   if (codeFolder) {
@@ -547,7 +601,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
-      const buttonDatasetTypeExperimental = document.getElementById(
+      /*const buttonDatasetTypeExperimental = document.getElementById(
         "guided-button-dataset-type-experimental"
       );
       const buttonDatasetTypeComputational = document.getElementById(
@@ -562,7 +616,9 @@ const savePageChanges = async (pageBeingLeftID) => {
           message: "Please indicate whether the dataset is experimental or computational",
         });
         throw errorArray;
-      }
+      }*/
+
+      // If they selected that their dataset does not contain subjects but does contain code,
     }
 
     if (pageBeingLeftID === "guided-name-subtitle-tab") {

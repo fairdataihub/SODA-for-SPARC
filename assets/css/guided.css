@@ -275,6 +275,13 @@
   max-width: 800px;
 }
 
+.guided--section .sub-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
 .guided--container-sub {
   display: flex;
   flex-grow: 1;
