@@ -2896,9 +2896,6 @@ document
       // create the manifest files if the user auto generated manifest files at any point
       await guidedCreateManifestFilesAndAddToDatasetStructure();
 
-      // TODO: Fine tune instead of waiting check until the manifest files exist then call the manifest generation function
-      await wait(3000);
-
       // get the manifest files
       let manifestJSONResponse;
       try {
@@ -2921,18 +2918,14 @@ document
         throw new Error("Failed to generate manifest files");
       }
 
-      let validationReport;
+      let clientUUID = uuid();
       try {
-        const validationResponse = await client.post(
-          `https://validation.sodaforsparc.io/validator/validate`,
-          {
-            clientUUID: uuid(),
-            dataset_structure: sodaJSONObj,
-            metadata_files: {},
-            manifests: manifests,
-          }
-        );
-        validationReport = validationResponse.data;
+        await client.post(`https://validation.sodaforsparc.io/validator/validate`, {
+          clientUUID: clientUUID,
+          dataset_structure: sodaJSONObj,
+          metadata_files: {},
+          manifests: manifests,
+        });
       } catch (error) {
         clientError(error);
 
@@ -2947,7 +2940,32 @@ document
           "Number of Files",
           file_counter
         );
-        throw new Error("Failed receive a response from the validation server");
+        throw new Error("Failed to receive a response from the validation server");
+      }
+
+      let validationReport;
+      while (validationReport !== undefined) {
+        console.log("Waiting for the validation to complete...");
+        await wait(15000);
+        validationReport = await pollForValidationResults(clientUUID);
+        if (!results) {
+          continue;
+        }
+      }
+
+      if (validationReportData.status === "Error") {
+        file_counter = 0;
+        folder_counter = 0;
+        get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
+        // log successful validation run to analytics
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Validation - Number of Files",
+          "Number of Files",
+          file_counter
+        );
+        throw new Error("Failed to receive a response from the validation server");
       }
 
       // write the full report to the ~/SODA/validation.txt file

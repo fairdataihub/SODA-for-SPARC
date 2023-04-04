@@ -59,6 +59,7 @@ const validateOrganizedDataset = async () => {
   let validationReport;
   try {
     validationReport = await createValidationReport(sodaJSONObjCopy);
+    if (validationReportData.status === "Error") throw new Error(validationReportData.error);
   } catch (error) {
     clientError(error);
     file_counter = 0;
