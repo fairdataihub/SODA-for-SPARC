@@ -9,7 +9,25 @@ Note: Some frontend elements of the workflow are in the renderer.js file as well
 ******************************************************
 */
 
-// Main functions
+// This function will be call after a dataset has been shared with the curation team
+// Users will be able to reserve DOI's for their datasets
+const reserveDOI = async (account, dataset) => {
+  // reference: https://docs.pennsieve.io/reference/reservedoi
+  console.log(account);
+  console.log(dataset);
+  return;
+
+  try {
+    let doiReserve = await client
+      .post
+      //TODO: Create endpoint to reserve DOI
+      ();
+  } catch (err) {
+    clientError(err);
+    userErrorMessage(err);
+  }
+};
+
 const disseminatePublish = async () => {
   // check that the user completed all pre-publishing checklist items for the given dataset
   if (!allPrepublishingChecklistItemsCompleted()) {
@@ -204,6 +222,9 @@ const unshareDataset = (option) => {
 };
 
 const disseminateCurationTeam = async (account, dataset, share_status = "") => {
+  // TODO: Find out what team is needed to share with the curation team
+  // Current method is currently not sharing with the curation team
+  // Maybe the selectedTeam name was changed?
   var selectedTeam = "SPARC Data Curation Team";
   var selectedRole = "manager";
 
@@ -362,7 +383,7 @@ const disseminateCurationTeam = async (account, dataset, share_status = "") => {
   }
 };
 
-async function disseminateConsortium(bfAcct, bfDS, share_status = "") {
+const disseminateConsortium = async (bfAcct, bfDS, share_status = "") => {
   var selectedTeam = "SPARC Embargoed Data Sharing Group";
   var selectedRole = "viewer";
 
@@ -523,9 +544,9 @@ async function disseminateConsortium(bfAcct, bfDS, share_status = "") {
       ]
     );
   }
-}
+};
 
-async function disseminateShowCurrentPermission(bfAcct, bfDS) {
+const disseminateShowCurrentPermission = async (bfAcct, bfDS) => {
   currentDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
   if (bfDS === "Select dataset") {
     currentDatasetPermission.innerHTML = "None";
@@ -565,9 +586,9 @@ async function disseminateShowCurrentPermission(bfAcct, bfDS) {
     "Disseminate Datasets - Show current dataset permission",
     defaultBfDatasetId
   );
-}
+};
 
-async function disseminiateShowCurrentDatasetStatus(callback, account, dataset) {
+const disseminiateShowCurrentDatasetStatus = async (callback, account, dataset) => {
   if (dataset === "Select dataset") {
     $(bfCurrentDatasetStatusProgress).css("visbility", "hidden");
     $("#bf-dataset-status-spinner").css("display", "none");
@@ -620,9 +641,9 @@ async function disseminiateShowCurrentDatasetStatus(callback, account, dataset) 
       );
     }
   }
-}
+};
 
-function checkDatasetDisseminate() {
+const checkDatasetDisseminate = () => {
   if (
     $(".bf-dataset-span.disseminate")
       .html()
@@ -635,4 +656,4 @@ function checkDatasetDisseminate() {
       $("#disseminate-dataset-confirm-button").click();
     }
   }
-}
+};

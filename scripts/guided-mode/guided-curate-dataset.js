@@ -1921,6 +1921,7 @@ const guidedModifyCurationTeamAccess = async (action) => {
       text: "This will inform the Curation Team that your dataset is ready to be reviewed. It is then advised not to make changes to the dataset until the Curation Team contacts you. Would you like to continue?",
     });
     if (confirmShareWithCurationTeam) {
+      //TODO: Check that the name for the curation team is correct or if it has changed on the pennsieve side
       try {
         await client.patch(
           `/manage_datasets/bf_dataset_permissions`,
