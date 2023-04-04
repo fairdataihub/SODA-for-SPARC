@@ -577,7 +577,6 @@
   background-color: var(--color-border);
   border: none;
   display: inline-block;
-  cursor: pointer;
   border-radius: 16px;
 }
 .guided--capsule.active {
