@@ -115,16 +115,6 @@ const guidedCheckHighLevelFoldersForImproperFiles = (datasetStructure) => {
   return [invalidFolders, invalidFiles];
 };
 
-document.getElementById("guided-button-has-code-data").addEventListener("click", () => {
-  const codeFolder = datasetStructureJSONObj["folders"]["code"];
-  if (codeFolder) {
-    if (folderImportedFromPennsieve(codeFolder)) {
-      // If the protocol folder is imported from Pennsieve, unmark it as deleted and update the UI
-      guidedModifyPennsieveFolder(codeFolder, "restore");
-      updateFolderStructureUI(highLevelFolderPageData.code);
-    }
-  }
-});
 document.getElementById("guided-button-has-protocol-data").addEventListener("click", () => {
   const protocolFolder = datasetStructureJSONObj["folders"]["protocol"];
   if (protocolFolder) {
@@ -4844,21 +4834,16 @@ const openPage = async (targetPageID) => {
           guidedDatasetKeywordsTagify.addTags(descriptionMetadata["keywords"]);
         }
 
-        const userSpecifiedStudyType = sodaJSONObj["dataset-type"];
-
         //reset the study type checkboxes
         const studyTypeRadioButtons = document.querySelectorAll("input[name='dataset-relation']");
         for (const studyTypeRadioButton of studyTypeRadioButtons) {
           studyTypeRadioButton.checked = false;
         }
-
         //check the correct study type checkbox if the study type was determined
-        if (studyType) {
-          const studyTypeRadioButton = document.querySelector(
-            `input[name='dataset-relation'][value='${userSpecifiedStudyType}']`
-          );
-          studyTypeRadioButton.checked = true;
-        }
+        const studyTypeRadioButton = document.querySelector(
+          `input[name='dataset-relation'][value='${sodaJSONObj["dataset-type"]}']`
+        );
+        studyTypeRadioButton.checked = true;
       };
       guidedLoadDescriptionDatasetInformation();
 
