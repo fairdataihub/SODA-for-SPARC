@@ -2966,7 +2966,7 @@ document
           "Number of Files",
           file_counter
         );
-        throw new Error("Could not validate your dataset")
+        throw new Error("Could not validate your dataset");
       }
 
       // write the full report to the ~/SODA/validation.txt file
