@@ -99,8 +99,6 @@ def remove_collection_names(account, dataset, tags):
         tags: List of collection ids (int)
     """
 
-    statusResponses = []
-
     token = get_access_token()
 
     selected_dataset_id = get_dataset_id(token, dataset)
@@ -111,9 +109,75 @@ def remove_collection_names(account, dataset, tags):
     for tagid in tags:
         r = requests.delete(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}/collections/{str(tagid)}", headers=create_request_headers(token))
         r.raise_for_status()
-        # result = r.text
-        # result = ps._api._del(f"/datasets/{str(dataset_id)}/collections/{str(tagid)}")
-        # statusResponses.append(result)
 
-    result = dict({"collection": "Collection removed"})
-    return result
+    return dict({"collection": "Collection removed"})
+
+
+def reserve_dataset_doi(dataset):  # sourcery skip: extract-method
+    """
+    Function used to reserve a DOI after dataset has been published
+    @params
+        account: User's Pennsieve account (string)
+        dataset: Dataset name (string)
+
+    @endpoint response
+        organizationID: Organization ID of the dataset (int)
+        datasetId: Dataset ID of the dataset (int)
+        DOI: DOI of the dataset (string)
+        title: Title of the dataset (string)
+        publisher: Publisher of the dataset (string) [Pennsieve Discover]
+        createdAt: Date the DOI was created (string)
+        state: State of the dataset (draft, published, etc.) (string)
+        creators: List of creators of the dataset (list)
+    """
+    print("Reserving DOI for dataset")
+    token = get_access_token()
+
+    dataset_id = get_dataset_id(token, dataset)
+
+    try:
+        print("sending request")
+        doi_request = requests.post(f"{PENNSIEVE_URL}/datasets/{dataset_id}/doi", headers=create_request_headers(token))
+        doi_request.raise_for_status()
+        print("request sent")
+        return {"doi": doi_request.json()["doi"]}
+    except Exception as e:
+        if type(e).__name__ == "HTTPError":
+            print(f"Error code: {str(e.response.status_code)}")
+            print(f"Error code: {str(e.code)}")
+            abort(400, e.response.json()["message"])
+        abort(500, "An internal server error prevented the request from being fulfilled. Please try again later.")
+
+def get_dataset_doi(dataset):
+    """
+    Function used to get the DOI of a dataset
+    @params
+        account: User's Pennsieve account (string)
+        dataset: Dataset name (string)
+    @endpoint response
+        organizationID: Organization ID of the dataset (int)
+        datasetId: Dataset ID of the dataset (int)
+        DOI: DOI of the dataset (string)
+        title: Title of the dataset (string)
+        publisher: Publisher of the dataset (string) [Pennsieve Discover]
+        createdAt: Date the DOI was created (string)
+        state: State of the dataset (draft, published, etc.) (string)
+        creators: List of creators of the dataset (list)
+    """
+    print("Getting DOI for dataset")
+    token = get_access_token()
+
+    print("getting dataset id")
+    print(dataset);
+    dataset_id = get_dataset_id(token, dataset)
+    print(dataset_id)
+    try:
+        print("sending request")
+        doi_request = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/doi", headers=create_request_headers(token))
+        doi_request.raise_for_status()
+        print(doi_request.json())
+        return {"doi": doi_request.json()["doi"]}
+    except Exception as e:
+        if type(e).__name__ == "HTTPError":
+            abort(400, e.response.json()["message"])
+        abort(500, "An internal server error prevented the request from being fulfilled. Please try again later.")

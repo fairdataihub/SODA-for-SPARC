@@ -5499,27 +5499,26 @@
               Unshare with SPARC Curation Team
             </button>
           </div>
-          <div class="guided-section hidden">
-            <h2 class="text-sub-step-title mt-0">
-              Reserve a DOI for your dataset while it's being review by the curation team.
-            </h2>
+          <div class="guided--section hidden">
+            <h2 class="text-sub-step-title mt-0">Reserve a DOI</h2>
             <p class="help-text">
-              If you would like to reserve a DOI for your dataset while it's being reviewed by the
-              curation team, click the button below.
+              Reserve a DOI for your dataset while it's being reviewed by the curation team.
+              However, this DOI will NOT be active, and therefore searchable, until the dataset is
+              published to Pennsieve Discover.
             </p>
             <button
-              class="ui positive button guided--button-footer mt-lg"
-              id="guided-button-reserve-doi"
+              class="ui positive button guided--button-footer mt-2"
+              id="curate-button-reserve-doi"
               style="
                 background-color: var(--color-light-green) !important;
-                width: 281px !important;
+                width: 150px !important;
                 height: 3.2rem;
-                font-family: Poppins;
               "
               onclick="reserveDOI()"
             >
               Reserve DOI
             </button>
+            <p id="curate-doi-information" class="help-text mt-2"></p>
           </div>
         </div>
       </div>

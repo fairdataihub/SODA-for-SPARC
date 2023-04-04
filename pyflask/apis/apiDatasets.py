@@ -9,7 +9,9 @@ from datasets import (
     get_dataset_by_id, 
     get_current_collection_names, 
     upload_collection_names, 
-    remove_collection_names
+    remove_collection_names,
+    reserve_dataset_doi,
+    get_dataset_doi
 )
 
 api = get_namespace(NamespaceEnum.DATASETS)
@@ -152,3 +154,27 @@ class OpenDataset(Resource):
           return "SUCCESS"
         except Exception as e:
           api.abort(500, str(e))
+
+
+
+
+@api.route('/<string:dataset_name>/reserve-doi')
+class DatasetDOI(Resource):
+  @api.doc(params={"dataset_name": "Name of the dataset to reserve DOI for"})
+  @api.doc(responses={200: 'Success', 400: 'Bad Request', 500: "Internal server error"})
+
+  def post(self, dataset_name):
+    try:
+      return reserve_dataset_doi(dataset_name)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
+    
+  def get(self, dataset_name):
+    try:
+      return get_dataset_doi(dataset_name)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e

@@ -11,18 +11,40 @@ Note: Some frontend elements of the workflow are in the renderer.js file as well
 
 // This function will be call after a dataset has been shared with the curation team
 // Users will be able to reserve DOI's for their datasets
-const reserveDOI = async (account, dataset) => {
+const reserveDOI = async () => {
   // reference: https://docs.pennsieve.io/reference/reservedoi
+  // information: https://docs.pennsieve.io/docs/digital-object-identifiers-dois#assigning-doi-to-your-pennsieve-dataset
+  let account = sodaJSONObj["bf-account-selected"]["account-name"];
+  let dataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+
   console.log(account);
   console.log(dataset);
-  return;
-
+  
+  // TODO: Create endpoint to reserve DOI
   try {
     let doiReserve = await client
-      .post
-      //TODO: Create endpoint to reserve DOI
-      ();
+      .post(`datasets/${dataset}/reserve-doi`, {
+        pennsieve_account: account,
+      });
+    
+    console.log(doiReserve);
+    
   } catch (err) {
+    clientError(err);
+    userErrorMessage(err);
+  }
+};
+
+const getDatasetDOI = async (account, dataset) => {
+  // reference: https://docs.pennsieve.io/reference/getdoi
+  console.log(account);
+  console.log(dataset);
+
+  try{
+    let doi = await client.get(`datasets/${dataset}/reserve-doi`);
+
+    console.log(doi);
+  } catch(err) {
     clientError(err);
     userErrorMessage(err);
   }

@@ -1902,6 +1902,19 @@ const guidedSetCurationTeamUI = (boolSharedWithCurationTeam) => {
   }
 };
 
+const guidedSetDOIUI = (boolHasDOI) => {
+  let pennsieveDOICheck = getDatasetDOI(defaultBfAccount, defaultBfDataset);
+  if(boolHasDOI){
+    console.log("has doi");
+  } else {
+    // Check from Pennsieve if the dataset has a DOI before showing the button
+    // In case DOI was reserved directly from Pennsieve
+    if(!pennsieveDOICheck) {
+      console.log("no doi");
+    }
+  }
+};
+
 const guidedModifyCurationTeamAccess = async (action) => {
   if (action === "share") {
     const guidedShareWithCurationTeamButton = document.getElementById(
@@ -5780,8 +5793,6 @@ const openPage = async (targetPageID) => {
       pennsieveDatasetLink.innerHTML = linkIcon + datasetLink;
       pennsieveDatasetLink.href = datasetLink;
 
-      // TODO: removed link copied notyf until we can get it to not fire twice.
-
       pennsieveCopy.removeEventListener(
         "click",
         () => {
@@ -5813,8 +5824,15 @@ const openPage = async (targetPageID) => {
           sharedWithSPARCCurationTeam = true;
         }
       }
+      // TODO: Check if dataset has a doi, if not, show the button to reserve a doi
+      // Else display the doi
+      let reservedDOI = false;
+      if ("doi" in sodaJSONObj["digital-metadata"]) {
+        reservedDOI = true;
+      }
 
       guidedSetCurationTeamUI(sharedWithSPARCCurationTeam);
+      guidedSetDOIUI(reservedDOI);
     }
 
     let currentParentTab = CURRENT_PAGE.closest(".guided--parent-tab");
@@ -11225,6 +11243,7 @@ $(document).ready(async () => {
       });
     }
   });
+
   $("#guided-button-add-permission-user").on("click", function () {
     const newUserPermission = {
       userString: $("#guided_bf_list_users option:selected").text().trim(),
@@ -13045,7 +13064,7 @@ $(document).ready(async () => {
     unPulseNextButton();
   });
 
-  function guidedGenerateRCFilesHelper(type) {
+  const guidedGenerateRCFilesHelper = (type) => {
     var textValue = $(`#guided-textarea-create-${type}`).val().trim();
     if (textValue === "") {
       Swal.fire({
@@ -13065,7 +13084,7 @@ $(document).ready(async () => {
       return "empty";
     }
   }
-  async function guidedSaveRCFile(type) {
+  const guidedSaveRCFile = async (type) => {
     var result = guidedGenerateRCFilesHelper(type);
     if (result === "empty") {
       return;

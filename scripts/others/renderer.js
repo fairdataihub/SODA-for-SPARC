@@ -3918,6 +3918,7 @@ const showPublishingStatus = async (callback) => {
           }
         );
         let res = get_publishing_status.data;
+        console.log(res);
 
         try {
           //update the dataset's publication status and display
