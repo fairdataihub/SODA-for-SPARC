@@ -577,10 +577,20 @@ const savePageChanges = async (pageBeingLeftID) => {
       const datasetType = sodaJSONObj["dataset-type"];
 
       if (datasetHasSubjects) {
+        guidedUnSkipPage("guided-subjects-folder-tab");
+        guidedUnSkipPage("guided-primary-data-organization-capsule");
+        guidedUnSkipPage("guided-source-data-organization-capsule");
+        guidedUnSkipPage("guided-derivative-data-organization-capsule");
       } else {
+        guidedSkipPage("guided-subjects-folder-tab");
+        guidedSkipPage("guided-primary-data-organization-capsule");
+        guidedSkipPage("guided-source-data-organization-capsule");
+        guidedSkipPage("guided-derivative-data-organization-capsule");
       }
       if (datasetHasCode) {
+        guidedUnSkipPage("guided-code-folder-tab");
       } else {
+        guidedSkipPage("guided-code-folder-tab");
       }
     }
 
