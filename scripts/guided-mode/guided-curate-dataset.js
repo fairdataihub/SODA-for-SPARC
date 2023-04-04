@@ -115,60 +115,6 @@ const guidedCheckHighLevelFoldersForImproperFiles = (datasetStructure) => {
   return [invalidFolders, invalidFiles];
 };
 
-//Add a click listener to elements with the class codeAnswerButton
-const codeAnswerButtons = document.querySelectorAll(".codeAnswerButton");
-for (const codeAnswerButton of codeAnswerButtons) {
-  codeAnswerButton.addEventListener("click", (e) => {
-    // Hide all of the sub sections (The section to be shown will be shown in this function)
-    const datasetTypeSubSections = document.getElementById("guided-section-dataset-type").children;
-    for (const datasetTypeSubSection of datasetTypeSubSections) {
-      datasetTypeSubSection.classList.add("hidden");
-    }
-
-    const codeAnswerButtonId = e.target.id;
-    const boolUserIndicatedDatasetHasSubjects = document
-      .getElementById("guided-button-dataset-contains-subjects")
-      .classList.contains("selected");
-
-    let interpredDatasetType;
-
-    console.log("boolUserIndicatedDatasetHasSubjects", boolUserIndicatedDatasetHasSubjects);
-    if (codeAnswerButtonId === "guided-button-dataset-contains-code") {
-      if (boolUserIndicatedDatasetHasSubjects) {
-        interpredDatasetType = "requires-manual-selection";
-      } else {
-        interpredDatasetType = "computational";
-      }
-    }
-    if (codeAnswerButtonId === "guided-button-dataset-does-not-contain-code") {
-      if (boolUserIndicatedDatasetHasSubjects) {
-        interpredDatasetType = "experimental";
-      } else {
-        interpredDatasetType = "selection-does-not-make-sense";
-      }
-    }
-
-    if (interpredDatasetType === "selection-does-not-make-sense") {
-      document.getElementById("guided-sub-section-configuration-error").classList.remove("hidden");
-    }
-    if (interpredDatasetType === "requires-manual-selection") {
-      document
-        .getElementById("guided-sub-section-manual-dataset-type-selection")
-        .classList.remove("hidden");
-    }
-    if (interpredDatasetType === "computational") {
-      document
-        .getElementById("guided-sub-section-computational-confirmation")
-        .classList.remove("hidden");
-    }
-    if (interpredDatasetType === "experimental") {
-      document
-        .getElementById("guided-sub-section-experimental-confirmation")
-        .classList.remove("hidden");
-    }
-  });
-}
-
 document.getElementById("guided-button-has-code-data").addEventListener("click", () => {
   const codeFolder = datasetStructureJSONObj["folders"]["code"];
   if (codeFolder) {
@@ -601,24 +547,41 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
-      /*const buttonDatasetTypeExperimental = document.getElementById(
-        "guided-button-dataset-type-experimental"
-      );
-      const buttonDatasetTypeComputational = document.getElementById(
-        "guided-button-dataset-type-computational"
-      );
-      if (
-        !buttonDatasetTypeExperimental.classList.contains("selected") &&
-        !buttonDatasetTypeComputational.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please indicate whether the dataset is experimental or computational",
-        });
-        throw errorArray;
-      }*/
+      if (sodaJSONObj["dataset-type"] === "requires-manual-selection") {
+        const buttonDatasetTypeExperimental = document.getElementById(
+          "guided-button-dataset-type-experimental"
+        );
+        const buttonDatasetTypeComputational = document.getElementById(
+          "guided-button-dataset-type-computational"
+        );
+        if (
+          !buttonDatasetTypeExperimental.classList.contains("selected") &&
+          !buttonDatasetTypeComputational.classList.contains("selected")
+        ) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please indicate whether the dataset is experimental or computational",
+          });
+          throw errorArray;
+        }
+        if (buttonDatasetTypeExperimental.classList.contains("selected")) {
+          sodaJSONObj["dataset-type"] = "experimental";
+        }
+        if (buttonDatasetTypeComputational.classList.contains("selected")) {
+          sodaJSONObj["dataset-type"] = "computational";
+        }
+      }
 
-      // If they selected that their dataset does not contain subjects but does contain code,
+      const datasetHasSubjects = sodaJSONObj["dataset-contains-subjects"];
+      const datasetHasCode = sodaJSONObj["dataset-contains-code"];
+      const datasetType = sodaJSONObj["dataset-type"];
+
+      if (datasetHasSubjects) {
+      } else {
+      }
+      if (datasetHasCode) {
+      } else {
+      }
     }
 
     if (pageBeingLeftID === "guided-name-subtitle-tab") {
@@ -4916,7 +4879,7 @@ const openPage = async (targetPageID) => {
           guidedDatasetKeywordsTagify.addTags(descriptionMetadata["keywords"]);
         }
 
-        const userSpecifiedStudyType = sodaJSONObj["button-config"]["dataset-type"];
+        const userSpecifiedStudyType = sodaJSONObj["dataset-type"];
 
         //reset the study type checkboxes
         const studyTypeRadioButtons = document.querySelectorAll("input[name='dataset-relation']");
@@ -11311,6 +11274,86 @@ $(document).ready(async () => {
     guidedAddTeamPermission(newTeamPermissionObj);
   });
 
+  const handleMultipleSubSectionDisplay = (controlledSectionID) => {
+    const controlledElementContainer = document.getElementById(controlledSectionID);
+    // Hide the children of the controlled element
+    // (There should be logic below that shows the correct child)
+    const controlledElementChildren = controlledElementContainer.children;
+    for (const child of controlledElementChildren) {
+      child.classList.add("hidden");
+    }
+
+    if (controlledSectionID === "guided-section-dataset-type") {
+      const buttonDatasetContainsSubjects = document.getElementById(
+        "guided-button-dataset-contains-subjects"
+      );
+      const buttonDatasetDoesNotContainSubjects = document.getElementById(
+        "guided-button-dataset-does-not-contain-subjects"
+      );
+      const buttonDatasetContainsCode = document.getElementById(
+        "guided-button-dataset-contains-code"
+      );
+      const buttonDatasetDoesNotContainCode = document.getElementById(
+        "guided-button-dataset-does-not-contain-code"
+      );
+
+      // If neither button is selected, return
+      if (
+        (!buttonDatasetContainsSubjects.classList.contains("selected") &&
+          !buttonDatasetDoesNotContainSubjects.classList.contains("selected")) ||
+        (!buttonDatasetContainsCode.classList.contains("selected") &&
+          !buttonDatasetDoesNotContainCode.classList.contains("selected"))
+      ) {
+        return;
+      }
+
+      let datasetHasSubjects = buttonDatasetContainsSubjects.classList.contains("selected");
+      let datasetHasCode = buttonDatasetContainsCode.classList.contains("selected");
+
+      sodaJSONObj["dataset-contains-subjects"] = datasetHasSubjects;
+      sodaJSONObj["dataset-contains-code"] = datasetHasCode;
+      console.log(sodaJSONObj["dataset-contains-subjects"]);
+      console.log(sodaJSONObj["dataset-contains-code"]);
+
+      let interpredDatasetType;
+
+      if (datasetHasCode && datasetHasSubjects) {
+        interpredDatasetType = "requires-manual-selection";
+      } else if (datasetHasCode && !datasetHasSubjects) {
+        interpredDatasetType = "computational";
+      } else if (!datasetHasCode && datasetHasSubjects) {
+        interpredDatasetType = "experimental";
+      } else {
+        interpredDatasetType = "selection-does-not-make-sense";
+      }
+
+      // set the dataset-type in the sodaJSONObj to be used by the page exit handler
+      sodaJSONObj["dataset-type"] = interpredDatasetType;
+      console.log(sodaJSONObj["dataset-type"]);
+
+      if (interpredDatasetType === "selection-does-not-make-sense") {
+        document
+          .getElementById("guided-sub-section-configuration-error")
+          .classList.remove("hidden");
+      }
+      if (interpredDatasetType === "requires-manual-selection") {
+        document
+          .getElementById("guided-sub-section-manual-dataset-type-selection")
+          .classList.remove("hidden");
+      }
+      if (interpredDatasetType === "computational") {
+        document
+          .getElementById("guided-sub-section-computational-confirmation")
+          .classList.remove("hidden");
+      }
+      if (interpredDatasetType === "experimental") {
+        document
+          .getElementById("guided-sub-section-experimental-confirmation")
+          .classList.remove("hidden");
+      }
+    }
+  };
+
   $(".guided--radio-button").on("click", function () {
     const selectedButton = $(this);
     const notSelectedButton = $(this).siblings(".guided--radio-button");
@@ -11322,6 +11365,13 @@ $(document).ready(async () => {
     //but all other radio button functions will be halted
     if (selectedButton.data("prevent-radio-handler") === true) {
       return;
+    }
+
+    //Store the button's config value in sodaJSONObj
+    if (selectedButton.data("button-config-value")) {
+      buttonConfigValue = selectedButton.data("button-config-value");
+      buttonConfigValueState = selectedButton.data("button-config-value-state");
+      sodaJSONObj["button-config"][buttonConfigValue] = buttonConfigValueState;
     }
 
     selectedButton.removeClass("not-selected basic");
@@ -11338,8 +11388,15 @@ $(document).ready(async () => {
     //Display and scroll to selected element container if data-next-element exists
     if (selectedButton.data("next-element")) {
       nextQuestionID = selectedButton.data("next-element");
-      nextQuestionElement = $(`#${nextQuestionID}`);
-      nextQuestionElement.removeClass("hidden");
+      nextQuestionElement = document.getElementById(nextQuestionID);
+      nextQuestionElement.classList.remove("hidden");
+
+      //Check to see if the button has the data attribute "controls-section"
+      //If it does, hide all other sections
+      if (selectedButton.data("controls-section")) {
+        const controlledSectionID = selectedButton.data("controls-section");
+        handleMultipleSubSectionDisplay(controlledSectionID);
+      }
 
       //slow scroll to the next question
       //temp fix to prevent scrolling error
@@ -11351,16 +11408,10 @@ $(document).ready(async () => {
         "guided-div-update-uploaded-cards",
       ];
       if (!elementsToNotScrollTo.includes(nextQuestionID)) {
-        nextQuestionElement[0].scrollIntoView({
+        nextQuestionElement.scrollIntoView({
           behavior: "smooth",
         });
       }
-    }
-    //Store the button's config value in sodaJSONObj
-    if (selectedButton.data("button-config-value")) {
-      buttonConfigValue = selectedButton.data("button-config-value");
-      buttonConfigValueState = selectedButton.data("button-config-value-state");
-      sodaJSONObj["button-config"][buttonConfigValue] = buttonConfigValueState;
     }
   });
 

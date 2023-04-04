@@ -407,20 +407,22 @@
             </label>
             <div class="guided--radio-button-container">
               <button
-                class="ui positive basic button guided--radio-button"
+                class="ui positive basic button guided--radio-button datasetTypeSelectionButton"
                 id="guided-button-dataset-contains-subjects"
                 data-next-element="guided-section-ask-if-dataset-contains-code"
                 data-button-config-value="dataset-contains-subjects"
                 data-button-config-value-state="yes"
+                data-controls-section="guided-section-dataset-type"
               >
                 Yes
               </button>
               <button
-                class="ui negative basic button guided--radio-button"
+                class="ui negative basic button guided--radio-button datasetTypeSelectionButton"
                 id="guided-button-dataset-does-not-contain-subjects"
                 data-next-element="guided-section-ask-if-dataset-contains-code"
                 data-button-config-value="dataset-contains-subjects"
                 data-button-config-value-state="no"
+                data-controls-section="guided-section-dataset-type"
               >
                 No
               </button>
@@ -432,22 +434,24 @@
               >Do you have code to be included in this dataset (computational models or analysis
               etc)</label
             >
-            <div class="guided--radio-button-container codeAnswerButton">
+            <div class="guided--radio-button-container">
               <button
-                class="ui positive basic button guided--radio-button"
+                class="ui positive basic button guided--radio-button datasetTypeSelectionButton"
                 id="guided-button-dataset-contains-code"
                 data-next-element="guided-section-dataset-type"
                 data-button-config-value="dataset-contains-code"
                 data-button-config-value-state="yes"
+                data-controls-section="guided-section-dataset-type"
               >
                 Yes
               </button>
               <button
-                class="ui negative basic button guided--radio-button codeAnswerButton"
+                class="ui negative basic button guided--radio-button datasetTypeSelectionButton"
                 id="guided-button-dataset-does-not-contain-code"
                 data-next-element="guided-section-dataset-type"
                 data-button-config-value="dataset-contains-code"
                 data-button-config-value-state="no"
+                data-controls-section="guided-section-dataset-type"
               >
                 No
               </button>
