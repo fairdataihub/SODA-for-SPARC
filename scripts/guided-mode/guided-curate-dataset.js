@@ -2966,7 +2966,7 @@ document
           "Number of Files",
           file_counter
         );
-        throw new Error("Failed to receive a response from the validation server");
+        throw new Error("Could not validate your dataset")
       }
 
       // write the full report to the ~/SODA/validation.txt file
@@ -2997,6 +2997,22 @@ document
 
       // get the parsed error report since the validation has been completed
       const errors = validationReport.parsed_report;
+
+      let hasValidationErrors = Object.getOwnPropertyNames(validationReport).length >= 1;
+
+      Swal.fire({
+        title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
+        text: hasValidationErrors
+          ? `Please fix the errors listed in the table below then re-run validation to check that your dataset conforms to the SDS.`
+          : `Your dataset conforms to the SPARC Dataset Structure.`,
+        allowEscapeKey: true,
+        allowOutsideClick: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        showConfirmButton: true,
+        icon: hasValidationErrors ? "error" : "success",
+      });
 
       console.log("Validation errors: ", errors);
 

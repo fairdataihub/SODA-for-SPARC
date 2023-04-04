@@ -190,7 +190,7 @@ const displayValidationReportErrors = (validationReport, tableBody, validationEr
   Swal.fire({
     title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
     text: hasValidationErrors
-      ? `Please fix the errors listed in the table below to pass validation.`
+      ? `Please fix the errors listed in the table below then re-run validation to check that your dataset conforms to the SDS.`
       : `Your dataset conforms to the SPARC Dataset Structure.`,
     allowEscapeKey: true,
     allowOutsideClick: true,
