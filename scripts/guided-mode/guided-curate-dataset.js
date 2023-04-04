@@ -3022,7 +3022,7 @@ document
       if (validationReportStatusIncomplete) {
         let viewReportResult = await Swal.fire({
           title: error,
-          html: `If you repeatedly have this issue please contact the SPARC Curation Team for support at curation@sparc.science. Would you like to view your raw validation report?`,
+          html: `If you repeatedly have this issue please contact the SODA for SPARC team at help@fairdataihub.org. Would you like to view your raw validation report?`,
           allowEscapeKey: true,
           allowOutsideClick: false,
           heightAuto: false,
