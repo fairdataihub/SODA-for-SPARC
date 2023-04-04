@@ -597,8 +597,10 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
       if (datasetHasCode) {
         guidedUnSkipPage("guided-code-folder-tab");
+        guidedUnSkipPage("guided-add-code-metadata-tab");
       } else {
         guidedSkipPage("guided-code-folder-tab");
+        guidedSkipPage("guided-add-code-metadata-tab");
       }
     }
 
@@ -733,70 +735,13 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-code-folder-tab") {
-      const guidedButtonUserHasCodeData = document.getElementById("guided-button-has-code-data");
-      const guidedButtonUserNoCodeData = document.getElementById("guided-button-no-code-data");
-
       const codeFolder = datasetStructureJSONObj["folders"]["code"];
-
-      if (
-        !guidedButtonUserHasCodeData.classList.contains("selected") &&
-        !guidedButtonUserNoCodeData.classList.contains("selected")
-      ) {
+      if (folderIsEmpty(codeFolder)) {
         errorArray.push({
           type: "notyf",
-          message: "Please indicate if your dataset contains code data",
+          message: "Please add code used to generate your dataset",
         });
         throw errorArray;
-      }
-      if (guidedButtonUserHasCodeData.classList.contains("selected")) {
-        if (
-          Object.keys(codeFolder.folders).length === 0 &&
-          Object.keys(codeFolder.files).length === 0
-        ) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please add code data or indicate that you do not have code data",
-          });
-          throw errorArray;
-        }
-        guidedUnSkipPage("guided-add-code-metadata-tab");
-      }
-      if (guidedButtonUserNoCodeData.classList.contains("selected")) {
-        if (
-          Object.keys(codeFolder.folders).length === 0 &&
-          Object.keys(codeFolder.files).length === 0
-        ) {
-          if (folderImportedFromPennsieve(codeFolder)) {
-            guidedModifyPennsieveFolder(codeFolder, "delete");
-          } else {
-            delete datasetStructureJSONObj["folders"]["code"];
-          }
-          guidedSkipPage("guided-add-code-metadata-tab");
-        } else {
-          const { value: deleteCodeFolderWithData } = await Swal.fire({
-            title: "Delete code folder?",
-            text: "You indicated that your dataset does not contain code data, however, you previously added code data to your dataset. Do you want to delete the code folder?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!",
-            cancelButtonText: "No, keep it!",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-
-          if (deleteCodeFolderWithData) {
-            if (folderImportedFromPennsieve(codeFolder)) {
-              guidedModifyPennsieveFolder(codeFolder, "delete");
-            } else {
-              delete datasetStructureJSONObj["folders"]["code"];
-            }
-            guidedSkipPage("guided-add-code-metadata-tab");
-          } else {
-            guidedButtonUserHasCodeData.click();
-          }
-        }
       }
     }
 
@@ -4415,7 +4360,7 @@ const openPage = async (targetPageID) => {
         //create a docs folder
         datasetStructureJSONObj["folders"]["code"] = newEmptyFolderObj();
       }
-      //Append the guided-file-explorer element to the docs folder organization container
+      //Append the guided-file-explorer element to the code folder organization container
       $("#guided-file-explorer-elements").appendTo($("#guided-user-has-code-data"));
       updateFolderStructureUI(highLevelFolderPageData.code);
 
