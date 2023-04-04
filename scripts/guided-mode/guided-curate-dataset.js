@@ -121,7 +121,7 @@ document.getElementById("guided-button-has-protocol-data").addEventListener("cli
     if (folderImportedFromPennsieve(protocolFolder)) {
       // If the protocol folder is imported from Pennsieve, unmark it as deleted and update the UI
       guidedModifyPennsieveFolder(protocolFolder, "restore");
-      updateFolderStructureUI(highLevelFolderPageData.protocol);
+      updateFolderStructureUI("protocol/");
     }
   }
 });
@@ -131,7 +131,7 @@ document.getElementById("guided-button-has-docs-data").addEventListener("click",
     if (folderImportedFromPennsieve(docsFolder)) {
       // If the protocol folder is imported from Pennsieve, unmark it as deleted and update the UI
       guidedModifyPennsieveFolder(docsFolder, "restore");
-      updateFolderStructureUI(highLevelFolderPageData.docs);
+      updateFolderStructureUI("docs/");
     }
   }
 });
@@ -4352,7 +4352,7 @@ const openPage = async (targetPageID) => {
       }
       //Append the guided-file-explorer element to the code folder organization container
       $("#guided-file-explorer-elements").appendTo($("#guided-user-has-code-data"));
-      updateFolderStructureUI(highLevelFolderPageData.code);
+      updateFolderStructureUI("code/");
 
       //Remove hidden class from file explorer element in case it was hidden
       //when showing the intro for prim/src/deriv organization
@@ -4368,7 +4368,7 @@ const openPage = async (targetPageID) => {
       }
       //Append the guided-file-explorer element to the docs folder organization container
       $("#guided-file-explorer-elements").appendTo($("#guided-user-has-protocol-data"));
-      updateFolderStructureUI(highLevelFolderPageData.protocol);
+      updateFolderStructureUI("protocol/");
 
       //Remove hidden class from file explorer element in case it was hidden
       //when showing the intro for prim/src/deriv organization
@@ -4384,7 +4384,7 @@ const openPage = async (targetPageID) => {
       }
       //Append the guided-file-explorer element to the docs folder organization container
       $("#guided-file-explorer-elements").appendTo($("#guided-user-has-docs-data"));
-      updateFolderStructureUI(highLevelFolderPageData.docs);
+      updateFolderStructureUI("docs/");
       //Remove hidden class from file explorer element in case it was hidden
       //when showing the intro for prim/src/deriv organization
       document.getElementById("guided-file-explorer-elements").classList.remove("hidden");
@@ -7412,84 +7412,15 @@ const attachGuidedMethodsToSodaJSONObj = () => {
   };
 };
 
-/********** Folder structure utility **********/
-const highLevelFolderPageData = {
-  primary: {
-    headerText: "Virtually structure your primary folder in the interface below.",
-    contentsText:
-      "Your primary should contain lorem ipsum foo bar random instructional text will go here",
-    pathSuffix: "primary/",
-  },
-  source: {
-    headerText: "Virtually structure your source folder in the interface below.",
-    contentsText:
-      "Your source folder should contain lorem ipsum foo bar random instructional text will go here",
-    pathSuffix: "source/",
-  },
-  derivative: {
-    headerText: "Virtually structure your derivative folder in the interface below.",
-    contentsText:
-      "Your derivative folder should contain lorem ipsum foo bar random instructional text will go here",
-    pathSuffix: "derivative/",
-  },
-  code: {
-    headerText: "Provide the code data associated with your dataset in the interface below",
-    contentsText: `You can also virtually structure the data and rename files/folders
-    as you would like to have them in your dataset when it is generated (note that none of
-    your original data will be modified).<br />`,
-    pathSuffix: "code/",
-  },
-  protocol: {
-    headerText: "Provide the protocol data associated with your dataset in the interface below",
-    contentsText: `You can also virtually structure the data and rename files/folders
-    as you would like to have them in your dataset when it is generated (note that none of
-    your original data will be modified).`,
-    pathSuffix: "protocol/",
-  },
-  docs: {
-    headerText: "Provide docs data associated with your dataset in the interface below",
-    contentsText: `You can also virtually structure the data and rename files/folders
-    as you would like to have them in your dataset when it is generated (note that none of
-    your original data will be modified).`,
-    pathSuffix: "docs/",
-  },
-};
-const generateHighLevelFolderSubFolderPageData = (
-  sampleOrSubject,
-  highLevelFolderName,
-  pathSuffix
-) => {
-  const customPageData = {
-    pathSuffix: `${highLevelFolderName}/${pathSuffix}`,
-  };
-  return customPageData;
-};
-
-const updateFolderStructureUI = (pageDataObj) => {
+const updateFolderStructureUI = (folderPath) => {
   //If the pageDataObj has header and contents, set element text and hide
   //If not, remove the elements from the screen
   const fileExplorer = document.getElementById("guided-file-explorer-elements");
-  const structureFolderHeaderElement = document.getElementById("structure-folder-header");
-  const structureFolderContentsElement = document.getElementById("structure-folder-contents");
 
-  // fileExplorer.style.webkitAnimation = "none";
   fileExplorer.classList.remove("file-explorer-transition");
 
-  if (pageDataObj.headerText) {
-    structureFolderHeaderElement.innerHTML = pageDataObj.headerText;
-    structureFolderHeaderElement.classList.remove("hidden");
-  } else {
-    structureFolderHeaderElement.classList.add("hidden");
-  }
-  if (pageDataObj.contentsText) {
-    structureFolderContentsElement.innerHTML = pageDataObj.contentsText;
-    structureFolderContentsElement.classList.remove("hidden");
-  } else {
-    structureFolderContentsElement.classList.add("hidden");
-  }
-
   //TODO: Figure out why this is undefined when transitioning with no subjects
-  $("#guided-input-global-path").val(`My_dataset_folder/${pageDataObj.pathSuffix}`);
+  $("#guided-input-global-path").val(`My_dataset_folder/${folderPath}`);
   organizeDSglobalPath = $("#guided-input-global-path")[0];
   var filtered = getGlobalPath(organizeDSglobalPath);
   organizeDSglobalPath.value = filtered.slice(0, filtered.length).join("/") + "/";
@@ -7498,6 +7429,7 @@ const updateFolderStructureUI = (pageDataObj) => {
   for (var item of filtered.slice(1, filtered.length)) {
     myPath = myPath["folders"][item];
   }
+  console.log(myPath);
   // construct UI with files and folders
   //var appendString = loadFileFolder(myPath);
 
@@ -10658,14 +10590,8 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
       //get the path prefix from the clicked item
       const pathSuffix = e.target.dataset.pathSuffix;
 
-      const samplePageData = generateHighLevelFolderSubFolderPageData(
-        "sample",
-        highLevelFolderName,
-        pathSuffix
-      );
-
       //render folder section in #items
-      updateFolderStructureUI(samplePageData);
+      updateFolderStructureUI(`${highLevelFolderName}/${pathSuffix}`);
     });
     //add hover event that changes the background color to black
     item.addEventListener("mouseover", (e) => {
@@ -10732,12 +10658,7 @@ const renderSubjectsHighLevelFolderAsideItems = (highLevelFolderName) => {
       //get the path prefix from the clicked item
       const pathSuffix = e.target.dataset.pathSuffix;
 
-      const samplePageData = generateHighLevelFolderSubFolderPageData(
-        "subject",
-        highLevelFolderName,
-        pathSuffix
-      );
-      updateFolderStructureUI(samplePageData);
+      updateFolderStructureUI(`${highLevelFolderName}/${pathSuffix}`);
     });
   });
 };
@@ -10785,12 +10706,7 @@ const renderPoolsHighLevelFolderAsideItems = (highLevelFolderName) => {
       //get the path prefix from the clicked item
       const pathSuffix = e.target.dataset.pathSuffix;
 
-      const poolPageData = generateHighLevelFolderSubFolderPageData(
-        "pool",
-        highLevelFolderName,
-        pathSuffix
-      );
-      updateFolderStructureUI(poolPageData);
+      updateFolderStructureUI(`${highLevelFolderName}/${pathSuffix}`);
     });
   });
 };
