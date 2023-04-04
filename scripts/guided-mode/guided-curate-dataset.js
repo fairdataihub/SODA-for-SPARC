@@ -1904,12 +1904,12 @@ const guidedSetCurationTeamUI = (boolSharedWithCurationTeam) => {
 
 const guidedSetDOIUI = (boolHasDOI) => {
   let pennsieveDOICheck = getDatasetDOI(defaultBfAccount, defaultBfDataset);
-  if(boolHasDOI){
+  if (boolHasDOI) {
     console.log("has doi");
   } else {
     // Check from Pennsieve if the dataset has a DOI before showing the button
     // In case DOI was reserved directly from Pennsieve
-    if(!pennsieveDOICheck) {
+    if (!pennsieveDOICheck) {
       console.log("no doi");
     }
   }
@@ -13083,7 +13083,7 @@ $(document).ready(async () => {
       });
       return "empty";
     }
-  }
+  };
   const guidedSaveRCFile = async (type) => {
     var result = guidedGenerateRCFilesHelper(type);
     if (result === "empty") {
@@ -13161,7 +13161,7 @@ $(document).ready(async () => {
         });
       }
     });
-  }
+  };
   $("#guided-generate-subjects-file").on("click", () => {
     addSubject("guided");
     clearAllSubjectFormFields(guidedSubjectsFormDiv);

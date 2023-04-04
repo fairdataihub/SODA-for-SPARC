@@ -2529,7 +2529,7 @@ $("#button-submit-dataset").click(async () => {
 
           organizeDatasetButton.style =
             "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
-          
+
           // Announce success to User
           uploadComplete.open({
             type: "success",

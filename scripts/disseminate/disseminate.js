@@ -19,16 +19,14 @@ const reserveDOI = async () => {
 
   console.log(account);
   console.log(dataset);
-  
+
   // TODO: Create endpoint to reserve DOI
   try {
-    let doiReserve = await client
-      .post(`datasets/${dataset}/reserve-doi`, {
-        pennsieve_account: account,
-      });
-    
+    let doiReserve = await client.post(`datasets/${dataset}/reserve-doi`, {
+      pennsieve_account: account,
+    });
+
     console.log(doiReserve);
-    
   } catch (err) {
     clientError(err);
     userErrorMessage(err);
@@ -40,11 +38,11 @@ const getDatasetDOI = async (account, dataset) => {
   console.log(account);
   console.log(dataset);
 
-  try{
+  try {
     let doi = await client.get(`datasets/${dataset}/reserve-doi`);
 
     console.log(doi);
-  } catch(err) {
+  } catch (err) {
     clientError(err);
     userErrorMessage(err);
   }
