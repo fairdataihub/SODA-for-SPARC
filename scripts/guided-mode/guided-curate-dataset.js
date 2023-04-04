@@ -578,14 +578,22 @@ const savePageChanges = async (pageBeingLeftID) => {
 
       if (datasetHasSubjects) {
         guidedUnSkipPage("guided-subjects-folder-tab");
-        guidedUnSkipPage("guided-primary-data-organization-capsule");
-        guidedUnSkipPage("guided-source-data-organization-capsule");
-        guidedUnSkipPage("guided-derivative-data-organization-capsule");
+        guidedUnSkipPage("guided-primary-data-organization-tab");
+        guidedUnSkipPage("guided-source-data-organization-tab");
+        guidedUnSkipPage("guided-derivative-data-organization-tab");
+        guidedUnSkipPage("guided-protocol-folder-tab");
+        guidedUnSkipPage("guided-docs-folder-tab");
+        guidedUnSkipPage("guided-create-subjects-metadata-tab");
+        guidedUnSkipPage("guided-create-subjects-metadata-tab");
       } else {
         guidedSkipPage("guided-subjects-folder-tab");
-        guidedSkipPage("guided-primary-data-organization-capsule");
-        guidedSkipPage("guided-source-data-organization-capsule");
-        guidedSkipPage("guided-derivative-data-organization-capsule");
+        guidedSkipPage("guided-primary-data-organization-tab");
+        guidedSkipPage("guided-source-data-organization-tab");
+        guidedSkipPage("guided-derivative-data-organization-tab");
+        guidedSkipPage("guided-protocol-folder-tab");
+        guidedSkipPage("guided-docs-folder-tab");
+        guidedSkipPage("guided-create-subjects-metadata-tab");
+        guidedSkipPage("guided-create-samples-metadata-tab");
       }
       if (datasetHasCode) {
         guidedUnSkipPage("guided-code-folder-tab");
@@ -3464,6 +3472,7 @@ const guidedSkipPage = (pageId) => {
 
   // If the page no longer exists, return
   if (!page) {
+    console.log("Page can not be Unskipped" + pageId + " because it no longer exists.");
     return;
   }
 
@@ -3491,6 +3500,7 @@ const guidedUnSkipPage = (pageId) => {
 
   // If the page no longer exists, return
   if (!page) {
+    console.log("Page can not be skipped" + pageId + " because it no longer exists.");
     return;
   }
 
@@ -13530,55 +13540,18 @@ $(document).ready(async () => {
       // temp logic that clicks the next button if the user is on the submission metadata page:
 
       if (openSubPageID === "guided-specify-subjects-page") {
-        const buttonYesSubjects = document.getElementById("guided-button-add-subjects-table");
-        const buttonNoSubjects = document.getElementById("guided-button-no-subjects");
-        if (
-          !buttonYesSubjects.classList.contains("selected") &&
-          !buttonNoSubjects.classList.contains("selected")
-        ) {
+        //Get the count of all subjects in and outside of pools
+        const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+        const subjectsCount = [...subjectsInPools, ...subjectsOutsidePools].length;
+
+        //Check to see if any subjects were added, and if not, disallow the user
+        //from progressing until they add at least one subject or select that they do not
+        if (subjectsCount === 0) {
           errorArray.push({
             type: "error",
-            message: "Please indicate if your dataset contains subjects.",
+            message: "Please add at least one subject to your dataset.",
           });
           throw errorArray;
-        }
-        if (buttonYesSubjects.classList.contains("selected")) {
-          //Get the count of all subjects in and outside of pools
-          const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
-          const subjectsCount = [...subjectsInPools, ...subjectsOutsidePools].length;
-
-          //Check to see if any subjects were added, and if not, disallow the user
-          //from progressing until they add at least one subject or select that they do not
-          if (subjectsCount === 0) {
-            errorArray.push({
-              type: "error",
-              message:
-                "Please add at least one subject or indicate that your dataset does not contain subjects.",
-            });
-            throw errorArray;
-          }
-
-          guidedUnSkipPage("guided-organize-subjects-into-pools-page");
-          guidedUnSkipPage("guided-specify-samples-page");
-
-          guidedUnSkipPage("guided-primary-data-organization-tab");
-          guidedUnSkipPage("guided-source-data-organization-tab");
-          guidedUnSkipPage("guided-derivative-data-organization-tab");
-
-          guidedUnSkipPage("guided-create-subjects-metadata-tab");
-          guidedUnSkipPage("guided-create-samples-metadata-tab");
-        }
-
-        if (buttonNoSubjects.classList.contains("selected")) {
-          guidedSkipPage("guided-organize-subjects-into-pools-page");
-          guidedSkipPage("guided-specify-samples-page");
-
-          guidedSkipPage("guided-primary-data-organization-tab");
-          guidedSkipPage("guided-source-data-organization-tab");
-          guidedSkipPage("guided-derivative-data-organization-tab");
-
-          guidedSkipPage("guided-create-subjects-metadata-tab");
-          guidedSkipPage("guided-create-samples-metadata-tab");
         }
       }
 
