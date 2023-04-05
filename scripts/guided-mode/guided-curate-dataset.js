@@ -291,7 +291,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         });
         throw errorArray;
       }
-
+      // This is the case where the user is resuming a Pennsieve dataset
       if (resumingPennsieveDataset) {
         if (
           !document
@@ -311,7 +311,8 @@ const savePageChanges = async (pageBeingLeftID) => {
         // Get the text currently in the dropdown
         const selectedPennsieveDataset = selectedPennsieveDatasetToResume[0].innerHTML;
         // Get the value of the dropdown (the dataset ID)
-        const selectedPennsieveDatasetID = selectedPennsieveDatasetToResume.val();
+        const selectedPennsieveDatasetID = selectedPennsieveDatasetToResume.val().trim();
+
         if (!selectedPennsieveDatasetID) {
           errorArray.push({
             type: "notyf",
@@ -320,6 +321,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
 
+        // Check if the user already has a progress file for this dataset
         const currentProgressFileNames = getGuidedProgressFileNames();
         if (currentProgressFileNames.includes(selectedPennsieveDataset)) {
           errorArray.push({
@@ -351,7 +353,6 @@ const savePageChanges = async (pageBeingLeftID) => {
           sodaJSONObj["initially-pulled-dataset-structure"] = JSON.parse(
             JSON.stringify(data["soda_object"]["dataset-structure"])
           );
-
           datasetStructureJSONObj = data["soda_object"]["dataset-structure"];
         } catch (error) {
           console.log(error);
@@ -363,11 +364,32 @@ const savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
 
+        // Check that the dataset pulled from Pennsieve only has SPARC folders at the root level
+        let invalidBaseFolders = [];
+        for (const baseFolder of Object.keys(datasetStructureJSONObj["folders"])) {
+          if (
+            !guidedHighLevelFolders.includes(baseFolder) &&
+            !nonGuidedHighLevelFolders.includes(baseFolder)
+          ) {
+            invalidBaseFolders.push(baseFolder);
+          }
+        }
+
+        if (invalidBaseFolders.length > 0) {
+          errorArray.push({
+            type: "swal",
+            title: "This dataset is not eligible to be edited via Guided Mode",
+            message: `The following folders are not allowed in the root of your dataset: ${invalidBaseFolders.join(
+              ", "
+            )}`,
+          });
+          throw errorArray;
+        }
+
         // Datasets pulled into Guided Mode should only have pool-folders or sub-folders inside of the primary, source,
         // and derivative high level folders. If this is not the case with the pulled dataset, reject it.
         const [invalidFolders, invalidFiles] =
           guidedCheckHighLevelFoldersForImproperFiles(datasetStructureJSONObj);
-
         if (invalidFolders.length > 0 || invalidFiles.length > 0) {
           errorArray.push({
             type: "swal",
@@ -382,72 +404,116 @@ const savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
 
-        //Fetch subjects and sample metadata and set subjectsTableData and sampleTableData
-        try {
-          let subjectsMetadataResponse = await client.get(
-            `/prepare_metadata/import_metadata_file`,
-            {
-              params: {
-                selected_account: defaultBfAccount,
-                selected_dataset: sodaJSONObj["digital-metadata"]["name"],
-                file_type: "subjects.xlsx",
-                ui_fields: Array.from(
-                  document
-                    .getElementById("guided-form-add-a-subject")
-                    .querySelectorAll(".subjects-form-entry")
-                )
-                  .map((field) => field.name.toLowerCase())
-                  .toString(),
-              },
-            }
-          );
-          // Set subjectsTableData as the res
-          subjectsTableData = subjectsMetadataResponse.data.subject_file_rows;
-        } catch (error) {
-          console.log("Unable to fetch subjects metadata" + error);
-        }
-        try {
-          let samplesMetadataResponse = await client.get(`/prepare_metadata/import_metadata_file`, {
-            params: {
-              file_type: "samples.xlsx",
-              selected_account: defaultBfAccount,
-              selected_dataset: sodaJSONObj["digital-metadata"]["name"],
-              ui_fields: Array.from(
-                document
-                  .getElementById("guided-form-add-a-sample")
-                  .querySelectorAll(".samples-form-entry")
-              )
-                .map((field) => field.name.toLowerCase())
-                .toString(),
-            },
-          });
-          // Set the samplesTableData as the samples metadata response
-          samplesTableData = samplesMetadataResponse.data.sample_file_rows;
-        } catch (error) {
-          console.log("Unable to fetch samples metadata" + error);
-        }
-
+        // Extract the pool/subject/sample structure from the folders and files pulled from Pennsieve
+        // Note: this Also adds the pool/subject/sample structure to the sodaJSONObj
         const datasetSubSamStructure =
           extractPoolSubSamStructureFromDataset(datasetStructureJSONObj);
-
         const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
-        if (subjectsInPools.length === 0 && subjectsOutsidePools.length === 0) {
-          errorArray.push({
-            type: "swal",
-            title: "This dataset is not eligible to be edited via Guided Mode",
-            message: `
-              Your dataset must have at least one subject to resume from Pennsieve using Guided Mode
-              <br />
-              <br />
-              If you would like to edit your dataset folders and files, please use the organize dataset feature in Free Form Mode.
-            `,
-          });
-          throw errorArray;
+        const subjects = [...subjectsInPools, ...subjectsOutsidePools];
+
+        // If no subjects from the dataset structure are found and the dataset does have primary, source, or derivative folders,
+        // then throw an error.
+        if (subjects.length === 0) {
+          for (const highLevelFolder of guidedHighLevelFolders) {
+            if (datasetStructureJSONObj["folders"][highLevelFolder]) {
+              errorArray.push({
+                type: "swal",
+                title: "This dataset is not eligible to be edited via Guided Mode",
+                message: `
+                  The dataset contains either the primary, source, or derivative folders, but no subjects were detected in the dataset structure.
+                `,
+              });
+              throw errorArray;
+            }
+          }
+          // Also throw an error if the dataset does not have a code folder (If the dataset does not contain subjects +prim/src/deriv, then it must have a code folder)
+          if (!datasetStructureJSONObj["folders"]["code"]) {
+            errorArray.push({
+              type: "swal",
+              title: "This dataset is not eligible to be edited via Guided Mode",
+              message: `
+                The dataset does not contain a code folder, which is required for datasets that do not contain primary, source, or derivative files.
+              `,
+            });
+            throw errorArray;
+          }
         }
 
-        // If subjectsTableData was found, check if the subject/sample metadata has the same structure as the
-        // dataset structure. If subject and sample metadata were not found, reset it and we'll add the metadata later
-        if (subjectsTableData.length > 1) {
+        // If the dataset has subjects, then we need to fetch the subjects metadata from Pennsieve
+        if (subjects.length > 0) {
+          subjectsTableData = [];
+          //Fetch subjects and sample metadata and set subjectsTableData and sampleTableData
+          try {
+            let fieldEntries = [];
+            for (const field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
+              fieldEntries.push(field.name.toLowerCase());
+            }
+            const subjectsMetadataResponse = await client.get(
+              `/prepare_metadata/import_metadata_file`,
+              {
+                params: {
+                  selected_account: defaultBfAccount,
+                  selected_dataset: selectedPennsieveDatasetID,
+                  file_type: "subjects.xlsx",
+                  ui_fields: fieldEntries.toString(),
+                },
+              }
+            );
+            // Set subjectsTableData as the res
+            subjectsTableData = subjectsMetadataResponse.data.subject_file_rows;
+          } catch (error) {
+            const emessage = userErrorMessage(error);
+            console.log("Unable to fetch subjects metadata" + emessage);
+            errorArray.push({
+              type: "swal",
+              title: "Unable to fetch subjects metadata to check dataset structure",
+              message: `
+                The following error occurred while trying to fetch subjects metadata from Pennsieve: ${emessage}
+              `,
+            });
+            throw errorArray;
+          }
+
+          const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
+          const samples = [...samplesInPools, ...samplesOutsidePools];
+
+          samplesTableData = [];
+
+          if (samples.length > 0) {
+            try {
+              let fieldEntries = [];
+              for (const field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
+                fieldEntries.push(field.name.toLowerCase());
+              }
+              let samplesMetadataResponse = await client.get(
+                `/prepare_metadata/import_metadata_file`,
+                {
+                  params: {
+                    selected_account: defaultBfAccount,
+                    selected_dataset: selectedPennsieveDatasetID,
+                    file_type: "samples.xlsx",
+                    ui_fields: fieldEntries.toString(),
+                  },
+                }
+              );
+              // Set the samplesTableData as the samples metadata response
+              samplesTableData = samplesMetadataResponse.data.sample_file_rows;
+            } catch (error) {
+              const emessage = userErrorMessage(error);
+              console.log("Unable to fetch samples metadata" + emessage);
+              errorArray.push({
+                type: "swal",
+                title: "Unable to fetch samples metadata to check dataset structure",
+                message: `
+                The following error occurred while trying to fetch samples metadata from Pennsieve: ${emessage}
+              `,
+              });
+              throw errorArray;
+            }
+          }
+
+          // If subjectsTableData was found, check if the subject/sample metadata has the same structure as the
+          // dataset structure. If subject and sample metadata were not found, reset it and we'll add the metadata later
           const metadataSubSamStructure = createGuidedStructureFromSubSamMetadata(
             subjectsTableData.slice(1),
             samplesTableData.slice(1)
@@ -466,10 +532,15 @@ const savePageChanges = async (pageBeingLeftID) => {
             });
             throw errorArray;
           }
-        } else {
-          // If the subjectsTableData or samplesTableData was not found, reset it and we'll add the metadata later
-          subjectsTableData = [];
-          samplesTableData = [];
+        }
+
+        // Pre-select the buttons that ask if the dataset contains *hlf* data based on the imported dataset structure
+        for (const hlf of nonGuidedHighLevelFolders) {
+          if (datasetStructureJSONObj["folders"][hlf]) {
+            sodaJSONObj["button-config"][`dataset-contains-${hlf}-data`] = "yes";
+          } else {
+            sodaJSONObj["button-config"][`dataset-contains-${hlf}-data`] = "no";
+          }
         }
 
         await Swal.fire({
@@ -1707,25 +1778,12 @@ const createGuidedStructureFromSubSamMetadata = (subjectsMetadataRows, samplesMe
   return poolSubSamStructure;
 };
 
-const extractPoolSubSamStructureFromMetadata = async () => {
-  if (datasetSubjectsMetadata && datasetSamplesMetadata) {
-    poolSubSamStructure = createGuidedStructureFromSubSamMetadata(
-      datasetSubjectsMetadata.slice(1),
-      datasetSamplesMetadata.slice(1)
-    );
-  }
-
-  return [datasetSubjectsMetadata, datasetSamplesMetadata, poolSubSamStructure];
-};
 // This function extracts the pool, subject, and sample structure from an imported dataset
 // and adds the pools, subjects, and samples to the guided mode structure if they exist.
 // This function also handles setting the button config options, for example, if the function
 // detects that there's primary subject data in the dataset, the yes button will be selected.
 const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
   const guidedFoldersInDataset = guidedHighLevelFolders.filter((folder) =>
-    Object.keys(datasetStructure["folders"]).includes(folder)
-  );
-  const nonGuidedFoldersInDataset = nonGuidedHighLevelFolders.filter((folder) =>
     Object.keys(datasetStructure["folders"]).includes(folder)
   );
 
@@ -1849,9 +1907,6 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
     }
   }
 
-  for (const hlf of nonGuidedFoldersInDataset) {
-    sodaJSONObj["button-config"][`dataset-contains-${hlf}-data`] = "yes";
-  }
   if (addedSubjects.length > 0) {
     sodaJSONObj["button-config"]["dataset-contains-subjects"] = "yes";
   }
@@ -3016,6 +3071,8 @@ document
       sodaJSONObj["dataset-validation-errors"] = errors;
     } catch (error) {
       console.log("error: " + error);
+      const emessage = userErrorMessage(error);
+      console.log("emessage: " + emessage);
       clientError(error);
       // Hide the loading div
       validationLoadingDiv.classList.add("hidden");
