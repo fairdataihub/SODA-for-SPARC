@@ -234,6 +234,7 @@ const transitionToPrepublishingQuestionThree = async () => {
     $("#para-review-dataset-info-disseminate").text() ===
     "Dataset is currently under review by your Publishing Team"
   ) {
+    console.log("showing withdraw button");
     // show the withdraw button
     $("#prepublishing-withdraw-btn-container").show();
     $("#prepublishing-withdraw-btn-container button").show();
@@ -243,6 +244,7 @@ const transitionToPrepublishingQuestionThree = async () => {
     return;
   }
 
+  console.log("showing checklist container");
   // show the pre-publishing checklist and the continue button
   $("#prepublishing-checklist-container").show();
   $(".pre-publishing-continue-container").show();

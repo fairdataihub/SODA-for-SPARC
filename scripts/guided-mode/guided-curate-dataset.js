@@ -1903,7 +1903,9 @@ const guidedSetCurationTeamUI = (boolSharedWithCurationTeam) => {
 };
 
 const guidedSetDOIUI = (boolHasDOI) => {
-  let pennsieveDOICheck = getDatasetDOI(defaultBfAccount, defaultBfDataset);
+  let account = sodaJSONObj["bf-account-selected"]["account-name"];
+  let dataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+  let pennsieveDOICheck = getDatasetDOI(account, dataset);
   if (boolHasDOI) {
     console.log("has doi");
   } else {
@@ -1915,6 +1917,11 @@ const guidedSetDOIUI = (boolHasDOI) => {
   }
 };
 
+const showPrepublishingReview = () => {
+  //Show the final step to select metadata files to be excluded
+  $("#guided--submit-prepublishing-review").removeClass("hidden");
+};
+
 const guidedModifyCurationTeamAccess = async (action) => {
   if (action === "share") {
     const guidedShareWithCurationTeamButton = document.getElementById(
@@ -1922,56 +1929,117 @@ const guidedModifyCurationTeamAccess = async (action) => {
     );
     guidedShareWithCurationTeamButton.disabled = true;
     guidedShareWithCurationTeamButton.classList.add("loading");
-    const { value: confirmShareWithCurationTeam } = await Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
+    guidedShareWithCurationTeamButton.classList.add("hidden");
+
+    //Determine if user is owner of dataset before beginning
+    Swal.fire({
+      title: "Determining your dataset permissions",
+      html: "Please wait...",
+      // timer: 5000,
+      allowEscapeKey: false,
+      allowOutsideClick: false,
       heightAuto: false,
-      cancelButtonText: "No",
-      confirmButtonText: "Yes",
-      focusCancel: true,
-      icon: "warning",
-      reverseButtons: reverseSwalButtons,
-      showCancelButton: true,
-      text: "This will inform the Curation Team that your dataset is ready to be reviewed. It is then advised not to make changes to the dataset until the Curation Team contacts you. Would you like to continue?",
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
     });
-    if (confirmShareWithCurationTeam) {
-      //TODO: Check that the name for the curation team is correct or if it has changed on the pennsieve side
-      try {
-        await client.patch(
-          `/manage_datasets/bf_dataset_permissions`,
-          {
-            input_role: "manager",
-          },
-          {
-            params: {
-              selected_account: defaultBfAccount,
-              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-              scope: "team",
-              name: "SPARC Data Curation Team",
-            },
-          }
-        );
-        guidedSetCurationTeamUI(true);
-        swal.fire({
-          width: "550px",
-          icon: "success",
-          title: "Dataset successfully shared with the Curation Team",
-          html: `It is now advised that you do not make changes to the dataset until
-          the Curation Team follows up with you.`,
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          confirmButtonText: "OK",
-          focusConfirm: true,
-        });
-      } catch (error) {
-        notyf.open({
-          duration: "5000",
-          type: "error",
-          message: "Error sharing dataset with the Curation Team",
-        });
-      }
+
+    let role;
+    let currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+    console.log(currentDataset);
+    try {
+      role = await api.getDatasetRole(currentDataset);
+    } catch (error) {
+      clientError(error);
+      await Swal.fire({
+        title: "Failed to determine if you are the dataset owner",
+        text: userErrorMessage(error),
+        icon: "error",
+        confirmButtonText: "Ok",
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+      });
+      guidedShareWithCurationTeamButton.classList.remove("hidden");
+      guidedShareWithCurationTeamButton.disabled = false;
+      guidedShareWithCurationTeamButton.classList.remove("loading");
+      return;
     }
-    guidedShareWithCurationTeamButton.disabled = false;
-    guidedShareWithCurationTeamButton.classList.remove("loading");
+
+    if (role !== "owner") {
+      await Swal.fire({
+        title: "Only the dataset owner can submit a dataset for pre-publishing review.",
+        icon: "error",
+        confirmButtonText: "Ok",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+      });
+      guidedShareWithCurationTeamButton.classList.remove("hidden");
+      guidedShareWithCurationTeamButton.disabled = false;
+      guidedShareWithCurationTeamButton.classList.remove("loading");
+      return;
+    }
+
+    //Role is owner from here forward
+    Swal.close();
+
+    // Show prepublishing checklist container
+    $("#guided--prepublishing-checklist-container").removeClass("hidden");
+
+    // const { value: confirmShareWithCurationTeam } = await Swal.fire({
+    //   backdrop: "rgba(0,0,0, 0.4)",
+    //   heightAuto: false,
+    //   cancelButtonText: "No",
+    //   confirmButtonText: "Yes",
+    //   focusCancel: true,
+    //   icon: "warning",
+    //   reverseButtons: reverseSwalButtons,
+    //   showCancelButton: true,
+    //   text: "This will inform the Curation Team that your dataset is ready to be reviewed. It is then advised not to make changes to the dataset until the Curation Team contacts you. Would you like to continue?",
+    // });
+    // if (confirmShareWithCurationTeam) {
+    //   //TODO: Check that the name for the curation team is correct or if it has changed on the pennsieve side
+    //   try {
+    //     await client.patch(
+    //       `/manage_datasets/bf_dataset_permissions`,
+    //       {
+    //         input_role: "manager",
+    //       },
+    //       {
+    //         params: {
+    //           selected_account: defaultBfAccount,
+    //           selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+    //           scope: "team",
+    //           name: "SPARC Data Curation Team",
+    //         },
+    //       }
+    //     );
+    //     guidedSetCurationTeamUI(true);
+    //     swal.fire({
+    //       width: "550px",
+    //       icon: "success",
+    //       title: "Dataset successfully shared with the Curation Team",
+    //       html: `It is now advised that you do not make changes to the dataset until
+    //       the Curation Team follows up with you.`,
+    //       backdrop: "rgba(0,0,0, 0.4)",
+    //       heightAuto: false,
+    //       confirmButtonText: "OK",
+    //       focusConfirm: true,
+    //     });
+    //   } catch (error) {
+    //     notyf.open({
+    //       duration: "5000",
+    //       type: "error",
+    //       message: "Error sharing dataset with the Curation Team",
+    //     });
+    //   }
+    // }
+    // guidedShareWithCurationTeamButton.disabled = false;
+    // guidedShareWithCurationTeamButton.classList.remove("loading");
   }
   if (action === "unshare") {
     const guidedUnshareWithCurationTeamButton = document.getElementById(

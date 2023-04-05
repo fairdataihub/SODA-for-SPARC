@@ -3894,6 +3894,7 @@ const showPrePublishingPageElements = () => {
   $(".pre-publishing-continue-container").hide();
 };
 
+// TODO: Adapt function to be used for Guided Mode as well
 const showPublishingStatus = async (callback) => {
   return new Promise(async function (resolve, reject) {
     console.log(callback);
