@@ -115,23 +115,13 @@ const guidedCheckHighLevelFoldersForImproperFiles = (datasetStructure) => {
   return [invalidFolders, invalidFiles];
 };
 
-document.getElementById("guided-button-has-code-data").addEventListener("click", () => {
-  const codeFolder = datasetStructureJSONObj["folders"]["code"];
-  if (codeFolder) {
-    if (folderImportedFromPennsieve(codeFolder)) {
-      // If the protocol folder is imported from Pennsieve, unmark it as deleted and update the UI
-      guidedModifyPennsieveFolder(codeFolder, "restore");
-      updateFolderStructureUI(highLevelFolderPageData.code);
-    }
-  }
-});
 document.getElementById("guided-button-has-protocol-data").addEventListener("click", () => {
   const protocolFolder = datasetStructureJSONObj["folders"]["protocol"];
   if (protocolFolder) {
     if (folderImportedFromPennsieve(protocolFolder)) {
       // If the protocol folder is imported from Pennsieve, unmark it as deleted and update the UI
       guidedModifyPennsieveFolder(protocolFolder, "restore");
-      updateFolderStructureUI(highLevelFolderPageData.protocol);
+      updateFolderStructureUI("protocol/");
     }
   }
 });
@@ -141,7 +131,7 @@ document.getElementById("guided-button-has-docs-data").addEventListener("click",
     if (folderImportedFromPennsieve(docsFolder)) {
       // If the protocol folder is imported from Pennsieve, unmark it as deleted and update the UI
       guidedModifyPennsieveFolder(docsFolder, "restore");
-      updateFolderStructureUI(highLevelFolderPageData.docs);
+      updateFolderStructureUI("docs/");
     }
   }
 });
@@ -244,6 +234,7 @@ const getGuidedProgressFileNames = () => {
     .readdirSync(guidedProgressFilePath)
     .map((progressFileName) => progressFileName.replace(".json", ""));
 };
+
 const savePageChanges = async (pageBeingLeftID) => {
   // This function is used by both the navigation bar and the side buttons,
   // and whenever it is being called, we know that the user is trying to save the changes on the current page.
@@ -300,7 +291,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         });
         throw errorArray;
       }
-
+      // This is the case where the user is resuming a Pennsieve dataset
       if (resumingPennsieveDataset) {
         if (
           !document
@@ -320,7 +311,8 @@ const savePageChanges = async (pageBeingLeftID) => {
         // Get the text currently in the dropdown
         const selectedPennsieveDataset = selectedPennsieveDatasetToResume[0].innerHTML;
         // Get the value of the dropdown (the dataset ID)
-        const selectedPennsieveDatasetID = selectedPennsieveDatasetToResume.val();
+        const selectedPennsieveDatasetID = selectedPennsieveDatasetToResume.val().trim();
+
         if (!selectedPennsieveDatasetID) {
           errorArray.push({
             type: "notyf",
@@ -329,6 +321,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
 
+        // Check if the user already has a progress file for this dataset
         const currentProgressFileNames = getGuidedProgressFileNames();
         if (currentProgressFileNames.includes(selectedPennsieveDataset)) {
           errorArray.push({
@@ -360,7 +353,6 @@ const savePageChanges = async (pageBeingLeftID) => {
           sodaJSONObj["initially-pulled-dataset-structure"] = JSON.parse(
             JSON.stringify(data["soda_object"]["dataset-structure"])
           );
-
           datasetStructureJSONObj = data["soda_object"]["dataset-structure"];
         } catch (error) {
           console.log(error);
@@ -372,11 +364,32 @@ const savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
 
+        // Check that the dataset pulled from Pennsieve only has SPARC folders at the root level
+        let invalidBaseFolders = [];
+        for (const baseFolder of Object.keys(datasetStructureJSONObj["folders"])) {
+          if (
+            !guidedHighLevelFolders.includes(baseFolder) &&
+            !nonGuidedHighLevelFolders.includes(baseFolder)
+          ) {
+            invalidBaseFolders.push(baseFolder);
+          }
+        }
+
+        if (invalidBaseFolders.length > 0) {
+          errorArray.push({
+            type: "swal",
+            title: "This dataset is not eligible to be edited via Guided Mode",
+            message: `The following folders are not allowed in the root of your dataset: ${invalidBaseFolders.join(
+              ", "
+            )}`,
+          });
+          throw errorArray;
+        }
+
         // Datasets pulled into Guided Mode should only have pool-folders or sub-folders inside of the primary, source,
         // and derivative high level folders. If this is not the case with the pulled dataset, reject it.
         const [invalidFolders, invalidFiles] =
           guidedCheckHighLevelFoldersForImproperFiles(datasetStructureJSONObj);
-
         if (invalidFolders.length > 0 || invalidFiles.length > 0) {
           errorArray.push({
             type: "swal",
@@ -391,72 +404,116 @@ const savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
 
-        //Fetch subjects and sample metadata and set subjectsTableData and sampleTableData
-        try {
-          let subjectsMetadataResponse = await client.get(
-            `/prepare_metadata/import_metadata_file`,
-            {
-              params: {
-                selected_account: defaultBfAccount,
-                selected_dataset: sodaJSONObj["digital-metadata"]["name"],
-                file_type: "subjects.xlsx",
-                ui_fields: Array.from(
-                  document
-                    .getElementById("guided-form-add-a-subject")
-                    .querySelectorAll(".subjects-form-entry")
-                )
-                  .map((field) => field.name.toLowerCase())
-                  .toString(),
-              },
-            }
-          );
-          // Set subjectsTableData as the res
-          subjectsTableData = subjectsMetadataResponse.data.subject_file_rows;
-        } catch (error) {
-          console.log("Unable to fetch subjects metadata" + error);
-        }
-        try {
-          let samplesMetadataResponse = await client.get(`/prepare_metadata/import_metadata_file`, {
-            params: {
-              file_type: "samples.xlsx",
-              selected_account: defaultBfAccount,
-              selected_dataset: sodaJSONObj["digital-metadata"]["name"],
-              ui_fields: Array.from(
-                document
-                  .getElementById("guided-form-add-a-sample")
-                  .querySelectorAll(".samples-form-entry")
-              )
-                .map((field) => field.name.toLowerCase())
-                .toString(),
-            },
-          });
-          // Set the samplesTableData as the samples metadata response
-          samplesTableData = samplesMetadataResponse.data.sample_file_rows;
-        } catch (error) {
-          console.log("Unable to fetch samples metadata" + error);
-        }
-
+        // Extract the pool/subject/sample structure from the folders and files pulled from Pennsieve
+        // Note: this Also adds the pool/subject/sample structure to the sodaJSONObj
         const datasetSubSamStructure =
           extractPoolSubSamStructureFromDataset(datasetStructureJSONObj);
-
         const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
-        if (subjectsInPools.length === 0 && subjectsOutsidePools.length === 0) {
-          errorArray.push({
-            type: "swal",
-            title: "This dataset is not eligible to be edited via Guided Mode",
-            message: `
-              Your dataset must have at least one subject to resume from Pennsieve using Guided Mode
-              <br />
-              <br />
-              If you would like to edit your dataset folders and files, please use the organize dataset feature in Free Form Mode.
-            `,
-          });
-          throw errorArray;
+        const subjects = [...subjectsInPools, ...subjectsOutsidePools];
+
+        // If no subjects from the dataset structure are found and the dataset does have primary, source, or derivative folders,
+        // then throw an error.
+        if (subjects.length === 0) {
+          for (const highLevelFolder of guidedHighLevelFolders) {
+            if (datasetStructureJSONObj["folders"][highLevelFolder]) {
+              errorArray.push({
+                type: "swal",
+                title: "This dataset is not eligible to be edited via Guided Mode",
+                message: `
+                  The dataset contains either the primary, source, or derivative folders, but no subjects were detected in the dataset structure.
+                `,
+              });
+              throw errorArray;
+            }
+          }
+          // Also throw an error if the dataset does not have a code folder (If the dataset does not contain subjects +prim/src/deriv, then it must have a code folder)
+          if (!datasetStructureJSONObj["folders"]["code"]) {
+            errorArray.push({
+              type: "swal",
+              title: "This dataset is not eligible to be edited via Guided Mode",
+              message: `
+                The dataset does not contain a code folder, which is required for datasets that do not contain primary, source, or derivative files.
+              `,
+            });
+            throw errorArray;
+          }
         }
 
-        // If subjectsTableData was found, check if the subject/sample metadata has the same structure as the
-        // dataset structure. If subject and sample metadata were not found, reset it and we'll add the metadata later
-        if (subjectsTableData.length > 1) {
+        // If the dataset has subjects, then we need to fetch the subjects metadata from Pennsieve
+        if (subjects.length > 0) {
+          subjectsTableData = [];
+          //Fetch subjects and sample metadata and set subjectsTableData and sampleTableData
+          try {
+            let fieldEntries = [];
+            for (const field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
+              fieldEntries.push(field.name.toLowerCase());
+            }
+            const subjectsMetadataResponse = await client.get(
+              `/prepare_metadata/import_metadata_file`,
+              {
+                params: {
+                  selected_account: defaultBfAccount,
+                  selected_dataset: selectedPennsieveDatasetID,
+                  file_type: "subjects.xlsx",
+                  ui_fields: fieldEntries.toString(),
+                },
+              }
+            );
+            // Set subjectsTableData as the res
+            subjectsTableData = subjectsMetadataResponse.data.subject_file_rows;
+          } catch (error) {
+            const emessage = userErrorMessage(error);
+            console.log("Unable to fetch subjects metadata" + emessage);
+            errorArray.push({
+              type: "swal",
+              title: "Unable to fetch subjects metadata to check dataset structure",
+              message: `
+                The following error occurred while trying to fetch subjects metadata from Pennsieve: ${emessage}
+              `,
+            });
+            throw errorArray;
+          }
+
+          const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
+          const samples = [...samplesInPools, ...samplesOutsidePools];
+
+          samplesTableData = [];
+
+          if (samples.length > 0) {
+            try {
+              let fieldEntries = [];
+              for (const field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
+                fieldEntries.push(field.name.toLowerCase());
+              }
+              let samplesMetadataResponse = await client.get(
+                `/prepare_metadata/import_metadata_file`,
+                {
+                  params: {
+                    selected_account: defaultBfAccount,
+                    selected_dataset: selectedPennsieveDatasetID,
+                    file_type: "samples.xlsx",
+                    ui_fields: fieldEntries.toString(),
+                  },
+                }
+              );
+              // Set the samplesTableData as the samples metadata response
+              samplesTableData = samplesMetadataResponse.data.sample_file_rows;
+            } catch (error) {
+              const emessage = userErrorMessage(error);
+              console.log("Unable to fetch samples metadata" + emessage);
+              errorArray.push({
+                type: "swal",
+                title: "Unable to fetch samples metadata to check dataset structure",
+                message: `
+                The following error occurred while trying to fetch samples metadata from Pennsieve: ${emessage}
+              `,
+              });
+              throw errorArray;
+            }
+          }
+
+          // If subjectsTableData was found, check if the subject/sample metadata has the same structure as the
+          // dataset structure. If subject and sample metadata were not found, reset it and we'll add the metadata later
           const metadataSubSamStructure = createGuidedStructureFromSubSamMetadata(
             subjectsTableData.slice(1),
             samplesTableData.slice(1)
@@ -475,10 +532,15 @@ const savePageChanges = async (pageBeingLeftID) => {
             });
             throw errorArray;
           }
-        } else {
-          // If the subjectsTableData or samplesTableData was not found, reset it and we'll add the metadata later
-          subjectsTableData = [];
-          samplesTableData = [];
+        }
+
+        // Pre-select the buttons that ask if the dataset contains *hlf* data based on the imported dataset structure
+        for (const hlf of nonGuidedHighLevelFolders) {
+          if (datasetStructureJSONObj["folders"][hlf]) {
+            sodaJSONObj["button-config"][`dataset-contains-${hlf}-data`] = "yes";
+          } else {
+            sodaJSONObj["button-config"][`dataset-contains-${hlf}-data`] = "no";
+          }
         }
 
         await Swal.fire({
@@ -511,6 +573,96 @@ const savePageChanges = async (pageBeingLeftID) => {
 
       //Skip this page becausae we should not come back to it
       guidedSkipPage("guided-resume-existing-dataset-tab");
+    }
+
+    if (pageBeingLeftID === "guided-prepare-dataset-structure-tab") {
+      const buttonDatasetContainsSubjects = document.getElementById(
+        "guided-button-dataset-contains-subjects"
+      );
+      const buttonDatasetDoesNotContainSubjects = document.getElementById(
+        "guided-button-dataset-does-not-contain-subjects"
+      );
+      if (
+        !buttonDatasetContainsSubjects.classList.contains("selected") &&
+        !buttonDatasetDoesNotContainSubjects.classList.contains("selected")
+      ) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please indicate whether or not the dataset contains subjects",
+        });
+        throw errorArray;
+      }
+
+      const buttonContainsCode = document.getElementById("guided-button-dataset-contains-code");
+      const buttonDoesNotContainCode = document.getElementById(
+        "guided-button-dataset-does-not-contain-code"
+      );
+      if (
+        !buttonContainsCode.classList.contains("selected") &&
+        !buttonDoesNotContainCode.classList.contains("selected")
+      ) {
+        errorArray.push({
+          type: "notyf",
+          message: "Please indicate whether or not the dataset contains code",
+        });
+        throw errorArray;
+      }
+
+      if (sodaJSONObj["dataset-type"] === "requires-manual-selection") {
+        const buttonDatasetTypeExperimental = document.getElementById(
+          "guided-button-dataset-type-experimental"
+        );
+        const buttonDatasetTypeComputational = document.getElementById(
+          "guided-button-dataset-type-computational"
+        );
+        if (
+          !buttonDatasetTypeExperimental.classList.contains("selected") &&
+          !buttonDatasetTypeComputational.classList.contains("selected")
+        ) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please indicate whether the dataset is experimental or computational",
+          });
+          throw errorArray;
+        }
+        if (buttonDatasetTypeExperimental.classList.contains("selected")) {
+          sodaJSONObj["dataset-type"] = "experimental";
+        }
+        if (buttonDatasetTypeComputational.classList.contains("selected")) {
+          sodaJSONObj["dataset-type"] = "computational";
+        }
+      }
+
+      const datasetHasSubjects = sodaJSONObj["dataset-contains-subjects"];
+      const datasetHasCode = sodaJSONObj["dataset-contains-code"];
+      const datasetType = sodaJSONObj["dataset-type"];
+
+      if (datasetHasSubjects) {
+        guidedUnSkipPage("guided-subjects-folder-tab");
+        guidedUnSkipPage("guided-primary-data-organization-tab");
+        guidedUnSkipPage("guided-source-data-organization-tab");
+        guidedUnSkipPage("guided-derivative-data-organization-tab");
+        guidedUnSkipPage("guided-protocol-folder-tab");
+        guidedUnSkipPage("guided-docs-folder-tab");
+        guidedUnSkipPage("guided-create-subjects-metadata-tab");
+        guidedUnSkipPage("guided-create-subjects-metadata-tab");
+      } else {
+        guidedSkipPage("guided-subjects-folder-tab");
+        guidedSkipPage("guided-primary-data-organization-tab");
+        guidedSkipPage("guided-source-data-organization-tab");
+        guidedSkipPage("guided-derivative-data-organization-tab");
+        guidedSkipPage("guided-protocol-folder-tab");
+        guidedSkipPage("guided-docs-folder-tab");
+        guidedSkipPage("guided-create-subjects-metadata-tab");
+        guidedSkipPage("guided-create-samples-metadata-tab");
+      }
+      if (datasetHasCode) {
+        guidedUnSkipPage("guided-code-folder-tab");
+        guidedUnSkipPage("guided-add-code-metadata-tab");
+      } else {
+        guidedSkipPage("guided-code-folder-tab");
+        guidedSkipPage("guided-add-code-metadata-tab");
+      }
     }
 
     if (pageBeingLeftID === "guided-name-subtitle-tab") {
@@ -644,70 +796,13 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-code-folder-tab") {
-      const guidedButtonUserHasCodeData = document.getElementById("guided-button-has-code-data");
-      const guidedButtonUserNoCodeData = document.getElementById("guided-button-no-code-data");
-
       const codeFolder = datasetStructureJSONObj["folders"]["code"];
-
-      if (
-        !guidedButtonUserHasCodeData.classList.contains("selected") &&
-        !guidedButtonUserNoCodeData.classList.contains("selected")
-      ) {
+      if (folderIsEmpty(codeFolder)) {
         errorArray.push({
           type: "notyf",
-          message: "Please indicate if your dataset contains code data",
+          message: "Please add code used to generate your dataset",
         });
         throw errorArray;
-      }
-      if (guidedButtonUserHasCodeData.classList.contains("selected")) {
-        if (
-          Object.keys(codeFolder.folders).length === 0 &&
-          Object.keys(codeFolder.files).length === 0
-        ) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please add code data or indicate that you do not have code data",
-          });
-          throw errorArray;
-        }
-        guidedUnSkipPage("guided-add-code-metadata-tab");
-      }
-      if (guidedButtonUserNoCodeData.classList.contains("selected")) {
-        if (
-          Object.keys(codeFolder.folders).length === 0 &&
-          Object.keys(codeFolder.files).length === 0
-        ) {
-          if (folderImportedFromPennsieve(codeFolder)) {
-            guidedModifyPennsieveFolder(codeFolder, "delete");
-          } else {
-            delete datasetStructureJSONObj["folders"]["code"];
-          }
-          guidedSkipPage("guided-add-code-metadata-tab");
-        } else {
-          const { value: deleteCodeFolderWithData } = await Swal.fire({
-            title: "Delete code folder?",
-            text: "You indicated that your dataset does not contain code data, however, you previously added code data to your dataset. Do you want to delete the code folder?",
-            icon: "warning",
-            showCancelButton: true,
-            confirmButtonColor: "#3085d6",
-            cancelButtonColor: "#d33",
-            confirmButtonText: "Yes, delete it!",
-            cancelButtonText: "No, keep it!",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-          });
-
-          if (deleteCodeFolderWithData) {
-            if (folderImportedFromPennsieve(codeFolder)) {
-              guidedModifyPennsieveFolder(codeFolder, "delete");
-            } else {
-              delete datasetStructureJSONObj["folders"]["code"];
-            }
-            guidedSkipPage("guided-add-code-metadata-tab");
-          } else {
-            guidedButtonUserHasCodeData.click();
-          }
-        }
       }
     }
 
@@ -1683,25 +1778,12 @@ const createGuidedStructureFromSubSamMetadata = (subjectsMetadataRows, samplesMe
   return poolSubSamStructure;
 };
 
-const extractPoolSubSamStructureFromMetadata = async () => {
-  if (datasetSubjectsMetadata && datasetSamplesMetadata) {
-    poolSubSamStructure = createGuidedStructureFromSubSamMetadata(
-      datasetSubjectsMetadata.slice(1),
-      datasetSamplesMetadata.slice(1)
-    );
-  }
-
-  return [datasetSubjectsMetadata, datasetSamplesMetadata, poolSubSamStructure];
-};
 // This function extracts the pool, subject, and sample structure from an imported dataset
 // and adds the pools, subjects, and samples to the guided mode structure if they exist.
 // This function also handles setting the button config options, for example, if the function
 // detects that there's primary subject data in the dataset, the yes button will be selected.
 const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
   const guidedFoldersInDataset = guidedHighLevelFolders.filter((folder) =>
-    Object.keys(datasetStructure["folders"]).includes(folder)
-  );
-  const nonGuidedFoldersInDataset = nonGuidedHighLevelFolders.filter((folder) =>
     Object.keys(datasetStructure["folders"]).includes(folder)
   );
 
@@ -1825,9 +1907,6 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
     }
   }
 
-  for (const hlf of nonGuidedFoldersInDataset) {
-    sodaJSONObj["button-config"][`dataset-contains-${hlf}-data`] = "yes";
-  }
   if (addedSubjects.length > 0) {
     sodaJSONObj["button-config"]["dataset-contains-subjects"] = "yes";
   }
@@ -3028,6 +3107,8 @@ document
       sodaJSONObj["dataset-validation-errors"] = errors;
     } catch (error) {
       console.log("error: " + error);
+      const emessage = userErrorMessage(error);
+      console.log("emessage: " + emessage);
       clientError(error);
       // Hide the loading div
       validationLoadingDiv.classList.add("hidden");
@@ -3419,6 +3500,7 @@ const guidedSkipPage = (pageId) => {
 
   // If the page no longer exists, return
   if (!page) {
+    console.log("Page can not be Unskipped" + pageId + " because it no longer exists.");
     return;
   }
 
@@ -3446,6 +3528,7 @@ const guidedUnSkipPage = (pageId) => {
 
   // If the page no longer exists, return
   if (!page) {
+    console.log("Page can not be skipped" + pageId + " because it no longer exists.");
     return;
   }
 
@@ -4360,9 +4443,9 @@ const openPage = async (targetPageID) => {
         //create a docs folder
         datasetStructureJSONObj["folders"]["code"] = newEmptyFolderObj();
       }
-      //Append the guided-file-explorer element to the docs folder organization container
+      //Append the guided-file-explorer element to the code folder organization container
       $("#guided-file-explorer-elements").appendTo($("#guided-user-has-code-data"));
-      updateFolderStructureUI(highLevelFolderPageData.code);
+      updateFolderStructureUI("code/");
 
       //Remove hidden class from file explorer element in case it was hidden
       //when showing the intro for prim/src/deriv organization
@@ -4378,7 +4461,7 @@ const openPage = async (targetPageID) => {
       }
       //Append the guided-file-explorer element to the docs folder organization container
       $("#guided-file-explorer-elements").appendTo($("#guided-user-has-protocol-data"));
-      updateFolderStructureUI(highLevelFolderPageData.protocol);
+      updateFolderStructureUI("protocol/");
 
       //Remove hidden class from file explorer element in case it was hidden
       //when showing the intro for prim/src/deriv organization
@@ -4394,7 +4477,7 @@ const openPage = async (targetPageID) => {
       }
       //Append the guided-file-explorer element to the docs folder organization container
       $("#guided-file-explorer-elements").appendTo($("#guided-user-has-docs-data"));
-      updateFolderStructureUI(highLevelFolderPageData.docs);
+      updateFolderStructureUI("docs/");
       //Remove hidden class from file explorer element in case it was hidden
       //when showing the intro for prim/src/deriv organization
       document.getElementById("guided-file-explorer-elements").classList.remove("hidden");
@@ -4844,43 +4927,16 @@ const openPage = async (targetPageID) => {
           guidedDatasetKeywordsTagify.addTags(descriptionMetadata["keywords"]);
         }
 
-        const studyTypeElements = document.querySelectorAll(".study-type-element");
-
-        //Unhide the study type elements incase they were hidden
-        for (const studyTypeElement of studyTypeElements) {
-          studyTypeElement.classList.remove("hidden");
-        }
-
-        const userSpecifiedIfDatasetHasSubjects =
-          sodaJSONObj["button-config"]?.["dataset-contains-subjects"];
-
-        let studyType;
-
-        if (userSpecifiedIfDatasetHasSubjects) {
-          userSpecifiedIfDatasetHasSubjects === "yes"
-            ? (studyType = "experimental")
-            : (studyType = "computational");
-
-          for (const studyTypeElement of studyTypeElements) {
-            studyTypeElement.classList.add("hidden");
-          }
-        } else if (descriptionMetadata?.["type"]) {
-          studyType = descriptionMetadata["type"];
-        }
-
         //reset the study type checkboxes
         const studyTypeRadioButtons = document.querySelectorAll("input[name='dataset-relation']");
         for (const studyTypeRadioButton of studyTypeRadioButtons) {
           studyTypeRadioButton.checked = false;
         }
-
         //check the correct study type checkbox if the study type was determined
-        if (studyType) {
-          const studyTypeRadioButton = document.querySelector(
-            `input[name='dataset-relation'][value='${studyType}']`
-          );
-          studyTypeRadioButton.checked = true;
-        }
+        const studyTypeRadioButton = document.querySelector(
+          `input[name='dataset-relation'][value='${sodaJSONObj["dataset-type"]}']`
+        );
+        studyTypeRadioButton.checked = true;
       };
       guidedLoadDescriptionDatasetInformation();
 
@@ -7449,84 +7505,15 @@ const attachGuidedMethodsToSodaJSONObj = () => {
   };
 };
 
-/********** Folder structure utility **********/
-const highLevelFolderPageData = {
-  primary: {
-    headerText: "Virtually structure your primary folder in the interface below.",
-    contentsText:
-      "Your primary should contain lorem ipsum foo bar random instructional text will go here",
-    pathSuffix: "primary/",
-  },
-  source: {
-    headerText: "Virtually structure your source folder in the interface below.",
-    contentsText:
-      "Your source folder should contain lorem ipsum foo bar random instructional text will go here",
-    pathSuffix: "source/",
-  },
-  derivative: {
-    headerText: "Virtually structure your derivative folder in the interface below.",
-    contentsText:
-      "Your derivative folder should contain lorem ipsum foo bar random instructional text will go here",
-    pathSuffix: "derivative/",
-  },
-  code: {
-    headerText: "Provide the code data associated with your dataset in the interface below",
-    contentsText: `You can also virtually structure the data and rename files/folders
-    as you would like to have them in your dataset when it is generated (note that none of
-    your original data will be modified).<br />`,
-    pathSuffix: "code/",
-  },
-  protocol: {
-    headerText: "Provide the protocol data associated with your dataset in the interface below",
-    contentsText: `You can also virtually structure the data and rename files/folders
-    as you would like to have them in your dataset when it is generated (note that none of
-    your original data will be modified).`,
-    pathSuffix: "protocol/",
-  },
-  docs: {
-    headerText: "Provide docs data associated with your dataset in the interface below",
-    contentsText: `You can also virtually structure the data and rename files/folders
-    as you would like to have them in your dataset when it is generated (note that none of
-    your original data will be modified).`,
-    pathSuffix: "docs/",
-  },
-};
-const generateHighLevelFolderSubFolderPageData = (
-  sampleOrSubject,
-  highLevelFolderName,
-  pathSuffix
-) => {
-  const customPageData = {
-    pathSuffix: `${highLevelFolderName}/${pathSuffix}`,
-  };
-  return customPageData;
-};
-
-const updateFolderStructureUI = (pageDataObj) => {
+const updateFolderStructureUI = (folderPath) => {
   //If the pageDataObj has header and contents, set element text and hide
   //If not, remove the elements from the screen
   const fileExplorer = document.getElementById("guided-file-explorer-elements");
-  const structureFolderHeaderElement = document.getElementById("structure-folder-header");
-  const structureFolderContentsElement = document.getElementById("structure-folder-contents");
 
-  // fileExplorer.style.webkitAnimation = "none";
   fileExplorer.classList.remove("file-explorer-transition");
 
-  if (pageDataObj.headerText) {
-    structureFolderHeaderElement.innerHTML = pageDataObj.headerText;
-    structureFolderHeaderElement.classList.remove("hidden");
-  } else {
-    structureFolderHeaderElement.classList.add("hidden");
-  }
-  if (pageDataObj.contentsText) {
-    structureFolderContentsElement.innerHTML = pageDataObj.contentsText;
-    structureFolderContentsElement.classList.remove("hidden");
-  } else {
-    structureFolderContentsElement.classList.add("hidden");
-  }
-
   //TODO: Figure out why this is undefined when transitioning with no subjects
-  $("#guided-input-global-path").val(`My_dataset_folder/${pageDataObj.pathSuffix}`);
+  $("#guided-input-global-path").val(`My_dataset_folder/${folderPath}`);
   organizeDSglobalPath = $("#guided-input-global-path")[0];
   var filtered = getGlobalPath(organizeDSglobalPath);
   organizeDSglobalPath.value = filtered.slice(0, filtered.length).join("/") + "/";
@@ -7535,6 +7522,7 @@ const updateFolderStructureUI = (pageDataObj) => {
   for (var item of filtered.slice(1, filtered.length)) {
     myPath = myPath["folders"][item];
   }
+  console.log(myPath);
   // construct UI with files and folders
   //var appendString = loadFileFolder(myPath);
 
@@ -10695,14 +10683,8 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
       //get the path prefix from the clicked item
       const pathSuffix = e.target.dataset.pathSuffix;
 
-      const samplePageData = generateHighLevelFolderSubFolderPageData(
-        "sample",
-        highLevelFolderName,
-        pathSuffix
-      );
-
       //render folder section in #items
-      updateFolderStructureUI(samplePageData);
+      updateFolderStructureUI(`${highLevelFolderName}/${pathSuffix}`);
     });
     //add hover event that changes the background color to black
     item.addEventListener("mouseover", (e) => {
@@ -10769,12 +10751,7 @@ const renderSubjectsHighLevelFolderAsideItems = (highLevelFolderName) => {
       //get the path prefix from the clicked item
       const pathSuffix = e.target.dataset.pathSuffix;
 
-      const samplePageData = generateHighLevelFolderSubFolderPageData(
-        "subject",
-        highLevelFolderName,
-        pathSuffix
-      );
-      updateFolderStructureUI(samplePageData);
+      updateFolderStructureUI(`${highLevelFolderName}/${pathSuffix}`);
     });
   });
 };
@@ -10822,12 +10799,7 @@ const renderPoolsHighLevelFolderAsideItems = (highLevelFolderName) => {
       //get the path prefix from the clicked item
       const pathSuffix = e.target.dataset.pathSuffix;
 
-      const poolPageData = generateHighLevelFolderSubFolderPageData(
-        "pool",
-        highLevelFolderName,
-        pathSuffix
-      );
-      updateFolderStructureUI(poolPageData);
+      updateFolderStructureUI(`${highLevelFolderName}/${pathSuffix}`);
     });
   });
 };
@@ -11261,6 +11233,86 @@ $(document).ready(async () => {
     guidedAddTeamPermission(newTeamPermissionObj);
   });
 
+  const handleMultipleSubSectionDisplay = (controlledSectionID) => {
+    const controlledElementContainer = document.getElementById(controlledSectionID);
+    // Hide the children of the controlled element
+    // (There should be logic below that shows the correct child)
+    const controlledElementChildren = controlledElementContainer.children;
+    for (const child of controlledElementChildren) {
+      child.classList.add("hidden");
+    }
+
+    if (controlledSectionID === "guided-section-dataset-type") {
+      const buttonDatasetContainsSubjects = document.getElementById(
+        "guided-button-dataset-contains-subjects"
+      );
+      const buttonDatasetDoesNotContainSubjects = document.getElementById(
+        "guided-button-dataset-does-not-contain-subjects"
+      );
+      const buttonDatasetContainsCode = document.getElementById(
+        "guided-button-dataset-contains-code"
+      );
+      const buttonDatasetDoesNotContainCode = document.getElementById(
+        "guided-button-dataset-does-not-contain-code"
+      );
+
+      // If neither button is selected, return
+      if (
+        (!buttonDatasetContainsSubjects.classList.contains("selected") &&
+          !buttonDatasetDoesNotContainSubjects.classList.contains("selected")) ||
+        (!buttonDatasetContainsCode.classList.contains("selected") &&
+          !buttonDatasetDoesNotContainCode.classList.contains("selected"))
+      ) {
+        return;
+      }
+
+      let datasetHasSubjects = buttonDatasetContainsSubjects.classList.contains("selected");
+      let datasetHasCode = buttonDatasetContainsCode.classList.contains("selected");
+
+      sodaJSONObj["dataset-contains-subjects"] = datasetHasSubjects;
+      sodaJSONObj["dataset-contains-code"] = datasetHasCode;
+      console.log(sodaJSONObj["dataset-contains-subjects"]);
+      console.log(sodaJSONObj["dataset-contains-code"]);
+
+      let interpredDatasetType;
+
+      if (datasetHasCode && datasetHasSubjects) {
+        interpredDatasetType = "requires-manual-selection";
+      } else if (datasetHasCode && !datasetHasSubjects) {
+        interpredDatasetType = "computational";
+      } else if (!datasetHasCode && datasetHasSubjects) {
+        interpredDatasetType = "experimental";
+      } else {
+        interpredDatasetType = "selection-does-not-make-sense";
+      }
+
+      // set the dataset-type in the sodaJSONObj to be used by the page exit handler
+      sodaJSONObj["dataset-type"] = interpredDatasetType;
+      console.log(sodaJSONObj["dataset-type"]);
+
+      if (interpredDatasetType === "selection-does-not-make-sense") {
+        document
+          .getElementById("guided-sub-section-configuration-error")
+          .classList.remove("hidden");
+      }
+      if (interpredDatasetType === "requires-manual-selection") {
+        document
+          .getElementById("guided-sub-section-manual-dataset-type-selection")
+          .classList.remove("hidden");
+      }
+      if (interpredDatasetType === "computational") {
+        document
+          .getElementById("guided-sub-section-computational-confirmation")
+          .classList.remove("hidden");
+      }
+      if (interpredDatasetType === "experimental") {
+        document
+          .getElementById("guided-sub-section-experimental-confirmation")
+          .classList.remove("hidden");
+      }
+    }
+  };
+
   $(".guided--radio-button").on("click", function () {
     const selectedButton = $(this);
     const notSelectedButton = $(this).siblings(".guided--radio-button");
@@ -11272,6 +11324,13 @@ $(document).ready(async () => {
     //but all other radio button functions will be halted
     if (selectedButton.data("prevent-radio-handler") === true) {
       return;
+    }
+
+    //Store the button's config value in sodaJSONObj
+    if (selectedButton.data("button-config-value")) {
+      buttonConfigValue = selectedButton.data("button-config-value");
+      buttonConfigValueState = selectedButton.data("button-config-value-state");
+      sodaJSONObj["button-config"][buttonConfigValue] = buttonConfigValueState;
     }
 
     selectedButton.removeClass("not-selected basic");
@@ -11288,8 +11347,15 @@ $(document).ready(async () => {
     //Display and scroll to selected element container if data-next-element exists
     if (selectedButton.data("next-element")) {
       nextQuestionID = selectedButton.data("next-element");
-      nextQuestionElement = $(`#${nextQuestionID}`);
-      nextQuestionElement.removeClass("hidden");
+      nextQuestionElement = document.getElementById(nextQuestionID);
+      nextQuestionElement.classList.remove("hidden");
+
+      //Check to see if the button has the data attribute "controls-section"
+      //If it does, hide all other sections
+      if (selectedButton.data("controls-section")) {
+        const controlledSectionID = selectedButton.data("controls-section");
+        handleMultipleSubSectionDisplay(controlledSectionID);
+      }
 
       //slow scroll to the next question
       //temp fix to prevent scrolling error
@@ -11301,16 +11367,10 @@ $(document).ready(async () => {
         "guided-div-update-uploaded-cards",
       ];
       if (!elementsToNotScrollTo.includes(nextQuestionID)) {
-        nextQuestionElement[0].scrollIntoView({
+        nextQuestionElement.scrollIntoView({
           behavior: "smooth",
         });
       }
-    }
-    //Store the button's config value in sodaJSONObj
-    if (selectedButton.data("button-config-value")) {
-      buttonConfigValue = selectedButton.data("button-config-value");
-      buttonConfigValueState = selectedButton.data("button-config-value-state");
-      sodaJSONObj["button-config"][buttonConfigValue] = buttonConfigValueState;
     }
   });
 
@@ -13419,55 +13479,18 @@ $(document).ready(async () => {
       // temp logic that clicks the next button if the user is on the submission metadata page:
 
       if (openSubPageID === "guided-specify-subjects-page") {
-        const buttonYesSubjects = document.getElementById("guided-button-add-subjects-table");
-        const buttonNoSubjects = document.getElementById("guided-button-no-subjects");
-        if (
-          !buttonYesSubjects.classList.contains("selected") &&
-          !buttonNoSubjects.classList.contains("selected")
-        ) {
+        //Get the count of all subjects in and outside of pools
+        const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+        const subjectsCount = [...subjectsInPools, ...subjectsOutsidePools].length;
+
+        //Check to see if any subjects were added, and if not, disallow the user
+        //from progressing until they add at least one subject or select that they do not
+        if (subjectsCount === 0) {
           errorArray.push({
             type: "error",
-            message: "Please indicate if your dataset contains subjects.",
+            message: "Please add at least one subject to your dataset.",
           });
           throw errorArray;
-        }
-        if (buttonYesSubjects.classList.contains("selected")) {
-          //Get the count of all subjects in and outside of pools
-          const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
-          const subjectsCount = [...subjectsInPools, ...subjectsOutsidePools].length;
-
-          //Check to see if any subjects were added, and if not, disallow the user
-          //from progressing until they add at least one subject or select that they do not
-          if (subjectsCount === 0) {
-            errorArray.push({
-              type: "error",
-              message:
-                "Please add at least one subject or indicate that your dataset does not contain subjects.",
-            });
-            throw errorArray;
-          }
-
-          guidedUnSkipPage("guided-organize-subjects-into-pools-page");
-          guidedUnSkipPage("guided-specify-samples-page");
-
-          guidedUnSkipPage("guided-primary-data-organization-tab");
-          guidedUnSkipPage("guided-source-data-organization-tab");
-          guidedUnSkipPage("guided-derivative-data-organization-tab");
-
-          guidedUnSkipPage("guided-create-subjects-metadata-tab");
-          guidedUnSkipPage("guided-create-samples-metadata-tab");
-        }
-
-        if (buttonNoSubjects.classList.contains("selected")) {
-          guidedSkipPage("guided-organize-subjects-into-pools-page");
-          guidedSkipPage("guided-specify-samples-page");
-
-          guidedSkipPage("guided-primary-data-organization-tab");
-          guidedSkipPage("guided-source-data-organization-tab");
-          guidedSkipPage("guided-derivative-data-organization-tab");
-
-          guidedSkipPage("guided-create-subjects-metadata-tab");
-          guidedSkipPage("guided-create-samples-metadata-tab");
         }
       }
 
