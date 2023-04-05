@@ -42,7 +42,6 @@ def get_dataset_by_id(dataset_id):
 
     r = requests.put(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=headers)
 
-    # TODO: log r.text and r.status_code
     r.raise_for_status()
 
     return r.json()

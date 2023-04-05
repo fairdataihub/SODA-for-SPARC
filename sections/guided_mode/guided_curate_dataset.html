@@ -4183,7 +4183,7 @@
                 Provide information to be included in your README:
               </h2>
               <textarea
-                class="guided--input guided--text-area-tall"
+                class="guided--input guided--text-area-tall resize-none"
                 type="text"
                 name="guided-README-text"
                 placeholder="Draft your README here"
@@ -4216,7 +4216,7 @@
                 Provide the changes since your previous publication:
               </h2>
               <textarea
-                class="guided--input guided--text-area-tall"
+                class="guided--input guided--text-area-tall resize-none"
                 type="text"
                 name="guided-CHANGES-text"
                 placeholder="Draft your CHANGES here"
@@ -5577,6 +5577,28 @@
               onclick="guidedModifyCurationTeamAccess('unshare')"
             >
               Unshare with SPARC Curation Team
+            </button>
+          </div>
+          <div class="guided-section hidden">
+            <h2 class="text-sub-step-title mt-0">
+              Reserve a DOI for your dataset while it's being review by the curation team.
+            </h2>
+            <p class="help-text">
+              If you would like to reserve a DOI for your dataset while it's being reviewed by the
+              curation team, click the button below.
+            </p>
+            <button
+              class="ui positive button guided--button-footer mt-lg"
+              id="guided-button-reserve-doi"
+              style="
+                background-color: var(--color-light-green) !important;
+                width: 281px !important;
+                height: 3.2rem;
+                font-family: Poppins;
+              "
+              onclick="reserveDOI()"
+            >
+              Reserve DOI
             </button>
           </div>
         </div>

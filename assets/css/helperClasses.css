@@ -161,6 +161,10 @@
   vertical-align: baseline !important;
 }
 
+.resize-none {
+  resize: none;
+}
+
 .align-top {
   vertical-align: top !important;
 }

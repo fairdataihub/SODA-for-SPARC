@@ -2000,6 +2000,7 @@ const guidedModifyCurationTeamAccess = async (action) => {
       text: "This will inform the Curation Team that your dataset is ready to be reviewed. It is then advised not to make changes to the dataset until the Curation Team contacts you. Would you like to continue?",
     });
     if (confirmShareWithCurationTeam) {
+      //TODO: Check that the name for the curation team is correct or if it has changed on the pennsieve side
       try {
         await client.patch(
           `/manage_datasets/bf_dataset_permissions`,
@@ -2975,9 +2976,6 @@ document
       // create the manifest files if the user auto generated manifest files at any point
       await guidedCreateManifestFilesAndAddToDatasetStructure();
 
-      // TODO: Fine tune instead of waiting check until the manifest files exist then call the manifest generation function
-      await wait(3000);
-
       // get the manifest files
       let manifestJSONResponse;
       try {
@@ -3000,18 +2998,14 @@ document
         throw new Error("Failed to generate manifest files");
       }
 
-      let validationReport;
+      let clientUUID = uuid();
       try {
-        const validationResponse = await client.post(
-          `https://validation.sodaforsparc.io/validator/validate`,
-          {
-            clientUUID: uuid(),
-            dataset_structure: sodaJSONObj,
-            metadata_files: {},
-            manifests: manifests,
-          }
-        );
-        validationReport = validationResponse.data;
+        await client.post(`https://validation.sodaforsparc.io/validator/validate`, {
+          clientUUID: clientUUID,
+          dataset_structure: sodaJSONObj,
+          metadata_files: {},
+          manifests: manifests,
+        });
       } catch (error) {
         clientError(error);
 
@@ -3026,7 +3020,32 @@ document
           "Number of Files",
           file_counter
         );
-        throw new Error("Failed receive a response from the validation server");
+        throw new Error("Failed to receive a response from the validation server");
+      }
+
+      let validationReport;
+      while (validationReport !== undefined) {
+        console.log("Waiting for the validation to complete...");
+        await wait(15000);
+        validationReport = await pollForValidationResults(clientUUID);
+        if (!results) {
+          continue;
+        }
+      }
+
+      if (validationReportData.status === "Error") {
+        file_counter = 0;
+        folder_counter = 0;
+        get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
+        // log successful validation run to analytics
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          "Validation - Number of Files",
+          "Number of Files",
+          file_counter
+        );
+        throw new Error("Could not validate your dataset");
       }
 
       // write the full report to the ~/SODA/validation.txt file
@@ -3058,6 +3077,22 @@ document
       // get the parsed error report since the validation has been completed
       const errors = validationReport.parsed_report;
 
+      let hasValidationErrors = Object.getOwnPropertyNames(validationReport).length >= 1;
+
+      Swal.fire({
+        title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
+        text: hasValidationErrors
+          ? `Please fix the errors listed in the table below then re-run validation to check that your dataset conforms to the SDS.`
+          : `Your dataset conforms to the SPARC Dataset Structure.`,
+        allowEscapeKey: true,
+        allowOutsideClick: true,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        showConfirmButton: true,
+        icon: hasValidationErrors ? "error" : "success",
+      });
+
       console.log("Validation errors: ", errors);
 
       // Hide the loading div
@@ -3084,7 +3119,7 @@ document
       if (validationReportStatusIncomplete) {
         let viewReportResult = await Swal.fire({
           title: error,
-          html: `If you repeatedly have this issue please contact the SPARC Curation Team for support at curation@sparc.science. Would you like to view your raw validation report?`,
+          html: `If you repeatedly have this issue please contact the SODA for SPARC team at help@fairdataihub.org. Would you like to view your raw validation report?`,
           allowEscapeKey: true,
           allowOutsideClick: false,
           heightAuto: false,

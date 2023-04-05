@@ -163,6 +163,7 @@ const getDatasetReadme = async (selected_account, selected_dataset) => {
 //  datasetIdOrName: string - the id/name of the dataset being submitted for publication
 //  embargoReleaseDate?: string  - in yyyy-mm-dd format. Represents the day an embargo will be lifted on this dataset; at which point the dataset will be made public.
 // O: void
+// TODO: Replace the share with curation team endpoints/functions with the function below
 const submitDatasetForPublication = async (
   pennsieveAccount,
   datasetName,

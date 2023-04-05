@@ -42,35 +42,53 @@ const createValidationReport = async (sodaJSONObj) => {
   console.log("localSodaJsonObject", sodaJSONObj);
   console.log("clientUUID", clientUUID);
 
-  let validationResponse = await client.post(
+  await client.post(
     `https://validation.sodaforsparc.io/validator/validate`,
     {
       clientUUID: clientUUID,
       dataset_structure: sodaJSONObj,
       metadata_files: metadataFiles,
       manifests: manifestFiles,
+    },
+    {
+      timeout: 0,
     }
   );
 
-  // track that a local validation succeeded
-  ipcRenderer.send(
-    "track-event",
-    "Success",
-    "Prepare Datasets - Validate your dataset - Local",
-    "Local Validation",
-    1
-  );
+  while (true) {
+    console.log("Waiting for the validation to complete...");
+    await wait(15000);
+    let results = await pollForValidationResults(clientUUID);
+    if (!results) {
+      continue;
+    }
+    return results;
+  }
+};
 
-  // track that a validation (local or pennsieve) succeeded
-  ipcRenderer.send(
-    "track-event",
-    "Success",
-    "Prepare Datasets - Validate your dataset",
-    "Dataset Validation",
-    1
-  );
+const pollForValidationResults = async (clientUUID) => {
+  let validationResultsResponse;
+  try {
+    validationResultsResponse = await client.get(
+      `https://validation.sodaforsparc.io/validator/results/${clientUUID}`
+    );
+  } catch (error) {
+    if (error.response.status == 503) {
+      console.log("YEs we have a 503");
+      return undefined;
+    }
+  }
+  let results = validationResultsResponse.data;
 
-  return validationResponse.data;
+  if (results.status == "Complete") {
+    return results;
+  } else if (results.status == "WIP") {
+    console.log("No results yet returning undefined");
+    return undefined;
+  } else {
+    // validation report failed to be received mark the validation as failed
+    throw new Error("Validation failed");
+  }
 };
 
 const validateLocalDataset = async () => {
@@ -144,6 +162,7 @@ const validateLocalDataset = async () => {
   let validationReportData;
   try {
     validationReportData = await createValidationReport(localSodaJsonObject);
+    if (validationReportData.status === "Error") throw new Error(validationReportData.error);
   } catch (error) {
     clientError(error);
     file_counter = 0;
@@ -195,7 +214,7 @@ const validateLocalDataset = async () => {
     // a path_error_report upon validating the selected dataset.
     let viewReportResult = await Swal.fire({
       title: "Could Not Generate a Sanitized Validation Report",
-      html: `If you repeatedly have this issue please contact the SPARC Curation Team for support at curation@sparc.science. Would you like to view your raw validation report?`,
+      html: `If you repeatedly have this issue please contact the SODA for SPARC team at help@fairdataihub.org. Would you like to view your raw validation report?`,
       allowEscapeKey: true,
       allowOutsideClick: false,
       heightAuto: false,
@@ -228,7 +247,7 @@ const validateLocalDataset = async () => {
   Swal.fire({
     title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
     text: hasValidationErrors
-      ? `Please fix the errors listed in the table below to pass validation. If you would like to see your raw error report, navigate to ${SODADirectory}/validation.txt.`
+      ? `Please fix the errors listed in the table below then re-run validation to check that your dataset conforms to the SDS.`
       : `Your dataset conforms to the SPARC Dataset Structure.`,
     allowEscapeKey: true,
     allowOutsideClick: false,
@@ -317,6 +336,7 @@ const validatePennsieveDatasetStandAlone = async () => {
   let validationReport;
   try {
     validationReport = await createValidationReport(localSodaJSONObj);
+    if (validationReport.status === "Error") throw new Error(validationReport.error);
   } catch (err) {
     clientError(err);
     file_counter = 0;
@@ -368,7 +388,7 @@ const validatePennsieveDatasetStandAlone = async () => {
     // a path_error_report upon validating the selected dataset.
     let viewReportResult = await Swal.fire({
       title: "Could Not Generate a Sanitized Validation Report",
-      html: `If you repeatedly have this issue please contact the SPARC Curation Team for support at curation@sparc.science. Would you like to view your raw validation report?`,
+      html: `If you repeatedly have this issue please contact the SODA for SPARC team at help@fairdataihub.org. Would you like to view your raw validation report?`,
       allowEscapeKey: true,
       allowOutsideClick: false,
       heightAuto: false,
@@ -401,7 +421,7 @@ const validatePennsieveDatasetStandAlone = async () => {
   Swal.fire({
     title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
     text: hasValidationErrors
-      ? `Please fix the errors listed in the table below to pass validation. If you would like to see your raw error report, navigate to ${SODADirectory}/validation.txt.`
+      ? `Please fix the errors listed in the table below then re-run validation to check that your dataset conforms to the SDS.`
       : `Your dataset conforms to the SPARC Dataset Structure.`,
     allowEscapeKey: true,
     allowOutsideClick: false,
