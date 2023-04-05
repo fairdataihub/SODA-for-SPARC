@@ -2944,17 +2944,16 @@ document
         throw new Error("Failed to receive a response from the validation server");
       }
 
-      let validationReport;
-      while (validationReport !== undefined) {
+      let validationReport = undefined;
+      while (validationReport === undefined) {
         console.log("Waiting for the validation to complete...");
         await wait(15000);
         validationReport = await pollForValidationResults(clientUUID);
-        if (!results) {
-          continue;
-        }
       }
 
-      if (validationReportData.status === "Error") {
+      console.log("The validationr eport status: ", validationReport);
+
+      if (validationReport.status === "Error") {
         file_counter = 0;
         folder_counter = 0;
         get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
@@ -2987,6 +2986,8 @@ document
         "Number of Files",
         file_counter
       );
+
+      console.log("THe log report is: ", validationReport);
 
       if (validationReport.status === "Incomplete") {
         // An incomplete validation report happens when the validator is unable to generate
