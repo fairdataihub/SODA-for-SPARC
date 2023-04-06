@@ -364,7 +364,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
 
-        // Check that the dataset pulled from Pennsieve only has SPARC folders at the root level
+        // Reject if anyh non-sparc folders are in the root of the dataset
         let invalidBaseFolders = [];
         for (const baseFolder of Object.keys(datasetStructureJSONObj["folders"])) {
           if (
@@ -374,7 +374,6 @@ const savePageChanges = async (pageBeingLeftID) => {
             invalidBaseFolders.push(baseFolder);
           }
         }
-
         if (invalidBaseFolders.length > 0) {
           errorArray.push({
             type: "swal",
