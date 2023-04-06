@@ -11261,6 +11261,8 @@ $(document).ready(async () => {
     });
 
     if (controlledSectionID === "guided-section-dataset-type") {
+      const previousDatasetType = sodaJSONObj["dataset-type"];
+
       const buttonDatasetContainsSubjects = document.getElementById(
         "guided-button-dataset-contains-subjects"
       );
@@ -11352,6 +11354,13 @@ $(document).ready(async () => {
             clientError(error);
           }
           setPageLoadingState(false);
+        } else {
+          if (previousDatasetType === "computational") {
+            document.getElementById("guided-button-dataset-type-computational").click();
+          }
+          if (previousDatasetType === "experimental") {
+            document.getElementById("guided-button-dataset-type-experimental").click();
+          }
         }
         document
           .getElementById("guided-sub-section-manual-dataset-type-selection")
