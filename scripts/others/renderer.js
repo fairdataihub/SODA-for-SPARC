@@ -2969,9 +2969,13 @@ function datasetStatusListChange() {
   showCurrentDatasetStatus();
 }
 
-function postCurationListChange() {
+// This function is called when the user selects a dataset from the dropdown list
+// It is called to update the UI elements that are related to the publishing status
+// of the dataset and displaying the correct UI elements
+const postCurationListChange = () => {
   // display the pre-publishing page
   showPrePublishingPageElements();
+  console.log("this is where publishing status is updated when dataset is selected");
   showPublishingStatus();
 }
 
@@ -3584,6 +3588,7 @@ const withdrawDatasetCheck = async (res) => {
   }
 };
 
+// TODO: Adapt this for guided mode
 const withdrawReviewDataset = async () => {
   bfWithdrawReviewDatasetBtn.disabled = true;
   var selectedBfAccount = $("#current-bf-account").text();
@@ -8505,14 +8510,19 @@ const curation_consortium_check = async (mode = "") => {
     } else {
       //needs to be replaced
       try {
-        let bf_get_permissions = await client.get(`/manage_datasets/bf_dataset_permissions`, {
-          params: {
-            selected_account: selected_account,
-            selected_dataset: selected_dataset,
-          },
-        });
-        // let permissions = bf_get_permissions.data.permissions;
-        let team_ids = bf_get_permissions.data.team_ids;
+        let bf_get_permissions = await api.getDatasetPermissions(selected_account, selected_dataset, true);
+        // let bf_get_permissions = await client.get(`/manage_datasets/bf_dataset_permissions`, {
+        //   params: {
+        //     selected_account: selected_account,
+        //     selected_dataset: selected_dataset,
+        //   },
+        // });
+
+        let permissions = bf_get_permissions.permissions;
+        let team_ids = bf_get_permissions.team_ids;
+        console.log(team_ids);
+        console.log(permissions);
+        console.log(bf_get_permissions);
 
         let curation_permission_satisfied = false;
         let consortium_permission_satisfied = false;
@@ -9114,7 +9124,7 @@ function logCurationForAnalytics(
   }
 }
 
-function getMetadataFileNameFromStatus(metadataFileStatus) {
+const getMetadataFileNameFromStatus = (metadataFileStatus) => {
   // get the UI text that displays the file path
   let filePath = metadataFileStatus.text();
 
@@ -9126,7 +9136,7 @@ function getMetadataFileNameFromStatus(metadataFileStatus) {
   return fileName;
 }
 
-function determineLocationFromStatus(metadataFileStatus) {
+const determineLocationFromStatus = (metadataFileStatus) => {
   let filePath = metadataFileStatus.text();
 
   // determine if the user imported from Pennsieve or Locally
@@ -9135,7 +9145,7 @@ function determineLocationFromStatus(metadataFileStatus) {
   return pennsieveFile;
 }
 
-function logGeneralOperationsForAnalytics(category, analyticsPrefix, granularity, actions) {
+const logGeneralOperationsForAnalytics = (category, analyticsPrefix, granularity, actions) => {
   // if no actions to log return
   if (!actions) {
     return;
@@ -9166,68 +9176,6 @@ function logGeneralOperationsForAnalytics(category, analyticsPrefix, granularity
     }
   }
 }
-
-/**
- *
- * @param {string} datasetIdOrName - The currently selected dataset - name or its ID
- * @returns statuses - A status object that details the state of each pre-publishing checklist item for the given dataset and user
- */
-const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
-  // check that a dataset name or id is provided
-  if (!datasetIdOrName || datasetIdOrName === "") {
-    throw new Error(
-      "Error: Must provide a valid dataset to log status of pre-publishing checklist items from."
-    );
-  }
-
-  // construct the statuses object
-  const statuses = {};
-
-  let dataset = await api.getDataset(defaultBfDatasetId);
-
-  // get the description - aka subtitle (unfortunate naming), tags, banner image URL, collaborators, and license
-  const { description, tags, license } = dataset["content"];
-
-  // set the subtitle's status
-  statuses.subtitle = description && description.length ? true : false;
-
-  let readme = await api.getDatasetReadme(defaultBfAccount, datasetIdOrName);
-
-  // set the readme's status
-  statuses.readme = readme && readme.length >= 1 ? true : false;
-
-  // set tags's status
-  statuses.tags = tags && tags.length ? true : false;
-
-  let bannerImageURL = await api.getDatasetBannerImageURL(defaultBfAccount, defaultBfDataset);
-
-  // set the banner image's url status
-  statuses.bannerImageURL = bannerImageURL && bannerImageURL.length ? true : false;
-
-  // set the license's status
-  statuses.license = license && license.length ? true : false;
-
-  // declare the orcidId
-  let orcidId;
-
-  // get the user's information
-  let user = await api.getUserInformation();
-
-  // get the orcid object out of the user information
-  let orcidObject = user.orcid;
-
-  // check if the owner has an orcid id
-  if (orcidObject) {
-    orcidId = orcidObject.orcid;
-  } else {
-    orcidId = undefined;
-  }
-
-  // the user has an ORCID iD if the property is defined and non-empty
-  statuses.ORCID = orcidId && orcidId.length ? true : false;
-
-  return statuses;
-};
 
 /*
 ******************************************************

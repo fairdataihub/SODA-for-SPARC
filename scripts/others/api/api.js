@@ -15,11 +15,11 @@ const getUserInformation = async () => {
 
 /**
  *
- * @param {string} datasetId - the current dataset id
+ * @param {string} datasetNameOrID - the current dataset name or id
  * @returns {datasetObject} dataset - the dataset object
  */
-const getDataset = async (datasetId) => {
-  let datasetResponse = await client.get(`/datasets/${datasetId}`);
+const getDataset = async (datasetNameOrID) => {
+  let datasetResponse = await client.get(`/datasets/${datasetNameOrID}`);
   return datasetResponse.data;
 };
 
@@ -37,9 +37,12 @@ const getDatasetBannerImageURL = async (selected_account, selected_dataset) => {
 };
 
 const getDatasetRole = async (datasetNameOrId) => {
+  console.log(datasetNameOrId);
   if (datasetNameOrId != undefined || datasetNameOrId != "") {
     defaultBfDataset = datasetNameOrId;
   }
+
+  console.log(defaultBfDataset);
   let datasetRoleResponse = await client.get(`/datasets/${defaultBfDataset}/role`, {
     params: {
       pennsieve_account: defaultBfAccount,
@@ -111,7 +114,7 @@ const getDatasetMetadataFiles = async (datasetName) => {
   return metadata_files;
 };
 
-const getDatasetPermissions = async (selected_account, selected_dataset) => {
+const getDatasetPermissions = async (selected_account, selected_dataset, boolReturnAll) => {
   let getDatasetPermissionsResponse = await client.get(`/manage_datasets/bf_dataset_permissions`, {
     params: {
       selected_account,
@@ -121,8 +124,16 @@ const getDatasetPermissions = async (selected_account, selected_dataset) => {
 
   let { permissions } = getDatasetPermissionsResponse.data;
 
-  return permissions;
+  if (boolReturnAll) {
+    // Return all permissions data: permissions array, team_ids object
+    return getDatasetPermissionsResponse.data;
+  } else {
+    // Return only the permissions array
+    return permissions;
+  }
 };
+
+// TODO: Add api function for setting dataset permissions
 
 const getDatasetsForAccount = async (selected_account) => {
   let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {

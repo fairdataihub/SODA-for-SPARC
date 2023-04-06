@@ -711,6 +711,7 @@
         <div id="begin-prepublishing-button-container">
           <button
             id="begin-prepublishing-btn"
+            onclick="beginPrepublishingFlow('')"
             class="btn_animated md"
             style="width: 200px; height: 40px; font-size: 15px"
             data-current="submit_prepublishing_review-question-2"
@@ -861,7 +862,7 @@
                             id="prepublishing-checklist-icon-ORCID"
                           ></i>
                         </div>
-                        <button id="ORCID-btn">Link ORCID iD</button>
+                        <button id="ORCID-btn" onclick="orcidSignIn()">Link ORCID iD</button>
                       </td>
                       <td>
                         Link your ORCID iD to Pennsieve in order to distinguish yourself from other
@@ -877,6 +878,8 @@
             <div class="pre-publishing-continue-container">
               <button
                 class="pre-publishing-continue btn_animated"
+                id="pre-publishing-continue-btn"
+                onclick="createPrepublishingChecklist('')"
                 style="width: 200px; height: 40px; font-size: 15px; margin-top: 2rem"
                 data-current="submit_prepublishing_review-question-3"
                 data-next="submit_prepublishing_review-question-4"

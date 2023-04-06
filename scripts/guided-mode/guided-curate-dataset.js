@@ -1889,8 +1889,9 @@ guidedUnHideSidebar = () => {};
 
 const guidedSetCurationTeamUI = (boolSharedWithCurationTeam) => {
   const textSharedWithCurationTeamStatus = document.getElementById(
-    "guided-dataset-shared-with-curation-team-status"
+    "guided--para-review-dataset-info-disseminate"
   );
+  // TODO: Have this update with the published status and not shared w curation team status
   if (boolSharedWithCurationTeam) {
     textSharedWithCurationTeamStatus.innerHTML = "Shared with the SPARC Curation Team";
     $("#guided-button-share-dataset-with-curation-team").hide();
@@ -1920,6 +1921,7 @@ const guidedSetDOIUI = (boolHasDOI) => {
 const showPrepublishingReview = () => {
   //Show the final step to select metadata files to be excluded
   $("#guided--submit-prepublishing-review").removeClass("hidden");
+  createPrepublishingChecklist("guided");
 };
 
 const guidedModifyCurationTeamAccess = async (action) => {
@@ -1931,65 +1933,14 @@ const guidedModifyCurationTeamAccess = async (action) => {
     guidedShareWithCurationTeamButton.classList.add("loading");
     guidedShareWithCurationTeamButton.classList.add("hidden");
 
-    //Determine if user is owner of dataset before beginning
-    Swal.fire({
-      title: "Determining your dataset permissions",
-      html: "Please wait...",
-      // timer: 5000,
-      allowEscapeKey: false,
-      allowOutsideClick: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
+    let publishPreCheckStatus = await beginPrepublishingFlow("guided");
 
-    let role;
-    let currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-    console.log(currentDataset);
-    try {
-      role = await api.getDatasetRole(currentDataset);
-    } catch (error) {
-      clientError(error);
-      await Swal.fire({
-        title: "Failed to determine if you are the dataset owner",
-        text: userErrorMessage(error),
-        icon: "error",
-        confirmButtonText: "Ok",
-        allowEscapeKey: false,
-        allowOutsideClick: false,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        timerProgressBar: false,
-      });
-      guidedShareWithCurationTeamButton.classList.remove("hidden");
+    // Will return false if there are issues running the precheck flow
+    if (!publishPreCheckStatus) {
       guidedShareWithCurationTeamButton.disabled = false;
       guidedShareWithCurationTeamButton.classList.remove("loading");
-      return;
-    }
-
-    if (role !== "owner") {
-      await Swal.fire({
-        title: "Only the dataset owner can submit a dataset for pre-publishing review.",
-        icon: "error",
-        confirmButtonText: "Ok",
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-      });
       guidedShareWithCurationTeamButton.classList.remove("hidden");
-      guidedShareWithCurationTeamButton.disabled = false;
-      guidedShareWithCurationTeamButton.classList.remove("loading");
-      return;
     }
-
-    //Role is owner from here forward
-    Swal.close();
-
-    // Show prepublishing checklist container
-    $("#guided--prepublishing-checklist-container").removeClass("hidden");
-
     // const { value: confirmShareWithCurationTeam } = await Swal.fire({
     //   backdrop: "rgba(0,0,0, 0.4)",
     //   heightAuto: false,
@@ -2042,6 +1993,7 @@ const guidedModifyCurationTeamAccess = async (action) => {
     // guidedShareWithCurationTeamButton.classList.remove("loading");
   }
   if (action === "unshare") {
+    // TODO: Adapt new meta to share with curation team
     const guidedUnshareWithCurationTeamButton = document.getElementById(
       "guided-button-unshare-dataset-with-curation-team"
     );
@@ -5179,14 +5131,20 @@ const openPage = async (targetPageID) => {
             `manage_datasets/bf_get_teams?selected_account=${defaultBfAccount}`
           );
 
-          //Returns an array of strings with the user's name and role
-          const currentDatasetPermissions = await api.getDatasetPermissions(
-            defaultBfAccount,
-            sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
-          );
-
+          // //Returns an array of strings with the user's name and role
+          // const currentDatasetPermissions = await api.getDatasetPermissions(
+          //   defaultBfAccount,
+          //   sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+          //   true
+          // );
+          //TODO: Check what these reponses look like compared to get dataset permissions endpoint
           const sparcUsers = sparcUsersReq.data.users;
           const sparcTeams = sparcTeamsReq.data.teams;
+          console.log(sparcUsersReq);
+          console.log(sparcTeamsReq);
+          console.log("CHECK THESE RESULTS BELOW AND ABOVE");
+          console.log(sparcUsers);
+          console.log(sparcTeams);
 
           let sparcUsersDivided = [];
 
@@ -5198,7 +5156,8 @@ const openPage = async (targetPageID) => {
 
           const permissions = await api.getDatasetPermissions(
             defaultBfAccount,
-            sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
+            sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+            false
           );
 
           //Filter out the integration user
@@ -5877,17 +5836,22 @@ const openPage = async (targetPageID) => {
 
       document.getElementById("guided-pennsieve-dataset-name").innerHTML =
         sodaJSONObj["digital-metadata"]["name"];
-      let bf_get_permissions = await client.get(`/manage_datasets/bf_dataset_permissions`, {
-        params: {
-          selected_account: defaultBfAccount,
-          selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-        },
-      });
-      let datasetPermissions = bf_get_permissions.data.permissions;
+
+
+      // let currentDatasetID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+      let bf_get_permissions = await api.getDatasetPermissions(defaultBfAccount, pennsieveDatasetID, false);
+      console.log(bf_get_permissions);
+      // let bf_get_permissions = await client.get(`/manage_datasets/bf_dataset_permissions`, {
+      //   params: {
+      //     selected_account: defaultBfAccount,
+      //     selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+      //   },
+      // });
+      // let datasetPermissions = bf_get_permissions;
 
       let sharedWithSPARCCurationTeam = false;
 
-      for (const permission of datasetPermissions) {
+      for (const permission of bf_get_permissions) {
         if (permission.includes("SPARC Data Curation Team")) {
           sharedWithSPARCCurationTeam = true;
         }
@@ -5898,7 +5862,7 @@ const openPage = async (targetPageID) => {
       if ("doi" in sodaJSONObj["digital-metadata"]) {
         reservedDOI = true;
       }
-
+      //Set the ui for curation team and DOI
       guidedSetCurationTeamUI(sharedWithSPARCCurationTeam);
       guidedSetDOIUI(reservedDOI);
     }

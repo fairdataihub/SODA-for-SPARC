@@ -30,9 +30,13 @@ def get_role(pennsieve_account, dataset):
         abort(500, "An internal server error prevented the request from being fulfilled. Please try again later.")
 
 
-def get_dataset_by_id(dataset_id):
-
+def get_dataset_by_id(dataset_name_or_id):
     token = get_access_token()
+
+    if dataset_name_or_id.startswith("N:dataset:"):
+        selected_dataset_id = dataset_name_or_id
+    else:
+        selected_dataset_id = get_dataset_id(token, dataset_name_or_id)
 
     headers = {
         "Accept": "*/*",
@@ -40,7 +44,7 @@ def get_dataset_by_id(dataset_id):
         "Authorization": f"Bearer {token}"
     }
 
-    r = requests.put(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=headers)
+    r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
 
     r.raise_for_status()
 

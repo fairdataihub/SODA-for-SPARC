@@ -42,13 +42,13 @@ class DatasetRole(Resource):
       raise e
 
 
-@api.route('/<string:dataset_id>')
+@api.route('/<string:dataset_name_or_id>')
 class Dataset(Resource):
   @api.doc(responses={200: 'Success', 400: 'Bad Request', 500: "Internal server error"})
-  def get(self, dataset_id):
+  def get(self, dataset_name_or_id):
 
     try:
-      return get_dataset_by_id(dataset_id) 
+      return get_dataset_by_id(dataset_name_or_id) 
     except Exception as e:
       # if exception is an HTTPError then check if 400 or 500 
       if type(e).__name__ == "HTTPError":

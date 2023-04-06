@@ -4,13 +4,82 @@
 Submit for pre-publishing review Workflow scripts 
 
 Note: Some frontend elements of the workflow are in the renderer.js file as well. They are can be found under postCurationListChange() function.
-      
+
 ******************************************************
 ******************************************************
 */
 
+/**
+ *
+ * @param {string} currentDataset - The currently selected dataset - name
+ * @returns statuses - A status object that details the state of each pre-publishing checklist item for the given dataset and user
+ */
+const getPrepublishingChecklistStatuses = async (currentDataset) => {
+  // check that a dataset name or id is provided
+  if (!currentDataset || currentDataset === "") {
+    throw new Error(
+      "Error: Must provide a valid dataset to log status of pre-publishing checklist items from."
+    );
+  }
+
+  // construct the statuses object
+  const statuses = {};
+
+  let dataset = await api.getDataset(currentDataset);
+
+  // get the description - aka subtitle (unfortunate naming), tags, banner image URL, collaborators, and license
+  const { description, tags, license } = dataset["content"];
+
+  // set the subtitle's status
+  statuses.subtitle = description && description.length ? true : false;
+
+  let readme = await api.getDatasetReadme(defaultBfAccount, currentDataset);
+
+  // set the readme's status
+  statuses.readme = readme && readme.length >= 1 ? true : false;
+
+  // set tags's status
+  statuses.tags = tags && tags.length ? true : false;
+
+  let bannerImageURL = await api.getDatasetBannerImageURL(defaultBfAccount, currentDataset);
+
+  // set the banner image's url status
+  statuses.bannerImageURL = bannerImageURL && bannerImageURL.length ? true : false;
+
+  // set the license's status
+  statuses.license = license && license.length ? true : false;
+
+  // declare the orcidId
+  let orcidId;
+
+  // get the user's information
+  let user = await api.getUserInformation();
+
+  // get the orcid object out of the user information
+  let orcidObject = user.orcid;
+
+  // check if the owner has an orcid id
+  if (orcidObject) {
+    orcidId = orcidObject.orcid;
+  } else {
+    orcidId = undefined;
+  }
+
+  // the user has an ORCID iD if the property is defined and non-empty
+  statuses.ORCID = orcidId && orcidId.length ? true : false;
+
+  return statuses;
+};
+
 // take the user to the Pennsieve account to sign up for an ORCID Id
-$("#ORCID-btn").on("click", async () => {
+const orcidSignIn = async (curationMode) => {
+  let curationModeID = "";
+  if (curationMode === "guided") {
+    // This is done to ensure the right element ID is called
+    // Guided mode elements have 'guided--' prepended to their ID
+    curationModeID = "guided--";
+  }
+
   // tell the main process to open a Modal window with the webcontents of the user's Pennsieve profile so they can add an ORCID iD
   ipcRenderer.send(
     "orcid",
@@ -94,33 +163,44 @@ $("#ORCID-btn").on("click", async () => {
     );
 
     // mark the orcid item green
-    setPrepublishingChecklistItemIconByStatus("prepublishing-checklist-icon-ORCID", true);
+    setPrepublishingChecklistItemIconByStatus(`${curationModeID}prepublishing-checklist-icon-ORCID`, true);
   });
-});
+};
 
-// changes Pre-Publishing checklist elements found in the UI on the "Disseminate Datasets - Submit for pre-publishing review" section
-// to green if a user completed that item and red if they did not.
-// I:
+//  Function fetches the status of each item needed to publish a dataset from the backend and updates the UI accordingly.
 //  inPrePublishing: boolean - True when the function is ran in the pre-publishing submission flow; false otherwise
-const showPrePublishingStatus = async (inPrePublishing = false) => {
-  if (defaultBfDataset === "Select dataset") {
+const showPrePublishingStatus = async (inPrePublishing = false, curationMode) => {
+  let currentDataset = defaultBfDataset;
+  let curationModeID = "";
+
+  if (curationMode === "guided") {
+    // This is done to ensure the right element ID is called
+    // Guided mode elements have 'guided--' prepended to their ID
+    curationModeID = "guided--";
+    currentDataset = sodaJSONObj["bf-dataset-selected"]["bf-dataset-selected"];
+    console.log("is guided mode here as well");
+  }
+  console.log(currentDataset);
+
+  if (currentDataset === "Select dataset") {
     return;
   }
 
   if (
-    $("#para-review-dataset-info-disseminate").text() !== "Dataset is not under review currently"
+    $(`#${curationModeID}para-review-dataset-info-disseminate`).text() !==
+    "Dataset is not under review currently"
   ) {
     return;
   }
 
   // spinners that fit into the checklist icon slots until statuses have been verified for the items
-  $(".icon-wrapper").attr("class", "ui mini active inline loader icon-wrapper");
-  $(".icon-wrapper").children().css("visibility", "hidden");
+  $(`.${curationModeID}icon-wrapper`).attr("class", "ui mini active inline loader icon-wrapper");
+  $(`.${curationModeID}icon-wrapper`).children().css("visibility", "hidden");
 
   // run the validation checks on each pre-publishing checklist item
   let statuses;
   try {
-    statuses = await getPrepublishingChecklistStatuses(defaultBfDataset);
+    statuses = await getPrepublishingChecklistStatuses(currentDataset);
   } catch (error) {
     clientError(error);
     if (inPrePublishing) {
@@ -147,7 +227,7 @@ const showPrePublishingStatus = async (inPrePublishing = false) => {
     );
 
     // set the status icons to red crosses
-    Array.from(document.querySelectorAll(".icon-wrapper i")).forEach((icon) => {
+    Array.from(document.querySelectorAll(`.${curationModeID}icon-wrapper i`)).forEach((icon) => {
       icon.classList.remove("check");
       icon.classList.add("cross");
       icon.style.color = "red";
@@ -165,29 +245,38 @@ const showPrePublishingStatus = async (inPrePublishing = false) => {
 
   // mark each pre-publishing item red or green to indicate if the item was completed
   setPrepublishingChecklistItemIconByStatus(
-    "prepublishing-checklist-icon-subtitle",
+    `${curationModeID}prepublishing-checklist-icon-subtitle`,
     statuses.subtitle
   );
 
-  setPrepublishingChecklistItemIconByStatus("prepublishing-checklist-icon-readme", statuses.readme);
-
-  setPrepublishingChecklistItemIconByStatus("prepublishing-checklist-icon-tags", statuses.tags);
+  setPrepublishingChecklistItemIconByStatus(
+    `${curationModeID}prepublishing-checklist-icon-readme`,
+    statuses.readme
+  );
 
   setPrepublishingChecklistItemIconByStatus(
-    "prepublishing-checklist-icon-banner",
+    `${curationModeID}prepublishing-checklist-icon-tags`,
+    statuses.tags
+  );
+
+  setPrepublishingChecklistItemIconByStatus(
+    `${curationModeID}prepublishing-checklist-icon-banner`,
     statuses.bannerImageURL
   );
 
   setPrepublishingChecklistItemIconByStatus(
-    "prepublishing-checklist-icon-license",
+    `${curationModeID}prepublishing-checklist-icon-license`,
     statuses.license
   );
 
-  setPrepublishingChecklistItemIconByStatus("prepublishing-checklist-icon-ORCID", statuses.ORCID);
+  setPrepublishingChecklistItemIconByStatus(
+    `${curationModeID}prepublishing-checklist-icon-ORCID`,
+    statuses.ORCID
+  );
 
   // hide the spinner and show the checklist item icons
-  $(".icon-wrapper").attr("class", "icon-wrapper");
-  $(".icon-wrapper").children().css("visibility", "visible");
+  $(`.${curationModeID}icon-wrapper`).attr("class", "icon-wrapper");
+  $(`.${curationModeID}icon-wrapper`).children().css("visibility", "visible");
 };
 
 // Inputs:
@@ -205,9 +294,17 @@ const setPrepublishingChecklistItemIconByStatus = (iconElementId, status) => {
 };
 
 // reads the pre-publishing checklist items from the UI and returns true if all are completed and false otherwise
-const allPrepublishingChecklistItemsCompleted = () => {
+// This function checks all elements with icon wrapper i class
+// half belong to guided mode and the other half belongs to free form mode
+const allPrepublishingChecklistItemsCompleted = (curationMode) => {
+  let curationModeID = "";
+  if(curationMode === "guided") {
+    // This is done to ensure the right element ID is called
+    // Guided mode elements have 'guided--' prepended to their ID
+    curationModeID = "guided--";
+  }
   // get the icons for the checklist elements
-  let prePublishingChecklistItems = $(".icon-wrapper i");
+  let prePublishingChecklistItems = $(`.${curationModeID}icon-wrapper i`);
 
   // filter out the completed items - by classname
   let incompleteChecklistItems = Array.from(prePublishingChecklistItems).filter((checklistItem) => {
@@ -307,10 +404,16 @@ $("#items-pre-publication").on("click", function (evt) {
   }
 });
 
-// transition to the final question and populate the file tree
-$(".pre-publishing-continue").on("click", async function () {
+// transition to the final question and populate the file tree with the dataset's metadata files
+const createPrepublishingChecklist = async (curationMode) => {
   // check that the user completed all pre-publishing checklist items for the given dataset
-  if (!allPrepublishingChecklistItemsCompleted()) {
+  let curationModeID = "";
+  if (curationMode === "guided") {
+    // This is done to ensure the right element ID is called
+    // Guided mode elements have 'guided--' prepended to their ID
+    curationModeID = "guided--";
+  }
+  if (!allPrepublishingChecklistItemsCompleted(curationMode)) {
     // alert the user they must complete all checklist items before beginning the prepublishing process
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
@@ -330,20 +433,25 @@ $(".pre-publishing-continue").on("click", async function () {
     return;
   }
 
-  // transition to the final section
-  transitionFreeFormMode(
-    this,
-    "submit_prepublishing_review-question-3",
-    "submit_prepublishing_review-tab",
-    "",
-    "individual-question post-curation"
-  );
+
+  if (curationMode !== "guided") {
+    // transition to the final section
+    let elementClicked = document.getElementById("pre-publishing-continue-btn");
+    console.log(elementClicked);
+    transitionFreeFormMode(
+      elementClicked,
+      "submit_prepublishing_review-question-3",
+      "submit_prepublishing_review-tab",
+      "",
+      "individual-question post-curation"
+    );
+  }
 
   // reset the file viewer so no duplicates appear
   removeChildren(document.querySelector("#items-pre-publication"));
 
   // show a spinner on the file tree
-  $(".items-spinner").show();
+  $(`.${curationModeID}items-spinner`).show();
 
   let excludedFileObjects;
   try {
@@ -373,7 +481,7 @@ $(".pre-publishing-continue").on("click", async function () {
 
     // continue as they may not want to set any "ignore files" anyways
     // hide the spinner for the file tree
-    $(".items-spinner").hide();
+    $(`.${curationModeID}items-spinner`).hide();
   }
 
   ipcRenderer.send(
@@ -427,13 +535,23 @@ $(".pre-publishing-continue").on("click", async function () {
   );
 
   // hide the spinner for the file tree
-  $(".items-spinner").hide();
-});
+  $(`.${curationModeID}items-spinner`).hide();
+};
 
 // check if the user is the dataset owner and transition to the prepublishing checklist question if so
-$("#begin-prepublishing-btn").on("click", async function () {
-  // check if the user is the dataset owner
-  // show a loading popup
+const beginPrepublishingFlow = async (curationMode) => {
+  let currentDataset = defaultBfDataset;
+  console.log(this);
+  console.log(currentDataset);
+  let curationModeID = "";
+  if (curationMode === "guided") {
+    // This is done to ensure the right element ID is called
+    // Guided mode elements have 'guided--' prepended to their ID
+    curationModeID = "guided--";
+    currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+    console.log(sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
+  }
+
   Swal.fire({
     title: "Determining your dataset permissions",
     html: "Please wait...",
@@ -451,7 +569,7 @@ $("#begin-prepublishing-btn").on("click", async function () {
   // check if the user is the dataset owner
   let role;
   try {
-    role = await api.getDatasetRole(defaultBfDataset);
+    role = await api.getDatasetRole(currentDataset);
   } catch (error) {
     // tell the user something went wrong getting access to their dataset permissions
     await Swal.fire({
@@ -475,7 +593,7 @@ $("#begin-prepublishing-btn").on("click", async function () {
       ["Determine User's Dataset Role"]
     );
 
-    return;
+    return false;
   }
 
   logGeneralOperationsForAnalytics(
@@ -495,32 +613,50 @@ $("#begin-prepublishing-btn").on("click", async function () {
       backdrop: "rgba(0,0,0, 0.4)",
     });
 
-    return;
+    return false;
   }
 
   // close the loading popup
   Swal.close();
 
   // wait for the Review status to be filled
-  if ($("#para-review-dataset-info-disseminate").text() === "") {
+  if ($(`#${curationModeID}para-review-dataset-info-disseminate`).text() === "") {
     await wait(1000);
   }
 
-  // transition to the next question
-  transitionFreeFormMode(
-    this,
-    "submit_prepublishing_review-question-2",
-    "submit_prepublishing_review-tab",
-    "",
-    "individual-question post-curation"
-  );
-
+  // transition to the next question if not in guided mode
   // load the next question's data
-  await showPrePublishingStatus(true);
-});
+  if (curationMode !== "guided") {
+    console.log(this)
+    let elementClicked = document.getElementById("begin-prepublishing-btn");
+    console.log(elementClicked);
+    transitionFreeFormMode(
+      elementClicked,
+      "submit_prepublishing_review-question-2",
+      "submit_prepublishing_review-tab",
+      "",
+      "individual-question post-curation"
+    );
+    await showPrePublishingStatus(true);
+  } else {
+    //Curation mode is guided mode
+    console.log("is guided mode");
+    await showPrePublishingStatus(true, "guided");
+    return true;
+  }
 
+};
+
+// TODO: Adapt this function to be used in Guided mode
 // Takes an array of file names and places the files inside of the file viewer found in step 3 of the pre-publicaiton submission process
-const populateFileViewer = (metadataFiles, excludedFiles) => {
+const populateFileViewer = (metadataFiles, excludedFiles, curationMode) => {
+  let curationModeID = "";
+  if (curationMode === "guided") {
+    // This is done to ensure the right element ID is called
+    // Guided mode elements have 'guided--' prepended to their ID
+    curationModeID = "guided--";
+  }
+  
   // get the file viewer element
   let fileViewer = document.querySelector("#items-pre-publication");
 

@@ -5468,7 +5468,7 @@
             <div class="guided--container-data-display mt-sm" style="width: 100%">
               <div class="guided--card-dataset-info">
                 <div class="guided--dataset-description-container">
-                  <h5 class="guided--dataset-description">Current status:</h5>
+                  <h5 class="guided--dataset-description">Review status:</h5>
                 </div>
                 <div class="guided--dataset-content-container">
                   <h5
@@ -5549,7 +5549,7 @@
                         <tr style="height: 15px">
                           <td>
                             <div
-                              class="icon-wrapper"
+                              class="guided--icon-wrapper"
                               style="display: inline-block; padding-right: 5px"
                             >
                               <i
@@ -5565,7 +5565,7 @@
                         <tr>
                           <td>
                             <div
-                              class="icon-wrapper"
+                              class="guided--icon-wrapper"
                               style="display: inline-block; padding-right: 5px"
                             >
                               <i
@@ -5581,7 +5581,7 @@
                         <tr>
                           <td>
                             <div
-                              class="icon-wrapper"
+                              class="guided--icon-wrapper"
                               style="display: inline-block; padding-right: 5px"
                             >
                               <i
@@ -5600,7 +5600,7 @@
                         <tr>
                           <td>
                             <div
-                              class="icon-wrapper"
+                              class="guided--icon-wrapper"
                               style="display: inline-block; padding-right: 5px"
                             >
                               <i
@@ -5616,7 +5616,7 @@
                         <tr>
                           <td>
                             <div
-                              class="icon-wrapper"
+                              class="guided--icon-wrapper"
                               style="display: inline-block; padding-right: 5px"
                             >
                               <i
@@ -5632,7 +5632,7 @@
                         <tr>
                           <td>
                             <div
-                              class="icon-wrapper"
+                              class="guided--icon-wrapper"
                               style="display: inline-block; padding-right: 5px"
                             >
                               <i
@@ -5641,7 +5641,9 @@
                                 id="guided--prepublishing-checklist-icon-ORCID"
                               ></i>
                             </div>
-                            <button id="guided--ORCID-btn">Link ORCID iD</button>
+                            <button id="guided--ORCID-btn" onclick="orcidSignIn()">
+                              Link ORCID iD
+                            </button>
                           </td>
                           <td>
                             Link your ORCID iD to Pennsieve in order to distinguish yourself from
@@ -5656,11 +5658,14 @@
                 <!--Continue Button comes before filetree and excluded files section-->
                 <div class="pre-publishing-continue-container">
                   <button
+                    id="guided--prepublishing-continue-btn"
                     class="pre-publishing-continue btn_animated"
                     style="width: 200px; height: 40px; font-size: 15px; margin-top: 2rem"
                     onclick="showPrepublishingReview()"
                   >
-                    <div class="btn_animated-inside">Continue</div>
+                    <div style="margin-left: 0px; padding-top: 2px" class="btn_animated-inside">
+                      Continue
+                    </div>
                   </button>
                 </div>
 
@@ -5735,7 +5740,7 @@
                     <div id="guided--items-pre-publication"></div>
 
                     <div
-                      class="ui active medium text loader items-spinner"
+                      class="ui active medium text loader guided--items-spinner"
                       style="position: absolute; top: 10rem; margin-left: auto; margin-right: auto"
                     >
                       Fetching Files

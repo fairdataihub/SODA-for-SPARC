@@ -499,7 +499,7 @@ const showCurrentPermission = async () => {
   log.info(`Requesting current permissions for ${selectedBfDataset}.`);
 
   try {
-    let permissions = await api.getDatasetPermissions(selectedBfAccount, selectedBfDataset);
+    let permissions = await api.getDatasetPermissions(selectedBfAccount, selectedBfDataset, false);
     let permissionList = "";
     let datasetOwner = "";
 

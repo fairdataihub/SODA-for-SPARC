@@ -22,11 +22,10 @@ const reserveDOI = async () => {
 
   // TODO: Create endpoint to reserve DOI
   try {
-    let doiReserve = await client.post(`datasets/${dataset}/reserve-doi`, {
-      pennsieve_account: account,
-    });
-
+    let doiReserve = await client.post(`datasets/${dataset}/reserve-doi`);
     console.log(doiReserve);
+    // Save DOI to SODAJSONObj
+    sodaJSONObj["digital-metadata"]["dataset-doi"] = doiReserve.data.doi;
   } catch (err) {
     clientError(err);
     userErrorMessage(err);
@@ -575,7 +574,7 @@ const disseminateShowCurrentPermission = async (bfAcct, bfDS) => {
 
   let permissions;
   try {
-    permissions = await api.getDatasetPermissions(bfAcct, bfDS);
+    permissions = await api.getDatasetPermissions(bfAcct, bfDS, false);
   } catch (error) {
     clientError(error);
     ipcRenderer.send(
