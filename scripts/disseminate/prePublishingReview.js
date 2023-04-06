@@ -163,7 +163,10 @@ const orcidSignIn = async (curationMode) => {
     );
 
     // mark the orcid item green
-    setPrepublishingChecklistItemIconByStatus(`${curationModeID}prepublishing-checklist-icon-ORCID`, true);
+    setPrepublishingChecklistItemIconByStatus(
+      `${curationModeID}prepublishing-checklist-icon-ORCID`,
+      true
+    );
   });
 };
 
@@ -298,7 +301,7 @@ const setPrepublishingChecklistItemIconByStatus = (iconElementId, status) => {
 // half belong to guided mode and the other half belongs to free form mode
 const allPrepublishingChecklistItemsCompleted = (curationMode) => {
   let curationModeID = "";
-  if(curationMode === "guided") {
+  if (curationMode === "guided") {
     // This is done to ensure the right element ID is called
     // Guided mode elements have 'guided--' prepended to their ID
     curationModeID = "guided--";
@@ -432,7 +435,6 @@ const createPrepublishingChecklist = async (curationMode) => {
 
     return;
   }
-
 
   if (curationMode !== "guided") {
     // transition to the final section
@@ -627,7 +629,7 @@ const beginPrepublishingFlow = async (curationMode) => {
   // transition to the next question if not in guided mode
   // load the next question's data
   if (curationMode !== "guided") {
-    console.log(this)
+    console.log(this);
     let elementClicked = document.getElementById("begin-prepublishing-btn");
     console.log(elementClicked);
     transitionFreeFormMode(
@@ -644,7 +646,6 @@ const beginPrepublishingFlow = async (curationMode) => {
     await showPrePublishingStatus(true, "guided");
     return true;
   }
-
 };
 
 // TODO: Adapt this function to be used in Guided mode
@@ -656,7 +657,7 @@ const populateFileViewer = (metadataFiles, excludedFiles, curationMode) => {
     // Guided mode elements have 'guided--' prepended to their ID
     curationModeID = "guided--";
   }
-  
+
   // get the file viewer element
   let fileViewer = document.querySelector("#items-pre-publication");
 

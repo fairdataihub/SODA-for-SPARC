@@ -2977,7 +2977,7 @@ const postCurationListChange = () => {
   showPrePublishingPageElements();
   console.log("this is where publishing status is updated when dataset is selected");
   showPublishingStatus();
-}
+};
 
 // upload banner image //
 const Cropper = require("cropperjs");
@@ -8510,7 +8510,11 @@ const curation_consortium_check = async (mode = "") => {
     } else {
       //needs to be replaced
       try {
-        let bf_get_permissions = await api.getDatasetPermissions(selected_account, selected_dataset, true);
+        let bf_get_permissions = await api.getDatasetPermissions(
+          selected_account,
+          selected_dataset,
+          true
+        );
         // let bf_get_permissions = await client.get(`/manage_datasets/bf_dataset_permissions`, {
         //   params: {
         //     selected_account: selected_account,
@@ -9134,7 +9138,7 @@ const getMetadataFileNameFromStatus = (metadataFileStatus) => {
   fileName = fileName.slice(0, fileName.indexOf("."));
 
   return fileName;
-}
+};
 
 const determineLocationFromStatus = (metadataFileStatus) => {
   let filePath = metadataFileStatus.text();
@@ -9143,7 +9147,7 @@ const determineLocationFromStatus = (metadataFileStatus) => {
   let pennsieveFile = filePath.toUpperCase().includes("Pennsieve".toUpperCase());
 
   return pennsieveFile;
-}
+};
 
 const logGeneralOperationsForAnalytics = (category, analyticsPrefix, granularity, actions) => {
   // if no actions to log return
@@ -9175,7 +9179,7 @@ const logGeneralOperationsForAnalytics = (category, analyticsPrefix, granularity
       ipcRenderer.send("track-event", `${category}`, actionName, defaultBfDatasetId);
     }
   }
-}
+};
 
 /*
 ******************************************************

@@ -5837,9 +5837,12 @@ const openPage = async (targetPageID) => {
       document.getElementById("guided-pennsieve-dataset-name").innerHTML =
         sodaJSONObj["digital-metadata"]["name"];
 
-
       // let currentDatasetID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
-      let bf_get_permissions = await api.getDatasetPermissions(defaultBfAccount, pennsieveDatasetID, false);
+      let bf_get_permissions = await api.getDatasetPermissions(
+        defaultBfAccount,
+        pennsieveDatasetID,
+        false
+      );
       console.log(bf_get_permissions);
       // let bf_get_permissions = await client.get(`/manage_datasets/bf_dataset_permissions`, {
       //   params: {
