@@ -1,3 +1,5 @@
+const { error } = require("jquery");
+
 const returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
 };
@@ -364,7 +366,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           throw errorArray;
         }
 
-        // Check that the dataset pulled from Pennsieve only has SPARC folders at the root level
+        // Reject if anyh non-sparc folders are in the root of the dataset
         let invalidBaseFolders = [];
         for (const baseFolder of Object.keys(datasetStructureJSONObj["folders"])) {
           if (
@@ -374,7 +376,6 @@ const savePageChanges = async (pageBeingLeftID) => {
             invalidBaseFolders.push(baseFolder);
           }
         }
-
         if (invalidBaseFolders.length > 0) {
           errorArray.push({
             type: "swal",
@@ -412,7 +413,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         const subjects = [...subjectsInPools, ...subjectsOutsidePools];
 
         // If no subjects from the dataset structure are found and the dataset does have primary, source, or derivative folders,
-        // then throw an error.
         if (subjects.length === 0) {
           for (const highLevelFolder of guidedHighLevelFolders) {
             if (datasetStructureJSONObj["folders"][highLevelFolder]) {
@@ -608,6 +608,14 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
+      if (sodaJSONObj["dataset-type"] === "selection-does-not-make-sense") {
+        errorArray.push({
+          type: "notyf",
+          message: "Selected subject and code answers do not lead to a viable curation path",
+        });
+        throw errorArray;
+      }
+
       if (sodaJSONObj["dataset-type"] === "requires-manual-selection") {
         const buttonDatasetTypeExperimental = document.getElementById(
           "guided-button-dataset-type-experimental"
@@ -642,8 +650,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         guidedUnSkipPage("guided-primary-data-organization-tab");
         guidedUnSkipPage("guided-source-data-organization-tab");
         guidedUnSkipPage("guided-derivative-data-organization-tab");
-        guidedUnSkipPage("guided-protocol-folder-tab");
-        guidedUnSkipPage("guided-docs-folder-tab");
         guidedUnSkipPage("guided-create-subjects-metadata-tab");
         guidedUnSkipPage("guided-create-subjects-metadata-tab");
       } else {
@@ -651,8 +657,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         guidedSkipPage("guided-primary-data-organization-tab");
         guidedSkipPage("guided-source-data-organization-tab");
         guidedSkipPage("guided-derivative-data-organization-tab");
-        guidedSkipPage("guided-protocol-folder-tab");
-        guidedSkipPage("guided-docs-folder-tab");
         guidedSkipPage("guided-create-subjects-metadata-tab");
         guidedSkipPage("guided-create-samples-metadata-tab");
       }
@@ -4243,16 +4247,6 @@ const openPage = async (targetPageID) => {
       $("#guided-back-button").css("visibility", "visible");
     }
 
-    //Hide the high level progress steps and green pills if the user is on the before getting started page
-    if (targetPageID === "guided-prepare-helpers-tab") {
-      //validate the api key and adjust icon accordingly
-      document.getElementById("structure-dataset-capsule-container").classList.add("hidden");
-      document.querySelector(".guided--progression-tab-container").classList.add("hidden");
-    } else {
-      document.getElementById("structure-dataset-capsule-container").classList.remove("hidden");
-      document.querySelector(".guided--progression-tab-container").classList.remove("hidden");
-    }
-
     handleNextButtonVisibility(targetPageID);
     handleBackButtonVisibility(targetPageID);
     handleGuidedValidationState(targetPageID);
@@ -5968,7 +5962,7 @@ const setActiveSubPage = (pageIdToActivate) => {
   //create a switch statement for pageIdToActivate to load data from sodaJSONObj
   //depending on page being opened
   if (pageIdToActivate === "guided-specify-subjects-page") {
-    document.getElementById("guided-section-dataset-type-text").classList.remove("hidden");
+    document.getElementById("guided-section-dataset-subjects-text").classList.remove("hidden");
     document.getElementById("guided-section-dataset-pools-text").classList.add("hidden");
     document.getElementById("guided-section-dataset-samples-text").classList.add("hidden");
 
@@ -5977,7 +5971,7 @@ const setActiveSubPage = (pageIdToActivate) => {
     document.getElementById("guided-add-subject-instructions").classList.add("hidden");
   }
   if (pageIdToActivate === "guided-organize-subjects-into-pools-page") {
-    document.getElementById("guided-section-dataset-type-text").classList.add("hidden");
+    document.getElementById("guided-section-dataset-subjects-text").classList.add("hidden");
     document.getElementById("guided-section-dataset-pools-text").classList.remove("hidden");
     document.getElementById("guided-section-dataset-samples-text").classList.add("hidden");
 
@@ -6020,7 +6014,7 @@ const setActiveSubPage = (pageIdToActivate) => {
     }
   }
   if (pageIdToActivate === "guided-specify-samples-page") {
-    document.getElementById("guided-section-dataset-type-text").classList.add("hidden");
+    document.getElementById("guided-section-dataset-subjects-text").classList.add("hidden");
     document.getElementById("guided-section-dataset-pools-text").classList.add("hidden");
     document.getElementById("guided-section-dataset-samples-text").classList.remove("hidden");
     renderSamplesTable();
@@ -11232,14 +11226,16 @@ $(document).ready(async () => {
     guidedAddTeamPermission(newTeamPermissionObj);
   });
 
-  const handleMultipleSubSectionDisplay = (controlledSectionID) => {
+  const handleMultipleSubSectionDisplay = async (controlledSectionID) => {
     const controlledElementContainer = document.getElementById(controlledSectionID);
     // Hide the children of the controlled element
     // (There should be logic below that shows the correct child)
-    const controlledElementChildren = controlledElementContainer.children;
-    for (const child of controlledElementChildren) {
+    const controlledElementChildren = controlledElementContainer.querySelectorAll(".sub-section");
+    controlledElementChildren.forEach((child) => {
+      //console log the child id
+      console.log(child.id);
       child.classList.add("hidden");
-    }
+    });
 
     if (controlledSectionID === "guided-section-dataset-type") {
       const buttonDatasetContainsSubjects = document.getElementById(
@@ -11287,7 +11283,17 @@ $(document).ready(async () => {
 
       // set the dataset-type in the sodaJSONObj to be used by the page exit handler
       sodaJSONObj["dataset-type"] = interpredDatasetType;
-      console.log(sodaJSONObj["dataset-type"]);
+
+      // If the determined dataset type is not computational or experimental, reset the buttons where the user selects it manually
+      if (
+        !sodaJSONObj["dataset-type"] === "computational" ||
+        !sodaJSONObj["dataset-type"] === "experimental"
+      ) {
+        if (sodaJSONObj["button-config"]["dataset-type"]) {
+          delete sodaJSONObj["button-config"]["dataset-type"];
+        }
+      }
+      resetGuidedRadioButtons("guided-sub-section-manual-dataset-type-selection");
 
       if (interpredDatasetType === "selection-does-not-make-sense") {
         document
@@ -11295,6 +11301,38 @@ $(document).ready(async () => {
           .classList.remove("hidden");
       }
       if (interpredDatasetType === "requires-manual-selection") {
+        // (If the user started from Pennsieve, see if we can pre-select the correct button)
+        if (sodaJSONObj?.["starting-point"]?.["type"] === "bf") {
+          setPageLoadingState(true);
+          try {
+            const descriptionMetadaRes = await client.get(
+              `/prepare_metadata/import_metadata_file`,
+              {
+                params: {
+                  selected_account: defaultBfAccount,
+                  selected_dataset: sodaJSONObj["bf-dataset-selected"]["dataset-name"],
+                  file_type: "dataset_description.xlsx",
+                },
+              }
+            );
+            // guidedLoadDescriptionDatasetInformation
+            const descriptionMetdataData = descriptionMetadaRes.data["Basic information"];
+            if (descriptionMetdataData[0][0] === "Type") {
+              const studyType = descriptionMetdataData[0][1];
+              if (studyType === "computational") {
+                document.getElementById("guided-button-dataset-type-computational").click();
+              }
+              if (studyType === "experimental") {
+                document.getElementById("guided-button-dataset-type-experimental").click();
+              }
+            }
+          } catch (error) {
+            // Case where dataset type was not able to be found from Pennsieve so user must manually select
+            console.log(error);
+            clientError(error);
+          }
+          setPageLoadingState(false);
+        }
         document
           .getElementById("guided-sub-section-manual-dataset-type-selection")
           .classList.remove("hidden");
@@ -12763,7 +12801,7 @@ $(document).ready(async () => {
       // create a dataset upload session
       datasetUploadSession.startSession();
     }
-
+    guidedSetNavLoadingState(true);
     client
       .post(
         `/curate_datasets/curation`,
@@ -12773,6 +12811,8 @@ $(document).ready(async () => {
         { timeout: 0 }
       )
       .then(async (curationRes) => {
+        guidedSetNavLoadingState(false);
+
         $("#sidebarCollapse").prop("disabled", false);
         log.info("Completed curate function");
 
@@ -12842,6 +12882,7 @@ $(document).ready(async () => {
         }
       })
       .catch(async (error) => {
+        guidedSetNavLoadingState(false);
         clientError(error);
 
         // log the difference again to Google Analytics

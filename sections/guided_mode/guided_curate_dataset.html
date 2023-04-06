@@ -403,7 +403,7 @@
           <h1 class="text-sub-step-title">Tell us a little about the structure of your dataset</h1>
           <div class="guided--section">
             <label class="guided--form-label centered">
-              Does your dataset include data collected from subjects, and optionally, samples?
+              Does your dataset include data collected from subjects and/or samples?
             </label>
             <div class="guided--radio-button-container">
               <button
@@ -429,7 +429,7 @@
             </div>
           </div>
 
-          <div class="guided--section my-2" id="guided-section-ask-if-dataset-contains-code">
+          <div class="guided--section" id="guided-section-ask-if-dataset-contains-code">
             <label class="guided--form-label centered"
               >Do you have code to be included in this dataset (computational models or analysis
               etc)</label
@@ -460,12 +460,11 @@
 
           <div class="guided--section" id="guided-section-dataset-type">
             <div class="sub-section" id="guided-sub-section-manual-dataset-type-selection">
-              <h2 class="text-sub-step-title">User must manually select</h2>
+              <h2 class="text-sub-step-title">Select a dataset type</h2>
               <p class="help-text">
-                Select the dataset type below that best describes your dataset and SODA will guide
-                you through the process of uploading your dataset based on your selection. If you
-                are unsure about which dataset type to select, please click the "Learn more" button
-                below.
+                Since your dataset has both subjects and code, please select your dataset manually.
+                If you are unsure if your dataset is experimental or computational, please click the
+                dropdown below to learn more about the difference.
               </p>
               <div class="info-dropdown">
                 <p class="info-dropdown-text" data-dropdown-type="info">
@@ -475,15 +474,12 @@
               </div>
               <div class="info-container">
                 <p class="help-text">
-                  <b>Experimental</b> datasets consist of data collected from subjects (either human
-                  or non-human) and/or from samples collected from subjects (e.g., tissue samples).
-                  These datasets are based on physical experiments that aim to investigate the
-                  properties or behavior of biological systems.
+                  <b>Experimental</b> datasets are datasets that have a primary purpose of
+                  collecting and sharing data obtained from physical experiments.
                 </p>
                 <p class="help-text">
                   <b>Computational</b> datasets consist of computational models, visualization
-                  scripts, or other computational outputs. These datasets do not contain subjects or
-                  samples derived from physical experiments.
+                  scripts, or other code that is used to analyze or visualize experimental data.
                 </p>
               </div>
               <label class="guided--form-label centered mt-lg"
@@ -605,13 +601,33 @@
               </div>
             </div>
             <div class="sub-section" id="guided-sub-section-experimental-confirmation">
-              Great, experimental
+              <h2 class="text-sub-step-title">
+                Click on the continue button to begin the experimental dataset curation process.
+              </h2>
+              <p class="help-text">
+                Since you selected that your dataset contains data derived from physical subjects
+                and does not contain code, you will be guided through the experimental dataset
+                curation process.
+              </p>
             </div>
             <div class="sub-section" id="guided-sub-section-computational-confirmation">
-              Great, computational
+              <h2 class="text-sub-step-title">
+                Click on the continue button to begin the computational dataset curation process.
+              </h2>
+              <p class="help-text">
+                Since you selected that your dataset contains code and does not contain data derived
+                from physical subjects, you will be guided through the experimental dataset curation
+                process.
+              </p>
             </div>
             <div class="sub-section" id="guided-sub-section-configuration-error">
-              This configuration does not make sense
+              <h2 class="text-sub-step-title text-error">Unable to determine dataset type</h2>
+              <p class="help-text">
+                The dataset type was not able to be determined as the dataset does not contain data
+                collected from subjects or any code for computational modeling, visualization
+                scripts etc. If your code does not contain either of the above, please contact the
+                SPARC team at <a href="mailto:curation@sparc.science">curation@sparc.science</a>.
+              </p>
             </div>
           </div>
         </div>
@@ -870,32 +886,11 @@
           class="guided--page hidden"
           data-page-name="Dataset structuring"
         >
-          <div class="guided--section" id="guided-section-dataset-type-text">
-            <h1 class="text-sub-step-title">Select a dataset type</h1>
+          <div class="guided--section" id="guided-section-dataset-subjects-text">
+            <h1 class="text-sub-step-title">Subject specification</h1>
             <p class="help-text">
-              Select the dataset type below that best describes your dataset and SODA will guide you
-              through the process of uploading your dataset based on your selection. If you are
-              unsure about which dataset type to select, please click the "Learn more" button below.
+              Add each subject that data was obtained from in the table below.
             </p>
-            <div class="info-dropdown">
-              <p class="info-dropdown-text" data-dropdown-type="info">
-                Learn more about experimental versus computational datasets
-              </p>
-              <i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="info-container">
-              <p class="help-text">
-                <b>Experimental</b> datasets consist of data collected from subjects (either human
-                or non-human) and/or from samples collected from subjects (e.g., tissue samples).
-                These datasets are based on physical experiments that aim to investigate the
-                properties or behavior of biological systems.
-              </p>
-              <p class="help-text">
-                <b>Computational</b> datasets consist of computational models, visualization
-                scripts, or other computational outputs. These datasets do not contain subjects or
-                samples derived from physical experiments.
-              </p>
-            </div>
           </div>
           <div class="guided--section" id="guided-section-dataset-pools-text">
             <h1 class="text-sub-step-title">Subject pooling</h1>
@@ -925,10 +920,6 @@
           </div>
           <div class="guided--panel sub-page" id="guided-specify-subjects-page">
             <div class="guided--section" id="guided-specify-subjects-prompt">
-              <label class="guided--form-label centered"
-                >Is the dataset experimental or computational?</label
-              >
-
               <div class="guided--panel">
                 <table
                   class="ui celled striped table mt-md"
@@ -937,8 +928,7 @@
                   <thead>
                     <tr>
                       <th class="text-center" colspan="2">
-                        Enter a unique ID for each of your subjects (e.g., "sub-1", "sub-2",
-                        etc.)<br />
+                        Enter a unique ID for each of your study's subjects
                       </th>
                     </tr>
                   </thead>
@@ -2042,15 +2032,8 @@
             <h1 class="text-sub-step-title">Add code used in the generation of the dataset</h1>
             <p class="help-text">
               The code folder should contain any scripts or programs used for computational models,
-              data processing, data analysis, or visualization. Some examples of what to add to the
-              code folder are:
-              <br />Python scripts for processing and analyzing the data, such as scripts for
-              loading the data, cleaning it, and performing statistical analyses <br />R scripts for
-              creating plots and visualizations of the data <br />Shell scripts for automating data
-              processing tasks or running analyses on a cluster or cloud computing environment
-              <br />Jupyter notebooks containing code, results, and visualizations for specific
-              analyses or projects <br />
-              README files or documentation describing the code and how to use it.
+              data processing, data analysis, or visualization. The code added inside the code
+              folder should contain a README file that describes the code and how to use it.
             </p>
           </div>
           <div class="guided--panel" id="guided-user-has-code-data"></div>
