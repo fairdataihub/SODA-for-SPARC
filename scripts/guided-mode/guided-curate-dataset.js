@@ -641,9 +641,20 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
       }
 
+      // This shouldn't happen but just in case the dataset type is not computational or experimental, throw an error
+      if (
+        sodaJSONObj["dataset-type"] !== "experimental" &&
+        sodaJSONObj["dataset-type"] !== "computational"
+      ) {
+        errorArray.push({
+          type: "notyf",
+          message: "Selected subject and code answers do not lead to a viable curation path",
+        });
+        throw errorArray;
+      }
+
       const datasetHasSubjects = sodaJSONObj["dataset-contains-subjects"];
       const datasetHasCode = sodaJSONObj["dataset-contains-code"];
-      const datasetType = sodaJSONObj["dataset-type"];
 
       if (datasetHasSubjects) {
         guidedUnSkipPage("guided-subjects-folder-tab");
@@ -1916,6 +1927,8 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
   }
   if (addedPools.length > 0) {
     sodaJSONObj["button-config"]["dataset-contains-pools"] = "yes";
+  } else {
+    sodaJSONObj["button-config"]["dataset-contains-pools"] = "no";
   }
   if (addedSamples.length > 0) {
     sodaJSONObj["button-config"]["dataset-contains-samples"] = "yes";
@@ -4308,6 +4321,22 @@ const openPage = async (targetPageID) => {
       //render progress resumption cards from progress file array on first page of guided mode
       const progressFileData = await getAllProgressFileData(guidedSavedProgressFiles);
       renderProgressCards(progressFileData);
+    }
+
+    if (targetPageID === "guided-prepare-dataset-structure-tab") {
+      // If the user has already added subjects, disallow them from selecting no (they have to go to the subject
+      // page to delete subjects but this would be a very strange case anyways)
+      const [subjectsInPools, subjectsOutsidePools] = sodaJSONObj.getAllSubjects();
+      const subjects = [...subjectsInPools, ...subjectsOutsidePools];
+      const subjectQuerySectioin = document.getElementById("guided-section-subject-yes-no");
+      const infoText = document.getElementById("subject-deletion-block-text");
+      if (subjects.length > 0) {
+        subjectQuerySectioin.classList.add("section-disabled");
+        infoText.classList.remove("hidden");
+      } else {
+        subjectQuerySectioin.classList.remove("section-disabled");
+        infoText.classList.add("hidden");
+      }
     }
 
     if (targetPageID === "guided-prepare-helpers-tab") {

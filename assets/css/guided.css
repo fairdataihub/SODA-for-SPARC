@@ -275,6 +275,11 @@
   max-width: 800px;
 }
 
+.guided--section.section-disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
 .guided--section .sub-section {
   display: flex;
   flex-direction: column;

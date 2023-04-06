@@ -398,10 +398,10 @@
         <div
           class="guided--page hidden"
           id="guided-prepare-dataset-structure-tab"
-          data-page-name="Dataset structure"
+          data-page-name="Dataset type"
         >
           <h1 class="text-sub-step-title">Tell us a little about the structure of your dataset</h1>
-          <div class="guided--section">
+          <div class="guided--section" id="guided-section-subject-yes-no">
             <label class="guided--form-label centered">
               Does your dataset include data collected from subjects and/or samples?
             </label>
@@ -427,6 +427,12 @@
                 No
               </button>
             </div>
+            <p class="help-text" id="subject-deletion-block-text">
+              <b
+                >Subjects have already been added to your dataset. If you would like to
+                add/edit/delete subjects, you may do so in the "dataset structuring" tab.</b
+              >
+            </p>
           </div>
 
           <div class="guided--section" id="guided-section-ask-if-dataset-contains-code">
