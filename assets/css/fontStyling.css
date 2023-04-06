@@ -164,6 +164,10 @@
   color: black !important;
 }
 
+.text-sub-step-title.text-error {
+  color: var(--color-bg-plum) !important;
+}
+
 h1.text-sub-step-title {
   font-size: 25px !important;
   margin-bottom: 15px;
