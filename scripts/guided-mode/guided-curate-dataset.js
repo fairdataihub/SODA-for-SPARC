@@ -757,6 +757,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         // for the SPARC funded dataset flow
         guidedUnSkipPage("guided-create-submission-metadata-tab");
         guidedUnSkipPage("guided-dataset-validation-tab");
+        guidedUnSkipPage("guided-protocols-tab");
       }
 
       // If the user selected that dataset is not SPARC funded, skip the submission metadata page
@@ -795,6 +796,9 @@ const savePageChanges = async (pageBeingLeftID) => {
         // Skip the submission metadata page
         // This can be safely skipped as the logic that handles the submission file is ran during upload
         guidedSkipPage("guided-create-submission-metadata-tab");
+
+        guidedSkipPage("guided-protocols-tab");
+
         //Skip the validation page as non-spac funded datasets do not need to be validated
         guidedSkipPage("guided-dataset-validation-tab");
       }
@@ -4948,17 +4952,6 @@ const openPage = async (targetPageID) => {
         if (descriptionMetadata?.["keywords"]) {
           guidedDatasetKeywordsTagify.addTags(descriptionMetadata["keywords"]);
         }
-
-        //reset the study type checkboxes
-        const studyTypeRadioButtons = document.querySelectorAll("input[name='dataset-relation']");
-        for (const studyTypeRadioButton of studyTypeRadioButtons) {
-          studyTypeRadioButton.checked = false;
-        }
-        //check the correct study type checkbox if the study type was determined
-        const studyTypeRadioButton = document.querySelector(
-          `input[name='dataset-relation'][value='${sodaJSONObj["dataset-type"]}']`
-        );
-        studyTypeRadioButton.checked = true;
       };
       guidedLoadDescriptionDatasetInformation();
 
@@ -14352,16 +14345,7 @@ $(document).ready(async () => {
 const guidedSaveDescriptionDatasetInformation = () => {
   const title = sodaJSONObj["digital-metadata"]["name"];
   const subtitle = sodaJSONObj["digital-metadata"]["subtitle"];
-  let studyType = null;
-  const selectedStudyTypeRadioButton = document.querySelector(
-    "input[name='dataset-relation']:checked"
-  );
-  if (!selectedStudyTypeRadioButton) {
-    throw "Please select a study type";
-  } else {
-    studyType = selectedStudyTypeRadioButton.value;
-  }
-
+  let studyType = sodaJSONObj["dataset-type"] || "";
   //get the keywords from the keywords textarea
   const keywordArray = getTagsFromTagifyElement(guidedDatasetKeywordsTagify);
   if (keywordArray.length < 3) {
