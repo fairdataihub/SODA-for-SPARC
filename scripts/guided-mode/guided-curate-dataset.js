@@ -11317,6 +11317,13 @@ $(document).ready(async () => {
     const selectedButton = $(this);
     const notSelectedButton = $(this).siblings(".guided--radio-button");
 
+    // If the user is changing between buttons that can cause a change to the dataset
+    // display warnings here before continuing
+
+    const clickedButtonID = selectedButton.attr("id");
+    if (clickedButtonID === "guided-button-dataset-contains-subjects") {
+    }
+
     notSelectedButton.removeClass("selected");
     notSelectedButton.addClass("not-selected basic");
 
