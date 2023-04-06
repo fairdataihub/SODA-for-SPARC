@@ -11301,7 +11301,8 @@ $(document).ready(async () => {
           .classList.remove("hidden");
       }
       if (interpredDatasetType === "requires-manual-selection") {
-        // (If the user started from Pennsieve, see if we can pre-select the correct button)
+        // If the user is updating a dataset from Pennsieve, try to get the dataset type from the dataset description file
+        // on Pennsieve and click the appropriate button
         if (sodaJSONObj?.["starting-point"]?.["type"] === "bf") {
           setPageLoadingState(true);
           try {
@@ -11315,7 +11316,6 @@ $(document).ready(async () => {
                 },
               }
             );
-            // guidedLoadDescriptionDatasetInformation
             const descriptionMetdataData = descriptionMetadaRes.data["Basic information"];
             if (descriptionMetdataData[0][0] === "Type") {
               const studyType = descriptionMetdataData[0][1];
