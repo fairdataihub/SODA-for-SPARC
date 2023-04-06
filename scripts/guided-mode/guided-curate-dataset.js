@@ -11308,10 +11308,7 @@ $(document).ready(async () => {
       sodaJSONObj["dataset-type"] = interpredDatasetType;
 
       // If the determined dataset type is not computational or experimental, reset the buttons where the user selects it manually
-      if (
-        !sodaJSONObj["dataset-type"] === "computational" ||
-        !sodaJSONObj["dataset-type"] === "experimental"
-      ) {
+      if (sodaJSONObj["dataset-type"] === "requires-manual-selection") {
         if (sodaJSONObj["button-config"]["dataset-type"]) {
           delete sodaJSONObj["button-config"]["dataset-type"];
         }
