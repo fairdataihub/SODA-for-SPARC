@@ -115,6 +115,17 @@ const guidedCheckHighLevelFoldersForImproperFiles = (datasetStructure) => {
   return [invalidFolders, invalidFiles];
 };
 
+document.getElementById("guided-button-dataset-contains-code").addEventListener("click", () => {
+  const codeFolder = datasetStructureJSONObj["folders"]["code"];
+  if (codeFolder) {
+    if (folderImportedFromPennsieve(codeFolder)) {
+      // If the code folder is imported from Pennsieve, unmark it as deleted
+      guidedModifyPennsieveFolder(codeFolder, "restore");
+      // NOTE: We do not need to update the UI since this button is not on the ui structuring page
+    }
+  }
+});
+
 document.getElementById("guided-button-has-protocol-data").addEventListener("click", () => {
   const protocolFolder = datasetStructureJSONObj["folders"]["protocol"];
   if (protocolFolder) {
@@ -11374,15 +11385,6 @@ $(document).ready(async () => {
     const selectedButton = $(this);
     const notSelectedButton = $(this).siblings(".guided--radio-button");
 
-    notSelectedButton.removeClass("selected");
-    notSelectedButton.addClass("not-selected basic");
-
-    //If button has prevent-radio-handler data attribute, other buttons, will be deselected
-    //but all other radio button functions will be halted
-    if (selectedButton.data("prevent-radio-handler") === true) {
-      return;
-    }
-
     if (selectedButton.data("warn-before-click") === true) {
       const buttonId = selectedButton.attr("id");
       if (buttonId === "guided-button-dataset-does-not-contain-code") {
@@ -11422,10 +11424,23 @@ $(document).ready(async () => {
               } else {
                 delete datasetStructureJSONObj["folders"]["code"];
               }
+            } else {
+              // return and do nothing
+              console.log("User cancelled code folder deletion");
+              return;
             }
           }
         }
       }
+    }
+
+    notSelectedButton.removeClass("selected");
+    notSelectedButton.addClass("not-selected basic");
+
+    //If button has prevent-radio-handler data attribute, other buttons, will be deselected
+    //but all other radio button functions will be halted
+    if (selectedButton.data("prevent-radio-handler") === true) {
+      return;
     }
 
     //Store the button's config value in sodaJSONObj
