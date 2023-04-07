@@ -1,5 +1,3 @@
-const { error } = require("jquery");
-
 const returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
 };
@@ -116,6 +114,17 @@ const guidedCheckHighLevelFoldersForImproperFiles = (datasetStructure) => {
   }
   return [invalidFolders, invalidFiles];
 };
+
+document.getElementById("guided-button-dataset-contains-code").addEventListener("click", () => {
+  const codeFolder = datasetStructureJSONObj["folders"]["code"];
+  if (codeFolder) {
+    if (folderImportedFromPennsieve(codeFolder)) {
+      // If the code folder is imported from Pennsieve, unmark it as deleted
+      guidedModifyPennsieveFolder(codeFolder, "restore");
+      // NOTE: We do not need to update the UI since this button is not on the ui structuring page
+    }
+  }
+});
 
 document.getElementById("guided-button-has-protocol-data").addEventListener("click", () => {
   const protocolFolder = datasetStructureJSONObj["folders"]["protocol"];
@@ -11379,15 +11388,57 @@ $(document).ready(async () => {
     }
   };
 
-  $(".guided--radio-button").on("click", function () {
+  $(".guided--radio-button").on("click", async function () {
     const selectedButton = $(this);
     const notSelectedButton = $(this).siblings(".guided--radio-button");
 
-    // If the user is changing between buttons that can cause a change to the dataset
-    // display warnings here before continuing
+    if (selectedButton.data("warn-before-click") === true) {
+      const buttonId = selectedButton.attr("id");
+      if (buttonId === "guided-button-dataset-does-not-contain-code") {
+        const dataInCodeFolder = datasetStructureJSONObj?.["folders"]?.["code"];
+        if (dataInCodeFolder) {
+          if (!folderIsEmpty(dataInCodeFolder)) {
+            const folderIsFromPennsieve = folderImportedFromPennsieve(dataInCodeFolder);
+            let warningText;
+            if (folderIsFromPennsieve) {
+              warningText = `You have code in your code folder that was imported from Pennsieve.
+                <br><br>
+                If you select "delete my code folder" below, your code folder will be deleted when you update your dataset
+                on the last step of the guided process.`;
+            } else {
+              warningText = `
+                You previously added code to your code folder.
+                <br><br>
+                If you select "delete my code folder" below, the code in your code folder will be permanently deleted.
+              `;
+            }
 
-    const clickedButtonID = selectedButton.attr("id");
-    if (clickedButtonID === "guided-button-dataset-contains-subjects") {
+            const { value: confirmCodeFolderDeletion } = await Swal.fire({
+              icon: "warning",
+              title: "Are you sure?",
+              html: warningText,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              confirmButtonText: `Delete my code folder`,
+              showCancelButton: true,
+              cancelButtonText: "Cancel",
+              focusConfirm: true,
+              allowOutsideClick: false,
+            });
+            if (confirmCodeFolderDeletion) {
+              if (folderIsFromPennsieve) {
+                guidedModifyPennsieveFolder(dataInCodeFolder, "delete");
+              } else {
+                delete datasetStructureJSONObj["folders"]["code"];
+              }
+            } else {
+              // return and do nothing
+              console.log("User cancelled code folder deletion");
+              return;
+            }
+          }
+        }
+      }
     }
 
     notSelectedButton.removeClass("selected");
