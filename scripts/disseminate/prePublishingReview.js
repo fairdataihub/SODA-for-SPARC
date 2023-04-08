@@ -180,7 +180,7 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode) =>
     // This is done to ensure the right element ID is called
     // Guided mode elements have 'guided--' prepended to their ID
     curationModeID = "guided--";
-    currentDataset = sodaJSONObj["bf-dataset-selected"]["bf-dataset-selected"];
+    currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
     console.log("is guided mode here as well");
   }
   console.log(currentDataset);
@@ -193,12 +193,18 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode) =>
     $(`#${curationModeID}para-review-dataset-info-disseminate`).text() !==
     "Dataset is not under review currently"
   ) {
+    console.log("returning here");
     return;
   }
 
   // spinners that fit into the checklist icon slots until statuses have been verified for the items
-  $(`.${curationModeID}icon-wrapper`).attr("class", "ui mini active inline loader icon-wrapper");
+  $(`.${curationModeID}icon-wrapper`).attr(
+    "class",
+    `ui mini active inline loader ${curationModeID}icon-wrapper`
+  );
   $(`.${curationModeID}icon-wrapper`).children().css("visibility", "hidden");
+  console.log($(`.${curationModeID}icon-wrapper`).children());
+  $("#guided--prepublishing-checklist-container").removeClass("hidden");
 
   // run the validation checks on each pre-publishing checklist item
   let statuses;
@@ -231,6 +237,7 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode) =>
 
     // set the status icons to red crosses
     Array.from(document.querySelectorAll(`.${curationModeID}icon-wrapper i`)).forEach((icon) => {
+      console.log("changing to red icon");
       icon.classList.remove("check");
       icon.classList.add("cross");
       icon.style.color = "red";
@@ -245,6 +252,8 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode) =>
     AnalyticsGranularity.ACTION,
     ["Fetch Pre-publishing Checklist Statuses"]
   );
+
+  console.log(statuses);
 
   // mark each pre-publishing item red or green to indicate if the item was completed
   setPrepublishingChecklistItemIconByStatus(
@@ -278,7 +287,7 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode) =>
   );
 
   // hide the spinner and show the checklist item icons
-  $(`.${curationModeID}icon-wrapper`).attr("class", "icon-wrapper");
+  $(`.${curationModeID}icon-wrapper`).attr("class", `${curationModeID}icon-wrapper`);
   $(`.${curationModeID}icon-wrapper`).children().css("visibility", "visible");
 };
 
@@ -308,6 +317,7 @@ const allPrepublishingChecklistItemsCompleted = (curationMode) => {
   }
   // get the icons for the checklist elements
   let prePublishingChecklistItems = $(`.${curationModeID}icon-wrapper i`);
+  console.log(prePublishingChecklistItems);
 
   // filter out the completed items - by classname
   let incompleteChecklistItems = Array.from(prePublishingChecklistItems).filter((checklistItem) => {
@@ -409,11 +419,14 @@ $("#items-pre-publication").on("click", function (evt) {
 
 // transition to the final question and populate the file tree with the dataset's metadata files
 const createPrepublishingChecklist = async (curationMode) => {
+  console.log("within createPrepublishingChecklist");
   // check that the user completed all pre-publishing checklist items for the given dataset
   let curationModeID = "";
+  let currentDataset = defaultBfDataset;
   if (curationMode === "guided") {
     // This is done to ensure the right element ID is called
     // Guided mode elements have 'guided--' prepended to their ID
+    currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
     curationModeID = "guided--";
   }
   if (!allPrepublishingChecklistItemsCompleted(curationMode)) {
@@ -449,8 +462,17 @@ const createPrepublishingChecklist = async (curationMode) => {
     );
   }
 
+  // hide the continue button
+  $(`.${curationModeID}pre-publishing-continue-container`).hide();
+
+  // show the submit button
+  $(`#${curationModeID}prepublishing-submit-btn-container`).show();
+
+  // show the excluded files section
+  $(`#${curationModeID}excluded-files-container`).show();
+
   // reset the file viewer so no duplicates appear
-  removeChildren(document.querySelector("#items-pre-publication"));
+  removeChildren(document.querySelector(`#${curationModeID}items-pre-publication`));
 
   // show a spinner on the file tree
   $(`.${curationModeID}items-spinner`).show();
@@ -458,7 +480,7 @@ const createPrepublishingChecklist = async (curationMode) => {
   let excludedFileObjects;
   try {
     // read in the excluded files
-    excludedFileObjects = await api.getFilesExcludedFromPublishing(defaultBfDataset);
+    excludedFileObjects = await api.getFilesExcludedFromPublishing(currentDataset);
   } catch (error) {
     clientError(error);
     // tell the user something went wrong getting access to their datasets ignored files
@@ -496,7 +518,7 @@ const createPrepublishingChecklist = async (curationMode) => {
   let metadataFiles;
   try {
     // read in all of the metadata files for the dataset
-    metadataFiles = await api.getDatasetMetadataFiles(defaultBfDataset);
+    metadataFiles = await api.getDatasetMetadataFiles(currentDataset);
   } catch (error) {
     clientError(error);
     // tell the user something went wrong getting access to their datasets ignored files

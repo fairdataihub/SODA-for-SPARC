@@ -1893,11 +1893,12 @@ const guidedSetCurationTeamUI = (boolSharedWithCurationTeam) => {
   );
   // TODO: Have this update with the published status and not shared w curation team status
   if (boolSharedWithCurationTeam) {
-    textSharedWithCurationTeamStatus.innerHTML = "Shared with the SPARC Curation Team";
+    textSharedWithCurationTeamStatus.innerHTML = "Dataset is not under review currently";
     $("#guided-button-share-dataset-with-curation-team").hide();
     $("#guided-button-unshare-dataset-with-curation-team").show();
   } else {
-    textSharedWithCurationTeamStatus.innerHTML = "Not shared with the SPARC Curation Team";
+    textSharedWithCurationTeamStatus.innerHTML = "Dataset is not under review currently";
+    $("#guided--prepublishing-checklist-container").addClass("hidden");
     $("#guided-button-share-dataset-with-curation-team").show();
     $("#guided-button-unshare-dataset-with-curation-team").hide();
   }
@@ -5854,6 +5855,7 @@ const openPage = async (targetPageID) => {
 
       let sharedWithSPARCCurationTeam = false;
 
+      // TODO: Modify this to be the publishing status and not permissions
       for (const permission of bf_get_permissions) {
         if (permission.includes("SPARC Data Curation Team")) {
           sharedWithSPARCCurationTeam = true;

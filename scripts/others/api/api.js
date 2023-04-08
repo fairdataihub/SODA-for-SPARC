@@ -136,6 +136,7 @@ const getDatasetPermissions = async (selected_account, selected_dataset, boolRet
 // TODO: Add api function for setting dataset permissions
 
 const getDatasetsForAccount = async (selected_account) => {
+  console.log(selected_account);
   let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
     params: {
       selected_account,
