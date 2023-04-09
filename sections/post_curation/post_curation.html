@@ -879,6 +879,7 @@
               <button
                 class="pre-publishing-continue btn_animated"
                 id="pre-publishing-continue-btn"
+                onclick="createPrepublishingChecklist()"
                 style="width: 200px; height: 40px; font-size: 15px; margin-top: 2rem"
                 data-current="submit_prepublishing_review-question-3"
                 data-next="submit_prepublishing_review-question-4"
@@ -952,7 +953,7 @@
               </div>
 
               <!--Pennsieve metadata file viewer-->
-              <div id="pre-publication-items-container">
+              <div id="pre-publication-items-container" class="prepublish-items-container">
                 <div id="items-pre-publication"></div>
 
                 <div

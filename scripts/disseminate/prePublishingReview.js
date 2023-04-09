@@ -553,6 +553,7 @@ const createPrepublishingChecklist = async (curationMode) => {
   );
 
   // place the metadata files in the file viewer - found in step 3 of the pre-publishing submission worfklow
+  console.log("before populateFileViewer");
   populateFileViewer(
     metadataFiles,
     excludedFileObjects.map((fileObject) => fileObject.fileName)
@@ -681,19 +682,19 @@ const populateFileViewer = (metadataFiles, excludedFiles, curationMode) => {
   }
 
   // get the file viewer element
-  let fileViewer = document.querySelector("#items-pre-publication");
+  let fileViewer = document.querySelector(`#${curationModeID}items-pre-publication`);
 
   // // traverse the given files
   metadataFiles.forEach((file) => {
     // create a top level container
     let div = document.createElement("div");
-    div.classList.add("pre-publishing-metadata-file-container");
+    div.classList.add(`${curationModeID}pre-publishing-metadata-file-container`);
 
     // create the checkbox
     let input = document.createElement("input");
     input.setAttribute("type", "checkbox");
     input.setAttribute("name", `${file}`);
-    input.classList.add("pre-publishing-metadata-file-input");
+    input.classList.add(`pre-publishing-metadata-file-input`);
     // check if the user already has this file marked as ecluded
     if (excludedFiles.includes(file)) {
       input.checked = true;
@@ -703,9 +704,9 @@ const populateFileViewer = (metadataFiles, excludedFiles, curationMode) => {
     let label = document.createElement("label");
     label.setAttribute("for", `${file}`);
     label.textContent = `${file}`;
-    label.classList.add("pre-publishing-metadata-file-label");
+    label.classList.add(`pre-publishing-metadata-file-label`);
     if (excludedFiles.includes(file)) {
-      label.classList.add("pre-publishing-file-viewer-file-selected");
+      label.classList.add(`pre-publishing-file-viewer-file-selected`);
     }
 
     // add the input and label to the container
@@ -717,11 +718,16 @@ const populateFileViewer = (metadataFiles, excludedFiles, curationMode) => {
   });
 };
 
+// TODO: Dorian -> Adapt this function to be used in Guided Mode
 // Check if there are excluded files in the excluded files list found in step 3 of the pre-publication submission workflow
-const excludedFilesInPublicationFlow = () => {
+const excludedFilesInPublicationFlow = (curationMode) => {
+  let curationModeID = "";
+  if (curationMode === "guided") {
+    curationModeID = "guided--";
+  }
   // get the checked UI elements in step 3 of the pre-publication submission flow
   let excludedFilesList = document.querySelectorAll(
-    "#items-pre-publication input[type='checkbox']:checked"
+    `#${curationModeID}items-pre-publication input[type='checkbox']:checked`
   );
 
   //return true if the list has children and false otherwise

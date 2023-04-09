@@ -217,6 +217,16 @@
   justify-content: center;
 }
 
+.prepublish-items-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  box-shadow: 0px 0px 10px #d5d5d5;
+  margin-top: 1rem;
+}
+
 /* TODO: remove the keyword guided on the classes below */
 
 .guided--progress-container {

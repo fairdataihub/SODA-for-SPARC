@@ -1403,7 +1403,7 @@
   justify-content: center;
 }
 
-#pre-publication-items-container {
+/* #pre-publication-items-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1411,7 +1411,7 @@
   position: relative;
   box-shadow: 0px 0px 10px #d5d5d5;
   margin-top: 1rem;
-}
+} */
 
 #items-pre-publication {
   min-height: 230px;
@@ -1433,6 +1433,11 @@
   font-size: 20px;
 }
 
+.guided--pre-publishing-metadata-file-input {
+  margin-right: 0.2rem;
+  font-size: 20px;
+}
+
 .pre-publishing-metadata-file-label {
   position: absolute;
   bottom: 0.3rem;
@@ -1442,6 +1447,11 @@
 }
 
 .pre-publishing-metadata-file-container {
+  width: 300px;
+  position: relative;
+}
+
+.guided--pre-publishing-metadata-file-container {
   width: 300px;
   position: relative;
 }

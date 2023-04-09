@@ -1942,56 +1942,6 @@ const guidedModifyCurationTeamAccess = async (action) => {
       guidedShareWithCurationTeamButton.classList.remove("loading");
       guidedShareWithCurationTeamButton.classList.remove("hidden");
     }
-    // const { value: confirmShareWithCurationTeam } = await Swal.fire({
-    //   backdrop: "rgba(0,0,0, 0.4)",
-    //   heightAuto: false,
-    //   cancelButtonText: "No",
-    //   confirmButtonText: "Yes",
-    //   focusCancel: true,
-    //   icon: "warning",
-    //   reverseButtons: reverseSwalButtons,
-    //   showCancelButton: true,
-    //   text: "This will inform the Curation Team that your dataset is ready to be reviewed. It is then advised not to make changes to the dataset until the Curation Team contacts you. Would you like to continue?",
-    // });
-    // if (confirmShareWithCurationTeam) {
-    //   //TODO: Check that the name for the curation team is correct or if it has changed on the pennsieve side
-    //   try {
-    //     await client.patch(
-    //       `/manage_datasets/bf_dataset_permissions`,
-    //       {
-    //         input_role: "manager",
-    //       },
-    //       {
-    //         params: {
-    //           selected_account: defaultBfAccount,
-    //           selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-    //           scope: "team",
-    //           name: "SPARC Data Curation Team",
-    //         },
-    //       }
-    //     );
-    //     guidedSetCurationTeamUI(true);
-    //     swal.fire({
-    //       width: "550px",
-    //       icon: "success",
-    //       title: "Dataset successfully shared with the Curation Team",
-    //       html: `It is now advised that you do not make changes to the dataset until
-    //       the Curation Team follows up with you.`,
-    //       backdrop: "rgba(0,0,0, 0.4)",
-    //       heightAuto: false,
-    //       confirmButtonText: "OK",
-    //       focusConfirm: true,
-    //     });
-    //   } catch (error) {
-    //     notyf.open({
-    //       duration: "5000",
-    //       type: "error",
-    //       message: "Error sharing dataset with the Curation Team",
-    //     });
-    //   }
-    // }
-    // guidedShareWithCurationTeamButton.disabled = false;
-    // guidedShareWithCurationTeamButton.classList.remove("loading");
   }
   if (action === "unshare") {
     // TODO: Adapt new meta to share with curation team

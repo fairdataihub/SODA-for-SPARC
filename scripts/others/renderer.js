@@ -3334,7 +3334,17 @@ ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
   $("#submit_prepublishing_review-spinner").hide();
 });
 
-const submitReviewDataset = async (embargoReleaseDate) => {
+// TODO: Dorian -> Adapt this function for Guided Mode
+const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
+  let curationModeID = "";
+  let currentAccount = defaultBfAccount;
+  let currentDataset = defaultBfDataset;
+
+  if (curationMode === "guided") {
+    curationModeID = "guided";
+    currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
+    currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+  }
   $("#para-submit_prepublishing_review-status").text("");
   bfRefreshPublishingDatasetStatusBtn.disabled = true;
   var selectedBfAccount = defaultBfAccount;
@@ -3345,7 +3355,7 @@ const submitReviewDataset = async (embargoReleaseDate) => {
 
   // check if the user has selected any files they want to be hidden to the public upon publication (aka ignored/excluded files)
   // set the loading message title accordingly
-  if (excludedFilesInPublicationFlow()) {
+  if (excludedFilesInPublicationFlow(curationMode)) {
     title = "Ignoring selected files and submitting dataset for pre-publishing review";
   } else {
     title = "Submitting dataset for pre-publishing review";
@@ -3367,13 +3377,13 @@ const submitReviewDataset = async (embargoReleaseDate) => {
   });
 
   // if there are excluded files upload them to Pennsieve so they will not be viewable to the public upon publication
-  if (excludedFilesInPublicationFlow()) {
+  if (excludedFilesInPublicationFlow(curationMode)) {
     // get the excluded files from the excluded files list in the third step of the pre-publishing review submission flow
     let files = getExcludedFilesFromPublicationFlow();
     try {
       // exclude the user's selected files from publication
       //check res
-      await api.updateDatasetExcludedFiles(defaultBfAccount, selectedBfDataset, files);
+      await api.updateDatasetExcludedFiles(currentAccount, currentDataset, files);
     } catch (error) {
       clientError(error);
       // log the error
@@ -3409,8 +3419,8 @@ const submitReviewDataset = async (embargoReleaseDate) => {
 
   try {
     await api.submitDatasetForPublication(
-      selectedBfAccount,
-      selectedBfDataset,
+      currentAccount,
+      currentDataset,
       embargoReleaseDate,
       embargoReleaseDate === "" ? "publication" : "embargo"
     );
@@ -3473,16 +3483,19 @@ const submitReviewDataset = async (embargoReleaseDate) => {
     },
   });
 
-  await transitionFreeFormMode(
-    document.querySelector("#begin-prepublishing-btn"),
-    "submit_prepublishing_review-question-2",
-    "submit_prepublishing_review-tab",
-    "",
-    "individual-question post-curation"
-  );
+  if (curationMode != "guided") {
+    await transitionFreeFormMode(
+      document.querySelector("#begin-prepublishing-btn"),
+      "submit_prepublishing_review-question-2",
+      "submit_prepublishing_review-tab",
+      "",
+      "individual-question post-curation"
+    );
+  }
 };
 
 // //Withdraw dataset from review
+// TODO: Dorian -> Adapt this function and the others below for Guided Mode (withdrawing a dataset from review functions)
 function withdrawDatasetSubmission() {
   // show a SWAL loading message until the submit for prepublishing flow is successful or fails
   Swal.fire({
@@ -3588,7 +3601,7 @@ const withdrawDatasetCheck = async (res) => {
   }
 };
 
-// TODO: Adapt this for guided mode
+// TODO: Dorian -> Adapt this for guided mode
 const withdrawReviewDataset = async () => {
   bfWithdrawReviewDatasetBtn.disabled = true;
   var selectedBfAccount = $("#current-bf-account").text();
@@ -3899,7 +3912,7 @@ const showPrePublishingPageElements = () => {
   $(".pre-publishing-continue-container").hide();
 };
 
-// TODO: Adapt function to be used for Guided Mode as well
+// TODO: Dorian -> Adapt function to be used for Guided Mode as well
 const showPublishingStatus = async (callback) => {
   return new Promise(async function (resolve, reject) {
     console.log(callback);
