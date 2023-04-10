@@ -3563,7 +3563,7 @@ const withdrawDatasetSubmission = (curationMode) => {
       ["Withdraw dataset"]
     );
   });
-}
+};
 
 const withdrawDatasetCheck = async (res, curationMode) => {
   let reviewstatus = res["publishing_status"];
@@ -3626,9 +3626,11 @@ const withdrawReviewDataset = async (curationMode) => {
   bfWithdrawReviewDatasetBtn.disabled = true;
 
   let currentAccount = $("#current-bf-account").text();
-  let currentDataset = $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, "");
+  let currentDataset = $(".bf-dataset-span")
+    .html()
+    .replace(/^\s+|\s+$/g, "");
 
-  if(curationMode == "guided") {
+  if (curationMode == "guided") {
     currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
     currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
   }
@@ -3685,10 +3687,8 @@ const withdrawReviewDataset = async (curationMode) => {
       guidedSetCurationTeamUI();
     }
 
-
     // scroll to the submit button
     // scrollToElement(".pre-publishing-continue");
-
   } catch (error) {
     clientError(error);
     var emessage = userErrorMessage(error);
@@ -3729,12 +3729,12 @@ const removeOptions = (selectbox) => {
   for (i = selectbox.options.length - 1; i >= 0; i--) {
     selectbox.remove(i);
   }
-}
+};
 
 const userError = (error) => {
   var myerror = error.message;
   return myerror;
-}
+};
 
 // Manage Datasets //
 
@@ -3791,7 +3791,7 @@ const refreshBfUsersList = () => {
         clientError(error);
       });
   }
-}
+};
 
 const refreshBfTeamsList = (teamList) => {
   removeOptions(teamList);
@@ -3830,7 +3830,7 @@ const refreshBfTeamsList = (teamList) => {
         confirm_click_account_function();
       });
   }
-}
+};
 
 const selectOptionColor = (mylist) => {
   mylist.style.color = mylist.options[mylist.selectedIndex].style.color;
@@ -3905,7 +3905,7 @@ const updateBfAccountList = async () => {
   }
   refreshBfUsersList();
   refreshBfTeamsList(bfListTeams);
-}
+};
 
 const loadDefaultAccount = async () => {
   let responseObject;
@@ -3951,7 +3951,7 @@ const showPrePublishingPageElements = () => {
 };
 
 // TODO: Dorian -> Adapt function to be used for Guided Mode as well
-const showPublishingStatus = async (callback, curationMode='') => {
+const showPublishingStatus = async (callback, curationMode = "") => {
   return new Promise(async function (resolve, reject) {
     console.log(callback);
     if (callback == "noClear") {
@@ -3960,7 +3960,9 @@ const showPublishingStatus = async (callback, curationMode='') => {
 
     let curationModeID = "";
     let currentAccount = $("#current-bf-account").text();
-    let currentDataset = $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, "");
+    let currentDataset = $(".bf-dataset-span")
+      .html()
+      .replace(/^\s+|\s+$/g, "");
 
     if (curationMode === "guided") {
       curationModeID = "guided--";
@@ -3986,8 +3988,10 @@ const showPublishingStatus = async (callback, curationMode='') => {
         try {
           //update the dataset's publication status and display
           //onscreen for the user under their dataset name
-          $(`#${curationModeID}para-review-dataset-info-disseminate`).text(publishStatusOutputConversion(res));
-          console.log($(`#${curationModeID}para-review-dataset-info-disseminate`))
+          $(`#${curationModeID}para-review-dataset-info-disseminate`).text(
+            publishStatusOutputConversion(res)
+          );
+          console.log($(`#${curationModeID}para-review-dataset-info-disseminate`));
 
           if (callback === submitReviewDatasetCheck || callback === withdrawDatasetCheck) {
             return resolve(callback(res, curationMode));
@@ -4046,7 +4050,7 @@ const publishStatusOutputConversion = (res) => {
   }
 
   return outputMessage;
-}
+};
 
 const allowedMedataFiles = [
   "submission.xlsx",
@@ -4298,7 +4302,7 @@ const populateJSONObjFolder = (action, jsonObject, folderPath) => {
       };
     }
   });
-}
+};
 
 let full_name_show = false;
 
@@ -4307,7 +4311,7 @@ const hideFullName = () => {
   fullNameValue.style.display = "none";
   fullNameValue.style.top = "-250%";
   fullNameValue.style.left = "-250%";
-}
+};
 
 //// HOVER FOR FULL NAME (FOLDERS WITH WRAPPED NAME IN UI)
 const showFullName = (ev, element, text) => {
@@ -4327,7 +4331,7 @@ const showFullName = (ev, element, text) => {
       }
     }, 800);
   }
-}
+};
 
 /// hover over a function for full name
 const hoverForFullName = (ev) => {
@@ -4349,7 +4353,7 @@ document.addEventListener("onmouseover", function (e) {
 const showDetailsFile = () => {
   $(".div-display-details.file").toggleClass("show");
   // $(".div-display-details.folders").hide()
-}
+};
 
 const pasteFromClipboard = (event, target_element) => {
   event.preventDefault();
@@ -4415,7 +4419,7 @@ const retrieveBFAccounts = async () => {
     bfAccountOptionsStatus = "No account connected";
   }
   return [bfAccountOptions, bfAccountOptionsStatus];
-}
+};
 
 let defaultAccountDetails = "";
 const showDefaultBFAccount = async () => {
@@ -4466,7 +4470,7 @@ const showDefaultBFAccount = async () => {
   } catch (error) {
     clientError(error);
   }
-}
+};
 
 ////// function to trigger action for each context menu option
 const hideMenu = (category, menu1, menu2, menu3) => {
@@ -4483,7 +4487,7 @@ const hideMenu = (category, menu1, menu2, menu3) => {
     menu3.style.top = "-210%";
     menu3.style.left = "-210%";
   }
-}
+};
 
 const changeStepOrganize = (step) => {
   if (step.id === "button-organize-prev") {
@@ -4501,7 +4505,7 @@ const changeStepOrganize = (step) => {
     organizePrevStepBtn.style.display = "block";
     organizeNextStepBtn.style.display = "none";
   }
-}
+};
 
 var newDSName;
 const generateDataset = (button) => {
@@ -4536,7 +4540,7 @@ const generateDataset = (button) => {
     $("#btn-generate-locally").removeClass("active");
     $(button).toggleClass("active");
   }
-}
+};
 
 ipcRenderer.on("selected-new-dataset", async (event, filepath) => {
   if (filepath.length > 0) {
@@ -5815,7 +5819,7 @@ const detectIrregularFolders = (folderName, pathEle) => {
       return irregularFolderArray;
     });
   }
-}
+};
 
 const checkIrregularNameBoolean = (folderName) => {
   //nonAllowedCharacters modified to only allow a-z A-z 0-9 and hyphen "-"
@@ -6209,7 +6213,7 @@ const folderContextMenu = (event) => {
   hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
   hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
   hideFullName();
-}
+};
 
 //////// options for files
 const fileContextMenu = (event) => {
@@ -6240,7 +6244,7 @@ const fileContextMenu = (event) => {
       hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
     });
   hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
-}
+};
 
 $(document).ready(function () {
   tippy("[data-tippy-content]:not(.tippy-content-main):not(.guided-tippy-wrapper)", {
@@ -7025,7 +7029,7 @@ const getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
 const sliceStringByValue = (string, endingValue) => {
   var newString = string.slice(string.indexOf(endingValue) + 1);
   return newString;
-}
+};
 
 var fileNameForEdit;
 ///// Option to manage description for files
@@ -7047,7 +7051,7 @@ const manageDesc = (ev) => {
   hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
   hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
   fileNameForEdit = fileName;
-}
+};
 
 const updateFileDetails = (ev) => {
   var fileName = fileNameForEdit;
@@ -7069,7 +7073,7 @@ const updateFileDetails = (ev) => {
   }
   // close the display
   showDetailsFile();
-}
+};
 
 const addDetailsForFile = (ev) => {
   var checked = false;
@@ -7107,7 +7111,7 @@ const addDetailsForFile = (ev) => {
     updateFileDetails(ev);
     $("#button-confirm-display-details-file").html("Added");
   }
-}
+};
 
 $("#inputNewNameDataset").on("click", () => {
   $("#nextBtn").prop("disabled", true);

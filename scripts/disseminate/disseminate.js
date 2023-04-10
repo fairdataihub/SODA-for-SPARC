@@ -116,7 +116,7 @@ const disseminateDataset = (option, curationMode) => {
   if (curationMode) {
     curationModeID = "guided--";
   }
-  
+
   if (option === "share-with-curation-team") {
     $("#share-curation-team-spinner").show();
     Swal.fire({
@@ -141,7 +141,7 @@ const disseminateDataset = (option, curationMode) => {
         var dataset = $(".bf-dataset-span")
           .html()
           .replace(/^\s+|\s+$/g, "");
-        
+
         disseminateCurationTeam(account, dataset);
       } else {
         $("#share-curation-team-spinner").hide();

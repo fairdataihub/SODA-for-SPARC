@@ -1953,10 +1953,9 @@ const guidedModifyCurationTeamAccess = async (action) => {
     );
 
     console.log("Withdrawing the dataset here");
-    withdrawDatasetSubmission('guided');
+    withdrawDatasetSubmission("guided");
     guidedUnshareWithCurationTeamButton.disabled = true;
     guidedUnshareWithCurationTeamButton.classList.add("loading");
-
 
     // guidedUnshareWithCurationTeamButton.disabled = false;
     // guidedUnshareWithCurationTeamButton.classList.remove("loading");

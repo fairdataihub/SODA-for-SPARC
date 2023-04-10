@@ -701,7 +701,7 @@ const populateFileViewer = (metadataFiles, excludedFiles, curationMode) => {
     curationModeID = "guided--";
   }
 
-  console.log(excludedFiles)
+  console.log(excludedFiles);
 
   // get the file viewer element
   let fileViewer = document.querySelector(`#${curationModeID}items-pre-publication`);
