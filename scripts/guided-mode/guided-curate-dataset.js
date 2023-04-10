@@ -1891,19 +1891,22 @@ const guidedSetCurationTeamUI = (boolSharedWithCurationTeam) => {
   const textSharedWithCurationTeamStatus = document.getElementById(
     "guided--para-review-dataset-info-disseminate"
   );
+  console.log("textSharedWithCurationTeamStatus", textSharedWithCurationTeamStatus.innerText);
   // TODO: Have this update with the published status and not shared w curation team status
-  if (boolSharedWithCurationTeam) {
-    textSharedWithCurationTeamStatus.innerHTML = "Dataset is not under review currently";
+  if (textSharedWithCurationTeamStatus.innerText != "Dataset is not under review currently") {
+    // textSharedWithCurationTeamStatus.innerHTML = "Dataset is not under review currently";
     $("#guided-button-share-dataset-with-curation-team").hide();
     $("#guided-button-unshare-dataset-with-curation-team").show();
   } else {
-    textSharedWithCurationTeamStatus.innerHTML = "Dataset is not under review currently";
+    // textSharedWithCurationTeamStatus.innerHTML = "Dataset is not under review currently";
     $("#guided--prepublishing-checklist-container").addClass("hidden");
     $("#guided-button-share-dataset-with-curation-team").show();
+    $("#guided-button-share-dataset-with-curation-team").removeClass("hidden");
     $("#guided-button-unshare-dataset-with-curation-team").hide();
   }
 };
 
+// TODO: Dorian -> Handle error reponses when no DOI is found
 const guidedSetDOIUI = (boolHasDOI) => {
   let account = sodaJSONObj["bf-account-selected"]["account-name"];
   let dataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
@@ -1948,58 +1951,15 @@ const guidedModifyCurationTeamAccess = async (action) => {
     const guidedUnshareWithCurationTeamButton = document.getElementById(
       "guided-button-unshare-dataset-with-curation-team"
     );
+
+    console.log("Withdrawing the dataset here");
+    withdrawDatasetSubmission('guided');
     guidedUnshareWithCurationTeamButton.disabled = true;
     guidedUnshareWithCurationTeamButton.classList.add("loading");
 
-    const { value: confirmUnshareWithCurationTeam } = await Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      cancelButtonText: "No",
-      confirmButtonText: "Yes",
-      focusCancel: true,
-      icon: "warning",
-      reverseButtons: reverseSwalButtons,
-      showCancelButton: true,
-      text: "Are you sure you would like to remove the SPARC Data Curation Team as a manager of this dataset?",
-    });
-    if (confirmUnshareWithCurationTeam) {
-      try {
-        await client.patch(
-          `/manage_datasets/bf_dataset_permissions`,
-          {
-            input_role: "remove current permissions",
-          },
-          {
-            params: {
-              selected_account: defaultBfAccount,
-              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-              scope: "team",
-              name: "SPARC Data Curation Team",
-            },
-          }
-        );
-        guidedSetCurationTeamUI(false);
-        swal.fire({
-          width: "550px",
-          icon: "success",
-          title: "Dataset successfully unshared with the Curation Team",
-          html: `You are now free to make any necessary modifications to your dataset. Once you are
-          ready to reshare with the Curation Team, please revisit this page.`,
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          confirmButtonText: "OK",
-          focusConfirm: true,
-        });
-      } catch (error) {
-        notyf.open({
-          duration: "5000",
-          type: "error",
-          message: "Error removing Curation Team access",
-        });
-      }
-    }
-    guidedUnshareWithCurationTeamButton.disabled = false;
-    guidedUnshareWithCurationTeamButton.classList.remove("loading");
+
+    // guidedUnshareWithCurationTeamButton.disabled = false;
+    // guidedUnshareWithCurationTeamButton.classList.remove("loading");
   }
 };
 
@@ -5818,6 +5778,8 @@ const openPage = async (targetPageID) => {
         reservedDOI = true;
       }
       //Set the ui for curation team and DOI
+      // TODO: -> Dorian Get the publishing status of the dataset to determine UI text
+      await showPublishingStatus("", "guided");
       guidedSetCurationTeamUI(sharedWithSPARCCurationTeam);
       guidedSetDOIUI(reservedDOI);
     }

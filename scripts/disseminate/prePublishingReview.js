@@ -417,9 +417,28 @@ $("#items-pre-publication").on("click", function (evt) {
   }
 });
 
+// bold a metadata file once the user checks it
+$("#guided--items-pre-publication").on("click", function (evt) {
+  let target = evt.target;
+
+  if (target.nodeName && target.nodeName.toLowerCase() === "input") {
+    // if target has a checked property and it is set to true
+    if (target.checked) {
+      // add a selected class to the label
+      let label = target.nextSibling;
+      label.classList.add("pre-publishing-file-viewer-file-selected");
+    } else if (target.checked !== undefined && target.checked === false) {
+      // remove the selected styling
+      let label = target.nextSibling;
+      label.classList.remove("pre-publishing-file-viewer-file-selected");
+    }
+  }
+});
+
 // transition to the final question and populate the file tree with the dataset's metadata files
 const createPrepublishingChecklist = async (curationMode) => {
   console.log("within createPrepublishingChecklist");
+  console.log(curationMode);
   // check that the user completed all pre-publishing checklist items for the given dataset
   let curationModeID = "";
   let currentDataset = defaultBfDataset;
@@ -556,7 +575,8 @@ const createPrepublishingChecklist = async (curationMode) => {
   console.log("before populateFileViewer");
   populateFileViewer(
     metadataFiles,
-    excludedFileObjects.map((fileObject) => fileObject.fileName)
+    excludedFileObjects.map((fileObject) => fileObject.fileName),
+    curationMode
   );
 
   // hide the spinner for the file tree
@@ -681,6 +701,8 @@ const populateFileViewer = (metadataFiles, excludedFiles, curationMode) => {
     curationModeID = "guided--";
   }
 
+  console.log(excludedFiles)
+
   // get the file viewer element
   let fileViewer = document.querySelector(`#${curationModeID}items-pre-publication`);
 
@@ -737,10 +759,16 @@ const excludedFilesInPublicationFlow = (curationMode) => {
 // retrieves the file path and name from the list of excluded files found in step 3 of the pre-publication submission workflow
 // Output:
 //  [{fileName: string}]
-const getExcludedFilesFromPublicationFlow = () => {
+// TODO: Dorian -> Adapt this function to be used in Guided Mode
+const getExcludedFilesFromPublicationFlow = (curationMode) => {
   // get the list items
+  let curationModeID = "";
+  if (curationMode === "guided") {
+    curationModeID = "guided--";
+  }
+
   let excludedFilesListItems = document.querySelectorAll(
-    "#items-pre-publication input[type='checkbox']:checked"
+    `#${curationModeID}items-pre-publication input[type='checkbox']:checked`
   );
 
   // iterate through each item

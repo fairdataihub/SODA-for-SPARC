@@ -47,9 +47,9 @@ const getDatasetDOI = async (account, dataset) => {
   }
 };
 
-const disseminatePublish = async () => {
+const disseminatePublish = async (curationMode) => {
   // check that the user completed all pre-publishing checklist items for the given dataset
-  if (!allPrepublishingChecklistItemsCompleted()) {
+  if (!allPrepublishingChecklistItemsCompleted(curationMode)) {
     // alert the user they must complete all checklist items before beginning the prepublishing process
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
@@ -85,8 +85,9 @@ const disseminatePublish = async () => {
     },
   });
 
+  console.log(submitReviewDatasetCheck);
   // begin the dataset publishing flow
-  await showPublishingStatus(submitReviewDatasetCheck);
+  await showPublishingStatus(submitReviewDatasetCheck, curationMode);
 };
 
 const refreshDatasetStatus = () => {
@@ -110,7 +111,12 @@ const disseminateShowPublishingStatus = (callback, account, dataset) => {
 };
 
 // Helper functions
-const disseminateDataset = (option) => {
+const disseminateDataset = (option, curationMode) => {
+  let curationModeID = "";
+  if (curationMode) {
+    curationModeID = "guided--";
+  }
+  
   if (option === "share-with-curation-team") {
     $("#share-curation-team-spinner").show();
     Swal.fire({
@@ -135,6 +141,7 @@ const disseminateDataset = (option) => {
         var dataset = $(".bf-dataset-span")
           .html()
           .replace(/^\s+|\s+$/g, "");
+        
         disseminateCurationTeam(account, dataset);
       } else {
         $("#share-curation-team-spinner").hide();
@@ -176,7 +183,7 @@ const disseminateDataset = (option) => {
     // check if the user can publish their dataset
     // if so publish the dataset for them under embargo or under publication
     // any exceptions will be caught here so the user can be alerted if something unexpected happens - and for logging
-    disseminatePublish().catch((error) => {
+    disseminatePublish(curationMode).catch((error) => {
       log.error(error);
       console.error(error);
       var emessage = userError(error);

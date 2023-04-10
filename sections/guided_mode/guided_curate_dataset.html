@@ -5456,6 +5456,28 @@
             </p>
           </div>
           <div class="guided--section">
+            <h2 class="text-sub-step-title mt-0">Reserve a DOI</h2>
+            <p class="help-text">
+              Reserve a DOI for your dataset while it's being reviewed by the curation team.
+              However, this DOI will NOT be active, and therefore searchable, until the dataset is
+              published to Pennsieve Discover.
+            </p>
+            <p id="guided--doi-information"></p>
+            <button
+              class="ui positive button guided--button-footer mt-2"
+              id="curate-button-reserve-doi"
+              style="
+                background-color: var(--color-light-green) !important;
+                width: 150px !important;
+                height: 3.2rem;
+              "
+              onclick="reserveDOI()"
+            >
+              Reserve DOI
+            </button>
+            <p id="curate-doi-information" class="help-text mt-2"></p>
+          </div>
+          <div class="guided--section">
             <h2 class="text-sub-step-title mt-0">Share with the curation team</h2>
 
             <p class="help-text">
@@ -5558,7 +5580,7 @@
                                 id="guided--prepublishing-checklist-icon-subtitle"
                               ></i>
                             </div>
-                            <button>Add a subtitle</button>
+                            <button class="disable-button">Add a subtitle</button>
                           </td>
                           <td>Give others a brief description of your dataset.</td>
                         </tr>
@@ -5574,7 +5596,7 @@
                                 id="guided--prepublishing-checklist-icon-tags"
                               ></i>
                             </div>
-                            <button>Add tags</button>
+                            <button class="disable-button">Add tags</button>
                           </td>
                           <td>Make it easier for people to find your dataset in Discover.</td>
                         </tr>
@@ -5590,7 +5612,7 @@
                                 id="guided--prepublishing-checklist-icon-readme"
                               ></i>
                             </div>
-                            <button>Add a description</button>
+                            <button class="disable-button">Add a description</button>
                           </td>
                           <td>
                             Give others a detailed overview of your dataset and outline your
@@ -5609,7 +5631,7 @@
                                 id="guided--prepublishing-checklist-icon-banner"
                               ></i>
                             </div>
-                            <button>Add a banner image</button>
+                            <button class="disable-button">Add a banner image</button>
                           </td>
                           <td>Add a banner image to help your dataset stand out in listings.</td>
                         </tr>
@@ -5625,7 +5647,7 @@
                                 id="guided--prepublishing-checklist-icon-license"
                               ></i>
                             </div>
-                            <button>Add a license</button>
+                            <button class="disable-button">Add a license</button>
                           </td>
                           <td>Let others know how they can use this data in their own research.</td>
                         </tr>
@@ -5641,7 +5663,7 @@
                                 id="guided--prepublishing-checklist-icon-ORCID"
                               ></i>
                             </div>
-                            <button id="guided--ORCID-btn" onclick="orcidSignIn()">
+                            <button id="guided--ORCID-btn" onclick="orcidSignIn('guided')">
                               Link ORCID iD
                             </button>
                           </td>
@@ -5676,7 +5698,7 @@
                 >
                   <button
                     id="guided--btn-withdraw-review-dataset"
-                    onclick="withdrawDatasetSubmission()"
+                    onclick="withdrawDatasetSubmission('guided')"
                     class="btn_animated md skip"
                     style="
                       cursor: pointer;
@@ -5739,12 +5761,13 @@
                   <div
                     id="guided--pre-publication-items-container"
                     class="prepublish-items-container"
+                    style="height: 12rem"
                   >
                     <div id="guided--items-pre-publication"></div>
 
                     <div
                       class="ui active medium text loader guided--items-spinner"
-                      style="position: absolute; top: 10rem; margin-left: auto; margin-right: auto"
+                      style="position: absolute; top: 6.5rem; margin-left: auto; margin-right: auto"
                     >
                       Fetching Files
                     </div>
@@ -5763,7 +5786,7 @@
                   id="guided--prepublishing-submit-btn-container"
                 >
                   <button
-                    onclick="disseminateDataset('submit-pre-publishing')"
+                    onclick="disseminateDataset('submit-pre-publishing', 'guided')"
                     class="btn_animated md"
                     style="
                       margin: 1.5rem 23%;
@@ -5779,27 +5802,6 @@
                 </div>
               </div>
             </div>
-          </div>
-          <div class="guided--section hidden">
-            <h2 class="text-sub-step-title mt-0">Reserve a DOI</h2>
-            <p class="help-text">
-              Reserve a DOI for your dataset while it's being reviewed by the curation team.
-              However, this DOI will NOT be active, and therefore searchable, until the dataset is
-              published to Pennsieve Discover.
-            </p>
-            <button
-              class="ui positive button guided--button-footer mt-2"
-              id="curate-button-reserve-doi"
-              style="
-                background-color: var(--color-light-green) !important;
-                width: 150px !important;
-                height: 3.2rem;
-              "
-              onclick="reserveDOI()"
-            >
-              Reserve DOI
-            </button>
-            <p id="curate-doi-information" class="help-text mt-2"></p>
           </div>
         </div>
       </div>

@@ -3107,7 +3107,8 @@ const setupPublicationOptionsPopover = () => {
   });
 };
 
-const submitReviewDatasetCheck = async (res) => {
+const submitReviewDatasetCheck = async (res, curationMode) => {
+  console.log(res);
   let reviewstatus = res["review_request_status"];
   let publishingStatus = res["publishing_status"];
   if (res["publishing_status"] === "PUBLISH_IN_PROGRESS") {
@@ -3228,7 +3229,7 @@ const submitReviewDatasetCheck = async (res) => {
       },
     });
     // submit the dataset for review with the given embargoReleaseDate
-    await submitReviewDataset(embargoReleaseDate);
+    await submitReviewDataset(embargoReleaseDate, curationMode);
   } else {
     // status is NOT_PUBLISHED
     // embargo release date represents the time a dataset that has been reviewed for publication becomes public
@@ -3316,7 +3317,7 @@ const submitReviewDatasetCheck = async (res) => {
     });
 
     // submit the dataset for review with the given embargoReleaseDate
-    await submitReviewDataset(embargoReleaseDate);
+    await submitReviewDataset(embargoReleaseDate, curationMode);
   }
 };
 
@@ -3379,7 +3380,7 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
   // if there are excluded files upload them to Pennsieve so they will not be viewable to the public upon publication
   if (excludedFilesInPublicationFlow(curationMode)) {
     // get the excluded files from the excluded files list in the third step of the pre-publishing review submission flow
-    let files = getExcludedFilesFromPublicationFlow();
+    let files = getExcludedFilesFromPublicationFlow(curationMode);
     try {
       // exclude the user's selected files from publication
       //check res
@@ -3416,6 +3417,11 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
       return;
     }
   }
+
+  console.log(currentAccount);
+  console.log(currentDataset);
+  console.log(embargoReleaseDate);
+  console.log(embargoReleaseDate === "" ? "publication" : "embargo");
 
   try {
     await api.submitDatasetForPublication(
@@ -3457,7 +3463,7 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
   }
 
   // update the publishing status UI element
-  await showPublishingStatus("noClear");
+  await showPublishingStatus("noClear", curationMode);
 
   // track success
   logGeneralOperationsForAnalytics(
@@ -3491,12 +3497,26 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
       "",
       "individual-question post-curation"
     );
+  } else {
+    // Update the UI again and hide the flow
+    $("#guided--prepublishing-checklist-container").addClass("hidden");
+    $("#guided--submit-prepublishing-review").addClass("hidden");
+    const guidedShareWithCurationTeamButton = document.getElementById(
+      "guided-button-share-dataset-with-curation-team"
+    );
+
+    guidedShareWithCurationTeamButton.classList.remove("hidden");
+    guidedShareWithCurationTeamButton.classList.remove("loading");
+
+    guidedShareWithCurationTeamButton.disabled = false;
+    // $("#guided-button-unshare-dataset-with-curation-team").show();
+    guidedSetCurationTeamUI();
   }
 };
 
 // //Withdraw dataset from review
 // TODO: Dorian -> Adapt this function and the others below for Guided Mode (withdrawing a dataset from review functions)
-function withdrawDatasetSubmission() {
+const withdrawDatasetSubmission = (curationMode) => {
   // show a SWAL loading message until the submit for prepublishing flow is successful or fails
   Swal.fire({
     title: `Preparing to withdraw the dataset submission`,
@@ -3515,7 +3535,7 @@ function withdrawDatasetSubmission() {
   // get the publishing status of the currently selected dataset
   // then check if it can be withdrawn, then withdraw it
   // catch any uncaught errors at this level (aka greacefully catch any exceptions to alert the user we cannot withdraw their dataset)
-  showPublishingStatus(withdrawDatasetCheck).catch((error) => {
+  showPublishingStatus(withdrawDatasetCheck, curationMode).catch((error) => {
     log.error(error);
     console.error(error);
     var emessage = userError(error);
@@ -3545,7 +3565,7 @@ function withdrawDatasetSubmission() {
   });
 }
 
-const withdrawDatasetCheck = async (res) => {
+const withdrawDatasetCheck = async (res, curationMode) => {
   let reviewstatus = res["publishing_status"];
   let requestStatus = res["review_request_status"];
   if (requestStatus != "requested") {
@@ -3596,21 +3616,25 @@ const withdrawDatasetCheck = async (res) => {
           Swal.showLoading();
         },
       });
-      await withdrawReviewDataset();
+      await withdrawReviewDataset(curationMode);
     }
   }
 };
 
 // TODO: Dorian -> Adapt this for guided mode
-const withdrawReviewDataset = async () => {
+const withdrawReviewDataset = async (curationMode) => {
   bfWithdrawReviewDatasetBtn.disabled = true;
-  var selectedBfAccount = $("#current-bf-account").text();
-  var selectedBfDataset = $(".bf-dataset-span")
-    .html()
-    .replace(/^\s+|\s+$/g, "");
+
+  let currentAccount = $("#current-bf-account").text();
+  let currentDataset = $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, "");
+
+  if(curationMode == "guided") {
+    currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
+    currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+  }
 
   try {
-    await api.withdrawDatasetReviewSubmission(selectedBfDataset, selectedBfAccount);
+    await api.withdrawDatasetReviewSubmission(currentDataset, currentAccount);
 
     logGeneralOperationsForAnalytics(
       "Success",
@@ -3620,7 +3644,7 @@ const withdrawReviewDataset = async () => {
     );
 
     // show the user their dataset's updated publishing status
-    await showPublishingStatus("noClear");
+    await showPublishingStatus("noClear", curationMode);
 
     await Swal.fire({
       title: "Dataset has been withdrawn from review!",
@@ -3637,20 +3661,34 @@ const withdrawReviewDataset = async () => {
       },
     });
 
-    // reveal the current section (question-3) again using the new publishing status value
-    await transitionFreeFormMode(
-      document.querySelector("#begin-prepublishing-btn"),
-      "submit_prepublishing_review-question-2",
-      "submit_prepublishing_review-tab",
-      "",
-      "individual-question post-curation"
-    );
+    if (curationMode != "guided") {
+      // reveal the current section (question-3) again using the new publishing status value
+      await transitionFreeFormMode(
+        document.querySelector("#begin-prepublishing-btn"),
+        "submit_prepublishing_review-question-2",
+        "submit_prepublishing_review-tab",
+        "",
+        "individual-question post-curation"
+      );
+
+      bfRefreshPublishingDatasetStatusBtn.disabled = false;
+      bfWithdrawReviewDatasetBtn.disabled = false;
+    } else {
+      const guidedUnshareWithCurationTeamButton = document.getElementById(
+        "guided-button-unshare-dataset-with-curation-team"
+      );
+
+      guidedUnshareWithCurationTeamButton.disabled = false;
+      guidedUnshareWithCurationTeamButton.classList.remove("loading");
+      guidedUnshareWithCurationTeamButton.classList.remove("hidden");
+
+      guidedSetCurationTeamUI();
+    }
+
 
     // scroll to the submit button
     // scrollToElement(".pre-publishing-continue");
 
-    bfRefreshPublishingDatasetStatusBtn.disabled = false;
-    bfWithdrawReviewDatasetBtn.disabled = false;
   } catch (error) {
     clientError(error);
     var emessage = userErrorMessage(error);
@@ -3686,21 +3724,21 @@ const withdrawReviewDataset = async () => {
 
 // General //
 
-function removeOptions(selectbox) {
+const removeOptions = (selectbox) => {
   var i;
   for (i = selectbox.options.length - 1; i >= 0; i--) {
     selectbox.remove(i);
   }
 }
 
-function userError(error) {
+const userError = (error) => {
   var myerror = error.message;
   return myerror;
 }
 
 // Manage Datasets //
 
-function refreshBfUsersList() {
+const refreshBfUsersList = () => {
   var accountSelected = defaultBfAccount;
 
   removeOptions(bfListUsers);
@@ -3755,7 +3793,7 @@ function refreshBfUsersList() {
   }
 }
 
-function refreshBfTeamsList(teamList) {
+const refreshBfTeamsList = (teamList) => {
   removeOptions(teamList);
 
   var accountSelected = defaultBfAccount;
@@ -3841,7 +3879,7 @@ const populateDatasetDropdowns = (mylist) => {
 };
 ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
 
-async function updateBfAccountList() {
+const updateBfAccountList = async () => {
   let responseObject;
   try {
     responseObject = await client.get("manage_datasets/bf_account_list");
@@ -3913,26 +3951,32 @@ const showPrePublishingPageElements = () => {
 };
 
 // TODO: Dorian -> Adapt function to be used for Guided Mode as well
-const showPublishingStatus = async (callback) => {
+const showPublishingStatus = async (callback, curationMode='') => {
   return new Promise(async function (resolve, reject) {
     console.log(callback);
     if (callback == "noClear") {
       var nothing;
     }
-    var selectedBfAccount = $("#current-bf-account").text();
-    var selectedBfDataset = $(".bf-dataset-span")
-      .html()
-      .replace(/^\s+|\s+$/g, "");
 
-    if (selectedBfDataset === "None") {
+    let curationModeID = "";
+    let currentAccount = $("#current-bf-account").text();
+    let currentDataset = $(".bf-dataset-span").html().replace(/^\s+|\s+$/g, "");
+
+    if (curationMode === "guided") {
+      curationModeID = "guided--";
+      currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
+      currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+    }
+
+    if (currentDataset === "None") {
       resolve();
     } else {
       try {
         let get_publishing_status = await client.get(
-          `/disseminate_datasets/datasets/${selectedBfDataset}/publishing_status`,
+          `/disseminate_datasets/datasets/${currentDataset}/publishing_status`,
           {
             params: {
-              selected_account: selectedBfAccount,
+              selected_account: currentAccount,
             },
           }
         );
@@ -3942,10 +3986,11 @@ const showPublishingStatus = async (callback) => {
         try {
           //update the dataset's publication status and display
           //onscreen for the user under their dataset name
-          $("#para-review-dataset-info-disseminate").text(publishStatusOutputConversion(res));
+          $(`#${curationModeID}para-review-dataset-info-disseminate`).text(publishStatusOutputConversion(res));
+          console.log($(`#${curationModeID}para-review-dataset-info-disseminate`))
 
           if (callback === submitReviewDatasetCheck || callback === withdrawDatasetCheck) {
-            return resolve(callback(res));
+            return resolve(callback(res, curationMode));
           }
 
           resolve();
@@ -3985,7 +4030,7 @@ const showPublishingStatus = async (callback) => {
   });
 };
 
-function publishStatusOutputConversion(res) {
+const publishStatusOutputConversion = (res) => {
   var reviewStatus = res["review_request_status"];
   var publishStatus = res["publishing_status"];
 
@@ -4209,7 +4254,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
 
 // ///////////////////////////////////////////////////////////////////////////
 // recursively populate json object
-function populateJSONObjFolder(action, jsonObject, folderPath) {
+const populateJSONObjFolder = (action, jsonObject, folderPath) => {
   var myitems = fs.readdirSync(folderPath);
   myitems.forEach((element) => {
     //prevented here
@@ -4257,7 +4302,7 @@ function populateJSONObjFolder(action, jsonObject, folderPath) {
 
 let full_name_show = false;
 
-function hideFullName() {
+const hideFullName = () => {
   full_name_show = false;
   fullNameValue.style.display = "none";
   fullNameValue.style.top = "-250%";
@@ -4265,7 +4310,7 @@ function hideFullName() {
 }
 
 //// HOVER FOR FULL NAME (FOLDERS WITH WRAPPED NAME IN UI)
-function showFullName(ev, element, text) {
+const showFullName = (ev, element, text) => {
   /// check if the full name of the folder is overflowing or not, if so, show full name on hover
   full_name_show = true;
   var isOverflowing =
@@ -4301,7 +4346,7 @@ document.addEventListener("onmouseover", function (e) {
 });
 
 // if a file/folder is clicked -> show details in right "sidebar"
-function showDetailsFile() {
+const showDetailsFile = () => {
   $(".div-display-details.file").toggleClass("show");
   // $(".div-display-details.folders").hide()
 }
@@ -4347,7 +4392,7 @@ var bfaddaccountTitle = `<h3 style="text-align:center">Connect your Pennsieve ac
 
 // this function is called in the beginning to load bf accounts to a list
 // which will be fed as dropdown options
-async function retrieveBFAccounts() {
+const retrieveBFAccounts = async () => {
   bfAccountOptions = [];
   bfAccountOptionsStatus = "";
 
@@ -4373,7 +4418,7 @@ async function retrieveBFAccounts() {
 }
 
 let defaultAccountDetails = "";
-async function showDefaultBFAccount() {
+const showDefaultBFAccount = async () => {
   try {
     let bf_default_acc_req = await client.get("manage_datasets/bf_default_account_load");
     let accounts = bf_default_acc_req.data.defaultAccounts;
@@ -4424,7 +4469,7 @@ async function showDefaultBFAccount() {
 }
 
 ////// function to trigger action for each context menu option
-function hideMenu(category, menu1, menu2, menu3) {
+const hideMenu = (category, menu1, menu2, menu3) => {
   if (category === "folder") {
     menu1.style.display = "none";
     menu1.style.top = "-200%";
@@ -4440,7 +4485,7 @@ function hideMenu(category, menu1, menu2, menu3) {
   }
 }
 
-function changeStepOrganize(step) {
+const changeStepOrganize = (step) => {
   if (step.id === "button-organize-prev") {
     document.getElementById("div-step-1-organize").style.display = "block";
     document.getElementById("div-step-2-organize").style.display = "none";
@@ -4459,7 +4504,7 @@ function changeStepOrganize(step) {
 }
 
 var newDSName;
-function generateDataset(button) {
+const generateDataset = (button) => {
   document.getElementById("para-organize-datasets-success").style.display = "none";
   document.getElementById("para-organize-datasets-error").style.display = "none";
   if (button.id === "btn-generate-locally") {
@@ -5757,7 +5802,7 @@ const dropHelper = async (
 };
 
 var irregularFolderArray = [];
-function detectIrregularFolders(folderName, pathEle) {
+const detectIrregularFolders = (folderName, pathEle) => {
   if (checkIrregularNameBoolean(folderName)) {
     irregularFolderArray.push(pathEle);
   }
@@ -6110,7 +6155,7 @@ const showmenu = (ev, category, deleted = false) => {
 };
 
 /// options for regular sub-folders
-function folderContextMenu(event) {
+const folderContextMenu = (event) => {
   console.log(event);
   $(".menu.reg-folder li")
     .unbind()
@@ -6167,7 +6212,7 @@ function folderContextMenu(event) {
 }
 
 //////// options for files
-function fileContextMenu(event) {
+const fileContextMenu = (event) => {
   if ($(".div-display-details.file").hasClass("show")) {
     $(".div-display-details.file").removeClass("show");
   }
@@ -6977,14 +7022,14 @@ const getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
   });
 };
 
-function sliceStringByValue(string, endingValue) {
+const sliceStringByValue = (string, endingValue) => {
   var newString = string.slice(string.indexOf(endingValue) + 1);
   return newString;
 }
 
 var fileNameForEdit;
 ///// Option to manage description for files
-function manageDesc(ev) {
+const manageDesc = (ev) => {
   var fileName = ev.parentElement.innerText;
   /// get current location of files in JSON object
   var filtered = getGlobalPath(organizeDSglobalPath);
@@ -7004,7 +7049,7 @@ function manageDesc(ev) {
   fileNameForEdit = fileName;
 }
 
-function updateFileDetails(ev) {
+const updateFileDetails = (ev) => {
   var fileName = fileNameForEdit;
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
@@ -7026,7 +7071,7 @@ function updateFileDetails(ev) {
   showDetailsFile();
 }
 
-function addDetailsForFile(ev) {
+const addDetailsForFile = (ev) => {
   var checked = false;
   for (var ele of $($(ev).siblings()).find("input:checkbox")) {
     if ($(ele).prop("checked")) {

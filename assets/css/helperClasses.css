@@ -57,6 +57,12 @@
   display: none !important;
 }
 
+.disable-button {
+  border: none;
+  background: inherit;
+  cursor: inherit !important;
+}
+
 .hide {
   pointer-events: none;
   visibility: hidden;

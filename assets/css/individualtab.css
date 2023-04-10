@@ -1424,6 +1424,17 @@
   margin-right: auto;
 }
 
+#guided--#items-pre-publication {
+  min-height: 230px;
+  height: 230px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-left: 38%;
+  margin-right: auto;
+}
+
 .pre-publishing-file-viewer-file-selected {
   font-weight: bold;
 }
