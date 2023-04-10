@@ -454,9 +454,12 @@ const savePageChanges = async (pageBeingLeftID) => {
           //Fetch subjects and sample metadata and set subjectsTableData and sampleTableData
           try {
             let fieldEntries = [];
-            for (const field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
+            for (const field of $("#guided-form-add-a-subject")
+              .children()
+              .find(".subjects-form-entry")) {
               fieldEntries.push(field.name.toLowerCase());
             }
+            fieldEntries = fieldEntries.toString();
             const subjectsMetadataResponse = await client.get(
               `/prepare_metadata/import_metadata_file`,
               {
@@ -464,12 +467,13 @@ const savePageChanges = async (pageBeingLeftID) => {
                   selected_account: defaultBfAccount,
                   selected_dataset: selectedPennsieveDatasetID,
                   file_type: "subjects.xlsx",
-                  ui_fields: fieldEntries.toString(),
+                  ui_fields: fieldEntries,
                 },
               }
             );
             // Set subjectsTableData as the res
             subjectsTableData = subjectsMetadataResponse.data.subject_file_rows;
+            console.log("subjectsTableData", subjectsTableData);
           } catch (error) {
             const emessage = userErrorMessage(error);
             console.log("Unable to fetch subjects metadata" + emessage);
@@ -488,12 +492,14 @@ const savePageChanges = async (pageBeingLeftID) => {
 
           samplesTableData = [];
 
+          // If the dataset has samples, then we need to fetch the samples metadata from Pennsieve
           if (samples.length > 0) {
             try {
               let fieldEntries = [];
               for (const field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
                 fieldEntries.push(field.name.toLowerCase());
               }
+              fieldEntries = fieldEntries.toString();
               let samplesMetadataResponse = await client.get(
                 `/prepare_metadata/import_metadata_file`,
                 {
@@ -501,12 +507,13 @@ const savePageChanges = async (pageBeingLeftID) => {
                     selected_account: defaultBfAccount,
                     selected_dataset: selectedPennsieveDatasetID,
                     file_type: "samples.xlsx",
-                    ui_fields: fieldEntries.toString(),
+                    ui_fields: fieldEntries,
                   },
                 }
               );
               // Set the samplesTableData as the samples metadata response
               samplesTableData = samplesMetadataResponse.data.sample_file_rows;
+              console.log("samplesTableData", samplesTableData);
             } catch (error) {
               const emessage = userErrorMessage(error);
               console.log("Unable to fetch samples metadata" + emessage);
@@ -9126,7 +9133,7 @@ const guidedLoadSubjectMetadataIfExists = (subjectMetadataId) => {
     //check through elements of tableData to find a subject ID match
     if (subjectsTableData[i][0] === subjectMetadataId) {
       //if the id matches, load the metadata into the form
-      populateForms(subjectMetadataId, "", "guided");
+      populateSubjectFields(subjectMetadataId, "", "guided");
       return;
     }
   }
@@ -9189,7 +9196,7 @@ const openModifySampleMetadataPage = (sampleMetadataID, samplesSubjectID) => {
       samplesTableData[i][1] === sampleMetadataID
     ) {
       //if the id matches, load the metadata into the form
-      populateFormsSamples(samplesSubjectID, sampleMetadataID, "", "guided");
+      populateSampleFields(samplesSubjectID, sampleMetadataID, "", "guided");
       return;
     }
   }
@@ -9280,7 +9287,7 @@ const openCopySubjectMetadataPopup = async () => {
         const currentSubjectOpenInView = document.getElementById("guided-bootbox-subject-id").value;
         if (currentSubjectOpenInView) {
           //If a subject was open in the UI, update it with the new metadata
-          populateForms(currentSubjectOpenInView, "", "guided");
+          populateSubjectFields(currentSubjectOpenInView, "", "guided");
         }
 
         await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
@@ -10942,7 +10949,7 @@ const renderSubjectsMetadataAsideItems = async () => {
 
       clearAllSubjectFormFields(guidedSubjectsFormDiv);
 
-      populateForms(e.target.innerText, "", "guided");
+      populateSubjectFields(e.target.innerText, "", "guided");
 
       //add selected class to clicked element
       e.target.classList.add("is-selected");
@@ -10952,8 +10959,6 @@ const renderSubjectsMetadataAsideItems = async () => {
           item.classList.remove("is-selected");
         }
       });
-
-      document.getElementById("guided-bootbox-subject-id").value = e.target.innerText;
 
       await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     });

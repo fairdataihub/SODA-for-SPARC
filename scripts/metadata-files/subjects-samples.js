@@ -34,6 +34,35 @@ var samplesFileData = [];
 var headersArrSubjects = [];
 var headersArrSamples = [];
 let guidedSamplesTableData = [];
+const subjectsMetadataStandardRows = [
+  "subject id",
+  "pool id",
+  "subject experimental group",
+  "age",
+  "sex",
+  "species",
+  "strain",
+  "member of",
+  "also in dataset",
+  "rrid for strain",
+  "age category",
+  "age range (min)",
+  "age range (max)",
+  "date of birth",
+  "protocol title",
+  "protocol url or doi",
+  "handedness",
+  "body mass",
+  "genotype",
+  "phenotype",
+  "disease or disorder",
+  "disease model",
+  "intervention",
+  "reference atlas",
+  "experimental log file path",
+  "experiment date",
+  "laboratory internal id",
+];
 
 function showForm(type, editBoolean) {
   if (type !== "edit") {
@@ -91,7 +120,7 @@ function promptImportPrevInfoSamples(arr1, arr2) {
   }).then((result) => {
     if (result.isConfirmed) {
       if ($("#previous-subject").val() !== "Select" && $("#previous-sample").val() !== "Select") {
-        populateFormsSamples(prevSubID, prevSamID, "import", "free-form");
+        populateSampleFields(prevSubID, prevSamID, "import", "free-form");
       }
     } else {
       hideForm("sample");
@@ -172,7 +201,7 @@ function promptImportPrevInfoSubject(arr1) {
     if (result.isConfirmed) {
       if ($("#previous-subject-single").val() !== "Select") {
         prevSubIDSingle = $("#previous-subject-single").val();
-        populateForms(prevSubIDSingle, "import", "free-form");
+        populateSubjectFields(prevSubIDSingle, "import", "free-form");
       }
     } else {
       hideForm("subject");
@@ -1008,7 +1037,7 @@ function loadSubjectInformation(ev, subjectID) {
   $("#btn-edit-subject").css("display", "inline-block");
   $("#btn-add-subject").css("display", "none");
   clearAllSubjectFormFields(subjectsFormDiv);
-  populateForms(subjectID, "", "free-form");
+  populateSubjectFields(subjectID, "", "free-form");
   $("#btn-edit-subject").unbind("click");
   $("#btn-edit-subject").click(function () {
     editSubject(ev, subjectID);
@@ -1023,7 +1052,7 @@ function loadSubjectInformation(ev, subjectID) {
   });
 }
 
-function populateForms(subjectID, type, curationMode) {
+function populateSubjectFields(subjectID, type, curationMode) {
   //Initialize variables shared between different curation modes and set them
   //based on curationMode passed in as parameter
   let fieldArr;
@@ -1128,105 +1157,92 @@ function populateForms(subjectID, type, curationMode) {
   }
 }
 
-function populateFormsSamples(subjectID, sampleID, type, curationMode) {
-  //Initialize variables shared between different curation modes and set them
-  //based on curationMode passed in as parameter
-  let fieldArr;
-  let curationModeSelectorPrefix;
-  let infoJson;
+function populateSampleFields(subjectID, sampleID, type, curationMode) {
+  if (sampleID === "clear" || sampleID.trim() === "") {
+    return;
+  }
 
+  // Initialize variable as the elements for the sample metadata form
+  let sampleMetadataFieldElements;
   if (curationMode === "free-form") {
-    curationModeSelectorPrefix = "";
-    fieldArr = $(samplesFormDiv).children().find(".samples-form-entry");
+    sampleMetadataFieldElements = $(samplesFormDiv).children().find(".samples-form-entry");
   }
   if (curationMode === "guided") {
-    curationModeSelectorPrefix = "guided-";
-    fieldArr = $(guidedSamplesFormDiv).children().find(".samples-form-entry");
+    sampleMetadataFieldElements = $(guidedSamplesFormDiv).children().find(".samples-form-entry");
   }
-  if (samplesTableData.length > 1) {
-    for (var i = 1; i < samplesTableData.length; i++) {
-      if (samplesTableData[i][0] === subjectID && samplesTableData[i][1] === sampleID) {
-        infoJson = samplesTableData[i];
-        break;
+
+  const sampleMetadataDataHeaders = samplesTableData[0];
+  const sampleMetadataDataValues = samplesTableData.find((sampleDataRow) => {
+    return sampleDataRow[0] === subjectID && sampleDataRow[1] === sampleID;
+  });
+
+  if (!sampleMetadataDataValues) {
+    console.log("No sample metadata found for sample " + sampleID);
+    return;
+  }
+
+  const emptyEntries = ["nan", "nat"];
+
+  //Loop through the sample metadata fields and populate the form with the
+  //corresponding values from the sample metadata table
+  for (let i = 0; i < sampleMetadataFieldElements.length; i++) {
+    // Get the name of the current sample metadata field
+    const sampleMetadataField = sampleMetadataFieldElements[i].name;
+
+    // Get the index of name of the current field from the sample metadata headers
+    const headerIndex = sampleMetadataDataHeaders.indexOf(sampleMetadataField);
+
+    // If the current field is not in the sample metadata headers, set the
+    // corresponding element to an empty string and continue to the next field
+    if (headerIndex === -1) {
+      console.log("No header found for field " + sampleMetadataField);
+      sampleMetadataFieldElements[i] = "";
+      continue;
+    }
+
+    // Get the value of the current field from the sample being populated
+    const sampleValue = sampleMetadataDataValues[headerIndex];
+
+    if (type === "import") {
+      if (sampleMetadataField === "sample id" || sampleMetadataField === "subject id") {
+        sampleMetadataFieldElements[i].value = "";
+        continue;
       }
     }
-  }
 
-  if (sampleID !== "clear" && sampleID.trim() !== "") {
-    // populate form
-    var emptyEntries = ["nan", "nat"];
-    var c = fieldArr.map(function (i, field) {
-      if (infoJson[i]) {
-        if (!emptyEntries.includes(infoJson[i].toLowerCase())) {
-          if (field.name === "Age") {
-            var fullAge = infoJson[i].split(" ");
-            var unitArr = ["hours", "days", "weeks", "months", "years"];
-            var breakBoolean = false;
-            field.value = fullAge[0];
-            if (fullAge[1]) {
-              for (var unit of unitArr) {
-                if (unit.includes(fullAge[1].toLowerCase())) {
-                  $(`#${curationModePrefix}bootbox-sample-age-info`).val(unit);
-                  breakBoolean = true;
-                  break;
-                }
-                if (!breakBoolean) {
-                  $(`#${curationModePrefix}bootbox-sample-age-info`).val("N/A");
-                }
-              }
-            } else {
-              $(`#${curationModePrefix}bootbox-sample-age-info`).val("N/A");
-            }
-          } else if (curationMode == "guided" && field.name === "was derived from") {
-            //If the selected sample derived from still exists, select it
-            //if not, reset the value
-            const previouslySavedDerivedFromSample = infoJson[i];
-            const wasDerivedFromDropdown = document.getElementById(
-              "guided-bootbox-wasDerivedFromSample"
-            );
-            wasDerivedFromDropdown.value = "";
-            for (const sample of wasDerivedFromDropdown.options) {
-              if (sample.value === previouslySavedDerivedFromSample) {
-                wasDerivedFromDropdown.value = sample.value;
-              }
-            }
-          } else if (curationMode == "guided" && field.name === "protocol url or doi") {
-            //If the selected sample derived from
-            const previouslySavedProtocolURL = infoJson[i];
-            const protocolTitleDropdown = document.getElementById(
-              "guided-bootbox-sample-protocol-title"
-            );
-            const protocolURLDropdown = document.getElementById(
-              "guided-bootbox-sample-protocol-location"
-            );
-            protocolTitleDropdown.value = "";
-            protocolURLDropdown.value = "";
+    // If the value of the current field is empty or is one of the empty entries,
+    // set the corresponding element to an empty string and continue to the next field
+    if (sampleValue === "" || emptyEntries.includes(sampleValue.toLowerCase())) {
+      console.log("Empty value found for field " + sampleMetadataField);
+      sampleMetadataFieldElements[i].value = "";
+      continue;
+    }
 
-            const protocols = sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
-            for (const protocol of protocols) {
-              if (protocol.link === previouslySavedProtocolURL) {
-                protocolTitleDropdown.value = protocol.description;
-                protocolURLDropdown.value = protocol.link;
-              }
-            }
-          } else {
-            if (type === "import") {
-              if (field.name === "subject id") {
-                field.value = "";
-              } else if (field.name === "sample id") {
-                field.value = "";
-              } else {
-                field.value = infoJson[i];
-              }
-            } else {
-              field.value = infoJson[i];
-            }
-          }
-        } else {
-          field.value = "";
+    if (curationMode === "guided" && sampleMetadataField === "was derived from") {
+      const wasDerivedFromDropdown = document.getElementById("guided-bootbox-wasDerivedFromSample");
+      wasDerivedFromDropdown.value = "";
+      for (const option of wasDerivedFromDropdown.options) {
+        if (option.value === sampleValue) {
+          wasDerivedFromDropdown.value = sampleValue;
         }
       }
-    });
+      continue;
+    }
+
+    if (curationMode === "guided" && sampleMetadataField === "protocol url or doi") {
+      const protocolURLDropdown = document.getElementById("guided-bootbox-protocolURL");
+      protocolURLDropdown.value = "";
+      for (const option of protocolURLDropdown.options) {
+        if (option.value === sampleValue) {
+          protocolURLDropdown.value = sampleValue;
+        }
+      }
+      continue;
+    }
+
+    // If the current field is not empty, set the corresponding element to the
+    // value of the current field
+    sampleMetadataFieldElements[i].value = sampleValue;
   }
 }
 
@@ -1236,7 +1252,7 @@ function loadSampleInformation(ev, subjectID, sampleID) {
   $("#btn-edit-sample").css("display", "inline-block");
   $("#btn-add-sample").css("display", "none");
   clearAllSubjectFormFields(samplesFormDiv);
-  populateFormsSamples(subjectID, sampleID, "", "free-form");
+  populateSampleFields(subjectID, sampleID, "", "free-form");
   $("#btn-edit-sample").unbind("click");
   $("#btn-edit-sample").click(function () {
     editSample(ev, sampleID);
