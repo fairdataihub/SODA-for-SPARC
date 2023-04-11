@@ -170,6 +170,7 @@ const orcidSignIn = async (curationMode) => {
   });
 };
 
+//  This function is the first step to the prepublishing workflow for both guided and freeform mode
 //  Function fetches the status of each item needed to publish a dataset from the backend and updates the UI accordingly.
 //  inPrePublishing: boolean - True when the function is ran in the pre-publishing submission flow; false otherwise
 const showPrePublishingStatus = async (inPrePublishing = false, curationMode) => {
@@ -182,6 +183,8 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode) =>
     curationModeID = "guided--";
     currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
     console.log("is guided mode here as well");
+    $("#guided--prepublishing-checklist-container").removeClass("hidden");
+    smoothScrollToElement(`guided--prepublishing-continue-btn`, "end", "nearest");
   }
   console.log(currentDataset);
 
@@ -203,8 +206,6 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode) =>
     `ui mini active inline loader ${curationModeID}icon-wrapper`
   );
   $(`.${curationModeID}icon-wrapper`).children().css("visibility", "hidden");
-  console.log($(`.${curationModeID}icon-wrapper`).children());
-  $("#guided--prepublishing-checklist-container").removeClass("hidden");
 
   // run the validation checks on each pre-publishing checklist item
   let statuses;
@@ -586,15 +587,13 @@ const createPrepublishingChecklist = async (curationMode) => {
 // check if the user is the dataset owner and transition to the prepublishing checklist question if so
 const beginPrepublishingFlow = async (curationMode) => {
   let currentDataset = defaultBfDataset;
-  console.log(this);
-  console.log(currentDataset);
+
   let curationModeID = "";
   if (curationMode === "guided") {
     // This is done to ensure the right element ID is called
     // Guided mode elements have 'guided--' prepended to their ID
     curationModeID = "guided--";
     currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-    console.log(sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
   }
 
   Swal.fire({
@@ -672,7 +671,6 @@ const beginPrepublishingFlow = async (curationMode) => {
   // transition to the next question if not in guided mode
   // load the next question's data
   if (curationMode !== "guided") {
-    console.log(this);
     let elementClicked = document.getElementById("begin-prepublishing-btn");
     console.log(elementClicked);
     transitionFreeFormMode(

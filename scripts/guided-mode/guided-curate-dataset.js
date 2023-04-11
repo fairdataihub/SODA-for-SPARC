@@ -817,9 +817,11 @@ const savePageChanges = async (pageBeingLeftID) => {
     if (pageBeingLeftID === "guided-primary-data-organization-tab") {
       cleanUpEmptyFoldersFromGeneratedGuidedStructure("primary");
     }
+
     if (pageBeingLeftID === "guided-source-data-organization-tab") {
       cleanUpEmptyFoldersFromGeneratedGuidedStructure("source");
     }
+
     if (pageBeingLeftID === "guided-derivative-data-organization-tab") {
       cleanUpEmptyFoldersFromGeneratedGuidedStructure("derivative");
     }
@@ -993,6 +995,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
       }
     }
+
     if (pageBeingLeftID === "guided-create-samples-metadata-tab") {
       //Save the sample metadata from the sample currently being modified
       addSample("guided");
@@ -1019,6 +1022,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
       }
     }
+
     if (pageBeingLeftID === "guided-add-code-metadata-tab") {
       const buttonYesComputationalModelingData = document.getElementById(
         "guided-button-has-computational-modeling-data"
@@ -1069,6 +1073,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
       }
     }
+
     if (pageBeingLeftID === "guided-pennsieve-intro-tab") {
       const confirmAccountbutton = document.getElementById(
         "guided-confirm-pennsieve-account-button"
@@ -1096,6 +1101,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           pennsieveIntroAccountDetailsText.innerHTML;
       }
     }
+
     if (pageBeingLeftID === "guided-banner-image-tab") {
       if (sodaJSONObj["digital-metadata"]["banner-image-path"] == undefined) {
         errorArray.push({
@@ -1318,6 +1324,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
       }*/
     }
+
     if (pageBeingLeftID === "guided-manifest-file-generation-tab") {
       const buttonYesAutoGenerateManifestFiles = document.getElementById(
         "guided-button-auto-generate-manifest-files"
@@ -1398,6 +1405,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
       }
     }
+
     if (pageBeingLeftID === "guided-protocols-tab") {
       const buttonYesUserHasProtocols = document.getElementById("guided-button-user-has-protocols");
       const buttonNoDelayProtocolEntry = document.getElementById(
@@ -2002,18 +2010,16 @@ const guidedUnLockSideBar = () => {
 guidedHideSidebar = () => {};
 guidedUnHideSidebar = () => {};
 
-const guidedSetCurationTeamUI = (boolSharedWithCurationTeam) => {
+// This function reads the innerText of the textSharedWithCurationTeamStatus element 
+// and hides or shows the share and unshare buttons accordingly
+const guidedSetCurationTeamUI = () => {
   const textSharedWithCurationTeamStatus = document.getElementById(
     "guided--para-review-dataset-info-disseminate"
   );
-  console.log("textSharedWithCurationTeamStatus", textSharedWithCurationTeamStatus.innerText);
-  // TODO: Have this update with the published status and not shared w curation team status
   if (textSharedWithCurationTeamStatus.innerText != "Dataset is not under review currently") {
-    // textSharedWithCurationTeamStatus.innerHTML = "Dataset is not under review currently";
     $("#guided-button-share-dataset-with-curation-team").hide();
     $("#guided-button-unshare-dataset-with-curation-team").show();
   } else {
-    // textSharedWithCurationTeamStatus.innerHTML = "Dataset is not under review currently";
     $("#guided--prepublishing-checklist-container").addClass("hidden");
     $("#guided-button-share-dataset-with-curation-team").show();
     $("#guided-button-share-dataset-with-curation-team").removeClass("hidden");
@@ -2021,21 +2027,23 @@ const guidedSetCurationTeamUI = (boolSharedWithCurationTeam) => {
   }
 };
 
-// TODO: Dorian -> Handle error reponses when no DOI is found
-const guidedSetDOIUI = async (boolHasDOI) => {
+const guidedReserveAndSaveDOI = async () => {
   let account = sodaJSONObj["bf-account-selected"]["account-name"];
   let dataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-  if (boolHasDOI) {
-    console.log("has doi");
-    let doiInfo = sodaJSONObj["digital-metadata"]["doi"];
-    $("#guided--para-doi-info").text(doiInfo);
+
+  let doiInformation = await api.reserveDOI(account, dataset);
+  guidedSetDOIUI(doiInformation);
+}
+
+// TODO: Dorian -> Handle error reponses when no DOI is found
+const guidedSetDOIUI = (doiInformation) => {
+  $("#guided--para-doi-info").text(doiInformation);
+  
+  // Hide the reserve DOI button
+  if(doiInformation != "No DOI found for this dataset") {
+    $("#curate-button-reserve-doi").addClass("hidden");
   } else {
-    let pennsieveDOICheck = await api.getDatasetDOI(account, dataset);
-    console.log("pennsieveDOICheck", pennsieveDOICheck);
-    // Check from Pennsieve if the dataset has a DOI before showing the button
-    // In case DOI was reserved directly from Pennsieve
-    $("#guided--para-doi-info").text(pennsieveDOICheck);
-    sodaJSONObj["digital-metadata"]["doi"] = pennsieveDOICheck;
+    $("#curate-button-reserve-doi").removeClass("hidden");
   }
 };
 
@@ -5820,6 +5828,9 @@ const openPage = async (targetPageID) => {
       // Show the loading page while the page's data is being fetched from Pennsieve
       setPageLoadingState(true);
 
+      const currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
+      const currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+
       const pennsieveDatasetID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
 
       const pennsieveDatasetLink = document.getElementById("guided-pennsieve-dataset-link");
@@ -5876,17 +5887,13 @@ const openPage = async (targetPageID) => {
           sharedWithSPARCCurationTeam = true;
         }
       }
-      // TODO: Check if dataset has a doi, if not, show the button to reserve a doi
-      // Else display the doi
-      let reservedDOI = false;
-      if ("doi" in sodaJSONObj["digital-metadata"]) {
-        reservedDOI = true;
-      }
-      //Set the ui for curation team and DOI
-      // TODO: -> Dorian Get the publishing status of the dataset to determine UI text
+
+      let pennsieveDOICheck = await api.getDatasetDOI(currentAccount, currentDataset);
+
+      //Set the ui for curation team and DOI information
       await showPublishingStatus("", "guided");
       guidedSetCurationTeamUI(sharedWithSPARCCurationTeam);
-      guidedSetDOIUI(reservedDOI);
+      guidedSetDOIUI(pennsieveDOICheck);
     }
 
     let currentParentTab = CURRENT_PAGE.closest(".guided--parent-tab");

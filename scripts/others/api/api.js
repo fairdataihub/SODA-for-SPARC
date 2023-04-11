@@ -133,6 +133,27 @@ const getDatasetPermissions = async (selected_account, selected_dataset, boolRet
   }
 };
 
+// This function will be call after a dataset has been shared with the curation team
+// Users will be able to reserve DOI's for their datasets
+const reserveDOI = async (account, dataset) => {
+  // reference: https://docs.pennsieve.io/reference/reservedoi
+  // information: https://docs.pennsieve.io/docs/digital-object-identifiers-dois#assigning-doi-to-your-pennsieve-dataset
+
+  console.log(account);
+  console.log(dataset);
+
+  // TODO: Create endpoint to reserve DOI
+  try {
+    let doiReserve = await client.post(`datasets/${dataset}/reserve-doi`);
+    console.log(doiReserve);
+    // Save DOI to SODAJSONObj
+    return doiReserve.data.doi;
+  } catch (err) {
+    clientError(err);
+    userErrorMessage(err);
+  }
+};
+
 const getDatasetDOI = async (account, dataset) => {
   // reference: https://docs.pennsieve.io/reference/getdoi
   console.log(account);
@@ -141,7 +162,6 @@ const getDatasetDOI = async (account, dataset) => {
   try {
     let doi = await client.get(`datasets/${dataset}/reserve-doi`);
     return doi.data.doi;
-    console.log(doi);
   } catch (err) {
     clientError(err);
     userErrorMessage(err);
@@ -414,6 +434,7 @@ const api = {
   createSkeletonDataset,
   validateLocalDataset,
   getDatasetDOI,
+  reserveDOI,
 };
 
 module.exports = api;

@@ -1372,7 +1372,7 @@
   color: #e7f1ff;
 }
 
-#prepublishing-checklist button {
+/* #prepublishing-checklist button {
   text-decoration: none;
   cursor: pointer;
   background: none;
@@ -1384,15 +1384,15 @@
   padding-left: 2rem;
   padding-right: 3em;
   margin: -2em;
-}
+} */
 
 #prepublishing-checklist td {
   vertical-align: middle;
 }
 
-#prepublishing-checklist button:hover {
+/* #prepublishing-checklist button:hover {
   text-decoration: underline;
-}
+} */
 
 #begin-prepublishing-button {
   margin: 0 auto;

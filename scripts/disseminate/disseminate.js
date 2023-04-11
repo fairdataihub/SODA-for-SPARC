@@ -9,44 +9,6 @@ Note: Some frontend elements of the workflow are in the renderer.js file as well
 ******************************************************
 */
 
-// This function will be call after a dataset has been shared with the curation team
-// Users will be able to reserve DOI's for their datasets
-const reserveDOI = async () => {
-  // reference: https://docs.pennsieve.io/reference/reservedoi
-  // information: https://docs.pennsieve.io/docs/digital-object-identifiers-dois#assigning-doi-to-your-pennsieve-dataset
-  let account = sodaJSONObj["bf-account-selected"]["account-name"];
-  let dataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-
-  console.log(account);
-  console.log(dataset);
-
-  // TODO: Create endpoint to reserve DOI
-  try {
-    let doiReserve = await client.post(`datasets/${dataset}/reserve-doi`);
-    console.log(doiReserve);
-    // Save DOI to SODAJSONObj
-    sodaJSONObj["digital-metadata"]["dataset-doi"] = doiReserve.data.doi;
-  } catch (err) {
-    clientError(err);
-    userErrorMessage(err);
-  }
-};
-
-const getDatasetDOI = async (account, dataset) => {
-  // reference: https://docs.pennsieve.io/reference/getdoi
-  console.log(account);
-  console.log(dataset);
-
-  try {
-    let doi = await client.get(`datasets/${dataset}/reserve-doi`);
-
-    console.log(doi);
-  } catch (err) {
-    clientError(err);
-    userErrorMessage(err);
-  }
-};
-
 const disseminatePublish = async (curationMode) => {
   // check that the user completed all pre-publishing checklist items for the given dataset
   if (!allPrepublishingChecklistItemsCompleted(curationMode)) {

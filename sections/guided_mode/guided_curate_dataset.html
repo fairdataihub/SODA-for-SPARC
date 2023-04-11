@@ -5513,13 +5513,9 @@
               published to Pennsieve Discover.
             </p>
             <div class="guided--container-data-display mt-sm" style="width: 100%">
-              <div class="guided--card-dataset-info">
-                <div class="guided--dataset-description-container">
-                  <h5 class="guided--dataset-description">DOI:</h5>
-                </div>
-                <div class="guided--dataset-content-container">
-                  <h5 id="guided--para-doi-info" class="guided--dataset-content"></h5>
-                </div>
+              <div class="guided--card-dataset-info w-auto">
+                <h5 class="guided--dataset-description mr-4">DOI:</h5>
+                <h5 id="guided--para-doi-info" class="guided--dataset-content"></h5>
               </div>
             </div>
             <p id="guided--doi-information"></p>
@@ -5531,7 +5527,7 @@
                 width: 150px !important;
                 height: 3.2rem;
               "
-              onclick="reserveDOI()"
+              onclick="guidedReserveAndSaveDOI()"
             >
               Reserve DOI
             </button>
@@ -5640,7 +5636,7 @@
                                 id="guided--prepublishing-checklist-icon-subtitle"
                               ></i>
                             </div>
-                            <button class="disable-button">Add a subtitle</button>
+                            <button class="disable-button ml-3">Add a subtitle</button>
                           </td>
                           <td>Give others a brief description of your dataset.</td>
                         </tr>
@@ -5656,7 +5652,7 @@
                                 id="guided--prepublishing-checklist-icon-tags"
                               ></i>
                             </div>
-                            <button class="disable-button">Add tags</button>
+                            <button class="disable-button ml-3">Add tags</button>
                           </td>
                           <td>Make it easier for people to find your dataset in Discover.</td>
                         </tr>
@@ -5672,7 +5668,7 @@
                                 id="guided--prepublishing-checklist-icon-readme"
                               ></i>
                             </div>
-                            <button class="disable-button">Add a description</button>
+                            <button class="disable-button ml-3">Add description</button>
                           </td>
                           <td>
                             Give others a detailed overview of your dataset and outline your
@@ -5691,7 +5687,7 @@
                                 id="guided--prepublishing-checklist-icon-banner"
                               ></i>
                             </div>
-                            <button class="disable-button">Add a banner image</button>
+                            <button class="disable-button ml-3">Add banner image</button>
                           </td>
                           <td>Add a banner image to help your dataset stand out in listings.</td>
                         </tr>
@@ -5707,7 +5703,7 @@
                                 id="guided--prepublishing-checklist-icon-license"
                               ></i>
                             </div>
-                            <button class="disable-button">Add a license</button>
+                            <button class="disable-button ml-3">Add license</button>
                           </td>
                           <td>Let others know how they can use this data in their own research.</td>
                         </tr>
@@ -5723,7 +5719,11 @@
                                 id="guided--prepublishing-checklist-icon-ORCID"
                               ></i>
                             </div>
-                            <button id="guided--ORCID-btn" onclick="orcidSignIn('guided')">
+                            <button
+                              id="guided--ORCID-btn"
+                              class="prepublishing-item-button ml-3"
+                              onclick="orcidSignIn('guided')"
+                            >
                               Link ORCID iD
                             </button>
                           </td>
@@ -5936,8 +5936,8 @@
     id="guided-file-explorer-elements"
     style="padding: 0; border-radius: 4px; height: 476px"
   >
-    <h2 class="text-sub-step-title mt-0" id="structure-folder-header"></h2>
-    <p class="help-text" id="structure-folder-contents"></p>
+    <!-- <h2 class="text-sub-step-title mt-0" id="structure-folder-header"></h2>
+    <p class="help-text" id="structure-folder-contents"></p> -->
     <div id="items-guided-container" style="width: 100%; display: flex; flex-direction: column">
       <div
         class="guided--folder-organization-buttons-container"
