@@ -11338,9 +11338,11 @@ $(document).ready(async () => {
           // If the user is updating a dataset from Pennsieve, try to get the dataset type from the dataset description file
           // on Pennsieve and click the appropriate button
           if (sodaJSONObj?.["starting-point"]?.["type"] === "bf") {
-            document
-              .getElementById("guided-sub-section-loading-dataset-type-import")
-              .classList.remove("hidden");
+            const pennsieveImportLoadingDiv = document.getElementById(
+              "guided-sub-section-loading-dataset-type-import"
+            );
+            // Show the loading div while the dataset type is attempted to be pulled from Pennsieve
+            pennsieveImportLoadingDiv.classList.remove("hidden");
             try {
               const descriptionMetadaRes = await client.get(
                 `/prepare_metadata/import_metadata_file`,
@@ -11364,10 +11366,8 @@ $(document).ready(async () => {
               console.log(error);
               clientError(error);
             }
-
-            document
-              .getElementById("guided-sub-section-loading-dataset-type-import")
-              .classList.add("hidden");
+            // Hide the loading div after the dataset type has been pulled from Pennsieve
+            pennsieveImportLoadingDiv.classList.add("hidden");
           }
         }
         document
