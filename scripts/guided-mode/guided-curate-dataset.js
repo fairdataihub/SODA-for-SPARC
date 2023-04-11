@@ -2010,7 +2010,7 @@ const guidedUnLockSideBar = () => {
 guidedHideSidebar = () => {};
 guidedUnHideSidebar = () => {};
 
-// This function reads the innerText of the textSharedWithCurationTeamStatus element 
+// This function reads the innerText of the textSharedWithCurationTeamStatus element
 // and hides or shows the share and unshare buttons accordingly
 const guidedSetCurationTeamUI = () => {
   const textSharedWithCurationTeamStatus = document.getElementById(
@@ -2033,14 +2033,14 @@ const guidedReserveAndSaveDOI = async () => {
 
   let doiInformation = await api.reserveDOI(account, dataset);
   guidedSetDOIUI(doiInformation);
-}
+};
 
 // TODO: Dorian -> Handle error reponses when no DOI is found
 const guidedSetDOIUI = (doiInformation) => {
   $("#guided--para-doi-info").text(doiInformation);
-  
+
   // Hide the reserve DOI button
-  if(doiInformation != "No DOI found for this dataset") {
+  if (doiInformation != "No DOI found for this dataset") {
     $("#curate-button-reserve-doi").addClass("hidden");
   } else {
     $("#curate-button-reserve-doi").removeClass("hidden");
