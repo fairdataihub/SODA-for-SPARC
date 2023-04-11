@@ -1052,116 +1052,236 @@ function loadSubjectInformation(ev, subjectID) {
   });
 }
 
+function asdf(subjectID, sampleID, type, curationMode) {
+  // Initialize variable as the elements for the sample metadata form
+  let sampleMetadataFieldElements;
+  if (curationMode === "free-form") {
+    sampleMetadataFieldElements = $(samplesFormDiv).children().find(".samples-form-entry");
+  }
+  if (curationMode === "guided") {
+    sampleMetadataFieldElements = $(guidedSamplesFormDiv).children().find(".samples-form-entry");
+  }
+
+  const sampleMetadataDataHeaders = samplesTableData[0];
+  const sampleMetadataDataValues = samplesTableData.find((sampleDataRow) => {
+    return sampleDataRow[0] === subjectID && sampleDataRow[1] === sampleID;
+  });
+
+  if (!sampleMetadataDataValues) {
+    console.log("No sample metadata found for sample " + sampleID);
+    return;
+  }
+
+  const emptyEntries = ["nan", "nat"];
+
+  //Loop through the sample metadata fields and populate the form with the
+  //corresponding values from the sample metadata table
+  for (let i = 0; i < sampleMetadataFieldElements.length; i++) {
+    // Get the name of the current sample metadata field
+    const sampleMetadataField = sampleMetadataFieldElements[i].name;
+
+    // Get the index of name of the current field from the sample metadata headers
+    const headerIndex = sampleMetadataDataHeaders.indexOf(sampleMetadataField);
+
+    // If the current field is not in the sample metadata headers, set the
+    // corresponding element to an empty string and continue to the next field
+    if (headerIndex === -1) {
+      console.log("No header found for field " + sampleMetadataField);
+      sampleMetadataFieldElements[i] = "";
+      continue;
+    }
+
+    // Get the value of the current field from the sample being populated
+    const sampleValue = sampleMetadataDataValues[headerIndex];
+
+    if (type === "import") {
+      if (sampleMetadataField === "sample id" || sampleMetadataField === "subject id") {
+        sampleMetadataFieldElements[i].value = "";
+        continue;
+      }
+    }
+
+    // If the value of the current field is empty or is one of the empty entries,
+    // set the corresponding element to an empty string and continue to the next field
+    if (sampleValue === "" || emptyEntries.includes(sampleValue.toLowerCase())) {
+      console.log("Empty value found for field " + sampleMetadataField);
+      sampleMetadataFieldElements[i].value = "";
+      continue;
+    }
+
+    if (curationMode === "guided" && sampleMetadataField === "was derived from") {
+      const wasDerivedFromDropdown = document.getElementById("guided-bootbox-wasDerivedFromSample");
+      wasDerivedFromDropdown.value = "";
+      for (const option of wasDerivedFromDropdown.options) {
+        if (option.value === sampleValue) {
+          wasDerivedFromDropdown.value = sampleValue;
+        }
+      }
+      continue;
+    }
+
+    if (curationMode === "guided" && sampleMetadataField === "protocol url or doi") {
+      const protocolURLDropdown = document.getElementById("guided-bootbox-protocolURL");
+      protocolURLDropdown.value = "";
+      for (const option of protocolURLDropdown.options) {
+        if (option.value === sampleValue) {
+          protocolURLDropdown.value = sampleValue;
+        }
+      }
+      continue;
+    }
+
+    // If the current field is not empty, set the corresponding element to the
+    // value of the current field
+    sampleMetadataFieldElements[i].value = sampleValue;
+  }
+}
+
 function populateSubjectFields(subjectID, type, curationMode) {
   //Initialize variables shared between different curation modes and set them
   //based on curationMode passed in as parameter
-  let fieldArr;
+  let subjectMetadataFieldElements;
   let curationModeSelectorPrefix;
-  let infoJson;
 
   if (curationMode === "free-form") {
     curationModeSelectorPrefix = "";
-    fieldArr = $(subjectsFormDiv).children().find(".subjects-form-entry");
+    subjectMetadataFieldElements = $(subjectsFormDiv).children().find(".subjects-form-entry");
   }
   if (curationMode === "guided") {
     curationModeSelectorPrefix = "guided-";
-    fieldArr = $(guidedSubjectsFormDiv).children().find(".subjects-form-entry");
+    subjectMetadataFieldElements = $(guidedSubjectsFormDiv).children().find(".subjects-form-entry");
   }
 
-  if (subjectsTableData.length > 1) {
-    for (var i = 1; i < subjectsTableData.length; i++) {
-      if (subjectsTableData[i][0] === subjectID) {
-        infoJson = subjectsTableData[i];
-        break;
+  const subjectsMetadataDataHeaders = subjectsTableData[0];
+  const subjectMetadataValues = subjectsTableData.find((subjectDataRow) => {
+    return subjectDataRow[0] === subjectID;
+  });
+
+  if (!subjectMetadataValues) {
+    console.log("No sample metadata found for sample " + subjectID);
+    return;
+  }
+  console.log(subjectMetadataValues);
+
+  const emptyEntries = ["nan", "nat"];
+
+  //Loop through the subject metadata fields and populate the form with the
+  //corresponding values from the subject metadata table
+  for (let i = 0; i < subjectMetadataFieldElements.length; i++) {
+    // Get the name of the current sample metadata field
+    const subjectMetadataFieldName = subjectMetadataFieldElements[i].name;
+
+    // Get the index of name of the current field from the sample metadata headers
+    const headerIndex = subjectsMetadataDataHeaders.indexOf(subjectMetadataFieldName);
+
+    // If the current field is not in the sample metadata headers, set the
+    // corresponding element to an empty string and continue to the next field
+    if (headerIndex === -1) {
+      console.log("No header found for field " + subjectMetadataFieldName);
+      subjectMetadataFieldName[i] = "";
+      continue;
+    }
+
+    // Get the value of the current field from the sample being populated
+    const subjectFieldValue = subjectMetadataValues[headerIndex];
+
+    if (type === "import") {
+      if (subjectFieldValue === "subject id") {
+        subjectMetadataFieldElements[i].value = "";
+        continue;
       }
     }
-  }
 
-  if (subjectID !== "clear" && subjectID.trim() !== "") {
-    if (curationMode === "guided") {
-      //Reset protocol title dropdowns to the default ("No protocols associated with this sample")
+    if (subjectMetadataFieldName === "Sex") {
+      if (subjectFieldValue != "Male" && subjectFieldValue != "Female") {
+        subjectMetadataFieldElements[i].value = "Unknown";
+      } else {
+        subjectMetadataFieldElements[i].value = subjectFieldValue;
+      }
+      continue;
+    }
+
+    if (subjectMetadataFieldName === "Age") {
+      if (subjectFieldValue === "" || emptyEntries.includes(subjectFieldValue.toLowerCase())) {
+        subjectsMetadataDataHeaders[i].value = "";
+        $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val("N/A");
+        continue;
+      }
+      const fullAge = subjectFieldValue.split(" ");
+      const standardUnits = ["hours", "days", "weeks", "months", "years"];
+
+      if (fullAge.length != 2 || !standardUnits.includes(fullAge[1].toLowerCase())) {
+        subjectsMetadataDataHeaders[i].value = "";
+        $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val("N/A");
+        continue;
+      }
+
+      subjectsMetadataDataHeaders[i].value = fullAge[0];
+      $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val(fullAge[1]);
+      continue;
+    }
+
+    if (subjectMetadataFieldName === "Species") {
+      if (subjectFieldValue === "" || emptyEntries.includes(subjectFieldValue.toLowerCase())) {
+        subjectsMetadataDataHeaders[i].value = "";
+        switchSpeciesStrainInput("species", "add", curationMode);
+      } else {
+        subjectsMetadataDataHeaders[i].value = subjectFieldValue;
+        switchSpeciesStrainInput("species", "edit", curationMode);
+      }
+      continue;
+    }
+
+    if (subjectMetadataFieldName === "Strain") {
+      if (subjectFieldValue === "" || emptyEntries.includes(subjectFieldValue.toLowerCase())) {
+        subjectsMetadataDataHeaders[i].value = "";
+        switchSpeciesStrainInput("strain", "add", curationMode);
+      } else {
+        subjectsMetadataDataHeaders[i].value = subjectFieldValue;
+        switchSpeciesStrainInput("strain", "edit", curationMode);
+      }
+      continue;
+    }
+
+    if (curationMode === "guided" && subjectMetadataFieldName === "RRID for strain") {
+      guidedSetStrainRRID(subjectFieldValue);
+      continue;
+    }
+
+    if (curationMode === "guided" && subjectMetadataFieldName === "Protocol Title") {
       const protocolTitleDropdown = document.getElementById(
         "guided-bootbox-subject-protocol-title"
       );
       const protocolURLDropdown = document.getElementById(
         "guided-bootbox-subject-protocol-location"
       );
-      protocolTitleDropdown.value = "";
-      protocolURLDropdown.value = "";
+      const previouslySavedProtocolUrl = subjectFieldValue;
+      const protocols = sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
+      const protocolInDropdown = protocols.find((protocol) => {
+        return protocol.link === previouslySavedProtocolUrl;
+      });
+      if (protocolInDropdown) {
+        protocolTitleDropdown.value = protocolInDropdown.description;
+        protocolURLDropdown.value = protocolInDropdown.link;
+      } else {
+        protocolTitleDropdown.value = "";
+        protocolURLDropdown.value = "";
+      }
+      continue;
     }
 
-    // populate form
-    var emptyEntries = ["nan", "nat"];
-    var c = fieldArr.map(function (i, field) {
-      if (infoJson[i]) {
-        if (!emptyEntries.includes(infoJson[i].toLowerCase())) {
-          if (field.name === "Age") {
-            var fullAge = infoJson[i].split(" ");
-            var unitArr = ["hours", "days", "weeks", "months", "years"];
-            var breakBoolean = false;
-            field.value = fullAge[0];
-            for (var unit of unitArr) {
-              if (fullAge[1]) {
-                if (unit.includes(fullAge[1].toLowerCase())) {
-                  $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val(unit);
-                  breakBoolean = true;
-                  break;
-                }
-                if (!breakBoolean) {
-                  $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val("N/A");
-                }
-              } else {
-                $(`#${curationModeSelectorPrefix}bootbox-subject-age-info`).val("N/A");
-              }
-            }
-          } else if (field.name === "Species" && infoJson[i] !== "") {
-            $(`#${curationModeSelectorPrefix}bootbox-subject-species`).val(infoJson[i]);
-            // manipulate the Add Strains/Species UI accordingly
-            switchSpeciesStrainInput("species", "edit", curationMode);
-          } else if (field.name === "Strain" && infoJson[i] !== "") {
-            $(`#${curationModeSelectorPrefix}bootbox-subject-strain`).val(infoJson[i]);
-            switchSpeciesStrainInput("strain", "edit", curationMode);
-          } else if (curationMode === "guided" && field.name === "RRID for strain") {
-            guidedSetStrainRRID(infoJson[i]);
-          } else if (curationMode == "guided" && field.name === "protocol url or doi") {
-            //If the selected sample derived from
-            const previouslySavedProtocolURL = infoJson[i];
-
-            const protocols = sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
-            for (const protocol of protocols) {
-              if (protocol.link === previouslySavedProtocolURL) {
-                protocolTitleDropdown.value = protocol.description;
-                protocolURLDropdown.value = protocol.link;
-              }
-            }
-          } else {
-            if (type === "import") {
-              if (field.name === "subject id") {
-                field.value = "";
-              } else {
-                field.value = infoJson[i];
-              }
-            } else {
-              field.value = infoJson[i];
-            }
-          }
-        } else {
-          field.value = "";
-        }
-      } else {
-        if (field.name === "Sex" && infoJson[i] === "") {
-          $("#bootbox-subject-sex").val("Unknown");
-        }
-      }
-    });
+    // If the value of the current field is empty or is one of the empty entries,
+    // set the corresponding element to an empty string and continue to the next field
+    if (subjectFieldValue === "" || emptyEntries.includes(subjectFieldValue.toLowerCase())) {
+      console.log("Empty value found for field " + subjectMetadataFieldName);
+      subjectMetadataFieldElements[i].value = "";
+    } else {
+      subjectMetadataFieldElements[i].value = subjectFieldValue;
+    }
   }
 }
 
 function populateSampleFields(subjectID, sampleID, type, curationMode) {
-  if (sampleID === "clear" || sampleID.trim() === "") {
-    return;
-  }
-
   // Initialize variable as the elements for the sample metadata form
   let sampleMetadataFieldElements;
   if (curationMode === "free-form") {

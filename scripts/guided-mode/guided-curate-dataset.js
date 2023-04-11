@@ -10851,7 +10851,7 @@ const renderSubjectsMetadataAsideItems = async () => {
     subjectMetadataCopyButton.classList.add("hidden");
   }
 
-  const subjectsFormNames = [...guidedSubjectsFormDiv.querySelectorAll(".subjects-form-entry")].map(
+  const subjectsFormNames = [guidedSubjectsFormDiv.querySelectorAll(".subjects-form-entry")].map(
     (entry) => {
       return entry.name;
     }
