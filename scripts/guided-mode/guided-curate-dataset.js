@@ -11332,43 +11332,45 @@ $(document).ready(async () => {
           .classList.remove("hidden");
       }
       if (interpredDatasetType === "requires-manual-selection") {
-        // If the user is updating a dataset from Pennsieve, try to get the dataset type from the dataset description file
-        // on Pennsieve and click the appropriate button
-        if (sodaJSONObj?.["starting-point"]?.["type"] === "bf") {
-          setPageLoadingState(true);
-          try {
-            const descriptionMetadaRes = await client.get(
-              `/prepare_metadata/import_metadata_file`,
-              {
-                params: {
-                  selected_account: defaultBfAccount,
-                  selected_dataset: sodaJSONObj["bf-dataset-selected"]["dataset-name"],
-                  file_type: "dataset_description.xlsx",
-                },
-              }
-            );
-            const descriptionMetdataData = descriptionMetadaRes.data["Basic information"];
-            if (descriptionMetdataData[0][0] === "Type") {
-              const studyType = descriptionMetdataData[0][1];
-              if (studyType === "computational") {
-                document.getElementById("guided-button-dataset-type-computational").click();
-              }
-              if (studyType === "experimental") {
-                document.getElementById("guided-button-dataset-type-experimental").click();
-              }
-            }
-          } catch (error) {
-            // Case where dataset type was not able to be found from Pennsieve so user must manually select
-            console.log(error);
-            clientError(error);
-          }
-          setPageLoadingState(false);
+        if (previousDatasetType === "computational" || previousDatasetType === "experimental") {
+          document.getElementById(`guided-button-dataset-type-${previousDatasetType}`).click();
         } else {
-          if (previousDatasetType === "computational") {
-            document.getElementById("guided-button-dataset-type-computational").click();
-          }
-          if (previousDatasetType === "experimental") {
-            document.getElementById("guided-button-dataset-type-experimental").click();
+          // If the user is updating a dataset from Pennsieve, try to get the dataset type from the dataset description file
+          // on Pennsieve and click the appropriate button
+          if (sodaJSONObj?.["starting-point"]?.["type"] === "bf") {
+            document
+              .getElementById("guided-sub-section-loading-dataset-type-import")
+              .classList.remove("hidden");
+            try {
+              const descriptionMetadaRes = await client.get(
+                `/prepare_metadata/import_metadata_file`,
+                {
+                  params: {
+                    selected_account: defaultBfAccount,
+                    selected_dataset: sodaJSONObj["bf-dataset-selected"]["dataset-name"],
+                    file_type: "dataset_description.xlsx",
+                  },
+                }
+              );
+              const descriptionMetdataData = descriptionMetadaRes.data["Basic information"];
+              if (descriptionMetdataData[0][0] === "Type") {
+                const studyType = descriptionMetdataData[0][1];
+                if (studyType === "computational") {
+                  document.getElementById("guided-button-dataset-type-computational").click();
+                }
+                if (studyType === "experimental") {
+                  document.getElementById("guided-button-dataset-type-experimental").click();
+                }
+              }
+            } catch (error) {
+              // Case where dataset type was not able to be found from Pennsieve so user must manually select
+              console.log(error);
+              clientError(error);
+            }
+
+            document
+              .getElementById("guided-sub-section-loading-dataset-type-import")
+              .classList.add("hidden");
           }
         }
         document
@@ -11478,7 +11480,7 @@ $(document).ready(async () => {
       //If it does, hide all other sections
       if (selectedButton.data("controls-section")) {
         const controlledSectionID = selectedButton.data("controls-section");
-        handleMultipleSubSectionDisplay(controlledSectionID);
+        await handleMultipleSubSectionDisplay(controlledSectionID);
       }
 
       //slow scroll to the next question
