@@ -652,6 +652,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
 
       // This shouldn't happen but just in case the dataset type is not computational or experimental, throw an error
+      // otherwise save the dataset type in a new key to be used if the user goes back to this page
       if (
         sodaJSONObj["dataset-type"] !== "experimental" &&
         sodaJSONObj["dataset-type"] !== "computational"
@@ -661,6 +662,8 @@ const savePageChanges = async (pageBeingLeftID) => {
           message: "Selected subject and code answers do not lead to a viable curation path",
         });
         throw errorArray;
+      } else {
+        sodaJSONObj["saved-dataset-type"] = sodaJSONObj["dataset-type"];
       }
 
       const datasetHasSubjects = sodaJSONObj["dataset-contains-subjects"];
@@ -11253,7 +11256,7 @@ $(document).ready(async () => {
     });
 
     if (controlledSectionID === "guided-section-dataset-type") {
-      const previousDatasetType = sodaJSONObj["dataset-type"];
+      const previouslySavedDatasetType = sodaJSONObj["saved-dataset-type"];
 
       const buttonDatasetContainsSubjects = document.getElementById(
         "guided-button-dataset-contains-subjects"
@@ -11315,8 +11318,13 @@ $(document).ready(async () => {
           .classList.remove("hidden");
       }
       if (interpredDatasetType === "requires-manual-selection") {
-        if (previousDatasetType === "computational" || previousDatasetType === "experimental") {
-          document.getElementById(`guided-button-dataset-type-${previousDatasetType}`).click();
+        if (
+          previouslySavedDatasetType === "computational" ||
+          previouslySavedDatasetType === "experimental"
+        ) {
+          document
+            .getElementById(`guided-button-dataset-type-${previouslySavedDatasetType}`)
+            .click();
         } else {
           // If the user is updating a dataset from Pennsieve, try to get the dataset type from the dataset description file
           // on Pennsieve and click the appropriate button
