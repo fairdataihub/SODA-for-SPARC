@@ -247,6 +247,7 @@ const getGuidedProgressFileNames = () => {
 };
 
 const savePageChanges = async (pageBeingLeftID) => {
+  console.log(pageBeingLeftID);
   // This function is used by both the navigation bar and the side buttons,
   // and whenever it is being called, we know that the user is trying to save the changes on the current page.
   // this function is async because we sometimes need to make calls to validate data before the page is ready to be left.
@@ -816,9 +817,11 @@ const savePageChanges = async (pageBeingLeftID) => {
     if (pageBeingLeftID === "guided-primary-data-organization-tab") {
       cleanUpEmptyFoldersFromGeneratedGuidedStructure("primary");
     }
+
     if (pageBeingLeftID === "guided-source-data-organization-tab") {
       cleanUpEmptyFoldersFromGeneratedGuidedStructure("source");
     }
+
     if (pageBeingLeftID === "guided-derivative-data-organization-tab") {
       cleanUpEmptyFoldersFromGeneratedGuidedStructure("derivative");
     }
@@ -992,6 +995,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
       }
     }
+
     if (pageBeingLeftID === "guided-create-samples-metadata-tab") {
       //Save the sample metadata from the sample currently being modified
       addSample("guided");
@@ -1018,6 +1022,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
       }
     }
+
     if (pageBeingLeftID === "guided-add-code-metadata-tab") {
       const buttonYesComputationalModelingData = document.getElementById(
         "guided-button-has-computational-modeling-data"
@@ -1068,6 +1073,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
       }
     }
+
     if (pageBeingLeftID === "guided-pennsieve-intro-tab") {
       const confirmAccountbutton = document.getElementById(
         "guided-confirm-pennsieve-account-button"
@@ -1095,6 +1101,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           pennsieveIntroAccountDetailsText.innerHTML;
       }
     }
+
     if (pageBeingLeftID === "guided-banner-image-tab") {
       if (sodaJSONObj["digital-metadata"]["banner-image-path"] == undefined) {
         errorArray.push({
@@ -1317,6 +1324,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
       }*/
     }
+
     if (pageBeingLeftID === "guided-manifest-file-generation-tab") {
       const buttonYesAutoGenerateManifestFiles = document.getElementById(
         "guided-button-auto-generate-manifest-files"
@@ -1397,6 +1405,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
       }
     }
+
     if (pageBeingLeftID === "guided-protocols-tab") {
       const buttonYesUserHasProtocols = document.getElementById("guided-button-user-has-protocols");
       const buttonNoDelayProtocolEntry = document.getElementById(
@@ -1481,6 +1490,11 @@ const savePageChanges = async (pageBeingLeftID) => {
         const changes = changesTextArea.value.trim();
         sodaJSONObj["dataset-metadata"]["CHANGES"] = changes;
       }
+    }
+
+    if (pageBeingLeftID === "guided-dataset-dissemination-tab") {
+      //Save the DOI information of the dataset
+      sodaJSONObj["digital-metadata"]["doi"] = $("#guided--para-doi-info").text();
     }
 
     // Save the current version of SODA as the user should be taken back to the first page when the app is updated
@@ -1996,19 +2010,47 @@ const guidedUnLockSideBar = () => {
 guidedHideSidebar = () => {};
 guidedUnHideSidebar = () => {};
 
-const guidedSetCurationTeamUI = (boolSharedWithCurationTeam) => {
+// This function reads the innerText of the textSharedWithCurationTeamStatus element
+// and hides or shows the share and unshare buttons accordingly
+const guidedSetCurationTeamUI = () => {
   const textSharedWithCurationTeamStatus = document.getElementById(
-    "guided-dataset-shared-with-curation-team-status"
+    "guided--para-review-dataset-info-disseminate"
   );
-  if (boolSharedWithCurationTeam) {
-    textSharedWithCurationTeamStatus.innerHTML = "Shared with the SPARC Curation Team";
+  if (textSharedWithCurationTeamStatus.innerText != "Dataset is not under review currently") {
     $("#guided-button-share-dataset-with-curation-team").hide();
     $("#guided-button-unshare-dataset-with-curation-team").show();
   } else {
-    textSharedWithCurationTeamStatus.innerHTML = "Not shared with the SPARC Curation Team";
+    $("#guided--prepublishing-checklist-container").addClass("hidden");
     $("#guided-button-share-dataset-with-curation-team").show();
+    $("#guided-button-share-dataset-with-curation-team").removeClass("hidden");
     $("#guided-button-unshare-dataset-with-curation-team").hide();
   }
+};
+
+const guidedReserveAndSaveDOI = async () => {
+  let account = sodaJSONObj["bf-account-selected"]["account-name"];
+  let dataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+
+  let doiInformation = await api.reserveDOI(account, dataset);
+  guidedSetDOIUI(doiInformation);
+};
+
+// TODO: Dorian -> Handle error reponses when no DOI is found
+const guidedSetDOIUI = (doiInformation) => {
+  $("#guided--para-doi-info").text(doiInformation);
+
+  // Hide the reserve DOI button
+  if (doiInformation != "No DOI found for this dataset") {
+    $("#curate-button-reserve-doi").addClass("hidden");
+  } else {
+    $("#curate-button-reserve-doi").removeClass("hidden");
+  }
+};
+
+const showPrepublishingReview = () => {
+  //Show the final step to select metadata files to be excluded
+  $("#guided--submit-prepublishing-review").removeClass("hidden");
+  createPrepublishingChecklist("guided");
 };
 
 const guidedModifyCurationTeamAccess = async (action) => {
@@ -2018,113 +2060,30 @@ const guidedModifyCurationTeamAccess = async (action) => {
     );
     guidedShareWithCurationTeamButton.disabled = true;
     guidedShareWithCurationTeamButton.classList.add("loading");
-    const { value: confirmShareWithCurationTeam } = await Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      cancelButtonText: "No",
-      confirmButtonText: "Yes",
-      focusCancel: true,
-      icon: "warning",
-      reverseButtons: reverseSwalButtons,
-      showCancelButton: true,
-      text: "This will inform the Curation Team that your dataset is ready to be reviewed. It is then advised not to make changes to the dataset until the Curation Team contacts you. Would you like to continue?",
-    });
-    if (confirmShareWithCurationTeam) {
-      //TODO: Check that the name for the curation team is correct or if it has changed on the pennsieve side
-      try {
-        await client.patch(
-          `/manage_datasets/bf_dataset_permissions`,
-          {
-            input_role: "manager",
-          },
-          {
-            params: {
-              selected_account: defaultBfAccount,
-              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-              scope: "team",
-              name: "SPARC Data Curation Team",
-            },
-          }
-        );
-        guidedSetCurationTeamUI(true);
-        swal.fire({
-          width: "550px",
-          icon: "success",
-          title: "Dataset successfully shared with the Curation Team",
-          html: `It is now advised that you do not make changes to the dataset until
-          the Curation Team follows up with you.`,
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          confirmButtonText: "OK",
-          focusConfirm: true,
-        });
-      } catch (error) {
-        notyf.open({
-          duration: "5000",
-          type: "error",
-          message: "Error sharing dataset with the Curation Team",
-        });
-      }
+    guidedShareWithCurationTeamButton.classList.add("hidden");
+
+    let publishPreCheckStatus = await beginPrepublishingFlow("guided");
+
+    // Will return false if there are issues running the precheck flow
+    if (!publishPreCheckStatus) {
+      guidedShareWithCurationTeamButton.disabled = false;
+      guidedShareWithCurationTeamButton.classList.remove("loading");
+      guidedShareWithCurationTeamButton.classList.remove("hidden");
     }
-    guidedShareWithCurationTeamButton.disabled = false;
-    guidedShareWithCurationTeamButton.classList.remove("loading");
   }
   if (action === "unshare") {
+    // TODO: Adapt new meta to share with curation team
     const guidedUnshareWithCurationTeamButton = document.getElementById(
       "guided-button-unshare-dataset-with-curation-team"
     );
+
+    console.log("Withdrawing the dataset here");
+    withdrawDatasetSubmission("guided");
     guidedUnshareWithCurationTeamButton.disabled = true;
     guidedUnshareWithCurationTeamButton.classList.add("loading");
 
-    const { value: confirmUnshareWithCurationTeam } = await Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      cancelButtonText: "No",
-      confirmButtonText: "Yes",
-      focusCancel: true,
-      icon: "warning",
-      reverseButtons: reverseSwalButtons,
-      showCancelButton: true,
-      text: "Are you sure you would like to remove the SPARC Data Curation Team as a manager of this dataset?",
-    });
-    if (confirmUnshareWithCurationTeam) {
-      try {
-        await client.patch(
-          `/manage_datasets/bf_dataset_permissions`,
-          {
-            input_role: "remove current permissions",
-          },
-          {
-            params: {
-              selected_account: defaultBfAccount,
-              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-              scope: "team",
-              name: "SPARC Data Curation Team",
-            },
-          }
-        );
-        guidedSetCurationTeamUI(false);
-        swal.fire({
-          width: "550px",
-          icon: "success",
-          title: "Dataset successfully unshared with the Curation Team",
-          html: `You are now free to make any necessary modifications to your dataset. Once you are
-          ready to reshare with the Curation Team, please revisit this page.`,
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          confirmButtonText: "OK",
-          focusConfirm: true,
-        });
-      } catch (error) {
-        notyf.open({
-          duration: "5000",
-          type: "error",
-          message: "Error removing Curation Team access",
-        });
-      }
-    }
-    guidedUnshareWithCurationTeamButton.disabled = false;
-    guidedUnshareWithCurationTeamButton.classList.remove("loading");
+    // guidedUnshareWithCurationTeamButton.disabled = false;
+    // guidedUnshareWithCurationTeamButton.classList.remove("loading");
   }
 };
 
@@ -5196,14 +5155,20 @@ const openPage = async (targetPageID) => {
             `manage_datasets/bf_get_teams?selected_account=${defaultBfAccount}`
           );
 
-          //Returns an array of strings with the user's name and role
-          const currentDatasetPermissions = await api.getDatasetPermissions(
-            defaultBfAccount,
-            sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
-          );
-
+          // //Returns an array of strings with the user's name and role
+          // const currentDatasetPermissions = await api.getDatasetPermissions(
+          //   defaultBfAccount,
+          //   sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+          //   true
+          // );
+          //TODO: Check what these reponses look like compared to get dataset permissions endpoint
           const sparcUsers = sparcUsersReq.data.users;
           const sparcTeams = sparcTeamsReq.data.teams;
+          console.log(sparcUsersReq);
+          console.log(sparcTeamsReq);
+          console.log("CHECK THESE RESULTS BELOW AND ABOVE");
+          console.log(sparcUsers);
+          console.log(sparcTeams);
 
           let sparcUsersDivided = [];
 
@@ -5215,7 +5180,8 @@ const openPage = async (targetPageID) => {
 
           const permissions = await api.getDatasetPermissions(
             defaultBfAccount,
-            sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
+            sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+            false
           );
 
           //Filter out the integration user
@@ -5862,6 +5828,9 @@ const openPage = async (targetPageID) => {
       // Show the loading page while the page's data is being fetched from Pennsieve
       setPageLoadingState(true);
 
+      const currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
+      const currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+
       const pennsieveDatasetID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
 
       const pennsieveDatasetLink = document.getElementById("guided-pennsieve-dataset-link");
@@ -5877,8 +5846,6 @@ const openPage = async (targetPageID) => {
 
       pennsieveDatasetLink.innerHTML = linkIcon + datasetLink;
       pennsieveDatasetLink.href = datasetLink;
-
-      // TODO: removed link copied notyf until we can get it to not fire twice.
 
       pennsieveCopy.removeEventListener(
         "click",
@@ -5896,23 +5863,37 @@ const openPage = async (targetPageID) => {
 
       document.getElementById("guided-pennsieve-dataset-name").innerHTML =
         sodaJSONObj["digital-metadata"]["name"];
-      let bf_get_permissions = await client.get(`/manage_datasets/bf_dataset_permissions`, {
-        params: {
-          selected_account: defaultBfAccount,
-          selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-        },
-      });
-      let datasetPermissions = bf_get_permissions.data.permissions;
+
+      // let currentDatasetID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+      let bf_get_permissions = await api.getDatasetPermissions(
+        defaultBfAccount,
+        pennsieveDatasetID,
+        false
+      );
+      console.log(bf_get_permissions);
+      // let bf_get_permissions = await client.get(`/manage_datasets/bf_dataset_permissions`, {
+      //   params: {
+      //     selected_account: defaultBfAccount,
+      //     selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+      //   },
+      // });
+      // let datasetPermissions = bf_get_permissions;
 
       let sharedWithSPARCCurationTeam = false;
 
-      for (const permission of datasetPermissions) {
+      // TODO: Modify this to be the publishing status and not permissions
+      for (const permission of bf_get_permissions) {
         if (permission.includes("SPARC Data Curation Team")) {
           sharedWithSPARCCurationTeam = true;
         }
       }
 
+      let pennsieveDOICheck = await api.getDatasetDOI(currentAccount, currentDataset);
+
+      //Set the ui for curation team and DOI information
+      await showPublishingStatus("", "guided");
       guidedSetCurationTeamUI(sharedWithSPARCCurationTeam);
+      guidedSetDOIUI(pennsieveDOICheck);
     }
 
     let currentParentTab = CURRENT_PAGE.closest(".guided--parent-tab");
@@ -6613,6 +6594,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
 
   // If the dataset had been previously successfully uploaded, check to make sure it exists on Pennsieve still.
   if (datasetHasAlreadyBeenSuccessfullyUploaded) {
+    console.log(datasetResumeJsonObj);
     const previouslyUploadedDatasetId =
       datasetResumeJsonObj["digital-metadata"]["pennsieve-dataset-id"];
     const datasetToResumeExistsOnPennsieve = await checkIfDatasetExistsOnPennsieve(
@@ -11239,6 +11221,7 @@ $(document).ready(async () => {
       });
     }
   });
+
   $("#guided-button-add-permission-user").on("click", function () {
     const newUserPermission = {
       userString: $("#guided_bf_list_users option:selected").text().trim(),
@@ -13248,7 +13231,7 @@ $(document).ready(async () => {
     unPulseNextButton();
   });
 
-  function guidedGenerateRCFilesHelper(type) {
+  const guidedGenerateRCFilesHelper = (type) => {
     var textValue = $(`#guided-textarea-create-${type}`).val().trim();
     if (textValue === "") {
       Swal.fire({
@@ -13267,8 +13250,8 @@ $(document).ready(async () => {
       });
       return "empty";
     }
-  }
-  async function guidedSaveRCFile(type) {
+  };
+  const guidedSaveRCFile = async (type) => {
     var result = guidedGenerateRCFilesHelper(type);
     if (result === "empty") {
       return;
@@ -13345,7 +13328,7 @@ $(document).ready(async () => {
         });
       }
     });
-  }
+  };
   $("#guided-generate-subjects-file").on("click", () => {
     addSubject("guided");
     clearAllSubjectFormFields(guidedSubjectsFormDiv);

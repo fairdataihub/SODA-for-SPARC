@@ -5519,6 +5519,34 @@
             </p>
           </div>
           <div class="guided--section">
+            <h2 class="text-sub-step-title mt-0">Reserve a DOI</h2>
+            <p class="help-text">
+              Reserve a DOI for your dataset while it's being reviewed by the curation team.
+              However, this DOI will NOT be active, and therefore searchable, until the dataset is
+              published to Pennsieve Discover.
+            </p>
+            <div class="guided--container-data-display mt-sm" style="width: 100%">
+              <div class="guided--card-dataset-info w-auto">
+                <h5 class="guided--dataset-description mr-4">DOI:</h5>
+                <h5 id="guided--para-doi-info" class="guided--dataset-content"></h5>
+              </div>
+            </div>
+            <p id="guided--doi-information"></p>
+            <button
+              class="ui positive button guided--button-footer mt-2"
+              id="curate-button-reserve-doi"
+              style="
+                background-color: var(--color-light-green) !important;
+                width: 150px !important;
+                height: 3.2rem;
+              "
+              onclick="guidedReserveAndSaveDOI()"
+            >
+              Reserve DOI
+            </button>
+            <p id="curate-doi-information" class="help-text mt-2"></p>
+          </div>
+          <div class="guided--section">
             <h2 class="text-sub-step-title mt-0">Share with the curation team</h2>
 
             <p class="help-text">
@@ -5531,11 +5559,11 @@
             <div class="guided--container-data-display mt-sm" style="width: 100%">
               <div class="guided--card-dataset-info">
                 <div class="guided--dataset-description-container">
-                  <h5 class="guided--dataset-description">Current status:</h5>
+                  <h5 class="guided--dataset-description">Review status:</h5>
                 </div>
                 <div class="guided--dataset-content-container">
                   <h5
-                    id="guided-dataset-shared-with-curation-team-status"
+                    id="guided--para-review-dataset-info-disseminate"
                     class="guided--dataset-content"
                   ></h5>
                 </div>
@@ -5562,27 +5590,291 @@
               Unshare with SPARC Curation Team
             </button>
           </div>
-          <div class="guided-section hidden">
-            <h2 class="text-sub-step-title mt-0">
-              Reserve a DOI for your dataset while it's being review by the curation team.
-            </h2>
-            <p class="help-text">
-              If you would like to reserve a DOI for your dataset while it's being reviewed by the
-              curation team, click the button below.
-            </p>
-            <button
-              class="ui positive button guided--button-footer mt-lg"
-              id="guided-button-reserve-doi"
-              style="
-                background-color: var(--color-light-green) !important;
-                width: 281px !important;
-                height: 3.2rem;
-                font-family: Poppins;
-              "
-              onclick="reserveDOI()"
-            >
-              Reserve DOI
-            </button>
+          <div class="guided--section hidden" id="guided--prepublishing-checklist-container">
+            <div class="ui form">
+              <div class="grouped fields">
+                <div>
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: column;
+                      align-items: center;
+                      justify-content: center;
+                    "
+                  >
+                    <label
+                      id="guided--pre_publishing_checklist_label"
+                      style="
+                        font-size: 17px;
+                        color: var(--color-bg-plum);
+                        width: 100%;
+                        text-align: center;
+                        margin-bottom: 1rem;
+                      "
+                      >Pre-publishing checklist:
+                      <i
+                        class="fas fa-info-circle popover-tooltip"
+                        data-content="Use the pre-publishing checklist below to verify your dataset meets all of the SPARC requirements for a publishable dataset. 
+                                    Click on any missing checklist items and you will be navigated to where you may add that item. "
+                        rel="popover"
+                        data-html="true"
+                        data-placement="right"
+                        data-trigger="hover"
+                        data-original-title=""
+                        title=""
+                      ></i>
+                    </label>
+
+                    <table
+                      class="ui fixed table"
+                      id="guided--prepublishing-checklist"
+                      style="max-height: 250px; margin-top: 0px"
+                    >
+                      <thead>
+                        <tr>
+                          <th style="width: 250px">Item</th>
+                          <th>Description</th>
+                        </tr>
+                      </thead>
+                      <tbody style="height: 250px">
+                        <tr style="height: 15px">
+                          <td>
+                            <div
+                              class="guided--icon-wrapper"
+                              style="display: inline-block; padding-right: 5px"
+                            >
+                              <i
+                                class="check icon"
+                                style="color: green; visibility: visible"
+                                id="guided--prepublishing-checklist-icon-subtitle"
+                              ></i>
+                            </div>
+                            <button class="disable-button ml-3">Add a subtitle</button>
+                          </td>
+                          <td>Give others a brief description of your dataset.</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div
+                              class="guided--icon-wrapper"
+                              style="display: inline-block; padding-right: 5px"
+                            >
+                              <i
+                                class="check icon"
+                                style="color: green; margin-right: 5px; visibility: visible"
+                                id="guided--prepublishing-checklist-icon-tags"
+                              ></i>
+                            </div>
+                            <button class="disable-button ml-3">Add tags</button>
+                          </td>
+                          <td>Make it easier for people to find your dataset in Discover.</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div
+                              class="guided--icon-wrapper"
+                              style="display: inline-block; padding-right: 5px"
+                            >
+                              <i
+                                class="check icon"
+                                style="color: green; margin-right: 5px; visibility: visible"
+                                id="guided--prepublishing-checklist-icon-readme"
+                              ></i>
+                            </div>
+                            <button class="disable-button ml-3">Add description</button>
+                          </td>
+                          <td>
+                            Give others a detailed overview of your dataset and outline your
+                            findings and analysis.
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div
+                              class="guided--icon-wrapper"
+                              style="display: inline-block; padding-right: 5px"
+                            >
+                              <i
+                                class="check icon"
+                                style="color: green; margin-right: 5px; visibility: visible"
+                                id="guided--prepublishing-checklist-icon-banner"
+                              ></i>
+                            </div>
+                            <button class="disable-button ml-3">Add banner image</button>
+                          </td>
+                          <td>Add a banner image to help your dataset stand out in listings.</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div
+                              class="guided--icon-wrapper"
+                              style="display: inline-block; padding-right: 5px"
+                            >
+                              <i
+                                class="check icon"
+                                style="color: green; margin-right: 5px; visibility: visible"
+                                id="guided--prepublishing-checklist-icon-license"
+                              ></i>
+                            </div>
+                            <button class="disable-button ml-3">Add license</button>
+                          </td>
+                          <td>Let others know how they can use this data in their own research.</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div
+                              class="guided--icon-wrapper"
+                              style="display: inline-block; padding-right: 5px"
+                            >
+                              <i
+                                class="check icon"
+                                style="color: green; margin-right: 5px; visibility: visible"
+                                id="guided--prepublishing-checklist-icon-ORCID"
+                              ></i>
+                            </div>
+                            <button
+                              id="guided--ORCID-btn"
+                              class="prepublishing-item-button ml-3"
+                              onclick="orcidSignIn('guided')"
+                            >
+                              Link ORCID iD
+                            </button>
+                          </td>
+                          <td>
+                            Link your ORCID iD to Pennsieve in order to distinguish yourself from
+                            other researchers.
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!--Continue Button comes before filetree and excluded files section-->
+                <div class="guided--pre-publishing-continue-container">
+                  <button
+                    id="guided--prepublishing-continue-btn"
+                    class="pre-publishing-continue btn_animated"
+                    style="width: 200px; height: 40px; font-size: 15px; margin-top: 2rem"
+                    onclick="showPrepublishingReview()"
+                  >
+                    <div style="margin-left: 0px; padding-top: 2px" class="btn_animated-inside">
+                      Continue
+                    </div>
+                  </button>
+                </div>
+
+                <!--Withdraw dataset from review when Review status shows dataset is under review-->
+                <div
+                  style="width: 100%; display: none; justify-content: center"
+                  id="guided--prepublishing-withdraw-btn-container"
+                >
+                  <button
+                    id="guided--btn-withdraw-review-dataset"
+                    onclick="withdrawDatasetSubmission('guided')"
+                    class="btn_animated md skip"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      width: 220px;
+                      height: 40px;
+                      background: rgb(255, 255, 255);
+                      color: red;
+                      font-weight: 600;
+                      border: 1px solid red;
+                      font-size: 15px;
+                      display: none;
+                    "
+                  >
+                    <div class="btn_animated-inside">
+                      <i class="fas fa-ban" style="padding-right: 5px"></i>
+                      Withdraw from review
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="guided--section hidden" id="guided--submit-prepublishing-review">
+            <div class="ui form" style="width: 450px">
+              <div class="grouped fields">
+                <!--Metadata file viewer-->
+                <div id="guided--excluded-files-container">
+                  <!--Pennsieve file tree header-->
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: column;
+                      align-items: center;
+                      justify-content: center;
+                    "
+                  >
+                    <label
+                      id="guided--pre-publishing-file-viewer-label"
+                      style="
+                        font-size: 17px;
+                        color: var(--color-bg-plum);
+                        width: 100%;
+                        text-align: center;
+                        margin-top: 1.5rem;
+                      "
+                      >Optionally exclude metadata files from publishing:
+                      <i
+                        class="fas fa-info-circle popover-tooltip"
+                        data-content="Excluded metadata files will not be visible to the public once your dataset has been published."
+                        rel="popover"
+                        data-html="true"
+                        data-placement="right"
+                        data-trigger="hover"
+                      ></i>
+                    </label>
+                  </div>
+
+                  <!--Pennsieve metadata file viewer-->
+                  <div
+                    id="guided--pre-publication-items-container"
+                    class="prepublish-items-container"
+                    style="height: 12rem"
+                  >
+                    <div id="guided--items-pre-publication"></div>
+
+                    <div
+                      class="ui active medium text loader guided--items-spinner"
+                      style="position: absolute; top: 6.5rem; margin-left: auto; margin-right: auto"
+                    >
+                      Fetching Files
+                    </div>
+                  </div>
+                </div>
+
+                <!--Submit Button-->
+                <!--#submit-withdraw-prepublishing-btns-container-->
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                  "
+                  id="guided--prepublishing-submit-btn-container"
+                >
+                  <button
+                    onclick="disseminateDataset('submit-pre-publishing', 'guided')"
+                    class="btn_animated md"
+                    style="
+                      margin: 1.5rem 23%;
+                      width: 200px;
+                      height: 40px;
+                      font-size: 15px;
+                      border: none !important; ;
+                    "
+                  >
+                    <i class="fas fa-sign-in-alt" style="padding-right: 5px"></i>
+                    Submit
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -5657,8 +5949,8 @@
     id="guided-file-explorer-elements"
     style="padding: 0; border-radius: 4px; height: 476px"
   >
-    <h2 class="text-sub-step-title mt-0" id="structure-folder-header"></h2>
-    <p class="help-text" id="structure-folder-contents"></p>
+    <!-- <h2 class="text-sub-step-title mt-0" id="structure-folder-header"></h2>
+    <p class="help-text" id="structure-folder-contents"></p> -->
     <div id="items-guided-container" style="width: 100%; display: flex; flex-direction: column">
       <div
         class="guided--folder-organization-buttons-container"

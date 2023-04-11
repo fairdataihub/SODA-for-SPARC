@@ -2969,11 +2969,15 @@ function datasetStatusListChange() {
   showCurrentDatasetStatus();
 }
 
-function postCurationListChange() {
+// This function is called when the user selects a dataset from the dropdown list
+// It is called to update the UI elements that are related to the publishing status
+// of the dataset and displaying the correct UI elements
+const postCurationListChange = () => {
   // display the pre-publishing page
   showPrePublishingPageElements();
+  console.log("this is where publishing status is updated when dataset is selected");
   showPublishingStatus();
-}
+};
 
 // upload banner image //
 const Cropper = require("cropperjs");
@@ -3103,7 +3107,8 @@ const setupPublicationOptionsPopover = () => {
   });
 };
 
-const submitReviewDatasetCheck = async (res) => {
+const submitReviewDatasetCheck = async (res, curationMode) => {
+  console.log(res);
   let reviewstatus = res["review_request_status"];
   let publishingStatus = res["publishing_status"];
   if (res["publishing_status"] === "PUBLISH_IN_PROGRESS") {
@@ -3224,7 +3229,7 @@ const submitReviewDatasetCheck = async (res) => {
       },
     });
     // submit the dataset for review with the given embargoReleaseDate
-    await submitReviewDataset(embargoReleaseDate);
+    await submitReviewDataset(embargoReleaseDate, curationMode);
   } else {
     // status is NOT_PUBLISHED
     // embargo release date represents the time a dataset that has been reviewed for publication becomes public
@@ -3312,7 +3317,7 @@ const submitReviewDatasetCheck = async (res) => {
     });
 
     // submit the dataset for review with the given embargoReleaseDate
-    await submitReviewDataset(embargoReleaseDate);
+    await submitReviewDataset(embargoReleaseDate, curationMode);
   }
 };
 
@@ -3330,7 +3335,17 @@ ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
   $("#submit_prepublishing_review-spinner").hide();
 });
 
-const submitReviewDataset = async (embargoReleaseDate) => {
+// TODO: Dorian -> Adapt this function for Guided Mode
+const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
+  let curationModeID = "";
+  let currentAccount = defaultBfAccount;
+  let currentDataset = defaultBfDataset;
+
+  if (curationMode === "guided") {
+    curationModeID = "guided";
+    currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
+    currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+  }
   $("#para-submit_prepublishing_review-status").text("");
   bfRefreshPublishingDatasetStatusBtn.disabled = true;
   var selectedBfAccount = defaultBfAccount;
@@ -3341,7 +3356,7 @@ const submitReviewDataset = async (embargoReleaseDate) => {
 
   // check if the user has selected any files they want to be hidden to the public upon publication (aka ignored/excluded files)
   // set the loading message title accordingly
-  if (excludedFilesInPublicationFlow()) {
+  if (excludedFilesInPublicationFlow(curationMode)) {
     title = "Ignoring selected files and submitting dataset for pre-publishing review";
   } else {
     title = "Submitting dataset for pre-publishing review";
@@ -3363,13 +3378,13 @@ const submitReviewDataset = async (embargoReleaseDate) => {
   });
 
   // if there are excluded files upload them to Pennsieve so they will not be viewable to the public upon publication
-  if (excludedFilesInPublicationFlow()) {
+  if (excludedFilesInPublicationFlow(curationMode)) {
     // get the excluded files from the excluded files list in the third step of the pre-publishing review submission flow
-    let files = getExcludedFilesFromPublicationFlow();
+    let files = getExcludedFilesFromPublicationFlow(curationMode);
     try {
       // exclude the user's selected files from publication
       //check res
-      await api.updateDatasetExcludedFiles(defaultBfAccount, selectedBfDataset, files);
+      await api.updateDatasetExcludedFiles(currentAccount, currentDataset, files);
     } catch (error) {
       clientError(error);
       // log the error
@@ -3403,10 +3418,15 @@ const submitReviewDataset = async (embargoReleaseDate) => {
     }
   }
 
+  console.log(currentAccount);
+  console.log(currentDataset);
+  console.log(embargoReleaseDate);
+  console.log(embargoReleaseDate === "" ? "publication" : "embargo");
+
   try {
     await api.submitDatasetForPublication(
-      selectedBfAccount,
-      selectedBfDataset,
+      currentAccount,
+      currentDataset,
       embargoReleaseDate,
       embargoReleaseDate === "" ? "publication" : "embargo"
     );
@@ -3443,7 +3463,7 @@ const submitReviewDataset = async (embargoReleaseDate) => {
   }
 
   // update the publishing status UI element
-  await showPublishingStatus("noClear");
+  await showPublishingStatus("noClear", curationMode);
 
   // track success
   logGeneralOperationsForAnalytics(
@@ -3469,17 +3489,34 @@ const submitReviewDataset = async (embargoReleaseDate) => {
     },
   });
 
-  await transitionFreeFormMode(
-    document.querySelector("#begin-prepublishing-btn"),
-    "submit_prepublishing_review-question-2",
-    "submit_prepublishing_review-tab",
-    "",
-    "individual-question post-curation"
-  );
+  if (curationMode != "guided") {
+    await transitionFreeFormMode(
+      document.querySelector("#begin-prepublishing-btn"),
+      "submit_prepublishing_review-question-2",
+      "submit_prepublishing_review-tab",
+      "",
+      "individual-question post-curation"
+    );
+  } else {
+    // Update the UI again and hide the flow
+    $("#guided--prepublishing-checklist-container").addClass("hidden");
+    $("#guided--submit-prepublishing-review").addClass("hidden");
+    const guidedShareWithCurationTeamButton = document.getElementById(
+      "guided-button-share-dataset-with-curation-team"
+    );
+
+    guidedShareWithCurationTeamButton.classList.remove("hidden");
+    guidedShareWithCurationTeamButton.classList.remove("loading");
+
+    guidedShareWithCurationTeamButton.disabled = false;
+    // $("#guided-button-unshare-dataset-with-curation-team").show();
+    guidedSetCurationTeamUI();
+  }
 };
 
 // //Withdraw dataset from review
-function withdrawDatasetSubmission() {
+// TODO: Dorian -> Adapt this function and the others below for Guided Mode (withdrawing a dataset from review functions)
+const withdrawDatasetSubmission = (curationMode) => {
   // show a SWAL loading message until the submit for prepublishing flow is successful or fails
   Swal.fire({
     title: `Preparing to withdraw the dataset submission`,
@@ -3498,7 +3535,7 @@ function withdrawDatasetSubmission() {
   // get the publishing status of the currently selected dataset
   // then check if it can be withdrawn, then withdraw it
   // catch any uncaught errors at this level (aka greacefully catch any exceptions to alert the user we cannot withdraw their dataset)
-  showPublishingStatus(withdrawDatasetCheck).catch((error) => {
+  showPublishingStatus(withdrawDatasetCheck, curationMode).catch((error) => {
     log.error(error);
     console.error(error);
     var emessage = userError(error);
@@ -3526,9 +3563,9 @@ function withdrawDatasetSubmission() {
       ["Withdraw dataset"]
     );
   });
-}
+};
 
-const withdrawDatasetCheck = async (res) => {
+const withdrawDatasetCheck = async (res, curationMode) => {
   let reviewstatus = res["publishing_status"];
   let requestStatus = res["review_request_status"];
   if (requestStatus != "requested") {
@@ -3579,20 +3616,27 @@ const withdrawDatasetCheck = async (res) => {
           Swal.showLoading();
         },
       });
-      await withdrawReviewDataset();
+      await withdrawReviewDataset(curationMode);
     }
   }
 };
 
-const withdrawReviewDataset = async () => {
+// TODO: Dorian -> Adapt this for guided mode
+const withdrawReviewDataset = async (curationMode) => {
   bfWithdrawReviewDatasetBtn.disabled = true;
-  var selectedBfAccount = $("#current-bf-account").text();
-  var selectedBfDataset = $(".bf-dataset-span")
+
+  let currentAccount = $("#current-bf-account").text();
+  let currentDataset = $(".bf-dataset-span")
     .html()
     .replace(/^\s+|\s+$/g, "");
 
+  if (curationMode == "guided") {
+    currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
+    currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+  }
+
   try {
-    await api.withdrawDatasetReviewSubmission(selectedBfDataset, selectedBfAccount);
+    await api.withdrawDatasetReviewSubmission(currentDataset, currentAccount);
 
     logGeneralOperationsForAnalytics(
       "Success",
@@ -3602,7 +3646,7 @@ const withdrawReviewDataset = async () => {
     );
 
     // show the user their dataset's updated publishing status
-    await showPublishingStatus("noClear");
+    await showPublishingStatus("noClear", curationMode);
 
     await Swal.fire({
       title: "Dataset has been withdrawn from review!",
@@ -3619,20 +3663,32 @@ const withdrawReviewDataset = async () => {
       },
     });
 
-    // reveal the current section (question-3) again using the new publishing status value
-    await transitionFreeFormMode(
-      document.querySelector("#begin-prepublishing-btn"),
-      "submit_prepublishing_review-question-2",
-      "submit_prepublishing_review-tab",
-      "",
-      "individual-question post-curation"
-    );
+    if (curationMode != "guided") {
+      // reveal the current section (question-3) again using the new publishing status value
+      await transitionFreeFormMode(
+        document.querySelector("#begin-prepublishing-btn"),
+        "submit_prepublishing_review-question-2",
+        "submit_prepublishing_review-tab",
+        "",
+        "individual-question post-curation"
+      );
+
+      bfRefreshPublishingDatasetStatusBtn.disabled = false;
+      bfWithdrawReviewDatasetBtn.disabled = false;
+    } else {
+      const guidedUnshareWithCurationTeamButton = document.getElementById(
+        "guided-button-unshare-dataset-with-curation-team"
+      );
+
+      guidedUnshareWithCurationTeamButton.disabled = false;
+      guidedUnshareWithCurationTeamButton.classList.remove("loading");
+      guidedUnshareWithCurationTeamButton.classList.remove("hidden");
+
+      guidedSetCurationTeamUI();
+    }
 
     // scroll to the submit button
     // scrollToElement(".pre-publishing-continue");
-
-    bfRefreshPublishingDatasetStatusBtn.disabled = false;
-    bfWithdrawReviewDatasetBtn.disabled = false;
   } catch (error) {
     clientError(error);
     var emessage = userErrorMessage(error);
@@ -3668,21 +3724,21 @@ const withdrawReviewDataset = async () => {
 
 // General //
 
-function removeOptions(selectbox) {
+const removeOptions = (selectbox) => {
   var i;
   for (i = selectbox.options.length - 1; i >= 0; i--) {
     selectbox.remove(i);
   }
-}
+};
 
-function userError(error) {
+const userError = (error) => {
   var myerror = error.message;
   return myerror;
-}
+};
 
 // Manage Datasets //
 
-function refreshBfUsersList() {
+const refreshBfUsersList = () => {
   var accountSelected = defaultBfAccount;
 
   removeOptions(bfListUsers);
@@ -3735,9 +3791,9 @@ function refreshBfUsersList() {
         clientError(error);
       });
   }
-}
+};
 
-function refreshBfTeamsList(teamList) {
+const refreshBfTeamsList = (teamList) => {
   removeOptions(teamList);
 
   var accountSelected = defaultBfAccount;
@@ -3774,7 +3830,7 @@ function refreshBfTeamsList(teamList) {
         confirm_click_account_function();
       });
   }
-}
+};
 
 const selectOptionColor = (mylist) => {
   mylist.style.color = mylist.options[mylist.selectedIndex].style.color;
@@ -3823,7 +3879,7 @@ const populateDatasetDropdowns = (mylist) => {
 };
 ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
 
-async function updateBfAccountList() {
+const updateBfAccountList = async () => {
   let responseObject;
   try {
     responseObject = await client.get("manage_datasets/bf_account_list");
@@ -3849,7 +3905,7 @@ async function updateBfAccountList() {
   }
   refreshBfUsersList();
   refreshBfTeamsList(bfListTeams);
-}
+};
 
 const loadDefaultAccount = async () => {
   let responseObject;
@@ -3894,38 +3950,51 @@ const showPrePublishingPageElements = () => {
   $(".pre-publishing-continue-container").hide();
 };
 
-const showPublishingStatus = async (callback) => {
+// TODO: Dorian -> Adapt function to be used for Guided Mode as well
+const showPublishingStatus = async (callback, curationMode = "") => {
   return new Promise(async function (resolve, reject) {
     console.log(callback);
     if (callback == "noClear") {
       var nothing;
     }
-    var selectedBfAccount = $("#current-bf-account").text();
-    var selectedBfDataset = $(".bf-dataset-span")
+
+    let curationModeID = "";
+    let currentAccount = $("#current-bf-account").text();
+    let currentDataset = $(".bf-dataset-span")
       .html()
       .replace(/^\s+|\s+$/g, "");
 
-    if (selectedBfDataset === "None") {
+    if (curationMode === "guided") {
+      curationModeID = "guided--";
+      currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
+      currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+    }
+
+    if (currentDataset === "None") {
       resolve();
     } else {
       try {
         let get_publishing_status = await client.get(
-          `/disseminate_datasets/datasets/${selectedBfDataset}/publishing_status`,
+          `/disseminate_datasets/datasets/${currentDataset}/publishing_status`,
           {
             params: {
-              selected_account: selectedBfAccount,
+              selected_account: currentAccount,
             },
           }
         );
         let res = get_publishing_status.data;
+        console.log(res);
 
         try {
           //update the dataset's publication status and display
           //onscreen for the user under their dataset name
-          $("#para-review-dataset-info-disseminate").text(publishStatusOutputConversion(res));
+          $(`#${curationModeID}para-review-dataset-info-disseminate`).text(
+            publishStatusOutputConversion(res)
+          );
+          console.log($(`#${curationModeID}para-review-dataset-info-disseminate`));
 
           if (callback === submitReviewDatasetCheck || callback === withdrawDatasetCheck) {
-            return resolve(callback(res));
+            return resolve(callback(res, curationMode));
           }
 
           resolve();
@@ -3965,7 +4034,7 @@ const showPublishingStatus = async (callback) => {
   });
 };
 
-function publishStatusOutputConversion(res) {
+const publishStatusOutputConversion = (res) => {
   var reviewStatus = res["review_request_status"];
   var publishStatus = res["publishing_status"];
 
@@ -3981,7 +4050,7 @@ function publishStatusOutputConversion(res) {
   }
 
   return outputMessage;
-}
+};
 
 const allowedMedataFiles = [
   "submission.xlsx",
@@ -4189,7 +4258,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
 
 // ///////////////////////////////////////////////////////////////////////////
 // recursively populate json object
-function populateJSONObjFolder(action, jsonObject, folderPath) {
+const populateJSONObjFolder = (action, jsonObject, folderPath) => {
   var myitems = fs.readdirSync(folderPath);
   myitems.forEach((element) => {
     //prevented here
@@ -4233,19 +4302,19 @@ function populateJSONObjFolder(action, jsonObject, folderPath) {
       };
     }
   });
-}
+};
 
 let full_name_show = false;
 
-function hideFullName() {
+const hideFullName = () => {
   full_name_show = false;
   fullNameValue.style.display = "none";
   fullNameValue.style.top = "-250%";
   fullNameValue.style.left = "-250%";
-}
+};
 
 //// HOVER FOR FULL NAME (FOLDERS WITH WRAPPED NAME IN UI)
-function showFullName(ev, element, text) {
+const showFullName = (ev, element, text) => {
   /// check if the full name of the folder is overflowing or not, if so, show full name on hover
   full_name_show = true;
   var isOverflowing =
@@ -4262,7 +4331,7 @@ function showFullName(ev, element, text) {
       }
     }, 800);
   }
-}
+};
 
 /// hover over a function for full name
 const hoverForFullName = (ev) => {
@@ -4281,10 +4350,10 @@ document.addEventListener("onmouseover", function (e) {
 });
 
 // if a file/folder is clicked -> show details in right "sidebar"
-function showDetailsFile() {
+const showDetailsFile = () => {
   $(".div-display-details.file").toggleClass("show");
   // $(".div-display-details.folders").hide()
-}
+};
 
 const pasteFromClipboard = (event, target_element) => {
   event.preventDefault();
@@ -4327,7 +4396,7 @@ var bfaddaccountTitle = `<h3 style="text-align:center">Connect your Pennsieve ac
 
 // this function is called in the beginning to load bf accounts to a list
 // which will be fed as dropdown options
-async function retrieveBFAccounts() {
+const retrieveBFAccounts = async () => {
   bfAccountOptions = [];
   bfAccountOptionsStatus = "";
 
@@ -4350,10 +4419,10 @@ async function retrieveBFAccounts() {
     bfAccountOptionsStatus = "No account connected";
   }
   return [bfAccountOptions, bfAccountOptionsStatus];
-}
+};
 
 let defaultAccountDetails = "";
-async function showDefaultBFAccount() {
+const showDefaultBFAccount = async () => {
   try {
     let bf_default_acc_req = await client.get("manage_datasets/bf_default_account_load");
     let accounts = bf_default_acc_req.data.defaultAccounts;
@@ -4401,10 +4470,10 @@ async function showDefaultBFAccount() {
   } catch (error) {
     clientError(error);
   }
-}
+};
 
 ////// function to trigger action for each context menu option
-function hideMenu(category, menu1, menu2, menu3) {
+const hideMenu = (category, menu1, menu2, menu3) => {
   if (category === "folder") {
     menu1.style.display = "none";
     menu1.style.top = "-200%";
@@ -4418,9 +4487,9 @@ function hideMenu(category, menu1, menu2, menu3) {
     menu3.style.top = "-210%";
     menu3.style.left = "-210%";
   }
-}
+};
 
-function changeStepOrganize(step) {
+const changeStepOrganize = (step) => {
   if (step.id === "button-organize-prev") {
     document.getElementById("div-step-1-organize").style.display = "block";
     document.getElementById("div-step-2-organize").style.display = "none";
@@ -4436,10 +4505,10 @@ function changeStepOrganize(step) {
     organizePrevStepBtn.style.display = "block";
     organizeNextStepBtn.style.display = "none";
   }
-}
+};
 
 var newDSName;
-function generateDataset(button) {
+const generateDataset = (button) => {
   document.getElementById("para-organize-datasets-success").style.display = "none";
   document.getElementById("para-organize-datasets-error").style.display = "none";
   if (button.id === "btn-generate-locally") {
@@ -4471,7 +4540,7 @@ function generateDataset(button) {
     $("#btn-generate-locally").removeClass("active");
     $(button).toggleClass("active");
   }
-}
+};
 
 ipcRenderer.on("selected-new-dataset", async (event, filepath) => {
   if (filepath.length > 0) {
@@ -5737,7 +5806,7 @@ const dropHelper = async (
 };
 
 var irregularFolderArray = [];
-function detectIrregularFolders(folderName, pathEle) {
+const detectIrregularFolders = (folderName, pathEle) => {
   if (checkIrregularNameBoolean(folderName)) {
     irregularFolderArray.push(pathEle);
   }
@@ -5750,7 +5819,7 @@ function detectIrregularFolders(folderName, pathEle) {
       return irregularFolderArray;
     });
   }
-}
+};
 
 const checkIrregularNameBoolean = (folderName) => {
   //nonAllowedCharacters modified to only allow a-z A-z 0-9 and hyphen "-"
@@ -6090,7 +6159,7 @@ const showmenu = (ev, category, deleted = false) => {
 };
 
 /// options for regular sub-folders
-function folderContextMenu(event) {
+const folderContextMenu = (event) => {
   console.log(event);
   $(".menu.reg-folder li")
     .unbind()
@@ -6144,10 +6213,10 @@ function folderContextMenu(event) {
   hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
   hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
   hideFullName();
-}
+};
 
 //////// options for files
-function fileContextMenu(event) {
+const fileContextMenu = (event) => {
   if ($(".div-display-details.file").hasClass("show")) {
     $(".div-display-details.file").removeClass("show");
   }
@@ -6175,7 +6244,7 @@ function fileContextMenu(event) {
       hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
     });
   hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
-}
+};
 
 $(document).ready(function () {
   tippy("[data-tippy-content]:not(.tippy-content-main):not(.guided-tippy-wrapper)", {
@@ -6957,14 +7026,14 @@ const getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
   });
 };
 
-function sliceStringByValue(string, endingValue) {
+const sliceStringByValue = (string, endingValue) => {
   var newString = string.slice(string.indexOf(endingValue) + 1);
   return newString;
-}
+};
 
 var fileNameForEdit;
 ///// Option to manage description for files
-function manageDesc(ev) {
+const manageDesc = (ev) => {
   var fileName = ev.parentElement.innerText;
   /// get current location of files in JSON object
   var filtered = getGlobalPath(organizeDSglobalPath);
@@ -6982,9 +7051,9 @@ function manageDesc(ev) {
   hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
   hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
   fileNameForEdit = fileName;
-}
+};
 
-function updateFileDetails(ev) {
+const updateFileDetails = (ev) => {
   var fileName = fileNameForEdit;
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
@@ -7004,9 +7073,9 @@ function updateFileDetails(ev) {
   }
   // close the display
   showDetailsFile();
-}
+};
 
-function addDetailsForFile(ev) {
+const addDetailsForFile = (ev) => {
   var checked = false;
   for (var ele of $($(ev).siblings()).find("input:checkbox")) {
     if ($(ele).prop("checked")) {
@@ -7042,7 +7111,7 @@ function addDetailsForFile(ev) {
     updateFileDetails(ev);
     $("#button-confirm-display-details-file").html("Added");
   }
-}
+};
 
 $("#inputNewNameDataset").on("click", () => {
   $("#nextBtn").prop("disabled", true);
@@ -8503,14 +8572,23 @@ const curation_consortium_check = async (mode = "") => {
     } else {
       //needs to be replaced
       try {
-        let bf_get_permissions = await client.get(`/manage_datasets/bf_dataset_permissions`, {
-          params: {
-            selected_account: selected_account,
-            selected_dataset: selected_dataset,
-          },
-        });
-        // let permissions = bf_get_permissions.data.permissions;
-        let team_ids = bf_get_permissions.data.team_ids;
+        let bf_get_permissions = await api.getDatasetPermissions(
+          selected_account,
+          selected_dataset,
+          true
+        );
+        // let bf_get_permissions = await client.get(`/manage_datasets/bf_dataset_permissions`, {
+        //   params: {
+        //     selected_account: selected_account,
+        //     selected_dataset: selected_dataset,
+        //   },
+        // });
+
+        let permissions = bf_get_permissions.permissions;
+        let team_ids = bf_get_permissions.team_ids;
+        console.log(team_ids);
+        console.log(permissions);
+        console.log(bf_get_permissions);
 
         let curation_permission_satisfied = false;
         let consortium_permission_satisfied = false;
@@ -9112,7 +9190,7 @@ function logCurationForAnalytics(
   }
 }
 
-function getMetadataFileNameFromStatus(metadataFileStatus) {
+const getMetadataFileNameFromStatus = (metadataFileStatus) => {
   // get the UI text that displays the file path
   let filePath = metadataFileStatus.text();
 
@@ -9122,18 +9200,18 @@ function getMetadataFileNameFromStatus(metadataFileStatus) {
   fileName = fileName.slice(0, fileName.indexOf("."));
 
   return fileName;
-}
+};
 
-function determineLocationFromStatus(metadataFileStatus) {
+const determineLocationFromStatus = (metadataFileStatus) => {
   let filePath = metadataFileStatus.text();
 
   // determine if the user imported from Pennsieve or Locally
   let pennsieveFile = filePath.toUpperCase().includes("Pennsieve".toUpperCase());
 
   return pennsieveFile;
-}
+};
 
-function logGeneralOperationsForAnalytics(category, analyticsPrefix, granularity, actions) {
+const logGeneralOperationsForAnalytics = (category, analyticsPrefix, granularity, actions) => {
   // if no actions to log return
   if (!actions) {
     return;
@@ -9163,68 +9241,6 @@ function logGeneralOperationsForAnalytics(category, analyticsPrefix, granularity
       ipcRenderer.send("track-event", `${category}`, actionName, defaultBfDatasetId);
     }
   }
-}
-
-/**
- *
- * @param {string} datasetIdOrName - The currently selected dataset - name or its ID
- * @returns statuses - A status object that details the state of each pre-publishing checklist item for the given dataset and user
- */
-const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
-  // check that a dataset name or id is provided
-  if (!datasetIdOrName || datasetIdOrName === "") {
-    throw new Error(
-      "Error: Must provide a valid dataset to log status of pre-publishing checklist items from."
-    );
-  }
-
-  // construct the statuses object
-  const statuses = {};
-
-  let dataset = await api.getDataset(defaultBfDatasetId);
-
-  // get the description - aka subtitle (unfortunate naming), tags, banner image URL, collaborators, and license
-  const { description, tags, license } = dataset["content"];
-
-  // set the subtitle's status
-  statuses.subtitle = description && description.length ? true : false;
-
-  let readme = await api.getDatasetReadme(defaultBfAccount, datasetIdOrName);
-
-  // set the readme's status
-  statuses.readme = readme && readme.length >= 1 ? true : false;
-
-  // set tags's status
-  statuses.tags = tags && tags.length ? true : false;
-
-  let bannerImageURL = await api.getDatasetBannerImageURL(defaultBfAccount, defaultBfDataset);
-
-  // set the banner image's url status
-  statuses.bannerImageURL = bannerImageURL && bannerImageURL.length ? true : false;
-
-  // set the license's status
-  statuses.license = license && license.length ? true : false;
-
-  // declare the orcidId
-  let orcidId;
-
-  // get the user's information
-  let user = await api.getUserInformation();
-
-  // get the orcid object out of the user information
-  let orcidObject = user.orcid;
-
-  // check if the owner has an orcid id
-  if (orcidObject) {
-    orcidId = orcidObject.orcid;
-  } else {
-    orcidId = undefined;
-  }
-
-  // the user has an ORCID iD if the property is defined and non-empty
-  statuses.ORCID = orcidId && orcidId.length ? true : false;
-
-  return statuses;
 };
 
 /*

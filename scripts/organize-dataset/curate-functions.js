@@ -4,24 +4,6 @@ var metadataFile = "";
 var jstreePreview = document.getElementById("div-dataset-tree-preview");
 const nonAllowedCharacters = '<>_:",;[]{}^`~@/|?*$=!%&+#\\';
 
-// per change event of current dataset span text
-// const confirm_click_function = () => {
-//   let temp = $(".bf-dataset-span").html();
-//   if ($(".bf-dataset-span").html() == "None" || $(".bf-dataset-span").html() == "") {
-//     $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "none");
-//     $("#para-review-dataset-info-disseminate").text("None");
-//   } else {
-//     $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "flex");
-//     if ($($(this).parents().find(".field").find(".synced-progress")).length) {
-//       if ($($(this).parents().find(".field").find(".synced-progress")).css("display") === "none") {
-//         $(".confirm-button").click();
-//       }
-//     } else {
-//       $(".confirm-button").click();
-//     }
-//   }
-// };
-
 // Event listeners for opening the dropdown prompt
 document
   .querySelector("#Question-getting-started-BF-account .change-current-account")

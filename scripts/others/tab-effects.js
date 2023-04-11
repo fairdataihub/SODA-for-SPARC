@@ -2023,9 +2023,12 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
       }
       break;
     case "submit_prepublishing_review-question-2":
+      console.log("here");
       transitionToPrepublishingQuestionThree();
       break;
     case "submit_prepublishing_review-question-3":
+      console.log("HERE");
+      // createPrepublishingChecklist("");
       transitionToPrePublishingSubmit();
     case "Question-prepare-manifest-1":
       continueProgressGenerateManifest = await switchMetadataManifestQuestion();

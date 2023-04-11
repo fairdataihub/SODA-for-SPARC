@@ -732,16 +732,20 @@ const unHideAndSmoothScrollToElement = (id) => {
   });
 };
 
-const smoothScrollToElement = (idOrElement) => {
+const smoothScrollToElement = (idOrElement, block = "start", inline = "nearest") => {
   //check if idOrElement is an element
   if (typeof idOrElement === "string") {
-    elementToScrollTo = document.getElementById(id);
+    elementToScrollTo = document.getElementById(idOrElement);
     elementToScrollTo.scrollIntoView({
       behavior: "smooth",
+      block: block,
+      inline: inline,
     });
   } else {
     idOrElement.scrollIntoView({
       behavior: "smooth",
+      block: block,
+      inline: inline,
     });
   }
 };
