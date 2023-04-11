@@ -275,6 +275,18 @@
   max-width: 800px;
 }
 
+.guided--section.section-disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.guided--section .sub-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
 .guided--container-sub {
   display: flex;
   flex-grow: 1;
@@ -570,7 +582,6 @@
   background-color: var(--color-border);
   border: none;
   display: inline-block;
-  cursor: pointer;
   border-radius: 16px;
 }
 .guided--capsule.active {

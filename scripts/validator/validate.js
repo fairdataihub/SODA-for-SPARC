@@ -214,7 +214,7 @@ const validateLocalDataset = async () => {
     // a path_error_report upon validating the selected dataset.
     let viewReportResult = await Swal.fire({
       title: "Could Not Generate a Sanitized Validation Report",
-      html: `If you repeatedly have this issue please contact the SPARC Curation Team for support at curation@sparc.science. Would you like to view your raw validation report?`,
+      html: `If you repeatedly have this issue please contact the SODA for SPARC team at help@fairdataihub.org. Would you like to view your raw validation report?`,
       allowEscapeKey: true,
       allowOutsideClick: false,
       heightAuto: false,
@@ -247,7 +247,7 @@ const validateLocalDataset = async () => {
   Swal.fire({
     title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
     text: hasValidationErrors
-      ? `Please fix the errors listed in the table below to pass validation. If you would like to see your raw error report, navigate to ${SODADirectory}/validation.txt.`
+      ? `Please fix the errors listed in the table below then re-run validation to check that your dataset conforms to the SDS.`
       : `Your dataset conforms to the SPARC Dataset Structure.`,
     allowEscapeKey: true,
     allowOutsideClick: false,
@@ -388,7 +388,7 @@ const validatePennsieveDatasetStandAlone = async () => {
     // a path_error_report upon validating the selected dataset.
     let viewReportResult = await Swal.fire({
       title: "Could Not Generate a Sanitized Validation Report",
-      html: `If you repeatedly have this issue please contact the SPARC Curation Team for support at curation@sparc.science. Would you like to view your raw validation report?`,
+      html: `If you repeatedly have this issue please contact the SODA for SPARC team at help@fairdataihub.org. Would you like to view your raw validation report?`,
       allowEscapeKey: true,
       allowOutsideClick: false,
       heightAuto: false,
@@ -421,7 +421,7 @@ const validatePennsieveDatasetStandAlone = async () => {
   Swal.fire({
     title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
     text: hasValidationErrors
-      ? `Please fix the errors listed in the table below to pass validation. If you would like to see your raw error report, navigate to ${SODADirectory}/validation.txt.`
+      ? `Please fix the errors listed in the table below then re-run validation to check that your dataset conforms to the SDS.`
       : `Your dataset conforms to the SPARC Dataset Structure.`,
     allowEscapeKey: true,
     allowOutsideClick: false,

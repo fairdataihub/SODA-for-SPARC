@@ -109,7 +109,7 @@ const validateOrganizedDataset = async () => {
     // a path_error_report upon validating the selected dataset.
     let viewReportResult = await Swal.fire({
       title: "Could Not Generate a Sanitized Validation Report",
-      html: `If you repeatedly have this issue please contact the SPARC Curation Team for support at curation@sparc.science. Would you like to view your raw validation report?`,
+      html: `If you repeatedly have this issue please contact the SODA for SPARC team at help@fairdataihub.org. Would you like to view your raw validation report?`,
       allowEscapeKey: true,
       allowOutsideClick: false,
       heightAuto: false,
@@ -142,8 +142,7 @@ const validateOrganizedDataset = async () => {
   await Swal.fire({
     title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
     text: hasValidationErrors
-      ? `Please fix the errors listed in the table below.
-                That your dataset passes validation before it is shared with the SPARC Curation Consortium is highly encouraged.`
+      ? `Please fix the errors listed in the table below then re-run validation to check that your dataset conforms to the SDS. It is encouraged that you fix as many issues as possible before sharing with the SPARC Curation Team.`
       : `Your dataset conforms to the SPARC Dataset Structure. Continue to the next step to upload your dataset.`,
     allowEscapeKey: true,
     allowOutsideClick: false,
@@ -191,7 +190,7 @@ const displayValidationReportErrors = (validationReport, tableBody, validationEr
   Swal.fire({
     title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
     text: hasValidationErrors
-      ? `Please fix the errors listed in the table below to pass validation.`
+      ? `Please fix the errors listed in the table below then re-run validation to check that your dataset conforms to the SDS.`
       : `Your dataset conforms to the SPARC Dataset Structure.`,
     allowEscapeKey: true,
     allowOutsideClick: true,
