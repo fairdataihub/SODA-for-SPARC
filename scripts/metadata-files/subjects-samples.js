@@ -592,12 +592,14 @@ const guidedSetStrainRRID = (RRID) => {
 
   if (!RRID) {
     rridLabel.classList.add("hidden");
+    rridInput.classList.add("hidden");
     rridInput.style.display = "none";
     rridInput.value = "";
     return;
   }
 
   rridLabel.classList.remove("hidden");
+  rridInput.classList.remove("hidden");
   rridInput.style.display = "flex";
   rridInput.value = RRID;
 };
@@ -754,8 +756,8 @@ function addSubjectMetadataEntriesIntoJSON(curationMode) {
     .find(".subjects-form-entry")) {
     if (field.value === "" || field.value === undefined || field.value === "Select") {
       field.value = null;
-    } else {
     }
+
     headersArrSubjects.push(field.name);
     // if it's age, then add age info input (day/week/month/year)
     if (field.name === "Age") {
@@ -793,7 +795,13 @@ function addSubjectMetadataEntriesIntoJSON(curationMode) {
       //Overwrite existing subject data with new subject data
       for (let i = 1; i < subjectsTableData.length; i++) {
         if (subjectsTableData[i][0] === subjectID) {
+          console.log(subjectsTableData[0]);
+
+          console.log("Overwriting existing subject data with new subject data");
+          console.log(subjectsTableData[i]);
+
           subjectsTableData[i] = valuesArr;
+          console.log(subjectsTableData[i]);
         }
       }
     }
@@ -1157,6 +1165,9 @@ function populateSubjectFields(subjectID, type, curationMode) {
     return subjectDataRow[0] === subjectID;
   });
 
+  console.log(subjectsMetadataDataHeaders);
+  console.log(subjectMetadataValues);
+
   if (!subjectMetadataValues) {
     console.log("No sample metadata found for sample " + subjectID);
     return;
@@ -1233,17 +1244,23 @@ function populateSubjectFields(subjectID, type, curationMode) {
     }
 
     if (subjectMetadataFieldName === "Strain") {
+      console.log("Strain value: " + subjectFieldValue);
       if (subjectFieldValue === "" || emptyEntries.includes(subjectFieldValue.toLowerCase())) {
         subjectsMetadataDataHeaders[i].value = "";
         switchSpeciesStrainInput("strain", "add", curationMode);
       } else {
+        console.log(
+          "Setting value to " + subjectFieldValue + " for field " + subjectMetadataFieldName
+        );
         subjectsMetadataDataHeaders[i].value = subjectFieldValue;
         switchSpeciesStrainInput("strain", "edit", curationMode);
+        console.log("VALUE" + subjectsMetadataDataHeaders[i].value);
       }
       continue;
     }
 
     if (curationMode === "guided" && subjectMetadataFieldName === "RRID for strain") {
+      subjectsMetadataDataHeaders[i].value = subjectFieldValue;
       guidedSetStrainRRID(subjectFieldValue);
       continue;
     }
@@ -1330,14 +1347,6 @@ function populateSampleFields(subjectID, sampleID, type, curationMode) {
       }
     }
 
-    // If the value of the current field is empty or is one of the empty entries,
-    // set the corresponding element to an empty string and continue to the next field
-    if (sampleValue === "" || emptyEntries.includes(sampleValue.toLowerCase())) {
-      console.log("Empty value found for field " + sampleMetadataField);
-      sampleMetadataFieldElements[i].value = "";
-      continue;
-    }
-
     if (curationMode === "guided" && sampleMetadataField === "was derived from") {
       const wasDerivedFromDropdown = document.getElementById("guided-bootbox-wasDerivedFromSample");
       wasDerivedFromDropdown.value = "";
@@ -1360,9 +1369,14 @@ function populateSampleFields(subjectID, sampleID, type, curationMode) {
       continue;
     }
 
-    // If the current field is not empty, set the corresponding element to the
-    // value of the current field
-    sampleMetadataFieldElements[i].value = sampleValue;
+    // If the value of the current field is empty or is one of the empty entries,
+    // set the corresponding element to an empty string and continue to the next field
+    if (sampleValue === "" || emptyEntries.includes(sampleValue.toLowerCase())) {
+      console.log("Empty value found for field " + sampleMetadataField);
+      sampleMetadataFieldElements[i].value = "";
+    } else {
+      sampleMetadataFieldElements[i].value = sampleValue;
+    }
   }
 }
 
