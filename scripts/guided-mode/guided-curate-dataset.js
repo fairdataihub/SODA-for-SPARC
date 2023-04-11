@@ -11355,11 +11355,8 @@ $(document).ready(async () => {
               const descriptionMetdataData = descriptionMetadaRes.data["Basic information"];
               if (descriptionMetdataData[0][0] === "Type") {
                 const studyType = descriptionMetdataData[0][1];
-                if (studyType === "computational") {
-                  document.getElementById("guided-button-dataset-type-computational").click();
-                }
-                if (studyType === "experimental") {
-                  document.getElementById("guided-button-dataset-type-experimental").click();
+                if (studyType === "computational" || studyType === "experimental") {
+                  document.getElementById(`guided-button-dataset-type-${studyType}`).click();
                 }
               }
             } catch (error) {
