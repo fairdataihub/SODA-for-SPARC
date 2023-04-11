@@ -116,7 +116,7 @@ def remove_collection_names(account, dataset, tags):
 
     return dict({"collection": "Collection removed"})
 
-
+# TODO: Dorian -> Ensure errors are being handled properly
 def reserve_dataset_doi(dataset):  # sourcery skip: extract-method
     """
     Function used to reserve a DOI after dataset has been published
@@ -147,8 +147,6 @@ def reserve_dataset_doi(dataset):  # sourcery skip: extract-method
         return {"doi": doi_request.json()["doi"]}
     except Exception as e:
         if type(e).__name__ == "HTTPError":
-            print(f"Error code: {str(e.response.status_code)}")
-            print(f"Error code: {str(e.code)}")
             abort(400, e.response.json()["message"])
         abort(500, "An internal server error prevented the request from being fulfilled. Please try again later.")
 
@@ -178,6 +176,8 @@ def get_dataset_doi(dataset):
     try:
         print("sending request")
         doi_request = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/doi", headers=create_request_headers(token))
+        if doi_request.status_code == 404:
+            return {"doi": "No DOI found for this dataset"}
         doi_request.raise_for_status()
         print(doi_request.json())
         return {"doi": doi_request.json()["doi"]}

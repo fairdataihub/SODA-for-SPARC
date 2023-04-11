@@ -133,6 +133,21 @@ const getDatasetPermissions = async (selected_account, selected_dataset, boolRet
   }
 };
 
+const getDatasetDOI = async (account, dataset) => {
+  // reference: https://docs.pennsieve.io/reference/getdoi
+  console.log(account);
+  console.log(dataset);
+
+  try {
+    let doi = await client.get(`datasets/${dataset}/reserve-doi`);
+    return doi.data.doi;
+    console.log(doi);
+  } catch (err) {
+    clientError(err);
+    userErrorMessage(err);
+  }
+};
+
 // TODO: Add api function for setting dataset permissions
 
 const getDatasetsForAccount = async (selected_account) => {
@@ -398,6 +413,7 @@ const api = {
   performUserActions,
   createSkeletonDataset,
   validateLocalDataset,
+  getDatasetDOI,
 };
 
 module.exports = api;

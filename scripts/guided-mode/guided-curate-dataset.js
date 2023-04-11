@@ -247,6 +247,7 @@ const getGuidedProgressFileNames = () => {
 };
 
 const savePageChanges = async (pageBeingLeftID) => {
+  console.log(pageBeingLeftID);
   // This function is used by both the navigation bar and the side buttons,
   // and whenever it is being called, we know that the user is trying to save the changes on the current page.
   // this function is async because we sometimes need to make calls to validate data before the page is ready to be left.
@@ -1483,6 +1484,11 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
     }
 
+    if (pageBeingLeftID === "guided-dataset-dissemination-tab") {
+      //Save the DOI information of the dataset
+      sodaJSONObj["digital-metadata"]["doi"] = $("#guided--para-doi-info").text();
+    }
+
     // Save the current version of SODA as the user should be taken back to the first page when the app is updated
     const currentAppVersion = document.getElementById("version").innerHTML;
     sodaJSONObj["last-version-of-soda-used"] = currentAppVersion;
@@ -2016,18 +2022,20 @@ const guidedSetCurationTeamUI = (boolSharedWithCurationTeam) => {
 };
 
 // TODO: Dorian -> Handle error reponses when no DOI is found
-const guidedSetDOIUI = (boolHasDOI) => {
+const guidedSetDOIUI = async (boolHasDOI) => {
   let account = sodaJSONObj["bf-account-selected"]["account-name"];
   let dataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-  let pennsieveDOICheck = getDatasetDOI(account, dataset);
   if (boolHasDOI) {
     console.log("has doi");
+    let doiInfo = sodaJSONObj["digital-metadata"]["doi"];
+    $("#guided--para-doi-info").text(doiInfo);
   } else {
+    let pennsieveDOICheck = await api.getDatasetDOI(account, dataset);
+    console.log("pennsieveDOICheck", pennsieveDOICheck);
     // Check from Pennsieve if the dataset has a DOI before showing the button
     // In case DOI was reserved directly from Pennsieve
-    if (!pennsieveDOICheck) {
-      console.log("no doi");
-    }
+    $("#guided--para-doi-info").text(pennsieveDOICheck);
+    sodaJSONObj["digital-metadata"]["doi"] = pennsieveDOICheck;
   }
 };
 
@@ -6579,6 +6587,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
 
   // If the dataset had been previously successfully uploaded, check to make sure it exists on Pennsieve still.
   if (datasetHasAlreadyBeenSuccessfullyUploaded) {
+    console.log(datasetResumeJsonObj);
     const previouslyUploadedDatasetId =
       datasetResumeJsonObj["digital-metadata"]["pennsieve-dataset-id"];
     const datasetToResumeExistsOnPennsieve = await checkIfDatasetExistsOnPennsieve(
