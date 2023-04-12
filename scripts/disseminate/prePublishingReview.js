@@ -531,7 +531,7 @@ const createPrepublishingChecklist = async (curationMode) => {
       "individual-question post-curation"
     );
   }
-  
+
   // hide the continue button
   $(`.${curationModeID}pre-publishing-continue-container`).hide();
 

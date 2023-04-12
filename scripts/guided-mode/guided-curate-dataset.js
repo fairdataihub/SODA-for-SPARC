@@ -1503,7 +1503,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       $("#guided--prepublishing-checklist-container").addClass("hidden");
       $("#guided--submit-prepublishing-review").addClass("hidden");
       $("#guided--para-doi-info").text("");
-      $("#guided-button-unshare-dataset-with-curation-team")
+      $("#guided-button-unshare-dataset-with-curation-team");
     }
 
     // Save the current version of SODA as the user should be taken back to the first page when the app is updated
@@ -2042,7 +2042,7 @@ const guidedReserveAndSaveDOI = async () => {
   let dataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
   $("#curate-button-reserve-doi").addClass("loading");
   $("#curate-button-reserve-doi").disabled = true;
-  
+
   let doiInformation = await api.reserveDOI(account, dataset);
   guidedSetDOIUI(doiInformation);
 };
@@ -2081,7 +2081,7 @@ const guidedModifyCurationTeamAccess = async (action) => {
     guidedShareWithCurationTeamButton.classList.add("hidden");
 
     let publishPreCheckStatus = await beginPrepublishingFlow("guided");
-    
+
     // Will return false if there are issues running the precheck flow
     if (!publishPreCheckStatus) {
       guidedShareWithCurationTeamButton.classList.remove("hidden");
@@ -6486,7 +6486,7 @@ const isNumberBetween = (number, minVal, maxVal) => {
 const subSamInputIsValid = (subSamInput) => {
   const subSamInputPattern = /^[a-z]+-[0-9A-Za-z-]+$/;
   return subSamInputPattern.test(subSamInput);
-}
+};
 
 const generateAlertElement = (alertType, warningMessageText) => {
   return `
