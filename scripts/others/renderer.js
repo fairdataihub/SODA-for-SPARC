@@ -3517,6 +3517,7 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
 // //Withdraw dataset from review
 // TODO: Dorian -> Adapt this function and the others below for Guided Mode (withdrawing a dataset from review functions)
 const withdrawDatasetSubmission = (curationMode) => {
+  console.log("clicked withdraw dataset submission")
   // show a SWAL loading message until the submit for prepublishing flow is successful or fails
   Swal.fire({
     title: `Preparing to withdraw the dataset submission`,
