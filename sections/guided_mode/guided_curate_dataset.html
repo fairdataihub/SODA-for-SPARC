@@ -76,13 +76,6 @@
               src="assets/img/logo-soda1024.png"
             />
           </div>
-          <h1
-            class="text-sub-step-title mt-sm mb-sm"
-            style="max-width: 600px; font-size: 18px !important"
-          >
-            Share FAIR neuromodulation-relation data and code through the SPARC data curation
-            workflow
-          </h1>
           <h2 class="mt-2 mb-3" style="font-size: 16px">What would you like to do today?</h2>
           <div
             class="justify-center align-items-center h-100"
@@ -91,32 +84,29 @@
           >
             <div class="button-prompt-container" id="guided-button-start-new-curate">
               <div class="wide-card-text-container">
-                <h2 class="wide-card-title-text" style="margin-right: 3.5rem">
-                  Curate a New Dataset
-                </h2>
+                <h2 class="wide-card-title-text">Curate a New Dataset</h2>
                 <p class="wide-card-subtitle-text">
-                  I want to curate and share a new datataset as per the SPARC workflow
+                  Follow the end-to-end curation process to upload a new SPARC dataset to Pennsieve
                 </p>
               </div>
               <div id="new-dataset-lottie-container" class="wide-card-lottie-container"></div>
             </div>
             <div class="button-prompt-container" id="guided-button-start-existing-curate">
               <div class="wide-card-text-container">
-                <h2 class="wide-card-title-text" style="margin-right: 1.5rem">
-                  Resume Existing Dataset
-                </h2>
+                <h2 class="wide-card-title-text">Resume an Existing Dataset</h2>
                 <p class="wide-card-subtitle-text">
-                  I want to resume working on a Pennsieve or locally saved dataset
+                  Continue working on a previously started dataset or update a dataset on Pennsieve
+                  via the end-to-end curation process
                 </p>
               </div>
               <div id="existing-dataset-lottie" class="wide-card-lottie-container"></div>
             </div>
             <div class="button-prompt-container" id="guided-button-start-modify-component">
               <div class="wide-card-text-container">
-                <h2 class="wide-card-title-text">Modify Dataset Component</h2>
+                <h2 class="wide-card-title-text">Free Form Mode</h2>
                 <p class="wide-card-subtitle-text">
-                  I want to edit specific aspects of my dataset (create metadata files, add banner
-                  image, etc)
+                  Individually edit aspects of a dataset (Manage Pennsieve dataset settings, create
+                  metadata files, manage dataset files, share a dataset etc.)
                 </p>
               </div>
               <div id="edit-dataset-component-lottie" class="wide-card-lottie-container"></div>
@@ -156,7 +146,7 @@
                 data-next-element="guided-section-resume-progress-cards"
               >
                 <div class="tile-button-icon" style="width: 46px; fill: var(--color-accent)">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 448 512">
                     <!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
                     <path
                       d="M48 96V416c0 8.8 7.2 16 16 16H384c8.8 0 16-7.2 16-16V170.5c0-4.2-1.7-8.3-4.7-11.3l33.9-33.9c12 12 18.7 28.3 18.7 45.3V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96C0 60.7 28.7 32 64 32H309.5c17 0 33.3 6.7 45.3 18.7l74.5 74.5-33.9 33.9L320.8 84.7c-.3-.3-.5-.5-.8-.8V184c0 13.3-10.7 24-24 24H104c-13.3 0-24-10.7-24-24V80H64c-8.8 0-16 7.2-16 16zm80-16v80H272V80H128zm32 240a64 64 0 1 1 128 0 64 64 0 1 1 -128 0z"
@@ -506,7 +496,7 @@
                       xmlns:xlink="http://www.w3.org/1999/xlink"
                       width="120%"
                       height="120%"
-                      viewBox="0 0 64.00 64.00"
+                      viewbox="0 0 64.00 64.00"
                       aria-hidden="true"
                       role="img"
                       class="iconify iconify--emojione"
@@ -577,7 +567,7 @@
                       id="Layer_1"
                       xmlns="http://www.w3.org/2000/svg"
                       xmlns:xlink="http://www.w3.org/1999/xlink"
-                      viewBox="0 0 32.00 32.00"
+                      viewbox="0 0 32.00 32.00"
                       xml:space="preserve"
                       width="120%"
                       height="120%"
@@ -4370,7 +4360,7 @@
             <!-- <div id="guided--banner-image-drag" style="margin-top: 1.5rem;">
               <div class="guided--container-file-import" droppable="true" ondrop="dropHandler(event, 'guided-para-path-image', 'bannerImage', 'guided-mode', dataDeliverables=false);" ondragover="return false;">
                 <div class="guided--file-import" data-code-metadata-file-type="bannerImage" style="min-height: 333px; width: 324px;">
-                  <div id="swal-data-deliverable" class="code-metadata-lottie-container" style="height: 100px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300" preserveAspectRatio="xMidYMid meet" style="width: 100%; height: 100%; transform: translate3d(0px, 0px, 0px); content-visibility: visible;"><defs><clipPath id="__lottie_element_791"><rect width="300" height="300" x="0" y="0"></rect></clipPath></defs><g clip-path="url(#__lottie_element_791)"><g transform="matrix(1,0,0,1,99,36.82099914550781)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M12,65.67900085449219 C12,65.67900085449219 12,59.67900085449219 12,59.67900085449219"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 13.893 13.893" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M12,45.7859992980957 C12,45.7859992980957 12,24.94700050354004 12,24.94700050354004"></path></g><g opacity="1" transform="matrix(1,0,0,1,15,15)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-3,3 C-3,3 -3,-3 -3,-3 C-3,-3 3,-3 3,-3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 10.909 10.909" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M28.909000396728516,12 C28.909000396728516,12 132.5449981689453,12 132.5449981689453,12"></path></g><g opacity="1" transform="matrix(1,0,0,1,141,15)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-3,-3 C-3,-3 3,-3 3,-3 C3,-3 3,3 3,3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 10.909 10.909" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M144,28.909000396728516 C144,28.909000396728516 144,132.54600524902344 144,132.54600524902344"></path></g><g opacity="1" transform="matrix(1,0,0,1,141,141)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M3,-3 C3,-3 3,3 3,3 C3,3 -3,3 -3,3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 11.333 11.333" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M126.66699981689453,144 C126.66699981689453,144 109.66699981689453,144 109.66699981689453,144"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M104,144 C104,144 98,144 98,144"></path></g></g><g transform="matrix(1,0,0,1,122.58927917480469,49.94279098510742)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,60.5620002746582,60.5620002746582)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="10" d=" M35.5620002746582,-35.5620002746582 C35.5620002746582,-35.5620002746582 -35.5620002746582,-23.679000854492188 -35.5620002746582,-23.679000854492188 C-35.5620002746582,-23.679000854492188 -10.25100040435791,-10.25100040435791 -10.25100040435791,-10.25100040435791 C-10.25100040435791,-10.25100040435791 -35.20399856567383,14.70300006866455 -35.20399856567383,14.70300006866455 C-35.20399856567383,14.70300006866455 -15.003999710083008,34.90299987792969 -15.003999710083008,34.90299987792969 C-15.003999710083008,34.90299987792969 9.949000358581543,9.949999809265137 9.949000358581543,9.949999809265137 C9.949000358581543,9.949999809265137 23.679000854492188,35.5620002746582 23.679000854492188,35.5620002746582 C23.679000854492188,35.5620002746582 35.5620002746582,-35.5620002746582 35.5620002746582,-35.5620002746582z"></path></g></g><g transform="matrix(1,0,0,1,102.64799499511719,40.451995849609375)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,74.48500061035156,74.48500061035156)"><path stroke-linecap="round" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-66,0 C-66,-33 -66,-66 -66,-66 C-66,-66 66,-66 66,-66 C66,-66 66,66 66,66 C66,66 66,66 66,66 C66,66 -66,66 -66,66 C-66,66 -66,33 -66,0"></path></g></g></g></svg></div>
+                  <div id="swal-data-deliverable" class="code-metadata-lottie-container" style="height: 100px"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 300 300" width="300" height="300" preserveAspectRatio="xMidYMid meet" style="width: 100%; height: 100%; transform: translate3d(0px, 0px, 0px); content-visibility: visible;"><defs><clipPath id="__lottie_element_791"><rect width="300" height="300" x="0" y="0"></rect></clipPath></defs><g clip-path="url(#__lottie_element_791)"><g transform="matrix(1,0,0,1,99,36.82099914550781)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M12,65.67900085449219 C12,65.67900085449219 12,59.67900085449219 12,59.67900085449219"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 13.893 13.893" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M12,45.7859992980957 C12,45.7859992980957 12,24.94700050354004 12,24.94700050354004"></path></g><g opacity="1" transform="matrix(1,0,0,1,15,15)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-3,3 C-3,3 -3,-3 -3,-3 C-3,-3 3,-3 3,-3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 10.909 10.909" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M28.909000396728516,12 C28.909000396728516,12 132.5449981689453,12 132.5449981689453,12"></path></g><g opacity="1" transform="matrix(1,0,0,1,141,15)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-3,-3 C-3,-3 3,-3 3,-3 C3,-3 3,3 3,3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 10.909 10.909" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M144,28.909000396728516 C144,28.909000396728516 144,132.54600524902344 144,132.54600524902344"></path></g><g opacity="1" transform="matrix(1,0,0,1,141,141)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M3,-3 C3,-3 3,3 3,3 C3,3 -3,3 -3,3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 11.333 11.333" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M126.66699981689453,144 C126.66699981689453,144 109.66699981689453,144 109.66699981689453,144"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M104,144 C104,144 98,144 98,144"></path></g></g><g transform="matrix(1,0,0,1,122.58927917480469,49.94279098510742)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,60.5620002746582,60.5620002746582)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="10" d=" M35.5620002746582,-35.5620002746582 C35.5620002746582,-35.5620002746582 -35.5620002746582,-23.679000854492188 -35.5620002746582,-23.679000854492188 C-35.5620002746582,-23.679000854492188 -10.25100040435791,-10.25100040435791 -10.25100040435791,-10.25100040435791 C-10.25100040435791,-10.25100040435791 -35.20399856567383,14.70300006866455 -35.20399856567383,14.70300006866455 C-35.20399856567383,14.70300006866455 -15.003999710083008,34.90299987792969 -15.003999710083008,34.90299987792969 C-15.003999710083008,34.90299987792969 9.949000358581543,9.949999809265137 9.949000358581543,9.949999809265137 C9.949000358581543,9.949999809265137 23.679000854492188,35.5620002746582 23.679000854492188,35.5620002746582 C23.679000854492188,35.5620002746582 35.5620002746582,-35.5620002746582 35.5620002746582,-35.5620002746582z"></path></g></g><g transform="matrix(1,0,0,1,102.64799499511719,40.451995849609375)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,74.48500061035156,74.48500061035156)"><path stroke-linecap="round" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-66,0 C-66,-33 -66,-66 -66,-66 C-66,-66 66,-66 66,-66 C66,-66 66,66 66,66 C66,66 66,66 66,66 C66,66 -66,66 -66,66 C-66,66 -66,33 -66,0"></path></g></g></g></svg></div>
                   <div style="display: flex;">
                     <p class="help-text text-center">
                       Drag and Drop</p>
@@ -4829,7 +4819,7 @@
                   <svg
                     width="48px"
                     height="48px"
-                    viewBox="0 0 16 16"
+                    viewbox="0 0 16 16"
                     class="bi bi-clipboard-check"
                     fill="#585858"
                     xmlns="http://www.w3.org/2000/svg"
