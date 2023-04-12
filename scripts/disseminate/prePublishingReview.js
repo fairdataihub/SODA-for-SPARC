@@ -108,6 +108,8 @@ const orcidSignIn = async (curationMode) => {
 
     log.info("Connecting orcid to Pennsieve account.");
 
+    console.log(accessCode);
+    console.log(defaultBfAccount);
     try {
       await client.post(
         `/user/orcid`,
@@ -122,7 +124,7 @@ const orcidSignIn = async (curationMode) => {
       clientError(error);
       let emessage = userErrorMessage(error);
       Swal.fire({
-        title: "Unable to integrate your ORCID iD with Pennsieve",
+        title: "An issue occurred with connecting your ORCID iD to Pennsieve.",
         text: emessage,
         icon: "error",
         allowEscapeKey: true,
@@ -170,12 +172,39 @@ const orcidSignIn = async (curationMode) => {
   });
 };
 
+// TODO: Dorian -> finish this function to reset the text of the checklist items
+// const resetPrePublishingChecklist = (curationMode) => {
+//   let curationModeID = "";
+//   if (curationMode === "guided") {
+//     curationModeID = "guided--";
+//   }
+//   let checkListItems = $(".prepublishing-item-button");
+//   for (let i = 0; i < checkListItems.length; i++) {
+//     let item = checkListItems[i];
+//     console.log(item);
+//     let itemText = item.innerText;
+//     if (!itemText.includes("Orcid") && !itemText.includes("Add")) {
+//       let resetText = itemText.replace(" added", "");
+//       //Lowercase the first letter of the string
+//       resetText = resetText.charAt(0).toLowerCase() + resetText.slice(1);
+//       item.innerText = "Add " + resetText;
+//       console.log(item.innerText);
+//     }
+//     else if(itemText.includes("Orcid") && !itemText.includes("Link")){
+//       let resetText = itemText.replace(" linked", "");
+//       item.innerText = "Link " + resetText;
+//       console.log(item.innerText);
+//     }
+//   }
+// }
+
 //  This function is the first step to the prepublishing workflow for both guided and freeform mode
 //  Function fetches the status of each item needed to publish a dataset from the backend and updates the UI accordingly.
 //  inPrePublishing: boolean - True when the function is ran in the pre-publishing submission flow; false otherwise
-const showPrePublishingStatus = async (inPrePublishing = false, curationMode) => {
+const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "") => {
   let currentDataset = defaultBfDataset;
   let curationModeID = "";
+  // resetPrePublishingChecklist(curationMode);
 
   if (curationMode === "guided") {
     // This is done to ensure the right element ID is called
@@ -183,6 +212,7 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode) =>
     curationModeID = "guided--";
     currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
     console.log("is guided mode here as well");
+    // Reset the language for the pre-publishing checklist items
     $("#guided--prepublishing-checklist-container").removeClass("hidden");
     smoothScrollToElement(`guided--prepublishing-continue-btn`, "end", "nearest");
   }
@@ -298,8 +328,26 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode) =>
 // gets the pre-publishing checklist item element by id and gives it a check or an 'x' based off the value of the pre-publishing item's status
 const setPrepublishingChecklistItemIconByStatus = (iconElementId, status) => {
   if (status) {
+    // Change icon of iconElementId to a checkmark
     $(`#${iconElementId}`).attr("class", "check icon");
     $(`#${iconElementId}`).css("color", "green");
+
+    // // Change text of iconElementId to let user know that the item has been linked
+    // let itemButton = $(`#${iconElementId}`).parent().siblings()[0];
+    // let itemButtonText = itemButton.innerText;
+    // if(itemButtonText.includes("Link")) {
+    //   let updatedButtonText = itemButtonText.replace("Link", "") + " linked";
+    //   itemButton.innerText = updatedButtonText;
+    // }
+    // if(itemButtonText.includes("Add")) {
+    //   let updatedButtonText = itemButtonText.replace("Add", "") + " added";
+    //   updatedButtonText = updatedButtonText.slice(1);
+    //   // Capitalize the first letter updatedButtonText
+    //   console.log("before updating text " + updatedButtonText)
+    //   let asdf = updatedButtonText.charAt(0).toUpperCase() + updatedButtonText.slice(1);
+    //   console.log(asdf);
+    //   itemButton.innerText = asdf;
+    // }
   } else {
     $(`#${iconElementId}`).attr("class", "close icon");
     $(`#${iconElementId}`).css("color", "red");
@@ -334,6 +382,7 @@ const allPrepublishingChecklistItemsCompleted = (curationMode) => {
 const transitionToPrepublishingQuestionThree = async () => {
   // hide the begin publishing button
   $("#begin-prepublishing-btn").hide();
+  // resetPrePublishingChecklist();
 
   // hide the excluded files container
   // because the Submit button transitions back to question three after showing this container
@@ -449,6 +498,7 @@ const createPrepublishingChecklist = async (curationMode) => {
     currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
     curationModeID = "guided--";
   }
+
   if (!allPrepublishingChecklistItemsCompleted(curationMode)) {
     // alert the user they must complete all checklist items before beginning the prepublishing process
     Swal.fire({

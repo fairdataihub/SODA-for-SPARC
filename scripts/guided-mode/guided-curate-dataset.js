@@ -71,6 +71,7 @@ const checkIfPoolsFoldersAreCorrect = (poolFolderPath) => {
     invalidFiles.push(poolFile);
   }
 };
+
 const checkIfSubjectsFoldersAreCorrect = (subjectFolderPath) => {
   const subjectFolders = Object.keys(subjectFolderPath["folders"]);
   const invalidSubjectFolders = subjectFolders.filter((folder) => {
@@ -85,6 +86,7 @@ const checkIfSubjectsFoldersAreCorrect = (subjectFolderPath) => {
     invalidFiles.push(subjectFile);
   }
 };
+
 const guidedCheckHighLevelFoldersForImproperFiles = (datasetStructure) => {
   const invalidFolders = [];
   const invalidFiles = [];
@@ -136,6 +138,7 @@ document.getElementById("guided-button-has-protocol-data").addEventListener("cli
     }
   }
 });
+
 document.getElementById("guided-button-has-docs-data").addEventListener("click", () => {
   const docsFolder = datasetStructureJSONObj["folders"]["docs"];
   if (docsFolder) {
@@ -240,6 +243,7 @@ const objectsHaveSameKeys = (...objects) => {
   const union = new Set(allKeys);
   return objects.every((object) => union.size === Object.keys(object).length);
 };
+
 const getGuidedProgressFileNames = () => {
   return fs
     .readdirSync(guidedProgressFilePath)
@@ -1498,6 +1502,11 @@ const savePageChanges = async (pageBeingLeftID) => {
     if (pageBeingLeftID === "guided-dataset-dissemination-tab") {
       //Save the DOI information of the dataset
       sodaJSONObj["digital-metadata"]["doi"] = $("#guided--para-doi-info").text();
+      // Reset the share with curation UI and DOI UI
+      $("#guided--prepublishing-checklist-container").addClass("hidden");
+      $("#guided--submit-prepublishing-review").addClass("hidden");
+      $("#guided--para-doi-info").text("");
+      $("#guided-button-unshare-dataset-with-curation-team");
     }
 
     // Save the current version of SODA as the user should be taken back to the first page when the app is updated
@@ -2020,25 +2029,29 @@ const guidedSetCurationTeamUI = () => {
     "guided--para-review-dataset-info-disseminate"
   );
   if (textSharedWithCurationTeamStatus.innerText != "Dataset is not under review currently") {
-    $("#guided-button-share-dataset-with-curation-team").hide();
-    $("#guided-button-unshare-dataset-with-curation-team").show();
+    $("#guided-button-share-dataset-with-curation-team").addClass("hidden");
+    $("#guided-button-unshare-dataset-with-curation-team").removeClass("hidden");
   } else {
     $("#guided--prepublishing-checklist-container").addClass("hidden");
-    $("#guided-button-share-dataset-with-curation-team").show();
+    $("#guided-button-share-dataset-with-curation-team").addClass("hidden");
     $("#guided-button-share-dataset-with-curation-team").removeClass("hidden");
-    $("#guided-button-unshare-dataset-with-curation-team").hide();
+    $("#guided-button-unshare-dataset-with-curation-team").addClass("hidden");
   }
 };
 
+// Function used to reserve a DOI for the current dataset and account
 const guidedReserveAndSaveDOI = async () => {
   let account = sodaJSONObj["bf-account-selected"]["account-name"];
   let dataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+  $("#curate-button-reserve-doi").addClass("loading");
+  $("#curate-button-reserve-doi").disabled = true;
 
   let doiInformation = await api.reserveDOI(account, dataset);
   guidedSetDOIUI(doiInformation);
 };
 
 // TODO: Dorian -> Handle error reponses when no DOI is found
+// Function is for displaying DOI information on the UI
 const guidedSetDOIUI = (doiInformation) => {
   $("#guided--para-doi-info").text(doiInformation);
 
@@ -2048,19 +2061,24 @@ const guidedSetDOIUI = (doiInformation) => {
   } else {
     $("#curate-button-reserve-doi").removeClass("hidden");
   }
+  $("#curate-button-reserve-doi").removeClass("loading");
+  $("#curate-button-reserve-doi").disabled = false;
 };
 
 const showPrepublishingReview = () => {
   //Show the final step to select metadata files to be excluded
   $("#guided--submit-prepublishing-review").removeClass("hidden");
   createPrepublishingChecklist("guided");
+  smoothScrollToElement("guided--submit-prepublishing-review", "end", "nearest");
 };
 
+// This function is for when a user clicks the share/unshare with curation team (requires Dataset to be published and locked)
 const guidedModifyCurationTeamAccess = async (action) => {
   if (action === "share") {
     const guidedShareWithCurationTeamButton = document.getElementById(
       "guided-button-share-dataset-with-curation-team"
     );
+
     guidedShareWithCurationTeamButton.disabled = true;
     guidedShareWithCurationTeamButton.classList.add("loading");
     guidedShareWithCurationTeamButton.classList.add("hidden");
@@ -2069,24 +2087,30 @@ const guidedModifyCurationTeamAccess = async (action) => {
 
     // Will return false if there are issues running the precheck flow
     if (!publishPreCheckStatus) {
-      guidedShareWithCurationTeamButton.disabled = false;
-      guidedShareWithCurationTeamButton.classList.remove("loading");
       guidedShareWithCurationTeamButton.classList.remove("hidden");
     }
+
+    guidedShareWithCurationTeamButton.classList.remove("loading");
+    guidedShareWithCurationTeamButton.disabled = false;
   }
   if (action === "unshare") {
-    // TODO: Adapt new meta to share with curation team
     const guidedUnshareWithCurationTeamButton = document.getElementById(
       "guided-button-unshare-dataset-with-curation-team"
     );
-
     console.log("Withdrawing the dataset here");
-    withdrawDatasetSubmission("guided");
+
     guidedUnshareWithCurationTeamButton.disabled = true;
     guidedUnshareWithCurationTeamButton.classList.add("loading");
+    guidedUnshareWithCurationTeamButton.classList.add("hidden");
 
-    // guidedUnshareWithCurationTeamButton.disabled = false;
-    // guidedUnshareWithCurationTeamButton.classList.remove("loading");
+    let removeStatus = await withdrawDatasetSubmission("guided");
+
+    if (removeStatus) {
+      guidedUnshareWithCurationTeamButton.classList.remove("hidden");
+    }
+
+    guidedUnshareWithCurationTeamButton.disabled = false;
+    guidedUnshareWithCurationTeamButton.classList.remove("loading");
   }
 };
 
@@ -2225,17 +2249,20 @@ const disableElementById = (id) => {
   elementToDisable.style.opacity = "0.5";
   elementToDisable.style.pointerEvents = "none";
 };
+
 const enableElementById = (id) => {
   elementToEnable = document.getElementById(id);
   elementToEnable.style.opacity = "1";
   elementToEnable.style.pointerEvents = "auto";
 };
+
 const hideEleShowEle = (elementIdToHide, elementIdToShow) => {
   elementToHide = document.getElementById(elementIdToHide);
   elementToShow = document.getElementById(elementIdToShow);
   elementToHide.classList.add("hidden");
   elementToShow.classList.remove("hidden");
 };
+
 const hideSubNavAndShowMainNav = (navButtonToClick) => {
   $("#guided-sub-page-navigation-footer-div").hide();
   $("#guided-footer-div").removeClass("hidden");
@@ -2397,6 +2424,7 @@ const saveGuidedProgress = async (guidedProgressFileName) => {
 
   fs.writeFileSync(guidedFilePath, JSON.stringify(sodaJSONObj, null, 2));
 };
+
 const readDirAsync = async (path) => {
   return new Promise((resolve, reject) => {
     fs.readdir(path, (error, result) => {
@@ -2408,6 +2436,7 @@ const readDirAsync = async (path) => {
     });
   });
 };
+
 const readFileAsync = async (path) => {
   return new Promise((resolve, reject) => {
     fs.readFile(path, "utf-8", (error, result) => {
@@ -2419,6 +2448,7 @@ const readFileAsync = async (path) => {
     });
   });
 };
+
 const getAllProgressFileData = async (progressFiles) => {
   return Promise.all(
     progressFiles.map((progressFile) => {
@@ -2427,10 +2457,12 @@ const getAllProgressFileData = async (progressFiles) => {
     })
   );
 };
+
 const getProgressFileData = async (progressFile) => {
   let progressFilePath = path.join(guidedProgressFilePath, progressFile + ".json");
   return readFileAsync(progressFilePath);
 };
+
 const deleteProgressCard = async (progressCardDeleteButton) => {
   const progressCard = progressCardDeleteButton.parentElement.parentElement;
   const progressCardNameToDelete = progressCard.querySelector(".progress-file-name").textContent;
@@ -2462,6 +2494,7 @@ const deleteProgressCard = async (progressCardDeleteButton) => {
     progressCard.remove();
   }
 };
+
 const generateProgressCardElement = (progressFileJSONObj) => {
   let progressFileImage = progressFileJSONObj["digital-metadata"]["banner-image-path"] || "";
 
@@ -2596,6 +2629,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
     </div>
   `;
 };
+
 const renderProgressCards = (progressFileJSONdata) => {
   //sort progressFileJSONdata by date to place newest cards on top
   progressFileJSONdata.sort((a, b) => {
@@ -6443,6 +6477,7 @@ const guidedIncreaseCurateProgressBar = (percentToIncrease) => {
     parseInt($("#guided-progress-bar-new-curate").attr("value")) + percentToIncrease
   );
 };
+
 const setGuidedProgressBarValue = (value) => {
   $("#guided-progress-bar-new-curate").attr("value", value);
 };
@@ -6450,10 +6485,12 @@ const setGuidedProgressBarValue = (value) => {
 const isNumberBetween = (number, minVal, maxVal) => {
   return !isNaN(parseFloat(number)) && isFinite(number) && number >= minVal && number <= maxVal;
 };
-function subSamInputIsValid(subSamInput) {
+
+const subSamInputIsValid = (subSamInput) => {
   const subSamInputPattern = /^[a-z]+-[0-9A-Za-z-]+$/;
   return subSamInputPattern.test(subSamInput);
-}
+};
+
 const generateAlertElement = (alertType, warningMessageText) => {
   return `
       <div class="alert alert-${alertType} guided--alert mr-2" role="alert">
@@ -6461,6 +6498,7 @@ const generateAlertElement = (alertType, warningMessageText) => {
       </div>
     `;
 };
+
 const generateAlertMessage = (elementToWarn) => {
   const alertMessage = elementToWarn.data("alert-message");
   const alertType = elementToWarn.data("alert-type");
@@ -6469,6 +6507,7 @@ const generateAlertMessage = (elementToWarn) => {
   }
   enableProgressButton();
 };
+
 const removeAlertMessageIfExists = (elementToCheck) => {
   const alertMessageToRemove = elementToCheck.next();
   if (alertMessageToRemove.hasClass("alert")) {
@@ -6584,6 +6623,7 @@ const patchPreviousGuidedModeVersions = () => {
 //Loads UI when continue curation button is pressed
 const guidedResumeProgress = async (resumeProgressButton) => {
   resumeProgressButton.addClass("loading");
+  resumeProgressButton.prop("disabled", true);
   const datasetNameToResume = resumeProgressButton
     .parent()
     .siblings()
@@ -6609,6 +6649,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
         message: `The dataset ${datasetResumeJsonObj["previous-guided-upload-dataset-name"]} was not found on Pennsieve therefore you can no longer modify this dataset via Guided Mode.`,
         duration: 7000,
       });
+      resumeProgressButton.prop("disabled", false);
       resumeProgressButton.removeClass("loading");
       return;
     }
@@ -6673,6 +6714,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
             focusConfirm: true,
             allowOutsideClick: false,
           });
+          resumeProgressButton.prop("disabled", false);
           resumeProgressButton.removeClass("loading");
           return;
         } else {
@@ -7564,6 +7606,7 @@ const deleteAdditionalLink = (linkName) => {
   //update the UI
   renderAdditionalLinksTable();
 };
+
 const generateadditionalLinkRowElement = (link, linkType, linkRelation) => {
   return `
     <tr>
