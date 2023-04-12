@@ -199,7 +199,7 @@ const orcidSignIn = async (curationMode) => {
 //  This function is the first step to the prepublishing workflow for both guided and freeform mode
 //  Function fetches the status of each item needed to publish a dataset from the backend and updates the UI accordingly.
 //  inPrePublishing: boolean - True when the function is ran in the pre-publishing submission flow; false otherwise
-const showPrePublishingStatus = async (inPrePublishing = false, curationMode='') => {
+const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "") => {
   let currentDataset = defaultBfDataset;
   let curationModeID = "";
   // resetPrePublishingChecklist(curationMode);
