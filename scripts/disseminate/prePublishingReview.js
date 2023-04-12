@@ -108,6 +108,8 @@ const orcidSignIn = async (curationMode) => {
 
     log.info("Connecting orcid to Pennsieve account.");
 
+    console.log(accessCode);
+    console.log(defaultBfAccount);
     try {
       await client.post(
         `/user/orcid`,
@@ -122,7 +124,7 @@ const orcidSignIn = async (curationMode) => {
       clientError(error);
       let emessage = userErrorMessage(error);
       Swal.fire({
-        title: "Unable to integrate your ORCID iD with Pennsieve",
+        title: "An issue occurred with connecting your ORCID iD to Pennsieve.",
         text: emessage,
         icon: "error",
         allowEscapeKey: true,
@@ -496,6 +498,7 @@ const createPrepublishingChecklist = async (curationMode) => {
     currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
     curationModeID = "guided--";
   }
+
   if (!allPrepublishingChecklistItemsCompleted(curationMode)) {
     // alert the user they must complete all checklist items before beginning the prepublishing process
     Swal.fire({
@@ -528,7 +531,7 @@ const createPrepublishingChecklist = async (curationMode) => {
       "individual-question post-curation"
     );
   }
-
+  
   // hide the continue button
   $(`.${curationModeID}pre-publishing-continue-container`).hide();
 

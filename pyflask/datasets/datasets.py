@@ -105,7 +105,10 @@ def remove_collection_names(account, dataset, tags):
 
     token = get_access_token()
 
-    selected_dataset_id = get_dataset_id(token, dataset)
+    if dataset.startswith("N:dataset:"):
+        selected_dataset_id = dataset
+    else:
+        selected_dataset_id = get_dataset_id(token, dataset)
 
     if not has_edit_permissions(token, selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
@@ -134,16 +137,13 @@ def reserve_dataset_doi(dataset):  # sourcery skip: extract-method
         state: State of the dataset (draft, published, etc.) (string)
         creators: List of creators of the dataset (list)
     """
-    print("Reserving DOI for dataset")
     token = get_access_token()
 
     dataset_id = get_dataset_id(token, dataset)
 
     try:
-        print("sending request")
         doi_request = requests.post(f"{PENNSIEVE_URL}/datasets/{dataset_id}/doi", headers=create_request_headers(token))
         doi_request.raise_for_status()
-        print("request sent")
         return {"doi": doi_request.json()["doi"]}
     except Exception as e:
         if type(e).__name__ == "HTTPError":

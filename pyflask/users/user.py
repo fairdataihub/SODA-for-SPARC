@@ -39,6 +39,9 @@ def integrate_orcid_with_pennsieve(access_code, pennsieve_account):
     return r.json()
   except Exception as e:
     print(e)
+    # If status is 400 then the orcid is already linked to users account
+    if r.status_code == 400:
+      abort(409, "ORCID iD is already linked to your Pennsieve account.")
     abort(400, "Invalid access code")
 
   

@@ -568,6 +568,9 @@ ipcMain.on("orcid", (event, url) => {
     if (url.includes("code=")) {
       // get the access code from the url
       let params = new URLSearchParams(url.slice(url.search(/\?/)));
+      console.log(url);
+      console.log(params);
+      console.log(params.get("code"));
       accessCode = params.get("code");
 
       // if so close the window

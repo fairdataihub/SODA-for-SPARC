@@ -3515,8 +3515,7 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
 };
 
 // //Withdraw dataset from review
-// TODO: Dorian -> Adapt this function and the others below for Guided Mode (withdrawing a dataset from review functions)
-const withdrawDatasetSubmission = (curationMode) => {
+const withdrawDatasetSubmission = async (curationMode) => {
   console.log("clicked withdraw dataset submission");
   // show a SWAL loading message until the submit for prepublishing flow is successful or fails
   Swal.fire({
@@ -3536,7 +3535,7 @@ const withdrawDatasetSubmission = (curationMode) => {
   // get the publishing status of the currently selected dataset
   // then check if it can be withdrawn, then withdraw it
   // catch any uncaught errors at this level (aka greacefully catch any exceptions to alert the user we cannot withdraw their dataset)
-  showPublishingStatus(withdrawDatasetCheck, curationMode).catch((error) => {
+  await showPublishingStatus(withdrawDatasetCheck, curationMode).catch((error) => {
     log.error(error);
     console.error(error);
     var emessage = userError(error);
@@ -3563,7 +3562,16 @@ const withdrawDatasetSubmission = (curationMode) => {
       AnalyticsGranularity.ALL_LEVELS,
       ["Withdraw dataset"]
     );
+    // This helps signal guided mode to update the UI
+    if (curationMode === "guided") {
+      return true;
+    }
   });
+
+  // This helps signal guided mode to update the UI
+  if (curationMode === "guided") {
+    return true;
+  }
 };
 
 const withdrawDatasetCheck = async (res, curationMode) => {
