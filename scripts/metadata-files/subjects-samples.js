@@ -563,13 +563,13 @@ const guidedSetStrainRRID = (RRID) => {
 
   if (!RRID) {
     rridLabel.classList.add("hidden");
-    rridInput.style.display = "none";
+    rridInput.classList.add("hidden");
     rridInput.value = "";
     return;
   }
 
   rridLabel.classList.remove("hidden");
-  rridInput.style.display = "flex";
+  rridInput.classList.remove("hidden");
   rridInput.value = RRID;
 };
 
