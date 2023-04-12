@@ -151,7 +151,9 @@ const setPageLoadingState = (boolLoadingState) => {
   const pageParentContainers = document.querySelectorAll(".guided--parent-tab");
 
   if (boolLoadingState === true) {
-    const loadingDivHtml = `
+    // Add the loading div if it does not exist
+    if (!document.getElementById("guided-loading-div")) {
+      const loadingDivHtml = `
       <div class="guided--main-tab" id="guided-loading-div">
         <div class="guided--loading-div">
           <div class="lds-roller">
@@ -168,9 +170,12 @@ const setPageLoadingState = (boolLoadingState) => {
         </div>
       </div>
     `;
-    // Add the loading div as the last child of the guided-body div
-    document.getElementById("guided-body").insertAdjacentHTML("beforeend", loadingDivHtml);
+      // Add the loading div as the last child of the guided-body div
+      document.getElementById("guided-body").insertAdjacentHTML("beforeend", loadingDivHtml);
+    }
 
+    // Hide the page parent containers
+    // Note: this class is added so we can easily show and hide the page parent containers without effecting the hidden status on the parent pages
     pageParentContainers.forEach((container) => {
       container.classList.add("temporary-hide");
     });
@@ -182,6 +187,8 @@ const setPageLoadingState = (boolLoadingState) => {
       loadingDiv.remove();
     }
 
+    // Show the page parent containers
+    // Note: this class is added so we can easily show and hide the page parent containers without effecting the hidden status on the parent pages
     pageParentContainers.forEach((container) => {
       container.classList.remove("temporary-hide");
     });
@@ -229,7 +236,6 @@ const guidedSetNavLoadingState = (loadingState) => {
     navItems.forEach((nav) => {
       nav.classList.remove("disabled-nav");
     });
-
     // Hide the lading div if the loading div was showing
     setPageLoadingState(false);
   }
