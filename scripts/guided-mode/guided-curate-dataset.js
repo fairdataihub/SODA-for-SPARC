@@ -3037,8 +3037,13 @@ document
         // so we use the saved dataset structure key;
         // in the case of a bf dataset that is not resumed, if dataset-structure is empty then so will saved-dataset-structure-json-obj
         // so this swap is safe
-        if (sodaJSONObjCopy["dataset-structure"] === {}) sodaJSONObjCopy["dataset-structure"] = sodaJSONObjCopy["saved-datset-structure-json-obj"];
-
+        if (sodaJSONObjCopy["dataset-structure"]) {
+          let files = sodaJSONObjCopy["dataset-structure"]["files"];
+          let folders = sodaJSONObjCopy["dataset-structure"]["folders"];
+          if (Object.keys(files).length === 0 && Object.keys(folders).length === 0 ) {
+            sodaJSONObjCopy["dataset-structure"] = sodaJSONObjCopy["saved-datset-structure-json-obj"];
+        }
+      }
         await api.performUserActions(sodaJSONObjCopy);
 
         // if the dataset-structure wasnt empty then we may have performed actions on the dataset structure in the previous step;
