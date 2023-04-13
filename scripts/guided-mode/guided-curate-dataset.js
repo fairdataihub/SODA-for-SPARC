@@ -3027,6 +3027,44 @@ document
       // Show the Loading div
       validationLoadingDiv.classList.remove("hidden");
 
+      let sodaJSONObjCopy = JSON.parse(JSON.stringify(sodaJSONObj));
+      // formatForDatasetGeneration(sodaJSONObjCopy);
+    
+      // if the user performed move, rename, delete on files in an imported dataset we need to perform those actions before creating the validation report;
+      // rationale for this can be found in the function definition
+      if (sodaJSONObjCopy["starting-point"]["type"] === "bf") {
+        // if the user resumes a dataset and validation is the first page they visit, then dataset-structure will be empty
+        // so we use the saved dataset structure key;
+        // in the case of a bf dataset that is not resumed, if dataset-structure is empty then so will saved-dataset-structure-json-obj
+        // so this swap is safe
+        if (sodaJSONObjCopy["dataset-structure"] === {}) sodaJSONObjCopy["dataset-structure"] = sodaJSONObjCopy["saved-datset-structure-json-obj"];
+
+        await api.performUserActions(sodaJSONObjCopy);
+
+        // if the dataset-structure wasnt empty then we may have performed actions on the dataset structure in the previous step;
+        // currently the saved-dataset-structure-json-obj key is used for GM validation so set its value to match the performed actions
+        sodaJSONObjCopy["saved-datset-structure-json-obj"] = sodaJSONObjCopy["dataset-structure"];
+      }
+
+      // count the amount of files in the dataset 
+      file_counter = 0;
+      get_num_files_and_folders(sodaJSONObjCopy["saved-datset-structure-json-obj"]);
+
+      if (file_counter >= 50000) {
+        await Swal.fire({
+          title: `Dataset Too Large`,
+          text: "At the moment we cannot validate a dataset with 50,000 or more files.",
+          allowEscapeKey: true,
+          allowOutsideClick: true,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          timerProgressBar: false,
+          showConfirmButton: true,
+          icon: "error",
+        });
+        throw new Error("Dataset is too large for validation");
+      }
+      
       // create the manifest files if the user auto generated manifest files at any point
       await guidedCreateManifestFilesAndAddToDatasetStructure();
 
@@ -3074,7 +3112,57 @@ document
           "Number of Files",
           file_counter
         );
-        throw new Error("Failed to receive a response from the validation server");
+
+        if (error.response && (error.response.status == 503 || error.response.status == 502)) {
+          await Swal.fire({
+            title: "Validation Service Unavailable",
+            text: "The validation service is currently too busy to validate your dataset. Please try again shortly.",
+            icon: "error",
+            confirmButtonText: "Ok",
+            backdrop: "rgba(0,0,0, 0.4)",
+            reverseButtons: reverseSwalButtons,
+            heightAuto: false,
+            showClass: {
+              popup: "animate__animated animate__zoomIn animate__faster",
+            },
+            hideClass: {
+              popup: "animate__animated animate__zoomOut animate__faster",
+            },
+          });
+        } else if (error.response && error.response.status == 400) {
+          let msg = error.response.data.message;
+          if (msg.includes("Missing required metadata files"))
+            msg = "Please add the required metadata files then re-run validation.";
+          await Swal.fire({
+            title: "Validation Error",
+            text: msg,
+            icon: "error",
+            confirmButtonText: "Ok",
+            backdrop: "rgba(0,0,0, 0.4)",
+            reverseButtons: reverseSwalButtons,
+            heightAuto: false,
+            showClass: {
+              popup: "animate__animated animate__zoomIn animate__faster",
+            },
+            hideClass: {
+              popup: "animate__animated animate__zoomOut animate__faster",
+            },
+          });
+        } else {
+          await Swal.fire({
+            title: "Failed to Validate Your Dataset",
+            text: "Please try again. If this issue persists contect the SODA for SPARC team at help@fairdataihub.org",
+            allowEscapeKey: true,
+            allowOutsideClick: false,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            timerProgressBar: false,
+            showConfirmButton: true,
+            icon: "error",
+          });
+        }
+
+        return
       }
 
       let validationReport = undefined;
