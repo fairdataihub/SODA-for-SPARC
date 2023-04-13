@@ -4,11 +4,11 @@
   display: block;
   font-size: 17px;
   color: rgba(0, 0, 0, 0.87);
-  text-align: center;
+  text-align: left;
   font-weight: 600;
   margin-top: 10px !important;
   margin-bottom: 12px;
-  /* margin-right: 3.5rem; */
+  margin-left: 2rem;
 }
 
 .wide-card-subtitle-text {
