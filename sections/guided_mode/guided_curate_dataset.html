@@ -84,19 +84,19 @@
           >
             <div class="button-prompt-container" id="guided-button-start-new-curate">
               <div class="wide-card-text-container">
-                <h2 class="wide-card-title-text">Curate a New Dataset</h2>
+                <h2 class="wide-card-title-text">Prepare and submit a new dataset</h2>
                 <p class="wide-card-subtitle-text">
-                  Follow the end-to-end curation process to upload a new SPARC dataset to Pennsieve
+                  This option will walk you through everything you need to prepare and submit a new
+                  dataset to SPARC
                 </p>
               </div>
               <div id="new-dataset-lottie-container" class="wide-card-lottie-container"></div>
             </div>
             <div class="button-prompt-container" id="guided-button-start-existing-curate">
               <div class="wide-card-text-container">
-                <h2 class="wide-card-title-text">Resume an Existing Dataset</h2>
+                <h2 class="wide-card-title-text">Continue Working on a dataset</h2>
                 <p class="wide-card-subtitle-text">
-                  Continue working on a previously started dataset or update a dataset on Pennsieve
-                  via the end-to-end curation process
+                  This option will let you resume working on a previously started dataset
                 </p>
               </div>
               <div id="existing-dataset-lottie" class="wide-card-lottie-container"></div>
@@ -105,8 +105,8 @@
               <div class="wide-card-text-container">
                 <h2 class="wide-card-title-text">Free Form Mode</h2>
                 <p class="wide-card-subtitle-text">
-                  Individually edit aspects of a dataset (Manage Pennsieve dataset settings, create
-                  metadata files, manage dataset files, share a dataset etc.)
+                  This option provides various features for editing individual components of a
+                  dataset (e.g. create manifest files, edit banner images, etc.)
                 </p>
               </div>
               <div id="edit-dataset-component-lottie" class="wide-card-lottie-container"></div>
@@ -310,9 +310,9 @@
         <div
           class="guided--page hidden"
           id="guided-ask-if-submission-is-sparc-funded-tab"
-          data-page-name="SPARC funding"
+          data-page-name="Funding information"
         >
-          <h1 class="text-sub-step-title">SPARC funding</h1>
+          <h1 class="text-sub-step-title">Funding information</h1>
           <div class="guided--section">
             <h2 class="text-sub-step-title">
               Is the dataset you are submitting funded by a SPARC award?
@@ -379,8 +379,7 @@
               <p class="help-text">
                 Please contact the SPARC curation team before continuing at
                 <a href="mailto:curation@sparc.science">curation@sparc.science</a> to ensure that
-                your dataset is suitable for the SPARC platform and to maximize the impact of your
-                data.
+                your dataset is suitable for the SPARC platform.
               </p>
             </div>
           </div>
@@ -388,9 +387,9 @@
         <div
           class="guided--page hidden"
           id="guided-prepare-dataset-structure-tab"
-          data-page-name="Dataset type"
+          data-page-name="Dataset content"
         >
-          <h1 class="text-sub-step-title">Describe the structure of your dataset</h1>
+          <h1 class="text-sub-step-title">Describe the content of your dataset</h1>
           <div class="guided--section" id="guided-section-subject-yes-no">
             <label class="guided--form-label centered">
               Does your dataset include data collected from subjects and/or samples?
@@ -427,8 +426,8 @@
 
           <div class="guided--section" id="guided-section-ask-if-dataset-contains-code">
             <label class="guided--form-label centered"
-              >Do you have code to be included in this dataset (computational models or analysis
-              etc)</label
+              >Does your dataset include code files in (computational models or analysis
+              etc.)?</label
             >
             <div class="guided--radio-button-container">
               <button
@@ -457,12 +456,9 @@
 
           <div class="guided--section" id="guided-section-dataset-type">
             <div class="sub-section" id="guided-sub-section-manual-dataset-type-selection">
-              <h2 class="text-sub-step-title">Select a dataset type</h2>
-              <p class="help-text">
-                Since your dataset has both subjects and code, please select your dataset type
-                manually. If you are unsure if your dataset is experimental or computational, click
-                the dropdown below.
-              </p>
+              <label class="guided--form-label centered mt-lg"
+                >Is the dataset focused on the experimental or code/computational aspect?</label
+              >
               <div class="info-dropdown">
                 <p class="info-dropdown-text" data-dropdown-type="info">
                   Learn more about experimental versus computational datasets
@@ -479,9 +475,6 @@
                   scripts, or other code that is used to analyze or visualize experimental data.
                 </p>
               </div>
-              <label class="guided--form-label centered mt-lg"
-                >Is the dataset experimental or computational?</label
-              >
               <div class="guided--radio-button-container">
                 <button
                   class="guided--radio-button tile-button"
@@ -550,7 +543,7 @@
                     </svg>
                   </div>
                   <div class="tile-button-text">
-                    <h2>Experimental</h2>
+                    <h2>Experimental focused</h2>
                   </div>
                 </button>
                 <button
@@ -592,7 +585,7 @@
                     </svg>
                   </div>
                   <div class="tile-button-text">
-                    <h2>Computational</h2>
+                    <h2>Computational focused</h2>
                   </div>
                 </button>
               </div>
@@ -715,8 +708,8 @@
             <p class="help-text">
               SPARC datasets require that all contributors have an ORCID iD. If you are not sure if
               a contributor has an ORCID iD, you can check by searching for their name on
-              <a target="_blank" href="https://orcid.org">orcid.org</a>. <br /><br />
-              If a contributor does not have an ORCID iD, they can create one for free at
+              <a target="_blank" href="https://orcid.org">orcid.org</a>. If a contributor does not
+              have an ORCID iD, they can create one for free at
               <a target="_blank" href="https://orcid.org/register">orcid.org/register</a>.
             </p>
           </div>
@@ -740,7 +733,7 @@
               placeholder="Enter dataset name here"
             />
             <div class="info-dropdown">
-              <p class="info-dropdown-text mt-sm" data-dropdown-type="info">
+              <p class="info-dropdown-text" data-dropdown-type="info">
                 What is the dataset name used for?
               </p>
               <i class="fas fa-chevron-right"></i>
@@ -897,9 +890,6 @@
         >
           <div class="guided--section" id="guided-section-dataset-subjects-text">
             <h1 class="text-sub-step-title">Subject specification</h1>
-            <p class="help-text">
-              Add each subject that data was obtained from in the table below.
-            </p>
           </div>
           <div class="guided--section" id="guided-section-dataset-pools-text">
             <h1 class="text-sub-step-title">Subject pooling</h1>
@@ -2036,13 +2026,13 @@
           </div>
         </div>
 
-        <div id="guided-code-folder-tab" class="guided--page hidden" data-page-name="Code data">
+        <div id="guided-code-folder-tab" class="guided--page hidden" data-page-name="Code files">
           <div class="guided--section">
-            <h1 class="text-sub-step-title">Add code used in the generation of the dataset</h1>
+            <h1 class="text-sub-step-title">Code files</h1>
             <p class="help-text">
-              The code folder should contain any scripts or programs used for computational models,
-              data processing, data analysis, or visualization. The code added inside the code
-              folder should contain a README file that describes the code and how to use it.
+              You mentioned at the beginning that you have code files in your dataset. Add those
+              code files into the interface below. Make sure you include a README file that
+              describes the code and how to use it.
             </p>
           </div>
           <div class="guided--panel" id="guided-user-has-code-data"></div>
@@ -5510,9 +5500,10 @@
           <div class="guided--section">
             <h2 class="text-sub-step-title mt-0">Reserve a DOI</h2>
             <p class="help-text">
-              Reserve a DOI for your dataset while it's being reviewed by the curation team.
-              However, this DOI will NOT be active, and therefore searchable, until the dataset is
-              published to Pennsieve Discover.
+              Reserve a DOI for your dataset while it's being reviewed by the curation team (for
+              instance, if you need to refer to this dataset in a manuscript right away). Note: This
+              DOI will NOT be active, and therefore searchable, until the dataset is published to
+              Pennsieve Discover.
             </p>
             <div class="guided--container-data-display mt-sm" style="width: 100%">
               <div class="guided--card-dataset-info w-auto">
@@ -5536,12 +5527,12 @@
             <p id="curate-doi-information" class="help-text mt-2"></p>
           </div>
           <div class="guided--section">
-            <h2 class="text-sub-step-title mt-0">Share with the curation team</h2>
+            <h2 class="text-sub-step-title mt-0">Send dataset to curation team for review</h2>
 
             <p class="help-text">
               Sharing your dataset with the SPARC Curation Team will inform the Curation Team that
-              your dataset is ready to be reviewed. It is then advised not to make changes to the
-              dataset until the Curation Team contacts you.
+              your dataset is ready to be reviewed. Note that your dataset will be locked and not
+              editable until it is reviewed by the curation team.
             </p>
           </div>
           <div class="guided--section">
@@ -5600,7 +5591,7 @@
                         text-align: center;
                         margin-bottom: 1rem;
                       "
-                      >Pre-publishing checklist:
+                      >Pre-submission checklist
                       <i
                         class="fas fa-info-circle popover-tooltip"
                         data-content="Use the pre-publishing checklist below to verify your dataset meets all of the SPARC requirements for a publishable dataset. 
