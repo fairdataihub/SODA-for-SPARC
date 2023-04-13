@@ -11169,7 +11169,10 @@ $(document).ready(async () => {
 
     // Skip the changes metadata tab as new datasets do not have changes metadata
     guidedSkipPage("guided-create-changes-metadata-tab");
-    await openPage("guided-ask-if-submission-is-sparc-funded-tab");
+
+    // Open the first page
+    const firstPage = getNonSkippedGuidedModePages(document)[0];
+    await openPage(firstPage.id);
   });
 
   $("#guided-button-start-existing-curate").on("click", async () => {

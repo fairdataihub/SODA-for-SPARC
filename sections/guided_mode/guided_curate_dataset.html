@@ -122,6 +122,8 @@
       >
         <div class="guided--capsule-container" id="structure-dataset-capsule-container">
           <div class="guided--capsule" id="guided-resume-existing-dataset-capsule"></div>
+
+          <div class="guided--capsule" id="guided-curation-preparation-intro-capsule"></div>
           <div class="guided--capsule" id="guided-ask-if-submission-is-sparc-funded-capsule"></div>
           <div class="guided--capsule" id="guided-prepare-dataset-structure-capsule"></div>
           <div class="guided--capsule" id="guided-prepare-helpers-capsule"></div>
@@ -307,8 +309,24 @@
           </div>
         </div>
 
+        <div class="guided--page" id="guided-curation-preparation-intro-tab" data-page-name="Intro">
+          <h1 class="text-sub-step-title">Curation Preparation</h1>
+          <div class="guided--section">
+            <p class="help-text">
+              In order to guide you through the process of submitting a new SPARC dataset, we will
+              ask some high level questions about the data you are submitting to determine how to
+              help you structure your data.
+            </p>
+          </div>
+          <div class="guided--section">
+            <h2 class="text-sub-step-title">
+              Click the "Continue" button below to go to the next page.
+            </h2>
+          </div>
+        </div>
+
         <div
-          class="guided--page hidden"
+          class="guided--page"
           id="guided-ask-if-submission-is-sparc-funded-tab"
           data-page-name="Funding information"
         >
@@ -385,7 +403,7 @@
           </div>
         </div>
         <div
-          class="guided--page hidden"
+          class="guided--page"
           id="guided-prepare-dataset-structure-tab"
           data-page-name="Dataset content"
         >
@@ -625,11 +643,7 @@
           </div>
         </div>
 
-        <div
-          id="guided-prepare-helpers-tab"
-          class="guided--page hidden"
-          data-page-name="Prepare data"
-        >
+        <div id="guided-prepare-helpers-tab" class="guided--page" data-page-name="Prepare data">
           <h1 class="text-sub-step-title">Before getting started</h1>
 
           <div class="guided--section">
@@ -706,11 +720,7 @@
           </div>
         </div>
 
-        <div
-          id="guided-name-subtitle-tab"
-          class="guided--page hidden"
-          data-page-name="Name and subtitle"
-        >
+        <div id="guided-name-subtitle-tab" class="guided--page" data-page-name="Name and subtitle">
           <h1 class="text-sub-step-title">Dataset name and subtitle</h1>
           <div class="guided--section">
             <label class="guided--form-label">Dataset name: </label>
@@ -783,7 +793,7 @@
         data-parent-tab-name="Dataset Structure"
       >
         <div class="guided--capsule-container">
-          <!--<div class="guided--capsule" id="guided-dataset-type-selection-capsule"></div>-->
+          <div class="guided--capsule" id="guided-dataset-structure-intro-capsule"></div>
           <div class="guided--capsule" id="guided-subjects-folder-capsule"></div>
           <div class="guided--capsule" id="guided-primary-data-organization-capsule"></div>
           <div class="guided--capsule" id="guided-source-data-organization-capsule"></div>
@@ -793,90 +803,26 @@
           <div class="guided--capsule" id="guided-docs-folder-capsule"></div>
           <div class="guided--capsule" id="guided-folder-structure-preview-capsule"></div>
         </div>
-        <!--
-        <div
-          class="guided--page hidden"
-          id="guided-dataset-type-selection-tab"
-          data-page-name="Dataset type"
-        >
-          <h1 class="guided--text-sub-step">Select a dataset type</h1>
-          <div class="guided--section" >
-            <h2 class="guided--text-sub-step">
-              Is the dataset you are submitting funded by a SPARC award?
-            </h2>
-            <div class="guided--radio-button-container">
-              <button
-                class="ui positive basic button guided--radio-button"
-                id="guided-button-dataset-is-sparc-funded"
-                data-next-element="guided-section-dataset-sparc-funded"
-                data-button-config-value="dataset-is-sparc-funded"
-                data-button-config-value-state="yes"
-              >
-                Yes
-              </button>
-              <button
-                class="ui negative basic button guided--radio-button"
-                id="guided-button-dataset-is-not-sparc-funded"
-                data-next-element="guided-section-dataset-not-sparc-funded"
-                data-button-config-value="dataset-is-sparc-funded"
-                data-button-config-value-state="no"
-              >
-                No
-              </button>
-            </div>
-          </div>
 
-          <div class="guided--section hidden" id="guided-section-dataset-sparc-funded">
-            <h2 class="guided--text-sub-step">
-              Click "Save and Continue" to confirm your dataset is funded by a SPARC award.
-            </h2>
+        <div class="guided--page" id="guided-dataset-structure-intro-tab" data-page-name="Intro">
+          <h1 class="text-sub-step-title">Dataset structure</h1>
+          <div class="guided--section">
+            <p class="help-text">
+              In order to guide you through the process of submitting a new SPARC dataset, we will
+              ask some high level questions about the data you are submitting to determine how to
+              help you structure your data.
+            </p>
           </div>
-
-          <div class="guided--section hidden" id="guided-section-dataset-not-sparc-funded">
-            <h2 class="guided--text-sub-step">
-              Have you already reached out to the SPARC curation team to see if your data is
-              suitable for the SPARC Data Portal?
+          <div class="guided--section">
+            <h2 class="text-sub-step-title">
+              Click the "Continue" button to start structuring your dataset.
             </h2>
-            <div class="guided--radio-button-container">
-              <button
-                class="ui positive basic button guided--radio-button"
-                id="guided-button-non-sparc-user-has-contacted-sparc"
-                data-next-element="guided-section-non-sparc-user-has-contacted-sparc"
-                data-button-config-value="non-sparc-user-has-contacted-sparc"
-                data-button-config-value-state="yes"
-              >
-                Yes
-              </button>
-              <button
-                class="ui negative basic button guided--radio-button"
-                id="guided-button-non-sparc-user-has-not-contacted-sparc"
-                data-next-element="guided-section-non-sparc-user-has-not-contacted-sparc"
-                data-button-config-value="non-sparc-user-has-contacted-sparc"
-                data-button-config-value-state="no"
-              >
-                No
-              </button>
-            </div>
-            <div class="guided--section" id="guided-section-non-sparc-user-has-contacted-sparc">
-              <h2 class="guided--text-sub-step">
-                Great, click "Continue" to start the curation process.
-              </h2>
-            </div>
-            <div class="guided--section" id="guided-section-non-sparc-user-has-not-contacted-sparc">
-              <p class="help-text">
-                Please contact the SPARC curation team before continuing at
-                <a href="mailto:curation@sparc.science">curation@sparc.science</a> to ensure that
-                your dataset is suitable for the SPARC platform and to maximize the impact of your
-                data.
-              </p>
-            </div>
           </div>
         </div>
-        -->
 
         <div
           id="guided-subjects-folder-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Dataset structuring"
         >
           <div class="guided--section" id="guided-section-dataset-subjects-text">
@@ -908,6 +854,7 @@
             ></div>
             <div class="guided--capsule-sub-page" id="guided-specify-samples-page-capsule"></div>
           </div>
+
           <div class="guided--panel sub-page" id="guided-specify-subjects-page">
             <div class="guided--section" id="guided-specify-subjects-prompt">
               <div class="guided--panel">
@@ -1030,7 +977,7 @@
         </div>
         <div
           id="guided-primary-data-organization-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Primary data"
         >
           <div class="guided--section">
@@ -1385,7 +1332,7 @@
         </div>
         <div
           id="guided-source-data-organization-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Source data"
         >
           <div class="guided--section">
@@ -1708,7 +1655,7 @@
         </div>
         <div
           id="guided-derivative-data-organization-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Derivative data"
         >
           <div class="guided--section">
@@ -2017,7 +1964,7 @@
           </div>
         </div>
 
-        <div id="guided-code-folder-tab" class="guided--page hidden" data-page-name="Code files">
+        <div id="guided-code-folder-tab" class="guided--page" data-page-name="Code files">
           <div class="guided--section">
             <h1 class="text-sub-step-title">Code files</h1>
             <p class="help-text">
@@ -2028,11 +1975,7 @@
           </div>
           <div class="guided--panel" id="guided-user-has-code-data"></div>
         </div>
-        <div
-          id="guided-protocol-folder-tab"
-          class="guided--page hidden"
-          data-page-name="Protocol data"
-        >
+        <div id="guided-protocol-folder-tab" class="guided--page" data-page-name="Protocol data">
           <div class="guided--section">
             <h1 class="text-sub-step-title">Protocol data</h1>
             <p class="help-text">
@@ -2067,7 +2010,7 @@
           </div>
           <div class="guided--panel hidden" id="guided-user-has-protocol-data"></div>
         </div>
-        <div id="guided-docs-folder-tab" class="guided--page hidden" data-page-name="Docs data">
+        <div id="guided-docs-folder-tab" class="guided--page" data-page-name="Docs data">
           <div class="guided--section">
             <h1 class="text-sub-step-title">Docs data</h1>
             <p class="help-text">
@@ -2106,7 +2049,7 @@
 
         <div
           id="guided-folder-structure-preview-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Dataset structure preview"
         >
           <div class="guided--section">
@@ -2134,6 +2077,7 @@
         data-parent-tab-name="Dataset metadata"
       >
         <div class="guided--capsule-container">
+          <div class="guided--capsule" id="guided-dataset-metadata-intro-capsule"></div>
           <div class="guided--capsule" id="guided-manifest-file-generation-capsule"></div>
           <div class="guided--capsule" id="guided-create-submission-metadata-capsule"></div>
           <div class="guided--capsule" id="guided-contributors-capsule"></div>
@@ -2145,8 +2089,23 @@
           <div class="guided--capsule" id="guided-create-readme-metadata-capsule"></div>
           <div class="guided--capsule" id="guided-create-changes-metadata-capsule"></div>
         </div>
+        <div class="guided--page" id="guided-dataset-metadata-intro-tab" data-page-name="Intro">
+          <h1 class="text-sub-step-title">Dataset metadata</h1>
+          <div class="guided--section">
+            <p class="help-text">
+              In order to guide you through the process of submitting a new SPARC dataset, we will
+              ask some high level questions about the data you are submitting to determine how to
+              help you structure your data.
+            </p>
+          </div>
+          <div class="guided--section">
+            <h2 class="text-sub-step-title">
+              Click the "Continue" button to start adding metadata to your dataset.
+            </h2>
+          </div>
+        </div>
         <div
-          class="guided--page hidden"
+          class="guided--page"
           id="guided-manifest-file-generation-tab"
           data-page-name="Create manifest files"
         >
@@ -2315,7 +2274,7 @@
         </div>
 
         <div
-          class="guided--page hidden"
+          class="guided--page"
           id="guided-create-submission-metadata-tab"
           data-page-name="Submission metadata"
         >
@@ -2448,7 +2407,7 @@
 
         <div
           id="guided-contributors-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Contributor information"
         >
           <div class="guided--section">
@@ -2490,11 +2449,7 @@
           </div>
         </div>
 
-        <div
-          id="guided-protocols-tab"
-          class="guided--page hidden"
-          data-page-name="Dataset protocols"
-        >
+        <div id="guided-protocols-tab" class="guided--page" data-page-name="Dataset protocols">
           <div class="guided--section">
             <h1 class="text-sub-step-title">Dataset protocols</h1>
             <p class="help-text">
@@ -2725,7 +2680,7 @@
         </div>
         <div
           id="guided-create-description-metadata-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Dataset description"
         >
           <div class="guided--section">
@@ -2922,7 +2877,7 @@
         </div>
         <div
           id="guided-create-subjects-metadata-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Subjects metadata"
         >
           <div class="guided--section">
@@ -3573,7 +3528,7 @@
         </div>
         <div
           id="guided-create-samples-metadata-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Samples metadata"
         >
           <div class="guided--section">
@@ -4002,11 +3957,7 @@
             </div>
           </div>
         </div>
-        <div
-          id="guided-add-code-metadata-tab"
-          class="guided--page hidden"
-          data-page-name="Code metadata"
-        >
+        <div id="guided-add-code-metadata-tab" class="guided--page" data-page-name="Code metadata">
           <div class="guided--section">
             <h1 class="text-sub-step-title">Code-related metadata</h1>
             <p class="help-text">
@@ -4094,11 +4045,7 @@
             </p>
           </div>
         </div>
-        <div
-          id="guided-create-readme-metadata-tab"
-          class="guided--page hidden"
-          data-page-name="README"
-        >
+        <div id="guided-create-readme-metadata-tab" class="guided--page" data-page-name="README">
           <div class="guided--section">
             <h1 class="text-sub-step-title">README information</h1>
             <p class="help-text">
@@ -4148,11 +4095,7 @@
             </div>
           </div>
         </div>
-        <div
-          id="guided-create-changes-metadata-tab"
-          class="guided--page hidden"
-          data-page-name="CHANGES"
-        >
+        <div id="guided-create-changes-metadata-tab" class="guided--page" data-page-name="CHANGES">
           <div class="guided--section">
             <h1 class="text-sub-step-title">CHANGES information</h1>
             <p class="help-text">
@@ -4196,11 +4139,7 @@
           <div class="guided--capsule" id="guided-add-tags-capsule"></div>
           <div class="guided--capsule" id="guided-assign-license-capsule"></div>
         </div>
-        <div
-          id="guided-pennsieve-intro-tab"
-          class="guided--page hidden"
-          data-page-name="Pennsieve log in"
-        >
+        <div id="guided-pennsieve-intro-tab" class="guided--page" data-page-name="Pennsieve log in">
           <div class="guided--section" style="padding-left: 0; padding-right: 0">
             <h1 class="text-sub-step-title">Pennsieve metadata</h1>
             <p class="help-text">
@@ -4311,7 +4250,7 @@
             </div>
           </div>
         </div>
-        <div id="guided-banner-image-tab" class="guided--page hidden" data-page-name="Banner image">
+        <div id="guided-banner-image-tab" class="guided--page" data-page-name="Banner image">
           <div class="guided--section">
             <h1 class="text-sub-step-title">Banner image</h1>
             <p class="help-text">
@@ -4504,7 +4443,7 @@
 
         <div
           id="guided-designate-permissions-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Pennsieve user permissions"
         >
           <div class="guided--section">
@@ -4651,7 +4590,7 @@
 
         <div
           id="guided-add-description-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Pennsieve dataset description"
         >
           <div class="guided--section">
@@ -4709,11 +4648,7 @@
             </div>
           </div>
         </div>
-        <div
-          id="guided-add-tags-tab"
-          class="guided--page hidden"
-          data-page-name="Pennsieve dataset tags"
-        >
+        <div id="guided-add-tags-tab" class="guided--page" data-page-name="Pennsieve dataset tags">
           <div class="guided--section">
             <h1 class="text-sub-step-title">Dataset tags</h1>
             <p class="help-text mb-lg">
@@ -4729,11 +4664,7 @@
             </p>
           </div>
         </div>
-        <div
-          id="guided-assign-license-tab"
-          class="guided--page hidden"
-          data-page-name="Sharing license"
-        >
+        <div id="guided-assign-license-tab" class="guided--page" data-page-name="Sharing license">
           <div class="guided--section">
             <h1 class="text-sub-step-title">Sharing license:</h1>
             <p class="help-text">
@@ -4773,7 +4704,7 @@
 
         <div
           id="guided-dataset-validation-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Dataset validation"
         >
           <div class="guided--section">
@@ -5026,7 +4957,7 @@
 
         <div
           id="guided-dataset-generation-confirmation-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Review and Generate"
         >
           <div class="guided--section">
@@ -5154,7 +5085,7 @@
 
         <div
           id="guided-dataset-generation-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Generate dataset"
         >
           <div class="guided--section">
@@ -5445,7 +5376,7 @@
 
         <div
           id="guided-dataset-dissemination-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Share with SPARC Curation Team"
         >
           <div class="guided--section">
