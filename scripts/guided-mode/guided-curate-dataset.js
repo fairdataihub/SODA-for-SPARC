@@ -693,7 +693,26 @@ const savePageChanges = async (pageBeingLeftID) => {
         guidedSkipPage("guided-derivative-data-organization-tab");
         guidedSkipPage("guided-create-subjects-metadata-tab");
         guidedSkipPage("guided-create-samples-metadata-tab");
+
+        if (datasetHasCode) {
+          // If Protocol and Docs are empty, skip the Protocol and Docs tabs
+          // This is checked so if the user starts from Pennsieve and they have Protocol and Docs data, they can still modify it
+          // but the protocol and docs pages will be skipped if the user is started a new computational dataset without subjects
+          if (folderIsEmpty(datasetStructureJSONObj?.["folders"]?.["protocol"])) {
+            guidedSkipPage("guided-protocol-folder-tab");
+          } else {
+            guidedUnSkipPage("guided-protocol-folder-tab");
+          }
+
+          if (folderIsEmpty(datasetStructureJSONObj?.["folders"]?.["docs"])) {
+            guidedSkipPage("guided-docs-folder-tab");
+          } else {
+            guidedUnSkipPage("guided-docs-folder-tab");
+          }
+        }
       }
+
+      // If the dataset does not contain code, skip the code pages
       if (datasetHasCode) {
         guidedUnSkipPage("guided-code-folder-tab");
         guidedUnSkipPage("guided-add-code-metadata-tab");
@@ -3591,6 +3610,8 @@ const pageIsSkipped = (pageId) => {
 };
 
 const folderIsEmpty = (folder) => {
+  if (!folder) return true;
+
   return Object.keys(folder.folders).length === 0 && Object.keys(folder.files).length === 0;
 };
 
@@ -11172,7 +11193,10 @@ $(document).ready(async () => {
 
     // Skip the changes metadata tab as new datasets do not have changes metadata
     guidedSkipPage("guided-create-changes-metadata-tab");
-    await openPage("guided-ask-if-submission-is-sparc-funded-tab");
+
+    // Open the first page
+    const firstPage = getNonSkippedGuidedModePages(document)[0];
+    await openPage(firstPage.id);
   });
 
   $("#guided-button-start-existing-curate").on("click", async () => {
@@ -11335,8 +11359,6 @@ $(document).ready(async () => {
 
       sodaJSONObj["dataset-contains-subjects"] = datasetHasSubjects;
       sodaJSONObj["dataset-contains-code"] = datasetHasCode;
-      console.log(sodaJSONObj["dataset-contains-subjects"]);
-      console.log(sodaJSONObj["dataset-contains-code"]);
 
       let interpredDatasetType;
 
