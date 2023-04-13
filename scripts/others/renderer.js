@@ -3605,7 +3605,6 @@ const withdrawDatasetCheck = async (res, curationMode) => {
   }
 };
 
-
 const withdrawReviewDataset = async (curationMode) => {
   bfWithdrawReviewDatasetBtn.disabled = true;
 
