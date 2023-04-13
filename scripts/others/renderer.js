@@ -3335,7 +3335,6 @@ ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
   $("#submit_prepublishing_review-spinner").hide();
 });
 
-
 const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
   let curationModeID = "";
   let currentAccount = defaultBfAccount;
