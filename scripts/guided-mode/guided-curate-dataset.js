@@ -2491,6 +2491,15 @@ const getProgressFileData = async (progressFile) => {
   return readFileAsync(progressFilePath);
 };
 
+const deleteProgresFile = async (progressFileName) => {
+  //Get the path of the progress file to delete
+  const progressFilePathToDelete = path.join(guidedProgressFilePath, progressFileName + ".json");
+  //delete the progress file
+  fs.unlinkSync(progressFilePathToDelete, (err) => {
+    console.log(err);
+  });
+};
+
 const deleteProgressCard = async (progressCardDeleteButton) => {
   const progressCard = progressCardDeleteButton.parentElement.parentElement;
   const progressCardNameToDelete = progressCard.querySelector(".progress-file-name").textContent;
@@ -2508,15 +2517,8 @@ const deleteProgressCard = async (progressCardDeleteButton) => {
     focusCancel: true,
   });
   if (result.isConfirmed) {
-    //Get the path of the progress file to delete
-    const progressFilePathToDelete = path.join(
-      guidedProgressFilePath,
-      progressCardNameToDelete + ".json"
-    );
     //delete the progress file
-    fs.unlinkSync(progressFilePathToDelete, (err) => {
-      console.log(err);
-    });
+    deleteProgresFile(progressCardNameToDelete);
 
     //remove the progress card from the DOM
     progressCard.remove();
@@ -3029,7 +3031,7 @@ document
 
       let sodaJSONObjCopy = JSON.parse(JSON.stringify(sodaJSONObj));
       // formatForDatasetGeneration(sodaJSONObjCopy);
-    
+
       // if the user performed move, rename, delete on files in an imported dataset we need to perform those actions before creating the validation report;
       // rationale for this can be found in the function definition
       if (sodaJSONObjCopy["starting-point"]["type"] === "bf") {
@@ -3051,7 +3053,7 @@ document
         sodaJSONObjCopy["saved-datset-structure-json-obj"] = sodaJSONObjCopy["dataset-structure"];
       }
 
-      // count the amount of files in the dataset 
+      // count the amount of files in the dataset
       file_counter = 0;
       get_num_files_and_folders(sodaJSONObjCopy["saved-datset-structure-json-obj"]);
 
@@ -3069,7 +3071,7 @@ document
         });
         throw new Error("Dataset is too large for validation");
       }
-      
+
       // create the manifest files if the user auto generated manifest files at any point
       await guidedCreateManifestFilesAndAddToDatasetStructure();
 
@@ -3167,7 +3169,7 @@ document
           });
         }
 
-        return
+        return;
       }
 
       let validationReport = undefined;
@@ -6687,17 +6689,14 @@ const patchPreviousGuidedModeVersions = () => {
     }
   }
 
-  let oldManifestFileHeaders = false;
   for (highLevelFolderManifestData in sodaJSONObj["guided-manifest-files"]) {
     if (
       sodaJSONObj["guided-manifest-files"][highLevelFolderManifestData]["headers"][0] ===
       "File Name"
     ) {
-      oldManifestFileHeaders = true;
+      // reset the manifest files
+      sodaJSONObj["guided-manifest-files"] = {};
     }
-  }
-  if (oldManifestFileHeaders) {
-    resetGuidedManifestFiles();
   }
 
   //Add key to track status of Pennsieve uploads
