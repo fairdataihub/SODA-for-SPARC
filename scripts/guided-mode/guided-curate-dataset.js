@@ -3029,7 +3029,7 @@ document
 
       let sodaJSONObjCopy = JSON.parse(JSON.stringify(sodaJSONObj));
       // formatForDatasetGeneration(sodaJSONObjCopy);
-    
+
       // if the user performed move, rename, delete on files in an imported dataset we need to perform those actions before creating the validation report;
       // rationale for this can be found in the function definition
       if (sodaJSONObjCopy["starting-point"]["type"] === "bf") {
@@ -3037,7 +3037,8 @@ document
         // so we use the saved dataset structure key;
         // in the case of a bf dataset that is not resumed, if dataset-structure is empty then so will saved-dataset-structure-json-obj
         // so this swap is safe
-        if (sodaJSONObjCopy["dataset-structure"] === {}) sodaJSONObjCopy["dataset-structure"] = sodaJSONObjCopy["saved-datset-structure-json-obj"];
+        if (sodaJSONObjCopy["dataset-structure"] === {})
+          sodaJSONObjCopy["dataset-structure"] = sodaJSONObjCopy["saved-datset-structure-json-obj"];
 
         await api.performUserActions(sodaJSONObjCopy);
 
@@ -3046,7 +3047,7 @@ document
         sodaJSONObjCopy["saved-datset-structure-json-obj"] = sodaJSONObjCopy["dataset-structure"];
       }
 
-      // count the amount of files in the dataset 
+      // count the amount of files in the dataset
       file_counter = 0;
       get_num_files_and_folders(sodaJSONObjCopy["saved-datset-structure-json-obj"]);
 
@@ -3064,7 +3065,7 @@ document
         });
         throw new Error("Dataset is too large for validation");
       }
-      
+
       // create the manifest files if the user auto generated manifest files at any point
       await guidedCreateManifestFilesAndAddToDatasetStructure();
 
@@ -3162,7 +3163,7 @@ document
           });
         }
 
-        return
+        return;
       }
 
       let validationReport = undefined;
