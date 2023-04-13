@@ -5908,9 +5908,6 @@ const openPage = async (targetPageID) => {
         addListener = false;
       }
 
-      document.getElementById("guided-pennsieve-dataset-name").innerHTML =
-        sodaJSONObj["digital-metadata"]["name"];
-
       // let currentDatasetID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
       let bf_get_permissions = await api.getDatasetPermissions(
         defaultBfAccount,
