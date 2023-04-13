@@ -2491,6 +2491,15 @@ const getProgressFileData = async (progressFile) => {
   return readFileAsync(progressFilePath);
 };
 
+const deleteProgresFile = async (progressFileName) => {
+  //Get the path of the progress file to delete
+  const progressFilePathToDelete = path.join(guidedProgressFilePath, progressFileName + ".json");
+  //delete the progress file
+  fs.unlinkSync(progressFilePathToDelete, (err) => {
+    console.log(err);
+  });
+};
+
 const deleteProgressCard = async (progressCardDeleteButton) => {
   const progressCard = progressCardDeleteButton.parentElement.parentElement;
   const progressCardNameToDelete = progressCard.querySelector(".progress-file-name").textContent;
@@ -2508,15 +2517,8 @@ const deleteProgressCard = async (progressCardDeleteButton) => {
     focusCancel: true,
   });
   if (result.isConfirmed) {
-    //Get the path of the progress file to delete
-    const progressFilePathToDelete = path.join(
-      guidedProgressFilePath,
-      progressCardNameToDelete + ".json"
-    );
     //delete the progress file
-    fs.unlinkSync(progressFilePathToDelete, (err) => {
-      console.log(err);
-    });
+    deleteProgresFile(progressCardNameToDelete);
 
     //remove the progress card from the DOM
     progressCard.remove();
@@ -6683,17 +6685,14 @@ const patchPreviousGuidedModeVersions = () => {
     }
   }
 
-  let oldManifestFileHeaders = false;
   for (highLevelFolderManifestData in sodaJSONObj["guided-manifest-files"]) {
     if (
       sodaJSONObj["guided-manifest-files"][highLevelFolderManifestData]["headers"][0] ===
       "File Name"
     ) {
-      oldManifestFileHeaders = true;
+      // reset the manifest files
+      sodaJSONObj["guided-manifest-files"] = {};
     }
-  }
-  if (oldManifestFileHeaders) {
-    resetGuidedManifestFiles();
   }
 
   //Add key to track status of Pennsieve uploads
