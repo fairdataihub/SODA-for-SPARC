@@ -18,7 +18,7 @@
           <div class="guided--progression-tab-content">
             <span class="dot">0</span>
             <div class="guided--progression-tab-labels">
-              <h1 class="guided--progression-tab-label-main">Curation preparation</h1>
+              <h1 class="guided--progression-tab-label-main">Curation Preparation</h1>
             </div>
           </div>
         </div>
@@ -29,7 +29,7 @@
           <div class="guided--progression-tab-content">
             <span class="dot">1</span>
             <div class="guided--progression-tab-labels">
-              <h1 class="guided--progression-tab-label-main">Dataset structure</h1>
+              <h1 class="guided--progression-tab-label-main">Dataset Structure</h1>
             </div>
           </div>
         </div>
@@ -40,7 +40,7 @@
           <div class="guided--progression-tab-content">
             <span class="dot">2</span>
             <div class="guided--progression-tab-labels">
-              <h1 class="guided--progression-tab-label-main">Dataset metadata</h1>
+              <h1 class="guided--progression-tab-label-main">Dataset Metadata</h1>
             </div>
           </div>
         </div>
@@ -51,7 +51,7 @@
           <div class="guided--progression-tab-content">
             <span class="dot">3</span>
             <div class="guided--progression-tab-labels">
-              <h1 class="guided--progression-tab-label-main">Pennsieve metadata</h1>
+              <h1 class="guided--progression-tab-label-main">Pennsieve Metadata</h1>
             </div>
           </div>
         </div>
@@ -59,7 +59,7 @@
           <div class="guided--progression-tab-content">
             <span class="dot">4</span>
             <div class="guided--progression-tab-labels">
-              <h1 class="guided--progression-tab-label-main">Generate dataset</h1>
+              <h1 class="guided--progression-tab-label-main">Generate Dataset</h1>
             </div>
           </div>
         </div>
@@ -313,9 +313,7 @@
           <h1 class="text-sub-step-title">Curation Preparation Introduction</h1>
           <div class="guided--section">
             <p class="help-text">
-              In order to guide you through the process of submitting a new SPARC dataset, we will
-              ask some high level questions about the data you are submitting to determine how to
-              help you structure it.
+              Let’s start with some high-level questions so we can understand your dataset.
             </p>
           </div>
           <div class="guided--section">
@@ -827,9 +825,11 @@
           <h1 class="text-sub-step-title">Dataset Structure Introduction</h1>
           <div class="guided--section">
             <p class="help-text">
-              Based off of the information you provided in the previous steps, you will be guided
-              through the process of adding folders and files to your dataset, which will be
-              uploaded to Pennsieve on the last step of the submission process.
+              The SPARC guidelines require all datasets to be organized according to a strict folder
+              structure (see image below). Over the next steps, you will be asked to specify folders
+              and files to be included in your dataset so SODA can automatically organize them
+              according to the SPARC folder structure when generating your dataset in the last step
+              of this process.
             </p>
           </div>
           <div class="guided--section">
@@ -846,6 +846,10 @@
         >
           <div class="guided--section" id="guided-section-dataset-subjects-text">
             <h1 class="text-sub-step-title">Subject specification</h1>
+            <p class="help-text">
+              Create a unique ID for each of the subjects that data was collected from in the
+              interface below.
+            </p>
           </div>
           <div class="guided--section" id="guided-section-dataset-pools-text">
             <h1 class="text-sub-step-title">Subject pooling</h1>
@@ -883,9 +887,7 @@
                 >
                   <thead>
                     <tr>
-                      <th class="text-center" colspan="2">
-                        Enter a unique ID for each of your study's subjects
-                      </th>
+                      <th class="text-center" colspan="2">Dataset subjects</th>
                     </tr>
                   </thead>
                   <tbody id="subject-specification-table-body"></tbody>
@@ -2113,8 +2115,10 @@
           <h1 class="text-sub-step-title">Dataset Metadata Introduction</h1>
           <div class="guided--section">
             <p class="help-text">
-              Now that you have added folders and files to your dataset, we will guide you through
-              the process of adding metadata for your dataset.
+              The SPARC guidelines require several metadata files containing specific information to
+              be included in the dataset. Over the next steps, you will be asked to provide that
+              information which will then be used by SODA to automatically create the SPARC-required
+              metadata files when generating your dataset in the last step of this process.
             </p>
           </div>
           <div class="guided--section">
@@ -2123,6 +2127,7 @@
             </h2>
           </div>
         </div>
+
         <div
           class="guided--page"
           id="guided-manifest-file-generation-tab"
@@ -4158,17 +4163,18 @@
           <div class="guided--capsule" id="guided-add-tags-capsule"></div>
           <div class="guided--capsule" id="guided-assign-license-capsule"></div>
         </div>
+
         <div id="guided-pennsieve-intro-tab" class="guided--page" data-page-name="Pennsieve log in">
           <div class="guided--section" style="padding-left: 0; padding-right: 0">
             <h1 class="text-sub-step-title">Pennsieve metadata</h1>
             <p class="help-text">
               All SPARC datasets must be uploaded on
               <a href="https://app.pennsieve.io" target="_blank">Pennsieve</a>, a free, open source
-              data management platform supported by the SPARC program. As per the SPARC data
-              curation rule, specific metadata are needed on your Pennsieve dataset. In the
-              subsequent pages, you will be prompted to add these metadata such as a banner image,
-              description, license, etc. SODA will automatically add these metadata to your
-              Pennsieve dataset when your dataset is generated during the last step of this process.
+              data management platform supported by the SPARC program. Over the next steps, you will
+              be prompted to add metadata to Pennsieve such as a banner image, description, license,
+              etc. and SODA will automatically add the metadata to your Pennsieve dataset when your
+              dataset is generated during the last step of this process. This information will be
+              shown on the landing page of your dataset when it is publised on sparc.science.
             </p>
           </div>
           <div class="guided--section">

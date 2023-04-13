@@ -6593,17 +6593,14 @@ const patchPreviousGuidedModeVersions = () => {
     }
   }
 
-  let oldManifestFileHeaders = false;
   for (highLevelFolderManifestData in sodaJSONObj["guided-manifest-files"]) {
     if (
       sodaJSONObj["guided-manifest-files"][highLevelFolderManifestData]["headers"][0] ===
       "File Name"
     ) {
-      oldManifestFileHeaders = true;
+      // reset the manifest files
+      sodaJSONObj["guided-manifest-files"] = {};
     }
-  }
-  if (oldManifestFileHeaders) {
-    resetGuidedManifestFiles();
   }
 
   //Add key to track status of Pennsieve uploads
