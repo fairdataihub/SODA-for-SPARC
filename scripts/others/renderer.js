@@ -3605,7 +3605,7 @@ const withdrawDatasetCheck = async (res, curationMode) => {
   }
 };
 
-// TODO: Dorian -> Adapt this for guided mode
+
 const withdrawReviewDataset = async (curationMode) => {
   bfWithdrawReviewDatasetBtn.disabled = true;
 
@@ -3934,7 +3934,6 @@ const showPrePublishingPageElements = () => {
   $(".pre-publishing-continue-container").hide();
 };
 
-// TODO: Dorian -> Adapt function to be used for Guided Mode as well
 const showPublishingStatus = async (callback, curationMode = "") => {
   return new Promise(async function (resolve, reject) {
     console.log(callback);

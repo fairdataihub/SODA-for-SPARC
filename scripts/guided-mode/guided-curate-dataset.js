@@ -2056,8 +2056,7 @@ const guidedReserveAndSaveDOI = async () => {
   guidedSetDOIUI(doiInformation);
 };
 
-// TODO: Dorian -> Handle error reponses when no DOI is found
-// Function is for displaying DOI information on the UI
+// Function is for displaying DOI information on the Guided UI
 const guidedSetDOIUI = (doiInformation) => {
   $("#guided--para-doi-info").text(doiInformation);
 
