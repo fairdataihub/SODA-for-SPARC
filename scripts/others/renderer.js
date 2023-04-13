@@ -3335,7 +3335,7 @@ ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
   $("#submit_prepublishing_review-spinner").hide();
 });
 
-// TODO: Dorian -> Adapt this function for Guided Mode
+
 const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
   let curationModeID = "";
   let currentAccount = defaultBfAccount;
@@ -3417,11 +3417,6 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
       return;
     }
   }
-
-  console.log(currentAccount);
-  console.log(currentDataset);
-  console.log(embargoReleaseDate);
-  console.log(embargoReleaseDate === "" ? "publication" : "embargo");
 
   try {
     await api.submitDatasetForPublication(

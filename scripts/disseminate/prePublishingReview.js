@@ -788,7 +788,6 @@ const populateFileViewer = (metadataFiles, excludedFiles, curationMode) => {
   });
 };
 
-// TODO: Dorian -> Adapt this function to be used in Guided Mode
 // Check if there are excluded files in the excluded files list found in step 3 of the pre-publication submission workflow
 const excludedFilesInPublicationFlow = (curationMode) => {
   let curationModeID = "";
@@ -807,7 +806,6 @@ const excludedFilesInPublicationFlow = (curationMode) => {
 // retrieves the file path and name from the list of excluded files found in step 3 of the pre-publication submission workflow
 // Output:
 //  [{fileName: string}]
-// TODO: Dorian -> Adapt this function to be used in Guided Mode
 const getExcludedFilesFromPublicationFlow = (curationMode) => {
   // get the list items
   let curationModeID = "";
