@@ -693,7 +693,26 @@ const savePageChanges = async (pageBeingLeftID) => {
         guidedSkipPage("guided-derivative-data-organization-tab");
         guidedSkipPage("guided-create-subjects-metadata-tab");
         guidedSkipPage("guided-create-samples-metadata-tab");
+
+        if (datasetHasCode) {
+          // If Protocol and Docs are empty, skip the Protocol and Docs tabs
+          // This is checked so if the user starts from Pennsieve and they have Protocol and Docs data, they can still modify it
+          // but the protocol and docs pages will be skipped if the user is started a new computational dataset without subjects
+          if (folderIsEmpty(datasetStructureJSONObj?.["folders"]?.["protocol"])) {
+            guidedSkipPage("guided-protocol-folder-tab");
+          } else {
+            guidedUnSkipPage("guided-protocol-folder-tab");
+          }
+
+          if (folderIsEmpty(datasetStructureJSONObj?.["folders"]?.["docs"])) {
+            guidedSkipPage("guided-docs-folder-tab");
+          } else {
+            guidedUnSkipPage("guided-docs-folder-tab");
+          }
+        }
       }
+
+      // If the dataset does not contain code, skip the code pages
       if (datasetHasCode) {
         guidedUnSkipPage("guided-code-folder-tab");
         guidedUnSkipPage("guided-add-code-metadata-tab");
@@ -2056,8 +2075,7 @@ const guidedReserveAndSaveDOI = async () => {
   guidedSetDOIUI(doiInformation);
 };
 
-// TODO: Dorian -> Handle error reponses when no DOI is found
-// Function is for displaying DOI information on the UI
+// Function is for displaying DOI information on the Guided UI
 const guidedSetDOIUI = (doiInformation) => {
   $("#guided--para-doi-info").text(doiInformation);
 
@@ -2080,43 +2098,47 @@ const showPrepublishingReview = () => {
 
 // This function is for when a user clicks the share/unshare with curation team (requires Dataset to be published and locked)
 const guidedModifyCurationTeamAccess = async (action) => {
+  const guidedShareWithCurationTeamButton = document.getElementById(
+    "guided-button-share-dataset-with-curation-team"
+  );
+  const guidedUnshareWithCurationTeamButton = document.getElementById(
+    "guided-button-unshare-dataset-with-curation-team"
+  );
   if (action === "share") {
-    const guidedShareWithCurationTeamButton = document.getElementById(
-      "guided-button-share-dataset-with-curation-team"
-    );
-
     guidedShareWithCurationTeamButton.disabled = true;
     guidedShareWithCurationTeamButton.classList.add("loading");
-    guidedShareWithCurationTeamButton.classList.add("hidden");
+    // guidedShareWithCurationTeamButton.classList.add("hidden");
 
     let publishPreCheckStatus = await beginPrepublishingFlow("guided");
 
+    console.log(publishPreCheckStatus);
     // Will return false if there are issues running the precheck flow
-    if (!publishPreCheckStatus) {
-      guidedShareWithCurationTeamButton.classList.remove("hidden");
+    if (publishPreCheckStatus) {
+      // guidedShareWithCurationTeamButton.classList.remove("hidden");
+      guidedShareWithCurationTeamButton.classList.add("hidden");
+      // guidedUnshareWithCurationTeamButton.classList.remove("hidden");
     }
-
     guidedShareWithCurationTeamButton.classList.remove("loading");
     guidedShareWithCurationTeamButton.disabled = false;
+    // guidedSetCurationTeamUI();
   }
   if (action === "unshare") {
-    const guidedUnshareWithCurationTeamButton = document.getElementById(
-      "guided-button-unshare-dataset-with-curation-team"
-    );
     console.log("Withdrawing the dataset here");
 
     guidedUnshareWithCurationTeamButton.disabled = true;
     guidedUnshareWithCurationTeamButton.classList.add("loading");
-    guidedUnshareWithCurationTeamButton.classList.add("hidden");
+    // guidedUnshareWithCurationTeamButton.classList.add("hidden");
 
     let removeStatus = await withdrawDatasetSubmission("guided");
 
     if (removeStatus) {
-      guidedUnshareWithCurationTeamButton.classList.remove("hidden");
+      guidedUnshareWithCurationTeamButton.classList.add("hidden");
+      guidedShareWithCurationTeamButton.classList.remove("hidden");
     }
 
     guidedUnshareWithCurationTeamButton.disabled = false;
     guidedUnshareWithCurationTeamButton.classList.remove("loading");
+    // guidedSetCurationTeamUI();
   }
 };
 
@@ -3588,6 +3610,8 @@ const pageIsSkipped = (pageId) => {
 };
 
 const folderIsEmpty = (folder) => {
+  if (!folder) return true;
+
   return Object.keys(folder.folders).length === 0 && Object.keys(folder.files).length === 0;
 };
 
@@ -11169,7 +11193,10 @@ $(document).ready(async () => {
 
     // Skip the changes metadata tab as new datasets do not have changes metadata
     guidedSkipPage("guided-create-changes-metadata-tab");
-    await openPage("guided-ask-if-submission-is-sparc-funded-tab");
+
+    // Open the first page
+    const firstPage = getNonSkippedGuidedModePages(document)[0];
+    await openPage(firstPage.id);
   });
 
   $("#guided-button-start-existing-curate").on("click", async () => {
@@ -11332,8 +11359,6 @@ $(document).ready(async () => {
 
       sodaJSONObj["dataset-contains-subjects"] = datasetHasSubjects;
       sodaJSONObj["dataset-contains-code"] = datasetHasCode;
-      console.log(sodaJSONObj["dataset-contains-subjects"]);
-      console.log(sodaJSONObj["dataset-contains-code"]);
 
       let interpredDatasetType;
 

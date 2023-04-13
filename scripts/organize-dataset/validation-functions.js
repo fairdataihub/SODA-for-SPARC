@@ -47,7 +47,6 @@ const validateOrganizedDataset = async () => {
     },
   });
 
-
   let sodaJSONObjCopy = JSON.parse(JSON.stringify(sodaJSONObj));
   formatForDatasetGeneration(sodaJSONObjCopy);
 
@@ -62,7 +61,7 @@ const validateOrganizedDataset = async () => {
   // 1. Local dataset -> count sodaJSONObj
   // 2. Pennsieve dataset -> count sodaJSONObj
   // 3. Saved dataset -> count sodaJSONObj
-  // 4. Merge -> count sodaJSONObj + packageTypeCounts to get the total number of files 
+  // 4. Merge -> count sodaJSONObj + packageTypeCounts to get the total number of files
   // NOTE: I do have to consider deleted files since they will not be included, but can ignore moved/renamed files since they will be included in the count
   // for now lets count then handle option 4 later
 
@@ -72,12 +71,16 @@ const validateOrganizedDataset = async () => {
 
   // check if the virutal files will be merged with a Pennsieve dataset
   if (
-    $('input[name="generate-4"]:checked')[0] && $('input[name="generate-4"]:checked')[0].id === "generate-BF-dataset-options-existing" ) {
+    $('input[name="generate-4"]:checked')[0] &&
+    $('input[name="generate-4"]:checked')[0].id === "generate-BF-dataset-options-existing"
+  ) {
     // get the package count of the PS dataset in order to see if it exceeds the maximumn size
     let packageTypeCounts;
     try {
       // TOOD: Handle the replacements if-existing case as this will change the amount of validation work to be done + therefore the actual amt
-      packageTypeCounts = await api.getNumberOfPackagesInDataset(sodaJSONObjCopy["bf-dataset-selected"]["dataset-name"]);
+      packageTypeCounts = await api.getNumberOfPackagesInDataset(
+        sodaJSONObjCopy["bf-dataset-selected"]["dataset-name"]
+      );
     } catch (err) {
       clientError(err);
       await Swal.fire({
@@ -93,19 +96,19 @@ const validateOrganizedDataset = async () => {
       });
       return;
     }
-  
+
     // count the number of packages in the packgeTypeCounts dictionary
     let packageCount = 0;
     for (let packageType in packageTypeCounts) {
       packageCount += packageTypeCounts[packageType];
     }
-    // TODO: Handle the case where a file replaces an online file 
-    file_counter += packageCount
+    // TODO: Handle the case where a file replaces an online file
+    file_counter += packageCount;
   }
 
-  console.log(file_counter)
+  console.log(file_counter);
 
-  if(file_counter >= 50000) {
+  if (file_counter >= 50000) {
     await Swal.fire({
       title: `Dataset Too Large`,
       text: "At the moment we cannot validate a dataset with 50,000 or more files.",
@@ -119,7 +122,6 @@ const validateOrganizedDataset = async () => {
     });
     return;
   }
-
 
   let validationReport;
   try {

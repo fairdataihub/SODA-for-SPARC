@@ -120,7 +120,7 @@ def remove_collection_names(account, dataset, tags):
 
     return dict({"collection": "Collection removed"})
 
-# TODO: Dorian -> Ensure errors are being handled properly
+
 def reserve_dataset_doi(dataset):  # sourcery skip: extract-method
     """
     Function used to reserve a DOI after dataset has been published
