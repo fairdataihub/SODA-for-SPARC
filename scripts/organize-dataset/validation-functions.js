@@ -47,6 +47,7 @@ const validateOrganizedDataset = async () => {
     },
   });
 
+
   let sodaJSONObjCopy = JSON.parse(JSON.stringify(sodaJSONObj));
   formatForDatasetGeneration(sodaJSONObjCopy);
 
@@ -56,10 +57,74 @@ const validateOrganizedDataset = async () => {
     await api.performUserActions(sodaJSONObjCopy);
   }
 
+  // check size before doing this
+  // situations:
+  // 1. Local dataset -> count sodaJSONObj
+  // 2. Pennsieve dataset -> count sodaJSONObj
+  // 3. Saved dataset -> count sodaJSONObj
+  // 4. Merge -> count sodaJSONObj + packageTypeCounts to get the total number of files 
+  // NOTE: I do have to consider deleted files since they will not be included, but can ignore moved/renamed files since they will be included in the count
+  // for now lets count then handle option 4 later
+
+  // get the number of files and folders in the dataset that have been added in the virutal organizer
+  file_counter = 0;
+  get_num_files_and_folders(sodaJSONObjCopy["dataset-structure"]);
+
+  // check if the virutal files will be merged with a Pennsieve dataset
+  if (
+    $('input[name="generate-4"]:checked')[0] && $('input[name="generate-4"]:checked')[0].id === "generate-BF-dataset-options-existing" ) {
+    // get the package count of the PS dataset in order to see if it exceeds the maximumn size
+    let packageTypeCounts;
+    try {
+      // TOOD: Handle the replacements if-existing case as this will change the amount of validation work to be done + therefore the actual amt
+      packageTypeCounts = await api.getNumberOfPackagesInDataset(sodaJSONObjCopy["bf-dataset-selected"]["dataset-name"]);
+    } catch (err) {
+      clientError(err);
+      await Swal.fire({
+        title: "Could not validate your dataset.",
+        message: `Could not determine the size of your dataset before validation. Please try again shortly.`,
+        allowEscapeKey: true,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        showConfirmButton: true,
+        icon: "error",
+      });
+      return;
+    }
+  
+    // count the number of packages in the packgeTypeCounts dictionary
+    let packageCount = 0;
+    for (let packageType in packageTypeCounts) {
+      packageCount += packageTypeCounts[packageType];
+    }
+    // TODO: Handle the case where a file replaces an online file 
+    file_counter += packageCount
+  }
+
+  console.log(file_counter)
+
+  if(file_counter >= 50000) {
+    await Swal.fire({
+      title: `Dataset Too Large`,
+      text: "At the moment we cannot validate a dataset with 50,000 or more files.",
+      allowEscapeKey: true,
+      allowOutsideClick: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      showConfirmButton: true,
+      icon: "error",
+    });
+    return;
+  }
+
+
   let validationReport;
   try {
     validationReport = await createValidationReport(sodaJSONObjCopy);
-    if (validationReportData.status === "Error") throw new Error(validationReportData.error);
+    if (validationReport.status === "Error") throw new Error(validationReport.error);
   } catch (error) {
     clientError(error);
     file_counter = 0;
