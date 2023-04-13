@@ -12,7 +12,8 @@ from datasets import (
     remove_collection_names,
     reserve_dataset_doi,
     get_dataset_doi,
-    get_package_type_counts
+    get_package_type_counts,
+    get_total_items_in_local_dataset
 )
 
 api = get_namespace(NamespaceEnum.DATASETS)
@@ -187,6 +188,27 @@ class PackageTypeCounts(Resource):
     def get(self, dataset_name):
         try:
             return get_package_type_counts(dataset_name)
+        except Exception as e:
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e
+        
+
+
+
+
+@api.route('/local/item_count')
+class PackageTypeCounts(Resource):
+    parser = reqparse.RequestParser()
+    parser.add_argument('dataset_path', type=str, required=True, help='Dataset name', location="args")
+    @api.doc(responses={200: 'Success', 400: 'Bad Request', 500: "Internal server error"})
+    def get(self):
+        # get the dataset_path from the query string 
+        args = self.parser.parse_args()
+        dataset_path = args.get('dataset_path')
+
+        try:
+            return get_total_items_in_local_dataset(dataset_path)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))

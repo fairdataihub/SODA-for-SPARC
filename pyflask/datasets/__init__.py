@@ -6,5 +6,6 @@ from .datasets import (
     remove_collection_names,
     reserve_dataset_doi,
     get_dataset_doi,
-    get_package_type_counts
+    get_package_type_counts,
+    get_total_items_in_local_dataset
 )
