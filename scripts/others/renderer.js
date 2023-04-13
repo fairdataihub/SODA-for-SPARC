@@ -3154,7 +3154,7 @@ const submitReviewDatasetCheck = async (res, curationMode) => {
       confirmButtonText: "Submit",
       denyButtonText: "Cancel",
       showDenyButton: true,
-      title: `Submit your dataset for pre-publishing review`,
+      title: `Submit your dataset for review`,
       reverseButtons: reverseSwalButtons,
       text: "",
       html: `
@@ -3243,7 +3243,7 @@ const submitReviewDatasetCheck = async (res, curationMode) => {
       confirmButtonText: "Submit",
       denyButtonText: "Cancel",
       showDenyButton: true,
-      title: `Submit your dataset for pre-publishing review`,
+      title: `Submit your dataset for review`,
       reverseButtons: reverseSwalButtons,
       html: `
               <div style="display: flex; flex-direction: column;  font-size: 15px;">
@@ -3501,6 +3501,7 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
 
     guidedShareWithCurationTeamButton.classList.remove("hidden");
     guidedShareWithCurationTeamButton.classList.remove("loading");
+    // $("#guided--para-review-dataset-info-disseminate").text("Dataset is not under review currently")
 
     guidedShareWithCurationTeamButton.disabled = false;
     // $("#guided-button-unshare-dataset-with-curation-team").show();
@@ -3558,7 +3559,7 @@ const withdrawDatasetSubmission = async (curationMode) => {
     );
     // This helps signal guided mode to update the UI
     if (curationMode === "guided") {
-      return true;
+      return false;
     }
   });
 
@@ -3587,40 +3588,20 @@ const withdrawDatasetCheck = async (res, curationMode) => {
       },
     });
   } else {
-    let result = await Swal.fire({
-      icon: "warning",
-      text: "Your dataset will be removed from review. You will have to submit it again before publishing it. Would you like to continue?",
+    // show a SWAL loading message until the submit for prepublishing flow is successful or fails
+    Swal.fire({
+      title: `Withdrawing dataset submission`,
+      html: "Please wait...",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-      showCancelButton: true,
-      focusCancel: true,
-      confirmButtonText: "Yes",
-      cancelButtonText: "No",
-      reverseButtons: reverseSwalButtons,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
+      timerProgressBar: false,
+      didOpen: () => {
+        Swal.showLoading();
       },
     });
-
-    if (result.isConfirmed) {
-      // show a SWAL loading message until the submit for prepublishing flow is successful or fails
-      Swal.fire({
-        title: `Withdrawing dataset submission`,
-        html: "Please wait...",
-        allowEscapeKey: false,
-        allowOutsideClick: false,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        timerProgressBar: false,
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      });
-      await withdrawReviewDataset(curationMode);
-    }
+    await withdrawReviewDataset(curationMode);
   }
 };
 

@@ -212,9 +212,26 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
     curationModeID = "guided--";
     currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
     console.log("is guided mode here as well");
+    Swal.fire({
+      title: "Checking if dataset is eligible to submit...",
+      html: "Please wait...",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      icon: "info",
+      showClass: {
+        popup: "animate__animated animate__fadeInDown",
+      },
+      hideClass: {
+        popup: "animate__animated animate__fadeOutUp",
+      },
+    });
     // Reset the language for the pre-publishing checklist items
-    $("#guided--prepublishing-checklist-container").removeClass("hidden");
-    smoothScrollToElement(`guided--prepublishing-continue-btn`, "end", "nearest");
+    // $("#guided--prepublishing-checklist-container").addClass("hidden");
+    // smoothScrollToElement(`guided--prepublishing-continue-btn`, "end", "nearest");
   }
   console.log(currentDataset);
 
@@ -227,7 +244,12 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
     "Dataset is not under review currently"
   ) {
     console.log("returning here");
-    return;
+    return false;
+  }
+
+  if(curationMode != "guided") {
+    // Spinners will not be shown in guided mode
+    $(`.${curationModeID}icon-wrapper`).children().css("visibility", "hidden");
   }
 
   // spinners that fit into the checklist icon slots until statuses have been verified for the items
@@ -235,7 +257,6 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
     "class",
     `ui mini active inline loader ${curationModeID}icon-wrapper`
   );
-  $(`.${curationModeID}icon-wrapper`).children().css("visibility", "hidden");
 
   // run the validation checks on each pre-publishing checklist item
   let statuses;
@@ -290,16 +311,19 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
   setPrepublishingChecklistItemIconByStatus(
     `${curationModeID}prepublishing-checklist-icon-subtitle`,
     statuses.subtitle
+    // false
   );
 
   setPrepublishingChecklistItemIconByStatus(
     `${curationModeID}prepublishing-checklist-icon-readme`,
     statuses.readme
+    // false
   );
 
   setPrepublishingChecklistItemIconByStatus(
     `${curationModeID}prepublishing-checklist-icon-tags`,
     statuses.tags
+    // false
   );
 
   setPrepublishingChecklistItemIconByStatus(
@@ -315,11 +339,61 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
   setPrepublishingChecklistItemIconByStatus(
     `${curationModeID}prepublishing-checklist-icon-ORCID`,
     statuses.ORCID
+    // false
   );
+
+  if(curationMode === "guided") {
+    // Check the status of checklist items for the dataset and alert
+    // the user if any of the items are not completed through a sweet alert
+    let checklistItemCheck = allPrepublishingChecklistItemsCompleted("guided");
+    let allItemsChecked = checklistItemCheck[0];
+    let checklistItems = checklistItemCheck[1];
+    console.log(allItemsChecked);
+    console.log(checklistItems);
+    if(!allItemsChecked) {
+      let result = await Swal.fire({
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        allowEscapeKey: false,
+        // If "Link ORCID iD" is not completed, then confirmButtonText will say "Link ORCID iD" and will redirect the user to the ORCID page
+        confirmButtonText: checklistItems.includes("Link ORCID iD") ? "Link ORCID iD" : "Ok",
+        showCancelButton: checklistItems.includes("Link ORCID iD") ? true : false,
+        title: "Cannot submit dataset yet",
+        // map checkListItems to a string of the checklist items that are not completed
+        text: `You must add all of the items below to your dataset before submitting your dataset for review: ${checklistItems.map(item => item).join(", ")} `,
+        icon: "error",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+        preConfirm: () => {
+          //If confirm button says OK, return false to prevent opening the ORCID page
+          if(checklistItems.includes("Link ORCID iD")) {
+            return "ORCID";
+          }
+          console.log("preconfirm");
+        }
+      });
+      console.log(result);
+      if(result.isConfirmed && result.value === "ORCID") {
+        orcidSignIn('guided')
+      }
+      return false;
+    } else {
+      // display the submit button to the user
+      Swal.close();
+      $("#guided--submit-prepublishing-review").removeClass("hidden");
+      return true;
+    }
+  }
 
   // hide the spinner and show the checklist item icons
   $(`.${curationModeID}icon-wrapper`).attr("class", `${curationModeID}icon-wrapper`);
-  $(`.${curationModeID}icon-wrapper`).children().css("visibility", "visible");
+  if(curationMode != "guided") {
+    $(`.${curationModeID}icon-wrapper`).children().css("visibility", "visible");
+  }
 };
 
 // Inputs:
@@ -359,6 +433,7 @@ const setPrepublishingChecklistItemIconByStatus = (iconElementId, status) => {
 // half belong to guided mode and the other half belongs to free form mode
 const allPrepublishingChecklistItemsCompleted = (curationMode) => {
   let curationModeID = "";
+  let prePublishingChecklistItemNames = [];
   if (curationMode === "guided") {
     // This is done to ensure the right element ID is called
     // Guided mode elements have 'guided--' prepended to their ID
@@ -370,9 +445,19 @@ const allPrepublishingChecklistItemsCompleted = (curationMode) => {
 
   // filter out the completed items - by classname
   let incompleteChecklistItems = Array.from(prePublishingChecklistItems).filter((checklistItem) => {
+    console.log("Filtering")
+    console.log(checklistItem);
+    console.log(checklistItem.dataset.checklistName);
+    if(checklistItem.className === "close icon") {
+      prePublishingChecklistItemNames.push(checklistItem.dataset.checklistName);
+    }
     return checklistItem.className === "close icon";
   });
 
+
+  if(curationMode === "guided") {
+    return [incompleteChecklistItems.length ? false : true, prePublishingChecklistItemNames]
+  }
   // if there are any incomplete checklist items then not all items are complete
   return incompleteChecklistItems.length ? false : true;
 };
@@ -734,8 +819,11 @@ const beginPrepublishingFlow = async (curationMode) => {
   } else {
     //Curation mode is guided mode
     console.log("is guided mode");
-    await showPrePublishingStatus(true, "guided");
-    return true;
+    // Don't send true until pre-publishing checklist is complete
+    let status = await showPrePublishingStatus(true, "guided");
+    console.log(status);
+    return status
+    // return true;
   }
 };
 

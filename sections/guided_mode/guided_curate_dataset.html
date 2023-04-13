@@ -5564,10 +5564,14 @@
             ><button
               class="ui positive button guided--button-footer mt-lg"
               id="guided-button-unshare-dataset-with-curation-team"
-              style="background-color: var(--color-bg-plum) !important; width: 270px !important"
+              style="
+                background-color: var(--color-bg-plum) !important;
+                width: 281px !important;
+                height: 3.2rem;
+              "
               onclick="guidedModifyCurationTeamAccess('unshare')"
             >
-              Unshare with SPARC Curation Team
+              Withdraw from Review
             </button>
           </div>
           <div class="guided--section hidden" id="guided--prepublishing-checklist-container">
@@ -5626,6 +5630,7 @@
                               <i
                                 class="check icon"
                                 style="color: green; visibility: visible"
+                                data-checklist-name="Subtitle"
                                 id="guided--prepublishing-checklist-icon-subtitle"
                               ></i>
                             </div>
@@ -5642,6 +5647,7 @@
                               <i
                                 class="check icon"
                                 style="color: green; margin-right: 5px; visibility: visible"
+                                data-checklist-name="Tags"
                                 id="guided--prepublishing-checklist-icon-tags"
                               ></i>
                             </div>
@@ -5658,6 +5664,7 @@
                               <i
                                 class="check icon"
                                 style="color: green; margin-right: 5px; visibility: visible"
+                                data-checklist-name="Description"
                                 id="guided--prepublishing-checklist-icon-readme"
                               ></i>
                             </div>
@@ -5676,6 +5683,7 @@
                             >
                               <i
                                 class="check icon"
+                                data-checklist-name="Banner image"
                                 style="color: green; margin-right: 5px; visibility: visible"
                                 id="guided--prepublishing-checklist-icon-banner"
                               ></i>
@@ -5693,6 +5701,7 @@
                               <i
                                 class="check icon"
                                 style="color: green; margin-right: 5px; visibility: visible"
+                                data-checklist-name="License"
                                 id="guided--prepublishing-checklist-icon-license"
                               ></i>
                             </div>
@@ -5709,6 +5718,7 @@
                               <i
                                 class="check icon"
                                 style="color: green; margin-right: 5px; visibility: visible"
+                                data-checklist-name="Link ORCID iD"
                                 id="guided--prepublishing-checklist-icon-ORCID"
                               ></i>
                             </div>
@@ -5783,7 +5793,7 @@
                   <!--Pennsieve file tree header-->
                   <div
                     style="
-                      display: flex;
+                      display: none !important;
                       flex-direction: column;
                       align-items: center;
                       justify-content: center;
@@ -5813,7 +5823,7 @@
                   <!--Pennsieve metadata file viewer-->
                   <div
                     id="guided--pre-publication-items-container"
-                    class="prepublish-items-container"
+                    class="prepublish-items-container hidden"
                     style="height: 12rem"
                   >
                     <div id="guided--items-pre-publication"></div>
@@ -5840,13 +5850,12 @@
                 >
                   <button
                     onclick="disseminateDataset('submit-pre-publishing', 'guided')"
-                    class="btn_animated md"
+                    class="ui positive button guided--button-footer mt-lg"
                     style="
-                      margin: 1.5rem 23%;
-                      width: 200px;
-                      height: 40px;
-                      font-size: 15px;
-                      border: none !important; ;
+                      background-color: var(--color-light-green) !important;
+                      width: 281px !important;
+                      height: 3.2rem;
+                      margin-top: 0 !important;
                     "
                   >
                     <i class="fas fa-sign-in-alt" style="padding-right: 5px"></i>

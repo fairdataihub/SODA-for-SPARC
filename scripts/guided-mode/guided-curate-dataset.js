@@ -2080,43 +2080,50 @@ const showPrepublishingReview = () => {
 
 // This function is for when a user clicks the share/unshare with curation team (requires Dataset to be published and locked)
 const guidedModifyCurationTeamAccess = async (action) => {
+  const guidedShareWithCurationTeamButton = document.getElementById(
+    "guided-button-share-dataset-with-curation-team"
+  );
+  const guidedUnshareWithCurationTeamButton = document.getElementById(
+    "guided-button-unshare-dataset-with-curation-team"
+  );
   if (action === "share") {
-    const guidedShareWithCurationTeamButton = document.getElementById(
-      "guided-button-share-dataset-with-curation-team"
-    );
 
     guidedShareWithCurationTeamButton.disabled = true;
     guidedShareWithCurationTeamButton.classList.add("loading");
-    guidedShareWithCurationTeamButton.classList.add("hidden");
+    // guidedShareWithCurationTeamButton.classList.add("hidden");
 
     let publishPreCheckStatus = await beginPrepublishingFlow("guided");
 
+    console.log(publishPreCheckStatus);
     // Will return false if there are issues running the precheck flow
-    if (!publishPreCheckStatus) {
-      guidedShareWithCurationTeamButton.classList.remove("hidden");
+    if (publishPreCheckStatus) {
+      // guidedShareWithCurationTeamButton.classList.remove("hidden");
+      guidedShareWithCurationTeamButton.classList.add("hidden");
+      // guidedUnshareWithCurationTeamButton.classList.remove("hidden");
     }
-
     guidedShareWithCurationTeamButton.classList.remove("loading");
     guidedShareWithCurationTeamButton.disabled = false;
+    // guidedSetCurationTeamUI();
+
   }
   if (action === "unshare") {
-    const guidedUnshareWithCurationTeamButton = document.getElementById(
-      "guided-button-unshare-dataset-with-curation-team"
-    );
+
     console.log("Withdrawing the dataset here");
 
     guidedUnshareWithCurationTeamButton.disabled = true;
     guidedUnshareWithCurationTeamButton.classList.add("loading");
-    guidedUnshareWithCurationTeamButton.classList.add("hidden");
+    // guidedUnshareWithCurationTeamButton.classList.add("hidden");
 
     let removeStatus = await withdrawDatasetSubmission("guided");
 
     if (removeStatus) {
-      guidedUnshareWithCurationTeamButton.classList.remove("hidden");
+      guidedUnshareWithCurationTeamButton.classList.add("hidden");
+      guidedShareWithCurationTeamButton.classList.remove("hidden");
     }
 
     guidedUnshareWithCurationTeamButton.disabled = false;
     guidedUnshareWithCurationTeamButton.classList.remove("loading");
+    // guidedSetCurationTeamUI();
   }
 };
 
