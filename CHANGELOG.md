@@ -9,13 +9,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Bug fixes:
 
-- GM: BUG FIX FOR GM
-- FFM: BUG FIX FOR FFM
+- GM: Sharing with the Curation Team has been modified to notify the Curation Team.
+-GM: For the file explorer the right click menu has been aligned with the mouse position.
+
+- FFM: Prepare Metadata -> dataset_description.xlsx text was being modified and has been patched to display fields as the user originally wrote it.
+- FFM: Imported metadata files not resetting upon changing a dataset has been patched.
+
+- The ability for deleting all files selected has been fixed.
+- Taxonomy endpoint has been patched to look up names and return response corrently.
 
 ## Feature Additions:
 
-- GM: CHANGE FOR GM
-- GM: CHANGE FOR GM
+- SODA for SPARC's home page has been updated to be minimal and easier to navigate. Free form mode and Guided mode have been merged to one location: Curate and Share.
+- GM: Ability to reserve a DOI after uploading.
 - GM: CHANGE FOR GM
 - FFM: CHANGE FOR FFM
 - FFM: CHANGE FOR FFM
