@@ -128,30 +128,28 @@ const validateLocalDataset = async () => {
     },
   });
 
-
   let totalItems;
   try {
-   totalItems = await api.getNumberOfItemsInLocalDataset(datasetPath)
-  } catch(error) {
+    totalItems = await api.getNumberOfItemsInLocalDataset(datasetPath);
+  } catch (error) {
     clientError(error);
-      await Swal.fire({
-        title: "Could not validate your dataset.",
-        message: `Could not determine the size of your dataset before validation. Please try again shortly.`,
-        allowEscapeKey: true,
-        allowOutsideClick: false,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        timerProgressBar: false,
-        showConfirmButton: true,
-        icon: "error",
-      });
-      return;
+    await Swal.fire({
+      title: "Could not validate your dataset.",
+      message: `Could not determine the size of your dataset before validation. Please try again shortly.`,
+      allowEscapeKey: true,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      showConfirmButton: true,
+      icon: "error",
+    });
+    return;
   }
 
-  console.log(totalItems)
+  console.log(totalItems);
 
-
-  if(totalItems >= 50000) {
+  if (totalItems >= 50000) {
     await Swal.fire({
       title: `Dataset Too Large`,
       text: "At the moment we cannot validate a dataset with 50,000 or more files.",
@@ -345,46 +343,46 @@ const validatePennsieveDatasetStandAlone = async () => {
     },
   });
 
-    // check if the dataset exceeds the maximumn size
-    let packageTypeCounts;
-    try {
-      packageTypeCounts = await api.getNumberOfPackagesInDataset(datasetName);
-    } catch (err) {
-      clientError(err);
-      await Swal.fire({
-        title: "Could not validate your dataset.",
-        message: `Could not determine the size of your dataset before validation. Please try again shortly.`,
-        allowEscapeKey: true,
-        allowOutsideClick: false,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        timerProgressBar: false,
-        showConfirmButton: true,
-        icon: "error",
-      });
-      return;
-    }
-  
-    // count the number of packages in the packgeTypeCounts dictionary
-    let packageCount = 0;
-    for (let packageType in packageTypeCounts) {
-      packageCount += packageTypeCounts[packageType];
-    }
-  
-    if (packageCount >= 50000) {
-      await Swal.fire({
-        title: `Dataset Too Large`,
-        text: "At the moment we cannot validate a dataset with 50,000 or more files.",
-        allowEscapeKey: true,
-        allowOutsideClick: true,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        timerProgressBar: false,
-        showConfirmButton: true,
-        icon: "error",
-      });
-      return;
-    }
+  // check if the dataset exceeds the maximumn size
+  let packageTypeCounts;
+  try {
+    packageTypeCounts = await api.getNumberOfPackagesInDataset(datasetName);
+  } catch (err) {
+    clientError(err);
+    await Swal.fire({
+      title: "Could not validate your dataset.",
+      message: `Could not determine the size of your dataset before validation. Please try again shortly.`,
+      allowEscapeKey: true,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      showConfirmButton: true,
+      icon: "error",
+    });
+    return;
+  }
+
+  // count the number of packages in the packgeTypeCounts dictionary
+  let packageCount = 0;
+  for (let packageType in packageTypeCounts) {
+    packageCount += packageTypeCounts[packageType];
+  }
+
+  if (packageCount >= 50000) {
+    await Swal.fire({
+      title: `Dataset Too Large`,
+      text: "At the moment we cannot validate a dataset with 50,000 or more files.",
+      allowEscapeKey: true,
+      allowOutsideClick: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      showConfirmButton: true,
+      icon: "error",
+    });
+    return;
+  }
 
   // create a local SODA JSON object to pass to the import endpoint
   let localSodaJSONObj = {
