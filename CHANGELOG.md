@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Bug fixes:
 
 - GM: Sharing with the Curation Team has been modified to notify the Curation Team.
--GM: For the file explorer the right click menu has been aligned with the mouse position.
+  -GM: For the file explorer the right click menu has been aligned with the mouse position.
 
 - FFM: Prepare Metadata -> dataset_description.xlsx text was being modified and has been patched to display fields as the user originally wrote it.
 - FFM: Imported metadata files not resetting upon changing a dataset has been patched.
