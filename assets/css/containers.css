@@ -178,6 +178,15 @@
   align-items: center;
 }
 
+.container-tab-information-header {
+  display: inline-flex;
+  align-items: center;
+  flex-direction: row;
+  width: 94.5%;
+  margin-bottom: 50px;
+  margin-left: 15px;
+}
+
 /* YouTube video frames */
 .video-container {
   position: relative;

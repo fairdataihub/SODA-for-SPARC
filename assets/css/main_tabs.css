@@ -80,11 +80,6 @@
   -webkit-transition: all 0.25s linear;
 }
 
-.section-header > div {
-  margin-left: 15px;
-  margin-right: 15px;
-}
-
 .section-header > div > svg {
   margin-right: 25px;
 }
