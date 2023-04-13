@@ -1,5 +1,4 @@
 // Purpose: The front end logic for the Validate Dataset section
-
 const { handleAxiosValidationErrors } = require("./scripts/validator/axios-validator-utility.js");
 
 const { translatePipelineError } = require("./scripts/validator/parse-pipeline-errors.js");
@@ -294,6 +293,33 @@ const validateLocalDataset = async () => {
 const validatePennsieveDatasetStandAlone = async () => {
   // get the dataset name from the dataset selection card
   let datasetName = document.querySelector("#bf_dataset_load_validator").textContent;
+
+  // check if the dataset exceeds the maximumn size
+  let packageTypeCounts = await api.getNumberOfPackagesInDataset(datasetName);
+
+  // count the number of packages in the packgeTypeCounts dictionary
+  let packageCount = 0;
+  for (let packageType in packageTypeCounts) {
+    packageCount += packageTypeCounts[packageType];
+  }
+
+  console.log(packageTypeCounts)
+  console.log(packageCount)
+
+  if (packageCount >= 50000) {
+    await Swal.fire({
+      title: `Dataset Too Large`,
+      text: "At the moment we cannot validate a dataset with 50,000 or more files.",
+      allowEscapeKey: true,
+      allowOutsideClick: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      showConfirmButton: true,
+      icon: "error",
+    });
+    return
+  }
 
   Swal.fire({
     title: `Validating your dataset`,

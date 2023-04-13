@@ -11,7 +11,8 @@ from datasets import (
     upload_collection_names, 
     remove_collection_names,
     reserve_dataset_doi,
-    get_dataset_doi
+    get_dataset_doi,
+    get_package_type_counts
 )
 
 api = get_namespace(NamespaceEnum.DATASETS)
@@ -178,3 +179,15 @@ class DatasetDOI(Resource):
       if notBadRequestException(e):
         api.abort(500, str(e))
       raise e
+    
+
+@api.route('/<string:dataset_name>/packageTypeCounts')
+class PackageTypeCounts(Resource):
+    @api.doc(responses={200: 'Success', 400: 'Bad Request', 500: "Internal server error"})
+    def get(self, dataset_name):
+        try:
+            return get_package_type_counts(dataset_name)
+        except Exception as e:
+            if notBadRequestException(e):
+                api.abort(500, str(e))
+            raise e

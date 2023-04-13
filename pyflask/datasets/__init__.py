@@ -5,5 +5,6 @@ from .datasets import (
     upload_collection_names,
     remove_collection_names,
     reserve_dataset_doi,
-    get_dataset_doi
+    get_dataset_doi,
+    get_package_type_counts
 )

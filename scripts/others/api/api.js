@@ -411,6 +411,11 @@ const validateLocalDataset = async (datasetPath) => {
   return validationResponse.data;
 };
 
+const getNumberOfPackagesInDataset = async (datasetName) => {
+  const packageCountsResponse = await client.get(`/datasets/${datasetName}/packageTypeCounts`);
+  return packageCountsResponse.data;
+}
+
 const api = {
   getUserInformation,
   getDataset,
@@ -435,6 +440,7 @@ const api = {
   validateLocalDataset,
   getDatasetDOI,
   reserveDOI,
+  getNumberOfPackagesInDataset
 };
 
 module.exports = api;

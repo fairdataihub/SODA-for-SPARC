@@ -185,3 +185,16 @@ def get_dataset_doi(dataset):
         if type(e).__name__ == "HTTPError":
             abort(400, e.response.json()["message"])
         abort(500, "An internal server error prevented the request from being fulfilled. Please try again later.")
+
+
+def get_package_type_counts(dataset_name):
+
+    token = get_access_token()
+
+    dataset_id = get_dataset_id(token, dataset_name)
+
+    r = requests.get(f"https://api.pennsieve.io/datasets/{dataset_id}/packageTypeCounts", headers=create_request_headers(token))
+    r.raise_for_status()
+
+    return r.json()
+
