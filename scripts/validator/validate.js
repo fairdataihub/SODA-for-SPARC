@@ -298,7 +298,7 @@ const validatePennsieveDatasetStandAlone = async () => {
   let packageTypeCounts;
   try {
     packageTypeCounts = await api.getNumberOfPackagesInDataset(datasetName);
-  } catch(err) {
+  } catch (err) {
     clientError(err);
     await Swal.fire({
       title: "Could not validate your dataset.",
