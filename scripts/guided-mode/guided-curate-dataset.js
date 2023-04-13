@@ -700,10 +700,8 @@ const savePageChanges = async (pageBeingLeftID) => {
           // but the protocol and docs pages will be skipped if the user is started a new computational dataset without subjects
           if (folderIsEmpty(datasetStructureJSONObj?.["folders"]?.["protocol"])) {
             guidedSkipPage("guided-protocol-folder-tab");
-            guidedSkipPage("guided-protocols-tab");
           } else {
             guidedUnSkipPage("guided-protocol-folder-tab");
-            guidedUnSkipPage("guided-protocols-tab");
           }
 
           if (folderIsEmpty(datasetStructureJSONObj?.["folders"]?.["docs"])) {
