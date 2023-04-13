@@ -417,9 +417,11 @@ const getNumberOfPackagesInDataset = async (datasetName) => {
 };
 
 const getNumberOfItemsInLocalDataset = async (datasetPath) => {
-  const itemCountsResponse = await client.get(`/datasets/local/item_count?dataset_path=${datasetPath}`)
+  const itemCountsResponse = await client.get(
+    `/datasets/local/item_count?dataset_path=${datasetPath}`
+  );
   return itemCountsResponse.data;
-}
+};
 
 const api = {
   getUserInformation,
@@ -446,7 +448,7 @@ const api = {
   getDatasetDOI,
   reserveDOI,
   getNumberOfPackagesInDataset,
-  getNumberOfItemsInLocalDataset
+  getNumberOfItemsInLocalDataset,
 };
 
 module.exports = api;
