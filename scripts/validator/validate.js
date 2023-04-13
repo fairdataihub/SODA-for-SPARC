@@ -41,20 +41,18 @@ const createValidationReport = async (sodaJSONObj) => {
   console.log("localSodaJsonObject", sodaJSONObj);
   console.log("clientUUID", clientUUID);
 
-
-    await client.post(
-      `https://validation.sodaforsparc.io/validator/validate`,
-      {
-        clientUUID: clientUUID,
-        dataset_structure: sodaJSONObj,
-        metadata_files: metadataFiles,
-        manifests: manifestFiles,
-      },
-      {
-        timeout: 0,
-      }
-    );
-
+  await client.post(
+    `https://validation.sodaforsparc.io/validator/validate`,
+    {
+      clientUUID: clientUUID,
+      dataset_structure: sodaJSONObj,
+      metadata_files: metadataFiles,
+      manifests: manifestFiles,
+    },
+    {
+      timeout: 0,
+    }
+  );
 
   while (true) {
     console.log("Waiting for the validation to complete...");
@@ -231,7 +229,8 @@ const validateLocalDataset = async () => {
       });
     } else if (error.response && error.response.status == 400) {
       let msg = error.response.data.message;
-      if (msg.includes("Missing required metadata files")) msg = "Please add the required metadata files then re-run validation.";
+      if (msg.includes("Missing required metadata files"))
+        msg = "Please add the required metadata files then re-run validation.";
       await Swal.fire({
         title: "Validation Error",
         text: msg,
@@ -445,7 +444,6 @@ const validatePennsieveDatasetStandAlone = async () => {
 
   localSodaJSONObj = datasetPopulationResponse.soda_object;
 
-
   let validationReport;
   try {
     validationReport = await createValidationReport(localSodaJSONObj);
@@ -481,7 +479,8 @@ const validatePennsieveDatasetStandAlone = async () => {
       });
     } else if (error.response && error.response.status == 400) {
       let msg = error.response.data.message;
-      if (msg.includes("Missing required metadata files")) msg = "Please add the required metadata files then re-run validation.";
+      if (msg.includes("Missing required metadata files"))
+        msg = "Please add the required metadata files then re-run validation.";
       await Swal.fire({
         title: "Validation Error",
         text: msg,

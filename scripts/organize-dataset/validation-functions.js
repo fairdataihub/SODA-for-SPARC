@@ -128,9 +128,9 @@ const validateOrganizedDataset = async () => {
     validationReport = await createValidationReport(sodaJSONObjCopy);
     if (validationReport.status === "Error") throw new Error(validationReport.error);
   } catch (error) {
-    console.log(error)
+    console.log(error);
     clientError(error);
-    if (error.response && ( error.response.status == 503 || error.response.status == 502)) {
+    if (error.response && (error.response.status == 503 || error.response.status == 502)) {
       await Swal.fire({
         title: "Validation Service Unavailable",
         text: "The validation service is currently too busy to validate your dataset. Please try again shortly.",
@@ -148,7 +148,8 @@ const validateOrganizedDataset = async () => {
       });
     } else if (error.response && error.response.status == 400) {
       let msg = error.response.data.message;
-      if (msg.includes("Missing required metadata files")) msg = "Please add the required metadata files then re-run validation.";
+      if (msg.includes("Missing required metadata files"))
+        msg = "Please add the required metadata files then re-run validation.";
       await Swal.fire({
         title: "Validation Error",
         text: msg,
