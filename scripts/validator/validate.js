@@ -295,16 +295,30 @@ const validatePennsieveDatasetStandAlone = async () => {
   let datasetName = document.querySelector("#bf_dataset_load_validator").textContent;
 
   // check if the dataset exceeds the maximumn size
-  let packageTypeCounts = await api.getNumberOfPackagesInDataset(datasetName);
+  let packageTypeCounts;
+  try {
+    packageTypeCounts = await api.getNumberOfPackagesInDataset(datasetName);
+  } catch(err) {
+    clientError(err);
+    await Swal.fire({
+      title: "Could not validate your dataset.",
+      message: `Could not determine the size of your dataset before validation. Please try again shortly.`,
+      allowEscapeKey: true,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      showConfirmButton: true,
+      icon: "error",
+    });
+    return;
+  }
 
   // count the number of packages in the packgeTypeCounts dictionary
   let packageCount = 0;
   for (let packageType in packageTypeCounts) {
     packageCount += packageTypeCounts[packageType];
   }
-
-  console.log(packageTypeCounts)
-  console.log(packageCount)
 
   if (packageCount >= 50000) {
     await Swal.fire({
