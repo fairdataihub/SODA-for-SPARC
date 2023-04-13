@@ -2087,7 +2087,6 @@ const guidedModifyCurationTeamAccess = async (action) => {
     "guided-button-unshare-dataset-with-curation-team"
   );
   if (action === "share") {
-
     guidedShareWithCurationTeamButton.disabled = true;
     guidedShareWithCurationTeamButton.classList.add("loading");
     // guidedShareWithCurationTeamButton.classList.add("hidden");
@@ -2104,10 +2103,8 @@ const guidedModifyCurationTeamAccess = async (action) => {
     guidedShareWithCurationTeamButton.classList.remove("loading");
     guidedShareWithCurationTeamButton.disabled = false;
     // guidedSetCurationTeamUI();
-
   }
   if (action === "unshare") {
-
     console.log("Withdrawing the dataset here");
 
     guidedUnshareWithCurationTeamButton.disabled = true;
