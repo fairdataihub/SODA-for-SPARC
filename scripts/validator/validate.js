@@ -42,18 +42,39 @@ const createValidationReport = async (sodaJSONObj) => {
   console.log("localSodaJsonObject", sodaJSONObj);
   console.log("clientUUID", clientUUID);
 
-  await client.post(
-    `https://validation.sodaforsparc.io/validator/validate`,
-    {
-      clientUUID: clientUUID,
-      dataset_structure: sodaJSONObj,
-      metadata_files: metadataFiles,
-      manifests: manifestFiles,
-    },
-    {
-      timeout: 0,
+  try {
+    await client.post(
+      `https://validation.sodaforsparc.io/validator/validate`,
+      {
+        clientUUID: clientUUID,
+        dataset_structure: sodaJSONObj,
+        metadata_files: metadataFiles,
+        manifests: manifestFiles,
+      },
+      {
+        timeout: 0,
+      }
+    );
+  } catch(error) {
+    if (error.response.status == 503 || error.response.status == 502) {
+      await Swal.fire({
+        title: "Validation Service Unavailable",
+        text: "The validation service is currently too busy to validate your dataset. Please try again shortly.",
+        icon: "error",
+        confirmButtonText: "Ok",
+        backdrop: "rgba(0,0,0, 0.4)",
+        reverseButtons: reverseSwalButtons,
+        heightAuto: false,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
     }
-  );
+    return 
+  }
 
   while (true) {
     console.log("Waiting for the validation to complete...");
@@ -73,17 +94,17 @@ const pollForValidationResults = async (clientUUID) => {
       `https://validation.sodaforsparc.io/validator/results/${clientUUID}`
     );
   } catch (error) {
-    if (error.response.status == 503) {
-      console.log("YEs we have a 503");
+    if (error.response.status == 503 || error.response.status == 502) {
+      // at this point their validation results are still being created so wait until they are finished instead of exiting the polling state
       return undefined;
     }
+    throw error;
   }
   let results = validationResultsResponse.data;
 
   if (results.status == "Complete") {
     return results;
   } else if (results.status == "WIP") {
-    console.log("No results yet returning undefined");
     return undefined;
   } else {
     // validation report failed to be received mark the validation as failed
