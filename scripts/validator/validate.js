@@ -332,7 +332,7 @@ const validatePennsieveDatasetStandAlone = async () => {
       showConfirmButton: true,
       icon: "error",
     });
-    return
+    return;
   }
 
   Swal.fire({
