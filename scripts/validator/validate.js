@@ -55,7 +55,7 @@ const createValidationReport = async (sodaJSONObj) => {
         timeout: 0,
       }
     );
-  } catch(error) {
+  } catch (error) {
     if (error.response.status == 503 || error.response.status == 502) {
       await Swal.fire({
         title: "Validation Service Unavailable",
@@ -73,7 +73,7 @@ const createValidationReport = async (sodaJSONObj) => {
         },
       });
     }
-    return 
+    return;
   }
 
   while (true) {
