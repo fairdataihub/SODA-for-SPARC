@@ -303,8 +303,8 @@ const validatePennsieveDatasetStandAlone = async () => {
     packageCount += packageTypeCounts[packageType];
   }
 
-  console.log(packageTypeCounts)
-  console.log(packageCount)
+  console.log(packageTypeCounts);
+  console.log(packageCount);
 
   if (packageCount >= 50000) {
     await Swal.fire({
@@ -318,7 +318,7 @@ const validatePennsieveDatasetStandAlone = async () => {
       showConfirmButton: true,
       icon: "error",
     });
-    return
+    return;
   }
 
   Swal.fire({
