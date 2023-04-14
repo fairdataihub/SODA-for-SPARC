@@ -1836,14 +1836,14 @@ def get_pennsieve_api_key_secret(email, password, keyname):
         response = response.json()
         if "preferredOrganization" in response:
             if response["preferredOrganization"] != sparc_org_id:
-                error = "Could not switch to the SPARC Organization. Please log in and switch to the organization and try again."
+                error = "It looks like you don't have access to the SPARC workspace on Pennsieve. This is required to upload datasets. Please reach out to the SPARC curation team (email) to get access to the SPARC workspace and try again."
                 raise Exception(error)
         else:
-            error = "Could not switch to the SPARC Organization. Please log in and switch to the organization and try again."
+            error = "It looks like you don't have access to the SPARC workspace on Pennsieve. This is required to upload datasets. Please reach out to the SPARC curation team (email) to get access to the SPARC workspace and try again."
             raise Exception(error)
     except Exception as error:
-        error = "Could not switch to the SPARC Organization. Please log in and switch to the organization and try again."
-        raise error
+        error = "It looks like you don't have access to the SPARC workspace on Pennsieve. This is required to upload datasets. Please reach out to the SPARC curation team (email) to get access to the SPARC workspace and try again."
+        raise Exception(error)
 
     try:
         url = "https://api.pennsieve.io/token/"
