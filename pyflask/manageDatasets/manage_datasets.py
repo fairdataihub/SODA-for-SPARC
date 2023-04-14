@@ -1843,7 +1843,7 @@ def get_pennsieve_api_key_secret(email, password, keyname):
             raise Exception(error)
     except Exception as error:
         error = "Could not switch to the SPARC Organization. Please log in and switch to the organization and try again."
-        raise error
+        raise Exception(error)
 
     try:
         url = "https://api.pennsieve.io/token/"
