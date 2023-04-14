@@ -133,7 +133,7 @@
     "cropperjs": "^1.5.12",
     "doi-regex": "^0.1.13",
     "dragselect": "^2.7.2",
-    "electron-context-menu": "^0.13.0",
+    "electron-context-menu": "^0.16.0",
     "electron-log": "^4.3.5",
     "electron-notarize": "^1.2.1",
     "electron-shortcut-normalizer": "^1.0.0",
