@@ -146,7 +146,7 @@ const updateDatasetList = (bfaccount) => {
 };
 
 // per change event of current dataset span text
-function confirm_click_function() {
+const confirm_click_function = () => {
   let temp = $(".bf-dataset-span").html();
   if ($(".bf-dataset-span").html() == "None" || $(".bf-dataset-span").html() == "") {
     $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "none");
@@ -161,7 +161,7 @@ function confirm_click_function() {
       $(".confirm-button").click();
     }
   }
-}
+};
 
 var dropdownEventID = "";
 const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
@@ -421,9 +421,14 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               confirm_click_account_function();
               updateBfAccountList();
 
-              // If the clicked button is the Guided Mode log in button, refresh the page to update UI
-              if (ev.getAttribute("id") === "guided-button-pennsieve-log-in") {
-                openPage("guided-pennsieve-intro-tab");
+              // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
+              // then reset the guided mode page
+              if (ev.getAttribute("data-reset-guided-mode-page") == "true") {
+                // Get the current page that the user is on in the guided mode
+                const currentPage = CURRENT_PAGE.id;
+                if (currentPage) {
+                  await openPage(currentPage);
+                }
               }
             } catch (error) {
               clientError(error);
@@ -652,7 +657,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               "Only datasets where you have owner or manager permissions will be shown in the list";
             tip_content.classList.add("tip-content");
             tip_content.style.textAlign = "left";
-            tip_container.style.marginTop = ".5rem";
+            tip_container.style.marginTop = "1rem";
             tip_container.appendChild(tip_content);
             sweet_al.appendChild(tip_container);
           },

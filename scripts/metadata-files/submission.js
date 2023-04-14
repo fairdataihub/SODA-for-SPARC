@@ -116,6 +116,156 @@ function resetSubmissionFields() {
   );
 }
 
+const openSubmissionMultiStepSwal = async (sparcAward, milestoneRes) => {
+  //add a custom milestone row for when the user wants to add a custom milestone
+  //not included in the dataset deliverables document
+  milestoneRes["Not included in the Dataset Deliverables document"] = [
+    {
+      "Description of data":
+        "Select this option when the dataset you are submitting is not related to a pre-agreed milestone",
+      "Expected date of completion": "N/A",
+    },
+  ];
+
+  let milestoneData;
+  let completionDate;
+  const milestoneValues = await Swal.mixin({
+    confirmButtonText: "Next &rarr;",
+    showCancelButton: true,
+    progressSteps: ["1", "2"],
+    width: 900,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    allowOutsideClick: false,
+  }).queue([
+    {
+      title: "Select the milestones associated with this submission:",
+      html: `
+          <div class="scrollable-swal-content-container" id="milestone-selection-table-container">
+             <table
+                class="ui celled striped table"
+                id="milestones-table"
+                style="margin-bottom: 25px; width: 800px"
+              >
+                <thead>
+                  <tr>
+                    <th></th>
+                    <th>Description</th>
+                    <th>Milestone</th>
+                    <th class="center aligned">Completion date</th>
+                  </tr>
+                </thead>
+                <tbody id="milestones-table-container"></tbody>
+              </table>
+        
+          </div>
+        `,
+      didOpen: () => {
+        renderMilestoneSelectionTable(milestoneRes);
+      },
+      preConfirm: () => {
+        const checkedMilestoneData = getCheckedMilestones();
+        checkedMilestoneData.length === 0
+          ? Swal.showValidationMessage("Please select at least one milestone")
+          : (milestoneData = checkedMilestoneData);
+      },
+    },
+    {
+      title: "Select the completion date associated with this submission:",
+      html: `
+          <div class="scrollable-swal-content-container">
+            <div class="justify-center">
+              <div class="ui form">
+                <div
+                  class="grouped fields"
+                  id="guided-completion-date-container"
+                  style="align-items: center"
+                ></div>
+              </div>
+            </div>
+          </div>
+        `,
+      didOpen: () => {
+        // get a unique set of completionDates from checkedMilestoneData
+        const uniqueCompletionDates = Array.from(
+          new Set(milestoneData.map((milestone) => milestone.completionDate))
+        );
+
+        if (uniqueCompletionDates.length === 1) {
+          //save the completion date into sodaJSONObj
+          completionDate = uniqueCompletionDates[0];
+          // Add a radio button for the unique completion date
+          document.getElementById("guided-completion-date-container").innerHTML =
+            createCompletionDateRadioElement("completion-date", completionDate);
+          //check the completion date
+          document.querySelector(
+            `input[name="completion-date"][value="${completionDate}"]`
+          ).checked = true;
+        }
+
+        if (uniqueCompletionDates.length > 1) {
+          //filter value 'N/A' from uniqueCompletionDates
+          const filteredUniqueCompletionDates = uniqueCompletionDates.filter(
+            (date) => date !== "N/A"
+          );
+
+          //create a radio button for each unique date
+          const completionDateCheckMarks = filteredUniqueCompletionDates
+            .map((completionDate) => {
+              return createCompletionDateRadioElement("completion-date", completionDate);
+            })
+            .join("\n");
+          document.getElementById("guided-completion-date-container").innerHTML =
+            completionDateCheckMarks;
+        }
+      },
+      preConfirm: () => {
+        const selectedCompletionDate = document.querySelector(
+          "input[name='completion-date']:checked"
+        );
+        if (!selectedCompletionDate) {
+          Swal.showValidationMessage("Please select a completion date");
+        } else {
+          completionDate = selectedCompletionDate.value;
+        }
+      },
+    },
+  ]);
+
+  if (milestoneData && completionDate) {
+    // Fill the SPARC award input with the imported SPARC award if it was found (otherwise it will be an empty string)
+    if (sparcAward.length > 0) {
+      document.getElementById("guided-submission-sparc-award-manual").value = sparcAward;
+    }
+
+    // Remove duplicate milestones from milestoneData and add them to the tagify input
+    const uniqueMilestones = Array.from(
+      new Set(milestoneData.map((milestone) => milestone.milestone))
+    );
+    guidedSubmissionTagsTagifyManual.removeAllTags();
+    guidedSubmissionTagsTagifyManual.addTags(uniqueMilestones);
+
+    // Add the completion date to the completion date dropdown and select it
+    const completionDateInput = document.getElementById("guided-submission-completion-date-manual");
+    completionDateInput.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
+    completionDateInput.value = completionDate;
+
+    // Hide the milestone selection section and show the submission metadata section
+    const sectionThatAsksIfDataDeliverablesReady = document.getElementById(
+      "guided-section-user-has-data-deliverables-question"
+    );
+    const sectionSubmissionMetadataInputs = document.getElementById(
+      "guided-section-submission-metadata-inputs"
+    );
+    const sectionDataDeliverablesImport = document.getElementById(
+      "guided-section-import-data-deliverables-document"
+    );
+    sectionThatAsksIfDataDeliverablesReady.classList.add("hidden");
+    sectionDataDeliverablesImport.classList.add("hidden");
+    sectionSubmissionMetadataInputs.classList.remove("hidden");
+  }
+};
+
 const helpMilestoneSubmission = async (curationMode) => {
   var filepath = "";
   var informationJson = {};
@@ -148,7 +298,10 @@ const helpMilestoneSubmission = async (curationMode) => {
         },
       });
       let res = extract_milestone.data;
-      milestoneObj = res;
+
+      // Get the SPARC award and milestone data from the response
+      const importedSparcAward = res["sparc_award"];
+      const milestoneObj = res["milestone_data"];
 
       //Handle free-form mode submission data
       if (curationMode === "free-form") {
@@ -173,35 +326,10 @@ const helpMilestoneSubmission = async (curationMode) => {
 
       //Handle guided mode submission data
       if (curationMode === "guided") {
-        const guidedMilestoneData = res;
-        //create a string with today's date in the format xxxx/xx/xx
-        const today = new Date();
-        const todayString = `
-              ${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}
-            `;
-        //add a custom milestone row for when the user wants to add a custom milestone
-        //not included in the dataset deliverables document
-        guidedMilestoneData["Not included in the Dataset Deliverables document"] = [
-          {
-            "Description of data":
-              "Select this option when the dataset you are submitting is not related to a pre-agreed milestone",
-            "Expected date of completion": "N/A",
-          },
-        ];
-
-        //save the unselected milestones into sodaJSONObj
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["temp-imported-milestones"] =
-          guidedMilestoneData;
-
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["filepath"] = filepath;
-
-        renderMilestoneSelectionTable(guidedMilestoneData);
-
-        guidedSubmissionTagsTagify.settings.whitelist = [];
-
-        unHideAndSmoothScrollToElement("guided-div-data-deliverables-import");
+        await openSubmissionMultiStepSwal(importedSparcAward, milestoneObj);
       }
     } catch (error) {
+      console.log(error);
       clientError(error);
       Swal.fire({
         backdrop: "rgba(0,0,0, 0.4)",

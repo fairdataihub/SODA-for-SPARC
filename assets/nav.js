@@ -21,6 +21,7 @@ async function handleSectionTrigger(event) {
   const itemsContainer = document.getElementById("items");
   const freeFormItemsContainer = document.getElementById("free-form-folder-structure-container");
   const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
+  const sectionRenderFileExplorer = event.target.dataset.render;
 
   if (sectionId === "organize-section") {
     //reset lazyloading values
@@ -40,7 +41,7 @@ async function handleSectionTrigger(event) {
     if (document.getElementById("returnButton") !== null) {
       Swal.fire({
         icon: "warning",
-        text: "You can not enter Guided Mode while an upload is in progress.",
+        text: "You cannot curate another dataset while an upload is in progress but you can still modify dataset components.",
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         confirmButtonText: "OK",
@@ -59,65 +60,88 @@ async function handleSectionTrigger(event) {
     // keys if the user has started the first step. The user must
     // be warned because Guided Mode uses shared variables and FF progress
     // must be wiped out.
-    if (Object.keys(sodaJSONObj).length > 0) {
-      //get the element with data-next="Question-getting-started-BF-account"
-      const buttonContinueExistingPennsieve = document.querySelector(
-        '[data-next="Question-getting-started-BF-account"]'
-      );
-      const transitionWarningMessage = `
-        Entering Guided Mode will wipe out the progress you have made organizing your dataset.
-        <br><br>
-        ${
-          buttonContinueExistingPennsieve.classList.contains("checked")
-            ? `To continue making modifications to your existing Pennsieve dataset, press Cancel.`
-            : `To save your progress, press Cancel${
-                currentTab < 2 ? ", progress to the third step," : ""
-              } and press "Save Progress" in the Organize Dataset tab.`
-        }
-      `;
+    //Update: Swal will only pop up if user is on organize datasets page only
+    // Update 2: If user has not selected any of the radio buttons in step 1, then swal
+    // will not pop up
+    let organizeDataset = document.getElementById("organize-section");
+    let boolRadioButtonsSelected = false;
+    let organizeDatasetRadioButtons = Array.from(
+      document.querySelectorAll(".getting-started-1st-question")
+    );
 
-      const warnBeforeExitCurate = await Swal.fire({
-        icon: "warning",
-        html: transitionWarningMessage,
-        showCancelButton: true,
-        focusCancel: true,
-        cancelButtonText: "Cancel",
-        confirmButtonText: "Enter Guided Mode",
-        reverseButtons: reverseSwalButtons,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      });
-      if (warnBeforeExitCurate.isConfirmed) {
-        // Wipe out organize dataset progress before entering Guided Mode
-        $("#dataset-loaded-message").hide();
-        $(".vertical-progress-bar-step").removeClass("is-current");
-        $(".vertical-progress-bar-step").removeClass("done");
-        $(".getting-started").removeClass("prev");
-        $(".getting-started").removeClass("show");
-        $(".getting-started").removeClass("test2");
-        $("#Question-getting-started-1").addClass("show");
-        $("#generate-dataset-progress-tab").css("display", "none");
-        currentTab = 0;
-        wipeOutCurateProgress();
-        globalGettingStarted1stQuestionBool = false;
-        document.getElementById("nextBtn").disabled = true;
-      } else {
-        //Stay in Organize datasets section
-        document.getElementById("main_tabs_view").click();
-        document.getElementById("organize_dataset_btn").click();
-        return;
+    // Remove first two as they are not radio buttons
+    organizeDatasetRadioButtons = organizeDatasetRadioButtons.splice(2);
+
+    organizeDatasetRadioButtons.forEach((radioButton) => {
+      if (radioButton.classList.contains("checked")) {
+        boolRadioButtonsSelected = true;
+      }
+    });
+
+    if (sodaJSONObj != undefined) {
+      if (boolRadioButtonsSelected === true) {
+        //get the element with data-next="Question-getting-started-BF-account"
+        const buttonContinueExistingPennsieve = document.querySelector(
+          '[data-next="Question-getting-started-BF-account"]'
+        );
+        const transitionWarningMessage = `
+          Going back home will wipe out the progress you have made organizing your dataset.
+          <br><br>
+          ${
+            buttonContinueExistingPennsieve.classList.contains("checked")
+              ? `To continue making modifications to your existing Pennsieve dataset, press Cancel.`
+              : `To save your progress, press Cancel${
+                  currentTab < 2 ? ", progress to the third step," : ""
+                } and press "Save Progress" in the Organize Dataset tab.`
+          }
+        `;
+
+        const warnBeforeExitCurate = await Swal.fire({
+          icon: "warning",
+          html: transitionWarningMessage,
+          showCancelButton: true,
+          focusCancel: true,
+          cancelButtonText: "Cancel",
+          confirmButtonText: "Go back Home",
+          reverseButtons: reverseSwalButtons,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        });
+        if (warnBeforeExitCurate.isConfirmed) {
+          // Wipe out organize dataset progress before entering Guided Mode
+          $("#dataset-loaded-message").hide();
+          $(".vertical-progress-bar-step").removeClass("is-current");
+          $(".vertical-progress-bar-step").removeClass("done");
+          $(".getting-started").removeClass("prev");
+          $(".getting-started").removeClass("show");
+          $(".getting-started").removeClass("test2");
+          $("#Question-getting-started-1").addClass("show");
+          $("#generate-dataset-progress-tab").css("display", "none");
+          currentTab = 0;
+          wipeOutCurateProgress();
+          globalGettingStarted1stQuestionBool = false;
+          document.getElementById("nextBtn").disabled = true;
+        } else {
+          //Stay in Organize datasets section
+          document.getElementById("main_tabs_view").click();
+          document.getElementById("organize_dataset_btn").click();
+          return;
+        }
       }
     }
-    sodaJSONObj = {};
-    datasetStructureJSONObj = {};
-    subjectsTableData = [];
-    samplesTableData = [];
+
+    if (sectionRenderFileExplorer != "file-explorer") {
+      sodaJSONObj = {};
+      datasetStructureJSONObj = {};
+      subjectsTableData = [];
+      samplesTableData = [];
+    }
 
     //Transition file explorer elements to guided mode
     organizeDSglobalPath = document.getElementById("guided-input-global-path");
@@ -130,7 +154,7 @@ async function handleSectionTrigger(event) {
     freeFormButtons.classList.remove("freeform-file-explorer-buttons");
     $(".shared-folder-structure-element").appendTo($("#guided-folder-structure-container"));
 
-    guidedPrepareHomeScreen();
+    guidedUnLockSideBar();
   }
 
   hideAllSectionsAndDeselectButtons();
@@ -145,12 +169,11 @@ async function handleSectionTrigger(event) {
   document.getElementById(sectionId).classList.add("is-shown");
 
   let showSidebarSections = [
-    "main_tabs-section",
-    "getting_started-section",
-    "guided_mode-section",
-    "help-section",
-    "documentation-section",
-    "contact-us-section",
+    "main_tabs-section", //Free form mode
+    "getting_started-section", //Overview page
+    "guided_mode-section", //Guided Mode
+    "documentation-section", //Documentation
+    "contact-us-section", //Contact us
   ];
 
   if (showSidebarSections.includes(sectionId)) {

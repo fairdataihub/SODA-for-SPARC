@@ -323,7 +323,6 @@ def bf_add_account_username(keyname, key, secret):
     # Check key and secret are valid, if not delete account from config
     try:
         token = get_access_token()
-        namespace_logger.info(f"Access token: {token}")
     except Exception as e:
         namespace_logger.error(e)
         bf_delete_account(keyname)
@@ -723,7 +722,7 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
 
     jsonfile = {"name": renamed_dataset_name}
     try: 
-        r = requests.put(f"{PENNSIEVE_URL}/{str(selected_dataset_id)}", json=jsonfile, headers=create_request_headers(token))
+        r = requests.put(f"{PENNSIEVE_URL}/datasets/{str(selected_dataset_id)}", json=jsonfile, headers=create_request_headers(token))
         r.raise_for_status()
         return {"message": f"Dataset renamed to {renamed_dataset_name}"}
     except Exception as e:
@@ -844,10 +843,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         error_message = "Please select a valid Pennsieve account"
         abort(500, e)
 
-    namespace_logger.info("Created a ps instance")
-
-    namespace_logger.info(f"Account is {accountname}")
-
 
     # select the user
     try:
@@ -859,7 +854,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         error_message = "Please select a valid Pennsieve account"
         abort(400, error_message)
 
-    namespace_logger.info("Switched to given account")
 
 
     # reauthenticate the user
@@ -872,14 +866,12 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         error_message = "Could not reauthenticate this user"
         abort(400, error_message)
 
-    namespace_logger.info(f"Using dataset {bfdataset}")
 
     selected_dataset_id = get_dataset_id(ps, bfdataset)
 
     # select the dataset 
     try:
         ps.use_dataset(selected_dataset_id)
-        namespace_logger.info("Used the dataset")
     except Exception as e:
         submitdatastatus = "Done"
         did_fail = True
@@ -1844,14 +1836,14 @@ def get_pennsieve_api_key_secret(email, password, keyname):
         response = response.json()
         if "preferredOrganization" in response:
             if response["preferredOrganization"] != sparc_org_id:
-                error = "Could not switch to the SPARC Organization. Please log in and switch to the organization and try again."
+                error = "It looks like you don't have access to the SPARC workspace on Pennsieve. This is required to upload datasets. Please reach out to the SPARC curation team (email) to get access to the SPARC workspace and try again."
                 raise Exception(error)
         else:
-            error = "Could not switch to the SPARC Organization. Please log in and switch to the organization and try again."
+            error = "It looks like you don't have access to the SPARC workspace on Pennsieve. This is required to upload datasets. Please reach out to the SPARC curation team (email) to get access to the SPARC workspace and try again."
             raise Exception(error)
     except Exception as error:
-        error = "Could not switch to the SPARC Organization. Please log in and switch to the organization and try again."
-        raise error
+        error = "It looks like you don't have access to the SPARC workspace on Pennsieve. This is required to upload datasets. Please reach out to the SPARC curation team (email) to get access to the SPARC workspace and try again."
+        raise Exception(error)
 
     try:
         url = "https://api.pennsieve.io/token/"

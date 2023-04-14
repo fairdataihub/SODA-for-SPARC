@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ### Import required python modules
+import json
 import requests
 import platform
 import os
@@ -761,8 +762,8 @@ def check_local_dataset_files_validity(soda_json_structure):
 
         for file_key in list(my_folder["files"].keys()):
             file = my_folder["files"][file_key]
-            # if file_key in ["manifest.xlsx", "manifest.csv"]:
-                # continue
+            if file_key in ["manifest.xlsx", "manifest.csv"]:
+                continue
             file_type = file["type"]
             if file_type == "local":
                 file_path = file["path"]
@@ -2864,10 +2865,12 @@ def bf_check_dataset_files_validity(soda_json_structure, ps):
 def clean_json_structure(soda_json_structure):
     global namespace_logger
     namespace_logger.info("Cleaning json structure")
-        # Delete any files on Pennsieve that have been marked as deleted
+    # Delete any files on Pennsieve that have been marked as deleted
     def recursive_file_delete(folder):
         if "files" in folder.keys():
             for item in list(folder["files"]):
+                if item in ["manifest.xlsx", "manifest.csv"]:
+                    continue
                 if "deleted" in folder["files"][item]["action"]:
                     # remove the file from the soda json structure
                     del folder["files"][item]
@@ -2904,7 +2907,6 @@ def clean_json_structure(soda_json_structure):
             recursive_file_rename(folder["folders"][item])
 
         return
-
 
     def recursive_folder_delete(folder):
         """
@@ -3374,7 +3376,9 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
             if(len(hlf_data_array) < 1):
                 hlf_data_array.append(standard_manifest_columns)
             for item in list(folder["files"]):
-
+                # do not generate a manifest file entry for the manifest file itself
+                if item in ["manifest.xlsx", "manifest.csv"]:
+                    continue
                 file_manifest_template_data = []
                 local_path_to_file = folder["files"][item]["path"].replace("\\", "/")
                 item_description = folder["files"][item]["description"]
@@ -3415,9 +3419,9 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
                 if "extra_columns" in folder["files"][item]:
                     for key in folder["files"][item]["extra_columns"]:
                         file_manifest_template_data.append(folder["files"][item]["extra_columns"][key])
-                        if key not in hlf_data_array:
+                        if key not in hlf_data_array[0]:
                             # add column name to manifest column names array
-                            hlf_data_array.append(key)
+                            hlf_data_array[0].append(key)
 
                 hlf_data_array.append(file_manifest_template_data)
 
@@ -3437,6 +3441,8 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
                 hlf_data_array.append(standard_manifest_columns)
             for item in list(folder["files"]):
                 file_manifest_template_data = []
+                if item in ["manifest.xlsx", "manifest.csv"]:
+                    continue
                 item_description = folder["files"][item]["description"]
                 item_additional_info = folder["files"][item]["additional-metadata"]
                 file_name = ""

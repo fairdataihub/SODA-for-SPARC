@@ -6,7 +6,7 @@
 >
   <header>
     <form action="#">
-      <div class="top-menu" style="display: flex; flex-direction: row">
+      <div class="top-menu" style="display: flex; flex-direction: row; justify-content: start">
         <input
           class="tab-input"
           id="manage_dataset_tab"
@@ -56,6 +56,14 @@
   </header>
 
   <div id="main_tabs">
+    <div class="ffm-return-to-guided">
+      <div class="ffm-return-container">
+        <button onclick="returnToGuided()" class="ui secondary basic button ffm-return-button">
+          <i class="fas fa-arrow-left" style="margin-right: 10px"></i>
+          Back
+        </button>
+      </div>
+    </div>
     <section class="main-tabs-section" id="manage_dataset_section">
       <div class="flex-main-container">
         <div class="flex-row-container">
@@ -141,7 +149,7 @@
                 class="content-button tippy-content-main"
                 id="pi_dataset_owner_btn"
                 data-section="pi_dataset_owner"
-                data-tippy-content="Give owner privilieges to the PI of your SPARC award as required by the SPARC curation rules"
+                data-tippy-content="Give owner privileges to the PI of your SPARC award as required by the SPARC curation rules"
                 rel="popover"
                 data-placement="bottom"
                 data-trigger="hover"
@@ -205,7 +213,7 @@
                 class="content-button tippy-content-main"
                 id="add_edit_subtitle_btn"
                 data-section="add_edit_subtitle"
-                data-tippy-content="Add few sentences that describe your dataset"
+                data-tippy-content="Add a few sentences that describe your dataset"
                 rel="popover"
                 data-placement="bottom"
                 data-trigger="hover"
@@ -263,7 +271,7 @@
                 class="content-button tippy-content-main"
                 id="upload_banner_image_btn"
                 data-section="add_edit_banner"
-                data-tippy-content="Provide an image that will be used as thumbnail for your dataset"
+                data-tippy-content="Provide an image that will be used as the thumbnail for your dataset"
                 rel="popover"
                 data-placement="bottom"
                 data-trigger="hover"
@@ -350,7 +358,7 @@
           </div>
         </div>
 
-        <div class="flex-row-container">
+        <div class="flex-row-container" style="margin-bottom: 4rem">
           <div class="flex-content-container">
             <div class="header-container">
               <p class="content-header">Local dataset</p>
@@ -429,15 +437,13 @@
             </div>
             <div class="button-container">
               <button
-                class="content-button"
+                class="content-button tippy-content-main"
                 id="rename_existing_bf_dataset_btn"
                 data-section="add_edit_bf_dataset_collection"
-                data-content="Add/edit a dataset to a collection"
+                data-tippy-content="Add/edit a dataset to a collection"
                 rel="popover"
                 data-placement="bottom"
                 data-trigger="hover"
-                data-original-title=""
-                title=""
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -1116,7 +1122,7 @@
           </div>
         </div>
 
-        <div class="flex-row-container">
+        <div class="flex-row-container" style="margin-bottom: 4rem">
           <div class="flex-content-container">
             <div class="header-container">
               <p class="content-header">Manifest files</p>
@@ -1318,7 +1324,7 @@
               <button
                 class="content-button tippy-content-main"
                 id="validate_dataset_btn"
-                style="background: #f6f6f6; width: 150px; height: 150px; pointer-events: none"
+                style="width: 150px; height: 150px"
                 data-section="validate_dataset"
                 data-tippy-content="Validate your SPARC dataset on Pennsieve."
                 rel="popover"
@@ -1326,7 +1332,6 @@
                 data-trigger="hover"
               >
                 <svg
-                  style="pointer-events: none"
                   width="48px"
                   height="48px"
                   viewBox="0 0 16 16"

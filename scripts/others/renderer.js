@@ -63,6 +63,7 @@ const Clipboard = electron.clipboard;
 
 var nextBtnDisabledVariable = true;
 var reverseSwalButtons = false;
+let organizeDSglobalPath = "";
 
 var datasetStructureJSONObj = {
   folders: {},
@@ -107,68 +108,180 @@ console.log(appVersion);
 log.info("Current SODA version:", appVersion);
 console.log("Current SODA version:", appVersion);
 
-// Here is where the splash screen lotties are created and loaded.
+// Here is where the lotties are created and loaded for the main tabs.
 // A mutation observer watches for when the overview tab element has
 // a class change to 'is-shown' to know when to load and unload the lotties
-let over_view_section = document.getElementById("getting_started-section");
-let column1 = document.getElementById("lottie1");
-let column2 = document.getElementById("lottie2");
-let column3 = document.getElementById("lottie3");
-let heart_lottie = document.getElementById("heart_lottie");
+// let over_view_section = document.getElementById("getting_started-section");
 
-var column1_lottie = lottie.loadAnimation({
-  container: column1,
-  animationData: column1Lottie /*(json js variable, (view src/assets/lotties)*/,
-  renderer: "svg",
-  loop: true /*controls looping*/,
-  autoplay: true,
-});
-var column2_lottie = lottie.loadAnimation({
-  container: column2,
-  animationData: column2Lottie /*(json js variable, (view src/assets/lotties)*/,
-  renderer: "svg",
-  loop: true /*controls looping*/,
-  autoplay: true,
-});
-var column3_lottie = lottie.loadAnimation({
-  container: column3,
-  animationData: column3Lottie,
+// LOTTIES FOR DOCUMENTATION AND CONTACT US PAGE
+let guidedModeSection = document.getElementById("guided_mode-section");
+let docu_lottie_section = document.getElementById("documentation-section");
+let contact_section = document.getElementById("contact-us-section");
+let doc_lottie = document.getElementById("documentation-lottie");
+let contact_lottie_container = document.getElementById("contact-us-lottie");
+let madeWithLoveContainer = document.getElementById("made-with-love-lottie");
+
+// LOTTIES FOR CURATE AND SHARE PAGE
+let newDatasetLottieContainer = document.getElementById("new-dataset-lottie-container");
+let existingDatasetLottieContainer = document.getElementById("existing-dataset-lottie");
+let modifyDatasetLottieContainer = document.getElementById("edit-dataset-component-lottie");
+
+//LOTTIES FOR OVERVIEW PAGE
+// let column1 = document.getElementById("lottie1");
+// let column2 = document.getElementById("lottie2");
+// let column3 = document.getElementById("lottie3");
+// let heart_lottie = document.getElementById("heart_lottie");
+
+newDatasetLottieContainer.innerHTML = "";
+existingDatasetLottieContainer.innerHTML = "";
+modifyDatasetLottieContainer.innerHTML = "";
+
+var newDatasetLottie = lottie.loadAnimation({
+  container: newDatasetLottieContainer,
+  animationData: newDataset,
   renderer: "svg",
   loop: true,
   autoplay: true,
 });
-var heart_container = lottie.loadAnimation({
-  container: heart_lottie,
+
+var existingDatasetLottie = lottie.loadAnimation({
+  container: existingDatasetLottieContainer,
+  animationData: existingDataset,
+  renderer: "svg",
+  loop: true,
+  autoplay: true,
+});
+
+let editDatasetLottie = lottie.loadAnimation({
+  container: modifyDatasetLottieContainer,
+  animationData: modifyDataset,
+  renderer: "svg",
+  loop: true,
+  autoplay: true,
+});
+
+var contact_lottie_animation = lottie.loadAnimation({
+  container: contact_lottie_container,
+  animationData: contact_lottie /*(json js variable, (view src/assets/lotties)*/,
+  renderer: "svg",
+  loop: true /*controls looping*/,
+  autoplay: true,
+});
+
+var contactHeartLottie = lottie.loadAnimation({
+  container: madeWithLoveContainer,
   animationData: heartLottie,
   renderer: "svg",
   loop: true,
   autoplay: true,
 });
 
-var overview_observer = new MutationObserver(function (mutations) {
+var documentation_lottie = lottie.loadAnimation({
+  container: doc_lottie,
+  animationData: docu_lottie /*(json js variable, (view src/assets/lotties)*/,
+  renderer: "svg",
+  loop: true /*controls looping*/,
+  autoplay: true,
+});
+
+// var column1_lottie = lottie.loadAnimation({
+//   container: column1,
+//   animationData: column1Lottie /*(json js variable, (view src/assets/lotties)*/,
+//   renderer: "svg",
+//   loop: true /*controls looping*/,
+//   autoplay: true,
+// });
+// var column2_lottie = lottie.loadAnimation({
+//   container: column2,
+//   animationData: column2Lottie /*(json js variable, (view src/assets/lotties)*/,
+//   renderer: "svg",
+//   loop: true /*controls looping*/,
+//   autoplay: true,
+// });
+// var column3_lottie = lottie.loadAnimation({
+//   container: column3,
+//   animationData: column3Lottie,
+//   renderer: "svg",
+//   loop: true,
+//   autoplay: true,
+// });
+// var heart_container = lottie.loadAnimation({
+//   container: heart_lottie,
+//   animationData: heartLottie,
+//   renderer: "svg",
+//   loop: true,
+//   autoplay: true,
+// });
+
+// A mutation observer (watches the classes of the given element)
+// On changes this will do some work with the lotties
+var sectionObserver = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
     var attributeValue = $(mutation.target).prop(mutation.attributeName);
 
     if (attributeValue.includes("is-shown") == true) {
       //add lotties
-      column1_lottie.play();
-      column2_lottie.play();
-      column3_lottie.play();
-      heart_container.play();
+      newDatasetLottie.play();
+      existingDatasetLottie.play();
+      editDatasetLottie.play();
+      // heart_container.play();
     } else {
-      column1_lottie.stop();
-      column2_lottie.stop();
-      column3_lottie.stop();
-      heart_container.stop();
+      newDatasetLottie.stop();
+      existingDatasetLottie.stop();
+      editDatasetLottie.stop();
+      // heart_container.stop();
     }
   });
 });
 
-overview_observer.observe(over_view_section, {
+// contact_lottie_animation.pause();
+// documentation_lottie.pause();
+// contactHeartLottieLottie.pause();
+
+var documentation_lottie_observer = new MutationObserver(function (mutations) {
+  mutations.forEach(function (mutation) {
+    var attributeValue = $(mutation.target).prop(mutation.attributeName);
+    if (attributeValue.includes("is-shown") == true) {
+      //play lottie
+      documentation_lottie.play();
+    } else {
+      // stop lottie to preserve memory
+      documentation_lottie.stop();
+    }
+  });
+});
+
+var contact_us_lottie_observer = new MutationObserver(function (mutations) {
+  mutations.forEach(function (mutation) {
+    var attributeValue = $(mutation.target).prop(mutation.attributeName);
+    if (attributeValue.includes("is-shown") == true) {
+      //play lottie
+      contact_lottie_animation.play();
+      contactHeartLottie.play();
+    } else {
+      //stop lottie to preserve memory
+      contact_lottie_animation.stop();
+      contactHeartLottie.stop();
+    }
+  });
+});
+
+sectionObserver.observe(guidedModeSection, {
   attributes: true,
   attributeFilter: ["class"],
 });
-document.getElementById("getting_starting_tab").click();
+
+documentation_lottie_observer.observe(docu_lottie_section, {
+  attributes: true,
+  attributeFilter: ["class"],
+});
+
+contact_us_lottie_observer.observe(contact_section, {
+  attributes: true,
+  attributeFilter: ["class"],
+});
+
+document.getElementById("guided_mode_view").click();
 
 let launchAnnouncement = false;
 ipcRenderer.on("checkForAnnouncements", (event, index) => {
@@ -1164,15 +1277,7 @@ const buttonSidebar = document.getElementById("button-hamburger");
 const buttonSidebarIcon = document.getElementById("button-soda-icon");
 const buttonSidebarBigIcon = document.getElementById("button-soda-big-icon");
 
-// Metadata Templates //
-const downloadSubmission = document.getElementById("a-submission");
-const downloadSamples = document.getElementById("a-samples");
-const downloadSubjects = document.getElementById("a-subjects");
-const downloadDescription = document.getElementById("a-description");
-const downloadManifest = document.getElementById("a-manifest");
-
 /////// New Organize Datasets /////////////////////
-let organizeDSglobalPath = "";
 
 const organizeDSbackButton = document.getElementById("button-back");
 const organizeDSaddFiles = document.getElementById("add-files");
@@ -1371,23 +1476,6 @@ const createDragSort = (tagify) => {
   });
 };
 
-//initialize Tagify input field for guided submission milestones
-const guidedSubmissionTagsInput = document.getElementById(
-  "guided-tagify-submission-milestone-tags-import"
-);
-
-const guidedSubmissionTagsTagify = new Tagify(guidedSubmissionTagsInput, {
-  duplicates: false,
-  delimiters: null,
-  dropdown: {
-    classname: "color-blue",
-    maxItems: Infinity,
-    enabled: 0,
-    closeOnSelect: true,
-  },
-});
-createDragSort(guidedSubmissionTagsTagify);
-
 const guidedSubmissionTagsInputManual = document.getElementById(
   "guided-tagify-submission-milestone-tags-manual"
 );
@@ -1425,7 +1513,7 @@ var collectionDatasetInput = document.getElementById("tagify-collection-tags"),
       enabled: 0,
       closeOnSelect: true,
       enforceWhitelist: true,
-      maxItems: 100,
+      maxItems: Infinity,
     },
     autoComplete: {
       enabled: true,
@@ -1459,6 +1547,7 @@ var studyOrganSystemsInput = document.getElementById("ds-study-organ-system"),
     ],
     duplicates: false,
     dropdown: {
+      maxItems: Infinity,
       enabled: 0,
       closeOnSelect: true,
     },
@@ -1487,76 +1576,6 @@ var guidedDatasetTagsInput = document.getElementById("guided-tagify-dataset-tags
   // initialize Tagify on the above input node reference
   guidedDatasetTagsTagify = new Tagify(guidedDatasetTagsInput);
 createDragSort(guidedDatasetTagsTagify);
-
-/////////////////////// Download Metadata Templates ////////////////////////////
-templateArray = [
-  "submission.xlsx",
-  "dataset_description.xlsx",
-  "subjects.xlsx",
-  "samples.xlsx",
-  "manifest.xlsx",
-  "DataDeliverablesDocument-template.docx",
-];
-
-const downloadTemplates = (templateItem, destinationFolder) => {
-  var templatePath = path.join(__dirname, "file_templates", templateItem);
-  var destinationPath = path.join(destinationFolder, templateItem);
-  if (fs.existsSync(destinationPath)) {
-    var emessage = "File '" + templateItem + "' already exists in " + destinationFolder;
-    Swal.fire({
-      icon: "error",
-      title: "Metadata file already exists",
-      text: `${emessage}`,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-    });
-
-    ipcRenderer.send("track-event", "Error", `Download Template - ${templateItem}`);
-  } else {
-    fs.createReadStream(templatePath).pipe(fs.createWriteStream(destinationPath));
-    var emessage = `Successfully saved '${templateItem}' to ${destinationFolder}`;
-    Swal.fire({
-      icon: "success",
-      title: "Download successful",
-      text: `${emessage}`,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-    });
-    ipcRenderer.send("track-event", "Success", `Download Template - ${templateItem}`);
-  }
-};
-
-downloadSubmission.addEventListener("click", (event) => {
-  ipcRenderer.send("open-folder-dialog-save-metadata", templateArray[0]);
-});
-downloadDescription.addEventListener("click", (event) => {
-  ipcRenderer.send("open-folder-dialog-save-metadata", templateArray[1]);
-});
-downloadSubjects.addEventListener("click", (event) => {
-  ipcRenderer.send("open-folder-dialog-save-metadata", templateArray[2]);
-});
-downloadSamples.addEventListener("click", (event) => {
-  ipcRenderer.send("open-folder-dialog-save-metadata", templateArray[3]);
-});
-downloadManifest.addEventListener("click", (event) => {
-  ipcRenderer.send("open-folder-dialog-save-metadata", templateArray[4]);
-});
-document
-  .getElementById("guided-data-deliverables-download-button")
-  .addEventListener("click", (event) => {
-    ipcRenderer.send("open-folder-dialog-save-metadata", "code_description.xlsx");
-  });
-ipcRenderer.on("selected-metadata-download-folder", (event, path, filename) => {
-  if (path.length > 0) {
-    downloadTemplates(filename, path[0]);
-  }
-});
-
-ipcRenderer.on("selected-DDD-download-folder", (event, path, filename) => {
-  if (path.length > 0) {
-    downloadTemplates(filename, path[0]);
-  }
-});
 
 /////////////////// Provide Grant Information section /////////////////////////
 //////////////// //////////////// //////////////// //////////////// ///////////
@@ -2189,7 +2208,7 @@ function createSpecimenTypeAutocomplete(id) {
   });
 }
 
-function createSpeciesAutocomplete(id) {
+const createSpeciesAutocomplete = (id, curationMode) => {
   // var listID = "autocomplete" + id;
   var autoCompleteJS2 = new autoComplete({
     selector: "#" + id,
@@ -2250,7 +2269,10 @@ function createSpeciesAutocomplete(id) {
 
         if (data.results.length === 0) {
           info.setAttribute("class", "no_results_species");
-          info.setAttribute("onclick", "loadTaxonomySpecies('" + data.query + "', '" + id + "')");
+          info.setAttribute(
+            "onclick",
+            "loadTaxonomySpecies('" + data.query + "', '" + id + "', '" + curationMode + "')"
+          );
           info.innerHTML = `Find the scientific name for <strong>"${data.query}"</strong>`;
         }
         list.prepend(info);
@@ -2270,7 +2292,7 @@ function createSpeciesAutocomplete(id) {
     autoCompleteJS2.input.value = selection;
     $("#btn-confirm-species").removeClass("confirm-disabled");
   });
-}
+};
 
 function createStrain(id, type, curationMode) {
   var autoCompleteJS4 = new autoComplete({
@@ -2330,7 +2352,12 @@ function createStrain(id, type, curationMode) {
   });
 }
 
-async function loadTaxonomySpecies(commonName, destinationInput) {
+const loadTaxonomySpecies = async (commonName, destinationInput, curationMode) => {
+  let curationModeSelectorPrefix = "";
+  if (curationMode === "guided") {
+    curationModeSelectorPrefix = "guided-";
+  }
+
   Swal.fire({
     title: "Finding the scientific name for " + commonName + "...",
     html: "Please wait...",
@@ -2345,12 +2372,13 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
   try {
     let load_taxonomy_species = await client.get(`/taxonomy/species`, {
       params: {
-        animals_list: [commonName],
+        animals_list: commonName,
       },
     });
     let res = load_taxonomy_species.data;
 
     if (Object.keys(res).length === 0) {
+      Swal.close();
       Swal.fire({
         title: "Cannot find a scientific name for '" + commonName + "'",
         text: "Make sure you enter a correct species name.",
@@ -2362,8 +2390,8 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
         $("#btn-confirm-species").addClass("confirm-disabled");
       }
       if (destinationInput.includes("subject")) {
-        if ($("#bootbox-subject-species").val() === "") {
-          $("#bootbox-subject-species").css("display", "none");
+        if ($(`#${curationModeSelectorPrefix}bootbox-subject-species`).val() === "") {
+          $(`#${curationModeSelectorPrefix}bootbox-subject-species`).css("display", "none");
         }
         // set the Edit species button back to "+ Add species"
         $("#button-add-species-subject").html(
@@ -2371,8 +2399,8 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
         );
       }
       if (destinationInput.includes("sample")) {
-        if ($("#bootbox-sample-species").val() === "") {
-          $("#bootbox-sample-species").css("display", "none");
+        if ($(`#${curationModeSelectorPrefix}bootbox-sample-species`).val() === "") {
+          $(`#${curationModeSelectorPrefix}bootbox-sample-species`).css("display", "none");
         }
         // set the Edit species button back to "+ Add species"
 
@@ -2381,13 +2409,39 @@ async function loadTaxonomySpecies(commonName, destinationInput) {
         );
       }
     } else {
+      Swal.close();
+
+      if (destinationInput.includes("subject")) {
+        $(`#${curationModeSelectorPrefix}bootbox-subject-species`).val(
+          res[commonName]["ScientificName"]
+        );
+        // $("#bootbox-subject-species").css("display", "inline-block");
+        switchSpeciesStrainInput("species", "edit", curationMode);
+      }
+
+      if (destinationInput.includes("subject")) {
+        $(`#${curationModeSelectorPrefix}bootbox-sample-species`).val(
+          res[commonName]["ScientificName"]
+        );
+        // $(`#${curationModeSelectorPrefix}bootbox-subject-species`).css("display", "inline-block");
+        switchSpeciesStrainInput("species", "edit", curationMode);
+      }
+
       $("#" + destinationInput).val(res[commonName]["ScientificName"]);
       $("#btn-confirm-species").removeClass("confirm-disabled");
     }
   } catch (error) {
+    Swal.close();
+    Swal.fire({
+      title: "An error occurred while requesting the scientific name for '" + commonName + "'",
+      text: userErrorMessage(error),
+      icon: "error",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+    });
     clientError(error);
   }
-}
+};
 
 // Function to add options to dropdown list
 function addOption(selectbox, text, value) {
@@ -2446,7 +2500,7 @@ function changeAwardInputDsDescription() {
 }
 
 // on change event when users choose a contributor's last name
-function onchangeLastNames() {
+const onchangeLastNames = () => {
   $("#dd-contributor-first-name").attr("disabled", true);
   var conLastname = $("#dd-contributor-last-name").val();
   removeOptions(document.getElementById("dd-contributor-first-name"));
@@ -2461,7 +2515,7 @@ function onchangeLastNames() {
       .trigger("onchange");
   }
   $("#dd-contributor-first-name").attr("disabled", false);
-}
+};
 
 //// De-populate dataset dropdowns to clear options
 const clearDatasetDropdowns = () => {
@@ -2474,7 +2528,7 @@ const clearDatasetDropdowns = () => {
 
 //////////////////////// Current Contributor(s) /////////////////////
 
-function delete_current_con(no) {
+const delete_current_con = (no) => {
   // after a contributor is deleted, add their name back to the contributor last name dropdown list
   if (
     $("#ds-description-contributor-list-last-" + no).length > 0 &&
@@ -2486,22 +2540,22 @@ function delete_current_con(no) {
     currentContributorsLastNames.push(deletedLastName);
   }
   document.getElementById("row-current-name" + no + "").outerHTML = "";
-}
+};
 
-function delete_link(no) {
+const delete_link = (no) => {
   document.getElementById("row-current-link" + no + "").outerHTML = "";
-}
+};
 
 //////////////////////// Article(s) and Protocol(s) /////////////////////
 
 //// function to leave fields empty if no data is found on Airtable
-function leaveFieldsEmpty(field, element) {
+const leaveFieldsEmpty = (field, element) => {
   if (field !== undefined) {
     element.value = field;
   } else {
     element.value = "";
   }
-}
+};
 
 $(currentConTable).mousedown(function (e) {
   var length = currentConTable.rows.length - 1;
@@ -2770,14 +2824,14 @@ const emptyDSInfoEntries = () => {
   return [fieldSatisfied, emptyFieldArray];
 };
 
-function emptyLinkInfo() {
+const emptyLinkInfo = () => {
   var tableCurrentLinks = document.getElementById("protocol-link-table-dd");
   var fieldSatisfied = false;
   if (tableCurrentLinks.rows.length > 1) {
     fieldSatisfied = true;
   }
   return fieldSatisfied;
-}
+};
 
 const emptyInfoEntries = (element) => {
   var fieldSatisfied = true;
@@ -2788,7 +2842,7 @@ const emptyInfoEntries = (element) => {
 };
 
 /// detect empty required fields and raise a warning
-function detectEmptyRequiredFields(funding) {
+const detectEmptyRequiredFields = (funding) => {
   /// dataset info
   var dsContent = emptyDSInfoEntries();
   var dsSatisfied = dsContent[0];
@@ -2832,7 +2886,7 @@ function detectEmptyRequiredFields(funding) {
     }
   }
   return [allFieldsSatisfied, errorMessage];
-}
+};
 
 //////////////////////////End of Ds description section ///////////////////////////////////
 //////////////// //////////////// //////////////// //////////////// ////////////////////////
@@ -2912,11 +2966,14 @@ function datasetStatusListChange() {
   showCurrentDatasetStatus();
 }
 
-function postCurationListChange() {
+// This function is called when the user selects a dataset from the dropdown list
+// It is called to update the UI elements that are related to the publishing status
+// of the dataset and displaying the correct UI elements
+const postCurationListChange = () => {
   // display the pre-publishing page
   showPrePublishingPageElements();
   showPublishingStatus();
-}
+};
 
 // upload banner image //
 const Cropper = require("cropperjs");
@@ -3046,7 +3103,7 @@ const setupPublicationOptionsPopover = () => {
   });
 };
 
-const submitReviewDatasetCheck = async (res) => {
+const submitReviewDatasetCheck = async (res, curationMode) => {
   let reviewstatus = res["review_request_status"];
   let publishingStatus = res["publishing_status"];
   if (res["publishing_status"] === "PUBLISH_IN_PROGRESS") {
@@ -3092,7 +3149,7 @@ const submitReviewDatasetCheck = async (res) => {
       confirmButtonText: "Submit",
       denyButtonText: "Cancel",
       showDenyButton: true,
-      title: `Submit your dataset for pre-publishing review`,
+      title: `Submit your dataset for review`,
       reverseButtons: reverseSwalButtons,
       text: "",
       html: `
@@ -3153,21 +3210,21 @@ const submitReviewDatasetCheck = async (res) => {
 
     // swal loading message for the submission
     // show a SWAL loading message until the submit for prepublishing flow is successful or fails
-    Swal.fire({
-      title: `Submitting dataset for pre-publishing review`,
-      html: "Please wait...",
-      // timer: 5000,
-      allowEscapeKey: false,
-      allowOutsideClick: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
+    // Swal.fire({
+    //   title: `Submitting dataset for pre-publishing review`,
+    //   html: "Please wait...",
+    //   // timer: 5000,
+    //   allowEscapeKey: false,
+    //   allowOutsideClick: false,
+    //   heightAuto: false,
+    //   backdrop: "rgba(0,0,0, 0.4)",
+    //   timerProgressBar: false,
+    //   didOpen: () => {
+    //     Swal.showLoading();
+    //   },
+    // });
     // submit the dataset for review with the given embargoReleaseDate
-    await submitReviewDataset(embargoReleaseDate);
+    await submitReviewDataset(embargoReleaseDate, curationMode);
   } else {
     // status is NOT_PUBLISHED
     // embargo release date represents the time a dataset that has been reviewed for publication becomes public
@@ -3181,18 +3238,18 @@ const submitReviewDatasetCheck = async (res) => {
       confirmButtonText: "Submit",
       denyButtonText: "Cancel",
       showDenyButton: true,
-      title: `Submit your dataset for pre-publishing review`,
+      title: `Submit your dataset for review`,
       reverseButtons: reverseSwalButtons,
       html: `
               <div style="display: flex; flex-direction: column;  font-size: 15px;">
                 <p style="text-align:left">Your dataset will be submitted for review to the SPARC Curation Team. While under review, the dataset will become locked until it has either been approved or rejected for publication. </p>
                 <div style="text-align: left; margin-bottom: 5px; display: flex; ">
-                  <input type="radio" name="publishing-options" value="immediate" style=" border: 0px; width: 18px; height: 18px;" checked>
-                  <div style="margin-left: 5px;"><label for="immediate"> Make this dataset available to the public immediately after publishing</label></div>
+                  <input type="checkbox" id="confirm-to-awknowledge" name="publishing-options" value="immediate" style=" border: 0px; width: 18px; height: 18px;">
+                  <div style="margin-left: 5px;"><label for="immediate">I understand that submitting to the Curation Team will lock this dataset</label></div>
                 </div>
                 <div style="text-align: left; margin-bottom: 5px; display: flex; ">
-                  <input type="radio" id="embargo-date-check" name="publishing-options" value="embargo-date-check" style=" border: 0px; width: 22px; height: 22px;">
-                  <div style="margin-left: 5px;"><label for="embargo-date-check" style="text-align:left">Place this dataset under embargo so that it is not made public immediately after publishing</label></div>
+                  <input type="checkbox" id="embargo-date-check" name="publishing-options" value="embargo-date-check" style=" border: 0px; width: 22px; height: 22px;">
+                  <div style="margin-left: 5px;"><label for="embargo-date-check" style="text-align:left">Place this dataset under embargo so that it is not made public immediately after publishing.</label> <br> <a href="https://docs.pennsieve.io/docs/what-is-an-embargoed-dataset" target="_blank">What is this?</a></div>
                 </div>
                 <div style="visibility:hidden; flex-direction: column;  margin-top: 10px;" id="calendar-wrapper">
                 <label style="margin-bottom: 5px; font-size: 13px;">When would you like this dataset to become publicly available?<label>
@@ -3222,11 +3279,27 @@ const submitReviewDatasetCheck = async (res) => {
       willOpen: () => {
         setupPublicationOptionsPopover();
       },
+      didOpen: () => {
+        // Add an event listener to id confirm-to-awknowledge
+        document.querySelector(".swal2-confirm").disabled = true;
+        document.getElementById("confirm-to-awknowledge").addEventListener("click", () => {
+          // if the checkbox is checked, enable the submit button
+          if (document.getElementById("confirm-to-awknowledge").checked) {
+            document.querySelector(".swal2-confirm").disabled = false;
+          } else {
+            // if the checkbox is not checked, disable the submit button
+            document.querySelector(".swal2-confirm").disabled = true;
+          }
+        });
+      },
       willClose: () => {
-        // check if the embargo radio button is selected
-        const checkedRadioButton = $("input:radio[name ='publishing-options']:checked").val();
+        // check if the embargo checkbox button is selected or not
+        // const checkedRadioButton = $("input:checkbox[name ='publishing-options']:checked").val();
 
-        if (checkedRadioButton === "embargo-date-check") {
+        // const checkedRadioButton = $("input:checkbox[name ='publishing-options']:checked");
+        console.log(document.getElementById("embargo-date-check").checked);
+
+        if (document.getElementById("embargo-date-check").checked) {
           // set the embargoDate variable if so
           embargoReleaseDate = $("#tui-date-picker-target").val();
         }
@@ -3236,26 +3309,32 @@ const submitReviewDatasetCheck = async (res) => {
     // check if the user cancelled
     if (!userResponse.isConfirmed) {
       // do not submit the dataset
-      return;
+      return [false, ""];
     }
 
-    // show a SWAL loading message until the submit for prepublishing flow is successful or fails
-    Swal.fire({
-      title: `Submitting dataset for pre-publishing review`,
-      html: "Please wait...",
-      // timer: 5000,
-      allowEscapeKey: false,
-      allowOutsideClick: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
+    if (userResponse.isConfirmed && curationMode === "guided") {
+      return [true, embargoReleaseDate];
+    }
 
-    // submit the dataset for review with the given embargoReleaseDate
-    await submitReviewDataset(embargoReleaseDate);
+    if (curationMode != "guided" && userResponse.isConfirmed) {
+      // show a SWAL loading message until the submit for prepublishing flow is successful or fails
+      Swal.fire({
+        title: `Submitting dataset for pre-publishing review`,
+        html: "Please wait...",
+        // timer: 5000,
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      // submit the dataset for review with the given embargoReleaseDate
+      await submitReviewDataset(embargoReleaseDate, curationMode);
+    }
   }
 };
 
@@ -3273,7 +3352,16 @@ ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
   $("#submit_prepublishing_review-spinner").hide();
 });
 
-const submitReviewDataset = async (embargoReleaseDate) => {
+const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
+  let curationModeID = "";
+  let currentAccount = defaultBfAccount;
+  let currentDataset = defaultBfDataset;
+
+  if (curationMode === "guided") {
+    curationModeID = "guided";
+    currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
+    currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+  }
   $("#para-submit_prepublishing_review-status").text("");
   bfRefreshPublishingDatasetStatusBtn.disabled = true;
   var selectedBfAccount = defaultBfAccount;
@@ -3284,10 +3372,10 @@ const submitReviewDataset = async (embargoReleaseDate) => {
 
   // check if the user has selected any files they want to be hidden to the public upon publication (aka ignored/excluded files)
   // set the loading message title accordingly
-  if (excludedFilesInPublicationFlow()) {
+  if (excludedFilesInPublicationFlow(curationMode)) {
     title = "Ignoring selected files and submitting dataset for pre-publishing review";
   } else {
-    title = "Submitting dataset for pre-publishing review";
+    title = "Submitting dataset to Curation Team";
   }
 
   // show a SWAL loading message until the submit for prepublishing flow is successful or fails
@@ -3306,13 +3394,13 @@ const submitReviewDataset = async (embargoReleaseDate) => {
   });
 
   // if there are excluded files upload them to Pennsieve so they will not be viewable to the public upon publication
-  if (excludedFilesInPublicationFlow()) {
+  if (excludedFilesInPublicationFlow(curationMode)) {
     // get the excluded files from the excluded files list in the third step of the pre-publishing review submission flow
-    let files = getExcludedFilesFromPublicationFlow();
+    let files = getExcludedFilesFromPublicationFlow(curationMode);
     try {
       // exclude the user's selected files from publication
       //check res
-      await api.updateDatasetExcludedFiles(defaultBfAccount, selectedBfDataset, files);
+      await api.updateDatasetExcludedFiles(currentAccount, currentDataset, files);
     } catch (error) {
       clientError(error);
       // log the error
@@ -3347,9 +3435,11 @@ const submitReviewDataset = async (embargoReleaseDate) => {
   }
 
   try {
+    await disseminateCurationTeam(currentAccount, currentDataset, "share", "newMethod");
+
     await api.submitDatasetForPublication(
-      selectedBfAccount,
-      selectedBfDataset,
+      currentAccount,
+      currentDataset,
       embargoReleaseDate,
       embargoReleaseDate === "" ? "publication" : "embargo"
     );
@@ -3386,7 +3476,7 @@ const submitReviewDataset = async (embargoReleaseDate) => {
   }
 
   // update the publishing status UI element
-  await showPublishingStatus("noClear");
+  await showPublishingStatus("noClear", curationMode);
 
   // track success
   logGeneralOperationsForAnalytics(
@@ -3401,7 +3491,7 @@ const submitReviewDataset = async (embargoReleaseDate) => {
     backdrop: "rgba(0,0,0, 0.4)",
     heightAuto: false,
     confirmButtonText: "Ok",
-    title: `Dataset has been submitted for pre-publishing review to the publishers within your organization!`,
+    title: `Dataset has been submitted for review to the SPARC Curation Team!`,
     icon: "success",
     reverseButtons: reverseSwalButtons,
     showClass: {
@@ -3412,36 +3502,56 @@ const submitReviewDataset = async (embargoReleaseDate) => {
     },
   });
 
-  await transitionFreeFormMode(
-    document.querySelector("#begin-prepublishing-btn"),
-    "submit_prepublishing_review-question-2",
-    "submit_prepublishing_review-tab",
-    "",
-    "individual-question post-curation"
-  );
+  if (curationMode != "guided") {
+    await transitionFreeFormMode(
+      document.querySelector("#begin-prepublishing-btn"),
+      "submit_prepublishing_review-question-2",
+      "submit_prepublishing_review-tab",
+      "",
+      "individual-question post-curation"
+    );
+  } else {
+    // Update the UI again and hide the flow
+    $("#guided--prepublishing-checklist-container").addClass("hidden");
+    $("#guided--submit-prepublishing-review").addClass("hidden");
+    const guidedShareWithCurationTeamButton = document.getElementById(
+      "guided-button-share-dataset-with-curation-team"
+    );
+
+    guidedShareWithCurationTeamButton.classList.remove("hidden");
+    guidedShareWithCurationTeamButton.classList.remove("loading");
+    // $("#guided--para-review-dataset-info-disseminate").text("Dataset is not under review currently")
+
+    guidedShareWithCurationTeamButton.disabled = false;
+    // $("#guided-button-unshare-dataset-with-curation-team").show();
+    guidedSetCurationTeamUI();
+  }
 };
 
 // //Withdraw dataset from review
-function withdrawDatasetSubmission() {
+const withdrawDatasetSubmission = async (curationMode) => {
   // show a SWAL loading message until the submit for prepublishing flow is successful or fails
-  Swal.fire({
-    title: `Preparing to withdraw the dataset submission`,
-    html: "Please wait...",
-    // timer: 5000,
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  });
+
+  if (curationMode !== "guided") {
+    Swal.fire({
+      title: `Preparing to withdraw the dataset submission`,
+      html: "Please wait...",
+      // timer: 5000,
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+  }
 
   // get the publishing status of the currently selected dataset
   // then check if it can be withdrawn, then withdraw it
   // catch any uncaught errors at this level (aka greacefully catch any exceptions to alert the user we cannot withdraw their dataset)
-  showPublishingStatus(withdrawDatasetCheck).catch((error) => {
+  await showPublishingStatus(withdrawDatasetCheck, curationMode).catch((error) => {
     log.error(error);
     console.error(error);
     var emessage = userError(error);
@@ -3468,10 +3578,19 @@ function withdrawDatasetSubmission() {
       AnalyticsGranularity.ALL_LEVELS,
       ["Withdraw dataset"]
     );
+    // This helps signal guided mode to update the UI
+    if (curationMode === "guided") {
+      return false;
+    }
   });
-}
 
-const withdrawDatasetCheck = async (res) => {
+  // This helps signal guided mode to update the UI
+  if (curationMode === "guided") {
+    return true;
+  }
+};
+
+const withdrawDatasetCheck = async (res, curationMode) => {
   let reviewstatus = res["publishing_status"];
   let requestStatus = res["review_request_status"];
   if (requestStatus != "requested") {
@@ -3490,26 +3609,8 @@ const withdrawDatasetCheck = async (res) => {
       },
     });
   } else {
-    let result = await Swal.fire({
-      icon: "warning",
-      text: "Your dataset will be removed from review. You will have to submit it again before publishing it. Would you like to continue?",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showCancelButton: true,
-      focusCancel: true,
-      confirmButtonText: "Yes",
-      cancelButtonText: "No",
-      reverseButtons: reverseSwalButtons,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
-
-    if (result.isConfirmed) {
-      // show a SWAL loading message until the submit for prepublishing flow is successful or fails
+    // show a SWAL loading message until the submit for prepublishing flow is successful or fails
+    if (curationMode !== "guided") {
       Swal.fire({
         title: `Withdrawing dataset submission`,
         html: "Please wait...",
@@ -3522,20 +3623,28 @@ const withdrawDatasetCheck = async (res) => {
           Swal.showLoading();
         },
       });
-      await withdrawReviewDataset();
     }
+    await withdrawReviewDataset(curationMode);
   }
 };
 
-const withdrawReviewDataset = async () => {
+const withdrawReviewDataset = async (curationMode) => {
   bfWithdrawReviewDatasetBtn.disabled = true;
-  var selectedBfAccount = $("#current-bf-account").text();
-  var selectedBfDataset = $(".bf-dataset-span")
+
+  let currentAccount = $("#current-bf-account").text();
+  let currentDataset = $(".bf-dataset-span")
     .html()
     .replace(/^\s+|\s+$/g, "");
 
+  if (curationMode == "guided") {
+    currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
+    currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+  }
+
   try {
-    await api.withdrawDatasetReviewSubmission(selectedBfDataset, selectedBfAccount);
+    await disseminateCurationTeam(currentAccount, currentDataset, "unshare", "newMethod");
+
+    await api.withdrawDatasetReviewSubmission(currentDataset, currentAccount);
 
     logGeneralOperationsForAnalytics(
       "Success",
@@ -3545,7 +3654,7 @@ const withdrawReviewDataset = async () => {
     );
 
     // show the user their dataset's updated publishing status
-    await showPublishingStatus("noClear");
+    await showPublishingStatus("noClear", curationMode);
 
     await Swal.fire({
       title: "Dataset has been withdrawn from review!",
@@ -3562,20 +3671,32 @@ const withdrawReviewDataset = async () => {
       },
     });
 
-    // reveal the current section (question-3) again using the new publishing status value
-    await transitionFreeFormMode(
-      document.querySelector("#begin-prepublishing-btn"),
-      "submit_prepublishing_review-question-2",
-      "submit_prepublishing_review-tab",
-      "",
-      "individual-question post-curation"
-    );
+    if (curationMode != "guided") {
+      // reveal the current section (question-3) again using the new publishing status value
+      await transitionFreeFormMode(
+        document.querySelector("#begin-prepublishing-btn"),
+        "submit_prepublishing_review-question-2",
+        "submit_prepublishing_review-tab",
+        "",
+        "individual-question post-curation"
+      );
+
+      bfRefreshPublishingDatasetStatusBtn.disabled = false;
+      bfWithdrawReviewDatasetBtn.disabled = false;
+    } else {
+      const guidedUnshareWithCurationTeamButton = document.getElementById(
+        "guided-button-unshare-dataset-with-curation-team"
+      );
+
+      guidedUnshareWithCurationTeamButton.disabled = false;
+      guidedUnshareWithCurationTeamButton.classList.remove("loading");
+      guidedUnshareWithCurationTeamButton.classList.remove("hidden");
+
+      guidedSetCurationTeamUI();
+    }
 
     // scroll to the submit button
     // scrollToElement(".pre-publishing-continue");
-
-    bfRefreshPublishingDatasetStatusBtn.disabled = false;
-    bfWithdrawReviewDatasetBtn.disabled = false;
   } catch (error) {
     clientError(error);
     var emessage = userErrorMessage(error);
@@ -3611,21 +3732,21 @@ const withdrawReviewDataset = async () => {
 
 // General //
 
-function removeOptions(selectbox) {
+const removeOptions = (selectbox) => {
   var i;
   for (i = selectbox.options.length - 1; i >= 0; i--) {
     selectbox.remove(i);
   }
-}
+};
 
-function userError(error) {
+const userError = (error) => {
   var myerror = error.message;
   return myerror;
-}
+};
 
 // Manage Datasets //
 
-function refreshBfUsersList() {
+const refreshBfUsersList = () => {
   var accountSelected = defaultBfAccount;
 
   removeOptions(bfListUsers);
@@ -3678,9 +3799,9 @@ function refreshBfUsersList() {
         clientError(error);
       });
   }
-}
+};
 
-function refreshBfTeamsList(teamList) {
+const refreshBfTeamsList = (teamList) => {
   removeOptions(teamList);
 
   var accountSelected = defaultBfAccount;
@@ -3717,7 +3838,7 @@ function refreshBfTeamsList(teamList) {
         confirm_click_account_function();
       });
   }
-}
+};
 
 const selectOptionColor = (mylist) => {
   mylist.style.color = mylist.options[mylist.selectedIndex].style.color;
@@ -3766,7 +3887,7 @@ const populateDatasetDropdowns = (mylist) => {
 };
 ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
 
-async function updateBfAccountList() {
+const updateBfAccountList = async () => {
   let responseObject;
   try {
     responseObject = await client.get("manage_datasets/bf_account_list");
@@ -3792,7 +3913,7 @@ async function updateBfAccountList() {
   }
   refreshBfUsersList();
   refreshBfTeamsList(bfListTeams);
-}
+};
 
 const loadDefaultAccount = async () => {
   let responseObject;
@@ -3837,26 +3958,33 @@ const showPrePublishingPageElements = () => {
   $(".pre-publishing-continue-container").hide();
 };
 
-const showPublishingStatus = async (callback) => {
+const showPublishingStatus = async (callback, curationMode = "") => {
   return new Promise(async function (resolve, reject) {
-    console.log(callback);
     if (callback == "noClear") {
       var nothing;
     }
-    var selectedBfAccount = $("#current-bf-account").text();
-    var selectedBfDataset = $(".bf-dataset-span")
+
+    let curationModeID = "";
+    let currentAccount = $("#current-bf-account").text();
+    let currentDataset = $(".bf-dataset-span")
       .html()
       .replace(/^\s+|\s+$/g, "");
 
-    if (selectedBfDataset === "None") {
+    if (curationMode === "guided") {
+      curationModeID = "guided--";
+      currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
+      currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+    }
+
+    if (currentDataset === "None") {
       resolve();
     } else {
       try {
         let get_publishing_status = await client.get(
-          `/disseminate_datasets/datasets/${selectedBfDataset}/publishing_status`,
+          `/disseminate_datasets/datasets/${currentDataset}/publishing_status`,
           {
             params: {
-              selected_account: selectedBfAccount,
+              selected_account: currentAccount,
             },
           }
         );
@@ -3865,10 +3993,12 @@ const showPublishingStatus = async (callback) => {
         try {
           //update the dataset's publication status and display
           //onscreen for the user under their dataset name
-          $("#para-review-dataset-info-disseminate").text(publishStatusOutputConversion(res));
+          $(`#${curationModeID}para-review-dataset-info-disseminate`).text(
+            publishStatusOutputConversion(res)
+          );
 
           if (callback === submitReviewDatasetCheck || callback === withdrawDatasetCheck) {
-            return resolve(callback(res));
+            return resolve(callback(res, curationMode));
           }
 
           resolve();
@@ -3908,7 +4038,7 @@ const showPublishingStatus = async (callback) => {
   });
 };
 
-function publishStatusOutputConversion(res) {
+const publishStatusOutputConversion = (res) => {
   var reviewStatus = res["review_request_status"];
   var publishStatus = res["publishing_status"];
 
@@ -3916,7 +4046,7 @@ function publishStatusOutputConversion(res) {
   if (reviewStatus === "draft" || reviewStatus === "cancelled") {
     outputMessage += "Dataset is not under review currently";
   } else if (reviewStatus === "requested") {
-    outputMessage += "Dataset is currently under review by your Publishing Team";
+    outputMessage += "Dataset is currently under review";
   } else if (reviewStatus === "rejected") {
     outputMessage += "Dataset has been rejected by your Publishing Team and may require revision";
   } else if (reviewStatus === "accepted") {
@@ -3924,7 +4054,7 @@ function publishStatusOutputConversion(res) {
   }
 
   return outputMessage;
-}
+};
 
 const allowedMedataFiles = [
   "submission.xlsx",
@@ -4132,7 +4262,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
 
 // ///////////////////////////////////////////////////////////////////////////
 // recursively populate json object
-function populateJSONObjFolder(action, jsonObject, folderPath) {
+const populateJSONObjFolder = (action, jsonObject, folderPath) => {
   var myitems = fs.readdirSync(folderPath);
   myitems.forEach((element) => {
     //prevented here
@@ -4176,19 +4306,19 @@ function populateJSONObjFolder(action, jsonObject, folderPath) {
       };
     }
   });
-}
+};
 
 let full_name_show = false;
 
-function hideFullName() {
+const hideFullName = () => {
   full_name_show = false;
   fullNameValue.style.display = "none";
   fullNameValue.style.top = "-250%";
   fullNameValue.style.left = "-250%";
-}
+};
 
 //// HOVER FOR FULL NAME (FOLDERS WITH WRAPPED NAME IN UI)
-function showFullName(ev, element, text) {
+const showFullName = (ev, element, text) => {
   /// check if the full name of the folder is overflowing or not, if so, show full name on hover
   full_name_show = true;
   var isOverflowing =
@@ -4205,7 +4335,7 @@ function showFullName(ev, element, text) {
       }
     }, 800);
   }
-}
+};
 
 /// hover over a function for full name
 const hoverForFullName = (ev) => {
@@ -4224,10 +4354,10 @@ document.addEventListener("onmouseover", function (e) {
 });
 
 // if a file/folder is clicked -> show details in right "sidebar"
-function showDetailsFile() {
+const showDetailsFile = () => {
   $(".div-display-details.file").toggleClass("show");
   // $(".div-display-details.folders").hide()
-}
+};
 
 const pasteFromClipboard = (event, target_element) => {
   event.preventDefault();
@@ -4270,7 +4400,7 @@ var bfaddaccountTitle = `<h3 style="text-align:center">Connect your Pennsieve ac
 
 // this function is called in the beginning to load bf accounts to a list
 // which will be fed as dropdown options
-async function retrieveBFAccounts() {
+const retrieveBFAccounts = async () => {
   bfAccountOptions = [];
   bfAccountOptionsStatus = "";
 
@@ -4293,10 +4423,10 @@ async function retrieveBFAccounts() {
     bfAccountOptionsStatus = "No account connected";
   }
   return [bfAccountOptions, bfAccountOptionsStatus];
-}
+};
 
 let defaultAccountDetails = "";
-async function showDefaultBFAccount() {
+const showDefaultBFAccount = async () => {
   try {
     let bf_default_acc_req = await client.get("manage_datasets/bf_default_account_load");
     let accounts = bf_default_acc_req.data.defaultAccounts;
@@ -4344,10 +4474,10 @@ async function showDefaultBFAccount() {
   } catch (error) {
     clientError(error);
   }
-}
+};
 
 ////// function to trigger action for each context menu option
-function hideMenu(category, menu1, menu2, menu3) {
+const hideMenu = (category, menu1, menu2, menu3) => {
   if (category === "folder") {
     menu1.style.display = "none";
     menu1.style.top = "-200%";
@@ -4361,9 +4491,9 @@ function hideMenu(category, menu1, menu2, menu3) {
     menu3.style.top = "-210%";
     menu3.style.left = "-210%";
   }
-}
+};
 
-function changeStepOrganize(step) {
+const changeStepOrganize = (step) => {
   if (step.id === "button-organize-prev") {
     document.getElementById("div-step-1-organize").style.display = "block";
     document.getElementById("div-step-2-organize").style.display = "none";
@@ -4379,10 +4509,10 @@ function changeStepOrganize(step) {
     organizePrevStepBtn.style.display = "block";
     organizeNextStepBtn.style.display = "none";
   }
-}
+};
 
 var newDSName;
-function generateDataset(button) {
+const generateDataset = (button) => {
   document.getElementById("para-organize-datasets-success").style.display = "none";
   document.getElementById("para-organize-datasets-error").style.display = "none";
   if (button.id === "btn-generate-locally") {
@@ -4414,7 +4544,7 @@ function generateDataset(button) {
     $("#btn-generate-locally").removeClass("active");
     $(button).toggleClass("active");
   }
-}
+};
 
 ipcRenderer.on("selected-new-dataset", async (event, filepath) => {
   if (filepath.length > 0) {
@@ -5680,7 +5810,7 @@ const dropHelper = async (
 };
 
 var irregularFolderArray = [];
-function detectIrregularFolders(folderName, pathEle) {
+const detectIrregularFolders = (folderName, pathEle) => {
   if (checkIrregularNameBoolean(folderName)) {
     irregularFolderArray.push(pathEle);
   }
@@ -5693,7 +5823,7 @@ function detectIrregularFolders(folderName, pathEle) {
       return irregularFolderArray;
     });
   }
-}
+};
 
 const checkIrregularNameBoolean = (folderName) => {
   //nonAllowedCharacters modified to only allow a-z A-z 0-9 and hyphen "-"
@@ -5895,8 +6025,11 @@ const handleSelectedBannerImage = async (path, curationMode) => {
 //////////////////////////////////////////////////////////////////////////////
 
 //// helper functions for hiding/showing context menus
-function showmenu(ev, category, deleted = false) {
+const showmenu = (ev, category, deleted = false) => {
   //stop the real right click menu
+  let guidedModeFileExporer = false;
+  let activePages = Array.from(document.querySelectorAll(".is-shown"));
+
   ev.preventDefault();
   var mouseX;
   let element = "";
@@ -5912,6 +6045,14 @@ function showmenu(ev, category, deleted = false) {
   }
 
   var mouseY = ev.pageY - 10;
+
+  activePages.forEach((page) => {
+    if (page.id === "guided_mode-section") {
+      guidedModeFileExporer = true;
+      mouseX = ev.pageX - 210;
+      mouseY = ev.pageY - 10;
+    }
+  });
 
   if (category === "folder") {
     if (deleted) {
@@ -5941,7 +6082,11 @@ function showmenu(ev, category, deleted = false) {
         $(menuFolder).children("#folder-description").show();
       }
     }
+    // This is where regular folders context menu will appear
     menuFolder.style.display = "block";
+    if (guidedModeFileExporer) {
+      // $(".menu.reg-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
+    }
     $(".menu.reg-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
   } else if (category === "high-level-folder") {
     if (deleted) {
@@ -5971,6 +6116,9 @@ function showmenu(ev, category, deleted = false) {
       }
     }
     menuHighLevelFolders.style.display = "block";
+    if (guidedModeFileExporer) {
+      // $(".menu.high-level-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
+    }
     $(".menu.high-level-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
   } else {
     if (deleted) {
@@ -5994,13 +6142,15 @@ function showmenu(ev, category, deleted = false) {
         $(menuFile).children("#file-description").show();
       }
     }
+
+    // This is where the context menu for regular files will be displayed
     menuFile.style.display = "block";
     $(".menu.file").css({ top: mouseY, left: mouseX }).fadeIn("slow");
   }
-}
+};
 
 /// options for regular sub-folders
-function folderContextMenu(event) {
+const folderContextMenu = (event) => {
   $(".menu.reg-folder li")
     .unbind()
     .click(function () {
@@ -6053,10 +6203,10 @@ function folderContextMenu(event) {
   hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
   hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
   hideFullName();
-}
+};
 
 //////// options for files
-function fileContextMenu(event) {
+const fileContextMenu = (event) => {
   if ($(".div-display-details.file").hasClass("show")) {
     $(".div-display-details.file").removeClass("show");
   }
@@ -6084,7 +6234,7 @@ function fileContextMenu(event) {
       hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
     });
   hideMenu("file", menuFolder, menuHighLevelFolders, menuFile);
-}
+};
 
 $(document).ready(function () {
   tippy("[data-tippy-content]:not(.tippy-content-main):not(.guided-tippy-wrapper)", {
@@ -6229,7 +6379,6 @@ $(document).bind("click", (event) => {
 
 // sort JSON objects by keys alphabetically (folder by folder, file by file)
 const sortObjByKeys = (object) => {
-  console.log(object);
   const orderedFolders = {};
   const orderedFiles = {};
   /// sort the files in objects
@@ -6863,14 +7012,14 @@ const getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
   });
 };
 
-function sliceStringByValue(string, endingValue) {
+const sliceStringByValue = (string, endingValue) => {
   var newString = string.slice(string.indexOf(endingValue) + 1);
   return newString;
-}
+};
 
 var fileNameForEdit;
 ///// Option to manage description for files
-function manageDesc(ev) {
+const manageDesc = (ev) => {
   var fileName = ev.parentElement.innerText;
   /// get current location of files in JSON object
   var filtered = getGlobalPath(organizeDSglobalPath);
@@ -6888,9 +7037,9 @@ function manageDesc(ev) {
   hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
   hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
   fileNameForEdit = fileName;
-}
+};
 
-function updateFileDetails(ev) {
+const updateFileDetails = (ev) => {
   var fileName = fileNameForEdit;
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
@@ -6910,9 +7059,9 @@ function updateFileDetails(ev) {
   }
   // close the display
   showDetailsFile();
-}
+};
 
-function addDetailsForFile(ev) {
+const addDetailsForFile = (ev) => {
   var checked = false;
   for (var ele of $($(ev).siblings()).find("input:checkbox")) {
     if ($(ele).prop("checked")) {
@@ -6948,7 +7097,7 @@ function addDetailsForFile(ev) {
     updateFileDetails(ev);
     $("#button-confirm-display-details-file").html("Added");
   }
-}
+};
 
 $("#inputNewNameDataset").on("click", () => {
   $("#nextBtn").prop("disabled", true);
@@ -7010,7 +7159,61 @@ document
     ipcRenderer.send("open-file-dialog-local-destination-curate");
   });
 
+// Local dataset selected response
 ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepath) => {
+  let numb = document.getElementById("local_dataset_number");
+  let progressBar_rightSide = document.getElementById("left-side_less_than_50");
+  let progressBar_leftSide = document.getElementById("right-side_greater_than_50");
+  //create setInterval variable that will keep track of the iterated items
+  let local_progress;
+
+  // Function to get the progress of the local dataset every 500ms
+  const progressReport = async () => {
+    try {
+      let monitorProgressResponse = await client.get(`/organize_datasets/datasets/import/progress`);
+
+      let { data } = monitorProgressResponse;
+      percentage_amount = data["progress_percentage"].toFixed(2);
+      finished = data["create_soda_json_completed"];
+
+      numb.innerText = percentage_amount + "%";
+      if (percentage_amount <= 50) {
+        progressBar_rightSide.style.transform = `rotate(${percentage_amount * 0.01 * 360}deg)`;
+      } else {
+        progressBar_rightSide.style.transition = "";
+        progressBar_rightSide.classList.add("notransition");
+        progressBar_rightSide.style.transform = `rotate(180deg)`;
+        progressBar_leftSide.style.transform = `rotate(${percentage_amount * 0.01 * 180}deg)`;
+      }
+
+      if (finished === 1) {
+        progressBar_leftSide.style.transform = `rotate(180deg)`;
+        numb.innerText = "100%";
+        clearInterval(local_progress);
+        progressBar_rightSide.classList.remove("notransition");
+        populate_existing_folders(datasetStructureJSONObj);
+        populate_existing_metadata(sodaJSONObj);
+        $("#para-continue-location-dataset-getting-started").text("Please continue below.");
+        $("#nextBtn").prop("disabled", false);
+        // log the success to analytics
+        logMetadataForAnalytics(
+          "Success",
+          PrepareDatasetsAnalyticsPrefix.CURATE,
+          AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+          Actions.EXISTING,
+          Destinations.LOCAL
+        );
+        setTimeout(() => {
+          document.getElementById("loading_local_dataset").style.display = "none";
+        }, 1000);
+      }
+    } catch (error) {
+      clientError(error);
+      clearInterval(local_progress);
+    }
+  };
+
+  // Function begins here
   if (filepath.length > 0) {
     if (filepath != null) {
       sodaJSONObj["starting-point"]["local-path"] = "";
@@ -7025,11 +7228,12 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
           "local"
         );
         if (valid_dataset == true) {
-          var action = "";
+          // Reset variables
           irregularFolderArray = [];
-          var replaced = [];
-          let finished = 0;
+          let replaced = {};
+
           detectIrregularFolders(path.basename(filepath[0]), filepath[0]);
+
           var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contains any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
           if (irregularFolderArray.length > 0) {
             Swal.fire({
@@ -7051,14 +7255,13 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
               },
               footer: footer,
             }).then(async (result) => {
-              // var replaced = [];
               /* Read more about isConfirmed, isDenied below */
               if (result.isConfirmed) {
                 action = "replace";
                 if (irregularFolderArray.length > 0) {
                   for (let i = 0; i < irregularFolderArray.length; i++) {
                     renamedFolderName = replaceIrregularFolders(irregularFolderArray[i]);
-                    replaced.push(renamedFolderName);
+                    replaced[path.basename(irregularFolderArray[i])] = renamedFolderName;
                   }
                 }
               } else if (result.isDenied) {
@@ -7066,7 +7269,7 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
                 if (irregularFolderArray.length > 0) {
                   for (let i = 0; i < irregularFolderArray.length; i++) {
                     renamedFolderName = removeIrregularFolders(irregularFolderArray[i]);
-                    replaced.push(renamedFolderName);
+                    replaced[irregularFolderArray[i]] = renamedFolderName;
                   }
                 }
               } else {
@@ -7077,148 +7280,59 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
                 return;
               }
 
-              let numb = document.getElementById("local_dataset_number");
-              numb.innerText = "0%";
-              progressBar_rightSide = document.getElementById("left-side_less_than_50");
-              progressBar_leftSide = document.getElementById("right-side_greater_than_50");
+              //Reset the progress bar
               progressBar_rightSide.style.transform = `rotate(0deg)`;
               progressBar_leftSide.style.transform = `rotate(0deg)`;
-              document.getElementById("loading_local_dataset").style.display = "block";
-              sodaJSONObj["starting-point"]["local-path"] = filepath[0];
+              numb.innerText = "0%";
 
+              // Show the progress bar
+              document.getElementById("loading_local_dataset").style.display = "block";
+
+              // Show file path to user in the input box
+              sodaJSONObj["starting-point"]["local-path"] = filepath[0];
               let root_folder_path = $("#input-destination-getting-started-locally").attr(
                 "placeholder"
               );
 
-              let local_progress = setInterval(progressReport, 500);
-              async function progressReport() {
-                try {
-                  let monitorProgressResponse = await client.get(
-                    `/organize_datasets/datasets/import/progress`
-                  );
-
-                  let { data } = monitorProgressResponse;
-                  percentage_amount = data["progress_percentage"].toFixed(2);
-                  finished = data["create_soda_json_completed"];
-
-                  progressBar_rightSide = document.getElementById("left-side_less_than_50");
-                  progressBar_leftSide = document.getElementById("right-side_greater_than_50");
-
-                  numb.innerText = percentage_amount + "%";
-                  if (percentage_amount <= 50) {
-                    progressBar_rightSide.style.transform = `rotate(${
-                      percentage_amount * 0.01 * 360
-                    }deg)`;
-                  } else {
-                    progressBar_rightSide.style.transition = "";
-                    progressBar_rightSide.classList.add("notransition");
-                    progressBar_rightSide.style.transform = `rotate(180deg)`;
-                    progressBar_leftSide.style.transform = `rotate(${
-                      percentage_amount * 0.01 * 180
-                    }deg)`;
-                  }
-
-                  if (finished === 1) {
-                    progressBar_leftSide.style.transform = `rotate(180deg)`;
-                    numb.innerText = "100%";
-                    clearInterval(local_progress);
-                    progressBar_rightSide.classList.remove("notransition");
-                    populate_existing_folders(datasetStructureJSONObj);
-                    populate_existing_metadata(sodaJSONObj);
-                    $("#para-continue-location-dataset-getting-started").text(
-                      "Please continue below."
-                    );
-                    $("#nextBtn").prop("disabled", false);
-                    // log the success to analytics
-                    logMetadataForAnalytics(
-                      "Success",
-                      PrepareDatasetsAnalyticsPrefix.CURATE,
-                      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-                      Actions.EXISTING,
-                      Destinations.LOCAL
-                    );
-                    setTimeout(() => {
-                      document.getElementById("loading_local_dataset").style.display = "none";
-                    }, 1000);
-                  }
-                } catch (error) {
-                  clientError(error);
-                  clearInterval(local_progress);
-                }
-              }
               //create setInterval variable that will keep track of the iterated items
+              local_progress = setInterval(progressReport, 500);
+
+              try {
+                let importLocalDatasetResponse = await client.post(
+                  `/organize_datasets/datasets/import`,
+                  {
+                    sodajsonobject: sodaJSONObj,
+                    root_folder_path: root_folder_path,
+                    irregular_folders: irregularFolderArray,
+                    replaced: replaced,
+                  },
+                  { timeout: 0 }
+                );
+                let { data } = importLocalDatasetResponse;
+                sodaJSONObj = data;
+                datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
+              } catch (error) {
+                clientError(error);
+                clearInterval(local_progress);
+              }
             });
           } else {
-            document.getElementById("loading_local_dataset").style.display = "block";
-            progressBar_rightSide = document.getElementById("left-side_less_than_50");
-            progressBar_leftSide = document.getElementById("right-side_greater_than_50");
+            // Reset the progress bar
             progressBar_leftSide.style.transform = `rotate(0deg)`;
             progressBar_rightSide.style.transform = `rotate(0deg)`;
-            let numb = document.getElementById("local_dataset_number");
             numb.innerText = "0%";
 
-            action = "";
+            // Show the progress bar
+            document.getElementById("loading_local_dataset").style.display = "block";
+
+            // Show file path to user in the input box
             sodaJSONObj["starting-point"]["local-path"] = filepath[0];
             let root_folder_path = $("#input-destination-getting-started-locally").attr(
               "placeholder"
             );
 
-            let percentage_amount = 0;
-            let local_progress = setInterval(progressReport, 500);
-            async function progressReport() {
-              try {
-                let monitorProgressResponse = await client.get(
-                  `/organize_datasets/datasets/import/progress`
-                );
-
-                let { data } = monitorProgressResponse;
-                percentage_amount = data["progress_percentage"].toFixed(2);
-                finished = data["create_soda_json_completed"];
-                progressBar_rightSide = document.getElementById("left-side_less_than_50");
-                progressBar_leftSide = document.getElementById("right-side_greater_than_50");
-
-                numb.innerText = percentage_amount + "%";
-                if (percentage_amount <= 50) {
-                  progressBar_rightSide.style.transform = `rotate(${
-                    percentage_amount * 0.01 * 360
-                  }deg)`;
-                } else {
-                  progressBar_rightSide.style.transition = "";
-                  progressBar_rightSide.classList.add("notransition");
-                  progressBar_rightSide.style.transform = `rotate(180deg)`;
-                  progressBar_leftSide.style.transform = `rotate(${
-                    percentage_amount * 0.01 * 180
-                  }deg)`;
-                }
-                if (finished === 1) {
-                  progressBar_leftSide.style.transform = `rotate(180deg)`;
-                  numb.innerText = "100%";
-
-                  clearInterval(local_progress);
-                  progressBar_rightSide.classList.remove("notransition");
-                  populate_existing_folders(datasetStructureJSONObj);
-                  populate_existing_metadata(sodaJSONObj);
-                  $("#para-continue-location-dataset-getting-started").text(
-                    "Please continue below."
-                  );
-                  $("#nextBtn").prop("disabled", false);
-                  // log the success to analytics
-                  logMetadataForAnalytics(
-                    "Success",
-                    PrepareDatasetsAnalyticsPrefix.CURATE,
-                    AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-                    Actions.EXISTING,
-                    Destinations.LOCAL
-                  );
-                  setTimeout(() => {
-                    document.getElementById("loading_local_dataset").style.display = "none";
-                  }, 1000);
-                }
-              } catch (error) {
-                clientError(error);
-                clearInterval(local_progress);
-              }
-            }
+            //create setInterval variable that will keep track of the iterated items
+            local_progress = setInterval(progressReport, 500);
 
             try {
               let importLocalDatasetResponse = await client.post(
@@ -7232,14 +7346,15 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
                 { timeout: 0 }
               );
               let { data } = importLocalDatasetResponse;
-              sodajsonobject = data;
-              datasetStructureJSONObj = sodajsonobject["dataset-structure"];
+              sodaJSONObj = data;
+              datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
             } catch (error) {
               clientError(error);
               clearInterval(local_progress);
             }
           }
         } else {
+          // Invalid dataset due to non-SPARC folder structure
           Swal.fire({
             icon: "warning",
             html: `This folder seem to have non-SPARC folders. Please select a folder that has a valid SPARC dataset structure.
@@ -7674,6 +7789,8 @@ async function initiate_generate() {
 
   let organizeDataset = document.getElementById("organize_dataset_btn");
   let uploadLocally = document.getElementById("upload_local_dataset_btn");
+  let curateNewDatasetButton = document.getElementById("guided-button-start-new-curate");
+  let curateExistingDatasetButton = document.getElementById("guided-button-start-existing-curate");
   let organizeDataset_option_buttons = document.getElementById("div-generate-comeback");
   let statusBarContainer = document.getElementById("div-new-curate-progress");
   var statusBarClone = statusBarContainer.cloneNode(true);
@@ -7687,8 +7804,16 @@ async function initiate_generate() {
   statusMeter.setAttribute("id", "nav-progress-bar-new-curate");
   statusMeter.className = "nav-status-bar";
   statusBarClone.appendChild(returnButton);
+
+  // Disable the Organize Dataset and Upload Locally buttons
   uploadLocally.disabled = true;
   organizeDataset.disabled = true;
+  curateNewDatasetButton.disabled = true;
+  curateExistingDatasetButton.disabled = true;
+
+  // Add disabled appearance to the buttons
+  curateExistingDatasetButton.className = "button-prompt-container curate-disabled-button";
+  curateNewDatasetButton.className = "button-prompt-container curate-disabled-button";
   organizeDataset.className = "disabled-content-button";
   uploadLocally.className = "disabled-content-button";
   organizeDataset.style = "background-color: #f6f6f6;  border: #fff;";
@@ -7866,16 +7991,25 @@ async function initiate_generate() {
         false
       );
 
+      //Enable the buttons
       organizeDataset_option_buttons.style.display = "flex";
       organizeDataset.disabled = false;
+      curateExistingDatasetButton.disabled = false;
+      curateNewDatasetButton.disabled = false;
+      uploadLocally.disabled = false;
+      $("#sidebarCollapse").prop("disabled", false);
+
+      //Add the original classes back to the buttons
+      curateExistingDatasetButton.className = "button-prompt-container";
+      curateNewDatasetButton.className = "button-prompt-container";
       organizeDataset.className = "content-button is-selected";
       organizeDataset.style = "background-color: #fff";
-      $("#sidebarCollapse").prop("disabled", false);
-      document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
-        "<span style='color: red;'>" + emessage + "</span>";
-      uploadLocally.disabled = false;
       uploadLocally.className = "content-button is-selected";
       uploadLocally.style = "background-color: #fff";
+
+      document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
+        "<span style='color: red;'>" + emessage + "</span>";
+
       Swal.fire({
         icon: "error",
         title: "An Error Occurred While Uploading Your Dataset",
@@ -7936,13 +8070,22 @@ async function initiate_generate() {
       document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
         "<span style='color: red;'>" + emessage + "</span>";
       log.error(error);
+
+      //Enable the buttons (organize datasets, upload locally, curate existing dataset, curate new dataset)
       organizeDataset_option_buttons.style.display = "flex";
       organizeDataset.disabled = false;
+      curateExistingDatasetButton.disabled = false;
+      curateNewDatasetButton.disabled = false;
+      uploadLocally.disabled = false;
+
+      //Add the original classes back to the buttons
+      curateExistingDatasetButton.className = "button-prompt-container";
+      curateNewDatasetButton.className = "button-prompt-container";
       organizeDataset.className = "content-button is-selected";
       organizeDataset.style = "background-color: #fff";
-      uploadLocally.disabled = false;
       uploadLocally.className = "content-button is-selected";
       uploadLocally.style = "background-color: #fff";
+
       Swal.fire({
         icon: "error",
         title: "An Error Occurred While Uploading Your Dataset",
@@ -7968,13 +8111,22 @@ async function initiate_generate() {
           document.getElementById("generate-dataset-progress-tab").style.display = "flex";
         }
       });
+
+      //Enable the buttons (organize datasets, upload locally, curate existing dataset, curate new dataset)
       organizeDataset_option_buttons.style.display = "flex";
       organizeDataset.disabled = false;
+      uploadLocally.disabled = false;
+      curateExistingDatasetButton.disabled = false;
+      curateNewDatasetButton.disabled = false;
+
+      //Add the original classes back to the buttons
+      curateExistingDatasetButton.className = "button-prompt-container";
+      curateNewDatasetButton.className = "button-prompt-container";
       organizeDataset.className = "content-button is-selected";
       organizeDataset.style = "background-color: #fff";
-      uploadLocally.disabled = false;
       uploadLocally.className = "content-button is-selected";
       uploadLocally.style = "background-color: #fff";
+
       console.error(error);
       //Clear the interval to stop the generation of new sweet alerts after intitial error
       clearInterval(timerProgress);
@@ -8045,24 +8197,38 @@ async function initiate_generate() {
       statusBarClone.remove();
       sparc_container.style.display = "inline";
       if (successful === true) {
-        organizeDataset_option_buttons.style.display = "flex";
+        //Enable the buttons (organize datasets, upload locally, curate existing dataset, curate new dataset)
         organizeDataset.disabled = false;
+        curateNewDatasetButton.disabled = false;
+        curateExistingDatasetButton.disabled = false;
+        uploadLocally.disabled = false;
+
+        // Add the original classes back to the buttons
+        organizeDataset_option_buttons.style.display = "flex";
+        curateExistingDatasetButton.className = "button-prompt-container";
+        curateNewDatasetButton.className = "button-prompt-container";
         organizeDataset.className = "content-button is-selected";
         organizeDataset.style = "background-color: #fff";
-        uploadLocally.disabled = false;
         uploadLocally.className = "content-button is-selected";
         uploadLocally.style = "background-color: #fff";
+
         uploadComplete.open({
           type: "success",
           message: "Dataset created successfully",
         });
       } else {
-        //enable buttons anyways
+        //enable buttons anyways (organize datasets, upload locally, curate existing dataset, curate new dataset)
         organizeDataset_option_buttons.style.display = "flex";
         organizeDataset.disabled = false;
+        curateNewDatasetButton.disabled = false;
+        curateExistingDatasetButton.disabled = false;
+        uploadLocally.disabled = false;
+
+        // Add the original classes back to the buttons
+        curateExistingDatasetButton.className = "button-prompt-container";
+        curateNewDatasetButton.className = "button-prompt-container";
         organizeDataset.className = "content-button is-selected";
         organizeDataset.style = "background-color: #fff";
-        uploadLocally.disabled = false;
         uploadLocally.className = "content-button is-selected";
         uploadLocally.style = "background-color: #fff";
       }
@@ -8385,14 +8551,20 @@ const curation_consortium_check = async (mode = "") => {
     } else {
       //needs to be replaced
       try {
-        let bf_get_permissions = await client.get(`/manage_datasets/bf_dataset_permissions`, {
-          params: {
-            selected_account: selected_account,
-            selected_dataset: selected_dataset,
-          },
-        });
-        // let permissions = bf_get_permissions.data.permissions;
-        let team_ids = bf_get_permissions.data.team_ids;
+        let bf_get_permissions = await api.getDatasetPermissions(
+          selected_account,
+          selected_dataset,
+          true
+        );
+        // let bf_get_permissions = await client.get(`/manage_datasets/bf_dataset_permissions`, {
+        //   params: {
+        //     selected_account: selected_account,
+        //     selected_dataset: selected_dataset,
+        //   },
+        // });
+
+        let permissions = bf_get_permissions.permissions;
+        let team_ids = bf_get_permissions.team_ids;
 
         let curation_permission_satisfied = false;
         let consortium_permission_satisfied = false;
@@ -8994,7 +9166,7 @@ function logCurationForAnalytics(
   }
 }
 
-function getMetadataFileNameFromStatus(metadataFileStatus) {
+const getMetadataFileNameFromStatus = (metadataFileStatus) => {
   // get the UI text that displays the file path
   let filePath = metadataFileStatus.text();
 
@@ -9004,18 +9176,18 @@ function getMetadataFileNameFromStatus(metadataFileStatus) {
   fileName = fileName.slice(0, fileName.indexOf("."));
 
   return fileName;
-}
+};
 
-function determineLocationFromStatus(metadataFileStatus) {
+const determineLocationFromStatus = (metadataFileStatus) => {
   let filePath = metadataFileStatus.text();
 
   // determine if the user imported from Pennsieve or Locally
   let pennsieveFile = filePath.toUpperCase().includes("Pennsieve".toUpperCase());
 
   return pennsieveFile;
-}
+};
 
-function logGeneralOperationsForAnalytics(category, analyticsPrefix, granularity, actions) {
+const logGeneralOperationsForAnalytics = (category, analyticsPrefix, granularity, actions) => {
   // if no actions to log return
   if (!actions) {
     return;
@@ -9045,68 +9217,6 @@ function logGeneralOperationsForAnalytics(category, analyticsPrefix, granularity
       ipcRenderer.send("track-event", `${category}`, actionName, defaultBfDatasetId);
     }
   }
-}
-
-/**
- *
- * @param {string} datasetIdOrName - The currently selected dataset - name or its ID
- * @returns statuses - A status object that details the state of each pre-publishing checklist item for the given dataset and user
- */
-const getPrepublishingChecklistStatuses = async (datasetIdOrName) => {
-  // check that a dataset name or id is provided
-  if (!datasetIdOrName || datasetIdOrName === "") {
-    throw new Error(
-      "Error: Must provide a valid dataset to log status of pre-publishing checklist items from."
-    );
-  }
-
-  // construct the statuses object
-  const statuses = {};
-
-  let dataset = await api.getDataset(defaultBfDatasetId);
-
-  // get the description - aka subtitle (unfortunate naming), tags, banner image URL, collaborators, and license
-  const { description, tags, license } = dataset["content"];
-
-  // set the subtitle's status
-  statuses.subtitle = description && description.length ? true : false;
-
-  let readme = await api.getDatasetReadme(defaultBfAccount, datasetIdOrName);
-
-  // set the readme's status
-  statuses.readme = readme && readme.length >= 1 ? true : false;
-
-  // set tags's status
-  statuses.tags = tags && tags.length ? true : false;
-
-  let bannerImageURL = await api.getDatasetBannerImageURL(defaultBfAccount, defaultBfDataset);
-
-  // set the banner image's url status
-  statuses.bannerImageURL = bannerImageURL && bannerImageURL.length ? true : false;
-
-  // set the license's status
-  statuses.license = license && license.length ? true : false;
-
-  // declare the orcidId
-  let orcidId;
-
-  // get the user's information
-  let user = await api.getUserInformation();
-
-  // get the orcid object out of the user information
-  let orcidObject = user.orcid;
-
-  // check if the owner has an orcid id
-  if (orcidObject) {
-    orcidId = orcidObject.orcid;
-  } else {
-    orcidId = undefined;
-  }
-
-  // the user has an ORCID iD if the property is defined and non-empty
-  statuses.ORCID = orcidId && orcidId.length ? true : false;
-
-  return statuses;
 };
 
 /*
@@ -9493,23 +9603,23 @@ function gatherLogs() {
   });
 }
 
-function gettingStarted() {
+const gettingStarted = () => {
   let getting_started = document.getElementById("main_tabs_view");
   getting_started.click();
-}
+};
 
-function sodaVideo() {
+const sodaVideo = () => {
   document.getElementById("overview-column-1").blur();
   shell.openExternal("https://docs.sodaforsparc.io/docs/getting-started/user-interface");
-}
+};
 
-function directToDocumentation() {
+const directToDocumentation = () => {
   shell.openExternal(
     "https://docs.sodaforsparc.io/docs/getting-started/organize-and-submit-sparc-datasets-with-soda"
   );
   document.getElementById("overview-column-2").blur();
   // window.open('https://docs.sodaforsparc.io', '_blank');
-}
+};
 const directToGuidedMode = () => {
   const guidedModeLinkButton = document.getElementById("guided_mode_view");
   guidedModeLinkButton.click();
@@ -9528,65 +9638,6 @@ document
 document
   .getElementById("home-button-free-form-mode-link")
   .addEventListener("click", directToFreeFormMode);
-
-let docu_lottie_section = document.getElementById("documentation-section");
-let doc_lottie = document.getElementById("documentation-lottie");
-
-let contact_section = document.getElementById("contact-us-section");
-let contact_lottie_container = document.getElementById("contact-us-lottie");
-
-var contact_lottie_animation = lottie.loadAnimation({
-  container: contact_lottie_container,
-  animationData: contact_lottie /*(json js variable, (view src/assets/lotties)*/,
-  renderer: "svg",
-  loop: true /*controls looping*/,
-  autoplay: true,
-});
-contact_lottie_animation.pause();
-var documentation_lottie = lottie.loadAnimation({
-  container: doc_lottie,
-  animationData: docu_lottie /*(json js variable, (view src/assets/lotties)*/,
-  renderer: "svg",
-  loop: true /*controls looping*/,
-  autoplay: true,
-});
-documentation_lottie.pause();
-
-var documentation_lottie_observer = new MutationObserver(function (mutations) {
-  mutations.forEach(function (mutation) {
-    var attributeValue = $(mutation.target).prop(mutation.attributeName);
-    if (attributeValue.includes("is-shown") == true) {
-      //play lottie
-      documentation_lottie.play();
-    } else {
-      // lottie.stop(documentation_lottie);
-      documentation_lottie.stop();
-    }
-  });
-});
-
-var contact_us_lottie_observer = new MutationObserver(function (mutations) {
-  mutations.forEach(function (mutation) {
-    var attributeValue = $(mutation.target).prop(mutation.attributeName);
-    if (attributeValue.includes("is-shown") == true) {
-      //play lottie
-      contact_lottie_animation.play();
-    } else {
-      contact_lottie_animation.stop();
-      // lottie.stop(contact_lottie_animation);
-    }
-  });
-});
-
-documentation_lottie_observer.observe(docu_lottie_section, {
-  attributes: true,
-  attributeFilter: ["class"],
-});
-
-contact_us_lottie_observer.observe(contact_section, {
-  attributes: true,
-  attributeFilter: ["class"],
-});
 
 tippy("#datasetPathDisplay", {
   placement: "top",

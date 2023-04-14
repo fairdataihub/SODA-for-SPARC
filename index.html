@@ -5,18 +5,6 @@
 
     <title>SODA - Keep Calm and Curate</title>
 
-    <link rel="stylesheet" href="assets/css/variables.css" />
-    <link rel="stylesheet" href="assets/css/nativize.css" />
-    <link rel="stylesheet" href="assets/css/global.css" />
-    <link rel="stylesheet" href="assets/css/nav.css" />
-    <link rel="stylesheet" href="assets/css/section.css" />
-    <link rel="stylesheet" href="assets/css/demo.css" />
-    <link rel="stylesheet" href="assets/css/individualtab.css" />
-    <link rel="stylesheet" href="assets/css/main_tabs.css" />
-    <link rel="stylesheet" href="node_modules/cropperjs/dist/cropper.css" />
-    <link rel="stylesheet" href="node_modules/notyf/notyf.min.css" />
-    <link rel="stylesheet" href="assets/css/spur.css" />
-    <link rel="stylesheet" href="assets/css/main.css" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
@@ -39,7 +27,28 @@
     <link rel="stylesheet" href="node_modules/tippy.js/dist/tippy.css" />
     <link rel="stylesheet" href="node_modules/tippy.js/themes/light.css" />
     <link rel="stylesheet" href="node_modules/intro.js/minified/introjs.min.css" />
+    <link rel="stylesheet" href="assets/css/animations.css" />
+    <link rel="stylesheet" href="assets/css/variables.css" />
+    <link rel="stylesheet" href="assets/css/helperClasses.css" />
+    <link rel="stylesheet" href="assets/css/spur.css" />
+    <link rel="stylesheet" href="assets/css/buttons.css" />
+    <link rel="stylesheet" href="assets/css/fontStyling.css" />
+    <link rel="stylesheet" href="assets/css/containers.css" />
+    <link rel="stylesheet" href="assets/css/folder_files.css" />
+    <!-- <link rel="stylesheet" href="assets/css/"> -->
+    <link rel="stylesheet" href="assets/css/overview_page.css" />
+    <link rel="stylesheet" href="assets/css/doc_contact_pages.css" />
+    <link rel="stylesheet" href="assets/css/nativize.css" />
+    <link rel="stylesheet" href="assets/css/nav.css" />
+    <link rel="stylesheet" href="assets/css/section.css" />
+    <link rel="stylesheet" href="assets/css/demo.css" />
+    <link rel="stylesheet" href="assets/css/individualtab.css" />
+    <link rel="stylesheet" href="assets/css/main_tabs.css" />
+    <link rel="stylesheet" href="node_modules/cropperjs/dist/cropper.css" />
+    <link rel="stylesheet" href="node_modules/notyf/notyf.min.css" />
+    <link rel="stylesheet" href="assets/css/main.css" />
     <link rel="stylesheet" href="assets/css/guided.css" />
+    <link rel="stylesheet" href="assets/css/global.css" />
 
     <link rel="stylesheet" href="https://jsuites.net/v4/jsuites.css" type="text/css" />
     <link rel="stylesheet" href="https://bossanova.uk/jspreadsheet/v4/jexcel.css" type="text/css" />
@@ -57,36 +66,18 @@
     <link rel="import" href="sections/prepare_metadata/create_manifest.html" />
     <link rel="import" href="sections/curate/curate.html" />
     <link rel="import" href="sections/main_tabs/main_tabs.html" />
-    <link rel="import" href="sections/documentation/documentation.html" />
     <link rel="import" href="sections/validate/validate_dataset.html" />
-    <link rel="import" href="sections/contact-us/contact_us.html" />
     <link rel="import" href="sections/guided_mode/guided_curate_dataset.html" />
+    <link rel="import" href="sections/documentation/documentation.html" />
+    <link rel="import" href="sections/contact-us/contact_us.html" />
     <script src="./assets/lotties/license-lottie.js" type="text/javascript"></script>
     <script src="./assets/lotties/overview-lotties.js" type="text/javascript"></script>
     <script src="./assets/lotties/documentation-lotties.js" type="text/javascript"></script>
     <script src="./assets/lotties/contact-us-lotties.js" type="text/javascript"></script>
-
-    <style>
-      #notification {
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        width: 288px;
-        padding: 20px;
-        z-index: 10000000;
-        border-radius: 5px;
-        background-color: white;
-        box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-      }
-
-      #version {
-        white-space: nowrap;
-      }
-
-      .hidden {
-        display: none;
-      }
-    </style>
+    <script>
+      require("./assets/imports"); // Imports html files into app
+      require("./assets/normalize-shortcuts"); // For normalizing shortcuts across OS
+    </script>
   </head>
 
   <body>
@@ -106,13 +97,8 @@
               src="assets/img/logo-new-green.png"
             />
             <h3
-              style="
-                font-size: 1.5rem;
-                color: var(--color-light-green);
-                width: auto;
-                text-align: center;
-                margin-top: 3px;
-              "
+              class="text-center large w-auto"
+              style="color: var(--color-light-green); margin-top: 3px"
             >
               SODA<br />
               <span id="version" style="font-size: 14px"></span>
@@ -120,7 +106,11 @@
           </div>
           <!-- Sidebar Links -->
           <ul class="list-unstyled components">
-            <li>
+            <!-- 
+              Overview page is temporarily hidden until redsign occurs 
+              (issue with lottie containers looking like buttons) 
+            -->
+            <li style="display: none">
               <a href="#" data-section="getting_started" id="getting_starting_tab">
                 <svg
                   data-section="getting_started"
@@ -151,18 +141,18 @@
                   fill="white"
                   class="bi bi-compass-fill"
                   viewBox="0 0 16 16"
-                  style="margin-right: 30px; margin-bottom: -5px"
+                  style="margin-right: 27px; margin-bottom: -5px"
                 >
                   <path
                     d="M8 16.016a7.5 7.5 0 0 0 1.962-14.74A1 1 0 0 0 9 0H7a1 1 0 0 0-.962 1.276A7.5 7.5 0 0 0 8 16.016zm6.5-7.5a6.5 6.5 0 1 1-13 0 6.5 6.5 0 0 1 13 0z"
                   ></path>
                   <path d="M6.94 7.44l4.95-2.83-2.83 4.95-4.949 2.83 2.828-4.95z"></path>
                 </svg>
-                Guided Mode
+                Curate and Share
               </a>
             </li>
 
-            <li>
+            <li style="display: none">
               <a href="#" data-section="main_tabs" id="main_tabs_view">
                 <svg
                   style="margin-right: 30px; margin-bottom: -5px"
@@ -231,7 +221,7 @@
         </div>
         <div>
           <div id="sparc-logo-container" class="sparc-logo">
-            <h4 style="text-align-last: center; color: black; margin-bottom: 4px">For</h4>
+            <h4 class="text-black mb-1 text-center">For</h4>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -278,15 +268,29 @@
     </nav>
 
     <nav id="guided-nav" style="display: none" class="guided--nav">
-      <img class="nav-center-logo-image" src="assets/img/logo-new-green.png" />
-      <h1 class="guided--text-sub-step mb-0 mt-0">Guided Mode</h1>
+      <img class="w-75" src="assets/img/logo-soda1024.png" />
+      <label
+        class="guided--form-label centered mt-lg"
+        style="border-bottom: 1px solid var(--color-light-green); width: auto"
+      >
+        Curent dataset
+      </label>
       <p
-        class="guided--help-text mb-0 mt-md"
-        style="border-bottom: 1px solid var(--color-light-green)"
+        class="help-text text-center ellipsis-after-two-lines"
+        id="guided-navbar-dataset-name-display"
+      ></p>
+
+      <label
+        class="guided--form-label centered mt-lg"
+        style="
+          border-bottom: 1px solid var(--color-light-green);
+          margin-bottom: 0.5rem;
+          width: auto;
+        "
         id="guided-page-navigation-header"
       >
-        <b>Page navigation</b>
-      </p>
+        Page navigation
+      </label>
 
       <ul id="guided-nav-items" class="guided--container-nav-items"></ul>
     </nav>
@@ -308,22 +312,13 @@
     <script src="https://bossanova.uk/jspreadsheet/v4/jexcel.js"></script>
 
     <script>
-      require("./assets/imports"); // Imports html files into app
-      // require("./assets/ex-links"); // Opens url into external chrome tab instead of in the app
-      // require("./assets/nav"); // Side navigation menu control
-      // require("./assets/demo-btns");
-      require("./assets/normalize-shortcuts"); // For normalizing shortcuts across OS
-    </script>
-
-    <script>
       $(document).ready(() => {
         $("#sidebarCollapse").on("click", function () {
           $("#main-nav").toggleClass("active");
           $(this).toggleClass("active");
           $(".section").toggleClass("fullShown");
         });
-      });
-      $(document).ready(() => {
+
         $("a").on("click", function () {
           $($(this).parents()[1]).find("a").removeClass("is-selected");
           $(this).addClass("is-selected");

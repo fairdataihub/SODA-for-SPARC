@@ -303,7 +303,7 @@ function initialize() {
     splash.loadURL(path.join("file://", __dirname, "/splash-screen.html"));
 
     //  if main window is ready to show, then destroy the splash window and show up the main window
-    mainWindow.once("ready-to-show", () => {
+    mainWindow.webContents.once("dom-ready", () => {
       setTimeout(function () {
         splash.close();
         //mainWindow.maximize();
@@ -468,7 +468,7 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
   const windowOptions = {
     minHeight: 450,
     width: 1120,
-    height: 500,
+    height: 550,
     center: true,
     show: true,
     icon: __dirname + "/assets/menu-icon/soda_icon.png",
@@ -485,6 +485,7 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
   let spreadSheetModal = new BrowserWindow(windowOptions);
 
   spreadSheetModal.on("close", (e) => {
+    mainWindow.webContents.send("spreadsheet-reply", "");
     try {
       spreadSheetModal.destroy();
       // spreadSheetModal.close();
@@ -505,10 +506,10 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
   ipcMain.on("spreadsheet-results", async (ev, res) => {
     //send back spreadsheet data to main window
     mainWindow.webContents.send("spreadsheet-reply", res);
-
     //destroy window
     try {
       spreadSheetModal.destroy();
+      // spreadSheetModal.close();
     } catch (e) {
       console.log(e);
     }

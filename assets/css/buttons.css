@@ -1,0 +1,272 @@
+/* This is a CSS file for the button standards used throughout SODA */
+
+.content-button {
+  width: 150px;
+  height: 150px;
+  border: none;
+  background-color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-right: 20px;
+  padding-left: 20px;
+  margin-right: 10px;
+  margin-left: 10px;
+  color: var(--color-teal);
+  opacity: 1;
+  position: relative;
+  box-shadow: 0px 0px 10px #d5d5d5;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  align-items: center;
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
+}
+
+.content-button p {
+  color: #222c3c;
+  font-size: 14px;
+  margin-top: 25px;
+  font-family: "Raleway", sans-serif;
+  pointer-events: none;
+}
+
+.content-button:hover {
+  outline: none;
+  box-shadow: 0px 0px 10px 0px var(--color-light-green);
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
+}
+
+.content-button:active {
+  border: 1px solid var(--color-light-green);
+  box-shadow: 0px 0px 3px 0px var(--color-light-green);
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
+}
+
+.content-button svg {
+  margin: 0 auto;
+  pointer-events: none;
+}
+
+.content-button h2,
+.tile-button h2 {
+  color: #4d4a4a;
+  font-weight: 400;
+  font-size: 14px;
+  bottom: -1em;
+  font-family: Poppins, sans-serif;
+  pointer-events: none;
+  text-align: center;
+}
+
+.dataset-card-button-confirm {
+  background-color: var(--color-light-green) !important;
+  width: 175px !important;
+  margin: 4px;
+  margin-bottom: 15px;
+}
+
+.dataset-card-button-container.align-right {
+  align-items: flex-end;
+}
+
+.dataset-card-button-confirm {
+  background-color: var(--color-light-green) !important;
+  margin: 4px;
+  margin-bottom: 15px;
+}
+
+.guided--progress-button-share {
+  background-color: #1e90ff !important;
+  margin: 4px;
+  margin-bottom: 15px;
+  width: 252px;
+}
+
+.guided--progress-button-resume-curation {
+  background-color: var(--color-light-green) !important;
+  margin: 4px;
+  margin-bottom: 15px;
+}
+
+.guided--progress-button-resume-pennsieve {
+  background-color: #ff5722 !important;
+  margin: 4px;
+  margin-bottom: 15px;
+}
+
+.tile-button-icon {
+  height: 50px;
+  width: 50px;
+}
+
+.dataset-card-body.shrink {
+  height: auto;
+}
+
+.dataset-card {
+  width: 100%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  border: none;
+  box-shadow: 0px 0px 10px #d5d5d5;
+  margin: 10px;
+  padding: 10px;
+  position: relative;
+}
+
+.dataset-card-row {
+  display: flex;
+  flex-grow: 1;
+  align-items: center;
+  justify-content: center;
+}
+
+.dataset-card-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 5px 10px;
+}
+
+.dataset-card-body {
+  display: flex;
+  height: 80px;
+  flex-grow: 1;
+  margin: 5px;
+  margin-left: 12px;
+  flex-direction: column;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+}
+
+.dataset-card-clock-icon {
+  margin: 0px;
+  color: #999;
+  font-weight: 600;
+  font-size: 12px !important;
+  width: auto;
+}
+
+.prepublishing-item-button {
+  box-shadow: 0 0 0 1px var(--color-light-green) inset !important;
+  border: none;
+  border-radius: 0.28571429rem;
+  color: var(--color-light-green) !important;
+  background: 0 0;
+  height: 2rem;
+  width: 12rem;
+}
+
+.prepublishing-item-button:hover {
+  box-shadow: 0px 0px 4px var(--color-light-green) !important;
+}
+
+.dataset-card-button-delete {
+  width: auto;
+  text-decoration: underline;
+  cursor: pointer;
+  margin: 0px;
+  color: black;
+  font-weight: 600;
+  font-size: 14px !important;
+}
+
+.disabled-content-button {
+  width: 150px;
+  height: 150px;
+  border: none;
+  background-color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 5px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-right: 20px;
+  padding-left: 20px;
+  margin-right: 10px;
+  margin-left: 10px;
+  color: var(--color-teal);
+  opacity: 1;
+  position: relative;
+  box-shadow: 0px 0px 10px #d5d5d5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.25s linear;
+  -webkit-transition: all 0.25s linear;
+}
+
+.disabled-content-button h2 {
+  color: #4d4a4a;
+  font-weight: 400;
+  font-size: 14px;
+  bottom: -1em;
+  font-family: "Raleway", sans-serif;
+  pointer-events: none;
+  text-align: center;
+  margin-top: 1em;
+}
+
+.curate-disabled-button {
+  background: #f6f6f6;
+  background-color: #f6f6f6;
+  color: #4d4a4a;
+  overflow: hidden;
+  cursor: initial !important;
+}
+
+.curate-disabled-button:hover {
+  box-shadow: 0px 0px 10px #d5d5d5 !important;
+}
+
+.disabled-generate-button {
+  background: #f6f6f6 !important;
+  margin: 5px;
+  width: 120px;
+  height: 40px;
+  font-size: 15px;
+  border: none !important;
+  border-radius: 8px;
+  font-weight: 600;
+  position: relative;
+  overflow: hidden;
+  cursor: initial !important;
+}
+
+.disabled-generate-button:hover {
+  box-shadow: 0px 0px 10px #d5d5d5 !important;
+}
+
+/* Footer buttons */
+
+.save-and-exit-button {
+  width: 160px !important;
+  font-weight: 600;
+  color: var(--color-light-green) !important;
+  box-shadow: 0 0 0 1px var(--color-light-green) inset !important;
+  cursor: pointer !important;
+  background: #fff;
+}
+
+.start-over-button {
+  background-color: #fff;
+  color: #b80d49;
+  border: 1px solid #b80d49;
+  font-weight: 600;
+  padding: 5px;
+
+  margin-left: 10px;
+  right: 10px;
+  margin-bottom: 10px;
+  width: 135px;
+}

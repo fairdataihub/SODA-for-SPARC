@@ -75,6 +75,26 @@ PENNSIEVE_URL = "https://api.pennsieve.io"
 from namespaces import NamespaceEnum, get_namespace_logger
 namespace_logger = get_namespace_logger(NamespaceEnum.MANAGE_DATASETS)
 
+METADATA_FILES_SPARC = [
+        "submission.xlsx",
+        "submission.csv",
+        "submission.json",
+        "dataset_description.xlsx",
+        "dataset_description.csv",
+        "dataset_description.json",
+        "subjects.xlsx",
+        "subjects.csv",
+        "subjects.json",
+        "samples.xlsx",
+        "samples.csv",
+        "samples.json",
+        "README.txt",
+        "CHANGES.txt",
+        "code_description.xlsx",
+        "inputs_metadata.xlsx",
+        "outputs_metadata.xlsx",
+    ]
+
 ### Internal functions
 def TZLOCAL():
     return datetime.now(timezone.utc).astimezone().tzinfo
@@ -573,11 +593,13 @@ def create_soda_json_object_backend(
     soda_json_structure, root_folder_path, irregularFolders, replaced
 ):
     """
-    Function for importing files from local machine into json structure
+    This function is meant for importing local datasets into SODA.
+    It creates a json object with the structure of the dataset.
     """
     global create_soda_json_progress  # amount of items counted during recursion
     global create_soda_json_total_items  # counts the total items in folder
     global create_soda_json_completed  # completed progress is either 0 or 1
+    global METADATA_FILES_SPARC
 
     high_level_sparc_folders = [
         "code",
@@ -603,21 +625,21 @@ def create_soda_json_object_backend(
 
         lastSlash = folder_path.rfind("/") + 1
         folder_name = folder_path[lastSlash:]
-        if folder_name in replaced:
-            folder_name = (
-                folder_path[:lastSlash]
-                + dataset_structure[folder_name]["original-name"]
-            )
-        # finds the last / in the path and that is the folder name
+
+        if folder_name in replaced.keys():
+            folder_name = replaced[folder_name]
+
+        # Check if folder is in irregular folders
         if folder_path in irregularFolders:
             index_check = irregularFolders.index(folder_path)
-            modified_name = replaced[index_check]
+            modified_name = replaced[os.path.basename(folder_path)]
             folder_path = irregularFolders[index_check]
         entries = os.listdir(folder_path)
         for entry in entries:
             gevent.sleep(0)
-            check_path = folder_path + "/" + entry
-            if os.path.isfile(check_path) is True:
+            item_path = os.path.normpath(os.path.join(folder_path, entry))
+
+            if os.path.isfile(item_path) is True:
                 # check manifest to add metadata
                 if entry[0:1] != ".":
                     create_soda_json_progress += 1
@@ -643,7 +665,7 @@ def create_soda_json_object_backend(
                                         extra_columns = True
                                         extra_columns_dict = dict(itertools.islice(key.items(), 5, len(key)))
                                     # description metadata
-                                    if key["filename"] in check_path:
+                                    if key["filename"] in item_path:
                                         if key["description"] != "":
                                             manifest_object["description"] = key[
                                                 "description"
@@ -718,7 +740,7 @@ def create_soda_json_object_backend(
                     # create json
                     if "extra_columns" in manifest_object:
                         dataset_structure["files"][entry] = {
-                            "path": check_path,
+                            "path": item_path,
                             "type": "local",
                             "action": ["existing"],
                             "description": manifest_object["description"],
@@ -727,22 +749,22 @@ def create_soda_json_object_backend(
                         }
                     else:
                         dataset_structure["files"][entry] = {
-                            "path": check_path,
+                            "path": item_path,
                             "type": "local",
                             "action": ["existing"],
                             "description": manifest_object["description"],
                             "additional-metadata": manifest_object["additional-metadata"],
                         }
-            elif os.path.isdir(check_path) is True:
+            elif os.path.isdir(item_path) is True:
                 create_soda_json_progress += 1
-                if check_path in irregularFolders:
-                    index_check = irregularFolders.index(check_path)
-                    modified_name = replaced[index_check]
+                if item_path in irregularFolders:
+                    index_check = irregularFolders.index(item_path)
+                    modified_name = replaced[os.path.basename(item_path)]
 
                     dataset_structure["folders"][modified_name] = {
                         "folders": {},
                         "files": {},
-                        "path": check_path,
+                        "path": item_path,
                         "type": "local",
                         "action": ["existing"],
                         "original-name": entry,
@@ -762,7 +784,7 @@ def create_soda_json_object_backend(
                     dataset_structure["folders"][entry] = {
                         "folders": {},
                         "files": {},
-                        "path": check_path,
+                        "path": item_path,
                         "type": "local",
                         "action": ["existing"],
                     }
@@ -784,14 +806,18 @@ def create_soda_json_object_backend(
             if Dir[0:1] != "." and Dir[0:8] != "manifest":
                 create_soda_json_total_items += 1
         for fileName in filenames:
-            # goes through all files and does not count hidden files
-            if fileName[0:1] != ".":
+            if root == root_folder_path and fileName in METADATA_FILES_SPARC:
+                # goes through all files and does not count hidden files
                 create_soda_json_total_items += 1
+            else:
+                if fileName[0:1] != ".":
+                    create_soda_json_total_items += 1
 
     # reading high level folders
     create_soda_json_completed = 0
     create_soda_json_progress = 0
     entries = os.listdir(root_folder_path)
+
 
     for entry in entries:
         # begin going through high level folders
@@ -799,7 +825,7 @@ def create_soda_json_object_backend(
         item_path = root_folder_path + "/" + entry
         # high level folder paths
         if os.path.isfile(item_path) is True:
-            if entry[0:1] != ".":
+            if entry[0:1] != "." and entry in METADATA_FILES_SPARC:
                 # is not a hidden folder
                 create_soda_json_progress += 1
                 soda_json_structure["metadata-files"][entry] = {

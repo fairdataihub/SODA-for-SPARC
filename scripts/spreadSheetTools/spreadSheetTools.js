@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
         tableOverflow: true,
         lazyLoading: true,
         loadingSpin: true,
-        tableHeight: "calc(100vh - 193px)",
+        tableHeight: "calc(100vh - 190px)",
         tableWidth: "calc(100vw - 23px)",
         toolbar: [
           {
@@ -72,13 +72,14 @@ document.addEventListener("DOMContentLoaded", function () {
         margin-left: 6px;
         "><i class="jexcel_toolbar_item material-icons" data-k="undefined" data-v="undefined" id="undefined">undo</i><p style="
         margin: 0;
-        /* vertical-align: 1rem; */
+        margin-top: -.5rem;
         font-size: 14px;
         ">Undo</p></div>
         <div><i class="jexcel_toolbar_item material-icons" data-k="undefined" data-v="undefined" id="undefined">redo</i><p style="
         margin: 0;
         font-size: 14px;
         vertical-align: 1;
+        margin-top: -.5rem;
         ">Redo</p></div>
       `;
 

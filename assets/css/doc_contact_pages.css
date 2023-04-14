@@ -1,0 +1,181 @@
+/* This CSS file is for the documentation and contact us tab */
+
+.doc_header {
+  font-weight: 700;
+  font-size: 1.875rem !important;
+  line-height: 2.25rem;
+  padding-bottom: 0.25rem;
+  margin: 0;
+  padding-top: 1.25rem;
+}
+
+.docu_divide {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  height: 0;
+  color: inherit;
+  border-top-width: 1px;
+}
+
+.documentation_container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  max-height: 1000px;
+}
+
+.document_container {
+  overflow-y: auto;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.dc_con {
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.doc_container {
+  padding-right: 1.25rem;
+  padding-top: 0.5rem;
+  justify-content: center;
+  align-items: center;
+  padding: 0.75rem;
+  flex-direction: column;
+  max-width: 1024px;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.document-content {
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  height: 57%;
+  display: flex;
+  justify-content: center;
+}
+
+.direct-to-doc-btn {
+  color: #666666;
+  display: flex;
+  background: white;
+  font-weight: bold;
+  line-height: 1rem;
+  font-size: 1rem;
+  width: 18rem !important;
+  height: 3.5rem;
+  margin-right: 1rem;
+  justify-content: center;
+  align-items: center;
+  border-radius: 0.25rem;
+  border-width: 1px;
+  border-color: #b80d49;
+}
+
+.direct-to-doc-btn:hover {
+  box-shadow: 0 0 6px #b0b0b0;
+}
+
+.documentation-lottie_style {
+  --lottie-animation-container-width: 400px;
+  --lottie-animation-container-height: 400px;
+  --lottie-animation-container-background-color: transparent;
+  width: var(--lottie-animation-container-width);
+  height: var(--lottie-animation-container-height);
+  background-color: var(--lottie-animation-container-background-color);
+  overflow: hidden;
+  margin: 0px !important;
+  .view_doc_button {
+    transition-property: all;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition-duration: 150ms;
+    border-width: 1px;
+    --tw-border-opacity: 1;
+    border-color: rgb(147 197 253 / var(--tw-border-opacity));
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.25rem;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    min-width: 130px;
+    font-size: 14px;
+    font-weight: 500;
+    --tw-text-opacity: 1;
+    color: rgb(17 24 39 / var(--tw-text-opacity));
+    cursor: pointer;
+    -webkit-appearance: button;
+    background-color: transparent;
+    background-image: none;
+  }
+}
+
+.document_text {
+  font-size: 1.3rem !important;
+  color: black !important;
+  font-weight: 500;
+  margin-top: 0 !important;
+  margin-bottom: 0;
+}
+
+.docu-content-container {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.button_container_contact {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.sodaVideo-button {
+  display: flex;
+  font-size: 15px;
+  background: white;
+  width: 14rem;
+  justify-content: center;
+  justify-self: center;
+  border-radius: 0.25rem;
+  align-items: center;
+  height: 3.5rem;
+  margin-right: 1rem;
+  color: #666666;
+  border-width: 1px;
+  border-color: var(--color-accent) !important;
+  font-family: Poppins;
+}
+
+.sodaVideo-button:hover {
+  box-shadow: 0 0 6px #b0b0b0;
+}
+
+#gather-logs-btn {
+  background: var(--color-light-green);
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  width: 130px;
+  height: 38px;
+  border: none;
+  cursor: pointer !important;
+  border-radius: 4px;
+}
+
+#gather-logs-btn:hover {
+  box-shadow: 0 0 6px #b0b0b0;
+}

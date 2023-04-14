@@ -386,7 +386,7 @@ $("#button-add-permission-pi").click(async () => {
     },
   }).then(async (result) => {
     if (result.isConfirmed) {
-      log.info("Changing PI Owner of datset");
+      log.info("Changing PI Owner of dataset");
 
       Swal.fire({
         title: "Changing PI Owner of dataset",
@@ -499,7 +499,7 @@ const showCurrentPermission = async () => {
   log.info(`Requesting current permissions for ${selectedBfDataset}.`);
 
   try {
-    let permissions = await api.getDatasetPermissions(selectedBfAccount, selectedBfDataset);
+    let permissions = await api.getDatasetPermissions(selectedBfAccount, selectedBfDataset, false);
     let permissionList = "";
     let datasetOwner = "";
 
@@ -884,9 +884,9 @@ const showCurrentSubtitle = async () => {
 // Add description //
 
 const requiredSections = {
-  studyPurpose: "study purpose",
-  dataCollection: "data collection",
-  primaryConclusion: "primary conclusion",
+  studyPurpose: "Study Purpose",
+  dataCollection: "Data Collection",
+  primaryConclusion: "Primary Conclusion",
   invalidText: "invalid text",
 };
 
@@ -979,17 +979,17 @@ const showCurrentDescription = async () => {
 
   // place the text into the text area for that field
   $("#ds-description-study-purpose").val(
-    parsedReadme[requiredSections.studyPurpose].replace(/\r?\n|\r/g, "")
+    parsedReadme[requiredSections.studyPurpose].trim().replace(/\r?\n|\r/g, "")
   );
 
   // place the text into the text area for that field
   $("#ds-description-data-collection").val(
-    parsedReadme[requiredSections.dataCollection].replace(/\r?\n|\r/g, "")
+    parsedReadme[requiredSections.dataCollection].trim().replace(/\r?\n|\r/g, "")
   );
 
   // place the text into the text area for that field
   $("#ds-description-primary-conclusion").val(
-    parsedReadme[requiredSections.primaryConclusion].replace(/\r?\n|\r/g, "")
+    parsedReadme[requiredSections.primaryConclusion].trim().replace(/\r?\n|\r/g, "")
   );
 
   // check if there is any invalid text remaining
@@ -1211,20 +1211,20 @@ const createParsedReadme = (readme) => {
 
   // create the return object
   const parsedReadme = {
-    "study purpose": "",
-    "data collection": "",
-    "primary conclusion": "",
+    "Study Purpose": "",
+    "Data Collection": "",
+    "Primary Conclusion": "",
     "invalid text": "",
   };
 
   // remove the "Study Purpose" section from the readme file and place its value in the parsed readme
-  mutableReadme = stripRequiredSectionFromReadme(mutableReadme, "study purpose", parsedReadme);
+  mutableReadme = stripRequiredSectionFromReadme(mutableReadme, "Study Purpose", parsedReadme);
 
   // remove the "Data Collection" section from the readme file and place its value in the parsed readme
-  mutableReadme = stripRequiredSectionFromReadme(mutableReadme, "data collection", parsedReadme);
+  mutableReadme = stripRequiredSectionFromReadme(mutableReadme, "Data Collection", parsedReadme);
 
   // search for the "Primary Conclusion" and basic variations of spacing
-  mutableReadme = stripRequiredSectionFromReadme(mutableReadme, "primary conclusion", parsedReadme);
+  mutableReadme = stripRequiredSectionFromReadme(mutableReadme, "Primary Conclusion", parsedReadme);
 
   // remove the invalid text from the readme contents
   mutableReadme = stripInvalidTextFromReadme(mutableReadme, parsedReadme);
@@ -1241,7 +1241,7 @@ const createParsedReadme = (readme) => {
 //      parsedReadme: Optional object that gets the stripped section text if provided
 const stripRequiredSectionFromReadme = (readme, sectionName, parsedReadme = undefined) => {
   // lowercase the readme file text to avoid casing issues with pattern matching
-  let mutableReadme = readme.trim().toLowerCase();
+  let mutableReadme = readme.trim();
 
   // serch for the start of the given section -- it can have one or more whitespace between the colon
   let searchRegExp = new RegExp(`[*][*]${sectionName}[ ]*:[*][*]`);
@@ -2399,9 +2399,178 @@ const logFilesForUpload = (upload_folder_path) => {
 };
 
 $("#button-submit-dataset").click(async () => {
+  const progressfunction = () => {
+    $("#upload_local_dataset_progress_div")[0].scrollIntoView({
+      behavior: "smooth",
+      block: "start",
+    });
+
+    client
+      .get("/manage_datasets/datasets/upload_progress")
+      .then((progressResponse) => {
+        let progressData = progressResponse.data;
+        statusMessage = progressData["progress"];
+        completionStatus = progressData["submit_dataset_status"];
+        let submitprintstatus = progressData["submit_print_status"];
+        totalFileSize = progressData["total_file_size"];
+        let uploadedFileSize = progressData["upload_file_size"];
+        let fileUploadStatus = progressData["files_uploaded_status"];
+
+        if (submitprintstatus === "Uploading") {
+          $("#div-progress-submit").css("display", "block");
+
+          if (statusMessage.includes("Success: COMPLETED!")) {
+            progressBarUploadBf.value = 100;
+            cloneMeter.value = 100;
+
+            $("#para-please-wait-manage-dataset").html("");
+            $("#para-progress-bar-status").html(statusMessage + smileyCan);
+            cloneStatus.innerHTML = statusMessage + smileyCan;
+          } else {
+            var value = (uploadedFileSize / totalFileSize) * 100;
+
+            progressBarUploadBf.value = value;
+            cloneMeter.value = value;
+
+            if (totalFileSize < displaySize) {
+              var totalSizePrint = totalFileSize.toFixed(2) + " B";
+            } else if (totalFileSize < displaySize * displaySize) {
+              var totalSizePrint = (totalFileSize / displaySize).toFixed(2) + " KB";
+            } else if (totalFileSize < displaySize * displaySize * displaySize) {
+              var totalSizePrint = (totalFileSize / displaySize / displaySize).toFixed(2) + " MB";
+            } else {
+              var totalSizePrint =
+                (totalFileSize / displaySize / displaySize / displaySize).toFixed(2) + " GB";
+            }
+
+            $("#para-please-wait-manage-dataset").html("");
+            // cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%";
+            if (statusMessage.indexOf("<br")) {
+              let timeIndex = statusMessage.indexOf("<br");
+              let timePhrase = statusMessage.substring(timeIndex);
+              cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%" + timePhrase;
+            }
+            $("#para-progress-bar-status").html(
+              fileUploadStatus +
+                statusMessage +
+                "Progress: " +
+                value.toFixed(2) +
+                "%" +
+                " (total size: " +
+                totalSizePrint +
+                ")"
+            );
+          }
+        }
+      })
+      .catch((error) => {
+        clientError(error);
+        let emessage = userErrorMessage(error);
+        ipcRenderer.send(
+          "track-event",
+          "Error",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET + ` - Progress track`,
+          defaultBfDatasetId
+        );
+
+        // Enable curation buttons
+        organizeDatasetButton.disabled = false;
+        curateExistingDatasetButton.disabled = false;
+        curateNewDatasetButton.disabled = false;
+
+        curateExistingDatasetButton.className = "button-prompt-container";
+        curateNewDatasetButton.className = "button-prompt-container";
+        organizeDatasetButton.className = "btn_animated generate-btn";
+        organzieDatasetButtonDiv.className = "btn_animated-inside";
+
+        organizeDatasetButton.style =
+          "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
+
+        $("#para-progress-bar-error-status").html(
+          "<span style='color: red;'>" + emessage + sadCan + "</span>"
+        );
+        Swal.fire({
+          icon: "error",
+          title: "An Error Occurred While Uploading Your Dataset",
+          html: "Check the error text in the Upload Local Dataset's upload page to see what went wrong.",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        }).then((result) => {
+          progressClone.remove();
+          sparc_logo.style.display = "inline";
+          if (result.isConfirmed) {
+            returnPage.click();
+          }
+        });
+      });
+
+    if (completionStatus === "Done") {
+      countDone++;
+
+      if (countDone > 1) {
+        log.info("Done submit track");
+        if (success_upload === true) {
+          // Enable curation buttons
+          organizeDatasetButton.disabled = false;
+          curateNewDatasetButton.disabled = false;
+          curateExistingDatasetButton.disabled = false;
+
+          curateExistingDatasetButton.className = "button-prompt-container";
+          curateNewDatasetButton.className = "button-prompt-container";
+          organizeDatasetButton.className = "btn_animated generate-btn";
+          organzieDatasetButtonDiv.className = "btn_animated-inside";
+
+          organizeDatasetButton.style =
+            "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
+
+          // Announce success to User
+          uploadComplete.open({
+            type: "success",
+            message: "Upload to Pennsieve completed",
+          });
+          dismissStatus(progressClone.id);
+          progressClone.remove();
+          sparc_logo.style.display = "inline";
+        }
+
+        if (statusMessage.includes("Success: COMPLETED")) {
+          ipcRenderer.send(
+            "track-event",
+            "Success",
+            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
+              ` - Progress track`,
+            defaultBfDatasetId
+          );
+        }
+
+        clearInterval(timerProgress);
+
+        $("#para-please-wait-manage-dataset").html("");
+
+        $("#button-submit-dataset").prop("disabled", false);
+        $("#selected-local-dataset-submit").prop("disabled", false);
+
+        ipcRenderer.send(
+          "track-event",
+          "Success",
+          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET + ` - Progress track`,
+          defaultBfDatasetId
+        );
+      }
+    }
+  };
+
   // make the button unclickable until the preflight checks fail or pass
   $("#button-submit-dataset").attr("disabled", true);
   $("#para-please-wait-manage-dataset").html("Please wait while we verify a few things...");
+
+  // Create a clone of the progress bar for the navigation menu
   let progressSubmit = document.getElementById("div-progress-submit");
   let navContainer = document.getElementById("nav-items");
   let progressError = document.getElementById("para-progress-bar-error-status");
@@ -2414,6 +2583,8 @@ $("#button-submit-dataset").click(async () => {
   let cloneStatus = progressClone.children[2];
   var navError = progressError.cloneNode(true);
   let organizeDatasetButton = document.getElementById("button-generate");
+  let curateNewDatasetButton = document.getElementById("guided-button-start-new-curate");
+  let curateExistingDatasetButton = document.getElementById("guided-button-start-existing-curate");
   let organzieDatasetButtonDiv = organizeDatasetButton.children[0];
 
   progressClone.style =
@@ -2433,9 +2604,21 @@ $("#button-submit-dataset").click(async () => {
     returnPage.click();
   };
   progressClone.appendChild(returnButton);
+
+  // Disable the organize dataset button
+  curateNewDatasetButton.disabled = true;
+  curateExistingDatasetButton.disabled = true;
   organizeDatasetButton.disabled = true;
+
+  // Change the color of the buttons to look disabled
+  curateExistingDatasetButton.className = "button-prompt-container curate-disabled-button";
+  curateNewDatasetButton.className = "button-prompt-container curate-disabled-button";
   organizeDatasetButton.className = "disabled-generate-button";
+
   organizeDatasetButton.style = "background-color: #f6f6f6";
+
+  // curateExistingDatasetButton.className = "disabled-animated-div";
+  // curateNewDatasetButton.className = "disabled-animated-div";
   organzieDatasetButtonDiv.className = "disabled-animated-div";
 
   let supplementary_checks = await run_pre_flight_checks(false);
@@ -2456,23 +2639,21 @@ $("#button-submit-dataset").click(async () => {
   let uploadedFolders = 0;
   let uploadedFileSize = 0;
   let previousUploadedFileSize = 0;
-
-  $("#para-please-wait-manage-dataset").html("Please wait...");
-  $("#para-progress-bar-error-status").html("");
-
-  progressBarUploadBf.value = 0;
-  cloneMeter.value = 0;
-
-  $("#button-submit-dataset").prop("disabled", true);
-  $("#selected-local-dataset-submit").prop("disabled", true);
-  $("#button-submit-dataset").popover("hide");
-  $("#progress-bar-status").html("Preparing files ...");
-
   var err = false;
   var completionStatus = "Solving";
   var success_upload = true;
   var selectedbfaccount = defaultBfAccount;
   var selectedbfdataset = defaultBfDataset;
+  progressBarUploadBf.value = 0;
+  cloneMeter.value = 0;
+
+  $("#para-please-wait-manage-dataset").html("Please wait...");
+  $("#para-progress-bar-error-status").html("");
+
+  $("#button-submit-dataset").prop("disabled", true);
+  $("#selected-local-dataset-submit").prop("disabled", true);
+  $("#button-submit-dataset").popover("hide");
+  $("#progress-bar-status").html("Preparing files ...");
 
   log.info("Files selected for upload:");
   logFilesForUpload(pathSubmitDataset.placeholder);
@@ -2564,10 +2745,17 @@ $("#button-submit-dataset").click(async () => {
       document.getElementById("para-progress-bar-error-status").innerHTML = emessage;
       success_upload = false;
       organizeDatasetButton.disabled = false;
+      curateExistingDatasetButton.disabled = false;
+      curateNewDatasetButton.disabled = false;
+
+      curateExistingDatasetButton.className = "button-prompt-container";
+      curateNewDatasetButton.className = "button-prompt-container";
       organizeDatasetButton.className = "btn_animated generate-btn";
+      organzieDatasetButtonDiv.className = "btn_animated-inside";
+
       organizeDatasetButton.style =
         "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
-      organzieDatasetButtonDiv.className = "btn_animated-inside";
+
       Swal.fire({
         icon: "error",
         title: "There was an issue uploading your dataset",
@@ -2652,156 +2840,6 @@ $("#button-submit-dataset").click(async () => {
   var countDone = 0;
   var timerProgress = setInterval(progressfunction, 1000);
   let statusMessage = "Error";
-
-  function progressfunction() {
-    $("#upload_local_dataset_progress_div")[0].scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-
-    client
-      .get("/manage_datasets/datasets/upload_progress")
-      .then((progressResponse) => {
-        let progressData = progressResponse.data;
-        statusMessage = progressData["progress"];
-        completionStatus = progressData["submit_dataset_status"];
-        let submitprintstatus = progressData["submit_print_status"];
-        totalFileSize = progressData["total_file_size"];
-        let uploadedFileSize = progressData["upload_file_size"];
-        let fileUploadStatus = progressData["files_uploaded_status"];
-
-        if (submitprintstatus === "Uploading") {
-          $("#div-progress-submit").css("display", "block");
-
-          if (statusMessage.includes("Success: COMPLETED!")) {
-            progressBarUploadBf.value = 100;
-            cloneMeter.value = 100;
-
-            $("#para-please-wait-manage-dataset").html("");
-            $("#para-progress-bar-status").html(statusMessage + smileyCan);
-            cloneStatus.innerHTML = statusMessage + smileyCan;
-          } else {
-            var value = (uploadedFileSize / totalFileSize) * 100;
-
-            progressBarUploadBf.value = value;
-            cloneMeter.value = value;
-
-            if (totalFileSize < displaySize) {
-              var totalSizePrint = totalFileSize.toFixed(2) + " B";
-            } else if (totalFileSize < displaySize * displaySize) {
-              var totalSizePrint = (totalFileSize / displaySize).toFixed(2) + " KB";
-            } else if (totalFileSize < displaySize * displaySize * displaySize) {
-              var totalSizePrint = (totalFileSize / displaySize / displaySize).toFixed(2) + " MB";
-            } else {
-              var totalSizePrint =
-                (totalFileSize / displaySize / displaySize / displaySize).toFixed(2) + " GB";
-            }
-
-            $("#para-please-wait-manage-dataset").html("");
-            // cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%";
-            if (statusMessage.indexOf("<br")) {
-              let timeIndex = statusMessage.indexOf("<br");
-              let timePhrase = statusMessage.substring(timeIndex);
-              cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%" + timePhrase;
-            }
-            $("#para-progress-bar-status").html(
-              fileUploadStatus +
-                statusMessage +
-                "Progress: " +
-                value.toFixed(2) +
-                "%" +
-                " (total size: " +
-                totalSizePrint +
-                ")"
-            );
-          }
-        }
-      })
-      .catch((error) => {
-        clientError(error);
-        let emessage = userErrorMessage(error);
-        ipcRenderer.send(
-          "track-event",
-          "Error",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET + ` - Progress track`,
-          defaultBfDatasetId
-        );
-        organizeDatasetButton.disabled = false;
-        organizeDatasetButton.className = "btn_animated generate-btn";
-        organizeDatasetButton.style =
-          "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
-        organzieDatasetButtonDiv.className = "btn_animated-inside";
-
-        $("#para-progress-bar-error-status").html(
-          "<span style='color: red;'>" + emessage + sadCan + "</span>"
-        );
-        Swal.fire({
-          icon: "error",
-          title: "An Error Occurred While Uploading Your Dataset",
-          html: "Check the error text in the Upload Local Dataset's upload page to see what went wrong.",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
-          },
-        }).then((result) => {
-          progressClone.remove();
-          sparc_logo.style.display = "inline";
-          if (result.isConfirmed) {
-            returnPage.click();
-          }
-        });
-      });
-
-    if (completionStatus === "Done") {
-      countDone++;
-
-      if (countDone > 1) {
-        log.info("Done submit track");
-        if (success_upload === true) {
-          organizeDatasetButton.disabled = false;
-          organizeDatasetButton.className = "btn_animated generate-btn";
-          organizeDatasetButton.style =
-            "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
-          organzieDatasetButtonDiv.className = "btn_animated-inside";
-          uploadComplete.open({
-            type: "success",
-            message: "Upload to Pennsieve completed",
-          });
-          dismissStatus(progressClone.id);
-          progressClone.remove();
-          sparc_logo.style.display = "inline";
-        }
-
-        if (statusMessage.includes("Success: COMPLETED")) {
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-              ` - Progress track`,
-            defaultBfDatasetId
-          );
-        }
-
-        clearInterval(timerProgress);
-
-        $("#para-please-wait-manage-dataset").html("");
-
-        $("#button-submit-dataset").prop("disabled", false);
-        $("#selected-local-dataset-submit").prop("disabled", false);
-
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET + ` - Progress track`,
-          defaultBfDatasetId
-        );
-      }
-    }
-  }
 
   let uploadErrorChildren = document.querySelector("#para-progress-bar-error-status").childNodes;
 
@@ -2980,7 +3018,7 @@ $("#bf_list_dataset_status").on("change", async () => {
   }
 });
 
-async function showCurrentDatasetStatus(callback) {
+const showCurrentDatasetStatus = async (callback) => {
   let selectedBfAccount = defaultBfAccount;
   let selectedBfDataset = defaultBfDataset;
 
@@ -3068,4 +3106,4 @@ async function showCurrentDatasetStatus(callback) {
     $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
     $("#bf-dataset-status-spinner").css("display", "none");
   }
-}
+};

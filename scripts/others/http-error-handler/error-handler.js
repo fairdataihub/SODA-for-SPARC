@@ -3,7 +3,7 @@
  *
  * @param {error} error - A general or Axios error object
  */
-function clientError(error) {
+const clientError = (error) => {
   // Handles gneral errors and getting basic information from Axios errors
   console.error(error);
   log.error(JSON.stringify(error));
@@ -29,7 +29,7 @@ function clientError(error) {
     // The request was made but no response was received
     log.error(error.request);
   }
-}
+};
 
 /**
  * Given an error object, take the message out of the appropriate error property and present it in a readable format.
@@ -37,7 +37,7 @@ function clientError(error) {
  * @param {Error} error - The error object. Can be a general Error or an Axios subclass.
  * @returns {string} - The error message to display to the user
  */
-function userErrorMessage(error) {
+const userErrorMessage = (error) => {
   let errorMessage = "";
   if (error.response) {
     // The request was made and the server responded with a status code
@@ -56,6 +56,6 @@ function userErrorMessage(error) {
   }
 
   return errorMessage;
-}
+};
 
 module.exports = { clientError, userErrorMessage };

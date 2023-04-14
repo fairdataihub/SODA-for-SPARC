@@ -3,16 +3,7 @@
 ** Makes the UI feel more native
 */
 
-html {
-  font-family: sans-serif;
-  -webkit-user-select: none; /* disable selection */
-  -webkit-user-drag: none; /* disable dragging */
-  cursor: default; /* use default cursor */
-}
-
-body {
-  margin: 0; /* remove default margin */
-}
+@import url("https://fonts.googleapis.com/css?family=Poppins:400,500,600,700");
 
 /* enable text selection */
 

@@ -108,16 +108,7 @@
     style="flex-direction: column; justify-content: space-between"
   >
     <header class="section-header">
-      <div
-        style="
-          display: inline-flex;
-          align-items: center;
-          flex-direction: row;
-          width: 94.5%;
-          padding-right: 20px;
-          margin-bottom: 50px;
-        "
-      >
+      <div class="container-tab-information-header">
         <div class="need-help-div">
           <h2>Organize dataset</h2>
           <a
@@ -221,8 +212,19 @@
               </svg>
             </span>
           </div>
-          <div class="vertical-progress-bar-step last">
+          <div class="vertical-progress-bar-step">
             <span>7</span>
+            <span>
+              <svg style="width: 16.41px; height: 12.12px" viewBox="0 0 24 24">
+                <path
+                  fill="#FFFFFF"
+                  d="M9,20.42L2.79,14.21L5.62,11.38L9,14.77L18.88,4.88L21.71,7.71L9,20.42Z"
+                />
+              </svg>
+            </span>
+          </div>  
+          <div class="vertical-progress-bar-step last">
+            <span>8</span>
             <span>
               <svg style="width: 16.41px; height: 12.12px" viewBox="0 0 24 24">
                 <path
@@ -298,6 +300,7 @@
                     ></label
                   >
                   <div
+                    id="getting-started-1-radio-buttons"
                     style="
                       display: flex;
                       flex-direction: row;
@@ -625,7 +628,7 @@
                                 color: #000;
                                 font-weight: 600;
                                 font-size: 15px;
-                                margin-left: 1px;
+                                margin-left: 1rem;
                               "
                               id="current-bf-account"
                               >None</span
@@ -671,7 +674,7 @@
                             color: #000;
                             font-weight: 600;
                             font-size: 15px;
-                            margin-left: -20px;
+                            margin-left: -5px;
                           "
                           id="para-account-detail-curate"
                         >
@@ -750,7 +753,7 @@
                               color: #000;
                               font-weight: 600;
                               font-size: 15px;
-                              margin-left: -15px;
+                              margin-left: 0new-foldernew-folderpx;
                             "
                             id="current-bf-dataset"
                             >None</span
@@ -812,11 +815,9 @@
                       </p>
                     </div>
                     <div
+                      class="justify-center mb-3"
                       style="
                         display: flex;
-                        justify-content: center;
-                        margin-bottom: 1.5rem;
-                        margin-top: 1.5rem;
                       "
                     >
                       <div
@@ -937,7 +938,7 @@
                 <div class="first-three-high-level-folders">
                   <div class="option-card high-level-folders">
                     <div class="card-head">
-                      <h2><i class="fas fa-folder"></i>code</h2>
+                      <h2 style="margin-left: 1rem;"><i class="fas fa-folder"></i>code</h2>
                       <div class="folder-checkbox" style="float: right">
                         <input
                           class="folder-input-check"
@@ -995,7 +996,7 @@
                 <div class="first-three-high-level-folders">
                   <div class="option-card high-level-folders">
                     <div class="card-head">
-                      <h2><i class="fas fa-folder"></i>docs</h2>
+                      <h2 style="margin-left: 1rem;"><i class="fas fa-folder"></i>docs</h2>
                       <div class="folder-checkbox">
                         <input
                           class="folder-input-check"
@@ -1069,6 +1070,7 @@
                 font-weight: 600;
                 padding-bottom: 5px;
                 margin-top: 20px;
+                margin-left: 5rem;
               "
             >
               Step 3: Structure dataset files
@@ -1077,34 +1079,30 @@
                 class="github-wiki-link"
                 href="https://docs.sodaforsparc.io/docs/prepare-dataset/step-3"
               >
-                <!-- <img
-                    class="nav-video"
-                    src="assets/img/documentation-icon.png"
-                  /> -->
               </a>
               <br /><br />
-              <span
+              <p
+                class="m-auto text-justify"
                 style="
-                  margin-top: 0;
                   color: #000;
                   font-size: 14px;
                   font-weight: 500;
+                  max-width: 400px;
                 "
               >
                 Virtually structure your dataset in the interface below.
-                <br />
-                Double click on any high-level SPARC folder (they could be added
-                here from Step 2)
-                <br />
+                <br /> <br/>
+                Double click on any high-level SPARC folder 
                 and organize your dataset by importing files, creating folders,
                 and renaming them.
+                <br />
                 <br />
                 You may also drag and drop your files and folders here.
                 <br />
                 Right click to rename, delete and move files and folders.
-                <br />
+                <br /> <br />
                 Note: You will be able to add metadata files in Step 4.
-              </span>
+            </p>
             </h3>
 
             <div
@@ -1132,7 +1130,6 @@
                   <div
                     id="organize-path-and-back-button-div"
                     class="freeform-file-explorer-buttons"
-                    style="width: 101% !important"
                   >
                     <!-- <div> -->
                     <!-- <h5 style="cursor: pointer;float:left;font-size:15px;color:var(--tagify-dd-color-primary)">
@@ -1170,6 +1167,7 @@
                       <button
                         id="new-folder"
                         style="
+                          width: 130px;
                           float: right;
                           margin-right: 10px;
                           color: var(--tagify-dd-color-primary);
@@ -1395,7 +1393,7 @@
               </a>
               <br />
             </h3>
-            <div class="div-organize-generate-dataset metadata">
+            <div id="metadata-files-menu" class="div-organize-generate-dataset metadata">
               <h3 class="question-title" style="padding-bottom: 10px">
                 Specify metadata files to be included in your dataset<br />
                 <span style="color: #696969; font-size: 13px"
@@ -1455,7 +1453,7 @@
                           <p
                             style="
                               margin-top: 30px;
-                              font-family: 'Raleway', sans-serif;
+                              font-family: 'Poppins', sans-serif;
                             "
                           >
                             submission
@@ -1502,10 +1500,10 @@
                           <p
                             style="
                               margin-top: 30px;
-                              font-family: 'Raleway', sans-serif;
+                              font-family: 'Poppins', sans-serif;
                             "
                           >
-                            dataset_description
+                            dataset description
                           </p></button
                         ><button
                           class="metadata-button button-generate-dataset"
@@ -1547,7 +1545,7 @@
                           <p
                             style="
                               margin-top: 30px;
-                              font-family: 'Raleway', sans-serif;
+                              font-family: 'Poppins', sans-serif;
                             "
                           >
                             README
@@ -1604,7 +1602,7 @@
                           <p
                             style="
                               margin-top: 30px;
-                              font-family: 'Raleway', sans-serif;
+                              font-family: 'Poppins', sans-serif;
                             "
                           >
                             subjects
@@ -1652,7 +1650,7 @@
                           <p
                             style="
                               margin-top: 30px;
-                              font-family: 'Raleway', sans-serif;
+                              font-family: 'Poppins', sans-serif;
                             "
                           >
                             samples
@@ -1699,7 +1697,7 @@
                           <p
                             style="
                               margin-top: 30px;
-                              font-family: 'Raleway', sans-serif;
+                              font-family: 'Poppins', sans-serif;
                             "
                           >
                             CHANGES
@@ -1763,7 +1761,7 @@
                           <p
                             style="
                               margin-top: 30px;
-                              font-family: 'Raleway', sans-serif;
+                              font-family: 'Poppins', sans-serif;
                             "
                           >
                             code_description
@@ -1810,7 +1808,7 @@
                           <p
                             style="
                               margin-top: 30px;
-                              font-family: 'Raleway', sans-serif;
+                              font-family: 'Poppins', sans-serif;
                             "
                           >
                             code_parameters
@@ -1828,7 +1826,7 @@
               <h5 style="text-align: center; color: #585858; font-size: 16px">
                 submission <br />(must be in .csv, .xlsx, or .json format)
               </h5>
-              <div style="margin-top: 25px; text-align: center">
+              <div class="text-center d-flex mt-3 justify-center">
                 <h5 style="text-align: center"></h5>
                 <div
                   class="div-file-import"
@@ -1890,7 +1888,7 @@
                   </button>
                 </div>
                 <div
-                  class="div-file-import pennsieve"
+                  class="div-file-import pennsieve p-3 justify-content-between"
                   id="metadata-submission-pennsieve"
                 >
                   <p style="font-weight: bold">Import Pennsieve file</p>
@@ -1998,8 +1996,8 @@
                 dataset_description <br />(must be in .csv, .xlsx, or .json
                 format)
               </h5>
-              <div style="margin-top: 25px; text-align: center">
-                <h5 style="text-align: center"></h5>
+              <div class="text-center d-flex mt-3 justify-center">
+                <h5 class="text-center"></h5>
                 <div
                   class="div-file-import"
                   droppable="true"
@@ -2044,7 +2042,7 @@
                   </button>
                 </div>
                 <div
-                  class="div-file-import pennsieve"
+                  class="div-file-import pennsieve p-3 justify-content-between"
                   id="metadata-ds-description-pennsieve"
                 >
                   <p style="font-weight: bold">Import Pennsieve file</p>
@@ -2150,7 +2148,7 @@
               <h5 style="text-align: center; color: #585858; font-size: 16px">
                 subjects <br />(must be in .csv, .xlsx, or .json format)
               </h5>
-              <div style="margin-top: 25px; text-align: center">
+              <div class="text-center d-flex mt-3 justify-center">
                 <h5 style="text-align: center"></h5>
                 <div
                   class="div-file-import"
@@ -2196,7 +2194,7 @@
                   </button>
                 </div>
                 <div
-                  class="div-file-import pennsieve"
+                  class="div-file-import pennsieve p-3 justify-content-between"
                   id="metadata-subjects-pennsieve"
                 >
                   <p style="font-weight: bold">Import Pennsieve file</p>
@@ -2302,7 +2300,7 @@
               <h5 style="text-align: center; color: #585858; font-size: 16px">
                 samples <br />(must be in .csv, .xlsx, or .json format)
               </h5>
-              <div style="margin-top: 25px; text-align: center">
+              <div class="text-center d-flex mt-3 justify-center">
                 <h5 style="text-align: center"></h5>
                 <div
                   class="div-file-import"
@@ -2348,7 +2346,7 @@
                   </button>
                 </div>
                 <div
-                  class="div-file-import pennsieve"
+                  class="div-file-import pennsieve p-3 justify-content-between"
                   id="metadata-samples-pennsieve"
                 >
                   <p style="font-weight: bold">Import Pennsieve file</p>
@@ -2454,7 +2452,7 @@
               <h5 style="text-align: center; color: #585858; font-size: 16px">
                 CHANGES <br />(must be in .txt format)
               </h5>
-              <div style="margin-top: 25px; text-align: center">
+              <div class="text-center d-flex mt-3 justify-center">
                 <h5 style="text-align: center"></h5>
                 <div
                   class="div-file-import"
@@ -2500,7 +2498,7 @@
                   </button>
                 </div>
                 <div
-                  class="div-file-import pennsieve"
+                  class="div-file-import pennsieve p-3 justify-content-between"
                   id="metadata-CHANGES-pennsieve"
                 >
                   <p style="font-weight: bold">Import Pennsieve file</p>
@@ -2607,7 +2605,7 @@
               <h5 style="text-align: center; color: #585858; font-size: 16px">
                 README <br />(must be in .txt format)
               </h5>
-              <div style="margin-top: 25px; text-align: center">
+              <div class="text-center d-flex mt-3 justify-center">
                 <h5 style="text-align: center"></h5>
                 <div
                   class="div-file-import"
@@ -2653,7 +2651,7 @@
                   </button>
                 </div>
                 <div
-                  class="div-file-import pennsieve"
+                  class="div-file-import pennsieve p-3 justify-content-between"
                   id="metadata-README-pennsieve"
                 >
                   <p style="font-weight: bold">Import Pennsieve file</p>
@@ -2760,7 +2758,7 @@
               <h5 style="text-align: center; color: #585858; font-size: 16px">
                 code_description <br />(must be in .xlsx format)
               </h5>
-              <div style="margin-top: 25px; text-align: center">
+              <div class="text-center d-flex mt-3 justify-center">
                 <h5 style="text-align: center"></h5>
                 <div
                   class="div-file-import"
@@ -2821,7 +2819,7 @@
                   </button>
                 </div>
                 <div
-                  class="div-file-import pennsieve"
+                  class="div-file-import pennsieve p-3 justify-content-between"
                   id="metadata-codeDescription-pennsieve"
                 >
                   <p style="font-weight: bold">Import Pennsieve file</p>
@@ -2928,7 +2926,7 @@
                 code_parameters <br />(must be in .csv, .tsv, .json or .xlsx
                 format)
               </h5>
-              <div style="margin-top: 25px; text-align: center">
+              <div class="text-center d-flex mt-3 justify-center">
                 <h5 style="text-align: center"></h5>
                 <div
                   class="div-file-import"
@@ -2989,7 +2987,7 @@
                   </button>
                 </div>
                 <div
-                  class="div-file-import pennsieve"
+                  class="div-file-import pennsieve p-3 justify-content-between"
                   id="metadata-inputsMetadata-pennsieve"
                 >
                   <p style="font-weight: bold">Import Pennsieve file</p>
@@ -3095,7 +3093,7 @@
               <h5 style="text-align: center; color: #585858; font-size: 16px">
                 outputs_metadata <br />(must be in .xlsx format)
               </h5>
-              <div style="margin-top: 25px; text-align: center">
+              <div class="text-center d-flex mt-3 justify-center">
                 <h5 style="text-align: center"></h5>
                 <div
                   class="div-file-import"
@@ -3156,7 +3154,7 @@
                   </button>
                 </div>
                 <div
-                  class="div-file-import pennsieve"
+                  class="div-file-import pennsieve p-3 justify-content-between"
                   id="metadata-outputsMetadata-pennsieve"
                 >
                   <p style="font-weight: bold">Import Pennsieve file</p>
@@ -3340,8 +3338,6 @@
               </div>
             </div>
           </div>
-
-
 
 
           <!-- 6. Generate dataset -->
@@ -4431,6 +4427,96 @@
           </div>
 
 
+          <!-- 7. Validate dataset -->
+          <div  
+          class="parent-tabs"
+          id="validate-dataset-tab"
+          style="display: flex; flex-direction: column;"
+        >
+          <h3
+          class="question-title"
+          style="
+            color: black;
+            font-size: 15px;
+            text-align: center;
+            font-weight: 600;
+            margin-top: 20px;
+          "
+        >
+          Step 7: Validate Dataset
+          <a
+            style="padding: 0px 0px 0px 5px"
+            class="github-wiki-link"
+            href="https://docs.sodaforsparc.io/docs/prepare-dataset/step-5"
+          >
+          </a>
+          <br /><br />
+        </h3>
+
+        <!--Some random stuff here woo woo -->
+        <div style="display: flex; flex-direction: column;">
+          <h3 class="justify-center w-50 m-auto text-black " style="font-size: medium; margin-top: -25px !important;">
+            Use this feature to validate a dataset against the SPARC Dataset Structure (SDS). 
+            For now, we recommend that you fix as many errors as possible before uploading and sharing your dataset
+            with the SPARC Curation Team. 
+          </h3>
+          <button 
+            style="align-self: center; margin-top: 50px; background: var(--color-light-green); color: #fff; font-weight: 600; border-radius: 4px; font-size: 14px; padding: 8px 24px; height: 38px;" 
+            id="organize--button-validate-dataset"
+            onclick="validateOrganizedDataset()">
+              Validate Dataset
+          </button>
+
+          <!-- Table to store validation results for the user -->
+          <div class="grouped fields">
+            <div
+              id="organize--table-validation-errors"
+              style="
+                visibility: hidden;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                margin-top: 50px;
+              "
+            >
+              <label style="font-size: 17px; color: var(--color-bg-plum)">
+                Validation Errors
+              </label>
+              <div
+                style="
+                  border-radius: 0.5rem;
+                  margin-top: 5px;
+                  width: 550px;
+                  align-self: center;
+                "
+              >
+                <p class="tip-content">
+                  The path column indicates where the errors occurred in your
+                  dataset. The message column provides an explanation of what
+                  the errors are. For updated validation results re-run
+                  validation by pressing the 'Validate Dataset' button.
+                  You can view your raw validation report by
+                  clicking <button class="validate-raw-report_btn">here</button>.
+                </p>
+              </div>
+
+              <table class="ui celled padded table" style="width: 800px;">
+                <thead>
+                  <tr>
+                    <th>Path</th>
+                    <th>Message</th>
+                    <!-- <th>Fix Here</th> -->
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!--End of step 7-->
+          </div>
+
+          
           <!-- 8. Preview dataset -->
           <div
             class="parent-tabs"
@@ -4448,7 +4534,7 @@
                 padding-bottom: 0px;
               "
             >
-              Step 7: Preview dataset
+              Step 8: Preview dataset
               <a
                 style="padding: 0px 0px 0px 5px"
                 class="github-wiki-link"
@@ -4725,50 +4811,19 @@
           <button
             id="start-over-btn"
             type="button"
-            class="transition-btn popover-tooltip"
+            class=" start-over-button transition-btn popover-tooltip"
             rel="popover"
             data-placement="top"
             data-trigger="hover"
             data-content="Reset your progress and go back to Step 1"
-            style="
-              background-color: #fff;
-              color: #b80d49;
-              border: 1px solid #b80d49;
-              font-weight: 600;
-              padding: 5px;
-
-              margin-left: 10px;
-              right: 10px;
-              margin-bottom: 10px;
-              width: 135px;
-            "
           >
             <i class="fas fa-sync-alt" style="margin-right: 10px"></i>Start over
           </button>
         </div>
         <div style="display: flex; flex-direction: row">
-          <!-- <button
-              id="start-over-btn"
-              type="button"
-              class="transition-btn"
-              style="
-                background-color: #fff;
-                color: #b80d49;
-                border: 1px solid #b80d49;
-                font-weight: 600;
-                padding: 5px;
-                width: 130px;
-
-                right: 10px;
-                margin-bottom: 10px;
-              "
-            >
-              <i class="fas fa-sync-alt" style="margin-right: 10px"></i>Start
-              over
-            </button> -->
           <button
             type="button"
-            class="transition-btn popover-tooltip"
+            class="ui secondary basic button save-and-exit-button transition-btn popover-tooltip"
             data-content="Save your progress and pick up from here later through Step 1 - Option 2: Continue with a previously saved progress in SODA."
             rel="popover"
             data-placement="top"
@@ -4776,16 +4831,7 @@
             id="save-progress-btn"
             onclick="saveOrganizeProgressPrompt()"
             style="
-              background: #fff;
-              color: var(--color-light-green);
-              border: 1px solid var(--color-light-green);
               padding: 8px 10px;
-              width: 135px;
-              height: 38px;
-              font-size: 14px;
-              font-weight: 600;
-              margin-right: 10px;
-              border-radius: 5px;
             "
           >
             <i class="far fa-save" style="margin-right: 10px"></i>Save progress

@@ -15,11 +15,11 @@ const getUserInformation = async () => {
 
 /**
  *
- * @param {string} datasetId - the current dataset id
+ * @param {string} datasetNameOrID - the current dataset name or id
  * @returns {datasetObject} dataset - the dataset object
  */
-const getDataset = async (datasetId) => {
-  let datasetResponse = await client.get(`/datasets/${datasetId}`);
+const getDataset = async (datasetNameOrID) => {
+  let datasetResponse = await client.get(`/datasets/${datasetNameOrID}`);
   return datasetResponse.data;
 };
 
@@ -37,6 +37,10 @@ const getDatasetBannerImageURL = async (selected_account, selected_dataset) => {
 };
 
 const getDatasetRole = async (datasetNameOrId) => {
+  if (datasetNameOrId != undefined || datasetNameOrId != "") {
+    defaultBfDataset = datasetNameOrId;
+  }
+
   let datasetRoleResponse = await client.get(`/datasets/${defaultBfDataset}/role`, {
     params: {
       pennsieve_account: defaultBfAccount,
@@ -108,7 +112,7 @@ const getDatasetMetadataFiles = async (datasetName) => {
   return metadata_files;
 };
 
-const getDatasetPermissions = async (selected_account, selected_dataset) => {
+const getDatasetPermissions = async (selected_account, selected_dataset, boolReturnAll) => {
   let getDatasetPermissionsResponse = await client.get(`/manage_datasets/bf_dataset_permissions`, {
     params: {
       selected_account,
@@ -118,8 +122,45 @@ const getDatasetPermissions = async (selected_account, selected_dataset) => {
 
   let { permissions } = getDatasetPermissionsResponse.data;
 
-  return permissions;
+  if (boolReturnAll) {
+    // Return all permissions data: permissions array, team_ids object
+    return getDatasetPermissionsResponse.data;
+  } else {
+    // Return only the permissions array
+    return permissions;
+  }
 };
+
+// This function will be call after a dataset has been shared with the curation team
+// Users will be able to reserve DOI's for their datasets
+const reserveDOI = async (account, dataset) => {
+  // reference: https://docs.pennsieve.io/reference/reservedoi
+  // information: https://docs.pennsieve.io/docs/digital-object-identifiers-dois#assigning-doi-to-your-pennsieve-dataset
+
+  // TODO: Create endpoint to reserve DOI
+  try {
+    let doiReserve = await client.post(`datasets/${dataset}/reserve-doi`);
+    // Save DOI to SODAJSONObj
+    return doiReserve.data.doi;
+  } catch (err) {
+    clientError(err);
+    userErrorMessage(err);
+  }
+};
+
+const getDatasetDOI = async (account, dataset) => {
+  // reference: https://docs.pennsieve.io/reference/getdoi
+
+  try {
+    let doi = await client.get(`datasets/${dataset}/reserve-doi`);
+    return doi.data.doi;
+  } catch (err) {
+    clientError(err);
+    userErrorMessage(err);
+  }
+};
+
+// TODO: Add api function for setting dataset permissions
 
 const getDatasetsForAccount = async (selected_account) => {
   let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
@@ -163,6 +204,7 @@ const getDatasetReadme = async (selected_account, selected_dataset) => {
 //  datasetIdOrName: string - the id/name of the dataset being submitted for publication
 //  embargoReleaseDate?: string  - in yyyy-mm-dd format. Represents the day an embargo will be lifted on this dataset; at which point the dataset will be made public.
 // O: void
+// TODO: Replace the share with curation team endpoints/functions with the function below
 const submitDatasetForPublication = async (
   pennsieveAccount,
   datasetName,
@@ -320,6 +362,57 @@ const uploadCollectionTags = async (account, dataset, tags) => {
   }
 };
 
+/**
+ *
+ * @param {*} formattedPennsieveSODAJSONObj - A soda json object that contains an imported Pennsieve dataset that has been formatted for curation.
+ *
+ * Mutates the argument object by performing the user actions (replace, rename, move, delete) stored in the argument object.
+ * The actions stored in the argument object are reflective of user actions performed in SODA's File Viewer UIs ( found in Organize Datasets step 5, Guided Mode, etc ).
+ * IMP: These actions are performed in the /curation endpoint. However, this endpoint exists in order to provide a local copy of the argument object post mutation
+ *      without having to generate the object on Pennsieve.
+ * Use Cases For Mutated Argument: Generating manifest files in Organize & Guided Mode, generating local copies of Pennsieve datasets for Validation, etc.
+ */
+const performUserActions = async (formattedPennsieveSODAJSONObj) => {
+  let cleanCopyResponse;
+  // handle renaming, moving, replace, and deleting files and folders
+  try {
+    cleanCopyResponse = await client.post("/curate_datasets/clean-dataset", {
+      soda_json_structure: formattedPennsieveSODAJSONObj,
+    });
+  } catch (error) {
+    clientError(error);
+  }
+
+  formattedPennsieveSODAJSONObj = cleanCopyResponse.data.soda_json_structure;
+};
+
+const createSkeletonDataset = async (sodaJSONObj) => {
+  const response = await client.post("/skeleton_dataset", {
+    sodajsonobject: sodaJSONObj,
+  });
+  let data = response.data;
+  return data["path_to_skeleton_dataset"];
+};
+
+const validateLocalDataset = async (datasetPath) => {
+  const validationResponse = await client.post("/validator/local", {
+    dataset_path: datasetPath,
+  });
+  return validationResponse.data;
+};
+
+const getNumberOfPackagesInDataset = async (datasetName) => {
+  const packageCountsResponse = await client.get(`/datasets/${datasetName}/packageTypeCounts`);
+  return packageCountsResponse.data;
+};
+
+const getNumberOfItemsInLocalDataset = async (datasetPath) => {
+  const itemCountsResponse = await client.get(
+    `/datasets/local/item_count?dataset_path=${datasetPath}`
+  );
+  return itemCountsResponse.data;
+};
+
 const api = {
   getUserInformation,
   getDataset,
@@ -339,6 +432,13 @@ const api = {
   uploadCollectionTags,
   removeCollectionTags,
   uploadNewTags,
+  performUserActions,
+  createSkeletonDataset,
+  validateLocalDataset,
+  getDatasetDOI,
+  reserveDOI,
+  getNumberOfPackagesInDataset,
+  getNumberOfItemsInLocalDataset,
 };
 
 module.exports = api;

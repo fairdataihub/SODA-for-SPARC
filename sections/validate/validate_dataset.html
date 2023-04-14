@@ -5,16 +5,7 @@
 >
   <div class="main-tabs show" style="display: flex; height: 100%; overflow-y: hidden">
     <header class="section-header">
-      <div
-        style="
-          display: inline-flex;
-          align-items: center;
-          flex-direction: row;
-          width: 94.5%;
-          padding-right: 20px;
-          margin-bottom: 50px;
-        "
-      >
+      <div class="container-tab-information-header">
         <div class="need-help-div">
           <h2>Validate Dataset</h2>
           <a
@@ -39,35 +30,10 @@
                 >About</label
               >
               <p class="about-text">
-                Use this feature to validate a dataset against the SPARC Dataset Structure (SDS). It
-                is possible to validate datasets stored on Pennsieve or stored locally on your
-                computer. We recommend that your dataset passes validation before being being shared
-                with the SPARC Curation Team.
+                Use this feature to validate a dataset against the SPARC Dataset Structure (SDS).
+                For now, we recommend that you fix as many errors as possible before uploading and
+                sharing your dataset with the SPARC Curation Team.
               </p>
-            </div>
-
-            <button id="click-me">Click Me</button>
-            <button id="remove-me">Remove Me</button>
-
-            <div
-              id="scicrunch"
-              class="individual_question"
-              style="display: flex; flex-direction: column; align-self: center; width: 800px"
-            >
-              <h2 style="color: black; align-self: center; font-size: 17px">
-                Connect a Scicrunch api key to SODA in order to use the Validator
-              </h2>
-              <p>
-                First register for a Scicrunch account
-                <a href="https://scicrunch.org/" target="_blank">here</a>. Then under the 'My
-                Account' button select 'API Keys'. Then click 'Generate An API Key'. Choose a
-                'Project Name'. Click 'Update Text'. Copy the key and paste it below.
-              </p>
-              <label type="text">Scicrunch API Key: </label>
-              <input />
-              <label type="text">Scicrunch API Key Name: </label>
-              <input />
-              <button style="align-self: center; width: 400px; margin-top: 15px">Submit</button>
             </div>
 
             <!--Select how you wish to validate the dataset-->
@@ -116,10 +82,14 @@
               </div>
 
               <div
-                class="option-card radio-button"
+                class="option-card radio-button popover-tooltip"
                 data-current="validate_dataset-question-1"
                 id="validate_dataset-1-pennsieve"
                 data-next="validate_dataset-question-2"
+                rel="popover"
+                data-placement="right"
+                data-html="true"
+                data-trigger="hover"
                 style="
                   max-width: 180px;
                   height: 220px !important;
@@ -127,7 +97,7 @@
                   margin-top: 25px;
                 "
               >
-                <div class="card-head">
+                <div class="card-head" style="pointer-events: none">
                   <div class="folder-checkbox">
                     <input
                       class="folder-input-check"
@@ -138,7 +108,7 @@
                     <label for="validate-1-Pennsieve"></label>
                   </div>
                 </div>
-                <div class="card-body">
+                <div class="card-body" style="pointer-events: none">
                   <i class="far fa-save" style="color: var(--color-bg-orange)"></i>
                   <h2>I want to validate a Pennsieve dataset</h2>
                 </div>
@@ -327,7 +297,7 @@
                   onclick="transitionFreeFormMode(this, 'validate_dataset-question-3', 'validate_dataset-tab', '', 'individual-question validate_dataset')"
                   data-next="validate_dataset-question-4"
                 >
-                  Run dataset validator
+                  Validate Dataset
                 </button>
               </div>
             </div>
@@ -349,11 +319,14 @@
               <label style="font-size: 17px; color: var(--color-bg-plum)">
                 Validation Errors
               </label>
-              <div style="border-radius: 0.5rem; margin-top: 5px; width: 550px; align-self: center">
+              <div
+                style="border-radius: 0.5rem; margin-top: 10px; width: 550px; align-self: center"
+              >
                 <p class="tip-content">
                   The path column indicates where the errors occurred in your dataset. The message
                   column provides an explanation of what the errors are. For updated validation
-                  results you can re-run validation.
+                  results you can re-run validation. You can view your raw validation report by
+                  clicking <button class="validate-raw-report_btn">here</button>.
                 </p>
               </div>
 

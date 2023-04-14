@@ -1,6 +1,7 @@
 const { platform } = require("os");
 
 const { copyFile, readdir } = require("fs").promises;
+let openedEdit = false;
 
 // opendropdown event listeners
 document.querySelectorAll(".manifest-change-current-account").forEach((element) => {
@@ -55,9 +56,13 @@ function openFolder(generationLocation) {
 }
 
 $(document).ready(function () {
+  let localDataSetImport = false;
+  let fileOpenedOnce = {};
   ipcRenderer.on("selected-local-dataset-manifest-purpose", (event, folderPath) => {
     if (folderPath.length > 0) {
       if (folderPath !== null) {
+        localDataSetImport = true;
+        fileOpenedOnce = {};
         document.getElementById("input-manifest-local-folder-dataset").placeholder = folderPath[0];
         localDatasetFolderPath = folderPath[0];
         $("#div-confirm-manifest-local-folder-dataset").css("display", "flex");
@@ -240,8 +245,21 @@ $(document).ready(function () {
 
   var jsonManifest = {};
 
-  $(jstreePreviewManifest).on("select_node.jstree", function (evt, data) {
+  //Event listener for the jstree to open manifest files
+  $(jstreePreviewManifest).on("select_node.jstree", async function (evt, data) {
+    // Check if pennsieve option was selected to reset localDataSetImport
+    if (document.getElementById("pennsieve-option-create-manifest").classList.contains("checked")) {
+      localDataSetImport = false;
+    }
+
+    // Check if the selected file is a manifest file
+    // If there's already an opened manifest file, don't open another one
     if (data.node.text === "manifest.xlsx") {
+      if (openedEdit) {
+        return;
+      }
+
+      openedEdit = true;
       // Show loading popup
       Swal.fire({
         title: `Loading the manifest file.`,
@@ -261,44 +279,379 @@ $(document).ready(function () {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
       });
+
       var parentFolderName = $("#" + data.node.parent + "_anchor").text();
+      if (!fileOpenedOnce?.[parentFolderName]) {
+        fileOpenedOnce[parentFolderName] = true;
+      }
+
+      // TODO: Check if this is needed everytime
       var localFolderPath = path.join(homeDirectory, "SODA", "manifest_files", parentFolderName);
       var selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
-      jsonManifest = excelToJson({
-        sourceFile: selectedManifestFilePath,
-        columnToKey: {
-          "*": "{{columnHeader}}",
-        },
-      })["Sheet1"];
-      Swal.fire({
-        title:
-          "<span style='font-size: 18px !important;'>Edit the manifest file below: </span> <br><span style='font-size: 13px; font-weight: 500'> Tip: Double click on a cell to edit it.<span>",
-        html: "<div id='div-manifest-edit'></div>",
-        allowEscapeKey: false,
-        allowOutsideClick: false,
-        showConfirmButton: true,
-        confirmButtonText: "Confirm",
-        showCancelButton: true,
-        width: "90%",
-        // height: "80%",
-        customClass: "swal-large",
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        didOpen: () => {
-          Swal.hideLoading();
-        },
-      }).then((result) => {
-        $(jstreePreviewManifest).jstree().deselect_all(true);
-        // sort the updated json object (since users might have added new columns)
-        let manifestHeaders = table1.getHeaders().split(",");
-        let manifestEntries = table1.getData();
-        let sortedJSON = processManifestInfo(manifestHeaders, manifestEntries);
-        // // write this new json to existing manifest.json file
-        jsonManifest = JSON.stringify(sortedJSON);
-        // convert manifest.json to existing manifest.xlsx file
-        convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
+      if (fs.existsSync(selectedManifestFilePath)) {
+        jsonManifest = excelToJson({
+          sourceFile: selectedManifestFilePath,
+          columnToKey: {
+            "*": "{{columnHeader}}",
+          },
+        })["Sheet1"];
+      }
+
+      sodaCopy = sodaJSONObj;
+      datasetStructCopy = sodaCopy["dataset-structure"];
+
+      //Save content of manifest file to a variable to add to soda json at the end
+      let originalManifestFilesValue = sodaCopy["manifest-files"];
+      sodaCopy["manifest-files"] = {};
+
+      try {
+        // used for imported local datasets and pennsieve datasets
+        // filters out deleted files/folders before creating manifest data again
+        const cleanJson = await client.post(
+          `/curate_datasets/clean-dataset`,
+          { soda_json_structure: sodaCopy },
+          { timeout: 0 }
+        );
+
+        let response = cleanJson.data.soda_json_structure;
+
+        sodaCopy = response;
+        datasetStructCopy = sodaCopy["dataset-structure"];
+      } catch (e) {
+        clientError(e);
+        userErrorMessage(e);
+      }
+
+      // manifest will still include pennsieve or locally imported files
+      // deleted to prevent from showing up as manifest card
+      if (sodaCopy["manifest-files"]?.["destination"]) {
+        delete sodaCopy["manifest-files"]["destination"];
+      }
+
+      // create manifest data of all high level folders
+      try {
+        const res = await client.post(
+          `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
+          {
+            dataset_structure_obj: datasetStructCopy,
+          },
+          { timeout: 0 }
+        );
+
+        // loop through each of the high level folders and create excel sheet in case no edits are made
+        // will be auto generated and ready for upload
+        const manifestRes = res.data;
+        let newManifestData = {};
+
+        // Format response for
+        for (const [highLevelFolderName, manifestFileData] of Object.entries(manifestRes)) {
+          if (manifestFileData.length > 1) {
+            const manifestHeader = manifestFileData.shift();
+            newManifestData[highLevelFolderName] = {
+              headers: manifestHeader,
+              data: manifestFileData,
+            };
+            // Will create an excel sheet of the manifest files in case they receive no edits
+            let jsonManifest = {};
+            let manifestFolder = path.join(homeDirectory, "SODA", "manifest_files");
+            let localFolderPath = path.join(manifestFolder, highLevelFolderName);
+            let selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
+            // create manifest folders if they don't exist
+            if (!fs.existsSync(manifestFolder)) {
+              fs.mkdirSync(manifestFolder);
+            }
+            if (!fs.existsSync(localFolderPath)) {
+              fs.mkdirSync(localFolderPath);
+              fs.closeSync(fs.openSync(selectedManifestFilePath, "w"));
+            }
+            if (!fs.existsSync(selectedManifestFilePath)) {
+            } else {
+              jsonManifest = excelToJson({
+                sourceFile: selectedManifestFilePath,
+                columnToKey: {
+                  "*": "{{columnHeader}}",
+                },
+              })["Sheet1"];
+            }
+            // If file doesn't exist then that means it didn't get imported properly
+            let sortedJSON = processManifestInfo(manifestHeader, manifestFileData);
+            jsonManifest = JSON.stringify(sortedJSON);
+            convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
+          }
+        }
+
+        // Check if dataset is local or pennsieve
+        // If local then we need to read the excel file and create a json object
+        let highLvlFolderNames = [];
+        if (localDataSetImport && !fileOpenedOnce?.[parentFolderName]) {
+          // get the paths of the manifest files that were imported locally
+          let manifestPaths = [];
+          for (const [highLevelFolderName, folderData] of Object.entries(
+            sodaCopy["dataset-structure"]["folders"]
+          )) {
+            for (const [fileName, fileData] of Object.entries(folderData["files"])) {
+              if (fileName === "manifest.xlsx") {
+                manifestPaths.push(path.join(folderData["path"], fileName));
+                highLvlFolderNames.push(highLevelFolderName);
+              }
+            }
+          }
+
+          if (manifestPaths.length > 0) {
+            let originalManifestEntry = sodaCopy["manifest-files"];
+            sodaCopy["manifest-files"] = {};
+
+            for (const manifestPath of manifestPaths) {
+              let manifestData = [];
+              let highLevelFolderName = path.basename(path.dirname(manifestPath));
+
+              if (!fs.existsSync(manifestPath)) {
+                // If manifest file doesn't exist then newManifestData will be used
+                // No old manifest to compare to
+                sodaCopy["manifest-files"][highLevelFolderName] =
+                  newManifestData[highLevelFolderName];
+              } else {
+                let jsonManifest = excelToJson({
+                  sourceFile: manifestPath,
+                  sheets: [{ name: "Sheet1" }],
+                  header: {
+                    rows: 0,
+                  },
+                  includeEmptyLines: true,
+                });
+
+                let alphabet = [
+                  "A",
+                  "B",
+                  "C",
+                  "D",
+                  "E",
+                  "F",
+                  "G",
+                  "H",
+                  "I",
+                  "J",
+                  "K",
+                  "L",
+                  "M",
+                  "N",
+                  "O",
+                  "P",
+                  "Q",
+                  "R",
+                  "S",
+                  "T",
+                  "U",
+                  "V",
+                  "W",
+                  "X",
+                  "Y",
+                  "Z",
+                ];
+                let manifestHeader = Object.values(jsonManifest["Sheet1"][0]);
+
+                alphabet = alphabet.slice(0, manifestHeader.length);
+
+                // Go through response and fill in empty cells with empty string
+                for (let j = 1; j < jsonManifest["Sheet1"].length; j++) {
+                  for (let i = 0; i < alphabet.length; i++) {
+                    let cellEntry = jsonManifest["Sheet1"][j][alphabet[i]];
+                    if (cellEntry === undefined) {
+                      jsonManifest["Sheet1"][j][alphabet[i]] = "";
+                    }
+                  }
+                  manifestData.push(Object.values(jsonManifest["Sheet1"][j]));
+                }
+
+                // Header and data should be formatted correctly
+
+                let sortedJSON = processManifestInfo(manifestHeader, manifestData);
+                sodaCopy["manifest-files"][highLevelFolderName] = {
+                  headers: manifestHeader,
+                  data: manifestData,
+                };
+              }
+            }
+          }
+        }
+
+        // Check if manifest data is different from what exists already (if previous data exists)
+        const existingManifestData = sodaCopy["manifest-files"];
+        let updatedManifestData;
+
+        if (existingManifestData) {
+          updatedManifestData = diffCheckManifestFiles(newManifestData, existingManifestData);
+        } else {
+          updatedManifestData = newManifestData;
+        }
+
+        // manifest data will be stored in sodaCopy to be reused for manifest edits/regenerating cards
+        // sodaJSONObj will remain the same and only have 'additonal-metadata' and 'description' data
+        sodaCopy["manifest-files"] = updatedManifestData;
+
+        // below needs to be added added before the main_curate_function begins
+        sodaJSONObj["manifest-files"] = originalManifestFilesValue;
+      } catch (err) {
+        clientError(err);
+        console.log(err);
+        userError(err);
+      }
+
+      //Create child window here
+      // const existingManifestData = sodaJSONObj["guided-manifest-files"][highLevelFolderName];
+      //send manifest data to main.js to then send to child window
+      const existingManifestData = sodaCopy["manifest-files"]?.[parentFolderName];
+      Swal.close();
+      // TODO: Lock all other manifest buttons
+      ipcRenderer.invoke("spreadsheet", existingManifestData);
+
+      //upon receiving a reply of the spreadsheet, handle accordingly
+      ipcRenderer.on("spreadsheet-reply", async (event, result) => {
+        openedEdit = false;
+        if (!result || result === "") {
+          ipcRenderer.removeAllListeners("spreadsheet-reply");
+          return;
+        } else {
+          //spreadsheet reply contained results
+          // await updateManifestJson(highLevelFolderName, result);
+          ipcRenderer.removeAllListeners("spreadsheet-reply");
+          saveManifestFiles = true;
+          // guidedManifestTable = result;
+          if (saveManifestFiles) {
+            //if additional metadata or description gets added for a file then add to json as well
+            sodaJSONObj["manifest-files"]["auto-generated"] = true;
+            const savedHeaders = result[0];
+            const savedData = result[1];
+            let jsonManifest = {};
+            let localFolderPath = path.join(
+              homeDirectory,
+              "SODA",
+              "manifest_files",
+              parentFolderName
+            );
+            let selectedManifestFilePath = path.join(localFolderPath, "manifest.xlsx");
+            if (!fs.existsSync(localFolderPath)) {
+              fs.mkdirSync(localFolderPath);
+              fs.closeSync(fs.openSync(selectedManifestFilePath, "w"));
+            }
+            jsonManifest = excelToJson({
+              sourceFile: selectedManifestFilePath,
+              columnToKey: {
+                "*": "{{columnHeader}}",
+              },
+            })["Sheet1"];
+
+            let sortedJSON = processManifestInfo(savedHeaders, savedData);
+            jsonManifest = JSON.stringify(sortedJSON);
+            convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
+            //Update the metadata in json object
+            // If extra columns are added preserve them into sodaJSONObj
+            for (let i = 0; i < savedData.length; i++) {
+              let fileName = savedData[i][0];
+              let cleanedFileName = "";
+              let fileNameSplit = fileName.split("/");
+              let description = savedData[i][2];
+              let additionalMetadata = savedData[i][4];
+
+              if (fileNameSplit[0] === "") {
+                //not in a subfolder
+                cleanedFileName = fileNameSplit[1];
+                sodaCopy["dataset-structure"]["folders"][parentFolderName]["files"][
+                  cleanedFileName
+                ]["description"] = description;
+                sodaJSONObj["dataset-structure"]["folders"][parentFolderName]["files"][
+                  cleanedFileName
+                ]["description"];
+                sodaCopy["dataset-structure"]["folders"][parentFolderName]["files"][
+                  cleanedFileName
+                ]["additional-metadata"] = additionalMetadata;
+                sodaJSONObj["dataset-structure"]["folders"][parentFolderName]["files"][
+                  cleanedFileName
+                ]["additional-metadata"] = additionalMetadata;
+                if (savedHeaders[i].length > 5) {
+                  //extra columns are present, ensure to preserve them in sodaJSONObj
+                  for (let extra_column_index = 5; extra_column_index < savedHeaders.length; i++) {
+                    let extraColumnName = savedHeaders[extra_column_index];
+
+                    sodaJSONObj["dataset-structure"]["folders"][parentFolderName]["files"][
+                      cleanedFileName
+                    ]["extra_columns"] = {
+                      [extraColumnName]: [savedData[i][extra_column_index]],
+                    };
+                  }
+                }
+              } else {
+                // is in a subfolder so search for it and update metadata
+                // need to add description and additional metadata to original sodaJSONObj
+                let folderDepthCopy = sodaCopy["dataset-structure"]["folders"][parentFolderName];
+                let folderDepthReal = sodaJSONObj["dataset-structure"]["folders"][parentFolderName];
+                for (let j = 0; j < fileNameSplit.length; j++) {
+                  if (j === fileNameSplit.length - 1) {
+                    folderDepthCopy["files"][fileNameSplit[j]]["description"] = description;
+                    folderDepthReal["files"][fileNameSplit[j]]["description"] = description;
+                    folderDepthCopy["files"][fileNameSplit[j]]["additional-metadata"] =
+                      additionalMetadata;
+                    folderDepthReal["files"][fileNameSplit[j]]["additional-metadata"] =
+                      additionalMetadata;
+
+                    if (savedData[i].length > 5) {
+                      //extra columns are present, ensure to preserve them in sodaJSONObj
+                      for (
+                        let extra_column_index = 5;
+                        extra_column_index < savedHeaders.length;
+                        extra_column_index++
+                      ) {
+                        folderDepthReal["files"][fileNameSplit[j]]["extra_columns"] = {
+                          [savedHeaders[extra_column_index]]: savedData[i][extra_column_index],
+                        };
+                      }
+                    }
+                  } else {
+                    folderDepthCopy = folderDepthCopy["folders"][fileNameSplit[j]];
+                    folderDepthReal = folderDepthReal["folders"][fileNameSplit[j]];
+                  }
+                }
+              }
+            }
+
+            sodaJSONObj["manifest-files"] = originalManifestFilesValue;
+
+            sodaCopy["manifest-files"][parentFolderName] = {
+              headers: savedHeaders,
+              data: savedData,
+            };
+          }
+        }
       });
-      loadManifestFileEdits(jsonManifest);
+      // Swal.fire({
+      //   title:
+      //     "<span style='font-size: 18px !important;'>Edit the manifest file below: </span> <br><span style='font-size: 13px; font-weight: 500'> Tip: Double click on a cell to edit it.<span>",
+      //   html: "<div id='div-manifest-edit'></div>",
+      //   allowEscapeKey: false,
+      //   allowOutsideClick: false,
+      //   showConfirmButton: true,
+      //   confirmButtonText: "Confirm",
+      //   showCancelButton: true,
+      //   width: "90%",
+      //   // height: "80%",
+      //   customClass: "swal-large",
+      //   heightAuto: false,
+      //   backdrop: "rgba(0,0,0, 0.4)",
+      //   didOpen: () => {
+      //     Swal.hideLoading();
+      //   },
+      // }).then((result) => {
+      //   $(jstreePreviewManifest).jstree().deselect_all(true);
+      //   // sort the updated json object (since users might have added new columns)
+      //   let manifestHeaders = table1.getHeaders().split(",");
+      //   let manifestEntries = table1.getData();
+      //   let sortedJSON = processManifestInfo(manifestHeaders, manifestEntries);
+      //   // // write this new json to existing manifest.json file
+      //   jsonManifest = JSON.stringify(sortedJSON);
+      //   // convert manifest.json to existing manifest.xlsx file
+      //   convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
+      // });
+      // loadManifestFileEdits(jsonManifest);
     }
   });
   $(guidedJsTreePreviewManifest).on("select_node.jstree", function (evt, data) {
@@ -331,35 +684,35 @@ $(document).ready(function () {
           "*": "{{columnHeader}}",
         },
       })["Sheet1"];
-      Swal.fire({
-        title:
-          "<span style='font-size: 18px !important;'>Edit the manifest file below: </span> <br><span style='font-size: 13px; font-weight: 500'> Tip: Double click on a cell to edit it.<span>",
-        html: "<div id='div-manifest-edit'></div>",
-        allowEscapeKey: false,
-        allowOutsideClick: false,
-        showConfirmButton: true,
-        confirmButtonText: "Confirm",
-        showCancelButton: true,
-        width: "90%",
-        // height: "80%",
-        customClass: "swal-large",
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        didOpen: () => {
-          Swal.hideLoading();
-        },
-      }).then((result) => {
-        $(jstreePreviewManifest).jstree().deselect_all(true);
-        // sort the updated json object (since users might have added new columns)
-        let manifestHeaders = table1.getHeaders().split(",");
-        let manifestEntries = table1.getData();
-        let sortedJSON = processManifestInfo(manifestHeaders, manifestEntries);
-        // // write this new json to existing manifest.json file
-        jsonManifest = JSON.stringify(sortedJSON);
-        // convert manifest.json to existing manifest.xlsx file
-        convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
-      });
-      loadManifestFileEdits(jsonManifest);
+      // Swal.fire({
+      //   title:
+      //     "<span style='font-size: 18px !important;'>Edit the manifest file below: </span> <br><span style='font-size: 13px; font-weight: 500'> Tip: Double click on a cell to edit it.<span>",
+      //   html: "<div id='div-manifest-edit'></div>",
+      //   allowEscapeKey: false,
+      //   allowOutsideClick: false,
+      //   showConfirmButton: true,
+      //   confirmButtonText: "Confirm",
+      //   showCancelButton: true,
+      //   width: "90%",
+      //   // height: "80%",
+      //   customClass: "swal-large",
+      //   heightAuto: false,
+      //   backdrop: "rgba(0,0,0, 0.4)",
+      //   didOpen: () => {
+      //     Swal.hideLoading();
+      //   },
+      // }).then((result) => {
+      //   $(jstreePreviewManifest).jstree().deselect_all(true);
+      //   // sort the updated json object (since users might have added new columns)
+      //   let manifestHeaders = table1.getHeaders().split(",");
+      //   let manifestEntries = table1.getData();
+      //   let sortedJSON = processManifestInfo(manifestHeaders, manifestEntries);
+      //   // // write this new json to existing manifest.json file
+      //   jsonManifest = JSON.stringify(sortedJSON);
+      //   // convert manifest.json to existing manifest.xlsx file
+      //   convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
+      // });
+      // loadManifestFileEdits(jsonManifest);
     }
   });
 });
@@ -373,16 +726,20 @@ const unHideAndSmoothScrollToElement = (id) => {
   });
 };
 
-const smoothScrollToElement = (idOrElement) => {
+const smoothScrollToElement = (idOrElement, block = "start", inline = "nearest") => {
   //check if idOrElement is an element
   if (typeof idOrElement === "string") {
-    elementToScrollTo = document.getElementById(id);
+    elementToScrollTo = document.getElementById(idOrElement);
     elementToScrollTo.scrollIntoView({
       behavior: "smooth",
+      block: block,
+      inline: inline,
     });
   } else {
     idOrElement.scrollIntoView({
       behavior: "smooth",
+      block: block,
+      inline: inline,
     });
   }
 };
@@ -639,6 +996,7 @@ const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
     document.querySelector("#input-manifest-local-gen-location").placeholder !==
     document.querySelector("#input-manifest-local-folder-dataset").placeholder
   ) {
+    // A local dataset folder has been selected that is different from the destination folder for the manifest file
     localGenerationDifferentDestination = true;
   }
 
@@ -676,7 +1034,7 @@ const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
   }).then((result) => {});
 
   // clean the manifest files by dropping empty columns ( keep the required columns even if empty )
-  await dropEmptyManifestColumns();
+  // await dropEmptyManifestColumns();
 
   await generateManifest("", type, manifestEditBoolean, ev);
 
@@ -1810,6 +2168,7 @@ function checkEmptySubFolders(datasetStructure) {
 // Parameter: dataset structure object
 // Return: manifest file folder path
 const generateManifestFolderLocallyForEdit = async (ev) => {
+  //Function called by Confirm button in Prepare Metadata -> Manifest
   var type = "local";
   if ($('input[name="generate-manifest-1"]:checked').prop("id") === "generate-manifest-from-Penn") {
     type = "bf";
@@ -2353,6 +2712,7 @@ document.querySelector(".manifest-change-current-ds").addEventListener("click", 
 document
   .querySelector("#show-manifest-gen-on-pennsieve-section-btn")
   .addEventListener("click", function () {
+    openedEdit = false;
     // show the section
     let section = document.querySelector("#manifest-gen-on-pennsieve-section");
     section.style.display = "flex";

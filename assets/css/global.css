@@ -1,22 +1,29 @@
+/* 
+  This CSS files contains the global standards for 
+  containers, text, dropdowns, cards/tiles, animations, sweet alert (swal), and helper classes 
+*/
+
 /* Fonts ---------------------------- */
+@import url("https://fonts.googleapis.com/css?family=Poppins:400,500,600,700");
 
 @font-face {
-  font-family: "Montserrat", sans-serif;
-  /* font-family: 'Source Code Pro'; */
+  font-family: "Poppins", sans-serif;
   font-style: normal;
   font-weight: 400;
-  /* src: local('Source Code Pro'), local('SourceCodePro'), url(fonts/SourceCodePro-Regular.ttf) format('truetype'); */
 }
 
-/* Global ---------------------------- */
+/* Global CSS to Standardize the styling used throughout SODA */
 
 * {
   box-sizing: border-box;
 }
 
 html {
+  font-family: Poppins, sans-serif;
+  -webkit-user-select: none; /* disable selection */
+  -webkit-user-drag: none; /* disable dragging */
+  cursor: default; /* use default cursor */
   height: 100%;
-  font-family: "BlinkMacSystemFont", "Lucida Grande", "Segoe UI", Ubuntu, Cantarell, sans-serif;
   font-size: 14px;
   line-height: 1.5;
   overflow: hidden; /* Prevents rubber-band scrolling of the whole "page" */
@@ -25,9 +32,10 @@ html {
 }
 
 body {
-  margin: 0;
+  margin: 0; /* Remove default margin */
   height: 100%;
   display: flex;
+  background: #e9edf4;
 }
 
 a {
@@ -39,31 +47,156 @@ h2,
 h3 {
   margin-top: 0;
   line-height: 1.5;
+  font-family: Poppins;
 }
 
 h1 {
   font-size: 1.5em;
   font-weight: 600;
+  font-family: Poppins;
 }
 
 h2 {
   font-size: 1.3em;
   font-weight: 600;
+  font-family: Poppins;
 }
 
 h3 {
   font-size: 1.12em;
   font-weight: 600;
+  font-family: Poppins;
 }
 
 h5 {
   font-size: 1em;
   font-weight: 600;
+  font-family: Poppins;
 }
 
-/* svg {
-  fill: currentColor;
-} */
+p,
+label,
+button,
+a,
+select,
+span,
+option,
+div,
+font,
+input {
+  font-family: Poppins !important;
+}
+
+textarea {
+  font-family: Poppins;
+  font-size: 15px;
+}
+
+/* Dropdown classes */
+
+.info-dropdown {
+  display: flex;
+  align-self: flex-start;
+  flex-wrap: nowrap;
+  justify-content: start;
+  align-items: center;
+  cursor: pointer;
+}
+
+.info-dropdown i {
+  margin-left: 6px;
+  margin-right: 6px;
+  font-size: 12px;
+  color: #000;
+}
+
+/* Card/tile standards */
+
+.disabled-animated-div {
+  padding-top: 10px;
+  background: #f6f6f6;
+  color: #4d4a4a;
+  width: inherit;
+  height: inherit;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+#notification {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 288px;
+  padding: 20px;
+  z-index: 10000000;
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+#version {
+  white-space: nowrap;
+}
+
+.temporary-hide {
+  display: none;
+}
+
+/* Animations */
+
+.backgroundAnimate {
+  background-image: none !important;
+  -o-animation: fadeIt 3s ease-in-out;
+  animation: fadeIt 3s ease-in-out;
+}
+
+.notransition {
+  -webkit-transition: none !important;
+  -moz-transition: none !important;
+  -o-transition: none !important;
+  transition: none !important;
+}
+
+.pulse-blue {
+  box-shadow: 0 0 0 0 rgba(52, 172, 224, 1);
+  animation: pulse-blue-animation 2s infinite;
+}
+
+.bi.bi-trash.custom-fields:hover {
+  animation: shakingeffect 0.4s;
+}
+
+/* 2 classes below are for the loading splash screen */
+
+.fas.fa-hand-point-left.welcome-icon-hand {
+  animation-duration: 0.7s;
+  animation-name: changeWelcomeIcon;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+  position: relative;
+  color: var(--color-light-green);
+  font-size: 21px;
+  margin-right: 10px;
+}
+
+.jump-back:hover,
+.jump-back:focus,
+.jump-back:active {
+  -webkit-animation-name: jump-back-float, jump-back;
+  animation-name: jump-back-float, jump-back;
+  -webkit-animation-duration: 0.3s, 1.5s;
+  animation-duration: 0.3s, 1.5s;
+  -webkit-animation-delay: 0s, 0.3s;
+  animation-delay: 0s, 0.3s;
+  -webkit-animation-timing-function: ease-out, ease-in-out;
+  animation-timing-function: ease-out, ease-in-out;
+  -webkit-animation-iteration-count: 1, infinite;
+  animation-iteration-count: 1, infinite;
+  -webkit-animation-fill-mode: forwards;
+  animation-fill-mode: forwards;
+  -webkit-animation-direction: normal, alternate;
+  animation-direction: normal, alternate;
+}
 
 /* Code */
 

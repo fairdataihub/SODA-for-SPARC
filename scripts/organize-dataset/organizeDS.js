@@ -211,7 +211,6 @@ function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
         },
       }).then((result) => {
         if (result.isConfirmed) {
-          copnsole.log(organizeCurrentLocation);
           var filtered = getGlobalPath(organizeCurrentLocation);
           var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
 
@@ -595,14 +594,14 @@ function renameFolder(
   }
 }
 
-function getGlobalPath(path) {
+const getGlobalPath = (path) => {
   var currentPath = path.value.trim();
   var jsonPathArray = currentPath.split("/");
   var filtered = jsonPathArray.filter(function (el) {
     return el != "";
   });
   return filtered;
-}
+};
 
 function loadFileFolder(myPath) {
   var appendString = "";

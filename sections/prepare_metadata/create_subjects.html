@@ -15,16 +15,7 @@
     "
   >
     <header class="section-header">
-      <div
-        style="
-          display: inline-flex;
-          align-items: center;
-          flex-direction: row;
-          width: 94.5%;
-          padding-right: 20px;
-          margin-bottom: 50px;
-        "
-      >
+      <div class="container-tab-information-header">
         <div style="width: 100%; border-bottom: 3px solid #b80d49; margin-bottom: -5px">
           <div class="need-help-div">
             <h2>Prepare Metadata - Create subjects.xlsx</h2>
@@ -116,7 +107,7 @@
                 </div>
                 <div class="card-body">
                   <i class="far fa-save" style="color: var(--color-bg-orange)"></i>
-                  <h2>I want to continue working on an existing subjects.xlsx file</h2>
+                  <h2>I want to continue on an existing subjects.xlsx file</h2>
                 </div>
               </div>
             </div>
@@ -1003,7 +994,7 @@
                   />
                   <button
                     class="button-add-species"
-                    onclick="addSpecies(this, 'subject')"
+                    onclick="addSpecies(this, 'subject', 'ffm')"
                     id="button-add-species-subject"
                   >
                     <svg
@@ -1806,7 +1797,7 @@
         <div id="accordian-custom-fields"></div>
         <div
           class="ui secondary submit button"
-          style="margin: 20px"
+          style="margin: 20px; font-family: Poppins"
           onclick="addCustomField('subjects', 'free-form')"
         >
           <svg

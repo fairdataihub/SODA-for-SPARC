@@ -496,13 +496,12 @@ function addSubjectIDToJSON(subjectID) {
 }
 
 /// function to add Species - subjects + samples
-async function addSpecies(ev, type, curationMode) {
+const addSpecies = async (ev, type, curationMode) => {
   let curationModeSelectorPrefix = "";
   if (curationMode == "guided") {
     curationModeSelectorPrefix = "guided-";
   }
 
-  $(`#${curationModeSelectorPrefix}bootbox-${type}-species`).val("");
   if (curationMode == "guided") {
     guidedSetStrainRRID("");
   }
@@ -518,7 +517,7 @@ async function addSpecies(ev, type, curationMode) {
     },
     didOpen: () => {
       $(".swal2-confirm").attr("id", "btn-confirm-species");
-      createSpeciesAutocomplete(`sweetalert-${type}-species`);
+      createSpeciesAutocomplete(`sweetalert-${type}-species`, curationMode);
     },
     preConfirm: () => {
       if (document.getElementById(`sweetalert-${type}-species`).value === "") {
@@ -535,9 +534,9 @@ async function addSpecies(ev, type, curationMode) {
   } else {
     switchSpeciesStrainInput("species", "add", curationMode);
   }
-}
+};
 
-function switchSpeciesStrainInput(type, mode, curationMode) {
+const switchSpeciesStrainInput = (type, mode, curationMode) => {
   let curationModeSelectorPrefix = "";
   if (curationMode == "guided") {
     curationModeSelectorPrefix = "guided-";
@@ -556,7 +555,7 @@ function switchSpeciesStrainInput(type, mode, curationMode) {
       "<i class='pen icon'></i>Edit"
     );
   }
-}
+};
 
 const guidedSetStrainRRID = (RRID) => {
   const rridLabel = document.getElementById("guided-strain-rrid-label");
@@ -564,17 +563,17 @@ const guidedSetStrainRRID = (RRID) => {
 
   if (!RRID) {
     rridLabel.classList.add("hidden");
-    rridInput.style.display = "none";
+    rridInput.classList.add("hidden");
     rridInput.value = "";
     return;
   }
 
   rridLabel.classList.remove("hidden");
-  rridInput.style.display = "flex";
+  rridInput.classList.remove("hidden");
   rridInput.value = RRID;
 };
 
-async function addStrain(ev, type, curationMode) {
+const addStrain = async (ev, type, curationMode) => {
   let curationModeSelectorPrefix = "";
   if (curationMode == "guided") {
     curationModeSelectorPrefix = "guided-";
@@ -614,7 +613,7 @@ async function addStrain(ev, type, curationMode) {
   } else {
     switchSpeciesStrainInput("strain", "add", curationMode);
   }
-}
+};
 
 // populate RRID
 function populateRRID(strain, type, curationMode) {

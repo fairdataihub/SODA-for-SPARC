@@ -9,10 +9,9 @@ Note: Some frontend elements of the workflow are in the renderer.js file as well
 ******************************************************
 */
 
-// Main functions
-const disseminatePublish = async () => {
+const disseminatePublish = async (curationMode) => {
   // check that the user completed all pre-publishing checklist items for the given dataset
-  if (!allPrepublishingChecklistItemsCompleted()) {
+  if (!allPrepublishingChecklistItemsCompleted(curationMode)) {
     // alert the user they must complete all checklist items before beginning the prepublishing process
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
@@ -34,22 +33,23 @@ const disseminatePublish = async () => {
   }
 
   // show a SWAL loading message until the submit popup that asks the user for their approval appears
-  Swal.fire({
-    title: `Preparing submission for pre-publishing review`,
-    html: "Please wait...",
-    // timer: 5000,
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  });
+  // Swal.fire({
+  //   title: `Preparing submission for pre-publishing review`,
+  //   html: "Please wait...",
+  //   // timer: 5000,
+  //   allowEscapeKey: false,
+  //   allowOutsideClick: false,
+  //   heightAuto: false,
+  //   backdrop: "rgba(0,0,0, 0.4)",
+  //   timerProgressBar: false,
+  //   didOpen: () => {
+  //     Swal.showLoading();
+  //   },
+  // });
 
+  console.log(submitReviewDatasetCheck);
   // begin the dataset publishing flow
-  await showPublishingStatus(submitReviewDatasetCheck);
+  await showPublishingStatus(submitReviewDatasetCheck, curationMode);
 };
 
 const refreshDatasetStatus = () => {
@@ -73,7 +73,12 @@ const disseminateShowPublishingStatus = (callback, account, dataset) => {
 };
 
 // Helper functions
-const disseminateDataset = (option) => {
+const disseminateDataset = async (option, curationMode) => {
+  let curationModeID = "";
+  if (curationMode) {
+    curationModeID = "guided--";
+  }
+
   if (option === "share-with-curation-team") {
     $("#share-curation-team-spinner").show();
     Swal.fire({
@@ -98,6 +103,7 @@ const disseminateDataset = (option) => {
         var dataset = $(".bf-dataset-span")
           .html()
           .replace(/^\s+|\s+$/g, "");
+
         disseminateCurationTeam(account, dataset);
       } else {
         $("#share-curation-team-spinner").hide();
@@ -139,7 +145,7 @@ const disseminateDataset = (option) => {
     // check if the user can publish their dataset
     // if so publish the dataset for them under embargo or under publication
     // any exceptions will be caught here so the user can be alerted if something unexpected happens - and for logging
-    disseminatePublish().catch((error) => {
+    disseminatePublish(curationMode).catch((error) => {
       log.error(error);
       console.error(error);
       var emessage = userError(error);
@@ -203,7 +209,10 @@ const unshareDataset = (option) => {
   });
 };
 
-const disseminateCurationTeam = async (account, dataset, share_status = "") => {
+const disseminateCurationTeam = async (account, dataset, share_status = "", method) => {
+  // TODO: Find out what team is needed to share with the curation team
+  // Current method is currently not sharing with the curation team
+  // Maybe the selectedTeam name was changed?
   var selectedTeam = "SPARC Data Curation Team";
   var selectedRole = "manager";
 
@@ -257,6 +266,9 @@ const disseminateCurationTeam = async (account, dataset, share_status = "") => {
         selected_status: selectedStatusOption,
       });
 
+      if (method === "newMethod") {
+        return;
+      }
       $("#share-curation-team-spinner").hide();
 
       if (share_status === "unshare") {
@@ -307,6 +319,9 @@ const disseminateCurationTeam = async (account, dataset, share_status = "") => {
     } catch (error) {
       clientError(error);
       let emessage = userErrorMessage(error);
+      if (method === "newMethod") {
+        return;
+      }
 
       Swal.fire({
         title: "Failed to share with Curation team!",
@@ -362,7 +377,7 @@ const disseminateCurationTeam = async (account, dataset, share_status = "") => {
   }
 };
 
-async function disseminateConsortium(bfAcct, bfDS, share_status = "") {
+const disseminateConsortium = async (bfAcct, bfDS, share_status = "") => {
   var selectedTeam = "SPARC Embargoed Data Sharing Group";
   var selectedRole = "viewer";
 
@@ -523,9 +538,9 @@ async function disseminateConsortium(bfAcct, bfDS, share_status = "") {
       ]
     );
   }
-}
+};
 
-async function disseminateShowCurrentPermission(bfAcct, bfDS) {
+const disseminateShowCurrentPermission = async (bfAcct, bfDS) => {
   currentDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
   if (bfDS === "Select dataset") {
     currentDatasetPermission.innerHTML = "None";
@@ -534,7 +549,7 @@ async function disseminateShowCurrentPermission(bfAcct, bfDS) {
 
   let permissions;
   try {
-    permissions = await api.getDatasetPermissions(bfAcct, bfDS);
+    permissions = await api.getDatasetPermissions(bfAcct, bfDS, false);
   } catch (error) {
     clientError(error);
     ipcRenderer.send(
@@ -565,9 +580,9 @@ async function disseminateShowCurrentPermission(bfAcct, bfDS) {
     "Disseminate Datasets - Show current dataset permission",
     defaultBfDatasetId
   );
-}
+};
 
-async function disseminiateShowCurrentDatasetStatus(callback, account, dataset) {
+const disseminiateShowCurrentDatasetStatus = async (callback, account, dataset) => {
   if (dataset === "Select dataset") {
     $(bfCurrentDatasetStatusProgress).css("visbility", "hidden");
     $("#bf-dataset-status-spinner").css("display", "none");
@@ -620,9 +635,9 @@ async function disseminiateShowCurrentDatasetStatus(callback, account, dataset) 
       );
     }
   }
-}
+};
 
-function checkDatasetDisseminate() {
+const checkDatasetDisseminate = () => {
   if (
     $(".bf-dataset-span.disseminate")
       .html()
@@ -635,4 +650,4 @@ function checkDatasetDisseminate() {
       $("#disseminate-dataset-confirm-button").click();
     }
   }
-}
+};
