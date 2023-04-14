@@ -2279,7 +2279,6 @@ const showCurrentLicense = async () => {
         selected_dataset: selectedBfDataset,
       },
     });
-    console.log(bf_get_license);
     let { license } = bf_get_license.data;
     currentDatasetLicense.innerHTML = license;
 

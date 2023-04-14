@@ -18,7 +18,6 @@ var currentTab = 0; // Current tab is set to be the first tab (0)
 const delay = 250;
 
 const showParentTab = (tabNow, nextOrPrev) => {
-  console.log("TabNow is " + tabNow);
   $("#nextBtn").prop("disabled", true);
   // check to show Save progress btn (only after step 2)
   if (tabNow >= 2) {
@@ -164,7 +163,6 @@ const showParentTab = (tabNow, nextOrPrev) => {
   }
 
   if (tabNow == x.length - 1) {
-    console.log("TabNow on last page");
     let step5Bubble = document.getElementsByClassName("vertical-progress-bar-step")[4];
     // if (step5Bubble.classList.contains("is-current")) {
     //   step5Bubble.classList.remove("is-current");
@@ -478,10 +476,7 @@ const checkHighLevelFoldersInput = () => {
  */
 const nextPrev = (pageIndex) => {
   // var x = document.getElementsByClassName("parent-tabs");
-  console.log("nextPrev called");
-  console.log(pageIndex);
   let parentTabs = document.getElementsByClassName("parent-tabs");
-  console.log(parentTabs[currentTab].id);
 
   if (pageIndex == -1 && parentTabs[currentTab].id === "getting-started-tab") {
     let event = new CustomEvent("custom-back", {
@@ -1200,7 +1195,6 @@ const create_json_object = (action, sodaJSONObj, root_folder_path) => {
       sodaJSONObj["starting-point"][folder]["manifest"] = excelToJson({
         sourceFile: sodaJSONObj["starting-point"][folder]["path"],
       })["Sheet1"];
-      console.log(sodaJSONObj["starting-point"][folder]["manifest"]);
     } else if (fs.existsSync(temp_file_path_csv)) {
       sodaJSONObj["starting-point"][folder]["path"] = temp_file_path_csv;
       sodaJSONObj["starting-point"][folder]["manifest"] = csvToJson
@@ -1337,10 +1331,6 @@ const recursive_structure_create = (
     };
     current_file_path = path.join(current_folder_path, file);
     let stats = fs.statSync(current_file_path);
-    // console.log(stats.isFile())
-    // console.log(path.parse(current_file_path).name != "manifest")
-    // console.log(!/(^|\/)\.[^\/\.]/g.test(file))
-    // console.log(high_level_folder != dataset_folder)
     if (
       stats.isFile() &&
       path.parse(current_file_path).name != "manifest" &&
@@ -1349,33 +1339,17 @@ const recursive_structure_create = (
     ) {
       if (sodaJSONObj["starting-point"][high_level_folder]["path"] !== "") {
         extension = path.extname(sodaJSONObj["starting-point"][high_level_folder]["path"]);
-        console.log(sodaJSONObj["starting-point"][high_level_folder]["path"]);
-        console.log(extension);
         if (extension == ".xlsx") {
           temp_current_file_path = current_file_path.replace(/\\/g, "/");
           root_folder_path = root_folder_path.replace(/\\/g, "/");
-          console.log(temp_current_file_path);
-          console.log(root_folder_path);
+
 
           relative_path = temp_current_file_path.replace(root_folder_path + "/", "");
-          console.log(relative_path);
-          console.log(sodaJSONObj["starting-point"][high_level_folder]["manifest"]);
           let manifestContent = sodaJSONObj["starting-point"][high_level_folder]["manifest"];
           let manifestHeaders = Object.values(manifestContent[0]);
           let manifestData = Object.values(manifestContent[1]);
-          console.log(manifestHeaders);
-          console.log(manifestHeaders.length);
-          // console.log(Object.values(sodaJSONObj["starting-point"][high_level_folder]["manifest"])[0].length)
 
-          console.log(sodaJSONObj["starting-point"][high_level_folder]["manifest"]);
           for (item in sodaJSONObj["starting-point"][high_level_folder]["manifest"]) {
-            console.log(item);
-            console.log(relative_path);
-            console.log(sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["A"]);
-            console.log(sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["B"]);
-            console.log(sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["C"]);
-            console.log(sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["D"]);
-            console.log(sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["E"]);
             if (
               sodaJSONObj["starting-point"][high_level_folder]["manifest"][item]["A"] ==
               relative_path
@@ -1398,14 +1372,9 @@ const recursive_structure_create = (
               }
               if (manifestHeaders.length > 5) {
                 //preserve extra columns
-                console.log("extra columns");
                 let extraColumnHeaders = manifestHeaders.slice(5);
                 let extraColumnValues = manifestData.slice(5);
-                console.log(extraColumnHeaders);
-                console.log(extraColumnHeaders.length);
-                console.log(extraColumnValues);
                 for (let i = 0; i < extraColumnHeaders.length; i++) {
-                  console.log(extraColumnValues[i]);
                   manifest_object["extra_columns"] = {
                     [extraColumnHeaders[i]]: extraColumnValues[i],
                   };
@@ -1450,7 +1419,6 @@ const recursive_structure_create = (
         }
       }
 
-      console.log(manifest_object);
       dataset_folder["files"][file] = {
         path: current_file_path,
         type: "local",
@@ -1949,7 +1917,6 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
 };
 
 const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, category) => {
-  console.log(ev, currentDiv, parentDiv, button, category);
   let continueProgressRC = true;
   let continueProgressDD = true;
 
@@ -2024,11 +1991,9 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
       }
       break;
     case "submit_prepublishing_review-question-2":
-      console.log("here");
       transitionToPrepublishingQuestionThree();
       break;
     case "submit_prepublishing_review-question-3":
-      console.log("HERE");
       // createPrepublishingChecklist("");
       transitionToPrePublishingSubmit();
     case "Question-prepare-manifest-1":
@@ -2463,7 +2428,6 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
   }
   for (var key of Object.keys(metadataobject)) {
     let file_name = require("path").parse(key).name;
-    console.log(file_name);
     switch (file_name) {
       case "submission":
         $(".metadata-button[data-next='submissionUpload']").addClass("done");
