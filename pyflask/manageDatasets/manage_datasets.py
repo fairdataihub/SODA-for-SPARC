@@ -1325,8 +1325,6 @@ def bf_add_permission_team(
 
     headers = create_request_headers(token)
 
-    print(organization_id)
-    print(selected_team)
     try:
         r = requests.get(f"{PENNSIEVE_URL}/organizations/{organization_id}/teams", headers=headers)
         r.raise_for_status()
