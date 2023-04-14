@@ -499,7 +499,7 @@ const showCurrentPermission = async () => {
   log.info(`Requesting current permissions for ${selectedBfDataset}.`);
 
   try {
-    let permissions = await api.getDatasetPermissions(selectedBfAccount, selectedBfDataset);
+    let permissions = await api.getDatasetPermissions(selectedBfAccount, selectedBfDataset, false);
     let permissionList = "";
     let datasetOwner = "";
 
@@ -2279,6 +2279,7 @@ const showCurrentLicense = async () => {
         selected_dataset: selectedBfDataset,
       },
     });
+    console.log(bf_get_license);
     let { license } = bf_get_license.data;
     currentDatasetLicense.innerHTML = license;
 
@@ -2472,11 +2473,19 @@ $("#button-submit-dataset").click(async () => {
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET + ` - Progress track`,
           defaultBfDatasetId
         );
+
+        // Enable curation buttons
         organizeDatasetButton.disabled = false;
+        curateExistingDatasetButton.disabled = false;
+        curateNewDatasetButton.disabled = false;
+
+        curateExistingDatasetButton.className = "button-prompt-container";
+        curateNewDatasetButton.className = "button-prompt-container";
         organizeDatasetButton.className = "btn_animated generate-btn";
+        organzieDatasetButtonDiv.className = "btn_animated-inside";
+
         organizeDatasetButton.style =
           "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
-        organzieDatasetButtonDiv.className = "btn_animated-inside";
 
         $("#para-progress-bar-error-status").html(
           "<span style='color: red;'>" + emessage + sadCan + "</span>"
@@ -2508,11 +2517,20 @@ $("#button-submit-dataset").click(async () => {
       if (countDone > 1) {
         log.info("Done submit track");
         if (success_upload === true) {
+          // Enable curation buttons
           organizeDatasetButton.disabled = false;
+          curateNewDatasetButton.disabled = false;
+          curateExistingDatasetButton.disabled = false;
+
+          curateExistingDatasetButton.className = "button-prompt-container";
+          curateNewDatasetButton.className = "button-prompt-container";
           organizeDatasetButton.className = "btn_animated generate-btn";
+          organzieDatasetButtonDiv.className = "btn_animated-inside";
+
           organizeDatasetButton.style =
             "margin: 5px; width: 120px; height: 40px; font-size: 15px; border: none !important;";
-          organzieDatasetButtonDiv.className = "btn_animated-inside";
+
+          // Announce success to User
           uploadComplete.open({
             type: "success",
             message: "Upload to Pennsieve completed",

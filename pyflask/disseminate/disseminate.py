@@ -163,14 +163,16 @@ def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset, publication
         abort(403, "You do not have permission to edit this dataset.")
         
     qs = construct_publication_qs(publication_type, embargo_release_date)
+    print(qs)
 
     try:
         r = requests.post(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/publication/request{qs}", headers=create_request_headers(token))
         r.raise_for_status()
         return r.json()
     except Exception as e:
-        if "400" in str(e):
-            abort(400, "Dataset cannot be published if owner does not have an ORCID ID")
+        # if "400" in str(e):
+        #     print(e)
+        #     abort(400, "Dataset cannot be published if owner does not have an ORCID ID")
         handle_http_error(e)
 
     # return ps._api._post(f"/datasets/{selected_dataset_id}/publication/request{qs}", headers=create_request_headers(ps))

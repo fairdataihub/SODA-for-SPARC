@@ -1,5 +1,4 @@
 // Purpose: The front end logic for the Validate Dataset section
-
 const { handleAxiosValidationErrors } = require("./scripts/validator/axios-validator-utility.js");
 
 const { translatePipelineError } = require("./scripts/validator/parse-pipeline-errors.js");
@@ -73,17 +72,17 @@ const pollForValidationResults = async (clientUUID) => {
       `https://validation.sodaforsparc.io/validator/results/${clientUUID}`
     );
   } catch (error) {
-    if (error.response.status == 503) {
-      console.log("YEs we have a 503");
+    if (error.response.status == 503 || error.response.status == 502) {
+      // at this point their validation results are still being created so wait until they are finished instead of exiting the polling state
       return undefined;
     }
+    throw error;
   }
   let results = validationResultsResponse.data;
 
   if (results.status == "Complete") {
     return results;
   } else if (results.status == "WIP") {
-    console.log("No results yet returning undefined");
     return undefined;
   } else {
     // validation report failed to be received mark the validation as failed
@@ -107,6 +106,42 @@ const validateLocalDataset = async () => {
       Swal.showLoading();
     },
   });
+
+  let totalItems;
+  try {
+    totalItems = await api.getNumberOfItemsInLocalDataset(datasetPath);
+  } catch (error) {
+    clientError(error);
+    await Swal.fire({
+      title: "Could not validate your dataset.",
+      message: `Could not determine the size of your dataset before validation. Please try again shortly.`,
+      allowEscapeKey: true,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      showConfirmButton: true,
+      icon: "error",
+    });
+    return;
+  }
+
+  console.log(totalItems);
+
+  if (totalItems >= 50000) {
+    await Swal.fire({
+      title: `Dataset Too Large`,
+      text: "At the moment we cannot validate a dataset with 50,000 or more files.",
+      allowEscapeKey: true,
+      allowOutsideClick: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      showConfirmButton: true,
+      icon: "error",
+    });
+    return;
+  }
 
   // setup the sodaJSONObj for the import endpoint
   let localSodaJsonObject = {
@@ -176,17 +211,54 @@ const validateLocalDataset = async () => {
       "Number of Files",
       file_counter
     );
-    await Swal.fire({
-      title: "Failed to Validate Your Dataset",
-      text: "Please try again. If this issue persists contect the SODA for SPARC team at help@fairdataihub.org",
-      allowEscapeKey: true,
-      allowOutsideClick: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      showConfirmButton: true,
-      icon: "error",
-    });
+    if (error.response && (error.response.status == 503 || error.response.status == 502)) {
+      await Swal.fire({
+        title: "Validation Service Unavailable",
+        text: "The validation service is currently too busy to validate your dataset. Please try again shortly.",
+        icon: "error",
+        confirmButtonText: "Ok",
+        backdrop: "rgba(0,0,0, 0.4)",
+        reverseButtons: reverseSwalButtons,
+        heightAuto: false,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+    } else if (error.response && error.response.status == 400) {
+      let msg = error.response.data.message;
+      if (msg.includes("Missing required metadata files"))
+        msg = "Please add the required metadata files then re-run validation.";
+      await Swal.fire({
+        title: "Validation Error",
+        text: msg,
+        icon: "error",
+        confirmButtonText: "Ok",
+        backdrop: "rgba(0,0,0, 0.4)",
+        reverseButtons: reverseSwalButtons,
+        heightAuto: false,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+    } else {
+      await Swal.fire({
+        title: "Failed to Validate Your Dataset",
+        text: "Please try again. If this issue persists contect the SODA for SPARC team at help@fairdataihub.org",
+        allowEscapeKey: true,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        showConfirmButton: true,
+        icon: "error",
+      });
+    }
     return;
   }
 
@@ -287,6 +359,47 @@ const validatePennsieveDatasetStandAlone = async () => {
     },
   });
 
+  // check if the dataset exceeds the maximumn size
+  let packageTypeCounts;
+  try {
+    packageTypeCounts = await api.getNumberOfPackagesInDataset(datasetName);
+  } catch (err) {
+    clientError(err);
+    await Swal.fire({
+      title: "Could not validate your dataset.",
+      message: `Could not determine the size of your dataset before validation. Please try again shortly.`,
+      allowEscapeKey: true,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      showConfirmButton: true,
+      icon: "error",
+    });
+    return;
+  }
+
+  // count the number of packages in the packgeTypeCounts dictionary
+  let packageCount = 0;
+  for (let packageType in packageTypeCounts) {
+    packageCount += packageTypeCounts[packageType];
+  }
+
+  if (packageCount >= 50000) {
+    await Swal.fire({
+      title: `Dataset Too Large`,
+      text: "At the moment we cannot validate a dataset with 50,000 or more files.",
+      allowEscapeKey: true,
+      allowOutsideClick: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      showConfirmButton: true,
+      icon: "error",
+    });
+    return;
+  }
+
   // create a local SODA JSON object to pass to the import endpoint
   let localSodaJSONObj = {
     "bf-account-selected": {
@@ -331,14 +444,12 @@ const validatePennsieveDatasetStandAlone = async () => {
 
   localSodaJSONObj = datasetPopulationResponse.soda_object;
 
-  console.log("Imported the dataset");
-
   let validationReport;
   try {
     validationReport = await createValidationReport(localSodaJSONObj);
     if (validationReport.status === "Error") throw new Error(validationReport.error);
-  } catch (err) {
-    clientError(err);
+  } catch (error) {
+    clientError(error);
     file_counter = 0;
     folder_counter = 0;
     get_num_files_and_folders(localSodaJSONObj["dataset-structure"]);
@@ -350,17 +461,54 @@ const validatePennsieveDatasetStandAlone = async () => {
       "Number of Files",
       file_counter
     );
-    await Swal.fire({
-      title: "Failed to Validate Your Dataset",
-      text: "Please try again. If this issue persists contect the SODA for SPARC team at help@fairdataihub.org",
-      allowEscapeKey: true,
-      allowOutsideClick: true,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      showConfirmButton: true,
-      icon: "error",
-    });
+    if (error.response && (error.response.status == 503 || error.response.status == 502)) {
+      await Swal.fire({
+        title: "Validation Service Unavailable",
+        text: "The validation service is currently too busy to validate your dataset. Please try again shortly.",
+        icon: "error",
+        confirmButtonText: "Ok",
+        backdrop: "rgba(0,0,0, 0.4)",
+        reverseButtons: reverseSwalButtons,
+        heightAuto: false,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+    } else if (error.response && error.response.status == 400) {
+      let msg = error.response.data.message;
+      if (msg.includes("Missing required metadata files"))
+        msg = "Please add the required metadata files then re-run validation.";
+      await Swal.fire({
+        title: "Validation Error",
+        text: msg,
+        icon: "error",
+        confirmButtonText: "Ok",
+        backdrop: "rgba(0,0,0, 0.4)",
+        reverseButtons: reverseSwalButtons,
+        heightAuto: false,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+    } else {
+      await Swal.fire({
+        title: "Failed to Validate Your Dataset",
+        text: "Please try again. If this issue persists contect the SODA for SPARC team at help@fairdataihub.org",
+        allowEscapeKey: true,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        showConfirmButton: true,
+        icon: "error",
+      });
+    }
     return;
   }
 

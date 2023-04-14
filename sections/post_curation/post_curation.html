@@ -7,16 +7,7 @@
 >
   <div class="main-tabs show" style="display: flex; height: 100%; overflow-y: hidden">
     <header class="section-header">
-      <div
-        style="
-          display: inline-flex;
-          align-items: center;
-          flex-direction: row;
-          width: 94.5%;
-          padding-right: 20px;
-          margin-bottom: 50px;
-        "
-      >
+      <div class="container-tab-information-header">
         <div class="need-help-div">
           <h2>Disseminate Datasets - Share with Curation Team</h2>
           <a
@@ -514,16 +505,7 @@
 >
   <div class="main-tabs show" style="display: flex; height: 100%; overflow-y: hidden">
     <header class="section-header">
-      <div
-        style="
-          display: inline-flex;
-          align-items: center;
-          flex-direction: row;
-          width: 94.5%;
-          padding-right: 20px;
-          margin-bottom: 50px;
-        "
-      >
+      <div class="container-tab-information-header">
         <div class="need-help-div">
           <h2>Disseminate Datasets - Submit for pre-publishing review</h2>
           <a
@@ -711,6 +693,7 @@
         <div id="begin-prepublishing-button-container">
           <button
             id="begin-prepublishing-btn"
+            onclick="beginPrepublishingFlow('')"
             class="btn_animated md"
             style="width: 200px; height: 40px; font-size: 15px"
             data-current="submit_prepublishing_review-question-2"
@@ -776,9 +759,10 @@
                           ></i>
                         </div>
                         <button
+                          class="prepublishing-item-button ml-3"
                           onClick="transitionFromPrePublishingChecklist('add_edit_subtitle-section')"
                         >
-                          Add a subtitle
+                          Add subtitle
                         </button>
                       </td>
                       <td>Give others a brief description of your dataset.</td>
@@ -792,7 +776,10 @@
                             id="prepublishing-checklist-icon-tags"
                           ></i>
                         </div>
-                        <button onClick="transitionFromPrePublishingChecklist('add_tags-section')">
+                        <button
+                          class="prepublishing-item-button ml-3"
+                          onClick="transitionFromPrePublishingChecklist('add_tags-section')"
+                        >
                           Add tags
                         </button>
                       </td>
@@ -808,9 +795,10 @@
                           ></i>
                         </div>
                         <button
+                          class="prepublishing-item-button ml-3"
                           onClick="transitionFromPrePublishingChecklist('add_edit_description-section')"
                         >
-                          Add a description
+                          Add description
                         </button>
                       </td>
                       <td>
@@ -828,9 +816,10 @@
                           ></i>
                         </div>
                         <button
+                          class="prepublishing-item-button ml-3"
                           onClick="transitionFromPrePublishingChecklist('add_edit_banner-section')"
                         >
-                          Add a banner image
+                          Add banner image
                         </button>
                       </td>
                       <td>Add a banner image to help your dataset stand out in listings.</td>
@@ -845,9 +834,10 @@
                           ></i>
                         </div>
                         <button
+                          class="prepublishing-item-button ml-3"
                           onClick="transitionFromPrePublishingChecklist('add_license-section')"
                         >
-                          Add a license
+                          Add license
                         </button>
                       </td>
                       <td>Let others know how they can use this data in their own research.</td>
@@ -861,7 +851,13 @@
                             id="prepublishing-checklist-icon-ORCID"
                           ></i>
                         </div>
-                        <button id="ORCID-btn">Link ORCID iD</button>
+                        <button
+                          class="prepublishing-item-button ml-3"
+                          id="ORCID-btn"
+                          onclick="orcidSignIn('freeform')"
+                        >
+                          Link ORCID iD
+                        </button>
                       </td>
                       <td>
                         Link your ORCID iD to Pennsieve in order to distinguish yourself from other
@@ -877,6 +873,8 @@
             <div class="pre-publishing-continue-container">
               <button
                 class="pre-publishing-continue btn_animated"
+                id="pre-publishing-continue-btn"
+                onclick="createPrepublishingChecklist('freeform')"
                 style="width: 200px; height: 40px; font-size: 15px; margin-top: 2rem"
                 data-current="submit_prepublishing_review-question-3"
                 data-next="submit_prepublishing_review-question-4"
@@ -897,7 +895,7 @@
                 style="
                   cursor: pointer;
                   border-radius: 8px;
-                  width: 200px;
+                  width: 220px;
                   height: 40px;
                   background: #fff;
                   color: red;
@@ -950,7 +948,7 @@
               </div>
 
               <!--Pennsieve metadata file viewer-->
-              <div id="pre-publication-items-container">
+              <div id="pre-publication-items-container" class="prepublish-items-container">
                 <div id="items-pre-publication"></div>
 
                 <div

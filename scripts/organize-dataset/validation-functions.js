@@ -56,12 +56,129 @@ const validateOrganizedDataset = async () => {
     await api.performUserActions(sodaJSONObjCopy);
   }
 
+  // check size before doing this
+  // situations:
+  // 1. Local dataset -> count sodaJSONObj
+  // 2. Pennsieve dataset -> count sodaJSONObj
+  // 3. Saved dataset -> count sodaJSONObj
+  // 4. Merge -> count sodaJSONObj + packageTypeCounts to get the total number of files
+  // NOTE: I do have to consider deleted files since they will not be included, but can ignore moved/renamed files since they will be included in the count
+  // for now lets count then handle option 4 later
+
+  // get the number of files and folders in the dataset that have been added in the virutal organizer
+  file_counter = 0;
+  get_num_files_and_folders(sodaJSONObjCopy["dataset-structure"]);
+
+  // check if the virutal files will be merged with a Pennsieve dataset
+  if (
+    $('input[name="generate-4"]:checked')[0] &&
+    $('input[name="generate-4"]:checked')[0].id === "generate-BF-dataset-options-existing"
+  ) {
+    // get the package count of the PS dataset in order to see if it exceeds the maximumn size
+    let packageTypeCounts;
+    try {
+      // TOOD: Handle the replacements if-existing case as this will change the amount of validation work to be done + therefore the actual amt
+      packageTypeCounts = await api.getNumberOfPackagesInDataset(
+        sodaJSONObjCopy["bf-dataset-selected"]["dataset-name"]
+      );
+    } catch (err) {
+      clientError(err);
+      await Swal.fire({
+        title: "Could not validate your dataset.",
+        message: `Could not determine the size of your dataset before validation. Please try again shortly.`,
+        allowEscapeKey: true,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        showConfirmButton: true,
+        icon: "error",
+      });
+      return;
+    }
+
+    // count the number of packages in the packgeTypeCounts dictionary
+    let packageCount = 0;
+    for (let packageType in packageTypeCounts) {
+      packageCount += packageTypeCounts[packageType];
+    }
+    // TODO: Handle the case where a file replaces an online file
+    file_counter += packageCount;
+  }
+
+  console.log(file_counter);
+
+  if (file_counter >= 50000) {
+    await Swal.fire({
+      title: `Dataset Too Large`,
+      text: "At the moment we cannot validate a dataset with 50,000 or more files.",
+      allowEscapeKey: true,
+      allowOutsideClick: true,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      showConfirmButton: true,
+      icon: "error",
+    });
+    return;
+  }
+
   let validationReport;
   try {
     validationReport = await createValidationReport(sodaJSONObjCopy);
-    if (validationReportData.status === "Error") throw new Error(validationReportData.error);
+    if (validationReport.status === "Error") throw new Error(validationReport.error);
   } catch (error) {
+    console.log(error);
     clientError(error);
+    if (error.response && (error.response.status == 503 || error.response.status == 502)) {
+      await Swal.fire({
+        title: "Validation Service Unavailable",
+        text: "The validation service is currently too busy to validate your dataset. Please try again shortly.",
+        icon: "error",
+        confirmButtonText: "Ok",
+        backdrop: "rgba(0,0,0, 0.4)",
+        reverseButtons: reverseSwalButtons,
+        heightAuto: false,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+    } else if (error.response && error.response.status == 400) {
+      let msg = error.response.data.message;
+      if (msg.includes("Missing required metadata files"))
+        msg = "Please add the required metadata files then re-run validation.";
+      await Swal.fire({
+        title: "Validation Error",
+        text: msg,
+        icon: "error",
+        confirmButtonText: "Ok",
+        backdrop: "rgba(0,0,0, 0.4)",
+        reverseButtons: reverseSwalButtons,
+        heightAuto: false,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+    } else {
+      await Swal.fire({
+        title: "Failed to Validate Your Dataset",
+        text: "Please try again. If this issue persists contect the SODA for SPARC team at help@fairdataihub.org",
+        allowEscapeKey: true,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        showConfirmButton: true,
+        icon: "error",
+      });
+    }
+
     file_counter = 0;
     folder_counter = 0;
     get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
@@ -73,17 +190,6 @@ const validateOrganizedDataset = async () => {
       "Number of Files",
       file_counter
     );
-    await Swal.fire({
-      title: "Failed to Validate Your Dataset",
-      text: "Please try again. If this issue persists contect the SODA for SPARC team at help@fairdataihub.org",
-      allowEscapeKey: true,
-      allowOutsideClick: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      showConfirmButton: true,
-      icon: "error",
-    });
     return;
   }
 

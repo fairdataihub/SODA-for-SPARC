@@ -18,7 +18,7 @@
           <div class="guided--progression-tab-content">
             <span class="dot">0</span>
             <div class="guided--progression-tab-labels">
-              <h1 class="guided--progression-tab-label-main">Curation preparation</h1>
+              <h1 class="guided--progression-tab-label-main">Curation Preparation</h1>
             </div>
           </div>
         </div>
@@ -29,7 +29,7 @@
           <div class="guided--progression-tab-content">
             <span class="dot">1</span>
             <div class="guided--progression-tab-labels">
-              <h1 class="guided--progression-tab-label-main">Dataset structure</h1>
+              <h1 class="guided--progression-tab-label-main">Dataset Structure</h1>
             </div>
           </div>
         </div>
@@ -40,7 +40,7 @@
           <div class="guided--progression-tab-content">
             <span class="dot">2</span>
             <div class="guided--progression-tab-labels">
-              <h1 class="guided--progression-tab-label-main">Dataset metadata</h1>
+              <h1 class="guided--progression-tab-label-main">Dataset Metadata</h1>
             </div>
           </div>
         </div>
@@ -51,7 +51,7 @@
           <div class="guided--progression-tab-content">
             <span class="dot">3</span>
             <div class="guided--progression-tab-labels">
-              <h1 class="guided--progression-tab-label-main">Pennsieve metadata</h1>
+              <h1 class="guided--progression-tab-label-main">Pennsieve Metadata</h1>
             </div>
           </div>
         </div>
@@ -59,7 +59,7 @@
           <div class="guided--progression-tab-content">
             <span class="dot">4</span>
             <div class="guided--progression-tab-labels">
-              <h1 class="guided--progression-tab-label-main">Generate dataset</h1>
+              <h1 class="guided--progression-tab-label-main">Generate Dataset</h1>
             </div>
           </div>
         </div>
@@ -76,13 +76,6 @@
               src="assets/img/logo-soda1024.png"
             />
           </div>
-          <h1
-            class="text-sub-step-title mt-sm mb-sm"
-            style="max-width: 600px; font-size: 18px !important"
-          >
-            Share FAIR neuromodulation-relation data and code through the SPARC data curation
-            workflow
-          </h1>
           <h2 class="mt-2 mb-3" style="font-size: 16px">What would you like to do today?</h2>
           <div
             class="justify-center align-items-center h-100"
@@ -91,32 +84,29 @@
           >
             <div class="button-prompt-container" id="guided-button-start-new-curate">
               <div class="wide-card-text-container">
-                <h2 class="wide-card-title-text" style="margin-right: 3.5rem">
-                  Curate a New Dataset
-                </h2>
+                <h2 class="wide-card-title-text">Prepare and submit a new dataset</h2>
                 <p class="wide-card-subtitle-text">
-                  I want to curate and share a new datataset as per the SPARC workflow
+                  This option will walk you through everything you need to prepare and submit a new
+                  dataset to SPARC
                 </p>
               </div>
               <div id="new-dataset-lottie-container" class="wide-card-lottie-container"></div>
             </div>
             <div class="button-prompt-container" id="guided-button-start-existing-curate">
               <div class="wide-card-text-container">
-                <h2 class="wide-card-title-text" style="margin-right: 1.5rem">
-                  Resume Existing Dataset
-                </h2>
+                <h2 class="wide-card-title-text">Continue Working on a dataset</h2>
                 <p class="wide-card-subtitle-text">
-                  I want to resume working on a Pennsieve or locally saved dataset
+                  This option will let you resume working on a previously started dataset
                 </p>
               </div>
               <div id="existing-dataset-lottie" class="wide-card-lottie-container"></div>
             </div>
             <div class="button-prompt-container" id="guided-button-start-modify-component">
               <div class="wide-card-text-container">
-                <h2 class="wide-card-title-text">Modify Dataset Component</h2>
+                <h2 class="wide-card-title-text">Free Form Mode</h2>
                 <p class="wide-card-subtitle-text">
-                  I want to edit specific aspects of my dataset (create metadata files, add banner
-                  image, etc)
+                  This option provides various features for editing individual components of a
+                  dataset (e.g. create manifest files, edit banner images, etc.)
                 </p>
               </div>
               <div id="edit-dataset-component-lottie" class="wide-card-lottie-container"></div>
@@ -132,6 +122,8 @@
       >
         <div class="guided--capsule-container" id="structure-dataset-capsule-container">
           <div class="guided--capsule" id="guided-resume-existing-dataset-capsule"></div>
+
+          <div class="guided--capsule" id="guided-curation-preparation-intro-capsule"></div>
           <div class="guided--capsule" id="guided-ask-if-submission-is-sparc-funded-capsule"></div>
           <div class="guided--capsule" id="guided-prepare-dataset-structure-capsule"></div>
           <div class="guided--capsule" id="guided-prepare-helpers-capsule"></div>
@@ -156,7 +148,7 @@
                 data-next-element="guided-section-resume-progress-cards"
               >
                 <div class="tile-button-icon" style="width: 46px; fill: var(--color-accent)">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 448 512">
                     <!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
                     <path
                       d="M48 96V416c0 8.8 7.2 16 16 16H384c8.8 0 16-7.2 16-16V170.5c0-4.2-1.7-8.3-4.7-11.3l33.9-33.9c12 12 18.7 28.3 18.7 45.3V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96C0 60.7 28.7 32 64 32H309.5c17 0 33.3 6.7 45.3 18.7l74.5 74.5-33.9 33.9L320.8 84.7c-.3-.3-.5-.5-.8-.8V184c0 13.3-10.7 24-24 24H104c-13.3 0-24-10.7-24-24V80H64c-8.8 0-16 7.2-16 16zm80-16v80H272V80H128zm32 240a64 64 0 1 1 128 0 64 64 0 1 1 -128 0z"
@@ -317,12 +309,26 @@
           </div>
         </div>
 
+        <div class="guided--page" id="guided-curation-preparation-intro-tab" data-page-name="Intro">
+          <h1 class="text-sub-step-title">Curation Preparation Introduction</h1>
+          <div class="guided--section">
+            <p class="help-text">
+              Let’s start with some high-level questions so we can understand your dataset.
+            </p>
+          </div>
+          <div class="guided--section">
+            <h2 class="text-sub-step-title">
+              Click the "Continue" button below to go to the next page.
+            </h2>
+          </div>
+        </div>
+
         <div
-          class="guided--page hidden"
+          class="guided--page"
           id="guided-ask-if-submission-is-sparc-funded-tab"
-          data-page-name="SPARC funding"
+          data-page-name="Funding information"
         >
-          <h1 class="text-sub-step-title">SPARC funding</h1>
+          <h1 class="text-sub-step-title">Funding information</h1>
           <div class="guided--section">
             <h2 class="text-sub-step-title">
               Is the dataset you are submitting funded by a SPARC award?
@@ -389,22 +395,40 @@
               <p class="help-text">
                 Please contact the SPARC curation team before continuing at
                 <a href="mailto:curation@sparc.science">curation@sparc.science</a> to ensure that
-                your dataset is suitable for the SPARC platform and to maximize the impact of your
-                data.
+                your dataset is suitable for the SPARC platform.
               </p>
             </div>
           </div>
         </div>
         <div
-          class="guided--page hidden"
+          class="guided--page"
           id="guided-prepare-dataset-structure-tab"
-          data-page-name="Dataset type"
+          data-page-name="Dataset content"
         >
-          <h1 class="text-sub-step-title">Tell us a little about the structure of your dataset</h1>
+          <h1 class="text-sub-step-title">Describe the content of your dataset</h1>
           <div class="guided--section" id="guided-section-subject-yes-no">
             <label class="guided--form-label centered">
               Does your dataset include data collected from subjects and/or samples?
             </label>
+            <div class="info-dropdown" style="align-self: center">
+              <p class="info-dropdown-text" data-dropdown-type="info">What are subjects/samples?</p>
+              <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="info-container">
+              <p class="help-text">
+                <b>Subjects</b> are experimental units that are being studied. A subject can be a
+                living human, animal, or a biological specimen.
+              </p>
+              <p class="help-text">
+                <b>Samples</b> are a portion of a subject's tissue, fluid, or other biological
+                materal that data is collected from.
+              </p>
+              <p class="help-text">
+                <b>For example:</b> If a study is being done on liver tissue, a subject could be a
+                human donor, and a sample could be a piece of liver tissue that was collected for
+                analysis.
+              </p>
+            </div>
             <div class="guided--radio-button-container">
               <button
                 class="ui positive basic button guided--radio-button datasetTypeSelectionButton"
@@ -437,8 +461,8 @@
 
           <div class="guided--section" id="guided-section-ask-if-dataset-contains-code">
             <label class="guided--form-label centered"
-              >Do you have code to be included in this dataset (computational models or analysis
-              etc)</label
+              >Does your dataset include code files in (computational models or analysis
+              etc.)?</label
             >
             <div class="guided--radio-button-container">
               <button
@@ -467,12 +491,9 @@
 
           <div class="guided--section" id="guided-section-dataset-type">
             <div class="sub-section" id="guided-sub-section-manual-dataset-type-selection">
-              <h2 class="text-sub-step-title">Select a dataset type</h2>
-              <p class="help-text">
-                Since your dataset has both subjects and code, please select your dataset type
-                manually. If you are unsure if your dataset is experimental or computational, please
-                click the dropdown below to learn more about the difference.
-              </p>
+              <label class="guided--form-label centered mt-lg"
+                >Is the dataset focused on the experimental or code/computational aspect?</label
+              >
               <div class="info-dropdown">
                 <p class="info-dropdown-text" data-dropdown-type="info">
                   Learn more about experimental versus computational datasets
@@ -489,9 +510,6 @@
                   scripts, or other code that is used to analyze or visualize experimental data.
                 </p>
               </div>
-              <label class="guided--form-label centered mt-lg"
-                >Is the dataset experimental or computational?</label
-              >
               <div class="guided--radio-button-container">
                 <button
                   class="guided--radio-button tile-button"
@@ -506,7 +524,7 @@
                       xmlns:xlink="http://www.w3.org/1999/xlink"
                       width="120%"
                       height="120%"
-                      viewBox="0 0 64.00 64.00"
+                      viewbox="0 0 64.00 64.00"
                       aria-hidden="true"
                       role="img"
                       class="iconify iconify--emojione"
@@ -560,7 +578,7 @@
                     </svg>
                   </div>
                   <div class="tile-button-text">
-                    <h2>Experimental</h2>
+                    <h2>Experimental focused</h2>
                   </div>
                 </button>
                 <button
@@ -577,7 +595,7 @@
                       id="Layer_1"
                       xmlns="http://www.w3.org/2000/svg"
                       xmlns:xlink="http://www.w3.org/1999/xlink"
-                      viewBox="0 0 32.00 32.00"
+                      viewbox="0 0 32.00 32.00"
                       xml:space="preserve"
                       width="120%"
                       height="120%"
@@ -602,30 +620,20 @@
                     </svg>
                   </div>
                   <div class="tile-button-text">
-                    <h2>Computational</h2>
+                    <h2>Computational focused</h2>
                   </div>
                 </button>
               </div>
             </div>
             <div class="sub-section" id="guided-sub-section-experimental-confirmation">
               <h2 class="text-sub-step-title">
-                Click the "continue" button to begin the experimental dataset curation process.
+                Click "Continue" to begin the experimental dataset curation process.
               </h2>
-              <p class="help-text">
-                Since you selected that your dataset contains data derived from physical subjects
-                and does not contain code, you will be guided through the experimental dataset
-                curation process.
-              </p>
             </div>
             <div class="sub-section" id="guided-sub-section-computational-confirmation">
               <h2 class="text-sub-step-title">
-                Click the "continue" button to begin the computational dataset curation process.
+                Click "Continue" to begin the computational dataset curation process.
               </h2>
-              <p class="help-text">
-                Since you selected that your dataset contains code and does not contain data derived
-                from physical subjects, you will be guided through the experimental dataset curation
-                process.
-              </p>
             </div>
             <div class="sub-section" id="guided-sub-section-configuration-error">
               <h2 class="text-sub-step-title text-error">Unable to determine dataset type</h2>
@@ -636,14 +644,23 @@
                 SPARC team at <a href="mailto:curation@sparc.science">curation@sparc.science</a>.
               </p>
             </div>
+            <div class="sub-section" id="guided-sub-section-loading-dataset-type-import">
+              <div class="lds-roller">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+              Importing dataset type from Pennsieve...
+            </div>
           </div>
         </div>
 
-        <div
-          id="guided-prepare-helpers-tab"
-          class="guided--page hidden"
-          data-page-name="Prepare data"
-        >
+        <div id="guided-prepare-helpers-tab" class="guided--page" data-page-name="Prepare data">
           <h1 class="text-sub-step-title">Before getting started</h1>
 
           <div class="guided--section">
@@ -713,18 +730,14 @@
             <p class="help-text">
               SPARC datasets require that all contributors have an ORCID iD. If you are not sure if
               a contributor has an ORCID iD, you can check by searching for their name on
-              <a target="_blank" href="https://orcid.org">orcid.org</a>. <br /><br />
-              If a contributor does not have an ORCID iD, they can create one for free at
+              <a target="_blank" href="https://orcid.org">orcid.org</a>. If a contributor does not
+              have an ORCID iD, they can create one for free at
               <a target="_blank" href="https://orcid.org/register">orcid.org/register</a>.
             </p>
           </div>
         </div>
 
-        <div
-          id="guided-name-subtitle-tab"
-          class="guided--page hidden"
-          data-page-name="Name and subtitle"
-        >
+        <div id="guided-name-subtitle-tab" class="guided--page" data-page-name="Name and subtitle">
           <h1 class="text-sub-step-title">Dataset name and subtitle</h1>
           <div class="guided--section">
             <label class="guided--form-label">Dataset name: </label>
@@ -738,7 +751,7 @@
               placeholder="Enter dataset name here"
             />
             <div class="info-dropdown">
-              <p class="info-dropdown-text mt-sm" data-dropdown-type="info">
+              <p class="info-dropdown-text" data-dropdown-type="info">
                 What is the dataset name used for?
               </p>
               <i class="fas fa-chevron-right"></i>
@@ -797,7 +810,7 @@
         data-parent-tab-name="Dataset Structure"
       >
         <div class="guided--capsule-container">
-          <!--<div class="guided--capsule" id="guided-dataset-type-selection-capsule"></div>-->
+          <div class="guided--capsule" id="guided-dataset-structure-intro-capsule"></div>
           <div class="guided--capsule" id="guided-subjects-folder-capsule"></div>
           <div class="guided--capsule" id="guided-primary-data-organization-capsule"></div>
           <div class="guided--capsule" id="guided-source-data-organization-capsule"></div>
@@ -807,96 +820,35 @@
           <div class="guided--capsule" id="guided-docs-folder-capsule"></div>
           <div class="guided--capsule" id="guided-folder-structure-preview-capsule"></div>
         </div>
-        <!--
-        <div
-          class="guided--page hidden"
-          id="guided-dataset-type-selection-tab"
-          data-page-name="Dataset type"
-        >
-          <h1 class="guided--text-sub-step">Select a dataset type</h1>
-          <div class="guided--section" >
-            <h2 class="guided--text-sub-step">
-              Is the dataset you are submitting funded by a SPARC award?
-            </h2>
-            <div class="guided--radio-button-container">
-              <button
-                class="ui positive basic button guided--radio-button"
-                id="guided-button-dataset-is-sparc-funded"
-                data-next-element="guided-section-dataset-sparc-funded"
-                data-button-config-value="dataset-is-sparc-funded"
-                data-button-config-value-state="yes"
-              >
-                Yes
-              </button>
-              <button
-                class="ui negative basic button guided--radio-button"
-                id="guided-button-dataset-is-not-sparc-funded"
-                data-next-element="guided-section-dataset-not-sparc-funded"
-                data-button-config-value="dataset-is-sparc-funded"
-                data-button-config-value-state="no"
-              >
-                No
-              </button>
-            </div>
-          </div>
 
-          <div class="guided--section hidden" id="guided-section-dataset-sparc-funded">
-            <h2 class="guided--text-sub-step">
-              Click "Save and Continue" to confirm your dataset is funded by a SPARC award.
-            </h2>
+        <div class="guided--page" id="guided-dataset-structure-intro-tab" data-page-name="Intro">
+          <h1 class="text-sub-step-title">Dataset Structure Introduction</h1>
+          <div class="guided--section">
+            <p class="help-text">
+              The SPARC guidelines require all datasets to be organized according to a strict folder
+              structure (see image below). Over the next steps, you will be asked to specify folders
+              and files to be included in your dataset so SODA can automatically organize them
+              according to the SPARC folder structure when generating your dataset in the last step
+              of this process.
+            </p>
           </div>
-
-          <div class="guided--section hidden" id="guided-section-dataset-not-sparc-funded">
-            <h2 class="guided--text-sub-step">
-              Have you already reached out to the SPARC curation team to see if your data is
-              suitable for the SPARC Data Portal?
+          <div class="guided--section">
+            <h2 class="text-sub-step-title">
+              Click "Save and Continue" to start structuring your dataset.
             </h2>
-            <div class="guided--radio-button-container">
-              <button
-                class="ui positive basic button guided--radio-button"
-                id="guided-button-non-sparc-user-has-contacted-sparc"
-                data-next-element="guided-section-non-sparc-user-has-contacted-sparc"
-                data-button-config-value="non-sparc-user-has-contacted-sparc"
-                data-button-config-value-state="yes"
-              >
-                Yes
-              </button>
-              <button
-                class="ui negative basic button guided--radio-button"
-                id="guided-button-non-sparc-user-has-not-contacted-sparc"
-                data-next-element="guided-section-non-sparc-user-has-not-contacted-sparc"
-                data-button-config-value="non-sparc-user-has-contacted-sparc"
-                data-button-config-value-state="no"
-              >
-                No
-              </button>
-            </div>
-            <div class="guided--section" id="guided-section-non-sparc-user-has-contacted-sparc">
-              <h2 class="guided--text-sub-step">
-                Great, click "Continue" to start the curation process.
-              </h2>
-            </div>
-            <div class="guided--section" id="guided-section-non-sparc-user-has-not-contacted-sparc">
-              <p class="help-text">
-                Please contact the SPARC curation team before continuing at
-                <a href="mailto:curation@sparc.science">curation@sparc.science</a> to ensure that
-                your dataset is suitable for the SPARC platform and to maximize the impact of your
-                data.
-              </p>
-            </div>
           </div>
         </div>
-        -->
 
         <div
           id="guided-subjects-folder-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Dataset structuring"
         >
           <div class="guided--section" id="guided-section-dataset-subjects-text">
             <h1 class="text-sub-step-title">Subject specification</h1>
             <p class="help-text">
-              Add each subject that data was obtained from in the table below.
+              Create a unique ID for each of the subjects that data was collected from in the
+              interface below.
             </p>
           </div>
           <div class="guided--section" id="guided-section-dataset-pools-text">
@@ -925,6 +877,7 @@
             ></div>
             <div class="guided--capsule-sub-page" id="guided-specify-samples-page-capsule"></div>
           </div>
+
           <div class="guided--panel sub-page" id="guided-specify-subjects-page">
             <div class="guided--section" id="guided-specify-subjects-prompt">
               <div class="guided--panel">
@@ -934,9 +887,7 @@
                 >
                   <thead>
                     <tr>
-                      <th class="text-center" colspan="2">
-                        Enter a unique ID for each of your study's subjects
-                      </th>
+                      <th class="text-center" colspan="2">Dataset subjects</th>
                     </tr>
                   </thead>
                   <tbody id="subject-specification-table-body"></tbody>
@@ -1047,7 +998,7 @@
         </div>
         <div
           id="guided-primary-data-organization-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Primary data"
         >
           <div class="guided--section">
@@ -1402,7 +1353,7 @@
         </div>
         <div
           id="guided-source-data-organization-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Source data"
         >
           <div class="guided--section">
@@ -1725,7 +1676,7 @@
         </div>
         <div
           id="guided-derivative-data-organization-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Derivative data"
         >
           <div class="guided--section">
@@ -2034,22 +1985,18 @@
           </div>
         </div>
 
-        <div id="guided-code-folder-tab" class="guided--page hidden" data-page-name="Code data">
+        <div id="guided-code-folder-tab" class="guided--page" data-page-name="Code files">
           <div class="guided--section">
-            <h1 class="text-sub-step-title">Add code used in the generation of the dataset</h1>
+            <h1 class="text-sub-step-title">Code files</h1>
             <p class="help-text">
-              The code folder should contain any scripts or programs used for computational models,
-              data processing, data analysis, or visualization. The code added inside the code
-              folder should contain a README file that describes the code and how to use it.
+              You mentioned at the beginning that you have code files in your dataset. Add those
+              code files into the interface below. Make sure you include a README file that
+              describes the code and how to use it.
             </p>
           </div>
           <div class="guided--panel" id="guided-user-has-code-data"></div>
         </div>
-        <div
-          id="guided-protocol-folder-tab"
-          class="guided--page hidden"
-          data-page-name="Protocol data"
-        >
+        <div id="guided-protocol-folder-tab" class="guided--page" data-page-name="Protocol data">
           <div class="guided--section">
             <h1 class="text-sub-step-title">Protocol data</h1>
             <p class="help-text">
@@ -2084,7 +2031,7 @@
           </div>
           <div class="guided--panel hidden" id="guided-user-has-protocol-data"></div>
         </div>
-        <div id="guided-docs-folder-tab" class="guided--page hidden" data-page-name="Docs data">
+        <div id="guided-docs-folder-tab" class="guided--page" data-page-name="Docs data">
           <div class="guided--section">
             <h1 class="text-sub-step-title">Docs data</h1>
             <p class="help-text">
@@ -2123,7 +2070,7 @@
 
         <div
           id="guided-folder-structure-preview-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Dataset structure preview"
         >
           <div class="guided--section">
@@ -2151,6 +2098,7 @@
         data-parent-tab-name="Dataset metadata"
       >
         <div class="guided--capsule-container">
+          <div class="guided--capsule" id="guided-dataset-metadata-intro-capsule"></div>
           <div class="guided--capsule" id="guided-manifest-file-generation-capsule"></div>
           <div class="guided--capsule" id="guided-create-submission-metadata-capsule"></div>
           <div class="guided--capsule" id="guided-contributors-capsule"></div>
@@ -2162,8 +2110,26 @@
           <div class="guided--capsule" id="guided-create-readme-metadata-capsule"></div>
           <div class="guided--capsule" id="guided-create-changes-metadata-capsule"></div>
         </div>
+
+        <div class="guided--page" id="guided-dataset-metadata-intro-tab" data-page-name="Intro">
+          <h1 class="text-sub-step-title">Dataset Metadata Introduction</h1>
+          <div class="guided--section">
+            <p class="help-text">
+              The SPARC guidelines require several metadata files containing specific information to
+              be included in the dataset. Over the next steps, you will be asked to provide that
+              information which will then be used by SODA to automatically create the SPARC-required
+              metadata files when generating your dataset in the last step of this process.
+            </p>
+          </div>
+          <div class="guided--section">
+            <h2 class="text-sub-step-title">
+              Click "Save and Continue" to start adding Metadata to your dataset.
+            </h2>
+          </div>
+        </div>
+
         <div
-          class="guided--page hidden"
+          class="guided--page"
           id="guided-manifest-file-generation-tab"
           data-page-name="Create manifest files"
         >
@@ -2332,7 +2298,7 @@
         </div>
 
         <div
-          class="guided--page hidden"
+          class="guided--page"
           id="guided-create-submission-metadata-tab"
           data-page-name="Submission metadata"
         >
@@ -2465,7 +2431,7 @@
 
         <div
           id="guided-contributors-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Contributor information"
         >
           <div class="guided--section">
@@ -2507,11 +2473,7 @@
           </div>
         </div>
 
-        <div
-          id="guided-protocols-tab"
-          class="guided--page hidden"
-          data-page-name="Dataset protocols"
-        >
+        <div id="guided-protocols-tab" class="guided--page" data-page-name="Dataset protocols">
           <div class="guided--section">
             <h1 class="text-sub-step-title">Dataset protocols</h1>
             <p class="help-text">
@@ -2742,7 +2704,7 @@
         </div>
         <div
           id="guided-create-description-metadata-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Dataset description"
         >
           <div class="guided--section">
@@ -2939,7 +2901,7 @@
         </div>
         <div
           id="guided-create-subjects-metadata-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Subjects metadata"
         >
           <div class="guided--section">
@@ -3013,9 +2975,9 @@
               <div class="guided--section neumorphic mt-xl">
                 <h2 class="text-sub-step-title mt-0">Experimental Setup</h2>
 
-                <label class="guided--form-label mt-xl">Pool ID:</label>
+                <label class="guided--form-label mt-xl hidden">Pool ID:</label>
                 <input
-                  class="guided--input subjects-form-entry"
+                  class="guided--input subjects-form-entry hidden"
                   id="guided-bootbox-subject-pool-id"
                   name="pool id"
                   type="text"
@@ -3590,7 +3552,7 @@
         </div>
         <div
           id="guided-create-samples-metadata-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Samples metadata"
         >
           <div class="guided--section">
@@ -3685,8 +3647,8 @@
                   sample ID of the sample from which the current sample was derived. <br />
                 </p>
 
-                <label class="guided--form-label mt-xl">Pool id:</label>
-                <div class="demo-controls-body w-100">
+                <label class="guided--form-label mt-xl hidden">Pool id:</label>
+                <div class="demo-controls-body w-100 hidden">
                   <div class="ui input modified">
                     <input
                       type="text"
@@ -4019,11 +3981,7 @@
             </div>
           </div>
         </div>
-        <div
-          id="guided-add-code-metadata-tab"
-          class="guided--page hidden"
-          data-page-name="Code metadata"
-        >
+        <div id="guided-add-code-metadata-tab" class="guided--page" data-page-name="Code metadata">
           <div class="guided--section">
             <h1 class="text-sub-step-title">Code-related metadata</h1>
             <p class="help-text">
@@ -4111,11 +4069,7 @@
             </p>
           </div>
         </div>
-        <div
-          id="guided-create-readme-metadata-tab"
-          class="guided--page hidden"
-          data-page-name="README"
-        >
+        <div id="guided-create-readme-metadata-tab" class="guided--page" data-page-name="README">
           <div class="guided--section">
             <h1 class="text-sub-step-title">README information</h1>
             <p class="help-text">
@@ -4165,11 +4119,7 @@
             </div>
           </div>
         </div>
-        <div
-          id="guided-create-changes-metadata-tab"
-          class="guided--page hidden"
-          data-page-name="CHANGES"
-        >
+        <div id="guided-create-changes-metadata-tab" class="guided--page" data-page-name="CHANGES">
           <div class="guided--section">
             <h1 class="text-sub-step-title">CHANGES information</h1>
             <p class="help-text">
@@ -4213,21 +4163,18 @@
           <div class="guided--capsule" id="guided-add-tags-capsule"></div>
           <div class="guided--capsule" id="guided-assign-license-capsule"></div>
         </div>
-        <div
-          id="guided-pennsieve-intro-tab"
-          class="guided--page hidden"
-          data-page-name="Pennsieve log in"
-        >
+
+        <div id="guided-pennsieve-intro-tab" class="guided--page" data-page-name="Pennsieve log in">
           <div class="guided--section" style="padding-left: 0; padding-right: 0">
             <h1 class="text-sub-step-title">Pennsieve metadata</h1>
             <p class="help-text">
               All SPARC datasets must be uploaded on
               <a href="https://app.pennsieve.io" target="_blank">Pennsieve</a>, a free, open source
-              data management platform supported by the SPARC program. As per the SPARC data
-              curation rule, specific metadata are needed on your Pennsieve dataset. In the
-              subsequent pages, you will be prompted to add these metadata such as a banner image,
-              description, license, etc. SODA will automatically add these metadata to your
-              Pennsieve dataset when your dataset is generated during the last step of this process.
+              data management platform supported by the SPARC program. Over the next steps, you will
+              be prompted to add metadata to Pennsieve such as a banner image, description, license,
+              etc. and SODA will automatically add the metadata to your Pennsieve dataset when your
+              dataset is generated during the last step of this process. This information will be
+              shown on the landing page of your dataset when it is publised on sparc.science.
             </p>
           </div>
           <div class="guided--section">
@@ -4328,7 +4275,7 @@
             </div>
           </div>
         </div>
-        <div id="guided-banner-image-tab" class="guided--page hidden" data-page-name="Banner image">
+        <div id="guided-banner-image-tab" class="guided--page" data-page-name="Banner image">
           <div class="guided--section">
             <h1 class="text-sub-step-title">Banner image</h1>
             <p class="help-text">
@@ -4358,7 +4305,7 @@
             <!-- <div id="guided--banner-image-drag" style="margin-top: 1.5rem;">
               <div class="guided--container-file-import" droppable="true" ondrop="dropHandler(event, 'guided-para-path-image', 'bannerImage', 'guided-mode', dataDeliverables=false);" ondragover="return false;">
                 <div class="guided--file-import" data-code-metadata-file-type="bannerImage" style="min-height: 333px; width: 324px;">
-                  <div id="swal-data-deliverable" class="code-metadata-lottie-container" style="height: 100px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 300" width="300" height="300" preserveAspectRatio="xMidYMid meet" style="width: 100%; height: 100%; transform: translate3d(0px, 0px, 0px); content-visibility: visible;"><defs><clipPath id="__lottie_element_791"><rect width="300" height="300" x="0" y="0"></rect></clipPath></defs><g clip-path="url(#__lottie_element_791)"><g transform="matrix(1,0,0,1,99,36.82099914550781)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M12,65.67900085449219 C12,65.67900085449219 12,59.67900085449219 12,59.67900085449219"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 13.893 13.893" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M12,45.7859992980957 C12,45.7859992980957 12,24.94700050354004 12,24.94700050354004"></path></g><g opacity="1" transform="matrix(1,0,0,1,15,15)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-3,3 C-3,3 -3,-3 -3,-3 C-3,-3 3,-3 3,-3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 10.909 10.909" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M28.909000396728516,12 C28.909000396728516,12 132.5449981689453,12 132.5449981689453,12"></path></g><g opacity="1" transform="matrix(1,0,0,1,141,15)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-3,-3 C-3,-3 3,-3 3,-3 C3,-3 3,3 3,3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 10.909 10.909" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M144,28.909000396728516 C144,28.909000396728516 144,132.54600524902344 144,132.54600524902344"></path></g><g opacity="1" transform="matrix(1,0,0,1,141,141)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M3,-3 C3,-3 3,3 3,3 C3,3 -3,3 -3,3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 11.333 11.333" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M126.66699981689453,144 C126.66699981689453,144 109.66699981689453,144 109.66699981689453,144"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M104,144 C104,144 98,144 98,144"></path></g></g><g transform="matrix(1,0,0,1,122.58927917480469,49.94279098510742)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,60.5620002746582,60.5620002746582)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="10" d=" M35.5620002746582,-35.5620002746582 C35.5620002746582,-35.5620002746582 -35.5620002746582,-23.679000854492188 -35.5620002746582,-23.679000854492188 C-35.5620002746582,-23.679000854492188 -10.25100040435791,-10.25100040435791 -10.25100040435791,-10.25100040435791 C-10.25100040435791,-10.25100040435791 -35.20399856567383,14.70300006866455 -35.20399856567383,14.70300006866455 C-35.20399856567383,14.70300006866455 -15.003999710083008,34.90299987792969 -15.003999710083008,34.90299987792969 C-15.003999710083008,34.90299987792969 9.949000358581543,9.949999809265137 9.949000358581543,9.949999809265137 C9.949000358581543,9.949999809265137 23.679000854492188,35.5620002746582 23.679000854492188,35.5620002746582 C23.679000854492188,35.5620002746582 35.5620002746582,-35.5620002746582 35.5620002746582,-35.5620002746582z"></path></g></g><g transform="matrix(1,0,0,1,102.64799499511719,40.451995849609375)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,74.48500061035156,74.48500061035156)"><path stroke-linecap="round" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-66,0 C-66,-33 -66,-66 -66,-66 C-66,-66 66,-66 66,-66 C66,-66 66,66 66,66 C66,66 66,66 66,66 C66,66 -66,66 -66,66 C-66,66 -66,33 -66,0"></path></g></g></g></svg></div>
+                  <div id="swal-data-deliverable" class="code-metadata-lottie-container" style="height: 100px"><svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 300 300" width="300" height="300" preserveAspectRatio="xMidYMid meet" style="width: 100%; height: 100%; transform: translate3d(0px, 0px, 0px); content-visibility: visible;"><defs><clipPath id="__lottie_element_791"><rect width="300" height="300" x="0" y="0"></rect></clipPath></defs><g clip-path="url(#__lottie_element_791)"><g transform="matrix(1,0,0,1,99,36.82099914550781)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M12,65.67900085449219 C12,65.67900085449219 12,59.67900085449219 12,59.67900085449219"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 13.893 13.893" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M12,45.7859992980957 C12,45.7859992980957 12,24.94700050354004 12,24.94700050354004"></path></g><g opacity="1" transform="matrix(1,0,0,1,15,15)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-3,3 C-3,3 -3,-3 -3,-3 C-3,-3 3,-3 3,-3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 10.909 10.909" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M28.909000396728516,12 C28.909000396728516,12 132.5449981689453,12 132.5449981689453,12"></path></g><g opacity="1" transform="matrix(1,0,0,1,141,15)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-3,-3 C-3,-3 3,-3 3,-3 C3,-3 3,3 3,3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 10.909 10.909" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M144,28.909000396728516 C144,28.909000396728516 144,132.54600524902344 144,132.54600524902344"></path></g><g opacity="1" transform="matrix(1,0,0,1,141,141)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M3,-3 C3,-3 3,3 3,3 C3,3 -3,3 -3,3"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke-dasharray=" 11.333 11.333" stroke-dashoffset="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M126.66699981689453,144 C126.66699981689453,144 109.66699981689453,144 109.66699981689453,144"></path></g><g opacity="1" transform="matrix(1,0,0,1,0,0)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M104,144 C104,144 98,144 98,144"></path></g></g><g transform="matrix(1,0,0,1,122.58927917480469,49.94279098510742)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,60.5620002746582,60.5620002746582)"><path stroke-linecap="butt" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="10" d=" M35.5620002746582,-35.5620002746582 C35.5620002746582,-35.5620002746582 -35.5620002746582,-23.679000854492188 -35.5620002746582,-23.679000854492188 C-35.5620002746582,-23.679000854492188 -10.25100040435791,-10.25100040435791 -10.25100040435791,-10.25100040435791 C-10.25100040435791,-10.25100040435791 -35.20399856567383,14.70300006866455 -35.20399856567383,14.70300006866455 C-35.20399856567383,14.70300006866455 -15.003999710083008,34.90299987792969 -15.003999710083008,34.90299987792969 C-15.003999710083008,34.90299987792969 9.949000358581543,9.949999809265137 9.949000358581543,9.949999809265137 C9.949000358581543,9.949999809265137 23.679000854492188,35.5620002746582 23.679000854492188,35.5620002746582 C23.679000854492188,35.5620002746582 35.5620002746582,-35.5620002746582 35.5620002746582,-35.5620002746582z"></path></g></g><g transform="matrix(1,0,0,1,102.64799499511719,40.451995849609375)" opacity="1" style="display: block;"><g opacity="1" transform="matrix(1,0,0,1,74.48500061035156,74.48500061035156)"><path stroke-linecap="round" stroke-linejoin="round" fill-opacity="0" stroke="rgb(74,144,226)" stroke-opacity="1" stroke-width="12" d=" M-66,0 C-66,-33 -66,-66 -66,-66 C-66,-66 66,-66 66,-66 C66,-66 66,66 66,66 C66,66 66,66 66,66 C66,66 -66,66 -66,66 C-66,66 -66,33 -66,0"></path></g></g></g></svg></div>
                   <div style="display: flex;">
                     <p class="help-text text-center">
                       Drag and Drop</p>
@@ -4521,7 +4468,7 @@
 
         <div
           id="guided-designate-permissions-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Pennsieve user permissions"
         >
           <div class="guided--section">
@@ -4668,7 +4615,7 @@
 
         <div
           id="guided-add-description-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Pennsieve dataset description"
         >
           <div class="guided--section">
@@ -4726,11 +4673,7 @@
             </div>
           </div>
         </div>
-        <div
-          id="guided-add-tags-tab"
-          class="guided--page hidden"
-          data-page-name="Pennsieve dataset tags"
-        >
+        <div id="guided-add-tags-tab" class="guided--page" data-page-name="Pennsieve dataset tags">
           <div class="guided--section">
             <h1 class="text-sub-step-title">Dataset tags</h1>
             <p class="help-text mb-lg">
@@ -4746,11 +4689,7 @@
             </p>
           </div>
         </div>
-        <div
-          id="guided-assign-license-tab"
-          class="guided--page hidden"
-          data-page-name="Sharing license"
-        >
+        <div id="guided-assign-license-tab" class="guided--page" data-page-name="Sharing license">
           <div class="guided--section">
             <h1 class="text-sub-step-title">Sharing license:</h1>
             <p class="help-text">
@@ -4790,7 +4729,7 @@
 
         <div
           id="guided-dataset-validation-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Dataset validation"
         >
           <div class="guided--section">
@@ -4817,7 +4756,7 @@
                   <svg
                     width="48px"
                     height="48px"
-                    viewBox="0 0 16 16"
+                    viewbox="0 0 16 16"
                     class="bi bi-clipboard-check"
                     fill="#585858"
                     xmlns="http://www.w3.org/2000/svg"
@@ -5043,7 +4982,7 @@
 
         <div
           id="guided-dataset-generation-confirmation-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Review and Generate"
         >
           <div class="guided--section">
@@ -5171,7 +5110,7 @@
 
         <div
           id="guided-dataset-generation-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Generate dataset"
         >
           <div class="guided--section">
@@ -5462,7 +5401,7 @@
 
         <div
           id="guided-dataset-dissemination-tab"
-          class="guided--page hidden"
+          class="guided--page"
           data-page-name="Share with SPARC Curation Team"
         >
           <div class="guided--section">
@@ -5497,32 +5436,62 @@
           <div class="guided--section">
             <h2 class="text-sub-step-title mt-0">Editing this dataset</h2>
             <p class="help-text">
-              Now that your initial dataset upload via Guided Mode has been completed, modifications
-              to your dataset can be made by clicking Free Form Mode in the sidebar, selecting the
-              component of your dataset you would like to edit, and selecting
-              <b><span id="guided-pennsieve-dataset-name"></span></b> from the dataset dropdown
-              list. Once your dataset is ready for SPARC curation review, you may share it with the
-              curation team below.
+              If you need to edit this dataset before sharing it with the curation team, you may do
+              so by clicking either "Free Form Mode" or "Continue working on a dataset" on the home
+              page. Selecting "Free Form Mode" is best for making small, individual changes to your
+              dataset, while "Continue working on a dataset" will take you through the same end to
+              end process as the initial upload but will allow you to edit your data uploaded to
+              Pennsieve. Once your dataset is ready for SPARC curation review, you may share it with
+              the curation team below.
             </p>
           </div>
           <div class="guided--section">
-            <h2 class="text-sub-step-title mt-0">Share with the curation team</h2>
+            <h2 class="text-sub-step-title mt-0">Reserve a DOI</h2>
+            <p class="help-text">
+              Reserve a DOI for your dataset while it's being reviewed by the curation team (for
+              instance, if you need to refer to this dataset in a manuscript right away). Note: This
+              DOI will NOT be active, and therefore searchable, until the dataset is published to
+              Pennsieve Discover.
+            </p>
+            <div class="guided--container-data-display mt-sm" style="width: 100%">
+              <div class="guided--card-dataset-info w-auto">
+                <h5 class="guided--dataset-description mr-4">DOI:</h5>
+                <h5 id="guided--para-doi-info" class="guided--dataset-content"></h5>
+              </div>
+            </div>
+            <p id="guided--doi-information"></p>
+            <button
+              class="ui positive button guided--button-footer mt-2"
+              id="curate-button-reserve-doi"
+              style="
+                background-color: var(--color-light-green) !important;
+                width: 150px !important;
+                height: 3.2rem;
+              "
+              onclick="guidedReserveAndSaveDOI()"
+            >
+              Reserve DOI
+            </button>
+            <p id="curate-doi-information" class="help-text mt-2"></p>
+          </div>
+          <div class="guided--section">
+            <h2 class="text-sub-step-title mt-0">Send dataset to curation team for review</h2>
 
             <p class="help-text">
               Sharing your dataset with the SPARC Curation Team will inform the Curation Team that
-              your dataset is ready to be reviewed. It is then advised not to make changes to the
-              dataset until the Curation Team contacts you.
+              your dataset is ready to be reviewed. Note that your dataset will be locked and not
+              editable until it is reviewed by the curation team.
             </p>
           </div>
           <div class="guided--section">
             <div class="guided--container-data-display mt-sm" style="width: 100%">
               <div class="guided--card-dataset-info">
                 <div class="guided--dataset-description-container">
-                  <h5 class="guided--dataset-description">Current status:</h5>
+                  <h5 class="guided--dataset-description">Review status:</h5>
                 </div>
                 <div class="guided--dataset-content-container">
                   <h5
-                    id="guided-dataset-shared-with-curation-team-status"
+                    id="guided--para-review-dataset-info-disseminate"
                     class="guided--dataset-content"
                   ></h5>
                 </div>
@@ -5543,33 +5512,306 @@
             ><button
               class="ui positive button guided--button-footer mt-lg"
               id="guided-button-unshare-dataset-with-curation-team"
-              style="background-color: var(--color-bg-plum) !important; width: 270px !important"
-              onclick="guidedModifyCurationTeamAccess('unshare')"
-            >
-              Unshare with SPARC Curation Team
-            </button>
-          </div>
-          <div class="guided-section hidden">
-            <h2 class="text-sub-step-title mt-0">
-              Reserve a DOI for your dataset while it's being review by the curation team.
-            </h2>
-            <p class="help-text">
-              If you would like to reserve a DOI for your dataset while it's being reviewed by the
-              curation team, click the button below.
-            </p>
-            <button
-              class="ui positive button guided--button-footer mt-lg"
-              id="guided-button-reserve-doi"
               style="
-                background-color: var(--color-light-green) !important;
+                background-color: var(--color-bg-plum) !important;
                 width: 281px !important;
                 height: 3.2rem;
-                font-family: Poppins;
               "
-              onclick="reserveDOI()"
+              onclick="guidedModifyCurationTeamAccess('unshare')"
             >
-              Reserve DOI
+              Withdraw from Review
             </button>
+          </div>
+          <div class="guided--section hidden" id="guided--prepublishing-checklist-container">
+            <div class="ui form">
+              <div class="grouped fields">
+                <div>
+                  <div
+                    style="
+                      display: flex;
+                      flex-direction: column;
+                      align-items: center;
+                      justify-content: center;
+                    "
+                  >
+                    <label
+                      id="guided--pre_publishing_checklist_label"
+                      style="
+                        font-size: 17px;
+                        color: var(--color-bg-plum);
+                        width: 100%;
+                        text-align: center;
+                        margin-bottom: 1rem;
+                      "
+                      >Pre-submission checklist
+                      <i
+                        class="fas fa-info-circle popover-tooltip"
+                        data-content="Use the pre-publishing checklist below to verify your dataset meets all of the SPARC requirements for a publishable dataset. 
+                                    Click on any missing checklist items and you will be navigated to where you may add that item. "
+                        rel="popover"
+                        data-html="true"
+                        data-placement="right"
+                        data-trigger="hover"
+                        data-original-title=""
+                        title=""
+                      ></i>
+                    </label>
+
+                    <table
+                      class="ui fixed table"
+                      id="guided--prepublishing-checklist"
+                      style="max-height: 250px; margin-top: 0px"
+                    >
+                      <thead>
+                        <tr>
+                          <th style="width: 250px">Item</th>
+                          <th>Description</th>
+                        </tr>
+                      </thead>
+                      <tbody style="height: 250px">
+                        <tr style="height: 15px">
+                          <td>
+                            <div
+                              class="guided--icon-wrapper"
+                              style="display: inline-block; padding-right: 5px"
+                            >
+                              <i
+                                class="check icon"
+                                style="color: green; visibility: visible"
+                                data-checklist-name="Subtitle"
+                                id="guided--prepublishing-checklist-icon-subtitle"
+                              ></i>
+                            </div>
+                            <button class="disable-button ml-3">Add subtitle</button>
+                          </td>
+                          <td>Give others a brief description of your dataset.</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div
+                              class="guided--icon-wrapper"
+                              style="display: inline-block; padding-right: 5px"
+                            >
+                              <i
+                                class="check icon"
+                                style="color: green; margin-right: 5px; visibility: visible"
+                                data-checklist-name="Tags"
+                                id="guided--prepublishing-checklist-icon-tags"
+                              ></i>
+                            </div>
+                            <button class="disable-button ml-3">Add tags</button>
+                          </td>
+                          <td>Make it easier for people to find your dataset in Discover.</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div
+                              class="guided--icon-wrapper"
+                              style="display: inline-block; padding-right: 5px"
+                            >
+                              <i
+                                class="check icon"
+                                style="color: green; margin-right: 5px; visibility: visible"
+                                data-checklist-name="Description"
+                                id="guided--prepublishing-checklist-icon-readme"
+                              ></i>
+                            </div>
+                            <button class="disable-button ml-3">Add description</button>
+                          </td>
+                          <td>
+                            Give others a detailed overview of your dataset and outline your
+                            findings and analysis.
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div
+                              class="guided--icon-wrapper"
+                              style="display: inline-block; padding-right: 5px"
+                            >
+                              <i
+                                class="check icon"
+                                data-checklist-name="Banner image"
+                                style="color: green; margin-right: 5px; visibility: visible"
+                                id="guided--prepublishing-checklist-icon-banner"
+                              ></i>
+                            </div>
+                            <button class="disable-button ml-3">Add banner image</button>
+                          </td>
+                          <td>Add a banner image to help your dataset stand out in listings.</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div
+                              class="guided--icon-wrapper"
+                              style="display: inline-block; padding-right: 5px"
+                            >
+                              <i
+                                class="check icon"
+                                style="color: green; margin-right: 5px; visibility: visible"
+                                data-checklist-name="License"
+                                id="guided--prepublishing-checklist-icon-license"
+                              ></i>
+                            </div>
+                            <button class="disable-button ml-3">Add license</button>
+                          </td>
+                          <td>Let others know how they can use this data in their own research.</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div
+                              class="guided--icon-wrapper"
+                              style="display: inline-block; padding-right: 5px"
+                            >
+                              <i
+                                class="check icon"
+                                style="color: green; margin-right: 5px; visibility: visible"
+                                data-checklist-name="Link ORCID iD"
+                                id="guided--prepublishing-checklist-icon-ORCID"
+                              ></i>
+                            </div>
+                            <button
+                              id="guided--ORCID-btn"
+                              class="prepublishing-item-button ml-3"
+                              onclick="orcidSignIn('guided')"
+                            >
+                              Link ORCID iD
+                            </button>
+                          </td>
+                          <td>
+                            Link your ORCID iD to Pennsieve in order to distinguish yourself from
+                            other researchers.
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!--Continue Button comes before filetree and excluded files section-->
+                <div class="guided--pre-publishing-continue-container">
+                  <button
+                    id="guided--prepublishing-continue-btn"
+                    class="pre-publishing-continue btn_animated"
+                    style="width: 200px; height: 40px; font-size: 15px; margin-top: 2rem"
+                    onclick="showPrepublishingReview()"
+                  >
+                    <div style="margin-left: 0px; padding-top: 2px" class="btn_animated-inside">
+                      Continue
+                    </div>
+                  </button>
+                </div>
+
+                <!--Withdraw dataset from review when Review status shows dataset is under review-->
+                <div
+                  style="width: 100%; display: none; justify-content: center"
+                  id="guided--prepublishing-withdraw-btn-container"
+                >
+                  <button
+                    id="guided--btn-withdraw-review-dataset"
+                    onclick="withdrawDatasetSubmission('guided')"
+                    class="btn_animated md skip"
+                    style="
+                      cursor: pointer;
+                      border-radius: 8px;
+                      width: 220px;
+                      height: 40px;
+                      background: rgb(255, 255, 255);
+                      color: red;
+                      font-weight: 600;
+                      border: 1px solid red;
+                      font-size: 15px;
+                      display: none;
+                    "
+                  >
+                    <div class="btn_animated-inside">
+                      <i class="fas fa-ban" style="padding-right: 5px"></i>
+                      Withdraw from review
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="guided--section hidden" id="guided--submit-prepublishing-review">
+            <div class="ui form" style="width: 450px">
+              <div class="grouped fields">
+                <!--Metadata file viewer-->
+                <div id="guided--excluded-files-container">
+                  <!--Pennsieve file tree header-->
+                  <div
+                    style="
+                      display: none !important;
+                      flex-direction: column;
+                      align-items: center;
+                      justify-content: center;
+                    "
+                  >
+                    <label
+                      id="guided--pre-publishing-file-viewer-label"
+                      style="
+                        font-size: 17px;
+                        color: var(--color-bg-plum);
+                        width: 100%;
+                        text-align: center;
+                        margin-top: 1.5rem;
+                      "
+                      >Optionally exclude metadata files from publishing:
+                      <i
+                        class="fas fa-info-circle popover-tooltip"
+                        data-content="Excluded metadata files will not be visible to the public once your dataset has been published."
+                        rel="popover"
+                        data-html="true"
+                        data-placement="right"
+                        data-trigger="hover"
+                      ></i>
+                    </label>
+                  </div>
+
+                  <!--Pennsieve metadata file viewer-->
+                  <div
+                    id="guided--pre-publication-items-container"
+                    class="prepublish-items-container hidden"
+                    style="height: 12rem"
+                  >
+                    <div id="guided--items-pre-publication"></div>
+
+                    <div
+                      class="ui active medium text loader guided--items-spinner"
+                      style="position: absolute; top: 6.5rem; margin-left: auto; margin-right: auto"
+                    >
+                      Fetching Files
+                    </div>
+                  </div>
+                </div>
+
+                <!--Submit Button-->
+                <!--#submit-withdraw-prepublishing-btns-container-->
+                <div
+                  style="
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                  "
+                  id="guided--prepublishing-submit-btn-container"
+                >
+                  <button
+                    onclick="disseminateDataset('submit-pre-publishing', 'guided')"
+                    class="ui positive button guided--button-footer mt-lg"
+                    style="
+                      background-color: var(--color-light-green) !important;
+                      width: 281px !important;
+                      height: 3.2rem;
+                      margin-top: 0 !important;
+                    "
+                  >
+                    <i class="fas fa-sign-in-alt" style="padding-right: 5px"></i>
+                    Submit
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -5644,8 +5886,8 @@
     id="guided-file-explorer-elements"
     style="padding: 0; border-radius: 4px; height: 476px"
   >
-    <h2 class="text-sub-step-title mt-0" id="structure-folder-header"></h2>
-    <p class="help-text" id="structure-folder-contents"></p>
+    <!-- <h2 class="text-sub-step-title mt-0" id="structure-folder-header"></h2>
+    <p class="help-text" id="structure-folder-contents"></p> -->
     <div id="items-guided-container" style="width: 100%; display: flex; flex-direction: column">
       <div
         class="guided--folder-organization-buttons-container"

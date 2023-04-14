@@ -15,11 +15,11 @@ const getUserInformation = async () => {
 
 /**
  *
- * @param {string} datasetId - the current dataset id
+ * @param {string} datasetNameOrID - the current dataset name or id
  * @returns {datasetObject} dataset - the dataset object
  */
-const getDataset = async (datasetId) => {
-  let datasetResponse = await client.get(`/datasets/${datasetId}`);
+const getDataset = async (datasetNameOrID) => {
+  let datasetResponse = await client.get(`/datasets/${datasetNameOrID}`);
   return datasetResponse.data;
 };
 
@@ -37,6 +37,12 @@ const getDatasetBannerImageURL = async (selected_account, selected_dataset) => {
 };
 
 const getDatasetRole = async (datasetNameOrId) => {
+  console.log(datasetNameOrId);
+  if (datasetNameOrId != undefined || datasetNameOrId != "") {
+    defaultBfDataset = datasetNameOrId;
+  }
+
+  console.log(defaultBfDataset);
   let datasetRoleResponse = await client.get(`/datasets/${defaultBfDataset}/role`, {
     params: {
       pennsieve_account: defaultBfAccount,
@@ -108,7 +114,7 @@ const getDatasetMetadataFiles = async (datasetName) => {
   return metadata_files;
 };
 
-const getDatasetPermissions = async (selected_account, selected_dataset) => {
+const getDatasetPermissions = async (selected_account, selected_dataset, boolReturnAll) => {
   let getDatasetPermissionsResponse = await client.get(`/manage_datasets/bf_dataset_permissions`, {
     params: {
       selected_account,
@@ -118,10 +124,54 @@ const getDatasetPermissions = async (selected_account, selected_dataset) => {
 
   let { permissions } = getDatasetPermissionsResponse.data;
 
-  return permissions;
+  if (boolReturnAll) {
+    // Return all permissions data: permissions array, team_ids object
+    return getDatasetPermissionsResponse.data;
+  } else {
+    // Return only the permissions array
+    return permissions;
+  }
 };
 
+// This function will be call after a dataset has been shared with the curation team
+// Users will be able to reserve DOI's for their datasets
+const reserveDOI = async (account, dataset) => {
+  // reference: https://docs.pennsieve.io/reference/reservedoi
+  // information: https://docs.pennsieve.io/docs/digital-object-identifiers-dois#assigning-doi-to-your-pennsieve-dataset
+
+  console.log(account);
+  console.log(dataset);
+
+  // TODO: Create endpoint to reserve DOI
+  try {
+    let doiReserve = await client.post(`datasets/${dataset}/reserve-doi`);
+    console.log(doiReserve);
+    // Save DOI to SODAJSONObj
+    return doiReserve.data.doi;
+  } catch (err) {
+    clientError(err);
+    userErrorMessage(err);
+  }
+};
+
+const getDatasetDOI = async (account, dataset) => {
+  // reference: https://docs.pennsieve.io/reference/getdoi
+  console.log(account);
+  console.log(dataset);
+
+  try {
+    let doi = await client.get(`datasets/${dataset}/reserve-doi`);
+    return doi.data.doi;
+  } catch (err) {
+    clientError(err);
+    userErrorMessage(err);
+  }
+};
+
+// TODO: Add api function for setting dataset permissions
+
 const getDatasetsForAccount = async (selected_account) => {
+  console.log(selected_account);
   let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
     params: {
       selected_account,
@@ -361,6 +411,18 @@ const validateLocalDataset = async (datasetPath) => {
   return validationResponse.data;
 };
 
+const getNumberOfPackagesInDataset = async (datasetName) => {
+  const packageCountsResponse = await client.get(`/datasets/${datasetName}/packageTypeCounts`);
+  return packageCountsResponse.data;
+};
+
+const getNumberOfItemsInLocalDataset = async (datasetPath) => {
+  const itemCountsResponse = await client.get(
+    `/datasets/local/item_count?dataset_path=${datasetPath}`
+  );
+  return itemCountsResponse.data;
+};
+
 const api = {
   getUserInformation,
   getDataset,
@@ -383,6 +445,10 @@ const api = {
   performUserActions,
   createSkeletonDataset,
   validateLocalDataset,
+  getDatasetDOI,
+  reserveDOI,
+  getNumberOfPackagesInDataset,
+  getNumberOfItemsInLocalDataset,
 };
 
 module.exports = api;

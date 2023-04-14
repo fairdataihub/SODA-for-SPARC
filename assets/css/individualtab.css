@@ -1372,7 +1372,7 @@
   color: #e7f1ff;
 }
 
-#prepublishing-checklist button {
+/* #prepublishing-checklist button {
   text-decoration: none;
   cursor: pointer;
   background: none;
@@ -1384,15 +1384,15 @@
   padding-left: 2rem;
   padding-right: 3em;
   margin: -2em;
-}
+} */
 
 #prepublishing-checklist td {
   vertical-align: middle;
 }
 
-#prepublishing-checklist button:hover {
+/* #prepublishing-checklist button:hover {
   text-decoration: underline;
-}
+} */
 
 #begin-prepublishing-button {
   margin: 0 auto;
@@ -1403,16 +1403,7 @@
   justify-content: center;
 }
 
-.pre-publishing-continue-container {
-  margin-bottom: 10px;
-  margin-top: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-#pre-publication-items-container {
+/* #pre-publication-items-container {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1420,9 +1411,20 @@
   position: relative;
   box-shadow: 0px 0px 10px #d5d5d5;
   margin-top: 1rem;
-}
+} */
 
 #items-pre-publication {
+  min-height: 230px;
+  height: 230px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-left: 38%;
+  margin-right: auto;
+}
+
+#guided--#items-pre-publication {
   min-height: 230px;
   height: 230px;
   display: flex;
@@ -1442,6 +1444,11 @@
   font-size: 20px;
 }
 
+.guided--pre-publishing-metadata-file-input {
+  margin-right: 0.2rem;
+  font-size: 20px;
+}
+
 .pre-publishing-metadata-file-label {
   position: absolute;
   bottom: 0.3rem;
@@ -1451,6 +1458,11 @@
 }
 
 .pre-publishing-metadata-file-container {
+  width: 300px;
+  position: relative;
+}
+
+.guided--pre-publishing-metadata-file-container {
   width: 300px;
   position: relative;
 }
