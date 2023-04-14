@@ -3514,7 +3514,7 @@ const withdrawDatasetSubmission = async (curationMode) => {
   console.log("clicked withdraw dataset submission");
   // show a SWAL loading message until the submit for prepublishing flow is successful or fails
 
-  if(curationMode !== 'guided') {
+  if (curationMode !== "guided") {
     Swal.fire({
       title: `Preparing to withdraw the dataset submission`,
       html: "Please wait...",
@@ -3592,7 +3592,7 @@ const withdrawDatasetCheck = async (res, curationMode) => {
     });
   } else {
     // show a SWAL loading message until the submit for prepublishing flow is successful or fails
-    if (curationMode !== 'guided'){
+    if (curationMode !== "guided") {
       Swal.fire({
         title: `Withdrawing dataset submission`,
         html: "Please wait...",
@@ -3605,7 +3605,7 @@ const withdrawDatasetCheck = async (res, curationMode) => {
           Swal.showLoading();
         },
       });
-  }
+    }
     await withdrawReviewDataset(curationMode);
   }
 };
