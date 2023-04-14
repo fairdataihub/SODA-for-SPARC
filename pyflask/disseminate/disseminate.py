@@ -163,7 +163,6 @@ def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset, publication
         abort(403, "You do not have permission to edit this dataset.")
         
     qs = construct_publication_qs(publication_type, embargo_release_date)
-    print(qs)
 
     try:
         r = requests.post(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/publication/request{qs}", headers=create_request_headers(token))
