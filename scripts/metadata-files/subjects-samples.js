@@ -563,13 +563,13 @@ const guidedSetStrainRRID = (RRID) => {
 
   if (!RRID) {
     rridLabel.classList.add("hidden");
-    rridInput.style.display = "none";
+    rridInput.classList.add("hidden");
     rridInput.value = "";
     return;
   }
 
   rridLabel.classList.remove("hidden");
-  rridInput.style.display = "flex";
+  rridInput.classList.remove("hidden");
   rridInput.value = RRID;
 };
 
@@ -1092,8 +1092,6 @@ function populateForms(subjectID, type, curationMode) {
           } else if (field.name === "Strain" && infoJson[i] !== "") {
             $(`#${curationModeSelectorPrefix}bootbox-subject-strain`).val(infoJson[i]);
             switchSpeciesStrainInput("strain", "edit", curationMode);
-          } else if (curationMode === "guided" && field.name === "RRID for strain") {
-            guidedSetStrainRRID(infoJson[i]);
           } else if (curationMode == "guided" && field.name === "protocol url or doi") {
             //If the selected sample derived from
             const previouslySavedProtocolURL = infoJson[i];

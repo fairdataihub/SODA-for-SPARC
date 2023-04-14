@@ -151,7 +151,8 @@ const setPageLoadingState = (boolLoadingState) => {
   const pageParentContainers = document.querySelectorAll(".guided--parent-tab");
 
   if (boolLoadingState === true) {
-    const loadingDivHtml = `
+    if (!document.getElementById("guided-loading-div")) {
+      const loadingDivHtml = `
       <div class="guided--main-tab" id="guided-loading-div">
         <div class="guided--loading-div">
           <div class="lds-roller">
@@ -168,8 +169,9 @@ const setPageLoadingState = (boolLoadingState) => {
         </div>
       </div>
     `;
-    // Add the loading div as the last child of the guided-body div
-    document.getElementById("guided-body").insertAdjacentHTML("beforeend", loadingDivHtml);
+      // Add the loading div as the last child of the guided-body div
+      document.getElementById("guided-body").insertAdjacentHTML("beforeend", loadingDivHtml);
+    }
 
     pageParentContainers.forEach((container) => {
       container.classList.add("temporary-hide");
@@ -454,7 +456,9 @@ const savePageChanges = async (pageBeingLeftID) => {
           //Fetch subjects and sample metadata and set subjectsTableData and sampleTableData
           try {
             let fieldEntries = [];
-            for (const field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
+            for (const field of $("#guided-form-add-a-subject")
+              .children()
+              .find(".subjects-form-entry")) {
               fieldEntries.push(field.name.toLowerCase());
             }
             const subjectsMetadataResponse = await client.get(
