@@ -465,7 +465,9 @@ const savePageChanges = async (pageBeingLeftID) => {
           //Fetch subjects and sample metadata and set subjectsTableData and sampleTableData
           try {
             let fieldEntries = [];
-            for (const field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
+            for (const field of $("#guided-form-add-a-subject")
+              .children()
+              .find(".subjects-form-entry")) {
               fieldEntries.push(field.name.toLowerCase());
             }
             const subjectsMetadataResponse = await client.get(
