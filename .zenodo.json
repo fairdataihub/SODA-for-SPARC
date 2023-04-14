@@ -31,15 +31,6 @@
   "description": "Simplifying data curation for researchers funded by the NIH SPARC initiative",
   "access_right": "open",
   "license": "MIT",
-  "keywords": [
-    "SPARC",
-    "FAIR",
-    "data",
-    "curation",
-    "mac",
-    "sparc-dataset",
-    "ubuntu",
-    "windows"
-  ],
+  "keywords": ["SPARC", "FAIR", "data", "curation", "mac", "sparc-dataset", "ubuntu", "windows"],
   "version": "11.0.0"
 }
