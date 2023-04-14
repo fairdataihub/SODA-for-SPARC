@@ -323,7 +323,6 @@ def bf_add_account_username(keyname, key, secret):
     # Check key and secret are valid, if not delete account from config
     try:
         token = get_access_token()
-        namespace_logger.info(f"Access token: {token}")
     except Exception as e:
         namespace_logger.error(e)
         bf_delete_account(keyname)
@@ -844,10 +843,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         error_message = "Please select a valid Pennsieve account"
         abort(500, e)
 
-    namespace_logger.info("Created a ps instance")
-
-    namespace_logger.info(f"Account is {accountname}")
-
 
     # select the user
     try:
@@ -859,7 +854,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         error_message = "Please select a valid Pennsieve account"
         abort(400, error_message)
 
-    namespace_logger.info("Switched to given account")
 
 
     # reauthenticate the user
@@ -872,14 +866,12 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         error_message = "Could not reauthenticate this user"
         abort(400, error_message)
 
-    namespace_logger.info(f"Using dataset {bfdataset}")
 
     selected_dataset_id = get_dataset_id(ps, bfdataset)
 
     # select the dataset 
     try:
         ps.use_dataset(selected_dataset_id)
-        namespace_logger.info("Used the dataset")
     except Exception as e:
         submitdatastatus = "Done"
         did_fail = True
@@ -1325,8 +1317,6 @@ def bf_add_permission_team(
 
     headers = create_request_headers(token)
 
-    print(organization_id)
-    print(selected_team)
     try:
         r = requests.get(f"{PENNSIEVE_URL}/organizations/{organization_id}/teams", headers=headers)
         r.raise_for_status()

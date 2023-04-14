@@ -37,12 +37,10 @@ const getDatasetBannerImageURL = async (selected_account, selected_dataset) => {
 };
 
 const getDatasetRole = async (datasetNameOrId) => {
-  console.log(datasetNameOrId);
   if (datasetNameOrId != undefined || datasetNameOrId != "") {
     defaultBfDataset = datasetNameOrId;
   }
 
-  console.log(defaultBfDataset);
   let datasetRoleResponse = await client.get(`/datasets/${defaultBfDataset}/role`, {
     params: {
       pennsieve_account: defaultBfAccount,
@@ -139,13 +137,9 @@ const reserveDOI = async (account, dataset) => {
   // reference: https://docs.pennsieve.io/reference/reservedoi
   // information: https://docs.pennsieve.io/docs/digital-object-identifiers-dois#assigning-doi-to-your-pennsieve-dataset
 
-  console.log(account);
-  console.log(dataset);
-
   // TODO: Create endpoint to reserve DOI
   try {
     let doiReserve = await client.post(`datasets/${dataset}/reserve-doi`);
-    console.log(doiReserve);
     // Save DOI to SODAJSONObj
     return doiReserve.data.doi;
   } catch (err) {
@@ -156,8 +150,6 @@ const reserveDOI = async (account, dataset) => {
 
 const getDatasetDOI = async (account, dataset) => {
   // reference: https://docs.pennsieve.io/reference/getdoi
-  console.log(account);
-  console.log(dataset);
 
   try {
     let doi = await client.get(`datasets/${dataset}/reserve-doi`);
@@ -171,7 +163,6 @@ const getDatasetDOI = async (account, dataset) => {
 // TODO: Add api function for setting dataset permissions
 
 const getDatasetsForAccount = async (selected_account) => {
-  console.log(selected_account);
   let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
     params: {
       selected_account,
@@ -400,7 +391,6 @@ const createSkeletonDataset = async (sodaJSONObj) => {
     sodajsonobject: sodaJSONObj,
   });
   let data = response.data;
-  console.log(data);
   return data["path_to_skeleton_dataset"];
 };
 

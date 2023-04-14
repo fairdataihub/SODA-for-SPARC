@@ -36,11 +36,6 @@ const createValidationReport = async (sodaJSONObj) => {
 
   let metadataFiles = metadataJSONResponse.data;
 
-  console.log("metadataFiles", metadataFiles);
-  console.log("manifestFiles", manifestFiles);
-  console.log("localSodaJsonObject", sodaJSONObj);
-  console.log("clientUUID", clientUUID);
-
   await client.post(
     `https://validation.sodaforsparc.io/validator/validate`,
     {
@@ -55,7 +50,6 @@ const createValidationReport = async (sodaJSONObj) => {
   );
 
   while (true) {
-    console.log("Waiting for the validation to complete...");
     await wait(15000);
     let results = await pollForValidationResults(clientUUID);
     if (!results) {
@@ -126,8 +120,6 @@ const validateLocalDataset = async () => {
     return;
   }
 
-  console.log(totalItems);
-
   if (totalItems >= 50000) {
     await Swal.fire({
       title: `Dataset Too Large`,
@@ -191,8 +183,6 @@ const validateLocalDataset = async () => {
   }
 
   localSodaJsonObject = importLocalDatasetResponse.data;
-
-  console.log("localSodaJsonObject", localSodaJsonObject);
 
   let validationReportData;
   try {
@@ -419,8 +409,6 @@ const validatePennsieveDatasetStandAlone = async () => {
 
   localSodaJSONObj["bf-account-selected"]["account-name"] = $("#current-bf-account").text();
   localSodaJSONObj["bf-dataset-selected"]["dataset-name"] = $("#current-bf-dataset").text();
-
-  console.log("About to import the dataset");
 
   // import the dataset from Pennsieve
   let datasetPopulationResponse;
@@ -736,7 +724,6 @@ document.querySelector("#validate_dataset-1-local").addEventListener("click", as
   }
 
   let otherOptionCard = document.querySelector("#validate_dataset-1-pennsieve");
-  console.log(otherOptionCard);
   otherOptionCard.classList.add("non-selected");
   otherOptionCard.classList.remove("checked");
   otherOptionCard.querySelector(".folder-checkbox input").checked = false;
@@ -773,7 +760,6 @@ document
     }
 
     let otherOptionCard = document.querySelector("#validate_dataset-1-local");
-    console.log(otherOptionCard);
     otherOptionCard.classList.add("non-selected");
     otherOptionCard.classList.remove("checked");
     otherOptionCard.querySelector(".folder-checkbox input").checked = false;
@@ -1011,7 +997,6 @@ const undoOptionCardSelection = (activeOptionCard) => {
   let previousOptionCard = document.querySelector(
     "#validate_dataset-section .option-card.non-selected"
   );
-  console.log(previousOptionCard);
   previousOptionCard.classList.remove("non-selected");
   previousOptionCard.classList.add("checked");
   previousOptionCard.querySelector(".folder-checkbox input").checked = true;
@@ -1030,7 +1015,6 @@ const clearValidationResults = (validationTableElement) => {
 };
 
 const getValidationResultsCount = () => {
-  console.log("CHecking validation results count");
   let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
 
   // check if there are any validation results

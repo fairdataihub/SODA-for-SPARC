@@ -109,7 +109,6 @@ def get_manifests(soda_json_structure):
           # get the manifest file from the subfolder
           for subfolder_item in subfolder["children"]:
               if subfolder_item["content"]["name"] == "manifest.xlsx":
-                namespace_logger.info(subfolder_item)
                 # get the manifest file
                 man_id = subfolder_item["content"]["id"]
                 df = load_manifest_to_dataframe(man_id, "xlsx", token)

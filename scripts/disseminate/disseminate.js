@@ -33,19 +33,19 @@ const disseminatePublish = async (curationMode) => {
   }
 
   // show a SWAL loading message until the submit popup that asks the user for their approval appears
-  Swal.fire({
-    title: `Preparing submission for pre-publishing review`,
-    html: "Please wait...",
-    // timer: 5000,
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  });
+  // Swal.fire({
+  //   title: `Preparing submission for pre-publishing review`,
+  //   html: "Please wait...",
+  //   // timer: 5000,
+  //   allowEscapeKey: false,
+  //   allowOutsideClick: false,
+  //   heightAuto: false,
+  //   backdrop: "rgba(0,0,0, 0.4)",
+  //   timerProgressBar: false,
+  //   didOpen: () => {
+  //     Swal.showLoading();
+  //   },
+  // });
 
   console.log(submitReviewDatasetCheck);
   // begin the dataset publishing flow
@@ -73,7 +73,7 @@ const disseminateShowPublishingStatus = (callback, account, dataset) => {
 };
 
 // Helper functions
-const disseminateDataset = (option, curationMode) => {
+const disseminateDataset = async (option, curationMode) => {
   let curationModeID = "";
   if (curationMode) {
     curationModeID = "guided--";
@@ -209,7 +209,7 @@ const unshareDataset = (option) => {
   });
 };
 
-const disseminateCurationTeam = async (account, dataset, share_status = "") => {
+const disseminateCurationTeam = async (account, dataset, share_status = "", method) => {
   // TODO: Find out what team is needed to share with the curation team
   // Current method is currently not sharing with the curation team
   // Maybe the selectedTeam name was changed?
@@ -266,6 +266,9 @@ const disseminateCurationTeam = async (account, dataset, share_status = "") => {
         selected_status: selectedStatusOption,
       });
 
+      if (method === "newMethod") {
+        return;
+      }
       $("#share-curation-team-spinner").hide();
 
       if (share_status === "unshare") {
@@ -316,6 +319,9 @@ const disseminateCurationTeam = async (account, dataset, share_status = "") => {
     } catch (error) {
       clientError(error);
       let emessage = userErrorMessage(error);
+      if (method === "newMethod") {
+        return;
+      }
 
       Swal.fire({
         title: "Failed to share with Curation team!",

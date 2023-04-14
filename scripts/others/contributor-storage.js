@@ -71,11 +71,9 @@ function addOrUpdateStoredContributor(firstName, lastName, ORCiD, affiliationsAr
 
   // If a contributor with the same ORCiD already exists, update the existing contributor
   if (existingStoredContributorWithSameORCiDIndex >= 0) {
-    console.log("Updating existing contributor");
     storedContributorsArray[existingStoredContributorWithSameORCiDIndex] = contributorObj;
   } else {
     // If a contributor with the same ORCiD doesn't exist, add the new contributor
-    console.log("Adding new contributor");
     storedContributorsArray.push(contributorObj);
   }
   // Write the updated array to the JSON file

@@ -256,7 +256,6 @@ $(document).ready(function () {
     // If there's already an opened manifest file, don't open another one
     if (data.node.text === "manifest.xlsx") {
       if (openedEdit) {
-        console.log("already opened");
         return;
       }
 
@@ -305,7 +304,6 @@ $(document).ready(function () {
       let originalManifestFilesValue = sodaCopy["manifest-files"];
       sodaCopy["manifest-files"] = {};
 
-      console.log(sodaCopy);
       try {
         // used for imported local datasets and pennsieve datasets
         // filters out deleted files/folders before creating manifest data again
@@ -422,8 +420,6 @@ $(document).ready(function () {
                   includeEmptyLines: true,
                 });
 
-                console.log(jsonManifest);
-
                 let alphabet = [
                   "A",
                   "B",
@@ -511,7 +507,6 @@ $(document).ready(function () {
 
       //upon receiving a reply of the spreadsheet, handle accordingly
       ipcRenderer.on("spreadsheet-reply", async (event, result) => {
-        console.log("spreadsheet-reply");
         openedEdit = false;
         if (!result || result === "") {
           ipcRenderer.removeAllListeners("spreadsheet-reply");
@@ -520,7 +515,6 @@ $(document).ready(function () {
           //spreadsheet reply contained results
           // await updateManifestJson(highLevelFolderName, result);
           ipcRenderer.removeAllListeners("spreadsheet-reply");
-          console.log(result);
           saveManifestFiles = true;
           // guidedManifestTable = result;
           if (saveManifestFiles) {
@@ -833,7 +827,6 @@ const convertJSONToXlsx = (jsondata, excelfile) => {
   //Write Column Title in Excel file
   let headingColumnIndex = 1;
   headingColumnNames.forEach((heading) => {
-    console.log(heading);
     let styleObject = yellowHeaderStyle;
     if (blueHeader.includes(heading)) styleObject = blueHeaderStyle;
     if (yellowHeader.includes(heading)) styleObject = yellowHeaderStyle;
@@ -848,7 +841,6 @@ const convertJSONToXlsx = (jsondata, excelfile) => {
   jsondata.forEach((record) => {
     let columnIndex = 1;
     Object.keys(record).forEach((columnName) => {
-      console.log(columnName);
       ws.cell(rowIndex, columnIndex++)
         .string(record[columnName])
         .style(standardCellStyle);
@@ -1090,8 +1082,6 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
           Destinations.LOCAL
         );
       } else {
-        console.log("pennsieve preview");
-        console.log(pennsievePreview);
         if (pennsievePreview) {
           generateAfterEdits();
           return;
@@ -1202,7 +1192,6 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
           return;
         }
         generateManifestHelper();
-        console.log("PERCHANCE HERE");
         initiate_generate_manifest_local(manifestEditBoolean, localDatasetFolderPath);
       }
     });
@@ -1315,7 +1304,6 @@ function updateJSONStructureManifestGenerate() {
 
 async function initiate_generate_manifest_local(manifestEditBoolean, originalDataset) {
   if (manifestEditBoolean === false) {
-    console.log("HERERERERE");
     createManifestLocally("local", false, originalDataset);
   } else {
     // SODA Manifest Files folder
