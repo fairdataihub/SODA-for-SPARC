@@ -816,9 +816,7 @@ def create_soda_json_object_backend(
     # reading high level folders
     create_soda_json_completed = 0
     create_soda_json_progress = 0
-    namespace_logger.info(root_folder_path)
     entries = os.listdir(root_folder_path)
-    namespace_logger.info(entries)
 
 
     for entry in entries:
@@ -837,7 +835,6 @@ def create_soda_json_object_backend(
                 }
             # do file work here
         elif os.path.isdir(item_path) is True:
-            namespace_logger.info("Counting a directory")
             create_soda_json_progress += 1
             # add item to soda
             if item_path in irregularFolders:
@@ -884,7 +881,6 @@ def create_soda_json_object_backend(
             json_format = excel_data.to_dict(orient="records")
             soda_json_structure["starting-point"][folder]["path"] = temp_file_path_xlsx
             soda_json_structure["starting-point"][folder]["manifest"] = json_format
-        namespace_logger.info("Creating structure for next " + folder)
         recursive_structure_create(dataset_folder["folders"][folder], high_lvl_path, folder)
 
     create_soda_json_completed = 1

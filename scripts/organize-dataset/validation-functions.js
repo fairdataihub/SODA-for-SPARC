@@ -106,8 +106,6 @@ const validateOrganizedDataset = async () => {
     file_counter += packageCount;
   }
 
-  console.log(file_counter);
-
   if (file_counter >= 50000) {
     await Swal.fire({
       title: `Dataset Too Large`,
@@ -128,7 +126,6 @@ const validateOrganizedDataset = async () => {
     validationReport = await createValidationReport(sodaJSONObjCopy);
     if (validationReport.status === "Error") throw new Error(validationReport.error);
   } catch (error) {
-    console.log(error);
     clientError(error);
     if (error.response && (error.response.status == 503 || error.response.status == 502)) {
       await Swal.fire({
@@ -282,7 +279,6 @@ const validateOrganizedDataset = async () => {
 };
 
 document.querySelector(".validate-raw-report_btn").addEventListener("click", (e) => {
-  console.log("Clicked on raw report button");
   // open the text file stored at the raw validation report path
   let pathToRawReport = path.join(os.homedir(), "SODA", "validation.txt");
 
@@ -354,8 +350,6 @@ const displayValidationReportErrors = (validationReport, tableBody, validationEr
  */
 const formatForDatasetGeneration = (sodaJSONObj) => {
   // update the copy of the json structure to get its state post generation initialization
-  console.log("here");
   updateJSONStructureGenerate(false, sodaJSONObj);
-  console.log("test");
   setSodaJSONStartingPoint(sodaJSONObj);
 };

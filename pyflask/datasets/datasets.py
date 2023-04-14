@@ -167,20 +167,14 @@ def get_dataset_doi(dataset):
         state: State of the dataset (draft, published, etc.) (string)
         creators: List of creators of the dataset (list)
     """
-    print("Getting DOI for dataset")
     token = get_access_token()
 
-    print("getting dataset id")
-    print(dataset);
     dataset_id = get_dataset_id(token, dataset)
-    print(dataset_id)
     try:
-        print("sending request")
         doi_request = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/doi", headers=create_request_headers(token))
         if doi_request.status_code == 404:
             return {"doi": "No DOI found for this dataset"}
         doi_request.raise_for_status()
-        print(doi_request.json())
         return {"doi": doi_request.json()["doi"]}
     except Exception as e:
         if type(e).__name__ == "HTTPError":

@@ -1966,7 +1966,6 @@ const ffmCreateManifest = async (sodaJson) => {
     datasetStructCopy = sodaCopy["dataset-structure"];
   } catch (e) {
     clientError(e);
-    console.log(e);
   }
 
   //manifest will still include pennsieve or locally imported files
@@ -2046,7 +2045,6 @@ const ffmCreateManifest = async (sodaJson) => {
     };
   } catch (err) {
     clientError(err);
-    console.log(err);
     userError(err);
   }
   renderFFManifestCards();

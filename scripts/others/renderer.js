@@ -218,17 +218,14 @@ var documentation_lottie = lottie.loadAnimation({
 var sectionObserver = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
     var attributeValue = $(mutation.target).prop(mutation.attributeName);
-    console.log(mutation.target);
 
     if (attributeValue.includes("is-shown") == true) {
       //add lotties
       newDatasetLottie.play();
       existingDatasetLottie.play();
       editDatasetLottie.play();
-      console.log("lotties playing");
       // heart_container.play();
     } else {
-      console.log("stopping lotties");
       newDatasetLottie.stop();
       existingDatasetLottie.stop();
       editDatasetLottie.stop();
@@ -2975,7 +2972,6 @@ function datasetStatusListChange() {
 const postCurationListChange = () => {
   // display the pre-publishing page
   showPrePublishingPageElements();
-  console.log("this is where publishing status is updated when dataset is selected");
   showPublishingStatus();
 };
 
@@ -3108,7 +3104,6 @@ const setupPublicationOptionsPopover = () => {
 };
 
 const submitReviewDatasetCheck = async (res, curationMode) => {
-  console.log(res);
   let reviewstatus = res["review_request_status"];
   let publishingStatus = res["publishing_status"];
   if (res["publishing_status"] === "PUBLISH_IN_PROGRESS") {
@@ -3535,21 +3530,23 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
 
 // //Withdraw dataset from review
 const withdrawDatasetSubmission = async (curationMode) => {
-  console.log("clicked withdraw dataset submission");
   // show a SWAL loading message until the submit for prepublishing flow is successful or fails
-  Swal.fire({
-    title: `Preparing to withdraw the dataset submission`,
-    html: "Please wait...",
-    // timer: 5000,
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  });
+
+  if (curationMode !== "guided") {
+    Swal.fire({
+      title: `Preparing to withdraw the dataset submission`,
+      html: "Please wait...",
+      // timer: 5000,
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+  }
 
   // get the publishing status of the currently selected dataset
   // then check if it can be withdrawn, then withdraw it
@@ -3613,18 +3610,20 @@ const withdrawDatasetCheck = async (res, curationMode) => {
     });
   } else {
     // show a SWAL loading message until the submit for prepublishing flow is successful or fails
-    Swal.fire({
-      title: `Withdrawing dataset submission`,
-      html: "Please wait...",
-      allowEscapeKey: false,
-      allowOutsideClick: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
+    if (curationMode !== "guided") {
+      Swal.fire({
+        title: `Withdrawing dataset submission`,
+        html: "Please wait...",
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+    }
     await withdrawReviewDataset(curationMode);
   }
 };
@@ -3961,7 +3960,6 @@ const showPrePublishingPageElements = () => {
 
 const showPublishingStatus = async (callback, curationMode = "") => {
   return new Promise(async function (resolve, reject) {
-    console.log(callback);
     if (callback == "noClear") {
       var nothing;
     }
@@ -3991,7 +3989,6 @@ const showPublishingStatus = async (callback, curationMode = "") => {
           }
         );
         let res = get_publishing_status.data;
-        console.log(res);
 
         try {
           //update the dataset's publication status and display
@@ -3999,7 +3996,6 @@ const showPublishingStatus = async (callback, curationMode = "") => {
           $(`#${curationModeID}para-review-dataset-info-disseminate`).text(
             publishStatusOutputConversion(res)
           );
-          console.log($(`#${curationModeID}para-review-dataset-info-disseminate`));
 
           if (callback === submitReviewDatasetCheck || callback === withdrawDatasetCheck) {
             return resolve(callback(res, curationMode));
@@ -6031,10 +6027,6 @@ const handleSelectedBannerImage = async (path, curationMode) => {
 //// helper functions for hiding/showing context menus
 const showmenu = (ev, category, deleted = false) => {
   //stop the real right click menu
-  console.log("align menu through here");
-  console.log(ev);
-  console.log(category);
-  console.log(deleted);
   let guidedModeFileExporer = false;
   let activePages = Array.from(document.querySelectorAll(".is-shown"));
 
@@ -6055,11 +6047,8 @@ const showmenu = (ev, category, deleted = false) => {
   var mouseY = ev.pageY - 10;
 
   activePages.forEach((page) => {
-    console.log(page.id);
     if (page.id === "guided_mode-section") {
       guidedModeFileExporer = true;
-      console.log("pageX: " + ev.pageX);
-      console.log("pageY: " + ev.pageY);
       mouseX = ev.pageX - 210;
       mouseY = ev.pageY - 10;
     }
@@ -6096,7 +6085,6 @@ const showmenu = (ev, category, deleted = false) => {
     // This is where regular folders context menu will appear
     menuFolder.style.display = "block";
     if (guidedModeFileExporer) {
-      console.log("align menu through here");
       // $(".menu.reg-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
     }
     $(".menu.reg-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
@@ -6129,9 +6117,6 @@ const showmenu = (ev, category, deleted = false) => {
     }
     menuHighLevelFolders.style.display = "block";
     if (guidedModeFileExporer) {
-      console.log("align menu through here");
-      console.log(mouseX);
-      console.log(mouseY);
       // $(".menu.high-level-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
     }
     $(".menu.high-level-folder").css({ top: mouseY, left: mouseX }).fadeIn("slow");
@@ -6157,9 +6142,7 @@ const showmenu = (ev, category, deleted = false) => {
         $(menuFile).children("#file-description").show();
       }
     }
-    console.log("mouseX: " + mouseX);
-    console.log("mouseY: " + mouseY);
-    console.log("maybe check here?");
+
     // This is where the context menu for regular files will be displayed
     menuFile.style.display = "block";
     $(".menu.file").css({ top: mouseY, left: mouseX }).fadeIn("slow");
@@ -6168,7 +6151,6 @@ const showmenu = (ev, category, deleted = false) => {
 
 /// options for regular sub-folders
 const folderContextMenu = (event) => {
-  console.log(event);
   $(".menu.reg-folder li")
     .unbind()
     .click(function () {
@@ -6281,7 +6263,6 @@ $(document).ready(function () {
 
 // Trigger action when the contexmenu is about to be shown
 $(document).bind("contextmenu", function (event) {
-  console.log("contextmenu here");
   // Avoid the real one
   event.preventDefault();
 
@@ -6398,7 +6379,6 @@ $(document).bind("click", (event) => {
 
 // sort JSON objects by keys alphabetically (folder by folder, file by file)
 const sortObjByKeys = (object) => {
-  console.log(object);
   const orderedFolders = {};
   const orderedFiles = {};
   /// sort the files in objects
@@ -6575,9 +6555,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     }
 
     //append path to tippy and display path to the file explorer
-    console.log(trimmedPath);
     pathDisplay.innerText = trimmedPath;
-    console.log(pathDisplay);
     pathDisplay._tippy.setContent(fullPath);
   }
 
@@ -7283,7 +7261,6 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
                 if (irregularFolderArray.length > 0) {
                   for (let i = 0; i < irregularFolderArray.length; i++) {
                     renamedFolderName = replaceIrregularFolders(irregularFolderArray[i]);
-                    console.log(renamedFolderName);
                     replaced[path.basename(irregularFolderArray[i])] = renamedFolderName;
                   }
                 }
@@ -7291,9 +7268,7 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
                 action = "remove";
                 if (irregularFolderArray.length > 0) {
                   for (let i = 0; i < irregularFolderArray.length; i++) {
-                    console.log(irregularFolderArray[i]);
                     renamedFolderName = removeIrregularFolders(irregularFolderArray[i]);
-                    console.log(renamedFolderName);
                     replaced[irregularFolderArray[i]] = renamedFolderName;
                   }
                 }
@@ -7322,10 +7297,6 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
               //create setInterval variable that will keep track of the iterated items
               local_progress = setInterval(progressReport, 500);
 
-              console.log(JSON.stringify(sodaJSONObj));
-              console.log(root_folder_path);
-              console.log(irregularFolderArray);
-              console.log(JSON.stringify(replaced));
               try {
                 let importLocalDatasetResponse = await client.post(
                   `/organize_datasets/datasets/import`,
@@ -8594,9 +8565,6 @@ const curation_consortium_check = async (mode = "") => {
 
         let permissions = bf_get_permissions.permissions;
         let team_ids = bf_get_permissions.team_ids;
-        console.log(team_ids);
-        console.log(permissions);
-        console.log(bf_get_permissions);
 
         let curation_permission_satisfied = false;
         let consortium_permission_satisfied = false;

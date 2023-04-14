@@ -191,8 +191,6 @@ const openSubmissionMultiStepSwal = async (sparcAward, milestoneRes) => {
           new Set(milestoneData.map((milestone) => milestone.completionDate))
         );
 
-        console.log(uniqueCompletionDates);
-
         if (uniqueCompletionDates.length === 1) {
           //save the completion date into sodaJSONObj
           completionDate = uniqueCompletionDates[0];

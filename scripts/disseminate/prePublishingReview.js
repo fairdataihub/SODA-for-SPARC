@@ -108,8 +108,6 @@ const orcidSignIn = async (curationMode) => {
 
     log.info("Connecting orcid to Pennsieve account.");
 
-    console.log(accessCode);
-    console.log(defaultBfAccount);
     try {
       await client.post(
         `/user/orcid`,
@@ -216,7 +214,6 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
     // $("#guided--prepublishing-checklist-container").addClass("hidden");
     // smoothScrollToElement(`guided--prepublishing-continue-btn`, "end", "nearest");
   }
-  console.log(currentDataset);
 
   if (currentDataset === "Select dataset") {
     return;
@@ -226,7 +223,6 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
     $(`#${curationModeID}para-review-dataset-info-disseminate`).text() !==
     "Dataset is not under review currently"
   ) {
-    console.log("returning here");
     return false;
   }
 
@@ -272,7 +268,6 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
 
     // set the status icons to red crosses
     Array.from(document.querySelectorAll(`.${curationModeID}icon-wrapper i`)).forEach((icon) => {
-      console.log("changing to red icon");
       icon.classList.remove("check");
       icon.classList.add("cross");
       icon.style.color = "red";
@@ -287,8 +282,6 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
     AnalyticsGranularity.ACTION,
     ["Fetch Pre-publishing Checklist Statuses"]
   );
-
-  console.log(statuses);
 
   // mark each pre-publishing item red or green to indicate if the item was completed
   setPrepublishingChecklistItemIconByStatus(
@@ -331,8 +324,6 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
     let checklistItemCheck = allPrepublishingChecklistItemsCompleted("guided");
     let allItemsChecked = checklistItemCheck[0];
     let checklistItems = checklistItemCheck[1];
-    console.log(allItemsChecked);
-    console.log(checklistItems);
     if (!allItemsChecked) {
       let result = await Swal.fire({
         backdrop: "rgba(0,0,0, 0.4)",
@@ -358,10 +349,8 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
           if (checklistItems.includes("Link ORCID iD")) {
             return "ORCID";
           }
-          console.log("preconfirm");
         },
       });
-      console.log(result);
       if (result.isConfirmed && result.value === "ORCID") {
         orcidSignIn("guided");
       }
@@ -429,13 +418,9 @@ const allPrepublishingChecklistItemsCompleted = (curationMode) => {
   }
   // get the icons for the checklist elements
   let prePublishingChecklistItems = $(`.${curationModeID}icon-wrapper i`);
-  console.log(prePublishingChecklistItems);
 
   // filter out the completed items - by classname
   let incompleteChecklistItems = Array.from(prePublishingChecklistItems).filter((checklistItem) => {
-    console.log("Filtering");
-    console.log(checklistItem);
-    console.log(checklistItem.dataset.checklistName);
     if (checklistItem.className === "close icon") {
       prePublishingChecklistItemNames.push(checklistItem.dataset.checklistName);
     }
@@ -466,7 +451,6 @@ const transitionToPrepublishingQuestionThree = async () => {
     $("#para-review-dataset-info-disseminate").text() ===
     "Dataset is currently under review by your Publishing Team"
   ) {
-    console.log("showing withdraw button");
     // show the withdraw button
     $("#prepublishing-withdraw-btn-container").show();
     $("#prepublishing-withdraw-btn-container button").show();
@@ -476,7 +460,6 @@ const transitionToPrepublishingQuestionThree = async () => {
     return;
   }
 
-  console.log("showing checklist container");
   // show the pre-publishing checklist and the continue button
   $("#prepublishing-checklist-container").show();
   $(".pre-publishing-continue-container").show();
@@ -559,8 +542,6 @@ $("#guided--items-pre-publication").on("click", function (evt) {
 
 // transition to the final question and populate the file tree with the dataset's metadata files
 const createPrepublishingChecklist = async (curationMode) => {
-  console.log("within createPrepublishingChecklist");
-  console.log(curationMode);
   // check that the user completed all pre-publishing checklist items for the given dataset
   let curationModeID = "";
   let currentDataset = defaultBfDataset;
@@ -594,7 +575,6 @@ const createPrepublishingChecklist = async (curationMode) => {
   if (curationMode !== "guided") {
     // transition to the final section
     let elementClicked = document.getElementById("pre-publishing-continue-btn");
-    console.log(elementClicked);
     transitionFreeFormMode(
       elementClicked,
       "submit_prepublishing_review-question-3",
@@ -695,7 +675,6 @@ const createPrepublishingChecklist = async (curationMode) => {
   );
 
   // place the metadata files in the file viewer - found in step 3 of the pre-publishing submission worfklow
-  console.log("before populateFileViewer");
   populateFileViewer(
     metadataFiles,
     excludedFileObjects.map((fileObject) => fileObject.fileName),
@@ -840,7 +819,6 @@ const beginPrepublishingFlow = async (curationMode) => {
   // load the next question's data
   if (curationMode !== "guided") {
     let elementClicked = document.getElementById("begin-prepublishing-btn");
-    console.log(elementClicked);
     transitionFreeFormMode(
       elementClicked,
       "submit_prepublishing_review-question-2",
@@ -871,8 +849,6 @@ const populateFileViewer = (metadataFiles, excludedFiles, curationMode) => {
     // Guided mode elements have 'guided--' prepended to their ID
     curationModeID = "guided--";
   }
-
-  console.log(excludedFiles);
 
   // get the file viewer element
   let fileViewer = document.querySelector(`#${curationModeID}items-pre-publication`);

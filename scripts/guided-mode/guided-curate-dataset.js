@@ -257,7 +257,6 @@ const getGuidedProgressFileNames = () => {
 };
 
 const savePageChanges = async (pageBeingLeftID) => {
-  console.log(pageBeingLeftID);
   // This function is used by both the navigation bar and the side buttons,
   // and whenever it is being called, we know that the user is trying to save the changes on the current page.
   // this function is async because we sometimes need to make calls to validate data before the page is ready to be left.
@@ -465,7 +464,9 @@ const savePageChanges = async (pageBeingLeftID) => {
           //Fetch subjects and sample metadata and set subjectsTableData and sampleTableData
           try {
             let fieldEntries = [];
-            for (const field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
+            for (const field of $("#guided-form-add-a-subject")
+              .children()
+              .find(".subjects-form-entry")) {
               fieldEntries.push(field.name.toLowerCase());
             }
             const subjectsMetadataResponse = await client.get(
@@ -481,7 +482,6 @@ const savePageChanges = async (pageBeingLeftID) => {
             );
             // Set subjectsTableData as the res
             subjectsTableData = subjectsMetadataResponse.data.subject_file_rows;
-            console.log("subjectsTableData", subjectsTableData);
           } catch (error) {
             const emessage = userErrorMessage(error);
             console.log("Unable to fetch subjects metadata" + emessage);
@@ -2127,11 +2127,26 @@ const guidedModifyCurationTeamAccess = async (action) => {
     // guidedSetCurationTeamUI();
   }
   if (action === "unshare") {
-    console.log("Withdrawing the dataset here");
-
     guidedUnshareWithCurationTeamButton.disabled = true;
     guidedUnshareWithCurationTeamButton.classList.add("loading");
     // guidedUnshareWithCurationTeamButton.classList.add("hidden");
+
+    const { value: withdraw } = await Swal.fire({
+      title: "Withdraw this Dataset From Publishing?",
+      icon: "warning",
+      showDenyButton: true,
+      confirmButtonText: "Yes",
+      denyButtonText: "No",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+    });
+
+    if (!withdraw) {
+      return;
+    }
 
     let removeStatus = await withdrawDatasetSubmission("guided");
 
@@ -3179,12 +3194,9 @@ document
 
       let validationReport = undefined;
       while (validationReport === undefined) {
-        console.log("Waiting for the validation to complete...");
         await wait(15000);
         validationReport = await pollForValidationResults(clientUUID);
       }
-
-      console.log("The validationr eport status: ", validationReport);
 
       if (validationReport.status === "Error") {
         file_counter = 0;
@@ -3209,8 +3221,6 @@ document
       folder_counter = 0;
       get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
 
-      console.log("File counter shows: " + file_counter + " files");
-
       // log successful validation run to analytics
       ipcRenderer.send(
         "track-event",
@@ -3219,8 +3229,6 @@ document
         "Number of Files",
         file_counter
       );
-
-      console.log("THe log report is: ", validationReport);
 
       if (validationReport.status === "Incomplete") {
         // An incomplete validation report happens when the validator is unable to generate
@@ -3248,8 +3256,6 @@ document
         icon: hasValidationErrors ? "error" : "success",
       });
 
-      console.log("Validation errors: ", errors);
-
       // Hide the loading div
       validationLoadingDiv.classList.add("hidden");
 
@@ -3260,9 +3266,7 @@ document
       sodaJSONObj["dataset-validated"] = "true";
       sodaJSONObj["dataset-validation-errors"] = errors;
     } catch (error) {
-      console.log("error: " + error);
       const emessage = userErrorMessage(error);
-      console.log("emessage: " + emessage);
       clientError(error);
       // Hide the loading div
       validationLoadingDiv.classList.add("hidden");
@@ -3699,7 +3703,6 @@ const guidedUnSkipPage = (pageId) => {
     document.getElementById(subPagesCapsule).classList.remove("hidden");
   }
   // remove the page from sodaJSONObj array if it is there
-  console.log(sodaJSONObj["skipped-pages"]);
   if (sodaJSONObj["skipped-pages"].includes(pageId)) {
     sodaJSONObj["skipped-pages"].splice(sodaJSONObj["skipped-pages"].indexOf(pageId), 1);
   }
@@ -4017,7 +4020,6 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
       // If the sample folder exists and is empty, delete it
       if (sampleFolder) {
         if (folderIsEmpty(sampleFolder)) {
-          console.log("deleting sample folder in pool cuz it was empty");
           delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName][
             "folders"
           ][subjectName]["folders"][sample];
@@ -4031,7 +4033,6 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
         ]?.[subjectName];
       if (subjectFolder) {
         if (folderIsEmpty(subjectFolder)) {
-          console.log("deleting subject folder in pool cuz it was empty");
           delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName][
             "folders"
           ][subjectName];
@@ -4043,7 +4044,6 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
         datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName];
       if (poolFolder) {
         if (folderIsEmpty(poolFolder)) {
-          console.log("deleting pool folder cuz it was empty");
           delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName];
         }
       }
@@ -4091,7 +4091,6 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
       // If the sample folder exists and is empty, delete it
       if (sampleFolder) {
         if (folderIsEmpty(sampleFolder)) {
-          console.log("deleting sample folder in pool cuz it was empty");
           delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName][
             "folders"
           ][subjectName]["folders"][sample];
@@ -4105,7 +4104,6 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
         ]?.[subjectName];
       if (subjectFolder) {
         if (folderIsEmpty(subjectFolder)) {
-          console.log("deleting subject folder in pool cuz it was empty");
           delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName][
             "folders"
           ][subjectName];
@@ -4117,7 +4115,6 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
         datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName];
       if (poolFolder) {
         if (folderIsEmpty(poolFolder)) {
-          console.log("deleting pool folder cuz it was empty");
           delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName];
         }
       }
@@ -4155,7 +4152,6 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
 };
 
 const resetGuidedRadioButtons = (parentPageID) => {
-  console.log("Reset guided radio buttons " + parentPageID);
   const parentPage = document.getElementById(parentPageID);
   const guidedRadioButtons = parentPage.querySelectorAll(".guided--radio-button");
   for (const guidedRadioButton of guidedRadioButtons) {
@@ -4236,8 +4232,6 @@ const checkIfPageIsValid = async (pageID) => {
 // the page has not yet been saved
 const pageNeedsUpdateFromPennsieve = (pageID) => {
   // Add the pages-fetched-from-pennsieve array to the sodaJSONObj if it does not exist
-  console.log(pageID);
-  console.log(sodaJSONObj["pages-fetched-from-pennsieve"]);
   if (!sodaJSONObj["pages-fetched-from-pennsieve"]) {
     sodaJSONObj["pages-fetched-from-pennsieve"] = [];
   }
@@ -4961,7 +4955,6 @@ const openPage = async (targetPageID) => {
       renderProtocolsTable();
     }
     if (targetPageID === "guided-create-description-metadata-tab") {
-      console.log(pageNeedsUpdateFromPennsieve("guided-create-description-metadata-tab"));
       if (pageNeedsUpdateFromPennsieve("guided-create-description-metadata-tab")) {
         // Show the loading page while the page's data is being fetched from Pennsieve
         setPageLoadingState(true);
@@ -5331,11 +5324,6 @@ const openPage = async (targetPageID) => {
           //TODO: Check what these reponses look like compared to get dataset permissions endpoint
           const sparcUsers = sparcUsersReq.data.users;
           const sparcTeams = sparcTeamsReq.data.teams;
-          console.log(sparcUsersReq);
-          console.log(sparcTeamsReq);
-          console.log("CHECK THESE RESULTS BELOW AND ABOVE");
-          console.log(sparcUsers);
-          console.log(sparcTeams);
 
           let sparcUsersDivided = [];
 
@@ -6034,7 +6022,6 @@ const openPage = async (targetPageID) => {
         pennsieveDatasetID,
         false
       );
-      console.log(bf_get_permissions);
       // let bf_get_permissions = await client.get(`/manage_datasets/bf_dataset_permissions`, {
       //   params: {
       //     selected_account: defaultBfAccount,
@@ -6747,7 +6734,6 @@ const guidedResumeProgress = async (resumeProgressButton) => {
 
   // If the dataset had been previously successfully uploaded, check to make sure it exists on Pennsieve still.
   if (datasetHasAlreadyBeenSuccessfullyUploaded) {
-    console.log(datasetResumeJsonObj);
     const previouslyUploadedDatasetId =
       datasetResumeJsonObj["digital-metadata"]["pennsieve-dataset-id"];
     const datasetToResumeExistsOnPennsieve = await checkIfDatasetExistsOnPennsieve(
@@ -7684,7 +7670,6 @@ const updateFolderStructureUI = (folderPath) => {
   for (var item of filtered.slice(1, filtered.length)) {
     myPath = myPath["folders"][item];
   }
-  console.log(myPath);
   // construct UI with files and folders
   //var appendString = loadFileFolder(myPath);
 
@@ -8153,8 +8138,6 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
       const contributorOrcid = document.getElementById("guided-contributor-orcid").value;
       const contributorAffiliations = affiliationTagify.value.map((item) => item.value);
       const contributorRoles = contributorRolesTagify.value.map((item) => item.value);
-      console.log("asdf" + contributorAffiliations);
-      console.log("asdf" + contributorRoles);
 
       if (
         !contributorFirstName ||
@@ -8444,8 +8427,6 @@ const openGuidedAddContributorSwal = async () => {
       const contributorOrcid = document.getElementById("guided-contributor-orcid").value.trim();
       const contributorAffiliations = affiliationTagify.value.map((item) => item.value);
       const contributorRoles = contributorRolesTagify.value.map((item) => item.value);
-      console.log(contributorAffiliations);
-      console.log(contributorRoles);
 
       if (
         !contributorFirstName ||
@@ -11407,7 +11388,6 @@ $(document).ready(async () => {
     const controlledElementChildren = controlledElementContainer.querySelectorAll(".sub-section");
     controlledElementChildren.forEach((child) => {
       //console log the child id
-      console.log(child.id);
       child.classList.add("hidden");
     });
 
@@ -11577,7 +11557,6 @@ $(document).ready(async () => {
               }
             } else {
               // return and do nothing
-              console.log("User cancelled code folder deletion");
               return;
             }
           }
@@ -12807,7 +12786,6 @@ $(document).ready(async () => {
       const pennsieveMetadataUploadTableRows = pennsieveMetadataUploadTable.children;
       for (const row of pennsieveMetadataUploadTableRows) {
         if (row.classList.contains("permissions-upload-tr")) {
-          console.log("Removing permissions row from UI");
           //delete the row to reset permissions UI
           row.remove();
         } else {
@@ -14253,7 +14231,6 @@ $(document).ready(async () => {
   $("#guided-button-sub-page-continue").on("click", async () => {
     //Get the id of the parent page that's currently open
     const currentParentPageID = CURRENT_PAGE.id;
-    console.log(currentParentPageID);
 
     if (currentParentPageID === "guided-create-submission-metadata-tab") {
       if (
