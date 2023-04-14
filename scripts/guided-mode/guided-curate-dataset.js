@@ -2105,6 +2105,7 @@ const guidedModifyCurationTeamAccess = async (action) => {
   const guidedUnshareWithCurationTeamButton = document.getElementById(
     "guided-button-unshare-dataset-with-curation-team"
   );
+
   const curationMode = "guided";
   if (action === "share") {
     guidedShareWithCurationTeamButton.disabled = true;
@@ -2132,7 +2133,7 @@ const guidedModifyCurationTeamAccess = async (action) => {
     // guidedUnshareWithCurationTeamButton.classList.add("hidden");
 
     const { value: withdraw } = await Swal.fire({
-      title: "Withdraw this Dataset From Publishing?",
+      title: "Withdraw this dataset from review?",
       icon: "warning",
       showDenyButton: true,
       confirmButtonText: "Yes",

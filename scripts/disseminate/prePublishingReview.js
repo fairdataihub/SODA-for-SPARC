@@ -310,6 +310,7 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
   setPrepublishingChecklistItemIconByStatus(
     `${curationModeID}prepublishing-checklist-icon-license`,
     statuses.license
+    // false
   );
 
   setPrepublishingChecklistItemIconByStatus(
@@ -334,9 +335,11 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
         showCancelButton: checklistItems.includes("Link ORCID iD") ? true : false,
         title: "Cannot submit dataset yet",
         // map checkListItems to a string of the checklist items that are not completed
-        text: `You must add all of the items below to your dataset before submitting your dataset for review: ${checklistItems
+        html: `You must add all of the items below to your dataset before submitting your dataset for review: ${checklistItems
           .map((item) => item)
-          .join(", ")}. Please try again after adding the missing items. `,
+          .join(
+            ", "
+          )}. <br> Please try again after adding the missing items through free form mode. `,
         icon: "error",
         showClass: {
           popup: "animate__animated animate__zoomIn animate__faster",
@@ -448,8 +451,9 @@ const transitionToPrepublishingQuestionThree = async () => {
 
   // check what the pre-publishing status is
   if (
-    $("#para-review-dataset-info-disseminate").text() ===
-    "Dataset is currently under review by your Publishing Team"
+    document
+      .getElementById("para-review-dataset-info-disseminate")
+      .innerText.includes("Dataset is currently under review")
   ) {
     // show the withdraw button
     $("#prepublishing-withdraw-btn-container").show();
@@ -716,23 +720,23 @@ const beginPrepublishingFlow = async (curationMode) => {
     // This is done to ensure the right element ID is called
     // Guided mode elements have 'guided--' prepended to their ID
 
-    Swal.fire({
-      title: "Checking if dataset is eligible to submit...",
-      html: "Please wait...",
-      allowEscapeKey: false,
-      allowOutsideClick: false,
-      showConfirmButton: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      icon: "info",
-      showClass: {
-        popup: "animate__animated animate__fadeInDown",
-      },
-      hideClass: {
-        popup: "animate__animated animate__fadeOutUp",
-      },
-    });
+    // Swal.fire({
+    //   title: "Checking if dataset is eligible to submit...",
+    //   html: "Please wait...",
+    //   allowEscapeKey: false,
+    //   allowOutsideClick: false,
+    //   showConfirmButton: false,
+    //   heightAuto: false,
+    //   backdrop: "rgba(0,0,0, 0.4)",
+    //   timerProgressBar: false,
+    //   icon: "info",
+    //   showClass: {
+    //     popup: "animate__animated animate__fadeInDown",
+    //   },
+    //   hideClass: {
+    //     popup: "animate__animated animate__fadeOutUp",
+    //   },
+    // });
   }
   if (curationMode === "") {
     console.log("within ffm");

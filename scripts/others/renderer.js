@@ -4046,7 +4046,7 @@ const publishStatusOutputConversion = (res) => {
   if (reviewStatus === "draft" || reviewStatus === "cancelled") {
     outputMessage += "Dataset is not under review currently";
   } else if (reviewStatus === "requested") {
-    outputMessage += "Dataset is currently under review by your Publishing Team";
+    outputMessage += "Dataset is currently under review";
   } else if (reviewStatus === "rejected") {
     outputMessage += "Dataset has been rejected by your Publishing Team and may require revision";
   } else if (reviewStatus === "accepted") {
