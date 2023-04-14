@@ -481,6 +481,7 @@ const savePageChanges = async (pageBeingLeftID) => {
             );
             // Set subjectsTableData as the res
             subjectsTableData = subjectsMetadataResponse.data.subject_file_rows;
+            console.log("subjectsTableData", subjectsTableData);
           } catch (error) {
             const emessage = userErrorMessage(error);
             console.log("Unable to fetch subjects metadata" + emessage);
@@ -6667,20 +6668,6 @@ const patchPreviousGuidedModeVersions = () => {
       //if contributor is in old format (string), convert to new format (array)
       if (!Array.isArray(contributor.conAffliation)) {
         contributor.conAffliation = [contributor.conAffliation];
-      }
-    }
-  }
-
-  //temp patch subjectsTableData to add "RRID for strain" field
-  if (subjectsTableData.length > 0) {
-    //check if subjectsTableData has "RRID for strain" field
-    if (!subjectsTableData[0].includes("RRID for strain")) {
-      //insert "RRID for strain" string as the 6th element of subjectsTableData[0]
-      subjectsTableData[0].splice(6, 0, "RRID for strain");
-      //Insert empty string as the 6th element for each subject in subjectsTableData
-      //besides the first element, which is the header row
-      for (let i = 1; i < subjectsTableData.length; i++) {
-        subjectsTableData[i].splice(6, 0, "");
       }
     }
   }
