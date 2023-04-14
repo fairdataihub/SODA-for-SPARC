@@ -2130,6 +2130,23 @@ const guidedModifyCurationTeamAccess = async (action) => {
     guidedUnshareWithCurationTeamButton.classList.add("loading");
     // guidedUnshareWithCurationTeamButton.classList.add("hidden");
 
+    const {value: withdraw} = await Swal.fire({
+      title: "Withdraw this Dataset From Publishing?",
+      icon: "warning",
+      showDenyButton: true,
+      confirmButtonText: "Yes",
+      denyButtonText: "No",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+    })
+
+    if (!withdraw) {
+      return 
+    }
+
     let removeStatus = await withdrawDatasetSubmission("guided");
 
     if (removeStatus) {

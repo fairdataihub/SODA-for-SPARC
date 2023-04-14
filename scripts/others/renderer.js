@@ -3513,19 +3513,22 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
 const withdrawDatasetSubmission = async (curationMode) => {
   console.log("clicked withdraw dataset submission");
   // show a SWAL loading message until the submit for prepublishing flow is successful or fails
-  Swal.fire({
-    title: `Preparing to withdraw the dataset submission`,
-    html: "Please wait...",
-    // timer: 5000,
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  });
+
+  if(curationMode !== 'guided') {
+    Swal.fire({
+      title: `Preparing to withdraw the dataset submission`,
+      html: "Please wait...",
+      // timer: 5000,
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+  }
 
   // get the publishing status of the currently selected dataset
   // then check if it can be withdrawn, then withdraw it
@@ -3589,18 +3592,20 @@ const withdrawDatasetCheck = async (res, curationMode) => {
     });
   } else {
     // show a SWAL loading message until the submit for prepublishing flow is successful or fails
-    Swal.fire({
-      title: `Withdrawing dataset submission`,
-      html: "Please wait...",
-      allowEscapeKey: false,
-      allowOutsideClick: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
+    if (curationMode !== 'guided'){
+      Swal.fire({
+        title: `Withdrawing dataset submission`,
+        html: "Please wait...",
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+  }
     await withdrawReviewDataset(curationMode);
   }
 };
