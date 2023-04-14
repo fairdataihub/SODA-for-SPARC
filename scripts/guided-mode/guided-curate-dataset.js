@@ -2105,18 +2105,21 @@ const guidedModifyCurationTeamAccess = async (action) => {
   const guidedUnshareWithCurationTeamButton = document.getElementById(
     "guided-button-unshare-dataset-with-curation-team"
   );
+  const curationMode = "guided";
   if (action === "share") {
     guidedShareWithCurationTeamButton.disabled = true;
     guidedShareWithCurationTeamButton.classList.add("loading");
     // guidedShareWithCurationTeamButton.classList.add("hidden");
 
-    let publishPreCheckStatus = await beginPrepublishingFlow("guided");
-
-    console.log(publishPreCheckStatus);
+    let publishPreCheckStatus = await beginPrepublishingFlow(curationMode);
+    let embargoDetails = publishPreCheckStatus[1];
+    console.log(embargoDetails);
+    console.log(publishPreCheckStatus[0]);
     // Will return false if there are issues running the precheck flow
-    if (publishPreCheckStatus) {
+    if (publishPreCheckStatus[0]) {
       // guidedShareWithCurationTeamButton.classList.remove("hidden");
       guidedShareWithCurationTeamButton.classList.add("hidden");
+      await submitReviewDataset(embargoDetails[1], curationMode);
       // guidedUnshareWithCurationTeamButton.classList.remove("hidden");
     }
     guidedShareWithCurationTeamButton.classList.remove("loading");

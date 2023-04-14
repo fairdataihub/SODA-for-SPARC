@@ -212,23 +212,6 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
     curationModeID = "guided--";
     currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
     console.log("is guided mode here as well");
-    Swal.fire({
-      title: "Checking if dataset is eligible to submit...",
-      html: "Please wait...",
-      allowEscapeKey: false,
-      allowOutsideClick: false,
-      showConfirmButton: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      icon: "info",
-      showClass: {
-        popup: "animate__animated animate__fadeInDown",
-      },
-      hideClass: {
-        popup: "animate__animated animate__fadeOutUp",
-      },
-    });
     // Reset the language for the pre-publishing checklist items
     // $("#guided--prepublishing-checklist-container").addClass("hidden");
     // smoothScrollToElement(`guided--prepublishing-continue-btn`, "end", "nearest");
@@ -269,8 +252,8 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
         backdrop: "rgba(0,0,0, 0.4)",
         heightAuto: false,
         confirmButtonText: "Ok",
-        title: "Cannot get pre-publication checklist statuses",
-        text: `Without the statuses you will not be able to publish your dataset. Please try again. `,
+        title: "Cannot get verify if dataset is ready to submit",
+        text: `Without the statuses you will not be able to submit your dataset. Please try again. `,
         icon: "error",
         showClass: {
           popup: "animate__animated animate__zoomIn animate__faster",
@@ -362,7 +345,7 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
         // map checkListItems to a string of the checklist items that are not completed
         text: `You must add all of the items below to your dataset before submitting your dataset for review: ${checklistItems
           .map((item) => item)
-          .join(", ")} `,
+          .join(", ")}. Please try again after adding the missing items. `,
         icon: "error",
         showClass: {
           popup: "animate__animated animate__zoomIn animate__faster",
@@ -386,7 +369,10 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
     } else {
       // display the submit button to the user
       Swal.close();
-      $("#guided--submit-prepublishing-review").removeClass("hidden");
+      // $("#guided--submit-prepublishing-review").removeClass("hidden");
+      // await disseminateDataset("submit-pre-publishing", "guided");
+      // TODO: Dorian check here if you submit here or somewhere else within the flow
+      // submitReviewDataset here?
       return true;
     }
   }
@@ -723,28 +709,70 @@ const createPrepublishingChecklist = async (curationMode) => {
 // check if the user is the dataset owner and transition to the prepublishing checklist question if so
 const beginPrepublishingFlow = async (curationMode) => {
   let currentDataset = defaultBfDataset;
+  let currentAccount = defaultBfAccount;
 
   let curationModeID = "";
+  let embargoDetails;
   if (curationMode === "guided") {
+    curationModeID = "guided--";
+    currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
+    currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+    let get_publishing_status = await client.get(
+      `/disseminate_datasets/datasets/${currentDataset}/publishing_status`,
+      {
+        params: {
+          selected_account: currentAccount,
+        },
+      }
+    );
+    let res = get_publishing_status.data;
+    console.log(res);
+
+    // Don't send true until pre-publishing checklist is complete
+    embargoDetails = await submitReviewDatasetCheck(res, "guided");
+    if (embargoDetails[0] === false) {
+      Swal.close();
+      return false;
+    }
     // This is done to ensure the right element ID is called
     // Guided mode elements have 'guided--' prepended to their ID
-    curationModeID = "guided--";
-    currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-  }
 
-  Swal.fire({
-    title: "Determining your dataset permissions",
-    html: "Please wait...",
-    // timer: 5000,
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    timerProgressBar: false,
-    didOpen: () => {
-      Swal.showLoading();
-    },
-  });
+    Swal.fire({
+      title: "Checking if dataset is eligible to submit...",
+      html: "Please wait...",
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      icon: "info",
+      showClass: {
+        popup: "animate__animated animate__fadeInDown",
+      },
+      hideClass: {
+        popup: "animate__animated animate__fadeOutUp",
+      },
+    });
+  }
+  if (curationMode === "") {
+    console.log("within ffm");
+    // $("#begin-prepublishing-btn").addClass("loading");
+
+    Swal.fire({
+      title: "Determining your dataset permissions",
+      html: "Please wait...",
+      // timer: 5000,
+      allowEscapeKey: false,
+      allowOutsideClick: false,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      timerProgressBar: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+  }
 
   // check if the user is the dataset owner
   let role;
@@ -796,8 +824,12 @@ const beginPrepublishingFlow = async (curationMode) => {
     return false;
   }
 
-  // close the loading popup
-  Swal.close();
+  if (curationMode === "") {
+    Swal.close();
+  }
+
+  // // close the loading popup
+  // Swal.close();
 
   // wait for the Review status to be filled
   if ($(`#${curationModeID}para-review-dataset-info-disseminate`).text() === "") {
@@ -820,10 +852,12 @@ const beginPrepublishingFlow = async (curationMode) => {
   } else {
     //Curation mode is guided mode
     console.log("is guided mode");
-    // Don't send true until pre-publishing checklist is complete
+
+    console.log(embargoDetails);
+
     let status = await showPrePublishingStatus(true, "guided");
     console.log(status);
-    return status;
+    return [status, embargoDetails];
     // return true;
   }
 };

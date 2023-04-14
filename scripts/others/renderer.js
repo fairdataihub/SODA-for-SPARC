@@ -3215,19 +3215,19 @@ const submitReviewDatasetCheck = async (res, curationMode) => {
 
     // swal loading message for the submission
     // show a SWAL loading message until the submit for prepublishing flow is successful or fails
-    Swal.fire({
-      title: `Submitting dataset for pre-publishing review`,
-      html: "Please wait...",
-      // timer: 5000,
-      allowEscapeKey: false,
-      allowOutsideClick: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
+    // Swal.fire({
+    //   title: `Submitting dataset for pre-publishing review`,
+    //   html: "Please wait...",
+    //   // timer: 5000,
+    //   allowEscapeKey: false,
+    //   allowOutsideClick: false,
+    //   heightAuto: false,
+    //   backdrop: "rgba(0,0,0, 0.4)",
+    //   timerProgressBar: false,
+    //   didOpen: () => {
+    //     Swal.showLoading();
+    //   },
+    // });
     // submit the dataset for review with the given embargoReleaseDate
     await submitReviewDataset(embargoReleaseDate, curationMode);
   } else {
@@ -3249,12 +3249,12 @@ const submitReviewDatasetCheck = async (res, curationMode) => {
               <div style="display: flex; flex-direction: column;  font-size: 15px;">
                 <p style="text-align:left">Your dataset will be submitted for review to the SPARC Curation Team. While under review, the dataset will become locked until it has either been approved or rejected for publication. </p>
                 <div style="text-align: left; margin-bottom: 5px; display: flex; ">
-                  <input type="radio" name="publishing-options" value="immediate" style=" border: 0px; width: 18px; height: 18px;" checked>
-                  <div style="margin-left: 5px;"><label for="immediate"> Make this dataset available to the public immediately after publishing</label></div>
+                  <input type="checkbox" id="confirm-to-awknowledge" name="publishing-options" value="immediate" style=" border: 0px; width: 18px; height: 18px;">
+                  <div style="margin-left: 5px;"><label for="immediate">I understand that submitting to the Curation Team will lock this dataset</label></div>
                 </div>
                 <div style="text-align: left; margin-bottom: 5px; display: flex; ">
-                  <input type="radio" id="embargo-date-check" name="publishing-options" value="embargo-date-check" style=" border: 0px; width: 22px; height: 22px;">
-                  <div style="margin-left: 5px;"><label for="embargo-date-check" style="text-align:left">Place this dataset under embargo so that it is not made public immediately after publishing</label></div>
+                  <input type="checkbox" id="embargo-date-check" name="publishing-options" value="embargo-date-check" style=" border: 0px; width: 22px; height: 22px;">
+                  <div style="margin-left: 5px;"><label for="embargo-date-check" style="text-align:left">Place this dataset under embargo so that it is not made public immediately after publishing.</label> <br> <a href="https://docs.pennsieve.io/docs/what-is-an-embargoed-dataset" target="_blank">What is this?</a></div>
                 </div>
                 <div style="visibility:hidden; flex-direction: column;  margin-top: 10px;" id="calendar-wrapper">
                 <label style="margin-bottom: 5px; font-size: 13px;">When would you like this dataset to become publicly available?<label>
@@ -3284,11 +3284,27 @@ const submitReviewDatasetCheck = async (res, curationMode) => {
       willOpen: () => {
         setupPublicationOptionsPopover();
       },
+      didOpen: () => {
+        // Add an event listener to id confirm-to-awknowledge
+        document.querySelector(".swal2-confirm").disabled = true;
+        document.getElementById("confirm-to-awknowledge").addEventListener("click", () => {
+          // if the checkbox is checked, enable the submit button
+          if (document.getElementById("confirm-to-awknowledge").checked) {
+            document.querySelector(".swal2-confirm").disabled = false;
+          } else {
+            // if the checkbox is not checked, disable the submit button
+            document.querySelector(".swal2-confirm").disabled = true;
+          }
+        });
+      },
       willClose: () => {
-        // check if the embargo radio button is selected
-        const checkedRadioButton = $("input:radio[name ='publishing-options']:checked").val();
+        // check if the embargo checkbox button is selected or not
+        // const checkedRadioButton = $("input:checkbox[name ='publishing-options']:checked").val();
 
-        if (checkedRadioButton === "embargo-date-check") {
+        // const checkedRadioButton = $("input:checkbox[name ='publishing-options']:checked");
+        console.log(document.getElementById("embargo-date-check").checked);
+
+        if (document.getElementById("embargo-date-check").checked) {
           // set the embargoDate variable if so
           embargoReleaseDate = $("#tui-date-picker-target").val();
         }
@@ -3298,26 +3314,32 @@ const submitReviewDatasetCheck = async (res, curationMode) => {
     // check if the user cancelled
     if (!userResponse.isConfirmed) {
       // do not submit the dataset
-      return;
+      return [false, ""];
     }
 
-    // show a SWAL loading message until the submit for prepublishing flow is successful or fails
-    Swal.fire({
-      title: `Submitting dataset for pre-publishing review`,
-      html: "Please wait...",
-      // timer: 5000,
-      allowEscapeKey: false,
-      allowOutsideClick: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
+    if (userResponse.isConfirmed && curationMode === "guided") {
+      return [true, embargoReleaseDate];
+    }
 
-    // submit the dataset for review with the given embargoReleaseDate
-    await submitReviewDataset(embargoReleaseDate, curationMode);
+    if (curationMode != "guided" && userResponse.isConfirmed) {
+      // show a SWAL loading message until the submit for prepublishing flow is successful or fails
+      Swal.fire({
+        title: `Submitting dataset for pre-publishing review`,
+        html: "Please wait...",
+        // timer: 5000,
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      // submit the dataset for review with the given embargoReleaseDate
+      await submitReviewDataset(embargoReleaseDate, curationMode);
+    }
   }
 };
 
@@ -3358,7 +3380,7 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
   if (excludedFilesInPublicationFlow(curationMode)) {
     title = "Ignoring selected files and submitting dataset for pre-publishing review";
   } else {
-    title = "Submitting dataset for pre-publishing review";
+    title = "Submitting dataset to Curation Team";
   }
 
   // show a SWAL loading message until the submit for prepublishing flow is successful or fails
@@ -3418,6 +3440,8 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
   }
 
   try {
+    await disseminateCurationTeam(currentAccount, currentDataset, "share", "newMethod");
+
     await api.submitDatasetForPublication(
       currentAccount,
       currentDataset,
@@ -3472,7 +3496,7 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
     backdrop: "rgba(0,0,0, 0.4)",
     heightAuto: false,
     confirmButtonText: "Ok",
-    title: `Dataset has been submitted for pre-publishing review to the publishers within your organization!`,
+    title: `Dataset has been submitted for review to the SPARC Curation Team!`,
     icon: "success",
     reverseButtons: reverseSwalButtons,
     showClass: {
@@ -3619,6 +3643,8 @@ const withdrawReviewDataset = async (curationMode) => {
   }
 
   try {
+    await disseminateCurationTeam(currentAccount, currentDataset, "unshare", "newMethod");
+
     await api.withdrawDatasetReviewSubmission(currentDataset, currentAccount);
 
     logGeneralOperationsForAnalytics(

@@ -694,8 +694,14 @@
           <button
             id="begin-prepublishing-btn"
             onclick="beginPrepublishingFlow('')"
-            class="btn_animated md"
-            style="width: 200px; height: 40px; font-size: 15px"
+            class="ui positive button guided--button-footer mt-lg"
+            style="
+              width: 200px;
+              height: 40px;
+              font-size: 15px;
+              background-color: var(--color-light-green);
+              margin-top: 0 !important;
+            "
             data-current="submit_prepublishing_review-question-2"
             data-next="submit_prepublishing_review-question-3"
           >
@@ -972,7 +978,7 @@
               id="prepublishing-submit-btn-container"
             >
               <button
-                onclick="disseminateDataset('submit-pre-publishing')"
+                onclick="disseminateDataset('submit-pre-publishing', '')"
                 class="btn_animated md"
                 style="
                   margin: 1.5rem 23%;
