@@ -57,10 +57,11 @@ def get_manifests(soda_json_structure):
         starting_point_dict = soda_json_structure["starting-point"]
         for key in starting_point_dict.keys():
            if key in ["primary", "code", "derivative", "source", "docs", "protocol", "derivative"]:
-               # read the file as a dataframe
-                df = pd.read_excel(starting_point_dict[key]["path"])
-                # convert to json
-                manifests[key] = df.to_json()
+                # read the file as a dataframe
+                if "path" in starting_point_dict[key] and starting_point_dict[key]["path"] is not '':
+                  df = pd.read_excel(starting_point_dict[key]["path"])
+                  # convert to json
+                  manifests[key] = df.to_json()
     elif "starting-point" in soda_json_structure and "type" in soda_json_structure["starting-point"] and soda_json_structure["starting-point"]["type"] == "bf":
       # check if the user has manifest files in their dataset's primary folders
       # if they do, add them to the manifests dict
