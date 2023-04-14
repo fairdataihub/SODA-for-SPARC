@@ -1343,7 +1343,6 @@ const recursive_structure_create = (
           temp_current_file_path = current_file_path.replace(/\\/g, "/");
           root_folder_path = root_folder_path.replace(/\\/g, "/");
 
-
           relative_path = temp_current_file_path.replace(root_folder_path + "/", "");
           let manifestContent = sodaJSONObj["starting-point"][high_level_folder]["manifest"];
           let manifestHeaders = Object.values(manifestContent[0]);

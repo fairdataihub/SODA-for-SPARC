@@ -137,7 +137,6 @@ const reserveDOI = async (account, dataset) => {
   // reference: https://docs.pennsieve.io/reference/reservedoi
   // information: https://docs.pennsieve.io/docs/digital-object-identifiers-dois#assigning-doi-to-your-pennsieve-dataset
 
-
   // TODO: Create endpoint to reserve DOI
   try {
     let doiReserve = await client.post(`datasets/${dataset}/reserve-doi`);

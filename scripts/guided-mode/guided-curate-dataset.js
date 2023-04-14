@@ -2123,7 +2123,6 @@ const guidedModifyCurationTeamAccess = async (action) => {
     // guidedSetCurationTeamUI();
   }
   if (action === "unshare") {
-
     guidedUnshareWithCurationTeamButton.disabled = true;
     guidedUnshareWithCurationTeamButton.classList.add("loading");
     // guidedUnshareWithCurationTeamButton.classList.add("hidden");
@@ -3195,7 +3194,6 @@ document
         validationReport = await pollForValidationResults(clientUUID);
       }
 
-
       if (validationReport.status === "Error") {
         file_counter = 0;
         folder_counter = 0;
@@ -3219,7 +3217,6 @@ document
       folder_counter = 0;
       get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
 
-
       // log successful validation run to analytics
       ipcRenderer.send(
         "track-event",
@@ -3228,7 +3225,6 @@ document
         "Number of Files",
         file_counter
       );
-
 
       if (validationReport.status === "Incomplete") {
         // An incomplete validation report happens when the validator is unable to generate
@@ -3255,7 +3251,6 @@ document
         showConfirmButton: true,
         icon: hasValidationErrors ? "error" : "success",
       });
-
 
       // Hide the loading div
       validationLoadingDiv.classList.add("hidden");

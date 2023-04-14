@@ -420,7 +420,6 @@ $(document).ready(function () {
                   includeEmptyLines: true,
                 });
 
-
                 let alphabet = [
                   "A",
                   "B",

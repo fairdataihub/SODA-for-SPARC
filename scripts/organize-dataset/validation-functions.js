@@ -106,7 +106,6 @@ const validateOrganizedDataset = async () => {
     file_counter += packageCount;
   }
 
-
   if (file_counter >= 50000) {
     await Swal.fire({
       title: `Dataset Too Large`,
