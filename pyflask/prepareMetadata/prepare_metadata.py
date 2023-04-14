@@ -968,14 +968,17 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
     # convert the string into a json object/dictionary
     if(str(type(soda_json_structure)) == "<class 'str'>"):
         soda_json_structure = json.loads(soda_json_structure);
-        
+
     dataset_structure = soda_json_structure["dataset-structure"]
 
     # get the count of the total number of high level folders in soda_json_structure
     for folder in list(dataset_structure["folders"]):
-        if folder in high_level_folders:
-            if dataset_structure["folders"][folder]["files"] == {} and dataset_structure["folders"][folder]["folders"] == {}:
-                manifest_progress["total_manifest_files"] += 1
+        if (
+            folder in high_level_folders
+            and dataset_structure["folders"][folder]["files"] == {}
+            and dataset_structure["folders"][folder]["folders"] == {}
+        ):
+            manifest_progress["total_manifest_files"] += 1
 
     # create the path to the dataset files and folders on Pennsieve and add them to the dataset structure stored in soda_json_structure
     recursive_item_path_create(dataset_structure, [])
@@ -992,7 +995,7 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
     manifest_progress["finished"] = True
 
     no_manifest_boolean = False
-    
+
     return {"message": "Finished"}
 
 
@@ -1200,20 +1203,18 @@ def drop_manifest_empty_columns(manifest_file_location):
         manifest_df = pd.read_excel(
             os.path.join(manifest_file_location, high_level_folder, "manifest.xlsx"), engine="openpyxl", usecols=column_check, header=0
         )
-        custom_columns = []
-
         # get the custom columns from the data frame
         SET_COLUMNS = ['filename', 'timestamp', 'description', 'file type', 'Additional Metadata']
-        for column in manifest_df.columns: 
-            if column not in SET_COLUMNS:
-                custom_columns.append(column)
-
-
+        custom_columns = [
+            column
+            for column in manifest_df.columns
+            if column not in SET_COLUMNS
+        ]
         # for each custom column delete the column if all values are null/empty
         manifest_dict = {x:manifest_df[x].values.tolist() for x in manifest_df}
 
         for column in custom_columns:
-            if all([pd.isna(x) for x in manifest_dict[column]]):
+            if all(pd.isna(x) for x in manifest_dict[column]):
                 # remove the column from dict
                 del manifest_dict[column]
 
