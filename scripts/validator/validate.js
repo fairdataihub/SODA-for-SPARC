@@ -120,7 +120,6 @@ const validateLocalDataset = async () => {
     return;
   }
 
-
   if (totalItems >= 50000) {
     await Swal.fire({
       title: `Dataset Too Large`,
@@ -184,7 +183,6 @@ const validateLocalDataset = async () => {
   }
 
   localSodaJsonObject = importLocalDatasetResponse.data;
-
 
   let validationReportData;
   try {
@@ -411,7 +409,6 @@ const validatePennsieveDatasetStandAlone = async () => {
 
   localSodaJSONObj["bf-account-selected"]["account-name"] = $("#current-bf-account").text();
   localSodaJSONObj["bf-dataset-selected"]["dataset-name"] = $("#current-bf-dataset").text();
-
 
   // import the dataset from Pennsieve
   let datasetPopulationResponse;

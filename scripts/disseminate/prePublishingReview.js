@@ -299,7 +299,6 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
     ["Fetch Pre-publishing Checklist Statuses"]
   );
 
-
   // mark each pre-publishing item red or green to indicate if the item was completed
   setPrepublishingChecklistItemIconByStatus(
     `${curationModeID}prepublishing-checklist-icon-subtitle`,
@@ -813,7 +812,6 @@ const populateFileViewer = (metadataFiles, excludedFiles, curationMode) => {
     // Guided mode elements have 'guided--' prepended to their ID
     curationModeID = "guided--";
   }
-
 
   // get the file viewer element
   let fileViewer = document.querySelector(`#${curationModeID}items-pre-publication`);
