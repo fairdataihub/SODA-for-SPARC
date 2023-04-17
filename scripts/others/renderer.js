@@ -3951,13 +3951,15 @@ const showPrePublishingPageElements = () => {
   }
 
   // show the "Begin Publishing" button and hide the checklist and submission section
-  $("#begin-prepublishing-btn").show();
+  $("#begin-prepublishing-btn").removeClass("hidden");
   $("#prepublishing-checklist-container").hide();
   $("#prepublishing-submit-btn-container").hide();
   $("#excluded-files-container").hide();
   $(".pre-publishing-continue-container").hide();
 };
 
+// The callback argument is used to determine whether or not to publish or unpublish the dataset
+// If callback is empty then the dataset status will only be fetched and displayed
 const showPublishingStatus = async (callback, curationMode = "") => {
   return new Promise(async function (resolve, reject) {
     if (callback == "noClear") {

@@ -210,18 +210,12 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
     curationModeID = "guided--";
     currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
     console.log("is guided mode here as well");
-    // Reset the language for the pre-publishing checklist items
-    // $("#guided--prepublishing-checklist-container").addClass("hidden");
-    // smoothScrollToElement(`guided--prepublishing-continue-btn`, "end", "nearest");
-  }
-
-  if (currentDataset === "Select dataset") {
-    return;
   }
 
   if (
+    currentDataset === "Select dataset" ||
     $(`#${curationModeID}para-review-dataset-info-disseminate`).text() !==
-    "Dataset is not under review currently"
+      "Dataset is not under review currently"
   ) {
     return false;
   }
@@ -287,19 +281,16 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
   setPrepublishingChecklistItemIconByStatus(
     `${curationModeID}prepublishing-checklist-icon-subtitle`,
     statuses.subtitle
-    // false
   );
 
   setPrepublishingChecklistItemIconByStatus(
     `${curationModeID}prepublishing-checklist-icon-readme`,
     statuses.readme
-    // false
   );
 
   setPrepublishingChecklistItemIconByStatus(
     `${curationModeID}prepublishing-checklist-icon-tags`,
     statuses.tags
-    // false
   );
 
   setPrepublishingChecklistItemIconByStatus(
@@ -310,13 +301,11 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
   setPrepublishingChecklistItemIconByStatus(
     `${curationModeID}prepublishing-checklist-icon-license`,
     statuses.license
-    // false
   );
 
   setPrepublishingChecklistItemIconByStatus(
     `${curationModeID}prepublishing-checklist-icon-ORCID`,
     statuses.ORCID
-    // false
   );
 
   if (curationMode === "guided") {
@@ -330,11 +319,9 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
         backdrop: "rgba(0,0,0, 0.4)",
         heightAuto: false,
         allowEscapeKey: false,
-        // If "Link ORCID iD" is not completed, then confirmButtonText will say "Link ORCID iD" and will redirect the user to the ORCID page
         confirmButtonText: checklistItems.includes("Link ORCID iD") ? "Link ORCID iD" : "Ok",
         showCancelButton: checklistItems.includes("Link ORCID iD") ? true : false,
         title: "Cannot submit dataset yet",
-        // map checkListItems to a string of the checklist items that are not completed
         html: `You must add all of the items below to your dataset before submitting your dataset for review: ${checklistItems
           .map((item) => item)
           .join(
@@ -354,17 +341,14 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
           }
         },
       });
+
+      //If the user clicks the ORCID button, open the ORCID page
       if (result.isConfirmed && result.value === "ORCID") {
         orcidSignIn("guided");
       }
       return false;
     } else {
-      // display the submit button to the user
       Swal.close();
-      // $("#guided--submit-prepublishing-review").removeClass("hidden");
-      // await disseminateDataset("submit-pre-publishing", "guided");
-      // TODO: Dorian check here if you submit here or somewhere else within the flow
-      // submitReviewDataset here?
       return true;
     }
   }
@@ -409,16 +393,15 @@ const setPrepublishingChecklistItemIconByStatus = (iconElementId, status) => {
 };
 
 // reads the pre-publishing checklist items from the UI and returns true if all are completed and false otherwise
-// This function checks all elements with icon wrapper i class
-// half belong to guided mode and the other half belongs to free form mode
+// This function checks elements with icon wrapper i class
+// If curationMode is guided the return will include an array of the checklist items that are not completed to alert user
 const allPrepublishingChecklistItemsCompleted = (curationMode) => {
   let curationModeID = "";
   let prePublishingChecklistItemNames = [];
   if (curationMode === "guided") {
-    // This is done to ensure the right element ID is called
-    // Guided mode elements have 'guided--' prepended to their ID
     curationModeID = "guided--";
   }
+
   // get the icons for the checklist elements
   let prePublishingChecklistItems = $(`.${curationModeID}icon-wrapper i`);
 
@@ -430,46 +413,46 @@ const allPrepublishingChecklistItemsCompleted = (curationMode) => {
     return checklistItem.className === "close icon";
   });
 
+  // if there are any incomplete checklist items then not all items are complete
   if (curationMode === "guided") {
     return [incompleteChecklistItems.length ? false : true, prePublishingChecklistItemNames];
   }
-  // if there are any incomplete checklist items then not all items are complete
   return incompleteChecklistItems.length ? false : true;
 };
 
 // once the user clicks the Begin Submission button check if they are the data set owner'
 // show the next section - which has the pre-publishing checklist - if so
-const transitionToPrepublishingQuestionThree = async () => {
-  // hide the begin publishing button
-  $("#begin-prepublishing-btn").hide();
-  // resetPrePublishingChecklist();
+// const transitionToPrepublishingQuestionThree = async () => {
+//   // hide the begin publishing button
+//   $("#begin-prepublishing-btn").addClass("hidden");
+//   // resetPrePublishingChecklist();
 
-  // hide the excluded files container
-  // because the Submit button transitions back to question three after showing this container
-  // it needs to be hidden
-  $("#excluded-files-container").hide();
+//   // hide the excluded files container
+//   // because the Submit button transitions back to question three after showing this container
+//   // it needs to be hidden
+//   $("#excluded-files-container").hide();
 
-  // check what the pre-publishing status is
-  if (
-    document
-      .getElementById("para-review-dataset-info-disseminate")
-      .innerText.includes("Dataset is currently under review")
-  ) {
-    // show the withdraw button
-    $("#prepublishing-withdraw-btn-container").show();
-    $("#prepublishing-withdraw-btn-container button").show();
-    $(".pre-publishing-continue-container").hide();
-    $("#prepublishing-checklist-container").hide();
+//   // check what the pre-publishing status is
+//   if (
+//     document
+//       .getElementById("para-review-dataset-info-disseminate")
+//       .innerText.includes("Dataset is currently under review")
+//   ) {
+//     // show the withdraw button
+//     $("#prepublishing-withdraw-btn-container").show();
+//     $("#prepublishing-withdraw-btn-container button").show();
+//     $(".pre-publishing-continue-container").hide();
+//     $("#prepublishing-checklist-container").hide();
 
-    return;
-  }
+//     return;
+//   }
 
-  // show the pre-publishing checklist and the continue button
-  $("#prepublishing-checklist-container").show();
-  $(".pre-publishing-continue-container").show();
-  $("#prepublishing-withdraw-btn-container").hide();
-  $("#prepublishing-withdraw-btn-container button").hide();
-};
+//   // show the pre-publishing checklist and the continue button
+//   $("#prepublishing-checklist-container").show();
+//   $(".pre-publishing-continue-container").show();
+//   $("#prepublishing-withdraw-btn-container").hide();
+//   $("#prepublishing-withdraw-btn-container button").hide();
+// };
 
 // user clicks on the 'Continue' button and navigates to the file tree wherein they can decide which
 // files will be excluded from the dataset upon publishing
@@ -626,7 +609,7 @@ const createPrepublishingChecklist = async (curationMode) => {
       "track-event",
       "Error",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW + " - Get Excluded Files",
-      defaultBfDatasetId
+      currentDataset
     );
 
     // continue as they may not want to set any "ignore files" anyways
@@ -638,7 +621,7 @@ const createPrepublishingChecklist = async (curationMode) => {
     "track-event",
     "Success",
     DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW + " - Get Excluded Files",
-    defaultBfDatasetId
+    currentDataset
   );
 
   let metadataFiles;
@@ -697,6 +680,8 @@ const beginPrepublishingFlow = async (curationMode) => {
   let curationModeID = "";
   let embargoDetails;
   if (curationMode === "guided") {
+    // This is done to ensure the right element ID is called
+    // Guided mode elements have 'guided--' prepended to their ID
     curationModeID = "guided--";
     currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
     currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
@@ -717,30 +702,9 @@ const beginPrepublishingFlow = async (curationMode) => {
       Swal.close();
       return false;
     }
-    // This is done to ensure the right element ID is called
-    // Guided mode elements have 'guided--' prepended to their ID
-
-    // Swal.fire({
-    //   title: "Checking if dataset is eligible to submit...",
-    //   html: "Please wait...",
-    //   allowEscapeKey: false,
-    //   allowOutsideClick: false,
-    //   showConfirmButton: false,
-    //   heightAuto: false,
-    //   backdrop: "rgba(0,0,0, 0.4)",
-    //   timerProgressBar: false,
-    //   icon: "info",
-    //   showClass: {
-    //     popup: "animate__animated animate__fadeInDown",
-    //   },
-    //   hideClass: {
-    //     popup: "animate__animated animate__fadeOutUp",
-    //   },
-    // });
   }
-  if (curationMode === "") {
+  if (curationMode === "freeform") {
     console.log("within ffm");
-    // $("#begin-prepublishing-btn").addClass("loading");
 
     Swal.fire({
       title: "Determining your dataset permissions",
@@ -807,30 +771,46 @@ const beginPrepublishingFlow = async (curationMode) => {
     return false;
   }
 
-  if (curationMode === "") {
-    Swal.close();
-  }
-
-  // // close the loading popup
-  // Swal.close();
+  // Close the swal pop up for freeform mode
+  Swal.close();
 
   // wait for the Review status to be filled
   if ($(`#${curationModeID}para-review-dataset-info-disseminate`).text() === "") {
+    console.log("is blank");
     await wait(1000);
   }
 
   // transition to the next question if not in guided mode
   // load the next question's data
   if (curationMode !== "guided") {
-    let elementClicked = document.getElementById("begin-prepublishing-btn");
-    transitionFreeFormMode(
-      elementClicked,
-      "submit_prepublishing_review-question-2",
-      "submit_prepublishing_review-tab",
-      "",
-      "individual-question post-curation"
-    );
-    await showPrePublishingStatus(true);
+    let reviewDatasetInfo = $("#para-review-dataset-info-disseminate").text();
+
+    $("#begin-prepublishing-btn").addClass("hidden");
+    $("#submit_prepublishing_review-question-2").removeClass("show");
+    $("#submit_prepublishing_review-question-3").addClass("show");
+
+    // hide the excluded files container
+    // because the Submit button transitions back to question three after showing this container
+    // it needs to be hidden
+    $("#excluded-files-container").hide();
+
+    if (reviewDatasetInfo.includes("Dataset is currently under review")) {
+      // show the withdraw button
+      $("#prepublishing-withdraw-btn-container").show();
+      $("#prepublishing-withdraw-btn-container button").show();
+      $(".pre-publishing-continue-container").hide();
+      $("#prepublishing-checklist-container").hide();
+
+      return;
+    }
+
+    // show the pre-publishing checklist and the continue button
+    $("#prepublishing-checklist-container").show();
+    $(".pre-publishing-continue-container").show();
+    $("#prepublishing-withdraw-btn-container").hide();
+    $("#prepublishing-withdraw-btn-container button").hide();
+
+    await showPrePublishingStatus(true, "freeform");
   } else {
     //Curation mode is guided mode
     console.log("is guided mode");
