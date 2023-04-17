@@ -1359,25 +1359,6 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-manifest-file-generation-tab") {
-      const buttonYesAutoGenerateManifestFiles = document.getElementById(
-        "guided-button-auto-generate-manifest-files"
-      );
-      const buttonNoImportManifestFiles = document.getElementById(
-        "guided-button-import-manifest-files"
-      );
-
-      if (
-        !buttonYesAutoGenerateManifestFiles.classList.contains("selected") &&
-        !buttonNoImportManifestFiles.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please indicate how you would like to prepare your manifest files",
-        });
-        throw errorArray;
-      }
-      if (buttonYesAutoGenerateManifestFiles.classList.contains("selected")) {
-      }
     }
 
     if (pageBeingLeftID === "guided-create-submission-metadata-tab") {
@@ -2734,11 +2715,11 @@ const renderProgressCards = (progressFileJSONdata) => {
   }
 };
 
-const renderManifestCards = async () => {
+const renderManifestCards = () => {
   const guidedManifestData = sodaJSONObj["guided-manifest-files"];
-  const highLevelFoldersWithManifestData = Object.keys(guidedManifestData);
+  const highLevelnFoldersWithManifestData = Object.keys(guidedManifestData);
 
-  const manifestCards = highLevelFoldersWithManifestData
+  const manifestCards = highLevelnFoldersWithManifestData
     .map((highLevelFolder) => {
       return generateManifestEditCard(highLevelFolder);
     })
@@ -2929,87 +2910,6 @@ document
   .getElementById("guided-button-resume-pennsieve-dataset")
   .addEventListener("click", async () => {
     renderGuidedResumePennsieveDatasetSelectionDropdown();
-  });
-
-document
-  .getElementById("guided-button-auto-generate-manifest-files")
-  .addEventListener("click", async () => {
-    //Wait for current call stack to finish
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
-    const manifestFilesCardsContainer = document.getElementById(
-      "guided-container-manifest-file-cards"
-    );
-
-    manifestFilesCardsContainer.innerHTML = `
-    <div class="guided--section">
-    <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-    </div>
-    Updating your dataset's manifest files...
-    `;
-
-    scrollToBottomOfGuidedBody();
-
-    try {
-      const sodaCopy = { ...sodaJSONObj };
-      delete sodaCopy["generate-dataset"];
-      sodaCopy["metadata-files"] = {};
-      sodaCopy["dataset-structure"] = datasetStructureJSONObj;
-
-      const cleanJson = await client.post(
-        `/curate_datasets/clean-dataset`,
-        { soda_json_structure: sodaCopy },
-        { timeout: 0 }
-      );
-      let response = cleanJson.data.soda_json_structure;
-      let responseDataStructure = response["dataset-structure"];
-
-      const res = await client.post(
-        `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
-        {
-          dataset_structure_obj: responseDataStructure,
-        },
-        { timeout: 0 }
-      );
-      const manifestRes = res.data;
-      //loop through each of the high level folders and store their manifest headers and data
-      //into the sodaJSONObj
-
-      let newManifestData = {};
-
-      for (const [highLevelFolderName, manifestFileData] of Object.entries(manifestRes)) {
-        //Only save manifest files for hlf that returned more than the headers
-        //(meaning manifest file data was generated in the response)
-        if (manifestFileData.length > 1) {
-          //Remove the first element from the array and set it as the headers
-          const manifestHeader = manifestFileData.shift();
-
-          newManifestData[highLevelFolderName] = {
-            headers: manifestHeader,
-            data: manifestFileData,
-          };
-        }
-      }
-      const existingManifestData = sodaJSONObj["guided-manifest-files"];
-      let updatedManifestData;
-
-      if (existingManifestData) {
-        updatedManifestData = diffCheckManifestFiles(newManifestData, existingManifestData);
-      } else {
-        updatedManifestData = newManifestData;
-      }
-
-      sodaJSONObj["guided-manifest-files"] = updatedManifestData;
-      // Save the sodaJSONObj with the new manifest files
-      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-    } catch (err) {
-      console.log(err);
-      clientError(err);
-      userError(err);
-    }
-
-    //Rerender the manifest cards
-    await renderManifestCards();
   });
 
 document
@@ -4748,6 +4648,68 @@ const openPage = async (targetPageID) => {
           delete datasetStructureJSONObj["folders"][folder]["files"]["manifest.xlsx"];
         }
       }
+
+      const manifestFilesCardsContainer = document.getElementById(
+        "guided-container-manifest-file-cards"
+      );
+
+      // Show the loading spinner
+      manifestFilesCardsContainer.innerHTML = `
+        <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+        Updating your dataset's manifest files...
+      `;
+
+      const sodaCopy = { ...sodaJSONObj };
+      delete sodaCopy["generate-dataset"];
+      sodaCopy["metadata-files"] = {};
+      sodaCopy["dataset-structure"] = datasetStructureJSONObj;
+
+      const cleanJson = await client.post(
+        `/curate_datasets/clean-dataset`,
+        { soda_json_structure: sodaCopy },
+        { timeout: 0 }
+      );
+      let response = cleanJson.data.soda_json_structure;
+      let responseDataStructure = response["dataset-structure"];
+
+      const res = await client.post(
+        `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
+        {
+          dataset_structure_obj: responseDataStructure,
+        },
+        { timeout: 0 }
+      );
+      const manifestRes = res.data;
+      //loop through each of the high level folders and store their manifest headers and data
+      //into the sodaJSONObj
+
+      let newManifestData = {};
+
+      for (const [highLevelFolderName, manifestFileData] of Object.entries(manifestRes)) {
+        //Only save manifest files for hlf that returned more than the headers
+        //(meaning manifest file data was generated in the response)
+        if (manifestFileData.length > 1) {
+          //Remove the first element from the array and set it as the headers
+          const manifestHeader = manifestFileData.shift();
+
+          newManifestData[highLevelFolderName] = {
+            headers: manifestHeader,
+            data: manifestFileData,
+          };
+        }
+      }
+      const existingManifestData = sodaJSONObj["guided-manifest-files"];
+      let updatedManifestData;
+
+      if (existingManifestData) {
+        updatedManifestData = diffCheckManifestFiles(newManifestData, existingManifestData);
+      } else {
+        updatedManifestData = newManifestData;
+      }
+
+      sodaJSONObj["guided-manifest-files"] = updatedManifestData;
+      //Rerender the manifest cards
+      renderManifestCards();
     }
 
     if (targetPageID === "guided-create-submission-metadata-tab") {
