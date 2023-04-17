@@ -8514,6 +8514,7 @@ const curation_consortium_check = async (mode = "") => {
     });
     let res = bf_account_details_req.data;
     let organization_id = res["organization_id"];
+    // TODO: RE_JOIN: Handle when changing bf_account_details to not return the organization id
     if (organization_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0") {
       $("#current_curation_team_status").text("None");
       $("#current_sparc_consortium_status").text("None");

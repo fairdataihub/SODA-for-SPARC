@@ -613,6 +613,7 @@ def bf_account_details(accountname):
     org_id = ""
 
     # add the sparc consortium as the organization name if the user is a member of the consortium
+    # TODO: RE-JOIN: Do not automatically return this organization ID. We want the user to select it later. So we should return their available organizations instead.
     organizations = r.json()
     for org in organizations["organizations"]:
         if org["organization"]["id"] == "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
