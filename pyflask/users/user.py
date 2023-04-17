@@ -80,6 +80,36 @@ def get_user_information(token):
 
 
 
+def set_preferred_organization(organization_id):
+    try:
+        url = "https://api.pennsieve.io/session/switch-organization"
+
+        querystring = {
+            "organization_id": organization_id
+        }
+
+        token = get_access_token()
+
+        response = requests.put(url, headers=create_request_headers(token), params=querystring)
+
+        response = requests.get(
+            f"{PENNSIEVE_URL}/user", headers={"Authorization": f"Bearer {api_key}"}
+        )
+        response.raise_for_status()
+        response = response.json()
+
+        if "preferredOrganization" in response:
+            if response["preferredOrganization"] != organization_id:
+                error = "It looks like you don't have access to your desired organization. Please reach out to the SPARC curation team (email) to get access to the SPARC workspace and try again."
+                raise Exception(error)
+        else:
+            error = "It looks like you don't have access to your desired organization. This is required to upload datasets. Please reach out to the SPARC curation team (email) to get access to the SPARC workspace and try again."
+            raise Exception(error)
+    except Exception as error:
+        error = "It looks like you don't have access to your desired organization. This is required to upload datasets. Please reach out to the SPARC curation team (email) to get access to the SPARC workspace and try again."
+        raise Exception(error)
+
+
 userpath = expanduser("~")
 configpath = join(userpath, ".pennsieve", "config.ini")
 def update_config_account_name(accountname):
