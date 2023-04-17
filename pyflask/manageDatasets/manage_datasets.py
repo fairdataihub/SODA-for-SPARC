@@ -1805,47 +1805,6 @@ def get_pennsieve_api_key_secret(email, password, keyname):
         raise e
 
     try:
-        url = "https://api.pennsieve.io/session/switch-organization"
-
-        sparc_org_id = "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
-        querystring = {
-            "organization_id": "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
-        }
-
-        headers = {"Accept": "application/json", "Authorization": f"Bearer {api_key}"}
-
-        response = requests.request("PUT", url, headers=headers, params=querystring)
-    except Exception as e:
-        raise e
-
-    try:
-        url = "https://api.pennsieve.io/session/switch-organization"
-
-        querystring = {
-            "organization_id": "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
-        }
-
-        headers = {"Accept": "application/json", "Authorization": f"Bearer {api_key}"}
-
-        response = requests.request("PUT", url, headers=headers, params=querystring)
-
-        response = requests.get(
-            f"{PENNSIEVE_URL}/user", headers={"Authorization": f"Bearer {api_key}"}
-        )
-        response.raise_for_status()
-        response = response.json()
-        if "preferredOrganization" in response:
-            if response["preferredOrganization"] != sparc_org_id:
-                error = "It looks like you don't have access to the SPARC workspace on Pennsieve. This is required to upload datasets. Please reach out to the SPARC curation team (email) to get access to the SPARC workspace and try again."
-                raise Exception(error)
-        else:
-            error = "It looks like you don't have access to the SPARC workspace on Pennsieve. This is required to upload datasets. Please reach out to the SPARC curation team (email) to get access to the SPARC workspace and try again."
-            raise Exception(error)
-    except Exception as error:
-        error = "It looks like you don't have access to the SPARC workspace on Pennsieve. This is required to upload datasets. Please reach out to the SPARC curation team (email) to get access to the SPARC workspace and try again."
-        raise Exception(error)
-
-    try:
         url = "https://api.pennsieve.io/token/"
 
         payload = {"name": f"{keyname}"}
