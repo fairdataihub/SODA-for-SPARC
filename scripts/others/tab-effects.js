@@ -2056,7 +2056,7 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
   }
 
   if (ev.getAttribute("data-next") === "div-rename-bf-dataset") {
-    let dataset_name = $("#rename_dataset_name").text();
+    let dataset_name = $("#rename_dataset_BF_account_tab .change-current-account.ds-dd h5").text();
     $("#bf-rename-dataset-name").val(dataset_name);
   }
 
@@ -3389,7 +3389,9 @@ $(document).ready(() => {
     let section = $(this).data("section");
 
     if (section === "add_edit_bf_dataset_collection") {
-      let rename_dataset_name = $("#rename_dataset_name").html();
+      let rename_dataset_name = $(
+        "#rename_dataset_BF_account_tab .change-current-account.ds-dd h5"
+      ).html();
       if (rename_dataset_name.trim() != "None" && rename_dataset_name != "") {
         $("#bf-rename-dataset-name").val(rename_dataset_name);
       } else {
@@ -3398,7 +3400,9 @@ $(document).ready(() => {
     }
 
     if (section === "rename_existing_bf_dataset") {
-      let rename_dataset_name = $("#rename_dataset_name").html();
+      let rename_dataset_name = $(
+        "#rename_dataset_BF_account_tab .change-current-account.ds-dd h5"
+      ).html();
       if (rename_dataset_name.trim() != "None" && rename_dataset_name != "") {
         $("#bf-rename-dataset-name").val(rename_dataset_name);
       } else {
