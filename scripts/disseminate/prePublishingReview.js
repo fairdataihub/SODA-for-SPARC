@@ -787,9 +787,9 @@ const beginPrepublishingFlow = async (curationMode) => {
     $("#submit_prepublishing_review-question-2").removeClass("show");
     $("#submit_prepublishing_review-question-3").addClass("show");
 
-    if(!datasetHasBeenPublished) {
+    if (!datasetHasBeenPublished) {
       smoothScrollToElement("pre-publishing-continue-btn");
-      
+
       await showPrePublishingStatus(true, "freeform");
     }
   } else {

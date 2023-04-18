@@ -12,7 +12,7 @@ Note: Some frontend elements of the workflow are in the renderer.js file as well
 // Helper functions
 // TODO -> Dorian use this $(".spinner.post-curation").show();
 const disseminatePublish = async (curationMode) => {
-  if(curationMode === "freeform") {
+  if (curationMode === "freeform") {
     $("#prepublishing-submit-btn").addClass("loading");
   }
 
@@ -44,14 +44,13 @@ const disseminatePublish = async (curationMode) => {
     let embargoReleaseDate = status[1];
     console.log(status);
     $("#prepublishing-submit-btn").removeClass("loading");
-    if(status[0] && curationMode === "freeform") {
+    if (status[0] && curationMode === "freeform") {
       // submit the dataset for review with the given embargoReleaseDate
       await submitReviewDataset(embargoReleaseDate, curationMode);
       $("#prepublishing-submit-btn-container").hide();
       resetffmPrepublishingUI();
     }
-
-  } catch(error) {
+  } catch (error) {
     log.error(error);
     console.error(error);
     Swal.fire({

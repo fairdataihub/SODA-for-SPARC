@@ -516,7 +516,6 @@ const showCurrentPermission = async () => {
 
     currentDatasetPermission.innerHTML = datasetOwner;
     currentAddEditDatasetPermission.innerHTML = permissionList;
-
   } catch (error) {
     clientError(error);
   }

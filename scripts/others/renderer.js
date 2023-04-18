@@ -3503,7 +3503,7 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
 };
 
 // //Withdraw dataset from review
-const withdrawDatasetSubmission = async (curationMode='') => {
+const withdrawDatasetSubmission = async (curationMode = "") => {
   // show a SWAL loading message until the submit for prepublishing flow is successful or fails
 
   if (curationMode !== "guided") {
@@ -8468,7 +8468,6 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
     }
   }
 });
-
 
 $("#button-generate-manifest-locally").click(() => {
   ipcRenderer.send("open-folder-dialog-save-manifest-local");
