@@ -623,35 +623,6 @@ $(document).ready(function () {
           }
         }
       });
-      // Swal.fire({
-      //   title:
-      //     "<span style='font-size: 18px !important;'>Edit the manifest file below: </span> <br><span style='font-size: 13px; font-weight: 500'> Tip: Double click on a cell to edit it.<span>",
-      //   html: "<div id='div-manifest-edit'></div>",
-      //   allowEscapeKey: false,
-      //   allowOutsideClick: false,
-      //   showConfirmButton: true,
-      //   confirmButtonText: "Confirm",
-      //   showCancelButton: true,
-      //   width: "90%",
-      //   // height: "80%",
-      //   customClass: "swal-large",
-      //   heightAuto: false,
-      //   backdrop: "rgba(0,0,0, 0.4)",
-      //   didOpen: () => {
-      //     Swal.hideLoading();
-      //   },
-      // }).then((result) => {
-      //   $(jstreePreviewManifest).jstree().deselect_all(true);
-      //   // sort the updated json object (since users might have added new columns)
-      //   let manifestHeaders = table1.getHeaders().split(",");
-      //   let manifestEntries = table1.getData();
-      //   let sortedJSON = processManifestInfo(manifestHeaders, manifestEntries);
-      //   // // write this new json to existing manifest.json file
-      //   jsonManifest = JSON.stringify(sortedJSON);
-      //   // convert manifest.json to existing manifest.xlsx file
-      //   convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
-      // });
-      // loadManifestFileEdits(jsonManifest);
     }
   });
   $(guidedJsTreePreviewManifest).on("select_node.jstree", function (evt, data) {
@@ -684,35 +655,6 @@ $(document).ready(function () {
           "*": "{{columnHeader}}",
         },
       })["Sheet1"];
-      // Swal.fire({
-      //   title:
-      //     "<span style='font-size: 18px !important;'>Edit the manifest file below: </span> <br><span style='font-size: 13px; font-weight: 500'> Tip: Double click on a cell to edit it.<span>",
-      //   html: "<div id='div-manifest-edit'></div>",
-      //   allowEscapeKey: false,
-      //   allowOutsideClick: false,
-      //   showConfirmButton: true,
-      //   confirmButtonText: "Confirm",
-      //   showCancelButton: true,
-      //   width: "90%",
-      //   // height: "80%",
-      //   customClass: "swal-large",
-      //   heightAuto: false,
-      //   backdrop: "rgba(0,0,0, 0.4)",
-      //   didOpen: () => {
-      //     Swal.hideLoading();
-      //   },
-      // }).then((result) => {
-      //   $(jstreePreviewManifest).jstree().deselect_all(true);
-      //   // sort the updated json object (since users might have added new columns)
-      //   let manifestHeaders = table1.getHeaders().split(",");
-      //   let manifestEntries = table1.getData();
-      //   let sortedJSON = processManifestInfo(manifestHeaders, manifestEntries);
-      //   // // write this new json to existing manifest.json file
-      //   jsonManifest = JSON.stringify(sortedJSON);
-      //   // convert manifest.json to existing manifest.xlsx file
-      //   convertJSONToXlsx(JSON.parse(jsonManifest), selectedManifestFilePath);
-      // });
-      // loadManifestFileEdits(jsonManifest);
     }
   });
 });
@@ -848,87 +790,6 @@ const convertJSONToXlsx = (jsondata, excelfile) => {
     rowIndex++;
   });
   wb.write(excelfile);
-};
-
-var table1;
-const loadManifestFileEdits = (jsondata) => {
-  let columns = Object.keys(jsondata[0]);
-  let columnList = [];
-  for (let i = 0; i < columns.length; i++) {
-    let subColumn = {
-      type: "text",
-      tableWidth: "100%",
-      width: "200px",
-      name: columns[i],
-      title: columns[i],
-      readOnly: false,
-    };
-    columnList.push(subColumn);
-  }
-  // After ID in pop has been initiated, initialize jspreadsheet
-  table1 = jspreadsheet(document.getElementById("div-manifest-edit"), {
-    data: jsondata.slice(1),
-    columns: columnList,
-    contextMenu: function (obj, x, y, e) {
-      var items = [];
-      if (y == null) {
-        // Insert a new column
-        if (obj.options.allowInsertColumn == true) {
-          items.push({
-            title: obj.options.text.insertANewColumnBefore,
-            onclick: function () {
-              obj.insertColumn(1, parseInt(x), 1);
-              $("#div-manifest-edit")
-                .find("table")
-                .find("thead")
-                .find("td")
-                .dblclick(function (e) {
-                  e.target.contentEditable = true;
-                  e.target.innerText = "";
-                  e.target.focus();
-                });
-            },
-          });
-        }
-        if (obj.options.allowInsertColumn == true) {
-          items.push({
-            title: obj.options.text.insertANewColumnAfter,
-            onclick: function () {
-              obj.insertColumn(1, parseInt(x), 0);
-              $("#div-manifest-edit")
-                .find("table")
-                .find("thead")
-                .find("td")
-                .dblclick(function (e) {
-                  e.target.contentEditable = true;
-                  e.target.innerText = "";
-                  e.target.focus();
-                });
-            },
-          });
-        }
-        // Delete a column
-        if (obj.options.allowDeleteColumn == true) {
-          items.push({
-            title: obj.options.text.deleteSelectedColumns,
-            onclick: function () {
-              obj.deleteColumn(obj.getSelectedColumns().length ? undefined : parseInt(x));
-            },
-          });
-        }
-      }
-      return items;
-    },
-  });
-  $("#div-manifest-edit")
-    .find("table")
-    .find("thead")
-    .find("td")
-    .dblclick(function (e) {
-      e.target.contentEditable = true;
-      e.target.innerText = "";
-      e.target.focus();
-    });
 };
 
 var localDatasetFolderPath = "";
