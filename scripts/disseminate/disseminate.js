@@ -32,21 +32,6 @@ const disseminatePublish = async (curationMode) => {
     return;
   }
 
-  // show a SWAL loading message until the submit popup that asks the user for their approval appears
-  // Swal.fire({
-  //   title: `Preparing submission for pre-publishing review`,
-  //   html: "Please wait...",
-  //   // timer: 5000,
-  //   allowEscapeKey: false,
-  //   allowOutsideClick: false,
-  //   heightAuto: false,
-  //   backdrop: "rgba(0,0,0, 0.4)",
-  //   timerProgressBar: false,
-  //   didOpen: () => {
-  //     Swal.showLoading();
-  //   },
-  // });
-
   console.log(submitReviewDatasetCheck);
   // begin the dataset publishing flow
   await showPublishingStatus(submitReviewDatasetCheck, curationMode);
@@ -73,72 +58,11 @@ const disseminateShowPublishingStatus = (callback, account, dataset) => {
 };
 
 // Helper functions
+// TODO -> Dorian use this $(".spinner.post-curation").show();
+// Rename function?
+//To show the spinner and remove share-with-curation-team option, share-with-sparc-consortium option
 const disseminateDataset = async (option, curationMode) => {
-  let curationModeID = "";
-  if (curationMode) {
-    curationModeID = "guided--";
-  }
-
-  if (option === "share-with-curation-team") {
-    $("#share-curation-team-spinner").show();
-    Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      cancelButtonText: "No",
-      confirmButtonText: "Yes",
-      focusCancel: true,
-      icon: "warning",
-      reverseButtons: reverseSwalButtons,
-      showCancelButton: true,
-      text: "This will inform the Curation Team that your dataset is ready to be reviewed. It is then advised not to make changes to the dataset until the Curation Team contacts you. Would you like to continue?",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        var account = $("#current-bf-account").text();
-        var dataset = $(".bf-dataset-span")
-          .html()
-          .replace(/^\s+|\s+$/g, "");
-
-        disseminateCurationTeam(account, dataset);
-      } else {
-        $("#share-curation-team-spinner").hide();
-      }
-    });
-  } else if (option === "share-with-sparc-consortium") {
-    $("#share-with-sparc-consortium-spinner").show();
-    Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: "Yes",
-      cancelButtonText: "No",
-      focusCancel: true,
-      heightAuto: false,
-      icon: "warning",
-      reverseButtons: reverseSwalButtons,
-      showCancelButton: true,
-      text: "Sharing will give viewer permissions to any SPARC investigator who has signed the SPARC Non-disclosure form and will allow them to see your data. This step must be done only once your dataset has been approved by the Curation Team. Would you like to continue?",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    }).then((result) => {
-      if (result.isConfirmed) {
-        var account = $("#current-bf-account").text();
-        var dataset = $(".bf-dataset-span")
-          .html()
-          .replace(/^\s+|\s+$/g, "");
-        disseminateConsortium(account, dataset);
-      } else {
-        $("#share-with-sparc-consortium-spinner").hide();
-      }
-    });
-  } else if (option === "submit-pre-publishing") {
+  if (option === "submit-pre-publishing") {
     // clear the current status text found under the dataset name in pre-publishing checklist page
     $("#para-submit_prepublishing_review-status").text("");
 
@@ -178,6 +102,8 @@ const disseminateDataset = async (option, curationMode) => {
   }
 };
 
+// TODO -> Dorian remove this function
+//Old function to share with curation team
 const unshareDataset = (option) => {
   let message_text = "";
   if (option === "share-with-curation-team") {

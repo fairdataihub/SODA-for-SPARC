@@ -17,6 +17,7 @@ let boolNextButtonDisabled = true;
 
 async function handleSectionTrigger(event) {
   // Display the current section
+  console.log("handleSectionTrigger");
   const sectionId = `${event.target.dataset.section}-section`;
   const itemsContainer = document.getElementById("items");
   const freeFormItemsContainer = document.getElementById("free-form-folder-structure-container");

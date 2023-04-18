@@ -8289,6 +8289,7 @@ async function initiate_generate() {
   };
 } // end initiate_generate
 
+// TODO: Dorian -> update this function to go to the new sharing method
 const show_curation_shortcut = () => {
   Swal.fire({
     backdrop: "rgba(0,0,0, 0.4)",

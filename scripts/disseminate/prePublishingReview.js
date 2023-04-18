@@ -824,7 +824,6 @@ const beginPrepublishingFlow = async (curationMode) => {
   }
 };
 
-// TODO: Adapt this function to be used in Guided mode
 // Takes an array of file names and places the files inside of the file viewer found in step 3 of the pre-publicaiton submission process
 const populateFileViewer = (metadataFiles, excludedFiles, curationMode) => {
   let curationModeID = "";
