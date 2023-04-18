@@ -517,7 +517,6 @@ const showCurrentPermission = async () => {
     currentDatasetPermission.innerHTML = datasetOwner;
     currentAddEditDatasetPermission.innerHTML = permissionList;
 
-    curation_consortium_check();
   } catch (error) {
     clientError(error);
   }

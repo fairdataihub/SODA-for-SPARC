@@ -5462,13 +5462,9 @@
             </div>
             <p id="guided--doi-information"></p>
             <button
-              class="ui positive button guided--button-footer mt-2"
+              class="ui positive button soda-green-background mt-2"
               id="curate-button-reserve-doi"
-              style="
-                background-color: var(--color-light-green) !important;
-                width: 150px !important;
-                height: 3.2rem;
-              "
+              style="width: 150px !important; height: 3.2rem"
               onclick="guidedReserveAndSaveDOI()"
             >
               Reserve DOI
@@ -5499,25 +5495,16 @@
               </div>
             </div>
             <button
-              class="ui positive button guided--button-footer mt-lg"
+              class="ui positive button soda-green-background mt-lg"
               id="guided-button-share-dataset-with-curation-team"
-              style="
-                background-color: var(--color-light-green) !important;
-                width: 281px !important;
-                height: 3.2rem;
-                font-family: Poppins;
-              "
+              style="width: 281px !important; height: 3.2rem"
               onclick="guidedModifyCurationTeamAccess('share')"
             >
               Share with SPARC Curation Team</button
             ><button
-              class="ui positive button guided--button-footer mt-lg"
+              class="ui positive button plum-background mt-lg"
               id="guided-button-unshare-dataset-with-curation-team"
-              style="
-                background-color: var(--color-bg-plum) !important;
-                width: 281px !important;
-                height: 3.2rem;
-              "
+              style="width: 281px !important; height: 3.2rem"
               onclick="guidedModifyCurationTeamAccess('unshare')"
             >
               Withdraw from Review
@@ -5673,7 +5660,7 @@
                             </div>
                             <button
                               id="guided--ORCID-btn"
-                              class="prepublishing-item-button ml-3"
+                              class="prepublishing-item-button hollow-button ml-3"
                               onclick="orcidSignIn('guided')"
                             >
                               Link ORCID iD
@@ -5699,35 +5686,6 @@
                   >
                     <div style="margin-left: 0px; padding-top: 2px" class="btn_animated-inside">
                       Continue
-                    </div>
-                  </button>
-                </div>
-
-                <!--Withdraw dataset from review when Review status shows dataset is under review-->
-                <div
-                  style="width: 100%; display: none; justify-content: center"
-                  id="guided--prepublishing-withdraw-btn-container"
-                >
-                  <button
-                    id="guided--btn-withdraw-review-dataset"
-                    onclick="withdrawDatasetSubmission('guided')"
-                    class="btn_animated md skip"
-                    style="
-                      cursor: pointer;
-                      border-radius: 8px;
-                      width: 220px;
-                      height: 40px;
-                      background: rgb(255, 255, 255);
-                      color: red;
-                      font-weight: 600;
-                      border: 1px solid red;
-                      font-size: 15px;
-                      display: none;
-                    "
-                  >
-                    <div class="btn_animated-inside">
-                      <i class="fas fa-ban" style="padding-right: 5px"></i>
-                      Withdraw from review
                     </div>
                   </button>
                 </div>
@@ -5798,14 +5756,9 @@
                   id="guided--prepublishing-submit-btn-container"
                 >
                   <button
-                    onclick="disseminateDataset('submit-pre-publishing', 'guided')"
-                    class="ui positive button guided--button-footer mt-lg"
-                    style="
-                      background-color: var(--color-light-green) !important;
-                      width: 281px !important;
-                      height: 3.2rem;
-                      margin-top: 0 !important;
-                    "
+                    onclick="disseminatePublish('guided')"
+                    class="ui positive button soda-green-background mt-lg"
+                    style="width: 281px !important; height: 3.2rem; margin-top: 0 !important"
                   >
                     <i class="fas fa-sign-in-alt" style="padding-right: 5px"></i>
                     Submit
@@ -5820,7 +5773,7 @@
     <footer class="guided--footer hidden" id="guided-footer-div">
       <div class="guided--container-footer-buttons flex-end">
         <button
-          class="ui secondary basic button guided--button-footer"
+          class="ui secondary basic button"
           id="guided-back-button"
           style="width: 200px !important; font-family: Poppins"
         >
@@ -5829,7 +5782,7 @@
       </div>
       <div class="guided--container-footer-buttons flex-between">
         <button
-          class="ui positive button guided--button-footer"
+          class="ui positive button soda-green-background"
           id="guided-next-button"
           style="
             background-color: var(--color-light-green) !important;
@@ -5853,7 +5806,7 @@
     <footer class="guided--footer hidden" id="guided-sub-page-navigation-footer-div">
       <div class="guided--container-footer-buttons flex-end">
         <button
-          class="ui secondary basic button guided--button-footer"
+          class="ui secondary basic button"
           id="guided-button-sub-page-back"
           style="width: 130px !important; font-family: Poppins"
         >
@@ -5862,7 +5815,7 @@
       </div>
       <div class="guided--container-footer-buttons flex-between">
         <button
-          class="ui secondary basic button guided--button-footer guided--button-basic"
+          class="ui secondary basic button hollow-button"
           id="guided-button-sub-page-continue"
           style="width: 130px !important; font-family: Poppins"
         >

@@ -2146,6 +2146,8 @@ const guidedModifyCurationTeamAccess = async (action) => {
     });
 
     if (!withdraw) {
+      guidedUnshareWithCurationTeamButton.disabled = false;
+      guidedUnshareWithCurationTeamButton.classList.remove("loading");
       return;
     }
 

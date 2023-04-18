@@ -945,9 +945,17 @@
   pointer-events: none;
 }
 
+.white-background {
+  background-color: #fff !important;
+}
+
+.plum-background {
+  background-color: var(--color-bg-plum) !important;
+}
+
 .soda-green-background {
   background-color: var(--color-light-green) !important;
-  color: white !important;
+  color: white;
 }
 
 .required:after {

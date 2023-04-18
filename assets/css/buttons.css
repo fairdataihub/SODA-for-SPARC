@@ -26,6 +26,15 @@
   -webkit-transition: all 0.25s linear;
 }
 
+.hollow-button {
+  color: var(--color-light-green) !important;
+  box-shadow: 0 0 0 1px var(--color-light-green) inset !important;
+}
+
+.hollow-button:hover {
+  box-shadow: 0 0 6px #b0b0b0 !important;
+}
+
 .content-button p {
   color: #222c3c;
   font-size: 14px;
@@ -157,17 +166,11 @@
 }
 
 .prepublishing-item-button {
-  box-shadow: 0 0 0 1px var(--color-light-green) inset !important;
   border: none;
   border-radius: 0.28571429rem;
-  color: var(--color-light-green) !important;
   background: 0 0;
   height: 2rem;
   width: 12rem;
-}
-
-.prepublishing-item-button:hover {
-  box-shadow: 0px 0px 4px var(--color-light-green) !important;
 }
 
 .dataset-card-button-delete {
@@ -240,7 +243,7 @@
   font-weight: 600;
   position: relative;
   overflow: hidden;
-  cursor: initial !important;
+  cursor: initial !impo\rtant;
 }
 
 .disabled-generate-button:hover {
@@ -251,11 +254,9 @@
 
 .save-and-exit-button {
   width: 160px !important;
-  font-weight: 600;
+  cursor: pointer !important;
   color: var(--color-light-green) !important;
   box-shadow: 0 0 0 1px var(--color-light-green) inset !important;
-  cursor: pointer !important;
-  background: #fff;
 }
 
 .start-over-button {

@@ -1995,7 +1995,7 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
       break;
     case "submit_prepublishing_review-question-3":
       // createPrepublishingChecklist("");
-      transitionToPrePublishingSubmit();
+      // transitionToPrePublishingSubmit();
       console.log("remove case");
     case "Question-prepare-manifest-1":
       continueProgressGenerateManifest = await switchMetadataManifestQuestion();

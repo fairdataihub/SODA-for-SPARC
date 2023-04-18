@@ -739,11 +739,6 @@
   margin-top: 15px !important;
 }
 
-.guided--button-basic {
-  color: var(--color-light-green) !important;
-  box-shadow: 0 0 0 1px var(--color-light-green) inset !important;
-}
-
 .guided--field {
   width: 600px;
   margin-top: 15px !important;
