@@ -2,7 +2,7 @@ const returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
 };
 
-const guidedAnimationManager = {
+const lottieAnimationManager = {
   animationData: {
     "guided-curation-preparation-intro-lottie": {
       animationData: questionList,
@@ -37,6 +37,30 @@ const guidedAnimationManager = {
       runningAnimation.stop();
     }
   },
+};
+
+/**
+ * @description Starts or stops all animations inside of a container
+ * @param {string} containerId
+ * @param {string} startOrStop
+ * @returns {void}
+ * @example
+ * startOrStopAnimationsInContainer("container-with-lottie-containers", "start");
+ * startOrStopAnimationsInContainer("container-with-lottie-containers", "stop");
+ */
+const startOrStopAnimationsInContainer = (containerId, startOrStop) => {
+  const container = document.getElementById(containerId);
+  const animationContainers = container.getElementsByClassName("lottieAnimationContainer");
+  for (const animationContainer of animationContainers) {
+    const animationContainerId = animationContainer.id;
+
+    if (startOrStop === "start") {
+      lottieAnimationManager.startAnimation(animationContainerId);
+    }
+    if (startOrStop === "stop") {
+      lottieAnimationManager.stopAnimation(animationContainerId);
+    }
+  }
 };
 
 const folderImportedFromPennsieve = (folderJSONPath) => {
@@ -1589,14 +1613,7 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     // Stop any animations that need to be stopped
-    const animationContainers = document
-      .getElementById(pageBeingLeftID)
-      .querySelectorAll(".guidedLottieContainer");
-    animationContainers.forEach((element) => {
-      const id = element.id;
-      guidedAnimationManager.stopAnimation(id);
-      console.log("Stopped animation with id: " + id);
-    });
+    startOrStopAnimationsInContainer(pageBeingLeftID, "stop");
   } catch (error) {
     guidedSetNavLoadingState(false);
     console.log(error);
@@ -6090,12 +6107,7 @@ const openPage = async (targetPageID) => {
     }
 
     // Start any animations that need to be started
-    const animationContainers = targetPage.querySelectorAll(".guidedLottieContainer");
-    animationContainers.forEach((element) => {
-      // get the id of the element
-      const id = element.id;
-      guidedAnimationManager.startAnimation(id);
-    });
+    startOrStopAnimationsInContainer(targetPageID, "start");
 
     // Set the last opened page and save it
     sodaJSONObj["page-before-exit"] = targetPageID;
