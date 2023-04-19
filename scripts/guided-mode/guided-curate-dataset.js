@@ -6008,9 +6008,8 @@ const openPage = async (targetPageID) => {
       pennsieveDatasetLink.href = datasetLink;
 
       pennsieveDOICopy.removeEventListener("click", () => {
-        copyLink(doiInfo),
-        true
-      })
+        copyLink(doiInfo), true;
+      });
 
       pennsieveCopy.removeEventListener(
         "click",
@@ -6026,7 +6025,7 @@ const openPage = async (targetPageID) => {
         pennsieveDOICopy.addEventListener("click", () => {
           let doiInfo = document.getElementById("guided--para-doi-info").innerText;
           copyLink(doiInfo);
-        })
+        });
         addListener = false;
       }
 

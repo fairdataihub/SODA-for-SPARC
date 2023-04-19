@@ -3,8 +3,6 @@
   (Similar to tailwind's class structure) 
 */
 
-
-
 /////////////////////////    DISPLAY CLASSES    /////////////////////////
 
 .d-none {
@@ -778,7 +776,6 @@
   margin-bottom: 20px !important;
 }
 
-
 /////////////////////////  WIDTH CLASSES AND HEIGHT CLASSES /////////////////////////
 
 .w-25 {
@@ -849,7 +846,6 @@
   place-content: center !important;
 }
 
-
 /////////////////////////  TEXT CLASSES /////////////////////////
 
 .text-wrap {
@@ -910,7 +906,6 @@
   box-shadow: none !important;
 }
 
-
 /////////////////////////  COLOR TEXT CLASSES /////////////////////////
 
 .text-blue {
@@ -948,7 +943,6 @@
 .text-dark {
   color: #1e232d !important;
 }
-
 
 /////////////////////////  BACKGROUND COLOR CLASSES /////////////////////////
 
