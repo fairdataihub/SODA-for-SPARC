@@ -12,6 +12,8 @@ from flask import abort
 from pennsieve2.pennsieve import Pennsieve
 from authentication import get_access_token
 
+logger = get_namespace_logger(NamespaceEnum.USER)
+
 
 
 def integrate_orcid_with_pennsieve(access_code, pennsieve_account):
@@ -108,6 +110,30 @@ def set_preferred_organization(organization_id):
     except Exception as error:
         error = "It looks like you don't have access to your desired organization. This is required to upload datasets. Please reach out to the SPARC curation team (email) to get access to the SPARC workspace and try again."
         raise Exception(error)
+    
+
+
+def get_user_organizations():
+  """
+  Get a user's organizations.
+  """
+  try:
+    token = get_access_token()
+  except Exception as e:
+     abort(400, "Please select a valid Pennsieve account")
+
+
+  r = requests.get(f"{PENNSIEVE_URL}/organizations", headers=create_request_headers(token))
+  r.raise_for_status()
+
+  organizations_list = r.json()["organizations"]
+  orgs = []
+  logger.info(organizations_list)
+  for organization in organizations_list:
+    orgs.append(organization["organization"]["name"])
+
+  return {"organizations": orgs}
+
 
 
 userpath = expanduser("~")

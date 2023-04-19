@@ -1326,6 +1326,7 @@ const manifestStatus = document.querySelector("#generate-manifest");
 // Manage datasets //
 var myitem;
 var datasetList = [];
+var organizationList = [];
 var sodaCopy = {};
 var datasetStructCopy = {};
 const bfUploadRefreshDatasetBtn = document.getElementById("button-upload-refresh-dataset-list");
@@ -2526,6 +2527,14 @@ const clearDatasetDropdowns = () => {
   }
 };
 
+const clearOrganizationDropdowns = () => {
+  for (let list of [curateOrganizationDropdown]) {
+    removeOptions(list);
+    addOption(list, "Search here...", "Select organization");
+    list.options[0].disabled = true;
+  }
+}
+
 //////////////////////// Current Contributor(s) /////////////////////
 
 const delete_current_con = (no) => {
@@ -2905,6 +2914,7 @@ var displaySize = 1000;
 
 /// Add all BF accounts to the dropdown list, and then choose by default one option ('global' account)
 const curateDatasetDropdown = document.getElementById("curatebfdatasetlist");
+const curateOrganizationDropdown = document.getElementById("curatebforganizationlist");
 
 async function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
   let defaultBfAccount = bfaccountDropdown.options[bfaccountDropdown.selectedIndex].text;
@@ -3867,6 +3877,24 @@ const refreshDatasetList = () => {
   return filteredDatasets.length;
 };
 
+
+/**
+ * 
+ * Sorts the user's available organizations and adds them to the organization picker dropdown.
+ * Prerequisite: Organizations have been fetched for the user otherwise nothing happens. 
+ * @returns length of the organizations list
+ */
+const refreshOrganizationList = () => {
+  organizationList.sort(function (a, b) {
+    return a.toLowerCase().localeCompare(b.toLowerCase());
+  });
+
+  populateOrganizationDropdowns(organizationList);
+
+  // parentDSTagify.settings.whitelist = getParentDatasets();
+  return organizationList.length;
+}
+
 /// populate the dropdowns with refreshed dataset list
 const populateDatasetDropdowns = (mylist) => {
   clearDatasetDropdowns();
@@ -3885,6 +3913,25 @@ const populateDatasetDropdowns = (mylist) => {
   postCurationListChange();
   datasetStatusListChange();
 };
+
+
+const populateOrganizationDropdowns = (organizations) => {
+  clearOrganizationDropdowns();
+
+  console.log(organizations)
+
+  for (const organization in organizations) {
+    var myitemselect = organizations[organization];
+    var option = document.createElement("option");
+    option.textContent = myitemselect;
+    option.value = myitemselect;
+    let option1 = option.cloneNode(true);
+    let option2 = option.cloneNode(true);
+
+    curateOrganizationDropdown.appendChild(option2);
+  }
+
+}
 ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
 
 const updateBfAccountList = async () => {
@@ -4454,7 +4501,10 @@ const showDefaultBFAccount = async () => {
         $("#div-bf-account-load-progress").css("display", "none");
         showHideDropdownButtons("account", "show");
         // refreshDatasetList()
+        console.log("About to update the dataset list")
         updateDatasetList();
+        console.log("About to update the organization list")
+        updateOrganizationList();
       } catch (error) {
         clientError(error);
 

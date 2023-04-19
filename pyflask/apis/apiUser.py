@@ -1,7 +1,7 @@
 from flask_restx import Resource, reqparse
 from namespaces import get_namespace, NamespaceEnum
 
-from users import integrate_orcid_with_pennsieve, get_user, set_preferred_organization
+from users import integrate_orcid_with_pennsieve, get_user, set_preferred_organization, get_user_organizations
 
 api = get_namespace(NamespaceEnum.USER)
 
@@ -53,7 +53,7 @@ class User(Resource):
         data = self.parser.parse_args()
 
 
-@api.route('organizations/preferred')
+@api.route('/organizations/preferred')
 class PreferredOrganization(Resource):
     parser = reqparse.RequestParser(bundle_errors=True)
     parser.add_argument("organization_id", type=str, required=True, help="The ID for the user's preferred organization", location="args")
@@ -64,5 +64,14 @@ class PreferredOrganization(Resource):
 
         try:
             return set_preferred_organization(organization_id)
+        except Exception as e:
+            api.abort(500, str(e))
+
+
+@api.route('/organizations')
+class Organizations(Resource):
+    def get(self):
+        try:
+            return get_user_organizations()
         except Exception as e:
             api.abort(500, str(e))

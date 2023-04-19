@@ -1,6 +1,8 @@
 // Purpose: Will become preload.js in the future. For now it is a place to put global variables/functions that are defined in javascript files
 //          needed by the renderer process in order to run.
 
+const { watchFile } = require("original-fs");
+
 // Contributors table for the dataset description editing page
 const currentConTable = document.getElementById("table-current-contributors");
 
@@ -38,6 +40,9 @@ const showHideDropdownButtons = (category, action) => {
       $("#div-bf-account-btns-getting-started").css("display", "none");
       $("#div-bf-account-btns-getting-started button").hide();
     }
+  } else if (category === "organization") {
+    console.log("May eventually need to add organization button logic here");
+
   }
 };
 
@@ -125,6 +130,7 @@ const updateDatasetList = (bfaccount) => {
       curateDatasetDropdown.appendChild(option);
     }
 
+    console.log("Using the curate bf list to show datasets here somehow")
     initializeBootstrapSelect("#curatebfdatasetlist", "show");
 
     $("#div-filter-datasets-progress-2").css("display", "none");
@@ -144,6 +150,54 @@ const updateDatasetList = (bfaccount) => {
     }
   }, 100);
 };
+
+
+const updateOrganizationList = async (bfaccount) => {
+  console.log("IN update organization list")
+  let organizations = [];
+
+  $("#div-filter-datasets-progress-2").css("display", "none");
+
+  removeOptions(curateOrganizationDropdown);
+  addOption(curateOrganizationDropdown, "Search here...", "Select organization");
+
+
+  initializeBootstrapSelect("#curatebforganizationlist", "disabled");
+
+  $("#bf-organization-select-header").css("display", "none");
+  $("#curatebforganizationlist").selectpicker("hide");
+  $("#curatebforganizationlist").selectpicker("refresh");
+  $(".selectpicker").selectpicker("hide");
+  $(".selectpicker").selectpicker("refresh");
+  $("#bf-organization-select-div").hide();
+
+  await wait(100)
+
+  $("#curatebforganizationlist").find("option:not(:first)").remove();
+
+  console.log("Organizations are: ", organizations)
+
+  // add the organization options to the dropdown
+  for (const myOrganization in organizations) {
+    var myitemselect = organiztions[myOrganization];
+    var option = document.createElement("option");
+    option.textContent = myitemselect;
+    option.value = myitemselect;
+    curateOrganizationDropdown.appendChild(option);
+  }
+
+
+  initializeBootstrapSelect("#curatebforganizationlist", "show");
+
+  // $("#div-filter-datasets-progress-2").css("display", "none");
+  //$("#bf-dataset-select-header").css("display", "block")
+  $("#curatebforganizationlist").selectpicker("show");
+  $("#curatebforganizationlist").selectpicker("refresh");
+  $(".selectpicker").selectpicker("show");
+  $(".selectpicker").selectpicker("refresh");
+  $("#bf-organization-select-div").show();
+
+}
 
 // per change event of current dataset span text
 const confirm_click_function = () => {
@@ -499,11 +553,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
       initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
 
-      //$("#curatebfdatasetlist").selectpicker("hide");
-      //$("#curatebfdatasetlist").selectpicker("refresh");
-      //$(".selectpicker").selectpicker("hide");
-      //$(".selectpicker").selectpicker("refresh");
-      //$("#bf-dataset-select-div").hide();
+
       try {
         var accountPresent = await check_api_key();
       } catch (error) {
@@ -512,6 +562,8 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         $(".svg-change-current-account.dataset").css("display", "block");
         accountPresent = false;
       }
+
+
       if (accountPresent === false) {
         //If there is no API key pair, warning will pop up allowing user to sign in
         await Swal.fire({
@@ -568,6 +620,8 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           refreshDatasetList();
         }
       }
+
+
       //after request check length again
       //if 0 then no datasets have been created
       if (datasetList.length === 0) {
@@ -819,5 +873,132 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       $(".ui.active.green.inline.loader.small").css("display", "none");
       ipcRenderer.send("track-event", "Success", "Selecting dataset", defaultBfDatasetId, 1);
     }, 10);
+  } else if (dropdown === "organization") {
+    console.log("Organization dropdown recognized")
+
+
+    if (ev != null) {
+      dropdownEventID = ev.id;
+    }
+
+    // TODO: Change these classes to organization classes 
+    $(".svg-change-current-account.organization").css("display", "none");
+    $("#div-permission-list-2").css("display", "none");
+    $(".ui.active.green.inline.loader.small").css("display", "block");
+
+    // hacky: wait for animations
+    await wait(10)
+
+    // disable the Continue btn first
+    $("#nextBtn").prop("disabled", true);
+
+    // disable the dropdown until the list of organizations is loaded - which happens elsewhere 
+    initializeBootstrapSelect("#curatebforganizationlist", "disabled");
+
+
+    // check if there is an account
+    let accountPresent = false;
+    try {
+      accountPresent = await check_api_key();
+    } catch (error) {
+      clientError(error)
+      $(".ui.active.green.inline.loader.small").css("display", "none");
+      $(".svg-change-current-account.dataset").css("display", "block");
+    }
+
+    // if no account as them to connect one 
+    if (!accountPresent) {
+      //If there is no API key pair, warning will pop up allowing user to sign in
+      const {value: result} = await Swal.fire({
+        icon: "warning",
+        text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connected to Pennsieve. Would you like to do it now?",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "Yes",
+        showCancelButton: true,
+        reverseButtons: reverseSwalButtons,
+        cancelButtonText: "I'll do it later",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      })
+      
+    
+      if (result.isConfirmed) {
+        await openDropdownPrompt(this, "bf");
+        $(".ui.active.green.inline.loader.small").css("display", "none");
+        $(".svg-change-current-account.dataset").css("display", "block");
+      } else {
+        $(".ui.active.green.inline.loader.small").css("display", "none");
+        $(".svg-change-current-account.dataset").css("display", "block");
+      }
+    
+      ipcRenderer.send(
+        "track-event",
+        "Error",
+        "Selecting dataset",
+        "User has not connected their Pennsieve account with SODA",
+        1
+      );
+    }
+
+    // get the list of the user's available organizations
+    //account is signed in but no datasets have been fetched or created
+    //invoke dataset request to ensure no datasets have been created
+    if (organizationList.length === 0) {
+      console.log("Fetching organizations since none are present")
+      let responseObject;
+      try {
+        responseObject = await client.get(`user/organizations`, {
+          params: {
+            selected_account: defaultBfAccount,
+          },
+        });
+      } catch (error) {
+        clientError(error);
+        return;
+      }
+
+      let orgs = responseObject.data.organizations;
+      organizationList = [];
+      organizationList = orgs;
+      console.log("Retrieved orgs are: ", organizationList)
+      console.log("About to add the new organizations to the dropdown")
+      refreshOrganizationList();
+    }
+
+
+    // hide "Confirm" button if Current dataset set to None
+    // related to the Organizae Datasets workflow current dataset span 
+    // if ($("#current-bf-organization-generate").text() === "None") {
+    //   showHideDropdownButtons("organization", "hide");
+    // } else {
+    //   showHideDropdownButtons("organization", "show");
+    // }
+
+    // hide "Confirm" button if Current dataset under Getting started set to None
+    // TODO: Maybe dont need this one
+    // if ($("#current-bf-organization").text() === "None") {
+    //   showHideDropdownButtons("organization", "hide");
+    // } else {
+    //   showHideDropdownButtons("organization", "show");
+    // }
+
+    // TODO: MIght need to hide if clicked twice / do similar logic as above 
+    // for organization span in those locations instead of a dataset span
+    //; since the logic is there for a reason.
+    showHideDropdownButtons("organization", "show");
+
+    $("body").removeClass("waiting");
+    $(".svg-change-current-account.organization").css("display", "block");
+    $(".ui.active.green.inline.loader.small").css("display", "none");
+
+
+    
+    
+
   }
 };
