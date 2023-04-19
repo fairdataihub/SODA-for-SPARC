@@ -11,7 +11,7 @@ document.querySelectorAll(".md-change-current-account").forEach((dropdownElement
   });
 });
 
-document.querySelectorAll(".ds-dd.organization").forEach(dropdownElement => {
+document.querySelectorAll(".ds-dd.organization").forEach((dropdownElement) => {
   dropdownElement.addEventListener("click", function () {
     openDropdownPrompt(this, "organization");
   });

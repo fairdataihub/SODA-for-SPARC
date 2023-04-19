@@ -2533,7 +2533,7 @@ const clearOrganizationDropdowns = () => {
     addOption(list, "Search here...", "Select organization");
     list.options[0].disabled = true;
   }
-}
+};
 
 //////////////////////// Current Contributor(s) /////////////////////
 
@@ -3877,11 +3877,10 @@ const refreshDatasetList = () => {
   return filteredDatasets.length;
 };
 
-
 /**
- * 
+ *
  * Sorts the user's available organizations and adds them to the organization picker dropdown.
- * Prerequisite: Organizations have been fetched for the user otherwise nothing happens. 
+ * Prerequisite: Organizations have been fetched for the user otherwise nothing happens.
  * @returns length of the organizations list
  */
 const refreshOrganizationList = () => {
@@ -3893,7 +3892,7 @@ const refreshOrganizationList = () => {
 
   // parentDSTagify.settings.whitelist = getParentDatasets();
   return organizationList.length;
-}
+};
 
 /// populate the dropdowns with refreshed dataset list
 const populateDatasetDropdowns = (mylist) => {
@@ -3914,11 +3913,10 @@ const populateDatasetDropdowns = (mylist) => {
   datasetStatusListChange();
 };
 
-
 const populateOrganizationDropdowns = (organizations) => {
   clearOrganizationDropdowns();
 
-  console.log(organizations)
+  console.log(organizations);
 
   for (const organization in organizations) {
     var myitemselect = organizations[organization];
@@ -3930,8 +3928,7 @@ const populateOrganizationDropdowns = (organizations) => {
 
     curateOrganizationDropdown.appendChild(option2);
   }
-
-}
+};
 ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
 
 const updateBfAccountList = async () => {
@@ -4501,9 +4498,9 @@ const showDefaultBFAccount = async () => {
         $("#div-bf-account-load-progress").css("display", "none");
         showHideDropdownButtons("account", "show");
         // refreshDatasetList()
-        console.log("About to update the dataset list")
+        console.log("About to update the dataset list");
         updateDatasetList();
-        console.log("About to update the organization list")
+        console.log("About to update the organization list");
         updateOrganizationList();
       } catch (error) {
         clientError(error);

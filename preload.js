@@ -42,7 +42,6 @@ const showHideDropdownButtons = (category, action) => {
     }
   } else if (category === "organization") {
     console.log("May eventually need to add organization button logic here");
-
   }
 };
 
@@ -130,7 +129,7 @@ const updateDatasetList = (bfaccount) => {
       curateDatasetDropdown.appendChild(option);
     }
 
-    console.log("Using the curate bf list to show datasets here somehow")
+    console.log("Using the curate bf list to show datasets here somehow");
     initializeBootstrapSelect("#curatebfdatasetlist", "show");
 
     $("#div-filter-datasets-progress-2").css("display", "none");
@@ -151,16 +150,14 @@ const updateDatasetList = (bfaccount) => {
   }, 100);
 };
 
-
 const updateOrganizationList = async (bfaccount) => {
-  console.log("IN update organization list")
+  console.log("IN update organization list");
   let organizations = [];
 
   $("#div-filter-datasets-progress-2").css("display", "none");
 
   removeOptions(curateOrganizationDropdown);
   addOption(curateOrganizationDropdown, "Search here...", "Select organization");
-
 
   initializeBootstrapSelect("#curatebforganizationlist", "disabled");
 
@@ -171,11 +168,11 @@ const updateOrganizationList = async (bfaccount) => {
   $(".selectpicker").selectpicker("refresh");
   $("#bf-organization-select-div").hide();
 
-  await wait(100)
+  await wait(100);
 
   $("#curatebforganizationlist").find("option:not(:first)").remove();
 
-  console.log("Organizations are: ", organizations)
+  console.log("Organizations are: ", organizations);
 
   // add the organization options to the dropdown
   for (const myOrganization in organizations) {
@@ -186,7 +183,6 @@ const updateOrganizationList = async (bfaccount) => {
     curateOrganizationDropdown.appendChild(option);
   }
 
-
   initializeBootstrapSelect("#curatebforganizationlist", "show");
 
   // $("#div-filter-datasets-progress-2").css("display", "none");
@@ -196,8 +192,7 @@ const updateOrganizationList = async (bfaccount) => {
   $(".selectpicker").selectpicker("show");
   $(".selectpicker").selectpicker("refresh");
   $("#bf-organization-select-div").show();
-
-}
+};
 
 // per change event of current dataset span text
 const confirm_click_function = () => {
@@ -553,7 +548,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
       initializeBootstrapSelect("#curatebfdatasetlist", "disabled");
 
-
       try {
         var accountPresent = await check_api_key();
       } catch (error) {
@@ -562,7 +556,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         $(".svg-change-current-account.dataset").css("display", "block");
         accountPresent = false;
       }
-
 
       if (accountPresent === false) {
         //If there is no API key pair, warning will pop up allowing user to sign in
@@ -620,7 +613,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           refreshDatasetList();
         }
       }
-
 
       //after request check length again
       //if 0 then no datasets have been created
@@ -874,42 +866,40 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       ipcRenderer.send("track-event", "Success", "Selecting dataset", defaultBfDatasetId, 1);
     }, 10);
   } else if (dropdown === "organization") {
-    console.log("Organization dropdown recognized")
-
+    console.log("Organization dropdown recognized");
 
     if (ev != null) {
       dropdownEventID = ev.id;
     }
 
-    // TODO: Change these classes to organization classes 
+    // TODO: Change these classes to organization classes
     $(".svg-change-current-account.organization").css("display", "none");
     $("#div-permission-list-2").css("display", "none");
     $(".ui.active.green.inline.loader.small").css("display", "block");
 
     // hacky: wait for animations
-    await wait(10)
+    await wait(10);
 
     // disable the Continue btn first
     $("#nextBtn").prop("disabled", true);
 
-    // disable the dropdown until the list of organizations is loaded - which happens elsewhere 
+    // disable the dropdown until the list of organizations is loaded - which happens elsewhere
     initializeBootstrapSelect("#curatebforganizationlist", "disabled");
-
 
     // check if there is an account
     let accountPresent = false;
     try {
       accountPresent = await check_api_key();
     } catch (error) {
-      clientError(error)
+      clientError(error);
       $(".ui.active.green.inline.loader.small").css("display", "none");
       $(".svg-change-current-account.dataset").css("display", "block");
     }
 
-    // if no account as them to connect one 
+    // if no account as them to connect one
     if (!accountPresent) {
       //If there is no API key pair, warning will pop up allowing user to sign in
-      const {value: result} = await Swal.fire({
+      const { value: result } = await Swal.fire({
         icon: "warning",
         text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connected to Pennsieve. Would you like to do it now?",
         heightAuto: false,
@@ -924,9 +914,8 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         hideClass: {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
-      })
-      
-    
+      });
+
       if (result.isConfirmed) {
         await openDropdownPrompt(this, "bf");
         $(".ui.active.green.inline.loader.small").css("display", "none");
@@ -935,7 +924,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         $(".ui.active.green.inline.loader.small").css("display", "none");
         $(".svg-change-current-account.dataset").css("display", "block");
       }
-    
+
       ipcRenderer.send(
         "track-event",
         "Error",
@@ -949,7 +938,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     //account is signed in but no datasets have been fetched or created
     //invoke dataset request to ensure no datasets have been created
     if (organizationList.length === 0) {
-      console.log("Fetching organizations since none are present")
+      console.log("Fetching organizations since none are present");
       let responseObject;
       try {
         responseObject = await client.get(`user/organizations`, {
@@ -965,14 +954,13 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       let orgs = responseObject.data.organizations;
       organizationList = [];
       organizationList = orgs;
-      console.log("Retrieved orgs are: ", organizationList)
-      console.log("About to add the new organizations to the dropdown")
+      console.log("Retrieved orgs are: ", organizationList);
+      console.log("About to add the new organizations to the dropdown");
       refreshOrganizationList();
     }
 
-
     // hide "Confirm" button if Current dataset set to None
-    // related to the Organizae Datasets workflow current dataset span 
+    // related to the Organizae Datasets workflow current dataset span
     // if ($("#current-bf-organization-generate").text() === "None") {
     //   showHideDropdownButtons("organization", "hide");
     // } else {
@@ -987,7 +975,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     //   showHideDropdownButtons("organization", "show");
     // }
 
-    // TODO: MIght need to hide if clicked twice / do similar logic as above 
+    // TODO: MIght need to hide if clicked twice / do similar logic as above
     // for organization span in those locations instead of a dataset span
     //; since the logic is there for a reason.
     showHideDropdownButtons("organization", "show");
@@ -995,10 +983,5 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     $("body").removeClass("waiting");
     $(".svg-change-current-account.organization").css("display", "block");
     $(".ui.active.green.inline.loader.small").css("display", "none");
-
-
-    
-    
-
   }
 };
