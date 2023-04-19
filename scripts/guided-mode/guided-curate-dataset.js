@@ -3313,12 +3313,14 @@ const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
         selected_account: defaultBfAccount,
       },
     });
+    console.log(responseObject);
     const datasets = responseObject.data.datasets;
     //Add the datasets to the select picker
     datasetSelectionSelectPicker.append(
       `<option value="" selected>Select a dataset on Pennsieve to resume</option>`
     );
     for (const dataset of datasets) {
+      console.log(dataset);
       datasetSelectionSelectPicker.append(`<option value="${dataset.id}">${dataset.name}</option>`);
     }
     datasetSelectionSelectPicker.selectpicker("refresh");
@@ -4388,11 +4390,14 @@ const openPage = async (targetPageID) => {
     const datasetName = sodaJSONObj?.["digital-metadata"]?.["name"];
     const nextButton = document.getElementById("guided-next-button");
     const saveAndExitButton = document.getElementById("guided-button-save-and-exit");
+    const nextButtonSpans = document.querySelectorAll(".next-button-span");
 
     if (!datasetName) {
       nextButton.innerHTML = "Continue";
+      nextButtonSpans.forEach((span) => {
+        span.innerHTML = "Continue";
+      });
       saveAndExitButton.innerHTML = "Return to Home Page";
-
       guidedLockSideBar(false);
     } else {
       // Set the dataset name display in the side bar
@@ -4400,6 +4405,9 @@ const openPage = async (targetPageID) => {
       datasetNameDisplay.innerHTML = datasetName;
 
       nextButton.innerHTML = "Save and Continue";
+      nextButtonSpans.forEach((span) => {
+        span.innerHTML = "Save and Continue";
+      });
       saveAndExitButton.innerHTML = `<i class="far fa-save" style="margin-right: 10px"></i>Save and Exit`;
       guidedLockSideBar(true);
     }
@@ -10632,31 +10640,6 @@ $("#guided-submission-completion-date-manual").change(function () {
 //////////       GUIDED OBJECT ACCESSORS       //////////
 /////////////////////////////////////////////////////////
 
-const getExistingPennsieveDatasetNames = async () => {
-  // get the access token so the user can access the Pennsieve api
-  let jwt = await get_access_token();
-  const options = {
-    method: "GET",
-    headers: {
-      Accept: "*/*",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`,
-    },
-  };
-  const datasetNamesResponse = await fetch("https://api.pennsieve.io/datasets/", options);
-
-  if (!datasetNamesResponse.ok) {
-    const message = `An error has occurred: ${response.status}`;
-    throw new Error(message);
-  }
-
-  const datasetNamesResponseJSON = await datasetNamesResponse.json();
-
-  //return an array of existing dataset names
-  return datasetNamesResponseJSON.map((dataset) => {
-    return dataset.content.name;
-  });
-};
 const getGuidedDatasetName = () => {
   return sodaJSONObj["digital-metadata"]["name"];
 };
