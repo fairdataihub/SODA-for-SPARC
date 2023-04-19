@@ -19,6 +19,11 @@
   min-width: 500px !important;
 }
 
+.guided--container-lottie-standard {
+  height: 150px;
+  width: 150px;
+}
+
 .black-arrow-lottie-container {
   height: 150px;
   width: 150px;

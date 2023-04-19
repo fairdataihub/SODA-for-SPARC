@@ -2,6 +2,43 @@ const returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
 };
 
+const guidedAnimationManager = {
+  animationData: {
+    "guided-curation-preparation-intro-lottie": {
+      animationData: questionList,
+      loop: true,
+      autoplay: true,
+    },
+  },
+
+  animations: {},
+
+  startAnimation: function (containerElementId) {
+    const animationData = this.animationData[containerElementId].animationData;
+    const loop = this.animationData[containerElementId].loop;
+    const autoplay = this.animationData[containerElementId].autoplay;
+
+    const container = document.getElementById(containerElementId);
+    container.innerHTML = "";
+
+    const anim = lottie.loadAnimation({
+      container: container,
+      animationData: animationData,
+      renderer: "svg",
+      loop: loop,
+      autoplay: autoplay,
+    });
+    this.animations[containerElementId] = anim;
+  },
+
+  stopAnimation: function (containerElementId) {
+    const runningAnimation = this.animations[containerElementId];
+    if (runningAnimation) {
+      runningAnimation.stop();
+    }
+  },
+};
+
 const folderImportedFromPennsieve = (folderJSONPath) => {
   return folderJSONPath.type === "bf";
 };
@@ -1550,6 +1587,16 @@ const savePageChanges = async (pageBeingLeftID) => {
         // We don't have to do anything here.
       }
     }
+
+    // Stop any animations that need to be stopped
+    const animationContainers = document
+      .getElementById(pageBeingLeftID)
+      .querySelectorAll(".guidedLottieContainer");
+    animationContainers.forEach((element) => {
+      const id = element.id;
+      guidedAnimationManager.stopAnimation(id);
+      console.log("Stopped animation with id: " + id);
+    });
   } catch (error) {
     guidedSetNavLoadingState(false);
     console.log(error);
@@ -6041,6 +6088,15 @@ const openPage = async (targetPageID) => {
         top: 0,
       });
     }
+
+    // Start any animations that need to be started
+    const animationContainers = targetPage.querySelectorAll(".guidedLottieContainer");
+    animationContainers.forEach((element) => {
+      // get the id of the element
+      const id = element.id;
+      guidedAnimationManager.startAnimation(id);
+    });
+
     // Set the last opened page and save it
     sodaJSONObj["page-before-exit"] = targetPageID;
     await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
