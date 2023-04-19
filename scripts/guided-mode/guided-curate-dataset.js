@@ -9,6 +9,16 @@ const lottieAnimationManager = {
       loop: true,
       autoplay: true,
     },
+    "guided-dataset-metadata-intro-lottie": {
+      animationData: metadataMachine,
+      loop: true,
+      autoplay: true,
+    },
+    "guided-dataset-structure-intro-lottie": {
+      animationData: addScienceData,
+      loop: true,
+      autoplay: true,
+    },
   },
 
   animations: {},
