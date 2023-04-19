@@ -3,6 +3,10 @@
   (Similar to tailwind's class structure) 
 */
 
+
+
+/////////////////////////    DISPLAY CLASSES    /////////////////////////
+
 .d-none {
   display: none !important;
 }
@@ -79,6 +83,8 @@
   transform: translateX(0);
   transition: visibility 0s 0s linear, opacity 0.36s ease-out, transform 0.36s ease-out;
 }
+
+/////////////////////////    POSITION CLASSES    /////////////////////////
 
 .grow {
   flex-grow: 1;
@@ -305,6 +311,8 @@
 .remove-left-border {
   border-left: none !important;
 }
+
+////////////////////////// MARGIN AND PADDING CLASSES //////////////////////////
 
 .m-0 {
   margin: 0 !important;
@@ -770,6 +778,9 @@
   margin-bottom: 20px !important;
 }
 
+
+/////////////////////////  WIDTH CLASSES AND HEIGHT CLASSES /////////////////////////
+
 .w-25 {
   width: 25% !important;
 }
@@ -838,9 +849,8 @@
   place-content: center !important;
 }
 
-.text-monospace {
-  font-family: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
-}
+
+/////////////////////////  TEXT CLASSES /////////////////////////
 
 .text-wrap {
   white-space: normal !important;
@@ -900,12 +910,19 @@
   box-shadow: none !important;
 }
 
-.blue {
+
+/////////////////////////  COLOR TEXT CLASSES /////////////////////////
+
+.text-blue {
   color: rgb(255, 165, 0, 0.8);
 }
 
 .text-soda-green {
   color: var(--color-light-green);
+}
+
+.text-transparent {
+  color: transparent !important;
 }
 
 .text-white {
@@ -932,17 +949,16 @@
   color: #1e232d !important;
 }
 
-.invalid {
-  border-color: #e0b4b4 !important;
-  background: #fff6f6 !important;
-}
 
-.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
-  height: 100%;
-}
+/////////////////////////  BACKGROUND COLOR CLASSES /////////////////////////
 
 .coming-soon-div {
   pointer-events: none;
+}
+
+.invalid {
+  border-color: #e0b4b4 !important;
+  background: #fff6f6 !important;
 }
 
 .white-background {
@@ -963,7 +979,7 @@
   color: red;
 }
 
-/* below are classes to modify sweet alert to SODA standards */
+/////////////////////////  SWEET ALERT CLASSES /////////////////////////
 
 .animate_fastest {
   --animate-duration: 0.3s;
@@ -1068,4 +1084,8 @@ body.swal2-shown > [aria-hidden="true"] {
 
 .swal2-confirm {
   background-color: var(--color-light-green) !important;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+  height: 100%;
 }

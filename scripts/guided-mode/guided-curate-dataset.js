@@ -2080,10 +2080,12 @@ const guidedReserveAndSaveDOI = async () => {
 const guidedSetDOIUI = (doiInformation) => {
   $("#guided--para-doi-info").text(doiInformation);
 
-  // Hide the reserve DOI button
   if (doiInformation != "No DOI found for this dataset") {
+    // Hide the reserve DOI button and show copy button
     $("#curate-button-reserve-doi").addClass("hidden");
+    $("#guided-pennsieve-copy-doi").removeClass("hidden");
   } else {
+    // Show reserve DOI button and hide copy button
     $("#curate-button-reserve-doi").removeClass("hidden");
   }
   $("#curate-button-reserve-doi").removeClass("loading");
@@ -4197,10 +4199,8 @@ const guidedResetUserTeamPermissionsDropdowns = () => {
 
 let addListener = true;
 const copyLink = (link) => {
-  const copyIcon = document.getElementById("guided-pennsieve-copy-icon");
+  console.log("copying link", link);
   Clipboard.writeText(link);
-  copyIcon.classList.remove("fa-copy");
-  copyIcon.classList.add("fa-check");
 
   notyf.open({
     duration: "2000",
@@ -5995,15 +5995,22 @@ const openPage = async (targetPageID) => {
 
       const pennsieveCopy = document.getElementById("guided-pennsieve-copy-dataset-link");
 
-      const copyIcon = document.getElementById("guided-pennsieve-copy-icon");
-      copyIcon.classList.remove("fa-check");
-      copyIcon.classList.add("fa-copy");
+      const pennsieveDatasetCopyIcon = document.getElementById("guided-pennsieve-copy-icon");
+
+      const pennsieveDOICopy = document.getElementById("guided-pennsieve-copy-doi");
+
+      pennsieveDatasetCopyIcon.classList.add("fa-copy");
 
       let datasetLink = `https://app.pennsieve.io/N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0/datasets/${pennsieveDatasetID}/overview`;
       let linkIcon = `<i class="fas fa-link" style="margin-right: 0.4rem; margin-left: 0.4rem"></i>`;
 
       pennsieveDatasetLink.innerHTML = linkIcon + datasetLink;
       pennsieveDatasetLink.href = datasetLink;
+
+      pennsieveDOICopy.removeEventListener("click", () => {
+        copyLink(doiInfo),
+        true
+      })
 
       pennsieveCopy.removeEventListener(
         "click",
@@ -6016,37 +6023,18 @@ const openPage = async (targetPageID) => {
         pennsieveCopy.addEventListener("click", () => {
           copyLink(datasetLink);
         });
+        pennsieveDOICopy.addEventListener("click", () => {
+          let doiInfo = document.getElementById("guided--para-doi-info").innerText;
+          copyLink(doiInfo);
+        })
         addListener = false;
-      }
-
-      // let currentDatasetID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
-      let bf_get_permissions = await api.getDatasetPermissions(
-        defaultBfAccount,
-        pennsieveDatasetID,
-        false
-      );
-      // let bf_get_permissions = await client.get(`/manage_datasets/bf_dataset_permissions`, {
-      //   params: {
-      //     selected_account: defaultBfAccount,
-      //     selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-      //   },
-      // });
-      // let datasetPermissions = bf_get_permissions;
-
-      let sharedWithSPARCCurationTeam = false;
-
-      // TODO: Modify this to be the publishing status and not permissions
-      for (const permission of bf_get_permissions) {
-        if (permission.includes("SPARC Data Curation Team")) {
-          sharedWithSPARCCurationTeam = true;
-        }
       }
 
       let pennsieveDOICheck = await api.getDatasetDOI(currentAccount, currentDataset);
 
       //Set the ui for curation team and DOI information
       await showPublishingStatus("", "guided");
-      guidedSetCurationTeamUI(sharedWithSPARCCurationTeam);
+      guidedSetCurationTeamUI();
       guidedSetDOIUI(pennsieveDOICheck);
     }
 
@@ -9518,8 +9506,8 @@ const specifySubject = (event, subjectNameInput) => {
         <div class="space-between w-100">
           <span class="subject-id">${subjectName}</span>
           <i
-            class="far fa-edit jump-back"
-            style="cursor: pointer;"
+            class="far fa-edit"
+            style="cursor: pointer; margin-top: .2rem;"
             onclick="openSubjectRenameInput($(this))"
           >
           </i>
@@ -9637,7 +9625,7 @@ const specifyPool = (event, poolNameInput) => {
         <div class="space-between" style="width: 250px;">
           <span class="pool-id">${poolName}</span>
           <i
-            class="far fa-edit jump-back"
+            class="far fa-edit"
             style="cursor: pointer;"
             onclick="openPoolRenameInput($(this))"
           >
@@ -9804,8 +9792,8 @@ const generateSubjectRowElement = (subjectName) => {
           <div class="space-between w-100">
             <span class="subject-id">${subjectName}</span>
             <i
-              class="far fa-edit jump-back"
-              style="cursor: pointer"
+              class="far fa-edit"
+              style="cursor: pointer; margin-top: .2rem"
               onclick="openSubjectRenameInput($(this))"
             >
             </i>
@@ -9864,7 +9852,7 @@ const generatePoolRowElement = (poolName) => {
           <div class="space-between" style="width: 250px">
             <span class="pool-id">${poolName}</span>
             <i
-              class="far fa-edit jump-back"
+              class="far fa-edit"
               style="cursor: pointer"
               onclick="openPoolRenameInput($(this))"
             >

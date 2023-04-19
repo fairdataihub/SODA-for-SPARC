@@ -3207,22 +3207,6 @@ const submitReviewDatasetCheck = async (res, curationMode) => {
       // do not submit the dataset
       return;
     }
-
-    // swal loading message for the submission
-    // show a SWAL loading message until the submit for prepublishing flow is successful or fails
-    // Swal.fire({
-    //   title: `Submitting dataset for pre-publishing review`,
-    //   html: "Please wait...",
-    //   // timer: 5000,
-    //   allowEscapeKey: false,
-    //   allowOutsideClick: false,
-    //   heightAuto: false,
-    //   backdrop: "rgba(0,0,0, 0.4)",
-    //   timerProgressBar: false,
-    //   didOpen: () => {
-    //     Swal.showLoading();
-    //   },
-    // });
     // submit the dataset for review with the given embargoReleaseDate
     await submitReviewDataset(embargoReleaseDate, curationMode);
   } else {
@@ -3506,7 +3490,11 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
 const withdrawDatasetSubmission = async (curationMode = "") => {
   // show a SWAL loading message until the submit for prepublishing flow is successful or fails
 
-  if (curationMode !== "guided") {
+  if (curationMode != "guided") {
+    $("#btn-withdraw-review-dataset").disabled = true;
+    $("#btn-withdraw-review-dataset").addClass("loading");
+    $("#btn-withdraw-review-dataset").addClass("text-transparent");
+
     const { value: withdraw } = await Swal.fire({
       title: "Withdraw this dataset from review?",
       icon: "warning",
@@ -3521,7 +3509,10 @@ const withdrawDatasetSubmission = async (curationMode = "") => {
     });
 
     if (!withdraw) {
-      return;
+      $("#btn-withdraw-review-dataset").disabled = false;
+      $("#btn-withdraw-review-dataset").removeClass("loading");
+      $("#btn-withdraw-review-dataset").removeClass("text-transparent");
+      return false;
     }
   }
 
@@ -3565,6 +3556,10 @@ const withdrawDatasetSubmission = async (curationMode = "") => {
   // This helps signal guided mode to update the UI
   if (curationMode === "guided") {
     return true;
+  } else {
+    $("#btn-withdraw-review-dataset").disabled = false;
+    $("#btn-withdraw-review-dataset").removeClass("loading");
+    $("#btn-withdraw-review-dataset").removeClass("text-transparent");
   }
 };
 
@@ -3588,26 +3583,12 @@ const withdrawDatasetCheck = async (res, curationMode) => {
     });
   } else {
     // show a SWAL loading message until the submit for prepublishing flow is successful or fails
-    if (curationMode !== "guided") {
-      Swal.fire({
-        title: `Withdrawing dataset submission`,
-        html: "Please wait...",
-        allowEscapeKey: false,
-        allowOutsideClick: false,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        timerProgressBar: false,
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      });
-    }
     await withdrawReviewDataset(curationMode);
   }
 };
 
 const withdrawReviewDataset = async (curationMode) => {
-  bfWithdrawReviewDatasetBtn.disabled = true;
+  // bfWithdrawReviewDatasetBtn.disabled = true;
 
   let currentAccount = $("#current-bf-account").text();
   let currentDataset = $(".bf-dataset-span")

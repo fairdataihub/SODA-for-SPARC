@@ -9,7 +9,7 @@
     <header class="section-header">
       <div class="container-tab-information-header">
         <div class="need-help-div">
-          <h2>Disseminate Datasets - Submit for pre-publishing review</h2>
+          <h2>Disseminate Datasets - Share with Curation Team</h2>
           <a
             target="_blank"
             href="https://docs.sodaforsparc.io/docs/disseminate-dataset/submit-for-pre-publishing-review"
@@ -196,14 +196,8 @@
           <button
             id="begin-prepublishing-btn"
             onclick="beginPrepublishingFlow('freeform')"
-            class="ui positive button guided--button-footer mt-lg"
-            style="
-              width: 200px;
-              height: 40px;
-              font-size: 15px;
-              background-color: var(--color-light-green);
-              margin-top: 0 !important;
-            "
+            class="ui positive button soda-green-background mt-0"
+            style="width: 200px; height: 40px; font-size: 15px"
           >
             Begin Submission
           </button>
@@ -265,7 +259,7 @@
                           ></i>
                         </div>
                         <button
-                          class="prepublishing-item-button hollow-button ml-3"
+                          class="prepublishing-item-button green-hollow-button ml-3"
                           onClick="transitionFromPrePublishingChecklist('add_edit_subtitle-section')"
                         >
                           Add subtitle
@@ -283,7 +277,7 @@
                           ></i>
                         </div>
                         <button
-                          class="prepublishing-item-button hollow-button ml-3"
+                          class="prepublishing-item-button green-hollow-button ml-3"
                           onClick="transitionFromPrePublishingChecklist('add_tags-section')"
                         >
                           Add tags
@@ -301,7 +295,7 @@
                           ></i>
                         </div>
                         <button
-                          class="prepublishing-item-button hollow-button ml-3"
+                          class="prepublishing-item-button green-hollow-button ml-3"
                           onClick="transitionFromPrePublishingChecklist('add_edit_description-section')"
                         >
                           Add description
@@ -322,7 +316,7 @@
                           ></i>
                         </div>
                         <button
-                          class="prepublishing-item-button hollow-button ml-3"
+                          class="prepublishing-item-button green-hollow-button ml-3"
                           onClick="transitionFromPrePublishingChecklist('add_edit_banner-section')"
                         >
                           Add banner image
@@ -340,7 +334,7 @@
                           ></i>
                         </div>
                         <button
-                          class="prepublishing-item-button hollow-button ml-3"
+                          class="prepublishing-item-button green-hollow-button ml-3"
                           onClick="transitionFromPrePublishingChecklist('add_license-section')"
                         >
                           Add license
@@ -358,7 +352,7 @@
                           ></i>
                         </div>
                         <button
-                          class="prepublishing-item-button hollow-button ml-3"
+                          class="prepublishing-item-button green-hollow-button ml-3"
                           id="ORCID-btn"
                           onclick="orcidSignIn('freeform')"
                         >
@@ -396,8 +390,8 @@
                 id="btn-withdraw-review-dataset"
                 onclick="withdrawDatasetSubmission()"
                 type="button"
-                class="ui button white-background"
-                style="color: red; font-weight: 600; border: 1px solid red; font-size: 15px"
+                class="ui positive button plum-background"
+                style="width: 281px !important; height: 3.2rem"
               >
                 <i class="fas fa-ban" style="padding-right: 5px"></i>
                 Withdraw from review
