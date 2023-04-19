@@ -1,4 +1,5 @@
 const { UserDetailsCard } = require("../../stories/UserDetailsCard");
+const { FIELD_OPTIONS } = require("../../stories/UserDetailsCardField");
 
 // add the edit subtitle card to the DOM
 
@@ -11,6 +12,12 @@ const addDatasetAndOrganizationCardComponents = () => {
     action: "delete",
     section: "individual-question manage-dataset",
     dataNext: "div_add_edit_subtitle",
+    fields: [
+      FIELD_OPTIONS.ACCOUNT_EDITABLE,
+      FIELD_OPTIONS.ACCOUNT_DETAILS,
+      FIELD_OPTIONS.ORGANIZATION_EDITABLE,
+      FIELD_OPTIONS.DATASET_EDITABLE,
+    ],
   });
 
   document
@@ -26,6 +33,11 @@ const addDatasetAndOrganizationCardComponents = () => {
     action: "delete",
     section: "individual-question manage-dataset",
     dataNext: "div-create-new-empty-dataset",
+    fields: [
+      FIELD_OPTIONS.ACCOUNT_EDITABLE,
+      FIELD_OPTIONS.ACCOUNT_DETAILS,
+      FIELD_OPTIONS.ORGANIZATION_EDITABLE,
+    ],
   });
 
   document
@@ -40,6 +52,12 @@ const addDatasetAndOrganizationCardComponents = () => {
     action: "delete",
     section: "individual-question manage-dataset",
     dataNext: "div-collection-bf-dataset",
+    fields: [
+      FIELD_OPTIONS.ACCOUNT_EDITABLE,
+      FIELD_OPTIONS.ACCOUNT_DETAILS,
+      FIELD_OPTIONS.DATASET_EDITABLE,
+      FIELD_OPTIONS.ORGANIZATION_EDITABLE,
+    ],
   });
 
   document
@@ -54,6 +72,12 @@ const addDatasetAndOrganizationCardComponents = () => {
     action: "delete",
     section: "individual-question manage-dataset",
     dataNext: "div-rename-bf-dataset",
+    fields: [
+      FIELD_OPTIONS.ACCOUNT_EDITABLE,
+      FIELD_OPTIONS.ACCOUNT_DETAILS,
+      FIELD_OPTIONS.ORGANIZATION_EDITABLE,
+      FIELD_OPTIONS.DATASET_EDITABLE,
+    ],
   });
 
   document
@@ -68,6 +92,13 @@ const addDatasetAndOrganizationCardComponents = () => {
     action: "delete",
     section: "individual-question manage-dataset",
     dataNext: "div_make_pi_owner_permissions",
+    fields: [
+      FIELD_OPTIONS.ACCOUNT_EDITABLE,
+      FIELD_OPTIONS.ACCOUNT_DETAILS,
+      FIELD_OPTIONS.ORGANIZATION_EDITABLE,
+      FIELD_OPTIONS.DATASET_EDITABLE,
+      FIELD_OPTIONS.OWNER_PERMISSIONS,
+    ],
   });
 
   document.querySelector("#top-level-card-container--make-pi-owner").appendChild(makePiOwnerCard);
@@ -80,6 +111,13 @@ const addDatasetAndOrganizationCardComponents = () => {
     action: "delete",
     section: "individual-question manage-dataset",
     dataNext: "add_edit_permissions_choice_div",
+    fields: [
+      FIELD_OPTIONS.ACCOUNT_EDITABLE,
+      FIELD_OPTIONS.ACCOUNT_DETAILS,
+      FIELD_OPTIONS.ORGANIZATION_EDITABLE,
+      FIELD_OPTIONS.DATASET_EDITABLE,
+      FIELD_OPTIONS.PERMISSIONS,
+    ],
   });
 
   document
@@ -94,6 +132,12 @@ const addDatasetAndOrganizationCardComponents = () => {
     action: "delete",
     section: "individual-question manage-dataset",
     dataNext: "div_add_tags",
+    fields: [
+      FIELD_OPTIONS.ACCOUNT_EDITABLE,
+      FIELD_OPTIONS.ACCOUNT_DETAILS,
+      FIELD_OPTIONS.ORGANIZATION_EDITABLE,
+      FIELD_OPTIONS.DATASET_EDITABLE,
+    ],
   });
 
   document.querySelector("#top-level-card-container--add-tags").appendChild(addTagsCard);
@@ -106,6 +150,12 @@ const addDatasetAndOrganizationCardComponents = () => {
     action: "delete",
     section: "individual-question manage-dataset",
     dataNext: "div_add_edit_description",
+    fields: [
+      FIELD_OPTIONS.ACCOUNT_EDITABLE,
+      FIELD_OPTIONS.ACCOUNT_DETAILS,
+      FIELD_OPTIONS.ORGANIZATION_EDITABLE,
+      FIELD_OPTIONS.DATASET_EDITABLE,
+    ],
   });
 
   document
@@ -120,6 +170,12 @@ const addDatasetAndOrganizationCardComponents = () => {
     action: "delete",
     section: "individual-question manage-dataset",
     dataNext: "div_add_edit_banner",
+    fields: [
+      FIELD_OPTIONS.ACCOUNT_EDITABLE,
+      FIELD_OPTIONS.ACCOUNT_DETAILS,
+      FIELD_OPTIONS.ORGANIZATION_EDITABLE,
+      FIELD_OPTIONS.DATASET_EDITABLE,
+    ],
   });
 
   document.querySelector("#top-level-card-container--add-edit-banner").appendChild(addEditBanner);
@@ -132,6 +188,13 @@ const addDatasetAndOrganizationCardComponents = () => {
     action: "delete",
     section: "individual-question manage-dataset",
     dataNext: "div_add_license",
+    fields: [
+      FIELD_OPTIONS.ACCOUNT_EDITABLE,
+      FIELD_OPTIONS.ACCOUNT_DETAILS,
+      FIELD_OPTIONS.ORGANIZATION_EDITABLE,
+      FIELD_OPTIONS.DATASET_EDITABLE,
+      FIELD_OPTIONS.LICENSE,
+    ],
   });
 
   document.querySelector("#top-level-card-container--add-license").appendChild(addLicenseCard);
@@ -144,6 +207,12 @@ const addDatasetAndOrganizationCardComponents = () => {
     action: "delete",
     section: "individual-question manage-dataset",
     dataNext: "upload_local_dataset_div",
+    fields: [
+      FIELD_OPTIONS.ACCOUNT_EDITABLE,
+      FIELD_OPTIONS.ACCOUNT_DETAILS,
+      FIELD_OPTIONS.ORGANIZATION_EDITABLE,
+      FIELD_OPTIONS.DATASET_EDITABLE,
+    ],
   });
 
   document
@@ -158,6 +227,12 @@ const addDatasetAndOrganizationCardComponents = () => {
     action: "delete",
     section: "individual-question manage-dataset",
     dataNext: "div_view_change_dataset_status",
+    fields: [
+      FIELD_OPTIONS.ACCOUNT_EDITABLE,
+      FIELD_OPTIONS.ACCOUNT_DETAILS,
+      FIELD_OPTIONS.ORGANIZATION_EDITABLE,
+      FIELD_OPTIONS.DATASET_EDITABLE,
+    ],
   });
 
   document
