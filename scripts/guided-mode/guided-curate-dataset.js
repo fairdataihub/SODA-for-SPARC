@@ -19,6 +19,16 @@ const lottieAnimationManager = {
       loop: true,
       autoplay: true,
     },
+    "guided-start-new-lottie": {
+      animationData: startNew,
+      loop: true,
+      autoplay: true,
+    },
+    "guided-resume-exiting-lottie": {
+      animationData: resumeExisting,
+      loop: true,
+      autoplay: true,
+    },
   },
 
   animations: {},
