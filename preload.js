@@ -404,18 +404,15 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               $("#para-account-detail-curate-generate").html(result);
               $(".bf-account-details-span").html(result);
               $("#para-continue-bf-dataset-getting-started").text("");
+              console.log("bf_account_details_req", bf_account_details_req);
+              console.log("opendropdown function");
 
-              $("#current_curation_team_status").text("None");
-              $("#curation-team-share-btn").hide();
-              $("#curation-team-unshare-btn").hide();
-              $("#current_sparc_consortium_status").text("None");
-              $("#sparc-consortium-share-btn").hide();
-              $("#sparc-consortium-unshare-btn").hide();
-              // const gettingStartedPennsieveBtn = document.getElementById(
-              // "getting-started-pennsieve-account"
-              // );
-              // gettingStartedPennsieveBtn.children[0].style.display = "none";
-              // gettingStartedPennsieveBtn.children[1].style.display = "flex";
+              // $("#current_curation_team_status").text("None");
+              // $("#curation-team-share-btn").hide();
+              // $("#curation-team-unshare-btn").hide();
+              // $("#current_sparc_consortium_status").text("None");
+              // $("#sparc-consortium-share-btn").hide();
+              // $("#sparc-consortium-unshare-btn").hide();
 
               showHideDropdownButtons("account", "show");
               confirm_click_account_function();

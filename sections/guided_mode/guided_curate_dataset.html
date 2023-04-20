@@ -92,7 +92,7 @@
               </div>
               <div id="new-dataset-lottie-container" class="wide-card-lottie-container"></div>
             </div>
-            <div class="button-prompt-container" id="guided-button-start-existing-curate">
+            <div class="button-prompt-container mt-2 mb-2" id="guided-button-start-existing-curate">
               <div class="wide-card-text-container">
                 <h2 class="wide-card-title-text">Continue working on a dataset</h2>
                 <p class="wide-card-subtitle-text">
@@ -916,7 +916,7 @@
                   Hit enter/click the checkbox after entering the subject ID to add a subject.
                 </p>
                 <button
-                  class="ui primary basic button mt-0"
+                  class="ui primary basic button mt-2"
                   onclick="addSubjectSpecificationTableRow()"
                 >
                   <i class="fas fa-plus" style="margin-right: 7px"></i>Add a new subject
@@ -969,7 +969,7 @@
                   </thead>
                   <tbody id="pools-specification-table-body"></tbody>
                 </table>
-                <button class="ui primary basic button mt-0" onclick="addPoolTableRow()">
+                <button class="ui primary basic button mt-2" onclick="addPoolTableRow()">
                   <i class="fas fa-plus" style="margin-right: 7px"></i>Add a new pool
                 </button>
               </div>
@@ -5288,7 +5288,7 @@
               Review dataset on Pennsieve to ensure it has been generated as requested and all the
               data and metadata are included properly
             </p>
-            <p
+            <div
               class="help-text text-center"
               style="
                 font-size: large;
@@ -5296,15 +5296,19 @@
                 padding: 0rem 0rem 0rem 0.3rem;
                 border-radius: 5px;
                 height: 44px;
+                width: 491px;
               "
             >
               <a id="guided-pennsieve-dataset-link" target="_blank">
-                <i class="fas fa-link" style="margin-right: 0.4rem; margin-left: 0.4rem"></i>
+                <i
+                  class="fas fa-link"
+                  style="margin-right: 0.4rem; margin-left: 0.4rem; writing-mode: tbd"
+                ></i>
               </a>
-              <button id="guided-pennsieve-copy-dataset-link">
+              <button id="guided-pennsieve-copy-dataset-link" class="copy-button">
                 <i id="guided-pennsieve-copy-icon" class="fas fa-copy"></i>
               </button>
-            </p>
+            </div>
           </div>
           <div class="guided--section">
             <h2 class="text-sub-step-title mt-0">Editing this dataset</h2>
@@ -5326,21 +5330,20 @@
               DOI will NOT be active, and therefore searchable, until the dataset is published to
               Pennsieve Discover.
             </p>
-            <div class="guided--container-data-display mt-sm" style="width: 100%">
-              <div class="guided--card-dataset-info w-auto">
+
+            <div class="help-text text-center copy-doi-container mt-2">
+              <div class="copy-doi-text-container">
                 <h5 class="guided--dataset-description mr-4">DOI:</h5>
                 <h5 id="guided--para-doi-info" class="guided--dataset-content"></h5>
               </div>
+              <button id="guided-pennsieve-copy-doi" class="copy-button hidden">
+                <i id="guided-pennsieve-copy-icon" class="fas fa-copy"></i>
+              </button>
             </div>
-            <p id="guided--doi-information"></p>
             <button
-              class="ui positive button guided--button-footer mt-2"
+              class="ui positive button soda-green-background mt-3"
               id="curate-button-reserve-doi"
-              style="
-                background-color: var(--color-light-green) !important;
-                width: 150px !important;
-                height: 3.2rem;
-              "
+              style="width: 150px !important; height: 3.2rem"
               onclick="guidedReserveAndSaveDOI()"
             >
               Reserve DOI
@@ -5371,28 +5374,19 @@
               </div>
             </div>
             <button
-              class="ui positive button guided--button-footer mt-lg"
+              class="ui positive button soda-green-background mt-lg"
               id="guided-button-share-dataset-with-curation-team"
-              style="
-                background-color: var(--color-light-green) !important;
-                width: 281px !important;
-                height: 3.2rem;
-                font-family: Poppins;
-              "
+              style="width: 281px !important; height: 3.2rem"
               onclick="guidedModifyCurationTeamAccess('share')"
             >
               Share with SPARC Curation Team</button
             ><button
-              class="ui positive button guided--button-footer mt-lg"
+              class="ui positive button plum-background mt-lg"
               id="guided-button-unshare-dataset-with-curation-team"
-              style="
-                background-color: var(--color-bg-plum) !important;
-                width: 281px !important;
-                height: 3.2rem;
-              "
+              style="width: 281px !important; height: 3.2rem"
               onclick="guidedModifyCurationTeamAccess('unshare')"
             >
-              Withdraw from Review
+              Withdraw from review
             </button>
           </div>
           <div class="guided--section hidden" id="guided--prepublishing-checklist-container">
@@ -5545,7 +5539,7 @@
                             </div>
                             <button
                               id="guided--ORCID-btn"
-                              class="prepublishing-item-button ml-3"
+                              class="prepublishing-item-button green-hollow-button ml-3"
                               onclick="orcidSignIn('guided')"
                             >
                               Link ORCID iD
@@ -5560,139 +5554,16 @@
                     </table>
                   </div>
                 </div>
-
-                <!--Continue Button comes before filetree and excluded files section-->
-                <div class="guided--pre-publishing-continue-container">
-                  <button
-                    id="guided--prepublishing-continue-btn"
-                    class="pre-publishing-continue btn_animated"
-                    style="width: 200px; height: 40px; font-size: 15px; margin-top: 2rem"
-                    onclick="showPrepublishingReview()"
-                  >
-                    <div style="margin-left: 0px; padding-top: 2px" class="btn_animated-inside">
-                      Continue
-                    </div>
-                  </button>
-                </div>
-
-                <!--Withdraw dataset from review when Review status shows dataset is under review-->
-                <div
-                  style="width: 100%; display: none; justify-content: center"
-                  id="guided--prepublishing-withdraw-btn-container"
-                >
-                  <button
-                    id="guided--btn-withdraw-review-dataset"
-                    onclick="withdrawDatasetSubmission('guided')"
-                    class="btn_animated md skip"
-                    style="
-                      cursor: pointer;
-                      border-radius: 8px;
-                      width: 220px;
-                      height: 40px;
-                      background: rgb(255, 255, 255);
-                      color: red;
-                      font-weight: 600;
-                      border: 1px solid red;
-                      font-size: 15px;
-                      display: none;
-                    "
-                  >
-                    <div class="btn_animated-inside">
-                      <i class="fas fa-ban" style="padding-right: 5px"></i>
-                      Withdraw from review
-                    </div>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="guided--section hidden" id="guided--submit-prepublishing-review">
-            <div class="ui form" style="width: 450px">
-              <div class="grouped fields">
-                <!--Metadata file viewer-->
-                <div id="guided--excluded-files-container">
-                  <!--Pennsieve file tree header-->
-                  <div
-                    style="
-                      display: none !important;
-                      flex-direction: column;
-                      align-items: center;
-                      justify-content: center;
-                    "
-                  >
-                    <label
-                      id="guided--pre-publishing-file-viewer-label"
-                      style="
-                        font-size: 17px;
-                        color: var(--color-bg-plum);
-                        width: 100%;
-                        text-align: center;
-                        margin-top: 1.5rem;
-                      "
-                      >Optionally exclude metadata files from publishing:
-                      <i
-                        class="fas fa-info-circle popover-tooltip"
-                        data-content="Excluded metadata files will not be visible to the public once your dataset has been published."
-                        rel="popover"
-                        data-html="true"
-                        data-placement="right"
-                        data-trigger="hover"
-                      ></i>
-                    </label>
-                  </div>
-
-                  <!--Pennsieve metadata file viewer-->
-                  <div
-                    id="guided--pre-publication-items-container"
-                    class="prepublish-items-container hidden"
-                    style="height: 12rem"
-                  >
-                    <div id="guided--items-pre-publication"></div>
-
-                    <div
-                      class="ui active medium text loader guided--items-spinner"
-                      style="position: absolute; top: 6.5rem; margin-left: auto; margin-right: auto"
-                    >
-                      Fetching Files
-                    </div>
-                  </div>
-                </div>
-
-                <!--Submit Button-->
-                <!--#submit-withdraw-prepublishing-btns-container-->
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                  "
-                  id="guided--prepublishing-submit-btn-container"
-                >
-                  <button
-                    onclick="disseminateDataset('submit-pre-publishing', 'guided')"
-                    class="ui positive button guided--button-footer mt-lg"
-                    style="
-                      background-color: var(--color-light-green) !important;
-                      width: 281px !important;
-                      height: 3.2rem;
-                      margin-top: 0 !important;
-                    "
-                  >
-                    <i class="fas fa-sign-in-alt" style="padding-right: 5px"></i>
-                    Submit
-                  </button>
-                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <footer class="guided--footer hidden" id="guided-footer-div">
+    <footer class="footer-container hidden" id="guided-footer-div">
       <div class="guided--container-footer-buttons flex-end">
         <button
-          class="ui secondary basic button guided--button-footer"
+          class="ui secondary basic button"
           id="guided-back-button"
           style="width: 200px !important; font-family: Poppins"
         >
@@ -5701,7 +5572,7 @@
       </div>
       <div class="guided--container-footer-buttons flex-between">
         <button
-          class="ui positive button guided--button-footer"
+          class="ui positive button soda-green-background"
           id="guided-next-button"
           style="
             background-color: var(--color-light-green) !important;
@@ -5722,10 +5593,10 @@
         </button>
       </div>
     </footer>
-    <footer class="guided--footer hidden" id="guided-sub-page-navigation-footer-div">
+    <footer class="footer-container hidden" id="guided-sub-page-navigation-footer-div">
       <div class="guided--container-footer-buttons flex-end">
         <button
-          class="ui secondary basic button guided--button-footer"
+          class="ui secondary basic button"
           id="guided-button-sub-page-back"
           style="width: 130px !important; font-family: Poppins"
         >
@@ -5734,7 +5605,7 @@
       </div>
       <div class="guided--container-footer-buttons flex-between">
         <button
-          class="ui secondary basic button guided--button-footer guided--button-basic"
+          class="ui secondary basic button green-hollow-button"
           id="guided-button-sub-page-continue"
           style="width: 130px !important; font-family: Poppins"
         >
@@ -5742,7 +5613,7 @@
         ><button
           class="ui secondary basic button save-and-exit-button"
           id="guided-button-sub-page-save-and-exit"
-          style="width: 160px !important; font-family: Poppins"
+          style="width: 165px !important; font-family: Poppins"
           onclick="guidedSaveAndExit()"
         >
           <i class="far fa-save" style="margin-right: 10px"></i>

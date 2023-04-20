@@ -63,35 +63,6 @@ const withdrawDatasetReviewSubmission = async (datasetName, selected_account) =>
   });
 };
 
-const getFilesExcludedFromPublishing = async (datasetName) => {
-  // get the excluded files
-  let excludedFilesRes = await client.get(
-    `/disseminate_datasets/datasets/${datasetName}/ignore-files`,
-    {
-      params: {
-        selected_account: defaultBfAccount,
-      },
-    }
-  );
-
-  let { ignore_files } = excludedFilesRes.data;
-
-  return ignore_files;
-};
-
-// tell Pennsieve to ignore a set of user selected files when publishing their dataset.
-// this keeps those files hidden from the public but visible to publishers and collaboraors.
-// I:
-//  datasetIdOrName: string - dataset name
-//  files: [{fileName: string}] - An array of file name objects
-const updateDatasetExcludedFiles = async (account, datasetName, files) => {
-  // create the request options
-  await client.put(`/disseminate_datasets/datasets/${datasetName}/ignore-files`, {
-    ignore_files: files,
-    selected_account: account,
-  });
-};
-
 // retrieves the currently selected dataset's metadata files
 // I:
 //  datasetName: string - Selected dataset name
@@ -420,8 +391,6 @@ const api = {
   getDatasetBannerImageURL,
   getDatasetRole,
   withdrawDatasetReviewSubmission,
-  getFilesExcludedFromPublishing,
-  updateDatasetExcludedFiles,
   getDatasetMetadataFiles,
   getDatasetPermissions,
   getDatasetsForAccount,

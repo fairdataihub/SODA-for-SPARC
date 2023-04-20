@@ -566,135 +566,6 @@ button[data-id="guided_bf_list_users_and_teams"] {
   margin: 30px auto;
 }
 
-.button-generate-dataset {
-  width: 200px;
-  height: 200px;
-  border: none;
-  background-color: #fff;
-  font-size: 13px;
-  font-weight: 600;
-  border-radius: 5px;
-  padding-top: 0;
-  padding-bottom: 5px;
-  padding-right: 20px;
-  padding-left: 20px;
-  margin-right: 30px;
-  color: var(--color-teal);
-  opacity: 1;
-  position: relative;
-  box-shadow: 0px 0px 10px #d5d5d5;
-}
-
-.button-generate-dataset:hover {
-  outline: none;
-  /* border: 1px solid var(--color-light-green); */
-  box-shadow: 0px 0px 10px 0px var(--color-light-green);
-  transition: all 0.25s linear;
-  -webkit-transition: all 0.25s linear;
-}
-
-.button-generate-dataset:active,
-.button-generate-dataset:focus {
-  outline: none;
-  border: 1px solid var(--color-light-green);
-  box-shadow: 0px 0px 3px 0px var(--color-light-green);
-  transition: all 0.25s linear;
-  -webkit-transition: all 0.25s linear;
-}
-
-.button-generate-dataset p {
-  color: #000;
-  font-weight: 500;
-  font-size: 14px;
-  line-height: 1.5;
-}
-
-.button-generate-dataset svg {
-  margin: 0 auto;
-}
-
-.button-generate-dataset .bi.bi-file-earmark-plus {
-  display: block;
-}
-
-.button-generate-dataset .bi.bi-check2 {
-  display: none;
-}
-
-.file-templates-button {
-  width: 160px;
-  height: 160px;
-  border: none;
-  background-color: #fff;
-  font-size: 13px;
-  font-weight: 600;
-  border-radius: 5px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  padding-right: 20px;
-  padding-left: 20px;
-  margin-right: 30px;
-  color: var(--color-teal);
-  opacity: 1;
-  position: relative;
-  box-shadow: 0px 0px 10px #d5d5d5;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  transition: all 0.25s linear;
-  -webkit-transition: all 0.25s linear;
-}
-
-.file-templates-button svg {
-  margin: 0 auto;
-  fill: var(--tagify-dd-color-primary);
-  width: 45px;
-  height: 45px;
-  pointer-events: none;
-}
-
-.file-templates-button:hover {
-  outline: none;
-  box-shadow: 0px 0px 10px 0px var(--color-light-green);
-  transition: all 0.25s linear;
-  -webkit-transition: all 0.25s linear;
-}
-
-.file-templates-button:active {
-  border: 1px solid var(--color-light-green);
-  box-shadow: 0px 0px 3px 0px var(--color-light-green);
-  transition: all 0.25s linear;
-  -webkit-transition: all 0.25s linear;
-}
-
-.metadata-button.button-generate-dataset.code-metadata {
-  display: none;
-}
-
-.metadata-button.button-generate-dataset.done {
-  border: 1px solid var(--color-light-green);
-  transition: all 0.25s linear;
-  -webkit-transition: all 0.25s linear;
-}
-
-.metadata-button.button-generate-dataset.done p {
-  color: var(--color-light-green);
-  font-weight: 600;
-}
-
-.metadata-button.button-generate-dataset.done .bi.bi-file-earmark-plus {
-  display: none;
-}
-
-.metadata-button.button-generate-dataset.done .bi.bi-check2 {
-  color: var(--color-light-green);
-  display: block !important;
-  margin: 0 auto;
-  transition: all 0.25s linear;
-  -webkit-transition: all 0.25s linear;
-}
-
 .form-group.row {
   margin-bottom: 10px;
   margin-left: 5px;
@@ -795,18 +666,6 @@ button[data-id="guided_bf_list_users_and_teams"] {
   color: var(--color-teal);
   opacity: 1;
   position: relative;
-}
-
-.folder-upload-div button {
-  width: 100px;
-  height: 25px;
-  background: #fff;
-  color: var(--color-light-green);
-  border: 1px solid var(--color-light-green);
-  border-radius: 3px;
-  box-shadow: 0 0 3px 0 var(--color-light-green);
-  margin: 0 auto;
-  cursor: pointer;
 }
 
 .folder-upload-div p {
@@ -1053,28 +912,6 @@ details[open] > summary::before {
   margin-bottom: 0;
 }
 
-.ffm-return-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 50%;
-  padding: 0px 3px;
-}
-
-.ffm-return-button {
-  height: 37px !important;
-  max-height: 37px;
-  width: 120px !important;
-  margin-left: 1rem !important;
-  margin-bottom: 3px !important;
-  font-family: Poppins !important;
-}
-
-.ffm-return-button:hover {
-  border: 1px solid var(--color-light-green) !important;
-  box-shadow: 0 0 6px #b0b0b0 !important;
-}
-
 @media (min-height: 1200px) {
   .getting-started-buttons {
     margin-top: -17rem !important;
@@ -1099,7 +936,7 @@ details[open] > summary::before {
   text-align: -webkit-center;
 }
 
-#guided-pennsieve-copy-dataset-link {
+.copy-button {
   background: var(--button-color);
   border: none;
   color: white;
@@ -1108,7 +945,7 @@ details[open] > summary::before {
   margin-left: 2px;
 }
 
-#guided-pennsieve-copy-dataset-link:hover {
+.copy-button:hover {
   background: #1c687e !important;
 }
 
@@ -1119,6 +956,7 @@ details[open] > summary::before {
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
+  font-size: medium;
 }
 
 #guided-pennsieve-dataset-link:hover {

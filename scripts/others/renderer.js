@@ -3207,22 +3207,6 @@ const submitReviewDatasetCheck = async (res, curationMode) => {
       // do not submit the dataset
       return;
     }
-
-    // swal loading message for the submission
-    // show a SWAL loading message until the submit for prepublishing flow is successful or fails
-    // Swal.fire({
-    //   title: `Submitting dataset for pre-publishing review`,
-    //   html: "Please wait...",
-    //   // timer: 5000,
-    //   allowEscapeKey: false,
-    //   allowOutsideClick: false,
-    //   heightAuto: false,
-    //   backdrop: "rgba(0,0,0, 0.4)",
-    //   timerProgressBar: false,
-    //   didOpen: () => {
-    //     Swal.showLoading();
-    //   },
-    // });
     // submit the dataset for review with the given embargoReleaseDate
     await submitReviewDataset(embargoReleaseDate, curationMode);
   } else {
@@ -3312,28 +3296,8 @@ const submitReviewDatasetCheck = async (res, curationMode) => {
       return [false, ""];
     }
 
-    if (userResponse.isConfirmed && curationMode === "guided") {
+    if (userResponse.isConfirmed) {
       return [true, embargoReleaseDate];
-    }
-
-    if (curationMode != "guided" && userResponse.isConfirmed) {
-      // show a SWAL loading message until the submit for prepublishing flow is successful or fails
-      Swal.fire({
-        title: `Submitting dataset for pre-publishing review`,
-        html: "Please wait...",
-        // timer: 5000,
-        allowEscapeKey: false,
-        allowOutsideClick: false,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        timerProgressBar: false,
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      });
-
-      // submit the dataset for review with the given embargoReleaseDate
-      await submitReviewDataset(embargoReleaseDate, curationMode);
     }
   }
 };
@@ -3352,35 +3316,22 @@ ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
   $("#submit_prepublishing_review-spinner").hide();
 });
 
+// TODO: Dorian -> Exlcuded files will no longer be a thing in the future
+// Go about removing the feature and see how it effects dataset submissions
 const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
   let curationModeID = "";
   let currentAccount = defaultBfAccount;
   let currentDataset = defaultBfDataset;
 
   if (curationMode === "guided") {
-    curationModeID = "guided";
+    curationModeID = "guided--";
     currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
     currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-  }
-  $("#para-submit_prepublishing_review-status").text("");
-  bfRefreshPublishingDatasetStatusBtn.disabled = true;
-  var selectedBfAccount = defaultBfAccount;
-  var selectedBfDataset = defaultBfDataset;
-
-  // title text
-  let title = "";
-
-  // check if the user has selected any files they want to be hidden to the public upon publication (aka ignored/excluded files)
-  // set the loading message title accordingly
-  if (excludedFilesInPublicationFlow(curationMode)) {
-    title = "Ignoring selected files and submitting dataset for pre-publishing review";
-  } else {
-    title = "Submitting dataset to Curation Team";
   }
 
   // show a SWAL loading message until the submit for prepublishing flow is successful or fails
   Swal.fire({
-    title: title,
+    title: "Submitting dataset to Curation Team",
     html: "Please wait...",
     // timer: 5000,
     allowEscapeKey: false,
@@ -3393,49 +3344,8 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
     },
   });
 
-  // if there are excluded files upload them to Pennsieve so they will not be viewable to the public upon publication
-  if (excludedFilesInPublicationFlow(curationMode)) {
-    // get the excluded files from the excluded files list in the third step of the pre-publishing review submission flow
-    let files = getExcludedFilesFromPublicationFlow(curationMode);
-    try {
-      // exclude the user's selected files from publication
-      //check res
-      await api.updateDatasetExcludedFiles(currentAccount, currentDataset, files);
-    } catch (error) {
-      clientError(error);
-      // log the error
-      logGeneralOperationsForAnalytics(
-        "Error",
-        DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
-        AnalyticsGranularity.ALL_LEVELS,
-        ["Updating excluded files"]
-      );
-
-      var emessage = userErrorMessage(error);
-
-      // alert the user of the error
-      Swal.fire({
-        backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
-        confirmButtonText: "Ok",
-        title: `Could not exclude the selected files from publication`,
-        icon: "error",
-        reverseButtons: reverseSwalButtons,
-        text: `${emessage}`,
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      });
-      // stop publication
-      return;
-    }
-  }
-
   try {
-    await disseminateCurationTeam(currentAccount, currentDataset, "share", "newMethod");
+    await permissionsCurationTeam(currentAccount, currentDataset, "share", "newMethod");
 
     await api.submitDatasetForPublication(
       currentAccount,
@@ -3452,8 +3362,6 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
       ["Submit dataset"]
     );
 
-    var emessage = userErrorMessage(error);
-
     // alert the user of an error
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
@@ -3462,7 +3370,7 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
       title: `Could not submit your dataset for pre-publishing review`,
       icon: "error",
       reverseButtons: reverseSwalButtons,
-      text: emessage,
+      text: userErrorMessage(error),
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -3503,61 +3411,57 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
   });
 
   if (curationMode != "guided") {
-    await transitionFreeFormMode(
-      document.querySelector("#begin-prepublishing-btn"),
-      "submit_prepublishing_review-question-2",
-      "submit_prepublishing_review-tab",
-      "",
-      "individual-question post-curation"
-    );
+    await resetffmPrepublishingUI();
   } else {
     // Update the UI again and hide the flow
     $("#guided--prepublishing-checklist-container").addClass("hidden");
-    $("#guided--submit-prepublishing-review").addClass("hidden");
-    const guidedShareWithCurationTeamButton = document.getElementById(
-      "guided-button-share-dataset-with-curation-team"
-    );
+    $("#guided-button-share-dataset-with-curation-team").removeClass("hidden");
+    $("#guided-button-share-dataset-with-curation-team").removeClass("loading");
+    $("#guided-button-share-dataset-with-curation-team").disabled = false;
 
-    guidedShareWithCurationTeamButton.classList.remove("hidden");
-    guidedShareWithCurationTeamButton.classList.remove("loading");
-    // $("#guided--para-review-dataset-info-disseminate").text("Dataset is not under review currently")
-
-    guidedShareWithCurationTeamButton.disabled = false;
-    // $("#guided-button-unshare-dataset-with-curation-team").show();
     guidedSetCurationTeamUI();
   }
 };
 
 // //Withdraw dataset from review
-const withdrawDatasetSubmission = async (curationMode) => {
+const withdrawDatasetSubmission = async (curationMode = "") => {
   // show a SWAL loading message until the submit for prepublishing flow is successful or fails
 
-  if (curationMode !== "guided") {
-    Swal.fire({
-      title: `Preparing to withdraw the dataset submission`,
-      html: "Please wait...",
-      // timer: 5000,
+  if (curationMode != "guided") {
+    document.getElementById("btn-withdraw-review-dataset").disabled = true;
+    $("#btn-withdraw-review-dataset").addClass("loading");
+    $("#btn-withdraw-review-dataset").addClass("text-transparent");
+
+    const { value: withdraw } = await Swal.fire({
+      title: "Withdraw this dataset from review?",
+      icon: "warning",
+      showDenyButton: true,
+      confirmButtonText: "Yes",
+      denyButtonText: "No",
       allowEscapeKey: false,
       allowOutsideClick: false,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       timerProgressBar: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
     });
+
+    if (!withdraw) {
+      document.getElementById("btn-withdraw-review-dataset").disabled = false;
+      $("#btn-withdraw-review-dataset").removeClass("loading");
+      $("#btn-withdraw-review-dataset").removeClass("text-transparent");
+      return false;
+    }
   }
 
   // get the publishing status of the currently selected dataset
   // then check if it can be withdrawn, then withdraw it
   // catch any uncaught errors at this level (aka greacefully catch any exceptions to alert the user we cannot withdraw their dataset)
-  await showPublishingStatus(withdrawDatasetCheck, curationMode).catch((error) => {
+  let status = await showPublishingStatus(withdrawDatasetCheck, curationMode).catch((error) => {
     log.error(error);
     console.error(error);
-    var emessage = userError(error);
     Swal.fire({
       title: "Could not withdraw dataset from publication!",
-      text: `${emessage}`,
+      text: `${userError(error)}`,
       heightAuto: false,
       icon: "error",
       confirmButtonText: "Ok",
@@ -3584,9 +3488,15 @@ const withdrawDatasetSubmission = async (curationMode) => {
     }
   });
 
+  console.log("status", status);
+
   // This helps signal guided mode to update the UI
   if (curationMode === "guided") {
     return true;
+  } else {
+    document.getElementById("btn-withdraw-review-dataset").disabled = false;
+    $("#btn-withdraw-review-dataset").removeClass("loading");
+    $("#btn-withdraw-review-dataset").removeClass("text-transparent");
   }
 };
 
@@ -3610,26 +3520,12 @@ const withdrawDatasetCheck = async (res, curationMode) => {
     });
   } else {
     // show a SWAL loading message until the submit for prepublishing flow is successful or fails
-    if (curationMode !== "guided") {
-      Swal.fire({
-        title: `Withdrawing dataset submission`,
-        html: "Please wait...",
-        allowEscapeKey: false,
-        allowOutsideClick: false,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        timerProgressBar: false,
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      });
-    }
     await withdrawReviewDataset(curationMode);
   }
 };
 
 const withdrawReviewDataset = async (curationMode) => {
-  bfWithdrawReviewDatasetBtn.disabled = true;
+  // bfWithdrawReviewDatasetBtn.disabled = true;
 
   let currentAccount = $("#current-bf-account").text();
   let currentDataset = $(".bf-dataset-span")
@@ -3642,9 +3538,9 @@ const withdrawReviewDataset = async (curationMode) => {
   }
 
   try {
-    await disseminateCurationTeam(currentAccount, currentDataset, "unshare", "newMethod");
-
     await api.withdrawDatasetReviewSubmission(currentDataset, currentAccount);
+
+    await permissionsCurationTeam(currentAccount, currentDataset, "unshare", "newMethod");
 
     logGeneralOperationsForAnalytics(
       "Success",
@@ -3673,13 +3569,7 @@ const withdrawReviewDataset = async (curationMode) => {
 
     if (curationMode != "guided") {
       // reveal the current section (question-3) again using the new publishing status value
-      await transitionFreeFormMode(
-        document.querySelector("#begin-prepublishing-btn"),
-        "submit_prepublishing_review-question-2",
-        "submit_prepublishing_review-tab",
-        "",
-        "individual-question post-curation"
-      );
+      await resetffmPrepublishingUI();
 
       bfRefreshPublishingDatasetStatusBtn.disabled = false;
       bfWithdrawReviewDatasetBtn.disabled = false;
@@ -3696,7 +3586,6 @@ const withdrawReviewDataset = async (curationMode) => {
     }
 
     // scroll to the submit button
-    // scrollToElement(".pre-publishing-continue");
   } catch (error) {
     clientError(error);
     var emessage = userErrorMessage(error);
@@ -3951,13 +3840,15 @@ const showPrePublishingPageElements = () => {
   }
 
   // show the "Begin Publishing" button and hide the checklist and submission section
-  $("#begin-prepublishing-btn").show();
+  $("#begin-prepublishing-btn").removeClass("hidden");
+  $("#submit_prepublishing_review-question-2").addClass("show");
   $("#prepublishing-checklist-container").hide();
   $("#prepublishing-submit-btn-container").hide();
-  $("#excluded-files-container").hide();
   $(".pre-publishing-continue-container").hide();
 };
 
+// The callback argument is used to determine whether or not to publish or unpublish the dataset
+// If callback is empty then the dataset status will only be fetched and displayed
 const showPublishingStatus = async (callback, curationMode = "") => {
   return new Promise(async function (resolve, reject) {
     if (callback == "noClear") {
@@ -8287,6 +8178,7 @@ async function initiate_generate() {
   };
 } // end initiate_generate
 
+// TODO: Dorian -> update this function to go to the new sharing method
 const show_curation_shortcut = () => {
   Swal.fire({
     backdrop: "rgba(0,0,0, 0.4)",
@@ -8494,217 +8386,6 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
     }
   }
 });
-
-// When mode = "update", the buttons won't be hidden or shown to prevent button flickering effect
-const curation_consortium_check = async (mode = "") => {
-  let selected_account = defaultBfAccount;
-  let selected_dataset = defaultBfDataset;
-
-  $(".spinner.post-curation").show();
-  $("#curation-team-unshare-btn").hide();
-  $("#sparc-consortium-unshare-btn").hide();
-  $("#curation-team-share-btn").hide();
-  $("#sparc-consortium-share-btn").hide();
-
-  try {
-    let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
-      params: {
-        selected_account: defaultBfAccount,
-      },
-    });
-    let res = bf_account_details_req.data;
-    let organization_id = res["organization_id"];
-    if (organization_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0") {
-      $("#current_curation_team_status").text("None");
-      $("#current_sparc_consortium_status").text("None");
-
-      Swal.fire({
-        title: "Failed to share with Curation team!",
-        text: "This account is not in the SPARC organization. Please switch accounts and try again",
-        icon: "error",
-        showConfirmButton: true,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-      });
-
-      if (mode != "update") {
-        $("#curation-team-unshare-btn").hide();
-        $("#sparc-consortium-unshare-btn").hide();
-        $("#curation-team-share-btn").hide();
-        $("#sparc-consortium-share-btn").hide();
-        $(".spinner.post-curation").hide();
-      }
-      return;
-    }
-
-    if (mode != "update") {
-      $("#curation-team-unshare-btn").hide();
-      $("#sparc-consortium-unshare-btn").hide();
-      $("#curation-team-share-btn").hide();
-      $("#sparc-consortium-share-btn").hide();
-    }
-
-    if (selected_dataset === "Select dataset") {
-      $("#current_curation_team_status").text("None");
-      $("#current_sparc_consortium_status").text("None");
-      $(".spinner.post-curation").hide();
-    } else {
-      //needs to be replaced
-      try {
-        let bf_get_permissions = await api.getDatasetPermissions(
-          selected_account,
-          selected_dataset,
-          true
-        );
-        // let bf_get_permissions = await client.get(`/manage_datasets/bf_dataset_permissions`, {
-        //   params: {
-        //     selected_account: selected_account,
-        //     selected_dataset: selected_dataset,
-        //   },
-        // });
-
-        let permissions = bf_get_permissions.permissions;
-        let team_ids = bf_get_permissions.team_ids;
-
-        let curation_permission_satisfied = false;
-        let consortium_permission_satisfied = false;
-        let curation_return_status = false;
-        let consortium_return_status = false;
-
-        for (var team of team_ids) {
-          // SPARC Data Curation Team's id
-          if (team["team_id"] == "N:team:d296053d-91db-46ae-ac80-3c137ea144e4") {
-            if (team["team_role"] == "manager") {
-              curation_permission_satisfied = true;
-            }
-          }
-
-          // SPARC Embargoed Data Sharing Group's id
-          if (team["team_id"] == "N:team:ee8d665b-d317-40f8-b63d-56874cf225a1") {
-            if (team["team_role"] == "viewer") {
-              consortium_permission_satisfied = true;
-            }
-          }
-        }
-
-        if (!curation_permission_satisfied) {
-          $("#current_curation_team_status").text("Not shared with the curation team");
-          curation_return_status = true;
-        }
-        if (!consortium_permission_satisfied) {
-          $("#current_sparc_consortium_status").text("Not shared with the SPARC Consortium");
-          consortium_return_status = true;
-        }
-
-        if (curation_return_status) {
-          if (mode != "update") {
-            $("#curation-team-share-btn").show();
-            $("#curation-team-unshare-btn").hide();
-          }
-        }
-
-        if (consortium_return_status) {
-          if (mode != "update") {
-            $("#sparc-consortium-unshare-btn").hide();
-            $("#sparc-consortium-share-btn").show();
-          }
-        }
-
-        if (curation_return_status && consortium_return_status) {
-          $("#sparc-consortium-unshare-btn").hide();
-          $("#sparc-consortium-share-btn").show();
-          $("#curation-team-unshare-btn").hide();
-          $("#curation-team-share-btn").show();
-          $(".spinner.post-curation").hide();
-          return;
-        }
-        //needs to be replaced
-        try {
-          let bf_dataset_permissions = await client.get(`/manage_datasets/bf_dataset_status`, {
-            params: {
-              selected_account: defaultBfAccount,
-              selected_dataset: defaultBfDataset,
-            },
-          });
-          let res = bf_dataset_permissions.data;
-
-          let dataset_status_value = res["current_status"];
-          let dataset_status = parseInt(dataset_status_value.substring(0, 2));
-          let curation_status_satisfied = false;
-          let consortium_status_satisfied = false;
-
-          if (dataset_status > 2) {
-            curation_status_satisfied = true;
-          }
-          if (dataset_status > 10) {
-            consortium_status_satisfied = true;
-          }
-
-          if (!curation_status_satisfied) {
-            $("#current_curation_team_status").text("Not shared with the curation team");
-            curation_return_status = true;
-          }
-          if (!consortium_status_satisfied) {
-            $("#current_sparc_consortium_status").text("Not shared with the SPARC Consortium");
-            consortium_return_status = true;
-          }
-
-          if (curation_return_status) {
-            $("#curation-team-unshare-btn").hide();
-            $("#curation-team-share-btn").show();
-          } else {
-            $("#current_curation_team_status").text("Shared with the curation team");
-            $("#curation-team-unshare-btn").show();
-            $("#curation-team-share-btn").hide();
-          }
-
-          if (consortium_return_status) {
-            $("#sparc-consortium-unshare-btn").hide();
-            $("#sparc-consortium-share-btn").show();
-          } else {
-            $("#current_sparc_consortium_status").text("Shared with the SPARC Consortium");
-            $("#sparc-consortium-unshare-btn").show();
-            $("#sparc-consortium-share-btn").hide();
-          }
-
-          if (curation_return_status && consortium_return_status) {
-            $("#sparc-consortium-unshare-btn").hide();
-            $("#sparc-consortium-share-btn").show();
-            $("#curation-team-unshare-btn").hide();
-            $("#curation-team-share-btn").show();
-            $(".spinner.post-curation").hide();
-            return;
-          }
-
-          $(".spinner.post-curation").hide();
-        } catch (error) {
-          clientError(error);
-          $("#current_curation_team_status").text("None");
-          $("#current_sparc_consortium_status").text("None");
-          $(".spinner.post-curation").hide();
-        }
-      } catch (error) {
-        clientError(error);
-        if (mode != "update") {
-          $("#current_curation_team_status").text("None");
-          $("#current_sparc_consortium_status").text("None");
-        }
-        $(".spinner.post-curation").hide();
-      }
-    }
-  } catch (error) {
-    clientError(error);
-
-    if (mode != "update") {
-      $("#curation-team-unshare-btn").hide();
-      $("#sparc-consortium-unshare-btn").hide();
-      $("#curation-team-share-btn").hide();
-      $("#sparc-consortium-share-btn").hide();
-    }
-
-    $(".spinner.post-curation").hide();
-  }
-};
 
 $("#button-generate-manifest-locally").click(() => {
   ipcRenderer.send("open-folder-dialog-save-manifest-local");
