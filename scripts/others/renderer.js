@@ -211,12 +211,10 @@ var sectionObserver = new MutationObserver(function (mutations) {
 
     if (attributeValue.includes("is-shown") == true) {
       //add lotties
-      newDatasetLottie.play();
       existingDatasetLottie.play();
       editDatasetLottie.play();
       // heart_container.play();
     } else {
-      newDatasetLottie.stop();
       existingDatasetLottie.stop();
       editDatasetLottie.stop();
       // heart_container.stop();
