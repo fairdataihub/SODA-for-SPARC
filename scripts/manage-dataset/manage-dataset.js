@@ -1,6 +1,10 @@
 // event listeners for opening dataset or account selection dropdown
-document.querySelectorAll(".ds-dd").forEach((dropdownElement) => {
+// TODO: Add logic so this doesnt apply to the organization fields
+
+document.querySelectorAll(".ds-dd:not(.organization)").forEach((dropdownElement) => {
   dropdownElement.addEventListener("click", function () {
+    console.log("clicked too");
+
     openDropdownPrompt(this, "dataset");
   });
 });
@@ -13,6 +17,7 @@ document.querySelectorAll(".md-change-current-account").forEach((dropdownElement
 
 document.querySelectorAll(".ds-dd.organization").forEach((dropdownElement) => {
   dropdownElement.addEventListener("click", function () {
+    console.log("clicked");
     openDropdownPrompt(this, "organization");
   });
 });

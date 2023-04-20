@@ -880,6 +880,8 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     // hacky: wait for animations
     await wait(10);
 
+    console.log("Waiting done")
+
     // disable the Continue btn first
     $("#nextBtn").prop("disabled", true);
 
@@ -895,6 +897,8 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       $(".ui.active.green.inline.loader.small").css("display", "none");
       $(".svg-change-current-account.dataset").css("display", "block");
     }
+
+    console.log("Api key checked")
 
     // if no account as them to connect one
     if (!accountPresent) {
@@ -958,6 +962,141 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       console.log("About to add the new organizations to the dropdown");
       refreshOrganizationList();
     }
+
+    //datasets do exist so display popup with dataset options
+    //else datasets have been created
+    if (organizationList.length > 0) {
+      await Swal.fire({
+        backdrop: "rgba(0,0,0, 0.4)",
+        cancelButtonText: "Cancel",
+        confirmButtonText: "Confirm",
+        focusCancel: true,
+        focusConfirm: false,
+        heightAuto: false,
+        allowOutsideClick: false,
+        allowEscapeKey: true,
+        html: datasetPermissionDiv,
+        reverseButtons: reverseSwalButtons,
+        showCloseButton: true,
+        showCancelButton: true,
+        title: "<h3 style='margin-bottom:20px !important'>Select your dataset</h3>",
+        showClass: {
+          popup: "animate__animated animate__fadeInDown animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp animate__faster animate_fastest",
+        },
+        willOpen: () => {
+          $("#curatebforganizationlist").selectpicker("hide");
+          $("#curatebforganizationlist").selectpicker("refresh");
+          $("#bf-organization-select-div").hide();
+        },
+        didOpen: () => {
+          $("#div-permission-list-2").css("display", "block");
+          $(".ui.active.green.inline.loader.small").css("display", "none");
+          datasetPermissionDiv.style.display = "block";
+          $("#curatebforganizationlist").attr("disabled", false);
+          $(datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "none");
+          $("#curatebforganizationlist").selectpicker("refresh");
+          $("#curatebforganizationlist").selectpicker("show");
+          $("#bf-organization-select-div").show();
+
+          bfDataset = $("#curatebforganizationlist").val();
+          let sweet_al = document.getElementsByClassName("swal2-content")[0];
+          let sweet_alrt = document.getElementsByClassName("swal2-actions")[0];
+          sweet_alrt.style.marginTop = "1rem";
+
+          let tip_container = document.createElement("div");
+          let tip_content = document.createElement("p");
+          tip_content.innerText =
+            "Only datasets where you have owner or manager permissions will be shown in the list";
+          tip_content.classList.add("tip-content");
+          tip_content.style.textAlign = "left";
+          tip_container.style.marginTop = "1rem";
+          tip_container.appendChild(tip_content);
+          sweet_al.appendChild(tip_container);
+        },
+        preConfirm: () => {
+          let bfOrganization = $("#curatebforganizationlist").val();
+          if (!bfOrganization) {
+            Swal.showValidationMessage("Please select an organization!");
+
+            $(datasetPermissionDiv)
+              .find("#div-filter-datasets-progress-2")
+              .css("display", "none");
+            $("#curatebforganizationlist").selectpicker("show");
+            $("#curatebforganizationlist").selectpicker("refresh");
+            $("#bf-organization-select-div").show();
+
+            return undefined;
+          } 
+
+          if (bfOrganization === "Select organization") {
+            Swal.showValidationMessage("Please select an organization!");
+
+            $(datasetPermissionDiv)
+              .find("#div-filter-datasets-progress-2")
+              .css("display", "none");
+            $("#curatebforganizationlist").selectpicker("show");
+            $("#curatebforganizationlist").selectpicker("refresh");
+            $("#bf-organization-select-div").show();
+
+            return undefined;
+          }
+
+          $("#license-lottie-div").css("display", "none");
+          $("#license-assigned").css("display", "none");
+          return bfOrganization;
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          if (show_timer) {
+            Swal.fire({
+              allowEscapeKey: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              heightAuto: false,
+              showConfirmButton: false,
+              timer: 2000,
+              timerProgressBar: false,
+              title: "Loading your dataset details...",
+              didOpen: () => {
+                Swal.showLoading();
+              },
+            });
+          }
+          if (dropdownEventID === "dd-select-pennsieve-dataset") {
+            $("#ds-name").val(bfDataset);
+            $("#ds-description").val = $("#bf-dataset-subtitle").val;
+            $("body").removeClass("waiting");
+            $(".svg-change-current-account.dataset").css("display", "block");
+            dropdownEventID = "";
+            return;
+          }
+          $("#current-bf-dataset").text(bfDataset);
+          $("#current-bf-dataset-generate").text(bfDataset);
+          $(".bf-dataset-span").html(bfDataset);
+          confirm_click_function();
+
+          defaultBfDataset = bfDataset;
+          // document.getElementById("ds-description").innerHTML = "";
+          refreshDatasetList();
+          $("#dataset-loaded-message").hide();
+
+          showHideDropdownButtons("dataset", "show");
+          document.getElementById("div-rename-bf-dataset").children[0].style.display = "flex";
+
+          // show the confirm button underneath the dataset select dropdown if one exists
+          let btn = document.querySelector(".btn-confirm-ds-selection");
+          btn.style.visibility = "visible";
+          btn.style.display = "flex";
+
+          // checkPrevDivForConfirmButton("dataset");
+        } else if (result.isDismissed) {
+          currentDatasetLicense.innerText = currentDatasetLicense.innerText;
+        }
+      });
+    }
+    
 
     // hide "Confirm" button if Current dataset set to None
     // related to the Organizae Datasets workflow current dataset span

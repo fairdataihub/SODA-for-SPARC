@@ -3884,10 +3884,13 @@ const refreshDatasetList = () => {
  * @returns length of the organizations list
  */
 const refreshOrganizationList = () => {
+  console.log("Refreshing orgs list with new results")
   organizationList.sort(function (a, b) {
     return a.toLowerCase().localeCompare(b.toLowerCase());
   });
 
+
+  console.log("About to populate the organization dropdown")
   populateOrganizationDropdowns(organizationList);
 
   // parentDSTagify.settings.whitelist = getParentDatasets();
@@ -3914,9 +3917,8 @@ const populateDatasetDropdowns = (mylist) => {
 };
 
 const populateOrganizationDropdowns = (organizations) => {
+  console.log("About to clear the organization dropdown before repopulating")
   clearOrganizationDropdowns();
-
-  console.log(organizations);
 
   for (const organization in organizations) {
     var myitemselect = organizations[organization];
@@ -3926,7 +3928,10 @@ const populateOrganizationDropdowns = (organizations) => {
     let option1 = option.cloneNode(true);
     let option2 = option.cloneNode(true);
 
-    curateOrganizationDropdown.appendChild(option2);
+    console.log("Adding an item to the dropdown now")
+    console.log(option1)
+
+    curateOrganizationDropdown.appendChild(option1);
   }
 };
 ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
