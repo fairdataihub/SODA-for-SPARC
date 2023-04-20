@@ -76,41 +76,36 @@
               src="assets/img/logo-soda1024.png"
             />
           </div>
-          <h2 class="mt-2 mb-3" style="font-size: 16px">What would you like to do today?</h2>
+          <h2 class="mt-2 mb-3" style="font-size: 16px">Select what you would like to do today</h2>
           <div
             class="justify-center align-items-center h-100"
             id="curate-new-home"
             style="flex-direction: column"
           >
-            <div class="button-prompt-container" id="guided-button-start-new-curate">
+            <div class="button-prompt-container" id="guided-button-go-to-starting-point-selection">
               <div class="wide-card-text-container">
-                <h2 class="wide-card-title-text">Prepare and submit a new dataset</h2>
+                <h2 class="wide-card-title-text">End to End Curation</h2>
                 <p class="wide-card-subtitle-text">
-                  This option will walk you through everything you need to prepare and submit a new
-                  dataset to SPARC
-                </p>
-              </div>
-              <div id="new-dataset-lottie-container" class="wide-card-lottie-container"></div>
-            </div>
-            <div class="button-prompt-container mt-2 mb-2" id="guided-button-start-existing-curate">
-              <div class="wide-card-text-container">
-                <h2 class="wide-card-title-text">Continue working on a dataset</h2>
-                <p class="wide-card-subtitle-text">
-                  This option will let you resume working on a previously started dataset to go
-                  through everything you need to submit a SPARC dataset
+                  This option will walk you through everything you need to prepare and submit a
+                  dataset to SPARC. You can either start submitting a new dataset or continue
+                  working on a previously started dataset.
                 </p>
               </div>
               <div id="existing-dataset-lottie" class="wide-card-lottie-container"></div>
             </div>
             <div class="button-prompt-container" id="guided-button-start-modify-component">
               <div class="wide-card-text-container">
-                <h2 class="wide-card-title-text">Free Form Mode</h2>
+                <h2 class="wide-card-title-text">Free Form Mode Curation</h2>
                 <p class="wide-card-subtitle-text">
                   This option provides various features for creating/editing individual components
-                  of a dataset (e.g. create manifest files, edit banner images, etc.)
+                  of a dataset (e.g. create manifest files, edit banner images, etc.).
                 </p>
               </div>
-              <div id="edit-dataset-component-lottie" class="wide-card-lottie-container"></div>
+              <div
+                id="edit-dataset-component-lottie"
+                class="wide-card-lottie-container"
+                style="margin-top: -20px"
+              ></div>
             </div>
           </div>
         </div>
@@ -122,7 +117,7 @@
         data-parent-tab-name="Curation Preparation"
       >
         <div class="guided--capsule-container" id="structure-dataset-capsule-container">
-          <div class="guided--capsule" id="guided-resume-existing-dataset-capsule"></div>
+          <div class="guided--capsule" id="guided-select-starting-point-capsule"></div>
 
           <div class="guided--capsule" id="guided-curation-preparation-intro-capsule"></div>
           <div class="guided--capsule" id="guided-ask-if-submission-is-sparc-funded-capsule"></div>
@@ -131,33 +126,45 @@
           <div class="guided--capsule" id="guided-name-subtitle-capsule"></div>
         </div>
         <div
-          id="guided-resume-existing-dataset-tab"
+          id="guided-select-starting-point-tab"
           class="guided--page h-100 hidden"
           data-page-name="Select starting point"
         >
-          <h1 class="text-sub-step-title">Select a dataset to resume</h1>
+          <div class="guided--section">
+            <h1 class="text-sub-step-title">End to End curation</h1>
+          </div>
 
-          <div class="guided--section mt-3">
+          <div class="guided--section">
             <label class="guided--form-label centered mb-4"
-              >Where is the dataset you would like to resume located?
+              >Select the task you would like to perform below:
             </label>
 
             <div class="guided--radio-button-container mt-4">
               <button
                 class="guided--radio-button tile-button"
+                id="guided-button-start-new-curation"
+                data-next-element="guided-section-start-new-curation"
+              >
+                <div
+                  class="tile-button-icon lottieAnimationContainer"
+                  id="guided-start-new-lottie"
+                ></div>
+                <div class="tile-button-text">
+                  <h2>Prepare and submit a new dataset</h2>
+                </div>
+              </button>
+
+              <button
+                class="guided--radio-button tile-button"
                 id="guided-button-resume-progress-file"
                 data-next-element="guided-section-resume-progress-cards"
               >
-                <div class="tile-button-icon" style="width: 46px; fill: var(--color-accent)">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 448 512">
-                    <!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-                    <path
-                      d="M48 96V416c0 8.8 7.2 16 16 16H384c8.8 0 16-7.2 16-16V170.5c0-4.2-1.7-8.3-4.7-11.3l33.9-33.9c12 12 18.7 28.3 18.7 45.3V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96C0 60.7 28.7 32 64 32H309.5c17 0 33.3 6.7 45.3 18.7l74.5 74.5-33.9 33.9L320.8 84.7c-.3-.3-.5-.5-.8-.8V184c0 13.3-10.7 24-24 24H104c-13.3 0-24-10.7-24-24V80H64c-8.8 0-16 7.2-16 16zm80-16v80H272V80H128zm32 240a64 64 0 1 1 128 0 64 64 0 1 1 -128 0z"
-                    />
-                  </svg>
-                </div>
+                <div
+                  class="tile-button-icon lottieAnimationContainer"
+                  id="guided-resume-exiting-lottie"
+                ></div>
                 <div class="tile-button-text">
-                  <h2>Saved in SODA</h2>
+                  <h2>Continue a dataset started on SODA</h2>
                 </div>
               </button>
 
@@ -174,12 +181,20 @@
                     height="50px"
                   />
                 </div>
-                <div class="tile-button-text">
-                  <h2>On Pennsieve</h2>
+                <div class="tile-button-text" style="margin-top: 10px">
+                  <h2>Work on a dataset from Pennsieve</h2>
                 </div>
               </button>
             </div>
           </div>
+
+          <div class="guided--section" id="guided-section-start-new-curation">
+            <h2 class="guided--text-click-continue">
+              Click "<span class="next-button-span"></span>" to start the End to End curation
+              process for preparing and submitting a new dataset.
+            </h2>
+          </div>
+
           <div class="guided--section" id="guided-section-resume-progress-cards"></div>
 
           <div
@@ -2585,10 +2600,8 @@
           </div>
           <p class="help-text">
             All SPARC datasets must include a dataset_description metadata file that contain various
-            information about the dataset. You have already provided some of the required
-            information during the previous steps (award number, contributors, protocols, etc.). You
-            can provide the remaining information below. It is suggest to provide as much
-            information as available. SODA will use that information to automatically create the
+            information about the dataset. It is suggested to provide as muh ch information as
+            available. SODA will use that information to automatically create the
             dataset_description file and include it in your dataset when it is generated in the last
             step of this guided workflow.
           </p>
@@ -4049,22 +4062,7 @@
               shown on the landing page of your dataset when it is publised on sparc.science.
             </p>
           </div>
-          <div class="guided--section">
-            <div class="space-around" style="align-items: flex-start">
-              <img
-                src="assets/img/Pennsieve-overview-example.png"
-                alt="SPARC dataset structure example"
-                style="width: 40%; object-fit: contain"
-              />
-              <div class="justify-center" style="width: 40%">
-                <img
-                  src="assets/img/Pennsieve-metadata-example.png"
-                  alt="SPARC dataset structure example"
-                  style="width: 100%; object-fit: contain"
-                />
-              </div>
-            </div>
-          </div>
+
           <div class="guided--panel">
             <div
               class="guided--section"

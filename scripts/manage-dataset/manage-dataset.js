@@ -2474,10 +2474,8 @@ $("#button-submit-dataset").click(async () => {
         // Enable curation buttons
         organizeDatasetButton.disabled = false;
         curateExistingDatasetButton.disabled = false;
-        curateNewDatasetButton.disabled = false;
 
         curateExistingDatasetButton.className = "button-prompt-container";
-        curateNewDatasetButton.className = "button-prompt-container";
         organizeDatasetButton.className = "btn_animated generate-btn";
         organzieDatasetButtonDiv.className = "btn_animated-inside";
 
@@ -2516,11 +2514,9 @@ $("#button-submit-dataset").click(async () => {
         if (success_upload === true) {
           // Enable curation buttons
           organizeDatasetButton.disabled = false;
-          curateNewDatasetButton.disabled = false;
           curateExistingDatasetButton.disabled = false;
 
           curateExistingDatasetButton.className = "button-prompt-container";
-          curateNewDatasetButton.className = "button-prompt-container";
           organizeDatasetButton.className = "btn_animated generate-btn";
           organzieDatasetButtonDiv.className = "btn_animated-inside";
 
@@ -2581,8 +2577,9 @@ $("#button-submit-dataset").click(async () => {
   let cloneStatus = progressClone.children[2];
   var navError = progressError.cloneNode(true);
   let organizeDatasetButton = document.getElementById("button-generate");
-  let curateNewDatasetButton = document.getElementById("guided-button-start-new-curate");
-  let curateExistingDatasetButton = document.getElementById("guided-button-start-existing-curate");
+  let curateExistingDatasetButton = document.getElementById(
+    "guided-button-go-to-starting-point-selection"
+  );
   let organzieDatasetButtonDiv = organizeDatasetButton.children[0];
 
   progressClone.style =
@@ -2604,19 +2601,15 @@ $("#button-submit-dataset").click(async () => {
   progressClone.appendChild(returnButton);
 
   // Disable the organize dataset button
-  curateNewDatasetButton.disabled = true;
   curateExistingDatasetButton.disabled = true;
   organizeDatasetButton.disabled = true;
 
   // Change the color of the buttons to look disabled
   curateExistingDatasetButton.className = "button-prompt-container curate-disabled-button";
-  curateNewDatasetButton.className = "button-prompt-container curate-disabled-button";
   organizeDatasetButton.className = "disabled-generate-button";
 
   organizeDatasetButton.style = "background-color: #f6f6f6";
 
-  // curateExistingDatasetButton.className = "disabled-animated-div";
-  // curateNewDatasetButton.className = "disabled-animated-div";
   organzieDatasetButtonDiv.className = "disabled-animated-div";
 
   let supplementary_checks = await run_pre_flight_checks(false);
@@ -2744,10 +2737,8 @@ $("#button-submit-dataset").click(async () => {
       success_upload = false;
       organizeDatasetButton.disabled = false;
       curateExistingDatasetButton.disabled = false;
-      curateNewDatasetButton.disabled = false;
 
       curateExistingDatasetButton.className = "button-prompt-container";
-      curateNewDatasetButton.className = "button-prompt-container";
       organizeDatasetButton.className = "btn_animated generate-btn";
       organzieDatasetButtonDiv.className = "btn_animated-inside";
 

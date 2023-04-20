@@ -10,12 +10,22 @@ const lottieAnimationManager = {
       autoplay: true,
     },
     "guided-dataset-metadata-intro-lottie": {
-      animationData: metadataMachine,
+      animationData: datasetMetadataIntroLottie,
       loop: true,
       autoplay: true,
     },
     "guided-dataset-structure-intro-lottie": {
       animationData: addScienceData,
+      loop: true,
+      autoplay: true,
+    },
+    "guided-start-new-lottie": {
+      animationData: startNew,
+      loop: true,
+      autoplay: true,
+    },
+    "guided-resume-exiting-lottie": {
+      animationData: resumeExisting,
       loop: true,
       autoplay: true,
     },
@@ -327,6 +337,25 @@ const getGuidedProgressFileNames = () => {
     .map((progressFileName) => progressFileName.replace(".json", ""));
 };
 
+const updateGuidedDatasetName = (newDatasetName) => {
+  const previousDatasetName = sodaJSONObj["digital-metadata"]["name"];
+
+  //update old progress file with new dataset name
+  const oldProgressFilePath = `${guidedProgressFilePath}/${previousDatasetName}.json`;
+  const newProgressFilePath = `${guidedProgressFilePath}/${newDatasetName}.json`;
+  fs.renameSync(oldProgressFilePath, newProgressFilePath);
+
+  const bannerImagePathToUpdate = sodaJSONObj["digital-metadata"]["banner-image-path"];
+  if (bannerImagePathToUpdate) {
+    const newBannerImagePath = bannerImagePathToUpdate.replace(previousDatasetName, newDatasetName);
+    //Rename the old banner image folder to the new dataset name
+    fs.renameSync(bannerImagePathToUpdate, newBannerImagePath);
+    //change the banner image path in the JSON obj
+    sodaJSONObj["digital-metadata"]["banner-image-path"] = newBannerImagePath;
+  }
+  sodaJSONObj["digital-metadata"]["name"] = newDatasetName;
+};
+
 const savePageChanges = async (pageBeingLeftID) => {
   // This function is used by both the navigation bar and the side buttons,
   // and whenever it is being called, we know that the user is trying to save the changes on the current page.
@@ -337,29 +366,10 @@ const savePageChanges = async (pageBeingLeftID) => {
   try {
     //save changes to the current page
 
-    const updateGuidedDatasetName = (newDatasetName) => {
-      const previousDatasetName = sodaJSONObj["digital-metadata"]["name"];
-
-      //update old progress file with new dataset name
-      const oldProgressFilePath = `${guidedProgressFilePath}/${previousDatasetName}.json`;
-      const newProgressFilePath = `${guidedProgressFilePath}/${newDatasetName}.json`;
-      fs.renameSync(oldProgressFilePath, newProgressFilePath);
-
-      const bannerImagePathToUpdate = sodaJSONObj["digital-metadata"]["banner-image-path"];
-      if (bannerImagePathToUpdate) {
-        const newBannerImagePath = bannerImagePathToUpdate.replace(
-          previousDatasetName,
-          newDatasetName
-        );
-        //Rename the old banner image folder to the new dataset name
-        fs.renameSync(bannerImagePathToUpdate, newBannerImagePath);
-        //change the banner image path in the JSON obj
-        sodaJSONObj["digital-metadata"]["banner-image-path"] = newBannerImagePath;
-      }
-      sodaJSONObj["digital-metadata"]["name"] = newDatasetName;
-    };
-
-    if (pageBeingLeftID === "guided-resume-existing-dataset-tab") {
+    if (pageBeingLeftID === "guided-select-starting-point-tab") {
+      const startingNewCuration = document
+        .getElementById("guided-button-start-new-curation")
+        .classList.contains("selected");
       const resumingExistingProgress = document
         .getElementById("guided-button-resume-progress-file")
         .classList.contains("selected");
@@ -368,12 +378,24 @@ const savePageChanges = async (pageBeingLeftID) => {
         .getElementById("guided-button-resume-pennsieve-dataset")
         .classList.contains("selected");
 
-      if (!resumingExistingProgress && !resumingPennsieveDataset) {
+      if (!startingNewCuration && !resumingExistingProgress && !resumingPennsieveDataset) {
         errorArray.push({
           type: "notyf",
           message: "Please select a dataset start location",
         });
         throw errorArray;
+      }
+
+      if (startingNewCuration) {
+        sodaJSONObj["starting-point"]["type"] = "new";
+        sodaJSONObj["generate-dataset"]["generate-option"] = "new";
+
+        // Skip the changes metadata tab as new datasets do not have changes metadata
+        guidedSkipPage("guided-create-changes-metadata-tab");
+
+        // Open the first page
+        const firstPage = getNonSkippedGuidedModePages(document)[0];
+        await openPage(firstPage.id);
       }
 
       if (resumingExistingProgress) {
@@ -664,7 +686,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
 
       //Skip this page becausae we should not come back to it
-      guidedSkipPage("guided-resume-existing-dataset-tab");
+      guidedSkipPage("guided-select-starting-point-tab");
     }
 
     if (pageBeingLeftID === "guided-prepare-dataset-structure-tab") {
@@ -2432,7 +2454,6 @@ const guidedTransitionFromHome = async () => {
   document.getElementById("guided-header-div").classList.remove("hidden");
 
   //Remove the lotties (will be added again upon visting the home page)
-  document.getElementById("new-dataset-lottie-container").innerHTML = "";
   document.getElementById("existing-dataset-lottie").innerHTML = "";
   document.getElementById("edit-dataset-component-lottie").innerHTML = "";
 
@@ -2442,7 +2463,7 @@ const guidedTransitionFromHome = async () => {
     page.classList.add("hidden");
   });
 
-  CURRENT_PAGE = document.getElementById("guided-resume-existing-dataset-tab");
+  CURRENT_PAGE = document.getElementById("guided-select-starting-point-tab");
 
   //reset sub-page navigation (Set the first sub-page to be the active sub-page
   //for all pages with sub-pages)
@@ -3376,18 +3397,8 @@ const guidedPrepareHomeScreen = async () => {
   //   $("#guided-continue-curation-header").text("");
   //   datasetCardsRadioButtonsContainer.classList.add("hidden");
   // }
-  //empty new-dataset-lottie-container div
-  document.getElementById("new-dataset-lottie-container").innerHTML = "";
   document.getElementById("existing-dataset-lottie").innerHTML = "";
   document.getElementById("edit-dataset-component-lottie").innerHTML = "";
-
-  lottie.loadAnimation({
-    container: document.getElementById("new-dataset-lottie-container"),
-    animationData: newDataset,
-    renderer: "svg",
-    loop: true,
-    autoplay: true,
-  });
 
   lottie.loadAnimation({
     container: document.getElementById("existing-dataset-lottie"),
@@ -3599,7 +3610,7 @@ const guidedResetSkippedPages = () => {
     "guided-dataset-generation-tab",
     "guided-structure-folder-tab",
     "guided-dataset-dissemination-tab",
-    "guided-resume-existing-dataset-tab",
+    "guided-select-starting-point-tab",
   ];
   for (const page of pagesThatShouldAlwaysBeskipped) {
     guidedSkipPage(page);
@@ -3624,6 +3635,7 @@ const guidedResetSkippedPages = () => {
 
 const guidedSkipPage = (pageId) => {
   const page = document.getElementById(pageId);
+  console.log("Page to be skipped: " + pageId);
 
   // If the page no longer exists, return
   if (!page) {
@@ -4367,7 +4379,7 @@ const openPage = async (targetPageID) => {
 
     // Hide the Header div on the resume existing dataset page
     const guidedProgressContainer = document.getElementById("guided-header-div");
-    if (targetPageID === "guided-resume-existing-dataset-tab") {
+    if (targetPageID === "guided-select-starting-point-tab") {
       guidedProgressContainer.classList.add("hidden");
     } else {
       guidedProgressContainer.classList.remove("hidden");
@@ -4412,7 +4424,7 @@ const openPage = async (targetPageID) => {
       }
     }
 
-    if (targetPageID === "guided-resume-existing-dataset-tab") {
+    if (targetPageID === "guided-select-starting-point-tab") {
       // Hide the pennsieve dataset import progress circle
       const importProgressCircle = document.querySelector(
         "#guided_loading_pennsieve_dataset-organize"
@@ -4425,6 +4437,12 @@ const openPage = async (targetPageID) => {
       }
 
       const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
+      console.log("guidedSavedProgressFiles", guidedSavedProgressFiles);
+      if (guidedSavedProgressFiles.length === 0) {
+        document.getElementById("guided-button-resume-progress-file").disabled = true;
+      } else {
+        document.getElementById("guided-button-resume-progress-file").disabled = false;
+      }
       //render progress resumption cards from progress file array on first page of guided mode
       const progressFileData = await getAllProgressFileData(guidedSavedProgressFiles);
       renderProgressCards(progressFileData);
@@ -6901,7 +6919,7 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   }
 
   // Skip this page incase it was not skipped in a previous session
-  guidedSkipPage("guided-resume-existing-dataset-tab");
+  guidedSkipPage("guided-select-starting-point-tab");
 
   //Hide the sub-page navigation and show the main page navigation footer
   //If the user traverses to a page that requires the sub-page navigation,
@@ -11226,72 +11244,67 @@ $(document).ready(async () => {
   const itemsContainer = document.getElementById("items");
   const freeFormItemsContainer = document.getElementById("free-form-folder-structure-container");
   const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
-  $("#guided-button-start-new-curate").on("click", async () => {
-    // If element has disabled class, do nothing
-    let disabled = document
-      .getElementById("guided-button-start-new-curate")
-      .classList.contains("curate-disabled-button");
-    if (disabled) {
-      return;
-    }
+  // $("#guided-button-start-new-curate").on("click", async () => {
+  //   // If element has disabled class, do nothing
+  //   let disabled = document
+  //     .getElementById("guided-button-start-new-curate")
+  //     .classList.contains("curate-disabled-button");
+  //   if (disabled) {
+  //     return;
+  //   }
 
-    guidedCreateSodaJSONObj();
-    attachGuidedMethodsToSodaJSONObj();
+  //   guidedCreateSodaJSONObj();
+  //   attachGuidedMethodsToSodaJSONObj();
 
-    sodaJSONObj["starting-point"]["type"] = "new";
-    sodaJSONObj["generate-dataset"]["generate-option"] = "new";
+  //   sodaJSONObj["starting-point"]["type"] = "new";
+  //   sodaJSONObj["generate-dataset"]["generate-option"] = "new";
 
-    //Transition file explorer elements to guided mode
-    organizeDSglobalPath = document.getElementById("guided-input-global-path");
-    organizeDSglobalPath.value = "";
-    dataset_path = document.getElementById("guided-input-global-path");
-    scroll_box = document.querySelector("#guided-body");
-    itemsContainer.innerHTML = "";
-    resetLazyLoading();
-    freeFormItemsContainer.classList.remove("freeform-file-explorer"); //add styling for free form mode
-    freeFormButtons.classList.remove("freeform-file-explorer-buttons");
-    $(".shared-folder-structure-element").appendTo($("#guided-folder-structure-container"));
+  //   //Transition file explorer elements to guided mode
+  //   organizeDSglobalPath = document.getElementById("guided-input-global-path");
+  //   organizeDSglobalPath.value = "";
+  //   dataset_path = document.getElementById("guided-input-global-path");
+  //   scroll_box = document.querySelector("#guided-body");
+  //   itemsContainer.innerHTML = "";
+  //   resetLazyLoading();
+  //   freeFormItemsContainer.classList.remove("freeform-file-explorer"); //add styling for free form mode
+  //   freeFormButtons.classList.remove("freeform-file-explorer-buttons");
+  //   $(".shared-folder-structure-element").appendTo($("#guided-folder-structure-container"));
 
-    guidedUnLockSideBar();
+  //   guidedUnLockSideBar();
 
-    guidedTransitionFromHome();
+  //   guidedTransitionFromHome();
 
-    // Skip the changes metadata tab as new datasets do not have changes metadata
-    guidedSkipPage("guided-create-changes-metadata-tab");
+  //   // Skip the changes metadata tab as new datasets do not have changes metadata
+  //   guidedSkipPage("guided-create-changes-metadata-tab");
 
-    // Open the first page
-    const firstPage = getNonSkippedGuidedModePages(document)[0];
-    await openPage(firstPage.id);
-  });
+  //   // Open the first page
+  //   const firstPage = getNonSkippedGuidedModePages(document)[0];
+  //   await openPage(firstPage.id);
+  // });
 
-  $("#guided-button-start-existing-curate").on("click", async () => {
-    // If element has disabled class, do nothing
-    let disabled = document
-      .getElementById("guided-button-start-existing-curate")
-      .classList.contains("curate-disabled-button");
-    if (disabled) {
-      return;
-    }
-    guidedCreateSodaJSONObj();
-    attachGuidedMethodsToSodaJSONObj();
-    guidedTransitionFromHome();
+  document
+    .getElementById("guided-button-go-to-starting-point-selection")
+    .addEventListener("click", async () => {
+      //Transition file explorer elements to guided mode
+      organizeDSglobalPath = document.getElementById("guided-input-global-path");
+      organizeDSglobalPath.value = "";
+      dataset_path = document.getElementById("guided-input-global-path");
+      scroll_box = document.querySelector("#guided-body");
+      itemsContainer.innerHTML = "";
+      resetLazyLoading();
+      freeFormItemsContainer.classList.remove("freeform-file-explorer"); //add styling for free form mode
+      freeFormButtons.classList.remove("freeform-file-explorer-buttons");
+      $(".shared-folder-structure-element").appendTo($("#guided-folder-structure-container"));
 
-    //Transition file explorer elements to guided mode
-    organizeDSglobalPath = document.getElementById("guided-input-global-path");
-    organizeDSglobalPath.value = "";
-    dataset_path = document.getElementById("guided-input-global-path");
-    scroll_box = document.querySelector("#guided-body");
-    itemsContainer.innerHTML = "";
-    resetLazyLoading();
-    freeFormItemsContainer.classList.remove("freeform-file-explorer"); //add styling for free form mode
-    freeFormButtons.classList.remove("freeform-file-explorer-buttons");
-    $(".shared-folder-structure-element").appendTo($("#guided-folder-structure-container"));
+      guidedCreateSodaJSONObj();
+      attachGuidedMethodsToSodaJSONObj();
+      guidedTransitionFromHome();
 
-    guidedUnLockSideBar();
+      guidedUnLockSideBar();
 
-    guidedUnSkipPage("guided-resume-existing-dataset-tab");
-    await openPage("guided-resume-existing-dataset-tab");
-  });
+      guidedUnSkipPage("guided-select-starting-point-tab");
+      await openPage("guided-select-starting-point-tab");
+    });
 
   $("#guided-button-start-modify-component").on("click", async () => {
     //Free form mode will open through here
