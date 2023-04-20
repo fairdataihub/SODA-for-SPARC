@@ -10,7 +10,7 @@ const lottieAnimationManager = {
       autoplay: true,
     },
     "guided-dataset-metadata-intro-lottie": {
-      animationData: metadataMachine,
+      animationData: datasetMetadataIntroLottie,
       loop: true,
       autoplay: true,
     },
