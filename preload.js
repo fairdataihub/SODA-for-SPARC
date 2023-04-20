@@ -1001,7 +1001,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           $("#curatebforganizationlist").selectpicker("show");
           $("#bf-organization-select-div").show();
 
-          bfDataset = $("#curatebforganizationlist").val();
+          bfOrganization = $("#curatebforganizationlist").val();
           let sweet_al = document.getElementsByClassName("swal2-content")[0];
           let sweet_alrt = document.getElementsByClassName("swal2-actions")[0];
           sweet_alrt.style.marginTop = "1rem";
@@ -1017,7 +1017,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           sweet_al.appendChild(tip_container);
         },
         preConfirm: () => {
-          let bfOrganization = $("#curatebforganizationlist").val();
+          bfOrganization = $("#curatebforganizationlist").val();
           if (!bfOrganization) {
             Swal.showValidationMessage("Please select an organization!");
 
@@ -1058,31 +1058,33 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               showConfirmButton: false,
               timer: 2000,
               timerProgressBar: false,
-              title: "Loading your dataset details...",
+              title: "Loading your organization details...",
               didOpen: () => {
                 Swal.showLoading();
               },
             });
           }
-          if (dropdownEventID === "dd-select-pennsieve-dataset") {
-            $("#ds-name").val(bfDataset);
+          console.log(dropdownEventID)
+          if (dropdownEventID === "dd-select-pennsieve-organization") {
+            $("#ds-name").val(bfOrganization);
             $("#ds-description").val = $("#bf-dataset-subtitle").val;
             $("body").removeClass("waiting");
             $(".svg-change-current-account.dataset").css("display", "block");
             dropdownEventID = "";
             return;
           }
-          $("#current-bf-dataset").text(bfDataset);
-          $("#current-bf-dataset-generate").text(bfDataset);
-          $(".bf-dataset-span").html(bfDataset);
+          $("#current-bf-organization").text(bfOrganization);
+          $("#current-bf-organization-generate").text(bfOrganization);
+          $(".bf-organization-span").html(bfOrganization);
           confirm_click_function();
 
-          defaultBfDataset = bfDataset;
+          // TODO: Add a new global for defaultOrganization?
+          // defaultBfDataset = bfDataset;
           // document.getElementById("ds-description").innerHTML = "";
-          refreshDatasetList();
+          refreshOrganizationList();
           $("#dataset-loaded-message").hide();
 
-          showHideDropdownButtons("dataset", "show");
+          showHideDropdownButtons("organization", "show");
           document.getElementById("div-rename-bf-dataset").children[0].style.display = "flex";
 
           // show the confirm button underneath the dataset select dropdown if one exists
