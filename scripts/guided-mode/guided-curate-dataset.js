@@ -2083,9 +2083,10 @@ const guidedSetDOIUI = (doiInformation) => {
   if (doiInformation != "No DOI found for this dataset") {
     // Hide the reserve DOI button and show copy button
     $("#curate-button-reserve-doi").addClass("hidden");
-    $("#guided-pennsieve-copy-doi").removeClass("hidden");
+    $("#guided-pennsieve-copy-doi").addClass("hidden");
   } else {
     // Show reserve DOI button and hide copy button
+    $("#guided-pennsieve-copy-doi").removeClass("hidden");
     $("#curate-button-reserve-doi").removeClass("hidden");
   }
   $("#curate-button-reserve-doi").removeClass("loading");
