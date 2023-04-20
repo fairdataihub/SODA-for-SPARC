@@ -92,7 +92,7 @@
               </div>
               <div id="new-dataset-lottie-container" class="wide-card-lottie-container"></div>
             </div>
-            <div class="button-prompt-container" id="guided-button-start-existing-curate">
+            <div class="button-prompt-container" id="guided-button-go-to-starting-point-selection">
               <div class="wide-card-text-container">
                 <h2 class="wide-card-title-text">Continue working on a dataset</h2>
                 <p class="wide-card-subtitle-text">
@@ -122,7 +122,7 @@
         data-parent-tab-name="Curation Preparation"
       >
         <div class="guided--capsule-container" id="structure-dataset-capsule-container">
-          <div class="guided--capsule" id="guided-resume-existing-dataset-capsule"></div>
+          <div class="guided--capsule" id="guided-select-starting-point-capsule"></div>
 
           <div class="guided--capsule" id="guided-curation-preparation-intro-capsule"></div>
           <div class="guided--capsule" id="guided-ask-if-submission-is-sparc-funded-capsule"></div>
@@ -131,7 +131,7 @@
           <div class="guided--capsule" id="guided-name-subtitle-capsule"></div>
         </div>
         <div
-          id="guided-resume-existing-dataset-tab"
+          id="guided-select-starting-point-tab"
           class="guided--page h-100 hidden"
           data-page-name="Select starting point"
         >
@@ -2585,10 +2585,8 @@
           </div>
           <p class="help-text">
             All SPARC datasets must include a dataset_description metadata file that contain various
-            information about the dataset. You have already provided some of the required
-            information during the previous steps (award number, contributors, protocols, etc.). You
-            can provide the remaining information below. It is suggest to provide as much
-            information as available. SODA will use that information to automatically create the
+            information about the dataset. It is suggested to provide as muh ch information as
+            available. SODA will use that information to automatically create the
             dataset_description file and include it in your dataset when it is generated in the last
             step of this guided workflow.
           </p>
