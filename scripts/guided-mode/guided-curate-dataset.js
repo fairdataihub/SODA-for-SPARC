@@ -1530,7 +1530,6 @@ const savePageChanges = async (pageBeingLeftID) => {
       sodaJSONObj["digital-metadata"]["doi"] = $("#guided--para-doi-info").text();
       // Reset the share with curation UI and DOI UI
       $("#guided--prepublishing-checklist-container").addClass("hidden");
-      $("#guided--submit-prepublishing-review").addClass("hidden");
       $("#guided--para-doi-info").text("");
       $("#guided-button-unshare-dataset-with-curation-team");
     }
@@ -2080,24 +2079,17 @@ const guidedReserveAndSaveDOI = async () => {
 const guidedSetDOIUI = (doiInformation) => {
   $("#guided--para-doi-info").text(doiInformation);
 
-  if (doiInformation != "No DOI found for this dataset") {
+  if (doiInformation === "No DOI found for this dataset") {
     // Hide the reserve DOI button and show copy button
-    $("#curate-button-reserve-doi").addClass("hidden");
     $("#guided-pennsieve-copy-doi").addClass("hidden");
+    $("#curate-button-reserve-doi").removeClass("hidden");
   } else {
     // Show reserve DOI button and hide copy button
     $("#guided-pennsieve-copy-doi").removeClass("hidden");
-    $("#curate-button-reserve-doi").removeClass("hidden");
+    $("#curate-button-reserve-doi").addClass("hidden");
   }
   $("#curate-button-reserve-doi").removeClass("loading");
   $("#curate-button-reserve-doi").disabled = false;
-};
-
-const showPrepublishingReview = () => {
-  //Show the final step to select metadata files to be excluded
-  $("#guided--submit-prepublishing-review").removeClass("hidden");
-  createPrepublishingChecklist("guided");
-  smoothScrollToElement("guided--submit-prepublishing-review", "end", "nearest");
 };
 
 // This function is for when a user clicks the share/unshare with curation team (requires Dataset to be published and locked)
@@ -2113,27 +2105,23 @@ const guidedModifyCurationTeamAccess = async (action) => {
   if (action === "share") {
     guidedShareWithCurationTeamButton.disabled = true;
     guidedShareWithCurationTeamButton.classList.add("loading");
-    // guidedShareWithCurationTeamButton.classList.add("hidden");
 
     let publishPreCheckStatus = await beginPrepublishingFlow(curationMode);
     let embargoDetails = publishPreCheckStatus[1];
     console.log(embargoDetails);
     console.log(publishPreCheckStatus[0]);
+    
     // Will return false if there are issues running the precheck flow
     if (publishPreCheckStatus[0]) {
-      // guidedShareWithCurationTeamButton.classList.remove("hidden");
       guidedShareWithCurationTeamButton.classList.add("hidden");
       await submitReviewDataset(embargoDetails[1], curationMode);
-      // guidedUnshareWithCurationTeamButton.classList.remove("hidden");
     }
     guidedShareWithCurationTeamButton.classList.remove("loading");
     guidedShareWithCurationTeamButton.disabled = false;
-    // guidedSetCurationTeamUI();
   }
   if (action === "unshare") {
     guidedUnshareWithCurationTeamButton.disabled = true;
     guidedUnshareWithCurationTeamButton.classList.add("loading");
-    // guidedUnshareWithCurationTeamButton.classList.add("hidden");
 
     const { value: withdraw } = await Swal.fire({
       title: "Withdraw this dataset from review?",
@@ -2163,7 +2151,6 @@ const guidedModifyCurationTeamAccess = async (action) => {
 
     guidedUnshareWithCurationTeamButton.disabled = false;
     guidedUnshareWithCurationTeamButton.classList.remove("loading");
-    // guidedSetCurationTeamUI();
   }
 };
 

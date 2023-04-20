@@ -270,6 +270,7 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
     return;
   }
 
+  console.log(statuses);
   logGeneralOperationsForAnalytics(
     "Success",
     DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
@@ -428,17 +429,13 @@ const resetffmPrepublishingUI = async () => {
   $("#begin-prepublishing-btn").addClass("hidden");
   // resetPrePublishingChecklist();
 
-  // hide the excluded files container
-  // because the Submit button transitions back to question three after showing this container
-  // it needs to be hidden
-  $("#excluded-files-container").hide();
-
   // check what the pre-publishing status is
   if (
     document
       .getElementById("para-review-dataset-info-disseminate")
       .innerText.includes("Dataset is currently under review")
   ) {
+    console.log("here")
     // show the withdraw button
     $("#prepublishing-withdraw-btn-container").show();
     $("#prepublishing-withdraw-btn-container button").show();
@@ -448,110 +445,18 @@ const resetffmPrepublishingUI = async () => {
     return true;
   }
 
+  console.log("here2")
   // show the pre-publishing checklist and the continue button
   $("#prepublishing-checklist-container").show();
   $(".pre-publishing-continue-container").show();
   $("#prepublishing-withdraw-btn-container").hide();
   $("#prepublishing-withdraw-btn-container button").hide();
-  return true;
+  return false;
 };
 
-// user clicks on the 'Continue' button and navigates to the file tree wherein they can decide which
-// files will be excluded from the dataset upon publishing
-const transitionToPrePublishingSubmit = async () => {
-  // check that the user completed all pre-publishing checklist items for the given dataset
-  if (!allPrepublishingChecklistItemsCompleted()) {
-    // alert the user they must complete all checklist items before beginning the prepublishing process
-    Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      confirmButtonText: "Ok",
-      title: "Cannot continue this pre-publication review submission",
-      text: "You need to complete all pre-publishing checklist items before you can continue to the next step of the pre-publication review flow.",
-      icon: "error",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
-
-    // halt execution
-    return false;
-  }
-
-  // hide the continue button
-  $(".pre-publishing-continue-container").hide();
-
-  // show the submit button
-  $("#prepublishing-submit-btn-container").show();
-
-  // show the excluded files section
-  $("#excluded-files-container").show();
-
-  return true;
-};
-
-// bold a metadata file once the user checks it
-$("#items-pre-publication").on("click", function (evt) {
-  let target = evt.target;
-
-  if (target.nodeName && target.nodeName.toLowerCase() === "input") {
-    // if target has a checked property and it is set to true
-    if (target.checked) {
-      // add a selected class to the label
-      let label = target.nextSibling;
-      label.classList.add("pre-publishing-file-viewer-file-selected");
-    } else if (target.checked !== undefined && target.checked === false) {
-      // remove the selected styling
-      let label = target.nextSibling;
-      label.classList.remove("pre-publishing-file-viewer-file-selected");
-    }
-  }
-});
-
-// bold a metadata file once the user checks it
-$("#guided--items-pre-publication").on("click", function (evt) {
-  let target = evt.target;
-
-  if (target.nodeName && target.nodeName.toLowerCase() === "input") {
-    // if target has a checked property and it is set to true
-    if (target.checked) {
-      // add a selected class to the label
-      let label = target.nextSibling;
-      label.classList.add("pre-publishing-file-viewer-file-selected");
-    } else if (target.checked !== undefined && target.checked === false) {
-      // remove the selected styling
-      let label = target.nextSibling;
-      label.classList.remove("pre-publishing-file-viewer-file-selected");
-    }
-  }
-});
 
 // transition to the final question and populate the file tree with the dataset's metadata files
 const createPrepublishingChecklist = async (curationMode) => {
-  // check that the user completed all pre-publishing checklist items for the given dataset
-  if (!allPrepublishingChecklistItemsCompleted(curationMode)) {
-    // alert the user they must complete all checklist items before beginning the prepublishing process
-    Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      confirmButtonText: "Ok",
-      title: "Cannot continue this pre-publication review submission",
-      text: "You need to complete all pre-publishing checklist items before you can continue to the next step of the pre-publication review flow.",
-      icon: "error",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
-
-    return false;
-  }
-
   let curationModeID = "";
   let currentDataset = defaultBfDataset;
   if (curationMode === "guided") {
@@ -562,111 +467,44 @@ const createPrepublishingChecklist = async (curationMode) => {
   }
 
   if (curationMode === "freeform") {
-    $("#submit_prepublishing_review-question-4").addClass("show");
-
-    // hide the continue button
-    $(`.pre-publishing-continue-container`).hide();
-
-    // show the submit button
-    $(`#prepublishing-submit-btn-container`).show();
-
-    // show the excluded files section
-    $(`#excluded-files-container`).show();
-
-    $(`.items-spinner`).show();
-
-    smoothScrollToElement(`pre-publication-items-container`);
+    document.getElementById("pre-publishing-continue-btn").disabled = true;
+    $("#pre-publishing-continue-btn").addClass("loading");
   }
 
-  // reset the file viewer so no duplicates appear
-  removeChildren(document.querySelector(`#${curationModeID}items-pre-publication`));
-
-  // show a spinner on the file tree
-
-  let excludedFileObjects;
-  try {
-    // read in the excluded files
-    excludedFileObjects = await api.getFilesExcludedFromPublishing(currentDataset);
-  } catch (error) {
-    clientError(error);
-    // tell the user something went wrong getting access to their datasets ignored files
-    await Swal.fire({
-      title: "Failed to get information on any ignored files you may have",
-      text: "If you have dataset files you already set to be ignored and would like to add more, please try publishing again later.",
-      icon: "error",
-      confirmButtonText: "Ok",
-      allowEscapeKey: false,
-      allowOutsideClick: false,
-      heightAuto: false,
+  // check that the user completed all pre-publishing checklist items for the given dataset
+  if (!allPrepublishingChecklistItemsCompleted(curationMode)) {
+    // alert the user they must complete all checklist items before beginning the prepublishing process
+    Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-    });
-
-    ipcRenderer.send(
-      "track-event",
-      "Error",
-      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW + " - Get Excluded Files",
-      currentDataset
-    );
-
-    // continue as they may not want to set any "ignore files" anyways
-    // hide the spinner for the file tree
-    $(`.${curationModeID}items-spinner`).hide();
-  }
-
-  ipcRenderer.send(
-    "track-event",
-    "Success",
-    DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW + " - Get Excluded Files",
-    currentDataset
-  );
-
-  let metadataFiles;
-  try {
-    // read in all of the metadata files for the dataset
-    metadataFiles = await api.getDatasetMetadataFiles(currentDataset);
-  } catch (error) {
-    clientError(error);
-    // tell the user something went wrong getting access to their datasets ignored files
-    await Swal.fire({
-      title: "Failed to get your dataset's files",
-      text: "If you would like to select files from your dataset to be ignored in the publishing process, please try again later.",
-      icon: "error",
-      confirmButtonText: "Ok",
-      allowEscapeKey: false,
-      allowOutsideClick: false,
       heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
+      confirmButtonText: "Ok",
+      title: "Cannot continue this submission",
+      text: "You need to complete all submission checklist items before you can submit.",
+      icon: "error",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
     });
+    if(curationMode === "freeform") {
+      document.getElementById("pre-publishing-continue-btn").disabled = false;
+      $("#pre-publishing-continue-btn").removeClass("loading");
+    }
 
-    // log the error information then continue execution -- this is because they may not want to ignore files when they publish
-    ipcRenderer.send(
-      "track-event",
-      "Error",
-      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW + " - Get Metadata Files",
-      defaultBfDatasetId
-    );
-
-    return;
+    return false;
   }
-
-  ipcRenderer.send(
-    "track-event",
-    "Success",
-    DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW + " - Get Metadata Files",
-    defaultBfDatasetId
-  );
-
-  // place the metadata files in the file viewer - found in step 3 of the pre-publishing submission worfklow
-  populateFileViewer(
-    metadataFiles,
-    excludedFileObjects.map((fileObject) => fileObject.fileName),
-    curationMode
-  );
 
   // hide the spinner for the file tree
   $(`.${curationModeID}items-spinner`).hide();
+
+  if(curationMode === "freeform") {
+    await disseminatePublish("freeform");
+    document.getElementById("pre-publishing-continue-btn").disabled = false;
+    $("#pre-publishing-continue-btn").removeClass("loading");
+    resetffmPrepublishingUI();
+  }
 };
 
 // check if the user is the dataset owner and transition to the prepublishing checklist question if so
@@ -781,14 +619,15 @@ const beginPrepublishingFlow = async (curationMode) => {
   // load the next question's data
   if (curationMode !== "guided") {
     let reviewDatasetInfo = $("#para-review-dataset-info-disseminate").text();
-    let datasetHasBeenPublished = resetffmPrepublishingUI();
+    let datasetHasBeenPublished = await resetffmPrepublishingUI();
+    console.log("datasetHasBeenPublished: " + datasetHasBeenPublished)
 
     $("#begin-prepublishing-btn").addClass("hidden");
     $("#submit_prepublishing_review-question-2").removeClass("show");
     $("#submit_prepublishing_review-question-3").addClass("show");
 
     if (!datasetHasBeenPublished) {
-      smoothScrollToElement("pre-publishing-continue-btn");
+      smoothScrollToElement("prepublishing-checklist");
 
       await showPrePublishingStatus(true, "freeform");
     }
@@ -801,96 +640,7 @@ const beginPrepublishingFlow = async (curationMode) => {
     let status = await showPrePublishingStatus(true, "guided");
     console.log(status);
     return [status, embargoDetails];
-    // return true;
   }
-};
-
-// Takes an array of file names and places the files inside of the file viewer found in step 3 of the pre-publicaiton submission process
-const populateFileViewer = (metadataFiles, excludedFiles, curationMode) => {
-  let curationModeID = "";
-  if (curationMode === "guided") {
-    // This is done to ensure the right element ID is called
-    // Guided mode elements have 'guided--' prepended to their ID
-    curationModeID = "guided--";
-  }
-
-  // get the file viewer element
-  let fileViewer = document.querySelector(`#${curationModeID}items-pre-publication`);
-
-  // // traverse the given files
-  metadataFiles.forEach((file) => {
-    // create a top level container
-    let div = document.createElement("div");
-    div.classList.add(`${curationModeID}pre-publishing-metadata-file-container`);
-
-    // create the checkbox
-    let input = document.createElement("input");
-    input.setAttribute("type", "checkbox");
-    input.setAttribute("name", `${file}`);
-    input.classList.add(`pre-publishing-metadata-file-input`);
-    // check if the user already has this file marked as ecluded
-    if (excludedFiles.includes(file)) {
-      input.checked = true;
-    }
-
-    // create the label
-    let label = document.createElement("label");
-    label.setAttribute("for", `${file}`);
-    label.textContent = `${file}`;
-    label.classList.add(`pre-publishing-metadata-file-label`);
-    if (excludedFiles.includes(file)) {
-      label.classList.add(`pre-publishing-file-viewer-file-selected`);
-    }
-
-    // add the input and label to the container
-    div.appendChild(input);
-    div.appendChild(label);
-
-    // add the struture to the file viewer
-    fileViewer.appendChild(div);
-  });
-};
-
-// Check if there are excluded files in the excluded files list found in step 3 of the pre-publication submission workflow
-const excludedFilesInPublicationFlow = (curationMode) => {
-  let curationModeID = "";
-  if (curationMode === "guided") {
-    curationModeID = "guided--";
-  }
-  // get the checked UI elements in step 3 of the pre-publication submission flow
-  let excludedFilesList = document.querySelectorAll(
-    `#${curationModeID}items-pre-publication input[type='checkbox']:checked`
-  );
-
-  //return true if the list has children and false otherwise
-  return excludedFilesList.length >= 1 ? true : false;
-};
-
-// retrieves the file path and name from the list of excluded files found in step 3 of the pre-publication submission workflow
-// Output:
-//  [{fileName: string}]
-const getExcludedFilesFromPublicationFlow = (curationMode) => {
-  // get the list items
-  let curationModeID = "";
-  if (curationMode === "guided") {
-    curationModeID = "guided--";
-  }
-
-  let excludedFilesListItems = document.querySelectorAll(
-    `#${curationModeID}items-pre-publication input[type='checkbox']:checked`
-  );
-
-  // iterate through each item
-  let fileNames = Array.from(excludedFilesListItems).map((listItem) => {
-    // get the Span element's text from the current list item
-    let fileName = listItem.nextSibling.textContent;
-
-    // return the filename in an object
-    return { fileName };
-  });
-
-  // return the file names list
-  return fileNames;
 };
 
 const removeChildren = (parent) => {

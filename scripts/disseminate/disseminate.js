@@ -13,6 +13,7 @@ Note: Some frontend elements of the workflow are in the renderer.js file as well
 // TODO -> Dorian use this $(".spinner.post-curation").show();
 const disseminatePublish = async (curationMode) => {
   if (curationMode === "freeform") {
+    $("#prepublishing-submit-btn").disabled = true;
     $("#prepublishing-submit-btn").addClass("loading");
   }
 
@@ -42,8 +43,9 @@ const disseminatePublish = async (curationMode) => {
   try {
     let status = await showPublishingStatus(submitReviewDatasetCheck, curationMode);
     let embargoReleaseDate = status[1];
-    console.log(status);
     $("#prepublishing-submit-btn").removeClass("loading");
+    console.log(status);
+    
     if (status[0] && curationMode === "freeform") {
       // submit the dataset for review with the given embargoReleaseDate
       await submitReviewDataset(embargoReleaseDate, curationMode);
@@ -94,7 +96,6 @@ const disseminateShowPublishingStatus = (callback, account, dataset) => {
     if (callback == "noClear") {
       var nothing;
     } else {
-      $("#para-submit_prepublishing_review-status").text("");
       showPublishingStatus("noClear");
     }
   }

@@ -3316,35 +3316,23 @@ ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
   $("#submit_prepublishing_review-spinner").hide();
 });
 
+// TODO: Dorian -> Exlcuded files will no longer be a thing in the future
+// Go about removing the feature and see how it effects dataset submissions
 const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
   let curationModeID = "";
   let currentAccount = defaultBfAccount;
   let currentDataset = defaultBfDataset;
 
   if (curationMode === "guided") {
-    curationModeID = "guided";
+    curationModeID = "guided--";
     currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
     currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
   }
-  $("#para-submit_prepublishing_review-status").text("");
-  bfRefreshPublishingDatasetStatusBtn.disabled = true;
-  var selectedBfAccount = defaultBfAccount;
-  var selectedBfDataset = defaultBfDataset;
 
-  // title text
-  let title = "";
-
-  // check if the user has selected any files they want to be hidden to the public upon publication (aka ignored/excluded files)
-  // set the loading message title accordingly
-  if (excludedFilesInPublicationFlow(curationMode)) {
-    title = "Ignoring selected files and submitting dataset for pre-publishing review";
-  } else {
-    title = "Submitting dataset to Curation Team";
-  }
 
   // show a SWAL loading message until the submit for prepublishing flow is successful or fails
   Swal.fire({
-    title: title,
+    title: "Submitting dataset to Curation Team",
     html: "Please wait...",
     // timer: 5000,
     allowEscapeKey: false,
@@ -3356,47 +3344,6 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
       Swal.showLoading();
     },
   });
-
-  // if there are excluded files upload them to Pennsieve so they will not be viewable to the public upon publication
-  if (excludedFilesInPublicationFlow(curationMode)) {
-    // get the excluded files from the excluded files list in the third step of the pre-publishing review submission flow
-    let files = getExcludedFilesFromPublicationFlow(curationMode);
-    try {
-      // exclude the user's selected files from publication
-      //check res
-      await api.updateDatasetExcludedFiles(currentAccount, currentDataset, files);
-    } catch (error) {
-      clientError(error);
-      // log the error
-      logGeneralOperationsForAnalytics(
-        "Error",
-        DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
-        AnalyticsGranularity.ALL_LEVELS,
-        ["Updating excluded files"]
-      );
-
-      var emessage = userErrorMessage(error);
-
-      // alert the user of the error
-      Swal.fire({
-        backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
-        confirmButtonText: "Ok",
-        title: `Could not exclude the selected files from publication`,
-        icon: "error",
-        reverseButtons: reverseSwalButtons,
-        text: `${emessage}`,
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      });
-      // stop publication
-      return;
-    }
-  }
 
   try {
     await permissionsCurationTeam(currentAccount, currentDataset, "share", "newMethod");
@@ -3416,8 +3363,6 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
       ["Submit dataset"]
     );
 
-    var emessage = userErrorMessage(error);
-
     // alert the user of an error
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
@@ -3426,7 +3371,7 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
       title: `Could not submit your dataset for pre-publishing review`,
       icon: "error",
       reverseButtons: reverseSwalButtons,
-      text: emessage,
+      text: userErrorMessage(error),
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
       },
@@ -3471,17 +3416,10 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
   } else {
     // Update the UI again and hide the flow
     $("#guided--prepublishing-checklist-container").addClass("hidden");
-    $("#guided--submit-prepublishing-review").addClass("hidden");
-    const guidedShareWithCurationTeamButton = document.getElementById(
-      "guided-button-share-dataset-with-curation-team"
-    );
+    $("#guided-button-share-dataset-with-curation-team").removeClass("hidden");
+    $("#guided-button-share-dataset-with-curation-team").removeClass("loading");
+    $("#guided-button-share-dataset-with-curation-team").disabled = false
 
-    guidedShareWithCurationTeamButton.classList.remove("hidden");
-    guidedShareWithCurationTeamButton.classList.remove("loading");
-    // $("#guided--para-review-dataset-info-disseminate").text("Dataset is not under review currently")
-
-    guidedShareWithCurationTeamButton.disabled = false;
-    // $("#guided-button-unshare-dataset-with-curation-team").show();
     guidedSetCurationTeamUI();
   }
 };
@@ -3491,7 +3429,7 @@ const withdrawDatasetSubmission = async (curationMode = "") => {
   // show a SWAL loading message until the submit for prepublishing flow is successful or fails
 
   if (curationMode != "guided") {
-    $("#btn-withdraw-review-dataset").disabled = true;
+    document.getElementById("btn-withdraw-review-dataset").disabled = true;
     $("#btn-withdraw-review-dataset").addClass("loading");
     $("#btn-withdraw-review-dataset").addClass("text-transparent");
 
@@ -3509,7 +3447,7 @@ const withdrawDatasetSubmission = async (curationMode = "") => {
     });
 
     if (!withdraw) {
-      $("#btn-withdraw-review-dataset").disabled = false;
+      document.getElementById("btn-withdraw-review-dataset").disabled = false;
       $("#btn-withdraw-review-dataset").removeClass("loading");
       $("#btn-withdraw-review-dataset").removeClass("text-transparent");
       return false;
@@ -3557,7 +3495,7 @@ const withdrawDatasetSubmission = async (curationMode = "") => {
   if (curationMode === "guided") {
     return true;
   } else {
-    $("#btn-withdraw-review-dataset").disabled = false;
+    document.getElementById("btn-withdraw-review-dataset").disabled = false;
     $("#btn-withdraw-review-dataset").removeClass("loading");
     $("#btn-withdraw-review-dataset").removeClass("text-transparent");
   }
@@ -3601,10 +3539,10 @@ const withdrawReviewDataset = async (curationMode) => {
   }
 
   try {
-    await permissionsCurationTeam(currentAccount, currentDataset, "unshare", "newMethod");
-
     await api.withdrawDatasetReviewSubmission(currentDataset, currentAccount);
 
+    await permissionsCurationTeam(currentAccount, currentDataset, "unshare", "newMethod");
+    
     logGeneralOperationsForAnalytics(
       "Success",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
@@ -3904,9 +3842,9 @@ const showPrePublishingPageElements = () => {
 
   // show the "Begin Publishing" button and hide the checklist and submission section
   $("#begin-prepublishing-btn").removeClass("hidden");
+  $("#submit_prepublishing_review-question-2").addClass("show");
   $("#prepublishing-checklist-container").hide();
   $("#prepublishing-submit-btn-container").hide();
-  $("#excluded-files-container").hide();
   $(".pre-publishing-continue-container").hide();
 };
 

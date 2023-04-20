@@ -225,16 +225,7 @@
                     text-align: center;
                     margin-bottom: 1rem;
                   "
-                  >Pre-publishing checklist:
-                  <i
-                    class="fas fa-info-circle popover-tooltip"
-                    data-content="Use the pre-publishing checklist below to verify your dataset meets all of the SPARC requirements for a publishable dataset. 
-                                Click on any missing checklist items and you will be navigated to where you may add that item. "
-                    rel="popover"
-                    data-html="true"
-                    data-placement="right"
-                    data-trigger="hover"
-                  ></i>
+                  >Submission checklist:
                 </label>
 
                 <table
@@ -377,7 +368,8 @@
                 onclick="createPrepublishingChecklist('freeform')"
                 style="width: 200px; height: 40px; font-size: 15px; margin-top: 2rem"
               >
-                Continue
+                <i class="fas fa-sign-in-alt" style="padding-right: 5px"></i>
+                Submit
               </button>
             </div>
 
@@ -404,51 +396,6 @@
       <div class="individual-question post-curation" id="submit_prepublishing_review-question-4">
         <div class="ui form" style="width: 450px">
           <div class="grouped fields">
-            <!--Metadata file viewer-->
-            <div id="excluded-files-container">
-              <!--Pennsieve file tree header-->
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  align-items: center;
-                  justify-content: center;
-                "
-              >
-                <label
-                  id="pre-publishing-file-viewer-label"
-                  style="
-                    font-size: 17px;
-                    color: var(--color-bg-plum);
-                    width: 100%;
-                    text-align: center;
-                    margin-top: 1.5rem;
-                  "
-                  >Optionally exclude metadata files from publishing:
-                  <i
-                    class="fas fa-info-circle popover-tooltip"
-                    data-content="Excluded metadata files will not be visible to the public once your dataset has been published."
-                    rel="popover"
-                    data-html="true"
-                    data-placement="right"
-                    data-trigger="hover"
-                  ></i>
-                </label>
-              </div>
-
-              <!--Pennsieve metadata file viewer-->
-              <div id="pre-publication-items-container" class="prepublish-items-container">
-                <div id="items-pre-publication"></div>
-
-                <div
-                  class="ui active medium text loader items-spinner"
-                  style="position: absolute; top: 10rem; margin-left: auto; margin-right: auto"
-                >
-                  Fetching Files
-                </div>
-              </div>
-            </div>
-
             <!--Submit Button-->
             <!--#submit-withdraw-prepublishing-btns-container-->
             <div
