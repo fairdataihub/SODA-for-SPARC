@@ -4437,6 +4437,12 @@ const openPage = async (targetPageID) => {
       }
 
       const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
+      console.log("guidedSavedProgressFiles", guidedSavedProgressFiles);
+      if (guidedSavedProgressFiles.length === 0) {
+        document.getElementById("guided-button-resume-progress-file").disabled = true;
+      } else {
+        document.getElementById("guided-button-resume-progress-file").disabled = false;
+      }
       //render progress resumption cards from progress file array on first page of guided mode
       const progressFileData = await getAllProgressFileData(guidedSavedProgressFiles);
       renderProgressCards(progressFileData);
