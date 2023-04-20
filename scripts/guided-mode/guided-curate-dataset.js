@@ -2110,7 +2110,7 @@ const guidedModifyCurationTeamAccess = async (action) => {
     let embargoDetails = publishPreCheckStatus[1];
     console.log(embargoDetails);
     console.log(publishPreCheckStatus[0]);
-    
+
     // Will return false if there are issues running the precheck flow
     if (publishPreCheckStatus[0]) {
       guidedShareWithCurationTeamButton.classList.add("hidden");

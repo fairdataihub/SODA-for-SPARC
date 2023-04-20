@@ -435,7 +435,7 @@ const resetffmPrepublishingUI = async () => {
       .getElementById("para-review-dataset-info-disseminate")
       .innerText.includes("Dataset is currently under review")
   ) {
-    console.log("here")
+    console.log("here");
     // show the withdraw button
     $("#prepublishing-withdraw-btn-container").show();
     $("#prepublishing-withdraw-btn-container button").show();
@@ -445,7 +445,7 @@ const resetffmPrepublishingUI = async () => {
     return true;
   }
 
-  console.log("here2")
+  console.log("here2");
   // show the pre-publishing checklist and the continue button
   $("#prepublishing-checklist-container").show();
   $(".pre-publishing-continue-container").show();
@@ -453,7 +453,6 @@ const resetffmPrepublishingUI = async () => {
   $("#prepublishing-withdraw-btn-container button").hide();
   return false;
 };
-
 
 // transition to the final question and populate the file tree with the dataset's metadata files
 const createPrepublishingChecklist = async (curationMode) => {
@@ -488,7 +487,7 @@ const createPrepublishingChecklist = async (curationMode) => {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
     });
-    if(curationMode === "freeform") {
+    if (curationMode === "freeform") {
       document.getElementById("pre-publishing-continue-btn").disabled = false;
       $("#pre-publishing-continue-btn").removeClass("loading");
     }
@@ -499,7 +498,7 @@ const createPrepublishingChecklist = async (curationMode) => {
   // hide the spinner for the file tree
   $(`.${curationModeID}items-spinner`).hide();
 
-  if(curationMode === "freeform") {
+  if (curationMode === "freeform") {
     await disseminatePublish("freeform");
     document.getElementById("pre-publishing-continue-btn").disabled = false;
     $("#pre-publishing-continue-btn").removeClass("loading");
@@ -620,7 +619,7 @@ const beginPrepublishingFlow = async (curationMode) => {
   if (curationMode !== "guided") {
     let reviewDatasetInfo = $("#para-review-dataset-info-disseminate").text();
     let datasetHasBeenPublished = await resetffmPrepublishingUI();
-    console.log("datasetHasBeenPublished: " + datasetHasBeenPublished)
+    console.log("datasetHasBeenPublished: " + datasetHasBeenPublished);
 
     $("#begin-prepublishing-btn").addClass("hidden");
     $("#submit_prepublishing_review-question-2").removeClass("show");

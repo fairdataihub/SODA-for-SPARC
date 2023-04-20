@@ -3329,7 +3329,6 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
     currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
   }
 
-
   // show a SWAL loading message until the submit for prepublishing flow is successful or fails
   Swal.fire({
     title: "Submitting dataset to Curation Team",
@@ -3418,7 +3417,7 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
     $("#guided--prepublishing-checklist-container").addClass("hidden");
     $("#guided-button-share-dataset-with-curation-team").removeClass("hidden");
     $("#guided-button-share-dataset-with-curation-team").removeClass("loading");
-    $("#guided-button-share-dataset-with-curation-team").disabled = false
+    $("#guided-button-share-dataset-with-curation-team").disabled = false;
 
     guidedSetCurationTeamUI();
   }
@@ -3542,7 +3541,7 @@ const withdrawReviewDataset = async (curationMode) => {
     await api.withdrawDatasetReviewSubmission(currentDataset, currentAccount);
 
     await permissionsCurationTeam(currentAccount, currentDataset, "unshare", "newMethod");
-    
+
     logGeneralOperationsForAnalytics(
       "Success",
       DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
