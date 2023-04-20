@@ -82,19 +82,9 @@
             id="curate-new-home"
             style="flex-direction: column"
           >
-            <div class="button-prompt-container" id="guided-button-start-new-curate">
-              <div class="wide-card-text-container">
-                <h2 class="wide-card-title-text">Prepare and submit a new dataset</h2>
-                <p class="wide-card-subtitle-text">
-                  This option will walk you through everything you need to prepare and submit a new
-                  dataset to SPARC
-                </p>
-              </div>
-              <div id="new-dataset-lottie-container" class="wide-card-lottie-container"></div>
-            </div>
             <div class="button-prompt-container" id="guided-button-go-to-starting-point-selection">
               <div class="wide-card-text-container">
-                <h2 class="wide-card-title-text">Continue working on a dataset</h2>
+                <h2 class="wide-card-title-text">End to End curation</h2>
                 <p class="wide-card-subtitle-text">
                   This option will let you resume working on a previously started dataset to go
                   through everything you need to submit a SPARC dataset
@@ -145,6 +135,24 @@
             <div class="guided--radio-button-container mt-4">
               <button
                 class="guided--radio-button tile-button"
+                id="guided-button-start-new-curation"
+                data-next-element="guided-section-start-new-curation"
+              >
+                <div class="tile-button-icon" style="width: 46px; fill: var(--color-accent)">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 448 512">
+                    <!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
+                    <path
+                      d="M48 96V416c0 8.8 7.2 16 16 16H384c8.8 0 16-7.2 16-16V170.5c0-4.2-1.7-8.3-4.7-11.3l33.9-33.9c12 12 18.7 28.3 18.7 45.3V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96C0 60.7 28.7 32 64 32H309.5c17 0 33.3 6.7 45.3 18.7l74.5 74.5-33.9 33.9L320.8 84.7c-.3-.3-.5-.5-.8-.8V184c0 13.3-10.7 24-24 24H104c-13.3 0-24-10.7-24-24V80H64c-8.8 0-16 7.2-16 16zm80-16v80H272V80H128zm32 240a64 64 0 1 1 128 0 64 64 0 1 1 -128 0z"
+                    />
+                  </svg>
+                </div>
+                <div class="tile-button-text">
+                  <h2>Curate new</h2>
+                </div>
+              </button>
+
+              <button
+                class="guided--radio-button tile-button"
                 id="guided-button-resume-progress-file"
                 data-next-element="guided-section-resume-progress-cards"
               >
@@ -180,6 +188,14 @@
               </button>
             </div>
           </div>
+
+          <div class="guided--section" id="guided-section-start-new-curation">
+            <h2 class="guided--text-click-continue">
+              Click the "<span class="next-button-span"></span>" button to start a new curation
+              session.
+            </h2>
+          </div>
+
           <div class="guided--section" id="guided-section-resume-progress-cards"></div>
 
           <div

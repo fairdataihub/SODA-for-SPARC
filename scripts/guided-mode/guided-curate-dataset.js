@@ -327,6 +327,25 @@ const getGuidedProgressFileNames = () => {
     .map((progressFileName) => progressFileName.replace(".json", ""));
 };
 
+const updateGuidedDatasetName = (newDatasetName) => {
+  const previousDatasetName = sodaJSONObj["digital-metadata"]["name"];
+
+  //update old progress file with new dataset name
+  const oldProgressFilePath = `${guidedProgressFilePath}/${previousDatasetName}.json`;
+  const newProgressFilePath = `${guidedProgressFilePath}/${newDatasetName}.json`;
+  fs.renameSync(oldProgressFilePath, newProgressFilePath);
+
+  const bannerImagePathToUpdate = sodaJSONObj["digital-metadata"]["banner-image-path"];
+  if (bannerImagePathToUpdate) {
+    const newBannerImagePath = bannerImagePathToUpdate.replace(previousDatasetName, newDatasetName);
+    //Rename the old banner image folder to the new dataset name
+    fs.renameSync(bannerImagePathToUpdate, newBannerImagePath);
+    //change the banner image path in the JSON obj
+    sodaJSONObj["digital-metadata"]["banner-image-path"] = newBannerImagePath;
+  }
+  sodaJSONObj["digital-metadata"]["name"] = newDatasetName;
+};
+
 const savePageChanges = async (pageBeingLeftID) => {
   // This function is used by both the navigation bar and the side buttons,
   // and whenever it is being called, we know that the user is trying to save the changes on the current page.
@@ -337,29 +356,10 @@ const savePageChanges = async (pageBeingLeftID) => {
   try {
     //save changes to the current page
 
-    const updateGuidedDatasetName = (newDatasetName) => {
-      const previousDatasetName = sodaJSONObj["digital-metadata"]["name"];
-
-      //update old progress file with new dataset name
-      const oldProgressFilePath = `${guidedProgressFilePath}/${previousDatasetName}.json`;
-      const newProgressFilePath = `${guidedProgressFilePath}/${newDatasetName}.json`;
-      fs.renameSync(oldProgressFilePath, newProgressFilePath);
-
-      const bannerImagePathToUpdate = sodaJSONObj["digital-metadata"]["banner-image-path"];
-      if (bannerImagePathToUpdate) {
-        const newBannerImagePath = bannerImagePathToUpdate.replace(
-          previousDatasetName,
-          newDatasetName
-        );
-        //Rename the old banner image folder to the new dataset name
-        fs.renameSync(bannerImagePathToUpdate, newBannerImagePath);
-        //change the banner image path in the JSON obj
-        sodaJSONObj["digital-metadata"]["banner-image-path"] = newBannerImagePath;
-      }
-      sodaJSONObj["digital-metadata"]["name"] = newDatasetName;
-    };
-
     if (pageBeingLeftID === "guided-select-starting-point-tab") {
+      const startingNewCuration = document
+        .getElementById("guided-button-start-new-curation")
+        .classList.contains("selected");
       const resumingExistingProgress = document
         .getElementById("guided-button-resume-progress-file")
         .classList.contains("selected");
@@ -368,12 +368,24 @@ const savePageChanges = async (pageBeingLeftID) => {
         .getElementById("guided-button-resume-pennsieve-dataset")
         .classList.contains("selected");
 
-      if (!resumingExistingProgress && !resumingPennsieveDataset) {
+      if (!startingNewCuration && !resumingExistingProgress && !resumingPennsieveDataset) {
         errorArray.push({
           type: "notyf",
           message: "Please select a dataset start location",
         });
         throw errorArray;
+      }
+
+      if (startingNewCuration) {
+        sodaJSONObj["starting-point"]["type"] = "new";
+        sodaJSONObj["generate-dataset"]["generate-option"] = "new";
+
+        // Skip the changes metadata tab as new datasets do not have changes metadata
+        guidedSkipPage("guided-create-changes-metadata-tab");
+
+        // Open the first page
+        const firstPage = getNonSkippedGuidedModePages(document)[0];
+        await openPage(firstPage.id);
       }
 
       if (resumingExistingProgress) {
@@ -2440,7 +2452,6 @@ const guidedTransitionFromHome = async () => {
   document.getElementById("guided-header-div").classList.remove("hidden");
 
   //Remove the lotties (will be added again upon visting the home page)
-  document.getElementById("new-dataset-lottie-container").innerHTML = "";
   document.getElementById("existing-dataset-lottie").innerHTML = "";
   document.getElementById("edit-dataset-component-lottie").innerHTML = "";
 
@@ -3384,18 +3395,8 @@ const guidedPrepareHomeScreen = async () => {
   //   $("#guided-continue-curation-header").text("");
   //   datasetCardsRadioButtonsContainer.classList.add("hidden");
   // }
-  //empty new-dataset-lottie-container div
-  document.getElementById("new-dataset-lottie-container").innerHTML = "";
   document.getElementById("existing-dataset-lottie").innerHTML = "";
   document.getElementById("edit-dataset-component-lottie").innerHTML = "";
-
-  lottie.loadAnimation({
-    container: document.getElementById("new-dataset-lottie-container"),
-    animationData: newDataset,
-    renderer: "svg",
-    loop: true,
-    autoplay: true,
-  });
 
   lottie.loadAnimation({
     container: document.getElementById("existing-dataset-lottie"),

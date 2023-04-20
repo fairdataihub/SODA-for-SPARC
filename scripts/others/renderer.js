@@ -122,7 +122,6 @@ let contact_lottie_container = document.getElementById("contact-us-lottie");
 let madeWithLoveContainer = document.getElementById("made-with-love-lottie");
 
 // LOTTIES FOR CURATE AND SHARE PAGE
-let newDatasetLottieContainer = document.getElementById("new-dataset-lottie-container");
 let existingDatasetLottieContainer = document.getElementById("existing-dataset-lottie");
 let modifyDatasetLottieContainer = document.getElementById("edit-dataset-component-lottie");
 
@@ -132,17 +131,8 @@ let modifyDatasetLottieContainer = document.getElementById("edit-dataset-compone
 // let column3 = document.getElementById("lottie3");
 // let heart_lottie = document.getElementById("heart_lottie");
 
-newDatasetLottieContainer.innerHTML = "";
 existingDatasetLottieContainer.innerHTML = "";
 modifyDatasetLottieContainer.innerHTML = "";
-
-var newDatasetLottie = lottie.loadAnimation({
-  container: newDatasetLottieContainer,
-  animationData: newDataset,
-  renderer: "svg",
-  loop: true,
-  autoplay: true,
-});
 
 var existingDatasetLottie = lottie.loadAnimation({
   container: existingDatasetLottieContainer,
