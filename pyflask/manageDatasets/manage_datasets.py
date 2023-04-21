@@ -1769,8 +1769,7 @@ def get_number_of_files_and_folders_locally(filepath):
     return {"totalFiles": totalFiles, "totalDir": totalDir}
 
 
-def get_pennsieve_api_key_secret(email, password, keyname):
-
+def get_cognito_userpool_access_token(email, password):
     PENNSIEVE_URL = "https://api.pennsieve.io"
 
     try:
@@ -1797,14 +1796,22 @@ def get_pennsieve_api_key_secret(email, password, keyname):
         abort(400, "Username or password was incorrect.")
 
     try:
-        api_key = login_response["AuthenticationResult"]["AccessToken"]
+        access_token = login_response["AuthenticationResult"]["AccessToken"]
         response = requests.get(
-            f"{PENNSIEVE_URL}/user", headers={"Authorization": f"Bearer {api_key}"}
+            f"{PENNSIEVE_URL}/user", headers={"Authorization": f"Bearer {access_token}"}
         )
         response.raise_for_status()
     except Exception as e:
         raise e
+    
+    return access_token
 
+
+
+def get_pennsieve_api_key_secret(email, password, keyname):
+
+    api_key = get_cognito_userpool_access_token(email, password)
+    
     try:
         url = "https://api.pennsieve.io/token/"
 
@@ -1826,8 +1833,11 @@ def get_pennsieve_api_key_secret(email, password, keyname):
         }
     except Exception as e:
         raise e
+    
+def switch_organizations(organization_id, email, password):
+    api_key = get_cognito_userpool_access_token(email, password)
 
-
+    
 
 def get_dataset_readme(selected_account, selected_dataset):
     """

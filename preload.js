@@ -1,8 +1,6 @@
 // Purpose: Will become preload.js in the future. For now it is a place to put global variables/functions that are defined in javascript files
 //          needed by the renderer process in order to run.
 
-const { watchFile } = require("original-fs");
-
 // Contributors table for the dataset description editing page
 const currentConTable = document.getElementById("table-current-contributors");
 
@@ -990,6 +988,8 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           $("#curatebforganizationlist").selectpicker("hide");
           $("#curatebforganizationlist").selectpicker("refresh");
           $("#bf-organization-select-div").hide();
+          // TODO: How to make this unnecessary?
+          $("#bf-dataset-select-div").hide();
         },
         didOpen: () => {
           $("#div-permission-list-2").css("display", "block");
@@ -1048,7 +1048,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           $("#license-assigned").css("display", "none");
           return bfOrganization;
         },
-      }).then((result) => {
+      }).then(async (result) => {
         if (result.isConfirmed) {
           if (show_timer) {
             Swal.fire({
@@ -1058,7 +1058,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               showConfirmButton: false,
               timer: 2000,
               timerProgressBar: false,
-              title: "Loading your organization details...",
+              title: "Loading your preferred organization ...",
               didOpen: () => {
                 Swal.showLoading();
               },
@@ -1088,9 +1088,14 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           document.getElementById("div-rename-bf-dataset").children[0].style.display = "flex";
 
           // show the confirm button underneath the dataset select dropdown if one exists
-          let btn = document.querySelector(".btn-confirm-ds-selection");
-          btn.style.visibility = "visible";
-          btn.style.display = "flex";
+          // let btn = document.querySelector(".btn-confirm-ds-selection");
+          // btn.style.visibility = "visible";
+          // btn.style.display = "flex";
+
+          // rejoin test organiztion
+          console.log("Setting the organization")
+          await api.setPreferredOrganization("N:organization:f08e188e-2316-4668-ae2c-8a20dc88502f")
+          console.log("Organization is setup")
 
           // checkPrevDivForConfirmButton("dataset");
         } else if (result.isDismissed) {

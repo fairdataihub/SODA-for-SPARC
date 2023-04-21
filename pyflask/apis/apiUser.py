@@ -56,7 +56,7 @@ class User(Resource):
 @api.route('/organizations/preferred')
 class PreferredOrganization(Resource):
     parser = reqparse.RequestParser(bundle_errors=True)
-    parser.add_argument("organization_id", type=str, required=True, help="The ID for the user's preferred organization", location="args")
+    parser.add_argument("organization_id", type=str, required=True, help="The ID for the user's preferred organization", location="json")
 
     def put(self):
         data = self.parser.parse_args()

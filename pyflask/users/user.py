@@ -82,23 +82,34 @@ def get_user_information(token):
 
 
 
-def set_preferred_organization(organization_id):
+def set_preferred_organization(organization_id, email, password):
     try:
+
+        api_key = get_cognito_userpool_access_token(email, password)
         url = "https://api.pennsieve.io/session/switch-organization"
 
-        querystring = {
-            "organization_id": organization_id
-        }
+        logger.info(f"Organization id: {organization_id}")
 
         token = get_access_token()
 
-        response = requests.put(url, headers=create_request_headers(token), params=querystring)
+        logger.info(f"Token: {token}")
+
+        headers = {"Accept": "*/*", "Content-Type": "application/json", "Accept-Encoding": "gzip, deflate, br", "Connection": "keep-alive", "Content-Length": "0"}
+
+        url += f"?organization_id={organization_id}&api_key={token}"
+        logger.info(f"URL: {url}")
+
+        response = requests.request("PUT", url, headers=headers)
+        response.raise_for_status()
+
 
         response = requests.get(
-            f"{PENNSIEVE_URL}/user", headers={"Authorization": f"Bearer {api_key}"}
+            f"{PENNSIEVE_URL}/user", headers={"Authorization": f"Bearer {token}"}
         )
         response.raise_for_status()
         response = response.json()
+
+        logger.info(response)
 
         if "preferredOrganization" in response:
             if response["preferredOrganization"] != organization_id:
