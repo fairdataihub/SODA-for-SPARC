@@ -3884,13 +3884,12 @@ const refreshDatasetList = () => {
  * @returns length of the organizations list
  */
 const refreshOrganizationList = () => {
-  console.log("Refreshing orgs list with new results")
+  console.log("Refreshing orgs list with new results");
   organizationList.sort(function (a, b) {
     return a.toLowerCase().localeCompare(b.toLowerCase());
   });
 
-
-  console.log("About to populate the organization dropdown")
+  console.log("About to populate the organization dropdown");
   populateOrganizationDropdowns(organizationList);
 
   // parentDSTagify.settings.whitelist = getParentDatasets();
@@ -3917,7 +3916,7 @@ const populateDatasetDropdowns = (mylist) => {
 };
 
 const populateOrganizationDropdowns = (organizations) => {
-  console.log("About to clear the organization dropdown before repopulating")
+  console.log("About to clear the organization dropdown before repopulating");
   clearOrganizationDropdowns();
 
   for (const organization in organizations) {
@@ -3928,8 +3927,8 @@ const populateOrganizationDropdowns = (organizations) => {
     let option1 = option.cloneNode(true);
     let option2 = option.cloneNode(true);
 
-    console.log("Adding an item to the dropdown now")
-    console.log(option1)
+    console.log("Adding an item to the dropdown now");
+    console.log(option1);
 
     curateOrganizationDropdown.appendChild(option1);
   }

@@ -413,13 +413,12 @@ const getNumberOfItemsInLocalDataset = async (datasetPath) => {
   return itemCountsResponse.data;
 };
 
-
 const setPreferredOrganization = async (organizationId) => {
   const response = await client.put("/user/organizations/preferred", {
     organization_id: organizationId,
   });
   return response.data;
-}
+};
 
 const api = {
   getUserInformation,
@@ -447,7 +446,7 @@ const api = {
   reserveDOI,
   getNumberOfPackagesInDataset,
   getNumberOfItemsInLocalDataset,
-  setPreferredOrganization
+  setPreferredOrganization,
 };
 
 module.exports = api;

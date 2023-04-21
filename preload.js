@@ -878,7 +878,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     // hacky: wait for animations
     await wait(10);
 
-    console.log("Waiting done")
+    console.log("Waiting done");
 
     // disable the Continue btn first
     $("#nextBtn").prop("disabled", true);
@@ -896,7 +896,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       $(".svg-change-current-account.dataset").css("display", "block");
     }
 
-    console.log("Api key checked")
+    console.log("Api key checked");
 
     // if no account as them to connect one
     if (!accountPresent) {
@@ -1021,22 +1021,18 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           if (!bfOrganization) {
             Swal.showValidationMessage("Please select an organization!");
 
-            $(datasetPermissionDiv)
-              .find("#div-filter-datasets-progress-2")
-              .css("display", "none");
+            $(datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "none");
             $("#curatebforganizationlist").selectpicker("show");
             $("#curatebforganizationlist").selectpicker("refresh");
             $("#bf-organization-select-div").show();
 
             return undefined;
-          } 
+          }
 
           if (bfOrganization === "Select organization") {
             Swal.showValidationMessage("Please select an organization!");
 
-            $(datasetPermissionDiv)
-              .find("#div-filter-datasets-progress-2")
-              .css("display", "none");
+            $(datasetPermissionDiv).find("#div-filter-datasets-progress-2").css("display", "none");
             $("#curatebforganizationlist").selectpicker("show");
             $("#curatebforganizationlist").selectpicker("refresh");
             $("#bf-organization-select-div").show();
@@ -1064,7 +1060,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               },
             });
           }
-          console.log(dropdownEventID)
+          console.log(dropdownEventID);
           if (dropdownEventID === "dd-select-pennsieve-organization") {
             $("#ds-name").val(bfOrganization);
             $("#ds-description").val = $("#bf-dataset-subtitle").val;
@@ -1093,9 +1089,9 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           // btn.style.display = "flex";
 
           // rejoin test organiztion
-          console.log("Setting the organization")
-          await api.setPreferredOrganization("N:organization:f08e188e-2316-4668-ae2c-8a20dc88502f")
-          console.log("Organization is setup")
+          console.log("Setting the organization");
+          await api.setPreferredOrganization("N:organization:f08e188e-2316-4668-ae2c-8a20dc88502f");
+          console.log("Organization is setup");
 
           // checkPrevDivForConfirmButton("dataset");
         } else if (result.isDismissed) {
@@ -1103,7 +1099,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         }
       });
     }
-    
 
     // hide "Confirm" button if Current dataset set to None
     // related to the Organizae Datasets workflow current dataset span
