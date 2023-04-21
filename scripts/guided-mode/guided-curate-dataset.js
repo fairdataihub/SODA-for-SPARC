@@ -2857,39 +2857,29 @@ const updateManifestJson = async (highLvlFolderName, result) => {
 };
 
 const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
-  // if the user chose to auto-generate manifest files, create the excel files in local storage
-  // and add the paths to the manifest files in the datasetStructure object
-  if (sodaJSONObj["button-config"]["manifest-files-generated-automatically"] === "yes") {
-    /**
-     * If the user has selected to auto-generate manifest files,
-     * grab the manifest data for each high level folder, create an excel file
-     * using the manifest data, and add the excel file to the datasetStructureJSONObj
-     */
+  // First, empty the guided_manifest_files so we can add the new manifest files
+  fs.emptyDirSync(guidedManifestFilePath);
 
-    // First, empty the guided_manifest_files so we can add the new manifest files
-    fs.emptyDirSync(guidedManifestFilePath);
+  const guidedManifestData = sodaJSONObj["guided-manifest-files"];
+  for (const [highLevelFolder, manifestData] of Object.entries(guidedManifestData)) {
+    let manifestJSON = processManifestInfo(
+      guidedManifestData[highLevelFolder]["headers"],
+      guidedManifestData[highLevelFolder]["data"]
+    );
+    jsonManifest = JSON.stringify(manifestJSON);
 
-    const guidedManifestData = sodaJSONObj["guided-manifest-files"];
-    for (const [highLevelFolder, manifestData] of Object.entries(guidedManifestData)) {
-      let manifestJSON = processManifestInfo(
-        guidedManifestData[highLevelFolder]["headers"],
-        guidedManifestData[highLevelFolder]["data"]
-      );
-      jsonManifest = JSON.stringify(manifestJSON);
+    const manifestPath = path.join(guidedManifestFilePath, highLevelFolder, "manifest.xlsx");
 
-      const manifestPath = path.join(guidedManifestFilePath, highLevelFolder, "manifest.xlsx");
+    fs.mkdirSync(path.join(guidedManifestFilePath, highLevelFolder), {
+      recursive: true,
+    });
 
-      fs.mkdirSync(path.join(guidedManifestFilePath, highLevelFolder), {
-        recursive: true,
-      });
-
-      convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
-      datasetStructureJSONObj["folders"][highLevelFolder]["files"]["manifest.xlsx"] = {
-        action: ["new"],
-        path: manifestPath,
-        type: "local",
-      };
-    }
+    convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
+    datasetStructureJSONObj["folders"][highLevelFolder]["files"]["manifest.xlsx"] = {
+      action: ["new"],
+      path: manifestPath,
+      type: "local",
+    };
   }
 };
 
