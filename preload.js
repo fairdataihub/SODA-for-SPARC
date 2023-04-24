@@ -689,6 +689,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             $("#curatebfdatasetlist").selectpicker("refresh");
             $("#curatebfdatasetlist").selectpicker("show");
             $("#bf-dataset-select-div").show();
+            $("#bf-organization-select-div").hide();
 
             bfDataset = $("#curatebfdatasetlist").val();
             let sweet_al = document.getElementsByClassName("swal2-content")[0];
