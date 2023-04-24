@@ -330,21 +330,6 @@ def bf_add_account_username(keyname, key, secret):
             "Please check that key name, key, and secret are entered properly"
         )
 
-    headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {token}",
-    }
-
-    # Check that the Pennsieve account is in the SPARC Consortium organization
-    r = requests.get(f"{PENNSIEVE_URL}/user", headers=headers)
-    r.raise_for_status
-    organization_id = r.json()["preferredOrganization"]
-    if organization_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
-        bf_delete_account(keyname)
-        abort(403,
-            "Please check that your account is within the SPARC Organization"
-        )
-
     try:
         if not config.has_section("global"):
             config.add_section("global")
@@ -604,23 +589,20 @@ def bf_account_details(accountname):
         abort(500, "Something went wrong while authenticating the user or connecting to Pennsieve.")
 
     acc_details = f"User email: {user_info['email']}<br>"
-    #acc_details = f"{acc_details}Organization: {user_info['preferredOrganization']}"
+    organization_id = user_info['preferredOrganization']
 
     # get the organizations this user account has access to 
     r = requests.get(f"{PENNSIEVE_URL}/organizations", headers=create_request_headers(token))
     r.raise_for_status()
 
-    org_id = ""
-
-    # add the sparc consortium as the organization name if the user is a member of the consortium
-    # TODO: RE-JOIN: Do not automatically return this organization ID. We want the user to select it later. So we should return their available organizations instead.
     organizations = r.json()
+
+    organization = "Wee"
     for org in organizations["organizations"]:
-        if org["organization"]["id"] == "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
-            acc_details = f"{acc_details}Organization: {org['organization']['name']}"
-            org_id = org["organization"]["id"]
+        if org["organization"]["id"] == organization_id:
+            organization = org["organization"]["name"]
 
-
+    print("New organization is: ", organization)
 
     try:
         # if a user hasn't added their account name to their config file then we want to write it now
@@ -629,7 +611,7 @@ def bf_account_details(accountname):
         update_config_account_name(accountname)
         
         ## return account details and datasets where such an account has some permission
-        return {"account_details": acc_details, "organization_id": org_id}
+        return {"account_details": acc_details, "organization": organization}
 
     except Exception as e:
         raise e
