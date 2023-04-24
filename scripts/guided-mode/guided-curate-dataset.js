@@ -3625,11 +3625,9 @@ const guidedResetSkippedPages = () => {
 
 const guidedSkipPage = (pageId) => {
   const page = document.getElementById(pageId);
-  console.log("Page to be skipped: " + pageId);
 
   // If the page no longer exists, return
   if (!page) {
-    console.log("Page can not be Unskipped" + pageId + " because it no longer exists.");
     return;
   }
 
@@ -3657,7 +3655,6 @@ const guidedUnSkipPage = (pageId) => {
 
   // If the page no longer exists, return
   if (!page) {
-    console.log("Page can not be skipped" + pageId + " because it no longer exists.");
     return;
   }
 
@@ -6788,6 +6785,33 @@ const guidedResumeProgress = async (resumeProgressButton) => {
   if (!datasetHasAlreadyBeenSuccessfullyUploaded) {
     // If the dataset is being edited on Pensieve, check to make sure the folders and files are still the same.
     if (datasetResumeJsonObj["starting-point"]?.["type"] === "bf") {
+      // Check to make sure the dataset is not locked
+      try {
+        const datasetIsLocked = await api.isDatasetLocked(
+          defaultBfAccount,
+          datasetResumeJsonObj["digital-metadata"]["pennsieve-dataset-id"]
+        );
+        console.log(datasetIsLocked);
+        if (datasetIsLocked) {
+          notyf.open({
+            type: "info",
+            message: `Dataset is locked`,
+            duration: 7000,
+          });
+          resumeProgressButton.prop("disabled", false);
+          resumeProgressButton.removeClass("loading");
+          return;
+        }
+      } catch (err) {
+        notyf.open({
+          type: "error",
+          message: `Unable to get dataset lock status. Please try again later.`,
+          duration: 7000,
+        });
+        resumeProgressButton.prop("disabled", false);
+        resumeProgressButton.removeClass("loading");
+        return;
+      }
       if (Object.keys(datasetResumeJsonObj["previously-uploaded-data"]).length > 0) {
         await Swal.fire({
           icon: "info",

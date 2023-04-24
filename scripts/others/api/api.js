@@ -52,6 +52,28 @@ const getDatasetRole = async (datasetNameOrId) => {
   return role;
 };
 
+const isDatasetLocked = async (account, datasetNameOrId) => {
+  try {
+    let datasetRoleResponse = await client.get(`/datasets/${datasetNameOrId}`, {
+      params: {
+        pennsieve_account: account,
+      },
+    });
+    // Return the dataset's lock status (true or false)
+    return datasetRoleResponse.data.locked;
+  } catch (err) {
+    // If the dataset is locked, the API will return a 423 error
+    if (err?.response?.status === 423) {
+      return true;
+    }
+    // If the dataset lock status cannot be determined, throw an error
+    clientError(err);
+    let emessage = userErrorMessage(err);
+    console.log(emessage);
+    throw new Error(emessage);
+  }
+};
+
 /**
  * Withdraw any dataset from a pre-publishing review submission
  * @param {string} datasetIdOrName
@@ -126,6 +148,18 @@ const getDatasetDOI = async (account, dataset) => {
     let doi = await client.get(`datasets/${dataset}/reserve-doi`);
     return doi.data.doi;
   } catch (err) {
+    clientError(err);
+    userErrorMessage(err);
+  }
+};
+
+const getLockStatus = async (datasetNameOrId) => {
+  try {
+    let lockStatusResponse = await client.get(`/datasets/${datasetNameOrId}/lock-status`);
+    console.log(lockStatusResponse);
+    return lockStatusResponse.data;
+  } catch (err) {
+    console.log(err);
     clientError(err);
     userErrorMessage(err);
   }
@@ -406,6 +440,7 @@ const api = {
   validateLocalDataset,
   getDatasetDOI,
   reserveDOI,
+  isDatasetLocked,
   getNumberOfPackagesInDataset,
   getNumberOfItemsInLocalDataset,
 };
