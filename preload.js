@@ -516,9 +516,25 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     if (ev != null) {
       dropdownEventID = ev.id;
     }
+
+    // check the value of Current Organization
+    // TODO: Test heavily
+    let currentOrganization = $(".bf-organization-span:first").text();
+
+    if (currentOrganization === "None") {
+      Swal.fire({
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        icon: "info",
+        text: "Please select an organization first",
+      });
+
+      return;
+    }
+
     $(".svg-change-current-account.dataset").css("display", "none");
     $("#div-permission-list-2").css("display", "none");
-    $(".ui.active.green.inline.loader.small").css("display", "block");
+    $(".ui.active.green.inline.loader.small:not(.organization-loader)").css("display", "block");
 
     setTimeout(async function () {
       // disable the Continue btn first
@@ -874,7 +890,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     // TODO: Change these classes to organization classes
     $(".svg-change-current-account.organization").css("display", "none");
     $("#div-permission-list-2").css("display", "none");
-    $(".ui.active.green.inline.loader.small").css("display", "block");
+    $(".ui.active.green.inline.loader.small.organization-loader").css("display", "block");
 
     // hacky: wait for animations
     await wait(10);
@@ -1091,7 +1107,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
           // rejoin test organiztion
           console.log("Setting the organization");
-          await api.setPreferredOrganization("N:organization:f08e188e-2316-4668-ae2c-8a20dc88502f");
+          //await api.setPreferredOrganization("N:organization:f08e188e-2316-4668-ae2c-8a20dc88502f");
           console.log("Organization is setup");
 
           // checkPrevDivForConfirmButton("dataset");
@@ -1124,6 +1140,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
     $("body").removeClass("waiting");
     $(".svg-change-current-account.organization").css("display", "block");
-    $(".ui.active.green.inline.loader.small").css("display", "none");
+    $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
   }
 };

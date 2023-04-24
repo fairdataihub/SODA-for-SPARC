@@ -72,7 +72,7 @@ const UserDetailsCardField = ({ fieldOption, tabName }) => {
               </svg>
             </div>
           </div>
-          <div class="ui active green inline loader small" style="display: none"></div>
+          <div class="ui active green inline loader small organization-loader" style="display: none"></div>
         </div>
     `;
   } else if (fieldOption === FIELD_OPTIONS.ACCOUNT_DETAILS) {
