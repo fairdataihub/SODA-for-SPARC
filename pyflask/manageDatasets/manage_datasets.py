@@ -591,13 +591,14 @@ def bf_account_details(accountname):
     acc_details = f"User email: {user_info['email']}<br>"
     organization_id = user_info['preferredOrganization']
 
+
     # get the organizations this user account has access to 
     r = requests.get(f"{PENNSIEVE_URL}/organizations", headers=create_request_headers(token))
     r.raise_for_status()
 
     organizations = r.json()
 
-    organization = "Wee"
+    organization = None
     for org in organizations["organizations"]:
         if org["organization"]["id"] == organization_id:
             organization = org["organization"]["name"]

@@ -852,6 +852,8 @@ const run_pre_flight_checks = async (check_update = true) => {
     }
   }
 
+  // set the preferred organization spans
+
   // an account is present
   // Check for an installed Pennsieve agent
   let pennsieveAgentCheckNotyf;
@@ -4498,6 +4500,10 @@ const showDefaultBFAccount = async () => {
         $("#para-account-detail-curate-generate").html(accountDetails);
         $(".bf-account-details-span").html(accountDetails);
         defaultAccountDetails = accountDetails;
+
+        // show the preferred organization
+        let organization = bf_account_details_req.data.organization;
+        $(".bf-organization-span").text(organization);
 
         $("#div-bf-account-load-progress").css("display", "none");
         showHideDropdownButtons("account", "show");
