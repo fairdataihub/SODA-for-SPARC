@@ -2658,7 +2658,8 @@ const generateProgressCardElement = (progressFileJSONObj) => {
   // Function to generate the button used to resume progress
   const generateProgressResumptionButton = (
     datasetStartingPoint,
-    boolAlreadyUploadedToPennsieve
+    boolAlreadyUploadedToPennsieve,
+    progressFileName
   ) => {
     let buttonText = "";
     let buttonClass = "";
@@ -2678,7 +2679,7 @@ const generateProgressCardElement = (progressFileJSONObj) => {
     return `
             <button
               class="ui positive button ${buttonClass}"
-              onClick="guidedResumeProgress($(this))"
+              onClick="guidedResumeProgress('${progressFileName}')"
             >
               ${buttonText}
             </button>
@@ -2736,7 +2737,11 @@ const generateProgressCardElement = (progressFileJSONObj) => {
         </div>
       </div>
       <div class="dataset-card-button-container align-right">
-        ${generateProgressResumptionButton(datasetStartingPoint, alreadyUploadedToPennsieve)}
+        ${generateProgressResumptionButton(
+          datasetStartingPoint,
+          alreadyUploadedToPennsieve,
+          progressFileName
+        )}
         <h2 class="dataset-card-button-delete" onclick="deleteProgressCard(this)">
           <i
             class="fas fa-trash mr-sm-1"
@@ -6749,202 +6754,190 @@ const patchPreviousGuidedModeVersions = () => {
 };
 
 //Loads UI when continue curation button is pressed
-const guidedResumeProgress = async (resumeProgressButton) => {
-  resumeProgressButton.addClass("loading");
-  resumeProgressButton.prop("disabled", true);
-  const datasetNameToResume = resumeProgressButton
-    .parent()
-    .siblings()
-    .find($(".progress-file-name"))
-    .html();
-  const datasetResumeJsonObj = await getProgressFileData(datasetNameToResume);
+const guidedResumeProgress = async (datasetNameToResume) => {
+  const loadingSwal = Swal.fire({
+    title: "Resuming where you last left off",
+    html: `
+    <div class="lds-roller">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  `,
+    width: 500,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    allowOutsideClick: false,
+    showConfirmButton: false,
+    showCancelButton: false,
+  });
 
-  // Datasets successfully uploaded will have the "previous-guided-upload-dataset-name" key
-  const datasetHasAlreadyBeenSuccessfullyUploaded =
-    datasetResumeJsonObj["previous-guided-upload-dataset-name"];
+  try {
+    const datasetResumeJsonObj = await getProgressFileData(datasetNameToResume);
 
-  // If the dataset had been previously successfully uploaded, check to make sure it exists on Pennsieve still.
-  if (datasetHasAlreadyBeenSuccessfullyUploaded) {
-    const previouslyUploadedDatasetId =
-      datasetResumeJsonObj["digital-metadata"]["pennsieve-dataset-id"];
-    const datasetToResumeExistsOnPennsieve = await checkIfDatasetExistsOnPennsieve(
-      previouslyUploadedDatasetId
-    );
-    if (!datasetToResumeExistsOnPennsieve) {
-      notyf.open({
-        type: "error",
-        message: `The dataset ${datasetResumeJsonObj["previous-guided-upload-dataset-name"]} was not found on Pennsieve therefore you can no longer modify this dataset via Guided Mode.`,
-        duration: 7000,
-      });
-      resumeProgressButton.prop("disabled", false);
-      resumeProgressButton.removeClass("loading");
-      return;
-    }
-  }
+    // Datasets successfully uploaded will have the "previous-guided-upload-dataset-name" key
+    const datasetHasAlreadyBeenSuccessfullyUploaded =
+      datasetResumeJsonObj["previous-guided-upload-dataset-name"];
 
-  if (!datasetHasAlreadyBeenSuccessfullyUploaded) {
-    // If the dataset is being edited on Pensieve, check to make sure the folders and files are still the same.
-    if (datasetResumeJsonObj["starting-point"]?.["type"] === "bf") {
-      // Check to make sure the dataset is not locked
-      try {
-        const datasetIsLocked = await api.isDatasetLocked(
-          defaultBfAccount,
-          datasetResumeJsonObj["digital-metadata"]["pennsieve-dataset-id"]
-        );
-        console.log(datasetIsLocked);
-        if (datasetIsLocked) {
-          notyf.open({
-            type: "info",
-            message: `Dataset is locked`,
-            duration: 7000,
-          });
-          resumeProgressButton.prop("disabled", false);
-          resumeProgressButton.removeClass("loading");
-          return;
-        }
-      } catch (err) {
-        notyf.open({
-          type: "error",
-          message: `Unable to get dataset lock status. Please try again later.`,
-          duration: 7000,
-        });
-        resumeProgressButton.prop("disabled", false);
-        resumeProgressButton.removeClass("loading");
-        return;
+    // If the dataset had been previously successfully uploaded, check to make sure it exists on Pennsieve still.
+    if (datasetHasAlreadyBeenSuccessfullyUploaded) {
+      const previouslyUploadedDatasetId =
+        datasetResumeJsonObj["digital-metadata"]["pennsieve-dataset-id"];
+      const datasetToResumeExistsOnPennsieve = await checkIfDatasetExistsOnPennsieve(
+        previouslyUploadedDatasetId
+      );
+      if (!datasetToResumeExistsOnPennsieve) {
+        throw new Error(`This dataset no longer exists on Pennsieve`);
       }
-      if (Object.keys(datasetResumeJsonObj["previously-uploaded-data"]).length > 0) {
-        await Swal.fire({
-          icon: "info",
-          title: "Resuming a Pennsieve dataset upload that previously failed",
-          html: `
+    }
+
+    if (!datasetHasAlreadyBeenSuccessfullyUploaded) {
+      // If the dataset is being edited on Pensieve, check to make sure the folders and files are still the same.
+      if (datasetResumeJsonObj["starting-point"]?.["type"] === "bf") {
+        // Check to make sure the dataset is not locked
+        try {
+          const datasetIsLocked = await api.isDatasetLocked(
+            defaultBfAccount,
+            datasetResumeJsonObj["digital-metadata"]["pennsieve-dataset-id"]
+          );
+          if (datasetIsLocked) {
+            throw new Error("Dataset is locked");
+          }
+        } catch (err) {
+          if (err?.response?.status === 423) {
+            throw new Error("Dataset is locked");
+          } else {
+            throw new Error("Unable to determine if dataset is locked");
+          }
+        }
+        if (Object.keys(datasetResumeJsonObj["previously-uploaded-data"]).length > 0) {
+          await Swal.fire({
+            icon: "info",
+            title: "Resuming a Pennsieve dataset upload that previously failed",
+            html: `
             Please note that any changes made to your dataset on Pennsieve since your last dataset upload
             was interrupted may be overwritten.
           `,
-          width: 500,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: `I understand`,
-          focusConfirm: true,
-          allowOutsideClick: false,
-        });
-      } else {
-        const nofiication = notyf.open({
-          type: "info",
-          message: `Checking to make sure the dataset structure on Pennsieve is the same as when you started editing this dataset.`,
-          duration: 30000,
-        });
-        let filesFoldersResponse = await client.post(
-          `/organize_datasets/dataset_files_and_folders`,
-          {
-            sodajsonobject: datasetResumeJsonObj,
-          },
-          { timeout: 0 }
-        );
-        let data = filesFoldersResponse.data;
-        const currentPennsieveDatasetStructure = data["soda_object"]["dataset-structure"];
-        notyf.dismiss(nofiication);
-
-        const intitiallyPulledDatasetStructure =
-          datasetResumeJsonObj["initially-pulled-dataset-structure"];
-
-        // check to make sure current and initially pulled dataset structures are the same
-        if (
-          JSON.stringify(currentPennsieveDatasetStructure) !==
-          JSON.stringify(intitiallyPulledDatasetStructure)
-        ) {
-          await Swal.fire({
-            icon: "error",
-            title: "Dataset structure on Pennsieve has changed",
-            html: `
-          The dataset structure on Pennsieve has changed since you started editing this dataset.
-          <br />
-          <br />
-          You will need to start over from the beginning. 
-        `,
             width: 500,
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
-            confirmButtonText: `Ok`,
+            confirmButtonText: `I understand`,
             focusConfirm: true,
             allowOutsideClick: false,
           });
-          resumeProgressButton.prop("disabled", false);
-          resumeProgressButton.removeClass("loading");
-          return;
         } else {
-          notyf.open({
-            type: "success",
-            message: `The dataset structure on Pennsieve is the same as when you started editing this dataset.`,
-            duration: 7000,
-          });
+          // Check to make sure the dataset structure on Pennsieve is the same as when the user started editing this dataset
+          let filesFoldersResponse = await client.post(
+            `/organize_datasets/dataset_files_and_folders`,
+            {
+              sodajsonobject: datasetResumeJsonObj,
+            },
+            { timeout: 0 }
+          );
+          let data = filesFoldersResponse.data;
+          const currentPennsieveDatasetStructure = data["soda_object"]["dataset-structure"];
+
+          const intitiallyPulledDatasetStructure =
+            datasetResumeJsonObj["initially-pulled-dataset-structure"];
+
+          // check to make sure current and initially pulled dataset structures are the same
+          if (
+            JSON.stringify(currentPennsieveDatasetStructure) !==
+            JSON.stringify(intitiallyPulledDatasetStructure)
+          ) {
+            throw new Error(
+              "Dataset structure on Pennsieve has changed since starting this dataset"
+            );
+          }
         }
       }
     }
-  }
-  sodaJSONObj = datasetResumeJsonObj;
-  attachGuidedMethodsToSodaJSONObj();
+    sodaJSONObj = datasetResumeJsonObj;
+    attachGuidedMethodsToSodaJSONObj();
 
-  datasetStructureJSONObj = sodaJSONObj["saved-datset-structure-json-obj"];
-  subjectsTableData = sodaJSONObj["subjects-table-data"];
-  samplesTableData = sodaJSONObj["samples-table-data"];
+    datasetStructureJSONObj = sodaJSONObj["saved-datset-structure-json-obj"];
+    subjectsTableData = sodaJSONObj["subjects-table-data"];
+    samplesTableData = sodaJSONObj["samples-table-data"];
 
-  //patches the sodajsonobj if it was created in a previous version of guided mode
-  patchPreviousGuidedModeVersions();
+    //patches the sodajsonobj if it was created in a previous version of guided mode
+    patchPreviousGuidedModeVersions();
 
-  // pageToReturnTo will be set to the page the user will return to
-  let pageToReturnTo;
+    // pageToReturnTo will be set to the page the user will return to
+    let pageToReturnTo;
 
-  // The last page the user left off on on a previous session
-  const usersPageBeforeExit = sodaJSONObj["page-before-exit"];
+    // The last page the user left off on on a previous session
+    const usersPageBeforeExit = sodaJSONObj["page-before-exit"];
 
-  // If the last time the user worked on the progress file was in a previous version of SODA, then force the user to restart from the first page
-  const currentSodaVersion = document.getElementById("version").innerHTML;
-  const lastVersionOfSodaUsedOnProgressFile = sodaJSONObj["last-version-of-soda-used"];
+    // If the last time the user worked on the progress file was in a previous version of SODA, then force the user to restart from the first page
+    const currentSodaVersion = document.getElementById("version").innerHTML;
+    const lastVersionOfSodaUsedOnProgressFile = sodaJSONObj["last-version-of-soda-used"];
 
-  if (lastVersionOfSodaUsedOnProgressFile === currentSodaVersion) {
-    const usersPageBeforeExit = datasetResumeJsonObj["page-before-exit"];
-    //Check to make sure the page still exists before returning to it
-    if (document.getElementById(usersPageBeforeExit)) {
-      pageToReturnTo = usersPageBeforeExit;
+    if (lastVersionOfSodaUsedOnProgressFile === currentSodaVersion) {
+      const usersPageBeforeExit = datasetResumeJsonObj["page-before-exit"];
+      //Check to make sure the page still exists before returning to it
+      if (document.getElementById(usersPageBeforeExit)) {
+        pageToReturnTo = usersPageBeforeExit;
+      }
     }
-  }
 
-  // If the user left while the upload was in progress, send the user to the upload confirmation page
-  if (usersPageBeforeExit === "guided-dataset-generation-tab") {
-    pageToReturnTo = "guided-dataset-generation-confirmation-tab";
-  }
+    // If the user left while the upload was in progress, send the user to the upload confirmation page
+    if (usersPageBeforeExit === "guided-dataset-generation-tab") {
+      pageToReturnTo = "guided-dataset-generation-confirmation-tab";
+    }
 
-  //If the dataset was successfully uploaded, send the user to the share with curation team
-  if (datasetResumeJsonObj["previous-guided-upload-dataset-name"]) {
-    pageToReturnTo = "guided-dataset-dissemination-tab";
-  }
+    //If the dataset was successfully uploaded, send the user to the share with curation team
+    if (datasetResumeJsonObj["previous-guided-upload-dataset-name"]) {
+      pageToReturnTo = "guided-dataset-dissemination-tab";
+    }
 
-  // Delete the button status for the Pennsieve account confirmation section
-  // So the user has to confirm their Pennsieve account before uploading
-  delete sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
+    // Delete the button status for the Pennsieve account confirmation section
+    // So the user has to confirm their Pennsieve account before uploading
+    delete sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
 
-  // Save the skipped pages in a temp variable since guidedTransitionFromHome will remove them
-  const prevSessionSkikppedPages = [...sodaJSONObj["skipped-pages"]];
+    // Save the skipped pages in a temp variable since guidedTransitionFromHome will remove them
+    const prevSessionSkikppedPages = [...sodaJSONObj["skipped-pages"]];
 
-  guidedTransitionFromHome();
-  // Reskip the pages from a previous session
-  for (const pageID of prevSessionSkikppedPages) {
-    guidedSkipPage(pageID);
-  }
+    guidedTransitionFromHome();
+    // Reskip the pages from a previous session
+    for (const pageID of prevSessionSkikppedPages) {
+      guidedSkipPage(pageID);
+    }
 
-  // Skip this page incase it was not skipped in a previous session
-  guidedSkipPage("guided-select-starting-point-tab");
+    // Skip this page incase it was not skipped in a previous session
+    guidedSkipPage("guided-select-starting-point-tab");
 
-  //Hide the sub-page navigation and show the main page navigation footer
-  //If the user traverses to a page that requires the sub-page navigation,
-  //the sub-page will be shown during openPage() function
-  hideSubNavAndShowMainNav(false);
+    //Hide the sub-page navigation and show the main page navigation footer
+    //If the user traverses to a page that requires the sub-page navigation,
+    //the sub-page will be shown during openPage() function
+    hideSubNavAndShowMainNav(false);
 
-  if (pageToReturnTo) {
-    await openPage(pageToReturnTo);
-  } else {
-    const firstPage = getNonSkippedGuidedModePages(document)[0];
-    await openPage(firstPage.id);
+    if (pageToReturnTo) {
+      await openPage(pageToReturnTo);
+    } else {
+      const firstPage = getNonSkippedGuidedModePages(document)[0];
+      await openPage(firstPage.id);
+    }
+
+    // Close the loading screen, the user should be on the page they left off on now
+    loadingSwal.close();
+  } catch (error) {
+    loadingSwal.close();
+    await Swal.fire({
+      icon: "error",
+      title: "Error",
+      text: error.message,
+      width: 500,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: `Ok`,
+      focusConfirm: true,
+      allowOutsideClick: false,
+    });
   }
 };
 

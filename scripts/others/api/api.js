@@ -53,25 +53,13 @@ const getDatasetRole = async (datasetNameOrId) => {
 };
 
 const isDatasetLocked = async (account, datasetNameOrId) => {
-  try {
-    let datasetRoleResponse = await client.get(`/datasets/${datasetNameOrId}`, {
-      params: {
-        pennsieve_account: account,
-      },
-    });
-    // Return the dataset's lock status (true or false)
-    return datasetRoleResponse.data.locked;
-  } catch (err) {
-    // If the dataset is locked, the API will return a 423 error
-    if (err?.response?.status === 423) {
-      return true;
-    }
-    // If the dataset lock status cannot be determined, throw an error
-    clientError(err);
-    let emessage = userErrorMessage(err);
-    console.log(emessage);
-    throw new Error(emessage);
-  }
+  let datasetRoleResponse = await client.get(`/datasets/${datasetNameOrId}`, {
+    params: {
+      pennsieve_account: account,
+    },
+  });
+  // Return the dataset's lock status (true or false)
+  return datasetRoleResponse.data.locked;
 };
 
 /**
