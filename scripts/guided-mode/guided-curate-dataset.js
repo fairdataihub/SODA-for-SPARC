@@ -6957,7 +6957,7 @@ const guidedResumeProgress = async (datasetNameToResume) => {
     await Swal.fire({
       icon: "info",
       title: "This dataset is not able to be resumed",
-      html: `${error.message}}`,
+      html: `${error.message}`,
       width: 500,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",

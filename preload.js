@@ -705,35 +705,38 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               },
             });
 
-            // Ensure the dataset is not locked before proceeding
-            let datasetIsLocked = false;
-            try {
-              datasetIsLocked = await api.isDatasetLocked(defaultBfAccount, bfDataset);
-            } catch (err) {
-              // If a 423 error is thrown, the dataset is locked
-              if (err?.response?.status === 423) {
-                datasetIsLocked = true;
+            // Ensure the dataset is not locked except for when the user is on the disseminate page (to allow for the dataset to be unsubmitted)
+            if (!dropdownEventID === "disseminate-select-pennsieve-dataset") {
+              // Ensure the dataset is not locked before proceeding
+              let datasetIsLocked = false;
+              try {
+                datasetIsLocked = await api.isDatasetLocked(defaultBfAccount, bfDataset);
+              } catch (err) {
+                // If a 423 error is thrown, the dataset is locked
+                if (err?.response?.status === 423) {
+                  datasetIsLocked = true;
+                }
               }
-            }
-            if (datasetIsLocked) {
-              // Show the locked swal and return
-              Swal.fire({
-                icon: "info",
-                title: `${bfDataset} is locked from editing`,
-                html: `
+              if (datasetIsLocked) {
+                // Show the locked swal and return
+                Swal.fire({
+                  icon: "info",
+                  title: `${bfDataset} is locked from editing`,
+                  html: `
                   This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
                   <br />
                   <br />
                   If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
                 `,
-                width: 600,
-                heightAuto: false,
-                backdrop: "rgba(0,0,0, 0.4)",
-                confirmButtonText: "Ok",
-                focusConfirm: true,
-                allowOutsideClick: false,
-              });
-              return;
+                  width: 600,
+                  heightAuto: false,
+                  backdrop: "rgba(0,0,0, 0.4)",
+                  confirmButtonText: "Ok",
+                  focusConfirm: true,
+                  allowOutsideClick: false,
+                });
+                return;
+              }
             }
             if (dropdownEventID === "dd-select-pennsieve-dataset") {
               $("#ds-name").val(bfDataset);
