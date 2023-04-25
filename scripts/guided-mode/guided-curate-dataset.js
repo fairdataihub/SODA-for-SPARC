@@ -450,6 +450,34 @@ const savePageChanges = async (pageBeingLeftID) => {
           });
           throw errorArray;
         }
+        // Check to make sure the dataset is not locked
+        const datasetIsLockedSwalObj = {
+          type: "swal",
+          title: `${selectedPennsieveDataset} is locked from editing`,
+          message: `
+            This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
+            <br />
+            <br />
+            If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
+          `,
+        };
+        try {
+          const datasetIsLocked = await api.isDatasetLocked(
+            defaultBfAccount,
+            selectedPennsieveDataset
+          );
+          if (datasetIsLocked) {
+            errorArray.push(datasetIsLockedSwalObj);
+            throw errorArray;
+          }
+        } catch (err) {
+          console.log("here is the error", err);
+          // If a 423 error is thrown, the dataset is locked
+          if (err?.response?.status === 423) {
+            errorArray.push(datasetIsLockedSwalObj);
+            throw errorArray;
+          }
+        }
 
         //Pull the dataset folders and files from Pennsieve\
         sodaJSONObj["bf-dataset-selected"] = {};
@@ -6809,10 +6837,9 @@ const guidedResumeProgress = async (datasetNameToResume) => {
             throw new Error("Dataset is locked");
           }
         } catch (err) {
+          // If a 423 error is thrown, the dataset is locked
           if (err?.response?.status === 423) {
             throw new Error("Dataset is locked");
-          } else {
-            throw new Error("Unable to determine if dataset is locked");
           }
         }
         if (Object.keys(datasetResumeJsonObj["previously-uploaded-data"]).length > 0) {
@@ -6927,6 +6954,17 @@ const guidedResumeProgress = async (datasetNameToResume) => {
     loadingSwal.close();
   } catch (error) {
     loadingSwal.close();
+    await Swal.fire({
+      icon: "info",
+      title: "This dataset is not able to be resumed",
+      html: `${error.message}}`,
+      width: 500,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: `I understand`,
+      focusConfirm: true,
+      allowOutsideClick: false,
+    });
     await Swal.fire({
       icon: "error",
       title: "Error",
