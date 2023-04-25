@@ -377,6 +377,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           if (!login || !password) {
             Swal.hideLoading();
             Swal.showValidationMessage(`Please enter email and password`);
+            return;
           } else {
             let key_name = SODA_SPARC_API_KEY;
             let response = await get_api_key(login, password, key_name);
@@ -976,7 +977,10 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
       let orgs = responseObject.data.organizations;
       organizationList = [];
-      organizationList = orgs;
+      // deconstruct the names to the organization list
+      for (const org in orgs) {
+        organizationList.push(orgs[org]["organization"]["name"]);
+      }
       console.log("Retrieved orgs are: ", organizationList);
       console.log("About to add the new organizations to the dropdown");
       refreshOrganizationList();
@@ -1067,20 +1071,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         },
       }).then(async (result) => {
         if (result.isConfirmed) {
-          if (show_timer) {
-            Swal.fire({
-              allowEscapeKey: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              heightAuto: false,
-              showConfirmButton: false,
-              timer: 2000,
-              timerProgressBar: false,
-              title: "Loading your preferred organization ...",
-              didOpen: () => {
-                Swal.showLoading();
-              },
-            });
-          }
           console.log(dropdownEventID);
           if (dropdownEventID === "dd-select-pennsieve-organization") {
             $("#ds-name").val(bfOrganization);
@@ -1095,23 +1085,68 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           $(".bf-organization-span").html(bfOrganization);
           confirm_click_function();
 
-          // TODO: Add a new global for defaultOrganization?
-          // defaultBfDataset = bfDataset;
-          // document.getElementById("ds-description").innerHTML = "";
           refreshOrganizationList();
           $("#dataset-loaded-message").hide();
 
           showHideDropdownButtons("organization", "show");
           document.getElementById("div-rename-bf-dataset").children[0].style.display = "flex";
 
-          // show the confirm button underneath the dataset select dropdown if one exists
-          // let btn = document.querySelector(".btn-confirm-ds-selection");
-          // btn.style.visibility = "visible";
-          // btn.style.display = "flex";
-
           // rejoin test organiztion
           console.log("Setting the organization");
+          console.log(bfOrganization);
           //await api.setPreferredOrganization("N:organization:f08e188e-2316-4668-ae2c-8a20dc88502f");
+          await Swal.fire({
+            allowOutsideClick: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            cancelButtonText: "Cancel",
+            confirmButtonText: "Switch Organization",
+            showCloseButton: false,
+            focusConfirm: false,
+            heightAuto: false,
+            reverseButtons: reverseSwalButtons,
+            showCancelButton: true,
+            title: `<h3 style="text-align:center">To switch your organization please provide your email and password</h3><p class="tip-content" style="margin-top: .5rem">Your email and password will not be saved and not seen by anyone.</p>`,
+            html: `<input type="text" id="ps_login" class="swal2-input" placeholder="Email Address for Pennsieve">
+              <input type="password" id="ps_password" class="swal2-input" placeholder="Password">`,
+            showClass: {
+              popup: "animate__animated animate__fadeInDown animate__faster",
+            },
+            hideClass: {
+              popup: "animate__animated animate__fadeOutUp animate__faster",
+            },
+            footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-a-pennsieve-account" style="text-decoration: none;">I don't have a Pennsieve account or access to my preferred organization.</a>`,
+            didOpen: () => {
+              $(".swal-popover").popover();
+              let div_footer = document.getElementsByClassName("swal2-footer")[0];
+              document.getElementsByClassName("swal2-popup")[0].style.width = "43rem";
+              div_footer.style.flexDirection = "column";
+              div_footer.style.alignItems = "center";
+            },
+            preConfirm: async () => {
+              const login = Swal.getPopup().querySelector("#ps_login").value;
+              const password = Swal.getPopup().querySelector("#ps_password").value;
+
+              console.log(login);
+              console.log(password);
+
+              if (!login) {
+                Swal.showValidationMessage("Please enter your email!");
+                return undefined;
+              }
+
+              if (!password) {
+                Swal.showValidationMessage("Please enter your password!");
+                return undefined;
+              }
+
+              try {
+                await api.setPreferredOrganization(login, password, bfOrganization);
+              } catch (err) {
+                clientError(err);
+              }
+            },
+          });
+
           console.log("Organization is setup");
 
           // checkPrevDivForConfirmButton("dataset");
@@ -1120,22 +1155,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         }
       });
     }
-
-    // hide "Confirm" button if Current dataset set to None
-    // related to the Organizae Datasets workflow current dataset span
-    // if ($("#current-bf-organization-generate").text() === "None") {
-    //   showHideDropdownButtons("organization", "hide");
-    // } else {
-    //   showHideDropdownButtons("organization", "show");
-    // }
-
-    // hide "Confirm" button if Current dataset under Getting started set to None
-    // TODO: Maybe dont need this one
-    // if ($("#current-bf-organization").text() === "None") {
-    //   showHideDropdownButtons("organization", "hide");
-    // } else {
-    //   showHideDropdownButtons("organization", "show");
-    // }
 
     // TODO: MIght need to hide if clicked twice / do similar logic as above
     // for organization span in those locations instead of a dataset span

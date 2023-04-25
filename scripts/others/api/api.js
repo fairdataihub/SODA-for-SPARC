@@ -413,10 +413,21 @@ const getNumberOfItemsInLocalDataset = async (datasetPath) => {
   return itemCountsResponse.data;
 };
 
-const setPreferredOrganization = async (organizationId) => {
+const setPreferredOrganization = async (email, password, organization) => {
   const response = await client.put("/user/organizations/preferred", {
-    organization_id: organizationId,
+    organization,
+    email,
+    password,
   });
+  return response.data;
+};
+
+const getUserPoolAccessToken = async (email, password) => {
+  const response = await client.post("/manage_datasets/userpool_access_token", {
+    email: email,
+    password: password,
+  });
+
   return response.data;
 };
 
@@ -447,6 +458,7 @@ const api = {
   getNumberOfPackagesInDataset,
   getNumberOfItemsInLocalDataset,
   setPreferredOrganization,
+  getUserPoolAccessToken,
 };
 
 module.exports = api;

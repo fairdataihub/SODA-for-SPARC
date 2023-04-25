@@ -56,14 +56,20 @@ class User(Resource):
 @api.route('/organizations/preferred')
 class PreferredOrganization(Resource):
     parser = reqparse.RequestParser(bundle_errors=True)
-    parser.add_argument("organization_id", type=str, required=True, help="The ID for the user's preferred organization", location="json")
+    parser.add_argument("organization", type=str, required=True, help="The name for the users perferred organization", location="json")
+    parser.add_argument("email", type=str, required=True, help="The users Pennsieve email", location="json")
+    parser.add_argument("password", type=str, required=True, help="The users Pennsieve password", location="json")
+    
 
     def put(self):
         data = self.parser.parse_args()
-        organization_id = data.get("organization_id")
+        organization = data.get("organization")
+        email = data.get("email")
+        password = data.get("password")
+
 
         try:
-            return set_preferred_organization(organization_id)
+            return set_preferred_organization(organization, email, password)
         except Exception as e:
             api.abort(500, str(e))
 

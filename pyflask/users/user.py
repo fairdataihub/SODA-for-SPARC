@@ -9,8 +9,7 @@ from utils import (
 )
 from namespaces import NamespaceEnum, get_namespace_logger
 from flask import abort
-from pennsieve2.pennsieve import Pennsieve
-from authentication import get_access_token
+from authentication import get_access_token, get_cognito_userpool_access_token, bf_add_account_username
 
 logger = get_namespace_logger(NamespaceEnum.USER)
 
@@ -82,45 +81,59 @@ def get_user_information(token):
 
 
 
-def set_preferred_organization(organization_id, email, password):
+def set_preferred_organization(organization, email, password):
     try:
+        token = get_cognito_userpool_access_token(email, password)
 
-        api_key = get_cognito_userpool_access_token(email, password)
+        # get the organization id from the organization name 
+        organizations = get_user_organizations()
+        organization_id = None
+        print(organizations)
+        for org in organizations["organizations"]:
+           if org["organization"]["name"] == organization:
+                organization_id = org["organization"]["id"]
+                break
+
+
+        # switch to the desired organization
         url = "https://api.pennsieve.io/session/switch-organization"
-
-        logger.info(f"Organization id: {organization_id}")
-
-        token = get_access_token()
-
-        logger.info(f"Token: {token}")
-
         headers = {"Accept": "*/*", "Content-Type": "application/json", "Accept-Encoding": "gzip, deflate, br", "Connection": "keep-alive", "Content-Length": "0"}
-
         url += f"?organization_id={organization_id}&api_key={token}"
         logger.info(f"URL: {url}")
-
         response = requests.request("PUT", url, headers=headers)
         response.raise_for_status()
 
+    except Exception as error:
+        error = "It looks like you don't have access to your desired organization. An organization is required to upload datasets. Please reach out to the SPARC curation team (email) to get access to your desired organization and try again."
+        raise Exception(error)
+    
 
-        response = requests.get(
-            f"{PENNSIEVE_URL}/user", headers={"Authorization": f"Bearer {token}"}
-        )
+    # get an api key and secret for programmatic access to the Pennsieve API
+    try:
+        url = "https://api.pennsieve.io/token/"
+
+        payload = {"name": "SODA-Pennsieve"}
+        headers = {
+            "Accept": "*/*",
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {token}",
+        }
+
+        response = requests.request("POST", url, json=payload, headers=headers)
         response.raise_for_status()
         response = response.json()
+       
+        key =  response["key"]
+        secret = response["secret"]
+    except Exception as e:
+        raise e
+    
 
-        logger.info(response)
-
-        if "preferredOrganization" in response:
-            if response["preferredOrganization"] != organization_id:
-                error = "It looks like you don't have access to your desired organization. Please reach out to the SPARC curation team (email) to get access to the SPARC workspace and try again."
-                raise Exception(error)
-        else:
-            error = "It looks like you don't have access to your desired organization. This is required to upload datasets. Please reach out to the SPARC curation team (email) to get access to the SPARC workspace and try again."
-            raise Exception(error)
-    except Exception as error:
-        error = "It looks like you don't have access to your desired organization. This is required to upload datasets. Please reach out to the SPARC curation team (email) to get access to the SPARC workspace and try again."
-        raise Exception(error)
+    # store the new api key for the current organization
+    try:
+      bf_add_account_username("SODA-pennsieve", key, secret)
+    except Exception as e:
+      raise e
     
 
 
@@ -138,12 +151,9 @@ def get_user_organizations():
   r.raise_for_status()
 
   organizations_list = r.json()["organizations"]
-  orgs = []
   logger.info(organizations_list)
-  for organization in organizations_list:
-    orgs.append(organization["organization"]["name"])
-
-  return {"organizations": orgs}
+  
+  return {"organizations": organizations_list}
 
 
 

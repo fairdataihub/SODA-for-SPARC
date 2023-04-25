@@ -1,10 +1,8 @@
 from flask_restx import Resource, fields, reqparse
 from manageDatasets import ( 
-    get_pennsieve_api_key_secret, 
     get_number_of_files_and_folders_locally,
     submit_dataset_progress,
     bf_add_account_api_key,
-    bf_add_account_username,
     bf_account_list,
     bf_dataset_account,
     bf_account_details,
@@ -43,6 +41,7 @@ import time
 
 from namespaces import get_namespace, NamespaceEnum
 from errorHandlers import notBadRequestException
+from authentication import get_cognito_userpool_access_token, bf_add_account_username, get_pennsieve_api_key_secret
 
 
 ##--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -1034,3 +1033,29 @@ class BfGetDatasetTags(Resource):
           api.abort(500, str(e))
         raise e
 
+
+
+
+
+
+@api.route('/userpool_access_token')
+class BfGetUserpoolAccessToken(Resource):
+  parser = reqparse.RequestParser(bundle_errors=True)
+  parser.add_argument('email', type=str, required=True, location='json', help='The account to get the userpool access token for.')
+  parser.add_argument('password', type=str, required=True, location='json', help='The password for the account.')
+
+  @api.expect(parser)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Get a userpool access token.")
+  @api.marshal_with(successMessage, False, 200)
+  def post(self):
+    data = self.parser.parse_args()
+
+    email = data.get('email')
+    password = data.get('password')
+
+    try:
+      return get_cognito_userpool_access_token(email, password)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e
