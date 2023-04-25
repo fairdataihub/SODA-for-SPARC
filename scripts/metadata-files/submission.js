@@ -15,39 +15,6 @@ document.querySelectorAll(".submission-change-current-ds").forEach((element) => 
   });
 });
 
-function resetSubmission() {
-  Swal.fire({
-    backdrop: "rgba(0,0,0, 0.4)",
-    confirmButtonText: "I want to start over!",
-    focusCancel: true,
-    heightAuto: false,
-    icon: "warning",
-    reverseButtons: reverseSwalButtons,
-    showCancelButton: true,
-    text: "Are you sure you want to start over and reset your progress?",
-    showClass: {
-      popup: "animate__animated animate__zoomIn animate__faster",
-    },
-    hideClass: {
-      popup: "animate__animated animate__zoomOut animate__faster",
-    },
-  }).then((result) => {
-    if (result.isConfirmed) {
-      // 1. remove Prev and Show from all individual-question except for the first one
-      // 2. empty all input, textarea, select, para-elements
-      $("#Question-prepare-submission-1").removeClass("prev");
-      $("#Question-prepare-submission-1").nextAll().removeClass("show");
-      $("#Question-prepare-submission-1").nextAll().removeClass("prev");
-      $("#Question-prepare-submission-1 .option-card")
-        .removeClass("checked")
-        .removeClass("disabled")
-        .removeClass("non-selected");
-      $("#Question-prepare-submission-1 .option-card .folder-input-check").prop("checked", false);
-      resetSubmissionFields();
-    }
-  });
-}
-
 const renderMilestoneSelectionTable = (milestoneData) => {
   //create a table row element for each description array element for each milestone key in guidedMilestoneData
   const milestoneTableRows = Object.keys(milestoneData)
@@ -71,50 +38,6 @@ const renderMilestoneSelectionTable = (milestoneData) => {
   const milestonesTableContainer = document.getElementById("milestones-table-container");
   milestonesTableContainer.innerHTML = milestoneTableRows;
 };
-
-function resetSubmissionFields() {
-  $("#existing-submission-file-destination").attr("placeholder", "Browse here");
-
-  $("#div-confirm-existing-submission-import").hide();
-
-  if ($("#bf_dataset_load_submission").text().trim() !== "None") {
-    $($("#div-check-bf-import-submission").children()[0]).show();
-    $("#div-check-bf-import-submission").css("display", "flex");
-  } else {
-    $("#div-check-bf-import-submission").hide();
-  }
-
-  var inputFields = $("#Question-prepare-submission-1").nextAll().find("input");
-  var textAreaFields = $("#Question-prepare-submission-1").nextAll().find("textarea");
-  var selectFields = $("#Question-prepare-submission-1").nextAll().find("select");
-
-  for (var field of inputFields) {
-    $(field).val("");
-  }
-  for (var field of textAreaFields) {
-    $(field).val("");
-  }
-  milestoneTagify1.removeAllTags();
-
-  // make accordion active again
-  $("#submission-title-accordion").addClass("active");
-  $("#submission-accordion").addClass("active");
-
-  // show generate button again
-  $("#button-generate-submission").show();
-
-  for (var field of selectFields) {
-    $(field).val("Select");
-  }
-  $("#submission-completion-date")
-    .empty()
-    .append('<option value="Select">Select an option</option>');
-  $("#submission-completion-date").append(
-    $("<option>", {
-      text: "Enter my own date",
-    })
-  );
-}
 
 const openSubmissionMultiStepSwal = async (sparcAward, milestoneRes) => {
   //add a custom milestone row for when the user wants to add a custom milestone

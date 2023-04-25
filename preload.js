@@ -210,10 +210,144 @@ const confirm_click_function = () => {
   }
 };
 
+// RESET UI LOGIC SECTION ---------------------------------------------------------------------
+function resetSubmission(askToReset = true) {
+  if (!askToReset) {
+    // 1. remove Prev and Show from all individual-question except for the first one
+    // 2. empty all input, textarea, select, para-elements
+    $("#Question-prepare-submission-1").removeClass("prev");
+    $("#Question-prepare-submission-1").nextAll().removeClass("show");
+    $("#Question-prepare-submission-1").nextAll().removeClass("prev");
+    $("#Question-prepare-submission-1 .option-card")
+      .removeClass("checked")
+      .removeClass("disabled")
+      .removeClass("non-selected");
+    $("#Question-prepare-submission-1 .option-card .folder-input-check").prop("checked", false);
+    resetSubmissionFields();
+    return;
+  }
+
+  Swal.fire({
+    backdrop: "rgba(0,0,0, 0.4)",
+    confirmButtonText: "I want to start over!",
+    focusCancel: true,
+    heightAuto: false,
+    icon: "warning",
+    reverseButtons: reverseSwalButtons,
+    showCancelButton: true,
+    text: "Are you sure you want to start over and reset your progress?",
+    showClass: {
+      popup: "animate__animated animate__zoomIn animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // 1. remove Prev and Show from all individual-question except for the first one
+      // 2. empty all input, textarea, select, para-elements
+      $("#Question-prepare-submission-1").removeClass("prev");
+      $("#Question-prepare-submission-1").nextAll().removeClass("show");
+      $("#Question-prepare-submission-1").nextAll().removeClass("prev");
+      $("#Question-prepare-submission-1 .option-card")
+        .removeClass("checked")
+        .removeClass("disabled")
+        .removeClass("non-selected");
+      $("#Question-prepare-submission-1 .option-card .folder-input-check").prop("checked", false);
+      resetSubmissionFields();
+    }
+  });
+}
+
+function resetSubmissionFields() {
+  $("#existing-submission-file-destination").attr("placeholder", "Browse here");
+
+  $("#div-confirm-existing-submission-import").hide();
+
+  if ($("#bf_dataset_load_submission").text().trim() !== "None") {
+    $($("#div-check-bf-import-submission").children()[0]).show();
+    $("#div-check-bf-import-submission").css("display", "flex");
+  } else {
+    $("#div-check-bf-import-submission").hide();
+  }
+
+  var inputFields = $("#Question-prepare-submission-1").nextAll().find("input");
+  var textAreaFields = $("#Question-prepare-submission-1").nextAll().find("textarea");
+  var selectFields = $("#Question-prepare-submission-1").nextAll().find("select");
+
+  for (var field of inputFields) {
+    $(field).val("");
+  }
+  for (var field of textAreaFields) {
+    $(field).val("");
+  }
+  milestoneTagify1.removeAllTags();
+
+  // make accordion active again
+  $("#submission-title-accordion").addClass("active");
+  $("#submission-accordion").addClass("active");
+
+  // show generate button again
+  $("#button-generate-submission").show();
+
+  for (var field of selectFields) {
+    $(field).val("Select");
+  }
+  $("#submission-completion-date")
+    .empty()
+    .append('<option value="Select">Select an option</option>');
+  $("#submission-completion-date").append(
+    $("<option>", {
+      text: "Enter my own date",
+    })
+  );
+}
+
 /**
  * Resets the FFM manage-dataset, prepare-metadata, disseminate-dataset UI to their initial state.  Note: Does not reset Account, or organization information in the user details cards.
  */
-const resetFFMUI = () => {};
+const resetFFMUI = () => {
+  // reset the manage dataset UI
+  $("#div_add_edit_subtitle").removeClass("show");
+  $("#div_add_edit_subtitle_tab").removeClass("prev");
+
+  $("#div-rename-bf-dataset").hide();
+  $("#rename_dataset_BF_account_tab").removeClass("prev");
+
+  $("#div_make_pi_owner_permissions").removeClass("show");
+  $("#pi_dataset_owner_tab").removeClass("prev");
+
+  $("#add_edit_permissions_choice_div").removeClass("show");
+  $("#add_edit_permissions_choice_tab").removeClass("prev");
+
+  $("#div_add_edit_description").removeClass("show");
+  $("#add_edit_description_tab").removeClass("prev");
+
+  $("#div_add_edit_banner").removeClass("show");
+  $("#add_edit_banner_tab").removeClass("prev");
+
+  $("#add_license_tab").removeClass("prev");
+  $("#div_add_license").removeClass("show");
+
+  $("#add_tags_tab").removeClass("prev");
+  $("#div_add_tags").removeClass("show");
+
+  $("#view_change_dataset_status_tab").removeClass("prev");
+  $("#div_view_change_dataset_status").removeClass("show");
+
+  $("#collection_BF_account_tab").removeClass("prev");
+  $("#div-collection-bf-dataset").removeClass("show");
+
+  $("#upload_local_dataset_tab").removeClass("prev");
+  $("#upload_local_dataset_div").removeClass("show");
+
+  // Note: the create new dataset section can be skipped
+
+  // reset the prepare metadata UI
+  resetSubmission(false);
+
+  // reset the disseminate dataset UI
+};
 
 var dropdownEventID = "";
 const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
