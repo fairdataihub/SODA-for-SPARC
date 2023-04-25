@@ -794,8 +794,44 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
-      // If the user selected that the dataset is SPARC funded, unskip the submission metadata page
       if (userSelectedDatasetIsSparcFunded) {
+        const userSelectedSparcOrganization = document
+          .getElementById("guided-button-select-organization-sparc")
+          .classList.contains("selected");
+        const userSelectedReJoinOrganization = document
+          .getElementById("guided-button-select-organization-rejoin")
+          .classList.contains("selected");
+        const userSelectedOtherOrganization = document
+          .getElementById("guided-button-select-organization-other")
+          .classList.contains("selected");
+
+        if (
+          !userSelectedSparcOrganization &&
+          !userSelectedReJoinOrganization &&
+          !userSelectedOtherOrganization
+        ) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please select the workspace you would like to upload this dataset to.",
+          });
+          throw errorArray;
+        }
+
+        // Handle case where user selected SPARC organization
+        if (userSelectedSparcOrganization) {
+          console.log("User selected SPARC organization");
+        }
+
+        // Handle case where user selected Re-join organization
+        if (userSelectedReJoinOrganization) {
+          console.log("User selected Re-join organization");
+        }
+
+        // Handle case where user selected Other organization
+        if (userSelectedOtherOrganization) {
+          console.log("User selected Other organization");
+        }
+
         // Make sure the submission metadata and validation tab are unskipped as they are required
         // for the SPARC funded dataset flow
         guidedUnSkipPage("guided-create-submission-metadata-tab");
