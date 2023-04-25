@@ -338,7 +338,7 @@
               <button
                 class="ui positive basic button guided--radio-button"
                 id="guided-button-dataset-is-sparc-funded"
-                data-next-element="guided-section-dataset-sparc-funded"
+                data-next-element="guided-section-select-organization"
                 data-button-config-value="dataset-is-sparc-funded"
                 data-button-config-value-state="yes"
               >
@@ -354,12 +354,6 @@
                 No
               </button>
             </div>
-          </div>
-
-          <div class="guided--section hidden" id="guided-section-dataset-sparc-funded">
-            <h2 class="text-sub-step-title">
-              Click "Continue" to confirm your dataset is funded by a SPARC award.
-            </h2>
           </div>
 
           <div class="guided--section hidden" id="guided-section-dataset-not-sparc-funded">
@@ -399,6 +393,48 @@
                 your dataset is suitable for the SPARC platform.
               </p>
             </div>
+          </div>
+
+          <div class="guided--section hidden" id="guided-section-select-organization">
+            <h2 class="text-sub-step-title">
+              Please select the workspace you would like to upload this dataset to.
+            </h2>
+            <div class="guided--radion-button-container">
+              <button
+                class="ui positive basic button guided--radio-button"
+                id="guided-button-select-organization-sparc"
+                data-next-element="guided-section-dataset-sparc-funded"
+                data-button-config-value="organization-selection"
+                data-button-config-value-state="SPARC"
+              >
+                SPARC
+              </button>
+              <button
+                class="ui positive basic button guided--radio-button"
+                id="guided-button-select-organization-rejoin"
+                data-next-element="guided-section-dataset-sparc-funded"
+                data-button-config-value="organization-selection"
+                data-button-config-value-state="Re-JOIN"
+              >
+                Re-JOIN
+              </button>
+              <button
+                class="ui positive basic button guided--radio-button"
+                id="guided-button-select-organization-other"
+                data-next-element="guided-section-dataset-sparc-funded"
+                data-button-config-value="organization-selection"
+                data-button-config-value-state="Other"
+              >
+                Other
+              </button>
+            </div>
+          </div>
+
+          <div class="guided--section hidden" id="guided-section-dataset-sparc-funded">
+            <h2 class="text-sub-step-title">
+              Click "Continue" to your confirm workspace and that your dataset is funded by a SPARC
+              award.
+            </h2>
           </div>
         </div>
         <div
