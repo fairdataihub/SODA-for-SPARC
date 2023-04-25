@@ -543,7 +543,6 @@ const beginPrepublishingFlow = async (curationMode) => {
     Swal.fire({
       title: "Determining your dataset permissions",
       html: "Please wait...",
-      // timer: 5000,
       allowEscapeKey: false,
       allowOutsideClick: false,
       heightAuto: false,

@@ -15,9 +15,8 @@ document.body.addEventListener("custom-back", (e) => {
 // Variable used to determine the disabled status of the organize datasets next button
 let boolNextButtonDisabled = true;
 
-async function handleSectionTrigger(event) {
+const handleSectionTrigger = async (event) => {
   // Display the current section
-  console.log("handleSectionTrigger");
   const sectionId = `${event.target.dataset.section}-section`;
   const itemsContainer = document.getElementById("items");
   const freeFormItemsContainer = document.getElementById("free-form-folder-structure-container");
@@ -64,7 +63,6 @@ async function handleSectionTrigger(event) {
     //Update: Swal will only pop up if user is on organize datasets page only
     // Update 2: If user has not selected any of the radio buttons in step 1, then swal
     // will not pop up
-    let organizeDataset = document.getElementById("organize-section");
     let boolRadioButtonsSelected = false;
     let organizeDatasetRadioButtons = Array.from(
       document.querySelectorAll(".getting-started-1st-question")
@@ -79,8 +77,7 @@ async function handleSectionTrigger(event) {
       }
     });
 
-    if (sodaJSONObj != undefined) {
-      if (boolRadioButtonsSelected === true) {
+    if (sodaJSONObj != undefined && boolRadioButtonsSelected === true) {
         //get the element with data-next="Question-getting-started-BF-account"
         const buttonContinueExistingPennsieve = document.querySelector(
           '[data-next="Question-getting-started-BF-account"]'
@@ -134,7 +131,7 @@ async function handleSectionTrigger(event) {
           document.getElementById("organize_dataset_btn").click();
           return;
         }
-      }
+  
     }
 
     if (sectionRenderFileExplorer != "file-explorer") {
