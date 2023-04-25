@@ -78,11 +78,11 @@ const handleSectionTrigger = async (event) => {
     });
 
     if (sodaJSONObj != undefined && boolRadioButtonsSelected === true) {
-        //get the element with data-next="Question-getting-started-BF-account"
-        const buttonContinueExistingPennsieve = document.querySelector(
-          '[data-next="Question-getting-started-BF-account"]'
-        );
-        const transitionWarningMessage = `
+      //get the element with data-next="Question-getting-started-BF-account"
+      const buttonContinueExistingPennsieve = document.querySelector(
+        '[data-next="Question-getting-started-BF-account"]'
+      );
+      const transitionWarningMessage = `
           Going back home will wipe out the progress you have made organizing your dataset.
           <br><br>
           ${
@@ -94,44 +94,43 @@ const handleSectionTrigger = async (event) => {
           }
         `;
 
-        const warnBeforeExitCurate = await Swal.fire({
-          icon: "warning",
-          html: transitionWarningMessage,
-          showCancelButton: true,
-          focusCancel: true,
-          cancelButtonText: "Cancel",
-          confirmButtonText: "Go back Home",
-          reverseButtons: reverseSwalButtons,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
-          },
-        });
-        if (warnBeforeExitCurate.isConfirmed) {
-          // Wipe out organize dataset progress before entering Guided Mode
-          $("#dataset-loaded-message").hide();
-          $(".vertical-progress-bar-step").removeClass("is-current");
-          $(".vertical-progress-bar-step").removeClass("done");
-          $(".getting-started").removeClass("prev");
-          $(".getting-started").removeClass("show");
-          $(".getting-started").removeClass("test2");
-          $("#Question-getting-started-1").addClass("show");
-          $("#generate-dataset-progress-tab").css("display", "none");
-          currentTab = 0;
-          wipeOutCurateProgress();
-          globalGettingStarted1stQuestionBool = false;
-          document.getElementById("nextBtn").disabled = true;
-        } else {
-          //Stay in Organize datasets section
-          document.getElementById("main_tabs_view").click();
-          document.getElementById("organize_dataset_btn").click();
-          return;
-        }
-  
+      const warnBeforeExitCurate = await Swal.fire({
+        icon: "warning",
+        html: transitionWarningMessage,
+        showCancelButton: true,
+        focusCancel: true,
+        cancelButtonText: "Cancel",
+        confirmButtonText: "Go back Home",
+        reverseButtons: reverseSwalButtons,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+      if (warnBeforeExitCurate.isConfirmed) {
+        // Wipe out organize dataset progress before entering Guided Mode
+        $("#dataset-loaded-message").hide();
+        $(".vertical-progress-bar-step").removeClass("is-current");
+        $(".vertical-progress-bar-step").removeClass("done");
+        $(".getting-started").removeClass("prev");
+        $(".getting-started").removeClass("show");
+        $(".getting-started").removeClass("test2");
+        $("#Question-getting-started-1").addClass("show");
+        $("#generate-dataset-progress-tab").css("display", "none");
+        currentTab = 0;
+        wipeOutCurateProgress();
+        globalGettingStarted1stQuestionBool = false;
+        document.getElementById("nextBtn").disabled = true;
+      } else {
+        //Stay in Organize datasets section
+        document.getElementById("main_tabs_view").click();
+        document.getElementById("organize_dataset_btn").click();
+        return;
+      }
     }
 
     if (sectionRenderFileExplorer != "file-explorer") {
@@ -181,7 +180,7 @@ const handleSectionTrigger = async (event) => {
   }
 
   boolNextButtonDisabled = document.getElementById("nextBtn").disabled;
-}
+};
 
 function showMainContent() {
   document.querySelector(".js-nav").classList.add("is-shown");
