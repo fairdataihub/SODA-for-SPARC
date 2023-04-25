@@ -820,16 +820,19 @@ const savePageChanges = async (pageBeingLeftID) => {
         // Handle case where user selected SPARC organization
         if (userSelectedSparcOrganization) {
           console.log("User selected SPARC organization");
+          // sodaJSONObj["digital-metadata"]["selected-organization"] = "SPARC";
         }
 
         // Handle case where user selected Re-join organization
         if (userSelectedReJoinOrganization) {
           console.log("User selected Re-join organization");
+          // sodaJSONObj["digital-metadata"]["selected-organization"] = "Re-JOIN";
         }
 
         // Handle case where user selected Other organization
         if (userSelectedOtherOrganization) {
           console.log("User selected Other organization");
+          // sodaJSONObj["digital-metadata"]["selected-organization"] = "other";
         }
 
         // Make sure the submission metadata and validation tab are unskipped as they are required
