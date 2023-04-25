@@ -59,6 +59,8 @@ class PreferredOrganization(Resource):
     parser.add_argument("organization", type=str, required=True, help="The name for the users perferred organization", location="json")
     parser.add_argument("email", type=str, required=True, help="The users Pennsieve email", location="json")
     parser.add_argument("password", type=str, required=True, help="The users Pennsieve password", location="json")
+    parser.add_argument("account", type=str, required=True, help="The users account name", location="json")
+
     
 
     def put(self):
@@ -66,10 +68,11 @@ class PreferredOrganization(Resource):
         organization = data.get("organization")
         email = data.get("email")
         password = data.get("password")
+        account = data.get("account")
 
 
         try:
-            return set_preferred_organization(organization, email, password)
+            return set_preferred_organization(organization, email, password, account)
         except Exception as e:
             api.abort(500, str(e))
 

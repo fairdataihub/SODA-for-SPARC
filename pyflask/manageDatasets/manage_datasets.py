@@ -400,6 +400,8 @@ def bf_dataset_account(accountname):
     r.raise_for_status()
     datasets = r.json()
 
+    print(datasets)
+
     datasets_list = []
     for ds in datasets:
         datasets_list.append({"name": ds["content"]["name"], "id": ds["content"]["id"]})

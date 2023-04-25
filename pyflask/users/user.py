@@ -9,7 +9,7 @@ from utils import (
 )
 from namespaces import NamespaceEnum, get_namespace_logger
 from flask import abort
-from authentication import get_access_token, get_cognito_userpool_access_token, bf_add_account_username
+from authentication import get_access_token, get_cognito_userpool_access_token, bf_add_account_username, bf_delete_account
 
 logger = get_namespace_logger(NamespaceEnum.USER)
 
@@ -81,7 +81,7 @@ def get_user_information(token):
 
 
 
-def set_preferred_organization(organization, email, password):
+def set_preferred_organization(organization, email, password, account_name):
     try:
         token = get_cognito_userpool_access_token(email, password)
 
@@ -131,7 +131,9 @@ def set_preferred_organization(organization, email, password):
 
     # store the new api key for the current organization
     try:
-      bf_add_account_username("SODA-pennsieve", key, secret)
+      bf_delete_account(account_name)
+      # TODO: Use the default_profile value if it exists, otherwise use soda-pennsieve
+      bf_add_account_username(account_name, key, secret)
     except Exception as e:
       raise e
     

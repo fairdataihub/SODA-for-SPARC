@@ -210,6 +210,11 @@ const confirm_click_function = () => {
   }
 };
 
+/**
+ * Resets the FFM manage-dataset, prepare-metadata, disseminate-dataset UI to their initial state.  Note: Does not reset Account, or organization information in the user details cards.
+ */
+const resetFFMUI = () => {};
+
 var dropdownEventID = "";
 const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
   // if users edit current account
@@ -1094,7 +1099,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           // rejoin test organiztion
           console.log("Setting the organization");
           console.log(bfOrganization);
-          //await api.setPreferredOrganization("N:organization:f08e188e-2316-4668-ae2c-8a20dc88502f");
           await Swal.fire({
             allowOutsideClick: false,
             backdrop: "rgba(0,0,0, 0.4)",
@@ -1140,13 +1144,21 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               }
 
               try {
-                await api.setPreferredOrganization(login, password, bfOrganization);
+                await api.setPreferredOrganization(
+                  login,
+                  password,
+                  bfOrganization,
+                  defaultBfAccount
+                );
               } catch (err) {
                 clientError(err);
               }
             },
           });
 
+          // reset the selected dataset to None
+          $(".bf-dataset-span").html("None");
+          resetFFMUI();
           console.log("Organization is setup");
 
           // checkPrevDivForConfirmButton("dataset");
