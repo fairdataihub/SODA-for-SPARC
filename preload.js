@@ -743,8 +743,24 @@ const resetFFMUI = () => {
   resetSamples(false);
   resetManifest(true); // true is intentional even if different from the preceding pattern
 
-  // reset the disseminate dataset UI
-  exitCurate(true, true);
+  // reset the prepare datasets sections
+  wipeOutCurateProgress()
+  // validation reset
+  let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
+  clearValidationResults(validationErrorsTable);
+
+  // reset the Disseminate Datasets sections
+  $("#share_curation_team-question-1").removeClass("prev");
+  $("#share_curation_team-question-2").removeClass("show");
+
+  $("#share_sparc_consortium-question-1").removeClass("prev");
+  $("#share_sparc_consortium-question-2").removeClass("show");
+
+  $("#submit_prepublishing_review-question-1").removeClass("prev");
+  $("#submit_prepublishing_review-question-2").removeClass("show")
+  $("#submit_prepublishing_review-question-3").removeClass("show")
+  $("#submit_prepublishing_review-question-4").removeClass("show")
+
 };
 
 var dropdownEventID = "";
