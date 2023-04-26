@@ -53,15 +53,23 @@ const getDatasetRole = async (datasetNameOrId) => {
 };
 
 const isDatasetLocked = async (account, datasetNameOrId) => {
-  let datasetRoleResponse = await client.get(`/datasets/${datasetNameOrId}`, {
-    params: {
-      pennsieve_account: account,
-    },
-  });
-  // Return the dataset's lock status (true or false)
-  return datasetRoleResponse.data.locked;
+  try {
+    let datasetRoleResponse = await client.get(`/datasets/${datasetNameOrId}`, {
+      params: {
+        pennsieve_account: account,
+      },
+    });
+    // Return the dataset's lock status (true or false)
+    return datasetRoleResponse.data.locked;
+  } catch (err) {
+    clientError(err);
+    if (err.response.status == 423) {
+      return true;
+    } else {
+      return false;
+    }
+  }
 };
-
 /**
  * Withdraw any dataset from a pre-publishing review submission
  * @param {string} datasetIdOrName

@@ -463,9 +463,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       });
     }
   } else if (dropdown === "dataset") {
-    if (ev != null) {
-      dropdownEventID = ev.id;
-    }
+    dropdownEventID = !!ev ? ev.id : "";
     $(".svg-change-current-account.dataset").css("display", "none");
     $("#div-permission-list-2").css("display", "none");
     $(".ui.active.green.inline.loader.small").css("display", "block");
@@ -705,18 +703,11 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               },
             });
 
-            // Ensure the dataset is not locked except for when the user is on the disseminate page (to allow for the dataset to be unsubmitted)
-            if (!dropdownEventID === "disseminate-select-pennsieve-dataset") {
+            console.log("dropdownEvent", dropdownEventID);
+            if (dropdownEventID != "disseminate-select-pennsieve-dataset") {
+              // Ensure the dataset is not locked except for when the user is on the disseminate page (to allow for the dataset to be unsubmitted)
               // Ensure the dataset is not locked before proceeding
-              let datasetIsLocked = false;
-              try {
-                datasetIsLocked = await api.isDatasetLocked(defaultBfAccount, bfDataset);
-              } catch (err) {
-                // If a 423 error is thrown, the dataset is locked
-                if (err?.response?.status === 423) {
-                  datasetIsLocked = true;
-                }
-              }
+              const datasetIsLocked = await api.isDatasetLocked(defaultBfAccount, bfDataset);
               if (datasetIsLocked) {
                 // Show the locked swal and return
                 Swal.fire({

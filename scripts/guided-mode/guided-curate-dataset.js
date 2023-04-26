@@ -407,6 +407,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
       // This is the case where the user is resuming a Pennsieve dataset
       if (resumingPennsieveDataset) {
+        console.log("resumingPennsieveDataset");
         if (
           !document
             .getElementById("guided-panel-pennsieve-dataset-import-loading")
@@ -450,33 +451,23 @@ const savePageChanges = async (pageBeingLeftID) => {
           });
           throw errorArray;
         }
-        // Check to make sure the dataset is not locked
-        const datasetIsLockedSwalObj = {
-          type: "swal",
-          title: `${selectedPennsieveDataset} is locked from editing`,
-          message: `
-            This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
-            <br />
-            <br />
-            If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
-          `,
-        };
-        try {
-          const datasetIsLocked = await api.isDatasetLocked(
-            defaultBfAccount,
-            selectedPennsieveDataset
-          );
-          if (datasetIsLocked) {
-            errorArray.push(datasetIsLockedSwalObj);
-            throw errorArray;
-          }
-        } catch (err) {
-          console.log("here is the error", err);
-          // If a 423 error is thrown, the dataset is locked
-          if (err?.response?.status === 423) {
-            errorArray.push(datasetIsLockedSwalObj);
-            throw errorArray;
-          }
+
+        const datasetIsLocked = await api.isDatasetLocked(
+          defaultBfAccount,
+          selectedPennsieveDataset
+        );
+        if (datasetIsLocked) {
+          errorArray.push({
+            type: "swal",
+            title: `${selectedPennsieveDataset} is locked from editing`,
+            message: `
+              This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
+              <br />
+              <br />
+              If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
+            `,
+          });
+          throw errorArray;
         }
 
         //Pull the dataset folders and files from Pennsieve\
@@ -6828,20 +6819,19 @@ const guidedResumeProgress = async (datasetNameToResume) => {
       // If the dataset is being edited on Pensieve, check to make sure the folders and files are still the same.
       if (datasetResumeJsonObj["starting-point"]?.["type"] === "bf") {
         // Check to make sure the dataset is not locked
-        try {
-          const datasetIsLocked = await api.isDatasetLocked(
-            defaultBfAccount,
-            datasetResumeJsonObj["digital-metadata"]["pennsieve-dataset-id"]
-          );
-          if (datasetIsLocked) {
-            throw new Error("Dataset is locked");
-          }
-        } catch (err) {
-          // If a 423 error is thrown, the dataset is locked
-          if (err?.response?.status === 423) {
-            throw new Error("Dataset is locked");
-          }
+        const datasetIsLocked = await api.isDatasetLocked(
+          defaultBfAccount,
+          datasetResumeJsonObj["digital-metadata"]["pennsieve-dataset-id"]
+        );
+        if (datasetIsLocked) {
+          throw new Error(`
+            This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
+            <br />
+            <br />
+            If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
+          `);
         }
+
         if (Object.keys(datasetResumeJsonObj["previously-uploaded-data"]).length > 0) {
           await Swal.fire({
             icon: "info",
@@ -6878,7 +6868,11 @@ const guidedResumeProgress = async (datasetNameToResume) => {
             JSON.stringify(intitiallyPulledDatasetStructure)
           ) {
             throw new Error(
-              "Dataset structure on Pennsieve has changed since starting this dataset"
+              `The dataset structure on Pennsieve has changed since you last edited this dataset.
+              <br />
+              <br />
+              If you would like to update this dataset, please delete this progress file and start over.
+              `
             );
           }
         }
@@ -6953,6 +6947,7 @@ const guidedResumeProgress = async (datasetNameToResume) => {
     // Close the loading screen, the user should be on the page they left off on now
     loadingSwal.close();
   } catch (error) {
+    console.log(error);
     loadingSwal.close();
     await Swal.fire({
       icon: "info",
@@ -6962,17 +6957,6 @@ const guidedResumeProgress = async (datasetNameToResume) => {
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: `I understand`,
-      focusConfirm: true,
-      allowOutsideClick: false,
-    });
-    await Swal.fire({
-      icon: "error",
-      title: "Error",
-      text: error.message,
-      width: 500,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: `Ok`,
       focusConfirm: true,
       allowOutsideClick: false,
     });
