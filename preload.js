@@ -303,6 +303,399 @@ function resetSubmissionFields() {
   );
 }
 
+function resetDD(askToReset = true) {
+  if (!askToReset) {
+    // 1. remove Prev and Show from all individual-question except for the first one
+    // 2. empty all input, textarea, select, para-elements
+    $("#Question-prepare-dd-1").removeClass("prev");
+    $("#Question-prepare-dd-1").nextAll().removeClass("show");
+    $("#Question-prepare-dd-1").nextAll().removeClass("prev");
+    $("#Question-prepare-dd-1 .option-card")
+      .removeClass("checked")
+      .removeClass("disabled")
+      .removeClass("non-selected");
+    $("#Question-prepare-dd-1 .option-card .folder-input-check").prop("checked", false);
+    resetDDFields();
+    return;
+  }
+
+  Swal.fire({
+    backdrop: "rgba(0,0,0, 0.4)",
+    confirmButtonText: "I want to start over!",
+    focusCancel: true,
+    heightAuto: false,
+    icon: "warning",
+    reverseButtons: reverseSwalButtons,
+    showCancelButton: true,
+    text: "Are you sure you want to start over and reset your progress?",
+    showClass: {
+      popup: "animate__animated animate__zoomIn animate__faster",
+    },
+    hideClass: {
+      popup: "animate__animated animate__zoomOut animate__faster",
+    },
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // 1. remove Prev and Show from all individual-question except for the first one
+      // 2. empty all input, textarea, select, para-elements
+      $("#Question-prepare-dd-1").removeClass("prev");
+      $("#Question-prepare-dd-1").nextAll().removeClass("show");
+      $("#Question-prepare-dd-1").nextAll().removeClass("prev");
+      $("#Question-prepare-dd-1 .option-card")
+        .removeClass("checked")
+        .removeClass("disabled")
+        .removeClass("non-selected");
+      $("#Question-prepare-dd-1 .option-card .folder-input-check").prop("checked", false);
+      resetDDFields();
+    }
+  });
+}
+
+function resetDDFields() {
+  // 1. empty all input, textarea, select, para-elements
+  // 2. delete all rows from table Contributor
+  // 3. delete all rows from table Links
+  var inputFields = $("#Question-prepare-dd-2").find("input");
+  var textAreaFields = $("#Question-prepare-dd-2").find("textarea");
+
+  // var selectFields = $("#Question-prepare-dd-4-sections").find("select");
+
+  for (var field of inputFields) {
+    $(field).val("");
+  }
+  for (var field of textAreaFields) {
+    $(field).val("");
+  }
+
+  $("#existing-dd-file-destination").attr("placeholder", "Browse here");
+
+  $("#div-confirm-existing-dd-import").hide();
+
+  if ($("#bf_dataset_load_dd").text().trim() !== "None") {
+    $($("#div-check-bf-import-dd").children()[0]).show();
+    $("#div-check-bf-import-dd").css("display", "flex");
+  } else {
+    $("#div-check-bf-import-dd").hide();
+  }
+
+  // show generate button again
+  $("#button-generate-dd").show();
+
+  keywordTagify.removeAllTags();
+  otherFundingTagify.removeAllTags();
+  studyTechniquesTagify.removeAllTags();
+  studyOrganSystemsTagify.removeAllTags();
+  studyApproachesTagify.removeAllTags();
+
+  // 3. deleting table rows
+  globalContributorNameObject = {};
+  currentContributorsLastNames = [];
+  contributorArray = [];
+  $("#contributor-table-dd tr:gt(0)").remove();
+  $("#protocol-link-table-dd tr:gt(0)").remove();
+  $("#other-link-table-dd tr:gt(0)").remove();
+
+  $("#div-contributor-table-dd").css("display", "none");
+  document.getElementById("protocol-link-table-dd").style.display = "none";
+  document.getElementById("div-protocol-link-table-dd").style.display = "none";
+  document.getElementById("div-other-link-table-dd").style.display = "none";
+  document.getElementById("other-link-table-dd").style.display = "none";
+
+  $("#dd-accordion").find(".title").removeClass("active");
+  $("#dd-accordion").find(".content").removeClass("active");
+
+  $("#input-destination-generate-dd-locally").attr("placeholder", "Browse here");
+  $("#div-confirm-destination-dd-locally").css("display", "none");
+}
+
+function resetSubjects(askToReset = true) {
+  if (!askToReset) {
+    // 1. remove Prev and Show from all individual-question except for the first one
+    // 2. empty all input, textarea, select, para-elements
+    $("#Question-prepare-subjects-1").removeClass("prev");
+    $("#Question-prepare-subjects-1").nextAll().removeClass("show");
+    $("#Question-prepare-subjects-1").nextAll().removeClass("prev");
+    $("#Question-prepare-subjects-1 .option-card")
+      .removeClass("checked")
+      .removeClass("disabled")
+      .removeClass("non-selected");
+    $("#Question-prepare-subjects-1 .option-card .folder-input-check").prop("checked", false);
+    $("#Question-prepare-subjects-2").find("button").show();
+    $("#div-confirm-primary-folder-import").find("button").hide();
+
+    $("#Question-prepare-subjects-primary-import").find("input").prop("placeholder", "Browse here");
+    subjectsFileData = [];
+    subjectsTableData = [];
+
+    $("#existing-subjects-file-destination").attr("placeholder", "Browse here");
+
+    $("#div-confirm-existing-subjects-import").hide();
+
+    // hide Strains and Species
+    $("#bootbox-subject-species").css("display", "none");
+    $("#bootbox-subject-strain").css("display", "none");
+
+    // delete custom fields (if any)
+    var fieldLength = $(".subjects-form-entry").length;
+    if (fieldLength > 18) {
+      for (var field of $(".subjects-form-entry").slice(18, fieldLength)) {
+        $($(field).parents()[2]).remove();
+      }
+    }
+    // show Primary import hyperlink again
+    $("#div-import-primary-folder-subjects").show();
+
+    // delete table rows except headers
+    $("#table-subjects tr:gt(0)").remove();
+    $("#table-subjects").css("display", "none");
+
+    $("#div-import-primary-folder-subjects").show();
+
+    // Hide Generate button
+    $("#button-generate-subjects").css("display", "none");
+
+    $("#button-add-a-subject").show();
+
+    $("#input-destination-generate-subjects-locally").attr("placeholder", "Browse here");
+    $("#div-confirm-destination-subjects-locally").css("display", "none");
+    return;
+  }
+
+  Swal.fire({
+    text: "Are you sure you want to start over and reset your progress?",
+    icon: "warning",
+    showCancelButton: true,
+    reverseButtons: reverseSwalButtons,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    confirmButtonText: "I want to start over",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // 1. remove Prev and Show from all individual-question except for the first one
+      // 2. empty all input, textarea, select, para-elements
+      $("#Question-prepare-subjects-1").removeClass("prev");
+      $("#Question-prepare-subjects-1").nextAll().removeClass("show");
+      $("#Question-prepare-subjects-1").nextAll().removeClass("prev");
+      $("#Question-prepare-subjects-1 .option-card")
+        .removeClass("checked")
+        .removeClass("disabled")
+        .removeClass("non-selected");
+      $("#Question-prepare-subjects-1 .option-card .folder-input-check").prop("checked", false);
+      $("#Question-prepare-subjects-2").find("button").show();
+      $("#div-confirm-primary-folder-import").find("button").hide();
+
+      $("#Question-prepare-subjects-primary-import")
+        .find("input")
+        .prop("placeholder", "Browse here");
+      subjectsFileData = [];
+      subjectsTableData = [];
+
+      $("#existing-subjects-file-destination").attr("placeholder", "Browse here");
+
+      $("#div-confirm-existing-subjects-import").hide();
+
+      // hide Strains and Species
+      $("#bootbox-subject-species").css("display", "none");
+      $("#bootbox-subject-strain").css("display", "none");
+
+      // delete custom fields (if any)
+      var fieldLength = $(".subjects-form-entry").length;
+      if (fieldLength > 18) {
+        for (var field of $(".subjects-form-entry").slice(18, fieldLength)) {
+          $($(field).parents()[2]).remove();
+        }
+      }
+      // show Primary import hyperlink again
+      $("#div-import-primary-folder-subjects").show();
+
+      // delete table rows except headers
+      $("#table-subjects tr:gt(0)").remove();
+      $("#table-subjects").css("display", "none");
+
+      $("#div-import-primary-folder-subjects").show();
+
+      // Hide Generate button
+      $("#button-generate-subjects").css("display", "none");
+
+      $("#button-add-a-subject").show();
+
+      $("#input-destination-generate-subjects-locally").attr("placeholder", "Browse here");
+      $("#div-confirm-destination-subjects-locally").css("display", "none");
+    }
+  });
+}
+
+function resetSamples(askToReset = true) {
+  if (!askToReset) {
+    // 1. remove Prev and Show from all individual-question except for the first one
+    // 2. empty all input, textarea, select, para-elements
+    $("#Question-prepare-samples-1").removeClass("prev");
+    $("#Question-prepare-samples-1").nextAll().removeClass("show");
+    $("#Question-prepare-samples-1").nextAll().removeClass("prev");
+    $("#Question-prepare-samples-1 .option-card")
+      .removeClass("checked")
+      .removeClass("disabled")
+      .removeClass("non-selected");
+    $("#Question-prepare-samples-1 .option-card .folder-input-check").prop("checked", false);
+    $("#Question-prepare-samples-2").find("button").show();
+    $("#div-confirm-primary-folder-import-samples").find("button").hide();
+
+    $("#Question-prepare-subjects-primary-import-samples")
+      .find("input")
+      .prop("placeholder", "Browse here");
+    samplesFileData = [];
+    samplesTableData = [];
+
+    $("#existing-samples-file-destination").attr("placeholder", "Browse here");
+    $("#div-confirm-existing-samples-import").hide();
+
+    // hide Strains and Species
+    $("#bootbox-sample-species").css("display", "none");
+    $("#bootbox-sample-strain").css("display", "none");
+
+    // delete custom fields (if any)
+    var fieldLength = $(".samples-form-entry").length;
+    if (fieldLength > 21) {
+      for (var field of $(".samples-form-entry").slice(21, fieldLength)) {
+        $($(field).parents()[2]).remove();
+      }
+    }
+    $("#div-import-primary-folder-samples").show();
+    // delete table rows except headers
+    $("#table-samples tr:gt(0)").remove();
+    $("#table-samples").css("display", "none");
+    // Hide Generate button
+    $("#button-generate-samples").css("display", "none");
+
+    $("#button-add-a-sample").show();
+
+    $("#input-destination-generate-samples-locally").attr("placeholder", "Browse here");
+    $("#div-confirm-destination-samples-locally").css("display", "none");
+    return;
+  }
+
+  Swal.fire({
+    text: "Are you sure you want to start over and reset your progress?",
+    icon: "warning",
+    showCancelButton: true,
+    reverseButtons: reverseSwalButtons,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    confirmButtonText: "I want to start over",
+  }).then((result) => {
+    if (result.isConfirmed) {
+      // 1. remove Prev and Show from all individual-question except for the first one
+      // 2. empty all input, textarea, select, para-elements
+      $("#Question-prepare-samples-1").removeClass("prev");
+      $("#Question-prepare-samples-1").nextAll().removeClass("show");
+      $("#Question-prepare-samples-1").nextAll().removeClass("prev");
+      $("#Question-prepare-samples-1 .option-card")
+        .removeClass("checked")
+        .removeClass("disabled")
+        .removeClass("non-selected");
+      $("#Question-prepare-samples-1 .option-card .folder-input-check").prop("checked", false);
+      $("#Question-prepare-samples-2").find("button").show();
+      $("#div-confirm-primary-folder-import-samples").find("button").hide();
+
+      $("#Question-prepare-subjects-primary-import-samples")
+        .find("input")
+        .prop("placeholder", "Browse here");
+      samplesFileData = [];
+      samplesTableData = [];
+
+      $("#existing-samples-file-destination").attr("placeholder", "Browse here");
+      $("#div-confirm-existing-samples-import").hide();
+
+      // hide Strains and Species
+      $("#bootbox-sample-species").css("display", "none");
+      $("#bootbox-sample-strain").css("display", "none");
+
+      // delete custom fields (if any)
+      var fieldLength = $(".samples-form-entry").length;
+      if (fieldLength > 21) {
+        for (var field of $(".samples-form-entry").slice(21, fieldLength)) {
+          $($(field).parents()[2]).remove();
+        }
+      }
+      $("#div-import-primary-folder-samples").show();
+      // delete table rows except headers
+      $("#table-samples tr:gt(0)").remove();
+      $("#table-samples").css("display", "none");
+      // Hide Generate button
+      $("#button-generate-samples").css("display", "none");
+
+      $("#button-add-a-sample").show();
+
+      $("#input-destination-generate-samples-locally").attr("placeholder", "Browse here");
+      $("#div-confirm-destination-samples-locally").css("display", "none");
+    }
+  });
+}
+
+function resetManifest(skip_permission) {
+  if (!skip_permission) {
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "I want to start over!",
+      focusCancel: true,
+      heightAuto: false,
+      icon: "warning",
+      reverseButtons: reverseSwalButtons,
+      showCancelButton: true,
+      text: "Are you sure you want to start over and reset your progress?",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // 1. remove Prev and Show from all individual-question except for the first one
+        // 2. empty all input, textarea, select, para-elements
+        $("#Question-prepare-manifest-1").removeClass("prev");
+        $("#Question-prepare-manifest-1").nextAll().removeClass("show");
+        $("#Question-prepare-manifest-1").nextAll().removeClass("prev");
+        $("#Question-prepare-manifest-1 .option-card")
+          .removeClass("checked")
+          .removeClass("disabled")
+          .removeClass("non-selected");
+        $("#Question-prepare-manifest-1 .option-card .folder-input-check").prop("checked", false);
+        $("#input-manifest-local-folder-dataset").attr("placeholder", "Browse here");
+        $("#div-confirm-manifest-local-folder-dataset").hide();
+        $("#bf_dataset_create_manifest").text("None");
+        let dir1 = path.join(homeDirectory, "SODA", "manifest_files");
+        let dir2 = path.join(homeDirectory, "SODA", "SODA Manifest Files");
+        removeDir(dir1);
+        removeDir(dir2);
+      } else {
+        return;
+      }
+    });
+  } else {
+    // 1. remove Prev and Show from all individual-question except for the first one
+    // 2. empty all input, textarea, select, para-elements
+    $("#Question-prepare-manifest-1").removeClass("prev");
+    $("#Question-prepare-manifest-1").nextAll().removeClass("show");
+    $("#Question-prepare-manifest-1").nextAll().removeClass("prev");
+    $("#Question-prepare-manifest-1 .option-card")
+      .removeClass("checked")
+      .removeClass("disabled")
+      .removeClass("non-selected");
+    $("#Question-prepare-manifest-1 .option-card .folder-input-check").prop("checked", false);
+    $("#input-manifest-local-folder-dataset").attr("placeholder", "Browse here");
+    $("#div-confirm-manifest-local-folder-dataset").hide();
+    $("#bf_dataset_create_manifest").text("None");
+    let dir1 = path.join(homeDirectory, "SODA", "manifest_files");
+    let dir2 = path.join(homeDirectory, "SODA", "SODA Manifest Files");
+    removeDir(dir1);
+    removeDir(dir2);
+
+    // reset the global variables for detecting the manifest path
+    finalManifestGenerationPath = "";
+  }
+}
+
 /**
  * Resets the FFM manage-dataset, prepare-metadata, disseminate-dataset UI to their initial state.  Note: Does not reset Account, or organization information in the user details cards.
  */
@@ -345,8 +738,13 @@ const resetFFMUI = () => {
 
   // reset the prepare metadata UI
   resetSubmission(false);
+  resetDD(false);
+  resetSubjects(false);
+  resetSamples(false);
+  resetManifest(true); // true is intentional even if different from the preceding pattern
 
   // reset the disseminate dataset UI
+  exitCurate(true, true);
 };
 
 var dropdownEventID = "";
