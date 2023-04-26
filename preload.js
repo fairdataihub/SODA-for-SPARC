@@ -1089,7 +1089,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       return;
     }
 
-    
     $(".svg-change-current-account.dataset").css("display", "none");
     $("#div-permission-list-2").css("display", "none");
     $(".ui.active.green.inline.loader.small:not(.organization-loader)").css("display", "block");
