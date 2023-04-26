@@ -11,6 +11,8 @@ def handle_http_error(e):
         abort(403, suffix)
     if "404" in prefix:
         abort(404, suffix)
+    if "423" in prefix:
+        abort(423, suffix)
     abort(500, "Something went wrong while processing your request. Please try again later.")
 
 

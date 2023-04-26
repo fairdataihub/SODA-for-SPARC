@@ -15,7 +15,7 @@ document.body.addEventListener("custom-back", (e) => {
 // Variable used to determine the disabled status of the organize datasets next button
 let boolNextButtonDisabled = true;
 
-async function handleSectionTrigger(event) {
+const handleSectionTrigger = async (event) => {
   // Display the current section
   const sectionId = `${event.target.dataset.section}-section`;
   const itemsContainer = document.getElementById("items");
@@ -63,7 +63,6 @@ async function handleSectionTrigger(event) {
     //Update: Swal will only pop up if user is on organize datasets page only
     // Update 2: If user has not selected any of the radio buttons in step 1, then swal
     // will not pop up
-    let organizeDataset = document.getElementById("organize-section");
     let boolRadioButtonsSelected = false;
     let organizeDatasetRadioButtons = Array.from(
       document.querySelectorAll(".getting-started-1st-question")
@@ -78,13 +77,12 @@ async function handleSectionTrigger(event) {
       }
     });
 
-    if (sodaJSONObj != undefined) {
-      if (boolRadioButtonsSelected === true) {
-        //get the element with data-next="Question-getting-started-BF-account"
-        const buttonContinueExistingPennsieve = document.querySelector(
-          '[data-next="Question-getting-started-BF-account"]'
-        );
-        const transitionWarningMessage = `
+    if (sodaJSONObj != undefined && boolRadioButtonsSelected === true) {
+      //get the element with data-next="Question-getting-started-BF-account"
+      const buttonContinueExistingPennsieve = document.querySelector(
+        '[data-next="Question-getting-started-BF-account"]'
+      );
+      const transitionWarningMessage = `
           Going back home will wipe out the progress you have made organizing your dataset.
           <br><br>
           ${
@@ -96,43 +94,42 @@ async function handleSectionTrigger(event) {
           }
         `;
 
-        const warnBeforeExitCurate = await Swal.fire({
-          icon: "warning",
-          html: transitionWarningMessage,
-          showCancelButton: true,
-          focusCancel: true,
-          cancelButtonText: "Cancel",
-          confirmButtonText: "Go back Home",
-          reverseButtons: reverseSwalButtons,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
-          },
-        });
-        if (warnBeforeExitCurate.isConfirmed) {
-          // Wipe out organize dataset progress before entering Guided Mode
-          $("#dataset-loaded-message").hide();
-          $(".vertical-progress-bar-step").removeClass("is-current");
-          $(".vertical-progress-bar-step").removeClass("done");
-          $(".getting-started").removeClass("prev");
-          $(".getting-started").removeClass("show");
-          $(".getting-started").removeClass("test2");
-          $("#Question-getting-started-1").addClass("show");
-          $("#generate-dataset-progress-tab").css("display", "none");
-          currentTab = 0;
-          wipeOutCurateProgress();
-          globalGettingStarted1stQuestionBool = false;
-          document.getElementById("nextBtn").disabled = true;
-        } else {
-          //Stay in Organize datasets section
-          document.getElementById("main_tabs_view").click();
-          document.getElementById("organize_dataset_btn").click();
-          return;
-        }
+      const warnBeforeExitCurate = await Swal.fire({
+        icon: "warning",
+        html: transitionWarningMessage,
+        showCancelButton: true,
+        focusCancel: true,
+        cancelButtonText: "Cancel",
+        confirmButtonText: "Go back Home",
+        reverseButtons: reverseSwalButtons,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+      if (warnBeforeExitCurate.isConfirmed) {
+        // Wipe out organize dataset progress before entering Guided Mode
+        $("#dataset-loaded-message").hide();
+        $(".vertical-progress-bar-step").removeClass("is-current");
+        $(".vertical-progress-bar-step").removeClass("done");
+        $(".getting-started").removeClass("prev");
+        $(".getting-started").removeClass("show");
+        $(".getting-started").removeClass("test2");
+        $("#Question-getting-started-1").addClass("show");
+        $("#generate-dataset-progress-tab").css("display", "none");
+        currentTab = 0;
+        wipeOutCurateProgress();
+        globalGettingStarted1stQuestionBool = false;
+        document.getElementById("nextBtn").disabled = true;
+      } else {
+        //Stay in Organize datasets section
+        document.getElementById("main_tabs_view").click();
+        document.getElementById("organize_dataset_btn").click();
+        return;
       }
     }
 
@@ -183,7 +180,7 @@ async function handleSectionTrigger(event) {
   }
 
   boolNextButtonDisabled = document.getElementById("nextBtn").disabled;
-}
+};
 
 function showMainContent() {
   document.querySelector(".js-nav").classList.add("is-shown");

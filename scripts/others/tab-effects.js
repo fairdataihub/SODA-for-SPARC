@@ -1989,12 +1989,6 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
         return;
       }
       break;
-    case "submit_prepublishing_review-question-2":
-      transitionToPrepublishingQuestionThree();
-      break;
-    case "submit_prepublishing_review-question-3":
-      // createPrepublishingChecklist("");
-      transitionToPrePublishingSubmit();
     case "Question-prepare-manifest-1":
       continueProgressGenerateManifest = await switchMetadataManifestQuestion();
       break;
@@ -2044,8 +2038,6 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
   $($(ev).parents()[0]).siblings().find(".option-card.radio-button").addClass("non-selected");
 
   // empty para elements (TODO: will convert these para elements to a swal2 alert so we don't have to clear them out)
-  $("#para-submit_prepublishing_review-status").text("");
-
   if (ev.getAttribute("data-next") === "div_make_pi_owner_permissions") {
     let nodeStorage = new JSONStorage(app.getPath("userData"));
     let previous_choice = nodeStorage.getItem("previously_selected_PI");

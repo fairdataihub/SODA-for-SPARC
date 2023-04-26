@@ -45,7 +45,7 @@
 
 .button-prompt-container {
   width: 600px;
-  height: 155px !important;
+  height: 170px !important;
   margin: 13px;
   cursor: pointer;
   display: flex;
@@ -72,6 +72,32 @@
   max-height: 90px;
   padding: 15px;
   padding-top: 30px;
+}
+
+.ffm-return-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 50%;
+  padding: 0px 3px;
+}
+
+.copy-doi-container {
+  font-size: large;
+  border: 2px solid var(--button-color);
+  padding: 0rem 0rem 0rem 0.3rem;
+  border-radius: 5px;
+  height: 44px;
+  width: 491px;
+  display: flex;
+}
+
+.copy-doi-text-container {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+  padding-left: 9rem;
 }
 
 .selectAll-container {
@@ -210,7 +236,6 @@
 
 .pre-publishing-continue-container {
   margin-bottom: 10px;
-  margin-top: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -237,6 +262,16 @@
 }
 
 /* TODO: remove the keyword guided on the classes below */
+
+.footer-container {
+  border-top: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-right: 30px;
+  padding-top: 15px;
+  height: 5rem;
+}
 
 .guided--progress-container {
   display: flex;

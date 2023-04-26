@@ -52,6 +52,24 @@ const getDatasetRole = async (datasetNameOrId) => {
   return role;
 };
 
+const isDatasetLocked = async (account, datasetNameOrId) => {
+  try {
+    let datasetRoleResponse = await client.get(`/datasets/${datasetNameOrId}`, {
+      params: {
+        pennsieve_account: account,
+      },
+    });
+    // Return the dataset's lock status (true or false)
+    return datasetRoleResponse.data.locked;
+  } catch (err) {
+    clientError(err);
+    if (err.response.status == 423) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+};
 /**
  * Withdraw any dataset from a pre-publishing review submission
  * @param {string} datasetIdOrName
@@ -60,35 +78,6 @@ const getDatasetRole = async (datasetNameOrId) => {
 const withdrawDatasetReviewSubmission = async (datasetName, selected_account) => {
   await client.post(`/disseminate_datasets/datasets/${datasetName}/publication/cancel`, {
     selected_account,
-  });
-};
-
-const getFilesExcludedFromPublishing = async (datasetName) => {
-  // get the excluded files
-  let excludedFilesRes = await client.get(
-    `/disseminate_datasets/datasets/${datasetName}/ignore-files`,
-    {
-      params: {
-        selected_account: defaultBfAccount,
-      },
-    }
-  );
-
-  let { ignore_files } = excludedFilesRes.data;
-
-  return ignore_files;
-};
-
-// tell Pennsieve to ignore a set of user selected files when publishing their dataset.
-// this keeps those files hidden from the public but visible to publishers and collaboraors.
-// I:
-//  datasetIdOrName: string - dataset name
-//  files: [{fileName: string}] - An array of file name objects
-const updateDatasetExcludedFiles = async (account, datasetName, files) => {
-  // create the request options
-  await client.put(`/disseminate_datasets/datasets/${datasetName}/ignore-files`, {
-    ignore_files: files,
-    selected_account: account,
   });
 };
 
@@ -155,6 +144,18 @@ const getDatasetDOI = async (account, dataset) => {
     let doi = await client.get(`datasets/${dataset}/reserve-doi`);
     return doi.data.doi;
   } catch (err) {
+    clientError(err);
+    userErrorMessage(err);
+  }
+};
+
+const getLockStatus = async (datasetNameOrId) => {
+  try {
+    let lockStatusResponse = await client.get(`/datasets/${datasetNameOrId}/lock-status`);
+    console.log(lockStatusResponse);
+    return lockStatusResponse.data;
+  } catch (err) {
+    console.log(err);
     clientError(err);
     userErrorMessage(err);
   }
@@ -439,8 +440,6 @@ const api = {
   getDatasetBannerImageURL,
   getDatasetRole,
   withdrawDatasetReviewSubmission,
-  getFilesExcludedFromPublishing,
-  updateDatasetExcludedFiles,
   getDatasetMetadataFiles,
   getDatasetPermissions,
   getDatasetsForAccount,
@@ -456,6 +455,7 @@ const api = {
   validateLocalDataset,
   getDatasetDOI,
   reserveDOI,
+  isDatasetLocked,
   getNumberOfPackagesInDataset,
   getNumberOfItemsInLocalDataset,
   setPreferredOrganization,

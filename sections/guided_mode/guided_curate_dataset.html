@@ -82,35 +82,30 @@
             id="curate-new-home"
             style="flex-direction: column"
           >
-            <div class="button-prompt-container" id="guided-button-start-new-curate">
+            <div class="button-prompt-container" id="guided-button-go-to-starting-point-selection">
               <div class="wide-card-text-container">
-                <h2 class="wide-card-title-text">Prepare and submit a new dataset</h2>
+                <h2 class="wide-card-title-text">End to End Curation</h2>
                 <p class="wide-card-subtitle-text">
-                  This option will walk you through everything you need to prepare and submit a new
-                  dataset to SPARC
-                </p>
-              </div>
-              <div id="new-dataset-lottie-container" class="wide-card-lottie-container"></div>
-            </div>
-            <div class="button-prompt-container" id="guided-button-start-existing-curate">
-              <div class="wide-card-text-container">
-                <h2 class="wide-card-title-text">Continue working on a dataset</h2>
-                <p class="wide-card-subtitle-text">
-                  This option will let you resume working on a previously started dataset to go
-                  through everything you need to submit a SPARC dataset
+                  This option will walk you through everything you need to prepare and submit a
+                  dataset to SPARC. You can either start submitting a new dataset or continue
+                  working on a previously started dataset.
                 </p>
               </div>
               <div id="existing-dataset-lottie" class="wide-card-lottie-container"></div>
             </div>
             <div class="button-prompt-container" id="guided-button-start-modify-component">
               <div class="wide-card-text-container">
-                <h2 class="wide-card-title-text">Free Form Mode</h2>
+                <h2 class="wide-card-title-text">Free Form Mode Curation</h2>
                 <p class="wide-card-subtitle-text">
                   This option provides various features for creating/editing individual components
-                  of a dataset (e.g. create manifest files, edit banner images, etc.)
+                  of a dataset (e.g. create manifest files, edit banner images, etc.).
                 </p>
               </div>
-              <div id="edit-dataset-component-lottie" class="wide-card-lottie-container"></div>
+              <div
+                id="edit-dataset-component-lottie"
+                class="wide-card-lottie-container"
+                style="margin-top: -20px"
+              ></div>
             </div>
           </div>
         </div>
@@ -122,7 +117,7 @@
         data-parent-tab-name="Curation Preparation"
       >
         <div class="guided--capsule-container" id="structure-dataset-capsule-container">
-          <div class="guided--capsule" id="guided-resume-existing-dataset-capsule"></div>
+          <div class="guided--capsule" id="guided-select-starting-point-capsule"></div>
 
           <div class="guided--capsule" id="guided-curation-preparation-intro-capsule"></div>
           <div class="guided--capsule" id="guided-ask-if-submission-is-sparc-funded-capsule"></div>
@@ -131,33 +126,80 @@
           <div class="guided--capsule" id="guided-name-subtitle-capsule"></div>
         </div>
         <div
-          id="guided-resume-existing-dataset-tab"
+          id="guided-select-starting-point-tab"
           class="guided--page h-100 hidden"
           data-page-name="Select starting point"
         >
-          <h1 class="text-sub-step-title">Select a dataset to resume</h1>
+          <div class="guided--section">
+            <h1 class="text-sub-step-title">End to End curation</h1>
+          </div>
 
-          <div class="guided--section mt-3">
+          <div class="guided--section">
             <label class="guided--form-label centered mb-4"
-              >Where is the dataset you would like to resume located?
+              >Select the task you would like to perform below:
             </label>
 
             <div class="guided--radio-button-container mt-4">
               <button
                 class="guided--radio-button tile-button"
-                id="guided-button-resume-progress-file"
-                data-next-element="guided-section-resume-progress-cards"
+                id="guided-button-start-new-curation"
+                data-next-element="guided-section-start-new-curation"
               >
-                <div class="tile-button-icon" style="width: 46px; fill: var(--color-accent)">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 448 512">
-                    <!--! Font Awesome Pro 6.3.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. -->
-                    <path
-                      d="M48 96V416c0 8.8 7.2 16 16 16H384c8.8 0 16-7.2 16-16V170.5c0-4.2-1.7-8.3-4.7-11.3l33.9-33.9c12 12 18.7 28.3 18.7 45.3V416c0 35.3-28.7 64-64 64H64c-35.3 0-64-28.7-64-64V96C0 60.7 28.7 32 64 32H309.5c17 0 33.3 6.7 45.3 18.7l74.5 74.5-33.9 33.9L320.8 84.7c-.3-.3-.5-.5-.8-.8V184c0 13.3-10.7 24-24 24H104c-13.3 0-24-10.7-24-24V80H64c-8.8 0-16 7.2-16 16zm80-16v80H272V80H128zm32 240a64 64 0 1 1 128 0 64 64 0 1 1 -128 0z"
-                    />
+                <div class="tile-button-icon">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="var(--color-light-green)"
+                    width="50px"
+                    height="50px"
+                    viewBox="0 0 32 32"
+                    version="1.1"
+                    stroke="var(--color-light-green)"
+                    stroke-width="0.1"
+                  >
+                    <g stroke-linecap="round" stroke-linejoin="round" />
+
+                    <g>
+                      <title>plus-frame</title>
+                      <path
+                        d="M0 26.016q0 2.496 1.76 4.224t4.256 1.76h20q2.464 0 4.224-1.76t1.76-4.224v-20q0-2.496-1.76-4.256t-4.224-1.76h-20q-2.496 0-4.256 1.76t-1.76 4.256v20zM4 26.016v-20q0-0.832 0.576-1.408t1.44-0.608h20q0.8 0 1.408 0.608t0.576 1.408v20q0 0.832-0.576 1.408t-1.408 0.576h-20q-0.832 0-1.44-0.576t-0.576-1.408zM8 16q0 0.832 0.576 1.44t1.44 0.576h4v4q0 0.832 0.576 1.408t1.408 0.576 1.408-0.576 0.608-1.408v-4h4q0.8 0 1.408-0.576t0.576-1.44-0.576-1.408-1.408-0.576h-4v-4q0-0.832-0.608-1.408t-1.408-0.608-1.408 0.608-0.576 1.408v4h-4q-0.832 0-1.44 0.576t-0.576 1.408z"
+                      />
+                    </g>
                   </svg>
                 </div>
                 <div class="tile-button-text">
-                  <h2>Saved in SODA</h2>
+                  <h2>Prepare and submit a new dataset</h2>
+                </div>
+              </button>
+
+              <button
+                class="guided--radio-button tile-button"
+                id="guided-button-resume-progress-file"
+                data-next-element="guided-section-resume-progress-cards"
+              >
+                <div class="tile-button-icon">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill=""
+                    width="50px"
+                    height="50px"
+                    viewBox="-3.2 -3.2 38.40 38.40"
+                    version="1.1"
+                    transform="matrix(1, 0, 0, 1, 0, 0)rotate(0)"
+                  >
+                    <g stroke-linecap="round" stroke-linejoin="round" />
+
+                    <g>
+                      <title>floppy-disk</title>
+                      <path
+                        stroke="black"
+                        stroke-width="1.5"
+                        d="M30.885 9.116l-8-8c-0.226-0.226-0.539-0.366-0.885-0.366-0 0-0 0-0 0h-20c-0.69 0-1.25 0.56-1.25 1.25v0 28c0 0.69 0.56 1.25 1.25 1.25h28c0.69-0.001 1.249-0.56 1.25-1.25v-20c0-0 0-0.001 0-0.001 0-0.345-0.14-0.657-0.365-0.883l0 0zM18.75 3.25v4.5h-11.5v-4.5zM28.75 28.75h-25.5v-25.5h1.5v5.75c0 0.69 0.56 1.25 1.25 1.25v0h14c0.69-0 1.25-0.56 1.25-1.25v-5.75h0.232l7.268 7.268zM16 14.75c-2.347 0-4.25 1.903-4.25 4.25s1.903 4.25 4.25 4.25c2.347 0 4.25-1.903 4.25-4.25v0c-0.003-2.346-1.904-4.247-4.25-4.25h-0zM16 20.75c-0.966 0-1.75-0.784-1.75-1.75s0.784-1.75 1.75-1.75c0.966 0 1.75 0.784 1.75 1.75v0c-0.001 0.966-0.784 1.749-1.75 1.75h-0z"
+                      />
+                    </g>
+                  </svg>
+                </div>
+                <div class="tile-button-text">
+                  <h2>Continue a dataset saved in SODA</h2>
                 </div>
               </button>
 
@@ -167,19 +209,50 @@
                 data-next-element="guided-section-select-pennsieve-dataset-to-resume"
               >
                 <div class="tile-button-icon">
-                  <img
-                    src="assets\img\pennsieveLogo.png"
-                    alt="PennsieveLogo"
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink"
                     width="50px"
                     height="50px"
-                  />
+                    viewBox="0 0 20 20"
+                    version="1.1"
+                    fill=""
+                    stroke=""
+                  >
+                    <g stroke-width="0" />
+
+                    <g stroke-linecap="round" stroke-linejoin="round" />
+
+                    <g>
+                      <title>cloud_down [#1060]</title>
+                      <desc>Created with Sketch.</desc>
+                      <defs></defs>
+                      <g stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                        <g transform="translate(-380.000000, -3479.000000)" fill="#1E90FF">
+                          <g transform="translate(56.000000, 160.000000)">
+                            <path
+                              d="M335.012169,3335.16807 L335.012169,3324.98562 L333.010357,3324.98562 L333.010357,3335.16807 L331.716185,3333.87374 L330.300904,3335.28919 L334.011263,3339 L337.721622,3335.28919 L336.306341,3333.87374 L335.012169,3335.16807 Z M338.785585,3332.99384 L337.013982,3332.99384 L337.013982,3330.99178 L338.909698,3330.99178 C343.169554,3330.99178 342.863277,3324.85348 338.915703,3324.99563 C337.511432,3318.03648 327.275165,3320.94347 329.243947,3327.42912 C327.772615,3326.25992 325.676718,3327.58428 326.046052,3329.40515 C326.422393,3331.25305 328.459237,3330.99178 330.282888,3330.99178 L331.008545,3330.99178 L331.008545,3332.99384 C328.302095,3332.99384 326.944866,3333.23408 325.453516,3332.01883 C323.727954,3330.61439 323.610847,3328.28901 324.721853,3326.70538 C325.635681,3325.40405 327.068978,3325.08272 327.068978,3325.08272 C327.975799,3318.05951 337.621532,3316.70512 340.440083,3323.20078 C340.434078,3323.18777 340.440083,3323.2148 340.463104,3323.22081 C345.91504,3324.87751 344.838065,3332.99384 338.785585,3332.99384 L338.785585,3332.99384 Z"
+                            ></path>
+                          </g>
+                        </g>
+                      </g>
+                    </g>
+                  </svg>
                 </div>
                 <div class="tile-button-text">
-                  <h2>On Pennsieve</h2>
+                  <h2>Work on a dataset from Pennsieve</h2>
                 </div>
               </button>
             </div>
           </div>
+
+          <div class="guided--section" id="guided-section-start-new-curation">
+            <h2 class="guided--text-click-continue">
+              Click "<span class="next-button-span"></span>" to start the End to End curation
+              process for preparing and submitting a new dataset.
+            </h2>
+          </div>
+
           <div class="guided--section" id="guided-section-resume-progress-cards"></div>
 
           <div
@@ -318,8 +391,15 @@
             </p>
           </div>
           <div class="guided--section">
-            <h2 class="text-sub-step-title">
-              Click the "Continue" button below to go to the next page.
+            <div
+              id="guided-curation-preparation-intro-lottie"
+              class="lottieAnimationContainer guided--container-lottie-standard"
+            ></div>
+          </div>
+          <div class="guided--section">
+            <h2 class="guided--text-click-continue">
+              Click the "<span class="next-button-span"></span>" button below to go to the next
+              page.
             </h2>
           </div>
         </div>
@@ -356,6 +436,13 @@
             </div>
           </div>
 
+          <div class="guided--section hidden" id="guided-section-dataset-sparc-funded">
+            <h2 class="guided--text-click-continue">
+              Click "<span class="next-button-span"></span>" to confirm your dataset is funded by a
+              SPARC award.
+            </h2>
+          </div>
+
           <div class="guided--section hidden" id="guided-section-dataset-not-sparc-funded">
             <h2 class="text-sub-step-title">
               Have you already reached out to the SPARC curation team to see if your data is
@@ -382,8 +469,8 @@
               </button>
             </div>
             <div class="guided--section" id="guided-section-non-sparc-user-has-contacted-sparc">
-              <h2 class="text-sub-step-title">
-                Great, click "Continue" to start the curation process.
+              <h2 class="guided--text-click-continue">
+                Great, click "<span class="next-button-span"></span>" to start the curation process.
               </h2>
             </div>
             <div class="guided--section" id="guided-section-non-sparc-user-has-not-contacted-sparc">
@@ -663,13 +750,15 @@
               </div>
             </div>
             <div class="sub-section" id="guided-sub-section-experimental-confirmation">
-              <h2 class="text-sub-step-title">
-                Click "Continue" to begin the experimental dataset curation process.
+              <h2 class="guided--text-click-continue">
+                Click "<span class="next-button-span"></span> to begin the experimental dataset
+                curation process.
               </h2>
             </div>
             <div class="sub-section" id="guided-sub-section-computational-confirmation">
-              <h2 class="text-sub-step-title">
-                Click "Continue" to begin the computational dataset curation process.
+              <h2 class="guided--text-click-continue">
+                Click "<span class="next-button-span"></span>" to begin the computational dataset
+                curation process.
               </h2>
             </div>
             <div class="sub-section" id="guided-sub-section-configuration-error">
@@ -863,15 +952,20 @@
           <div class="guided--section">
             <p class="help-text">
               The SPARC guidelines require all datasets to be organized according to a strict folder
-              structure (see image below). Over the next steps, you will be asked to specify folders
-              and files to be included in your dataset so SODA can automatically organize them
-              according to the SPARC folder structure when generating your dataset in the last step
-              of this process.
+              structure. Over the next steps, you will be asked to specify folders and files to be
+              included in your dataset so SODA can automatically organize them according to the
+              SPARC folder structure when generating your dataset in the last step of this process.
             </p>
           </div>
           <div class="guided--section">
-            <h2 class="text-sub-step-title">
-              Click "Save and Continue" to start structuring your dataset.
+            <div
+              id="guided-dataset-structure-intro-lottie"
+              class="lottieAnimationContainer guided--container-lottie-standard"
+            ></div>
+          </div>
+          <div class="guided--section">
+            <h2 class="guided--text-click-continue">
+              Click "<span class="next-button-span"></span>" to start structuring your dataset.
             </h2>
           </div>
         </div>
@@ -937,7 +1031,7 @@
                   Hit enter/click the checkbox after entering the subject ID to add a subject.
                 </p>
                 <button
-                  class="ui primary basic button mt-0"
+                  class="ui primary basic button mt-2"
                   onclick="addSubjectSpecificationTableRow()"
                 >
                   <i class="fas fa-plus" style="margin-right: 7px"></i>Add a new subject
@@ -990,18 +1084,9 @@
                   </thead>
                   <tbody id="pools-specification-table-body"></tbody>
                 </table>
-                <button class="ui primary basic button mt-0" onclick="addPoolTableRow()">
+                <button class="ui primary basic button mt-2" onclick="addPoolTableRow()">
                   <i class="fas fa-plus" style="margin-right: 7px"></i>Add a new pool
                 </button>
-                <!--<button
-                    class="ui primary button mt-md"
-                    id="guided-button-save-pool-fields"
-                    style="
-                      background-color: var(--color-light-green) !important;
-                    "
-                  >
-                    Continue
-                  </button>-->
               </div>
             </div>
           </div>
@@ -2159,8 +2244,15 @@
             </p>
           </div>
           <div class="guided--section">
-            <h2 class="text-sub-step-title">
-              Click "Save and Continue" to start adding Metadata to your dataset.
+            <div
+              id="guided-dataset-metadata-intro-lottie"
+              class="lottieAnimationContainer guided--container-lottie-standard"
+            ></div>
+          </div>
+          <div class="guided--section">
+            <h2 class="guided--text-click-continue">
+              Click "<span class="next-button-span"></span>" to start adding Metadata to your
+              dataset.
             </h2>
           </div>
         </div>
@@ -2177,159 +2269,17 @@
               files. One manifest file must be included in each high level folder. Manifest files
               are intended to contain information about all of the data files in its high level
               folder.
-              <br /><br />
-              You can request SODA to generate manifest files for you and they will be included in
-              your dataset when it is generated in the last step of the guided workflow.
             </p>
           </div>
-          <div class="guided--section">
-            <h2 class="text-sub-step-title">
-              Would you like SODA to auto-generate your manifest files?
-            </h2>
-            <div class="guided--radio-button-container">
-              <button
-                class="guided--radio-button tile-button"
-                id="guided-button-auto-generate-manifest-files"
-                data-next-element="guided-section-auto-generate-manifest-files"
-                data-button-config-value="manifest-files-generated-automatically"
-                data-button-config-value-state="yes"
-              >
-                <div class="tile-button-icon">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 640 512">
-                    <path
-                      fill="currentColor"
-                      d="M320 0c17.7 0 32 14.3 32 32V96H480c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H160c-35.3 0-64-28.7-64-64V160c0-35.3 28.7-64 64-64H288V32c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H208zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H304zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H400zM264 256c0-22.1-17.9-40-40-40s-40 17.9-40 40s17.9 40 40 40s40-17.9 40-40zm152 40c22.1 0 40-17.9 40-40s-17.9-40-40-40s-40 17.9-40 40s17.9 40 40 40zM48 224H64V416H48c-26.5 0-48-21.5-48-48V272c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48v96c0 26.5-21.5 48-48 48H576V224h16z"
-                    />
-                  </svg>
-                </div>
-                <div class="tile-button-text">
-                  <h2>Yes, auto-generate my manifest files</h2>
-                </div>
-              </button>
-              <div
-                class="guided-tippy-wrapper"
-                data-tippy-content="Manifest file import coming soon"
-                rel="popover"
-                placement="bottom"
-                data-trigger="hover"
-              >
-                <button
-                  class="guided--radio-button tile-button"
-                  id="guided-button-import-manifest-files"
-                  style="opacity: 0.5; cursor: default !important; pointer-events: none"
-                >
-                  <div class="tile-button-icon">
-                    <svg
-                      height="50"
-                      width="50"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewbox="0 0 80.48 98.35"
-                    >
-                      <defs>
-                        <style>
-                          .cls-1,
-                          .cls-2 {
-                            fill: none;
-                          }
+          <div class="guided--section" id="guided-section-auto-generate-manifest-files">
+            <h2 class="text-sub-step-title">Preview/Edit manifest files</h2>
+            <p class="help-text">
+              Click on any manifest file below if you would like to preview it or add additional
+              metadata. Note that SODA will automatically include the "filename", "timestamp", and
+              "file type" in your manifest files. Click 'Save and Continue' to move on to the next
+              step.
+            </p>
 
-                          .cls-1,
-                          .cls-2,
-                          .cls-3 {
-                            stroke-miterlimit: 10;
-                          }
-
-                          .cls-1 {
-                            stroke-width: 6px;
-                          }
-
-                          .cls-2 {
-                            stroke-width: 8px;
-                          }
-                        </style>
-                      </defs>
-                      <g id="Layer_2" data-name="Layer 2">
-                        <g id="Layer_2-2" data-name="Layer 2">
-                          <rect
-                            class="cls-1"
-                            x="65.2"
-                            y="70.64"
-                            width="0.17"
-                            height="25.22"
-                            stroke="#B80D49"
-                          ></rect>
-                          <rect
-                            class="cls-1"
-                            x="65.29"
-                            y="70.64"
-                            width="0.17"
-                            height="25.22"
-                            transform="translate(148.62 17.88) rotate(90)"
-                            stroke="#B80D49"
-                          ></rect>
-                          <path
-                            class="cls-2"
-                            d="M43.72,83.16l-32.67.09a7.83,7.83,0,0,1-8-7.58V10.58A7.82,7.82,0,0,1,11.05,3H48.81L65.54,17.54V64.8"
-                            stroke="#565E6B"
-                          ></path>
-                          <path
-                            class="cls-3"
-                            d="M65.54,17.54v3.23H52.61a7.31,7.31,0,0,1-7.52-7.09V3h3.72Z"
-                            stroke="#565E6B"
-                            fill="#565E6B"
-                          ></path>
-                          <line
-                            class="cls-1"
-                            x1="4.4"
-                            y1="46.35"
-                            x2="63.26"
-                            y2="46.35"
-                            stroke="#13716D"
-                          ></line>
-                          <line
-                            class="cls-1"
-                            x1="4.4"
-                            y1="62.64"
-                            x2="63.26"
-                            y2="62.64"
-                            stroke="#13716D"
-                          ></line>
-                          <line
-                            class="cls-1"
-                            x1="22.4"
-                            y1="46.35"
-                            x2="22.4"
-                            y2="80.5"
-                            stroke="#13716D"
-                          ></line>
-                          <line
-                            class="cls-1"
-                            x1="40.4"
-                            y1="46.35"
-                            x2="40.4"
-                            y2="80.5"
-                            stroke="#13716D"
-                          ></line>
-                        </g>
-                      </g>
-                    </svg>
-                  </div>
-                  <div class="tile-button-text">
-                    <h2>No, I already have manifest files prepared</h2>
-                  </div>
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="guided--panel" id="guided-section-auto-generate-manifest-files">
-            <div class="guided--section">
-              <h2 class="text-sub-step-title">Preview/Edit manifest files</h2>
-              <p class="help-text">
-                Click on any manifest file below if you would like to preview it or add additional
-                metadata. Note that SODA will automatically include the "filename", "timestamp", and
-                "file type" in your manifest files. Click 'Save and Continue' to move on to the next
-                step.
-              </p>
-            </div>
             <div class="guided--section" id="guided-container-manifest-file-cards"></div>
           </div>
         </div>
@@ -2734,8 +2684,9 @@
             </button>
           </div>
           <div class="guided--section hidden" id="guided-div-wait-for-protocols">
-            <h2 class="text-sub-step-title">
-              Click "Save and Continue" to continue without adding protocols to your dataset.
+            <h2 class="guided--text-click-continue">
+              Click "<span class="next-button-span"></span>" to continue without adding protocols to
+              your dataset.
             </h2>
           </div>
         </div>
@@ -2749,10 +2700,8 @@
           </div>
           <p class="help-text">
             All SPARC datasets must include a dataset_description metadata file that contain various
-            information about the dataset. You have already provided some of the required
-            information during the previous steps (award number, contributors, protocols, etc.). You
-            can provide the remaining information below. It is suggest to provide as much
-            information as available. SODA will use that information to automatically create the
+            information about the dataset. It is suggested to provide as muh ch information as
+            available. SODA will use that information to automatically create the
             dataset_description file and include it in your dataset when it is generated in the last
             step of this guided workflow.
           </p>
@@ -4100,10 +4049,9 @@
             </div>
           </div>
           <div class="guided--section" id="guided-section-no-computational-modeling-data">
-            <p class="help-text">
-              Your dataset does not require a code_description.xlsx file. Click "Save and Continue"
-              below.
-            </p>
+            <h2 class="guided--text-click-continue">
+              Click "<span class="next-button-span"></span>" below.
+            </h2>
           </div>
         </div>
         <div id="guided-create-readme-metadata-tab" class="guided--page" data-page-name="README">
@@ -4214,22 +4162,7 @@
               shown on the landing page of your dataset when it is publised on sparc.science.
             </p>
           </div>
-          <div class="guided--section">
-            <div class="space-around" style="align-items: flex-start">
-              <img
-                src="assets/img/Pennsieve-overview-example.png"
-                alt="SPARC dataset structure example"
-                style="width: 40%; object-fit: contain"
-              />
-              <div class="justify-center" style="width: 40%">
-                <img
-                  src="assets/img/Pennsieve-metadata-example.png"
-                  alt="SPARC dataset structure example"
-                  style="width: 100%; object-fit: contain"
-                />
-              </div>
-            </div>
-          </div>
+
           <div class="guided--panel">
             <div
               class="guided--section"
@@ -5011,8 +4944,9 @@
             </div>
           </div>
           <div class="guided--section" id="guided-section-skip-validation">
-            <h2 class="guided--text-sub-step">
-              Click "Save and Continue" to continue without validating your dataset
+            <h2 class="guided--text-click-continue">
+              Click "<span class="next-button-span"></span>" to continue without validating your
+              dataset
             </h2>
           </div>
         </div>
@@ -5423,9 +5357,9 @@
                 </tr>
               </tbody>
             </table>
-            <h2 class="text-sub-step-title" id="guided-dataset-upload-complete-message">
-              Click "Save and Continue" to go to the last step of the data curation and sharing
-              process
+            <h2 class="guided--text-click-continue" id="guided-dataset-upload-complete-message">
+              Click "<span class="next-button-span"></span>" to go to the last step of the data
+              curation and sharing process
             </h2>
           </div>
           <div
@@ -5452,7 +5386,7 @@
               Review dataset on Pennsieve to ensure it has been generated as requested and all the
               data and metadata are included properly
             </p>
-            <p
+            <div
               class="help-text text-center"
               style="
                 font-size: large;
@@ -5460,15 +5394,19 @@
                 padding: 0rem 0rem 0rem 0.3rem;
                 border-radius: 5px;
                 height: 44px;
+                width: 491px;
               "
             >
               <a id="guided-pennsieve-dataset-link" target="_blank">
-                <i class="fas fa-link" style="margin-right: 0.4rem; margin-left: 0.4rem"></i>
+                <i
+                  class="fas fa-link"
+                  style="margin-right: 0.4rem; margin-left: 0.4rem; writing-mode: tbd"
+                ></i>
               </a>
-              <button id="guided-pennsieve-copy-dataset-link">
+              <button id="guided-pennsieve-copy-dataset-link" class="copy-button">
                 <i id="guided-pennsieve-copy-icon" class="fas fa-copy"></i>
               </button>
-            </p>
+            </div>
           </div>
           <div class="guided--section">
             <h2 class="text-sub-step-title mt-0">Editing this dataset</h2>
@@ -5490,21 +5428,20 @@
               DOI will NOT be active, and therefore searchable, until the dataset is published to
               Pennsieve Discover.
             </p>
-            <div class="guided--container-data-display mt-sm" style="width: 100%">
-              <div class="guided--card-dataset-info w-auto">
+
+            <div class="help-text text-center copy-doi-container mt-2">
+              <div class="copy-doi-text-container">
                 <h5 class="guided--dataset-description mr-4">DOI:</h5>
                 <h5 id="guided--para-doi-info" class="guided--dataset-content"></h5>
               </div>
+              <button id="guided-pennsieve-copy-doi" class="copy-button hidden">
+                <i id="guided-pennsieve-copy-icon" class="fas fa-copy"></i>
+              </button>
             </div>
-            <p id="guided--doi-information"></p>
             <button
-              class="ui positive button guided--button-footer mt-2"
+              class="ui positive button soda-green-background mt-3"
               id="curate-button-reserve-doi"
-              style="
-                background-color: var(--color-light-green) !important;
-                width: 150px !important;
-                height: 3.2rem;
-              "
+              style="width: 150px !important; height: 3.2rem"
               onclick="guidedReserveAndSaveDOI()"
             >
               Reserve DOI
@@ -5535,28 +5472,19 @@
               </div>
             </div>
             <button
-              class="ui positive button guided--button-footer mt-lg"
+              class="ui positive button soda-green-background mt-lg"
               id="guided-button-share-dataset-with-curation-team"
-              style="
-                background-color: var(--color-light-green) !important;
-                width: 281px !important;
-                height: 3.2rem;
-                font-family: Poppins;
-              "
+              style="width: 281px !important; height: 3.2rem"
               onclick="guidedModifyCurationTeamAccess('share')"
             >
               Share with SPARC Curation Team</button
             ><button
-              class="ui positive button guided--button-footer mt-lg"
+              class="ui positive button plum-background mt-lg"
               id="guided-button-unshare-dataset-with-curation-team"
-              style="
-                background-color: var(--color-bg-plum) !important;
-                width: 281px !important;
-                height: 3.2rem;
-              "
+              style="width: 281px !important; height: 3.2rem"
               onclick="guidedModifyCurationTeamAccess('unshare')"
             >
-              Withdraw from Review
+              Withdraw from review
             </button>
           </div>
           <div class="guided--section hidden" id="guided--prepublishing-checklist-container">
@@ -5709,7 +5637,7 @@
                             </div>
                             <button
                               id="guided--ORCID-btn"
-                              class="prepublishing-item-button ml-3"
+                              class="prepublishing-item-button green-hollow-button ml-3"
                               onclick="orcidSignIn('guided')"
                             >
                               Link ORCID iD
@@ -5724,139 +5652,16 @@
                     </table>
                   </div>
                 </div>
-
-                <!--Continue Button comes before filetree and excluded files section-->
-                <div class="guided--pre-publishing-continue-container">
-                  <button
-                    id="guided--prepublishing-continue-btn"
-                    class="pre-publishing-continue btn_animated"
-                    style="width: 200px; height: 40px; font-size: 15px; margin-top: 2rem"
-                    onclick="showPrepublishingReview()"
-                  >
-                    <div style="margin-left: 0px; padding-top: 2px" class="btn_animated-inside">
-                      Continue
-                    </div>
-                  </button>
-                </div>
-
-                <!--Withdraw dataset from review when Review status shows dataset is under review-->
-                <div
-                  style="width: 100%; display: none; justify-content: center"
-                  id="guided--prepublishing-withdraw-btn-container"
-                >
-                  <button
-                    id="guided--btn-withdraw-review-dataset"
-                    onclick="withdrawDatasetSubmission('guided')"
-                    class="btn_animated md skip"
-                    style="
-                      cursor: pointer;
-                      border-radius: 8px;
-                      width: 220px;
-                      height: 40px;
-                      background: rgb(255, 255, 255);
-                      color: red;
-                      font-weight: 600;
-                      border: 1px solid red;
-                      font-size: 15px;
-                      display: none;
-                    "
-                  >
-                    <div class="btn_animated-inside">
-                      <i class="fas fa-ban" style="padding-right: 5px"></i>
-                      Withdraw from review
-                    </div>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="guided--section hidden" id="guided--submit-prepublishing-review">
-            <div class="ui form" style="width: 450px">
-              <div class="grouped fields">
-                <!--Metadata file viewer-->
-                <div id="guided--excluded-files-container">
-                  <!--Pennsieve file tree header-->
-                  <div
-                    style="
-                      display: none !important;
-                      flex-direction: column;
-                      align-items: center;
-                      justify-content: center;
-                    "
-                  >
-                    <label
-                      id="guided--pre-publishing-file-viewer-label"
-                      style="
-                        font-size: 17px;
-                        color: var(--color-bg-plum);
-                        width: 100%;
-                        text-align: center;
-                        margin-top: 1.5rem;
-                      "
-                      >Optionally exclude metadata files from publishing:
-                      <i
-                        class="fas fa-info-circle popover-tooltip"
-                        data-content="Excluded metadata files will not be visible to the public once your dataset has been published."
-                        rel="popover"
-                        data-html="true"
-                        data-placement="right"
-                        data-trigger="hover"
-                      ></i>
-                    </label>
-                  </div>
-
-                  <!--Pennsieve metadata file viewer-->
-                  <div
-                    id="guided--pre-publication-items-container"
-                    class="prepublish-items-container hidden"
-                    style="height: 12rem"
-                  >
-                    <div id="guided--items-pre-publication"></div>
-
-                    <div
-                      class="ui active medium text loader guided--items-spinner"
-                      style="position: absolute; top: 6.5rem; margin-left: auto; margin-right: auto"
-                    >
-                      Fetching Files
-                    </div>
-                  </div>
-                </div>
-
-                <!--Submit Button-->
-                <!--#submit-withdraw-prepublishing-btns-container-->
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                  "
-                  id="guided--prepublishing-submit-btn-container"
-                >
-                  <button
-                    onclick="disseminateDataset('submit-pre-publishing', 'guided')"
-                    class="ui positive button guided--button-footer mt-lg"
-                    style="
-                      background-color: var(--color-light-green) !important;
-                      width: 281px !important;
-                      height: 3.2rem;
-                      margin-top: 0 !important;
-                    "
-                  >
-                    <i class="fas fa-sign-in-alt" style="padding-right: 5px"></i>
-                    Submit
-                  </button>
-                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <footer class="guided--footer hidden" id="guided-footer-div">
+    <footer class="footer-container hidden" id="guided-footer-div">
       <div class="guided--container-footer-buttons flex-end">
         <button
-          class="ui secondary basic button guided--button-footer"
+          class="ui secondary basic button"
           id="guided-back-button"
           style="width: 200px !important; font-family: Poppins"
         >
@@ -5865,7 +5670,7 @@
       </div>
       <div class="guided--container-footer-buttons flex-between">
         <button
-          class="ui positive button guided--button-footer"
+          class="ui positive button soda-green-background"
           id="guided-next-button"
           style="
             background-color: var(--color-light-green) !important;
@@ -5886,10 +5691,10 @@
         </button>
       </div>
     </footer>
-    <footer class="guided--footer hidden" id="guided-sub-page-navigation-footer-div">
+    <footer class="footer-container hidden" id="guided-sub-page-navigation-footer-div">
       <div class="guided--container-footer-buttons flex-end">
         <button
-          class="ui secondary basic button guided--button-footer"
+          class="ui secondary basic button"
           id="guided-button-sub-page-back"
           style="width: 130px !important; font-family: Poppins"
         >
@@ -5898,7 +5703,7 @@
       </div>
       <div class="guided--container-footer-buttons flex-between">
         <button
-          class="ui secondary basic button guided--button-footer guided--button-basic"
+          class="ui secondary basic button green-hollow-button"
           id="guided-button-sub-page-continue"
           style="width: 130px !important; font-family: Poppins"
         >
@@ -5906,7 +5711,7 @@
         ><button
           class="ui secondary basic button save-and-exit-button"
           id="guided-button-sub-page-save-and-exit"
-          style="width: 160px !important; font-family: Poppins"
+          style="width: 165px !important; font-family: Poppins"
           onclick="guidedSaveAndExit()"
         >
           <i class="far fa-save" style="margin-right: 10px"></i>

@@ -1004,13 +1004,15 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               $("#para-account-detail-curate-generate").html(result);
               $(".bf-account-details-span").html(result);
               $("#para-continue-bf-dataset-getting-started").text("");
+              console.log("bf_account_details_req", bf_account_details_req);
+              console.log("opendropdown function");
 
-              $("#current_curation_team_status").text("None");
-              $("#curation-team-share-btn").hide();
-              $("#curation-team-unshare-btn").hide();
-              $("#current_sparc_consortium_status").text("None");
-              $("#sparc-consortium-share-btn").hide();
-              $("#sparc-consortium-unshare-btn").hide();
+              // $("#current_curation_team_status").text("None");
+              // $("#curation-team-share-btn").hide();
+              // $("#curation-team-unshare-btn").hide();
+              // $("#current_sparc_consortium_status").text("None");
+              // $("#sparc-consortium-share-btn").hide();
+              // $("#sparc-consortium-unshare-btn").hide();
 
               let org = bf_account_details_req.data.organization;
               console.log(org);
@@ -1070,9 +1072,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       });
     }
   } else if (dropdown === "dataset") {
-    if (ev != null) {
-      dropdownEventID = ev.id;
-    }
+    dropdownEventID = !!ev ? ev.id : "";
 
     // check the value of Current Organization
     // TODO: Test heavily
@@ -1089,6 +1089,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       return;
     }
 
+    
     $(".svg-change-current-account.dataset").css("display", "none");
     $("#div-permission-list-2").css("display", "none");
     $(".ui.active.green.inline.loader.small:not(.organization-loader)").css("display", "block");
@@ -1311,21 +1312,46 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               }
             }
           },
-        }).then((result) => {
+        }).then(async (result) => {
           if (result.isConfirmed) {
-            if (show_timer) {
-              Swal.fire({
-                allowEscapeKey: false,
-                backdrop: "rgba(0,0,0, 0.4)",
-                heightAuto: false,
-                showConfirmButton: false,
-                timer: 2000,
-                timerProgressBar: false,
-                title: "Loading your dataset details...",
-                didOpen: () => {
-                  Swal.showLoading();
-                },
-              });
+            Swal.fire({
+              allowEscapeKey: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              heightAuto: false,
+              showConfirmButton: false,
+              timer: 2000,
+              timerProgressBar: false,
+              title: "Loading your dataset details...",
+              didOpen: () => {
+                Swal.showLoading();
+              },
+            });
+
+            console.log("dropdownEvent", dropdownEventID);
+            if (dropdownEventID != "disseminate-select-pennsieve-dataset") {
+              // Ensure the dataset is not locked except for when the user is on the disseminate page (to allow for the dataset to be unsubmitted)
+              // Ensure the dataset is not locked before proceeding
+              const datasetIsLocked = await api.isDatasetLocked(defaultBfAccount, bfDataset);
+              if (datasetIsLocked) {
+                // Show the locked swal and return
+                Swal.fire({
+                  icon: "info",
+                  title: `${bfDataset} is locked from editing`,
+                  html: `
+                  This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
+                  <br />
+                  <br />
+                  If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
+                `,
+                  width: 600,
+                  heightAuto: false,
+                  backdrop: "rgba(0,0,0, 0.4)",
+                  confirmButtonText: "Ok",
+                  focusConfirm: true,
+                  allowOutsideClick: false,
+                });
+                return;
+              }
             }
             if (dropdownEventID === "dd-select-pennsieve-dataset") {
               $("#ds-name").val(bfDataset);
