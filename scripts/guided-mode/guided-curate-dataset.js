@@ -6796,6 +6796,8 @@ const guidedResumeProgress = async (datasetNameToResume) => {
     showCancelButton: false,
   });
 
+  // Wait for 2 seconds so that the loading icon can at least kind of be seen (This can be removed)
+  await new Promise((resolve) => setTimeout(resolve, 2000));
   try {
     const datasetResumeJsonObj = await getProgressFileData(datasetNameToResume);
 
