@@ -744,7 +744,7 @@ const resetFFMUI = () => {
   resetManifest(true); // true is intentional even if different from the preceding pattern
 
   // reset the prepare datasets sections
-  wipeOutCurateProgress()
+  wipeOutCurateProgress();
   // validation reset
   let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
   clearValidationResults(validationErrorsTable);
@@ -757,10 +757,9 @@ const resetFFMUI = () => {
   $("#share_sparc_consortium-question-2").removeClass("show");
 
   $("#submit_prepublishing_review-question-1").removeClass("prev");
-  $("#submit_prepublishing_review-question-2").removeClass("show")
-  $("#submit_prepublishing_review-question-3").removeClass("show")
-  $("#submit_prepublishing_review-question-4").removeClass("show")
-
+  $("#submit_prepublishing_review-question-2").removeClass("show");
+  $("#submit_prepublishing_review-question-3").removeClass("show");
+  $("#submit_prepublishing_review-question-4").removeClass("show");
 };
 
 var dropdownEventID = "";
