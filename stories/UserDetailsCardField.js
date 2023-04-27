@@ -91,12 +91,13 @@ const UserDetailsCardField = ({ fieldOption, tabName }) => {
   } else if (fieldOption === FIELD_OPTIONS.OWNER_PERMISSIONS) {
     fieldContainer.style.display = "flex";
     fieldContainer.style.flexDirection = "row";
+    fieldContainer.style.justifyContent = "space-between";
     field = `
             <div class="card-container manage-dataset" style="overflow-x: hidden">
               <div>
                 <h5
                   class="card-left"
-                  style="text-align: right; padding-right: 10px; width: 140px"
+                  style="text-align: left; padding-right: 10px; width: 140px; margin-right: 60px;"
                 >
                   Current owner:
                 </h5>
