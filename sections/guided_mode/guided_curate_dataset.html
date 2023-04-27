@@ -4150,7 +4150,7 @@
         </div>
 
         <div id="guided-pennsieve-intro-tab" class="guided--page" data-page-name="Pennsieve log in">
-          <div class="guided--section" style="padding-left: 0; padding-right: 0">
+          <div class="guided--section">
             <h1 class="text-sub-step-title">Pennsieve metadata</h1>
             <p class="help-text">
               All SPARC datasets must be uploaded on
@@ -4163,84 +4163,116 @@
             </p>
           </div>
 
-          <div class="guided--panel">
-            <div
-              class="guided--section"
-              id="guided-confirm-pennsieve-account"
-              style="padding-left: 0; padding-right: 0"
-            >
-              <div class="guided--input-container">
-                <h2 class="text-sub-step-title">
-                  Is this the Pennsieve account you would like to work with?
-                </h2>
-                <div class="guided--container-data-display mt-sm" style="width: 100%">
-                  <div class="guided--card-dataset-info">
-                    <div class="guided--dataset-description-container">
-                      <h5 class="guided--dataset-description">Current account:</h5>
-                    </div>
-                    <div
-                      class="guided--dataset-content-container"
-                      onclick="openDropdownPrompt(this, 'bf')"
-                    >
-                      <h5
-                        id="guided-pennsive-intro-bf-account"
-                        class="guided--dataset-content"
-                      ></h5>
-                      <i class="far fa-edit jump-back" style="color: #000"></i>
-                    </div>
+          <div class="guided--section" id="guided-confirm-pennsieve-account">
+            <div class="guided--input-container">
+              <h2 class="text-sub-step-title">
+                Is this the Pennsieve account you would like to work with?
+              </h2>
+              <div class="guided--container-data-display mt-sm" style="width: 100%">
+                <div class="guided--card-dataset-info">
+                  <div class="guided--dataset-description-container">
+                    <h5 class="guided--dataset-description">Current account:</h5>
                   </div>
-                  <div class="guided--card-dataset-info">
-                    <div class="guided--dataset-description-container">
-                      <h5 class="guided--dataset-description">Account details:</h5>
-                    </div>
-                    <div
-                      class="guided--dataset-content-container"
-                      onclick="openDropdownPrompt(this, 'bf')"
+                  <div
+                    class="guided--dataset-content-container"
+                    onclick="openDropdownPrompt(this, 'bf')"
+                  >
+                    <h5 id="guided-pennsive-intro-bf-account" class="guided--dataset-content"></h5>
+                    <i class="far fa-edit jump-back" style="color: #000"></i>
+                  </div>
+                </div>
+                <div class="guided--card-dataset-info">
+                  <div class="guided--dataset-description-container">
+                    <h5 class="guided--dataset-description">Account details:</h5>
+                  </div>
+                  <div
+                    class="guided--dataset-content-container"
+                    onclick="openDropdownPrompt(this, 'bf')"
+                  >
+                    <h5
+                      class="guided--dataset-content guidedBfAccountDetails"
+                      id="guided-pennsive-intro-account-details"
                     >
-                      <h5
-                        class="guided--dataset-content guidedBfAccountDetails"
-                        id="guided-pennsive-intro-account-details"
-                      >
-                        None
-                      </h5>
-                      <i class="far fa-edit jump-back" style="color: #000"></i>
-                    </div>
+                      None
+                    </h5>
+                    <i class="far fa-edit jump-back" style="color: #000"></i>
                   </div>
                 </div>
               </div>
-              <div class="guided--radio-button-container mb-sm" style="margin-top: 1rem">
-                <button
-                  class="ui positive basic button guided--radio-button"
-                  id="guided-confirm-pennsieve-account-button"
-                  style="width: 247px"
-                  data-button-config-value="pennsieve-account-has-been-confirmed"
-                  data-button-config-value-state="yes"
-                >
-                  Yes, this is the account
-                </button>
-                <button
-                  class="ui negative basic button guided--radio-button"
-                  data-prevent-radio-handler="true"
-                  data-reset-guided-mode-page="true"
-                  onclick="openDropdownPrompt(this, 'bf')"
-                  style="width: 247px"
-                >
-                  No, connect another account
-                </button>
-              </div>
             </div>
-            <div class="guided--section" id="guided-select-pennsieve-account">
-              <h2 class="text-sub-step-title">First, connect your Pennsieve account with SODA</h2>
+            <div class="guided--radio-button-container mb-sm" style="margin-top: 1rem">
               <button
-                class="ui positive button mt-md"
+                class="ui positive basic button guided--radio-button"
+                id="guided-confirm-pennsieve-account-button"
+                style="width: 247px"
+                data-next-element="guided-section-select-organization2"
+                data-button-config-value="pennsieve-account-has-been-confirmed"
+                data-button-config-value-state="yes"
+              >
+                Yes, this is the account
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button"
+                data-prevent-radio-handler="true"
                 data-reset-guided-mode-page="true"
                 onclick="openDropdownPrompt(this, 'bf')"
-                style="
-                  background-color: var(--color-light-green) !important;
-                  width: 200px !important;
-                "
+                style="width: 247px"
               >
-                Log in to Pennsieve
+                No, connect another account
+              </button>
+            </div>
+          </div>
+          <div class="guided--section" id="guided-select-pennsieve-account">
+            <h2 class="text-sub-step-title">First, connect your Pennsieve account with SODA</h2>
+            <button
+              class="ui positive button mt-md"
+              data-reset-guided-mode-page="true"
+              onclick="openDropdownPrompt(this, 'bf')"
+              style="background-color: var(--color-light-green) !important; width: 200px !important"
+            >
+              Log in to Pennsieve
+            </button>
+          </div>
+          <div class="guided--section" id="guided-section-select-organization2">
+            <div class="guided--input-container">
+              <h2 class="text-sub-step-title">Is this the organization?</h2>
+              <div class="guided--container-data-display mt-sm" style="width: 100%">
+                <div class="guided--card-dataset-info">
+                  <div class="guided--dataset-description-container">
+                    <h5 class="guided--dataset-description">foo:</h5>
+                  </div>
+                  <div
+                    class="guided--dataset-content-container"
+                    onclick="openDropdownPrompt(this, 'bf')"
+                  >
+                    <h5
+                      id="guided-pennsive-selected-organization"
+                      class="guided--dataset-content"
+                    ></h5>
+                    <i class="far fa-edit jump-back" style="color: #000"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="guided--radio-button-container mb-sm" style="margin-top: 1rem">
+              <button
+                class="ui positive basic button guided--radio-button"
+                id="guided-confirm-pennsieve-account-button"
+                style="width: 280px"
+                data-next-element="guided-section-select-organization3"
+                data-button-config-value="organization-has-been-confirmed"
+                data-button-config-value-state="yes"
+              >
+                Yes, this is the organization
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button"
+                data-prevent-radio-handler="true"
+                data-reset-guided-mode-page="true"
+                onclick="openDropdownPrompt(this, 'bf')"
+                style="width: 280px"
+              >
+                No, select a different organization
               </button>
             </div>
           </div>
