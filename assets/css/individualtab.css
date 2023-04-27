@@ -1088,9 +1088,9 @@
 }
 
 .card-container.prepare-submission .card-left {
-  /* text-align: right; */
+  text-align: left;
   float: left;
-  /* width: auto; */
+  width: auto;
 }
 
 .card-right {
