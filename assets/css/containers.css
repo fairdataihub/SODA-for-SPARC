@@ -431,3 +431,8 @@
   -webkit-animation-delay: -0.8s;
   animation-delay: -0.8s;
 }
+
+.top-level-card-container {
+  margin: auto;
+  width: 550px;
+}
