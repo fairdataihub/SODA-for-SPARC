@@ -411,9 +411,7 @@
         >
           <h1 class="text-sub-step-title">Funding information</h1>
           <div class="guided--section">
-            <h2 class="text-sub-step-title">
-              Is the dataset you are submitting funded by a SPARC award?
-            </h2>
+            <h2 class="text-sub-step-title">Select the funding source for your dataset below:</h2>
             <div class="guided--radio-button-container">
               <button
                 class="ui positive basic button guided--radio-button"
@@ -422,28 +420,44 @@
                 data-button-config-value="dataset-is-sparc-funded"
                 data-button-config-value-state="yes"
               >
-                Yes
+                SPARC
               </button>
               <button
-                class="ui negative basic button guided--radio-button"
-                id="guided-button-dataset-is-not-sparc-funded"
-                data-next-element="guided-section-dataset-not-sparc-funded"
+                class="ui positive basic button guided--radio-button"
+                id="guided-button-dataset-is-re-join-funded"
+                data-next-element="guided-section-dataset-re-join-funded"
                 data-button-config-value="dataset-is-sparc-funded"
                 data-button-config-value-state="no"
               >
-                No
+                RE-JOIN
+              </button>
+
+              <button
+                class="ui negative basic button guided--radio-button"
+                id="guided-button-dataset-is-not-sparc-funded"
+                data-next-element="guided-section-dataset-funded-by-other"
+                data-button-config-value="dataset-is-sparc-funded"
+                data-button-config-value-state="no"
+              >
+                Other
               </button>
             </div>
           </div>
 
-          <div class="guided--section hidden" id="guided-section-dataset-sparc-funded">
+          <div class="guided--section" id="guided-section-dataset-sparc-funded">
             <h2 class="guided--text-click-continue">
               Click "<span class="next-button-span"></span>" to confirm your dataset is funded by a
               SPARC award.
             </h2>
           </div>
+          <div class="guided--section" id="guided-section-dataset-re-join-funded">
+            <h2 class="guided--text-click-continue">
+              Click "<span class="next-button-span"></span>" to confirm your dataset is funded by
+              RE-JOIN.
+            </h2>
+          </div>
 
-          <div class="guided--section hidden" id="guided-section-dataset-not-sparc-funded">
+          <div class="guided--section" id="guided-section-dataset-funded-by-other">
             <h2 class="text-sub-step-title">
               Have you already reached out to the SPARC curation team to see if your data is
               suitable for the SPARC Data Portal?
@@ -4205,7 +4219,7 @@
                   >
                     <h5
                       id="guided-pennsive-selected-organization"
-                      class="guided--dataset-content"
+                      class="guided--dataset-content bf-organization-span"
                     ></h5>
                     <i class="far fa-edit jump-back" style="color: #000"></i>
                   </div>

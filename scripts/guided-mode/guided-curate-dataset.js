@@ -894,14 +894,21 @@ const savePageChanges = async (pageBeingLeftID) => {
       const userSelectedDatasetIsSparcFunded = document
         .getElementById("guided-button-dataset-is-sparc-funded")
         .classList.contains("selected");
+      const userSelectedDatasetIsReJoinFunded = document
+        .getElementById("guided-button-dataset-is-re-join-funded")
+        .classList.contains("selected");
       const userSelectedDatasetIsNotSparcFunded = document
         .getElementById("guided-button-dataset-is-not-sparc-funded")
         .classList.contains("selected");
 
-      if (!userSelectedDatasetIsSparcFunded && !userSelectedDatasetIsNotSparcFunded) {
+      if (
+        !userSelectedDatasetIsSparcFunded &&
+        !userSelectedDatasetIsNotSparcFunded &&
+        !userSelectedDatasetIsReJoinFunded
+      ) {
         errorArray.push({
           type: "notyf",
-          message: "Please indicate if your dataset is SPARC funded",
+          message: "Please indicate the funding source for this dataset.",
         });
         throw errorArray;
       }
@@ -913,6 +920,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         guidedUnSkipPage("guided-create-submission-metadata-tab");
         guidedUnSkipPage("guided-dataset-validation-tab");
         guidedUnSkipPage("guided-protocols-tab");
+      } else {
       }
 
       // If the user selected that dataset is not SPARC funded, skip the submission metadata page
