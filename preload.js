@@ -734,32 +734,62 @@ const resetFFMUI = (ev) => {
   $("#upload_local_dataset_tab").removeClass("prev");
   $("#upload_local_dataset_div").removeClass("show");
 
-  // Note: the create new dataset section can be skipped
-
-  // reset the prepare metadata UI
-  let resetSubmission = true;
+  // reset the prepare metadata UI -- only reset if the user is not in that section of the UI
+  let resetSubmissionTab = true;
+  let resetSubjectsTab = true;
+  let resetSamplesTab = true;
+  let resetDDTab = true;
+  let resetManifestTab = true;
+  let resetValidation = true;
   if (ev?.parentNode?.parentNode) {
     console.log(ev.parentNode.parentNode);
     if (ev.parentNode.parentNode.classList.contains("prepare-submission")) {
-      resetSubmission = false;
+      resetSubmissionTab = false;
+    }
+    if (ev.parentNode.parentNode.classList.contains("prepare-subjects")) {
+      resetSubjectsTab = false;
+    }
+    if (ev.parentNode.parentNode.classList.contains("prepare-samples")) {
+      resetSamplesTab = false;
+    }
+    if (ev.parentNode.parentNode.classList.contains("prepare-dataset-description")) {
+      resetDDTab = false;
+    }
+    if (ev.parentNode.parentNode.classList.contains("prepare-manifest")) {
+      resetManifestTab = false;
+    }
+    if (ev.parentNode.parentNode.classList.contains("prepare-validation")) {
+      resetValidation = false;
     }
   }
 
-  if (resetSubmission) {
+  if (resetSubmissionTab) {
     resetSubmission(false);
   }
 
-  resetDD(false);
-  resetSubjects(false);
-  resetSamples(false);
-  resetManifest(true); // true is intentional even if different from the preceding pattern
+  if (resetDDTab) {
+    resetDD(false);
+  }
+
+  if (resetSubjectsTab) {
+    resetSubjects(false);
+  }
+
+  if (resetSamplesTab) {
+    resetSamples(false);
+  }
+
+  if (resetManifestTab) {
+    resetManifest(false);
+  }
 
   // reset the prepare datasets sections
   wipeOutCurateProgress();
   // validation reset
   let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
-  clearValidationResults(validationErrorsTable);
-
+  if (resetValidation) {
+    clearValidationResults(validationErrorsTable);
+  }
   // reset the Disseminate Datasets sections
   $("#share_curation_team-question-1").removeClass("prev");
   $("#share_curation_team-question-2").removeClass("show");

@@ -853,11 +853,11 @@
   margin-bottom: 30px;
 }
 
-.individual-question.prepare-submission {
+.individual-question.prepare-metadata {
   width: 60%;
 }
 
-.individual-question.prepare-submission .field {
+.individual-question.prepare-metadata .field {
   margin: 15px !important;
   width: 100% !important;
 }
@@ -1087,7 +1087,7 @@
   width: fit-content;
 }
 
-.card-container.prepare-submission .card-left {
+.card-container.prepare-metadata .card-left {
   text-align: left;
   float: left;
   width: auto;
@@ -1459,4 +1459,27 @@
 
 #gather-logs-btn:hover {
   box-shadow: 0 0 6px #b0b0b0;
+}
+
+.prepare-metadata-dataset-span {
+  padding-left: 6px !important;
+  margin-left: 59px !important;
+}
+
+.prepare-metadata-organization-span {
+  width: fit-content !important;
+  margin-left: 32px !important;
+}
+
+.prepare-metadata-account-details-span {
+  padding-left: 65px !important;
+}
+
+.prepare-metadata-current-account-span {
+  margin-left: 60px !important;
+}
+
+.prepare-metadata-card-field {
+  width: 600px !important;
+  margin: 0 auto !important;
 }
