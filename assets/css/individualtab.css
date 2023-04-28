@@ -853,11 +853,11 @@
   margin-bottom: 30px;
 }
 
-.individual-question.prepare-submission {
+.individual-question.prepare-metadata {
   width: 60%;
 }
 
-.individual-question.prepare-submission .field {
+.individual-question.prepare-metadata .field {
   margin: 15px !important;
   width: 100% !important;
 }
@@ -1087,7 +1087,7 @@
   width: fit-content;
 }
 
-.card-container.prepare-submission .card-left {
+.card-container.prepare-metadata .card-left {
   text-align: left;
   float: left;
   width: auto;
