@@ -784,7 +784,7 @@ const resetFFMUI = (ev) => {
   }
 
   // reset the prepare datasets sections
-  wipeOutCurateProgress();
+  // wipeOutCurateProgress();
   // validation reset
   let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
   if (resetValidation) {
