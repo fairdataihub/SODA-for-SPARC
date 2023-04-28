@@ -4184,10 +4184,9 @@
                 Yes, this is the account
               </button>
               <button
-                class="ui negative basic button guided--radio-button"
+                class="ui negative basic button guided--radio-button change-current-account ds-dd organization"
                 data-prevent-radio-handler="true"
                 data-reset-guided-mode-page="true"
-                onclick="openDropdownPrompt(this, 'bf')"
                 style="width: 247px"
               >
                 No, connect another account
@@ -4211,11 +4210,10 @@
               <div class="guided--container-data-display mt-sm" style="width: 100%">
                 <div class="guided--card-dataset-info">
                   <div class="guided--dataset-description-container">
-                    <h5 class="guided--dataset-description">foo:</h5>
+                    <h5 class="guided--dataset-description">Current organization:</h5>
                   </div>
                   <div
-                    class="guided--dataset-content-container"
-                    onclick="openDropdownPrompt(this, 'bf')"
+                    class="guided--dataset-content-container change-current-account ds-dd organization"
                   >
                     <h5
                       id="guided-pennsive-selected-organization"
@@ -4229,7 +4227,7 @@
             <div class="guided--radio-button-container mb-sm" style="margin-top: 1rem">
               <button
                 class="ui positive basic button guided--radio-button"
-                id="guided-confirm-pennsieve-account-button"
+                id="guided-confirm-pennsieve-organization-button"
                 style="width: 280px"
                 data-next-element="guided-section-organization-confirmed"
                 data-button-config-value="organization-has-been-confirmed"
@@ -4238,10 +4236,9 @@
                 Yes, this is the organization
               </button>
               <button
-                class="ui negative basic button guided--radio-button"
+                class="ui negative basic button guided--radio-button change-current-account ds-dd organization"
                 data-prevent-radio-handler="true"
                 data-reset-guided-mode-page="true"
-                onclick="openDropdownPrompt(this, 'bf')"
                 style="width: 280px"
               >
                 No, select a different organization
@@ -4249,7 +4246,10 @@
             </div>
           </div>
           <div class="guided--section" id="guided-section-organization-confirmed">
-            <h2 class="text-sub-step-title">Great! Now, let's create a new dataset</h2>
+            <h2 class="guided--text-click-continue">
+              Click "<span class="next-button-span"></span>" to confirm your account and
+              organization you will be uploading to.
+            </h2>
           </div>
         </div>
         <div id="guided-banner-image-tab" class="guided--page" data-page-name="Banner image">
