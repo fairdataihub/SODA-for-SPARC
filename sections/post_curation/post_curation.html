@@ -28,7 +28,7 @@
         <div class="ui form" style="width: 100%">
           <div class="grouped fields">
             <label style="font-size: 17px; color: var(--color-bg-plum)">Select a dataset: </label>
-            <div class="field" style="margin: auto; width: 550px">
+            <div class="field prepare-metadata-card-field">
               <div
                 style="
                   display: flex;
@@ -52,7 +52,11 @@
                         style="width: 100%"
                         onclick="openDropdownPrompt(this, 'bf')"
                       >
-                        <h5 class="card-right bf-account-span" style="padding-left: 15px">None</h5>
+                        <h5
+                          class="card-right bf-account-span prepare-metadata-current-account-span"
+                        >
+                          None
+                        </h5>
 
                         <svg
                           class="svg-change-current-account bi bi-pencil-fill"
@@ -73,10 +77,12 @@
                 <div style="display: flex; flex-direction: row; margin-bottom: 15px">
                   <div class="card-container prepare-metadata">
                     <div style="width: 100%">
-                      <h5 class="card-left" style="text-align: left; padding-right: 20px">
-                        Account details:
+                      <h5 class="card-left" style="text-align: left">Account details:</h5>
+                      <h5
+                        class="card-right bf-account-details-span prepare-metadata-account-details-span"
+                      >
+                        None
                       </h5>
-                      <h5 class="card-right bf-account-details-span">None</h5>
                     </div>
                   </div>
                 </div>
@@ -88,7 +94,9 @@
                         class="change-current-account ds-dd organization"
                         style="margin-left: 12px"
                       >
-                        <h5 class="card-right bf-organization-span" style="width: fit-content">
+                        <h5
+                          class="card-right bf-organization-span prepare-metadata-organization-span"
+                        >
                           None
                         </h5>
 
@@ -125,7 +133,9 @@
                         onclick="openDropdownPrompt(this, 'dataset')"
                         style="width: 100%"
                       >
-                        <h5 class="card-right bf-dataset-span" style="padding-left: 15px">None</h5>
+                        <h5 class="card-right bf-dataset-span prepare-metadata-dataset-span">
+                          None
+                        </h5>
 
                         <svg
                           class="svg-change-current-account dataset bi bi-pencil-fill"
@@ -172,7 +182,7 @@
                       >
                         <span
                           id="para-review-dataset-info-disseminate"
-                          style="color: #000; font-weight: 600; margin-left: 19px; font-size: 15px"
+                          class="prepare-metadata-review-status"
                         >
                           None
                         </span>
