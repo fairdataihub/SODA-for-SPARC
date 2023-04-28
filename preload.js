@@ -739,43 +739,43 @@ const resetFFMUI = (ev) => {
   let resetSubjectsTab = true;
   let resetSamplesTab = true;
   let resetDDTab = true;
-  let resetManifestTab = true; 
+  let resetManifestTab = true;
   let resetValidation = true;
-  if(ev?.parentNode?.parentNode) {
-    console.log(ev.parentNode.parentNode)
-    if(ev.parentNode.parentNode.classList.contains("prepare-submission")) {
-      resetSubmissionTab = false
+  if (ev?.parentNode?.parentNode) {
+    console.log(ev.parentNode.parentNode);
+    if (ev.parentNode.parentNode.classList.contains("prepare-submission")) {
+      resetSubmissionTab = false;
     }
-    if(ev.parentNode.parentNode.classList.contains("prepare-subjects")) {
-      resetSubjectsTab = false
+    if (ev.parentNode.parentNode.classList.contains("prepare-subjects")) {
+      resetSubjectsTab = false;
     }
-    if(ev.parentNode.parentNode.classList.contains("prepare-samples")) {
-      resetSamplesTab = false
+    if (ev.parentNode.parentNode.classList.contains("prepare-samples")) {
+      resetSamplesTab = false;
     }
-    if(ev.parentNode.parentNode.classList.contains("prepare-dataset-description")) {
-      resetDDTab = false
+    if (ev.parentNode.parentNode.classList.contains("prepare-dataset-description")) {
+      resetDDTab = false;
     }
-    if(ev.parentNode.parentNode.classList.contains("prepare-manifest")) {
-      resetManifestTab = false
+    if (ev.parentNode.parentNode.classList.contains("prepare-manifest")) {
+      resetManifestTab = false;
     }
-    if(ev.parentNode.parentNode.classList.contains("prepare-validation")) {
-      resetValidation = false
+    if (ev.parentNode.parentNode.classList.contains("prepare-validation")) {
+      resetValidation = false;
     }
   }
-  
+
   if (resetSubmissionTab) {
-    resetSubmission(false)
+    resetSubmission(false);
   }
-  
-  if(resetDDTab) {
+
+  if (resetDDTab) {
     resetDD(false);
   }
 
-  if(resetSubjectsTab) {
+  if (resetSubjectsTab) {
     resetSubjects(false);
   }
 
-  if(resetSamplesTab) {
+  if (resetSamplesTab) {
     resetSamples(false);
   }
 
@@ -787,7 +787,7 @@ const resetFFMUI = (ev) => {
   wipeOutCurateProgress();
   // validation reset
   let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
-  if(resetValidation) {
+  if (resetValidation) {
     clearValidationResults(validationErrorsTable);
   }
   // reset the Disseminate Datasets sections
@@ -1509,7 +1509,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     // if (ev != null) {
     //   dropdownEventID = ev.id;
     // }
-  
 
     // TODO: Change these classes to organization classes
     $(".svg-change-current-account.organization").css("display", "none");
