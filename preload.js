@@ -741,6 +741,7 @@ const resetFFMUI = (ev) => {
   let resetDDTab = true;
   let resetManifestTab = true;
   let resetValidation = true;
+  let resetOrganizationTab = true;
   if (ev?.parentNode?.parentNode) {
     console.log(ev.parentNode.parentNode);
     if (ev.parentNode.parentNode.classList.contains("prepare-submission")) {
@@ -760,6 +761,9 @@ const resetFFMUI = (ev) => {
     }
     if (ev.parentNode.parentNode.classList.contains("prepare-validation")) {
       resetValidation = false;
+    }
+    if(ev.parentNode.parentNode.classList.contains("organize-dataset")) {
+      resetOrganizationTab = false;
     }
   }
 
@@ -784,7 +788,11 @@ const resetFFMUI = (ev) => {
   }
 
   // reset the prepare datasets sections
-  // wipeOutCurateProgress();
+  // do not wipe curation progress when resetting in GM or from within Organize Datasets
+  if(resetOrganizationTab) {
+    wipeOutCurateProgress();
+  }
+
   // validation reset
   let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
   if (resetValidation) {
