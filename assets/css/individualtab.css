@@ -1460,3 +1460,26 @@
 #gather-logs-btn:hover {
   box-shadow: 0 0 6px #b0b0b0;
 }
+
+.prepare-metadata-dataset-span {
+  padding-left: 6px !important;
+  margin-left: 59px !important;
+}
+
+.prepare-metadata-organization-span {
+  width: fit-content !important;
+  margin-left: 32px !important;
+}
+
+.prepare-metadata-account-details-span {
+  padding-left: 65px !important;
+}
+
+.prepare-metadata-current-account-span {
+  margin-left: 60px !important;
+}
+
+.prepare-metadata-card-field {
+  width: 600px !important;
+  margin: 0 auto !important; 
+}
