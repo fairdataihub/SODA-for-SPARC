@@ -1461,6 +1461,13 @@
   box-shadow: 0 0 6px #b0b0b0;
 }
 
+.prepare-metadata-review-status {
+  color: #000 !important;
+  font-weight: 600 !important;
+  margin-left: 65px !important;
+  font-size: 15px !important;
+}
+
 .prepare-metadata-dataset-span {
   padding-left: 6px !important;
   margin-left: 59px !important;
