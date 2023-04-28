@@ -901,13 +901,13 @@ const savePageChanges = async (pageBeingLeftID) => {
       const userSelectedDatasetIsReJoinFunded = document
         .getElementById("guided-button-dataset-is-re-join-funded")
         .classList.contains("selected");
-      const userSelectedDatasetIsNotSparcFunded = document
+      const userSelectedDatasetIsOtherFunded = document
         .getElementById("guided-button-dataset-is-not-sparc-funded")
         .classList.contains("selected");
 
       if (
         !userSelectedDatasetIsSparcFunded &&
-        !userSelectedDatasetIsNotSparcFunded &&
+        !userSelectedDatasetIsOtherFunded &&
         !userSelectedDatasetIsReJoinFunded
       ) {
         errorArray.push({
@@ -924,48 +924,43 @@ const savePageChanges = async (pageBeingLeftID) => {
         guidedUnSkipPage("guided-create-submission-metadata-tab");
         guidedUnSkipPage("guided-dataset-validation-tab");
         guidedUnSkipPage("guided-protocols-tab");
-      } else {
       }
 
       // If the user selected that dataset is not SPARC funded, skip the submission metadata page
-      // The logic that handles the submission file is ran during uploadiyhihhihiuhihi
-      if (userSelectedDatasetIsNotSparcFunded) {
-        const userSelectedTheyHaveReachedOutToCurationTeam = document
-          .getElementById("guided-button-non-sparc-user-has-contacted-sparc")
-          .classList.contains("selected");
-        const userSelectedTheyHaveNotReachedOutToCurationTeam = document
-          .getElementById("guided-button-non-sparc-user-has-not-contacted-sparc")
-          .classList.contains("selected");
+      // The logic that handles the submission file is ran during upload
+      if (userSelectedDatasetIsReJoinFunded || userSelectedDatasetIsOtherFunded) {
+        if (userSelectedDatasetIsOtherFunded) {
+          const userSelectedTheyHaveReachedOutToCurationTeam = document
+            .getElementById("guided-button-non-sparc-user-has-contacted-sparc")
+            .classList.contains("selected");
+          const userSelectedTheyHaveNotReachedOutToCurationTeam = document
+            .getElementById("guided-button-non-sparc-user-has-not-contacted-sparc")
+            .classList.contains("selected");
 
-        if (
-          !userSelectedTheyHaveReachedOutToCurationTeam &&
-          !userSelectedTheyHaveNotReachedOutToCurationTeam
-        ) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please indicate if you have reached out to the curation team",
-          });
-          throw errorArray;
-        }
-
-        if (userSelectedTheyHaveReachedOutToCurationTeam) {
-          // We don't have to do anything here
-        }
-
-        if (userSelectedTheyHaveNotReachedOutToCurationTeam) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please reach out to the curation team before continuing the curation process",
-          });
-          throw errorArray;
+          if (
+            !userSelectedTheyHaveReachedOutToCurationTeam &&
+            !userSelectedTheyHaveNotReachedOutToCurationTeam
+          ) {
+            errorArray.push({
+              type: "notyf",
+              message: "Please indicate if you have reached out to the curation team",
+            });
+            throw errorArray;
+          }
+          if (userSelectedTheyHaveNotReachedOutToCurationTeam) {
+            errorArray.push({
+              type: "notyf",
+              message:
+                "Please reach out to the curation team before continuing the curation process",
+            });
+            throw errorArray;
+          }
         }
 
         // Skip the submission metadata page
         // This can be safely skipped as the logic that handles the submission file is ran during upload
         guidedSkipPage("guided-create-submission-metadata-tab");
-
         guidedSkipPage("guided-protocols-tab");
-
         //Skip the validation page as non-spac funded datasets do not need to be validated
         guidedSkipPage("guided-dataset-validation-tab");
       }
@@ -1256,6 +1251,17 @@ const savePageChanges = async (pageBeingLeftID) => {
       const confirmOrganizationButton = document.getElementById(
         "guided-confirm-pennsieve-organization-button"
       );
+      const userSelectedOrganization = guidedGetCurrentUserOrganization();
+
+      if (userSelectedOrganization === "Click here to select organization") {
+        // If the user has not selected an organization, throw an error
+        errorArray.push({
+          type: "notyf",
+          message: "Please select an organization before continuing",
+        });
+        throw errorArray;
+      }
+
       if (!confirmOrganizationButton.classList.contains("selected")) {
         // If the user has not confirmed their organization, throw an error
         errorArray.push({
@@ -1274,8 +1280,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       const pennsieveIntroOrganizationDetailsText = document.getElementById(
         "guided-pennsive-selected-organization"
       );
-      sodaJSONObj["last-confirmed-pennsieve-organization-details"] =
-        guidedGetCurrentUserOrganization();
+      sodaJSONObj["last-confirmed-pennsieve-organization-details"] = userSelectedOrganization;
     }
 
     if (pageBeingLeftID === "guided-banner-image-tab") {
@@ -11613,6 +11618,14 @@ $(document).ready(async () => {
     notSelectedButton.removeClass("selected");
     notSelectedButton.addClass("not-selected basic");
 
+    //Hide all child containers of non-selected buttons
+    notSelectedButton.each(function () {
+      if ($(this).data("next-element")) {
+        nextQuestionID = $(this).data("next-element");
+        $(`#${nextQuestionID}`).addClass("hidden");
+      }
+    });
+
     //If button has prevent-radio-handler data attribute, other buttons, will be deselected
     //but all other radio button functions will be halted
     if (selectedButton.data("prevent-radio-handler") === true) {
@@ -11628,14 +11641,6 @@ $(document).ready(async () => {
 
     selectedButton.removeClass("not-selected basic");
     selectedButton.addClass("selected");
-
-    //Hide all child containers of non-selected buttons
-    notSelectedButton.each(function () {
-      if ($(this).data("next-element")) {
-        nextQuestionID = $(this).data("next-element");
-        $(`#${nextQuestionID}`).addClass("hidden");
-      }
-    });
 
     //Display and scroll to selected element container if data-next-element exists
     if (selectedButton.data("next-element")) {

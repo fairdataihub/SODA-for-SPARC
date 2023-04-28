@@ -414,32 +414,111 @@
             <h2 class="text-sub-step-title">Select the funding source for your dataset below:</h2>
             <div class="guided--radio-button-container">
               <button
-                class="ui positive basic button guided--radio-button"
+                class="guided--radio-button tile-button"
                 id="guided-button-dataset-is-sparc-funded"
                 data-next-element="guided-section-dataset-sparc-funded"
                 data-button-config-value="dataset-is-sparc-funded"
                 data-button-config-value-state="yes"
               >
-                SPARC
-              </button>
-              <button
-                class="ui positive basic button guided--radio-button"
-                id="guided-button-dataset-is-re-join-funded"
-                data-next-element="guided-section-dataset-re-join-funded"
-                data-button-config-value="dataset-is-sparc-funded"
-                data-button-config-value-state="no"
-              >
-                RE-JOIN
+                <div class="tile-button-icon">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink"
+                    viewBox="0 0 170.5327 84.5895"
+                    height="50px"
+                    width="50px"
+                  >
+                    <a href="https://sparc.science/">
+                      <defs>
+                        <linearGradient
+                          id="linear-gradient"
+                          y1="42.7643"
+                          x2="170.5327"
+                          y2="42.7643"
+                          gradientUnits="userSpaceOnUse"
+                        >
+                          <stop offset="0" stop-color="#0b00bf"></stop>
+                          <stop offset="1" stop-color="#bc00fc"></stop>
+                        </linearGradient>
+                      </defs>
+                      <title>For Sparc</title>
+                      <g id="derivative-logo">
+                        <path
+                          d="M169.0691,57.0889l-60.922-1.5a2.8941,2.8941,0,0,0-2.7225,1.7374l-.0289.0665L99.327,71.3508,87.0724,4.2313l-.0045-.03a3.9867,3.9867,0,0,0-7.8393-.0051L69.6429,55.6522,1.4623,57.3835a1.5,1.5,0,0,0,.0125,3l70.6845,1.2053a2.9235,2.9235,0,0,0,2.9-2.2814l.0259-.1154L83.01,23.8779,95.2029,82.1654l.0113.0551a3,3,0,0,0,5.684.5645l9.237-21.2451,58.9339-1.451a1.5,1.5,0,0,0,0-3Z"
+                          style="fill: url(#linear-gradient)"
+                        ></path>
+                        <path
+                          d="M11.3962.9629c6.9756,0,11.2637,4.48,11.2637,11.583V16.77H16.0681V12.5459c0-3.2637-1.7285-5.2471-4.6719-5.2471-3.0078,0-4.7353,1.9834-4.7353,5.2471a6.6109,6.6109,0,0,0,2.4316,5.0557L17.86,25.8574c2.8154,2.6875,5.3115,5.6319,5.3115,10.56,0,7.1035-4.416,11.583-11.5195,11.583-7.167,0-11.583-4.48-11.583-11.583V32.1924H6.6609V36.417c0,3.2637,1.792,5.2471,4.9912,5.2471,3.1357,0,4.9277-1.9834,4.9277-5.2471a7.4448,7.4448,0,0,0-2.6875-5.44l-8.96-8.3828C1.3494,19.2656.0691,16.45.0691,12.3545.0691,5.4424,4.3572.9629,11.3962.9629Z"
+                        ></path>
+                        <path
+                          d="M44.2927,31.9365V47.5518H37.7009V1.4111H48.9636c7.1035,0,11.583,4.48,11.583,11.583v7.3594c0,7.168-4.4795,11.583-11.583,11.583ZM48.9,25.73c3.1993,0,5.0557-1.92,5.0557-5.1836V12.8027c0-3.2-1.8564-5.1845-5.0557-5.1845H44.2927V25.73Z"
+                        ></path>
+                        <path
+                          d="M116.6443,47.5518h-6.5918V1.4111h11.583c7.1035,0,11.583,4.48,11.583,11.583v6.2715a11.1941,11.1941,0,0,1-5.0557,9.8555c1.8565,5.6318,4.48,13.3115,6.1436,18.4307h-6.72l-5.5674-16.7666h-5.375Zm4.9267-22.9747c3.2,0,5.0557-1.92,5.0557-5.1191V12.8027c0-3.2-1.8555-5.1845-5.0557-5.1845h-4.9267V24.5771Z"
+                        ></path>
+                        <path
+                          d="M170.4656,32.1924V36.417c0,7.1035-4.4151,11.583-11.5186,11.583-7.1679,0-11.583-4.48-11.583-11.583V12.5459c0-7.1035,4.4151-11.583,11.583-11.583,7.1035,0,11.5186,4.48,11.5186,11.583V16.77h-6.5908V12.5459c0-3.2637-1.792-5.2471-4.9278-5.2471-3.2,0-4.9922,1.9834-4.9922,5.2471V36.417c0,3.2637,1.792,5.2471,4.9922,5.2471,3.1358,0,4.9278-1.9834,4.9278-5.2471V32.1924Z"
+                        ></path>
+                      </g>
+                    </a>
+                  </svg>
+                </div>
+                <div class="tile-button-text">
+                  <h2>NIH SPARC program</h2>
+                </div>
               </button>
 
               <button
-                class="ui negative basic button guided--radio-button"
+                class="guided--radio-button tile-button"
+                id="guided-button-dataset-is-re-join-funded"
+                data-next-element="guided-section-dataset-re-join-funded"
+                data-button-config-value="dataset-is-sparc-funded"
+                data-button-config-value-state="re-join"
+              >
+                <div class="tile-button-icon">
+                  <img
+                    src="assets\img\rejoinLogo.png"
+                    alt="REJOINlogo"
+                    width="50px"
+                    height="50px"
+                  />
+                </div>
+                <div class="tile-button-text">
+                  <h2>NIH RE-JOIN program</h2>
+                </div>
+              </button>
+
+              <button
+                class="guided--radio-button tile-button"
                 id="guided-button-dataset-is-not-sparc-funded"
                 data-next-element="guided-section-dataset-funded-by-other"
                 data-button-config-value="dataset-is-sparc-funded"
                 data-button-config-value-state="no"
               >
-                Other
+                <div class="tile-button-icon">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="#000000"
+                    width="50px"
+                    height="50px"
+                    viewBox="0 0 32 32"
+                    version="1.1"
+                  >
+                    <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+                    <g id="SVGRepo_iconCarrier">
+                      <title>globe</title>
+                      <path
+                        d="M16 1.25c-8.146 0-14.75 6.604-14.75 14.75s6.604 14.75 14.75 14.75c8.146 0 14.75-6.604 14.75-14.75v0c-0.010-8.142-6.608-14.74-14.749-14.75h-0.001zM16.004 29.055c-1.6-1.439-2.871-3.21-3.709-5.209l-0.036-0.096h7.501c-0.865 2.1-2.142 3.874-3.741 5.292l-0.015 0.013zM11.715 22.25c-0.535-1.635-0.867-3.519-0.918-5.474l-0.001-0.026h10.408c-0.049 1.979-0.376 3.865-0.944 5.642l0.039-0.142zM2.788 16.75h6.49c0.047 1.976 0.347 3.863 0.87 5.655l-0.039-0.155h-5.787c-0.868-1.592-1.423-3.47-1.533-5.466l-0.002-0.034zM15.996 2.946c1.662 1.487 2.971 3.333 3.809 5.419l0.035 0.098-7.682-0.037c0.864-2.174 2.172-4.010 3.823-5.467l0.015-0.013zM20.356 9.966c0.492 1.571 0.799 3.383 0.848 5.258l0.001 0.026h-10.408c0.048-1.916 0.355-3.742 0.887-5.47l-0.038 0.143zM9.278 15.25h-6.49c0.11-1.977 0.641-3.806 1.502-5.433l-0.034 0.071 5.808 0.028c-0.456 1.587-0.74 3.418-0.786 5.307l-0.001 0.027zM22.722 16.75h6.49c-0.111 2.030-0.666 3.908-1.569 5.569l0.034-0.069h-5.787c0.484-1.637 0.785-3.524 0.831-5.474l0-0.026zM22.722 15.25c-0.046-1.896-0.325-3.706-0.808-5.432l0.037 0.155 5.848 0.028c0.794 1.525 1.304 3.316 1.411 5.214l0.002 0.035zM26.909 8.497l-5.441-0.026c-0.784-2.139-1.911-3.977-3.331-5.545l0.013 0.014c3.653 0.618 6.74 2.655 8.731 5.513l0.029 0.043zM13.85 2.941c-1.396 1.54-2.516 3.36-3.262 5.363l-0.038 0.115-5.381-0.026c2.019-2.845 5.073-4.84 8.602-5.441l0.078-0.011zM5.276 23.75h5.334c0.783 2.051 1.881 3.814 3.252 5.323l-0.012-0.014c-3.547-0.602-6.557-2.542-8.548-5.272l-0.026-0.038zM18.15 29.059c1.36-1.495 2.457-3.258 3.202-5.196l0.038-0.114h5.334c-2.017 2.768-5.027 4.708-8.496 5.298l-0.078 0.011z"
+                      />
+                    </g>
+                  </svg>
+                </div>
+                <div class="tile-button-text">
+                  <h2>Other funding source</h2>
+                </div>
               </button>
             </div>
           </div>
@@ -4184,9 +4263,10 @@
                 Yes, this is the account
               </button>
               <button
-                class="ui negative basic button guided--radio-button change-current-account ds-dd organization"
+                class="ui negative basic button guided--radio-button"
                 data-prevent-radio-handler="true"
                 data-reset-guided-mode-page="true"
+                onclick="openDropdownPrompt(this, 'bf')"
                 style="width: 247px"
               >
                 No, connect another account
@@ -4206,7 +4286,9 @@
           </div>
           <div class="guided--section" id="guided-section-select-organization">
             <div class="guided--input-container">
-              <h2 class="text-sub-step-title">Is this the organization?</h2>
+              <h2 class="text-sub-step-title">
+                Is this the Pennsieve organization you want to upload your dataset to?
+              </h2>
               <div class="guided--container-data-display mt-sm" style="width: 100%">
                 <div class="guided--card-dataset-info">
                   <div class="guided--dataset-description-container">
@@ -4218,7 +4300,9 @@
                     <h5
                       id="guided-pennsive-selected-organization"
                       class="guided--dataset-content bf-organization-span"
-                    ></h5>
+                    >
+                      Click here to select organization
+                    </h5>
                     <i class="far fa-edit jump-back" style="color: #000"></i>
                   </div>
                 </div>
