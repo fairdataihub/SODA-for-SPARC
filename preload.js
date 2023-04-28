@@ -738,17 +738,17 @@ const resetFFMUI = (ev) => {
 
   // reset the prepare metadata UI
   let resetSubmission = true;
-  if(ev?.parentNode?.parentNode) {
-    console.log(ev.parentNode.parentNode)
-    if(ev.parentNode.parentNode.classList.contains("prepare-submission")) {
-      resetSubmission = false
+  if (ev?.parentNode?.parentNode) {
+    console.log(ev.parentNode.parentNode);
+    if (ev.parentNode.parentNode.classList.contains("prepare-submission")) {
+      resetSubmission = false;
     }
   }
-  
+
   if (resetSubmission) {
-    resetSubmission(false)
+    resetSubmission(false);
   }
-  
+
   resetDD(false);
   resetSubjects(false);
   resetSamples(false);
@@ -1479,7 +1479,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     // if (ev != null) {
     //   dropdownEventID = ev.id;
     // }
-  
 
     // TODO: Change these classes to organization classes
     $(".svg-change-current-account.organization").css("display", "none");
