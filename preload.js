@@ -699,7 +699,7 @@ function resetManifest(skip_permission) {
 /**
  * Resets the FFM manage-dataset, prepare-metadata, disseminate-dataset UI to their initial state.  Note: Does not reset Account, or organization information in the user details cards.
  */
-const resetFFMUI = () => {
+const resetFFMUI = (ev) => {
   // reset the manage dataset UI
   $("#div_add_edit_subtitle").removeClass("show");
   $("#div_add_edit_subtitle_tab").removeClass("prev");
@@ -737,7 +737,18 @@ const resetFFMUI = () => {
   // Note: the create new dataset section can be skipped
 
   // reset the prepare metadata UI
-  resetSubmission(false);
+  let resetSubmission = true;
+  if(ev?.parentNode?.parentNode) {
+    console.log(ev.parentNode.parentNode)
+    if(ev.parentNode.parentNode.classList.contains("prepare-submission")) {
+      resetSubmission = false
+    }
+  }
+  
+  if (resetSubmission) {
+    resetSubmission(false)
+  }
+  
   resetDD(false);
   resetSubjects(false);
   resetSamples(false);
@@ -1465,9 +1476,10 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
   } else if (dropdown === "organization") {
     console.log("Organization dropdown recognized");
 
-    if (ev != null) {
-      dropdownEventID = ev.id;
-    }
+    // if (ev != null) {
+    //   dropdownEventID = ev.id;
+    // }
+  
 
     // TODO: Change these classes to organization classes
     $(".svg-change-current-account.organization").css("display", "none");
@@ -1730,7 +1742,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
           // reset the selected dataset to None
           $(".bf-dataset-span").html("None");
-          resetFFMUI();
+          resetFFMUI(ev);
           console.log("Organization is setup");
 
           // checkPrevDivForConfirmButton("dataset");
