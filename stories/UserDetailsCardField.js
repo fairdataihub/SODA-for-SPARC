@@ -55,7 +55,7 @@ const UserDetailsCardField = ({ fieldOption, tabName }) => {
         <div class="card-container ${tabName}">
           <div style="width: 100%; display: flex">
             <h5 class="card-left" style="padding-right: 5px">Current organization:</h5>
-            <div class="change-current-account ds-dd organization" style="margin-left: 10px">
+            <div class="change-current-account ds-dd organization" style="margin-left: 12px">
               <h5 class="card-right bf-organization-span" style="width: fit-content">None</h5>
 
               <svg
@@ -83,7 +83,7 @@ const UserDetailsCardField = ({ fieldOption, tabName }) => {
               <h5 class="card-left" style="padding-right: 21px; width: 40%">
                 Account details:
               </h5>
-              <h5 class="card-right bf-account-details-span">None</h5>
+              <h5 class="card-right bf-account-details-span" style="padding-left: 4px;">None</h5>
             </div>
           </div>
         </div>
@@ -91,12 +91,13 @@ const UserDetailsCardField = ({ fieldOption, tabName }) => {
   } else if (fieldOption === FIELD_OPTIONS.OWNER_PERMISSIONS) {
     fieldContainer.style.display = "flex";
     fieldContainer.style.flexDirection = "row";
+    fieldContainer.style.justifyContent = "space-between";
     field = `
             <div class="card-container manage-dataset" style="overflow-x: hidden">
               <div>
                 <h5
                   class="card-left"
-                  style="text-align: right; padding-right: 10px; width: 140px"
+                  style="text-align: left; padding-right: 10px; width: 140px; margin-right: 60px;"
                 >
                   Current owner:
                 </h5>
@@ -122,7 +123,7 @@ const UserDetailsCardField = ({ fieldOption, tabName }) => {
             <h5 class="card-left" style="padding-right: 5px">Current account:</h5>
             <div
               class="change-current-account md-change-current-account"
-              style="margin-left: 10px"
+              style="margin-left: 6px"
             >
               <h5 class="card-right bf-account-span" style="width: fit-content">None</h5>
 
@@ -152,7 +153,7 @@ const UserDetailsCardField = ({ fieldOption, tabName }) => {
           <div>
             <h5
               class="card-left"
-              style="text-align: right; padding-right: 11px; width: 165px"
+              style="text-align: left; padding-right: 11px; width: 200px;"
             >
               Current permissions:
             </h5>
@@ -173,13 +174,13 @@ const UserDetailsCardField = ({ fieldOption, tabName }) => {
     field = `
         <div class="card-container manage-dataset" style="overflow-x: hidden">
           <div>
-            <h5 class="card-left" style="text-align: right; padding-right: 21px">
+            <h5 class="card-left" style="text-align: left; padding-right: 21px; width: 200px;">
               Current license:
             </h5>
             <h5
               id="para-dataset-license-current"
               class="card-right"
-              style="margin-top: 0px; margin-left: 140px; padding-left: 6px"
+              style="margin-top: 0px; padding-left: 5px"
             >
               None
             </h5>
