@@ -765,7 +765,7 @@ const resetFFMUI = (ev) => {
     if (ev.parentNode.parentNode.classList.contains("organize-dataset")) {
       resetOrganizationTab = false;
     }
-    if(ev.parentNode.parentNode?.id === "guided-section-select-organization"){
+    if (ev.parentNode.parentNode?.id === "guided-section-select-organization") {
       resetOrganizationTab = false;
     }
   }
@@ -793,7 +793,7 @@ const resetFFMUI = (ev) => {
   // reset the prepare datasets sections
   // do not wipe curation progress when resetting in GM or from within Organize Datasets
   if (resetOrganizationTab) {
-    console.log("Wiping progress whoops")
+    console.log("Wiping progress whoops");
     wipeOutCurateProgress();
   }
 
