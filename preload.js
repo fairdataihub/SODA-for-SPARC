@@ -1125,7 +1125,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       });
     }
   } else if (dropdown === "dataset") {
-    console.log("Dropdown event launched for dataset")
+    console.log("Dropdown event launched for dataset");
     dropdownEventID = !!ev ? ev.id : "";
 
     // check the value of Current Organization
