@@ -1235,6 +1235,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           let result = responseObject.data.datasets;
           datasetList = [];
           datasetList = result;
+          console.log(datasetList);
           refreshDatasetList();
         }
       }
@@ -1786,6 +1787,11 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           $(".bf-dataset-span").html("None");
           resetFFMUI(ev);
           console.log("Organization is setup");
+
+          // reset the dataset list
+          datasetList = [];
+          defaultBfDataset = null;
+          clearDatasetDropdowns();
 
           // checkPrevDivForConfirmButton("dataset");
         } else if (result.isDismissed) {
