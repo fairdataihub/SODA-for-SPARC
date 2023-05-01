@@ -2814,25 +2814,9 @@ const renderProgressCards = (progressFileJSONdata) => {
     return new Date(b["last-modified"]) - new Date(a["last-modified"]);
   });
 
-  //sort progressFileJSONdata into two rows one with property "previous-guided-upload-dataset-name"
-  //and one without property "previous-guided-upload-dataset-name"
-  const progressDataAlreadyUploadedToPennsieve = progressFileJSONdata.filter(
-    (progressFileJSONobj) => {
-      return progressFileJSONobj["previous-guided-upload-dataset-name"];
-    }
-  );
-  const progressDataNotYetUploadedToPennsieve = progressFileJSONdata.filter(
-    (progressFileJSONobj) => {
-      return !progressFileJSONobj["previous-guided-upload-dataset-name"];
-    }
-  );
-
   const progressCardsContainer = document.getElementById("guided-section-resume-progress-cards");
   // If there are progress cards to display, display them
-  if (
-    progressDataNotYetUploadedToPennsieve.length > 0 ||
-    progressDataAlreadyUploadedToPennsieve.length > 0
-  ) {
+  if (progressFileJSONdata.length > 0) {
     // Add the title to the container
     progressCardsContainer.innerHTML = `
       <h2 class="text-sub-step-title">
@@ -2841,14 +2825,10 @@ const renderProgressCards = (progressFileJSONdata) => {
     `;
     //Add the progress cards that have already been uploaded to Pennsieve
     //to their container (datasets that have the sodaJSONObj["previous-guided-upload-dataset-name"] property)
-    progressCardsContainer.innerHTML += progressDataAlreadyUploadedToPennsieve
+    progressCardsContainer.innerHTML += progressFileJSONdata
       .map((progressFile) => generateProgressCardElement(progressFile))
       .join("\n");
-    //Add the progress cards that have not yet been uploaded to Pennsieve
-    //to their container (datasets that do not have the sodaJSONObj["previous-guided-upload-dataset-name"] property)
-    progressCardsContainer.innerHTML += progressDataNotYetUploadedToPennsieve
-      .map((progressFile) => generateProgressCardElement(progressFile))
-      .join("\n");
+      
     tippy(".progress-card-popover", {
       allowHTML: true,
       interactive: true,
