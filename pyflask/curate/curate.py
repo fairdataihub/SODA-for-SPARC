@@ -2089,7 +2089,7 @@ bytes_uploaded_per_file = {}
 total_bytes_uploaded = {"value": 0}
 current_files_in_subscriber_session = 0
 
-def bf_generate_new_dataset(soda_json_structure, ps, ds, account):
+def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
     global namespace_logger
 
@@ -3158,7 +3158,7 @@ def main_curate_function(soda_json_structure):
                     r.raise_for_status()
                     myds = r.json()
                     
-                    bf_generate_new_dataset(soda_json_structure, ps, myds, accountname)
+                    bf_generate_new_dataset(soda_json_structure, ps, myds)
                 if generate_option == "existing-bf":
                     namespace_logger.info("We are in existing bf as intended ")
 
