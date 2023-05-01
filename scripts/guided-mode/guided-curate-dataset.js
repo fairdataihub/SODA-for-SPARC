@@ -2828,7 +2828,7 @@ const renderProgressCards = (progressFileJSONdata) => {
     progressCardsContainer.innerHTML += progressFileJSONdata
       .map((progressFile) => generateProgressCardElement(progressFile))
       .join("\n");
-      
+
     tippy(".progress-card-popover", {
       allowHTML: true,
       interactive: true,
