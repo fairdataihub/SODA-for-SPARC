@@ -750,7 +750,9 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
 
 
-    # reauthenticate the user
+    selected_dataset_id = get_dataset_id(get_access_token(), bfdataset)
+
+        # reauthenticate the user
     try:
         ps.user.reauthenticate()
     except Exception as e:
@@ -759,9 +761,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         did_upload = False
         error_message = "Could not reauthenticate this user"
         abort(400, error_message)
-
-
-    selected_dataset_id = get_dataset_id(ps, bfdataset)
 
     # select the dataset 
     try:
