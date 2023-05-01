@@ -33,6 +33,7 @@ from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
 from utils import authenticate_user_with_client, connect_pennsieve_client, get_dataset_id, create_request_headers, TZLOCAL
 from manifest import create_high_level_manifest_files_existing_bf_starting_point, create_high_level_manifest_files, get_auto_generated_manifest_files
+from authentication import get_access_token
 
 from pysodaUtils import (
     check_forbidden_characters_bf,
@@ -1637,7 +1638,7 @@ def bf_get_existing_files_details(ps_folder, ps):
     content = ps_folder["content"]
     if (str(content['id'])[2:9]) == "dataset":
         # TODO: Update this call. Does not fetch files at the root of the dataset. Moreover maybe just do it at the start of creating the tracking folder.
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{content['id']}", headers=create_request_headers(ps)) 
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{content['id']}", headers=create_request_headers(get_access_token())) 
         r.raise_for_status()
         root_folder = r.json()
         root_children = root_folder["children"]
@@ -2119,6 +2120,16 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
     current_size_of_uploaded_files = 0
 
     try:
+        # set the dataset 
+        namespace_logger.info(f"Setting dataset to {ds['content']['id']}")
+            # select the user
+        # ps = Pennsieve()
+        # ps.user.switch(account)
+        # ps.user.reauthenticate()
+        selected_id = ds["content"]["id"]
+        ps.use_dataset(selected_id)
+        
+        
 
         def recursive_create_folder_for_bf(
             my_folder, my_tracking_folder, existing_folder_option
@@ -2514,7 +2525,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                         ):
                             my_file = ds['children']['files'][file_key]
                             # delete the file from Pennsieve
-                            r = requests.post(f"{PENNSIEVE_URL}/data/delete", json={"things": [my_file['content']['id']]}, headers=create_request_headers(ps))
+                            r = requests.post(f"{PENNSIEVE_URL}/data/delete", json={"things": [my_file['content']['id']]}, headers=create_request_headers(get_access_token()))
                             r.raise_for_status()
                         if (
                             existing_file_option == "skip"
@@ -2578,7 +2589,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     file_name_no_ext = os.path.splitext(folder['children']['files'][child_key]['content']['name'])[0]
                     if file_name_no_ext.lower() == "manifest":
                         # delete the manifest file from the given folder 
-                        r = requests.post(f"{PENNSIEVE_URL}/data/delete", json={"things": [folder['children']['files'][child_key]['content']['id']]}, headers=create_request_headers(ps))
+                        r = requests.post(f"{PENNSIEVE_URL}/data/delete", json={"things": [folder['children']['files'][child_key]['content']['id']]}, headers=create_request_headers(get_access_token()))
                         r.raise_for_status()
 
                 # upload new manifest files
@@ -2592,8 +2603,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
         #main_initial_bfdataset_size = bf_dataset_size()
         start_generate = 1
 
-        # set the dataset 
-        ps.use_dataset(ds["content"]["id"])
+
 
         main_curate_progress_message = ("Queuing dataset files for upload with the Pennsieve Agent..." + "<br>" + "This may take some time.")
 
@@ -3031,7 +3041,9 @@ def main_curate_function(soda_json_structure):
             )
             accountname = soda_json_structure["bf-account-selected"]["account-name"]
             ps = connect_pennsieve_client()
-            authenticate_user_with_client(ps, accountname)
+            ps.user.switch(accountname)
+            ps.user.reauthenticate()
+            # authenticate_user_with_client(ps, accountname)
         except Exception as e:
             main_curate_status = "Done"
             abort(400, "Please select a valid Pennsieve account.")
@@ -3044,14 +3056,16 @@ def main_curate_function(soda_json_structure):
                 "Checking that the selected Pennsieve dataset is valid"
             )
             bfdataset = soda_json_structure["bf-dataset-selected"]["dataset-name"]
-            selected_dataset_id = get_dataset_id(ps, bfdataset)
+            token = get_access_token()
+            selected_dataset_id = get_dataset_id(token, bfdataset)
+            
         except Exception as e:
             main_curate_status = "Done"
             abort(400, "Error: Please select a valid Pennsieve dataset")
 
         # check that the user has permissions for uploading and modifying the dataset
         main_curate_progress_message = "Checking that you have required permissions for modifying the selected dataset"
-        role = bf_get_current_user_permission_agent_two(selected_dataset_id, ps)["role"]
+        role = bf_get_current_user_permission_agent_two(selected_dataset_id, token)["role"]
         if role not in ["owner", "manager", "editor"]:
             main_curate_status = "Done"
             abort(403, "Error: You don't have permissions for uploading to this Pennsieve dataset")
@@ -3137,15 +3151,19 @@ def main_curate_function(soda_json_structure):
                         ds = bf_create_new_dataset(dataset_name, ps)
                         selected_dataset_id = ds["content"]["id"]
 
+                    namespace_logger.info("We are in generate_new for some reason")
+
                     # whether we are generating a new dataset or merging, we want the dataset information for later steps
-                    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(ps))
+                    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
                     r.raise_for_status()
                     myds = r.json()
                     
                     bf_generate_new_dataset(soda_json_structure, ps, myds)
                 if generate_option == "existing-bf":
+                    namespace_logger.info("We are in existing bf as intended ")
+
                     # make an api request to pennsieve to get the dataset details
-                    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(ps))
+                    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
                     r.raise_for_status()
                     myds = r.json()
                     bf_update_existing_dataset(soda_json_structure, bf, myds, ps)

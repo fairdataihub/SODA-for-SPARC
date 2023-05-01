@@ -1252,6 +1252,14 @@ async function initiate_generate_manifest_bf() {
     }
   }
 
+  let supplementary_checks = await run_pre_flight_checks(false);
+  if (!supplementary_checks) {
+    // hide the progress bar as an upload will not occur yet
+    $("#upload_local_dataset_progress_div").hide();
+    $("#button-submit-dataset").attr("disabled", false);
+    return;
+  }
+
   let curationResponse;
   try {
     curationResponse = await client.post(
