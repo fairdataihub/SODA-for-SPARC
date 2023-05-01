@@ -947,7 +947,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           popup: "animate__animated animate__fadeOutUp animate__faster",
         },
 
-        footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-a-pennsieve-account" style="text-decoration: none;">I don't have a Pennsieve account and/or access to the SPARC Organization</a>`,
+        footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-a-pennsieve-account" style="text-decoration: none;">I don't have a Pennsieve account</a>`,
 
         didOpen: () => {
           $(".swal-popover").popover();
