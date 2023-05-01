@@ -227,6 +227,8 @@ function resetSubmission(askToReset = true) {
     return;
   }
 
+  console.log("Asking to resewt");
+
   Swal.fire({
     backdrop: "rgba(0,0,0, 0.4)",
     confirmButtonText: "I want to start over!",
@@ -318,6 +320,8 @@ function resetDD(askToReset = true) {
     resetDDFields();
     return;
   }
+
+  console.log("Asking to resewt");
 
   Swal.fire({
     backdrop: "rgba(0,0,0, 0.4)",
@@ -461,6 +465,8 @@ function resetSubjects(askToReset = true) {
     return;
   }
 
+  console.log("Asking to resewt");
+
   Swal.fire({
     text: "Are you sure you want to start over and reset your progress?",
     icon: "warning",
@@ -574,6 +580,8 @@ function resetSamples(askToReset = true) {
     return;
   }
 
+  console.log("Asking to resewt");
+
   Swal.fire({
     text: "Are you sure you want to start over and reset your progress?",
     icon: "warning",
@@ -632,8 +640,8 @@ function resetSamples(askToReset = true) {
   });
 }
 
-function resetManifest(skip_permission) {
-  if (!skip_permission) {
+function resetManifest(askToReset = true) {
+  if (askToReset) {
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "I want to start over!",
