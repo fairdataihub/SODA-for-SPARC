@@ -54,7 +54,7 @@ const UserDetailsCardField = ({ fieldOption, tabName }) => {
     field = `
         <div class="card-container ${tabName}">
           <div style="width: 100%; display: flex">
-            <h5 class="card-left" style="padding-right: 5px">Current organization:</h5>
+            <h5 class="card-left" style="padding-right: 5px">Current workspace:</h5>
             <div class="change-current-account ds-dd organization" style="margin-left: 12px">
               <h5 class="card-right bf-organization-span" style="width: fit-content">None</h5>
 

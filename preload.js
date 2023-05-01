@@ -1634,7 +1634,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         reverseButtons: reverseSwalButtons,
         showCloseButton: true,
         showCancelButton: true,
-        title: "<h3 style='margin-bottom:20px !important'>Select your dataset</h3>",
+        title: "<h3 style='margin-bottom:20px !important'>Select your workspace</h3>",
         showClass: {
           popup: "animate__animated animate__fadeInDown animate__faster",
         },
@@ -1644,12 +1644,15 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         willOpen: () => {
           $("#curatebforganizationlist").selectpicker("hide");
           $("#curatebforganizationlist").selectpicker("refresh");
-          $("#bf-organization-select-div").hide();
+          // $("#bf-organization-select-header").show();
           // TODO: How to make this unnecessary?
-          $("#bf-dataset-select-div").hide();
+          // $("#bf-dataset-select-div").hide();
+          // $("#bf-dataset-select-header").hide();
         },
         didOpen: () => {
           $("#div-permission-list-2").css("display", "block");
+          // $("#bf-dataset-select-div").hide();
+          // $("#bf-dataset-select-header").hide();
           $(".ui.active.green.inline.loader.small").css("display", "none");
           datasetPermissionDiv.style.display = "block";
           $("#curatebforganizationlist").attr("disabled", false);
@@ -1657,6 +1660,8 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           $("#curatebforganizationlist").selectpicker("refresh");
           $("#curatebforganizationlist").selectpicker("show");
           $("#bf-organization-select-div").show();
+          $("#bf-dataset-select-div").hide();
+          $("#bf-dataset-select-header").hide();
 
           bfOrganization = $("#curatebforganizationlist").val();
           let sweet_al = document.getElementsByClassName("swal2-content")[0];
