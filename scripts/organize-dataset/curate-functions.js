@@ -17,8 +17,14 @@ document
     openDropdownPrompt(this, "dataset", false);
   });
 
+// document
+//   .querySelector("#Question-generate-dataset-BF-dataset .change-current-account.organization")
+//   .addEventListener("click", function () {
+//     openDropdownPrompt(this, "organization", false);
+//   });
+
 document
-  .querySelector("#Question-generate-dataset-BF-dataset .change-current-account")
+  .querySelector("#Question-generate-dataset-BF-dataset .change-current-account:not(.organization)")
   .addEventListener("click", function () {
     openDropdownPrompt(this, "dataset", false);
   });

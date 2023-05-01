@@ -3751,6 +3751,7 @@ const refreshDatasetList = () => {
     return a.toLowerCase().localeCompare(b.toLowerCase());
   });
 
+  console.log("Filtered datasets: ", filteredDatasets);
   populateDatasetDropdowns(filteredDatasets);
   // parentDSTagify.settings.whitelist = getParentDatasets();
   return filteredDatasets.length;
