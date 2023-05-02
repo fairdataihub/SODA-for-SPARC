@@ -11002,10 +11002,14 @@ const renderSubjectsMetadataAsideItems = async () => {
   let subjects = [...subjectsInPools, ...subjectsOutsidePools];
 
   const subjectMetadataCopyButton = document.getElementById("guided-button-subject-metadata-copy");
+  const subjectMetadataCopyTip = document.getElementById("guided-copy-subjects-tip");
+
   if (subjects.length > 1) {
     subjectMetadataCopyButton.classList.remove("hidden");
+    subjectMetadataCopyTip.classList.remove("hidden");
   } else {
     subjectMetadataCopyButton.classList.add("hidden");
+    subjectMetadataCopyTip.classList.add("hidden");
   }
 
   const subjectsFormNames = [...guidedSubjectsFormDiv.querySelectorAll(".subjects-form-entry")].map(
@@ -11134,10 +11138,14 @@ const renderSamplesMetadataAsideItems = async () => {
   const sampleNames = samples.map((sample) => sample.sampleName);
 
   const sampleMetadataCopyButton = document.getElementById("guided-button-sample-metadata-copy");
+  const sampleMetadataCopyTip = document.getElementById("guided-copy-samples-tip");
+
   if (samples.length > 1) {
     sampleMetadataCopyButton.classList.remove("hidden");
+    sampleMetadataCopyTip.classList.remove("hidden");
   } else {
     sampleMetadataCopyButton.classList.add("hidden");
+    sampleMetadataCopyTip.classList.add("hidden");
   }
 
   const samplesFormEntries = guidedSamplesFormDiv.querySelectorAll(".samples-form-entry");
