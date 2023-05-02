@@ -375,8 +375,23 @@
               </div>
               <div class="info-container">
                 <p class="help-text mb-0">
-                  If you don't see your SPARC award in the dropdown above, your dataset either does
-                  not exist on Pennsieve or you do not have Owner or Manager permissions.
+                  Your current workspace is
+                  <b><span class="bf-organization-span"></span></b>
+                  <br />
+                  If your dataset is not in this workspace, click the button below to switch to a
+                  different workspace.
+                  <br />
+                  <button
+                    class="ui positive button mt-md"
+                    style="background-color: var(--color-light-green) !important"
+                  >
+                    Import datasets from a different organization
+                  </button>
+
+                  <br />
+                  <br />
+                  If you don't see your dataset in the dropdown above, your dataset either does not
+                  exist on Pennsieve or you do not have Owner or Manager permissions.
                 </p>
               </div>
             </div>
@@ -4294,7 +4309,7 @@
                       id="guided-pennsive-selected-organization"
                       class="guided--dataset-content bf-organization-span"
                     >
-                      Click here to select organization
+                      Click here to select workspace
                     </h5>
                     <i class="far fa-edit jump-back" style="color: #000"></i>
                   </div>
@@ -5083,7 +5098,7 @@
                   id="guided-pennsive-selected-organization-review-generate"
                   class="guided--dataset-content bf-organization-span"
                 >
-                  Click here to select organization
+                  Click here to select workspace
                 </h5>
                 <i class="far fa-edit jump-back" style="color: #000"></i>
               </div>

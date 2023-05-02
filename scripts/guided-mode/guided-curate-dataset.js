@@ -7,7 +7,7 @@ const guidedGetCurrentUserWorkSpace = () => {
   const workSpaceFromUI = document.getElementById(
     "guided-pennsive-selected-organization"
   ).innerHTML;
-  if (workSpaceFromUI === "Click here to select organization") {
+  if (workSpaceFromUI === "Click here to select workspace") {
     return null;
   }
   return workSpaceFromUI;
