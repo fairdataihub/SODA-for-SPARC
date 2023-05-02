@@ -2023,6 +2023,57 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
     case "validate_dataset-question-1":
       continueProgressValidateDataset = await transitionToValidateQuestionTwo();
       break;
+    case "Question-prepare-subjects-3":
+      console.log("Inside the subjects field selection logic");
+      const checkedRadioButtonSubjectsFirstQuestion = $(
+        "input:radio[name ='subjects-1']:checked"
+      ).attr("id");
+
+      // check if we selected start a new subjects file
+      if (checkedRadioButtonSubjectsFirstQuestion === "subjects-1-B") {
+        // allow users to select an organization
+        $("#subjects-organization-field").show();
+      } else {
+        // starting from an existing subjects file
+        const checkedRadioButtonSubjectsSecondQuestion = $(
+          "input:radio[name ='subjects-3']:checked"
+        ).attr("id");
+        // check if file is from Pennsieve
+        if (checkedRadioButtonSubjectsSecondQuestion === "subjects-3-A") {
+          // do not allow organization switching
+          $("#subjects-organization-field").hide();
+        } else {
+          // show organization field to allow switching
+          $("#subjects-organization-field").show();
+        }
+      }
+      break;
+    case "Question-prepare-samples-3":
+      console.log("Inside the samples field selection logic");
+      const checkedRadioButtonSamplesFirstQuestion = $(
+        "input:radio[name ='samples-1']:checked"
+      ).attr("id");
+
+      // check if we selected start a new subjects file
+      if (checkedRadioButtonSamplesFirstQuestion === "samples-1-B") {
+        // allow users to select an organization
+        $("#samples-organization-field").show();
+      } else {
+        // starting from an existing subjects file
+        const checkedRadioButtonSamplesSecondQuestion = $(
+          "input:radio[name ='samples-3']:checked"
+        ).attr("id");
+        console.log(checkedRadioButtonSamplesSecondQuestion);
+        // check if file is from Pennsieve
+        if (checkedRadioButtonSamplesSecondQuestion === "samples-3-A") {
+          // do not allow organization switching
+          $("#samples-organization-field").hide();
+        } else {
+          // show organization field to allow switching
+          $("#samples-organization-field").show();
+        }
+      }
+      break;
   }
 
   if (!continueProgressRC) {
