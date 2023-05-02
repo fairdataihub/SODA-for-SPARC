@@ -189,6 +189,9 @@ const fill_info_details = () => {
   if (sodaJSONObj["starting-point"]["type"] === "bf") {
     add_card_detail("Pennsieve account", sodaJSONObj["bf-account-selected"]["account-name"]);
     add_card_detail("Dataset name", sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
+    let workspace = $("#bf-organization-curate-first-question").text();
+    add_card_detail("Selected workspace", workspace);
+
     new_dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
     if (manifestFileCheck.checked) {
       add_card_detail("Manifest files", "Requested from SODA", 1, "pulse-manifest-checkbox", true);
@@ -256,6 +259,10 @@ const fill_info_details = () => {
         add_card_detail("Original dataset location", sodaJSONObj["starting-point"]["local-path"]);
       }
 
+      console.log("The thing: ");
+      console.log($("#organization-bf-curation"));
+      console.log($("#organization-bf-curation").text());
+
       add_card_detail("New dataset location", "Pennsieve", 1, "Question-generate-dataset", true);
       add_card_detail(
         "Pennsieve account",
@@ -267,6 +274,14 @@ const fill_info_details = () => {
       add_card_detail(
         "Account details",
         $("#para-account-detail-curate-generate").html(),
+        1,
+        "Question-generate-dataset-BF-account",
+        true
+      );
+      let workspace = $("#organization-bf-curation").text();
+      add_card_detail(
+        "Selected workspace",
+        workspace,
         1,
         "Question-generate-dataset-BF-account",
         true
@@ -420,9 +435,9 @@ const add_card_detail = (
   let parent_element = $("#other-dataset-information-container");
 
   let new_card_element =
-    "<div class='card-container generate-preview'><h5 class='card-left' style='text-align: right;'>" +
+    "<div class='card-container generate-preview'><h5 class='card-left' style='text-align: left;'>" +
     card_left +
-    ":</h5><p class='card-right' style='margin-left: 2rem;'>" +
+    ":</h5><p class='card-right' style='width: 300px;'>" +
     card_right;
 
   if (parent_tab === -1) {
