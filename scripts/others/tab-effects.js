@@ -1982,6 +1982,16 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
       continueProgressSubmission = await switchMetadataSubmissionQuestion();
       break;
     case "Generate-submission":
+      console.log("Yes in the case we want to add button logic to");
+      const checkedRadioButton = $("input:radio[name ='submission-1']:checked").attr("id");
+      if (checkedRadioButton === "submission-1-B") {
+        $("#submission-organization-field").show();
+      } else {
+        $("#submission-organization-field").hide();
+      }
+
+      // check if the user has selected start from existing pennsieve
+      // if so then hide the workspace selection field
       var res = generateSubmissionFile();
       if (res === "empty") {
         return;
