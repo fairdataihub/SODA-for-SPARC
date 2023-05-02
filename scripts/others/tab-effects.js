@@ -2025,6 +2025,30 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
       continueProgressGenerateDD = await generateDatasetDescription();
       break;
     case "Generate-changes":
+      console.log("Inside the DD field selection logic");
+      const checkedRadioButtonChangesFirstQuestion = $(
+        "input:radio[name ='changes-1']:checked"
+      ).attr("id");
+
+      // check if we selected start a new subjects file
+      if (checkedRadioButtonChangesFirstQuestion === "changes-1-B") {
+        // allow users to select an organization
+        $("#changes-organization-field").show();
+      } else {
+        // starting from an existing subjects file
+        const checkedRadioButtonChangesSecondQuestion = $(
+          "input:radio[name ='changes-3']:checked"
+        ).attr("id");
+        console.log(checkedRadioButtonChangesSecondQuestion);
+        // check if file is from Pennsieve
+        if (checkedRadioButtonChangesSecondQuestion === "changes-3-A") {
+          // do not allow organization switching
+          $("#changes-organization-field").hide();
+        } else {
+          // show organization field to allow switching
+          $("#changes-organization-field").show();
+        }
+      }
       var res = generateRCFilesHelper("changes");
       if (res === "empty") {
         return;
