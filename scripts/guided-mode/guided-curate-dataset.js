@@ -2,6 +2,15 @@ const returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
 };
 
+const handleGuidedModeOrgSwitch = async (buttonClicked) => {
+  console.log(buttonClicked);
+  const clickedButtonId = buttonClicked.id;
+  console.log(clickedButtonId);
+  if (clickedButtonId === "guided-button-change-workspace-dataset-import") {
+    renderGuidedResumePennsieveDatasetSelectionDropdown();
+  }
+};
+
 const guidedGetCurrentUserWorkSpace = () => {
   // Returns null if the user has not selected a workspace
   const workSpaceFromUI = document.getElementById(
