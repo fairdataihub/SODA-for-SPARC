@@ -3269,6 +3269,62 @@ function raiseWarningExit(message) {
   });
 }
 
+const resetCuration = () => {
+  $("#dataset-loaded-message").hide();
+  $(".vertical-progress-bar-step").removeClass("is-current");
+  $(".vertical-progress-bar-step").removeClass("done");
+  $(".getting-started").removeClass("prev");
+  $(".getting-started").removeClass("show");
+  $(".getting-started").removeClass("test2");
+  $("#Question-getting-started-1").addClass("show");
+  $("#generate-dataset-progress-tab").css("display", "none");
+
+  currentTab = 0;
+  // uncheck all radio buttons and checkboxes
+  $("#organize-section").find(".option-card").removeClass("checked");
+  $("#organize-section").find(".option-card.radio-button").removeClass("non-selected");
+  $("#organize-section").find(".option-card.high-level-folders").removeClass("disabled");
+  $("#organize-section").find(".option-card .folder-input-check").prop("checked", false);
+  $("#organize-section").find(".parent-tabs.option-card").removeClass("checked");
+  $("#organize-section").find(".parent-tabs.option-card.radio-button").removeClass("non-selected");
+  $("#organize-section")
+    .find(".parent-tabs.option-card.high-level-folders")
+    .removeClass("disabled");
+  $("#organize-section").find(".parent-tabs.option-card.folder-input-check").prop("checked", false);
+  $(".metadata-button.button-generate-dataset").removeClass("done");
+  $(".metadata-button.button-generate-dataset").removeClass("d-flex");
+  $("#organize-section input:checkbox").prop("checked", false);
+  $("#organize-section input:radio").prop("checked", false);
+
+  // set back local destination for folders to empty
+  $("#input-destination-generate-dataset-locally").val("");
+  $("#input-destination-getting-started-locally").val("");
+  $("#input-destination-getting-started-locally").prop("placeholder", "Browse here");
+  $("#input-destination-generate-dataset-locally").prop("placeholder", "Browse here");
+
+  // set metadata file paths to empty
+  $(".para-metadata-file-status").text("");
+
+  // hide the generate manifest locally button
+  $("#button-generate-manifest-locally").hide();
+
+  // set back Please continue para element
+  $("#para-continue-prepare-new-getting-started").text("");
+  $("#para-continue-bf-dataset-getting-started").text("");
+  $("#para-continue-location-dataset-getting-started").text("");
+
+  // un-show all divs from Generate dataset step
+  $($("#Question-generate-dataset").siblings()).removeClass("show");
+
+  $(".generate-dataset").removeClass("prev");
+  $(".generate-dataset").removeClass("show");
+  $(".generate-dataset").removeClass("test2");
+  $("#generate-manifest-curate").prop("checked", false);
+
+  // $("#main_tabs_view")[0].click();
+  globalGettingStarted1stQuestionBool = false;
+};
+
 const exitCurate = async (resetProgressTabs, start_over = false) => {
   $("#dataset-loaded-message").hide();
   // if exit Btn is clicked after Generate

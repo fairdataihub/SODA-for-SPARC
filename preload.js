@@ -772,12 +772,17 @@ const resetFFMUI = (ev) => {
     }
     if (ev.parentNode.parentNode.classList.contains("organize-dataset")) {
       resetOrganizationTab = false;
+      console.log(ev.parentNode.parentNode.id);
+      if (ev.parentNode.parentNode.id === "bf-organization-curate-first-question-container") {
+        $("#current-bf-dataset").text("None");
+        $("#para-continue-bf-dataset-getting-started").hide();
+      }
     }
 
     // If the workspace is changed in guided mode, do not reset the organize dataset tab
-    if (ev.classList.contains("guided-change-workspace")) {
-      resetOrganizationTab = false;
-    }
+    // if (ev.classList.contains("guided-change-workspace")) {
+    //   resetOrganizationTab = false;
+    // }
   }
 
   if (resetSubmissionTab) {
@@ -803,8 +808,8 @@ const resetFFMUI = (ev) => {
   // reset the prepare datasets sections
   // do not wipe curation progress when resetting in GM or from within Organize Datasets
   if (resetOrganizationTab) {
-    console.log("Wiping progress whoops");
-    wipeOutCurateProgress();
+    console.log("Wiping progress not killing sodajsonobj");
+    resetCuration();
   }
 
   // validation reset
