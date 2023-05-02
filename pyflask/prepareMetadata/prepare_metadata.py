@@ -218,6 +218,7 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
     namespace_logger.info("Connecting to the pennsieve client")
     
     ps = connect_pennsieve_client()
+    ps.user.switch(bfaccount)
     authenticate_user_with_client(ps, bfaccount)
     
     # check that the Pennsieve dataset is valid
