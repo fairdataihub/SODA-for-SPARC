@@ -1760,7 +1760,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             hideClass: {
               popup: "animate__animated animate__fadeOutUp animate__faster",
             },
-            footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-a-pennsieve-account" style="text-decoration: none;">I don't have a Pennsieve account or access to my preferred organization.</a>`,
             didOpen: () => {
               $(".swal-popover").popover();
               let div_footer = document.getElementsByClassName("swal2-footer")[0];

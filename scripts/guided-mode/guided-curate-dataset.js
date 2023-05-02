@@ -13534,7 +13534,7 @@ $(document).ready(async () => {
 
     if (!currentWorkspace) {
       Swal.fire({
-        width: 600,
+        width: 700,
         icon: "info",
         title: "You are not logged in to any workspace.",
         html: `
@@ -13552,16 +13552,25 @@ $(document).ready(async () => {
 
     if (currentWorkspace != datasetWorkspace) {
       Swal.fire({
-        width: 600,
+        width: 700,
         icon: "info",
         title: "You are not logged in to the workspace you confirmed earlier.",
         html: `
           You previously confirmed that the Dataset workspace is <b>${datasetWorkspace}</b>.
           <br />
           <br />
-          Please select the previously confirmed workspace by clicking on the pencil icon to the right
-          of the Dataset workspace field on this page, or click Pennsieve metadata and then click the Pennsieve log in
-          menu item in the sidebar to the left to switch to a different workspace.
+          <p class="text-left">
+            If the workspace you would like to upload the dataset to is still <b>${datasetWorkspace}</b>,
+            you can change the workspace by clicking the pencil icon to the right of the Dataset workspace field
+            on this page.
+          </p>
+          <br />
+          <br />
+          <p class="text-left">
+            If you would like to change the dataset workspace to <b>${currentWorkspace}</b>, you can do so by
+            by clicking the Pennsieve metadata item in the left sidebar, selecting Pennsieve log in, and then
+            change your workspace to <b>${currentWorkspace}</b>.
+          </p>
         `,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
