@@ -776,6 +776,12 @@ const resetFFMUI = (ev) => {
       if (ev.parentNode.parentNode.id === "bf-organization-curate-first-question-container") {
         $("#current-bf-dataset").text("None");
         $("#para-continue-bf-dataset-getting-started").hide();
+      } else if (
+        ev.parentNode.parentNode.id === "bf-organization-curate-second-question-container"
+      ) {
+        console.log("Should reset");
+        $("#current-bf-dataset-generate").text("None");
+        // $("#Question-generate-dataset-existing-folders-options").hide();
       }
     }
 
