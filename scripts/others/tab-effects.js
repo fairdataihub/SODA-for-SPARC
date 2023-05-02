@@ -2031,6 +2031,30 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
       }
       break;
     case "Generate-readme":
+      console.log("Inside the DD field selection logic");
+      const checkedRadioButtonReadmeFirstQuestion = $("input:radio[name ='readme-1']:checked").attr(
+        "id"
+      );
+
+      // check if we selected start a new subjects file
+      if (checkedRadioButtonReadmeFirstQuestion === "readme-1-B") {
+        // allow users to select an organization
+        $("#readme-organization-field").show();
+      } else {
+        // starting from an existing subjects file
+        const checkedRadioButtonReadmeSecondQuestion = $(
+          "input:radio[name ='readme-3']:checked"
+        ).attr("id");
+        console.log(checkedRadioButtonReadmeSecondQuestion);
+        // check if file is from Pennsieve
+        if (checkedRadioButtonReadmeSecondQuestion === "readme-3-A") {
+          // do not allow organization switching
+          $("#readme-organization-field").hide();
+        } else {
+          // show organization field to allow switching
+          $("#readme-organization-field").show();
+        }
+      }
       var res = generateRCFilesHelper("readme");
       if (res === "empty") {
         return;
