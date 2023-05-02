@@ -2,8 +2,15 @@ const returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
 };
 
-const guidedGetCurrentUserOrganization = () => {
-  return document.getElementById("guided-pennsive-selected-organization").innerHTML;
+const guidedGetCurrentUserWorkSpace = () => {
+  // Returns null if the user has not selected a workspace
+  const workSpaceFromUI = document.getElementById(
+    "guided-pennsive-selected-organization"
+  ).innerHTML;
+  if (workSpaceFromUI === "Click here to select organization") {
+    return null;
+  }
+  return workSpaceFromUI;
 };
 
 const lottieAnimationManager = {
@@ -1251,15 +1258,17 @@ const savePageChanges = async (pageBeingLeftID) => {
       const confirmOrganizationButton = document.getElementById(
         "guided-confirm-pennsieve-organization-button"
       );
-      const userSelectedOrganization = guidedGetCurrentUserOrganization();
+      const userSelectedWorkSpace = guidedGetCurrentUserWorkSpace();
 
-      if (userSelectedOrganization === "Click here to select organization") {
+      if (!userSelectedWorkSpace) {
         // If the user has not selected an organization, throw an error
         errorArray.push({
           type: "notyf",
           message: "Please select an organization before continuing",
         });
         throw errorArray;
+      } else {
+        sodaJSONObj["digital-metadata"]["dataset-workspace"] = userSelectedWorkSpace;
       }
 
       if (!confirmOrganizationButton.classList.contains("selected")) {
@@ -1280,7 +1289,7 @@ const savePageChanges = async (pageBeingLeftID) => {
       const pennsieveIntroOrganizationDetailsText = document.getElementById(
         "guided-pennsive-selected-organization"
       );
-      sodaJSONObj["last-confirmed-pennsieve-organization-details"] = userSelectedOrganization;
+      sodaJSONObj["last-confirmed-pennsieve-workspace-details"] = userSelectedWorkSpace;
     }
 
     if (pageBeingLeftID === "guided-banner-image-tab") {
@@ -5275,10 +5284,10 @@ const openPage = async (targetPageID) => {
               document.getElementById("guided-confirm-pennsieve-account-button").click();
             }
           }
-          if (sodaJSONObj["last-confirmed-pennsieve-organization-details"]) {
+          if (sodaJSONObj["last-confirmed-pennsieve-workspace-details"]) {
             if (
-              sodaJSONObj["last-confirmed-pennsieve-organization-details"] ===
-              guidedGetCurrentUserOrganization()
+              sodaJSONObj["last-confirmed-pennsieve-workspace-details"] ===
+              guidedGetCurrentUserWorkSpace()
             ) {
               document.getElementById("guided-confirm-pennsieve-organization-button").click();
             }
@@ -13519,6 +13528,49 @@ $(document).ready(async () => {
   });
 
   $("#guided-generate-dataset-button").on("click", async function () {
+    // Ensure that the current workspace is the workspace the user confirmed
+    const currentWorkspace = guidedGetCurrentUserWorkSpace();
+    const datasetWorkspace = sodaJSONObj["digital-metadata"]["dataset-workspace"];
+
+    if (!currentWorkspace) {
+      Swal.fire({
+        width: 600,
+        icon: "info",
+        title: "You are not logged in to any workspace.",
+        html: `
+          Please select a workspace by clicking on the pencil icon to the right of the Dataset workspace field
+          on this page.
+        `,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: `OK`,
+        focusConfirm: true,
+        allowOutsideClick: false,
+      });
+      return;
+    }
+
+    if (currentWorkspace != datasetWorkspace) {
+      Swal.fire({
+        width: 600,
+        icon: "info",
+        title: "You are not logged in to the workspace you confirmed earlier.",
+        html: `
+          You previously confirmed that the Dataset workspace is <b>${datasetWorkspace}</b>.
+          <br />
+          <br />
+          Please select the previously confirmed workspace by clicking on the pencil icon to the right
+          of the Dataset workspace field on this page, or click Pennsieve metadata and then click the Pennsieve log in
+          menu item in the sidebar to the left to switch to a different workspace.
+        `,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: `OK`,
+        focusConfirm: true,
+        allowOutsideClick: false,
+      });
+      return;
+    }
     //run pre flight checks and abort if any fail
     let supplementary_checks = await run_pre_flight_checks(false);
     if (!supplementary_checks) {
