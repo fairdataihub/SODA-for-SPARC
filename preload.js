@@ -1800,6 +1800,9 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           // reset the selected dataset to None
           $(".bf-dataset-span").html("None");
           resetFFMUI(ev);
+
+          // Update the guided Mode UI depending on the button that was clicked to open up the dropdown
+          handleGuidedModeOrgSwitch(ev);
           console.log("Organization is setup");
 
           // reset the dataset list
