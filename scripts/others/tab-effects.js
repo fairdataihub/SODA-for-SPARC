@@ -189,6 +189,9 @@ const fill_info_details = () => {
   if (sodaJSONObj["starting-point"]["type"] === "bf") {
     add_card_detail("Pennsieve account", sodaJSONObj["bf-account-selected"]["account-name"]);
     add_card_detail("Dataset name", sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
+    let workspace = $("#bf-organization-curate-first-question").text();
+    add_card_detail("Selected workspace", workspace);
+
     new_dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
     if (manifestFileCheck.checked) {
       add_card_detail("Manifest files", "Requested from SODA", 1, "pulse-manifest-checkbox", true);
@@ -256,6 +259,10 @@ const fill_info_details = () => {
         add_card_detail("Original dataset location", sodaJSONObj["starting-point"]["local-path"]);
       }
 
+      console.log("The thing: ");
+      console.log($("#organization-bf-curation"));
+      console.log($("#organization-bf-curation").text());
+
       add_card_detail("New dataset location", "Pennsieve", 1, "Question-generate-dataset", true);
       add_card_detail(
         "Pennsieve account",
@@ -267,6 +274,14 @@ const fill_info_details = () => {
       add_card_detail(
         "Account details",
         $("#para-account-detail-curate-generate").html(),
+        1,
+        "Question-generate-dataset-BF-account",
+        true
+      );
+      let workspace = $("#organization-bf-curation").text();
+      add_card_detail(
+        "Selected workspace",
+        workspace,
         1,
         "Question-generate-dataset-BF-account",
         true
@@ -420,9 +435,9 @@ const add_card_detail = (
   let parent_element = $("#other-dataset-information-container");
 
   let new_card_element =
-    "<div class='card-container generate-preview'><h5 class='card-left' style='text-align: right;'>" +
+    "<div class='card-container generate-preview'><h5 class='card-left' style='text-align: left;'>" +
     card_left +
-    ":</h5><p class='card-right' style='margin-left: 2rem;'>" +
+    ":</h5><p class='card-right' style='width: 300px;'>" +
     card_right;
 
   if (parent_tab === -1) {
@@ -1967,6 +1982,16 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
       continueProgressSubmission = await switchMetadataSubmissionQuestion();
       break;
     case "Generate-submission":
+      console.log("Yes in the case we want to add button logic to");
+      const checkedRadioButton = $("input:radio[name ='submission-1']:checked").attr("id");
+      if (checkedRadioButton === "submission-1-B") {
+        $("#submission-organization-field").show();
+      } else {
+        $("#submission-organization-field").hide();
+      }
+
+      // check if the user has selected start from existing pennsieve
+      // if so then hide the workspace selection field
       var res = generateSubmissionFile();
       if (res === "empty") {
         return;
@@ -1975,15 +2000,85 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
       $("#submission-title-accordion").removeClass("active");
       break;
     case "Generate-dd":
+      console.log("Inside the DD field selection logic");
+      const checkedRadioButtonDDFirstQuestion = $("input:radio[name ='dd-1']:checked").attr("id");
+
+      // check if we selected start a new subjects file
+      if (checkedRadioButtonDDFirstQuestion === "dd-1-B") {
+        // allow users to select an organization
+        $("#dd-organization-field").show();
+      } else {
+        // starting from an existing subjects file
+        const checkedRadioButtonDDSecondQuestion = $("input:radio[name ='dd-4']:checked").attr(
+          "id"
+        );
+        console.log(checkedRadioButtonDDSecondQuestion);
+        // check if file is from Pennsieve
+        if (checkedRadioButtonDDSecondQuestion === "dd-4-A") {
+          // do not allow organization switching
+          $("#dd-organization-field").hide();
+        } else {
+          // show organization field to allow switching
+          $("#dd-organization-field").show();
+        }
+      }
       continueProgressGenerateDD = await generateDatasetDescription();
       break;
     case "Generate-changes":
+      console.log("Inside the DD field selection logic");
+      const checkedRadioButtonChangesFirstQuestion = $(
+        "input:radio[name ='changes-1']:checked"
+      ).attr("id");
+
+      // check if we selected start a new subjects file
+      if (checkedRadioButtonChangesFirstQuestion === "changes-1-B") {
+        // allow users to select an organization
+        $("#changes-organization-field").show();
+      } else {
+        // starting from an existing subjects file
+        const checkedRadioButtonChangesSecondQuestion = $(
+          "input:radio[name ='changes-3']:checked"
+        ).attr("id");
+        console.log(checkedRadioButtonChangesSecondQuestion);
+        // check if file is from Pennsieve
+        if (checkedRadioButtonChangesSecondQuestion === "changes-3-A") {
+          // do not allow organization switching
+          $("#changes-organization-field").hide();
+        } else {
+          // show organization field to allow switching
+          $("#changes-organization-field").show();
+        }
+      }
       var res = generateRCFilesHelper("changes");
       if (res === "empty") {
         return;
       }
       break;
     case "Generate-readme":
+      console.log("Inside the DD field selection logic");
+      const checkedRadioButtonReadmeFirstQuestion = $("input:radio[name ='readme-1']:checked").attr(
+        "id"
+      );
+
+      // check if we selected start a new subjects file
+      if (checkedRadioButtonReadmeFirstQuestion === "readme-1-B") {
+        // allow users to select an organization
+        $("#readme-organization-field").show();
+      } else {
+        // starting from an existing subjects file
+        const checkedRadioButtonReadmeSecondQuestion = $(
+          "input:radio[name ='readme-3']:checked"
+        ).attr("id");
+        console.log(checkedRadioButtonReadmeSecondQuestion);
+        // check if file is from Pennsieve
+        if (checkedRadioButtonReadmeSecondQuestion === "readme-3-A") {
+          // do not allow organization switching
+          $("#readme-organization-field").hide();
+        } else {
+          // show organization field to allow switching
+          $("#readme-organization-field").show();
+        }
+      }
       var res = generateRCFilesHelper("readme");
       if (res === "empty") {
         return;
@@ -1997,6 +2092,57 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
       break;
     case "validate_dataset-question-1":
       continueProgressValidateDataset = await transitionToValidateQuestionTwo();
+      break;
+    case "Question-prepare-subjects-3":
+      console.log("Inside the subjects field selection logic");
+      const checkedRadioButtonSubjectsFirstQuestion = $(
+        "input:radio[name ='subjects-1']:checked"
+      ).attr("id");
+
+      // check if we selected start a new subjects file
+      if (checkedRadioButtonSubjectsFirstQuestion === "subjects-1-B") {
+        // allow users to select an organization
+        $("#subjects-organization-field").show();
+      } else {
+        // starting from an existing subjects file
+        const checkedRadioButtonSubjectsSecondQuestion = $(
+          "input:radio[name ='subjects-3']:checked"
+        ).attr("id");
+        // check if file is from Pennsieve
+        if (checkedRadioButtonSubjectsSecondQuestion === "subjects-3-A") {
+          // do not allow organization switching
+          $("#subjects-organization-field").hide();
+        } else {
+          // show organization field to allow switching
+          $("#subjects-organization-field").show();
+        }
+      }
+      break;
+    case "Question-prepare-samples-3":
+      console.log("Inside the samples field selection logic");
+      const checkedRadioButtonSamplesFirstQuestion = $(
+        "input:radio[name ='samples-1']:checked"
+      ).attr("id");
+
+      // check if we selected start a new subjects file
+      if (checkedRadioButtonSamplesFirstQuestion === "samples-1-B") {
+        // allow users to select an organization
+        $("#samples-organization-field").show();
+      } else {
+        // starting from an existing subjects file
+        const checkedRadioButtonSamplesSecondQuestion = $(
+          "input:radio[name ='samples-3']:checked"
+        ).attr("id");
+        console.log(checkedRadioButtonSamplesSecondQuestion);
+        // check if file is from Pennsieve
+        if (checkedRadioButtonSamplesSecondQuestion === "samples-3-A") {
+          // do not allow organization switching
+          $("#samples-organization-field").hide();
+        } else {
+          // show organization field to allow switching
+          $("#samples-organization-field").show();
+        }
+      }
       break;
   }
 
