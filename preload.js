@@ -773,7 +773,9 @@ const resetFFMUI = (ev) => {
     if (ev.parentNode.parentNode.classList.contains("organize-dataset")) {
       resetOrganizationTab = false;
     }
-    if (ev.parentNode.parentNode?.id === "guided-section-select-organization") {
+
+    // If the workspace is changed in guided mode, do not reset the organize dataset tab
+    if (ev.classList.contains("guided-change-workspace")) {
       resetOrganizationTab = false;
     }
   }
