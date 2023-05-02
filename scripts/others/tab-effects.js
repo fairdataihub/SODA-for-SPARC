@@ -2000,6 +2000,28 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
       $("#submission-title-accordion").removeClass("active");
       break;
     case "Generate-dd":
+      console.log("Inside the DD field selection logic");
+      const checkedRadioButtonDDFirstQuestion = $("input:radio[name ='dd-1']:checked").attr("id");
+
+      // check if we selected start a new subjects file
+      if (checkedRadioButtonDDFirstQuestion === "dd-1-B") {
+        // allow users to select an organization
+        $("#dd-organization-field").show();
+      } else {
+        // starting from an existing subjects file
+        const checkedRadioButtonDDSecondQuestion = $("input:radio[name ='dd-4']:checked").attr(
+          "id"
+        );
+        console.log(checkedRadioButtonDDSecondQuestion);
+        // check if file is from Pennsieve
+        if (checkedRadioButtonDDSecondQuestion === "dd-4-A") {
+          // do not allow organization switching
+          $("#dd-organization-field").hide();
+        } else {
+          // show organization field to allow switching
+          $("#dd-organization-field").show();
+        }
+      }
       continueProgressGenerateDD = await generateDatasetDescription();
       break;
     case "Generate-changes":
