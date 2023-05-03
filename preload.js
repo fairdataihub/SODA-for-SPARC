@@ -1610,7 +1610,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             popup: "animate__animated animate__zoomOut animate__faster",
           },
         });
-        return
+        return;
       }
 
       ipcRenderer.send(
@@ -1741,7 +1741,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       }).then(async (result) => {
         if (result.isConfirmed) {
           console.log(dropdownEventID);
-          console.log("REsult is considered confirmed")
+          console.log("REsult is considered confirmed");
           if (dropdownEventID === "dd-select-pennsieve-organization") {
             $("#ds-name").val(bfOrganization);
             $("#ds-description").val = $("#bf-dataset-subtitle").val;
