@@ -88,7 +88,6 @@ def set_preferred_organization(organization, email, password, account_name):
         # get the organization id from the organization name 
         organizations = get_user_organizations()
         organization_id = None
-        print(organizations)
         for org in organizations["organizations"]:
            if org["organization"]["name"] == organization:
                 organization_id = org["organization"]["id"]
