@@ -27,17 +27,14 @@ model_get_role_response = api.model("GetRoleResponse", {
 @api.route('/<string:dataset_name>/role')
 class DatasetRole(Resource):
   parser = reqparse.RequestParser()
-  parser.add_argument('pennsieve_account', type=str, required=True, help='Pennsieve account', location="args")
   @api.doc(params={"dataset_name": "The name of the dataset"})
 
   @api.expect(parser)
   @api.doc(responses={200: 'Success', 400: 'Bad Request', 500: "Internal server error"})
   def get(self, dataset_name):
-    args = self.parser.parse_args()
-    pennsieve_account = args.get('pennsieve_account')
 
     try:
-      return get_role(pennsieve_account, dataset_name) 
+      return get_role(dataset_name) 
     except Exception as e:
       if notBadRequestException(e):
         api.abort(500, str(e))
