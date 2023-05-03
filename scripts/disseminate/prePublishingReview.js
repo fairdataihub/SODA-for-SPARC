@@ -594,7 +594,7 @@ const beginPrepublishingFlow = async (curationMode) => {
   // check if the user is the owner
   if (role !== "owner") {
     await Swal.fire({
-      title: "Only the dataset owner can submit a dataset for pre-publishing review.",
+      title: "Only the dataset owner can submit a dataset to the Curation Team.",
       icon: "error",
       confirmButtonText: "Ok",
       heightAuto: false,
