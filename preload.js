@@ -1528,10 +1528,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
   } else if (dropdown === "organization") {
     console.log("Organization dropdown recognized");
 
-    // if (ev != null) {
-    //   dropdownEventID = ev.id;
-    // }
-
     // TODO: Change these classes to organization classes
     $(".svg-change-current-account.organization").css("display", "none");
     $("#div-permission-list-2").css("display", "none");
@@ -1587,6 +1583,21 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       } else {
         $(".ui.active.green.inline.loader.small").css("display", "none");
         $(".svg-change-current-account.dataset").css("display", "block");
+        await Swal.fire({
+          icon: "warning",
+          text: "You cannot select your workspace until you connect your account with Pennsieve.",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: "Ok",
+          showCancelButton: false,
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        });
+        return
       }
 
       ipcRenderer.send(
@@ -1717,6 +1728,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       }).then(async (result) => {
         if (result.isConfirmed) {
           console.log(dropdownEventID);
+          console.log("REsult is considered confirmed")
           if (dropdownEventID === "dd-select-pennsieve-organization") {
             $("#ds-name").val(bfOrganization);
             $("#ds-description").val = $("#bf-dataset-subtitle").val;
@@ -1809,6 +1821,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           // checkPrevDivForConfirmButton("dataset");
         } else if (result.isDismissed) {
           currentDatasetLicense.innerText = currentDatasetLicense.innerText;
+          return;
         }
       });
     }
