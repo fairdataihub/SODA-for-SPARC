@@ -722,6 +722,10 @@ const savePageChanges = async (pageBeingLeftID) => {
 
         // Unskip the CHANGES metadata so the user can add changes since previous publication
         guidedUnSkipPage("guided-create-changes-metadata-tab");
+
+        // Skip the page where they confirm their log in and workspace because we should already have it
+        sodaJSONObj["digital-metadata"]["dataset-workspace"] = guidedGetCurrentUserWorkSpace();
+        guidedSkipPage("guided-pennsieve-intro-tab");
       }
 
       //Skip this page becausae we should not come back to it
@@ -6771,6 +6775,14 @@ const patchPreviousGuidedModeVersions = () => {
   if (!sodaJSONObj["skipped-pages"].includes("guided-create-changes-metadata-tab")) {
     if (sodaJSONObj["starting-point"]["type"] === "new") {
       sodaJSONObj["skipped-pages"].push("guided-create-changes-metadata-tab");
+    }
+  }
+
+  if (sodaJSONObj?.["starting-point"]?.["type"] === "bf") {
+    if (!sodaJSONObj?.["digital-metadata"]?.["dataset-workspace"]) {
+      // Skip the log in page since we no longer need it
+      guidedSkipPage("guided-pennsieve-intro-tab");
+      sodaJSONObj["digital-metadata"]["dataset-workspace"] = guidedGetCurrentUserWorkSpace();
     }
   }
 };
@@ -13568,11 +13580,36 @@ $(document).ready(async () => {
     }
 
     if (currentWorkspace != datasetWorkspace) {
-      Swal.fire({
-        width: 700,
-        icon: "info",
-        title: "You are not logged in to the workspace you confirmed earlier.",
-        html: `
+      if (sodaJSONObj?.["starting-point"]?.["type"] === "bf") {
+        Swal.fire({
+          width: 700,
+          icon: "info",
+          title: "You are not logged in to the workspace you pulled this dataset from.",
+          html: `
+          <p class="text-left">
+            You pulled this dataset from the workspace <b>${datasetWorkspace}</b>, but you are currently
+            logged in to the workspace <b>${currentWorkspace}</b>.
+          </p>
+          <br />
+          <br />
+          <p class="text-left">
+            To push the changes you made to this dataset to Pennsieve, please select
+            the workspace <b>${datasetWorkspace}</b> by clicking the pencil icon to
+            the right of the Dataset workspace field on this page.
+          </p>
+        `,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: `OK`,
+          focusConfirm: true,
+          allowOutsideClick: false,
+        });
+      } else {
+        Swal.fire({
+          width: 700,
+          icon: "info",
+          title: "You are not logged in to the workspace you confirmed earlier.",
+          html: `
           You previously confirmed that the Dataset workspace is <b>${datasetWorkspace}</b>.
           <br />
           <br />
@@ -13589,12 +13626,13 @@ $(document).ready(async () => {
             change your workspace to <b>${currentWorkspace}</b>.
           </p>
         `,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: `OK`,
-        focusConfirm: true,
-        allowOutsideClick: false,
-      });
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: `OK`,
+          focusConfirm: true,
+          allowOutsideClick: false,
+        });
+      }
       return;
     }
     //run pre flight checks and abort if any fail
