@@ -4596,19 +4596,27 @@ const openPage = async (targetPageID) => {
           const submissionData = submissionMetadataRes.data;
           let sparcAwardRes = submissionData["SPARC Award number"];
           if (sparcAwardRes) {
+            const substringsSparcAwardsShouldContain = ["ot2od", "ot3od", "u18", "tr", "u01"]; // Note: These substrings are taken from the validator...
             sparcAwardRes = sparcAwardRes.toLowerCase().trim();
-            // If they have an external award, we can assume the submission is not SPARC funded
-            if (sparcAwardRes === "external") {
-              // Select the not sparc funded button and assume the user has contacted SPARC
-              document.getElementById("guided-button-dataset-is-not-sparc-funded").click();
-              document.getElementById("guided-button-non-sparc-user-has-contacted-sparc").click();
+
+            let awardIsSparcFunded = false;
+
+            // Loop through the sparcSPARCAwards and check if the sparcAwrardRes contains one of them as a substring
+            // (meaning this is a SPARC funded dataset)
+            for (const substring of substringsSparcAwardsShouldContain) {
+              if (sparcAwardRes.includes(substring)) {
+                awardIsSparcFunded = true;
+                break;
+              }
             }
-            // If they have a SPARC award and the length is greater than the length of "external",
-            // we can assume the submission is SPARC funded
-            else if (sparcAwardRes.length > 8) {
+
+            // If the sparcAwrardRes contains one of the sparcSPARCAwards as a substring, select that the dataset is SPARC funded
+            // If not, assume the user has contacted SPARC since they have already uploaded to Pennsieve (saves them a clicks)
+
+            if (awardIsSparcFunded) {
               document.getElementById("guided-button-dataset-is-sparc-funded").click();
             } else {
-              throw new Error("Unable to determine if submission is SPARC funded");
+              document.getElementById("guided-button-non-sparc-user-has-contacted-sparc").click();
             }
           }
         } catch (error) {
