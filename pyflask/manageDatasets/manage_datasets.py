@@ -400,7 +400,6 @@ def bf_dataset_account(accountname):
     r.raise_for_status()
     datasets = r.json()
 
-    print(datasets)
 
     datasets_list = []
     for ds in datasets:
@@ -513,7 +512,6 @@ def bf_account_details(accountname):
         if org["organization"]["id"] == organization_id:
             organization = org["organization"]["name"]
 
-    print("New organization is: ", organization)
 
     try:
         # if a user hasn't added their account name to their config file then we want to write it now

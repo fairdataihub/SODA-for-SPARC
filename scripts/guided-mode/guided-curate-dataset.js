@@ -722,6 +722,10 @@ const savePageChanges = async (pageBeingLeftID) => {
 
         // Unskip the CHANGES metadata so the user can add changes since previous publication
         guidedUnSkipPage("guided-create-changes-metadata-tab");
+
+        // Skip the page where they confirm their log in and workspace because we should already have it
+        sodaJSONObj["digital-metadata"]["dataset-workspace"] = guidedGetCurrentUserWorkSpace();
+        guidedSkipPage("guided-pennsieve-intro-tab");
       }
 
       //Skip this page becausae we should not come back to it
@@ -4577,41 +4581,48 @@ const openPage = async (targetPageID) => {
       );
     }
 
-    if (targetPageID === "guided-ask-if-submission-is-sparc-funded-tab") {
-      if (pageNeedsUpdateFromPennsieve(targetPageID)) {
-        // Show the loading page while the page's data is being fetched from Pennsieve
-        setPageLoadingState(true);
-        try {
-          const submissionMetadataRes = await client.get(`/prepare_metadata/import_metadata_file`, {
-            params: {
-              selected_account: defaultBfAccount,
-              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-              file_type: "submission.xlsx",
-            },
-          });
-          const submissionData = submissionMetadataRes.data;
-          let sparcAwardRes = submissionData["SPARC Award number"];
-          if (sparcAwardRes) {
-            sparcAwardRes = sparcAwardRes.toLowerCase().trim();
-            // If they have an external award, we can assume the submission is not SPARC funded
-            if (sparcAwardRes === "external") {
-              // Select the not sparc funded button and assume the user has contacted SPARC
-              document.getElementById("guided-button-dataset-is-not-sparc-funded").click();
-              document.getElementById("guided-button-non-sparc-user-has-contacted-sparc").click();
-            }
-            // If they have a SPARC award and the length is greater than the length of "external",
-            // we can assume the submission is SPARC funded
-            else if (sparcAwardRes.length > 8) {
-              document.getElementById("guided-button-dataset-is-sparc-funded").click();
-            } else {
-              throw new Error("Unable to determine if submission is SPARC funded");
+    if (
+      targetPageID === "guided-ask-if-submission-is-sparc-funded-tab" &&
+      pageNeedsUpdateFromPennsieve(targetPageID)
+    ) {
+      setPageLoadingState(true);
+      try {
+        const submissionMetadataRes = await client.get(`/prepare_metadata/import_metadata_file`, {
+          params: {
+            selected_account: defaultBfAccount,
+            selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+            file_type: "submission.xlsx",
+          },
+        });
+        const submissionData = submissionMetadataRes.data;
+        let sparcAwardRes = submissionData["SPARC Award number"];
+        if (sparcAwardRes) {
+          const substringsSparcAwardsShouldContain = ["ot2od", "ot3od", "u18", "tr", "u01"]; // Note: These substrings are taken from the validator...
+          sparcAwardRes = sparcAwardRes.toLowerCase().trim();
+
+          let awardIsSparcFunded = false;
+
+          // Loop through the sparcSPARCAwards and check if the sparcAwrardRes contains one of them as a substring
+          // (meaning this is a SPARC funded dataset)
+          for (const substring of substringsSparcAwardsShouldContain) {
+            if (sparcAwardRes.includes(substring)) {
+              awardIsSparcFunded = true;
+              break;
             }
           }
-        } catch (error) {
-          // If the manifest file is not found or the SPARC award number string is smaller than 8 characters,
-          // we can't assume anything about the submission so the user has to select the appropriate button
-          console.log(error);
+
+          // If the sparcAwrardRes contains one of the sparcSPARCAwards as a substring, select that the dataset is SPARC funded
+          // If not, assume the user has contacted SPARC since they have already uploaded to Pennsieve (saves them a clicks)
+          if (awardIsSparcFunded) {
+            document.getElementById("guided-button-dataset-is-sparc-funded").click();
+          } else {
+            document.getElementById("guided-button-non-sparc-user-has-contacted-sparc").click();
+          }
         }
+      } catch (error) {
+        // If the manifest file is not found or the SPARC award number string is smaller than 8 characters,
+        // we can't assume anything about the submission so the user has to select the appropriate button
+        console.log(error);
       }
     }
 
@@ -6771,6 +6782,14 @@ const patchPreviousGuidedModeVersions = () => {
   if (!sodaJSONObj["skipped-pages"].includes("guided-create-changes-metadata-tab")) {
     if (sodaJSONObj["starting-point"]["type"] === "new") {
       sodaJSONObj["skipped-pages"].push("guided-create-changes-metadata-tab");
+    }
+  }
+
+  if (sodaJSONObj?.["starting-point"]?.["type"] === "bf") {
+    if (!sodaJSONObj?.["digital-metadata"]?.["dataset-workspace"]) {
+      // Skip the log in page since we no longer need it
+      guidedSkipPage("guided-pennsieve-intro-tab");
+      sodaJSONObj["digital-metadata"]["dataset-workspace"] = guidedGetCurrentUserWorkSpace();
     }
   }
 };
@@ -13568,11 +13587,36 @@ $(document).ready(async () => {
     }
 
     if (currentWorkspace != datasetWorkspace) {
-      Swal.fire({
-        width: 700,
-        icon: "info",
-        title: "You are not logged in to the workspace you confirmed earlier.",
-        html: `
+      if (sodaJSONObj?.["starting-point"]?.["type"] === "bf") {
+        Swal.fire({
+          width: 700,
+          icon: "info",
+          title: "You are not logged in to the workspace you pulled this dataset from.",
+          html: `
+          <p class="text-left">
+            You pulled this dataset from the workspace <b>${datasetWorkspace}</b>, but you are currently
+            logged in to the workspace <b>${currentWorkspace}</b>.
+          </p>
+          <br />
+          <br />
+          <p class="text-left">
+            To push the changes you made to this dataset to Pennsieve, please select
+            the workspace <b>${datasetWorkspace}</b> by clicking the pencil icon to
+            the right of the Dataset workspace field on this page.
+          </p>
+        `,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: `OK`,
+          focusConfirm: true,
+          allowOutsideClick: false,
+        });
+      } else {
+        Swal.fire({
+          width: 700,
+          icon: "info",
+          title: "You are not logged in to the workspace you confirmed earlier.",
+          html: `
           You previously confirmed that the Dataset workspace is <b>${datasetWorkspace}</b>.
           <br />
           <br />
@@ -13589,12 +13633,13 @@ $(document).ready(async () => {
             change your workspace to <b>${currentWorkspace}</b>.
           </p>
         `,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: `OK`,
-        focusConfirm: true,
-        allowOutsideClick: false,
-      });
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: `OK`,
+          focusConfirm: true,
+          allowOutsideClick: false,
+        });
+      }
       return;
     }
     //run pre flight checks and abort if any fail

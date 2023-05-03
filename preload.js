@@ -784,11 +784,6 @@ const resetFFMUI = (ev) => {
         // $("#Question-generate-dataset-existing-folders-options").hide();
       }
     }
-
-    // If the workspace is changed in guided mode, do not reset the organize dataset tab
-    // if (ev.classList.contains("guided-change-workspace")) {
-    //   resetOrganizationTab = false;
-    // }
   }
 
   if (resetSubmissionTab) {
@@ -1010,7 +1005,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             if (response[0] == "failed") {
               let error_message = response[1];
               if (response[1]["message"] === "exceptions must derive from BaseException") {
-                error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">It seems that you do not have access to the SPARC Organization on Pennsieve. See our <a target="_blank" href="https://docs.sodaforsparc.io/docs/next/how-to/how-to-get-a-pennsieve-account">[dedicated help page]</a> to learn how to get access</div>`;
+                error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">It seems that you do not have access to your desired workspace on Pennsieve. See our <a target="_blank" href="https://docs.sodaforsparc.io/docs/next/how-to/how-to-get-a-pennsieve-account">[dedicated help page]</a> to learn how to get access</div>`;
               }
               if (response[1]["message"] === "Error: Username or password was incorrect.") {
                 error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">Error: Username or password was incorrect</div>`;
@@ -1541,10 +1536,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
   } else if (dropdown === "organization") {
     console.log("Organization dropdown recognized");
 
-    // if (ev != null) {
-    //   dropdownEventID = ev.id;
-    // }
-
     // TODO: Change these classes to organization classes
     $(".svg-change-current-account.organization").css("display", "none");
     $("#div-permission-list-2").css("display", "none");
@@ -1600,6 +1591,21 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       } else {
         $(".ui.active.green.inline.loader.small").css("display", "none");
         $(".svg-change-current-account.dataset").css("display", "block");
+        await Swal.fire({
+          icon: "warning",
+          text: "You cannot select your workspace until you connect your account with Pennsieve.",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: "Ok",
+          showCancelButton: false,
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate__animated animate__zoomOut animate__faster",
+          },
+        });
+        return;
       }
 
       ipcRenderer.send(
@@ -1730,6 +1736,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       }).then(async (result) => {
         if (result.isConfirmed) {
           console.log(dropdownEventID);
+          console.log("REsult is considered confirmed");
           if (dropdownEventID === "dd-select-pennsieve-organization") {
             $("#ds-name").val(bfOrganization);
             $("#ds-description").val = $("#bf-dataset-subtitle").val;
@@ -1810,10 +1817,14 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
           // reset the selected dataset to None
           $(".bf-dataset-span").html("None");
-          resetFFMUI(ev);
 
-          // Update the guided Mode UI depending on the button that was clicked to open up the dropdown
-          handleGuidedModeOrgSwitch(ev);
+          // If the button that triggered the organization has the class
+          // guided-change-workspace (from guided mode), handle changes based on the ev id
+          // otherwise, reset the FFM UI based on the ev class
+          ev.classList.contains("guided-change-workspace")
+            ? handleGuidedModeOrgSwitch(ev)
+            : resetFFMUI(ev);
+
           console.log("Organization is setup");
 
           // reset the dataset list
@@ -1824,6 +1835,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           // checkPrevDivForConfirmButton("dataset");
         } else if (result.isDismissed) {
           currentDatasetLicense.innerText = currentDatasetLicense.innerText;
+          return;
         }
       });
     }

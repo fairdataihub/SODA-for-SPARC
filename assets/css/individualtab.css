@@ -1464,18 +1464,19 @@
 .prepare-metadata-review-status {
   color: #000 !important;
   font-weight: 600 !important;
-  margin-left: 65px !important;
+  margin-left: 68px !important;
   font-size: 15px !important;
 }
 
 .prepare-metadata-dataset-span {
   padding-left: 6px !important;
-  margin-left: 59px !important;
+  margin-left: 62px !important;
 }
 
 .prepare-metadata-organization-span {
   width: fit-content !important;
   margin-left: 32px !important;
+  padding-left: 15px;
 }
 
 .prepare-metadata-account-details-span {
