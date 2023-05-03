@@ -4581,49 +4581,48 @@ const openPage = async (targetPageID) => {
       );
     }
 
-    if (targetPageID === "guided-ask-if-submission-is-sparc-funded-tab") {
-      if (pageNeedsUpdateFromPennsieve(targetPageID)) {
-        // Show the loading page while the page's data is being fetched from Pennsieve
-        setPageLoadingState(true);
-        try {
-          const submissionMetadataRes = await client.get(`/prepare_metadata/import_metadata_file`, {
-            params: {
-              selected_account: defaultBfAccount,
-              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-              file_type: "submission.xlsx",
-            },
-          });
-          const submissionData = submissionMetadataRes.data;
-          let sparcAwardRes = submissionData["SPARC Award number"];
-          if (sparcAwardRes) {
-            const substringsSparcAwardsShouldContain = ["ot2od", "ot3od", "u18", "tr", "u01"]; // Note: These substrings are taken from the validator...
-            sparcAwardRes = sparcAwardRes.toLowerCase().trim();
+    if (
+      targetPageID === "guided-ask-if-submission-is-sparc-funded-tab" &&
+      pageNeedsUpdateFromPennsieve(targetPageID)
+    ) {
+      setPageLoadingState(true);
+      try {
+        const submissionMetadataRes = await client.get(`/prepare_metadata/import_metadata_file`, {
+          params: {
+            selected_account: defaultBfAccount,
+            selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+            file_type: "submission.xlsx",
+          },
+        });
+        const submissionData = submissionMetadataRes.data;
+        let sparcAwardRes = submissionData["SPARC Award number"];
+        if (sparcAwardRes) {
+          const substringsSparcAwardsShouldContain = ["ot2od", "ot3od", "u18", "tr", "u01"]; // Note: These substrings are taken from the validator...
+          sparcAwardRes = sparcAwardRes.toLowerCase().trim();
 
-            let awardIsSparcFunded = false;
+          let awardIsSparcFunded = false;
 
-            // Loop through the sparcSPARCAwards and check if the sparcAwrardRes contains one of them as a substring
-            // (meaning this is a SPARC funded dataset)
-            for (const substring of substringsSparcAwardsShouldContain) {
-              if (sparcAwardRes.includes(substring)) {
-                awardIsSparcFunded = true;
-                break;
-              }
-            }
-
-            // If the sparcAwrardRes contains one of the sparcSPARCAwards as a substring, select that the dataset is SPARC funded
-            // If not, assume the user has contacted SPARC since they have already uploaded to Pennsieve (saves them a clicks)
-
-            if (awardIsSparcFunded) {
-              document.getElementById("guided-button-dataset-is-sparc-funded").click();
-            } else {
-              document.getElementById("guided-button-non-sparc-user-has-contacted-sparc").click();
+          // Loop through the sparcSPARCAwards and check if the sparcAwrardRes contains one of them as a substring
+          // (meaning this is a SPARC funded dataset)
+          for (const substring of substringsSparcAwardsShouldContain) {
+            if (sparcAwardRes.includes(substring)) {
+              awardIsSparcFunded = true;
+              break;
             }
           }
-        } catch (error) {
-          // If the manifest file is not found or the SPARC award number string is smaller than 8 characters,
-          // we can't assume anything about the submission so the user has to select the appropriate button
-          console.log(error);
+
+          // If the sparcAwrardRes contains one of the sparcSPARCAwards as a substring, select that the dataset is SPARC funded
+          // If not, assume the user has contacted SPARC since they have already uploaded to Pennsieve (saves them a clicks)
+          if (awardIsSparcFunded) {
+            document.getElementById("guided-button-dataset-is-sparc-funded").click();
+          } else {
+            document.getElementById("guided-button-non-sparc-user-has-contacted-sparc").click();
+          }
         }
+      } catch (error) {
+        // If the manifest file is not found or the SPARC award number string is smaller than 8 characters,
+        // we can't assume anything about the submission so the user has to select the appropriate button
+        console.log(error);
       }
     }
 
