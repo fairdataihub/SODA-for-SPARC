@@ -784,11 +784,6 @@ const resetFFMUI = (ev) => {
         // $("#Question-generate-dataset-existing-folders-options").hide();
       }
     }
-
-    // If the workspace is changed in guided mode, do not reset the organize dataset tab
-    // if (ev.classList.contains("guided-change-workspace")) {
-    //   resetOrganizationTab = false;
-    // }
   }
 
   if (resetSubmissionTab) {
@@ -1822,10 +1817,14 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
           // reset the selected dataset to None
           $(".bf-dataset-span").html("None");
-          resetFFMUI(ev);
 
-          // Update the guided Mode UI depending on the button that was clicked to open up the dropdown
-          handleGuidedModeOrgSwitch(ev);
+          // If the button that triggered the organization has the class
+          // guided-change-workspace (from guided mode), handle changes based on the ev id
+          // otherwise, reset the FFM UI based on the ev class
+          ev.classList.contains("guided-change-workspace")
+            ? handleGuidedModeOrgSwitch(ev)
+            : resetFFMUI(ev);
+
           console.log("Organization is setup");
 
           // reset the dataset list
