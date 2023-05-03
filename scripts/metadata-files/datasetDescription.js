@@ -701,7 +701,6 @@ async function addProtocol() {
   }
 }
 
-
 // TODO: Dorian -> remove this function
 // It was intended for importing from Protocols.io (not supported anymore)
 function addExistingProtocol() {
