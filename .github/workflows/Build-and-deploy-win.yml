@@ -4,7 +4,7 @@ run-name: ${{ github.actor }} is building a Windows release for SODA
 on:
   push:
     branches:
-      - disabled-switch-this-text-to-main-to-reinstate
+      - staging
 
 jobs:
   deploy-on-windows:
@@ -39,4 +39,5 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           npm run python-onefile-build
-          npm run deploy-win
+          cd pyflaskdist/
+          ./app.exe 4242
