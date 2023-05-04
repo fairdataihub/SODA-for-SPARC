@@ -142,9 +142,10 @@ def bf_add_account_username(keyname, key, secret):
         # Add new account
         if not config.has_section(keyname):
             config.add_section(keyname)
-            config.set(keyname, "api_token", key)
-            config.set(keyname, "api_secret", secret)
-            # config.set(keyname, "api_host", PENNSIEVE_URL)
+
+        config.set(keyname, "api_token", key)
+        config.set(keyname, "api_secret", secret)
+        # config.set(keyname, "api_host", PENNSIEVE_URL)
 
         # set profile name in global section
         if not config.has_section("global"):
