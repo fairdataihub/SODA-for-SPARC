@@ -826,9 +826,10 @@ const resetFFMUI = (ev) => {
   $("#share_sparc_consortium-question-2").removeClass("show");
 
   $("#submit_prepublishing_review-question-1").removeClass("prev");
-  $("#submit_prepublishing_review-question-2").removeClass("show");
+  $("#submit_prepublishing_review-question-2").addClass("show");
   $("#submit_prepublishing_review-question-3").removeClass("show");
   $("#submit_prepublishing_review-question-4").removeClass("show");
+  $("#para-review-dataset-info-disseminate").text("None");
 };
 
 var dropdownEventID = "";
@@ -1788,9 +1789,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             preConfirm: async () => {
               const login = Swal.getPopup().querySelector("#ps_login").value;
               const password = Swal.getPopup().querySelector("#ps_password").value;
-
-              console.log(login);
-              console.log(password);
 
               if (!login) {
                 Swal.showValidationMessage("Please enter your email!");

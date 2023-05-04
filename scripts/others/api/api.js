@@ -41,11 +41,7 @@ const getDatasetRole = async (datasetNameOrId) => {
     defaultBfDataset = datasetNameOrId;
   }
 
-  let datasetRoleResponse = await client.get(`/datasets/${defaultBfDataset}/role`, {
-    params: {
-      pennsieve_account: defaultBfAccount,
-    },
-  });
+  let datasetRoleResponse = await client.get(`/datasets/${defaultBfDataset}/role`);
 
   let { role } = datasetRoleResponse.data;
 

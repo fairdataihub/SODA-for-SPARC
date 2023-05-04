@@ -2672,6 +2672,9 @@ function loadDataFrametoUISamples(type) {
   }
 }
 
+//TODO: Dorian -> Remove this function (not supported anymore)
+// Go through Protocols workflow and remove functions related to connecting/importing
+// From Protocols.io
 function preliminaryProtocolStep(type) {
   var credentials = loadExistingProtocolInfo();
   if (credentials[0]) {
@@ -2682,6 +2685,7 @@ function preliminaryProtocolStep(type) {
   }
 }
 
+//TODO: Dorian -> Remove this function (not supported anymore)
 function protocolAccountQuestion(type, changeAccountBoolean) {
   if (changeAccountBoolean) {
     var titleText = "Do you want to connect to a different protocol account?";
@@ -2783,6 +2787,7 @@ function protocolAccountQuestion(type, changeAccountBoolean) {
   });
 }
 
+//TODO: Dorian -> Remove this function (not supported anymore)
 async function connectProtocol(type) {
   const { value: protocolCredentials } = await Swal.fire({
     width: "fit-content",
@@ -2820,6 +2825,7 @@ async function connectProtocol(type) {
 const protocolHostname = "www.protocols.io";
 var protocolResearcherList = {};
 
+//TODO: Dorian -> Remove this function (not supported anymore)
 function sendHttpsRequestProtocol(accessToken, accessType, filetype) {
   var protocolList = {};
   var protocolInfo = {
@@ -2854,6 +2860,7 @@ function sendHttpsRequestProtocol(accessToken, accessType, filetype) {
   });
 }
 
+//TODO: Dorian -> Remove this function (not supported anymore)
 function grabResearcherProtocolList(username, email, token, type, filetype) {
   if (type === "first-time") {
     Swal.fire({
@@ -2920,6 +2927,7 @@ function grabResearcherProtocolList(username, email, token, type, filetype) {
   });
 }
 
+//TODO: Dorian -> Remove this function (not supported anymore)
 async function showProtocolCredentials(email, filetype) {
   if (Object.keys(protocolResearcherList).length === 0) {
     var warningText = "You currently don't have any protocols.";
