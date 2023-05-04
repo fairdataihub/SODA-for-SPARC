@@ -834,347 +834,347 @@ const resetFFMUI = (ev) => {
 
 const addBfAccount = async (ev, verifyingOrganization = False) => {
   var resolveMessage = "";
-    if (bfAccountOptionsStatus === "") {
-      if (Object.keys(bfAccountOptions).length === 1) {
-        footerMessage = "No existing accounts to load. Please add an account.";
-      } else {
-        footerMessage = "";
+  if (bfAccountOptionsStatus === "") {
+    if (Object.keys(bfAccountOptions).length === 1) {
+      footerMessage = "No existing accounts to load. Please add an account.";
+    } else {
+      footerMessage = "";
+    }
+  } else {
+    footerMessage = bfAccountOptionsStatus;
+  }
+  var bfacct;
+  let bfAccountSwal = false;
+  if (bfAccountSwal === null) {
+    if (bfacct !== "Select") {
+      Swal.fire({
+        allowEscapeKey: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        showConfirmButton: false,
+        timer: 2000,
+        timerProgressBar: true,
+        title: "Loading your account details...",
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+      $("#Question-getting-started-BF-account")
+        .nextAll()
+        .removeClass("show")
+        .removeClass("prev")
+        .removeClass("test2");
+      $("#Question-generate-dataset-BF-account")
+        .nextAll()
+        .removeClass("show")
+        .removeClass("prev")
+        .removeClass("test2");
+      $("#current-bf-account").text("");
+      $("#current-bf-account-generate").text("");
+      $("#create_empty_dataset_BF_account_span").text("");
+      $(".bf-account-span").text("");
+      $("#current-bf-dataset").text("None");
+      $("#current-bf-dataset-generate").text("None");
+      $(".bf-dataset-span").html("None");
+      defaultBfDataset = "Select dataset";
+      document.getElementById("ds-description").innerHTML = "";
+      refreshDatasetList();
+      $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css("display", "none");
+      $("#button-confirm-bf-dataset-getting-started").hide();
+
+      $("#para-account-detail-curate").html("");
+      $("#current-bf-dataset").text("None");
+      $(".bf-dataset-span").html("None");
+      showHideDropdownButtons("dataset", "hide");
+
+      try {
+        let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
+          params: {
+            selected_account: bfacct,
+          },
+        });
+        let accountDetails = bf_account_details_req.data.account_details;
+        $("#para-account-detail-curate").html(accountDetails);
+        $("#current-bf-account").text(bfacct);
+        $("#current-bf-account-generate").text(bfacct);
+        $("#create_empty_dataset_BF_account_span").text(bfacct);
+        $(".bf-account-span").text(bfacct);
+        updateBfAccountList();
+        //change icons in getting started page (guided mode)
+        const gettingStartedPennsieveBtn = document.getElementById(
+          "getting-started-pennsieve-account"
+        );
+        gettingStartedPennsieveBtn.children[0].style.display = "none";
+        gettingStartedPennsieveBtn.children[1].style.display = "flex";
+
+        try {
+          let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
+            params: {
+              selected_account: bfacct,
+            },
+          });
+
+          datasetList = [];
+          datasetList = responseObject.data.datasets;
+          clearDatasetDropdowns();
+          refreshDatasetList();
+        } catch (error) {
+          clientError(error);
+          document.getElementById("para-filter-datasets-status-2").innerHTML =
+            "<span style='color: red'>" + userErrorMessage(error) + "</span>";
+          return;
+        }
+      } catch (error) {
+        clientError(error);
+        Swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          icon: "error",
+          text: userErrorMessage(error),
+          footer:
+            "<a href='https://docs.pennsieve.io/docs/configuring-the-client-credentials'>Why do I have this issue?</a>",
+        });
+        showHideDropdownButtons("account", "hide");
       }
     } else {
-      footerMessage = bfAccountOptionsStatus;
+      Swal.showValidationMessage("Please select an account!");
     }
-    var bfacct;
-    let bfAccountSwal = false;
-    if (bfAccountSwal === null) {
-      if (bfacct !== "Select") {
+  } else if (bfAccountSwal === false) {
+    let titleText = `<h3 style="text-align:center">Connect your Pennsieve account using your email and password</h3><p class="tip-content" style="margin-top: .5rem">Your email and password will not be saved and not seen by anyone.</p>`;
+    if (verifyingOrganization) {
+      titleText = `<h3 style="text-align:center">Grant SODA access to your current workspace</h3><p class="tip-content" style="margin-top: .5rem">Your email and password will not be saved and not seen by anyone.</p>`;
+    }
+    let footerText = `<a target="_blank" href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-a-pennsieve-account" style="text-decoration: none;">I don't have a Pennsieve account</a>`;
+    if (verifyingOrganization) {
+      footerText = "";
+    }
+    let confirmButtonTextValue = "Connect to Pennsieve";
+    if (verifyingOrganization) {
+      confirmButtonTextValue = "Grant Access";
+    }
+
+    Swal.fire({
+      allowOutsideClick: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      cancelButtonText: "Cancel",
+      confirmButtonText: confirmButtonTextValue,
+      showCloseButton: false,
+      focusConfirm: false,
+      heightAuto: false,
+      reverseButtons: reverseSwalButtons,
+      showCancelButton: true,
+      title: titleText,
+      html: `<input type="text" id="ps_login" class="swal2-input" placeholder="Email Address for Pennsieve">
+          <input type="password" id="ps_password" class="swal2-input" placeholder="Password">`,
+      showClass: {
+        popup: "animate__animated animate__fadeInDown animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__fadeOutUp animate__faster",
+      },
+
+      footer: footerText,
+
+      didOpen: () => {
+        $(".swal-popover").popover();
+        let div_footer = document.getElementsByClassName("swal2-footer")[0];
+        document.getElementsByClassName("swal2-popup")[0].style.width = "43rem";
+        div_footer.style.flexDirection = "column";
+        div_footer.style.alignItems = "center";
+        if (!verifyingOrganization) {
+          let swal_actions = document.getElementsByClassName("swal2-actions")[0];
+          let api_button = document.createElement("button");
+          let api_arrow = document.createElement("i");
+
+          api_button.innerText = "Connect with API key instead";
+          api_button.setAttribute("onclick", "showBFAddAccountSweetalert()");
+          api_arrow.classList.add("fas");
+          api_arrow.classList.add("fa-arrow-right");
+          api_arrow.style.marginLeft = "10px";
+          api_button.type = "button";
+          api_button.style.border = "";
+          api_button.id = "api_connect_btn";
+          api_button.classList.add("transition-btn");
+          api_button.classList.add("api_key-btn");
+          api_button.classList.add("back");
+          api_button.style.display = "inline";
+          api_button.appendChild(api_arrow);
+          swal_actions.parentElement.insertBefore(api_button, div_footer);
+        } else {
+          // hide the cancel button
+          let cancel_button = document.getElementsByClassName("swal2-cancel")[0];
+          cancel_button.style.display = "none";
+        }
+      },
+      preConfirm: async () => {
+        Swal.resetValidationMessage();
+        Swal.showLoading();
+        const login = Swal.getPopup().querySelector("#ps_login").value;
+        const password = Swal.getPopup().querySelector("#ps_password").value;
+        if (!login || !password) {
+          Swal.hideLoading();
+          Swal.showValidationMessage(`Please enter email and password`);
+          return;
+        } else {
+          let key_name = SODA_SPARC_API_KEY;
+          let response = await get_api_key(login, password, key_name);
+          if (response[0] == "failed") {
+            let error_message = response[1];
+            if (response[1]["message"] === "exceptions must derive from BaseException") {
+              error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">It seems that you do not have access to your desired workspace on Pennsieve. See our <a target="_blank" href="https://docs.sodaforsparc.io/docs/next/how-to/how-to-get-a-pennsieve-account">[dedicated help page]</a> to learn how to get access</div>`;
+            }
+            if (response[1]["message"] === "Error: Username or password was incorrect.") {
+              error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">Error: Username or password was incorrect</div>`;
+            }
+            Swal.hideLoading();
+            Swal.showValidationMessage(error_message);
+            document.getElementById("swal2-validation-message").style.flexDirection = "column";
+          } else if (response["success"] == "success") {
+            return {
+              key: response["key"],
+              secret: response["secret"],
+              name: response["name"],
+            };
+          }
+        }
+      },
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        let titleText = "Adding account...";
+        if (verifyingOrganization) {
+          titleText = "Loading workspace details...";
+        }
         Swal.fire({
           allowEscapeKey: false,
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
           showConfirmButton: false,
-          timer: 2000,
-          timerProgressBar: true,
-          title: "Loading your account details...",
+          title: titleText,
           didOpen: () => {
             Swal.showLoading();
           },
         });
-        $("#Question-getting-started-BF-account")
-          .nextAll()
-          .removeClass("show")
-          .removeClass("prev")
-          .removeClass("test2");
-        $("#Question-generate-dataset-BF-account")
-          .nextAll()
-          .removeClass("show")
-          .removeClass("prev")
-          .removeClass("test2");
-        $("#current-bf-account").text("");
-        $("#current-bf-account-generate").text("");
-        $("#create_empty_dataset_BF_account_span").text("");
-        $(".bf-account-span").text("");
-        $("#current-bf-dataset").text("None");
-        $("#current-bf-dataset-generate").text("None");
-        $(".bf-dataset-span").html("None");
-        defaultBfDataset = "Select dataset";
-        document.getElementById("ds-description").innerHTML = "";
-        refreshDatasetList();
-        $($("#button-confirm-bf-dataset-getting-started").parents()[0]).css("display", "none");
-        $("#button-confirm-bf-dataset-getting-started").hide();
+        let key_name = result.value.name;
+        let apiKey = result.value.key;
+        let apiSecret = result.value.secret;
 
-        $("#para-account-detail-curate").html("");
-        $("#current-bf-dataset").text("None");
-        $(".bf-dataset-span").html("None");
-        showHideDropdownButtons("dataset", "hide");
-
+        // lowercase the key_name the user provided
+        // this is to prevent an issue caused by the pennsiev agent
+        // wherein it fails to validate an account if it is not lowercase
+        key_name = key_name.toLowerCase();
+        //needs to be replaced
         try {
-          let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
-            params: {
-              selected_account: bfacct,
-            },
+          await client.put(`/manage_datasets/account/username`, {
+            keyname: key_name,
+            key: apiKey,
+            secret: apiSecret,
           });
-          let accountDetails = bf_account_details_req.data.account_details;
-          $("#para-account-detail-curate").html(accountDetails);
-          $("#current-bf-account").text(bfacct);
-          $("#current-bf-account-generate").text(bfacct);
-          $("#create_empty_dataset_BF_account_span").text(bfacct);
-          $(".bf-account-span").text(bfacct);
-          updateBfAccountList();
-          //change icons in getting started page (guided mode)
-          const gettingStartedPennsieveBtn = document.getElementById(
-            "getting-started-pennsieve-account"
-          );
-          gettingStartedPennsieveBtn.children[0].style.display = "none";
-          gettingStartedPennsieveBtn.children[1].style.display = "flex";
+          bfAccountOptions[key_name] = key_name;
+          defaultBfAccount = key_name;
+          defaultBfDataset = "Select dataset";
 
           try {
-            let responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
+            let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
               params: {
-                selected_account: bfacct,
+                selected_account: defaultBfAccount,
               },
             });
+            let result = bf_account_details_req.data.account_details;
+            $("#para-account-detail-curate").html(result);
+            $("#current-bf-account").text(key_name);
+            $("#current-bf-account-generate").text(key_name);
+            $("#create_empty_dataset_BF_account_span").text(key_name);
+            $(".bf-account-span").text(key_name);
+            $("#current-bf-dataset").text("None");
+            $("#current-bf-dataset-generate").text("None");
+            $(".bf-dataset-span").html("None");
+            $("#para-account-detail-curate-generate").html(result);
+            $("#para_create_empty_dataset_BF_account").html(result);
+            $("#para-account-detail-curate-generate").html(result);
+            $(".bf-account-details-span").html(result);
+            $("#para-continue-bf-dataset-getting-started").text("");
+            console.log("bf_account_details_req", bf_account_details_req);
+            console.log("opendropdown function");
 
-            datasetList = [];
-            datasetList = responseObject.data.datasets;
-            clearDatasetDropdowns();
-            refreshDatasetList();
+            // $("#current_curation_team_status").text("None");
+            // $("#curation-team-share-btn").hide();
+            // $("#curation-team-unshare-btn").hide();
+            // $("#current_sparc_consortium_status").text("None");
+            // $("#sparc-consortium-share-btn").hide();
+            // $("#sparc-consortium-unshare-btn").hide();
+
+            let org = bf_account_details_req.data.organization;
+            console.log(org);
+            $(".bf-organization-span").text(org);
+            // const gettingStartedPennsieveBtn = document.getElementById(
+            // "getting-started-pennsieve-account"
+            // );
+            // gettingStartedPennsieveBtn.children[0].style.display = "none";
+            // gettingStartedPennsieveBtn.children[1].style.display = "flex";
+
+            showHideDropdownButtons("account", "show");
+            confirm_click_account_function();
+            updateBfAccountList();
+
+            // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
+            // then reset the guided mode page
+            if (ev?.getAttribute("data-reset-guided-mode-page") == "true") {
+              // Get the current page that the user is on in the guided mode
+              const currentPage = CURRENT_PAGE.id;
+              if (currentPage) {
+                await openPage(currentPage);
+              }
+            }
           } catch (error) {
             clientError(error);
-            document.getElementById("para-filter-datasets-status-2").innerHTML =
-              "<span style='color: red'>" + userErrorMessage(error) + "</span>";
-            return;
+            Swal.fire({
+              backdrop: "rgba(0,0,0, 0.4)",
+              heightAuto: false,
+              icon: "error",
+              text: "Something went wrong!",
+              footer:
+                '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
+            });
+            showHideDropdownButtons("account", "hide");
+            confirm_click_account_function();
           }
-        } catch (error) {
-          clientError(error);
-          Swal.fire({
-            backdrop: "rgba(0,0,0, 0.4)",
-            heightAuto: false,
-            icon: "error",
-            text: userErrorMessage(error),
-            footer:
-              "<a href='https://docs.pennsieve.io/docs/configuring-the-client-credentials'>Why do I have this issue?</a>",
-          });
-          showHideDropdownButtons("account", "hide");
-        }
-      } else {
-        Swal.showValidationMessage("Please select an account!");
-      }
-    } else if (bfAccountSwal === false) {
-      let titleText = `<h3 style="text-align:center">Connect your Pennsieve account using your email and password</h3><p class="tip-content" style="margin-top: .5rem">Your email and password will not be saved and not seen by anyone.</p>`
-      if(verifyingOrganization){
-        titleText = `<h3 style="text-align:center">Grant SODA access to your current workspace</h3><p class="tip-content" style="margin-top: .5rem">Your email and password will not be saved and not seen by anyone.</p>`
-      }
-      let footerText = `<a target="_blank" href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-a-pennsieve-account" style="text-decoration: none;">I don't have a Pennsieve account</a>`
-      if(verifyingOrganization){
-        footerText = ''
-      }
-      let confirmButtonTextValue = "Connect to Pennsieve"
-      if(verifyingOrganization){
-        confirmButtonTextValue = "Grant Access"
-      }
 
-      Swal.fire({
-        allowOutsideClick: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        cancelButtonText: "Cancel",
-        confirmButtonText: confirmButtonTextValue,
-        showCloseButton: false,
-        focusConfirm: false,
-        heightAuto: false,
-        reverseButtons: reverseSwalButtons,
-        showCancelButton: true,
-        title: titleText,
-        html: `<input type="text" id="ps_login" class="swal2-input" placeholder="Email Address for Pennsieve">
-          <input type="password" id="ps_password" class="swal2-input" placeholder="Password">`,
-        showClass: {
-          popup: "animate__animated animate__fadeInDown animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__fadeOutUp animate__faster",
-        },
+          datasetList = [];
+          defaultBfDataset = null;
+          clearDatasetDropdowns();
 
-        footer: footerText,
-
-        didOpen: () => {
-          $(".swal-popover").popover();
-          let div_footer = document.getElementsByClassName("swal2-footer")[0];
-          document.getElementsByClassName("swal2-popup")[0].style.width = "43rem";
-          div_footer.style.flexDirection = "column";
-          div_footer.style.alignItems = "center";
-          if(!verifyingOrganization){
-            let swal_actions = document.getElementsByClassName("swal2-actions")[0];
-            let api_button = document.createElement("button");
-            let api_arrow = document.createElement("i");
-
-            api_button.innerText = "Connect with API key instead";
-            api_button.setAttribute("onclick", "showBFAddAccountSweetalert()");
-            api_arrow.classList.add("fas");
-            api_arrow.classList.add("fa-arrow-right");
-            api_arrow.style.marginLeft = "10px";
-            api_button.type = "button";
-            api_button.style.border = "";
-            api_button.id = "api_connect_btn";
-            api_button.classList.add("transition-btn");
-            api_button.classList.add("api_key-btn");
-            api_button.classList.add("back");
-            api_button.style.display = "inline";
-            api_button.appendChild(api_arrow);
-            swal_actions.parentElement.insertBefore(api_button, div_footer);
-          } else {
-            // hide the cancel button 
-            let cancel_button = document.getElementsByClassName("swal2-cancel")[0];
-            cancel_button.style.display = "none";
-          }
-        },
-        preConfirm: async () => {
-          Swal.resetValidationMessage();
-          Swal.showLoading();
-          const login = Swal.getPopup().querySelector("#ps_login").value;
-          const password = Swal.getPopup().querySelector("#ps_password").value;
-          if (!login || !password) {
-            Swal.hideLoading();
-            Swal.showValidationMessage(`Please enter email and password`);
-            return;
-          } else {
-            let key_name = SODA_SPARC_API_KEY;
-            let response = await get_api_key(login, password, key_name);
-            if (response[0] == "failed") {
-              let error_message = response[1];
-              if (response[1]["message"] === "exceptions must derive from BaseException") {
-                error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">It seems that you do not have access to your desired workspace on Pennsieve. See our <a target="_blank" href="https://docs.sodaforsparc.io/docs/next/how-to/how-to-get-a-pennsieve-account">[dedicated help page]</a> to learn how to get access</div>`;
-              }
-              if (response[1]["message"] === "Error: Username or password was incorrect.") {
-                error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">Error: Username or password was incorrect</div>`;
-              }
-              Swal.hideLoading();
-              Swal.showValidationMessage(error_message);
-              document.getElementById("swal2-validation-message").style.flexDirection = "column";
-            } else if (response["success"] == "success") {
-              return {
-                key: response["key"],
-                secret: response["secret"],
-                name: response["name"],
-              };
-            }
-          }
-        },
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          let titleText = "Adding account..."
-          if(verifyingOrganization){
-            titleText = "Loading workspace details..."
+          let titleText = "Successfully added! <br/>Loading your account details...";
+          if (verifyingOrganization) {
+            titleText = "Workspace details loaded!";
           }
           Swal.fire({
             allowEscapeKey: false,
-            backdrop: "rgba(0,0,0, 0.4)",
             heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            icon: "success",
             showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
             title: titleText,
             didOpen: () => {
               Swal.showLoading();
             },
           });
-          let key_name = result.value.name;
-          let apiKey = result.value.key;
-          let apiSecret = result.value.secret;
-
-          // lowercase the key_name the user provided
-          // this is to prevent an issue caused by the pennsiev agent
-          // wherein it fails to validate an account if it is not lowercase
-          key_name = key_name.toLowerCase();
-          //needs to be replaced
-          try {
-            await client.put(`/manage_datasets/account/username`, {
-              keyname: key_name,
-              key: apiKey,
-              secret: apiSecret,
-            });
-            bfAccountOptions[key_name] = key_name;
-            defaultBfAccount = key_name;
-            defaultBfDataset = "Select dataset";
-
-            try {
-              let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
-                params: {
-                  selected_account: defaultBfAccount,
-                },
-              });
-              let result = bf_account_details_req.data.account_details;
-              $("#para-account-detail-curate").html(result);
-              $("#current-bf-account").text(key_name);
-              $("#current-bf-account-generate").text(key_name);
-              $("#create_empty_dataset_BF_account_span").text(key_name);
-              $(".bf-account-span").text(key_name);
-              $("#current-bf-dataset").text("None");
-              $("#current-bf-dataset-generate").text("None");
-              $(".bf-dataset-span").html("None");
-              $("#para-account-detail-curate-generate").html(result);
-              $("#para_create_empty_dataset_BF_account").html(result);
-              $("#para-account-detail-curate-generate").html(result);
-              $(".bf-account-details-span").html(result);
-              $("#para-continue-bf-dataset-getting-started").text("");
-              console.log("bf_account_details_req", bf_account_details_req);
-              console.log("opendropdown function");
-
-              // $("#current_curation_team_status").text("None");
-              // $("#curation-team-share-btn").hide();
-              // $("#curation-team-unshare-btn").hide();
-              // $("#current_sparc_consortium_status").text("None");
-              // $("#sparc-consortium-share-btn").hide();
-              // $("#sparc-consortium-unshare-btn").hide();
-
-              let org = bf_account_details_req.data.organization;
-              console.log(org);
-              $(".bf-organization-span").text(org);
-              // const gettingStartedPennsieveBtn = document.getElementById(
-              // "getting-started-pennsieve-account"
-              // );
-              // gettingStartedPennsieveBtn.children[0].style.display = "none";
-              // gettingStartedPennsieveBtn.children[1].style.display = "flex";
-
-              showHideDropdownButtons("account", "show");
-              confirm_click_account_function();
-              updateBfAccountList();
-
-              // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
-              // then reset the guided mode page
-              if (ev?.getAttribute("data-reset-guided-mode-page") == "true") {
-                // Get the current page that the user is on in the guided mode
-                const currentPage = CURRENT_PAGE.id;
-                if (currentPage) {
-                  await openPage(currentPage);
-                }
-              }
-            } catch (error) {
-              clientError(error);
-              Swal.fire({
-                backdrop: "rgba(0,0,0, 0.4)",
-                heightAuto: false,
-                icon: "error",
-                text: "Something went wrong!",
-                footer:
-                  '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
-              });
-              showHideDropdownButtons("account", "hide");
-              confirm_click_account_function();
-            }
-
-            datasetList = [];
-            defaultBfDataset = null;
-            clearDatasetDropdowns();
-
-            let titleText = "Successfully added! <br/>Loading your account details..."
-            if(verifyingOrganization){
-              titleText = "Workspace details loaded!"
-            }
-            Swal.fire({
-              allowEscapeKey: false,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              icon: "success",
-              showConfirmButton: false,
-              timer: 3000,
-              timerProgressBar: true,
-              title: titleText,
-              didOpen: () => {
-                Swal.showLoading();
-              },
-            });
-          } catch (error) {
-            clientError(error);
-            Swal.showValidationMessage(userErrorMessage(error));
-            Swal.close();
-          }
+        } catch (error) {
+          clientError(error);
+          Swal.showValidationMessage(userErrorMessage(error));
+          Swal.close();
         }
-      });
-    }
-}
+      }
+    });
+  }
+};
 
 var dropdownEventID = "";
-const openDropdownPrompt = async (ev, dropdown, show_timer = true, ) => {
+const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
   // if users edit current account
   if (dropdown === "bf") {
-    await addBfAccount(ev, false)
+    await addBfAccount(ev, false);
   } else if (dropdown === "dataset") {
     console.log("Dropdown event launched for dataset");
     dropdownEventID = ev?.id ?? "";
