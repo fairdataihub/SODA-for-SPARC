@@ -1190,13 +1190,6 @@ def bf_add_permission_team(
     token = get_access_token()
 
     organization_id = get_user_information(token)["preferredOrganization"]
-    if selected_team == "SPARC Data Curation Team":
-        if organization_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
-            abort(403, "Please login under the Pennsieve SPARC Consortium organization to share with the Curation Team")
-    if selected_team == "SPARC Embargoed Data Sharing Group":
-        if organization_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
-            abort(403, "Please login under the Pennsieve SPARC Consortium organization to share with the SPARC consortium group")
-
 
     c = 0
 
