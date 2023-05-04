@@ -1685,9 +1685,6 @@ const savePageChanges = async (pageBeingLeftID) => {
       $("#guided-button-unshare-dataset-with-curation-team");
     }
 
-    // Save the current version of SODA as the user should be taken back to the first page when the app is updated
-    const currentAppVersion = document.getElementById("version").innerHTML;
-    sodaJSONObj["last-version-of-soda-used"] = currentAppVersion;
     if (pageBeingLeftID === "guided-dataset-validation-tab") {
       const guidedButtonRunValidation = document.getElementById(
         "guided-button-run-dataset-validation"
@@ -1719,6 +1716,10 @@ const savePageChanges = async (pageBeingLeftID) => {
         // We don't have to do anything here.
       }
     }
+
+    // Save the current version of SODA as the user should be taken back to the first page when the app is updated
+    const currentAppVersion = document.getElementById("version").innerHTML;
+    sodaJSONObj["last-version-of-soda-used"] = currentAppVersion;
 
     // Stop any animations that need to be stopped
     startOrStopAnimationsInContainer(pageBeingLeftID, "stop");
@@ -2857,8 +2858,8 @@ const renderProgressCards = (progressFileJSONdata) => {
     });
   } else {
     progressCardsContainer.innerHTML = `
-      <h2 class="guided--text-sub-step mt-5">
-        No Progress files found.
+      <h2 class="guided--text-click-continue" style="color: var(--color-bg-plum) !important">
+        No datasets in progress found.
       </h2>
     `;
   }
@@ -4487,11 +4488,7 @@ const openPage = async (targetPageID) => {
 
       const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
       console.log("guidedSavedProgressFiles", guidedSavedProgressFiles);
-      if (guidedSavedProgressFiles.length === 0) {
-        document.getElementById("guided-button-resume-progress-file").disabled = true;
-      } else {
-        document.getElementById("guided-button-resume-progress-file").disabled = false;
-      }
+
       //render progress resumption cards from progress file array on first page of guided mode
       const progressFileData = await getAllProgressFileData(guidedSavedProgressFiles);
       renderProgressCards(progressFileData);
