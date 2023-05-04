@@ -275,9 +275,10 @@ class BfGetUsers(Resource):
 
       return bf_get_users(selected_account)
     except Exception as e:
+      # TODO: Refine this app wide to handle requests errors more appropriately
       if notBadRequestException(e):
         api.abort(500, str(e))
-      raise e
+      api.abort(401, str(e))
 
 
 

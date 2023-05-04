@@ -832,11 +832,8 @@ const resetFFMUI = (ev) => {
   $("#para-review-dataset-info-disseminate").text("None");
 };
 
-var dropdownEventID = "";
-const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
-  // if users edit current account
-  if (dropdown === "bf") {
-    var resolveMessage = "";
+const addBfAccount = async (ev, verifyingOrganization = False) => {
+  var resolveMessage = "";
     if (bfAccountOptionsStatus === "") {
       if (Object.keys(bfAccountOptions).length === 1) {
         footerMessage = "No existing accounts to load. Please add an account.";
@@ -919,6 +916,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
             datasetList = [];
             datasetList = responseObject.data.datasets;
+            clearDatasetDropdowns();
             refreshDatasetList();
           } catch (error) {
             clientError(error);
@@ -942,19 +940,30 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         Swal.showValidationMessage("Please select an account!");
       }
     } else if (bfAccountSwal === false) {
+      let titleText = `<h3 style="text-align:center">Connect your Pennsieve account using your email and password</h3><p class="tip-content" style="margin-top: .5rem">Your email and password will not be saved and not seen by anyone.</p>`
+      if(verifyingOrganization){
+        titleText = `<h3 style="text-align:center">Grant SODA access to your current workspace</h3><p class="tip-content" style="margin-top: .5rem">Your email and password will not be saved and not seen by anyone.</p>`
+      }
+      let footerText = `<a target="_blank" href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-a-pennsieve-account" style="text-decoration: none;">I don't have a Pennsieve account</a>`
+      if(verifyingOrganization){
+        footerText = ''
+      }
+      let confirmButtonTextValue = "Connect to Pennsieve"
+      if(verifyingOrganization){
+        confirmButtonTextValue = "Grant Access"
+      }
+
       Swal.fire({
         allowOutsideClick: false,
         backdrop: "rgba(0,0,0, 0.4)",
         cancelButtonText: "Cancel",
-        confirmButtonText: "Connect to Pennsieve",
+        confirmButtonText: confirmButtonTextValue,
         showCloseButton: false,
         focusConfirm: false,
         heightAuto: false,
         reverseButtons: reverseSwalButtons,
         showCancelButton: true,
-
-        title: `<h3 style="text-align:center">Connect your Pennsieve account using your email and password</h3><p class="tip-content" style="margin-top: .5rem">Your email and password will not be saved and not seen by anyone.</p>`,
-
+        title: titleText,
         html: `<input type="text" id="ps_login" class="swal2-input" placeholder="Email Address for Pennsieve">
           <input type="password" id="ps_password" class="swal2-input" placeholder="Password">`,
         showClass: {
@@ -964,7 +973,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           popup: "animate__animated animate__fadeOutUp animate__faster",
         },
 
-        footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-a-pennsieve-account" style="text-decoration: none;">I don't have a Pennsieve account</a>`,
+        footer: footerText,
 
         didOpen: () => {
           $(".swal-popover").popover();
@@ -972,24 +981,30 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           document.getElementsByClassName("swal2-popup")[0].style.width = "43rem";
           div_footer.style.flexDirection = "column";
           div_footer.style.alignItems = "center";
-          let swal_actions = document.getElementsByClassName("swal2-actions")[0];
-          let api_button = document.createElement("button");
-          let api_arrow = document.createElement("i");
+          if(!verifyingOrganization){
+            let swal_actions = document.getElementsByClassName("swal2-actions")[0];
+            let api_button = document.createElement("button");
+            let api_arrow = document.createElement("i");
 
-          api_button.innerText = "Connect with API key instead";
-          api_button.setAttribute("onclick", "showBFAddAccountSweetalert()");
-          api_arrow.classList.add("fas");
-          api_arrow.classList.add("fa-arrow-right");
-          api_arrow.style.marginLeft = "10px";
-          api_button.type = "button";
-          api_button.style.border = "";
-          api_button.id = "api_connect_btn";
-          api_button.classList.add("transition-btn");
-          api_button.classList.add("api_key-btn");
-          api_button.classList.add("back");
-          api_button.style.display = "inline";
-          api_button.appendChild(api_arrow);
-          swal_actions.parentElement.insertBefore(api_button, div_footer);
+            api_button.innerText = "Connect with API key instead";
+            api_button.setAttribute("onclick", "showBFAddAccountSweetalert()");
+            api_arrow.classList.add("fas");
+            api_arrow.classList.add("fa-arrow-right");
+            api_arrow.style.marginLeft = "10px";
+            api_button.type = "button";
+            api_button.style.border = "";
+            api_button.id = "api_connect_btn";
+            api_button.classList.add("transition-btn");
+            api_button.classList.add("api_key-btn");
+            api_button.classList.add("back");
+            api_button.style.display = "inline";
+            api_button.appendChild(api_arrow);
+            swal_actions.parentElement.insertBefore(api_button, div_footer);
+          } else {
+            // hide the cancel button 
+            let cancel_button = document.getElementsByClassName("swal2-cancel")[0];
+            cancel_button.style.display = "none";
+          }
         },
         preConfirm: async () => {
           Swal.resetValidationMessage();
@@ -1025,12 +1040,16 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         },
       }).then(async (result) => {
         if (result.isConfirmed) {
+          let titleText = "Adding account..."
+          if(verifyingOrganization){
+            titleText = "Loading workspace details..."
+          }
           Swal.fire({
             allowEscapeKey: false,
             backdrop: "rgba(0,0,0, 0.4)",
             heightAuto: false,
             showConfirmButton: false,
-            title: "Adding account...",
+            title: titleText,
             didOpen: () => {
               Swal.showLoading();
             },
@@ -1099,7 +1118,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
               // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
               // then reset the guided mode page
-              if (ev.getAttribute("data-reset-guided-mode-page") == "true") {
+              if (ev?.getAttribute("data-reset-guided-mode-page") == "true") {
                 // Get the current page that the user is on in the guided mode
                 const currentPage = CURRENT_PAGE.id;
                 if (currentPage) {
@@ -1120,6 +1139,14 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               confirm_click_account_function();
             }
 
+            datasetList = [];
+            defaultBfDataset = null;
+            clearDatasetDropdowns();
+
+            let titleText = "Successfully added! <br/>Loading your account details..."
+            if(verifyingOrganization){
+              titleText = "Workspace details loaded!"
+            }
             Swal.fire({
               allowEscapeKey: false,
               heightAuto: false,
@@ -1128,7 +1155,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               showConfirmButton: false,
               timer: 3000,
               timerProgressBar: true,
-              title: "Successfully added! <br/>Loading your account details...",
+              title: titleText,
               didOpen: () => {
                 Swal.showLoading();
               },
@@ -1141,6 +1168,13 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         }
       });
     }
+}
+
+var dropdownEventID = "";
+const openDropdownPrompt = async (ev, dropdown, show_timer = true, ) => {
+  // if users edit current account
+  if (dropdown === "bf") {
+    await addBfAccount(ev, false)
   } else if (dropdown === "dataset") {
     console.log("Dropdown event launched for dataset");
     dropdownEventID = ev?.id ?? "";

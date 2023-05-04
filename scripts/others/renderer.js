@@ -898,6 +898,22 @@ const run_pre_flight_checks = async (check_update = true) => {
   await wait(500);
 
   notyf.open({
+    type: "info",
+    message: "Verifying access to workspace.",
+  })
+
+  // make an api request to change to the organization members. If it fails with a 401 then ask them to go through the workspace change flow as SODA does not have access to the workspace.
+  try {
+    await client.get(`/manage_datasets/bf_get_users?selected_account=${defaultBfAccount}`)
+  } catch (err) {
+    clientError(err)
+    if(err.response.status) {
+      console.log("About to open dropdown prompt")
+      await addBfAccount(null, true)
+    }
+  }
+
+  notyf.open({
     type: "final",
     message: "You're all set!",
   });
