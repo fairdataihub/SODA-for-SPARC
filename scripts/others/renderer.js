@@ -866,8 +866,8 @@ const run_pre_flight_checks = async (check_update = true) => {
         type: "error",
         message: "Unable to start the Pennsieve Agent.",
       });
-      return false;
-    }, 20000);
+      throw new Error("Unable to start the Pennsieve Agent before timeout");
+    }, 15000);
 
     await startPennsieveAgentAndCheckVersion();
 
