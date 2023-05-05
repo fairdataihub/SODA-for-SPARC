@@ -781,9 +781,13 @@ const resetFFMUI = (ev) => {
       ) {
         console.log("Should reset");
         $("#current-bf-dataset-generate").text("None");
-        // $("#Question-generate-dataset-existing-folders-options").hide();
+        // show the confirm button under the workspace selection question 
+        $("#btn-bf-workspace").css("display", "flex");
+        // hide the dataset options selection section
+        transitionSubQuestionsButton(document.querySelector("#btn-bf-workspace"), 'Question-generate-dataset-BF-workspace', 'generate-dataset-tab', 'delete', 'individual-question generate-dataset')
       }
     }
+
   }
 
   if (resetSubmissionTab) {

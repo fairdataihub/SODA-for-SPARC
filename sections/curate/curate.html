@@ -3615,6 +3615,84 @@
                             id="btn-bf-account"
                             class="btn_animated"
                             onclick="transitionSubQuestionsButton(this, 'Question-generate-dataset-BF-account', 'generate-dataset-tab', 'delete', 'individual-question generate-dataset')"
+                            data-next="Question-generate-dataset-BF-workspace"
+                            style="
+                              margin: 0 10px;
+                              width: 100px;
+                              border: none !important;
+                            "
+                          >
+                            Confirm
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+
+                  <!--Place it here i think-->
+                  <div
+                  class="individual-question generate-dataset"
+                  id="Question-generate-dataset-BF-workspace"
+                  >
+                    <div class="ui form" style="width: 100%">
+                      <div class="grouped fields">
+                        <label
+                          style="font-size: 17px; color: var(--color-bg-plum)"
+                          >Which workspace would you like to upload your dataset to?</label
+                        >
+                          <div
+                            class="field"
+                            style="margin: 5px auto; width: 550px"
+                          >
+                            <div
+                              style="
+                                display: flex;
+                                flex-direction: column;
+                                justify-content: space-between;
+                                margin-top: 15px;
+                                height: auto;
+                                box-shadow: 0px 0px 10px #d5d5d5;
+                                padding: 15px 25px;
+                                border-radius: 5px;
+                              "
+                            >
+                              <div class="card-container prepare-metadata organize-dataset" id="bf-organization-curate-second-question-container">
+                                <div style="width: 100%;" id="bf-workspace-curate-second-question">
+                                  <h5 class="card-left" style="padding-right: 5px">Current workspace:</h5>
+                                  <div class="change-current-account ds-dd organization" style="margin-left: 12px">
+                                    <h5 class="card-right bf-organization-span" style="width: fit-content; margin-left: 50px;" id="organization-bf-curation">None</h5>
+
+                                    <svg
+                                      class="svg-change-current-account organization bi bi-pencil-fill"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      width="18"
+                                      height="18"
+                                      fill="#000"
+                                      viewBox="0 0 16 16"
+                                    >
+                                      <path
+                                        d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                                      />
+                                    </svg>
+                                  </div>
+                                </div>
+                                <div class="ui active green inline loader small organization-loader" style="display: none"></div>
+                              </div>
+                            </div>
+                          </div>
+                          <div
+                            id="div-bf-workspace-btns"
+                            style="
+                              flex-direction: row;
+                              justify-content: center;
+                              margin: 10px auto;
+                            "
+                          >
+                          <button
+                            id="btn-bf-workspace"
+                            class="btn_animated"
+                            onclick="transitionSubQuestionsButton(this, 'Question-generate-dataset-BF-workspace', 'generate-dataset-tab', 'delete', 'individual-question generate-dataset')"
                             data-next="Question-generate-dataset-options"
                             style="
                               margin: 0 10px;
@@ -3628,6 +3706,8 @@
                       </div>
                     </div>
                   </div>
+
+
 
                   <div
                     class="individual-question generate-dataset"
@@ -3826,6 +3906,8 @@
                     ></p>
                   </div>
 
+
+
                   <div
                     class="individual-question generate-dataset"
                     id="Question-generate-dataset-BF-dataset"
@@ -3852,28 +3934,6 @@
                               border-radius: 5px;
                             "
                           >
-                          <div class="card-container prepare-metadata organize-dataset" id="bf-organization-curate-second-question-container">
-                            <div style="width: 100%;">
-                              <h5 class="card-left" style="padding-right: 5px">Current workspace:</h5>
-                              <div class="change-current-account ds-dd organization" style="margin-left: 12px">
-                                <h5 class="card-right bf-organization-span" style="width: fit-content; margin-left: 50px;" id="organization-bf-curation">None</h5>
-                  
-                                <svg
-                                  class="svg-change-current-account organization bi bi-pencil-fill"
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="18"
-                                  height="18"
-                                  fill="#000"
-                                  viewBox="0 0 16 16"
-                                >
-                                  <path
-                                    d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                                  />
-                                </svg>
-                              </div>
-                            </div>
-                            <div class="ui active green inline loader small organization-loader" style="display: none"></div>
-                          </div>
                             <div
                               style="
                                 display: flex;
