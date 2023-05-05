@@ -3,7 +3,6 @@
 
 document.querySelectorAll(".ds-dd:not(.organization)").forEach((dropdownElement) => {
   dropdownElement.addEventListener("click", function () {
-
     openDropdownPrompt(this, "dataset");
   });
 });
