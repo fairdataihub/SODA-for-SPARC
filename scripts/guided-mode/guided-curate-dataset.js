@@ -3320,9 +3320,9 @@ document
       let hasValidationErrors = Object.getOwnPropertyNames(validationReport).length >= 1;
 
       Swal.fire({
-        title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
+        title: hasValidationErrors ? "Validator detected potential issues" : `Dataset is Valid`,
         text: hasValidationErrors
-          ? `Please fix the errors listed in the table below then re-run validation to check that your dataset conforms to the SDS.`
+          ? `Note that the validator is currently in beta and may contain false positives. Review the validation report and continue to the next page.`
           : `Your dataset conforms to the SPARC Dataset Structure.`,
         allowEscapeKey: true,
         allowOutsideClick: true,
