@@ -42,9 +42,10 @@ const getPrepublishingChecklistStatuses = async (currentDataset) => {
   statuses.tags = tags && tags.length ? true : false;
 
   let bannerImageURL = await api.getDatasetBannerImageURL(defaultBfAccount, currentDataset);
+  console.log(bannerImageURL);
 
   // set the banner image's url status
-  statuses.bannerImageURL = bannerImageURL && bannerImageURL.length ? true : false;
+  statuses.bannerImageURL = bannerImageURL !== "No banner image" ? true : false;
 
   // set the license's status
   statuses.license = license && license.length ? true : false;
@@ -200,6 +201,7 @@ const orcidSignIn = async (curationMode) => {
 //  Function fetches the status of each item needed to publish a dataset from the backend and updates the UI accordingly.
 //  inPrePublishing: boolean - True when the function is ran in the pre-publishing submission flow; false otherwise
 const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "") => {
+  console.log("Showing pre-publishing statuses");
   let currentDataset = defaultBfDataset;
   let curationModeID = "";
   // resetPrePublishingChecklist(curationMode);
