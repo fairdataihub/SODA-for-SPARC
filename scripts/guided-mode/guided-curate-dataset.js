@@ -2258,7 +2258,9 @@ const guidedModifyCurationTeamAccess = async (action) => {
   const guidedUnshareWithCurationTeamButton = document.getElementById(
     "guided-button-unshare-dataset-with-curation-team"
   );
-  const guidedUnshareMessage = document.getElementById("guided-unshare-dataset-with-curation-team-message");
+  const guidedUnshareMessage = document.getElementById(
+    "guided-unshare-dataset-with-curation-team-message"
+  );
   const curationMode = "guided";
 
   if (action === "share") {
