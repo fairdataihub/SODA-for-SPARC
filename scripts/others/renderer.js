@@ -845,7 +845,6 @@ const run_pre_flight_checks = async (check_update = true) => {
   // an account is present
   // Check for an installed Pennsieve agent
   let pennsieveAgentCheckNotyf;
-
   try {
     // Open a notyf to let the user know that we are checking for the agent that closes only if the agent is found.
     pennsieveAgentCheckNotyf = notyf.open({
@@ -853,22 +852,7 @@ const run_pre_flight_checks = async (check_update = true) => {
       message: "Checking to make sure the latest Pennsieve Agent is installed...",
       duration: 0, // 0 means it will not close automatically
     });
-
-    // Set a timeout of 20 seconds
-    const agentStartTimeout = setTimeout(() => {
-      notyf.dismiss(pennsieveAgentCheckNotyf);
-      notyf.open({
-        type: "error",
-        message: "Unable to start the Pennsieve Agent.",
-      });
-      throw new Error("Unable to start the Pennsieve Agent before timeout");
-    }, 15000);
-
     await startPennsieveAgentAndCheckVersion();
-
-    // Clear the timeout if the function completes before 20 seconds so that the timeout doesn't fire.
-    clearTimeout(agentStartTimeout);
-
     notyf.dismiss(pennsieveAgentCheckNotyf);
     notyf.open({
       type: "success",
