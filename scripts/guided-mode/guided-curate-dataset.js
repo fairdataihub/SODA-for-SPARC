@@ -2237,7 +2237,7 @@ const guidedReserveAndSaveDOI = async () => {
 const guidedSetDOIUI = (doiInformation) => {
   $("#curate-button-reserve-doi").removeClass("loading");
   $("#curate-button-reserve-doi").disabled = false;
-  if(doiInformation === "locked") {
+  if (doiInformation === "locked") {
     // Show reserve DOI button and hide copy button
     $("#guided-pennsieve-copy-doi").addClass("hidden");
     $("#curate-button-reserve-doi").addClass("hidden");

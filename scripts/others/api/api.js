@@ -131,7 +131,7 @@ const reserveDOI = async (account, dataset) => {
     let errorMessage = userErrorMessage(err);
     clientError(err);
     console.log(errorMessage);
-    if(errorMessage.includes("is locked")) {
+    if (errorMessage.includes("is locked")) {
       return "locked";
     }
     return false;
