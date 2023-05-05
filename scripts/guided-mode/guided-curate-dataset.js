@@ -2210,12 +2210,14 @@ const guidedSetCurationTeamUI = () => {
   );
   if (textSharedWithCurationTeamStatus.innerText != "Dataset is not under review currently") {
     $("#guided-button-share-dataset-with-curation-team").addClass("hidden");
-    $("#guided-button-unshare-dataset-with-curation-team").removeClass("hidden");
+    $("#guided-button-unshare-dataset-with-curation-team").addClass("hidden");
+    $("#guided-unshare-dataset-with-curation-team-message").removeClass("hidden");
   } else {
     $("#guided--prepublishing-checklist-container").addClass("hidden");
     $("#guided-button-share-dataset-with-curation-team").addClass("hidden");
     $("#guided-button-share-dataset-with-curation-team").removeClass("hidden");
     $("#guided-button-unshare-dataset-with-curation-team").addClass("hidden");
+    $("#guided-unshare-dataset-with-curation-team-message").addClass("hidden");
   }
 };
 
@@ -2227,14 +2229,40 @@ const guidedReserveAndSaveDOI = async () => {
   $("#curate-button-reserve-doi").disabled = true;
 
   let doiInformation = await api.reserveDOI(account, dataset);
+  console.log(doiInformation);
   guidedSetDOIUI(doiInformation);
 };
 
 // Function is for displaying DOI information on the Guided UI
 const guidedSetDOIUI = (doiInformation) => {
+  $("#curate-button-reserve-doi").removeClass("loading");
+  $("#curate-button-reserve-doi").disabled = false;
+  if (doiInformation === "locked") {
+    // Show reserve DOI button and hide copy button
+    $("#guided-pennsieve-copy-doi").addClass("hidden");
+    $("#curate-button-reserve-doi").addClass("hidden");
+
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      confirmButtonText: "Ok",
+      title: "Cannot reserve DOI",
+      text: "Your dataset is locked, so modification is not allowed.",
+      icon: "error",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
+    return;
+  }
+
   $("#guided--para-doi-info").text(doiInformation);
 
-  if (doiInformation === "No DOI found for this dataset") {
+  if (doiInformation === "No DOI found for this dataset" || doiInformation === false) {
     // Hide the reserve DOI button and show copy button
     $("#guided-pennsieve-copy-doi").addClass("hidden");
     $("#curate-button-reserve-doi").removeClass("hidden");
@@ -2243,8 +2271,6 @@ const guidedSetDOIUI = (doiInformation) => {
     $("#guided-pennsieve-copy-doi").removeClass("hidden");
     $("#curate-button-reserve-doi").addClass("hidden");
   }
-  $("#curate-button-reserve-doi").removeClass("loading");
-  $("#curate-button-reserve-doi").disabled = false;
 };
 
 // This function is for when a user clicks the share/unshare with curation team (requires Dataset to be published and locked)
@@ -2255,16 +2281,17 @@ const guidedModifyCurationTeamAccess = async (action) => {
   const guidedUnshareWithCurationTeamButton = document.getElementById(
     "guided-button-unshare-dataset-with-curation-team"
   );
-
+  const guidedUnshareMessage = document.getElementById(
+    "guided-unshare-dataset-with-curation-team-message"
+  );
   const curationMode = "guided";
+
   if (action === "share") {
     guidedShareWithCurationTeamButton.disabled = true;
     guidedShareWithCurationTeamButton.classList.add("loading");
 
     let publishPreCheckStatus = await beginPrepublishingFlow(curationMode);
     let embargoDetails = publishPreCheckStatus[1];
-    console.log(embargoDetails);
-    console.log(publishPreCheckStatus[0]);
 
     // Will return false if there are issues running the precheck flow
     if (publishPreCheckStatus[0]) {
@@ -2275,6 +2302,8 @@ const guidedModifyCurationTeamAccess = async (action) => {
     guidedShareWithCurationTeamButton.disabled = false;
   }
   if (action === "unshare") {
+    // Add your dataset has been shared, to withdraw please do so from Pennsieve
+    // TODO: Dorian -> refactor this (it will be removed essentially)
     guidedUnshareWithCurationTeamButton.disabled = true;
     guidedUnshareWithCurationTeamButton.classList.add("loading");
 

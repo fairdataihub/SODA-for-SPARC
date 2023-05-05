@@ -142,9 +142,13 @@ def reserve_dataset_doi(dataset):  # sourcery skip: extract-method
 
     try:
         doi_request = requests.post(f"{PENNSIEVE_URL}/datasets/{dataset_id}/doi", headers=create_request_headers(token))
+        # if status code is 423 then dataset is locked
+        # if doi_request.status_code == 423:
+        #     abort(423, "Dataset is locked. Please try again later.")
         doi_request.raise_for_status()
         return {"doi": doi_request.json()["doi"]}
     except Exception as e:
+        print(e)
         if type(e).__name__ == "HTTPError":
             abort(400, e.response.json()["message"])
         abort(500, "An internal server error prevented the request from being fulfilled. Please try again later.")

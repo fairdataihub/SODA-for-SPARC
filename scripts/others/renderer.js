@@ -3355,12 +3355,10 @@ ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
 // TODO: Dorian -> Exlcuded files will no longer be a thing in the future
 // Go about removing the feature and see how it effects dataset submissions
 const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
-  let curationModeID = "";
   let currentAccount = defaultBfAccount;
   let currentDataset = defaultBfDataset;
 
   if (curationMode === "guided") {
-    curationModeID = "guided--";
     currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
     currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
   }
@@ -3381,7 +3379,7 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
   });
 
   try {
-    await permissionsCurationTeam(currentAccount, currentDataset, "share", "newMethod");
+    // await permissionsCurationTeam(currentAccount, currentDataset, "share", "newMethod");
 
     await api.submitDatasetForPublication(
       currentAccount,
@@ -3576,7 +3574,7 @@ const withdrawReviewDataset = async (curationMode) => {
   try {
     await api.withdrawDatasetReviewSubmission(currentDataset, currentAccount);
 
-    await permissionsCurationTeam(currentAccount, currentDataset, "unshare", "newMethod");
+    // await permissionsCurationTeam(currentAccount, currentDataset, "unshare", "newMethod");
 
     logGeneralOperationsForAnalytics(
       "Success",
