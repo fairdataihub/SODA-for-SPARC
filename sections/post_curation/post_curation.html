@@ -417,9 +417,20 @@
             </div>
 
             <!--Withdraw dataset from review when Review status shows dataset is under review-->
+            <div class="guided--section mt-2" id="unshare-dataset-with-curation-team-message">
+              <p class="help-text text-black">
+                This dataset is currently being reviewed by the SPARC curation team, therefore, has
+                been set to read-only mode. No changes can be made to this dataset until the review
+                is complete. If you would like to make changes to this dataset, please reach out to
+                the SPARC curation team at
+                <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
+              </p>
+            </div>
+            <!-- TODO: Dorian remove this html, no longer withdrawing datasets -->
             <div
-              style="width: 100%; display: flex; justify-content: center"
+              style="width: 100%; display: hidden !important; justify-content: center"
               id="prepublishing-withdraw-btn-container"
+              class="hidden"
             >
               <button
                 id="btn-withdraw-review-dataset"

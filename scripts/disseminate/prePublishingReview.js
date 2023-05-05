@@ -371,6 +371,7 @@ const setPrepublishingChecklistItemIconByStatus = (iconElementId, status) => {
     $(`#${iconElementId}`).attr("class", "check icon");
     $(`#${iconElementId}`).css("color", "green");
 
+    // TODO: Dorian -> See if this is still worth doing
     // // Change text of iconElementId to let user know that the item has been linked
     // let itemButton = $(`#${iconElementId}`).parent().siblings()[0];
     // let itemButtonText = itemButton.innerText;
@@ -438,8 +439,8 @@ const resetffmPrepublishingUI = async () => {
     console.log("here");
     // show the withdraw button
     // TODO: Dorian -> Remove withdraw button and show message instead
-    $("#prepublishing-withdraw-btn-container").show();
-    $("#prepublishing-withdraw-btn-container button").show();
+    $("#unshare-dataset-with-curation-team-message").removeClass("hidden");
+    // $("#prepublishing-withdraw-btn-container button").show();
     $(".pre-publishing-continue-container").hide();
     $("#prepublishing-checklist-container").hide();
 
@@ -450,8 +451,9 @@ const resetffmPrepublishingUI = async () => {
   // show the pre-publishing checklist and the continue button
   $("#prepublishing-checklist-container").show();
   $(".pre-publishing-continue-container").show();
-  $("#prepublishing-withdraw-btn-container").hide();
-  $("#prepublishing-withdraw-btn-container button").hide();
+  $("#unshare-dataset-with-curation-team-message").addClass("hidden");
+  // $("#prepublishing-withdraw-btn-container").hide();
+  // $("#prepublishing-withdraw-btn-container button").hide();
   return false;
 };
 
@@ -460,8 +462,6 @@ const createPrepublishingChecklist = async (curationMode) => {
   let curationModeID = "";
   let currentDataset = defaultBfDataset;
   if (curationMode === "guided") {
-    // This is done to ensure the right element ID is called
-    // Guided mode elements have 'guided--' prepended to their ID
     currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
     curationModeID = "guided--";
   }
@@ -620,6 +620,7 @@ const beginPrepublishingFlow = async (curationMode) => {
   if (curationMode !== "guided") {
     let reviewDatasetInfo = $("#para-review-dataset-info-disseminate").text();
     let datasetHasBeenPublished = await resetffmPrepublishingUI();
+    console.log(reviewDatasetInfo);
     console.log("datasetHasBeenPublished: " + datasetHasBeenPublished);
 
     $("#begin-prepublishing-btn").addClass("hidden");
