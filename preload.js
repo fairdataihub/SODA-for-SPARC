@@ -167,7 +167,6 @@ const updateOrganizationList = async (bfaccount) => {
 
   $("#curatebforganizationlist").find("option:not(:first)").remove();
 
-
   // add the organization options to the dropdown
   for (const myOrganization in organizations) {
     var myitemselect = organiztions[myOrganization];
@@ -222,7 +221,6 @@ function resetSubmission(askToReset = true) {
     resetSubmissionFields();
     return;
   }
-
 
   Swal.fire({
     backdrop: "rgba(0,0,0, 0.4)",
@@ -315,7 +313,6 @@ function resetDD(askToReset = true) {
     resetDDFields();
     return;
   }
-
 
   Swal.fire({
     backdrop: "rgba(0,0,0, 0.4)",
@@ -459,7 +456,6 @@ function resetSubjects(askToReset = true) {
     return;
   }
 
-
   Swal.fire({
     text: "Are you sure you want to start over and reset your progress?",
     icon: "warning",
@@ -572,7 +568,6 @@ function resetSamples(askToReset = true) {
     $("#div-confirm-destination-samples-locally").css("display", "none");
     return;
   }
-
 
   Swal.fire({
     text: "Are you sure you want to start over and reset your progress?",
@@ -1562,7 +1557,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       ipcRenderer.send("track-event", "Success", "Selecting dataset", defaultBfDatasetId, 1);
     }, 10);
   } else if (dropdown === "organization") {
-
     // TODO: Change these classes to organization classes
     $(".svg-change-current-account.organization").css("display", "none");
     $("#div-permission-list-2").css("display", "none");
@@ -1570,7 +1564,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
     // hacky: wait for animations
     await wait(10);
-
 
     // disable the Continue btn first
     $("#nextBtn").prop("disabled", true);
@@ -1587,7 +1580,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       $(".ui.active.green.inline.loader.small").css("display", "none");
       $(".svg-change-current-account.dataset").css("display", "block");
     }
-
 
     // if no account as them to connect one
     if (!accountPresent) {
@@ -1840,7 +1832,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           ev.classList.contains("guided-change-workspace")
             ? handleGuidedModeOrgSwitch(ev)
             : resetFFMUI(ev);
-
 
           // reset the dataset list
           datasetList = [];

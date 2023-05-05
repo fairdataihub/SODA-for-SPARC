@@ -3521,7 +3521,6 @@ const withdrawDatasetSubmission = async (curationMode = "") => {
     }
   });
 
-
   // This helps signal guided mode to update the UI
   if (curationMode === "guided") {
     return true;

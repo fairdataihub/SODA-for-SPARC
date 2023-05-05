@@ -535,7 +535,6 @@ const beginPrepublishingFlow = async (curationMode) => {
     }
   }
   if (curationMode === "freeform") {
-
     Swal.fire({
       title: "Determining your dataset permissions",
       html: "Please wait...",
