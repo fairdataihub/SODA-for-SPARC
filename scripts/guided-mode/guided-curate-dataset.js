@@ -942,7 +942,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         // Make sure the submission metadata and validation tab are unskipped as they are required
         // for the SPARC funded dataset flow
         guidedUnSkipPage("guided-create-submission-metadata-tab");
-        guidedUnSkipPage("guided-dataset-validation-tab");
         guidedUnSkipPage("guided-protocols-tab");
       }
 
@@ -980,9 +979,11 @@ const savePageChanges = async (pageBeingLeftID) => {
         // Skip the submission metadata page
         // This can be safely skipped as the logic that handles the submission file is ran during upload
         guidedSkipPage("guided-create-submission-metadata-tab");
+        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = "EXTERNAL";
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = [""];
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = "";
+
         guidedSkipPage("guided-protocols-tab");
-        //Skip the validation page as non-spac funded datasets do not need to be validated
-        guidedSkipPage("guided-dataset-validation-tab");
       }
     }
 
@@ -3171,7 +3172,7 @@ document
         manifestJSONResponse = await client.post(
           "/skeleton_dataset/manifest_json",
           {
-            sodaJSONObj: sodaJSONObj,
+            sodajsonobject: sodaJSONObj,
           },
           {
             timeout: 0,
@@ -3184,7 +3185,7 @@ document
       let manifests = manifestJSONResponse.data;
       // If the manifest files are not generated, throw an error
       if (!manifests) {
-        throw new Error("Failed to generate manifest files");
+        throw new Error("Failed to generate manifest files2");
       }
 
       let clientUUID = uuid();
@@ -3258,6 +3259,12 @@ document
             icon: "error",
           });
         }
+
+        // Hide the loading div
+        validationLoadingDiv.classList.add("hidden");
+        // Show the error div
+        errorDuringValidationDiv.classList.remove("hidden");
+        guidedSetNavLoadingState(false);
 
         return;
       }
@@ -6818,6 +6825,14 @@ const patchPreviousGuidedModeVersions = () => {
       guidedSkipPage("guided-pennsieve-intro-tab");
       sodaJSONObj["digital-metadata"]["dataset-workspace"] = guidedGetCurrentUserWorkSpace();
     }
+  }
+
+  // No longer skip validation page for non-sparc datasts ("page should always be unskipped")
+  if (sodaJSONObj["skipped-pages"].includes("guided-dataset-validation-tab")) {
+    console.log("Unskipping validation page");
+    sodaJSONObj["skipped-pages"] = sodaJSONObj["skipped-pages"].filter(
+      (page) => page !== "guided-dataset-validation-tab"
+    );
   }
 };
 
