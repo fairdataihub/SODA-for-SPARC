@@ -6918,7 +6918,7 @@ const guidedResumeProgress = async (datasetNameToResume) => {
           let filesFoldersResponse = await client.post(
             `/organize_datasets/dataset_files_and_folders`,
             {
-              sodaJSONObj: datasetResumeJsonObj,
+              sodajsonobject: datasetResumeJsonObj,
             },
             { timeout: 0 }
           );
@@ -7021,6 +7021,7 @@ const guidedResumeProgress = async (datasetNameToResume) => {
     // Close the loading screen, the user should be on the page they left off on now
     loadingSwal.close();
   } catch (error) {
+    console.log(userErrorMessage(error));
     console.log(error);
     loadingSwal.close();
     await Swal.fire({
