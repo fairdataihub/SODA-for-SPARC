@@ -2235,9 +2235,34 @@ const guidedReserveAndSaveDOI = async () => {
 
 // Function is for displaying DOI information on the Guided UI
 const guidedSetDOIUI = (doiInformation) => {
+  $("#curate-button-reserve-doi").removeClass("loading");
+  $("#curate-button-reserve-doi").disabled = false;
+  if(doiInformation === "locked") {
+    // Show reserve DOI button and hide copy button
+    $("#guided-pennsieve-copy-doi").addClass("hidden");
+    $("#curate-button-reserve-doi").addClass("hidden");
+
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      confirmButtonText: "Ok",
+      title: "Cannot reserve DOI",
+      text: "Your dataset is locked, so modification is not allowed.",
+      icon: "error",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
+    return;
+  }
+
   $("#guided--para-doi-info").text(doiInformation);
 
-  if (doiInformation === "No DOI found for this dataset") {
+  if (doiInformation === "No DOI found for this dataset" || doiInformation === false) {
     // Hide the reserve DOI button and show copy button
     $("#guided-pennsieve-copy-doi").addClass("hidden");
     $("#curate-button-reserve-doi").removeClass("hidden");
@@ -2246,8 +2271,6 @@ const guidedSetDOIUI = (doiInformation) => {
     $("#guided-pennsieve-copy-doi").removeClass("hidden");
     $("#curate-button-reserve-doi").addClass("hidden");
   }
-  $("#curate-button-reserve-doi").removeClass("loading");
-  $("#curate-button-reserve-doi").disabled = false;
 };
 
 // This function is for when a user clicks the share/unshare with curation team (requires Dataset to be published and locked)

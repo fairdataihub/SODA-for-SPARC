@@ -128,8 +128,13 @@ const reserveDOI = async (account, dataset) => {
     // Save DOI to SODAJSONObj
     return doiReserve.data.doi;
   } catch (err) {
+    let errorMessage = userErrorMessage(err);
     clientError(err);
-    userErrorMessage(err);
+    console.log(errorMessage);
+    if(errorMessage.includes("is locked")) {
+      return "locked";
+    }
+    return false;
   }
 };
 
