@@ -2210,12 +2210,14 @@ const guidedSetCurationTeamUI = () => {
   );
   if (textSharedWithCurationTeamStatus.innerText != "Dataset is not under review currently") {
     $("#guided-button-share-dataset-with-curation-team").addClass("hidden");
-    $("#guided-button-unshare-dataset-with-curation-team").removeClass("hidden");
+    $("#guided-button-unshare-dataset-with-curation-team").addClass("hidden");
+    $("#guided-unshare-dataset-with-curation-team-message").removeClass("hidden");
   } else {
     $("#guided--prepublishing-checklist-container").addClass("hidden");
     $("#guided-button-share-dataset-with-curation-team").addClass("hidden");
     $("#guided-button-share-dataset-with-curation-team").removeClass("hidden");
     $("#guided-button-unshare-dataset-with-curation-team").addClass("hidden");
+    $("#guided-unshare-dataset-with-curation-team-message").addClass("hidden");
   }
 };
 
@@ -2227,6 +2229,7 @@ const guidedReserveAndSaveDOI = async () => {
   $("#curate-button-reserve-doi").disabled = true;
 
   let doiInformation = await api.reserveDOI(account, dataset);
+  console.log(doiInformation);
   guidedSetDOIUI(doiInformation);
 };
 
@@ -2255,16 +2258,15 @@ const guidedModifyCurationTeamAccess = async (action) => {
   const guidedUnshareWithCurationTeamButton = document.getElementById(
     "guided-button-unshare-dataset-with-curation-team"
   );
-
+  const guidedUnshareMessage = document.getElementById("guided-unshare-dataset-with-curation-team-message");
   const curationMode = "guided";
+
   if (action === "share") {
     guidedShareWithCurationTeamButton.disabled = true;
     guidedShareWithCurationTeamButton.classList.add("loading");
 
     let publishPreCheckStatus = await beginPrepublishingFlow(curationMode);
     let embargoDetails = publishPreCheckStatus[1];
-    console.log(embargoDetails);
-    console.log(publishPreCheckStatus[0]);
 
     // Will return false if there are issues running the precheck flow
     if (publishPreCheckStatus[0]) {
@@ -2275,6 +2277,8 @@ const guidedModifyCurationTeamAccess = async (action) => {
     guidedShareWithCurationTeamButton.disabled = false;
   }
   if (action === "unshare") {
+    // Add your dataset has been shared, to withdraw please do so from Pennsieve
+    // TODO: Dorian -> refactor this (it will be removed essentially)
     guidedUnshareWithCurationTeamButton.disabled = true;
     guidedUnshareWithCurationTeamButton.classList.add("loading");
 

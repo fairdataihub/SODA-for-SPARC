@@ -437,6 +437,7 @@ const resetffmPrepublishingUI = async () => {
   ) {
     console.log("here");
     // show the withdraw button
+    // TODO: Dorian -> Remove withdraw button and show message instead
     $("#prepublishing-withdraw-btn-container").show();
     $("#prepublishing-withdraw-btn-container button").show();
     $(".pre-publishing-continue-container").hide();
