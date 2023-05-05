@@ -577,11 +577,6 @@ const getPennsieveAgentPath = () => {
     if (fs.existsSync(unixPath)) {
       return unixPath;
     }
-    // sometimes the pennsieve agent might install here on MAC
-    const optPath = "/usr/local/opt/pennsieve";
-    if (fs.existsSync(optPath)) {
-      return optPath;
-    }
   }
   throw new Error(`Cannot find pennsieve agent executable`);
 };
