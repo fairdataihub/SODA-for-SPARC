@@ -215,7 +215,6 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
     global namespace_logger
 
 
-    namespace_logger.info("Connecting to the pennsieve client")
     
     ps = connect_pennsieve_client()
     ps.user.switch(bfaccount)

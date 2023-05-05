@@ -39,7 +39,6 @@ const showHideDropdownButtons = (category, action) => {
       $("#div-bf-account-btns-getting-started button").hide();
     }
   } else if (category === "organization") {
-    console.log("May eventually need to add organization button logic here");
   }
 };
 
@@ -127,7 +126,6 @@ const updateDatasetList = (bfaccount) => {
       curateDatasetDropdown.appendChild(option);
     }
 
-    console.log("Using the curate bf list to show datasets here somehow");
     initializeBootstrapSelect("#curatebfdatasetlist", "show");
 
     $("#div-filter-datasets-progress-2").css("display", "none");
@@ -149,7 +147,6 @@ const updateDatasetList = (bfaccount) => {
 };
 
 const updateOrganizationList = async (bfaccount) => {
-  console.log("IN update organization list");
   let organizations = [];
 
   $("#div-filter-datasets-progress-2").css("display", "none");
@@ -170,7 +167,6 @@ const updateOrganizationList = async (bfaccount) => {
 
   $("#curatebforganizationlist").find("option:not(:first)").remove();
 
-  console.log("Organizations are: ", organizations);
 
   // add the organization options to the dropdown
   for (const myOrganization in organizations) {
@@ -227,7 +223,6 @@ function resetSubmission(askToReset = true) {
     return;
   }
 
-  console.log("Asking to resewt");
 
   Swal.fire({
     backdrop: "rgba(0,0,0, 0.4)",
@@ -321,7 +316,6 @@ function resetDD(askToReset = true) {
     return;
   }
 
-  console.log("Asking to resewt");
 
   Swal.fire({
     backdrop: "rgba(0,0,0, 0.4)",
@@ -465,7 +459,6 @@ function resetSubjects(askToReset = true) {
     return;
   }
 
-  console.log("Asking to resewt");
 
   Swal.fire({
     text: "Are you sure you want to start over and reset your progress?",
@@ -580,7 +573,6 @@ function resetSamples(askToReset = true) {
     return;
   }
 
-  console.log("Asking to resewt");
 
   Swal.fire({
     text: "Are you sure you want to start over and reset your progress?",
@@ -751,7 +743,6 @@ const resetFFMUI = (ev) => {
   let resetValidation = true;
   let resetOrganizationTab = true;
   if (ev?.parentNode?.parentNode) {
-    console.log(ev.parentNode.parentNode);
     if (ev.parentNode.parentNode.classList.contains("prepare-submission")) {
       resetSubmissionTab = false;
     }
@@ -772,14 +763,12 @@ const resetFFMUI = (ev) => {
     }
     if (ev.parentNode.parentNode.classList.contains("organize-dataset")) {
       resetOrganizationTab = false;
-      console.log(ev.parentNode.parentNode.id);
       if (ev.parentNode.parentNode.id === "bf-organization-curate-first-question-container") {
         $("#current-bf-dataset").text("None");
         $("#para-continue-bf-dataset-getting-started").hide();
       } else if (
         ev.parentNode.parentNode.id === "bf-organization-curate-second-question-container"
       ) {
-        console.log("Should reset");
         $("#current-bf-dataset-generate").text("None");
         // show the confirm button under the workspace selection question
         $("#btn-bf-workspace").css("display", "flex");
@@ -818,7 +807,6 @@ const resetFFMUI = (ev) => {
   // reset the prepare datasets sections
   // do not wipe curation progress when resetting in GM or from within Organize Datasets
   if (resetOrganizationTab) {
-    console.log("Wiping progress not killing sodajsonobj");
     resetCuration();
   }
 
@@ -1102,8 +1090,6 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
             $("#para-account-detail-curate-generate").html(result);
             $(".bf-account-details-span").html(result);
             $("#para-continue-bf-dataset-getting-started").text("");
-            console.log("bf_account_details_req", bf_account_details_req);
-            console.log("opendropdown function");
 
             // $("#current_curation_team_status").text("None");
             // $("#curation-team-share-btn").hide();
@@ -1113,7 +1099,6 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
             // $("#sparc-consortium-unshare-btn").hide();
 
             let org = bf_account_details_req.data.organization;
-            console.log(org);
             $(".bf-organization-span").text(org);
             // const gettingStartedPennsieveBtn = document.getElementById(
             // "getting-started-pennsieve-account"
@@ -1185,7 +1170,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
   if (dropdown === "bf") {
     await addBfAccount(ev, false);
   } else if (dropdown === "dataset") {
-    console.log("Dropdown event launched for dataset");
     dropdownEventID = ev?.id ?? "";
 
     // check the value of Current Organization
@@ -1295,7 +1279,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           let result = responseObject.data.datasets;
           datasetList = [];
           datasetList = result;
-          console.log(datasetList);
           refreshDatasetList();
         }
       }
@@ -1444,7 +1427,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             // Ensure the dataset is not locked except for when the user is on the disseminate page (to allow for the dataset to be unsubmitted)
             // Ensure the dataset is not locked before proceeding
             const datasetIsLocked = await api.isDatasetLocked(defaultBfAccount, bfDataset);
-            console.log("datasetIsLocked", datasetIsLocked);
             if (datasetIsLocked) {
               // Show the locked swal and return
               Swal.fire({
@@ -1470,7 +1452,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             }
 
             if (dropdownEventID === "dd-select-pennsieve-dataset") {
-              console.log("Uh");
               $("#ds-name").val(bfDataset);
               $("#ds-description").val = $("#bf-dataset-subtitle").val;
               $("body").removeClass("waiting");
@@ -1581,7 +1562,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       ipcRenderer.send("track-event", "Success", "Selecting dataset", defaultBfDatasetId, 1);
     }, 10);
   } else if (dropdown === "organization") {
-    console.log("Organization dropdown recognized");
 
     // TODO: Change these classes to organization classes
     $(".svg-change-current-account.organization").css("display", "none");
@@ -1591,7 +1571,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     // hacky: wait for animations
     await wait(10);
 
-    console.log("Waiting done");
 
     // disable the Continue btn first
     $("#nextBtn").prop("disabled", true);
@@ -1609,7 +1588,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       $(".svg-change-current-account.dataset").css("display", "block");
     }
 
-    console.log("Api key checked");
 
     // if no account as them to connect one
     if (!accountPresent) {
@@ -1668,7 +1646,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     //account is signed in but no datasets have been fetched or created
     //invoke dataset request to ensure no datasets have been created
     if (organizationList.length === 0) {
-      console.log("Fetching organizations since none are present");
       let responseObject;
       try {
         responseObject = await client.get(`user/organizations`, {
@@ -1687,8 +1664,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       for (const org in orgs) {
         organizationList.push(orgs[org]["organization"]["name"]);
       }
-      console.log("Retrieved orgs are: ", organizationList);
-      console.log("About to add the new organizations to the dropdown");
+
       refreshOrganizationList();
     }
 
@@ -1782,8 +1758,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         },
       }).then(async (result) => {
         if (result.isConfirmed) {
-          console.log(dropdownEventID);
-          console.log("REsult is considered confirmed");
           if (dropdownEventID === "dd-select-pennsieve-organization") {
             $("#ds-name").val(bfOrganization);
             $("#ds-description").val = $("#bf-dataset-subtitle").val;
@@ -1804,8 +1778,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           document.getElementById("div-rename-bf-dataset").children[0].style.display = "flex";
 
           // rejoin test organiztion
-          console.log("Setting the organization");
-          console.log(bfOrganization);
           await Swal.fire({
             allowOutsideClick: false,
             backdrop: "rgba(0,0,0, 0.4)",
@@ -1869,7 +1841,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             ? handleGuidedModeOrgSwitch(ev)
             : resetFFMUI(ev);
 
-          console.log("Organization is setup");
 
           // reset the dataset list
           datasetList = [];

@@ -144,7 +144,6 @@ const UserDetailsCardField = ({ fieldOption, tabName }) => {
         </div>
     `;
   } else if (fieldOption === FIELD_OPTIONS.PERMISSIONS) {
-    console.log("YEs, adding permissions");
     fieldContainer.style.display = "flex";
     fieldContainer.style.flexDirection = "row";
 

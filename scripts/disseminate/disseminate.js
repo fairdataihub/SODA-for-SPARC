@@ -44,7 +44,6 @@ const disseminatePublish = async (curationMode) => {
     let status = await showPublishingStatus(submitReviewDatasetCheck, curationMode);
     let embargoReleaseDate = status[1];
     $("#prepublishing-submit-btn").removeClass("loading");
-    console.log(status);
 
     if (status[0] && curationMode === "freeform") {
       // submit the dataset for review with the given embargoReleaseDate

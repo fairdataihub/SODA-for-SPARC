@@ -42,7 +42,6 @@ const getPrepublishingChecklistStatuses = async (currentDataset) => {
   statuses.tags = tags && tags.length ? true : false;
 
   let bannerImageURL = await api.getDatasetBannerImageURL(defaultBfAccount, currentDataset);
-  console.log(bannerImageURL);
 
   // set the banner image's url status
   statuses.bannerImageURL = bannerImageURL !== "No banner image" ? true : false;
@@ -201,7 +200,6 @@ const orcidSignIn = async (curationMode) => {
 //  Function fetches the status of each item needed to publish a dataset from the backend and updates the UI accordingly.
 //  inPrePublishing: boolean - True when the function is ran in the pre-publishing submission flow; false otherwise
 const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "") => {
-  console.log("Showing pre-publishing statuses");
   let currentDataset = defaultBfDataset;
   let curationModeID = "";
   // resetPrePublishingChecklist(curationMode);
@@ -211,7 +209,6 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
     // Guided mode elements have 'guided--' prepended to their ID
     curationModeID = "guided--";
     currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-    console.log("is guided mode here as well");
   }
 
   if (
@@ -272,7 +269,6 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
     return;
   }
 
-  console.log(statuses);
   logGeneralOperationsForAnalytics(
     "Success",
     DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
@@ -438,7 +434,6 @@ const resetffmPrepublishingUI = async () => {
       .getElementById("para-review-dataset-info-disseminate")
       .innerText.includes("Dataset is currently under review")
   ) {
-    console.log("here");
     // show the withdraw button
     // TODO: Dorian -> Remove withdraw button and show message instead
     $("#unshare-dataset-with-curation-team-message").removeClass("hidden");
@@ -449,7 +444,6 @@ const resetffmPrepublishingUI = async () => {
     return true;
   }
 
-  console.log("here2");
   // show the pre-publishing checklist and the continue button
   $("#prepublishing-checklist-container").show();
   $(".pre-publishing-continue-container").show();
@@ -532,7 +526,6 @@ const beginPrepublishingFlow = async (curationMode) => {
       }
     );
     let res = get_publishing_status.data;
-    console.log(res);
 
     // Don't send true until pre-publishing checklist is complete
     embargoDetails = await submitReviewDatasetCheck(res, "guided");
@@ -542,7 +535,6 @@ const beginPrepublishingFlow = async (curationMode) => {
     }
   }
   if (curationMode === "freeform") {
-    console.log("within ffm");
 
     Swal.fire({
       title: "Determining your dataset permissions",
@@ -613,7 +605,6 @@ const beginPrepublishingFlow = async (curationMode) => {
 
   // wait for the Review status to be filled
   if ($(`#${curationModeID}para-review-dataset-info-disseminate`).text() === "") {
-    console.log("is blank");
     await wait(1000);
   }
 
@@ -622,8 +613,6 @@ const beginPrepublishingFlow = async (curationMode) => {
   if (curationMode !== "guided") {
     let reviewDatasetInfo = $("#para-review-dataset-info-disseminate").text();
     let datasetHasBeenPublished = await resetffmPrepublishingUI();
-    console.log(reviewDatasetInfo);
-    console.log("datasetHasBeenPublished: " + datasetHasBeenPublished);
 
     $("#begin-prepublishing-btn").addClass("hidden");
     $("#submit_prepublishing_review-question-2").removeClass("show");
@@ -636,12 +625,7 @@ const beginPrepublishingFlow = async (curationMode) => {
     }
   } else {
     //Curation mode is guided mode
-    console.log("is guided mode");
-
-    console.log(embargoDetails);
-
     let status = await showPrePublishingStatus(true, "guided");
-    console.log(status);
     return [status, embargoDetails];
   }
 };

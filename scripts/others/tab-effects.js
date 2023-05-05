@@ -259,10 +259,6 @@ const fill_info_details = () => {
         add_card_detail("Original dataset location", sodaJSONObj["starting-point"]["local-path"]);
       }
 
-      console.log("The thing: ");
-      console.log($("#organization-bf-curation"));
-      console.log($("#organization-bf-curation").text());
-
       add_card_detail("New dataset location", "Pennsieve", 1, "Question-generate-dataset", true);
       add_card_detail(
         "Pennsieve account",
@@ -1982,7 +1978,6 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
       continueProgressSubmission = await switchMetadataSubmissionQuestion();
       break;
     case "Generate-submission":
-      console.log("Yes in the case we want to add button logic to");
       const checkedRadioButton = $("input:radio[name ='submission-1']:checked").attr("id");
       if (checkedRadioButton === "submission-1-B") {
         $("#submission-organization-field").show();
@@ -2000,7 +1995,6 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
       $("#submission-title-accordion").removeClass("active");
       break;
     case "Generate-dd":
-      console.log("Inside the DD field selection logic");
       const checkedRadioButtonDDFirstQuestion = $("input:radio[name ='dd-1']:checked").attr("id");
 
       // check if we selected start a new subjects file
@@ -2012,7 +2006,6 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
         const checkedRadioButtonDDSecondQuestion = $("input:radio[name ='dd-4']:checked").attr(
           "id"
         );
-        console.log(checkedRadioButtonDDSecondQuestion);
         // check if file is from Pennsieve
         if (checkedRadioButtonDDSecondQuestion === "dd-4-A") {
           // do not allow organization switching
@@ -2025,7 +2018,6 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
       continueProgressGenerateDD = await generateDatasetDescription();
       break;
     case "Generate-changes":
-      console.log("Inside the DD field selection logic");
       const checkedRadioButtonChangesFirstQuestion = $(
         "input:radio[name ='changes-1']:checked"
       ).attr("id");
@@ -2039,7 +2031,6 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
         const checkedRadioButtonChangesSecondQuestion = $(
           "input:radio[name ='changes-3']:checked"
         ).attr("id");
-        console.log(checkedRadioButtonChangesSecondQuestion);
         // check if file is from Pennsieve
         if (checkedRadioButtonChangesSecondQuestion === "changes-3-A") {
           // do not allow organization switching
@@ -2055,7 +2046,6 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
       }
       break;
     case "Generate-readme":
-      console.log("Inside the DD field selection logic");
       const checkedRadioButtonReadmeFirstQuestion = $("input:radio[name ='readme-1']:checked").attr(
         "id"
       );
@@ -2069,7 +2059,6 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
         const checkedRadioButtonReadmeSecondQuestion = $(
           "input:radio[name ='readme-3']:checked"
         ).attr("id");
-        console.log(checkedRadioButtonReadmeSecondQuestion);
         // check if file is from Pennsieve
         if (checkedRadioButtonReadmeSecondQuestion === "readme-3-A") {
           // do not allow organization switching
@@ -2094,7 +2083,6 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
       continueProgressValidateDataset = await transitionToValidateQuestionTwo();
       break;
     case "Question-prepare-subjects-3":
-      console.log("Inside the subjects field selection logic");
       const checkedRadioButtonSubjectsFirstQuestion = $(
         "input:radio[name ='subjects-1']:checked"
       ).attr("id");
@@ -2119,7 +2107,6 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
       }
       break;
     case "Question-prepare-samples-3":
-      console.log("Inside the samples field selection logic");
       const checkedRadioButtonSamplesFirstQuestion = $(
         "input:radio[name ='samples-1']:checked"
       ).attr("id");
@@ -2133,7 +2120,6 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
         const checkedRadioButtonSamplesSecondQuestion = $(
           "input:radio[name ='samples-3']:checked"
         ).attr("id");
-        console.log(checkedRadioButtonSamplesSecondQuestion);
         // check if file is from Pennsieve
         if (checkedRadioButtonSamplesSecondQuestion === "samples-3-A") {
           // do not allow organization switching

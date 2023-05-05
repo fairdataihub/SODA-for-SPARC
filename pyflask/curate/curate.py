@@ -2121,7 +2121,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
     try:
         # set the dataset 
-        namespace_logger.info(f"Setting dataset to {ds['content']['id']}")
             # select the user
         # ps = Pennsieve()
         # ps.user.switch(account)
@@ -2701,7 +2700,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a href='https://docs.sodaforsparc.io/docs/next/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
 
 
-        namespace_logger.info("Finished uploading metadata files")
         # 7. Upload manifest files
         if list_upload_manifest_files:
             namespace_logger.info("bf_generate_new_dataset (optional) step 7 upload manifest files")
@@ -2728,7 +2726,6 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             current_files_in_subscriber_session = total_manifest_files
             files_uploaded = 0
 
-            namespace_logger.info(f"Uploading {total_manifest_files} manifest files to Pennsieve.")
 
             try: 
                 # upload the manifest 
@@ -2874,7 +2871,6 @@ def bf_check_dataset_files_validity(soda_json_structure, ps):
 
 def clean_json_structure(soda_json_structure):
     global namespace_logger
-    namespace_logger.info("Cleaning json structure")
     # Delete any files on Pennsieve that have been marked as deleted
     def recursive_file_delete(folder):
         if "files" in folder.keys():
@@ -3151,7 +3147,6 @@ def main_curate_function(soda_json_structure):
                         ds = bf_create_new_dataset(dataset_name, ps)
                         selected_dataset_id = ds["content"]["id"]
 
-                    namespace_logger.info("We are in generate_new for some reason")
 
                     # whether we are generating a new dataset or merging, we want the dataset information for later steps
                     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
@@ -3160,7 +3155,6 @@ def main_curate_function(soda_json_structure):
                     
                     bf_generate_new_dataset(soda_json_structure, ps, myds)
                 if generate_option == "existing-bf":
-                    namespace_logger.info("We are in existing bf as intended ")
 
                     # make an api request to pennsieve to get the dataset details
                     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))

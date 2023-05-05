@@ -153,7 +153,6 @@ const getDatasetDOI = async (account, dataset) => {
 const getLockStatus = async (datasetNameOrId) => {
   try {
     let lockStatusResponse = await client.get(`/datasets/${datasetNameOrId}/lock-status`);
-    console.log(lockStatusResponse);
     return lockStatusResponse.data;
   } catch (err) {
     console.log(err);

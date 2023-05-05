@@ -3,7 +3,6 @@
 
 document.querySelectorAll(".ds-dd:not(.organization)").forEach((dropdownElement) => {
   dropdownElement.addEventListener("click", function () {
-    console.log("clicked too");
 
     openDropdownPrompt(this, "dataset");
   });
@@ -17,7 +16,6 @@ document.querySelectorAll(".md-change-current-account").forEach((dropdownElement
 
 document.querySelectorAll(".ds-dd.organization").forEach((dropdownElement) => {
   dropdownElement.addEventListener("click", function () {
-    console.log("clicked");
     openDropdownPrompt(this, "organization");
   });
 });

@@ -3,9 +3,7 @@ const returnToGuided = () => {
 };
 
 const handleGuidedModeOrgSwitch = async (buttonClicked) => {
-  console.log(buttonClicked);
   const clickedButtonId = buttonClicked.id;
-  console.log(clickedButtonId);
   if (clickedButtonId === "guided-button-change-workspace-dataset-import") {
     renderGuidedResumePennsieveDatasetSelectionDropdown();
   }
@@ -427,7 +425,6 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
       // This is the case where the user is resuming a Pennsieve dataset
       if (resumingPennsieveDataset) {
-        console.log("resumingPennsieveDataset");
         if (
           !document
             .getElementById("guided-panel-pennsieve-dataset-import-loading")
@@ -616,7 +613,6 @@ const savePageChanges = async (pageBeingLeftID) => {
             subjectsTableData = subjectsMetadataResponse.data.subject_file_rows;
           } catch (error) {
             const emessage = userErrorMessage(error);
-            console.log("Unable to fetch subjects metadata" + emessage);
             errorArray.push({
               type: "swal",
               title: "Unable to fetch subjects metadata to check dataset structure",
@@ -653,7 +649,6 @@ const savePageChanges = async (pageBeingLeftID) => {
               samplesTableData = samplesMetadataResponse.data.sample_file_rows;
             } catch (error) {
               const emessage = userErrorMessage(error);
-              console.log("Unable to fetch samples metadata" + emessage);
               errorArray.push({
                 type: "swal",
                 title: "Unable to fetch samples metadata to check dataset structure",
@@ -2230,7 +2225,6 @@ const guidedReserveAndSaveDOI = async () => {
   $("#curate-button-reserve-doi").disabled = true;
 
   let doiInformation = await api.reserveDOI(account, dataset);
-  console.log(doiInformation);
   guidedSetDOIUI(doiInformation);
 };
 
@@ -3415,14 +3409,12 @@ const renderGuidedResumePennsieveDatasetSelectionDropdown = async () => {
         selected_account: defaultBfAccount,
       },
     });
-    console.log(responseObject);
     const datasets = responseObject.data.datasets;
     //Add the datasets to the select picker
     datasetSelectionSelectPicker.append(
       `<option value="" selected>Select a dataset on Pennsieve to resume</option>`
     );
     for (const dataset of datasets) {
-      console.log(dataset);
       datasetSelectionSelectPicker.append(`<option value="${dataset.id}">${dataset.name}</option>`);
     }
     datasetSelectionSelectPicker.selectpicker("refresh");
@@ -4261,7 +4253,6 @@ const guidedResetUserTeamPermissionsDropdowns = () => {
 
 let addListener = true;
 const copyLink = (link) => {
-  console.log("copying link", link);
   Clipboard.writeText(link);
 
   notyf.open({
@@ -4523,7 +4514,6 @@ const openPage = async (targetPageID) => {
       }
 
       const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
-      console.log("guidedSavedProgressFiles", guidedSavedProgressFiles);
 
       //render progress resumption cards from progress file array on first page of guided mode
       const progressFileData = await getAllProgressFileData(guidedSavedProgressFiles);
@@ -6829,7 +6819,6 @@ const patchPreviousGuidedModeVersions = () => {
 
   // No longer skip validation page for non-sparc datasts ("page should always be unskipped")
   if (sodaJSONObj["skipped-pages"].includes("guided-dataset-validation-tab")) {
-    console.log("Unskipping validation page");
     sodaJSONObj["skipped-pages"] = sodaJSONObj["skipped-pages"].filter(
       (page) => page !== "guided-dataset-validation-tab"
     );

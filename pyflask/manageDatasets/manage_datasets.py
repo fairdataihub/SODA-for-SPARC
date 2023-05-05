@@ -819,7 +819,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
             namespace_logger.error(e)
             raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a href='https://docs.sodaforsparc.io/docs/next/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
 
-        namespace_logger.info("Upload complete now no more messages")
         submitdatastatus = "Done"
     except Exception as e:
         submitdatastatus = "Done"

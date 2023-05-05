@@ -908,7 +908,6 @@ const run_pre_flight_checks = async (check_update = true) => {
   } catch (err) {
     clientError(err);
     if (err.response.status) {
-      console.log("About to open dropdown prompt");
       await addBfAccount(null, true);
     }
   }
@@ -3522,7 +3521,6 @@ const withdrawDatasetSubmission = async (curationMode = "") => {
     }
   });
 
-  console.log("status", status);
 
   // This helps signal guided mode to update the UI
   if (curationMode === "guided") {
@@ -3785,7 +3783,6 @@ const refreshDatasetList = () => {
     return a.toLowerCase().localeCompare(b.toLowerCase());
   });
 
-  console.log("Filtered datasets: ", filteredDatasets);
   populateDatasetDropdowns(filteredDatasets);
   // parentDSTagify.settings.whitelist = getParentDatasets();
   return filteredDatasets.length;
@@ -3798,12 +3795,10 @@ const refreshDatasetList = () => {
  * @returns length of the organizations list
  */
 const refreshOrganizationList = () => {
-  console.log("Refreshing orgs list with new results");
   organizationList.sort(function (a, b) {
     return a.toLowerCase().localeCompare(b.toLowerCase());
   });
 
-  console.log("About to populate the organization dropdown");
   populateOrganizationDropdowns(organizationList);
 
   // parentDSTagify.settings.whitelist = getParentDatasets();
@@ -3830,7 +3825,6 @@ const populateDatasetDropdowns = (mylist) => {
 };
 
 const populateOrganizationDropdowns = (organizations) => {
-  console.log("About to clear the organization dropdown before repopulating");
   clearOrganizationDropdowns();
 
   for (const organization in organizations) {
@@ -3840,9 +3834,6 @@ const populateOrganizationDropdowns = (organizations) => {
     option.value = myitemselect;
     let option1 = option.cloneNode(true);
     let option2 = option.cloneNode(true);
-
-    console.log("Adding an item to the dropdown now");
-    console.log(option1);
 
     curateOrganizationDropdown.appendChild(option1);
   }
@@ -4422,9 +4413,7 @@ const showDefaultBFAccount = async () => {
         $("#div-bf-account-load-progress").css("display", "none");
         showHideDropdownButtons("account", "show");
         // refreshDatasetList()
-        console.log("About to update the dataset list");
         updateDatasetList();
-        console.log("About to update the organization list");
         updateOrganizationList();
       } catch (error) {
         clientError(error);
