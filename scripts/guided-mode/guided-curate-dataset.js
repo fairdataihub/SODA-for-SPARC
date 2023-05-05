@@ -3142,14 +3142,14 @@ document
         manifestJSONResponse = await client.post(
           "/skeleton_dataset/manifest_json",
           {
-            sodajsonobject: sodaJSONObj,
+            sodaJSONObj: sodaJSONObj,
           },
           {
             timeout: 0,
           }
         );
       } catch (error) {
-        throw new Error("Failed to generate manifest files1");
+        throw new Error("Failed to generate manifest files");
       }
 
       let manifests = manifestJSONResponse.data;
@@ -6775,6 +6775,7 @@ const patchPreviousGuidedModeVersions = () => {
     // This is the first time the user has used SODA since the "last-version-of-soda-used" key was added
     sodaJSONObj["last-version-of-soda-used"] = "10.0.4";
   }
+
   // If the user started a dataset after version 10.0.4, skip CHANGES metadata pages
   if (!sodaJSONObj["skipped-pages"].includes("guided-create-changes-metadata-tab")) {
     if (sodaJSONObj["starting-point"]["type"] === "new") {
@@ -6873,7 +6874,7 @@ const guidedResumeProgress = async (datasetNameToResume) => {
           let filesFoldersResponse = await client.post(
             `/organize_datasets/dataset_files_and_folders`,
             {
-              sodajsonobject: datasetResumeJsonObj,
+              sodaJSONObj: datasetResumeJsonObj,
             },
             { timeout: 0 }
           );
@@ -6915,21 +6916,28 @@ const guidedResumeProgress = async (datasetNameToResume) => {
     // The last page the user left off on on a previous session
     const usersPageBeforeExit = sodaJSONObj["page-before-exit"];
 
-    // If the last time the user worked on the progress file was in a previous version of SODA, then force the user to restart from the first page
-    const currentSodaVersion = document.getElementById("version").innerHTML;
-    const lastVersionOfSodaUsedOnProgressFile = sodaJSONObj["last-version-of-soda-used"];
-
-    if (lastVersionOfSodaUsedOnProgressFile === currentSodaVersion) {
-      const usersPageBeforeExit = datasetResumeJsonObj["page-before-exit"];
-      //Check to make sure the page still exists before returning to it
-      if (document.getElementById(usersPageBeforeExit)) {
-        pageToReturnTo = usersPageBeforeExit;
-      }
+    //Check to make sure the page still exists before returning to it
+    //Code below might still specify a different page to return to though.
+    if (document.getElementById(usersPageBeforeExit)) {
+      pageToReturnTo = usersPageBeforeExit;
     }
 
     // If the user left while the upload was in progress, send the user to the upload confirmation page
     if (usersPageBeforeExit === "guided-dataset-generation-tab") {
       pageToReturnTo = "guided-dataset-generation-confirmation-tab";
+    }
+
+    // If the last time the user worked on the progress file was in a previous version of SODA, then force the user to restart from the first page
+    const currentSodaVersion = document.getElementById("version").innerHTML;
+    const lastVersionOfSodaUsedOnProgressFile = sodaJSONObj["last-version-of-soda-used"];
+    if (lastVersionOfSodaUsedOnProgressFile != currentSodaVersion) {
+      pageToReturnTo = null;
+    }
+
+    // console.log() console.log("") remove me before an actual release or talk to Jacob
+    if (!sodaJSONObj["special-rejoin-key"]) {
+      sodaJSONObj["special-rejoin-key"] = "now-i-wont-return-to-the-first-page";
+      pageToReturnTo = null;
     }
 
     //If the dataset was successfully uploaded, send the user to the share with curation team
@@ -7021,6 +7029,9 @@ const guidedUploadStatusIcon = (elementID, status) => {
 //dataset description (first page) functions
 guidedCreateSodaJSONObj = () => {
   sodaJSONObj = {};
+
+  //console.log(" remove me and remove everything that has the key special-rejoin-key it was only for the special beta rejoin release")
+  sodaJSONObj["special-rejoin-key"] = "now-i-wont-return-to-the-first-page";
 
   sodaJSONObj["guided-options"] = {};
   sodaJSONObj["bf-account-selected"] = {};
@@ -8165,7 +8176,7 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
             contenteditable="true"
           />
           <p class="guided--text-input-instructions mb-0 text-left">
-            Role(s) the contributor played in the creation of the dataset.
+            Role(s) the contributor played in the creation of the dataset. Visit <a target="_blank" href="https://schema.datacite.org/meta/kernel-4.4/doc/DataCite-MetadataKernel_v4.4.pdf">DataCite</a> for a definition of the roles.
             <br />
             <b>
               Select a role from the dropdown to add it to the list.
@@ -8431,7 +8442,7 @@ const openGuidedAddContributorSwal = async () => {
             contenteditable="true"
           />
           <p class="guided--text-input-instructions mb-0 text-left">
-            Role(s) the contributor played in the creation of the dataset.
+            Role(s) the contributor played in the creation of the dataset. Visit <a target="_blank" href="https://schema.datacite.org/meta/kernel-4.4/doc/DataCite-MetadataKernel_v4.4.pdf">DataCite</a> for a definition of the roles.
             <br />
             <b>
               Select a role from the dropdown to add it to the list.
