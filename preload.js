@@ -781,7 +781,16 @@ const resetFFMUI = (ev) => {
       ) {
         console.log("Should reset");
         $("#current-bf-dataset-generate").text("None");
-        // $("#Question-generate-dataset-existing-folders-options").hide();
+        // show the confirm button under the workspace selection question
+        $("#btn-bf-workspace").css("display", "flex");
+        // hide the dataset options selection section
+        transitionSubQuestionsButton(
+          document.querySelector("#btn-bf-workspace"),
+          "Question-generate-dataset-BF-workspace",
+          "generate-dataset-tab",
+          "delete",
+          "individual-question generate-dataset"
+        );
       }
     }
   }
@@ -826,9 +835,10 @@ const resetFFMUI = (ev) => {
   $("#share_sparc_consortium-question-2").removeClass("show");
 
   $("#submit_prepublishing_review-question-1").removeClass("prev");
-  $("#submit_prepublishing_review-question-2").removeClass("show");
+  $("#submit_prepublishing_review-question-2").addClass("show");
   $("#submit_prepublishing_review-question-3").removeClass("show");
   $("#submit_prepublishing_review-question-4").removeClass("show");
+  $("#para-review-dataset-info-disseminate").text("None");
 };
 
 const addBfAccount = async (ev, verifyingOrganization = False) => {
@@ -1431,32 +1441,30 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               },
             });
 
-            console.log("dropdownEvent", dropdownEventID);
-            if (dropdownEventID != "disseminate-select-pennsieve-dataset") {
-              // Ensure the dataset is not locked except for when the user is on the disseminate page (to allow for the dataset to be unsubmitted)
-              // Ensure the dataset is not locked before proceeding
-              const datasetIsLocked = await api.isDatasetLocked(defaultBfAccount, bfDataset);
-              if (datasetIsLocked) {
-                // Show the locked swal and return
-                Swal.fire({
-                  icon: "info",
-                  title: `${bfDataset} is locked from editing`,
-                  html: `
+            // Ensure the dataset is not locked except for when the user is on the disseminate page (to allow for the dataset to be unsubmitted)
+            // Ensure the dataset is not locked before proceeding
+            const datasetIsLocked = await api.isDatasetLocked(defaultBfAccount, bfDataset);
+            if (datasetIsLocked) {
+              // Show the locked swal and return
+              Swal.fire({
+                icon: "info",
+                title: `${bfDataset} is locked from editing`,
+                html: `
                   This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
                   <br />
                   <br />
                   If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
                 `,
-                  width: 600,
-                  heightAuto: false,
-                  backdrop: "rgba(0,0,0, 0.4)",
-                  confirmButtonText: "Ok",
-                  focusConfirm: true,
-                  allowOutsideClick: false,
-                });
-                return;
-              }
+                width: 600,
+                heightAuto: false,
+                backdrop: "rgba(0,0,0, 0.4)",
+                confirmButtonText: "Ok",
+                focusConfirm: true,
+                allowOutsideClick: false,
+              });
+              return;
             }
+
             if (dropdownEventID === "dd-select-pennsieve-dataset") {
               $("#ds-name").val(bfDataset);
               $("#ds-description").val = $("#bf-dataset-subtitle").val;
@@ -1822,9 +1830,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             preConfirm: async () => {
               const login = Swal.getPopup().querySelector("#ps_login").value;
               const password = Swal.getPopup().querySelector("#ps_password").value;
-
-              console.log(login);
-              console.log(password);
 
               if (!login) {
                 Swal.showValidationMessage("Please enter your email!");

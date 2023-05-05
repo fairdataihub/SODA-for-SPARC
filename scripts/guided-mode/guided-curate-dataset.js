@@ -1685,9 +1685,6 @@ const savePageChanges = async (pageBeingLeftID) => {
       $("#guided-button-unshare-dataset-with-curation-team");
     }
 
-    // Save the current version of SODA as the user should be taken back to the first page when the app is updated
-    const currentAppVersion = document.getElementById("version").innerHTML;
-    sodaJSONObj["last-version-of-soda-used"] = currentAppVersion;
     if (pageBeingLeftID === "guided-dataset-validation-tab") {
       const guidedButtonRunValidation = document.getElementById(
         "guided-button-run-dataset-validation"
@@ -1719,6 +1716,10 @@ const savePageChanges = async (pageBeingLeftID) => {
         // We don't have to do anything here.
       }
     }
+
+    // Save the current version of SODA as the user should be taken back to the first page when the app is updated
+    const currentAppVersion = document.getElementById("version").innerHTML;
+    sodaJSONObj["last-version-of-soda-used"] = currentAppVersion;
 
     // Stop any animations that need to be stopped
     startOrStopAnimationsInContainer(pageBeingLeftID, "stop");
@@ -2209,12 +2210,14 @@ const guidedSetCurationTeamUI = () => {
   );
   if (textSharedWithCurationTeamStatus.innerText != "Dataset is not under review currently") {
     $("#guided-button-share-dataset-with-curation-team").addClass("hidden");
-    $("#guided-button-unshare-dataset-with-curation-team").removeClass("hidden");
+    $("#guided-button-unshare-dataset-with-curation-team").addClass("hidden");
+    $("#guided-unshare-dataset-with-curation-team-message").removeClass("hidden");
   } else {
     $("#guided--prepublishing-checklist-container").addClass("hidden");
     $("#guided-button-share-dataset-with-curation-team").addClass("hidden");
     $("#guided-button-share-dataset-with-curation-team").removeClass("hidden");
     $("#guided-button-unshare-dataset-with-curation-team").addClass("hidden");
+    $("#guided-unshare-dataset-with-curation-team-message").addClass("hidden");
   }
 };
 
@@ -2226,14 +2229,40 @@ const guidedReserveAndSaveDOI = async () => {
   $("#curate-button-reserve-doi").disabled = true;
 
   let doiInformation = await api.reserveDOI(account, dataset);
+  console.log(doiInformation);
   guidedSetDOIUI(doiInformation);
 };
 
 // Function is for displaying DOI information on the Guided UI
 const guidedSetDOIUI = (doiInformation) => {
+  $("#curate-button-reserve-doi").removeClass("loading");
+  $("#curate-button-reserve-doi").disabled = false;
+  if (doiInformation === "locked") {
+    // Show reserve DOI button and hide copy button
+    $("#guided-pennsieve-copy-doi").addClass("hidden");
+    $("#curate-button-reserve-doi").addClass("hidden");
+
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      confirmButtonText: "Ok",
+      title: "Cannot reserve DOI",
+      text: "Your dataset is locked, so modification is not allowed.",
+      icon: "error",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
+    return;
+  }
+
   $("#guided--para-doi-info").text(doiInformation);
 
-  if (doiInformation === "No DOI found for this dataset") {
+  if (doiInformation === "No DOI found for this dataset" || doiInformation === false) {
     // Hide the reserve DOI button and show copy button
     $("#guided-pennsieve-copy-doi").addClass("hidden");
     $("#curate-button-reserve-doi").removeClass("hidden");
@@ -2242,8 +2271,6 @@ const guidedSetDOIUI = (doiInformation) => {
     $("#guided-pennsieve-copy-doi").removeClass("hidden");
     $("#curate-button-reserve-doi").addClass("hidden");
   }
-  $("#curate-button-reserve-doi").removeClass("loading");
-  $("#curate-button-reserve-doi").disabled = false;
 };
 
 // This function is for when a user clicks the share/unshare with curation team (requires Dataset to be published and locked)
@@ -2254,16 +2281,17 @@ const guidedModifyCurationTeamAccess = async (action) => {
   const guidedUnshareWithCurationTeamButton = document.getElementById(
     "guided-button-unshare-dataset-with-curation-team"
   );
-
+  const guidedUnshareMessage = document.getElementById(
+    "guided-unshare-dataset-with-curation-team-message"
+  );
   const curationMode = "guided";
+
   if (action === "share") {
     guidedShareWithCurationTeamButton.disabled = true;
     guidedShareWithCurationTeamButton.classList.add("loading");
 
     let publishPreCheckStatus = await beginPrepublishingFlow(curationMode);
     let embargoDetails = publishPreCheckStatus[1];
-    console.log(embargoDetails);
-    console.log(publishPreCheckStatus[0]);
 
     // Will return false if there are issues running the precheck flow
     if (publishPreCheckStatus[0]) {
@@ -2274,6 +2302,8 @@ const guidedModifyCurationTeamAccess = async (action) => {
     guidedShareWithCurationTeamButton.disabled = false;
   }
   if (action === "unshare") {
+    // Add your dataset has been shared, to withdraw please do so from Pennsieve
+    // TODO: Dorian -> refactor this (it will be removed essentially)
     guidedUnshareWithCurationTeamButton.disabled = true;
     guidedUnshareWithCurationTeamButton.classList.add("loading");
 
@@ -2857,8 +2887,8 @@ const renderProgressCards = (progressFileJSONdata) => {
     });
   } else {
     progressCardsContainer.innerHTML = `
-      <h2 class="guided--text-sub-step mt-5">
-        No Progress files found.
+      <h2 class="guided--text-click-continue" style="color: var(--color-bg-plum) !important">
+        No datasets in progress found.
       </h2>
     `;
   }
@@ -3141,14 +3171,14 @@ document
         manifestJSONResponse = await client.post(
           "/skeleton_dataset/manifest_json",
           {
-            sodajsonobject: sodaJSONObj,
+            sodaJSONObj: sodaJSONObj,
           },
           {
             timeout: 0,
           }
         );
       } catch (error) {
-        throw new Error("Failed to generate manifest files1");
+        throw new Error("Failed to generate manifest files");
       }
 
       let manifests = manifestJSONResponse.data;
@@ -4487,11 +4517,7 @@ const openPage = async (targetPageID) => {
 
       const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
       console.log("guidedSavedProgressFiles", guidedSavedProgressFiles);
-      if (guidedSavedProgressFiles.length === 0) {
-        document.getElementById("guided-button-resume-progress-file").disabled = true;
-      } else {
-        document.getElementById("guided-button-resume-progress-file").disabled = false;
-      }
+
       //render progress resumption cards from progress file array on first page of guided mode
       const progressFileData = await getAllProgressFileData(guidedSavedProgressFiles);
       renderProgressCards(progressFileData);
@@ -6778,6 +6804,7 @@ const patchPreviousGuidedModeVersions = () => {
     // This is the first time the user has used SODA since the "last-version-of-soda-used" key was added
     sodaJSONObj["last-version-of-soda-used"] = "10.0.4";
   }
+
   // If the user started a dataset after version 10.0.4, skip CHANGES metadata pages
   if (!sodaJSONObj["skipped-pages"].includes("guided-create-changes-metadata-tab")) {
     if (sodaJSONObj["starting-point"]["type"] === "new") {
@@ -6876,7 +6903,7 @@ const guidedResumeProgress = async (datasetNameToResume) => {
           let filesFoldersResponse = await client.post(
             `/organize_datasets/dataset_files_and_folders`,
             {
-              sodajsonobject: datasetResumeJsonObj,
+              sodaJSONObj: datasetResumeJsonObj,
             },
             { timeout: 0 }
           );
@@ -6918,21 +6945,28 @@ const guidedResumeProgress = async (datasetNameToResume) => {
     // The last page the user left off on on a previous session
     const usersPageBeforeExit = sodaJSONObj["page-before-exit"];
 
-    // If the last time the user worked on the progress file was in a previous version of SODA, then force the user to restart from the first page
-    const currentSodaVersion = document.getElementById("version").innerHTML;
-    const lastVersionOfSodaUsedOnProgressFile = sodaJSONObj["last-version-of-soda-used"];
-
-    if (lastVersionOfSodaUsedOnProgressFile === currentSodaVersion) {
-      const usersPageBeforeExit = datasetResumeJsonObj["page-before-exit"];
-      //Check to make sure the page still exists before returning to it
-      if (document.getElementById(usersPageBeforeExit)) {
-        pageToReturnTo = usersPageBeforeExit;
-      }
+    //Check to make sure the page still exists before returning to it
+    //Code below might still specify a different page to return to though.
+    if (document.getElementById(usersPageBeforeExit)) {
+      pageToReturnTo = usersPageBeforeExit;
     }
 
     // If the user left while the upload was in progress, send the user to the upload confirmation page
     if (usersPageBeforeExit === "guided-dataset-generation-tab") {
       pageToReturnTo = "guided-dataset-generation-confirmation-tab";
+    }
+
+    // If the last time the user worked on the progress file was in a previous version of SODA, then force the user to restart from the first page
+    const currentSodaVersion = document.getElementById("version").innerHTML;
+    const lastVersionOfSodaUsedOnProgressFile = sodaJSONObj["last-version-of-soda-used"];
+    if (lastVersionOfSodaUsedOnProgressFile != currentSodaVersion) {
+      pageToReturnTo = null;
+    }
+
+    // console.log() console.log("") remove me before an actual release or talk to Jacob
+    if (!sodaJSONObj["special-rejoin-key"]) {
+      sodaJSONObj["special-rejoin-key"] = "now-i-wont-return-to-the-first-page";
+      pageToReturnTo = null;
     }
 
     //If the dataset was successfully uploaded, send the user to the share with curation team
@@ -7024,6 +7058,9 @@ const guidedUploadStatusIcon = (elementID, status) => {
 //dataset description (first page) functions
 guidedCreateSodaJSONObj = () => {
   sodaJSONObj = {};
+
+  //console.log(" remove me and remove everything that has the key special-rejoin-key it was only for the special beta rejoin release")
+  sodaJSONObj["special-rejoin-key"] = "now-i-wont-return-to-the-first-page";
 
   sodaJSONObj["guided-options"] = {};
   sodaJSONObj["bf-account-selected"] = {};
@@ -8168,7 +8205,7 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
             contenteditable="true"
           />
           <p class="guided--text-input-instructions mb-0 text-left">
-            Role(s) the contributor played in the creation of the dataset.
+            Role(s) the contributor played in the creation of the dataset. Visit <a target="_blank" href="https://schema.datacite.org/meta/kernel-4.4/doc/DataCite-MetadataKernel_v4.4.pdf">DataCite</a> for a definition of the roles.
             <br />
             <b>
               Select a role from the dropdown to add it to the list.
@@ -8434,7 +8471,7 @@ const openGuidedAddContributorSwal = async () => {
             contenteditable="true"
           />
           <p class="guided--text-input-instructions mb-0 text-left">
-            Role(s) the contributor played in the creation of the dataset.
+            Role(s) the contributor played in the creation of the dataset. Visit <a target="_blank" href="https://schema.datacite.org/meta/kernel-4.4/doc/DataCite-MetadataKernel_v4.4.pdf">DataCite</a> for a definition of the roles.
             <br />
             <b>
               Select a role from the dropdown to add it to the list.

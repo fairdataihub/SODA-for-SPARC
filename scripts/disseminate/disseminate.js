@@ -102,39 +102,7 @@ const disseminateShowPublishingStatus = (callback, account, dataset) => {
   $("#submit_prepublishing_review-spinner").hide();
 };
 
-// TODO -> Dorian remove this function
-//Old function to share with curation team
-// const unshareDataset = (option) => {
-//   let message_text = "";
-//   if (option === "share-with-curation-team") {
-//     message_text =
-//       "Are you sure you want to remove SPARC Data Curation Team from this dataset and revert the status of this dataset back to 'Work In Progress (Investigator)'?";
-//   } else if (option === "share-with-sparc-consortium") {
-//     message_text =
-//       "Are you sure you want to remove SPARC Embargoed Data Sharing Group from this dataset and revert the status of this dataset back to 'Curated & Awaiting PI Approval (Curators)'?";
-//   }
-
-//   Swal.fire({
-//     backdrop: "rgba(0,0,0, 0.4)",
-//     confirmButtonText: "Continue",
-//     focusCancel: true,
-//     heightAuto: false,
-//     icon: "warning",
-//     reverseButtons: reverseSwalButtons,
-//     showCancelButton: true,
-//     text: message_text,
-//   }).then((result) => {
-//     if (result.isConfirmed) {
-//       $(".spinner.post-curation").show();
-//       if (option === "share-with-curation-team") {
-//         disseminateCurationTeam(defaultBfAccount, defaultBfDataset, "unshare");
-//       } else if (option === "share-with-sparc-consortium") {
-//         disseminateConsortium(defaultBfAccount, defaultBfDataset, "unshare");
-//       }
-//     }
-//   });
-// };
-
+// TODO: -> Dorian remove this function
 const permissionsCurationTeam = async (account, dataset, share_status = "", method) => {
   // TODO -> Dorian Find out what team is needed to share with the curation team
   // Current method is currently not sharing with the curation team

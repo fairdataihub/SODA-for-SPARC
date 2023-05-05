@@ -440,26 +440,6 @@ ipcMain.on("restart_app", async () => {
   autoUpdater.quitAndInstall();
 });
 
-const getPennsieveAgentPath = () => {
-  if (process.platform === "win32" || process.platform === "cygwin") {
-    const bit64Path = path.join("C:\\Program Files\\Pennsieve\\pennsieve.exe");
-    const bit32Path = path.join("C:\\Program Files (x86)\\Pennsieve\\pennsieve.exe");
-    if (fs.existsSync(bit64Path)) {
-      return bit64Path;
-    }
-    if (fs.existsSync(bit32Path)) {
-      return bit32Path;
-    }
-    throw new Error(`Cannot find pennsieve at ${bit64Path} or ${bit32Path}`);
-  } else {
-    pennsievePath = "/usr/local/bin/pennsieve";
-    if (fs.existsSync(pennsievePath)) {
-      return pennsievePath;
-    }
-    throw new Error(`Cannot find pennsieve at ${pennsievePath}`);
-  }
-};
-
 ipcMain.on("spawn-pennsieve-agent", async (event) => {});
 
 // passing in the spreadsheet data to pass to a modal

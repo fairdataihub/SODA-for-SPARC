@@ -437,6 +437,7 @@ const resetffmPrepublishingUI = async () => {
   ) {
     console.log("here");
     // show the withdraw button
+    // TODO: Dorian -> Remove withdraw button and show message instead
     $("#prepublishing-withdraw-btn-container").show();
     $("#prepublishing-withdraw-btn-container button").show();
     $(".pre-publishing-continue-container").hide();
@@ -507,6 +508,7 @@ const createPrepublishingChecklist = async (curationMode) => {
 };
 
 // check if the user is the dataset owner and transition to the prepublishing checklist question if so
+// TODO: Dorian handle the freeform withdraw button and remove it
 const beginPrepublishingFlow = async (curationMode) => {
   let currentDataset = defaultBfDataset;
   let currentAccount = defaultBfAccount;

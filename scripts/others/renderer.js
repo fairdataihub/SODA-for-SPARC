@@ -577,6 +577,11 @@ const getPennsieveAgentPath = () => {
     if (fs.existsSync(unixPath)) {
       return unixPath;
     }
+    // sometimes the pennsieve agent might install here on MAC
+    const optPath = "/usr/local/opt/pennsieve";
+    if (fs.existsSync(optPath)) {
+      return optPath;
+    }
   }
   throw new Error(`Cannot find pennsieve agent executable`);
 };
@@ -845,6 +850,7 @@ const run_pre_flight_checks = async (check_update = true) => {
   // an account is present
   // Check for an installed Pennsieve agent
   let pennsieveAgentCheckNotyf;
+
   try {
     // Open a notyf to let the user know that we are checking for the agent that closes only if the agent is found.
     pennsieveAgentCheckNotyf = notyf.open({
@@ -852,7 +858,21 @@ const run_pre_flight_checks = async (check_update = true) => {
       message: "Checking to make sure the latest Pennsieve Agent is installed...",
       duration: 0, // 0 means it will not close automatically
     });
+
+    // Set a timeout of 20 seconds
+    const agentStartTimeout = setTimeout(() => {
+      notyf.dismiss(pennsieveAgentCheckNotyf);
+      notyf.open({
+        type: "error",
+        message: "Unable to start the Pennsieve Agent.",
+      });
+    }, 20000);
+
     await startPennsieveAgentAndCheckVersion();
+
+    // Clear the timeout if the function completes before 20 seconds so that the timeout doesn't fire.
+    clearTimeout(agentStartTimeout);
+
     notyf.dismiss(pennsieveAgentCheckNotyf);
     notyf.open({
       type: "success",
@@ -3335,12 +3355,10 @@ ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
 // TODO: Dorian -> Exlcuded files will no longer be a thing in the future
 // Go about removing the feature and see how it effects dataset submissions
 const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
-  let curationModeID = "";
   let currentAccount = defaultBfAccount;
   let currentDataset = defaultBfDataset;
 
   if (curationMode === "guided") {
-    curationModeID = "guided--";
     currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
     currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
   }
@@ -3361,7 +3379,7 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
   });
 
   try {
-    await permissionsCurationTeam(currentAccount, currentDataset, "share", "newMethod");
+    // await permissionsCurationTeam(currentAccount, currentDataset, "share", "newMethod");
 
     await api.submitDatasetForPublication(
       currentAccount,
@@ -3556,7 +3574,7 @@ const withdrawReviewDataset = async (curationMode) => {
   try {
     await api.withdrawDatasetReviewSubmission(currentDataset, currentAccount);
 
-    await permissionsCurationTeam(currentAccount, currentDataset, "unshare", "newMethod");
+    // await permissionsCurationTeam(currentAccount, currentDataset, "unshare", "newMethod");
 
     logGeneralOperationsForAnalytics(
       "Success",

@@ -1188,7 +1188,7 @@ async function initiate_generate_manifest_local(manifestEditBoolean, originalDat
     );
 
     if (moveFinishedBool) {
-      resetManifest(true);
+      resetManifest(false);
       // reset sodaJSONObj
       sodaJSONObj = {
         "starting-point": { type: "" },
@@ -1383,7 +1383,7 @@ async function initiate_generate_manifest_bf() {
     },
   });
   generatingBoolean = false;
-  resetManifest(true);
+  resetManifest(false);
 }
 
 /// creating manifest files locally by generating them to a local SODA folder, then move them to original dataset folder
@@ -2170,7 +2170,7 @@ async function createManifestLocally(type, editBoolean, originalDataset) {
       );
 
       if (moveFinishedBool) {
-        resetManifest(true);
+        resetManifest(false);
         // reset sodaJSONObj
         sodaJSONObj = {
           "starting-point": { type: "" },

@@ -12,15 +12,13 @@ from authentication import get_access_token
 
 PENNSIEVE_URL = "https://api.pennsieve.io"
 
-def get_role(pennsieve_account, dataset):
-    ps = connect_pennsieve_client()
+def get_role(dataset):
+    token = get_access_token()
 
-    authenticate_user_with_client(ps, pennsieve_account)
-
-    selected_dataset_id = get_dataset_id(ps, dataset)
+    selected_dataset_id = get_dataset_id(token, dataset)
 
     try:
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/role", headers=create_request_headers(ps))
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/role", headers=create_request_headers(token))
         r.raise_for_status()
         role = r.json()["role"]
         # role =  ps._api._get(f"/datasets/{selected_dataset_id}/role")["role"]
@@ -144,9 +142,13 @@ def reserve_dataset_doi(dataset):  # sourcery skip: extract-method
 
     try:
         doi_request = requests.post(f"{PENNSIEVE_URL}/datasets/{dataset_id}/doi", headers=create_request_headers(token))
+        # if status code is 423 then dataset is locked
+        # if doi_request.status_code == 423:
+        #     abort(423, "Dataset is locked. Please try again later.")
         doi_request.raise_for_status()
         return {"doi": doi_request.json()["doi"]}
     except Exception as e:
+        print(e)
         if type(e).__name__ == "HTTPError":
             abort(400, e.response.json()["message"])
         abort(500, "An internal server error prevented the request from being fulfilled. Please try again later.")
