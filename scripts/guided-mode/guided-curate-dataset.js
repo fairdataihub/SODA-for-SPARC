@@ -942,7 +942,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         // Make sure the submission metadata and validation tab are unskipped as they are required
         // for the SPARC funded dataset flow
         guidedUnSkipPage("guided-create-submission-metadata-tab");
-        guidedUnSkipPage("guided-dataset-validation-tab");
         guidedUnSkipPage("guided-protocols-tab");
       }
 
@@ -980,9 +979,11 @@ const savePageChanges = async (pageBeingLeftID) => {
         // Skip the submission metadata page
         // This can be safely skipped as the logic that handles the submission file is ran during upload
         guidedSkipPage("guided-create-submission-metadata-tab");
+        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = "EXTERNAL";
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = [""];
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = "";
+
         guidedSkipPage("guided-protocols-tab");
-        //Skip the validation page as non-spac funded datasets do not need to be validated
-        guidedSkipPage("guided-dataset-validation-tab");
       }
     }
 
@@ -3171,7 +3172,7 @@ document
         manifestJSONResponse = await client.post(
           "/skeleton_dataset/manifest_json",
           {
-            sodaJSONObj: sodaJSONObj,
+            sodajsonobject: sodaJSONObj,
           },
           {
             timeout: 0,
@@ -3184,7 +3185,7 @@ document
       let manifests = manifestJSONResponse.data;
       // If the manifest files are not generated, throw an error
       if (!manifests) {
-        throw new Error("Failed to generate manifest files");
+        throw new Error("Failed to generate manifest files2");
       }
 
       let clientUUID = uuid();
@@ -3259,6 +3260,12 @@ document
           });
         }
 
+        // Hide the loading div
+        validationLoadingDiv.classList.add("hidden");
+        // Show the error div
+        errorDuringValidationDiv.classList.remove("hidden");
+        guidedSetNavLoadingState(false);
+
         return;
       }
 
@@ -3313,9 +3320,9 @@ document
       let hasValidationErrors = Object.getOwnPropertyNames(validationReport).length >= 1;
 
       Swal.fire({
-        title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
+        title: hasValidationErrors ? "Validator detected potential issues" : `Dataset is Valid`,
         text: hasValidationErrors
-          ? `Please fix the errors listed in the table below then re-run validation to check that your dataset conforms to the SDS.`
+          ? `Note that the validator is currently in beta and may contain false positives. Review the validation report and continue to the next page.`
           : `Your dataset conforms to the SPARC Dataset Structure.`,
         allowEscapeKey: true,
         allowOutsideClick: true,
@@ -6819,6 +6826,14 @@ const patchPreviousGuidedModeVersions = () => {
       sodaJSONObj["digital-metadata"]["dataset-workspace"] = guidedGetCurrentUserWorkSpace();
     }
   }
+
+  // No longer skip validation page for non-sparc datasts ("page should always be unskipped")
+  if (sodaJSONObj["skipped-pages"].includes("guided-dataset-validation-tab")) {
+    console.log("Unskipping validation page");
+    sodaJSONObj["skipped-pages"] = sodaJSONObj["skipped-pages"].filter(
+      (page) => page !== "guided-dataset-validation-tab"
+    );
+  }
 };
 
 //Loads UI when continue curation button is pressed
@@ -6903,7 +6918,7 @@ const guidedResumeProgress = async (datasetNameToResume) => {
           let filesFoldersResponse = await client.post(
             `/organize_datasets/dataset_files_and_folders`,
             {
-              sodaJSONObj: datasetResumeJsonObj,
+              sodajsonobject: datasetResumeJsonObj,
             },
             { timeout: 0 }
           );
@@ -7006,6 +7021,7 @@ const guidedResumeProgress = async (datasetNameToResume) => {
     // Close the loading screen, the user should be on the page they left off on now
     loadingSwal.close();
   } catch (error) {
+    console.log(userErrorMessage(error));
     console.log(error);
     loadingSwal.close();
     await Swal.fire({
