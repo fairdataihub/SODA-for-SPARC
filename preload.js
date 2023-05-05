@@ -1444,6 +1444,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             // Ensure the dataset is not locked except for when the user is on the disseminate page (to allow for the dataset to be unsubmitted)
             // Ensure the dataset is not locked before proceeding
             const datasetIsLocked = await api.isDatasetLocked(defaultBfAccount, bfDataset);
+            console.log("datasetIsLocked", datasetIsLocked);
             if (datasetIsLocked) {
               // Show the locked swal and return
               Swal.fire({
@@ -1462,10 +1463,14 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
                 focusConfirm: true,
                 allowOutsideClick: false,
               });
+              // $("#submit_prepublishing_review-question-2").hide();
+              $("#unshare-dataset-with-curation-team-message").addClass("hidden");
+              // $("#begin-prepublishing-btn").addClass("hidden");
               return;
             }
 
             if (dropdownEventID === "dd-select-pennsieve-dataset") {
+              console.log("Uh");
               $("#ds-name").val(bfDataset);
               $("#ds-description").val = $("#bf-dataset-subtitle").val;
               $("body").removeClass("waiting");
