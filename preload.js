@@ -707,6 +707,7 @@ const resetFFMUI = (ev) => {
 
   $("#add_edit_permissions_choice_div").removeClass("show");
   $("#add_edit_permissions_choice_tab").removeClass("prev");
+  $("#para-add-edit-dataset-permission-current").text("None")
 
   $("#div_add_edit_description").removeClass("show");
   $("#add_edit_description_tab").removeClass("prev");
@@ -1579,6 +1580,8 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       clientError(error);
       $(".ui.active.green.inline.loader.small").css("display", "none");
       $(".svg-change-current-account.dataset").css("display", "block");
+      $("#div-permission-list-2").css("display", "block");
+
     }
 
     // if no account as them to connect one
@@ -1608,6 +1611,8 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       } else {
         $(".ui.active.green.inline.loader.small").css("display", "none");
         $(".svg-change-current-account.dataset").css("display", "block");
+        $("#div-permission-list-2").css("display", "block");
+
         await Swal.fire({
           icon: "warning",
           text: "You cannot select your workspace until you connect your account with Pennsieve.",
@@ -1693,8 +1698,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         },
         didOpen: () => {
           $("#div-permission-list-2").css("display", "block");
-          // $("#bf-dataset-select-div").hide();
-          // $("#bf-dataset-select-header").hide();
           $(".ui.active.green.inline.loader.small").css("display", "none");
           datasetPermissionDiv.style.display = "block";
           $("#curatebforganizationlist").attr("disabled", false);
@@ -1758,10 +1761,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             dropdownEventID = "";
             return;
           }
-          $("#current-bf-organization").text(bfOrganization);
-          $("#current-bf-organization-generate").text(bfOrganization);
-          $(".bf-organization-span").html(bfOrganization);
-          confirm_click_function();
+
 
           refreshOrganizationList();
           $("#dataset-loaded-message").hide();
@@ -1819,9 +1819,30 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
                 );
               } catch (err) {
                 clientError(err);
+                await Swal.fire({
+                  backdrop: "rgba(0,0,0, 0.4)",
+                  heightAuto: false,
+                  icon: "error",
+                  title: "Could Not Switch Organizations",
+                  text:"Please try again shortly.",
+                })
+                // reset the UI to pre-org switch state
+                $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
+                $(".svg-change-current-account.organization").css("display", "block");
+                return
               }
+
+              // set the new organization information in the appropriate fields
+              console.log("Falling through to set the new organization information correctly?")
+              $("#current-bf-organization").text(bfOrganization);
+              $("#current-bf-organization-generate").text(bfOrganization);
+              $(".bf-organization-span").html(bfOrganization);
+              // set the permissions content to an empty string
+
+              confirm_click_function();
             },
           });
+
 
           // reset the selected dataset to None
           $(".bf-dataset-span").html("None");
