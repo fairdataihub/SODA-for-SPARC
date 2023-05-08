@@ -1756,6 +1756,8 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         console.log("Cancelled the selection")
         $(".svg-change-current-account.organization").css("display", "block");
         $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
+        $("#license-lottie-div").css("display", "block");
+        $("#license-assigned").css("display", "block");
         currentDatasetLicense.innerText = currentDatasetLicense.innerText;
         return;
       }
@@ -1855,6 +1857,8 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       if(!res) {
         $(".svg-change-current-account.organization").css("display", "block");
         $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
+        $("#license-lottie-div").css("display", "block");
+        $("#license-assigned").css("display", "block");
         return
       }
 
