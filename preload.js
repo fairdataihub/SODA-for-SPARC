@@ -1667,7 +1667,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     //datasets do exist so display popup with dataset options
     //else datasets have been created
     if (organizationList.length > 0) {
-      const {value: result } = await Swal.fire({
+      const { value: result } = await Swal.fire({
         backdrop: "rgba(0,0,0, 0.4)",
         cancelButtonText: "Cancel",
         confirmButtonText: "Confirm",
@@ -1750,10 +1750,10 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           $("#license-assigned").css("display", "none");
           return bfOrganization;
         },
-      })
-      
-      if(!result) {
-        console.log("Cancelled the selection")
+      });
+
+      if (!result) {
+        console.log("Cancelled the selection");
         $(".svg-change-current-account.organization").css("display", "block");
         $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
         $("#license-lottie-div").css("display", "block");
@@ -1761,7 +1761,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         currentDatasetLicense.innerText = currentDatasetLicense.innerText;
         return;
       }
-      
+
       if (dropdownEventID === "dd-select-pennsieve-organization") {
         $("#ds-name").val(bfOrganization);
         $("#ds-description").val = $("#bf-dataset-subtitle").val;
@@ -1771,7 +1771,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         return;
       }
 
-
       refreshOrganizationList();
       $("#dataset-loaded-message").hide();
 
@@ -1779,7 +1778,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       document.getElementById("div-rename-bf-dataset").children[0].style.display = "flex";
 
       // rejoin test organiztion
-      const {value: res} = await Swal.fire({
+      const { value: res } = await Swal.fire({
         allowOutsideClick: false,
         backdrop: "rgba(0,0,0, 0.4)",
         cancelButtonText: "Cancel",
@@ -1820,12 +1819,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           }
 
           try {
-            await api.setPreferredOrganization(
-              login,
-              password,
-              bfOrganization,
-              defaultBfAccount
-            );
+            await api.setPreferredOrganization(login, password, bfOrganization, defaultBfAccount);
           } catch (err) {
             clientError(err);
             await Swal.fire({
@@ -1833,16 +1827,16 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               heightAuto: false,
               icon: "error",
               title: "Could Not Switch Organizations",
-              text:"Please try again shortly.",
-            })
+              text: "Please try again shortly.",
+            });
             // reset the UI to pre-org switch state
             $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
             $(".svg-change-current-account.organization").css("display", "block");
-            return undefined; 
+            return undefined;
           }
 
           // set the new organization information in the appropriate fields
-          console.log("Falling through to set the new organization information correctly?")
+          console.log("Falling through to set the new organization information correctly?");
           $("#current-bf-organization").text(bfOrganization);
           $("#current-bf-organization-generate").text(bfOrganization);
           $(".bf-organization-span").html(bfOrganization);
@@ -1850,16 +1844,16 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
           confirm_click_function();
 
-          return true
+          return true;
         },
-      })
+      });
 
-      if(!res) {
+      if (!res) {
         $(".svg-change-current-account.organization").css("display", "block");
         $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
         $("#license-lottie-div").css("display", "block");
         $("#license-assigned").css("display", "block");
-        return
+        return;
       }
 
       // reset the selected dataset to None
