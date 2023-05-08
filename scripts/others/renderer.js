@@ -662,7 +662,6 @@ const getPennsieveAgentVersion = async (pathToPennsieveAgent) => {
 // If any of the mandatory steps fail, the user will be notified on how to alleviate the issue
 // and the promise will be rejected
 const startPennsieveAgentAndCheckVersion = async () => {
-  return new Promise(async (resolve, reject) => {
     // First get the latest Pennsieve agent version on GitHub
     // This is to ensure the user has the latest version of the agent
     let browser_download_url;
@@ -684,8 +683,8 @@ const startPennsieveAgentAndCheckVersion = async () => {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
       });
-      log.error(error);
-      reject(error);
+      clientError(error)
+      throw error
     }
 
     // Get the path to the Pennsieve agent
@@ -709,8 +708,8 @@ const startPennsieveAgentAndCheckVersion = async () => {
         shell.openExternal(browser_download_url);
         shell.openExternal("https://docs.pennsieve.io/docs/uploading-files-programmatically");
       }
-      log.error(error);
-      reject(error);
+      clientError(error);
+      throw error;
     }
 
     // Stop the Pennsieve agent if it is running
@@ -720,15 +719,15 @@ const startPennsieveAgentAndCheckVersion = async () => {
     } catch (error) {
       // If the agent is not running then we can ignore this error
       // But it shouldn't throw if the agent is running or not
-      log.error(error);
+      clientError(error)
     }
 
     // Start the Pennsieve agent
     try {
       await startPennsieveAgent(agentPath);
     } catch (error) {
-      log.error(error);
-      reject(error);
+      clientError(error)
+      throw error;
     }
 
     // Get the version of the Pennsieve agent
@@ -737,8 +736,8 @@ const startPennsieveAgentAndCheckVersion = async () => {
       pennsieveAgentVersionObj = await getPennsieveAgentVersion(agentPath);
       pennsieveAgentVersion = pennsieveAgentVersionObj["Agent Version"];
     } catch (error) {
-      log.error(error);
-      reject(error);
+      clientError(error);
+      throw error;
     }
 
     if (pennsieveAgentVersion !== latest_agent_version) {
@@ -762,12 +761,9 @@ const startPennsieveAgentAndCheckVersion = async () => {
         shell.openExternal(browser_download_url);
         shell.openExternal("https://docs.pennsieve.io/docs/uploading-files-programmatically");
       }
-      reject("The installed version of the Pennsieve agent is not the latest version.");
+      throw Error("The installed version of the Pennsieve agent is not the latest version.");
     }
 
-    // The Pennsieve agent is now running so we can now resolve the promise
-    resolve();
-  });
 };
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
