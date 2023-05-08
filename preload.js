@@ -707,7 +707,7 @@ const resetFFMUI = (ev) => {
 
   $("#add_edit_permissions_choice_div").removeClass("show");
   $("#add_edit_permissions_choice_tab").removeClass("prev");
-  $("#para-add-edit-dataset-permission-current").text("None")
+  $("#para-add-edit-dataset-permission-current").text("None");
 
   $("#div_add_edit_description").removeClass("show");
   $("#add_edit_description_tab").removeClass("prev");
@@ -1581,7 +1581,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       $(".ui.active.green.inline.loader.small").css("display", "none");
       $(".svg-change-current-account.dataset").css("display", "block");
       $("#div-permission-list-2").css("display", "block");
-
     }
 
     // if no account as them to connect one
@@ -1762,7 +1761,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             return;
           }
 
-
           refreshOrganizationList();
           $("#dataset-loaded-message").hide();
 
@@ -1824,16 +1822,19 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
                   heightAuto: false,
                   icon: "error",
                   title: "Could Not Switch Organizations",
-                  text:"Please try again shortly.",
-                })
+                  text: "Please try again shortly.",
+                });
                 // reset the UI to pre-org switch state
-                $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
+                $(".ui.active.green.inline.loader.small.organization-loader").css(
+                  "display",
+                  "none"
+                );
                 $(".svg-change-current-account.organization").css("display", "block");
-                return
+                return;
               }
 
               // set the new organization information in the appropriate fields
-              console.log("Falling through to set the new organization information correctly?")
+              console.log("Falling through to set the new organization information correctly?");
               $("#current-bf-organization").text(bfOrganization);
               $("#current-bf-organization-generate").text(bfOrganization);
               $(".bf-organization-span").html(bfOrganization);
@@ -1842,7 +1843,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               confirm_click_function();
             },
           });
-
 
           // reset the selected dataset to None
           $(".bf-dataset-span").html("None");
