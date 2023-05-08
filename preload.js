@@ -707,7 +707,7 @@ const resetFFMUI = (ev) => {
 
   $("#add_edit_permissions_choice_div").removeClass("show");
   $("#add_edit_permissions_choice_tab").removeClass("prev");
-  $("#para-add-edit-dataset-permission-current").text("None")
+  $("#para-add-edit-dataset-permission-current").text("None");
 
   $("#div_add_edit_description").removeClass("show");
   $("#add_edit_description_tab").removeClass("prev");
@@ -1581,7 +1581,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       $(".ui.active.green.inline.loader.small").css("display", "none");
       $(".svg-change-current-account.dataset").css("display", "block");
       $("#div-permission-list-2").css("display", "block");
-
     }
 
     // if no account as them to connect one
