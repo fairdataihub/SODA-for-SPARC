@@ -249,6 +249,37 @@ document.getElementById("guided-button-has-docs-data").addEventListener("click",
   }
 });
 
+const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
+  try {
+    const changesRes = await client.get(`/prepare_metadata/readme_changes_file`, {
+      params: {
+        file_type: "CHANGES",
+        selected_account: defaultBfAccount,
+        selected_dataset: pennsieveDatasetID,
+      },
+    });
+    const changes_text = changesRes.data.text;
+    //sodaJSONObj["dataset-metadata"]["CHANGES"] = changes_text;
+    console.log("CHANGES file exists, skipping regardless of publication status");
+    return true;
+  } catch (error) {
+    const emessage = userErrorMessage(error);
+    console.log(emessage);
+    console.log("No CHANGES file exists, checking publication status");
+    const datasetInfo = await api.getDatasetInformation(defaultBfAccount, pennsieveDatasetID);
+    console.log(datasetInfo);
+
+    if (datasetInfo?.["publication"]?.["status"] === "completed") {
+      console.log("Dataset is published, we need to show changes");
+      //sodaJSONObj["dataset-metadata"]["CHANGES"] = "";
+      return true;
+    } else {
+      console.log("Dataset is not published, we do not need to show changes");
+      return false;
+    }
+  }
+};
+
 const setPageLoadingState = (boolLoadingState) => {
   const pageParentContainers = document.querySelectorAll(".guided--parent-tab");
 
@@ -716,7 +747,12 @@ const savePageChanges = async (pageBeingLeftID) => {
         sodaJSONObj["digital-metadata"]["name"] = selectedPennsieveDataset;
 
         // Unskip the CHANGES metadata so the user can add changes since previous publication
-        guidedUnSkipPage("guided-create-changes-metadata-tab");
+        const changesMetadataPageShouldBeShown = checkIfChangesMetadataPageShouldBeShown(
+          selectedPennsieveDatasetID
+        );
+        changesMetadataPageShouldBeShown
+          ? guidedUnSkipPage("guided-create-changes-metadata-tab")
+          : guidedSkipPage("guided-create-changes-metadata-tab");
 
         // Skip the page where they confirm their log in and workspace because we should already have it
         sodaJSONObj["digital-metadata"]["dataset-workspace"] = guidedGetCurrentUserWorkSpace();
@@ -5884,6 +5920,8 @@ const openPage = async (targetPageID) => {
           sodaJSONObj["dataset-metadata"]["CHANGES"] = changes_text;
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-changes-metadata-tab");
         } catch (error) {
+          //Handle the case where the user does not have a CHANGES file
+
           clientError(error);
           const emessage = error.response.data.message;
           await guidedShowOptionalRetrySwal(emessage, "guided-create-changes-metadata-tab");
