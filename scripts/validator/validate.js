@@ -760,7 +760,6 @@ document
 
     document.querySelector("#run_validator_btn").style.display = "none";
 
-
     // move to next question
     transitionFreeFormMode(
       this,
@@ -835,7 +834,6 @@ document.querySelector("#validate-local-dataset-path").addEventListener("click",
 
     document.querySelector("#run_validator_btn").style.display = "flex";
 
-
     transitionFreeFormMode(
       this,
       "validate_dataset-question-2",
@@ -846,7 +844,7 @@ document.querySelector("#validate-local-dataset-path").addEventListener("click",
 
     showQuestionThreeLocal();
 
-    document.querySelector("#div-confirm-validate_dataset").scrollIntoView()
+    document.querySelector("#div-confirm-validate_dataset").scrollIntoView();
 
     // showConfirmButton();
   });
@@ -888,8 +886,6 @@ document.querySelector("#run_validator_btn").addEventListener("click", async fun
     await validatePennsieveDatasetStandAlone();
   }
 });
-
-
 
 // observer for the selected dataset label in the dataset selection card in question 2
 const questionTwoDatasetSelectionObserver = new MutationObserver(() => {
@@ -1007,8 +1003,6 @@ const getValidationResultsCount = () => {
   // check if there are any validation results
   return validationErrorsTable.childElementCount;
 };
-
-
 
 const showQuestionThreeLocal = () => {
   // set question 3's visibility to visible
