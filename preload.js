@@ -699,7 +699,7 @@ const resetFFMUI = (ev) => {
   $("#div_add_edit_subtitle").removeClass("show");
   $("#div_add_edit_subtitle_tab").removeClass("prev");
 
-  $("#div-rename-bf-dataset").hide();
+  $("#div-rename-bf-dataset").removeClass("show");
   $("#rename_dataset_BF_account_tab").removeClass("prev");
 
   $("#div_make_pi_owner_permissions").removeClass("show");
@@ -738,6 +738,7 @@ const resetFFMUI = (ev) => {
   let resetValidation = true;
   let resetOrganizationTab = true;
   if (ev?.parentNode?.parentNode) {
+    console.log(ev.parentNode.parentNode);
     if (ev.parentNode.parentNode.classList.contains("prepare-submission")) {
       resetSubmissionTab = false;
     }
@@ -1465,7 +1466,8 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             $("#dataset-loaded-message").hide();
 
             showHideDropdownButtons("dataset", "show");
-            document.getElementById("div-rename-bf-dataset").children[0].style.display = "flex";
+            // document.getElementById("div-rename-bf-dataset").children[0].style.display =
+            //   "flex !important";
 
             // show the confirm button underneath the dataset select dropdown if one exists
             let btn = document.querySelector(".btn-confirm-ds-selection");
