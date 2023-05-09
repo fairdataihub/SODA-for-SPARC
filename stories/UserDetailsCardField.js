@@ -13,6 +13,7 @@ const FIELD_OPTIONS = {
 };
 
 const UserDetailsCardField = ({ fieldOption, tabName }) => {
+  console.log(tabName);
   // given a field name, create a field with the appropriate attributes, classnames, etc
   let field = ``;
   const fieldContainer = document.createElement("div");
@@ -26,7 +27,7 @@ const UserDetailsCardField = ({ fieldOption, tabName }) => {
       <div class="card-container ${tabName}">
         <div style="width: 100%; display: flex">
           <h5 class="card-left" style="padding-right: 5px">Current dataset:</h5>
-          <div class="change-current-account ds-dd" style="margin-left: 10px">
+          <div class="change-current-account ds-dd dataset" style="margin-left: 10px">
             <h5 class="card-right bf-dataset-span" style="width: fit-content">None</h5>
 
             <svg
