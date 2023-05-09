@@ -760,8 +760,10 @@ const resetFFMUI = (ev) => {
     if (ev.parentNode.parentNode.classList.contains("organize-dataset")) {
       resetOrganizationTab = false;
       if (ev.parentNode.parentNode.id === "bf-organization-curate-first-question-container") {
+        console.log("IN here for resetting");
         $("#current-bf-dataset").text("None");
         $("#para-continue-bf-dataset-getting-started").hide();
+        $("#button-confirm-bf-dataset-getting-started").css("display", "none");
       } else if (
         ev.parentNode.parentNode.id === "bf-organization-curate-second-question-container"
       ) {
