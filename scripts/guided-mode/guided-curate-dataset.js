@@ -258,24 +258,22 @@ const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
         selected_dataset: pennsieveDatasetID,
       },
     });
-    const changes_text = changesRes.data.text;
-    //sodaJSONObj["dataset-metadata"]["CHANGES"] = changes_text;
     console.log("CHANGES file exists, skipping regardless of publication status");
-    return true;
+    const changes_text = changesRes.data.text;
+    return { shouldShow: true, changesMetadata: changes_text };
   } catch (error) {
     const emessage = userErrorMessage(error);
     console.log(emessage);
-    console.log("No CHANGES file exists, checking publication status");
-    const datasetInfo = await api.getDatasetInformation(defaultBfAccount, pennsieveDatasetID);
-    console.log(datasetInfo);
 
-    if (datasetInfo?.["publication"]?.["status"] === "completed") {
+    const datasetInfo = await api.getDatasetInformation(defaultBfAccount, pennsieveDatasetID);
+    const isPublished = datasetInfo?.publication?.status === "completed";
+
+    if (isPublished) {
       console.log("Dataset is published, we need to show changes");
-      //sodaJSONObj["dataset-metadata"]["CHANGES"] = "";
-      return true;
+      return { shouldShow: true, changesMetadata: "" };
     } else {
       console.log("Dataset is not published, we do not need to show changes");
-      return false;
+      return { shouldShow: false };
     }
   }
 };
@@ -746,14 +744,16 @@ const savePageChanges = async (pageBeingLeftID) => {
         sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] = selectedPennsieveDatasetID;
         sodaJSONObj["digital-metadata"]["name"] = selectedPennsieveDataset;
 
-        // Unskip the CHANGES metadata so the user can add changes since previous publication
-        const changesMetadataPageShouldBeShown = checkIfChangesMetadataPageShouldBeShown(
+        const changesCheckRes = await checkIfChangesMetadataPageShouldBeShown(
           selectedPennsieveDatasetID
         );
-        changesMetadataPageShouldBeShown
-          ? guidedUnSkipPage("guided-create-changes-metadata-tab")
-          : guidedSkipPage("guided-create-changes-metadata-tab");
-
+        if (changesCheckRes.shouldShow === true) {
+          sodaJSONObj["dataset-metadata"]["CHANGES"] = changesCheckRes.changesMetadata;
+          guidedUnSkipPage("guided-create-changes-metadata-tab");
+        } else {
+          sodaJSONObj["dataset-metadata"]["CHANGES"] = "";
+          guidedSkipPage("guided-create-changes-metadata-tab");
+        }
         // Skip the page where they confirm their log in and workspace because we should already have it
         sodaJSONObj["digital-metadata"]["dataset-workspace"] = guidedGetCurrentUserWorkSpace();
         guidedSkipPage("guided-pennsieve-intro-tab");
@@ -6785,7 +6785,7 @@ const newEmptyFolderObj = () => {
   };
 };
 
-const patchPreviousGuidedModeVersions = () => {
+const patchPreviousGuidedModeVersions = async () => {
   //temp patch contributor affiliations if they are still a string (they were added in the previous version)
   const contributors = sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
   if (contributors) {
@@ -6844,6 +6844,17 @@ const patchPreviousGuidedModeVersions = () => {
   if (!sodaJSONObj["skipped-pages"].includes("guided-create-changes-metadata-tab")) {
     if (sodaJSONObj["starting-point"]["type"] === "new") {
       sodaJSONObj["skipped-pages"].push("guided-create-changes-metadata-tab");
+    }
+    if (sodaJSONObj["starting-point"]["type"] === "bf") {
+      const datasetsPennsieveID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+      const changesCheckRes = await checkIfChangesMetadataPageShouldBeShown(datasetsPennsieveID);
+      if (changesCheckRes.shouldShow === true) {
+        sodaJSONObj["dataset-metadata"]["CHANGES"] = changesCheckRes.changesMetadata;
+        guidedUnSkipPage("guided-create-changes-metadata-tab");
+      } else {
+        sodaJSONObj["dataset-metadata"]["CHANGES"] = "";
+        guidedSkipPage("guided-create-changes-metadata-tab");
+      }
     }
   }
 
@@ -6979,7 +6990,7 @@ const guidedResumeProgress = async (datasetNameToResume) => {
     samplesTableData = sodaJSONObj["samples-table-data"];
 
     //patches the sodajsonobj if it was created in a previous version of guided mode
-    patchPreviousGuidedModeVersions();
+    await patchPreviousGuidedModeVersions();
 
     // pageToReturnTo will be set to the page the user will return to
     let pageToReturnTo;
