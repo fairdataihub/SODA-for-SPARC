@@ -2156,7 +2156,7 @@ var subjectsDestinationPath = "";
 var samplesDestinationPath = "";
 
 $(document).ready(function () {
-  loadExistingProtocolInfo();
+  // loadExistingProtocolInfo();
   for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
     if (field.value === "" || field.value === undefined || field.value === "Select") {
       field.value = null;
@@ -2675,369 +2675,371 @@ function loadDataFrametoUISamples(type) {
 //TODO: Dorian -> Remove this function (not supported anymore)
 // Go through Protocols workflow and remove functions related to connecting/importing
 // From Protocols.io
-function preliminaryProtocolStep(type) {
-  var credentials = loadExistingProtocolInfo();
-  if (credentials[0]) {
-    // show email for protocol account
-    showProtocolCredentials(credentials[1], type);
-  } else {
-    protocolAccountQuestion(type, false);
-  }
-}
+// function preliminaryProtocolStep(type) {
+//   var credentials = loadExistingProtocolInfo();
+//   if (credentials[0]) {
+//     // show email for protocol account
+//     showProtocolCredentials(credentials[1], type);
+//   } else {
+//     protocolAccountQuestion(type, false);
+//   }
+// }
 
 //TODO: Dorian -> Remove this function (not supported anymore)
-function protocolAccountQuestion(type, changeAccountBoolean) {
-  if (changeAccountBoolean) {
-    var titleText = "Do you want to connect to a different protocol account?";
-  } else {
-    var titleText = "Do you have an account with protocol.io?";
-  }
-  Swal.fire({
-    title: titleText,
-    showCancelButton: true,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    confirmButtonText:
-      '<a target="_blank" href="https://www.protocols.io/developers" style="color:#fff;border-bottom:none">Yes, I do</a>',
-    cancelButtonText: "No, I don't",
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    reverseButtons: reverseSwalButtons,
-  }).then(async (result) => {
-    if (result.isConfirmed) {
-      setTimeout(function () {
-        connectProtocol(type);
-      }, 1500);
-    } else {
-      if (!changeAccountBoolean) {
-        if (type !== "DD") {
-          Swal.fire(
-            "Please create an account with protocol.io.",
-            "SODA suggests you create an account with protocols.io first. For help with creating and sharing a protocol with SPARC, please visit <a target='_blank' href='https://sparc.science/help/1slXZSS2XtTYQsdY6mEJi5'>this dedicated webpage</a>.",
-            "warning"
-          );
-        } else {
-          const { value: formValue } = await Swal.fire({
-            title: "Enter a protocol link:",
-            text: " For help with creating and sharing a protocol with SPARC, please visit <a target='_blank' href='https://sparc.science/help/1slXZSS2XtTYQsdY6mEJi5'>this dedicated webpage</a>.",
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            showCancelButton: true,
-            confirmButtonText: "Add",
-            cancelButtonText: "Cancel",
-            width: "38rem",
-            showCancelButton: true,
-            allowEscapeKey: false,
-            allowOutsideClick: false,
-            html:
-              '<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one \'Protocol URLs or DOIs\' link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL">' +
-              '<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description"></textarea>',
-            focusConfirm: false,
-            preConfirm: () => {
-              var link = $("#DD-protocol-link").val();
-              let protocolLink = "";
+// function protocolAccountQuestion(type, changeAccountBoolean) {
+//   if (changeAccountBoolean) {
+//     var titleText = "Do you want to connect to a different protocol account?";
+//   } else {
+//     var titleText = "Do you have an account with protocol.io?";
+//   }
+//   Swal.fire({
+//     title: titleText,
+//     showCancelButton: true,
+//     heightAuto: false,
+//     backdrop: "rgba(0,0,0, 0.4)",
+//     confirmButtonText:
+//       '<a target="_blank" href="https://www.protocols.io/developers" style="color:#fff;border-bottom:none">Yes, I do</a>',
+//     cancelButtonText: "No, I don't",
+//     allowEscapeKey: false,
+//     allowOutsideClick: false,
+//     reverseButtons: reverseSwalButtons,
+//   }).then(async (result) => {
+//     if (result.isConfirmed) {
+//       setTimeout(function () {
+//         connectProtocol(type);
+//       }, 1500);
+//     } else {
+//       if (!changeAccountBoolean) {
+//         if (type !== "DD") {
+//           Swal.fire(
+//             "Please create an account with protocol.io.",
+//             "SODA suggests you create an account with protocols.io first. For help with creating and sharing a protocol with SPARC, please visit <a target='_blank' href='https://sparc.science/help/1slXZSS2XtTYQsdY6mEJi5'>this dedicated webpage</a>.",
+//             "warning"
+//           );
+//         } else {
+//           const { value: formValue } = await Swal.fire({
+//             title: "Enter a protocol link:",
+//             text: " For help with creating and sharing a protocol with SPARC, please visit <a target='_blank' href='https://sparc.science/help/1slXZSS2XtTYQsdY6mEJi5'>this dedicated webpage</a>.",
+//             heightAuto: false,
+//             backdrop: "rgba(0,0,0, 0.4)",
+//             showCancelButton: true,
+//             confirmButtonText: "Add",
+//             cancelButtonText: "Cancel",
+//             width: "38rem",
+//             showCancelButton: true,
+//             allowEscapeKey: false,
+//             allowOutsideClick: false,
+//             html:
+//               '<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one \'Protocol URLs or DOIs\' link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL">' +
+//               '<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description"></textarea>',
+//             focusConfirm: false,
+//             preConfirm: () => {
+//               var link = $("#DD-protocol-link").val();
+//               let protocolLink = "";
 
-              if ($("#DD-protocol-description").val() === "") {
-                Swal.showValidationMessage(`Please enter a short description!`);
-              }
+//               if ($("#DD-protocol-description").val() === "") {
+//                 Swal.showValidationMessage(`Please enter a short description!`);
+//               }
 
-              var duplicate = checkLinkDuplicate(
-                link,
-                document.getElementById("protocol-link-table-dd")
-              );
-              if (duplicate) {
-                Swal.showValidationMessage(
-                  "Duplicate protocol. The protocol you entered is already added."
-                );
-              }
+//               var duplicate = checkLinkDuplicate(
+//                 link,
+//                 document.getElementById("protocol-link-table-dd")
+//               );
+//               if (duplicate) {
+//                 Swal.showValidationMessage(
+//                   "Duplicate protocol. The protocol you entered is already added."
+//                 );
+//               }
 
-              if (link === "") {
-                Swal.showValidationMessage(`Please enter a link!`);
-              } else {
-                if (doiRegex.declared({ exact: true }).test(link) === true) {
-                  protocolLink = "DOI";
-                } else {
-                  //check if link is valid
-                  if (validator.isURL(link) != true) {
-                    Swal.showValidationMessage(`Please enter a valid link`);
-                  } else {
-                    //link is valid url and check for 'doi' in link
-                    if (link.includes("doi")) {
-                      protocolLink = "DOI";
-                    } else {
-                      protocolLink = "URL";
-                    }
-                  }
-                }
-              }
-              return [
-                $("#DD-protocol-link").val(),
-                protocolLink,
-                "IsProtocolFor",
-                $("#DD-protocol-description").val(),
-              ];
-            },
-          });
-          if (formValue) {
-            addProtocolLinktoTableDD(formValue[0], formValue[1], formValue[2], formValue[3]);
-          }
-        }
-      }
-    }
-  });
-}
-
-//TODO: Dorian -> Remove this function (not supported anymore)
-async function connectProtocol(type) {
-  const { value: protocolCredentials } = await Swal.fire({
-    width: "fit-content",
-    title: "Once you're signed in, grab your <i>private access token</i> and enter it below: ",
-    html: '<div class="ui input" style="margin: 10px 0"><i style="margin-top: 12px; margin-right:10px; font-size:20px" class="lock icon"></i><input type="text" id="protocol-password" class="subjects-form-entry" placeholder="Private access token" style="padding-left:5px"></div>',
-    imageUrl:
-      "https://github.com/fairdataihub/SODA-for-SPARC/blob/main/docs/documentation/Prepare-metadata/subjects/protocol-info.png?raw=true",
-    imageWidth: 450,
-    imageHeight: 200,
-    imageAlt: "Custom image",
-    focusConfirm: false,
-    confirmButtonText: "Let's connect",
-    showCancelButton: true,
-    showLoaderOnConfirm: true,
-    heightAuto: false,
-    allowEscapeKey: false,
-    allowOutsideClick: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    reverseButtons: reverseSwalButtons,
-    preConfirm: () => {
-      var res = document.getElementById("protocol-password").value;
-      if (res) {
-        return res;
-      } else {
-        Swal.showValidationMessage("Please provide a access token to connect.");
-        return false;
-      }
-    },
-  });
-  if (protocolCredentials) {
-    sendHttpsRequestProtocol(protocolCredentials.trim(), "first-time", type);
-  }
-}
-
-const protocolHostname = "www.protocols.io";
-var protocolResearcherList = {};
+//               if (link === "") {
+//                 Swal.showValidationMessage(`Please enter a link!`);
+//               } else {
+//                 if (doiRegex.declared({ exact: true }).test(link) === true) {
+//                   protocolLink = "DOI";
+//                 } else {
+//                   //check if link is valid
+//                   if (validator.isURL(link) != true) {
+//                     Swal.showValidationMessage(`Please enter a valid link`);
+//                   } else {
+//                     //link is valid url and check for 'doi' in link
+//                     if (link.includes("doi")) {
+//                       protocolLink = "DOI";
+//                     } else {
+//                       protocolLink = "URL";
+//                     }
+//                   }
+//                 }
+//               }
+//               return [
+//                 $("#DD-protocol-link").val(),
+//                 protocolLink,
+//                 "IsProtocolFor",
+//                 $("#DD-protocol-description").val(),
+//               ];
+//             },
+//           });
+//           if (formValue) {
+//             addProtocolLinktoTableDD(formValue[0], formValue[1], formValue[2], formValue[3]);
+//           }
+//         }
+//       }
+//     }
+//   });
+// }
 
 //TODO: Dorian -> Remove this function (not supported anymore)
-function sendHttpsRequestProtocol(accessToken, accessType, filetype) {
-  var protocolList = {};
-  var protocolInfo = {
-    hostname: protocolHostname,
-    port: 443,
-    path: `/api/v3/session/profile`,
-    headers: { Authorization: `Bearer ${accessToken}` },
-  };
-  https.get(protocolInfo, (res) => {
-    if (res.statusCode === 200) {
-      res.setEncoding("utf8");
-      res.on("data", async function (body) {
-        var bodyRes = JSON.parse(body);
-        saveProtocolInfo(accessToken, bodyRes.user.email);
-        await grabResearcherProtocolList(
-          bodyRes.user.username,
-          bodyRes.user.email,
-          accessToken,
-          accessType,
-          filetype
-        );
-      });
-    } else {
-      if (accessType === "first-time") {
-        Swal.fire(
-          "Failed to connect with protocol.io",
-          "Please check your access token and try again.",
-          "error"
-        );
-      }
-    }
-  });
-}
+// async function connectProtocol(type) {
+//   const { value: protocolCredentials } = await Swal.fire({
+//     width: "fit-content",
+//     title: "Once you're signed in, grab your <i>private access token</i> and enter it below: ",
+//     html: '<div class="ui input" style="margin: 10px 0"><i style="margin-top: 12px; margin-right:10px; font-size:20px" class="lock icon"></i><input type="text" id="protocol-password" class="subjects-form-entry" placeholder="Private access token" style="padding-left:5px"></div>',
+//     imageUrl:
+//       "https://github.com/fairdataihub/SODA-for-SPARC/blob/main/docs/documentation/Prepare-metadata/subjects/protocol-info.png?raw=true",
+//     imageWidth: 450,
+//     imageHeight: 200,
+//     imageAlt: "Custom image",
+//     focusConfirm: false,
+//     confirmButtonText: "Let's connect",
+//     showCancelButton: true,
+//     showLoaderOnConfirm: true,
+//     heightAuto: false,
+//     allowEscapeKey: false,
+//     allowOutsideClick: false,
+//     backdrop: "rgba(0,0,0, 0.4)",
+//     reverseButtons: reverseSwalButtons,
+//     preConfirm: () => {
+//       var res = document.getElementById("protocol-password").value;
+//       if (res) {
+//         return res;
+//       } else {
+//         Swal.showValidationMessage("Please provide a access token to connect.");
+//         return false;
+//       }
+//     },
+//   });
+//   if (protocolCredentials) {
+//     sendHttpsRequestProtocol(protocolCredentials.trim(), "first-time", type);
+//   }
+// }
+
+// const protocolHostname = "www.protocols.io";
+// var protocolResearcherList = {};
 
 //TODO: Dorian -> Remove this function (not supported anymore)
-function grabResearcherProtocolList(username, email, token, type, filetype) {
-  if (type === "first-time") {
-    Swal.fire({
-      title: "Please wait...",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      allowEscapeKey: false,
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
-  }
-  var protocolInfoList = {
-    hostname: protocolHostname,
-    port: 443,
-    path: `/api/v3/protocols?filter="shared_with_user"`,
-    headers: { Authorization: `Bearer ${token}` },
-  };
-  https.get(protocolInfoList, (res) => {
-    if (res.statusCode === 200) {
-      let data = "";
-      res.setEncoding("utf8");
-      res.on("data", (d) => {
-        data += d;
-      });
-      res.on("end", () => {
-        var result = JSON.parse(data);
-        protocolResearcherList = {};
-        for (var item of result["items"]) {
-          protocolResearcherList["https://www.protocols.io/view/" + item.uri] = item.title;
-        }
-        if (Object.keys(protocolResearcherList).length > 0) {
-          if (type === "first-time") {
-            Swal.fire({
-              title: "Successfully connected! <br/>Loading your protocol information...",
-              timer: 2000,
-              timerProgressBar: false,
-              allowEscapeKey: false,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              showConfirmButton: false,
-              allowOutsideClick: false,
-              didOpen: () => {
-                Swal.showLoading();
-              },
-            }).then((result) => {
-              showProtocolCredentials(email, filetype);
-            });
-          }
-        } else {
-          if (type === "first-time") {
-            Swal.fire({
-              title: "Successfully connected",
-              text: "However, at this moment, you do not have any protocol information for SODA to extract.",
-              icon: "success",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-            });
-          }
-        }
-      });
-    }
-  });
-}
+// function sendHttpsRequestProtocol(accessToken, accessType, filetype) {
+//   var protocolList = {};
+//   var protocolInfo = {
+//     hostname: protocolHostname,
+//     port: 443,
+//     path: `/api/v3/session/profile`,
+//     headers: { Authorization: `Bearer ${accessToken}` },
+//   };
+//   https.get(protocolInfo, (res) => {
+//     if (res.statusCode === 200) {
+//       res.setEncoding("utf8");
+//       res.on("data", async function (body) {
+//         var bodyRes = JSON.parse(body);
+//         saveProtocolInfo(accessToken, bodyRes.user.email);
+//         await grabResearcherProtocolList(
+//           bodyRes.user.username,
+//           bodyRes.user.email,
+//           accessToken,
+//           accessType,
+//           filetype
+//         );
+//       });
+//     } else {
+//       if (accessType === "first-time") {
+//         Swal.fire(
+//           "Failed to connect with protocol.io",
+//           "Please check your access token and try again.",
+//           "error"
+//         );
+//       }
+//     }
+//   });
+// }
 
 //TODO: Dorian -> Remove this function (not supported anymore)
-async function showProtocolCredentials(email, filetype) {
-  if (Object.keys(protocolResearcherList).length === 0) {
-    var warningText = "You currently don't have any protocols.";
-  } else {
-    var warningText = "Please select a protocol.";
-  }
-  var htmlEle = `<div><h2>Protocol information: </h2><h3 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Email: <span style="font-weight:500; text-align:left">${email}</span><span style="width: 40%; text-align:right"><a onclick="protocolAccountQuestion('${filetype}', true)" style="font-weight:500;text-decoration: underline">Change</a></span></h3><h3 style="text-align:left">Current protocols: </h3></div>`;
-  const { value: protocol } = await Swal.fire({
-    html: htmlEle,
-    input: "select",
-    inputOptions: protocolResearcherList,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    inputPlaceholder: "Select a protocol",
-    showCancelButton: true,
-    confirmButtonText: "Add",
-    reverseButtons: reverseSwalButtons,
-    inputValidator: (value) => {
-      if (value) {
-        if (filetype === "DD") {
-          if (checkDuplicateLink(value, "protocol-link-table-dd")) {
-            return "The link provided is already added to the table. Please provide a different protocol.";
-          }
-        }
-      } else {
-        return warningText;
-      }
-    },
-  });
-  if (protocol) {
-    if (filetype === "subjects") {
-      $("#bootbox-subject-protocol-title").val(protocolResearcherList[protocol]);
-      $("#bootbox-subject-protocol-location").val(protocol);
-    } else if (filetype === "samples") {
-      $("#bootbox-sample-protocol-title").val(protocolResearcherList[protocol]);
-      $("#bootbox-sample-protocol-location").val(protocol);
-    } else {
-      const { value: formValue } = await Swal.fire({
-        html:
-          '<label>Protocol Type: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one \'Protocol URLs or DOIs\' link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-select" class="swal2-input"><option value="Select">Select a type</option><option value="URL">URL</option><option value="DOI">DOI</option></select>' +
-          '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one \'Protocol URLs or DOIs\' link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsProtocolFor">IsProtocolFor</option><option value="HasProtocol">HasProtocol</option><option value="IsSoftwareFor">IsSoftwareFor</option><option value="HasSoftware">HasSoftware</option></select>' +
-          '<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Optionally provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description"></textarea>',
-        title: "Fill in the below fields to add the protocol: ",
-        focusConfirm: false,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        cancelButtonText: "Cancel",
-        customClass: "swal-content-additional-link",
-        showCancelButton: true,
-        reverseButtons: reverseSwalButtons,
-        heightAuto: false,
-        width: "38rem",
-        backdrop: "rgba(0,0,0, 0.4)",
-        didOpen: () => {
-          $(".swal-popover").popover();
-        },
-        preConfirm: () => {
-          if ($("#DD-protocol-link-select").val() === "Select") {
-            Swal.showValidationMessage(`Please choose a link type!`);
-          }
-          if ($("#DD-protocol-link-relation").val() === "Select") {
-            Swal.showValidationMessage(`Please choose a link relation!`);
-          }
-          if ($("#DD-protocol-description").val() === "") {
-            Swal.showValidationMessage(`Please enter a short description!`);
-          }
-          var duplicate = checkLinkDuplicate(
-            protocol,
-            document.getElementById("protocol-link-table-dd")
-          );
-          if (duplicate) {
-            Swal.showValidationMessage(
-              "Duplicate protocol. The protocol you entered is already added."
-            );
-          }
-          return [
-            protocol,
-            $("#DD-protocol-link-select").val(),
-            $("#DD-protocol-link-relation").val(),
-            $("#DD-protocol-description").val(),
-          ];
-        },
-      });
-      if (formValue) {
-        addProtocolLinktoTableDD(formValue[0], formValue[1], formValue[2], formValue[3]);
-      }
-    }
-  }
-}
+// function grabResearcherProtocolList(username, email, token, type, filetype) {
+//   if (type === "first-time") {
+//     Swal.fire({
+//       title: "Please wait...",
+//       heightAuto: false,
+//       backdrop: "rgba(0,0,0, 0.4)",
+//       allowEscapeKey: false,
+//       allowOutsideClick: false,
+//       didOpen: () => {
+//         Swal.showLoading();
+//       },
+//     });
+//   }
+//   var protocolInfoList = {
+//     hostname: protocolHostname,
+//     port: 443,
+//     path: `/api/v3/protocols?filter="shared_with_user"`,
+//     headers: { Authorization: `Bearer ${token}` },
+//   };
+//   https.get(protocolInfoList, (res) => {
+//     if (res.statusCode === 200) {
+//       let data = "";
+//       res.setEncoding("utf8");
+//       res.on("data", (d) => {
+//         data += d;
+//       });
+//       res.on("end", () => {
+//         var result = JSON.parse(data);
+//         protocolResearcherList = {};
+//         for (var item of result["items"]) {
+//           protocolResearcherList["https://www.protocols.io/view/" + item.uri] = item.title;
+//         }
+//         if (Object.keys(protocolResearcherList).length > 0) {
+//           if (type === "first-time") {
+//             Swal.fire({
+//               title: "Successfully connected! <br/>Loading your protocol information...",
+//               timer: 2000,
+//               timerProgressBar: false,
+//               allowEscapeKey: false,
+//               heightAuto: false,
+//               backdrop: "rgba(0,0,0, 0.4)",
+//               showConfirmButton: false,
+//               allowOutsideClick: false,
+//               didOpen: () => {
+//                 Swal.showLoading();
+//               },
+//             }).then((result) => {
+//               showProtocolCredentials(email, filetype);
+//             });
+//           }
+//         } else {
+//           if (type === "first-time") {
+//             Swal.fire({
+//               title: "Successfully connected",
+//               text: "However, at this moment, you do not have any protocol information for SODA to extract.",
+//               icon: "success",
+//               heightAuto: false,
+//               backdrop: "rgba(0,0,0, 0.4)",
+//             });
+//           }
+//         }
+//       });
+//     }
+//   });
+// }
 
-function saveProtocolInfo(token, email) {
-  var content = parseJson(protocolConfigPath);
-  content["access-token"] = token;
-  content["email"] = email;
-  fs.writeFileSync(protocolConfigPath, JSON.stringify(content));
-}
+//TODO: Dorian -> Remove this function (not supported anymore)
+// async function showProtocolCredentials(email, filetype) {
+//   if (Object.keys(protocolResearcherList).length === 0) {
+//     var warningText = "You currently don't have any protocols.";
+//   } else {
+//     var warningText = "Please select a protocol.";
+//   }
+//   var htmlEle = `<div><h2>Protocol information: </h2><h3 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Email: <span style="font-weight:500; text-align:left">${email}</span><span style="width: 40%; text-align:right"><a onclick="protocolAccountQuestion('${filetype}', true)" style="font-weight:500;text-decoration: underline">Change</a></span></h3><h3 style="text-align:left">Current protocols: </h3></div>`;
+//   const { value: protocol } = await Swal.fire({
+//     html: htmlEle,
+//     input: "select",
+//     inputOptions: protocolResearcherList,
+//     heightAuto: false,
+//     backdrop: "rgba(0,0,0, 0.4)",
+//     inputPlaceholder: "Select a protocol",
+//     showCancelButton: true,
+//     confirmButtonText: "Add",
+//     reverseButtons: reverseSwalButtons,
+//     inputValidator: (value) => {
+//       if (value) {
+//         if (filetype === "DD") {
+//           if (checkDuplicateLink(value, "protocol-link-table-dd")) {
+//             return "The link provided is already added to the table. Please provide a different protocol.";
+//           }
+//         }
+//       } else {
+//         return warningText;
+//       }
+//     },
+//   });
+//   if (protocol) {
+//     if (filetype === "subjects") {
+//       $("#bootbox-subject-protocol-title").val(protocolResearcherList[protocol]);
+//       $("#bootbox-subject-protocol-location").val(protocol);
+//     } else if (filetype === "samples") {
+//       $("#bootbox-sample-protocol-title").val(protocolResearcherList[protocol]);
+//       $("#bootbox-sample-protocol-location").val(protocol);
+//     } else {
+//       const { value: formValue } = await Swal.fire({
+//         html:
+//           '<label>Protocol Type: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one \'Protocol URLs or DOIs\' link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-select" class="swal2-input"><option value="Select">Select a type</option><option value="URL">URL</option><option value="DOI">DOI</option></select>' +
+//           '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one \'Protocol URLs or DOIs\' link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsProtocolFor">IsProtocolFor</option><option value="HasProtocol">HasProtocol</option><option value="IsSoftwareFor">IsSoftwareFor</option><option value="HasSoftware">HasSoftware</option></select>' +
+//           '<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Optionally provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description"></textarea>',
+//         title: "Fill in the below fields to add the protocol: ",
+//         focusConfirm: false,
+//         heightAuto: false,
+//         backdrop: "rgba(0,0,0, 0.4)",
+//         cancelButtonText: "Cancel",
+//         customClass: "swal-content-additional-link",
+//         showCancelButton: true,
+//         reverseButtons: reverseSwalButtons,
+//         heightAuto: false,
+//         width: "38rem",
+//         backdrop: "rgba(0,0,0, 0.4)",
+//         didOpen: () => {
+//           $(".swal-popover").popover();
+//         },
+//         preConfirm: () => {
+//           if ($("#DD-protocol-link-select").val() === "Select") {
+//             Swal.showValidationMessage(`Please choose a link type!`);
+//           }
+//           if ($("#DD-protocol-link-relation").val() === "Select") {
+//             Swal.showValidationMessage(`Please choose a link relation!`);
+//           }
+//           if ($("#DD-protocol-description").val() === "") {
+//             Swal.showValidationMessage(`Please enter a short description!`);
+//           }
+//           var duplicate = checkLinkDuplicate(
+//             protocol,
+//             document.getElementById("protocol-link-table-dd")
+//           );
+//           if (duplicate) {
+//             Swal.showValidationMessage(
+//               "Duplicate protocol. The protocol you entered is already added."
+//             );
+//           }
+//           return [
+//             protocol,
+//             $("#DD-protocol-link-select").val(),
+//             $("#DD-protocol-link-relation").val(),
+//             $("#DD-protocol-description").val(),
+//           ];
+//         },
+//       });
+//       if (formValue) {
+//         addProtocolLinktoTableDD(formValue[0], formValue[1], formValue[2], formValue[3]);
+//       }
+//     }
+//   }
+// }
 
-function loadExistingProtocolInfo() {
-  var protocolExists = false;
-  //// config and load live data from Protocol.io
-  var protocolTokenContent = parseJson(protocolConfigPath);
-  if (JSON.stringify(protocolTokenContent) !== "{}") {
-    var protocolToken = protocolTokenContent["access-token"];
-    if (protocolToken.trim() !== "") {
-      sendHttpsRequestProtocol(protocolToken.trim(), "upon-loading");
-      protocolExists = true;
-    }
-  }
-  return [protocolExists, protocolTokenContent["email"]];
-}
+// TODO: Dorian -> remove this function
+// function saveProtocolInfo(token, email) {
+//   var content = parseJson(protocolConfigPath);
+//   content["access-token"] = token;
+//   content["email"] = email;
+//   fs.writeFileSync(protocolConfigPath, JSON.stringify(content));
+// }
+
+// TODO: Dorian -> remove function Not needed anymore
+// function loadExistingProtocolInfo() {
+//   var protocolExists = false;
+//   //// config and load live data from Protocol.io
+//   var protocolTokenContent = parseJson(protocolConfigPath);
+//   if (JSON.stringify(protocolTokenContent) !== "{}") {
+//     var protocolToken = protocolTokenContent["access-token"];
+//     if (protocolToken.trim() !== "") {
+//       sendHttpsRequestProtocol(protocolToken.trim(), "upon-loading");
+//       protocolExists = true;
+//     }
+//   }
+//   return [protocolExists, protocolTokenContent["email"]];
+// }
 
 async function addAdditionalLink() {
   const { value: values } = await Swal.fire({

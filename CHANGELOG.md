@@ -22,10 +22,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - SODA for SPARC's home page has been updated to be minimal and easier to navigate. Free form mode and Guided mode have been merged to one location: Curate and Share.
 - GM: Ability to reserve a DOI after uploading.
-- GM: CHANGE FOR GM
-- FFM: CHANGE FOR FFM
-- FFM: CHANGE FOR FFM
-- FFM: CHANGE FOR FFM
 
 ## v.10.0.5 - 2023-03-20
 
