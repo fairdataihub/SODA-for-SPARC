@@ -1,7 +1,9 @@
 import os.path 
 import pandas as pd
 import requests
-from utils import create_request_headers, load_manifest_to_dataframe
+from utils import create_request_headers, load_manifest_to_dataframe, get_dataset_id
+from authentication import get_access_token
+
 
 #from utils import create_request_headers
 
@@ -13,9 +15,9 @@ path = os.path.join(os.path.expanduser("~"), "SODA", "skeleton")
 
 
 # obtain Pennsieve S3 URL for an existing metadata file
-def returnFileURL(ps, item_id):
+def returnFileURL(token, item_id):
 
-    r = requests.get(f"{PENNSIEVE_URL}/packages/{item_id}/view", headers=create_request_headers(ps))
+    r = requests.get(f"{PENNSIEVE_URL}/packages/{item_id}/view", headers=create_request_headers(token))
     r.raise_for_status()
 
     file_details = r.json()
@@ -23,7 +25,7 @@ def returnFileURL(ps, item_id):
 
     r = requests.get(
         f"{PENNSIEVE_URL}/packages/{item_id}/files/{file_id}",
-        headers=create_request_headers(ps),
+        headers=create_request_headers(token),
     )
     r.raise_for_status()
 
@@ -82,18 +84,20 @@ def import_metadata(url, filename):
     
 
 # import existing metadata files except Readme and Changes from Pennsieve
-def import_bf_metadata_files_skeleton(bfdataset, ps, metadata_files):
+def import_bf_metadata_files_skeleton(bfdataset, metadata_files):
 
     if not os.path.exists(path):
         os.makedirs(path)
+
+    token = get_access_token()
         
     try: 
-        selected_dataset_id = ps.get_datasets()[bfdataset]
+        selected_dataset_id = get_dataset_id(token, bfdataset)
     except Exception as e:
         raise Exception("Please select a valid Pennsieve dataset.") from e
 
 
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(ps))
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(token))
     r.raise_for_status()
 
     dataset = r.json()
@@ -103,11 +107,11 @@ def import_bf_metadata_files_skeleton(bfdataset, ps, metadata_files):
                 item_id = child["content"]["id"]
                 if child["content"]["name"] in ["README.txt", "CHANGES.txt"]:
                     # make a request to the zipit service directly
-                    url = returnFileURL(ps, item_id)
+                    url = returnFileURL(token, item_id)
                     r = requests.get(url)
                     metadata_files[child["content"]["name"]] = r.text
                 else:
-                    dataframe = load_manifest_to_dataframe(item_id, "xlsx", ps)
+                    dataframe = load_manifest_to_dataframe(item_id, "xlsx", token)
                     metadata_json = dataframe.to_json()
                     metadata_files[child["content"]["name"]] = metadata_json
 

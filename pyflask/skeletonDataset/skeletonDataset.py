@@ -126,9 +126,8 @@ def get_metadata_files_json(soda_json_structure):
         for metadata_file_name, props in soda_json_structure["metadata-files"].items():
             if props["type"] == "bf": 
                 selected_dataset = soda_json_structure["bf-dataset-selected"]["dataset-name"]
-                ps = Pennsieve()
                 # TODO: Update the import xlsx funcs to use the new func that avoids SSL errors
-                import_bf_metadata_files_skeleton(selected_dataset, ps, metadata_files)
+                import_bf_metadata_files_skeleton(selected_dataset, metadata_files)
             else:
                 # get the file location from the user's computer
                 file_location = props["path"]
