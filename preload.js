@@ -707,6 +707,7 @@ const resetFFMUI = (ev) => {
 
   $("#add_edit_permissions_choice_div").removeClass("show");
   $("#add_edit_permissions_choice_tab").removeClass("prev");
+  $("#para-add-edit-dataset-permission-current").text("None");
 
   $("#div_add_edit_description").removeClass("show");
   $("#add_edit_description_tab").removeClass("prev");
@@ -760,8 +761,10 @@ const resetFFMUI = (ev) => {
     if (ev.parentNode.parentNode.classList.contains("organize-dataset")) {
       resetOrganizationTab = false;
       if (ev.parentNode.parentNode.id === "bf-organization-curate-first-question-container") {
+        console.log("IN here for resetting");
         $("#current-bf-dataset").text("None");
         $("#para-continue-bf-dataset-getting-started").hide();
+        $("#button-confirm-bf-dataset-getting-started").css("display", "none");
       } else if (
         ev.parentNode.parentNode.id === "bf-organization-curate-second-question-container"
       ) {
@@ -803,6 +806,9 @@ const resetFFMUI = (ev) => {
   // reset the prepare datasets sections
   // do not wipe curation progress when resetting in GM or from within Organize Datasets
   if (resetOrganizationTab) {
+    // if we are going to reset the organization and are not within the organize flow, set the first dataset field value to None -- the second dataset field gets reset within resetCuration
+    $("#current-bf-dataset").text("None");
+    $("#button-confirm-bf-dataset-getting-started").css("display", "none");
     resetCuration();
   }
 
@@ -1588,6 +1594,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       clientError(error);
       $(".ui.active.green.inline.loader.small").css("display", "none");
       $(".svg-change-current-account.dataset").css("display", "block");
+      $("#div-permission-list-2").css("display", "block");
     }
 
     // if no account as them to connect one
@@ -1617,6 +1624,8 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       } else {
         $(".ui.active.green.inline.loader.small").css("display", "none");
         $(".svg-change-current-account.dataset").css("display", "block");
+        $("#div-permission-list-2").css("display", "block");
+
         await Swal.fire({
           icon: "warning",
           text: "You cannot select your workspace until you connect your account with Pennsieve.",
@@ -1672,7 +1681,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     //datasets do exist so display popup with dataset options
     //else datasets have been created
     if (organizationList.length > 0) {
-      await Swal.fire({
+      const { value: result } = await Swal.fire({
         backdrop: "rgba(0,0,0, 0.4)",
         cancelButtonText: "Cancel",
         confirmButtonText: "Confirm",
@@ -1702,8 +1711,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         },
         didOpen: () => {
           $("#div-permission-list-2").css("display", "block");
-          // $("#bf-dataset-select-div").hide();
-          // $("#bf-dataset-select-header").hide();
           $(".ui.active.green.inline.loader.small").css("display", "none");
           datasetPermissionDiv.style.display = "block";
           $("#curatebforganizationlist").attr("disabled", false);
@@ -1757,102 +1764,128 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           $("#license-assigned").css("display", "none");
           return bfOrganization;
         },
-      }).then(async (result) => {
-        if (result.isConfirmed) {
-          if (dropdownEventID === "dd-select-pennsieve-organization") {
-            $("#ds-name").val(bfOrganization);
-            $("#ds-description").val = $("#bf-dataset-subtitle").val;
-            $("body").removeClass("waiting");
-            $(".svg-change-current-account.dataset").css("display", "block");
-            dropdownEventID = "";
-            return;
+      });
+
+      if (!result) {
+        console.log("Cancelled the selection");
+        $(".svg-change-current-account.organization").css("display", "block");
+        $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
+        $("#license-lottie-div").css("display", "block");
+        $("#license-assigned").css("display", "block");
+        currentDatasetLicense.innerText = currentDatasetLicense.innerText;
+        return;
+      }
+
+      if (dropdownEventID === "dd-select-pennsieve-organization") {
+        $("#ds-name").val(bfOrganization);
+        $("#ds-description").val = $("#bf-dataset-subtitle").val;
+        $("body").removeClass("waiting");
+        $(".svg-change-current-account.dataset").css("display", "block");
+        dropdownEventID = "";
+        return;
+      }
+
+      refreshOrganizationList();
+      $("#dataset-loaded-message").hide();
+
+      showHideDropdownButtons("organization", "show");
+      document.getElementById("div-rename-bf-dataset").children[0].style.display = "flex";
+
+      // rejoin test organiztion
+      const { value: res } = await Swal.fire({
+        allowOutsideClick: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        cancelButtonText: "Cancel",
+        confirmButtonText: "Switch Organization",
+        showCloseButton: false,
+        focusConfirm: false,
+        heightAuto: false,
+        reverseButtons: reverseSwalButtons,
+        showCancelButton: true,
+        title: `<h3 style="text-align:center">To switch your organization please provide your email and password</h3><p class="tip-content" style="margin-top: .5rem">Your email and password will not be saved and not seen by anyone.</p>`,
+        html: `<input type="text" id="ps_login" class="swal2-input" placeholder="Email Address for Pennsieve">
+          <input type="password" id="ps_password" class="swal2-input" placeholder="Password">`,
+        showClass: {
+          popup: "animate__animated animate__fadeInDown animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__fadeOutUp animate__faster",
+        },
+        didOpen: () => {
+          $(".swal-popover").popover();
+          let div_footer = document.getElementsByClassName("swal2-footer")[0];
+          document.getElementsByClassName("swal2-popup")[0].style.width = "43rem";
+          div_footer.style.flexDirection = "column";
+          div_footer.style.alignItems = "center";
+        },
+        preConfirm: async () => {
+          const login = Swal.getPopup().querySelector("#ps_login").value;
+          const password = Swal.getPopup().querySelector("#ps_password").value;
+
+          if (!login) {
+            Swal.showValidationMessage("Please enter your email!");
+            return undefined;
           }
+
+          if (!password) {
+            Swal.showValidationMessage("Please enter your password!");
+            return undefined;
+          }
+
+          try {
+            await api.setPreferredOrganization(login, password, bfOrganization, defaultBfAccount);
+          } catch (err) {
+            clientError(err);
+            await Swal.fire({
+              backdrop: "rgba(0,0,0, 0.4)",
+              heightAuto: false,
+              icon: "error",
+              title: "Could Not Switch Organizations",
+              text: "Please try again shortly.",
+            });
+            // reset the UI to pre-org switch state
+            $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
+            $(".svg-change-current-account.organization").css("display", "block");
+            return undefined;
+          }
+
+          // set the new organization information in the appropriate fields
+          console.log("Falling through to set the new organization information correctly?");
           $("#current-bf-organization").text(bfOrganization);
           $("#current-bf-organization-generate").text(bfOrganization);
           $(".bf-organization-span").html(bfOrganization);
+          // set the permissions content to an empty string
+
           confirm_click_function();
 
-          refreshOrganizationList();
-          $("#dataset-loaded-message").hide();
-
-          showHideDropdownButtons("organization", "show");
-          document.getElementById("div-rename-bf-dataset").children[0].style.display = "flex";
-
-          // rejoin test organiztion
-          await Swal.fire({
-            allowOutsideClick: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            cancelButtonText: "Cancel",
-            confirmButtonText: "Switch Organization",
-            showCloseButton: false,
-            focusConfirm: false,
-            heightAuto: false,
-            reverseButtons: reverseSwalButtons,
-            showCancelButton: true,
-            title: `<h3 style="text-align:center">To switch your organization please provide your email and password</h3><p class="tip-content" style="margin-top: .5rem">Your email and password will not be saved and not seen by anyone.</p>`,
-            html: `<input type="text" id="ps_login" class="swal2-input" placeholder="Email Address for Pennsieve">
-              <input type="password" id="ps_password" class="swal2-input" placeholder="Password">`,
-            showClass: {
-              popup: "animate__animated animate__fadeInDown animate__faster",
-            },
-            hideClass: {
-              popup: "animate__animated animate__fadeOutUp animate__faster",
-            },
-            didOpen: () => {
-              $(".swal-popover").popover();
-              let div_footer = document.getElementsByClassName("swal2-footer")[0];
-              document.getElementsByClassName("swal2-popup")[0].style.width = "43rem";
-              div_footer.style.flexDirection = "column";
-              div_footer.style.alignItems = "center";
-            },
-            preConfirm: async () => {
-              const login = Swal.getPopup().querySelector("#ps_login").value;
-              const password = Swal.getPopup().querySelector("#ps_password").value;
-
-              if (!login) {
-                Swal.showValidationMessage("Please enter your email!");
-                return undefined;
-              }
-
-              if (!password) {
-                Swal.showValidationMessage("Please enter your password!");
-                return undefined;
-              }
-
-              try {
-                await api.setPreferredOrganization(
-                  login,
-                  password,
-                  bfOrganization,
-                  defaultBfAccount
-                );
-              } catch (err) {
-                clientError(err);
-              }
-            },
-          });
-
-          // reset the selected dataset to None
-          $(".bf-dataset-span").html("None");
-
-          // If the button that triggered the organization has the class
-          // guided-change-workspace (from guided mode), handle changes based on the ev id
-          // otherwise, reset the FFM UI based on the ev class
-          ev.classList.contains("guided-change-workspace")
-            ? handleGuidedModeOrgSwitch(ev)
-            : resetFFMUI(ev);
-
-          // reset the dataset list
-          datasetList = [];
-          defaultBfDataset = null;
-          clearDatasetDropdowns();
-
-          // checkPrevDivForConfirmButton("dataset");
-        } else if (result.isDismissed) {
-          currentDatasetLicense.innerText = currentDatasetLicense.innerText;
-          return;
-        }
+          return true;
+        },
       });
+
+      if (!res) {
+        $(".svg-change-current-account.organization").css("display", "block");
+        $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
+        $("#license-lottie-div").css("display", "block");
+        $("#license-assigned").css("display", "block");
+        return;
+      }
+
+      // reset the selected dataset to None
+      $(".bf-dataset-span").html("None");
+
+      // If the button that triggered the organization has the class
+      // guided-change-workspace (from guided mode), handle changes based on the ev id
+      // otherwise, reset the FFM UI based on the ev class
+      ev.classList.contains("guided-change-workspace")
+        ? handleGuidedModeOrgSwitch(ev)
+        : resetFFMUI(ev);
+
+      // reset the dataset list
+      datasetList = [];
+      defaultBfDataset = null;
+      clearDatasetDropdowns();
+
+      // checkPrevDivForConfirmButton("dataset");
     }
 
     // TODO: MIght need to hide if clicked twice / do similar logic as above

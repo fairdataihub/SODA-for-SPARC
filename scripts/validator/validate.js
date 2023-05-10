@@ -676,9 +676,6 @@ const transitionToValidateQuestionTwo = async () => {
     // show local section
     localSection.style = "display: flex;";
 
-    // hide the confirm button
-    hideConfirmButton("local");
-
     // confirm that the input holding the local dataset path's placeholder is reset
     let input = document.querySelector("#validate-local-dataset-path");
     input.setAttribute("placeholder", "Browse here");
@@ -689,9 +686,6 @@ const transitionToValidateQuestionTwo = async () => {
 
     // transition for pennsieve dataset
     pennsieveSection.style = "display: flex;";
-
-    // show the pennsieve track's confirm button
-    document.querySelector("#confirm-dataset-selection--validator").style.visibility = "visible";
   }
 
   return true;
@@ -702,12 +696,6 @@ const transitionToValidateQuestionThree = async () => {
   let userWantsToReset = await userWantsToResetValidation();
 
   if (userWantsToReset === false) return userWantsToReset;
-
-  // hide the confirm buttons
-  let confirmDatasetBtn = document.querySelector("#validator-confirm-local-dataset-btn");
-
-  // set the field display property to none to remove the margins
-  confirmDatasetBtn.parentElement.style.display = "none";
 
   return true;
 };
@@ -731,6 +719,8 @@ document.querySelector("#validate_dataset-1-local").addEventListener("click", as
   // reset validation table
   let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
   clearValidationResults(validationErrorsTable);
+
+  document.querySelector("#run_validator_btn").style.display = "none";
 
   // transition to the next question - uses transitionToValidateQuestionTwo
   transitionFreeFormMode(
@@ -767,6 +757,8 @@ document
     // reset validation table
     let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
     clearValidationResults(validationErrorsTable);
+
+    document.querySelector("#run_validator_btn").style.display = "none";
 
     // move to next question
     transitionFreeFormMode(
@@ -840,14 +832,8 @@ document.querySelector("#validate-local-dataset-path").addEventListener("click",
 
     hideQuestionThreeLocal();
 
-    showConfirmButton();
-  });
-});
+    document.querySelector("#run_validator_btn").style.display = "flex";
 
-document
-  .querySelector("#validator-confirm-local-dataset-btn")
-  .addEventListener("click", async function () {
-    // transition to question 4
     transitionFreeFormMode(
       this,
       "validate_dataset-question-2",
@@ -857,7 +843,12 @@ document
     );
 
     showQuestionThreeLocal();
+
+    document.querySelector("#div-confirm-validate_dataset").scrollIntoView();
+
+    // showConfirmButton();
   });
+});
 
 // start dataset validation
 document.querySelector("#run_validator_btn").addEventListener("click", async function (evt) {
@@ -896,26 +887,18 @@ document.querySelector("#run_validator_btn").addEventListener("click", async fun
   }
 });
 
-document
-  .querySelector("#confirm-dataset-selection--validator")
-  .addEventListener("click", function () {
-    hideConfirmButton("pennsieve");
-
+// observer for the selected dataset label in the dataset selection card in question 2
+const questionTwoDatasetSelectionObserver = new MutationObserver(() => {
+  if ($("#bf_dataset_load_validator").text().trim() !== "None") {
     // transition to the next question
     transitionFreeFormMode(
-      this,
+      document.querySelector("#confirm-dataset-selection--validator"),
       "validate_dataset-question-2",
       "validate_dataset-tab",
       "",
       "individual-question validate_dataset"
     );
-  });
-
-// observer for the selected dataset label in the dataset selection card in question 2
-const questionTwoDatasetSelectionObserver = new MutationObserver(() => {
-  if ($("#bf_dataset_load_validator").text().trim() !== "None") {
-    $("#div-check-bf-import-validator").css("display", "flex");
-    $($("#div-check-bf-import-validator").children()[0]).show();
+    document.querySelector("#run_validator_btn").style.display = "flex";
   } else {
     $("#div-check-bf-import-validator").css("display", "none");
   }
@@ -1020,25 +1003,6 @@ const getValidationResultsCount = () => {
 
   // check if there are any validation results
   return validationErrorsTable.childElementCount;
-};
-
-// TODO: Make it differentiate between local and pennsieve confirm buttons
-const showConfirmButton = () => {
-  // show the confirm button
-  let confirmDatasetBtn = document.querySelector("#validator-confirm-local-dataset-btn");
-  confirmDatasetBtn.parentElement.style.display = "flex";
-};
-
-// TODO: Make it differentiate between local and pennsieve confirm buttons
-const hideConfirmButton = (mode) => {
-  if (mode == "pennsieve") {
-    let confirmDatasetBtn = document.querySelector("#confirm-dataset-selection--validator");
-    confirmDatasetBtn.parentElement.style.display = "none";
-    return;
-  }
-  // hide the confirm button
-  let confirmDatasetBtn = document.querySelector("#validator-confirm-local-dataset-btn");
-  confirmDatasetBtn.parentElement.style.display = "none";
 };
 
 const showQuestionThreeLocal = () => {
