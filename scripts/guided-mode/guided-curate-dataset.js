@@ -17,7 +17,8 @@ const guidedGetCurrentUserWorkSpace = () => {
   const workSpaceFromUI = document.getElementById(
     "guided-pennsive-selected-organization"
   ).innerHTML;
-  if (workSpaceFromUI === "Click here to select workspace") {
+  console.log(workSpaceFromUI);
+  if (workSpaceFromUI.includes("Click here to select workspace")) {
     return null;
   }
   return workSpaceFromUI;
@@ -2927,6 +2928,14 @@ const guidedRenderProgressCards = async () => {
   progressFileData.sort((a, b) => {
     return new Date(b["last-modified"]) - new Date(a["last-modified"]);
   });
+
+  if (!guidedGetCurrentUserWorkSpace()) {
+    //wait 3 seconds for the workspace to potentially load
+    //note this wait is not ideal, but it can be removed. If the workspace is not loaded before
+    //the progress cards are rendered, the user will be prompted to switch workspaces
+    //for all progress cards that are not in the current workspace
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+  }
 
   const progressCardsContainer = document.getElementById("guided-section-resume-progress-cards");
   // If there are progress cards to display, display them
@@ -5843,7 +5852,30 @@ const openPage = async (targetPageID) => {
         ? samplesProtocolContainer.classList.remove("hidden")
         : samplesProtocolContainer.classList.add("hidden");
     }
+
     if (targetPageID === "guided-add-code-metadata-tab") {
+      if (pageNeedsUpdateFromPennsieve("guided-add-code-metadata-tab")) {
+        // Show the loading page while the page's data is being fetched from Pennsieve
+        setPageLoadingState(true);
+        try {
+          let metadata_import = await client.get(`/prepare_metadata/import_metadata_file`, {
+            params: {
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+              file_type: "code_description.xlsx",
+              file_path: guidedMetadataFilePath,
+            },
+          });
+          console.log(metadata_import);
+        } catch (error) {
+          clientError(error);
+          const emessage = error.response.data.message;
+          await guidedShowOptionalRetrySwal(emessage, "guided-add-code-metadata-tab");
+          // If the user chooses not to retry re-fetching the page data, mark the page as fetched
+          // so the the fetch does not occur again
+          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-add-code-metadata-tab");
+        }
+      }
       const codeDescriptionPath =
         sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"];
 

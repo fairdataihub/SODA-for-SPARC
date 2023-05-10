@@ -1454,11 +1454,17 @@ var affiliationConfigPath = path.join(metadataPath, affiliationFileName);
 var milestonePath = path.join(metadataPath, milestoneFileName);
 var progressFilePath = path.join(homeDirectory, "SODA", "Progress");
 var guidedProgressFilePath = path.join(homeDirectory, "SODA", "Guided-Progress");
+const guidedMetadataFilePath = path.join(homeDirectory, "SODA", "guided_metadata_files");
 const guidedManifestFilePath = path.join(homeDirectory, "SODA", "guided_manifest_files");
 var protocolConfigPath = path.join(metadataPath, protocolConfigFileName);
 var allCollectionTags = {};
 var currentTags = {};
 var currentCollectionTags = [];
+
+// Create the guidedMetadataFilePath if it does not exist
+if (!fs.existsSync(guidedMetadataFilePath)) {
+  fs.mkdirSync(guidedMetadataFilePath);
+}
 
 if (process.platform === "linux") {
   //check if data exists inside of the Soda folder, and if it does, move it into the capitalized SODA folder

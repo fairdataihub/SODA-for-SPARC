@@ -400,6 +400,20 @@ ipcMain.handle("open-file-dialog-import-banner-image", async (event) => {
   return files.filePaths;
 });
 
+ipcMain.handle("open-excel-file-at-path", async (event, path) => {
+  let mainWindow = BrowserWindow.getFocusedWindow();
+  let files = await dialog.showOpenDialog(mainWindow, {
+    properties: ["openFile"],
+    filters: [{ extensions: ["xlsx"] }],
+    title: "Open Excel file",
+    defaultPath: path,
+  });
+  if (!files) {
+    return [];
+  }
+  return files.filePaths;
+});
+
 /// Validate import local dataset
 ipcMain.on("open-file-dialog-validate-local-ds", (event) => {
   dialog.showOpenDialog(
