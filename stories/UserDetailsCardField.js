@@ -27,7 +27,7 @@ const UserDetailsCardField = ({ fieldOption, tabName }) => {
       <div class="card-container ${tabName}">
         <div style="width: 100%; display: flex">
           <h5 class="card-left" style="padding-right: 5px">Current dataset:</h5>
-          <div class="change-current-account ds-dd dataset" style="margin-left: 10px">
+          <div class="change-current-account ds-dd dataset-name" style="margin-left: 10px">
             <h5 class="card-right bf-dataset-span" style="width: fit-content">None</h5>
 
             <svg

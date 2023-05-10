@@ -1010,6 +1010,7 @@ const undoOptionCardSelection = (activeOptionCard) => {
 const clearValidationResults = (validationTableElement) => {
   // remove its children
   while (validationTableElement.firstChild) {
+    console.log(validationTableElement.firstChild);
     validationTableElement.removeChild(validationTableElement.firstChild);
   }
 };

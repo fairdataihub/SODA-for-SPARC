@@ -754,9 +754,9 @@ const resetFFMUI = (ev) => {
     if (ev.parentNode.parentNode.classList.contains("prepare-manifest")) {
       resetManifestTab = false;
     }
-    if (ev.parentNode.parentNode.classList.contains("prepare-validation")) {
-      resetValidation = false;
-    }
+    // if (ev.parentNode.parentNode.classList.contains("prepare-validation")) {
+    //   resetValidation = false;
+    // }
     if (ev.parentNode.parentNode.classList.contains("organize-dataset")) {
       resetOrganizationTab = false;
       if (ev.parentNode.parentNode.id === "bf-organization-curate-first-question-container") {
@@ -809,6 +809,13 @@ const resetFFMUI = (ev) => {
   // validation reset
   let validationErrorsTable = document.querySelector("#validation-errors-container tbody");
   if (resetValidation) {
+    // Function only resets the table and hides the validation section
+    // If they have selected the first cards those will not be reset
+    console.log(resetValidation);
+    // $("#div-check-bf-import-validator").css("display", "flex");
+    $("#validate_dataset-question-3").removeClass("show");
+    $("#validate_dataset-question-3").removeClass("prev");
+    $("#validate_dataset-question-4").removeClass("show");
     clearValidationResults(validationErrorsTable);
   }
   // reset the Disseminate Datasets sections

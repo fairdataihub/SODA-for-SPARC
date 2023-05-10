@@ -2181,7 +2181,7 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
 
   if (ev.getAttribute("data-next") === "div-rename-bf-dataset") {
     let dataset_name = $(
-      "#rename_dataset_BF_account_tab .change-current-account.ds-dd.dataset h5"
+      "#rename_dataset_BF_account_tab .change-current-account.ds-dd.dataset-name h5"
     ).text();
     $("#bf-rename-dataset-name").val(dataset_name);
   }
