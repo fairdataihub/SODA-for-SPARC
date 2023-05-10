@@ -814,6 +814,46 @@ def checkEmptyColumn(column):
         return True
     return False
 
+def download_pennsieve_file_to_local_path(url, node_id, ps_or_token, target_download_path):
+    try:
+        """
+        Given a manifests package id and its storage type - excel or csv - returns a pandas dataframe.
+        IMP: Pass in the pennsieve token or pennsieve object to ps_or_token for authentication.
+
+        Args:
+            node_id (str): The id of the manifest package.
+            type (str): The type of the manifest - csv or excel.
+            ps_or_token (str): The pennsieve token or pennsieve object.
+            usecols (list, optional): The columns to be used. Defaults to None.
+            header (int, optional): The header row. Defaults to 0.
+        """
+        payload = {"data": {"nodeIds": [node_id]}}
+        headers = { "Content-Type" : "application/json" }
+        # headers = create_request_headers(ps_or_token)
+        if type(ps_or_token) == str:
+            fileResFromPennsieve = requests.post(f"https://api.pennsieve.io/zipit/?api_key={ps_or_token}", json=payload, headers=headers)
+            # Save the file to the local path
+            with open(target_download_path, 'wb') as f:
+                f.write(fileResFromPennsieve.content)
+            namespace_logger.info("SUCCESS AT PATH" + target_download_path)
+
+        else:
+            token = ps_or_token.get_user().session_token
+            fileResFromPennsieve = requests.post(f"https://api.pennsieve.io/zipit/?api_key={token}", json=payload, headers=headers)
+            # Save the file to the local path
+            with open(target_download_path, 'wb') as f:
+                f.write(fileResFromPennsieve.content)
+            namespace_logger.info("SUCCESS AT PATH" + target_download_path)
+
+        namespace_logger.info("Downloading file from Pennsieve to local path")
+        namespace_logger.info("url: " + url)
+        namespace_logger.info("item_id: " + item_id)
+        namespace_logger.info("token: " + token)
+        namespace_logger.info("target_download_path: " + target_download_path)
+    except Exception as e:
+        namespace_logger.error("Error in logging: " + str(e))
+
+
 
 
 ## load/import an existing local or Pennsieve submission.xlsx file
@@ -887,7 +927,7 @@ def load_existing_submission_file(filepath, item_id=None, token=None):
 
 
 # import existing metadata files except Readme and Changes from Pennsieve
-def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
+def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset, target_download_path):
     token = get_access_token()
 
     selected_dataset_id = get_dataset_id(token, bfdataset)
@@ -897,22 +937,29 @@ def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
 
     items = r.json()["children"]
 
+    if target_download_path != None:
+        namespace_logger.info("Target download path is " + target_download_path)
+
     for i in items:
         if i["content"]["name"] == file_type:
             item_id = i["content"]["id"]
             url = returnFileURL(token, item_id)
+            # If a target_download_path is provided, download the file to that path
+            if target_download_path:
+                return download_pennsieve_file_to_local_path(url, item_id, token, target_download_path)
+            else:
+                if file_type == "submission.xlsx":
+                    return load_existing_submission_file(url, item_id, token)
 
-            if file_type == "submission.xlsx":
-                return load_existing_submission_file(url, item_id, token)
+                elif file_type == "dataset_description.xlsx":
+                    return load_existing_DD_file("bf", url, item_id, token)
 
-            elif file_type == "dataset_description.xlsx":
-                return load_existing_DD_file("bf", url, item_id, token)
+                elif file_type == "subjects.xlsx":
+                    return convert_subjects_samples_file_to_df("subjects", url, ui_fields, item_id, token)
 
-            elif file_type == "subjects.xlsx":
-                return convert_subjects_samples_file_to_df("subjects", url, ui_fields, item_id, token)
-
-            elif file_type == "samples.xlsx":
-                return convert_subjects_samples_file_to_df("samples", url, ui_fields, item_id, token)
+                elif file_type == "samples.xlsx":
+                    return convert_subjects_samples_file_to_df("samples", url, ui_fields, item_id, token)
+            
 
     abort(400, 
         f"No {file_type} file was found at the root of the dataset provided."

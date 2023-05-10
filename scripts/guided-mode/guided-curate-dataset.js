@@ -5863,7 +5863,7 @@ const openPage = async (targetPageID) => {
               selected_account: defaultBfAccount,
               selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
               file_type: "code_description.xlsx",
-              file_path: guidedMetadataFilePath,
+              target_download_path: guidedMetadataFilePath,
             },
           });
           console.log(metadata_import);

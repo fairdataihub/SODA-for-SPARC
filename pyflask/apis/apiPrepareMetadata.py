@@ -454,6 +454,7 @@ class ImportBFMetadataFile(Resource):
     parser_import_metadata_file.add_argument('selected_dataset', type=str, help='Pennsieve dataset to save the metadata file to.', location="args", required=True)
     parser_import_metadata_file.add_argument('file_type', type=str, help="The type of metadata file that we can import from Pennsieve. Must be [subjects.xlsx, samples.xlsx, dataset_description.xlsx, and submission.xlsx]", location="args", required=True)
     parser_import_metadata_file.add_argument('ui_fields', type=str, help="Path to the metadata file on the user's machine.", location="args", required=False)
+    parser_import_metadata_file.add_argument('target_download_path', type=str, help="Path the metadata file will be downloaded to.", location="args", required=False)
     
 
     # @api.expect(parser_import_bf_metadata_file)
@@ -468,14 +469,15 @@ class ImportBFMetadataFile(Resource):
         selected_account = args.get('selected_account')
         selected_dataset = args.get('selected_dataset')
         ui_fields = args.get('ui_fields')
+        target_download_path = args.get('target_download_path')
 
 
         valid = none_type_validation(file_type, selected_account, selected_dataset)
         if not valid:
             api.abort(400, "Error: To import a metadata file from Pennsieve provide a file_type, selected_account, and selected_dataset.")
         
-        if file_type not in ['submission.xlsx', 'samples.xlsx', 'subjects.xlsx', 'dataset_description.xlsx']:
-            api.abort(400, "Error: The file_type parameter must be submission.xlsx, samples.xlsx, subjects.xlsx, or dataset_description.xlsx.")
+        if file_type not in ['submission.xlsx', 'samples.xlsx', 'subjects.xlsx', 'dataset_description.xlsx', 'code_description.xlsx']:
+            api.abort(400, "Error: The file_type parameter must be submission.xlsx, samples.xlsx, subjects.xlsx, dataset_description.xlsx, or code_description.xlsx.")
         
         if file_type in ['samples.xlsx', 'subjects.xlsx'] and not ui_fields:
             api.abort(400, "An ui_fields property is required for fetching samples or subjects file types.")
@@ -489,7 +491,7 @@ class ImportBFMetadataFile(Resource):
             ui_fields = list(map(str.strip, ui_fields.strip('][').replace("'", '').replace('"', '').split(',')))
 
         try:
-            return import_bf_metadata_file(file_type, ui_fields, selected_account, selected_dataset)
+            return import_bf_metadata_file(file_type, ui_fields, selected_account, selected_dataset, target_download_path)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))

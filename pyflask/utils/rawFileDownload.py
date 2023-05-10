@@ -1,5 +1,7 @@
 import requests
 import pandas as pd
+from namespaces import get_namespace, NamespaceEnum
+
 
 def download_raw_file_to_path(node_id, ps_or_token, path_to_download_to):
     """
@@ -21,4 +23,3 @@ def download_raw_file_to_path(node_id, ps_or_token, path_to_download_to):
     else:
         token = ps_or_token.get_user().session_token
         r = requests.post(f"https://api.pennsieve.io/zipit/?api_key={token}", json=payload, headers=headers)
-        print("Downloading raw file to path...")
