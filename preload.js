@@ -805,6 +805,9 @@ const resetFFMUI = (ev) => {
   // reset the prepare datasets sections
   // do not wipe curation progress when resetting in GM or from within Organize Datasets
   if (resetOrganizationTab) {
+    // if we are going to reset the organization and are not within the organize flow, set the first dataset field value to None -- the second dataset field gets reset within resetCuration
+    $("#current-bf-dataset").text("None");
+    $("#button-confirm-bf-dataset-getting-started").css("display", "none");
     resetCuration();
   }
 
