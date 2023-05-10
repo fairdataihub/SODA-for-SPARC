@@ -18,7 +18,6 @@ def download_raw_file_to_path(node_id, ps_or_token, path_to_download_to):
     # headers = create_request_headers(ps_or_token)
     if type(ps_or_token) == str:
         r = requests.post(f"https://api.pennsieve.io/zipit/?api_key={ps_or_token}", json=payload, headers=headers)
-        print("Downloading raw file to path...")
     else:
         token = ps_or_token.get_user().session_token
         r = requests.post(f"https://api.pennsieve.io/zipit/?api_key={token}", json=payload, headers=headers)

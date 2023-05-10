@@ -21,7 +21,7 @@ from functools import partial
 from pennsieve2.pennsieve import Pennsieve
 #from pennsieve import Pennsieve
 from manageDatasets import bf_dataset_account
-from utils import ( connect_pennsieve_client, authenticate_user_with_client, get_dataset_id, create_request_headers, column_check, returnFileURL, load_manifest_to_dataframe, download_raw_file_to_path,)
+from utils import ( connect_pennsieve_client, authenticate_user_with_client, get_dataset_id, create_request_headers, column_check, returnFileURL, load_manifest_to_dataframe)
 from permissions import has_edit_permissions, bf_get_current_user_permission_agent_two
 from collections import defaultdict
 import requests
@@ -913,11 +913,6 @@ def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
 
             elif file_type == "samples.xlsx":
                 return convert_subjects_samples_file_to_df("samples", url, ui_fields, item_id, token)
-            
-            elif file_type == "code_description.xlsx":
-                # I want to download the file to a given path here
-                return download_raw_file_to_path(url, item_id, token, "code_description.xlsx")
-
 
     abort(400, 
         f"No {file_type} file was found at the root of the dataset provided."
