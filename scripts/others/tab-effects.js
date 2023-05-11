@@ -2745,14 +2745,17 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
 // TODO: Dorian see if this function is ever used,
 // (not being called anywhere that I can see)
 function obtainDivsbyCategory(category) {
-  console.log("function is used?")
+  console.log("function is used?");
   let individualQuestions = document.getElementsByClassName("individual-question");
   let categoryQuestionList = [];
   for (let i = 0; i < individualQuestions.length; i++) {
     let question = individualQuestions[i];
 
-    if (question.getAttribute("data-id") !== null && question.getAttribute("data-id").includes(category)) {
-          categoryQuestionList.push(question.id);
+    if (
+      question.getAttribute("data-id") !== null &&
+      question.getAttribute("data-id").includes(category)
+    ) {
+      categoryQuestionList.push(question.id);
     }
   }
   return categoryQuestionList;
