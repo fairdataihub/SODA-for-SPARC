@@ -913,6 +913,10 @@ def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
 
             elif file_type == "samples.xlsx":
                 return convert_subjects_samples_file_to_df("samples", url, ui_fields, item_id, token)
+            
+            elif file_type == "code_description.xlsx":
+                # Simply return true since we don't currently have a UI for code_description
+                return True
 
     abort(400, 
         f"No {file_type} file was found at the root of the dataset provided."

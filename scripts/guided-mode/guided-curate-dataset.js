@@ -17,8 +17,10 @@ const guidedGetCurrentUserWorkSpace = () => {
   const workSpaceFromUI = document.getElementById(
     "guided-pennsive-selected-organization"
   ).innerHTML;
-  console.log(workSpaceFromUI);
-  if (workSpaceFromUI.includes("Click here to select workspace")) {
+  if (
+    workSpaceFromUI.includes("Click here to select workspace") ||
+    workSpaceFromUI.includes("None")
+  ) {
     return null;
   }
   return workSpaceFromUI;
@@ -279,6 +281,27 @@ const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
       console.log("Dataset is not published, we do not need to show changes");
       return { shouldShow: false };
     }
+  }
+};
+
+const skipOrUnSkipCodeDescriptionPage = async (pennsieveDatasetID) => {
+  try {
+    await client.get(`/prepare_metadata/import_metadata_file`, {
+      params: {
+        selected_account: defaultBfAccount,
+        selected_dataset: pennsieveDatasetID,
+        file_type: "code_description.xlsx",
+      },
+    });
+    console.log("code_description file exists, skipping page");
+    // If the response resolves, the file exists, so skip the page
+    guidedSkipPage("guided-add-code-metadata-tab");
+  } catch (error) {
+    const emessage = userErrorMessage(error);
+    console.log(emessage);
+    // If there is an error or the file does not exist, unskip the page
+    // (User has to add the code_description file))
+    guidedUnSkipPage("guided-add-code-metadata-tab");
   }
 };
 
@@ -758,6 +781,10 @@ const savePageChanges = async (pageBeingLeftID) => {
           sodaJSONObj["dataset-metadata"]["CHANGES"] = "";
           guidedSkipPage("guided-create-changes-metadata-tab");
         }
+
+        // Skip the code_description page if it already exists on Pennsieve
+        await skipOrUnSkipCodeDescriptionPage(selectedPennsieveDatasetID);
+
         // Skip the page where they confirm their log in and workspace because we should already have it
         sodaJSONObj["digital-metadata"]["dataset-workspace"] = guidedGetCurrentUserWorkSpace();
         guidedSkipPage("guided-pennsieve-intro-tab");
@@ -6843,6 +6870,9 @@ const patchPreviousGuidedModeVersions = async () => {
   if (sodaJSONObj["last-version-of-soda-used"] <= "11.0.0") {
     if (sodaJSONObj["starting-point"]["type"] === "bf") {
       const datasetsPennsieveID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+
+      // Skip/unSkip the changes metadata page based on publishing status
+      // (if the changes file already exists, then still show it)
       const changesCheckRes = await checkIfChangesMetadataPageShouldBeShown(datasetsPennsieveID);
       if (changesCheckRes.shouldShow === true) {
         sodaJSONObj["dataset-metadata"]["CHANGES"] = changesCheckRes.changesMetadata;
@@ -6851,6 +6881,9 @@ const patchPreviousGuidedModeVersions = async () => {
         sodaJSONObj["dataset-metadata"]["CHANGES"] = "";
         guidedSkipPage("guided-create-changes-metadata-tab");
       }
+
+      // Skip the code_description page if it already exists on Pennsieve
+      await skipOrUnSkipCodeDescriptionPage(datasetsPennsieveID);
     }
   }
 

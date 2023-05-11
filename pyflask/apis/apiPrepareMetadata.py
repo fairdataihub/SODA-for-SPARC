@@ -474,8 +474,8 @@ class ImportBFMetadataFile(Resource):
         if not valid:
             api.abort(400, "Error: To import a metadata file from Pennsieve provide a file_type, selected_account, and selected_dataset.")
         
-        if file_type not in ['submission.xlsx', 'samples.xlsx', 'subjects.xlsx', 'dataset_description.xlsx']:
-            api.abort(400, "Error: The file_type parameter must be submission.xlsx, samples.xlsx, subjects.xlsx, or dataset_description.xlsx.")
+        if file_type not in ['submission.xlsx', 'samples.xlsx', 'subjects.xlsx', 'dataset_description.xlsx', 'code_description.xlsx']:
+            api.abort(400, "Error: The file_type parameter must be submission.xlsx, samples.xlsx, subjects.xlsx, dataset_description.xlsx, or code_description.xlsx.")
         
         if file_type in ['samples.xlsx', 'subjects.xlsx'] and not ui_fields:
             api.abort(400, "An ui_fields property is required for fetching samples or subjects file types.")
