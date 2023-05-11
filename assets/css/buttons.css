@@ -113,6 +113,13 @@
   margin-bottom: 15px;
 }
 
+.guided--progress-button-switch-workspace {
+  background-color: gainsboro !important;
+  margin: 4px;
+  margin-bottom: 15px;
+  color: black !important;
+}
+
 .tile-button-icon {
   height: 50px;
   width: 50px;
