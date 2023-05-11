@@ -17,7 +17,8 @@ const guidedGetCurrentUserWorkSpace = () => {
   const workSpaceFromUI = document.getElementById(
     "guided-pennsive-selected-organization"
   ).innerHTML;
-  if (workSpaceFromUI === "Click here to select workspace") {
+  console.log(workSpaceFromUI);
+  if (workSpaceFromUI.includes("Click here to select workspace")) {
     return null;
   }
   return workSpaceFromUI;
@@ -2927,6 +2928,14 @@ const guidedRenderProgressCards = async () => {
   progressFileData.sort((a, b) => {
     return new Date(b["last-modified"]) - new Date(a["last-modified"]);
   });
+
+  if (!guidedGetCurrentUserWorkSpace()) {
+    //wait 3 seconds for the workspace to potentially load
+    //note this wait is not ideal, but it can be removed. If the workspace is not loaded before
+    //the progress cards are rendered, the user will be prompted to switch workspaces
+    //for all progress cards that are not in the current workspace
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+  }
 
   const progressCardsContainer = document.getElementById("guided-section-resume-progress-cards");
   // If there are progress cards to display, display them
