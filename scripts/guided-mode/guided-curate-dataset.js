@@ -6891,6 +6891,8 @@ const patchPreviousGuidedModeVersions = async () => {
     if (!sodaJSONObj?.["digital-metadata"]?.["dataset-workspace"]) {
       // Skip the log in page since we no longer need it
       guidedSkipPage("guided-pennsieve-intro-tab");
+      // If the dataset-workspace has not yet been set, set it to the current user's workspace
+      // (this happens after the dataset has already been pulled and checked if valid for Guided Mode...)
       sodaJSONObj["digital-metadata"]["dataset-workspace"] = guidedGetCurrentUserWorkSpace();
     }
   }
