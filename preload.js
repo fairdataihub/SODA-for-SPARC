@@ -190,6 +190,7 @@ const updateOrganizationList = async (bfaccount) => {
 // per change event of current dataset span text
 const confirm_click_function = () => {
   let temp = $(".bf-dataset-span").html();
+  console.log("temp: ", temp);
   if ($(".bf-dataset-span").html() == "None" || $(".bf-dataset-span").html() == "") {
     $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "none");
     $("#para-review-dataset-info-disseminate").text("None");
@@ -713,10 +714,12 @@ const resetFFMUI = (ev) => {
   $("#add_edit_description_tab").removeClass("prev");
 
   $("#div_add_edit_banner").removeClass("show");
+  $("#div_add_edit_banner").hide();
   $("#add_edit_banner_tab").removeClass("prev");
 
   $("#add_license_tab").removeClass("prev");
   $("#div_add_license").removeClass("show");
+  $("#para-dataset-license-current").text("None");
 
   $("#add_tags_tab").removeClass("prev");
   $("#div_add_tags").removeClass("show");
@@ -1511,7 +1514,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           document.getElementById("ds-name").value =
             document.getElementById("rename_dataset_name").innerText;
         } else {
-          document.getElementById("Question-prepare-dd-4").classList.add("show");
+          // document.getElementById("Question-prepare-dd-4").classList.add("show");
           let onMyCompButton = document.getElementById("Question-prepare-dd-4-new");
           document.getElementById("dd-select-pennsieve-dataset").style.display = "none";
           let onPennsieveButton =
@@ -1519,7 +1522,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           if (onMyCompButton.classList.contains("checked")) {
             document.getElementById("Question-prepare-dd-3").classList.add("show");
           } else {
-            document.getElementById("Question-prepare-dd-5").classList.add("show");
+            // document.getElementById("Question-prepare-dd-5").classList.add("show");
           }
         }
 
@@ -1856,7 +1859,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           $(".bf-organization-span").html(bfOrganization);
           // set the permissions content to an empty string
 
-          confirm_click_function();
+          // confirm_click_function();
 
           return true;
         },

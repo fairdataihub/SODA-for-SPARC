@@ -321,7 +321,7 @@ input[name="dataset_status_radio"]:checked ~ label {
 
 .btn_animated {
   cursor: pointer;
-  border-radius: 8px;
+  border-radius: 4px;
   margin: 0px 10px;
   height: 35px;
   background: var(--color-light-green);

@@ -2183,6 +2183,7 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
     let dataset_name = $(
       "#rename_dataset_BF_account_tab .change-current-account.ds-dd.dataset-name h5"
     ).text();
+    console.log("dataset_name: ", dataset_name);
     $("#bf-rename-dataset-name").val(dataset_name);
   }
 
@@ -2741,16 +2742,20 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
   }
 };
 
+// TODO: Dorian see if this function is ever used,
+// (not being called anywhere that I can see)
 function obtainDivsbyCategory(category) {
-  var individualQuestions = document.getElementsByClassName("individual-question");
-  var categoryQuestionList = [];
-  for (var i = 0; i < individualQuestions.length; i++) {
-    var question = individualQuestions[i];
+  console.log("function is used?");
+  let individualQuestions = document.getElementsByClassName("individual-question");
+  let categoryQuestionList = [];
+  for (let i = 0; i < individualQuestions.length; i++) {
+    let question = individualQuestions[i];
 
-    if (question.getAttribute("data-id") !== null) {
-      if (question.getAttribute("data-id").includes(category)) {
-        categoryQuestionList.push(question.id);
-      }
+    if (
+      question.getAttribute("data-id") !== null &&
+      question.getAttribute("data-id").includes(category)
+    ) {
+      categoryQuestionList.push(question.id);
     }
   }
   return categoryQuestionList;
@@ -3570,20 +3575,20 @@ $(document).ready(() => {
   $(".content-button").click(function () {
     let section = $(this).data("section");
 
-    if (section === "add_edit_bf_dataset_collection") {
-      let rename_dataset_name = $(
-        "#rename_dataset_BF_account_tab .change-current-account.ds-dd h5"
-      ).html();
-      if (rename_dataset_name.trim() != "None" && rename_dataset_name != "") {
-        $("#bf-rename-dataset-name").val(rename_dataset_name);
-      } else {
-        $("#bf-rename-dataset-name").val("");
-      }
-    }
+    // if (section === "add_edit_bf_dataset_collection") {
+    //   let rename_dataset_name = $(
+    //     "#rename_dataset_BF_account_tab .change-current-account.ds-dd.dataset-name h5"
+    //   ).html();
+    //   if (rename_dataset_name.trim() != "None" && rename_dataset_name != "") {
+    //     $("#bf-rename-dataset-name").val(rename_dataset_name);
+    //   } else {
+    //     $("#bf-rename-dataset-name").val("");
+    //   }
+    // }
 
     if (section === "rename_existing_bf_dataset") {
       let rename_dataset_name = $(
-        "#rename_dataset_BF_account_tab .change-current-account.ds-dd h5"
+        "#rename_dataset_BF_account_tab .change-current-account.ds-dd.dataset-name h5"
       ).html();
       if (rename_dataset_name.trim() != "None" && rename_dataset_name != "") {
         $("#bf-rename-dataset-name").val(rename_dataset_name);
