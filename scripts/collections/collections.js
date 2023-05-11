@@ -1,3 +1,5 @@
+// this function runs when the DOM is ready, i.e. when the document has been parsed
+$(document).ready(function () {
 //upload new collection tags or check if none
 $("#button-bf-collection").on("click", async () => {
   setTimeout(async () => {
@@ -168,9 +170,11 @@ $("#button-collection-dataset-confirm").on("click", async () => {
 
   //sweet alert will show only if user is on the collections section
   if (collection_section.classList.contains("is-shown")) {
-    let datasetName = document.getElementById("collection_dataset_name").innerText;
+    let dataset_name = $(
+      "#collection_BF_account_tab .change-current-account.ds-dd.dataset-name h5"
+    ).html();
     Swal.fire({
-      title: `Getting collection of dataset: ${datasetName}`,
+      title: `Getting collection of dataset: ${dataset_name}`,
       html: "Please wait...",
       // timer: 5000,
       allowEscapeKey: false,
@@ -184,14 +188,20 @@ $("#button-collection-dataset-confirm").on("click", async () => {
     });
   }
 
+  console.log('defaultBfAccount', defaultBfDataset);
+  console.log('defaultBfDataset', defaultBfDataset);
   let collection_list = await api.getAllCollectionTags(defaultBfAccount);
   let current_tags = await api.getCurrentCollectionTags(defaultBfAccount, defaultBfDataset);
 
+  console.log("current tags: ", current_tags)
   let collectionNames = Object.keys(collection_list);
   let currentCollectionNames = Object.keys(current_tags);
 
   currentCollectionNames.sort();
   collectionNames.sort();
+
+  console.log("current collection names: ", currentCollectionNames)
+  console.log("collection names: ", collectionNames)
 
   //put the gathered collection names to the tagify whitelist
   collectionDatasetTags.settings.whitelist = collectionNames;
@@ -200,5 +210,8 @@ $("#button-collection-dataset-confirm").on("click", async () => {
   collectionDatasetTags.addTags(currentCollectionNames);
 
   //if on collection section close the shown sweet alert
-  if (collection_section.classList.contains("is-shown")) Swal.close();
+  if (collection_section.classList.contains("is-shown")) {
+    Swal.close();
+  }
+});
 });

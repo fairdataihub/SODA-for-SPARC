@@ -55,8 +55,8 @@ const addDatasetAndOrganizationCardComponents = () => {
     fields: [
       FIELD_OPTIONS.ACCOUNT_EDITABLE,
       FIELD_OPTIONS.ACCOUNT_DETAILS,
-      FIELD_OPTIONS.DATASET_EDITABLE,
       FIELD_OPTIONS.ORGANIZATION_EDITABLE,
+      FIELD_OPTIONS.DATASET_EDITABLE,
     ],
   });
 
