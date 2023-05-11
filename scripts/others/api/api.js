@@ -66,6 +66,17 @@ const isDatasetLocked = async (account, datasetNameOrId) => {
     }
   }
 };
+
+const getDatasetInformation = async (account, datasetNameOrId) => {
+  const datasetInformationResponse = await client.get(`/datasets/${datasetNameOrId}`, {
+    params: {
+      pennsieve_account: account,
+    },
+  });
+  // Returns information about the dataset (locked, published, etc.)
+  return datasetInformationResponse.data;
+};
+
 /**
  * Withdraw any dataset from a pre-publishing review submission
  * @param {string} datasetIdOrName
@@ -456,6 +467,7 @@ const api = {
   getDatasetDOI,
   reserveDOI,
   isDatasetLocked,
+  getDatasetInformation,
   getNumberOfPackagesInDataset,
   getNumberOfItemsInLocalDataset,
   setPreferredOrganization,
