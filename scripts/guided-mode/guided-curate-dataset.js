@@ -2941,6 +2941,19 @@ const generateProgressCardElement = (progressFileJSONObj) => {
   `;
 };
 
+// Waits for the workspace to load before rendering the progress cards
+// Note: Does not throw an error if the workspace never loads, but we wait in case the workspace is still being loaded
+// (usually on start up when they go to Guided Mode quickly)
+const letWorkSpaceLoadingCook = async () => {
+  for (let i = 0; i < 15; i++) {
+    if (guidedGetCurrentUserWorkSpace()) {
+      return true;
+    }
+    await new Promise((resolve) => setTimeout(resolve, 200)); // wait for .2 seconds before trying again
+  }
+  return false;
+};
+
 const guidedRenderProgressCards = async () => {
   //Check if Guided-Progress folder exists. If not, create it.
   if (!fs.existsSync(guidedProgressFilePath)) {
@@ -2956,13 +2969,7 @@ const guidedRenderProgressCards = async () => {
     return new Date(b["last-modified"]) - new Date(a["last-modified"]);
   });
 
-  if (!guidedGetCurrentUserWorkSpace()) {
-    //wait 3 seconds for the workspace to potentially load
-    //note this wait is not ideal, but it can be removed. If the workspace is not loaded before
-    //the progress cards are rendered, the user will be prompted to switch workspaces
-    //for all progress cards that are not in the current workspace
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-  }
+  await letWorkSpaceLoadingCook();
 
   const progressCardsContainer = document.getElementById("guided-section-resume-progress-cards");
   // If there are progress cards to display, display them
