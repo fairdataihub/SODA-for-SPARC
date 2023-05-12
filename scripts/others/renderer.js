@@ -7294,7 +7294,7 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
             html: `This folder seem to have non-SPARC folders. Please select a folder that has a valid SPARC dataset structure.
               <br/>
               See the "Data Organization" section of the SPARC documentation for more
-              <a a target="_blank" href="https://sparc.science/help/3FXikFXC8shPRd8xZqhjVT#top"> details</a>`,
+              <a target="_blank" href="https://sparc.science/help/3FXikFXC8shPRd8xZqhjVT#top"> details</a>`,
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
             showConfirmButton: false,

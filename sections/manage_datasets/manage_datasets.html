@@ -2068,7 +2068,7 @@
         <div class="ui form" style="width: 100%">
           <div class="grouped fields" style="display: flex; justify-content: center">
             <label style="font-size: 17px; color: var(--color-bg-plum)"
-              >What is the location of the dataset?</label
+              >What is the location of the local dataset to upload?</label
             >
             <div
               class="field"
@@ -2186,9 +2186,13 @@
   </div>
 
   <div class="footer-div">
-    <div style="display: flex; flex-direction: row; width: 120px">
+    <div style="display: flex;">
       <button type="button" class="transition-btn prev" data-section="main_tabs">
         <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
+      </button>
+      <button onclick="resetUploadLocalDataset()" class="start-over" style=" margin-left: 300px;">
+        <i class="fas fa-sync-alt" style="margin-right: 10px; font-size: inherit;"></i>
+        Start over
       </button>
     </div>
   </div>
