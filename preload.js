@@ -1078,8 +1078,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
             secret: apiSecret,
           });
 
-
-          // set the user's email to be the defaultBfAccount value 
+          // set the user's email to be the defaultBfAccount value
           bfAccountOptions[key_name] = key_name;
           defaultBfAccount = key_name;
           defaultBfDataset = "Select dataset";
@@ -1095,7 +1094,6 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
             $("#current-bf-dataset-generate").text("None");
             $(".bf-dataset-span").html("None");
             $("#para-continue-bf-dataset-getting-started").text("");
-
 
             // set the workspace field values to the user's current workspace
             let org = bf_account_details_req.data.organization;
