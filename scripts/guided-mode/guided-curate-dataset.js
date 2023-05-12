@@ -6916,7 +6916,7 @@ const guidedGetPageToReturnTo = (sodaJSONObj) => {
   const usersPageBeforeExit = sodaJSONObj["page-before-exit"];
 
   //If the dataset was successfully uploaded, send the user to the share with curation team
-  if (datasetResumeJsonObj["previous-guided-upload-dataset-name"]) {
+  if (sodaJSONObj["previous-guided-upload-dataset-name"]) {
     return "guided-dataset-dissemination-tab";
   }
 
@@ -6940,8 +6940,8 @@ const guidedGetPageToReturnTo = (sodaJSONObj) => {
     }
 
     //If the dataset was successfully uploaded, send the user to the share with curation team
-    if (datasetResumeJsonObj["previous-guided-upload-dataset-name"]) {
-      pageToReturnTo = "guided-dataset-dissemination-tab";
+    if (sodaJSONObj["previous-guided-upload-dataset-name"]) {
+      return "guided-dataset-dissemination-tab";
     }
 
     // if (!sodaJSONObj["special-rejoin-key"]) {
