@@ -782,9 +782,6 @@ const savePageChanges = async (pageBeingLeftID) => {
           guidedSkipPage("guided-create-changes-metadata-tab");
         }
 
-        // Skip the code_description page if it already exists on Pennsieve
-        await skipOrUnSkipCodeDescriptionPage(selectedPennsieveDatasetID);
-
         // Skip the page where they confirm their log in and workspace because we should already have it
         sodaJSONObj["digital-metadata"]["dataset-workspace"] = guidedGetCurrentUserWorkSpace();
         guidedSkipPage("guided-pennsieve-intro-tab");
@@ -5887,6 +5884,22 @@ const openPage = async (targetPageID) => {
         : samplesProtocolContainer.classList.add("hidden");
     }
     if (targetPageID === "guided-add-code-metadata-tab") {
+      if (pageNeedsUpdateFromPennsieve("guided-add-code-metadata-tab")) {
+        // Show the loading page while the page's data is being fetched from Pennsieve
+        setPageLoadingState(true);
+        try {
+          await client.get(`/prepare_metadata/import_metadata_file`, {
+            params: {
+              selected_account: defaultBfAccount,
+              selected_dataset: pennsieveDatasetID,
+              file_type: "code_description.xlsx",
+            },
+          });
+          console.log("code_description file exists");
+        } catch (error) {
+          console.log("code_description file does not exist");
+        }
+      }
       const codeDescriptionPath =
         sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"];
 
@@ -6888,9 +6901,6 @@ const patchPreviousGuidedModeVersions = async () => {
         sodaJSONObj["dataset-metadata"]["CHANGES"] = "";
         guidedSkipPage("guided-create-changes-metadata-tab");
       }
-
-      // Skip the code_description page if it already exists on Pennsieve
-      await skipOrUnSkipCodeDescriptionPage(datasetsPennsieveID);
     }
   }
 
