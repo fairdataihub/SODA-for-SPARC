@@ -21,7 +21,7 @@ const transitionToValidateQuestionTwo = async () => {
   let localDatasetCard = document.querySelector("#validate-1-Local");
   let validatingLocalDataset = localDatasetCard.checked;
   console.lod("validatingLocalDataset: ", validatingLocalDataset);
-  console.log("local dataset card: ", localDatasetCard)
+  console.log("local dataset card: ", localDatasetCard);
 
   // perform the transition for a local dataset
   if (validatingLocalDataset) {
