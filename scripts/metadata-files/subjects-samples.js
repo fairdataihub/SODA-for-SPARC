@@ -35,7 +35,7 @@ var headersArrSubjects = [];
 var headersArrSamples = [];
 let guidedSamplesTableData = [];
 
-function showForm(type, editBoolean) {
+const showForm = (type, editBoolean) => {
   if (type !== "edit") {
     clearAllSubjectFormFields(subjectsFormDiv);
   }
@@ -45,9 +45,9 @@ function showForm(type, editBoolean) {
   $("#footer-div-subjects").css("display", "none");
   $("#btn-add-custom-field").show();
   $("#sidebarCollapse").prop("disabled", "true");
-}
+};
 
-function showFormSamples(type, editBoolean) {
+const showFormSamples = (type, editBoolean) => {
   if (type !== "edit") {
     clearAllSubjectFormFields(samplesFormDiv);
   }
@@ -57,7 +57,7 @@ function showFormSamples(type, editBoolean) {
   $("#footer-div-samples").css("display", "none");
   $("#btn-add-custom-field-samples").show();
   $("#sidebarCollapse").prop("disabled", "true");
-}
+};
 
 var selectHTMLSamples =
   "<div><select id='previous-subject' class='swal2-input' onchange='displayPreviousSample()'></select><select style='display:none' id='previous-sample' class='swal2-input' onchange='confirmSample()'></select></div>";
@@ -67,7 +67,7 @@ var prevSubIDSingle = "";
 var selectHTMLSubjects =
   "<div><select id='previous-subject-single' class='swal2-input'></select></div>";
 
-function promptImportPrevInfoSamples(arr1, arr2) {
+const promptImportPrevInfoSamples = (arr1, arr2) => {
   Swal.fire({
     title: "Choose a previous sample:",
     html: selectHTMLSamples,
@@ -97,10 +97,10 @@ function promptImportPrevInfoSamples(arr1, arr2) {
       hideForm("sample");
     }
   });
-}
+};
 
 // onboarding for subjects/samples file
-function onboardingMetadata(type) {
+const onboardingMetadata = (type) => {
   var helperButtons = $($($(`#table-${type}s`).children()[1]).find(`.row-${type}s`)[0]).find(
     ".contributor-helper-buttons"
   )[0];
@@ -151,9 +151,9 @@ function onboardingMetadata(type) {
       })
       .start();
   }
-}
+};
 
-function promptImportPrevInfoSubject(arr1) {
+const promptImportPrevInfoSubject = (arr1) => {
   Swal.fire({
     title: "Choose a previous subject:",
     html: selectHTMLSubjects,
@@ -178,9 +178,9 @@ function promptImportPrevInfoSubject(arr1) {
       hideForm("subject");
     }
   });
-}
+};
 
-function displayPreviousSample() {
+const displayPreviousSample = () => {
   if ($("#previous-subject").val() !== "Select") {
     $("#previous-sample").css("display", "block");
     prevSubID = $("#previous-subject").val();
@@ -198,9 +198,9 @@ function displayPreviousSample() {
     $("#previous-sample").css("display", "none");
     prevSubID = "";
   }
-}
+};
 
-function confirmSample() {
+const confirmSample = () => {
   if ($("#previous-sample").val() !== "Select") {
     $("#btn-confirm-previous-import").removeClass("confirm-disabled");
     prevSamID = $("#previous-sample").val();
@@ -208,10 +208,10 @@ function confirmSample() {
     $("#btn-confirm-previous-import").addClass("confirm-disabled");
     prevSamID = "";
   }
-}
+};
 
 // for "Done adding" button - subjects
-function addSubject(curationMode) {
+const addSubject = (curationMode) => {
   let subjectID = "";
   if (curationMode === "free-form") {
     subjectID = $("#bootbox-subject-id").val();
@@ -226,10 +226,10 @@ function addSubject(curationMode) {
   if (curationMode === "guided") {
     addSubjectMetadataEntriesIntoJSON("guided");
   }
-}
+};
 
 // for "Done adding" button - samples
-function addSample(curationMode) {
+const addSample = (curationMode) => {
   let sampleID = "";
   let subjectID = "";
   if (curationMode === "free-form") {
@@ -247,9 +247,9 @@ function addSample(curationMode) {
   if (curationMode === "guided") {
     addSampleMetadataEntriesIntoJSON("guided");
   }
-}
+};
 
-function warningBeforeHideForm(type) {
+const warningBeforeHideForm = (type) => {
   Swal.fire({
     title: "Are you sure you want to cancel?",
     text: "This will reset your progress with the current subject_id.",
@@ -270,9 +270,9 @@ function warningBeforeHideForm(type) {
       }
     }
   });
-}
+};
 
-function hideForm(type) {
+const hideForm = (type) => {
   var formDiv;
   if (type === "subject") {
     formDiv = subjectsFormDiv;
@@ -286,9 +286,9 @@ function hideForm(type) {
   $("#sidebarCollapse").prop("disabled", false);
   $("#btn-edit-" + type + "").css("display", "none");
   $("#btn-add-" + type + "").css("display", "inline-block");
-}
+};
 
-function validateSubSamID(ev) {
+const validateSubSamID = (ev) => {
   var regex = /^[a-zA-Z0-9-_]+$/;
   var id = $(ev).prop("id");
   var value = $("#" + id).val();
@@ -301,9 +301,9 @@ function validateSubSamID(ev) {
     $(ev).removeClass("invalid");
     $("#para-" + id).css("display", "none");
   }
-}
+};
 
-function addNewIDToTable(newID, secondaryID, type) {
+const addNewIDToTable = (newID, secondaryID, type) => {
   var message = "";
   if (type === "subjects") {
     var keyword = "subject";
@@ -370,9 +370,9 @@ function addNewIDToTable(newID, secondaryID, type) {
       "_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
   }
   return message;
-}
+};
 
-function addNewIDToTableStrict(newID, secondaryID, type) {
+const addNewIDToTableStrict = (newID, secondaryID, type) => {
   var message = "";
   if (type === "subjects") {
     var keyword = "subject";
@@ -395,9 +395,9 @@ function addNewIDToTableStrict(newID, secondaryID, type) {
     var message = `We detect duplicate ${keyword}_id(s). Please make sure ${keyword}_id(s) are unique before you generate.`;
   }
   return message;
-}
+};
 
-function addSubjectIDtoDataBase(id) {
+const addSubjectIDtoDataBase = (id) => {
   var table = document.getElementById("table-subjects");
   var duplicate = false;
   var error = "";
@@ -422,9 +422,9 @@ function addSubjectIDtoDataBase(id) {
   if (error !== "") {
     Swal.fire("Failed to add the subject", error, "error");
   }
-}
+};
 
-function addSampleIDtoDataBase(samID, subID) {
+const addSampleIDtoDataBase = (samID, subID) => {
   var table = document.getElementById("table-samples");
   var duplicate = false;
   var error = "";
@@ -449,9 +449,9 @@ function addSampleIDtoDataBase(samID, subID) {
   if (error !== "") {
     Swal.fire("Failed to add the sample", error, "error");
   }
-}
+};
 
-function clearAllSubjectFormFields(form) {
+const clearAllSubjectFormFields = (form) => {
   for (var field of $(form).children().find("input")) {
     $(field).val("");
   }
@@ -486,14 +486,14 @@ function clearAllSubjectFormFields(form) {
       `<svg xmlns="http://www.w3.org/2000/svg" style="vertical-align: middle" width="14" height="14" fill="currentColor" class="bi bi-plus" viewBox="0 0 16 16"><path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4z"/></svg>Add strain`
     );
   }
-}
+};
 
 // add new subject ID to JSON file (main file to be converted to excel)
-function addSubjectIDToJSON(subjectID) {
+const addSubjectIDToJSON = (subjectID) => {
   if ($("#form-add-a-subject").length > 0) {
     addSubjectMetadataEntriesIntoJSON("free-form");
   }
-}
+};
 
 /// function to add Species - subjects + samples
 const addSpecies = async (ev, type, curationMode) => {
@@ -616,7 +616,7 @@ const addStrain = async (ev, type, curationMode) => {
 };
 
 // populate RRID
-function populateRRID(strain, type, curationMode) {
+const populateRRID = (strain, type, curationMode) => {
   let curationModeSelectorPrefix = "";
   if (curationMode == "guided") {
     curationModeSelectorPrefix = "guided-";
@@ -706,9 +706,9 @@ function populateRRID(strain, type, curationMode) {
       });
     }
   });
-}
+};
 
-function addSubjectMetadataEntriesIntoJSON(curationMode) {
+const addSubjectMetadataEntriesIntoJSON = (curationMode) => {
   let curationModeSelectorPrefix;
   let dataLength = subjectsTableData.length;
 
@@ -775,9 +775,9 @@ function addSubjectMetadataEntriesIntoJSON(curationMode) {
     clearAllSubjectFormFields(subjectsFormDiv);
     hideForm("subject");
   }
-}
+};
 
-function addSampleMetadataEntriesIntoJSON(curationMode) {
+const addSampleMetadataEntriesIntoJSON = (curationMode) => {
   let curationModeSelectorPrefix = "";
   var dataLength = samplesTableData.length;
   if (curationMode === "free-form") {
@@ -835,27 +835,27 @@ function addSampleMetadataEntriesIntoJSON(curationMode) {
     clearAllSubjectFormFields(samplesFormDiv);
     hideForm("sample");
   }
-}
+};
 
-function addSampleIDtoJSON(sampleID) {
+const addSampleIDtoJSON = (sampleID) => {
   if ($("#form-add-a-sample").length > 0) {
     addSampleMetadataEntriesIntoJSON("free-form");
   }
-}
+};
 
 // associated with the edit icon (edit a subject)
-function edit_current_subject_id(ev) {
+const edit_current_subject_id = (ev) => {
   var currentRow = $(ev).parents()[2];
   var subjectID = $(currentRow)[0].cells[1].innerText;
   loadSubjectInformation(ev, subjectID);
-}
-function edit_current_sample_id(ev) {
+};
+const edit_current_sample_id = (ev) => {
   var currentRow = $(ev).parents()[2];
   var subjectID = $(currentRow)[0].cells[1].innerText;
   var sampleID = $(currentRow)[0].cells[2].innerText;
   loadSampleInformation(ev, subjectID, sampleID);
-}
-async function edit_current_protocol_id(ev) {
+};
+const edit_current_protocol_id = async (ev) => {
   let oldProtocolLink = "";
   var currentRow = $(ev).parents()[2];
   var link = $(currentRow)[0].cells[1].innerText;
@@ -944,9 +944,9 @@ async function edit_current_protocol_id(ev) {
     $(currentRow)[0].cells[3].innerHTML = values[2];
     $(currentRow)[0].cells[4].innerText = values[3];
   }
-}
+};
 
-async function edit_current_additional_link_id(ev) {
+const edit_current_additional_link_id = async (ev) => {
   var currentRow = $(ev).parents()[2];
   var link = $(currentRow)[0].cells[1].innerText;
   var linkType = $(currentRow)[0].cells[2].innerText;
@@ -1000,9 +1000,9 @@ async function edit_current_additional_link_id(ev) {
     $(currentRow)[0].cells[3].innerText = values[2];
     $(currentRow)[0].cells[4].innerText = values[3];
   }
-}
+};
 
-function loadSubjectInformation(ev, subjectID) {
+const loadSubjectInformation = (ev, subjectID) => {
   // 1. load fields for form
   showForm("display", true);
   $("#btn-edit-subject").css("display", "inline-block");
@@ -1021,9 +1021,9 @@ function loadSubjectInformation(ev, subjectID) {
       $("#button-confirm-custom-header-name").hide();
     }
   });
-}
+};
 
-function populateForms(subjectID, type, curationMode) {
+const populateForms = (subjectID, type, curationMode) => {
   //Initialize variables shared between different curation modes and set them
   //based on curationMode passed in as parameter
   let fieldArr;
@@ -1126,9 +1126,9 @@ function populateForms(subjectID, type, curationMode) {
       }
     });
   }
-}
+};
 
-function populateFormsSamples(subjectID, sampleID, type, curationMode) {
+const populateFormsSamples = (subjectID, sampleID, type, curationMode) => {
   //Initialize variables shared between different curation modes and set them
   //based on curationMode passed in as parameter
   let fieldArr;
@@ -1228,9 +1228,9 @@ function populateFormsSamples(subjectID, sampleID, type, curationMode) {
       }
     });
   }
-}
+};
 
-function loadSampleInformation(ev, subjectID, sampleID) {
+const loadSampleInformation = (ev, subjectID, sampleID) => {
   // 1. load fields for form
   showFormSamples("display", true);
   $("#btn-edit-sample").css("display", "inline-block");
@@ -1249,9 +1249,9 @@ function loadSampleInformation(ev, subjectID, sampleID) {
       $("#button-confirm-custom-header-name-samples").hide();
     }
   });
-}
+};
 
-function editSubject(ev, subjectID) {
+const editSubject = (ev, subjectID) => {
   for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
     if (field.value.trim() !== "" && field.value !== undefined && field.value !== "Select") {
       // if it's age, then add age info input (day/week/month/year)
@@ -1309,9 +1309,9 @@ function editSubject(ev, subjectID) {
     }
   }
   subjectsFileData = [];
-}
+};
 
-function editSample(ev, sampleID) {
+const editSample = (ev, sampleID) => {
   for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
     if (field.value.trim() !== "" && field.value !== undefined && field.value !== "Select") {
       samplesFileData.push(field.value);
@@ -1357,9 +1357,9 @@ function editSample(ev, sampleID) {
     }
   }
   samplesFileData = [];
-}
+};
 
-function delete_current_subject_id(ev) {
+const delete_current_subject_id = (ev) => {
   Swal.fire({
     title: "Are you sure you want to delete this subject?",
     showCancelButton: true,
@@ -1387,9 +1387,9 @@ function delete_current_subject_id(ev) {
       }
     }
   });
-}
+};
 
-function delete_current_sample_id(ev) {
+const delete_current_sample_id = (ev) => {
   Swal.fire({
     title: "Are you sure you want to delete this sample?",
     showCancelButton: true,
@@ -1417,9 +1417,9 @@ function delete_current_sample_id(ev) {
       }
     }
   });
-}
+};
 
-function delete_current_protocol_id(ev) {
+const delete_current_protocol_id = (ev) => {
   Swal.fire({
     title: "Are you sure you want to delete this protocol?",
     showCancelButton: true,
@@ -1439,9 +1439,9 @@ function delete_current_protocol_id(ev) {
       updateIndexForTable(document.getElementById("protocol-link-table-dd"));
     }
   });
-}
+};
 
-function delete_current_additional_link_id(ev) {
+const delete_current_additional_link_id = (ev) => {
   Swal.fire({
     title: "Are you sure you want to delete this link?",
     showCancelButton: true,
@@ -1461,9 +1461,9 @@ function delete_current_additional_link_id(ev) {
       updateIndexForTable(document.getElementById("other-link-table-dd"));
     }
   });
-}
+};
 
-async function copy_current_subject_id(ev) {
+const copy_current_subject_id = async (ev) => {
   const { value: newSubject } = await Swal.fire({
     title: "Enter an ID for the new subject:",
     input: "text",
@@ -1501,9 +1501,9 @@ async function copy_current_subject_id(ev) {
       }
     }
   }
-}
+};
 
-async function copy_current_sample_id(ev) {
+const copy_current_sample_id = async (ev) => {
   const { value: newSubSam } = await Swal.fire({
     title: "Enter an ID for the new subject and sample: ",
     html:
@@ -1546,7 +1546,7 @@ async function copy_current_sample_id(ev) {
       }
     }
   }
-}
+};
 
 const updateIndexForTable = (table, boolUpdateIndex) => {
   // disable table to prevent further row-moving action before the updateIndexForTable finishes
@@ -1590,7 +1590,7 @@ const updateIndexForTable = (table, boolUpdateIndex) => {
   $("#table-samples").css("pointer-events", "auto");
 };
 
-function updateOrderIDTable(table, json, type) {
+const updateOrderIDTable = (table, json, type) => {
   var length = table.rows.length;
   // 1. make a new json object - orderedTableData
   var orderedTableData = [];
@@ -1618,9 +1618,9 @@ function updateOrderIDTable(table, json, type) {
   } else if (type === "samples") {
     samplesTableData = orderedTableData;
   }
-}
+};
 
-function updateOrderContributorTable(table, json) {
+const updateOrderContributorTable = (table, json) => {
   var length = table.rows.length;
   // 1. make a new json object - orderedTableData
   var orderedTableData = [];
@@ -1637,24 +1637,16 @@ function updateOrderContributorTable(table, json) {
     }
   }
   contributorArray = orderedTableData;
-}
-//
-// function generateSubjects() {
-//   ipcRenderer.send("open-folder-dialog-save-subjects", "subjects.xlsx");
-// }
-//
-// function generateSamples() {
-//   ipcRenderer.send("open-folder-dialog-save-samples", "samples.xlsx");
-// }
+};
 
-function showPrimaryBrowseFolder() {
+const showPrimaryBrowseFolder = () => {
   ipcRenderer.send("open-file-dialog-local-primary-folder");
-}
-function showPrimaryBrowseFolderSamples() {
+};
+const showPrimaryBrowseFolderSamples = () => {
   ipcRenderer.send("open-file-dialog-local-primary-folder-samples");
-}
+};
 
-function importPrimaryFolderSubjects(folderPath) {
+const importPrimaryFolderSubjects = (folderPath) => {
   headersArrSubjects = [];
   for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
     if (field.value === "" || field.value === undefined || field.value === "Select") {
@@ -1731,8 +1723,9 @@ function importPrimaryFolderSubjects(folderPath) {
       });
     }
   }
-}
-function importPrimaryFolderSamples(folderPath) {
+};
+
+const importPrimaryFolderSamples = (folderPath) => {
   headersArrSamples = [];
   for (var field of $("#form-add-a-sample").children().find(".samples-form-entry")) {
     if (field.value === "" || field.value === undefined || field.value === "Select") {
@@ -1823,9 +1816,9 @@ function importPrimaryFolderSamples(folderPath) {
       });
     }
   }
-}
+};
 
-function loadSubjectsDataToTable() {
+const loadSubjectsDataToTable = () => {
   var iconMessage = "success";
   var showConfirmButtonBool = false;
   // var text =
@@ -1865,9 +1858,9 @@ function loadSubjectsDataToTable() {
   });
   $("#button-generate-subjects").css("display", "block");
   $("#div-import-primary-folder-subjects").hide();
-}
+};
 
-function loadSamplesDataToTable() {
+const loadSamplesDataToTable = () => {
   // delete table rows except headers
   $("#table-samples tr:gt(0)").remove();
   for (var i = 1; i < samplesTableData.length; i++) {
@@ -1894,10 +1887,10 @@ function loadSamplesDataToTable() {
   }
   $("#button-generate-samples").css("display", "block");
   $("#div-import-primary-folder-samples").hide();
-}
+};
 
 // functions below are to show/add/cancel a custom header
-async function addCustomField(type, curationMode) {
+const addCustomField = async (type, curationMode) => {
   let subjectsHeaderArray = null;
   let samplesHeaderArray = null;
   if (curationMode == "free-form") {
@@ -1972,7 +1965,7 @@ async function addCustomField(type, curationMode) {
       addCustomHeader("samples", customField, curationMode);
     }
   }
-}
+};
 
 const addCustomHeader = (type, customHeaderValue, curationMode) => {
   let curationModeSelectorPrefix = "";
@@ -2048,7 +2041,7 @@ const addCustomHeader = (type, customHeaderValue, curationMode) => {
   }
 };
 
-function deleteCustomField(ev, customField, category, curationMode) {
+const deleteCustomField = (ev, customField, category, curationMode) => {
   // category 0 => subjects;
   // category 1 => samples
   Swal.fire({
@@ -2094,9 +2087,9 @@ function deleteCustomField(ev, customField, category, curationMode) {
       }
     }
   });
-}
+};
 
-function addExistingCustomHeader(customName) {
+const addExistingCustomHeader = (customName) => {
   var divElement = `
     <div class="div-dd-info">
       <div class="demo-controls-head">
@@ -2122,9 +2115,9 @@ function addExistingCustomHeader(customName) {
   `;
   $("#accordian-custom-fields").append(divElement);
   headersArrSubjects.push(customName);
-}
+};
 
-function addExistingCustomHeaderSamples(customName) {
+const addExistingCustomHeaderSamples = (customName) => {
   var divElement = `
     <div class="div-dd-info">
       <div class="demo-controls-head">
@@ -2150,7 +2143,7 @@ function addExistingCustomHeaderSamples(customName) {
   `;
   $("#accordian-custom-fields-samples").append(divElement);
   headersArrSamples.push(customName);
-}
+};
 
 var subjectsDestinationPath = "";
 var samplesDestinationPath = "";
@@ -2325,7 +2318,7 @@ $(document).ready(function () {
   });
 });
 
-function showExistingSubjectsFile() {
+const showExistingSubjectsFile = () => {
   if ($("#existing-subjects-file-destination").prop("placeholder") !== "Browse here") {
     Swal.fire({
       title: "Are you sure you want to import a different subjects file?",
@@ -2351,9 +2344,9 @@ function showExistingSubjectsFile() {
   } else {
     ipcRenderer.send("open-file-dialog-existing-subjects");
   }
-}
+};
 
-function showExistingSamplesFile() {
+const showExistingSamplesFile = () => {
   if ($("#existing-samples-file-destination").prop("placeholder") !== "Browse here") {
     Swal.fire({
       title: "Are you sure you want to import a different samples file?",
@@ -2379,9 +2372,9 @@ function showExistingSamplesFile() {
   } else {
     ipcRenderer.send("open-file-dialog-existing-samples");
   }
-}
+};
 
-function importExistingSubjectsFile() {
+const importExistingSubjectsFile = () => {
   var filePath = $("#existing-subjects-file-destination").prop("placeholder");
   if (filePath === "Browse here") {
     Swal.fire("No file chosen", "Please select a path to your subjects.xlsx file,", "error");
@@ -2428,9 +2421,9 @@ function importExistingSubjectsFile() {
       setTimeout(loadSubjectsFileToDataframe, 1000, filePath);
     }
   }
-}
+};
 
-function importExistingSamplesFile() {
+const importExistingSamplesFile = () => {
   var filePath = $("#existing-samples-file-destination").prop("placeholder");
   if (filePath === "Browse here") {
     Swal.fire("No file chosen", "Please select a path to your samples.xlsx file.", "error");
@@ -2478,9 +2471,9 @@ function importExistingSamplesFile() {
       setTimeout(loadSamplesFileToDataframe(filePath), 1000);
     }
   }
-}
+};
 
-async function checkBFImportSubjects() {
+const checkBFImportSubjects = async () => {
   Swal.fire({
     title: "Importing the subjects.xlsx file",
     html: "Please wait...",
@@ -2541,9 +2534,9 @@ async function checkBFImportSubjects() {
       Destinations.PENNSIEVE
     );
   }
-}
+};
 
-async function checkBFImportSamples() {
+const checkBFImportSamples = async () => {
   Swal.fire({
     title: "Importing the samples.xlsx file",
     html: "Please wait...",
@@ -2606,9 +2599,9 @@ async function checkBFImportSamples() {
       Destinations.PENNSIEVE
     );
   }
-}
+};
 
-function loadDataFrametoUI(type) {
+const loadDataFrametoUI = (type) => {
   var fieldSubjectEntries = [];
   for (var field of $("#form-add-a-subject").children().find(".subjects-form-entry")) {
     fieldSubjectEntries.push(field.name.toLowerCase());
@@ -2638,9 +2631,9 @@ function loadDataFrametoUI(type) {
     $("#button-fake-confirm-existing-bf-subjects-file-load").click();
     $($("#button-fake-confirm-existing-bf-subjects-file-load").siblings()[0]).hide();
   }
-}
+};
 
-function loadDataFrametoUISamples(type) {
+const loadDataFrametoUISamples = (type) => {
   // separate regular headers and custom headers
   const lowercasedHeaders = samplesTableData[0].map((header) => header.toLowerCase());
   var fieldSampleEntries = [];
@@ -2670,378 +2663,9 @@ function loadDataFrametoUISamples(type) {
     $("#button-fake-confirm-existing-bf-samples-file-load").click();
     $($("#button-fake-confirm-existing-bf-samples-file-load").siblings()[0]).hide();
   }
-}
+};
 
-//TODO: Dorian -> Remove this function (not supported anymore)
-// Go through Protocols workflow and remove functions related to connecting/importing
-// From Protocols.io
-// function preliminaryProtocolStep(type) {
-//   var credentials = loadExistingProtocolInfo();
-//   if (credentials[0]) {
-//     // show email for protocol account
-//     showProtocolCredentials(credentials[1], type);
-//   } else {
-//     protocolAccountQuestion(type, false);
-//   }
-// }
-
-//TODO: Dorian -> Remove this function (not supported anymore)
-// function protocolAccountQuestion(type, changeAccountBoolean) {
-//   if (changeAccountBoolean) {
-//     var titleText = "Do you want to connect to a different protocol account?";
-//   } else {
-//     var titleText = "Do you have an account with protocol.io?";
-//   }
-//   Swal.fire({
-//     title: titleText,
-//     showCancelButton: true,
-//     heightAuto: false,
-//     backdrop: "rgba(0,0,0, 0.4)",
-//     confirmButtonText:
-//       '<a target="_blank" href="https://www.protocols.io/developers" style="color:#fff;border-bottom:none">Yes, I do</a>',
-//     cancelButtonText: "No, I don't",
-//     allowEscapeKey: false,
-//     allowOutsideClick: false,
-//     reverseButtons: reverseSwalButtons,
-//   }).then(async (result) => {
-//     if (result.isConfirmed) {
-//       setTimeout(function () {
-//         connectProtocol(type);
-//       }, 1500);
-//     } else {
-//       if (!changeAccountBoolean) {
-//         if (type !== "DD") {
-//           Swal.fire(
-//             "Please create an account with protocol.io.",
-//             "SODA suggests you create an account with protocols.io first. For help with creating and sharing a protocol with SPARC, please visit <a target='_blank' href='https://sparc.science/help/1slXZSS2XtTYQsdY6mEJi5'>this dedicated webpage</a>.",
-//             "warning"
-//           );
-//         } else {
-//           const { value: formValue } = await Swal.fire({
-//             title: "Enter a protocol link:",
-//             text: " For help with creating and sharing a protocol with SPARC, please visit <a target='_blank' href='https://sparc.science/help/1slXZSS2XtTYQsdY6mEJi5'>this dedicated webpage</a>.",
-//             heightAuto: false,
-//             backdrop: "rgba(0,0,0, 0.4)",
-//             showCancelButton: true,
-//             confirmButtonText: "Add",
-//             cancelButtonText: "Cancel",
-//             width: "38rem",
-//             showCancelButton: true,
-//             allowEscapeKey: false,
-//             allowOutsideClick: false,
-//             html:
-//               '<label>Protocol URL: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one \'Protocol URLs or DOIs\' link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><input id="DD-protocol-link" class="swal2-input" placeholder="Enter a URL">' +
-//               '<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description"></textarea>',
-//             focusConfirm: false,
-//             preConfirm: () => {
-//               var link = $("#DD-protocol-link").val();
-//               let protocolLink = "";
-
-//               if ($("#DD-protocol-description").val() === "") {
-//                 Swal.showValidationMessage(`Please enter a short description!`);
-//               }
-
-//               var duplicate = checkLinkDuplicate(
-//                 link,
-//                 document.getElementById("protocol-link-table-dd")
-//               );
-//               if (duplicate) {
-//                 Swal.showValidationMessage(
-//                   "Duplicate protocol. The protocol you entered is already added."
-//                 );
-//               }
-
-//               if (link === "") {
-//                 Swal.showValidationMessage(`Please enter a link!`);
-//               } else {
-//                 if (doiRegex.declared({ exact: true }).test(link) === true) {
-//                   protocolLink = "DOI";
-//                 } else {
-//                   //check if link is valid
-//                   if (validator.isURL(link) != true) {
-//                     Swal.showValidationMessage(`Please enter a valid link`);
-//                   } else {
-//                     //link is valid url and check for 'doi' in link
-//                     if (link.includes("doi")) {
-//                       protocolLink = "DOI";
-//                     } else {
-//                       protocolLink = "URL";
-//                     }
-//                   }
-//                 }
-//               }
-//               return [
-//                 $("#DD-protocol-link").val(),
-//                 protocolLink,
-//                 "IsProtocolFor",
-//                 $("#DD-protocol-description").val(),
-//               ];
-//             },
-//           });
-//           if (formValue) {
-//             addProtocolLinktoTableDD(formValue[0], formValue[1], formValue[2], formValue[3]);
-//           }
-//         }
-//       }
-//     }
-//   });
-// }
-
-//TODO: Dorian -> Remove this function (not supported anymore)
-// async function connectProtocol(type) {
-//   const { value: protocolCredentials } = await Swal.fire({
-//     width: "fit-content",
-//     title: "Once you're signed in, grab your <i>private access token</i> and enter it below: ",
-//     html: '<div class="ui input" style="margin: 10px 0"><i style="margin-top: 12px; margin-right:10px; font-size:20px" class="lock icon"></i><input type="text" id="protocol-password" class="subjects-form-entry" placeholder="Private access token" style="padding-left:5px"></div>',
-//     imageUrl:
-//       "https://github.com/fairdataihub/SODA-for-SPARC/blob/main/docs/documentation/Prepare-metadata/subjects/protocol-info.png?raw=true",
-//     imageWidth: 450,
-//     imageHeight: 200,
-//     imageAlt: "Custom image",
-//     focusConfirm: false,
-//     confirmButtonText: "Let's connect",
-//     showCancelButton: true,
-//     showLoaderOnConfirm: true,
-//     heightAuto: false,
-//     allowEscapeKey: false,
-//     allowOutsideClick: false,
-//     backdrop: "rgba(0,0,0, 0.4)",
-//     reverseButtons: reverseSwalButtons,
-//     preConfirm: () => {
-//       var res = document.getElementById("protocol-password").value;
-//       if (res) {
-//         return res;
-//       } else {
-//         Swal.showValidationMessage("Please provide a access token to connect.");
-//         return false;
-//       }
-//     },
-//   });
-//   if (protocolCredentials) {
-//     sendHttpsRequestProtocol(protocolCredentials.trim(), "first-time", type);
-//   }
-// }
-
-// const protocolHostname = "www.protocols.io";
-// var protocolResearcherList = {};
-
-//TODO: Dorian -> Remove this function (not supported anymore)
-// function sendHttpsRequestProtocol(accessToken, accessType, filetype) {
-//   var protocolList = {};
-//   var protocolInfo = {
-//     hostname: protocolHostname,
-//     port: 443,
-//     path: `/api/v3/session/profile`,
-//     headers: { Authorization: `Bearer ${accessToken}` },
-//   };
-//   https.get(protocolInfo, (res) => {
-//     if (res.statusCode === 200) {
-//       res.setEncoding("utf8");
-//       res.on("data", async function (body) {
-//         var bodyRes = JSON.parse(body);
-//         saveProtocolInfo(accessToken, bodyRes.user.email);
-//         await grabResearcherProtocolList(
-//           bodyRes.user.username,
-//           bodyRes.user.email,
-//           accessToken,
-//           accessType,
-//           filetype
-//         );
-//       });
-//     } else {
-//       if (accessType === "first-time") {
-//         Swal.fire(
-//           "Failed to connect with protocol.io",
-//           "Please check your access token and try again.",
-//           "error"
-//         );
-//       }
-//     }
-//   });
-// }
-
-//TODO: Dorian -> Remove this function (not supported anymore)
-// function grabResearcherProtocolList(username, email, token, type, filetype) {
-//   if (type === "first-time") {
-//     Swal.fire({
-//       title: "Please wait...",
-//       heightAuto: false,
-//       backdrop: "rgba(0,0,0, 0.4)",
-//       allowEscapeKey: false,
-//       allowOutsideClick: false,
-//       didOpen: () => {
-//         Swal.showLoading();
-//       },
-//     });
-//   }
-//   var protocolInfoList = {
-//     hostname: protocolHostname,
-//     port: 443,
-//     path: `/api/v3/protocols?filter="shared_with_user"`,
-//     headers: { Authorization: `Bearer ${token}` },
-//   };
-//   https.get(protocolInfoList, (res) => {
-//     if (res.statusCode === 200) {
-//       let data = "";
-//       res.setEncoding("utf8");
-//       res.on("data", (d) => {
-//         data += d;
-//       });
-//       res.on("end", () => {
-//         var result = JSON.parse(data);
-//         protocolResearcherList = {};
-//         for (var item of result["items"]) {
-//           protocolResearcherList["https://www.protocols.io/view/" + item.uri] = item.title;
-//         }
-//         if (Object.keys(protocolResearcherList).length > 0) {
-//           if (type === "first-time") {
-//             Swal.fire({
-//               title: "Successfully connected! <br/>Loading your protocol information...",
-//               timer: 2000,
-//               timerProgressBar: false,
-//               allowEscapeKey: false,
-//               heightAuto: false,
-//               backdrop: "rgba(0,0,0, 0.4)",
-//               showConfirmButton: false,
-//               allowOutsideClick: false,
-//               didOpen: () => {
-//                 Swal.showLoading();
-//               },
-//             }).then((result) => {
-//               showProtocolCredentials(email, filetype);
-//             });
-//           }
-//         } else {
-//           if (type === "first-time") {
-//             Swal.fire({
-//               title: "Successfully connected",
-//               text: "However, at this moment, you do not have any protocol information for SODA to extract.",
-//               icon: "success",
-//               heightAuto: false,
-//               backdrop: "rgba(0,0,0, 0.4)",
-//             });
-//           }
-//         }
-//       });
-//     }
-//   });
-// }
-
-//TODO: Dorian -> Remove this function (not supported anymore)
-// async function showProtocolCredentials(email, filetype) {
-//   if (Object.keys(protocolResearcherList).length === 0) {
-//     var warningText = "You currently don't have any protocols.";
-//   } else {
-//     var warningText = "Please select a protocol.";
-//   }
-//   var htmlEle = `<div><h2>Protocol information: </h2><h3 style="text-align:left;display:flex; flex-direction: row; justify-content: space-between">Email: <span style="font-weight:500; text-align:left">${email}</span><span style="width: 40%; text-align:right"><a onclick="protocolAccountQuestion('${filetype}', true)" style="font-weight:500;text-decoration: underline">Change</a></span></h3><h3 style="text-align:left">Current protocols: </h3></div>`;
-//   const { value: protocol } = await Swal.fire({
-//     html: htmlEle,
-//     input: "select",
-//     inputOptions: protocolResearcherList,
-//     heightAuto: false,
-//     backdrop: "rgba(0,0,0, 0.4)",
-//     inputPlaceholder: "Select a protocol",
-//     showCancelButton: true,
-//     confirmButtonText: "Add",
-//     reverseButtons: reverseSwalButtons,
-//     inputValidator: (value) => {
-//       if (value) {
-//         if (filetype === "DD") {
-//           if (checkDuplicateLink(value, "protocol-link-table-dd")) {
-//             return "The link provided is already added to the table. Please provide a different protocol.";
-//           }
-//         }
-//       } else {
-//         return warningText;
-//       }
-//     },
-//   });
-//   if (protocol) {
-//     if (filetype === "subjects") {
-//       $("#bootbox-subject-protocol-title").val(protocolResearcherList[protocol]);
-//       $("#bootbox-subject-protocol-location").val(protocol);
-//     } else if (filetype === "samples") {
-//       $("#bootbox-sample-protocol-title").val(protocolResearcherList[protocol]);
-//       $("#bootbox-sample-protocol-location").val(protocol);
-//     } else {
-//       const { value: formValue } = await Swal.fire({
-//         html:
-//           '<label>Protocol Type: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one \'Protocol URLs or DOIs\' link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-select" class="swal2-input"><option value="Select">Select a type</option><option value="URL">URL</option><option value="DOI">DOI</option></select>' +
-//           '<label>Relation to the dataset: <i class="fas fa-info-circle swal-popover" data-content="URLs (if still private) / DOIs (if public) of protocols from protocols.io related to this dataset.<br />Note that at least one \'Protocol URLs or DOIs\' link is mandatory."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><select id="DD-protocol-link-relation" class="swal2-input"><option value="Select">Select a relation</option><option value="IsProtocolFor">IsProtocolFor</option><option value="HasProtocol">HasProtocol</option><option value="IsSoftwareFor">IsSoftwareFor</option><option value="HasSoftware">HasSoftware</option></select>' +
-//           '<label>Protocol description: <i class="fas fa-info-circle swal-popover" data-content="Optionally provide a short description of the link."rel="popover"data-placement="right"data-html="true"data-trigger="hover"></i></label><textarea id="DD-protocol-description" class="swal2-textarea" placeholder="Enter a description"></textarea>',
-//         title: "Fill in the below fields to add the protocol: ",
-//         focusConfirm: false,
-//         heightAuto: false,
-//         backdrop: "rgba(0,0,0, 0.4)",
-//         cancelButtonText: "Cancel",
-//         customClass: "swal-content-additional-link",
-//         showCancelButton: true,
-//         reverseButtons: reverseSwalButtons,
-//         heightAuto: false,
-//         width: "38rem",
-//         backdrop: "rgba(0,0,0, 0.4)",
-//         didOpen: () => {
-//           $(".swal-popover").popover();
-//         },
-//         preConfirm: () => {
-//           if ($("#DD-protocol-link-select").val() === "Select") {
-//             Swal.showValidationMessage(`Please choose a link type!`);
-//           }
-//           if ($("#DD-protocol-link-relation").val() === "Select") {
-//             Swal.showValidationMessage(`Please choose a link relation!`);
-//           }
-//           if ($("#DD-protocol-description").val() === "") {
-//             Swal.showValidationMessage(`Please enter a short description!`);
-//           }
-//           var duplicate = checkLinkDuplicate(
-//             protocol,
-//             document.getElementById("protocol-link-table-dd")
-//           );
-//           if (duplicate) {
-//             Swal.showValidationMessage(
-//               "Duplicate protocol. The protocol you entered is already added."
-//             );
-//           }
-//           return [
-//             protocol,
-//             $("#DD-protocol-link-select").val(),
-//             $("#DD-protocol-link-relation").val(),
-//             $("#DD-protocol-description").val(),
-//           ];
-//         },
-//       });
-//       if (formValue) {
-//         addProtocolLinktoTableDD(formValue[0], formValue[1], formValue[2], formValue[3]);
-//       }
-//     }
-//   }
-// }
-
-// TODO: Dorian -> remove this function
-// function saveProtocolInfo(token, email) {
-//   var content = parseJson(protocolConfigPath);
-//   content["access-token"] = token;
-//   content["email"] = email;
-//   fs.writeFileSync(protocolConfigPath, JSON.stringify(content));
-// }
-
-// TODO: Dorian -> remove function Not needed anymore
-// function loadExistingProtocolInfo() {
-//   var protocolExists = false;
-//   //// config and load live data from Protocol.io
-//   var protocolTokenContent = parseJson(protocolConfigPath);
-//   if (JSON.stringify(protocolTokenContent) !== "{}") {
-//     var protocolToken = protocolTokenContent["access-token"];
-//     if (protocolToken.trim() !== "") {
-//       sendHttpsRequestProtocol(protocolToken.trim(), "upon-loading");
-//       protocolExists = true;
-//     }
-//   }
-//   return [protocolExists, protocolTokenContent["email"]];
-// }
-
-async function addAdditionalLink() {
+const addAdditionalLink = async () => {
   const { value: values } = await Swal.fire({
     title: "Add additional link",
     html:
@@ -3114,9 +2738,9 @@ async function addAdditionalLink() {
   if (values) {
     addAdditionalLinktoTableDD(values[0], values[1], values[2], values[3]);
   }
-}
+};
 
-function checkLinkDuplicate(link, table) {
+const checkLinkDuplicate = (link, table) => {
   var duplicate = false;
   var rowcount = table.rows.length;
   for (var i = 1; i < rowcount; i++) {
@@ -3127,9 +2751,9 @@ function checkLinkDuplicate(link, table) {
     }
   }
   return duplicate;
-}
+};
 
-function hideDescriptionForDOIs() {
+const hideDescriptionForDOIs = () => {
   $("#DD-additional-link-description").val("");
   $("#DD-additional-link").val("");
   if ($("#DD-additional-link-type").val() === "Originating Article DOI") {
@@ -3139,9 +2763,9 @@ function hideDescriptionForDOIs() {
     $("#DD-additional-link-description").css("display", "block");
     $("#label-additional-link-description").css("display", "block");
   }
-}
+};
 
-function showAgeSection(ev, div, type) {
+const showAgeSection = (ev, div, type) => {
   var allDivsArr = [];
   if (type === "subjects") {
     allDivsArr = ["div-exact-age", "div-age-category", "div-age-range"];
@@ -3157,9 +2781,9 @@ function showAgeSection(ev, div, type) {
   for (var divEle of allDivsArr) {
     $("#" + divEle).addClass("hidden");
   }
-}
+};
 
-function readXMLScicrunch(xml, type, curationMode) {
+const readXMLScicrunch = (xml, type, curationMode) => {
   var parser = new DOMParser();
   var xmlDoc = parser.parseFromString(xml, "text/xml");
   var resultList = xmlDoc.getElementsByTagName("name"); // THE XML TAG NAME.
@@ -3202,4 +2826,4 @@ function readXMLScicrunch(xml, type, curationMode) {
     }
   }
   return res;
-}
+};
