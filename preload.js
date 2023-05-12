@@ -191,7 +191,7 @@ const updateOrganizationList = async (bfaccount) => {
 const confirm_click_function = () => {
   let temp = $(".bf-dataset-span").html();
   console.log("temp: ", temp);
-  if ($(".bf-dataset-span").html() == "None" || $(".bf-dataset-span").html() == "") {
+  if (temp == "None" || temp == "") {
     $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "none");
     $("#para-review-dataset-info-disseminate").text("None");
   } else {
@@ -714,7 +714,6 @@ const resetFFMUI = (ev) => {
   $("#add_edit_description_tab").removeClass("prev");
 
   $("#div_add_edit_banner").removeClass("show");
-  $("#div_add_edit_banner").hide();
   $("#add_edit_banner_tab").removeClass("prev");
 
   $("#add_license_tab").removeClass("prev");
@@ -1501,6 +1500,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         } else {
           showHideDropdownButtons("dataset", "show");
         }
+
         //currently changing it but not visually in the UI
         $("#bf_list_users_pi").val("Select PI");
 
