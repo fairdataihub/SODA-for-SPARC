@@ -200,9 +200,6 @@ $(document).ready(function () {
     currentCollectionNames.sort();
     collectionNames.sort();
 
-    console.log("current collection names: ", currentCollectionNames);
-    console.log("collection names: ", collectionNames);
-
     //put the gathered collection names to the tagify whitelist
     collectionDatasetTags.settings.whitelist = collectionNames;
     currentCollectionTags = currentCollectionNames;
