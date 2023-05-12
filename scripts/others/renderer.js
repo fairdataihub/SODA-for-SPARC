@@ -988,9 +988,9 @@ const apiVersionsMatch = async () => {
   //Load Default/global Pennsieve account if available
   if (hasConnectedAccountWithPennsieve()) {
     try {
-    updateBfAccountList();
+      updateBfAccountList();
     } catch (error) {
-      clientError(error)
+      clientError(error);
     }
   }
   checkNewAppVersion(); // Added so that version will be displayed for new users
