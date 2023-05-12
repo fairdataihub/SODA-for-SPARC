@@ -34,17 +34,12 @@ class Orcid(Resource):
 
 @api.route('/')
 class User(Resource):
-    parser = reqparse.RequestParser(bundle_errors=True)
-    parser.add_argument("pennsieve_account", type=str, required=True, help="Pennsieve account", location="args")
 
-    @api.expect(parser)
     @api.doc(response={200: "Success", 400: "Bad Request", 500: "Internal Server Error"}, description="Get a user's information.")
     def get(self):
-        data = self.parser.parse_args()
-        pennsieve_account = data.get("pennsieve_account")
 
         try:
-            return get_user(pennsieve_account)
+            return get_user()
         except Exception as e:
             api.abort(500, str(e))
 

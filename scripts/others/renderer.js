@@ -3855,14 +3855,22 @@ const loadDefaultAccount = async () => {
 
   let accounts = responseObject.data["defaultAccounts"];
 
+  console.log(accounts)
+
   if (accounts.length > 0) {
     var myitemselect = accounts[0];
-    defaultBfAccount = myitemselect;
 
-    $("#current-bf-account").text(myitemselect);
-    $("#current-bf-account-generate").text(myitemselect);
-    $("#create_empty_dataset_BF_account_span").text(myitemselect);
-    $(".bf-account-span").text(myitemselect);
+    // fetch the user's email and set that as the defaultBfAccount value
+    // this is used to set the default account in the UI
+    let userInformation = await api.getUserInformation()
+    let userEmail = userInformation.email
+
+
+    defaultBfAccount = userEmail;
+    $("#current-bf-account").text(defaultBfAccount);
+    $("#current-bf-account-generate").text(defaultBfAccount);
+    $("#create_empty_dataset_BF_account_span").text(defaultBfAccount);
+    $(".bf-account-span").text(defaultBfAccount);
     showHideDropdownButtons("account", "show");
     refreshBfUsersList();
     refreshBfTeamsList(bfListTeams);

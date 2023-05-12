@@ -45,7 +45,7 @@ def integrate_orcid_with_pennsieve(access_code, pennsieve_account):
     abort(400, "Invalid access code")
 
   
-def get_user(selected_account):
+def get_user():
   """
   Get a user's information.
   """
