@@ -2405,9 +2405,9 @@ const logFilesForUpload = (upload_folder_path) => {
 };
 
 const resetUploadLocalDataset = async () => {
-  let uploadLocalDatasetParentTab = document.querySelector("#upload_local_dataset_parent-tab")
+  let uploadLocalDatasetParentTab = document.querySelector("#upload_local_dataset_parent-tab");
 
-  const {value: result} = await Swal.fire({
+  const { value: result } = await Swal.fire({
     title: "Reset your progress?",
     icon: "warning",
     showCancelButton: true,
@@ -2417,20 +2417,20 @@ const resetUploadLocalDataset = async () => {
     cancelButtonColor: "#d33",
     confirmButtonText: "Yes",
     cancelButtonText: "No",
-  })
+  });
 
-  console.log(result)
+  console.log(result);
 
   if (!result) {
-    return
+    return;
   }
 
-  // remove the show class from all child elements except for the first two 
+  // remove the show class from all child elements except for the first two
   for (let i = 2; i < uploadLocalDatasetParentTab.children.length; i++) {
     uploadLocalDatasetParentTab.children[i].classList.remove("show");
   }
 
-  // hide the upload button 
+  // hide the upload button
   $("#button-submit-dataset").hide();
 
   // reset the input text original text
@@ -2439,9 +2439,7 @@ const resetUploadLocalDataset = async () => {
 
   // $("#selected-local-dataset-submit").placeholder = "Select a folder"
   // $("#selected-local-dataset-submit").value = "Select a folder"
-
-
-}
+};
 
 $("#button-submit-dataset").click(async () => {
   const progressfunction = () => {
@@ -2607,8 +2605,6 @@ $("#button-submit-dataset").click(async () => {
     }
   };
 
-
-
   // Create a clone of the progress bar for the navigation menu
   let progressSubmit = document.getElementById("div-progress-submit");
   let navContainer = document.getElementById("nav-items");
@@ -2672,7 +2668,7 @@ $("#button-submit-dataset").click(async () => {
   // make the button unclickable until the preflight checks fail or pass
   $("#button-submit-dataset").attr("disabled", true);
   $("#para-please-wait-manage-dataset").html("Please wait while we verify a few things...");
-  $("#para-progress-bar-status").html("")
+  $("#para-progress-bar-status").html("");
 
   let supplementary_checks = await run_pre_flight_checks(false);
   if (!supplementary_checks) {
@@ -2697,7 +2693,6 @@ $("#button-submit-dataset").click(async () => {
   var success_upload = true;
   var selectedbfaccount = defaultBfAccount;
   var selectedbfdataset = defaultBfDataset;
-
 
   log.info("Files selected for upload:");
   logFilesForUpload(pathSubmitDataset.placeholder);
@@ -2739,7 +2734,7 @@ $("#button-submit-dataset").click(async () => {
       log.info("Completed submit function");
 
       // hide the Upload dataset button to make sure that it isn't clickable until the user selects another dataset to upload
-      $("#button-submit-dataset").hide()
+      $("#button-submit-dataset").hide();
 
       // can tell us how many successful upload sessions a dataset ID had (the value is implicitly set to 1 via Total Events query in Analytics) within a given timeframe
       ipcRenderer.send(
