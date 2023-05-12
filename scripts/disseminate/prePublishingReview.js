@@ -437,7 +437,6 @@ const resetffmPrepublishingUI = async () => {
     // show the withdraw button
     // TODO: Dorian -> Remove withdraw button and show message instead
     $("#unshare-dataset-with-curation-team-message").removeClass("hidden");
-    // $("#prepublishing-withdraw-btn-container button").show();
     $(".pre-publishing-continue-container").hide();
     $("#prepublishing-checklist-container").hide();
 
@@ -448,8 +447,6 @@ const resetffmPrepublishingUI = async () => {
   $("#prepublishing-checklist-container").show();
   $(".pre-publishing-continue-container").show();
   $("#unshare-dataset-with-curation-team-message").addClass("hidden");
-  // $("#prepublishing-withdraw-btn-container").hide();
-  // $("#prepublishing-withdraw-btn-container button").hide();
   return false;
 };
 
