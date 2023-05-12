@@ -987,7 +987,11 @@ const apiVersionsMatch = async () => {
 
   //Load Default/global Pennsieve account if available
   if (hasConnectedAccountWithPennsieve()) {
+    try {
     updateBfAccountList();
+    } catch (error) {
+      clientError(error)
+    }
   }
   checkNewAppVersion(); // Added so that version will be displayed for new users
 };
@@ -3868,7 +3872,7 @@ const loadDefaultAccount = async () => {
     $("#current-bf-account-generate").text(userEmail);
     $("#create_empty_dataset_BF_account_span").text(userEmail);
     $(".bf-account-span").text(userEmail);
-    
+
     showHideDropdownButtons("account", "show");
     refreshBfUsersList();
     refreshBfTeamsList(bfListTeams);
