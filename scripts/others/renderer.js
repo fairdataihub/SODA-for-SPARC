@@ -987,7 +987,11 @@ const apiVersionsMatch = async () => {
 
   //Load Default/global Pennsieve account if available
   if (hasConnectedAccountWithPennsieve()) {
-    updateBfAccountList();
+    try {
+      updateBfAccountList();
+    } catch (error) {
+      clientError(error);
+    }
   }
   checkNewAppVersion(); // Added so that version will be displayed for new users
 };
@@ -3857,12 +3861,18 @@ const loadDefaultAccount = async () => {
 
   if (accounts.length > 0) {
     var myitemselect = accounts[0];
+    // keep the defaultBfAccount value as the user's profile config key value for reference later
     defaultBfAccount = myitemselect;
 
-    $("#current-bf-account").text(myitemselect);
-    $("#current-bf-account-generate").text(myitemselect);
-    $("#create_empty_dataset_BF_account_span").text(myitemselect);
-    $(".bf-account-span").text(myitemselect);
+    // fetch the user's email and set that as the account field's value
+    let userInformation = await api.getUserInformation();
+    let userEmail = userInformation.email;
+
+    $("#current-bf-account").text(userEmail);
+    $("#current-bf-account-generate").text(userEmail);
+    $("#create_empty_dataset_BF_account_span").text(userEmail);
+    $(".bf-account-span").text(userEmail);
+
     showHideDropdownButtons("account", "show");
     refreshBfUsersList();
     refreshBfTeamsList(bfListTeams);
