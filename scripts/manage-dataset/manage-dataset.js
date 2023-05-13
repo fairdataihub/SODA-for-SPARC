@@ -2434,7 +2434,7 @@ const resetUploadLocalDataset = async () => {
   $("#button-submit-dataset").hide();
 
   // reset the input text original text
-  document.querySelector("#selected-local-dataset-submit").value = "Select a folder";
+  // document.querySelector("#selected-local-dataset-submit").value = "Select a folder";
   document.querySelector("#selected-local-dataset-submit").placeholder = "Select a folder";
 
   // $("#selected-local-dataset-submit").placeholder = "Select a folder"
@@ -2541,6 +2541,10 @@ $("#button-submit-dataset").click(async () => {
           },
           hideClass: {
             popup: "animate__animated animate__zoomOut animate__faster",
+          },
+          didOpen: () => {
+            document.getElementById("swal2-content").style.maxHeight = "19rem";
+            document.getElementById("swal2-content").style.overflowY = "auto";
           },
         }).then((result) => {
           progressClone.remove();
@@ -2783,8 +2787,8 @@ $("#button-submit-dataset").click(async () => {
       $("#para-progress-bar-status").html("");
       cloneStatus.innerHTML = "";
       $("#div-progress-submit").css("display", "none");
-      document.getElementById("para-progress-bar-error-status").style = "color: red";
-      document.getElementById("para-progress-bar-error-status").innerHTML = emessage;
+      // document.getElementById("para-progress-bar-error-status").style = "color: red";
+      // document.getElementById("para-progress-bar-error-status").innerHTML = emessage;
       success_upload = false;
       organizeDatasetButton.disabled = false;
       curateExistingDatasetButton.disabled = false;
@@ -2801,6 +2805,10 @@ $("#button-submit-dataset").click(async () => {
         title: "There was an issue uploading your dataset",
         html: emessage,
         allowOutsideClick: false,
+        didOpen: () => {
+          document.getElementById("swal2-content").style.maxHeight = "19rem";
+          document.getElementById("swal2-content").style.overflowY = "auto";
+        },
       }).then((result) => {
         progressClone.remove();
         sparc_logo.style.display = "inline";
@@ -2882,94 +2890,6 @@ $("#button-submit-dataset").click(async () => {
   let statusMessage = "Error";
 
   let uploadErrorChildren = document.querySelector("#para-progress-bar-error-status").childNodes;
-
-  //   const monitorBucketUpload = () => {
-  //     // ask the server for the amount of files uploaded in the current session
-  //     client
-  //       .get("/manage_datasets/datasets/upload_details")
-  //       .then((detailsResponse) => {
-  //         let detailsData = detailsResponse.data;
-  //         if (
-  //           detailsData["uploaded_files"] > 0 &&
-  //           detailsData["upload_folder_count"] > uploadedFolders
-  //         ) {
-  //           uploadedFiles = detailsData["uploaded_files"];
-  //           previousUploadedFileSize = uploadedFileSize;
-  //           uploadedFileSize = detailsData["uploaded_file_size"];
-  //           let didFail = detailsData["did_fail"];
-  //           let didUpload = detailsData["did_upload"];
-  //           uploadedFolders = detailsData["upload_folder_count"];
-
-  //           // analytics places values with matching action and label pairs into a single 'bucket/aggregate'
-  //           // so log the increase in size at every step to get the sum total size of the uploaded files
-  //           incrementInFileSize = uploadedFileSize - previousUploadedFileSize;
-
-  //           // failed to upload a bucket, but did upload some files
-  //           if (didFail && didUpload) {
-  //             // even when the upload fails we want to know how many files were uploaded and their size
-  //             // for the current upload session
-  //             ipcRenderer.send(
-  //               "track-event",
-  //               "Success",
-  //               ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-  //               ` - Number of Files`,
-  //               `${datasetUploadSession.id}`,
-  //               250
-  //             );
-
-  //             ipcRenderer.send(
-  //               "track-event",
-  //               "Success",
-  //               ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-  //               " - size",
-  //               `${datasetUploadSession.id}`,
-  //               incrementInFileSize
-  //             );
-
-  //             return;
-  //           } else if (didFail && !didUpload) {
-  //             // there is no session information to log outside of the general information logged in the
-  //             // error for api_bf_submit
-  //             return;
-  //           } else {
-  //             // track the amount of files uploaded for the current bucket
-  //             ipcRenderer.send(
-  //               "track-event",
-  //               "Success",
-  //               ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-  //               ` - Number of Files`,
-  //               `${datasetUploadSession.id}`,
-  //               uploadedFiles
-  //             );
-
-  //             ipcRenderer.send(
-  //               "track-event",
-  //               "Success",
-  //               ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-  //               " - size",
-  //               `${datasetUploadSession.id}`,
-  //               incrementInFileSize
-  //             );
-  //           }
-  //         }
-  //       })
-  //       .catch((error) => {
-  //         clientError(error);
-  //         //Clear the interval to stop the generation of new sweet alerts after intitial error
-  //         clearInterval(uploadDetailsTimer);
-  //       });
-
-  //     // if completion status was not set to done clear interval when the error span gets an error message
-  //     if (completionStatus === "Done" || uploadErrorChildren.length > 0) {
-  //       countDone++;
-
-  //       if (countDone > 1) {
-  //         clearInterval(uploadDetailsTimer);
-  //       }
-  //     }
-  //   };
-
-  //   var uploadDetailsTimer = setInterval(monitorBucketUpload, 1000);
 });
 
 const addRadioOption = (ul, text, val) => {
