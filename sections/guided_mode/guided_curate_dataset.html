@@ -4167,23 +4167,9 @@
         <div id="guided-add-code-metadata-tab" class="guided--page" data-page-name="Code metadata">
           <div class="guided--section">
             <h1 class="text-sub-step-title">Code-related metadata</h1>
-            <p class="help-text">
-              The code_description metadata file is required for all datasets that include
-              computation modeling related code files. It contains information that describes the
-              code in terms of its quality. This file is typically prepared through
-              <a href="https://osparc.io/" target="_blank">osparc.io</a>, an interactive, online
-              simulation platform that hosts SPARC computational models and solvers. Prepare the
-              code_description metadata files on osparc then continue below. For help, please reach
-              out to
-              <a href="mailto:curation@sparc.science" target="_blank">the SPARC Curation Team.</a>
-              Alternatively, you can download the code_description.xslx template
-              <a id="guided-data-deliverables-download-button" style="text-decoration: underline"
-                >here</a
-              >
-              and fill it out manually
-            </p>
           </div>
-          <div class="guided--section">
+
+          <div class="guided--section" id="guided-section-start-new-code-metadata-query">
             <label class="guided--form-label centered">
               Does your dataset contain computational modeling-related code files?
             </label>
@@ -4209,8 +4195,51 @@
               </button>
             </div>
           </div>
+          <div class="guided--section" id="guided-section-start-from-pennsieve-code-metadata-query">
+            <label class="guided--form-label centered">
+              A code_description file already exists on Pennsieve for this dataset.
+              <br /><br />
+              Would you like to update it?
+            </label>
+
+            <div class="guided--radio-button-container">
+              <button
+                class="ui positive button guided--radio-button"
+                id="guided-button-update-code-description-on-pennsieve"
+                data-next-element="guided-section-import-computational-modeling-data"
+                data-button-config-value="update-code-description-on-pennsieve"
+                data-button-config-value-state="yes"
+              >
+                Yes
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button"
+                id="guided-button-keep-code-description-on-pennsieve"
+                data-next-element="guided-section-user-chose-not-to-update-code-description"
+                data-button-config-value="update-code-description-on-pennsieve"
+                data-button-config-value-state="no"
+              >
+                No
+              </button>
+            </div>
+          </div>
 
           <div class="guided--section" id="guided-section-import-computational-modeling-data">
+            <p class="help-text">
+              The code_description metadata file is required for all datasets that include
+              computation modeling related code files. It contains information that describes the
+              code in terms of its quality. This file is typically prepared through
+              <a href="https://osparc.io/" target="_blank">osparc.io</a>, an interactive, online
+              simulation platform that hosts SPARC computational models and solvers. Prepare the
+              code_description metadata files on osparc then continue below. For help, please reach
+              out to
+              <a href="mailto:curation@sparc.science" target="_blank">the SPARC Curation Team.</a>
+              Alternatively, you can download the code_description.xslx template
+              <a id="guided-data-deliverables-download-button" style="text-decoration: underline"
+                >here</a
+              >
+              and fill it out manually
+            </p>
             <h2 class="text-sub-step-title">Import the code_description metadata file</h2>
             <p class="help-text small text-center mt-sm">
               <b>The code_description file must be in .xlsx format (code_description.xlsx)</b>
@@ -4248,6 +4277,17 @@
           <div class="guided--section" id="guided-section-no-computational-modeling-data">
             <h2 class="guided--text-click-continue">
               Click "<span class="next-button-span"></span>" below.
+            </h2>
+          </div>
+          <div
+            class="guided--section"
+            id="guided-section-user-chose-not-to-update-code-description"
+          >
+            <h2 class="guided--text-click-continue">
+              Your code_description file will remain on Pennsieve as is. Click "<span
+                class="next-button-span"
+              ></span
+              >" below.
             </h2>
           </div>
         </div>

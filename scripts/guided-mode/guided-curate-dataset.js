@@ -1256,52 +1256,112 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-add-code-metadata-tab") {
-      const buttonYesComputationalModelingData = document.getElementById(
-        "guided-button-has-computational-modeling-data"
+      const startNewCodeDescYesNoContainer = document.getElementById(
+        "guided-section-start-new-code-metadata-query"
       );
-      const buttonNoComputationalModelingData = document.getElementById(
-        "guided-button-no-computational-modeling-data"
+      const startPennsieveCodeDescYesNoContainer = document.getElementById(
+        "guided-section-start-from-pennsieve-code-metadata-query"
       );
 
-      if (
-        !buttonYesComputationalModelingData.classList.contains("selected") &&
-        !buttonNoComputationalModelingData.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please specify if your dataset contains computational modeling data",
-        });
-        throw errorArray;
-      }
-
-      if (buttonYesComputationalModelingData.classList.contains("selected")) {
-        const codeDescriptionPathElement = document.getElementById(
-          "guided-code-description-para-text"
+      if (!startNewCodeDescYesNoContainer.classList.contains("hidden")) {
+        const buttonYesComputationalModelingData = document.getElementById(
+          "guided-button-has-computational-modeling-data"
         );
-        //check if the innerhtml of the code description path element is a valid path
-        if (codeDescriptionPathElement.innerHTML === "") {
+        const buttonNoComputationalModelingData = document.getElementById(
+          "guided-button-no-computational-modeling-data"
+        );
+
+        if (
+          !buttonYesComputationalModelingData.classList.contains("selected") &&
+          !buttonNoComputationalModelingData.classList.contains("selected")
+        ) {
           errorArray.push({
             type: "notyf",
-            message: "Please import your code description file",
+            message: "Please specify if your dataset contains computational modeling data",
           });
           throw errorArray;
         }
 
-        const codeDescriptionPath = codeDescriptionPathElement.innerHTML;
-        //Check if the code description file is valid
-        if (!fs.existsSync(codeDescriptionPath)) {
-          errorArray.push({
-            type: "notyf",
-            message: "The imported code_description file is not valid",
-          });
-          throw errorArray;
+        if (buttonYesComputationalModelingData.classList.contains("selected")) {
+          const codeDescriptionPathElement = document.getElementById(
+            "guided-code-description-para-text"
+          );
+          //check if the innerhtml of the code description path element is a valid path
+          if (codeDescriptionPathElement.innerHTML === "") {
+            errorArray.push({
+              type: "notyf",
+              message: "Please import your code description file",
+            });
+            throw errorArray;
+          }
+
+          const codeDescriptionPath = codeDescriptionPathElement.innerHTML;
+          //Check if the code description file is valid
+          if (!fs.existsSync(codeDescriptionPath)) {
+            errorArray.push({
+              type: "notyf",
+              message: "The imported code_description file does not exist at the selected path",
+            });
+            throw errorArray;
+          }
+        }
+
+        if (buttonNoComputationalModelingData.classList.contains("selected")) {
+          //If the user had imported a code description file, remove it
+          if (sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"]) {
+            delete sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"];
+          }
         }
       }
+      if (!startPennsieveCodeDescYesNoContainer.classList.contains("hidden")) {
+        const buttonUpdateCodeDescription = document.getElementById(
+          "guided-button-update-code-description-on-pennsieve"
+        );
+        const buttonKeepCodeDescription = document.getElementById(
+          "guided-button-keep-code-description-on-pennsieve"
+        );
 
-      if (buttonNoComputationalModelingData.classList.contains("selected")) {
-        //If the user had imported a code description file, remove it
-        if (sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"]) {
-          delete sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"];
+        if (
+          !buttonUpdateCodeDescription.classList.contains("selected") &&
+          !buttonKeepCodeDescription.classList.contains("selected")
+        ) {
+          errorArray.push({
+            type: "notyf",
+            message:
+              "Please specify if you would like to update your code_description file on Pennsieve",
+          });
+          throw errorArray;
+        }
+
+        if (buttonUpdateCodeDescription.classList.contains("selected")) {
+          const codeDescriptionPathElement = document.getElementById(
+            "guided-code-description-para-text"
+          );
+          //check if the innerhtml of the code description path element is a valid path
+          if (codeDescriptionPathElement.innerHTML === "") {
+            errorArray.push({
+              type: "notyf",
+              message: "Please import your code description file",
+            });
+            throw errorArray;
+          }
+
+          const codeDescriptionPath = codeDescriptionPathElement.innerHTML;
+          //Check if the code description file is valid
+          if (!fs.existsSync(codeDescriptionPath)) {
+            errorArray.push({
+              type: "notyf",
+              message: "The imported code_description file does not exist at the selected path",
+            });
+            throw errorArray;
+          }
+        }
+
+        if (buttonKeepCodeDescription.classList.contains("selected")) {
+          //If the user had imported a code description file, remove it
+          if (sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"]) {
+            delete sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"];
+          }
         }
       }
     }
@@ -4303,6 +4363,7 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
 };
 
 const resetGuidedRadioButtons = (parentPageID) => {
+  console.log(parentPageID);
   const parentPage = document.getElementById(parentPageID);
   const guidedRadioButtons = parentPage.querySelectorAll(".guided--radio-button");
   for (const guidedRadioButton of guidedRadioButtons) {
@@ -5883,7 +5944,14 @@ const openPage = async (targetPageID) => {
         ? samplesProtocolContainer.classList.remove("hidden")
         : samplesProtocolContainer.classList.add("hidden");
     }
+
     if (targetPageID === "guided-add-code-metadata-tab") {
+      const startNewCodeDescYesNoContainer = document.getElementById(
+        "guided-section-start-new-code-metadata-query"
+      );
+      const startPennsieveCodeDescYesNoContainer = document.getElementById(
+        "guided-section-start-from-pennsieve-code-metadata-query"
+      );
       if (pageNeedsUpdateFromPennsieve("guided-add-code-metadata-tab")) {
         // Show the loading page while the page's data is being fetched from Pennsieve
         setPageLoadingState(true);
@@ -5891,15 +5959,26 @@ const openPage = async (targetPageID) => {
           await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
               selected_account: defaultBfAccount,
-              selected_dataset: pennsieveDatasetID,
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
               file_type: "code_description.xlsx",
             },
           });
+          sodaJSONObj["pennsieve-dataset-has-code-metadata-file"] = "yes";
           console.log("code_description file exists");
         } catch (error) {
           console.log("code_description file does not exist");
         }
       }
+      // If the code_description file has been detected on the dataset on Pennsieve, show the
+      // "Start from Pennsieve" option, otherwise show the "Start new" option
+      if (sodaJSONObj["pennsieve-dataset-has-code-metadata-file"] === "yes") {
+        startNewCodeDescYesNoContainer.classList.add("hidden");
+        startPennsieveCodeDescYesNoContainer.classList.remove("hidden");
+      } else {
+        startNewCodeDescYesNoContainer.classList.remove("hidden");
+        startPennsieveCodeDescYesNoContainer.classList.add("hidden");
+      }
+
       const codeDescriptionPath =
         sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"];
 
@@ -6953,6 +7032,9 @@ const guidedGetPageToReturnTo = (sodaJSONObj) => {
     if (sodaJSONObj["previous-guided-upload-dataset-name"]) {
       return "guided-dataset-dissemination-tab";
     }
+
+    // If no other conditions are met, return the page the user was last on
+    return usersPageBeforeExit;
 
     // if (!sodaJSONObj["special-rejoin-key"]) {
     //   sodaJSONObj["special-rejoin-key"] = "now-i-wont-return-to-the-first-page";
@@ -12677,6 +12759,7 @@ $(document).ready(async () => {
       guidedUploadStatusIcon("guided-samples-metadata-upload-status", "error");
       samplesMetadataUploadText.innerHTML = `Failed to upload samples metadata`;
       clientError(error);
+      throw new Error(error);
     }
   };
   const guidedUploadSubmissionMetadata = async (bfAccount, datasetName, submissionMetadataJSON) => {
@@ -13096,7 +13179,9 @@ $(document).ready(async () => {
         }
       }
 
-      if (fs.existsSync(sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"])) {
+      // If the code_description was provided, upload to Pennsieve
+      // (This key is only set if the user choses yes to add/update code description)
+      if (sodaJSONObj?.["dataset-metadata"]?.["code-metadata"]?.["code_description"]) {
         await guidedUploadCodeDescriptionMetadata(
           guidedBfAccount,
           guidedDatasetName,
