@@ -12190,16 +12190,8 @@ $(document).ready(async () => {
           openGuidedDatasetRenameSwal();
         });
       }
-      Swal.fire({
-        title: `Failed to create a new dataset.`,
-        text: emessage,
-        showCancelButton: false,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        icon: "error",
-      });
 
-      throw emessage;
+      throw new Error(userErrorMessage(error));
     }
   };
 
@@ -12241,6 +12233,7 @@ $(document).ready(async () => {
       let emessage = userErrorMessage(error);
       datasetSubtitleUploadText.innerHTML = "Failed to add a dataset subtitle.";
       guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "error");
+      throw new Error(userErrorMessage(error));
     }
   };
 
@@ -12288,6 +12281,8 @@ $(document).ready(async () => {
     } catch (error) {
       datasetDescriptionUploadText.innerHTML = "Failed to add a dataset description.";
       guidedUploadStatusIcon("guided-dataset-description-upload-status", "error");
+
+      throw new Error(userErrorMessage(error));
     }
   };
   const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePath) => {
@@ -12326,9 +12321,10 @@ $(document).ready(async () => {
       await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       console.error(error);
-      let emessage = userErrorMessage(error);
       datasetBannerImageUploadText.innerHTML = "Failed to add a dataset banner image.";
       guidedUploadStatusIcon("guided-dataset-banner-image-upload-status", "error");
+
+      throw new Error(userErrorMessage(error));
     }
   };
   const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) => {
@@ -12364,63 +12360,10 @@ $(document).ready(async () => {
       await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       console.error(error);
-      let emessage = userErrorMessage(error);
       datasetLicenseUploadText.innerHTML = "Failed to add a dataset license.";
       guidedUploadStatusIcon("guided-dataset-license-upload-status", "error");
-    }
-  };
 
-  const guidedAddPiOwner = async (bfAccount, datasetName, piOwnerObj) => {
-    let loggedInUserIsNotPiOwner;
-    for (user of sodaJSONObj["digital-metadata"]["user-permissions"]) {
-      if (user.loggedInUser) {
-        //if logged in user has a user permission, then someone else is set as pi owner
-        loggedInUserIsNotPiOwner = true;
-      }
-    }
-
-    document.getElementById("guided-dataset-pi-owner-upload-tr").classList.remove("hidden");
-    const datasetPiOwnerUploadText = document.getElementById("guided-dataset-pi-owner-upload-text");
-    datasetPiOwnerUploadText.innerHTML = "Adding PI owner...";
-    guidedUploadStatusIcon("guided-dataset-pi-owner-upload-status", "loading");
-
-    if (loggedInUserIsNotPiOwner) {
-      const previouslyUploadedPiOwnerObj = sodaJSONObj["previously-uploaded-data"]["pi-owner"];
-
-      if (previouslyUploadedPiOwnerObj === piOwnerObj) {
-        datasetPiOwnerUploadText.innerHTML = "PI owner already added on Pennsieve";
-        guidedUploadStatusIcon("guided-dataset-pi-owner-upload-status", "success");
-        return;
-      }
-
-      try {
-        await client.patch(
-          `/manage_datasets/bf_dataset_permissions`,
-          {
-            input_role: "owner",
-          },
-          {
-            params: {
-              selected_account: bfAccount,
-              selected_dataset: datasetName,
-              scope: "user",
-              name: piOwnerObj["UUID"],
-            },
-          }
-        );
-        datasetPiOwnerUploadText.innerHTML = `Successfully added PI: ${piOwnerObj["name"]}`;
-        guidedUploadStatusIcon("guided-dataset-pi-owner-upload-status", "success");
-        sodaJSONObj["previously-uploaded-data"]["pi-owner"] = piOwnerObj;
-        await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-      } catch (error) {
-        console.error(error);
-        let emessage = userErrorMessage(error);
-        datasetPiOwnerUploadText.innerHTML = "Failed to add a PI owner.";
-        guidedUploadStatusIcon("guided-dataset-pi-owner-upload-status", "error");
-      }
-    } else {
-      datasetPiOwnerUploadText.innerHTML = `Successfully added PI: ${piOwnerObj["name"]}`;
-      guidedUploadStatusIcon("guided-dataset-pi-owner-upload-status", "success");
+      throw new Error(userErrorMessage(error));
     }
   };
 
@@ -12456,6 +12399,8 @@ $(document).ready(async () => {
     } catch (error) {
       datasetTagsUploadText.innerHTML = "Failed to add dataset tags.";
       guidedUploadStatusIcon("guided-dataset-tags-upload-status", "error");
+
+      throw new Error(userErrorMessage(error));
     }
   };
 
@@ -12724,6 +12669,7 @@ $(document).ready(async () => {
       guidedUploadStatusIcon("guided-subjects-metadata-upload-status", "error");
       subjectsMetadataUploadText.innerHTML = `Failed to upload subjects metadata`;
       clientError(error);
+      throw new Error(userErrorMessage(error));
     }
   };
   const guidedUploadSamplesMetadata = async (bfAccount, datasetName, samplesTableData) => {
@@ -12766,7 +12712,8 @@ $(document).ready(async () => {
       guidedUploadStatusIcon("guided-samples-metadata-upload-status", "error");
       samplesMetadataUploadText.innerHTML = `Failed to upload samples metadata`;
       clientError(error);
-      throw new Error(error);
+
+      throw new Error(userErrorMessage(error));
     }
   };
   const guidedUploadSubmissionMetadata = async (bfAccount, datasetName, submissionMetadataJSON) => {
@@ -12811,8 +12758,8 @@ $(document).ready(async () => {
       guidedUploadStatusIcon("guided-submission-metadata-upload-status", "error");
       submissionMetadataUploadText.innerHTML = `Failed to upload submission metadata`;
       clientError(error);
-      const emessage = userErrorMessage(error);
-      throw new Error(emessage);
+
+      throw new Error(userErrorMessage(error));
     }
   };
 
@@ -12883,8 +12830,8 @@ $(document).ready(async () => {
       guidedUploadStatusIcon("guided-dataset-description-metadata-upload-status", "error");
       datasetDescriptionMetadataUploadText.innerHTML = `Failed to upload dataset description metadata`;
       clientError(error);
-      const emessage = userErrorMessage(error);
-      throw new Error(emessage);
+
+      throw new Error(userErrorMessage(error));
     }
   };
 
@@ -12914,6 +12861,8 @@ $(document).ready(async () => {
       guidedUploadStatusIcon("guided-code-description-metadata-upload-status", "error");
       codeDescriptionMetadataUploadText.innerHTML = `Failed to upload code description metadata`;
       clientError(error);
+
+      throw new Error(userErrorMessage(error));
     }
   };
 
@@ -12967,6 +12916,8 @@ $(document).ready(async () => {
       guidedUploadStatusIcon(`guided-${readmeORchanges}-metadata-upload-status`, "error");
       datasetDescriptionMetadataUploadText.innerHTML = `Failed to upload ${readmeORchanges.toUpperCase()} metadata`;
       clientError(error);
+
+      throw new Error(userErrorMessage(error));
     }
   };
 
@@ -13120,7 +13071,6 @@ $(document).ready(async () => {
       await guidedAddDatasetBannerImage(guidedBfAccount, guidedDatasetName, guidedBannerImagePath);
       await guidedAddDatasetLicense(guidedBfAccount, guidedDatasetName, guidedLicense);
       await guidedAddDatasetTags(guidedBfAccount, guidedDatasetName, guidedTags);
-      // await guidedAddPiOwner(guidedBfAccount, guidedDatasetName, guidedPIOwner);
       await guidedAddUserPermissions(guidedBfAccount, guidedDatasetName, guidedUsers);
       await guidedAddTeamPermissions(guidedBfAccount, guidedDatasetName, guidedTeams);
 
