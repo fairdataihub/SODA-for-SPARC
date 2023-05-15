@@ -622,7 +622,7 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
 const getPennsieveAgentVersion = async (pathToPennsieveAgent) => {
   return new Promise((resolve, reject) => {
     try {
-      // Timeout if the agent was not able to be retrieved within 7 seconds
+      // // Timeout if the agent was not able to be retrieved within 7 seconds
       const versionCheckTimeout = setTimeout(() => {
         reject(
           new Error(
@@ -3863,6 +3863,7 @@ const loadDefaultAccount = async () => {
     var myitemselect = accounts[0];
     // keep the defaultBfAccount value as the user's profile config key value for reference later
     defaultBfAccount = myitemselect;
+    console.log(defaultBfAccount);
 
     // fetch the user's email and set that as the account field's value
     let userInformation = await api.getUserInformation();
@@ -7070,7 +7071,7 @@ $("#inputNewNameDataset").keyup(function () {
       $("#btn-confirm-new-dataset-name").hide();
       document.getElementById("para-new-name-dataset-message").innerHTML =
         "Error: A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.";
-      // $("#nextBtn").prop("disabled", true);
+      // $("#nextBtn").prop("disabled", true)
       $("#Question-generate-dataset-generate-div-old").removeClass("show");
       $("#div-confirm-inputNewNameDataset").css("display", "none");
       $("#btn-confirm-new-dataset-name").hide();
