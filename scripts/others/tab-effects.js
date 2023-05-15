@@ -3602,7 +3602,10 @@ $(document).ready(() => {
     $(".section").addClass("fullShown");
   });
 
-  $(".footer-div div button").click(() => {
+  $(".footer-div div button").click((ev) => {
+    if (ev.currentTarget.id === "reset-local-upload") {
+      return;
+    }
     $("#main-nav").removeClass("active");
     if ($("#sidebarCollapse").hasClass("active")) {
       $("#sidebarCollapse").removeClass("active");
