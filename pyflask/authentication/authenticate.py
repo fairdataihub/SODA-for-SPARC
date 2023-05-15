@@ -111,7 +111,6 @@ def bf_delete_default_profile():
     
     default_profile_name = config["global"]["default_profile"]
     config.remove_section("global")
-    config.remove_section(default_profile_name)
 
     with open(configpath, "w") as configfile:
         config.write(configfile)
@@ -169,7 +168,11 @@ def bf_add_account_username(keyname, key, secret):
     global namespace_logger
 
     temp_keyname = "SODA_temp_generated"
-    # first delete the pre-existing profile if one exists
+    # first delete the pre-existing default_profile entry , but not the profile itself 
+
+    # lowercase the key name 
+    keyname = keyname.lower()
+    
     bf_delete_default_profile()
     try:
         keyname = keyname.strip()
@@ -195,7 +198,7 @@ def bf_add_account_username(keyname, key, secret):
         # if config.has_section(keyname):
         #     config.set(keyname, "api_host", PENNSIEVE_URL)
 
-        # Add new account
+        # Add new account if it does not already exist
         if not config.has_section(keyname):
             config.add_section(keyname)
 

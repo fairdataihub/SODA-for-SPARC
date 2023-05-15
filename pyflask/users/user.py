@@ -129,11 +129,11 @@ def set_preferred_organization(organization, email, password, account_name):
     
 
     # store the new api key for the current organization
-    try:
-      # remove the current default profile if one exists 
-      bf_delete_default_profile()
-    except Exception as e:
-      raise e
+    # try:
+    #   # remove the current default profile if one exists 
+    #   bf_delete_default_profile()
+    # except Exception as e:
+    #   raise e
     
     
     try:

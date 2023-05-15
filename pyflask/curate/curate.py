@@ -3027,7 +3027,7 @@ def main_curate_function(soda_json_structure):
             abort(400, error)
 
     namespace_logger.info("main_curate_function step 1.2")
-
+    
     # 1.2. Check that the bf destination is valid if generate on bf, or any other bf actions are requested
     if "bf-account-selected" in soda_json_structure:
         # check that the Pennsieve account is valid
