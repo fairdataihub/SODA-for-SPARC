@@ -1818,7 +1818,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           }
 
           try {
-            await api.setPreferredOrganization(login, password, bfOrganization, defaultBfAccount);
+            await api.setPreferredOrganization(login, password, bfOrganization, "soda-pennsieve");
           } catch (err) {
             clientError(err);
             await Swal.fire({
@@ -1840,6 +1840,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           $("#current-bf-organization-generate").text(bfOrganization);
           $(".bf-organization-span").html(bfOrganization);
           // set the permissions content to an empty string
+          await loadDefaultAccount();
 
           // confirm_click_function();
 
