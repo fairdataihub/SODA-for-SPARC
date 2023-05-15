@@ -2076,11 +2076,12 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
     case "Question-prepare-manifest-1":
       continueProgressGenerateManifest = await switchMetadataManifestQuestion();
       break;
-    case "validate_dataset-question-2":
-      continueProgressValidateDataset = await transitionToValidateQuestionThree();
-      break;
     case "validate_dataset-question-1":
       continueProgressValidateDataset = await transitionToValidateQuestionTwo();
+      break;
+    case "validate_dataset-question-2":
+      console.log("here?");
+      continueProgressValidateDataset = await transitionToValidateQuestionThree();
       break;
     case "Question-prepare-subjects-3":
       const checkedRadioButtonSubjectsFirstQuestion = $(
