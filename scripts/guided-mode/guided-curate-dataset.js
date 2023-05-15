@@ -107,6 +107,32 @@ const startOrStopAnimationsInContainer = (containerId, startOrStop) => {
   }
 };
 
+const hideAndShowElementsDependingOnStartType = (pageElement) => {
+  console.log(pageElement);
+  const startingFromPennsieve = sodaJSONObj?.["starting-point"]?.["type"] === "bf";
+  const textToShowWhenStartingFromPennsieve = pageElement.querySelectorAll(
+    ".showWhenStartingFromPennsieve"
+  );
+  const textToShowWhenStartingNew = pageElement.querySelectorAll(".showWhenStartingNew");
+  console.log("PennsieveStartElements", textToShowWhenStartingFromPennsieve);
+  console.log("NewStartElements", textToShowWhenStartingNew);
+  if (startingFromPennsieve) {
+    textToShowWhenStartingFromPennsieve.forEach((element) => {
+      element.classList.remove("hidden");
+    });
+    textToShowWhenStartingNew.forEach((element) => {
+      element.classList.add("hidden");
+    });
+  } else {
+    textToShowWhenStartingFromPennsieve.forEach((element) => {
+      element.classList.add("hidden");
+    });
+    textToShowWhenStartingNew.forEach((element) => {
+      element.classList.remove("hidden");
+    });
+  }
+};
+
 const folderImportedFromPennsieve = (folderJSONPath) => {
   return folderJSONPath.type === "bf";
 };
@@ -6324,6 +6350,8 @@ const openPage = async (targetPageID) => {
 
     // Start any animations that need to be started
     startOrStopAnimationsInContainer(targetPageID, "start");
+
+    hideAndShowElementsDependingOnStartType(targetPage);
 
     // Set the last opened page and save it
     sodaJSONObj["page-before-exit"] = targetPageID;
