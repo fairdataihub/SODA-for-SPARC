@@ -7012,8 +7012,10 @@ const patchPreviousGuidedModeVersions = async () => {
       // Delete the saved button config for the code metadata page (The flow was slightly updated)
       // The user will have to reselect their option If they do not have a code-description file, otherwise
       // the new prompt will be shown.
-      if (sodaJSONObj?.["button-config"]?.["dataset-contains-code-data"]) {
-        delete sodaJSONObj["button-config"]["dataset-contains-code-data"];
+      if (
+        sodaJSONObj?.["button-config"]?.["dataset-contains-computational-modeling-data"] === "no"
+      ) {
+        delete sodaJSONObj["button-config"]["dataset-contains-computational-modeling-data"];
       }
     }
   }
