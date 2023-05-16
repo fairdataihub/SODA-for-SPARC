@@ -187,7 +187,7 @@ const fill_info_details = () => {
   let new_dataset_name = "My_dataset_folder";
   $(".card-container.generate-preview").remove();
   if (sodaJSONObj["starting-point"]["type"] === "bf") {
-    add_card_detail("Pennsieve account", sodaJSONObj["bf-account-selected"]["account-name"]);
+    add_card_detail("Pennsieve account", $("#current-bf-account-generate").text());
     add_card_detail("Dataset name", sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
     let workspace = $("#bf-organization-curate-first-question").text();
     add_card_detail("Selected workspace", workspace);
@@ -263,13 +263,6 @@ const fill_info_details = () => {
       add_card_detail(
         "Pennsieve account",
         $("#current-bf-account-generate").text(),
-        1,
-        "Question-generate-dataset-BF-account",
-        true
-      );
-      add_card_detail(
-        "Account details",
-        $("#para-account-detail-curate-generate").html(),
         1,
         "Question-generate-dataset-BF-account",
         true
@@ -1703,7 +1696,7 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
       },
     };
 
-    sodaJSONObj["bf-account-selected"]["account-name"] = $("#current-bf-account").text();
+    sodaJSONObj["bf-account-selected"]["account-name"] = defaultBfAccount;
     sodaJSONObj["bf-dataset-selected"]["dataset-name"] = $("#current-bf-dataset").text();
     $("#para-continue-bf-dataset-getting-started").text("");
     $("body").addClass("waiting");
@@ -3099,12 +3092,10 @@ const updateJSONStructureGenerate = (progress = false, sodaJSONObj) => {
         };
         if ($("#current-bf-account-generate").text() !== "None") {
           if ("bf-account-selected" in sodaJSONObj) {
-            sodaJSONObj["bf-account-selected"]["account-name"] = $(
-              "#current-bf-account-generate"
-            ).text();
+            sodaJSONObj["bf-account-selected"]["account-name"] = defaultBfAccount;
           } else {
             sodaJSONObj["bf-account-selected"] = {
-              "account-name": $("#current-bf-account-generate").text(),
+              "account-name": defaultBfAccount,
             };
           }
         }
