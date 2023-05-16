@@ -9177,6 +9177,7 @@ const scaleBannerImage = async (imagePath) => {
   }
 };
 
+// TODO: Dorian this function is probably not needed anymore
 function openFeedbackForm() {
   let feedback_btn = document.getElementById("feedback-btn");
   if (!feedback_btn.classList.contains("is-open")) {
@@ -9189,7 +9190,9 @@ function openFeedbackForm() {
     });
   }, 5);
 }
-function gatherLogs() {
+
+
+const gatherLogs = () => {
   //function will be used to gather all logs on all OS's
   let homedir = os.homedir();
   let file_path = "";
