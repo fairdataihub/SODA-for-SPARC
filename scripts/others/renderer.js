@@ -9191,7 +9191,6 @@ function openFeedbackForm() {
   }, 5);
 }
 
-
 const gatherLogs = () => {
   //function will be used to gather all logs on all OS's
   let homedir = os.homedir();
@@ -9317,7 +9316,7 @@ const gatherLogs = () => {
       }
     }
   });
-}
+};
 
 const gettingStarted = () => {
   let getting_started = document.getElementById("main_tabs_view");
