@@ -7045,7 +7045,7 @@ const patchPreviousGuidedModeVersions = async () => {
   //   sodaJSONObj["special-rejoin-key"] = "now-i-wont-return-to-the-first-page";
   //   return firstPageID;
   // }
-}
+};
 
 //Loads UI when continue curation button is pressed
 const guidedResumeProgress = async (datasetNameToResume) => {
