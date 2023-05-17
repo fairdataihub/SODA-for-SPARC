@@ -1119,6 +1119,7 @@ const check_agent_installed = async () => {
 };
 
 const check_agent_installed_version = async (agent_version) => {
+  console.log("CHecking agent version now");
   let notification = null;
   notification = notyf.open({
     type: "ps_agent",
@@ -1131,7 +1132,10 @@ const check_agent_installed_version = async (agent_version) => {
   // IMP: error in subfunction is handled by caller
   [browser_download_url, latest_agent_version] = await get_latest_agent_version();
 
-  if (agent_version.indexOf(latest_agent_version) === -1) {
+  console.log(agent_version);
+  console.log(latest_agent_version);
+
+  if (agent_version !== latest_agent_version) {
     notyf.dismiss(notification);
     notyf.open({
       type: "warning",
@@ -1160,12 +1164,19 @@ const get_latest_agent_version = async () => {
   );
 
   let releases = releasesResponse.data;
-  let release = releases[0];
-  let latest_agent_version = release.tag_name;
+  let targetRelease = undefined;
+  let latest_agent_version = undefined;
+  for (const release of releases) {
+    targetRelease = release;
+    latest_agent_version = release.tag_name;
+    if (!release.prerelease && !release.draft) {
+      break;
+    }
+  }
 
   if (process.platform == "darwin") {
     reverseSwalButtons = true;
-    release.assets.forEach((asset, index) => {
+    targetRelease.assets.forEach((asset, index) => {
       let file_name = asset.name;
       if (path.extname(file_name) == ".pkg") {
         browser_download_url = asset.browser_download_url;
@@ -1175,7 +1186,7 @@ const get_latest_agent_version = async () => {
 
   if (process.platform == "win32") {
     reverseSwalButtons = false;
-    release.assets.forEach((asset, index) => {
+    targetRelease.assets.forEach((asset, index) => {
       let file_name = asset.name;
       if (path.extname(file_name) == ".msi" || path.extname(file_name) == ".exe") {
         browser_download_url = asset.browser_download_url;
@@ -1185,7 +1196,7 @@ const get_latest_agent_version = async () => {
 
   if (process.platform == "linux") {
     reverseSwalButtons = false;
-    release.assets.forEach((asset, index) => {
+    targetRelease.assets.forEach((asset, index) => {
       let file_name = asset.name;
       if (path.extname(file_name) == ".deb") {
         browser_download_url = asset.browser_download_url;
