@@ -2061,7 +2061,7 @@ $("#generate-manifest-curate").change(async function () {
         destination: "generate-dataset",
       };
     }
-    
+
     await ffmCreateManifest(sodaJSONObj);
     $("#ffm-manifest-generator").show();
     $("#button-generate-manifest-locally").show();
