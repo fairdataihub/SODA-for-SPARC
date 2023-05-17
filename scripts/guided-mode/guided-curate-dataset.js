@@ -3400,22 +3400,6 @@ const guidedPrepareHomeScreen = async () => {
     fs.mkdirSync(guidedProgressFilePath, { recursive: true });
   }
 
-  // const datasetCardsRadioButtonsContainer = document.getElementById(
-  //   "guided-div-dataset-cards-radio-buttons"
-  // );
-
-  // const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
-  // //render progress resumption cards from progress file array on first page of guided mode
-  // if (guidedSavedProgressFiles.length != 0) {
-  //   datasetCardsRadioButtonsContainer.classList.remove("hidden");
-  //   const progressFileData = await getAllProgressFileData(guidedSavedProgressFiles);
-  //   renderProgressCards(progressFileData);
-  //   document.getElementById("guided-button-view-datasets-in-progress").click();
-  // } else {
-  //   $("#guided-continue-curation-header").text("");
-  //   datasetCardsRadioButtonsContainer.classList.add("hidden");
-  // }
-  //empty new-dataset-lottie-container div
   document.getElementById("new-dataset-lottie-container").innerHTML = "";
   document.getElementById("existing-dataset-lottie").innerHTML = "";
   document.getElementById("edit-dataset-component-lottie").innerHTML = "";
@@ -4459,7 +4443,10 @@ const openPage = async (targetPageID) => {
         fs.mkdirSync(guidedProgressFilePath, { recursive: true });
       }
 
-      const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
+      //Get all progress files in the guided progress folder (and filter out non-json files)
+      const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath).filter((file) =>
+        file.endsWith(".json")
+      );
       //render progress resumption cards from progress file array on first page of guided mode
       const progressFileData = await getAllProgressFileData(guidedSavedProgressFiles);
       renderProgressCards(progressFileData);
