@@ -17,7 +17,9 @@ var currentTab = 0; // Current tab is set to be the first tab (0)
 
 const delay = 250;
 
-const showParentTab = (tabNow, nextOrPrev) => {
+const showParentTab = async (tabNow, nextOrPrev) => {
+  console.log(tabNow);
+  console.log(nextOrPrev);
   $("#nextBtn").prop("disabled", true);
   // check to show Save progress btn (only after step 2)
   if (tabNow >= 2) {
@@ -91,9 +93,20 @@ const showParentTab = (tabNow, nextOrPrev) => {
     $("#nextBtn").prop("disabled", false);
   }
   if (tabNow == 4) {
+    console.log("HUH");
+    if(nextOrPrev === -1) {
+      return;
+    }
     if (document.getElementById("generate-manifest-curate").checked) {
+      console.log("CHECKED");
       // need to run manifest creation
-      ffmCreateManifest(sodaJSONObj);
+      //Hide the UI until the manifest card are created
+      $("#manifest-creating-loading").removeClass("hidden");
+      $("#manifest-items-container").addClass("hidden");
+      await ffmCreateManifest(sodaJSONObj);
+      $("#manifest-items-container").removeClass("hidden");
+      $("#manifest-creating-loading").addClass("hidden");
+      $("button-generate-manifest-locally").show();
     } else {
       document.getElementById("ffm-container-manifest-file-cards").innerHTML = "";
     }
