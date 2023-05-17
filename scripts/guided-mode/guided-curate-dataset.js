@@ -736,6 +736,13 @@ const savePageChanges = async (pageBeingLeftID) => {
           message: "Please enter a dataset name.",
         });
       }
+      if (check_forbidden_characters_bf(datasetNameInput)) {
+        errorArray.push({
+          type: "notyf",
+          message:
+            "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
+        });
+      }
       if (!datasetSubtitleInput) {
         errorArray.push({
           type: "notyf",
