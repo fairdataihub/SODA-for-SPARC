@@ -753,9 +753,6 @@ const startPennsieveAgentAndCheckVersion = async () => {
       reject(error);
     }
 
-    console.log(pennsieveAgentVersion);
-    console.log(latest_agent_version);
-
     if (pennsieveAgentVersion !== latest_agent_version) {
       let { value: result } = await Swal.fire({
         icon: "warning",
