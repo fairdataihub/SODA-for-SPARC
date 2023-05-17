@@ -7721,6 +7721,10 @@ document.getElementById("button-generate").addEventListener("click", async funct
       hideClass: {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
+      didOpen: () => {
+        document.getElementById("swal2-content").style.maxHeight = "19rem";
+        document.getElementById("swal2-content").style.overflowY = "auto";
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         initiate_generate();
@@ -8021,6 +8025,10 @@ async function initiate_generate() {
         },
         hideClass: {
           popup: "animate__animated animate__zoomOut animate__faster",
+        },
+        didOpen: () => {
+          document.getElementById("swal2-content").style.maxHeight = "19rem";
+          document.getElementById("swal2-content").style.overflowY = "auto";
         },
       }).then((result) => {
         statusBarClone.remove();
@@ -9464,19 +9472,7 @@ const scaleBannerImage = async (imagePath) => {
   }
 };
 
-function openFeedbackForm() {
-  let feedback_btn = document.getElementById("feedback-btn");
-  if (!feedback_btn.classList.contains("is-open")) {
-    feedback_btn.click();
-  }
-  setTimeout(() => {
-    document.getElementById("feedback-btn").scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  }, 5);
-}
-function gatherLogs() {
+const gatherLogs = () => {
   //function will be used to gather all logs on all OS's
   let homedir = os.homedir();
   let file_path = "";
