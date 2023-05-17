@@ -94,7 +94,7 @@ const showParentTab = async (tabNow, nextOrPrev) => {
   }
   if (tabNow == 4) {
     console.log("HUH");
-    if(nextOrPrev === -1) {
+    if (nextOrPrev === -1) {
       return;
     }
     if (document.getElementById("generate-manifest-curate").checked) {

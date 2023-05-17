@@ -82,6 +82,9 @@ const determineSwalSuccessMessage = (addEditButton) => {
 
 // illegal character name warning for new dataset names
 $("#bf-new-dataset-name").on("keyup", () => {
+  // Clear success lottie
+  $("#dataset-created-success-lottie").empty();
+  $("#dataset-success-container").addClass("hidden");
   let newName = $("#bf-new-dataset-name").val().trim();
 
   if (newName !== "") {
@@ -171,6 +174,19 @@ $("#button-create-bf-new-dataset").click(async () => {
           Swal.hideLoading();
         },
       });
+
+      let datasetCreatedLottie = document.getElementById("dataset-created-success-lottie");
+      if (datasetCreatedLottie.children.length < 1) {
+        // licenseContainer.removeChild(licenseContainer.children[1]);
+        lottie.loadAnimation({
+          container: datasetCreatedLottie,
+          animationData: licenseLottie,
+          renderer: "svg",
+          loop: true,
+          autoplay: true,
+        });
+      }
+      $("#dataset-success-container").removeClass("hidden");
 
       log.info(`Created dataset successfully`);
 

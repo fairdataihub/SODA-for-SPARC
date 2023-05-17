@@ -28,7 +28,7 @@
       <div
         class="individual-question manage-dataset show prev"
         id="create_empty_dataset_BF_account_tab"
-        style="height: auto"
+        style="height: auto; margin-bottom: 0.5rem"
       >
         <div class="ui form" style="width: 100%">
           <div class="grouped fields">
@@ -175,6 +175,28 @@
                 </p>
               </div>
             </div>
+            <div
+              id="dataset-success-container"
+              class="hidden"
+              style="display: flex; margin-top: 2rem; flex-direction: column"
+            >
+              <div
+                id="dataset-created-success-lottie"
+                style="/* display: none; */ width: 190px; align-self: center"
+              ></div>
+              <label
+                id="dataset-created-success-message"
+                style="
+                  font-weight: 700;
+                  font-size: 17px;
+                  color: var(--color-light-green) !important;
+                  width: 100%;
+                  text-align: center;
+                  /* display: none; */
+                "
+                >Dataset was successfully created!
+              </label>
+            </div>
             <p
               style="color: red; width: 440px; text-align: center; margin: auto"
               id="para-new-name-dataset-message"
@@ -192,7 +214,13 @@
               <button
                 id="button-create-bf-new-dataset"
                 class="btn_animated"
-                style="width: 200px; display: none; border: none !important; font-size: 15px"
+                style="
+                  width: 200px;
+                  height: 40px;
+                  display: none;
+                  border: none !important;
+                  font-size: 15px;
+                "
               >
                 <div class="btn_animated-inside" style="margin: 0; padding: 0; margin-top: 0.1rem">
                   Create dataset

@@ -157,6 +157,11 @@ async function handleSectionTrigger(event) {
     guidedUnLockSideBar();
   }
 
+  if (sectionId === "create_new_bf_dataset-section") {
+    $("#dataset-success-container").addClass("hidden");
+    $("dataset-created-success-lottie").empty();
+  }
+
   hideAllSectionsAndDeselectButtons();
 
   if (event.detail.target) {
