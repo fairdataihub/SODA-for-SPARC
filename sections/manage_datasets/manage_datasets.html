@@ -513,12 +513,7 @@
             >
               <div
                 id="pi_bootstrap_select_div"
-                style="
-                  display: flex;
-                  flex-direction: row;
-                  justify-content: space-around;
-                  width: 100%;
-                "
+                style="display: flex; flex-direction: column; justify-content: space-around"
               >
                 <select
                   class="selectpicker"
@@ -535,55 +530,31 @@
                 >
                   <option>Select PI</option>
                 </select>
-              </div>
-              <!-- <div class="info-container">
-                <div class="demo-wrapper info-container-wrapper">
-                  <button class="js-container-target demo-toggle-button info-summary">
+                <div class="info-dropdown" style="margin-top: 1rem; align-self: flex-start">
+                  <p class="info-dropdown-text" data-dropdown-type="info">
                     Can't find your PI in the list?
-                  </button>
+                  </p>
+                  <i class="fas fa-chevron-right" style="transform: rotate(90deg)"></i>
+                </div>
 
-                  <div class="demo-box details-box" id="no-user-found-button">
-                    The SPARC PI must have a Pennsieve account and have access
-                    to the SPARC Organization before you can give
-                    them ownership of the dataset. Click
+                <div class="info-container" style="width: 550px; margin-bottom: 1rem">
+                  <p class="help-text">
+                    The SPARC PI must have a Pennsieve account and have access to the SPARC
+                    Organization before you can give them ownership of the dataset. Click
                     <a
                       target="_blank"
                       href="https://docs.sodaforsparc.io/docs/next/how-to/how-to-get-a-pennsieve-account"
                       >here</a
                     >
-                    for instructions on getting a Pennsieve account and access
-                    to the SPARC Organization.
-                  </div>
+                    for instructions on getting a Pennsieve account and access to the SPARC
+                    Organization.
+                  </p>
                 </div>
-              </div> -->
-
-              <div
-                class="info-dropdown"
-                style="margin: 1.5rem 0rem 0.1rem 10rem; align-self: flex-start"
-              >
-                <p class="info-dropdown-text" data-dropdown-type="info">
-                  Can't find your PI in the list?
-                </p>
-                <i class="fas fa-chevron-right" style="transform: rotate(90deg)"></i>
-              </div>
-
-              <div class="info-container" style="width: 550px; margin-bottom: 1rem">
-                <p class="help-text">
-                  The SPARC PI must have a Pennsieve account and have access to the SPARC
-                  Organization before you can give them ownership of the dataset. Click
-                  <a
-                    target="_blank"
-                    href="https://docs.sodaforsparc.io/docs/next/how-to/how-to-get-a-pennsieve-account"
-                    >here</a
-                  >
-                  for instructions on getting a Pennsieve account and access to the SPARC
-                  Organization.
-                </p>
               </div>
 
               <div
                 id="div-button-add-permission-pi"
-                style="flex-direction: row; justify-content: center"
+                style="flex-direction: row; justify-content: center; margin-top: 1rem"
               >
                 <button
                   id="button-add-permission-pi"

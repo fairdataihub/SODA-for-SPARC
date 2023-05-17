@@ -2955,6 +2955,7 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
 ///////////////////////////////END OF NEW CURATE UI CODE ADAPTATION ///////////////////////////////////////////////////
 
 const metadataDatasetlistChange = () => {
+  console.log("here");
   $("#bf-dataset-subtitle").val("");
   $("#para-dataset-banner-image-status").html("");
   showCurrentSubtitle();
@@ -7655,6 +7656,10 @@ document.getElementById("button-generate").addEventListener("click", async funct
       hideClass: {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
+      didOpen: () => {
+        document.getElementById("swal2-content").style.maxHeight = "19rem";
+        document.getElementById("swal2-content").style.overflowY = "auto";
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         initiate_generate();
@@ -7953,6 +7958,10 @@ async function initiate_generate() {
         hideClass: {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
+        didOpen: () => {
+          document.getElementById("swal2-content").style.maxHeight = "19rem";
+          document.getElementById("swal2-content").style.overflowY = "auto";
+        },
       }).then((result) => {
         statusBarClone.remove();
         sparc_container.style.display = "inline";
@@ -8026,6 +8035,10 @@ async function initiate_generate() {
         },
         hideClass: {
           popup: "animate__animated animate__zoomOut animate__faster",
+        },
+        didOpen: () => {
+          document.getElementById("swal2-content").style.maxHeight = "19rem";
+          document.getElementById("swal2-content").style.overflowY = "auto";
         },
       }).then((result) => {
         //statusBarClone.remove();
@@ -9176,20 +9189,6 @@ const scaleBannerImage = async (imagePath) => {
     return error.response;
   }
 };
-
-// TODO: Dorian this function is probably not needed anymore
-function openFeedbackForm() {
-  let feedback_btn = document.getElementById("feedback-btn");
-  if (!feedback_btn.classList.contains("is-open")) {
-    feedback_btn.click();
-  }
-  setTimeout(() => {
-    document.getElementById("feedback-btn").scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  }, 5);
-}
 
 const gatherLogs = () => {
   //function will be used to gather all logs on all OS's
