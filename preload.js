@@ -773,8 +773,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
         // update the gloabl dataset id
         for (const item of datasetList) {
-          let { name } = item;
-          let { id } = item;
+          let {name, id} = item;
           if (name === bfDataset) {
             defaultBfDatasetId = id;
           }

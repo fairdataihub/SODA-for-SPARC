@@ -24,9 +24,9 @@ jobs:
           zenodo_deposition_id: 5565456
           zenodo_publish: true
           zenodo_sandbox: false
-          committer_name: 'fairdataihub-bot'
-          committer_email: 'fairdataihub@gmail.com'
-          commit_message: 'chore: update ${file_name} for Zenodo release'
+          committer_name: "fairdataihub-bot"
+          committer_email: "fairdataihub@gmail.com"
+          commit_message: "chore: update ${file_name} for Zenodo release"
           update_metadata_files: true
           codemeta_json: true
           citation_cff: true

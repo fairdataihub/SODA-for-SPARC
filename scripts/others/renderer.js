@@ -9597,7 +9597,7 @@ const gatherLogs = () => {
       }
     }
   });
-}
+};
 
 const gettingStarted = () => {
   let getting_started = document.getElementById("main_tabs_view");
