@@ -1040,7 +1040,7 @@
                   </div>
                   <div class="option-card high-level-folders">
                     <div class="card-head">
-                      <h2 style="padding-left: 10px">
+                      <h2 style="padding-left: 10px;">
                         <i class="fas fa-folder" style="margin-right: 7px;"></i>derivative
                       </h2>
                       <div class="folder-checkbox">
@@ -3328,18 +3328,28 @@
                     Yes
                   </label>
                 </div>
-                <div style="display: flex; flex-direction: column; justify-content: center">
-                  <a
-                    id="button-generate-manifest-locally"
-                    data-content="Use this button to generate and view the manifest file locally"
-                    rel="popover"
-                    data-placement="right"
-                    data-trigger="hover"
-                    style="text-decoration: underline; display: none"
-                  >
+                <div class="guided--panel mt-0 hidden" id="manifest-creating-loading">
+                  <div class="lds-roller">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                  </div>
+                  Generating manifest files...
+                </div>
+                <div id="manifest-items-container"
+                  style="display: flex; flex-direction: column; justify-content: center">
+                  <a id="button-generate-manifest-locally"
+                    data-content="Use this button to generate and view the manifest file locally" rel="popover"
+                    data-placement="right" data-trigger="hover" style="text-decoration: underline; display: none">
                     Create a copy of the Manifest files locally to review.
                   </a>
-                  <div id="ffm-container-manifest-file-cards" style="display: flex; flex-direction: column; justify-content: center; align-items: center"></div>
+                  <div id="ffm-container-manifest-file-cards"
+                    style="display: flex; flex-direction: column; justify-content: center; align-items: center"></div>
                 </div>
               </div>
             </div>

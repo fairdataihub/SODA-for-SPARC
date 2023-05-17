@@ -4192,6 +4192,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
 
 // ///////////////////////////////////////////////////////////////////////////
 // recursively populate json object
+// TODO: Dorian -> This is the function the populates content from inside the folder to the JSON object
 const populateJSONObjFolder = (action, jsonObject, folderPath) => {
   var myitems = fs.readdirSync(folderPath);
   myitems.forEach((element) => {
@@ -4892,6 +4893,7 @@ const addFoldersfunction = async (action, nonallowedFolderArray, folderArray, cu
         }
       }
       // $("#items").empty();
+      console.log("currentLocation", currentLocation);
       listItems(currentLocation, "#items", 500, (reset = true));
       getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
       beginScrollListen();
@@ -6916,7 +6918,9 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
 };
 
 const getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
+  console.log("getInFolder Called");
   $(singleUIItem).dblclick(async function () {
+    console.log("double click called");
     if ($(this).children("h1").hasClass("myFol")) {
       start = 0;
       listed_count = 0;
@@ -6936,8 +6940,9 @@ const getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
       }
       $("#items").empty();
       already_created_elem = [];
-      let items = loadFileFolder(myPath);
+      // let items = loadFileFolder(myPath);
       //we have some items to display
+      console.log("myPath", myPath);
       listItems(myPath, "#items", 500, (reset = true));
       getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
       organizeLandingUIEffect();

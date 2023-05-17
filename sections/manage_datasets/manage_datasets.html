@@ -28,7 +28,7 @@
       <div
         class="individual-question manage-dataset show prev"
         id="create_empty_dataset_BF_account_tab"
-        style="height: auto"
+        style="height: auto; margin-bottom: 0.5rem"
       >
         <div
           id="top-level-card-container-create-empty-dataset"
@@ -64,6 +64,28 @@
                   relatively informative.
                 </p>
               </div>
+            </div>
+            <div
+              id="dataset-success-container"
+              class="hidden"
+              style="display: flex; margin-top: 2rem; flex-direction: column"
+            >
+              <div
+                id="dataset-created-success-lottie"
+                style="/* display: none; */ width: 190px; align-self: center"
+              ></div>
+              <label
+                id="dataset-created-success-message"
+                style="
+                  font-weight: 700;
+                  font-size: 17px;
+                  color: var(--color-light-green) !important;
+                  width: 100%;
+                  text-align: center;
+                  /* display: none; */
+                "
+                >Dataset was successfully created!
+              </label>
             </div>
             <p
               style="color: red; width: 440px; text-align: center; margin: auto"
