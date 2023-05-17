@@ -753,8 +753,8 @@ const startPennsieveAgentAndCheckVersion = async () => {
       reject(error);
     }
 
-    console.log(pennsieveAgentVersion)
-    console.log(latest_agent_version)
+    console.log(pennsieveAgentVersion);
+    console.log(latest_agent_version);
 
     if (pennsieveAgentVersion !== latest_agent_version) {
       let { value: result } = await Swal.fire({
@@ -1118,7 +1118,7 @@ const check_agent_installed = async () => {
 };
 
 const check_agent_installed_version = async (agent_version) => {
-  console.log("CHecking agent version now")
+  console.log("CHecking agent version now");
   let notification = null;
   notification = notyf.open({
     type: "ps_agent",
@@ -1131,8 +1131,8 @@ const check_agent_installed_version = async (agent_version) => {
   // IMP: error in subfunction is handled by caller
   [browser_download_url, latest_agent_version] = await get_latest_agent_version();
 
-  console.log(agent_version) 
-  console.log(latest_agent_version)
+  console.log(agent_version);
+  console.log(latest_agent_version);
 
   if (agent_version !== latest_agent_version) {
     notyf.dismiss(notification);
@@ -1164,15 +1164,14 @@ const get_latest_agent_version = async () => {
 
   let releases = releasesResponse.data;
   let targetRelease = undefined;
-  let latest_agent_version = undefined; 
+  let latest_agent_version = undefined;
   for (const release of releases) {
     targetRelease = release;
     latest_agent_version = release.tag_name;
-    if(!release.prerelease && !release.draft) {
+    if (!release.prerelease && !release.draft) {
       break;
     }
   }
-  
 
   if (process.platform == "darwin") {
     reverseSwalButtons = true;
