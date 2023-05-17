@@ -3039,7 +3039,12 @@ const guidedRenderProgressCards = async () => {
 
   const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
 
-  const progressFileData = await getAllProgressFileData(guidedSavedProgressFiles);
+  // Filter out non .json files
+  const jsonProgressFiles = guidedSavedProgressFiles.filter((file) => {
+    return file.endsWith(".json");
+  });
+
+  const progressFileData = await getAllProgressFileData(jsonProgressFiles);
 
   // Sort by last modified date
   progressFileData.sort((a, b) => {
