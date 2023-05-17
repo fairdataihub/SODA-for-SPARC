@@ -1206,7 +1206,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     console.log("currentLicenseText", currentLicenseText);
     console.log("currentPermissionsText", currentPermissionsText);
 
-
     setTimeout(async function () {
       // disable the Continue btn first
       $("#nextBtn").prop("disabled", true);
@@ -1539,7 +1538,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
         // update the gloabl dataset id
         for (const item of datasetList) {
-          let {name, id} = item;
+          let { name, id } = item;
           if (name === bfDataset) {
             defaultBfDatasetId = id;
           }
