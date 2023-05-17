@@ -100,6 +100,59 @@ def bf_delete_account(keyname):
     with open(configpath, "w") as configfile:
         config.write(configfile)
 
+    
+
+def bf_delete_default_profile():
+    config = ConfigParser()
+    config.read(configpath)
+
+    if "global" not in config:
+        return 
+    
+    default_profile_name = config["global"]["default_profile"]
+    config.remove_section("global")
+
+    with open(configpath, "w") as configfile:
+        config.write(configfile)
+
+
+def create_unique_profile_name(token, email, account_name):
+    try:
+        # get the users email
+        PENNSIEVE_URL = "https://api.pennsieve.io"
+
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {token}",
+        }
+
+
+        r = requests.get(f"{PENNSIEVE_URL}/user", headers=headers)    
+        r.raise_for_status()    
+
+        user_info = r.json()
+
+        # create a substring of the start of the email to the @ symbol
+        email_sub = email.split("@")[0]
+
+        organization_id = user_info["preferredOrganization"]
+
+        # get the organizations this user account has access to 
+        r = requests.get(f"{PENNSIEVE_URL}/organizations", headers=headers)
+        r.raise_for_status()
+
+        organizations = r.json()
+
+        organization = None
+        for org in organizations["organizations"]:
+            if org["organization"]["id"] == organization_id:
+                organization = org["organization"]["name"]
+
+        # create an updated profile name that is unqiue to the user and their workspace 
+        return f"{account_name}-{email_sub}-{organization}"
+    except Exception as e:
+        raise e
+
 
 def bf_add_account_username(keyname, key, secret):
     """
@@ -115,6 +168,12 @@ def bf_add_account_username(keyname, key, secret):
     global namespace_logger
 
     temp_keyname = "SODA_temp_generated"
+    # first delete the pre-existing default_profile entry , but not the profile itself 
+
+    # lowercase the key name 
+    keyname = keyname.lower()
+    
+    bf_delete_default_profile()
     try:
         keyname = keyname.strip()
 
@@ -139,7 +198,7 @@ def bf_add_account_username(keyname, key, secret):
         # if config.has_section(keyname):
         #     config.set(keyname, "api_host", PENNSIEVE_URL)
 
-        # Add new account
+        # Add new account if it does not already exist
         if not config.has_section(keyname):
             config.add_section(keyname)
 
@@ -204,11 +263,14 @@ def get_pennsieve_api_key_secret(email, password, keyname):
         response = requests.request("POST", url, json=payload, headers=headers)
         response.raise_for_status()
         response = response.json()
+
+        profile_name = create_unique_profile_name(api_key, email, keyname)
+
         return { 
             "success": "success", 
             "key": response["key"], 
             "secret": response["secret"], 
-            "name": response["name"]
+            "name": profile_name
         }
     except Exception as e:
         raise e

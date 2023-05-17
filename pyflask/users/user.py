@@ -9,7 +9,7 @@ from utils import (
 )
 from namespaces import NamespaceEnum, get_namespace_logger
 from flask import abort
-from authentication import get_access_token, get_cognito_userpool_access_token, bf_add_account_username, bf_delete_account
+from authentication import get_access_token, get_cognito_userpool_access_token, bf_add_account_username, bf_delete_account, bf_delete_default_profile
 
 logger = get_namespace_logger(NamespaceEnum.USER)
 
@@ -45,7 +45,7 @@ def integrate_orcid_with_pennsieve(access_code, pennsieve_account):
     abort(400, "Invalid access code")
 
   
-def get_user(selected_account):
+def get_user():
   """
   Get a user's information.
   """
@@ -129,9 +129,29 @@ def set_preferred_organization(organization, email, password, account_name):
     
 
     # store the new api key for the current organization
+    # try:
+    #   # remove the current default profile if one exists 
+    #   bf_delete_default_profile()
+    # except Exception as e:
+    #   raise e
+    
+    
     try:
-      bf_delete_account(account_name)
-      # TODO: Use the default_profile value if it exists, otherwise use soda-pennsieve
+      # get the users email 
+      user_info = get_user_information(token)
+      email = user_info["email"]
+
+      # create a substring of the start of the email to the @ symbol
+      email_sub = email.split("@")[0]
+
+      # create an updated profile name that is unqiue to the user and their workspace 
+      account_name = f"{account_name}-{email_sub}-{organization}"
+             
+    except Exception as e:
+       raise e 
+    
+    try:
+      # create the new profile for the user, associate the api key and secret with the profile, and set it as the default profile
       bf_add_account_username(account_name, key, secret)
     except Exception as e:
       raise e

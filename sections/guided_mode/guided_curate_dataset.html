@@ -590,144 +590,6 @@
             </div>
           </div>
         </div>
-
-        <div id="guided-pennsieve-intro-tab" class="guided--page" data-page-name="Pennsieve log in">
-          <div class="guided--section">
-            <h1 class="text-sub-step-title">Pennsieve metadata</h1>
-            <p class="help-text">
-              All SPARC datasets must be uploaded on
-              <a href="https://app.pennsieve.io" target="_blank">Pennsieve</a>, a free, open source
-              data management platform supported by the SPARC program. Over the next steps, you will
-              be prompted to add metadata to Pennsieve such as a banner image, description, license,
-              etc. and SODA will automatically add the metadata to your Pennsieve dataset when your
-              dataset is generated during the last step of this process. This information will be
-              shown on the landing page of your dataset when it is publised on sparc.science.
-            </p>
-          </div>
-
-          <div class="guided--section" id="guided-confirm-pennsieve-account">
-            <div class="guided--input-container">
-              <h2 class="text-sub-step-title">
-                Is this the Pennsieve account you would like to work with?
-              </h2>
-              <div class="guided--container-data-display mt-sm" style="width: 100%">
-                <div class="guided--card-dataset-info">
-                  <div class="guided--dataset-description-container">
-                    <h5 class="guided--dataset-description">Current account:</h5>
-                  </div>
-                  <div
-                    class="guided--dataset-content-container"
-                    onclick="openDropdownPrompt(this, 'bf')"
-                  >
-                    <h5 id="guided-pennsive-intro-bf-account" class="guided--dataset-content"></h5>
-                    <i class="far fa-edit jump-back" style="color: #000"></i>
-                  </div>
-                </div>
-                <div class="guided--card-dataset-info">
-                  <div class="guided--dataset-description-container">
-                    <h5 class="guided--dataset-description">Account details:</h5>
-                  </div>
-                  <div
-                    class="guided--dataset-content-container"
-                    onclick="openDropdownPrompt(this, 'bf')"
-                  >
-                    <h5
-                      class="guided--dataset-content guidedBfAccountDetails"
-                      id="guided-pennsive-intro-account-details"
-                    >
-                      None
-                    </h5>
-                    <i class="far fa-edit jump-back" style="color: #000"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="guided--radio-button-container mb-sm" style="margin-top: 1rem">
-              <button
-                class="ui positive basic button guided--radio-button"
-                id="guided-confirm-pennsieve-account-button"
-                style="width: 247px"
-                data-next-element="guided-section-select-organization"
-                data-button-config-value="pennsieve-account-has-been-confirmed"
-                data-button-config-value-state="yes"
-              >
-                Yes, this is the account
-              </button>
-              <button
-                class="ui negative basic button guided--radio-button"
-                data-prevent-radio-handler="true"
-                data-reset-guided-mode-page="true"
-                onclick="openDropdownPrompt(this, 'bf')"
-                style="width: 247px"
-              >
-                No, connect another account
-              </button>
-            </div>
-          </div>
-          <div class="guided--section" id="guided-select-pennsieve-account">
-            <h2 class="text-sub-step-title">First, connect your Pennsieve account with SODA</h2>
-            <button
-              class="ui positive button mt-md"
-              data-reset-guided-mode-page="true"
-              onclick="openDropdownPrompt(this, 'bf')"
-              style="background-color: var(--color-light-green) !important; width: 200px !important"
-            >
-              Log in to Pennsieve
-            </button>
-          </div>
-          <div class="guided--section" id="guided-section-select-organization">
-            <div class="guided--input-container">
-              <h2 class="text-sub-step-title">
-                Is this the Pennsieve workspace you want to upload your dataset to?
-              </h2>
-              <div class="guided--container-data-display mt-sm" style="width: 100%">
-                <div class="guided--card-dataset-info">
-                  <div class="guided--dataset-description-container">
-                    <h5 class="guided--dataset-description">Current workspace:</h5>
-                  </div>
-                  <div
-                    class="guided--dataset-content-container change-current-account ds-dd organization guided-change-workspace"
-                  >
-                    <h5
-                      id="guided-pennsive-selected-organization"
-                      class="guided--dataset-content bf-organization-span"
-                    >
-                      Click here to select workspace
-                    </h5>
-                    <i class="far fa-edit jump-back" style="color: #000"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="guided--radio-button-container mb-sm" style="margin-top: 1rem">
-              <button
-                class="ui positive basic button guided--radio-button"
-                id="guided-confirm-pennsieve-organization-button"
-                style="width: 280px"
-                data-next-element="guided-section-organization-confirmed"
-                data-button-config-value="organization-has-been-confirmed"
-                data-button-config-value-state="yes"
-              >
-                Yes, this is the organization
-              </button>
-              <button
-                class="ui negative basic button guided--radio-button change-current-account ds-dd organization guided-change-workspace"
-                data-prevent-radio-handler="true"
-                data-reset-guided-mode-page="true"
-                style="width: 280px"
-              >
-                No, select a different organization
-              </button>
-            </div>
-          </div>
-          <div class="guided--section" id="guided-section-organization-confirmed">
-            <h2 class="guided--text-click-continue">
-              Click "<span class="next-button-span"></span>" to confirm your account and
-              organization you will be uploading to.
-            </h2>
-          </div>
-        </div>
-
         <div
           class="guided--page"
           id="guided-prepare-dataset-structure-tab"
@@ -4393,7 +4255,6 @@
         data-parent-tab-name="Pennsieve metadata"
       >
         <div class="guided--capsule-container">
-          <div class="guided--capsule" id="guided-pennsieve-metadata-intro-capsule"></div>
           <div class="guided--capsule" id="guided-pennsieve-intro-capsule"></div>
           <div class="guided--capsule" id="guided-banner-image-capsule"></div>
           <div class="guided--capsule" id="guided-designate-permissions-capsule"></div>
@@ -4401,29 +4262,143 @@
           <div class="guided--capsule" id="guided-add-tags-capsule"></div>
           <div class="guided--capsule" id="guided-assign-license-capsule"></div>
         </div>
-        <div class="guided--page" id="guided-pennsieve-metadata-intro-tab" data-page-name="Intro">
-          <h1 class="text-sub-step-title">Pennsieve metadata Introduction</h1>
+
+        <div id="guided-pennsieve-intro-tab" class="guided--page" data-page-name="Pennsieve log in">
           <div class="guided--section">
+            <h1 class="text-sub-step-title">Pennsieve metadata</h1>
             <p class="help-text">
-              The SPARC guidelines require all datasets to be organized according to a strict folder
-              structure. Over the next steps, you will be asked to specify folders and files to be
-              included in your dataset so SODA can automatically organize them according to the
-              SPARC folder structure when generating your dataset in the last step of this process.
+              All SPARC datasets must be uploaded on
+              <a href="https://app.pennsieve.io" target="_blank">Pennsieve</a>, a free, open source
+              data management platform supported by the SPARC program. Over the next steps, you will
+              be prompted to add metadata to Pennsieve such as a banner image, description, license,
+              etc. and SODA will automatically add the metadata to your Pennsieve dataset when your
+              dataset is generated during the last step of this process. This information will be
+              shown on the landing page of your dataset when it is publised on sparc.science.
             </p>
           </div>
-          <div class="guided--section">
-            <div
-              id="guided-dataset-structure-intro-lottie"
-              class="lottieAnimationContainer guided--container-lottie-standard"
-            ></div>
+
+          <div class="guided--section" id="guided-confirm-pennsieve-account">
+            <div class="guided--input-container">
+              <h2 class="text-sub-step-title">
+                Is this the Pennsieve account you would like to work with?
+              </h2>
+              <div class="guided--container-data-display mt-sm" style="width: 100%">
+                <div class="guided--card-dataset-info">
+                  <div class="guided--dataset-description-container">
+                    <h5 class="guided--dataset-description">Current account:</h5>
+                  </div>
+                  <div
+                    class="guided--dataset-content-container"
+                    onclick="openDropdownPrompt(this, 'bf')"
+                  >
+                    <h5 id="guided-pennsive-intro-bf-account" class="guided--dataset-content"></h5>
+                    <i class="far fa-edit jump-back" style="color: #000"></i>
+                  </div>
+                </div>
+                <div class="guided--card-dataset-info">
+                  <div class="guided--dataset-description-container">
+                    <h5 class="guided--dataset-description">Account details:</h5>
+                  </div>
+                  <div
+                    class="guided--dataset-content-container"
+                    onclick="openDropdownPrompt(this, 'bf')"
+                  >
+                    <h5
+                      class="guided--dataset-content guidedBfAccountDetails"
+                      id="guided-pennsive-intro-account-details"
+                    >
+                      None
+                    </h5>
+                    <i class="far fa-edit jump-back" style="color: #000"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="guided--radio-button-container mb-sm" style="margin-top: 1rem">
+              <button
+                class="ui positive basic button guided--radio-button"
+                id="guided-confirm-pennsieve-account-button"
+                style="width: 247px"
+                data-next-element="guided-section-select-organization"
+                data-button-config-value="pennsieve-account-has-been-confirmed"
+                data-button-config-value-state="yes"
+              >
+                Yes, this is the account
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button"
+                data-prevent-radio-handler="true"
+                data-reset-guided-mode-page="true"
+                onclick="openDropdownPrompt(this, 'bf')"
+                style="width: 247px"
+              >
+                No, connect another account
+              </button>
+            </div>
           </div>
-          <div class="guided--section">
+          <div class="guided--section" id="guided-select-pennsieve-account">
+            <h2 class="text-sub-step-title">First, connect your Pennsieve account with SODA</h2>
+            <button
+              class="ui positive button mt-md"
+              data-reset-guided-mode-page="true"
+              onclick="openDropdownPrompt(this, 'bf')"
+              style="background-color: var(--color-light-green) !important; width: 200px !important"
+            >
+              Log in to Pennsieve
+            </button>
+          </div>
+          <div class="guided--section" id="guided-section-select-organization">
+            <div class="guided--input-container">
+              <h2 class="text-sub-step-title">
+                Is this the Pennsieve workspace you want to upload your dataset to?
+              </h2>
+              <div class="guided--container-data-display mt-sm" style="width: 100%">
+                <div class="guided--card-dataset-info">
+                  <div class="guided--dataset-description-container">
+                    <h5 class="guided--dataset-description">Current workspace:</h5>
+                  </div>
+                  <div
+                    class="guided--dataset-content-container change-current-account ds-dd organization guided-change-workspace"
+                  >
+                    <h5
+                      id="guided-pennsive-selected-organization"
+                      class="guided--dataset-content bf-organization-span"
+                    >
+                      Click here to select workspace
+                    </h5>
+                    <i class="far fa-edit jump-back" style="color: #000"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="guided--radio-button-container mb-sm" style="margin-top: 1rem">
+              <button
+                class="ui positive basic button guided--radio-button"
+                id="guided-confirm-pennsieve-organization-button"
+                style="width: 280px"
+                data-next-element="guided-section-organization-confirmed"
+                data-button-config-value="organization-has-been-confirmed"
+                data-button-config-value-state="yes"
+              >
+                Yes, this is the organization
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button change-current-account ds-dd organization guided-change-workspace"
+                data-prevent-radio-handler="true"
+                data-reset-guided-mode-page="true"
+                style="width: 280px"
+              >
+                No, select a different organization
+              </button>
+            </div>
+          </div>
+          <div class="guided--section" id="guided-section-organization-confirmed">
             <h2 class="guided--text-click-continue">
-              Click "<span class="next-button-span"></span>" to start FOO BARRRRR.
+              Click "<span class="next-button-span"></span>" to confirm your account and
+              organization you will be uploading to.
             </h2>
           </div>
         </div>
-
         <div id="guided-banner-image-tab" class="guided--page" data-page-name="Banner image">
           <div class="guided--section">
             <h1 class="text-sub-step-title">Banner image</h1>

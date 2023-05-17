@@ -622,7 +622,7 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
 const getPennsieveAgentVersion = async (pathToPennsieveAgent) => {
   return new Promise((resolve, reject) => {
     try {
-      // Timeout if the agent was not able to be retrieved within 7 seconds
+      // // Timeout if the agent was not able to be retrieved within 7 seconds
       const versionCheckTimeout = setTimeout(() => {
         reject(
           new Error(
@@ -987,7 +987,11 @@ const apiVersionsMatch = async () => {
 
   //Load Default/global Pennsieve account if available
   if (hasConnectedAccountWithPennsieve()) {
-    updateBfAccountList();
+    try {
+      updateBfAccountList();
+    } catch (error) {
+      clientError(error);
+    }
   }
   checkNewAppVersion(); // Added so that version will be displayed for new users
 };
@@ -1115,6 +1119,7 @@ const check_agent_installed = async () => {
 };
 
 const check_agent_installed_version = async (agent_version) => {
+  console.log("CHecking agent version now");
   let notification = null;
   notification = notyf.open({
     type: "ps_agent",
@@ -1127,7 +1132,10 @@ const check_agent_installed_version = async (agent_version) => {
   // IMP: error in subfunction is handled by caller
   [browser_download_url, latest_agent_version] = await get_latest_agent_version();
 
-  if (agent_version.indexOf(latest_agent_version) === -1) {
+  console.log(agent_version);
+  console.log(latest_agent_version);
+
+  if (agent_version !== latest_agent_version) {
     notyf.dismiss(notification);
     notyf.open({
       type: "warning",
@@ -1156,12 +1164,19 @@ const get_latest_agent_version = async () => {
   );
 
   let releases = releasesResponse.data;
-  let release = releases[0];
-  let latest_agent_version = release.tag_name;
+  let targetRelease = undefined;
+  let latest_agent_version = undefined;
+  for (const release of releases) {
+    targetRelease = release;
+    latest_agent_version = release.tag_name;
+    if (!release.prerelease && !release.draft) {
+      break;
+    }
+  }
 
   if (process.platform == "darwin") {
     reverseSwalButtons = true;
-    release.assets.forEach((asset, index) => {
+    targetRelease.assets.forEach((asset, index) => {
       let file_name = asset.name;
       if (path.extname(file_name) == ".pkg") {
         browser_download_url = asset.browser_download_url;
@@ -1171,7 +1186,7 @@ const get_latest_agent_version = async () => {
 
   if (process.platform == "win32") {
     reverseSwalButtons = false;
-    release.assets.forEach((asset, index) => {
+    targetRelease.assets.forEach((asset, index) => {
       let file_name = asset.name;
       if (path.extname(file_name) == ".msi" || path.extname(file_name) == ".exe") {
         browser_download_url = asset.browser_download_url;
@@ -1181,7 +1196,7 @@ const get_latest_agent_version = async () => {
 
   if (process.platform == "linux") {
     reverseSwalButtons = false;
-    release.assets.forEach((asset, index) => {
+    targetRelease.assets.forEach((asset, index) => {
       let file_name = asset.name;
       if (path.extname(file_name) == ".deb") {
         browser_download_url = asset.browser_download_url;
@@ -3857,12 +3872,19 @@ const loadDefaultAccount = async () => {
 
   if (accounts.length > 0) {
     var myitemselect = accounts[0];
+    // keep the defaultBfAccount value as the user's profile config key value for reference later
     defaultBfAccount = myitemselect;
+    console.log(defaultBfAccount);
 
-    $("#current-bf-account").text(myitemselect);
-    $("#current-bf-account-generate").text(myitemselect);
-    $("#create_empty_dataset_BF_account_span").text(myitemselect);
-    $(".bf-account-span").text(myitemselect);
+    // fetch the user's email and set that as the account field's value
+    let userInformation = await api.getUserInformation();
+    let userEmail = userInformation.email;
+
+    $("#current-bf-account").text(userEmail);
+    $("#current-bf-account-generate").text(userEmail);
+    $("#create_empty_dataset_BF_account_span").text(userEmail);
+    $(".bf-account-span").text(userEmail);
+
     showHideDropdownButtons("account", "show");
     refreshBfUsersList();
     refreshBfTeamsList(bfListTeams);
@@ -7060,7 +7082,7 @@ $("#inputNewNameDataset").keyup(function () {
       $("#btn-confirm-new-dataset-name").hide();
       document.getElementById("para-new-name-dataset-message").innerHTML =
         "Error: A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.";
-      // $("#nextBtn").prop("disabled", true);
+      // $("#nextBtn").prop("disabled", true)
       $("#Question-generate-dataset-generate-div-old").removeClass("show");
       $("#div-confirm-inputNewNameDataset").css("display", "none");
       $("#btn-confirm-new-dataset-name").hide();
@@ -7294,7 +7316,7 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
             html: `This folder seem to have non-SPARC folders. Please select a folder that has a valid SPARC dataset structure.
               <br/>
               See the "Data Organization" section of the SPARC documentation for more
-              <a a target="_blank" href="https://sparc.science/help/3FXikFXC8shPRd8xZqhjVT#top"> details</a>`,
+              <a target="_blank" href="https://sparc.science/help/3FXikFXC8shPRd8xZqhjVT#top"> details</a>`,
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
             showConfirmButton: false,

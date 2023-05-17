@@ -14,7 +14,7 @@ const addDatasetAndOrganizationCardComponents = () => {
     dataNext: "div_add_edit_subtitle",
     fields: [
       FIELD_OPTIONS.ACCOUNT_EDITABLE,
-      FIELD_OPTIONS.ACCOUNT_DETAILS,
+
       FIELD_OPTIONS.ORGANIZATION_EDITABLE,
       FIELD_OPTIONS.DATASET_EDITABLE,
     ],
@@ -33,11 +33,7 @@ const addDatasetAndOrganizationCardComponents = () => {
     action: "delete",
     section: "individual-question manage-dataset",
     dataNext: "div-create-new-empty-dataset",
-    fields: [
-      FIELD_OPTIONS.ACCOUNT_EDITABLE,
-      FIELD_OPTIONS.ACCOUNT_DETAILS,
-      FIELD_OPTIONS.ORGANIZATION_EDITABLE,
-    ],
+    fields: [FIELD_OPTIONS.ACCOUNT_EDITABLE, FIELD_OPTIONS.ORGANIZATION_EDITABLE],
   });
 
   document
@@ -54,7 +50,7 @@ const addDatasetAndOrganizationCardComponents = () => {
     dataNext: "div-collection-bf-dataset",
     fields: [
       FIELD_OPTIONS.ACCOUNT_EDITABLE,
-      FIELD_OPTIONS.ACCOUNT_DETAILS,
+
       FIELD_OPTIONS.ORGANIZATION_EDITABLE,
       FIELD_OPTIONS.DATASET_EDITABLE,
     ],
@@ -74,7 +70,7 @@ const addDatasetAndOrganizationCardComponents = () => {
     dataNext: "div-rename-bf-dataset",
     fields: [
       FIELD_OPTIONS.ACCOUNT_EDITABLE,
-      FIELD_OPTIONS.ACCOUNT_DETAILS,
+
       FIELD_OPTIONS.ORGANIZATION_EDITABLE,
       FIELD_OPTIONS.DATASET_EDITABLE,
     ],
@@ -94,7 +90,7 @@ const addDatasetAndOrganizationCardComponents = () => {
     dataNext: "div_make_pi_owner_permissions",
     fields: [
       FIELD_OPTIONS.ACCOUNT_EDITABLE,
-      FIELD_OPTIONS.ACCOUNT_DETAILS,
+
       FIELD_OPTIONS.ORGANIZATION_EDITABLE,
       FIELD_OPTIONS.DATASET_EDITABLE,
       FIELD_OPTIONS.OWNER_PERMISSIONS,
@@ -113,7 +109,7 @@ const addDatasetAndOrganizationCardComponents = () => {
     dataNext: "add_edit_permissions_choice_div",
     fields: [
       FIELD_OPTIONS.ACCOUNT_EDITABLE,
-      FIELD_OPTIONS.ACCOUNT_DETAILS,
+
       FIELD_OPTIONS.ORGANIZATION_EDITABLE,
       FIELD_OPTIONS.DATASET_EDITABLE,
       FIELD_OPTIONS.PERMISSIONS,
@@ -134,7 +130,7 @@ const addDatasetAndOrganizationCardComponents = () => {
     dataNext: "div_add_tags",
     fields: [
       FIELD_OPTIONS.ACCOUNT_EDITABLE,
-      FIELD_OPTIONS.ACCOUNT_DETAILS,
+
       FIELD_OPTIONS.ORGANIZATION_EDITABLE,
       FIELD_OPTIONS.DATASET_EDITABLE,
     ],
@@ -152,7 +148,7 @@ const addDatasetAndOrganizationCardComponents = () => {
     dataNext: "div_add_edit_description",
     fields: [
       FIELD_OPTIONS.ACCOUNT_EDITABLE,
-      FIELD_OPTIONS.ACCOUNT_DETAILS,
+
       FIELD_OPTIONS.ORGANIZATION_EDITABLE,
       FIELD_OPTIONS.DATASET_EDITABLE,
     ],
@@ -172,7 +168,7 @@ const addDatasetAndOrganizationCardComponents = () => {
     dataNext: "div_add_edit_banner",
     fields: [
       FIELD_OPTIONS.ACCOUNT_EDITABLE,
-      FIELD_OPTIONS.ACCOUNT_DETAILS,
+
       FIELD_OPTIONS.ORGANIZATION_EDITABLE,
       FIELD_OPTIONS.DATASET_EDITABLE,
     ],
@@ -190,7 +186,7 @@ const addDatasetAndOrganizationCardComponents = () => {
     dataNext: "div_add_license",
     fields: [
       FIELD_OPTIONS.ACCOUNT_EDITABLE,
-      FIELD_OPTIONS.ACCOUNT_DETAILS,
+
       FIELD_OPTIONS.ORGANIZATION_EDITABLE,
       FIELD_OPTIONS.DATASET_EDITABLE,
       FIELD_OPTIONS.LICENSE,
@@ -209,7 +205,7 @@ const addDatasetAndOrganizationCardComponents = () => {
     dataNext: "upload_local_dataset_div",
     fields: [
       FIELD_OPTIONS.ACCOUNT_EDITABLE,
-      FIELD_OPTIONS.ACCOUNT_DETAILS,
+
       FIELD_OPTIONS.ORGANIZATION_EDITABLE,
       FIELD_OPTIONS.DATASET_EDITABLE,
     ],
@@ -229,7 +225,7 @@ const addDatasetAndOrganizationCardComponents = () => {
     dataNext: "div_view_change_dataset_status",
     fields: [
       FIELD_OPTIONS.ACCOUNT_EDITABLE,
-      FIELD_OPTIONS.ACCOUNT_DETAILS,
+
       FIELD_OPTIONS.ORGANIZATION_EDITABLE,
       FIELD_OPTIONS.DATASET_EDITABLE,
     ],

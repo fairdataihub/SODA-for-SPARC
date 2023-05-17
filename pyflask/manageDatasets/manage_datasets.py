@@ -786,7 +786,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         did_upload = False
         abort(400, invalid_dataset_messages)
 
-    if not has_edit_permissions(ps, selected_dataset_id):
+    if not has_edit_permissions(get_access_token(), selected_dataset_id):
         submitdatastatus = "Done"
         did_fail = True
         did_upload = False

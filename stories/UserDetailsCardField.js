@@ -7,7 +7,7 @@ const FIELD_OPTIONS = {
   ACCOUNT_EDITABLE: "account-editable-field",
   ORGANIZATION_EDITABLE: "organization-editable-field",
   DATASET_EDITABLE: "dataset-editable-field",
-  ACCOUNT_DETAILS: "account-details-field",
+  ACCOUNT_DETAILS_EXTRA: "account-details-field",
   PERMISSIONS: "permissions-field",
   LICENSE: "license-field",
 };
@@ -76,7 +76,7 @@ const UserDetailsCardField = ({ fieldOption, tabName }) => {
           <div class="ui active green inline loader small organization-loader" style="display: none"></div>
         </div>
     `;
-  } else if (fieldOption === FIELD_OPTIONS.ACCOUNT_DETAILS) {
+  } else if (fieldOption === FIELD_OPTIONS.ACCOUNT_DETAILS_EXTRA) {
     field = `
       <div style="display: flex; flex-direction: row; margin-bottom: 15px">
           <div class="card-container ${tabName}">

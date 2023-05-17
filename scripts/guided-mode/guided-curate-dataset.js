@@ -3031,19 +3031,6 @@ const generateProgressCardElement = (progressFileJSONObj) => {
   `;
 };
 
-// Waits for the workspace to load before rendering the progress cards
-// Note: Does not throw an error if the workspace never loads, but we wait in case the workspace is still being loaded
-// (usually on start up when they go to Guided Mode quickly)
-const letWorkSpaceLoadingCook = async () => {
-  for (let i = 0; i < 15; i++) {
-    if (guidedGetCurrentUserWorkSpace()) {
-      return true;
-    }
-    await new Promise((resolve) => setTimeout(resolve, 200)); // wait for .2 seconds before trying again
-  }
-  return false;
-};
-
 const guidedRenderProgressCards = async () => {
   //Check if Guided-Progress folder exists. If not, create it.
   if (!fs.existsSync(guidedProgressFilePath)) {
@@ -3059,7 +3046,13 @@ const guidedRenderProgressCards = async () => {
     return new Date(b["last-modified"]) - new Date(a["last-modified"]);
   });
 
-  await letWorkSpaceLoadingCook();
+  if (!guidedGetCurrentUserWorkSpace()) {
+    //wait 3 seconds for the workspace to potentially load
+    //note this wait is not ideal, but it can be removed. If the workspace is not loaded before
+    //the progress cards are rendered, the user will be prompted to switch workspaces
+    //for all progress cards that are not in the current workspace
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+  }
 
   const progressCardsContainer = document.getElementById("guided-section-resume-progress-cards");
   // If there are progress cards to display, display them
@@ -3663,10 +3656,6 @@ const guidedPrepareHomeScreen = async () => {
     fs.mkdirSync(guidedProgressFilePath, { recursive: true });
   }
 
-<<<<<<< HEAD
-=======
-  document.getElementById("new-dataset-lottie-container").innerHTML = "";
->>>>>>> origin/temp-staging-j-merges
   document.getElementById("existing-dataset-lottie").innerHTML = "";
   document.getElementById("edit-dataset-component-lottie").innerHTML = "";
 
@@ -4698,24 +4687,7 @@ const openPage = async (targetPageID) => {
       );
       importProgressCircle.classList.add("hidden");
 
-<<<<<<< HEAD
       await guidedRenderProgressCards();
-=======
-      //Check if Guided-Progress folder exists. If not, create it.
-      if (!fs.existsSync(guidedProgressFilePath)) {
-        fs.mkdirSync(guidedProgressFilePath, { recursive: true });
-      }
-
-      //Get all progress files in the guided progress folder (and filter out non-json files)
-      const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
-      const jsonProgressFiles = guidedSavedProgressFiles.filter((file) => {
-        return file.endsWith(".json");
-      });
-
-      //render progress resumption cards from progress file array on first page of guided mode
-      const progressFileData = await getAllProgressFileData(jsonProgressFiles);
-      renderProgressCards(progressFileData);
->>>>>>> origin/temp-staging-j-merges
     }
 
     if (targetPageID === "guided-prepare-dataset-structure-tab") {
@@ -7050,8 +7022,6 @@ const patchPreviousGuidedModeVersions = async () => {
     if (!sodaJSONObj?.["digital-metadata"]?.["dataset-workspace"]) {
       // Skip the log in page since we no longer need it
       guidedSkipPage("guided-pennsieve-intro-tab");
-      // If the dataset-workspace has not yet been set, set it to the current user's workspace
-      // (this happens after the dataset has already been pulled and checked if valid for Guided Mode...)
       sodaJSONObj["digital-metadata"]["dataset-workspace"] = guidedGetCurrentUserWorkSpace();
     }
   }
@@ -7062,49 +7032,21 @@ const patchPreviousGuidedModeVersions = async () => {
       (page) => page !== "guided-dataset-validation-tab"
     );
   }
-};
-const guidedGetPageToReturnTo = (sodaJSONObj) => {
-  // Set by openPage function
-  const usersPageBeforeExit = sodaJSONObj["page-before-exit"];
 
   //If the dataset was successfully uploaded, send the user to the share with curation team
   if (sodaJSONObj["previous-guided-upload-dataset-name"]) {
     return "guided-dataset-dissemination-tab";
   }
 
-  // returns the id of the first page of guided mode
-  const firstPageID = getNonSkippedGuidedModePages(document)[0].id;
+  // If no other conditions are met, return the page the user was last on
+  return usersPageBeforeExit;
 
-  const currentSodaVersion = document.getElementById("version").innerHTML;
-  const lastVersionOfSodaUsedOnProgressFile = sodaJSONObj["last-version-of-soda-used"];
-  if (lastVersionOfSodaUsedOnProgressFile != currentSodaVersion) {
-    // If the last time the user worked on the progress file was in a previous version of SODA, then force the user to restart from the first page
-    return firstPageID;
-  } else {
-    // If the page the user was last on no longer exists, return them to the first page
-    if (!document.getElementById(usersPageBeforeExit)) {
-      return firstPageID;
-    }
+  // if (!sodaJSONObj["special-rejoin-key"]) {
+  //   sodaJSONObj["special-rejoin-key"] = "now-i-wont-return-to-the-first-page";
+  //   return firstPageID;
+  // }
+}
 
-    // If the user left while the upload was in progress, send the user to the upload confirmation page
-    if (usersPageBeforeExit === "guided-dataset-generation-tab") {
-      return "guided-dataset-generation-confirmation-tab";
-    }
-
-    //If the dataset was successfully uploaded, send the user to the share with curation team
-    if (sodaJSONObj["previous-guided-upload-dataset-name"]) {
-      return "guided-dataset-dissemination-tab";
-    }
-
-    // If no other conditions are met, return the page the user was last on
-    return usersPageBeforeExit;
-
-    // if (!sodaJSONObj["special-rejoin-key"]) {
-    //   sodaJSONObj["special-rejoin-key"] = "now-i-wont-return-to-the-first-page";
-    //   return firstPageID;
-    // }
-  }
-};
 //Loads UI when continue curation button is pressed
 const guidedResumeProgress = async (datasetNameToResume) => {
   const loadingSwal = Swal.fire({
@@ -7223,6 +7165,41 @@ const guidedResumeProgress = async (datasetNameToResume) => {
     //patches the sodajsonobj if it was created in a previous version of guided mode
     await patchPreviousGuidedModeVersions();
 
+    // pageToReturnTo will be set to the page the user will return to
+    let pageToReturnTo;
+
+    // The last page the user left off on on a previous session
+    const usersPageBeforeExit = sodaJSONObj["page-before-exit"];
+
+    //Check to make sure the page still exists before returning to it
+    //Code below might still specify a different page to return to though.
+    if (document.getElementById(usersPageBeforeExit)) {
+      pageToReturnTo = usersPageBeforeExit;
+    }
+
+    // If the user left while the upload was in progress, send the user to the upload confirmation page
+    if (usersPageBeforeExit === "guided-dataset-generation-tab") {
+      pageToReturnTo = "guided-dataset-generation-confirmation-tab";
+    }
+
+    // If the last time the user worked on the progress file was in a previous version of SODA, then force the user to restart from the first page
+    const currentSodaVersion = document.getElementById("version").innerHTML;
+    const lastVersionOfSodaUsedOnProgressFile = sodaJSONObj["last-version-of-soda-used"];
+    if (lastVersionOfSodaUsedOnProgressFile != currentSodaVersion) {
+      pageToReturnTo = null;
+    }
+
+    // console.log() console.log("") remove me before an actual release or talk to Jacob
+    if (!sodaJSONObj["special-rejoin-key"]) {
+      sodaJSONObj["special-rejoin-key"] = "now-i-wont-return-to-the-first-page";
+      pageToReturnTo = null;
+    }
+
+    //If the dataset was successfully uploaded, send the user to the share with curation team
+    if (datasetResumeJsonObj["previous-guided-upload-dataset-name"]) {
+      pageToReturnTo = "guided-dataset-dissemination-tab";
+    }
+
     // Delete the button status for the Pennsieve account confirmation section
     // So the user has to confirm their Pennsieve account before uploading
     delete sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
@@ -7245,10 +7222,12 @@ const guidedResumeProgress = async (datasetNameToResume) => {
     //the sub-page will be shown during openPage() function
     hideSubNavAndShowMainNav(false);
 
-    // pageToReturnTo will be set to the page the user will return to
-    const pageToReturnTo = guidedGetPageToReturnTo(sodaJSONObj);
-
-    await openPage(pageToReturnTo);
+    if (pageToReturnTo) {
+      await openPage(pageToReturnTo);
+    } else {
+      const firstPage = getNonSkippedGuidedModePages(document)[0];
+      await openPage(firstPage.id);
+    }
 
     // Close the loading screen, the user should be on the page they left off on now
     loadingSwal.close();

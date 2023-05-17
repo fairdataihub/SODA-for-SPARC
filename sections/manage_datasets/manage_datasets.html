@@ -2061,14 +2061,14 @@
       </div>
 
       <div
-        class="individual-question manage-dataset"
+        class="individual-question manage-dataset mb-3"
         id="upload_local_dataset_div"
         style="height: auto"
       >
         <div class="ui form" style="width: 100%">
           <div class="grouped fields" style="display: flex; justify-content: center">
             <label style="font-size: 17px; color: var(--color-bg-plum)"
-              >What is the location of the dataset?</label
+              >What is the location of the local dataset to upload?</label
             >
             <div
               class="field"
@@ -2185,10 +2185,14 @@
     </div>
   </div>
 
-  <div class="footer-div">
-    <div style="display: flex; flex-direction: row; width: 120px">
+  <div class="footer-div" style="width: 95%">
+    <div class="d-flex w-100 justify-content-between">
       <button type="button" class="transition-btn prev" data-section="main_tabs">
         <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
+      </button>
+      <button id="reset-local-upload" onclick="resetUploadLocalDataset()" class="start-over">
+        <i class="fas fa-sync-alt" style="margin-right: 10px; font-size: inherit;"></i>
+        Start over
       </button>
     </div>
   </div>

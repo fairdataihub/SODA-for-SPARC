@@ -1078,6 +1078,8 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
             key: apiKey,
             secret: apiSecret,
           });
+
+          // set the user's email to be the defaultBfAccount value
           bfAccountOptions[key_name] = key_name;
           defaultBfAccount = key_name;
           defaultBfDataset = "Select dataset";
@@ -1088,35 +1090,15 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
                 selected_account: defaultBfAccount,
               },
             });
-            let result = bf_account_details_req.data.account_details;
-            $("#para-account-detail-curate").html(result);
-            $("#current-bf-account").text(key_name);
-            $("#current-bf-account-generate").text(key_name);
-            $("#create_empty_dataset_BF_account_span").text(key_name);
-            $(".bf-account-span").text(key_name);
+            // reset the dataset field values
             $("#current-bf-dataset").text("None");
             $("#current-bf-dataset-generate").text("None");
             $(".bf-dataset-span").html("None");
-            $("#para-account-detail-curate-generate").html(result);
-            $("#para_create_empty_dataset_BF_account").html(result);
-            $("#para-account-detail-curate-generate").html(result);
-            $(".bf-account-details-span").html(result);
             $("#para-continue-bf-dataset-getting-started").text("");
 
-            // $("#current_curation_team_status").text("None");
-            // $("#curation-team-share-btn").hide();
-            // $("#curation-team-unshare-btn").hide();
-            // $("#current_sparc_consortium_status").text("None");
-            // $("#sparc-consortium-share-btn").hide();
-            // $("#sparc-consortium-unshare-btn").hide();
-
+            // set the workspace field values to the user's current workspace
             let org = bf_account_details_req.data.organization;
             $(".bf-organization-span").text(org);
-            // const gettingStartedPennsieveBtn = document.getElementById(
-            // "getting-started-pennsieve-account"
-            // );
-            // gettingStartedPennsieveBtn.children[0].style.display = "none";
-            // gettingStartedPennsieveBtn.children[1].style.display = "flex";
 
             showHideDropdownButtons("account", "show");
             confirm_click_account_function();
@@ -1837,7 +1819,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           }
 
           try {
-            await api.setPreferredOrganization(login, password, bfOrganization, defaultBfAccount);
+            await api.setPreferredOrganization(login, password, bfOrganization, "soda-pennsieve");
           } catch (err) {
             clientError(err);
             await Swal.fire({
@@ -1859,6 +1841,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           $("#current-bf-organization-generate").text(bfOrganization);
           $(".bf-organization-span").html(bfOrganization);
           // set the permissions content to an empty string
+          await loadDefaultAccount();
 
           // confirm_click_function();
 

@@ -77,18 +77,6 @@
                 <div style="display: flex; flex-direction: row; margin-bottom: 15px">
                   <div class="card-container prepare-metadata">
                     <div style="width: 100%">
-                      <h5 class="card-left" style="text-align: left">Account details:</h5>
-                      <h5
-                        class="card-right bf-account-details-span prepare-metadata-account-details-span"
-                      >
-                        None
-                      </h5>
-                    </div>
-                  </div>
-                </div>
-                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                  <div class="card-container prepare-metadata">
-                    <div style="width: 100%">
                       <h5 class="card-left" style="padding-right: 5px">Current workspace:</h5>
                       <div
                         class="change-current-account ds-dd organization"
@@ -425,6 +413,23 @@
                 the SPARC curation team at
                 <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
               </p>
+            </div>
+            <!-- TODO: Dorian remove this html, no longer withdrawing datasets -->
+            <div
+              style="width: 100%; display: hidden !important; justify-content: center"
+              id="prepublishing-withdraw-btn-container"
+              class="hidden"
+            >
+              <button
+                id="btn-withdraw-review-dataset"
+                onclick="withdrawDatasetSubmission()"
+                type="button"
+                class="ui positive button plum-background"
+                style="width: 281px !important; height: 3.2rem"
+              >
+                <i class="fas fa-ban" style="padding-right: 5px"></i>
+                Withdraw from review
+              </button>
             </div>
           </div>
         </div>
