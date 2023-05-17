@@ -957,6 +957,13 @@ const savePageChanges = async (pageBeingLeftID) => {
           message: "Please enter a dataset name.",
         });
       }
+      if (check_forbidden_characters_bf(datasetNameInput)) {
+        errorArray.push({
+          type: "notyf",
+          message:
+            "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
+        });
+      }
       if (!datasetSubtitleInput) {
         errorArray.push({
           type: "notyf",
@@ -3656,6 +3663,10 @@ const guidedPrepareHomeScreen = async () => {
     fs.mkdirSync(guidedProgressFilePath, { recursive: true });
   }
 
+<<<<<<< HEAD
+=======
+  document.getElementById("new-dataset-lottie-container").innerHTML = "";
+>>>>>>> origin/temp-staging-j-merges
   document.getElementById("existing-dataset-lottie").innerHTML = "";
   document.getElementById("edit-dataset-component-lottie").innerHTML = "";
 
@@ -4687,7 +4698,24 @@ const openPage = async (targetPageID) => {
       );
       importProgressCircle.classList.add("hidden");
 
+<<<<<<< HEAD
       await guidedRenderProgressCards();
+=======
+      //Check if Guided-Progress folder exists. If not, create it.
+      if (!fs.existsSync(guidedProgressFilePath)) {
+        fs.mkdirSync(guidedProgressFilePath, { recursive: true });
+      }
+
+      //Get all progress files in the guided progress folder (and filter out non-json files)
+      const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
+      const jsonProgressFiles = guidedSavedProgressFiles.filter((file) => {
+        return file.endsWith(".json");
+      });
+
+      //render progress resumption cards from progress file array on first page of guided mode
+      const progressFileData = await getAllProgressFileData(jsonProgressFiles);
+      renderProgressCards(progressFileData);
+>>>>>>> origin/temp-staging-j-merges
     }
 
     if (targetPageID === "guided-prepare-dataset-structure-tab") {
