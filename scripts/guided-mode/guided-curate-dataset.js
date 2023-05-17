@@ -4444,11 +4444,13 @@ const openPage = async (targetPageID) => {
       }
 
       //Get all progress files in the guided progress folder (and filter out non-json files)
-      const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath).filter((file) =>
-        file.endsWith(".json")
-      );
+      const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
+      const jsonProgressFiles = guidedSavedProgressFiles.filter((file) => {
+        return file.endsWith(".json");
+      });
+
       //render progress resumption cards from progress file array on first page of guided mode
-      const progressFileData = await getAllProgressFileData(guidedSavedProgressFiles);
+      const progressFileData = await getAllProgressFileData(jsonProgressFiles);
       renderProgressCards(progressFileData);
     }
 
