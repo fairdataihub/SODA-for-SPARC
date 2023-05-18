@@ -902,12 +902,11 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
             selected_account: bfacct,
           },
         });
-        let accountDetails = bf_account_details_req.data.account_details;
-        $("#para-account-detail-curate").html(accountDetails);
-        $("#current-bf-account").text(bfacct);
-        $("#current-bf-account-generate").text(bfacct);
-        $("#create_empty_dataset_BF_account_span").text(bfacct);
-        $(".bf-account-span").text(bfacct);
+        let user_email = bf_account_details_req.data.email;
+        $("#current-bf-account").text(user_email);
+        $("#current-bf-account-generate").text(user_email);
+        $("#create_empty_dataset_BF_account_span").text(user_email);
+        $(".bf-account-span").text(user_email);
         updateBfAccountList();
         //change icons in getting started page (guided mode)
         const gettingStartedPennsieveBtn = document.getElementById(

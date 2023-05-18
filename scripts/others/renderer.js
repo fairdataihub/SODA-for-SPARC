@@ -4390,17 +4390,11 @@ const showDefaultBFAccount = async () => {
             selected_account: defaultBfAccount,
           },
         });
-        let accountDetails = bf_account_details_req.data.account_details;
-        $("#para-account-detail-curate").html(accountDetails);
-        $("#current-bf-account").text(defaultBfAccount);
-        $("#current-bf-account-generate").text(defaultBfAccount);
-        $("#create_empty_dataset_BF_account_span").text(defaultBfAccount);
-        $(".bf-account-span").text(defaultBfAccount);
-        $("#card-right bf-account-details-span").html(accountDetails);
-        $("#para_create_empty_dataset_BF_account").html(accountDetails);
-        $("#para-account-detail-curate-generate").html(accountDetails);
-        $(".bf-account-details-span").html(accountDetails);
-        defaultAccountDetails = accountDetails;
+        let user_email = bf_account_details_req.data.email;
+        $("#current-bf-account").text(user_email);
+        $("#current-bf-account-generate").text(user_email);
+        $("#create_empty_dataset_BF_account_span").text(user_email);
+        $(".bf-account-span").text(user_email);
 
         // show the preferred organization
         let organization = bf_account_details_req.data.organization;
@@ -8577,19 +8571,14 @@ async function showBFAddAccountSweetalert() {
                     },
                   })
                   .then((response) => {
-                    let accountDetails = response.data.account_details;
-                    $("#para-account-detail-curate").html(accountDetails);
-                    $("#current-bf-account").text(name);
-                    $("#current-bf-account-generate").text(name);
-                    $("#create_empty_dataset_BF_account_span").text(name);
-                    $(".bf-account-span").text(name);
+                    let user_email = response.data.email;
+                    $("#current-bf-account").text(user_email);
+                    $("#current-bf-account-generate").text(user_email);
+                    $("#create_empty_dataset_BF_account_span").text(user_email);
+                    $(".bf-account-span").text(user_email);
                     $("#current-bf-dataset").text("None");
                     $("#current-bf-dataset-generate").text("None");
                     $(".bf-dataset-span").html("None");
-                    $("#para-account-detail-curate-generate").html(accountDetails);
-                    $("#para_create_empty_dataset_BF_account").html(accountDetails);
-                    $("#para-account-detail-curate-generate").html(accountDetails);
-                    $(".bf-account-details-span").html(accountDetails);
                     $("#para-continue-bf-dataset-getting-started").text("");
                     showHideDropdownButtons("account", "show");
                     confirm_click_account_function();
