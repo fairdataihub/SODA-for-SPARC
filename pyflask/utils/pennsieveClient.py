@@ -2,12 +2,12 @@ from pennsieve2.pennsieve import Pennsieve
 from flask import abort
 import requests
 
-def connect_pennsieve_client():
+def connect_pennsieve_client(account_name):
     """
         Connects to Pennsieve Python client to the Agent and returns the initialized Pennsieve object.
     """
     try:
-        return Pennsieve()
+        return Pennsieve(profile_name=account_name)
     except Exception as e:
         abort(500, f"Could not connect to the Pennsieve agent: {e}")
 

@@ -727,7 +727,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
     # initialize the Pennsieve client 
     try:
-        ps = Pennsieve()
+        ps = Pennsieve(profile_name=accountname)
     except Exception as e:
         submitdatastatus = "Done"
         did_fail = True
@@ -748,7 +748,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
 
 
-    selected_dataset_id = get_dataset_id(get_access_token(), bfdataset)
+    selected_dataset_id = get_dataset_id(ps, bfdataset)
 
         # reauthenticate the user
     try:
