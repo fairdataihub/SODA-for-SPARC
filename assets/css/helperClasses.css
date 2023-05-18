@@ -985,6 +985,11 @@
   margin-top: 5px;
 }
 
+.swal2-content {
+  max-height: 400px !important;
+  overflow-y: auto !important;
+}
+
 .swal2-content .guided--form-label,
 .swal2-content .tagify__input {
   text-align: left;

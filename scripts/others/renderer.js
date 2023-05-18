@@ -4599,6 +4599,26 @@ ipcRenderer.on("selected-new-dataset", async (event, filepath) => {
   }
 });
 
+const CheckFileListForServerAccess = async (fileList) => {
+  try {
+    const res = await client.post(`/curate_datasets/check_server_access_to_files`, {
+      file_list_to_check: fileList,
+    });
+    //const accessible_files = res.data.accessible_files;
+    const inaccessible_files = res.data.inaccessible_files;
+    console.log("inaccessible_files", inaccessible_files);
+    return inaccessible_files;
+  } catch (error) {
+    console.log(userErrorMessage(error));
+    notyf.open({
+      type: "error",
+      message: `Unable to determine file/folder accessibility`,
+      duration: 7000,
+    });
+    return [];
+  }
+};
+
 //////////// FILE BROWSERS to import existing files and folders /////////////////////
 organizeDSaddFiles.addEventListener("click", function () {
   ipcRenderer.send("open-files-organize-datasets-dialog");
@@ -4630,8 +4650,29 @@ ipcRenderer.on("selected-files-organize-datasets", async (event, path) => {
       },
     });
   }
+
   if (path.length > 0) {
-    if (path.length < 0) {
+    let load_spinner_promise = new Promise(async (resolved) => {
+      let background = document.createElement("div");
+      let spinner_container = document.createElement("div");
+      let spinner_icon = document.createElement("div");
+      spinner_container.setAttribute("id", "items_loading_container");
+      spinner_icon.setAttribute("id", "item_load");
+      spinner_icon.setAttribute("class", "ui large active inline loader icon-wrapper");
+      background.setAttribute("class", "loading-items-background");
+      background.setAttribute("id", "loading-items-background-overlay");
+
+      spinner_container.append(spinner_icon);
+      document.body.prepend(background);
+      document.body.prepend(spinner_container);
+      let loading_items_spinner = document.getElementById("items_loading_container");
+      loading_items_spinner.style.display = "block";
+      if (loading_items_spinner.style.display === "block") {
+        setTimeout(() => {
+          resolved();
+        }, 100);
+      }
+    }).then(async () => {
       await addFilesfunction(
         path,
         myPath,
@@ -4640,42 +4681,11 @@ ipcRenderer.on("selected-files-organize-datasets", async (event, path) => {
         ".single-item",
         datasetStructureJSONObj
       );
-    } else {
-      let load_spinner_promise = new Promise(async (resolved) => {
-        let background = document.createElement("div");
-        let spinner_container = document.createElement("div");
-        let spinner_icon = document.createElement("div");
-        spinner_container.setAttribute("id", "items_loading_container");
-        spinner_icon.setAttribute("id", "item_load");
-        spinner_icon.setAttribute("class", "ui large active inline loader icon-wrapper");
-        background.setAttribute("class", "loading-items-background");
-        background.setAttribute("id", "loading-items-background-overlay");
-
-        spinner_container.append(spinner_icon);
-        document.body.prepend(background);
-        document.body.prepend(spinner_container);
-        let loading_items_spinner = document.getElementById("items_loading_container");
-        loading_items_spinner.style.display = "block";
-        if (loading_items_spinner.style.display === "block") {
-          setTimeout(() => {
-            resolved();
-          }, 100);
-        }
-      }).then(async () => {
-        await addFilesfunction(
-          path,
-          myPath,
-          organizeDSglobalPath,
-          "#items",
-          ".single-item",
-          datasetStructureJSONObj
-        );
-        // Swal.close();
-        document.getElementById("loading-items-background-overlay").remove();
-        document.getElementById("items_loading_container").remove();
-        // background.remove();
-      });
-    }
+      // Swal.close();
+      document.getElementById("loading-items-background-overlay").remove();
+      document.getElementById("items_loading_container").remove();
+      // background.remove();
+    });
   }
 });
 
@@ -5203,9 +5213,16 @@ const dropHelper = async (
   let loadingIcon = document.getElementById("items_loading_container");
   let loadingContainer = document.getElementById("loading-items-background-overlay");
 
+  const filePathsInEv1 = Object.keys(ev1).map((file) => ev1[file].path);
+  const inaccessible_files = await CheckFileListForServerAccess(filePathsInEv1);
+
   for (var i = 0; i < ev1.length; i++) {
     /// Get all the file information
     var itemPath = ev1[i].path;
+    if (inaccessible_files.includes(itemPath)) {
+      // go to next file if file is inaccessible
+      continue;
+    }
     var itemName = path.parse(itemPath).base;
     var duplicate = false;
     var statsObj = fs.statSync(itemPath);
@@ -5368,6 +5385,32 @@ const dropHelper = async (
         }
       }
     }
+  }
+
+  if (inaccessible_files.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
+
+    let inaccessible_files_string = inaccessible_files.join("\n");
+
+    await Swal.fire({
+      icon: "info",
+      title: "Files not accessible to server:",
+      html: `
+        <div>
+          ${inaccessible_files_string}
+        </div>
+      `,
+      width: 500,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: `OK`,
+      focusConfirm: true,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    });
   }
 
   if (doubleExtension.length > 0) {

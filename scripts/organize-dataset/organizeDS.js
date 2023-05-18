@@ -1614,9 +1614,15 @@ const addFilesfunction = async (
   let loadingIcon = document.getElementById("items_loading_container");
   let loadingContainer = document.getElementById("loading-items-background-overlay");
 
+  // Check for files that the server can not access
+  const inaccessible_files = await CheckFileListForServerAccess(fileArray);
+
   // loop through the files that are trying to be imported
   for (let i = 0; i < fileArray.length; i++) {
     let filePath = fileArray[i];
+    if (inaccessible_files.includes(filePath)) {
+      continue;
+    }
     let fileBase = path.parse(filePath).base;
     let fileName = path.parse(filePath).name;
 
@@ -1743,6 +1749,32 @@ const addFilesfunction = async (
         }
       }
     }
+  }
+
+  if (inaccessible_files.length > 0) {
+    if (loadingContainer != undefined) {
+      loadingContainer.style.display = "none";
+      loadingIcon.style.display = "none";
+    }
+
+    let inaccessible_files_string = inaccessible_files.join("\n");
+
+    await Swal.fire({
+      icon: "info",
+      title: "Files not accessible to server:",
+      html: `
+        <div>
+          ${inaccessible_files_string}
+        </div>
+      `,
+      width: 500,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: `OK`,
+      focusConfirm: true,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+    });
   }
 
   //after iterating through all the files handle problem files through alerts
