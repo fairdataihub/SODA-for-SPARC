@@ -1866,6 +1866,8 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
       // reset the selected dataset to None
       $(".bf-dataset-span").html("None");
+      // reset the current owner span in the manage dataset make pi owner of a dataset tab
+      $(".current-permissions").html("None");
 
       // If the button that triggered the organization has the class
       // guided-change-workspace (from guided mode), handle changes based on the ev id
