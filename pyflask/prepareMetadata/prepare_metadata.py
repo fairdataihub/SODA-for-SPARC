@@ -26,7 +26,7 @@ from permissions import has_edit_permissions, bf_get_current_user_permission_age
 from collections import defaultdict
 import requests
 from errorHandlers import is_file_not_found_exception, is_invalid_file_exception, InvalidDeliverablesDocument
-
+import time
 from authentication import get_access_token
 
 
@@ -213,19 +213,20 @@ def subscriber_metadata(ps, events_dict):
 
 def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_after_upload):
     global namespace_logger
-
-
-    
-    ps = connect_pennsieve_client()
-    ps.user.switch(bfaccount)
+    namespace_logger.info(f"Uploading dataset {bfdataset} with account {bfaccount}")
+    ps = connect_pennsieve_client(bfaccount)
     authenticate_user_with_client(ps, bfaccount)
+
+    token = get_access_token()
     
     # check that the Pennsieve dataset is valid
-    selected_dataset_id = get_dataset_id(ps, bfdataset)
+    selected_dataset_id = get_dataset_id(token, bfdataset)
+
+
     # check that the user has permissions for uploading and modifying the dataset
-    if not has_edit_permissions(ps, selected_dataset_id):
+    if not has_edit_permissions(token, selected_dataset_id):
         abort(403, "You do not have permissions to edit this dataset.")
-    headers = create_request_headers(ps)
+    headers = create_request_headers(token)
     # handle duplicates on Pennsieve: first, obtain the existing file ID
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
     r.raise_for_status()

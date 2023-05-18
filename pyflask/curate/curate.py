@@ -3036,7 +3036,7 @@ def main_curate_function(soda_json_structure):
                 "Checking that the selected Pennsieve account is valid"
             )
             accountname = soda_json_structure["bf-account-selected"]["account-name"]
-            ps = connect_pennsieve_client()
+            ps = connect_pennsieve_client(accountname)
             ps.user.switch(accountname)
             ps.user.reauthenticate()
             # authenticate_user_with_client(ps, accountname)
