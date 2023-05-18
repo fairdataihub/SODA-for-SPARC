@@ -2870,6 +2870,8 @@ def check_server_access_to_files(file_list):
     for file in file_list:
         if os.path.isfile(file):
             accessible_files.append(file)
+        if os.path.isdir(file):
+            accessible_files.append(file)
         else:
             inaccessible_files.append(file)
 
