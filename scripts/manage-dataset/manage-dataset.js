@@ -2561,6 +2561,7 @@ $("#button-submit-dataset").click(async () => {
       if (countDone > 1) {
         log.info("Done submit track");
         if (success_upload === true) {
+          console.log("Finishing upload already");
           // Enable curation buttons
           organizeDatasetButton.disabled = false;
           curateExistingDatasetButton.disabled = false;
@@ -2682,7 +2683,9 @@ $("#button-submit-dataset").click(async () => {
     return;
   }
 
-  $("#button-submit-dataset").attr("disabled", false);
+  $("#button-submit-dataset").css("display", "none");
+
+  // $("#button-submit-dataset").attr("disabled", false);
 
   $("#upload_local_dataset_progress_div").show();
 
@@ -2791,6 +2794,7 @@ $("#button-submit-dataset").click(async () => {
       // document.getElementById("para-progress-bar-error-status").innerHTML = emessage;
       success_upload = false;
       organizeDatasetButton.disabled = false;
+      console.log("Cancelling the disabled status");
       curateExistingDatasetButton.disabled = false;
 
       curateExistingDatasetButton.className = "button-prompt-container";
