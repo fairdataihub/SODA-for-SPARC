@@ -708,7 +708,10 @@ const resetFFMUI = (ev) => {
   $("#pi_dataset_owner_tab").removeClass("prev");
 
   $("#add_edit_permissions_choice_div").removeClass("show");
+  $("#add_edit_permissions_choice_div").removeClass("prev");
   $("#add_edit_permissions_choice_tab").removeClass("prev");
+  $("#add_edit_team_permissions_div").removeClass("show");
+  $("#add_edit_user_permissions_div").removeClass("show");
   $("#para-add-edit-dataset-permission-current").text("None");
 
   $("#div_add_edit_description").removeClass("show");
