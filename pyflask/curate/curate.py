@@ -2864,13 +2864,11 @@ def bf_check_dataset_files_validity(soda_json_structure, ps):
 
 def check_server_access_to_files(file_list):
     # Return two lists, one that the server can open, and one that it can not.
-    # This is to avoid the server trying to open files that it does not have access to.
+    # This is to avoid the server trying to open files that it does not have access to.cf
     accessible_files = []
     inaccessible_files = []
     for file in file_list:
-        if os.path.isfile(file):
-            accessible_files.append(file)
-        if os.path.isdir(file):
+        if os.path.isfile(file) or os.path.isdir(file):
             accessible_files.append(file)
         else:
             inaccessible_files.append(file)

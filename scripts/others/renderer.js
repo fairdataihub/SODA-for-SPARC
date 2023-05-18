@@ -4601,15 +4601,20 @@ ipcRenderer.on("selected-new-dataset", async (event, filepath) => {
 
 const CheckFileListForServerAccess = async (fileList) => {
   try {
-    await new Promise((resolve) => setTimeout(resolve, 10000));
     const res = await client.post(`/curate_datasets/check_server_access_to_files`, {
       file_list_to_check: fileList,
     });
     //const accessible_files = res.data.accessible_files;
     const inaccessible_files = res.data.inaccessible_files;
+    console.log("inaccessible_files", inaccessible_files);
     return inaccessible_files;
   } catch (error) {
     console.log(userErrorMessage(error));
+    notyf.open({
+      type: "error",
+      message: `Unable to determine file/folder accessibility`,
+      duration: 7000,
+    });
     return [];
   }
 };
