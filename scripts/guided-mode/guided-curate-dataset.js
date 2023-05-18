@@ -2687,24 +2687,90 @@ const generateProgressCardElement = (progressFileJSONObj) => {
   `;
 };
 
-const renderProgressCards = (progressFileJSONdata) => {
+const guidedRenderProgressCards = async () => {
+  //Check if Guided-Progress folder exists. If not, create it.
+  if (!fs.existsSync(guidedProgressFilePath)) {
+    fs.mkdirSync(guidedProgressFilePath, { recursive: true });
+  }
+
+  const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
+
+  // Filter out non .json files
+  const jsonProgressFiles = guidedSavedProgressFiles.filter((file) => {
+    return file.endsWith(".json");
+  });
+
+  const progressFileData = await getAllProgressFileData(jsonProgressFiles);
+
+  // Sort by last modified date
+  progressFileData.sort((a, b) => {
+    return new Date(b["last-modified"]) - new Date(a["last-modified"]);
+  });
+
+  if (!guidedGetCurrentUserWorkSpace()) {
+    //wait 3 seconds for the workspace to potentially load
+    //note this wait is not ideal, but it can be removed. If the workspace is not loaded before
+    //the progress cards are rendered, the user will be prompted to switch workspaces
+    //for all progress cards that are not in the current workspace
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+  }
+
+  const progressCardsContainer = document.getElementById("guided-section-resume-progress-cards");
+  // If there are progress cards to display, display them
+  if (progressFileData.length > 0) {
+    // Add the title to the container
+    progressCardsContainer.innerHTML = `
+      <h2 class="text-sub-step-title">
+        Select the dataset that you would like to continue working with and click "Continue"
+      </h2>
+    `;
+    //Add the progress cards that have already been uploaded to Pennsieve
+    //to their container (datasets that have the sodaJSONObj["previous-guided-upload-dataset-name"] property)
+    progressCardsContainer.innerHTML += progressFileData
+      .map((progressFile) => generateProgressCardElement(progressFile))
+      .join("\n");
+
+    tippy(".progress-card-popover", {
+      allowHTML: true,
+      interactive: true,
+    });
+  } else {
+    progressCardsContainer.innerHTML = `
+      <h2 class="guided--text-click-continue" style="color: var(--color-bg-plum) !important">
+        No datasets in progress found.
+      </h2>
+    `;
+  }
+};
+
+const renderProgressCards = async () => {
+  //Check if Guided-Progress folder exists. If not, create it.
+  if (!fs.existsSync(guidedProgressFilePath)) {
+    fs.mkdirSync(guidedProgressFilePath, { recursive: true });
+  }
+
+  const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
+
+  // Filter out non .json files
+  const jsonProgressFiles = guidedSavedProgressFiles.filter((file) => {
+    return file.endsWith(".json");
+  });
+
+  const progressFileData = await getAllProgressFileData(jsonProgressFiles);
+
   //sort progressFileJSONdata by date to place newest cards on top
-  progressFileJSONdata.sort((a, b) => {
+  progressFileData.sort((a, b) => {
     return new Date(b["last-modified"]) - new Date(a["last-modified"]);
   });
 
   //sort progressFileJSONdata into two rows one with property "previous-guided-upload-dataset-name"
   //and one without property "previous-guided-upload-dataset-name"
-  const progressDataAlreadyUploadedToPennsieve = progressFileJSONdata.filter(
-    (progressFileJSONobj) => {
-      return progressFileJSONobj["previous-guided-upload-dataset-name"];
-    }
-  );
-  const progressDataNotYetUploadedToPennsieve = progressFileJSONdata.filter(
-    (progressFileJSONobj) => {
-      return !progressFileJSONobj["previous-guided-upload-dataset-name"];
-    }
-  );
+  const progressDataAlreadyUploadedToPennsieve = progressFileData.filter((progressFileJSONobj) => {
+    return progressFileJSONobj["previous-guided-upload-dataset-name"];
+  });
+  const progressDataNotYetUploadedToPennsieve = progressFileData.filter((progressFileJSONobj) => {
+    return !progressFileJSONobj["previous-guided-upload-dataset-name"];
+  });
 
   const progressCardsContainer = document.getElementById("guided-section-resume-progress-cards");
   // If there are progress cards to display, display them
@@ -3400,22 +3466,6 @@ const guidedPrepareHomeScreen = async () => {
     fs.mkdirSync(guidedProgressFilePath, { recursive: true });
   }
 
-  // const datasetCardsRadioButtonsContainer = document.getElementById(
-  //   "guided-div-dataset-cards-radio-buttons"
-  // );
-
-  // const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
-  // //render progress resumption cards from progress file array on first page of guided mode
-  // if (guidedSavedProgressFiles.length != 0) {
-  //   datasetCardsRadioButtonsContainer.classList.remove("hidden");
-  //   const progressFileData = await getAllProgressFileData(guidedSavedProgressFiles);
-  //   renderProgressCards(progressFileData);
-  //   document.getElementById("guided-button-view-datasets-in-progress").click();
-  // } else {
-  //   $("#guided-continue-curation-header").text("");
-  //   datasetCardsRadioButtonsContainer.classList.add("hidden");
-  // }
-  //empty new-dataset-lottie-container div
   document.getElementById("new-dataset-lottie-container").innerHTML = "";
   document.getElementById("existing-dataset-lottie").innerHTML = "";
   document.getElementById("edit-dataset-component-lottie").innerHTML = "";
@@ -4454,15 +4504,7 @@ const openPage = async (targetPageID) => {
       );
       importProgressCircle.classList.add("hidden");
 
-      //Check if Guided-Progress folder exists. If not, create it.
-      if (!fs.existsSync(guidedProgressFilePath)) {
-        fs.mkdirSync(guidedProgressFilePath, { recursive: true });
-      }
-
-      const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
-      //render progress resumption cards from progress file array on first page of guided mode
-      const progressFileData = await getAllProgressFileData(guidedSavedProgressFiles);
-      renderProgressCards(progressFileData);
+      await renderProgressCards();
     }
 
     if (targetPageID === "guided-prepare-dataset-structure-tab") {
