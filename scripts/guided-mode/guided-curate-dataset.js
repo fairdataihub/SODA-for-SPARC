@@ -6035,6 +6035,8 @@ const openPage = async (targetPageID) => {
 
       const currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
       const currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+      const userInformation = await api.getUserInformation();
+      const userOrganization = userInformation["preferredOrganization"];
 
       const pennsieveDatasetID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
 
@@ -6046,9 +6048,7 @@ const openPage = async (targetPageID) => {
       copyIcon.classList.remove("fa-check");
       copyIcon.classList.add("fa-copy");
 
-      // TODO: Dorian -> Organization ID needs to be requested to account for rejoin or sparc accounts
-
-      let datasetLink = `https://app.pennsieve.io/N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0/datasets/${pennsieveDatasetID}/overview`;
+      let datasetLink = `https://app.pennsieve.io/${userOrganization}/datasets/${pennsieveDatasetID}/overview`;
       let linkIcon = `<i class="fas fa-link" style="margin-right: 0.4rem; margin-left: 0.4rem"></i>`;
 
       pennsieveDatasetLink.innerHTML = linkIcon + datasetLink;
