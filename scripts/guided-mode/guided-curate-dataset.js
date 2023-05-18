@@ -1446,12 +1446,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
-      // Store the Pennsieve account details in the sodaJSONObj to compare with the account details when the user returns to the Pennsieve intro page
-      const pennsieveIntroAccountDetailsText = document.getElementById(
-        "guided-pennsive-intro-account-details"
-      );
-      sodaJSONObj["last-confirmed-pennsieve-account-details"] =
-        pennsieveIntroAccountDetailsText.innerHTML;
       const pennsieveIntroOrganizationDetailsText = document.getElementById(
         "guided-pennsive-selected-organization"
       );
@@ -5477,31 +5471,7 @@ const openPage = async (targetPageID) => {
         const pennsieveIntroText = document.getElementById("guided-pennsive-intro-bf-account");
         pennsieveIntroText.innerHTML = defaultBfAccount;
 
-        const pennsieveIntroAccountDetailsText = document.getElementById(
-          "guided-pennsive-intro-account-details"
-        );
-        setTimeout(() => {
-          pennsieveIntroAccountDetailsText.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          });
-        }, 0);
-        setPageLoadingState(true);
-
         try {
-          const bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
-            params: {
-              selected_account: defaultBfAccount,
-            },
-          });
-          const accountDetailsRes = bf_account_details_req.data.account_details;
-          pennsieveIntroAccountDetailsText.innerHTML = accountDetailsRes;
-          // If the account details are the same as the last confirmed account details, then automatically confirm the account
-          if (sodaJSONObj["last-confirmed-pennsieve-account-details"]) {
-            if (sodaJSONObj["last-confirmed-pennsieve-account-details"] === accountDetailsRes) {
-              document.getElementById("guided-confirm-pennsieve-account-button").click();
-            }
-          }
           if (sodaJSONObj["last-confirmed-pennsieve-workspace-details"]) {
             if (
               sodaJSONObj["last-confirmed-pennsieve-workspace-details"] ===

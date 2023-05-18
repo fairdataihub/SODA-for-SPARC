@@ -519,7 +519,6 @@ const importGenerateDatasetStep = async (object) => {
               selected_account: bfAccountSelected,
             },
           });
-          $("#para-account-detail-curate").html(dataset_request.data.account_details);
           updateBfAccountList();
         } catch (error) {
           clientError(error);

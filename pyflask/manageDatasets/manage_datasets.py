@@ -497,7 +497,7 @@ def bf_account_details(accountname):
     except Exception as e:
         abort(500, "Something went wrong while authenticating the user or connecting to Pennsieve.")
 
-    acc_details = f"User email: {user_info['email']}<br>"
+    user_email = user_info['email']
     organization_id = user_info['preferredOrganization']
 
 
@@ -520,7 +520,7 @@ def bf_account_details(accountname):
         update_config_account_name(accountname)
         
         ## return account details and datasets where such an account has some permission
-        return {"account_details": acc_details, "organization": organization}
+        return {"email": user_email, "organization": organization}
 
     except Exception as e:
         raise e
