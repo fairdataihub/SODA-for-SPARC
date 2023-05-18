@@ -1446,7 +1446,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
-    
       const pennsieveIntroOrganizationDetailsText = document.getElementById(
         "guided-pennsive-selected-organization"
       );
