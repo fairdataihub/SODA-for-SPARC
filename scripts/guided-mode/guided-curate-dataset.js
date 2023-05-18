@@ -1446,12 +1446,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
-      // Store the Pennsieve account details in the sodaJSONObj to compare with the account details when the user returns to the Pennsieve intro page
-      const pennsieveIntroAccountDetailsText = document.getElementById(
-        "guided-pennsive-intro-account-details"
-      );
-      sodaJSONObj["last-confirmed-pennsieve-account-details"] =
-        pennsieveIntroAccountDetailsText.innerHTML;
+    
       const pennsieveIntroOrganizationDetailsText = document.getElementById(
         "guided-pennsive-selected-organization"
       );
