@@ -1574,7 +1574,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     // disable the dropdown until the list of organizations is loaded - which happens elsewhere
     initializeBootstrapSelect("#curatebforganizationlist", "disabled");
 
-
     // check if there is an account
     let accountPresent = false;
     try {
@@ -1585,7 +1584,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       $(".svg-change-current-account.dataset").css("display", "block");
       $("#div-permission-list-2").css("display", "block");
       initializeBootstrapSelect("#curatebforganizationlist", "show");
-
     }
 
     // if no account as them to connect one
