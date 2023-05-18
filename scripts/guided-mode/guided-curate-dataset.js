@@ -7014,7 +7014,7 @@ const patchPreviousGuidedModeVersions = async () => {
   }
 
   // If no other conditions are met, return the page the user was last on
-  return usersPageBeforeExit;
+  return sodaJSONObj['page-before-exit'];
 
   // if (!sodaJSONObj["special-rejoin-key"]) {
   //   sodaJSONObj["special-rejoin-key"] = "now-i-wont-return-to-the-first-page";
