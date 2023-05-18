@@ -551,12 +551,13 @@ function resetSamples(askToReset = true) {
     $("#bootbox-sample-strain").css("display", "none");
 
     // delete custom fields (if any)
-    var fieldLength = $(".samples-form-entry").length;
-    if (fieldLength > 21) {
-      for (var field of $(".samples-form-entry").slice(21, fieldLength)) {
-        $($(field).parents()[2]).remove();
-      }
-    }
+          // delete custom samples metadata fields (if any)
+          document
+          .getElementById("accordian-custom-fields-samples")
+          .querySelectorAll(".div-dd-info")
+          .forEach((customField) => {
+            customField.remove();
+          });
     $("#div-import-primary-folder-samples").show();
     // delete table rows except headers
     $("#table-samples tr:gt(0)").remove();
