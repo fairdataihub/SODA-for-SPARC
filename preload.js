@@ -1574,6 +1574,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     // disable the dropdown until the list of organizations is loaded - which happens elsewhere
     initializeBootstrapSelect("#curatebforganizationlist", "disabled");
 
+
     // check if there is an account
     let accountPresent = false;
     try {
@@ -1583,6 +1584,8 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       $(".ui.active.green.inline.loader.small").css("display", "none");
       $(".svg-change-current-account.dataset").css("display", "block");
       $("#div-permission-list-2").css("display", "block");
+      initializeBootstrapSelect("#curatebforganizationlist", "show");
+
     }
 
     // if no account as them to connect one
@@ -1628,6 +1631,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             popup: "animate__animated animate__zoomOut animate__faster",
           },
         });
+        initializeBootstrapSelect("#curatebforganizationlist", "show");
         return;
       }
 
@@ -1653,6 +1657,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         });
       } catch (error) {
         clientError(error);
+        initializeBootstrapSelect("#curatebforganizationlist", "show");
         return;
       }
 
@@ -1761,6 +1766,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         $("#license-lottie-div").css("display", "block");
         $("#license-assigned").css("display", "block");
         currentDatasetLicense.innerText = currentDatasetLicense.innerText;
+        initializeBootstrapSelect("#curatebforganizationlist", "show");
         return;
       }
 
@@ -1856,6 +1862,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
         $("#license-lottie-div").css("display", "block");
         $("#license-assigned").css("display", "block");
+        initializeBootstrapSelect("#curatebforganizationlist", "show");
         return;
       }
 
@@ -1880,6 +1887,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     // TODO: MIght need to hide if clicked twice / do similar logic as above
     // for organization span in those locations instead of a dataset span
     //; since the logic is there for a reason.
+    initializeBootstrapSelect("#curatebforganizationlist", "show");
     showHideDropdownButtons("organization", "show");
 
     $("body").removeClass("waiting");
