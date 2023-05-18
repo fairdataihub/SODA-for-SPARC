@@ -6046,6 +6046,8 @@ const openPage = async (targetPageID) => {
       copyIcon.classList.remove("fa-check");
       copyIcon.classList.add("fa-copy");
 
+      // TODO: Dorian -> Organization ID needs to be requested to account for rejoin or sparc accounts
+
       let datasetLink = `https://app.pennsieve.io/N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0/datasets/${pennsieveDatasetID}/overview`;
       let linkIcon = `<i class="fas fa-link" style="margin-right: 0.4rem; margin-left: 0.4rem"></i>`;
 

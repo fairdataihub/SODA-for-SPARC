@@ -3420,6 +3420,7 @@ $(document).ready(() => {
   });
 
   // Blackfynn transition warning message
+  //TODO: Dorian -> Remove this as it is no longer needed
   const url =
     "https://raw.githubusercontent.com/bvhpatel/SODA/master/src/assets/blackfynn-warning-message.txt";
   fetch(url).then(function (response) {
