@@ -5213,16 +5213,16 @@ const dropHelper = async (
   let loadingIcon = document.getElementById("items_loading_container");
   let loadingContainer = document.getElementById("loading-items-background-overlay");
 
-  const filePathsInEv1 = Object.keys(ev1).map((file) => ev1[file].path);
-  const inaccessible_files = await CheckFileListForServerAccess(filePathsInEv1);
+  // const filePathsInEv1 = Object.keys(ev1).map((file) => ev1[file].path);
+  // const inaccessible_files = await CheckFileListForServerAccess(filePathsInEv1);
 
   for (var i = 0; i < ev1.length; i++) {
     /// Get all the file information
     var itemPath = ev1[i].path;
-    if (inaccessible_files.includes(itemPath)) {
+    /* if (inaccessible_files.includes(itemPath)) {
       // go to next file if file is inaccessible
       continue;
-    }
+    }*/
     var itemName = path.parse(itemPath).base;
     var duplicate = false;
     var statsObj = fs.statSync(itemPath);
