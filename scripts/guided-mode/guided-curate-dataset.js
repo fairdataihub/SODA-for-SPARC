@@ -5469,7 +5469,10 @@ const openPage = async (targetPageID) => {
         selectPennsieveAccountDiv.classList.add("hidden");
 
         const pennsieveIntroText = document.getElementById("guided-pennsive-intro-bf-account");
-        pennsieveIntroText.innerHTML = defaultBfAccount;
+        // fetch the user's email and set that as the account field's value
+        const userInformation = await api.getUserInformation();
+        const userEmail = userInformation.email;
+        pennsieveIntroText.innerHTML = userEmail;
 
         try {
           if (sodaJSONObj["last-confirmed-pennsieve-workspace-details"]) {

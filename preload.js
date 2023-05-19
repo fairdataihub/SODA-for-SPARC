@@ -719,6 +719,7 @@ const resetFFMUI = (ev) => {
   $("#add_edit_description_tab").removeClass("prev");
 
   $("#div_add_edit_banner").removeClass("show");
+  // $("#div_add_edit_banner").hide();
   $("#add_edit_banner_tab").removeClass("prev");
 
   $("#add_license_tab").removeClass("prev");
