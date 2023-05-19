@@ -13,14 +13,12 @@ from authentication import get_access_token
 PENNSIEVE_URL = "https://api.pennsieve.io"
 
 def get_role(pennsieve_account, dataset):
-    ps = connect_pennsieve_client()
+    token = get_access_token()
 
-    authenticate_user_with_client(ps, pennsieve_account)
-
-    selected_dataset_id = get_dataset_id(ps, dataset)
+    selected_dataset_id = get_dataset_id(token, dataset)
 
     try:
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/role", headers=create_request_headers(ps))
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/role", headers=create_request_headers(token))
         r.raise_for_status()
         role = r.json()["role"]
         # role =  ps._api._get(f"/datasets/{selected_dataset_id}/role")["role"]
