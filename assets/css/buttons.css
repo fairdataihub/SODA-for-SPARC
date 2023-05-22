@@ -113,7 +113,8 @@
   margin-bottom: 15px;
 }
 
-.guided--progress-button-switch-workspace {
+.guided--progress-button-switch-workspace,
+.guided--progress-button-login-to-pennsieve {
   background-color: gainsboro !important;
   margin: 4px;
   margin-bottom: 15px;

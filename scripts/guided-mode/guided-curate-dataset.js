@@ -2923,6 +2923,21 @@ const generateProgressCardElement = (progressFileJSONObj) => {
     workspaceUserNeedsToSwitchTo
   ) => {
     if (workspaceUserNeedsToSwitchTo) {
+      // If the progress file has an organization set but the user is no longer logged in,
+      // prompt the user to log in
+      if (!defaultBfAccount) {
+        return `
+          <button
+            class="ui positive button guided--progress-button-login-to-pennsieve"
+            data-reset-guided-mode-page="true"
+            onclick="openDropdownPrompt(this, 'bf')"
+          >
+            Log in to Pennsieve to resume curation
+          </button>
+        `;
+      }
+      // If the user is logged in but the user needs to switch to a different workspace,
+      // prompt the user to switch to the correct workspace
       return `
         <button
           class="ui positive button guided-change-workspace guided--progress-button-switch-workspace"
