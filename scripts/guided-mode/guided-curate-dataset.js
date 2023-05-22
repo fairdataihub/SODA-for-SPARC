@@ -3096,6 +3096,12 @@ const guidedRenderProgressCards = async () => {
   }
 };
 
+document
+  .getElementById("guided-button-resume-progress-file")
+  .addEventListener("click", async () => {
+    await guidedRenderProgressCards();
+  });
+
 const renderManifestCards = () => {
   const guidedManifestData = sodaJSONObj["guided-manifest-files"];
   const highLevelnFoldersWithManifestData = Object.keys(guidedManifestData);
@@ -4700,8 +4706,6 @@ const openPage = async (targetPageID) => {
         "#guided_loading_pennsieve_dataset-organize"
       );
       importProgressCircle.classList.add("hidden");
-
-      await guidedRenderProgressCards();
     }
 
     if (targetPageID === "guided-prepare-dataset-structure-tab") {
