@@ -460,7 +460,7 @@ const generateDDFile = async (uploadBFBoolean) => {
   studyInfoValueObject["study approach"] = studyApproachesArr;
 
   /// get current, selected Pennsieve account
-  var bfaccountname = $("#current-bf-account").text();
+  var bfaccountname = defaultBfAccount;
   let bf_dataset = document.getElementById("bf_dataset_load_dd").innerText.trim();
 
   log.info(`Generating a dataset description file.`);
