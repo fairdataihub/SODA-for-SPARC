@@ -8227,7 +8227,7 @@ async function initiate_generate() {
 } // end initiate_generate
 
 // TODO: Dorian -> update this function to go to the new sharing method
-const show_curation_shortcut = () => {
+const show_curation_shortcut = async () => {
   Swal.fire({
     backdrop: "rgba(0,0,0, 0.4)",
     cancelButtonText: "No. I'll do it later",
@@ -8244,7 +8244,7 @@ const show_curation_shortcut = () => {
     hideClass: {
       popup: "animate__animated animate__zoomOut animate__faster",
     },
-  }).then((result) => {
+  }).then(async (result) => {
     //dismissStatus("status-bar-curate-progress");
     uploadComplete.open({
       type: "success",
@@ -8254,8 +8254,21 @@ const show_curation_shortcut = () => {
     //statusBarContainer.remove();
 
     if (result.isConfirmed) {
+      $("#guided_mode_view").click();
+      $(".swal2-confirm").click();
+      $(".vertical-progress-bar-step").removeClass("is-current");
+      $(".vertical-progress-bar-step").removeClass("done");
+      $(".getting-started").removeClass("prev");
+      $(".getting-started").removeClass("show");
+      $(".getting-started").removeClass("test2");
+      $("#Question-getting-started-1").addClass("show");
+      $("#generate-dataset-progress-tab").css("display", "none");
+
+      currentTab = 0;
+      await wipeOutCurateProgress();
+      $("#guided-button-start-modify-component").click();
       $("#disseminate_dataset_tab").click();
-      $("#share_curation_team_btn").click();
+      $("#submit_prepublishing_review_btn").click();
     }
   });
 };
