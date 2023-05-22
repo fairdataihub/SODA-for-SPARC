@@ -693,22 +693,34 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               }
             }
           },
-        }).then((result) => {
+        }).then(async (result) => {
           if (result.isConfirmed) {
-            if (show_timer) {
+            // Ensure the dataset is not locked before proceeding
+            const datasetIsLocked = await api.isDatasetLocked(defaultBfAccount, bfDataset);
+            if (datasetIsLocked) {
+              // Show the locked swal and return
               Swal.fire({
-                allowEscapeKey: false,
-                backdrop: "rgba(0,0,0, 0.4)",
+                icon: "info",
+                title: `${bfDataset} is locked from editing`,
+                html: `
+                This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
+                <br />
+                <br />
+                If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
+                `,
+                width: 600,
                 heightAuto: false,
-                showConfirmButton: false,
-                timer: 2000,
-                timerProgressBar: false,
-                title: "Loading your dataset details...",
-                didOpen: () => {
-                  Swal.showLoading();
-                },
+                backdrop: "rgba(0,0,0, 0.4)",
+                confirmButtonText: "Ok",
+                focusConfirm: true,
+                allowOutsideClick: false,
               });
+              // $("#submit_prepublishing_review-question-2").hide();
+              $("#unshare-dataset-with-curation-team-message").addClass("hidden");
+              // $("#begin-prepublishing-btn").addClass("hidden");
+              return;
             }
+
             if (dropdownEventID === "dd-select-pennsieve-dataset") {
               $("#ds-name").val(bfDataset);
               $("#ds-description").val = $("#bf-dataset-subtitle").val;

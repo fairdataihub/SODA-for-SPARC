@@ -492,7 +492,7 @@ const createPrepublishingChecklist = async (curationMode) => {
 
   if (curationMode === "freeform") {
     document.getElementById("pre-publishing-continue-btn").disabled = true;
-    $("#pre-publishing-continue-btn").addClass("loading");
+    // $("#pre-publishing-continue-btn").addClass("loading");
   }
 
   // check that the user completed all pre-publishing checklist items for the given dataset
@@ -526,7 +526,7 @@ const createPrepublishingChecklist = async (curationMode) => {
   if (curationMode === "freeform") {
     await disseminatePublish("freeform");
     document.getElementById("pre-publishing-continue-btn").disabled = false;
-    $("#pre-publishing-continue-btn").removeClass("loading");
+    // $("#pre-publishing-continue-btn").removeClass("loading");
     resetffmPrepublishingUI();
   }
 };

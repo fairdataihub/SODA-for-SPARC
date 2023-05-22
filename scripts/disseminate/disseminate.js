@@ -10,6 +10,11 @@ Note: Some frontend elements of the workflow are in the renderer.js file as well
 */
 
 const disseminatePublish = async (curationMode) => {
+  if (curationMode === "freeform") {
+    $("#prepublishing-submit-btn").disabled = true;
+    $("#prepublishing-submit-btn").addClass("loading");
+  }
+
   // check that the user completed all pre-publishing checklist items for the given dataset
   if (!allPrepublishingChecklistItemsCompleted(curationMode)) {
     // alert the user they must complete all checklist items before beginning the prepublishing process
@@ -32,24 +37,47 @@ const disseminatePublish = async (curationMode) => {
     return;
   }
 
-  // show a SWAL loading message until the submit popup that asks the user for their approval appears
-  // Swal.fire({
-  //   title: `Preparing submission for pre-publishing review`,
-  //   html: "Please wait...",
-  //   // timer: 5000,
-  //   allowEscapeKey: false,
-  //   allowOutsideClick: false,
-  //   heightAuto: false,
-  //   backdrop: "rgba(0,0,0, 0.4)",
-  //   timerProgressBar: false,
-  //   didOpen: () => {
-  //     Swal.showLoading();
-  //   },
-  // });
-
-  console.log(submitReviewDatasetCheck);
   // begin the dataset publishing flow
-  await showPublishingStatus(submitReviewDatasetCheck, curationMode);
+  try {
+    let status = await showPublishingStatus(submitReviewDatasetCheck, curationMode);
+    let embargoReleaseDate = status[1];
+    $("#prepublishing-submit-btn").removeClass("loading");
+
+    if (status[0] && curationMode === "freeform") {
+      // submit the dataset for review with the given embargoReleaseDate
+      await submitReviewDataset(embargoReleaseDate, curationMode);
+      $("#prepublishing-submit-btn-container").hide();
+      resetffmPrepublishingUI();
+    }
+  } catch (error) {
+    log.error(error);
+    console.error(error);
+    Swal.fire({
+      title: "Could not submit dataset for publication",
+      text: `${userError(error)}`,
+      heightAuto: false,
+      icon: "error",
+      confirmButtonText: "Ok",
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Ok",
+      showClass: {
+        popup: "animate__animated animate__fadeInDown animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__fadeOutUp animate__faster",
+      },
+    });
+
+    // log the failure to publish to analytics
+    logCurationForAnalytics(
+      "Error",
+      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      ["Publish"],
+      Destinations.PENNSIEVE,
+      true
+    );
+  }
 };
 
 const refreshDatasetStatus = () => {
