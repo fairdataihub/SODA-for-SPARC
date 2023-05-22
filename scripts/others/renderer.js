@@ -8254,7 +8254,12 @@ const show_curation_shortcut = async () => {
     //statusBarContainer.remove();
 
     if (result.isConfirmed) {
-      let datasetName = sodaJSONObj["generate-dataset"]["dataset-name"];
+      let datasetName = "";
+      if (!sodaJSONObj["generate-dataset"].hasOwnProperty("dataset-name")) {
+        datasetName = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+      } else {
+        datasetName = sodaJSONObj["generate-dataset"]["dataset-name"];
+      }
       $(".bf-dataset-span").html(datasetName);
       $("#current-bf-dataset").text(datasetName);
       $("#current-bf-dataset-generate").text(datasetName);
