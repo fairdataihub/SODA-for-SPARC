@@ -8254,6 +8254,20 @@ const show_curation_shortcut = async () => {
     //statusBarContainer.remove();
 
     if (result.isConfirmed) {
+      let datasetName = sodaJSONObj["generate-dataset"]["dataset-name"];
+      $(".bf-dataset-span").html(datasetName);
+      $("#current-bf-dataset").text(datasetName);
+      $("#current-bf-dataset-generate").text(datasetName);
+      $(".bf-dataset-span").html(datasetName);
+      confirm_click_function();
+
+      defaultBfDataset = datasetName;
+      // document.getElementById("ds-description").innerHTML = "";
+      refreshDatasetList();
+      $("#dataset-loaded-message").hide();
+
+      // showHideDropdownButtons("dataset", "show");
+      confirm_click_function();
       $("#guided_mode_view").click();
       $(".swal2-confirm").click();
       $(".vertical-progress-bar-step").removeClass("is-current");
