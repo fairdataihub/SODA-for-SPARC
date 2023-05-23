@@ -36,6 +36,21 @@ const getDatasetBannerImageURL = async (selected_account, selected_dataset) => {
   return banner_image;
 };
 
+const isDatasetLocked = async (account, datasetNameOrId) => {
+  try {
+    let datasetRoleResponse = await client.get(`/datasets/${datasetNameOrId}`);
+    // Return the dataset's lock status (true or false)
+    return datasetRoleResponse.data.locked;
+  } catch (err) {
+    clientError(err);
+    if (err.response.status == 423) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+};
+
 const getDatasetRole = async (datasetNameOrId) => {
   if (datasetNameOrId != undefined || datasetNameOrId != "") {
     defaultBfDataset = datasetNameOrId;
@@ -438,6 +453,7 @@ const api = {
   reserveDOI,
   getNumberOfPackagesInDataset,
   getNumberOfItemsInLocalDataset,
+  isDatasetLocked,
 };
 
 module.exports = api;

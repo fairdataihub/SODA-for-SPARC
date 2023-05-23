@@ -5452,23 +5452,23 @@
               Reserve a DOI for your dataset while it's being reviewed by the curation team (for
               instance, if you need to refer to this dataset in a manuscript right away). Note: This
               DOI will NOT be active, and therefore searchable, until the dataset is published to
-              Pennsieve Discover.
+              Pennsieve Discover. If you send your dataset to the curation team without reserving a
+              DOI you will not be able to reserve one after due to the dataset being locked.
             </p>
-            <div class="guided--container-data-display mt-sm" style="width: 100%">
-              <div class="guided--card-dataset-info w-auto">
+
+            <div class="help-text text-center copy-doi-container mt-2">
+              <div class="copy-doi-text-container">
                 <h5 class="guided--dataset-description mr-4">DOI:</h5>
                 <h5 id="guided--para-doi-info" class="guided--dataset-content"></h5>
               </div>
+              <button id="guided-pennsieve-copy-doi" class="copy-button hidden">
+                <i id="guided-pennsieve-copy-icon" class="fas fa-copy"></i>
+              </button>
             </div>
-            <p id="guided--doi-information"></p>
             <button
-              class="ui positive button guided--button-footer mt-2"
+              class="ui positive button soda-green-background mt-3"
               id="curate-button-reserve-doi"
-              style="
-                background-color: var(--color-light-green) !important;
-                width: 150px !important;
-                height: 3.2rem;
-              "
+              style="width: 150px !important; height: 3.2rem"
               onclick="guidedReserveAndSaveDOI()"
             >
               Reserve DOI
@@ -5499,29 +5499,32 @@
               </div>
             </div>
             <button
-              class="ui positive button guided--button-footer mt-lg"
+              class="ui positive button soda-green-background mt-lg"
               id="guided-button-share-dataset-with-curation-team"
-              style="
-                background-color: var(--color-light-green) !important;
-                width: 281px !important;
-                height: 3.2rem;
-                font-family: Poppins;
-              "
+              style="width: 281px !important; height: 3.2rem"
               onclick="guidedModifyCurationTeamAccess('share')"
             >
               Share with SPARC Curation Team</button
             ><button
-              class="ui positive button guided--button-footer mt-lg"
+              class="ui positive button plum-background mt-lg"
               id="guided-button-unshare-dataset-with-curation-team"
-              style="
-                background-color: var(--color-bg-plum) !important;
-                width: 281px !important;
-                height: 3.2rem;
-              "
+              style="width: 281px !important; height: 3.2rem"
               onclick="guidedModifyCurationTeamAccess('unshare')"
             >
-              Withdraw from Review
+              Withdraw from review
             </button>
+            <div
+              class="guided--section mt-3 hidden"
+              id="guided-unshare-dataset-with-curation-team-message"
+            >
+              <p class="help-text text-black">
+                This dataset is currently being reviewed by the SPARC curation team, therefore, has
+                been set to read-only mode. No changes can be made to this dataset until the review
+                is complete. If you would like to make changes to this dataset, please reach out to
+                the SPARC curation team at
+                <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
+              </p>
+            </div>
           </div>
           <div class="guided--section hidden" id="guided--prepublishing-checklist-container">
             <div class="ui form">

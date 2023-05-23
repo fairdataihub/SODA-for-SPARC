@@ -1,3 +1,5 @@
+const { remove } = require("fs-extra");
+
 const returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
 };
@@ -1537,7 +1539,6 @@ const savePageChanges = async (pageBeingLeftID) => {
       sodaJSONObj["digital-metadata"]["doi"] = $("#guided--para-doi-info").text();
       // Reset the share with curation UI and DOI UI
       $("#guided--prepublishing-checklist-container").addClass("hidden");
-      $("#guided--submit-prepublishing-review").addClass("hidden");
       $("#guided--para-doi-info").text("");
       $("#guided-button-unshare-dataset-with-curation-team");
     }
@@ -2063,12 +2064,14 @@ const guidedSetCurationTeamUI = () => {
   );
   if (textSharedWithCurationTeamStatus.innerText != "Dataset is not under review currently") {
     $("#guided-button-share-dataset-with-curation-team").addClass("hidden");
-    $("#guided-button-unshare-dataset-with-curation-team").removeClass("hidden");
+    $("#guided-button-unshare-dataset-with-curation-team").addClass("hidden");
+    $("#guided-unshare-dataset-with-curation-team-message").removeClass("hidden");
   } else {
     $("#guided--prepublishing-checklist-container").addClass("hidden");
     $("#guided-button-share-dataset-with-curation-team").addClass("hidden");
     $("#guided-button-share-dataset-with-curation-team").removeClass("hidden");
     $("#guided-button-unshare-dataset-with-curation-team").addClass("hidden");
+    $("#guided-unshare-dataset-with-curation-team-message").addClass("hidden");
   }
 };
 
@@ -2085,16 +2088,42 @@ const guidedReserveAndSaveDOI = async () => {
 
 // Function is for displaying DOI information on the Guided UI
 const guidedSetDOIUI = (doiInformation) => {
-  $("#guided--para-doi-info").text(doiInformation);
-
-  // Hide the reserve DOI button
-  if (doiInformation != "No DOI found for this dataset") {
-    $("#curate-button-reserve-doi").addClass("hidden");
-  } else {
-    $("#curate-button-reserve-doi").removeClass("hidden");
-  }
   $("#curate-button-reserve-doi").removeClass("loading");
   $("#curate-button-reserve-doi").disabled = false;
+  if (doiInformation === "locked") {
+    // Show reserve DOI button and hide copy button
+    $("#guided-pennsieve-copy-doi").addClass("hidden");
+    $("#curate-button-reserve-doi").addClass("hidden");
+
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      confirmButtonText: "Ok",
+      title: "Cannot reserve DOI",
+      text: "Your dataset is locked, so modification is not allowed.",
+      icon: "error",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+
+    return;
+  }
+
+  $("#guided--para-doi-info").text(doiInformation);
+
+  if (doiInformation === "No DOI found for this dataset" || doiInformation === false) {
+    // Hide the reserve DOI button and show copy button
+    $("#guided-pennsieve-copy-doi").addClass("hidden");
+    $("#curate-button-reserve-doi").removeClass("hidden");
+  } else {
+    // Show reserve DOI button and hide copy button
+    $("#guided-pennsieve-copy-doi").removeClass("hidden");
+    $("#curate-button-reserve-doi").addClass("hidden");
+  }
 };
 
 const showPrepublishingReview = () => {
@@ -2112,35 +2141,35 @@ const guidedModifyCurationTeamAccess = async (action) => {
   const guidedUnshareWithCurationTeamButton = document.getElementById(
     "guided-button-unshare-dataset-with-curation-team"
   );
-
+  const guidedUnshareMessage = document.getElementById(
+    "guided-unshare-dataset-with-curation-team-message"
+  );
   const curationMode = "guided";
+
   if (action === "share") {
     guidedShareWithCurationTeamButton.disabled = true;
     guidedShareWithCurationTeamButton.classList.add("loading");
-    // guidedShareWithCurationTeamButton.classList.add("hidden");
 
     let publishPreCheckStatus = await beginPrepublishingFlow(curationMode);
     let embargoDetails = publishPreCheckStatus[1];
-    console.log(embargoDetails);
-    console.log(publishPreCheckStatus[0]);
+
     // Will return false if there are issues running the precheck flow
     if (publishPreCheckStatus[0]) {
-      // guidedShareWithCurationTeamButton.classList.remove("hidden");
       guidedShareWithCurationTeamButton.classList.add("hidden");
       await submitReviewDataset(embargoDetails[1], curationMode);
-      // guidedUnshareWithCurationTeamButton.classList.remove("hidden");
+      guidedUnshareMessage.classList.remove("hidden");
     }
     guidedShareWithCurationTeamButton.classList.remove("loading");
     guidedShareWithCurationTeamButton.disabled = false;
-    // guidedSetCurationTeamUI();
   }
   if (action === "unshare") {
+    // Add your dataset has been shared, to withdraw please do so from Pennsieve
+    // TODO: Dorian -> refactor this (it will be removed essentially)
     guidedUnshareWithCurationTeamButton.disabled = true;
     guidedUnshareWithCurationTeamButton.classList.add("loading");
-    // guidedUnshareWithCurationTeamButton.classList.add("hidden");
 
     const { value: withdraw } = await Swal.fire({
-      title: "Withdraw this dataset from review?",
+      title: "Unshare this dataset from Curation Team?",
       icon: "warning",
       showDenyButton: true,
       confirmButtonText: "Yes",
@@ -2153,6 +2182,8 @@ const guidedModifyCurationTeamAccess = async (action) => {
     });
 
     if (!withdraw) {
+      guidedUnshareWithCurationTeamButton.disabled = false;
+      guidedUnshareWithCurationTeamButton.classList.remove("loading");
       return;
     }
 
@@ -2165,7 +2196,6 @@ const guidedModifyCurationTeamAccess = async (action) => {
 
     guidedUnshareWithCurationTeamButton.disabled = false;
     guidedUnshareWithCurationTeamButton.classList.remove("loading");
-    // guidedSetCurationTeamUI();
   }
 };
 
@@ -4251,6 +4281,7 @@ const guidedResetUserTeamPermissionsDropdowns = () => {
 };
 
 let addListener = true;
+let removeEventListener = false;
 const copyLink = (link) => {
   const copyIcon = document.getElementById("guided-pennsieve-copy-icon");
   Clipboard.writeText(link);
@@ -6035,8 +6066,6 @@ const openPage = async (targetPageID) => {
 
       const currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
       const currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-      const userInformation = await api.getUserInformation();
-      const userOrganization = userInformation["preferredOrganization"];
 
       const pennsieveDatasetID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
 
@@ -6044,58 +6073,48 @@ const openPage = async (targetPageID) => {
 
       const pennsieveCopy = document.getElementById("guided-pennsieve-copy-dataset-link");
 
-      const copyIcon = document.getElementById("guided-pennsieve-copy-icon");
-      copyIcon.classList.remove("fa-check");
-      copyIcon.classList.add("fa-copy");
+      const pennsieveDatasetCopyIcon = document.getElementById("guided-pennsieve-copy-icon");
 
-      let datasetLink = `https://app.pennsieve.io/${userOrganization}/datasets/${pennsieveDatasetID}/overview`;
+      const pennsieveDOICopy = document.getElementById("guided-pennsieve-copy-doi");
+
+      pennsieveDatasetCopyIcon.classList.add("fa-copy");
+
+      let datasetLink = `https://app.pennsieve.io/N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0/datasets/${pennsieveDatasetID}/overview`;
       let linkIcon = `<i class="fas fa-link" style="margin-right: 0.4rem; margin-left: 0.4rem"></i>`;
 
       pennsieveDatasetLink.innerHTML = linkIcon + datasetLink;
       pennsieveDatasetLink.href = datasetLink;
 
-      pennsieveCopy.removeEventListener(
-        "click",
-        () => {
-          copyLink(datasetLink);
-        },
-        true
-      );
+      if (removeEventListener) {
+        pennsieveDOICopy.removeEventListener("click", () => {
+          copyLink(doiInfo), true;
+        });
+
+        pennsieveCopy.removeEventListener(
+          "click",
+          () => {
+            copyLink(datasetLink);
+          },
+          true
+        );
+      }
       if (addListener) {
         pennsieveCopy.addEventListener("click", () => {
           copyLink(datasetLink);
         });
+        pennsieveDOICopy.addEventListener("click", () => {
+          let doiInfo = document.getElementById("guided--para-doi-info").innerText;
+          copyLink(doiInfo);
+        });
         addListener = false;
-      }
-
-      // let currentDatasetID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
-      let bf_get_permissions = await api.getDatasetPermissions(
-        defaultBfAccount,
-        pennsieveDatasetID,
-        false
-      );
-      // let bf_get_permissions = await client.get(`/manage_datasets/bf_dataset_permissions`, {
-      //   params: {
-      //     selected_account: defaultBfAccount,
-      //     selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-      //   },
-      // });
-      // let datasetPermissions = bf_get_permissions;
-
-      let sharedWithSPARCCurationTeam = false;
-
-      // TODO: Modify this to be the publishing status and not permissions
-      for (const permission of bf_get_permissions) {
-        if (permission.includes("SPARC Data Curation Team")) {
-          sharedWithSPARCCurationTeam = true;
-        }
+        removeEventListener = true;
       }
 
       let pennsieveDOICheck = await api.getDatasetDOI(currentAccount, currentDataset);
 
       //Set the ui for curation team and DOI information
       await showPublishingStatus("", "guided");
-      guidedSetCurationTeamUI(sharedWithSPARCCurationTeam);
+      guidedSetCurationTeamUI();
       guidedSetDOIUI(pennsieveDOICheck);
     }
 
