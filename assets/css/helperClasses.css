@@ -947,7 +947,7 @@
 
 .soda-green-background {
   background-color: var(--color-light-green) !important;
-  color: white !important;
+  color: white;
 }
 
 .required:after {

@@ -645,6 +645,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             $("#curatebfdatasetlist").selectpicker("refresh");
             $("#curatebfdatasetlist").selectpicker("show");
             $("#bf-dataset-select-div").show();
+            $("#bf-organization-select-div").hide();
 
             bfDataset = $("#curatebfdatasetlist").val();
             let sweet_al = document.getElementsByClassName("swal2-content")[0];
@@ -695,6 +696,20 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           },
         }).then(async (result) => {
           if (result.isConfirmed) {
+            Swal.fire({
+              allowEscapeKey: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              heightAuto: false,
+              showConfirmButton: false,
+              timer: 2000,
+              timerProgressBar: false,
+              title: "Loading your dataset details...",
+              didOpen: () => {
+                Swal.showLoading();
+              },
+            });
+
+            // Ensure the dataset is not locked except for when the user is on the disseminate page (to allow for the dataset to be unsubmitted)
             // Ensure the dataset is not locked before proceeding
             const datasetIsLocked = await api.isDatasetLocked(defaultBfAccount, bfDataset);
             if (datasetIsLocked) {
@@ -703,10 +718,10 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
                 icon: "info",
                 title: `${bfDataset} is locked from editing`,
                 html: `
-                This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
-                <br />
-                <br />
-                If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
+                  This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
+                  <br />
+                  <br />
+                  If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
                 `,
                 width: 600,
                 heightAuto: false,
@@ -740,7 +755,8 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             $("#dataset-loaded-message").hide();
 
             showHideDropdownButtons("dataset", "show");
-            document.getElementById("div-rename-bf-dataset").children[0].style.display = "flex";
+            // document.getElementById("div-rename-bf-dataset").children[0].style.display =
+            //   "flex !important";
 
             // show the confirm button underneath the dataset select dropdown if one exists
             let btn = document.querySelector(".btn-confirm-ds-selection");
@@ -758,6 +774,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         } else {
           showHideDropdownButtons("dataset", "show");
         }
+
         //currently changing it but not visually in the UI
         $("#bf_list_users_pi").val("Select PI");
 
@@ -771,7 +788,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           document.getElementById("ds-name").value =
             document.getElementById("rename_dataset_name").innerText;
         } else {
-          document.getElementById("Question-prepare-dd-4").classList.add("show");
+          // document.getElementById("Question-prepare-dd-4").classList.add("show");
           let onMyCompButton = document.getElementById("Question-prepare-dd-4-new");
           document.getElementById("dd-select-pennsieve-dataset").style.display = "none";
           let onPennsieveButton =
@@ -779,7 +796,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           if (onMyCompButton.classList.contains("checked")) {
             document.getElementById("Question-prepare-dd-3").classList.add("show");
           } else {
-            document.getElementById("Question-prepare-dd-5").classList.add("show");
+            // document.getElementById("Question-prepare-dd-5").classList.add("show");
           }
         }
 

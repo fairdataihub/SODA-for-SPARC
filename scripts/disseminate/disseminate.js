@@ -11,8 +11,8 @@ Note: Some frontend elements of the workflow are in the renderer.js file as well
 
 const disseminatePublish = async (curationMode) => {
   if (curationMode === "freeform") {
-    $("#prepublishing-submit-btn").disabled = true;
-    $("#prepublishing-submit-btn").addClass("loading");
+    document.getElementById("pre-publishing-continue-btn").disabled = false;
+    $("#prepublishing-submit-btn").removeClass("loading");
   }
 
   // check that the user completed all pre-publishing checklist items for the given dataset
@@ -22,8 +22,8 @@ const disseminatePublish = async (curationMode) => {
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       confirmButtonText: "Ok",
-      title: "Cannot submit dataset for pre-publication review!",
-      text: "You need to complete all pre-publishing checklist items before you can submit your dataset for pre-publication review!",
+      title: "Cannot share dataset with Curation Team!",
+      text: "You need to complete all Submission checklist items before you can share your dataset!",
       icon: "error",
       showClass: {
         popup: "animate__animated animate__zoomIn animate__faster",
@@ -53,7 +53,7 @@ const disseminatePublish = async (curationMode) => {
     log.error(error);
     console.error(error);
     Swal.fire({
-      title: "Could not submit dataset for publication",
+      title: "Could not submit dataset to Curation Team",
       text: `${userError(error)}`,
       heightAuto: false,
       icon: "error",

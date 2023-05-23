@@ -3374,7 +3374,7 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       confirmButtonText: "Ok",
-      title: `Could not submit your dataset for to Curation Team`,
+      title: `Could not share dataset with Curation Team`,
       icon: "error",
       reverseButtons: reverseSwalButtons,
       text: userErrorMessage(error),
@@ -3853,10 +3853,10 @@ const showPrePublishingPageElements = () => {
   }
 
   // show the "Begin Publishing" button and hide the checklist and submission section
-  $("#begin-prepublishing-btn").show();
+  $("#begin-prepublishing-btn").removeClass("hidden");
+  $("#submit_prepublishing_review-question-2").addClass("show");
   $("#prepublishing-checklist-container").hide();
   $("#prepublishing-submit-btn-container").hide();
-  $("#excluded-files-container").hide();
   $(".pre-publishing-continue-container").hide();
 };
 

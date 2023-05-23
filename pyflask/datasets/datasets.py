@@ -43,7 +43,7 @@ def get_dataset_by_id(dataset_name_or_id):
         "Authorization": f"Bearer {token}"
     }
 
-    r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(token))
+    r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
 
     r.raise_for_status()
 
