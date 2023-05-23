@@ -3331,9 +3331,13 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
   let currentAccount = defaultBfAccount;
   let currentDataset = defaultBfDataset;
 
+  console.log(curationMode);
   if (curationMode === "guided") {
     currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
     currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+  } else {
+    $("#pre-publishing-continue-btn").removeClass("loading");
+    $("#pre-publishing-continue-btn").disabled = false;
   }
 
   // show a SWAL loading message until the submit for prepublishing flow is successful or fails

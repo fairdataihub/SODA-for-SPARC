@@ -531,10 +531,10 @@ const createPrepublishingChecklist = async (curationMode) => {
   $(`.${curationModeID}items-spinner`).hide();
 
   if (curationMode === "freeform") {
-    await disseminatePublish("freeform");
     document.getElementById("pre-publishing-continue-btn").disabled = false;
     $("#pre-publishing-continue-btn").disabled = false;
     $("#pre-publishing-continue-btn").removeClass("loading");
+    await disseminatePublish("freeform");
     resetffmPrepublishingUI();
   }
 };

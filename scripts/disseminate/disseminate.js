@@ -10,12 +10,6 @@ Note: Some frontend elements of the workflow are in the renderer.js file as well
 */
 
 const disseminatePublish = async (curationMode) => {
-  if (curationMode === "freeform") {
-    document.getElementById("pre-publishing-continue-btn").disabled = false;
-    $("#pre-publishing-continue-btn").disabled = false;
-    $("#prepublishing-submit-btn").removeClass("loading");
-  }
-
   // check that the user completed all pre-publishing checklist items for the given dataset
   if (!allPrepublishingChecklistItemsCompleted(curationMode)) {
     // alert the user they must complete all checklist items before beginning the prepublishing process
@@ -42,9 +36,12 @@ const disseminatePublish = async (curationMode) => {
   try {
     let status = await showPublishingStatus(submitReviewDatasetCheck, curationMode);
     let embargoReleaseDate = status[1];
-    $("#prepublishing-submit-btn").removeClass("loading");
+    $("#pre-publishing-continue-btn").removeClass("loading");
 
     if (status[0] && curationMode === "freeform") {
+      document.getElementById("pre-publishing-continue-btn").disabled = false;
+      $("#pre-publishing-continue-btn").disabled = false;
+      $("#pre-publishing-continue-btn").removeClass("loading");
       // submit the dataset for review with the given embargoReleaseDate
       await submitReviewDataset(embargoReleaseDate, curationMode);
       $("#prepublishing-submit-btn-container").hide();
@@ -68,6 +65,12 @@ const disseminatePublish = async (curationMode) => {
         popup: "animate__animated animate__fadeOutUp animate__faster",
       },
     });
+
+    if (curationMode === "freeform") {
+      document.getElementById("pre-publishing-continue-btn").disabled = false;
+      $("#pre-publishing-continue-btn").disabled = false;
+      $("#pre-publishing-continue-btn").removeClass("loading");
+    }
 
     // log the failure to publish to analytics
     logCurationForAnalytics(
