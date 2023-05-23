@@ -11302,43 +11302,6 @@ $(document).ready(async () => {
   const itemsContainer = document.getElementById("items");
   const freeFormItemsContainer = document.getElementById("free-form-folder-structure-container");
   const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
-  $("#guided-button-start-new-curate").on("click", async () => {
-    // If element has disabled class, do nothing
-    let disabled = document
-      .getElementById("guided-button-start-new-curate")
-      .classList.contains("curate-disabled-button");
-    if (disabled) {
-      return;
-    }
-
-    guidedCreateSodaJSONObj();
-    attachGuidedMethodsToSodaJSONObj();
-
-    sodaJSONObj["starting-point"]["type"] = "new";
-    sodaJSONObj["generate-dataset"]["generate-option"] = "new";
-
-    //Transition file explorer elements to guided mode
-    organizeDSglobalPath = document.getElementById("guided-input-global-path");
-    organizeDSglobalPath.value = "";
-    dataset_path = document.getElementById("guided-input-global-path");
-    scroll_box = document.querySelector("#guided-body");
-    itemsContainer.innerHTML = "";
-    resetLazyLoading();
-    freeFormItemsContainer.classList.remove("freeform-file-explorer"); //add styling for free form mode
-    freeFormButtons.classList.remove("freeform-file-explorer-buttons");
-    $(".shared-folder-structure-element").appendTo($("#guided-folder-structure-container"));
-
-    guidedUnLockSideBar();
-
-    guidedTransitionFromHome();
-
-    // Skip the changes metadata tab as new datasets do not have changes metadata
-    guidedSkipPage("guided-create-changes-metadata-tab");
-
-    // Open the first page
-    const firstPage = getNonSkippedGuidedModePages(document)[0];
-    await openPage(firstPage.id);
-  });
 
   document
     .getElementById("guided-button-go-to-starting-point-selection")

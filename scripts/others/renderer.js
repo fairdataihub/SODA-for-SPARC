@@ -7697,7 +7697,9 @@ async function initiate_generate() {
   let organizeDataset = document.getElementById("organize_dataset_btn");
   let uploadLocally = document.getElementById("upload_local_dataset_btn");
   let curateNewDatasetButton = document.getElementById("guided-button-start-new-curate");
-  let curateExistingDatasetButton = document.getElementById("guided-button-start-existing-curate");
+  let curateExistingDatasetButton = document.getElementById(
+    "guided-button-go-to-starting-point-selection"
+  );
   let organizeDataset_option_buttons = document.getElementById("div-generate-comeback");
   let statusBarContainer = document.getElementById("div-new-curate-progress");
   var statusBarClone = statusBarContainer.cloneNode(true);
