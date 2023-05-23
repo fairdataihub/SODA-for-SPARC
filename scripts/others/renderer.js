@@ -489,7 +489,7 @@ const startupServerAndApiCheck = async () => {
     //two minutes pass then handle connection error
     // SWAL that the server needs to be restarted for the app to work
     clientError(error);
-    ipcRenderer.send("track-event", "Error", "Establishing Python Connection", error);
+    ipcRenderer.send("track-event", "Error", "Establishing Python Connection");
 
     await Swal.fire({
       icon: "error",
