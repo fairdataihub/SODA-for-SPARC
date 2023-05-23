@@ -4943,6 +4943,12 @@ const allowDrop = (ev) => {
 
 var filesElement;
 var targetElement;
+
+const newDrop = async (event) => {
+  console.log(event);
+  console.log(event.dataTransfer.files);
+  console.log(event.target);
+};
 const drop = async (ev) => {
   irregularFolderArray = [];
   let renamedFolderName = "";
