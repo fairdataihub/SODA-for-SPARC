@@ -12,6 +12,7 @@ Note: Some frontend elements of the workflow are in the renderer.js file as well
 const disseminatePublish = async (curationMode) => {
   if (curationMode === "freeform") {
     document.getElementById("pre-publishing-continue-btn").disabled = false;
+    $("#pre-publishing-continue-btn").disabled = false;
     $("#prepublishing-submit-btn").removeClass("loading");
   }
 

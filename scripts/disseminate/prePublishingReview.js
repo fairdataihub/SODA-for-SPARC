@@ -19,7 +19,7 @@ const getPrepublishingChecklistStatuses = async (currentDataset) => {
   // check that a dataset name or id is provided
   if (!currentDataset || currentDataset === "") {
     throw new Error(
-      "Error: Must provide a valid dataset to log status of pre-publishing checklist items from."
+      "Error: Must provide a valid dataset to log status of submission checklist items from."
     );
   }
 
@@ -209,6 +209,8 @@ const orcidSignIn = async (curationMode) => {
 //  Function fetches the status of each item needed to publish a dataset from the backend and updates the UI accordingly.
 //  inPrePublishing: boolean - True when the function is ran in the pre-publishing submission flow; false otherwise
 const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "") => {
+  document.getElementById("pre-publishing-continue-btn").disabled = true;
+  $("#pre-publishing-continue-btn").disabled = true;
   console.log("In showing prepublishing checklist statuses start");
   let currentDataset = defaultBfDataset;
   let curationModeID = "";
@@ -385,6 +387,9 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
     $(`.${curationModeID}icon-wrapper`).children().css("visibility", "visible");
   }
 
+  document.getElementById("pre-publishing-continue-btn").disabled = false;
+  $("#pre-publishing-continue-btn").disabled = false;
+
   return true;
 };
 
@@ -492,6 +497,7 @@ const createPrepublishingChecklist = async (curationMode) => {
 
   if (curationMode === "freeform") {
     document.getElementById("pre-publishing-continue-btn").disabled = true;
+    $("#pre-publishing-continue-btn").disabled = true;
     $("#pre-publishing-continue-btn").addClass("loading");
   }
 
@@ -514,6 +520,7 @@ const createPrepublishingChecklist = async (curationMode) => {
     });
     if (curationMode === "freeform") {
       document.getElementById("pre-publishing-continue-btn").disabled = false;
+      $("#pre-publishing-continue-btn").disabled = false;
       $("#pre-publishing-continue-btn").removeClass("loading");
     }
 
@@ -526,6 +533,7 @@ const createPrepublishingChecklist = async (curationMode) => {
   if (curationMode === "freeform") {
     await disseminatePublish("freeform");
     document.getElementById("pre-publishing-continue-btn").disabled = false;
+    $("#pre-publishing-continue-btn").disabled = false;
     $("#pre-publishing-continue-btn").removeClass("loading");
     resetffmPrepublishingUI();
   }
@@ -644,6 +652,8 @@ const beginPrepublishingFlow = async (curationMode) => {
     $("#begin-prepublishing-btn").addClass("hidden");
     $("#submit_prepublishing_review-question-2").removeClass("show");
     $("#submit_prepublishing_review-question-3").addClass("show");
+    document.getElementById("pre-publishing-continue-btn").disabled = true;
+    $("#pre-publishing-continue-btn").disabled = true;
 
     if (!datasetHasBeenPublished) {
       console.log("Dataset hasnt been published");
