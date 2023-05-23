@@ -5114,10 +5114,6 @@ const dropHelper = async (
   for (var i = 0; i < ev1.length; i++) {
     /// Get all the file information
     var itemPath = ev1[i].path;
-    /* if (inaccessible_files.includes(itemPath)) {
-      // go to next file if file is inaccessible
-      continue;
-    }*/
     var itemName = path.parse(itemPath).base;
     var duplicate = false;
     var statsObj = fs.statSync(itemPath);
@@ -5280,32 +5276,6 @@ const dropHelper = async (
         }
       }
     }
-  }
-
-  if (inaccessible_files.length > 0) {
-    if (loadingContainer != undefined) {
-      loadingContainer.style.display = "none";
-      loadingIcon.style.display = "none";
-    }
-
-    let inaccessible_files_string = inaccessible_files.join("\n");
-
-    await Swal.fire({
-      icon: "info",
-      title: "Files not accessible to server:",
-      html: `
-        <div>
-          ${inaccessible_files_string}
-        </div>
-      `,
-      width: 500,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: `OK`,
-      focusConfirm: true,
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-    });
   }
 
   if (doubleExtension.length > 0) {

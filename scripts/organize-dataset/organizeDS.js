@@ -1751,32 +1751,6 @@ const addFilesfunction = async (
     }
   }
 
-  if (inaccessible_files.length > 0) {
-    if (loadingContainer != undefined) {
-      loadingContainer.style.display = "none";
-      loadingIcon.style.display = "none";
-    }
-
-    let inaccessible_files_string = inaccessible_files.join("\n");
-
-    await Swal.fire({
-      icon: "info",
-      title: "Files not accessible to server:",
-      html: `
-        <div>
-          ${inaccessible_files_string}
-        </div>
-      `,
-      width: 500,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: `OK`,
-      focusConfirm: true,
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-    });
-  }
-
   //after iterating through all the files handle problem files through alerts
   if (doubleExtension.length > 0) {
     if (loadingContainer != undefined) {
