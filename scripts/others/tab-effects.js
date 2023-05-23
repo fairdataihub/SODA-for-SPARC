@@ -91,6 +91,10 @@ const showParentTab = (tabNow, nextOrPrev) => {
     $("#nextBtn").prop("disabled", false);
   }
   if (tabNow == 4) {
+    if (nextOrPrev === -1) {
+      return;
+    }
+
     if (document.getElementById("generate-manifest-curate").checked) {
       // need to run manifest creation
       ffmCreateManifest(sodaJSONObj);
