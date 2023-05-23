@@ -1091,6 +1091,12 @@ function loadSubmissionFileToUI(data, type) {
       data["Milestone completion date"],
       data["Milestone completion date"]
     );
+    // HERE BOI
+    $("#submission-completion-date").append(
+      $("<option>", {
+        text: "Enter my own date",
+      })
+    );
     $("#submission-completion-date").val(data["Milestone completion date"]);
   }
   Swal.fire({
