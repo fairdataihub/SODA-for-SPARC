@@ -11303,31 +11303,29 @@ $(document).ready(async () => {
   const freeFormItemsContainer = document.getElementById("free-form-folder-structure-container");
   const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
 
-  document
-    .getElementById("guided-button-go-to-starting-point-selection")
-    .addEventListener("click", async () => {
-      //Transition file explorer elements to guided mode
-      organizeDSglobalPath = document.getElementById("guided-input-global-path");
-      organizeDSglobalPath.value = "";
-      dataset_path = document.getElementById("guided-input-global-path");
-      scroll_box = document.querySelector("#guided-body");
-      itemsContainer.innerHTML = "";
-      resetLazyLoading();
-      freeFormItemsContainer.classList.remove("freeform-file-explorer");
-      freeFormButtons.classList.remove("freeform-file-explorer-buttons");
-      $(".shared-folder-structure-element").appendTo($("#guided-folder-structure-container"));
+  document.getElementById("button-homepage-guided-mode").addEventListener("click", async () => {
+    //Transition file explorer elements to guided mode
+    organizeDSglobalPath = document.getElementById("guided-input-global-path");
+    organizeDSglobalPath.value = "";
+    dataset_path = document.getElementById("guided-input-global-path");
+    scroll_box = document.querySelector("#guided-body");
+    itemsContainer.innerHTML = "";
+    resetLazyLoading();
+    freeFormItemsContainer.classList.remove("freeform-file-explorer");
+    freeFormButtons.classList.remove("freeform-file-explorer-buttons");
+    $(".shared-folder-structure-element").appendTo($("#guided-folder-structure-container"));
 
-      guidedCreateSodaJSONObj();
-      attachGuidedMethodsToSodaJSONObj();
-      guidedTransitionFromHome();
+    guidedCreateSodaJSONObj();
+    attachGuidedMethodsToSodaJSONObj();
+    guidedTransitionFromHome();
 
-      guidedUnLockSideBar();
+    guidedUnLockSideBar();
 
-      guidedUnSkipPage("guided-resume-existing-dataset-tab");
-      await openPage("guided-resume-existing-dataset-tab");
-    });
+    guidedUnSkipPage("guided-resume-existing-dataset-tab");
+    await openPage("guided-resume-existing-dataset-tab");
+  });
 
-  $("#guided-button-start-modify-component").on("click", async () => {
+  $("#button-homepage-freeform-mode").on("click", async () => {
     //Free form mode will open through here
     guidedPrepareHomeScreen();
 
