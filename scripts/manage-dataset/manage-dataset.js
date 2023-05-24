@@ -2600,7 +2600,9 @@ $("#button-submit-dataset").click(async () => {
   var navError = progressError.cloneNode(true);
   let organizeDatasetButton = document.getElementById("button-generate");
   let curateNewDatasetButton = document.getElementById("guided-button-start-new-curate");
-  let curateExistingDatasetButton = document.getElementById("guided-button-start-existing-curate");
+  let curateExistingDatasetButton = document.getElementById(
+    "guided-button-go-to-starting-point-selection"
+  );
   let organzieDatasetButtonDiv = organizeDatasetButton.children[0];
 
   progressClone.style =

@@ -122,7 +122,6 @@ let contact_lottie_container = document.getElementById("contact-us-lottie");
 let madeWithLoveContainer = document.getElementById("made-with-love-lottie");
 
 // LOTTIES FOR CURATE AND SHARE PAGE
-let newDatasetLottieContainer = document.getElementById("new-dataset-lottie-container");
 let existingDatasetLottieContainer = document.getElementById("existing-dataset-lottie");
 let modifyDatasetLottieContainer = document.getElementById("edit-dataset-component-lottie");
 
@@ -132,19 +131,10 @@ let modifyDatasetLottieContainer = document.getElementById("edit-dataset-compone
 // let column3 = document.getElementById("lottie3");
 // let heart_lottie = document.getElementById("heart_lottie");
 
-newDatasetLottieContainer.innerHTML = "";
 existingDatasetLottieContainer.innerHTML = "";
 modifyDatasetLottieContainer.innerHTML = "";
 
-var newDatasetLottie = lottie.loadAnimation({
-  container: newDatasetLottieContainer,
-  animationData: newDataset,
-  renderer: "svg",
-  loop: true,
-  autoplay: true,
-});
-
-var existingDatasetLottie = lottie.loadAnimation({
+let existingDatasetLottie = lottie.loadAnimation({
   container: existingDatasetLottieContainer,
   animationData: existingDataset,
   renderer: "svg",
@@ -160,7 +150,7 @@ let editDatasetLottie = lottie.loadAnimation({
   autoplay: true,
 });
 
-var contact_lottie_animation = lottie.loadAnimation({
+let contact_lottie_animation = lottie.loadAnimation({
   container: contact_lottie_container,
   animationData: contact_lottie /*(json js variable, (view src/assets/lotties)*/,
   renderer: "svg",
@@ -168,7 +158,7 @@ var contact_lottie_animation = lottie.loadAnimation({
   autoplay: true,
 });
 
-var contactHeartLottie = lottie.loadAnimation({
+let contactHeartLottie = lottie.loadAnimation({
   container: madeWithLoveContainer,
   animationData: heartLottie,
   renderer: "svg",
@@ -176,7 +166,7 @@ var contactHeartLottie = lottie.loadAnimation({
   autoplay: true,
 });
 
-var documentation_lottie = lottie.loadAnimation({
+let documentation_lottie = lottie.loadAnimation({
   container: doc_lottie,
   animationData: docu_lottie /*(json js variable, (view src/assets/lotties)*/,
   renderer: "svg",
@@ -221,12 +211,10 @@ var sectionObserver = new MutationObserver(function (mutations) {
 
     if (attributeValue.includes("is-shown") == true) {
       //add lotties
-      newDatasetLottie.play();
       existingDatasetLottie.play();
       editDatasetLottie.play();
       // heart_container.play();
     } else {
-      newDatasetLottie.stop();
       existingDatasetLottie.stop();
       editDatasetLottie.stop();
       // heart_container.stop();
@@ -7709,7 +7697,9 @@ async function initiate_generate() {
   let organizeDataset = document.getElementById("organize_dataset_btn");
   let uploadLocally = document.getElementById("upload_local_dataset_btn");
   let curateNewDatasetButton = document.getElementById("guided-button-start-new-curate");
-  let curateExistingDatasetButton = document.getElementById("guided-button-start-existing-curate");
+  let curateExistingDatasetButton = document.getElementById(
+    "guided-button-go-to-starting-point-selection"
+  );
   let organizeDataset_option_buttons = document.getElementById("div-generate-comeback");
   let statusBarContainer = document.getElementById("div-new-curate-progress");
   var statusBarClone = statusBarContainer.cloneNode(true);
