@@ -21,11 +21,11 @@ authors:
     family-names: Portillo
     given-names: Dorian
 cff-version: 1.2.0
-date-released: "2023-04-14"
+date-released: '2023-05-24'
 identifiers:
   - description: DOI for this software's record on Zenodo
     type: doi
-    value: https://doi.org/10.5281/zenodo.7106162
+    value: https://doi.org/10.5281/zenodo.7968585
 keywords:
   - SPARC
   - FAIR
