@@ -4,7 +4,7 @@ run-name: ${{ github.actor }} is building a MAC release for SODA
 on:
   push:
     branches:
-      - disabled-switch-this-text-to-main-to-reinstate
+      - main
 
 jobs:
   deploy-on-mac:
