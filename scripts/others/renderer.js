@@ -468,7 +468,7 @@ const startupServerAndApiCheck = async () => {
     }
     time_pass = new Date() - time_start;
     if (status) break;
-    if (time_pass > 120000) break; //break after two minutes
+    if (time_pass > 300000) break; //break after five minutes
     await wait(2000);
   }
 
