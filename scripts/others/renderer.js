@@ -1116,7 +1116,6 @@ const check_agent_installed_version = async (agent_version) => {
   // IMP: error in subfunction is handled by caller
   [browser_download_url, latest_agent_version] = await get_latest_agent_version();
 
-
   if (agent_version !== latest_agent_version) {
     notyf.dismiss(notification);
     notyf.open({
