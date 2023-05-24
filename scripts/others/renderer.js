@@ -104,7 +104,6 @@ console.log("User OS:", os.type(), os.platform(), "version:", os.release());
 
 // Check current app version //
 const appVersion = app.getVersion();
-console.log(appVersion);
 log.info("Current SODA version:", appVersion);
 console.log("Current SODA version:", appVersion);
 
@@ -1103,7 +1102,6 @@ const check_agent_installed = async () => {
 };
 
 const check_agent_installed_version = async (agent_version) => {
-  console.log("CHecking agent version now");
   let notification = null;
   notification = notyf.open({
     type: "ps_agent",
@@ -1116,8 +1114,6 @@ const check_agent_installed_version = async (agent_version) => {
   // IMP: error in subfunction is handled by caller
   [browser_download_url, latest_agent_version] = await get_latest_agent_version();
 
-  console.log(agent_version);
-  console.log(latest_agent_version);
 
   if (agent_version !== latest_agent_version) {
     notyf.dismiss(notification);
@@ -3280,7 +3276,6 @@ const submitReviewDatasetCheck = async (res, curationMode) => {
         // const checkedRadioButton = $("input:checkbox[name ='publishing-options']:checked").val();
 
         // const checkedRadioButton = $("input:checkbox[name ='publishing-options']:checked");
-        console.log(document.getElementById("embargo-date-check").checked);
 
         if (document.getElementById("embargo-date-check").checked) {
           // set the embargoDate variable if so
@@ -3319,7 +3314,6 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
   let currentAccount = defaultBfAccount;
   let currentDataset = defaultBfDataset;
 
-  console.log(curationMode);
   if (curationMode === "guided") {
     currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
     currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
@@ -4489,7 +4483,6 @@ const CheckFileListForServerAccess = async (fileList) => {
     });
     //const accessible_files = res.data.accessible_files;
     const inaccessible_files = res.data.inaccessible_files;
-    console.log("inaccessible_files", inaccessible_files);
     return inaccessible_files;
   } catch (error) {
     console.log(userErrorMessage(error));

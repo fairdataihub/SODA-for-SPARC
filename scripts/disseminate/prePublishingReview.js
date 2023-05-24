@@ -15,7 +15,6 @@ Note: Some frontend elements of the workflow are in the renderer.js file as well
  * @returns statuses - A status object that details the state of each pre-publishing checklist item for the given dataset and user
  */
 const getPrepublishingChecklistStatuses = async (currentDataset) => {
-  console.log("Inside the get dataset function");
   // check that a dataset name or id is provided
   if (!currentDataset || currentDataset === "") {
     throw new Error(
@@ -28,13 +27,11 @@ const getPrepublishingChecklistStatuses = async (currentDataset) => {
 
   let dataset;
   try {
-    console.log("About to get the dataset");
     dataset = await api.getDataset(currentDataset);
   } catch (error) {
     clientError(error);
   }
 
-  console.log(dataset);
 
   // get the description - aka subtitle (unfortunate naming), tags, banner image URL, collaborators, and license
   const { description, tags, license } = dataset["content"];
@@ -211,25 +208,16 @@ const orcidSignIn = async (curationMode) => {
 const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "") => {
   document.getElementById("pre-publishing-continue-btn").disabled = true;
   $("#pre-publishing-continue-btn").disabled = true;
-  console.log("In showing prepublishing checklist statuses start");
   let currentDataset = defaultBfDataset;
   let curationModeID = "";
   // resetPrePublishingChecklist(curationMode);
 
   if (curationMode === "guided") {
-    console.log("Curation mode is guided mode");
     // This is done to ensure the right element ID is called
     // Guided mode elements have 'guided--' prepended to their ID
     curationModeID = "guided--";
     currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
   }
-
-  console.log("Relevant dataset name information: ", currentDataset);
-  console.log("Value of the curation mode ID: ", curationModeID);
-  console.log(
-    "Value of the disseminate field: ",
-    $(`#${curationModeID}para-review-dataset-info-disseminate`).text()
-  );
 
   // wait until a value has been loaded into the status field
   while ($(`#${curationModeID}para-review-dataset-info-disseminate`).text().trim() == "None") {
@@ -241,9 +229,7 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
     $(`#${curationModeID}para-review-dataset-info-disseminate`).text() !==
       "Dataset is not under review currently"
   ) {
-    console.log(
-      "Returning as it has been determined that dataset is under review currently or that the current dataset is select dataset"
-    );
+
     return false;
   }
 
@@ -258,7 +244,6 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
     `ui mini active inline loader ${curationModeID}icon-wrapper`
   );
 
-  console.log("Fetching the prepublishing checklist");
   // run the validation checks on each pre-publishing checklist item
   let statuses;
   try {
@@ -398,8 +383,6 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
 //  status: a boolean corresponding to the checklist item
 // gets the pre-publishing checklist item element by id and gives it a check or an 'x' based off the value of the pre-publishing item's status
 const setPrepublishingChecklistItemIconByStatus = (iconElementId, status) => {
-  console.log(iconElementId);
-  console.log(status);
   if (status) {
     // Change icon of iconElementId to a checkmark
     $(`#${iconElementId}`).attr("class", "check icon");
@@ -645,7 +628,6 @@ const beginPrepublishingFlow = async (curationMode) => {
   // transition to the next question if not in guided mode
   // load the next question's data
   if (curationMode !== "guided") {
-    console.log("Prebublishing flow starting");
     let reviewDatasetInfo = $("#para-review-dataset-info-disseminate").text();
     let datasetHasBeenPublished = await resetffmPrepublishingUI();
 
@@ -656,7 +638,6 @@ const beginPrepublishingFlow = async (curationMode) => {
     $("#pre-publishing-continue-btn").disabled = true;
 
     if (!datasetHasBeenPublished) {
-      console.log("Dataset hasnt been published");
       smoothScrollToElement("prepublishing-checklist");
 
       let success = await showPrePublishingStatus(true, "freeform");
