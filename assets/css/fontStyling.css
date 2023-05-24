@@ -164,6 +164,15 @@
   color: black !important;
 }
 
+h2.guided--text-click-continue {
+  font-size: 15px;
+  color: var(--color-light-green) !important;
+  text-align: center;
+  font-weight: 600;
+  margin-top: 9px !important;
+  opacity: 0.8;
+}
+
 .text-sub-step-title.text-error {
   color: var(--color-bg-plum) !important;
 }
