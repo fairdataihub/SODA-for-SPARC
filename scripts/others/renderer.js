@@ -761,6 +761,8 @@ const startPennsieveAgentAndCheckVersion = async () => {
       if (result) {
         shell.openExternal(browser_download_url);
         shell.openExternal("https://docs.pennsieve.io/docs/uploading-files-programmatically");
+        // stop the pennsieve agent so the agent installer will not require a reboot
+        await stopPennsieveAgent(agentPath)
       }
       reject("The installed version of the Pennsieve agent is not the latest version.");
     }
