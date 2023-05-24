@@ -8192,7 +8192,7 @@ const show_curation_shortcut = async () => {
     hideClass: {
       popup: "animate__animated animate__zoomOut animate__faster",
     },
-  }).then( async (result) => {
+  }).then(async (result) => {
     //dismissStatus("status-bar-curate-progress");
     uploadComplete.open({
       type: "success",
@@ -8221,7 +8221,6 @@ const show_curation_shortcut = async () => {
 
       // showHideDropdownButtons("dataset", "show");
       confirm_click_function();
-
 
       $("#guided_mode_view").click();
       $(".swal2-confirm").click();
