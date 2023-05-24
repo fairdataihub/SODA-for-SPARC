@@ -8175,7 +8175,7 @@ async function initiate_generate() {
   };
 } // end initiate_generate
 
-const show_curation_shortcut = () => {
+const show_curation_shortcut = async () => {
   Swal.fire({
     backdrop: "rgba(0,0,0, 0.4)",
     cancelButtonText: "No. I'll do it later",
@@ -8192,7 +8192,7 @@ const show_curation_shortcut = () => {
     hideClass: {
       popup: "animate__animated animate__zoomOut animate__faster",
     },
-  }).then((result) => {
+  }).then( async (result) => {
     //dismissStatus("status-bar-curate-progress");
     uploadComplete.open({
       type: "success",
@@ -8202,8 +8202,41 @@ const show_curation_shortcut = () => {
     //statusBarContainer.remove();
 
     if (result.isConfirmed) {
+      let datasetName = "";
+      if (!sodaJSONObj["generate-dataset"].hasOwnProperty("dataset-name")) {
+        datasetName = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+      } else {
+        datasetName = sodaJSONObj["generate-dataset"]["dataset-name"];
+      }
+      $(".bf-dataset-span").html(datasetName);
+      $("#current-bf-dataset").text(datasetName);
+      $("#current-bf-dataset-generate").text(datasetName);
+      $(".bf-dataset-span").html(datasetName);
+      confirm_click_function();
+
+      defaultBfDataset = datasetName;
+      // document.getElementById("ds-description").innerHTML = "";
+      refreshDatasetList();
+      $("#dataset-loaded-message").hide();
+
+      // showHideDropdownButtons("dataset", "show");
+      confirm_click_function();
+
+
+      $("#guided_mode_view").click();
+      $(".swal2-confirm").click();
+      $(".vertical-progress-bar-step").removeClass("is-current");
+      $(".vertical-progress-bar-step").removeClass("done");
+      $(".getting-started").removeClass("prev");
+      $(".getting-started").removeClass("show");
+      $(".getting-started").removeClass("test2");
+      $("#Question-getting-started-1").addClass("show");
+      $("#generate-dataset-progress-tab").css("display", "none");
+      currentTab = 0;
+      await wipeOutCurateProgress();
+      $("#guided-button-start-modify-component").click();
       $("#disseminate_dataset_tab").click();
-      $("#share_curation_team_btn").click();
+      $("#submit_prepublishing_review_btn").click();
     }
   });
 };
