@@ -5691,10 +5691,6 @@ const openPage = async (targetPageID) => {
           let partialUserDetails = [];
           let finalTeamPermissions = [];
           let piOwner = [];
-          //const filteredPermissions = ['User: Jacob Clark , role: owner', 'User: Christopher Marroquin , role: viewer', 'User: Dorian Portillo , role: editor']
-          //Store fetched users and team members and store in soda json
-          // going to need the UUID of user permissions
-          //Fetch or do we already have the info?
 
           //so check for PI owner as well
           for (const userPermission of filteredPermissions) {
