@@ -868,8 +868,6 @@ const importOrganizeProgressPrompt = () => {
 
 //   $("#guided_bf_list_users_pi").selectpicker();
 //   $("#guided_bf_list_users_pi").selectpicker("refresh");
-//   $("#guided_bf_list_users_and_teams").selectpicker();
-//   $("#guided_bf_list_users_and_teams").selectpicker("refresh");
 // });
 
 const get_api_key = (login, password, key_name) => {

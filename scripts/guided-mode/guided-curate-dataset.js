@@ -5610,28 +5610,28 @@ const openPage = async (targetPageID) => {
         $("#guided-banner-image-preview-container").hide();
       }
     }
+
+    const guidedUpdateUsersAndTeamsDropdown = (users, teams) => {};
     if (targetPageID === "guided-designate-permissions-tab") {
+      const usersReq = await client.get(
+        `manage_datasets/bf_get_users?selected_account=${defaultBfAccount}`
+      );
+      const teamsReq = await client.get(
+        `manage_datasets/bf_get_teams?selected_account=${defaultBfAccount}`
+      );
+
+      const usersThatCanBeGrantedPermissions = sparcUsersReq.data.users;
+      const teamsThatCanBeGrantedPermissions = sparcTeamsReq.data.teams;
+
+      // guided_bf_list_users_and_teams
+      // <option>Select individuals or teams to grant permissions to</option>
+
+      guidedUpdateUsersAndTeamsDropdown(sparcUsers, sparcTeams);
+
       if (pageNeedsUpdateFromPennsieve("guided-designate-permissions-tab")) {
         // Show the loading page while the page's data is being fetched from Pennsieve
         setPageLoadingState(true);
         try {
-          const sparcUsersReq = await client.get(
-            `manage_datasets/bf_get_users?selected_account=${defaultBfAccount}`
-          );
-          const sparcTeamsReq = await client.get(
-            `manage_datasets/bf_get_teams?selected_account=${defaultBfAccount}`
-          );
-
-          // //Returns an array of strings with the user's name and role
-          // const currentDatasetPermissions = await api.getDatasetPermissions(
-          //   defaultBfAccount,
-          //   sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-          //   true
-          // );
-          //TODO: Check what these reponses look like compared to get dataset permissions endpoint
-          const sparcUsers = sparcUsersReq.data.users;
-          const sparcTeams = sparcTeamsReq.data.teams;
-
           let sparcUsersDivided = [];
 
           //sparc users results needs to be formatted
@@ -11654,6 +11654,7 @@ $(document).ready(async () => {
       if (newPermissionRoleElement.val().trim() === "Select role") {
         throw "Please select a role for the user or team";
       }
+
       if (
         newPermissionElement.val().trim() === sodaJSONObj["digital-metadata"]["pi-owner"]["UUID"]
       ) {
