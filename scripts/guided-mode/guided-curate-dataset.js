@@ -4444,6 +4444,43 @@ const updateGuidedRadioButtonsFromJSON = (parentPageID) => {
   }
 };
 
+const guidedAddUsersAndTeamsToDropdown = (usersArray, teamsArray) => {
+  const guidedUsersAndTeamsDropdown = document.getElementById("guided_bf_list_users_and_teams");
+  // Reset the dropdown
+  guidedUsersAndTeamsDropdown.innerHTML =
+    "<option>Select individuals or teams to grant permissions to</option>";
+
+  // Loop through the users and add them to the dropdown
+  for (const userString of usersArray) {
+    const userNameAndEmail = userString.split("!|**|!")[0].trim();
+    const userID = userString.split("!|**|!")[1].trim();
+    const userOption = `
+          <option
+            permission-type="user"
+            value="${userID}"
+          >
+            ${userNameAndEmail}
+          </option>
+        `;
+    guidedUsersAndTeamsDropdown.insertAdjacentHTML("beforeend", userOption);
+  }
+
+  // Loop through the teams and add them to the dropdown
+  for (const team of teamsArray) {
+    const trimmedTeam = team.trim();
+    const teamOption = `
+          <option
+            permission-type="team"
+            value="${trimmedTeam}"
+          >
+            ${trimmedTeam}
+          </option>
+        `;
+    guidedUsersAndTeamsDropdown.insertAdjacentHTML("beforeend", teamOption);
+  }
+  console.log("guidedUsersAndTeamsDropdown: ", guidedUsersAndTeamsDropdown);
+};
+
 const guidedResetUserTeamPermissionsDropdowns = () => {
   $("#guided_bf_list_users_and_teams").val("Select individuals or teams to grant permissions to");
   $("#guided_bf_list_users_and_teams").selectpicker("refresh");
@@ -5622,43 +5659,11 @@ const openPage = async (targetPageID) => {
       const usersThatCanBeGrantedPermissions = usersReq.data.users;
       const teamsThatCanBeGrantedPermissions = teamsReq.data.teams;
 
-      const guidedUsersAndTeamsDropdown = document.getElementById("guided_bf_list_users_and_teams");
-      // Reset the dropdown
-      guidedUsersAndTeamsDropdown.innerHTML =
-        "<option>Select individuals or teams to grant permissions to</option>";
-
-      // Loop through the users and add them to the dropdown
-      for (const userString of usersThatCanBeGrantedPermissions) {
-        const userNameAndEmail = userString.split("!|**|!")[0].trim();
-        const userID = userString.split("!|**|!")[1].trim();
-        const userOption = `
-          <option
-            permission-type="user"
-            value="${userID}"
-          >
-            ${userNameAndEmail}
-          </option>
-        `;
-        guidedUsersAndTeamsDropdown.insertAdjacentHTML("beforeend", userOption);
-      }
-
-      // Loop through the teams and add them to the dropdown
-      for (const team of teamsThatCanBeGrantedPermissions) {
-        const trimmedTeam = team.trim();
-        const teamOption = `
-          <option
-            permission-type="team"
-            value="${trimmedTeam}"
-          >
-            ${trimmedTeam}
-          </option>
-        `;
-        guidedUsersAndTeamsDropdown.insertAdjacentHTML("beforeend", teamOption);
-      }
-      console.log("guidedUsersAndTeamsDropdown: ", guidedUsersAndTeamsDropdown);
-
-      // guided_bf_list_users_and_teams
-      // <option>Select individuals or teams to grant permissions to</option>
+      // Reset the dropdown with the new users and teams
+      guidedAddUsersAndTeamsToDropdown(
+        usersThatCanBeGrantedPermissions,
+        teamsThatCanBeGrantedPermissions
+      );
 
       if (pageNeedsUpdateFromPennsieve("guided-designate-permissions-tab")) {
         // Show the loading page while the page's data is being fetched from Pennsieve
@@ -5667,7 +5672,7 @@ const openPage = async (targetPageID) => {
           let sparcUsersDivided = [];
 
           //sparc users results needs to be formatted
-          sparcUsers.forEach((element) => {
+          usersThatCanBeGrantedPermissions.forEach((element) => {
             //first two elements of this array will just be an email with no name
             sparcUsersDivided.push(element.split(" !|**|!"));
           });
