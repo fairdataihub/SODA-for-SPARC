@@ -1383,9 +1383,6 @@ const bfListUsers = document.querySelector("#bf_list_users");
 const bfListTeams = document.querySelector("#bf_list_teams");
 const bfListRolesTeam = document.querySelector("#bf_list_roles_team");
 const bfAddPermissionTeamBtn = document.getElementById("button-add-permission-team");
-// Guided mode dropdowns
-const guidedBfListUsersPi = document.querySelector("#guided_bf_list_users_pi");
-const guidedBfListUsersAndTeams = document.querySelector("#guided_bf_list_users_and_teams");
 
 //Pennsieve dataset status
 const bfCurrentDatasetStatusProgress = document.querySelector(
@@ -3677,15 +3674,6 @@ const refreshBfUsersList = () => {
         // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
         $("#bf_list_users").selectpicker("refresh");
         $("#bf_list_users").find("option:not(:first)").remove();
-        $("#guided_bf_list_users_and_teams").selectpicker("refresh");
-
-        //delete all elements with data-permission-type of "team"
-        const userDropdownElements = document.querySelectorAll(
-          "#guided_bf_list_users_and_teams option[permission-type='user']"
-        );
-        userDropdownElements.forEach((element) => {
-          element.remove();
-        });
 
         $("#button-add-permission-user").hide();
         $("#bf_list_users_pi").selectpicker("refresh");
@@ -3700,9 +3688,6 @@ const refreshBfUsersList = () => {
           bfListUsers.appendChild(optionUser);
           var optionUser2 = optionUser.cloneNode(true);
           bfListUsersPI.appendChild(optionUser2);
-          var guidedOptionUser = optionUser.cloneNode(true);
-          guidedOptionUser.setAttribute("permission-type", "user");
-          guidedBfListUsersAndTeams.appendChild(guidedOptionUser);
         }
       })
       .catch((error) => {
@@ -3736,9 +3721,6 @@ const refreshBfTeamsList = (teamList) => {
           optionTeam.textContent = myTeam;
           optionTeam.value = myTeam;
           teamList.appendChild(optionTeam);
-          var guidedOptionTeam = optionTeam.cloneNode(true);
-          guidedOptionTeam.setAttribute("permission-type", "team");
-          guidedBfListUsersAndTeams.appendChild(guidedOptionTeam);
         }
         confirm_click_account_function();
       })

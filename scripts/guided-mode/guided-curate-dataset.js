@@ -5611,7 +5611,6 @@ const openPage = async (targetPageID) => {
       }
     }
 
-    const guidedUpdateUsersAndTeamsDropdown = (users, teams) => {};
     if (targetPageID === "guided-designate-permissions-tab") {
       const usersReq = await client.get(
         `manage_datasets/bf_get_users?selected_account=${defaultBfAccount}`
@@ -5620,13 +5619,46 @@ const openPage = async (targetPageID) => {
         `manage_datasets/bf_get_teams?selected_account=${defaultBfAccount}`
       );
 
-      const usersThatCanBeGrantedPermissions = sparcUsersReq.data.users;
-      const teamsThatCanBeGrantedPermissions = sparcTeamsReq.data.teams;
+      const usersThatCanBeGrantedPermissions = usersReq.data.users;
+      const teamsThatCanBeGrantedPermissions = teamsReq.data.teams;
+
+      const guidedUsersAndTeamsDropdown = document.getElementById("guided_bf_list_users_and_teams");
+      // Reset the dropdown
+      guidedUsersAndTeamsDropdown.innerHTML =
+        "<option>Select individuals or teams to grant permissions to</option>";
+
+      // Loop through the users and add them to the dropdown
+      for (const userString of usersThatCanBeGrantedPermissions) {
+        const userNameAndEmail = userString.split("!|**|!")[0].trim();
+        const userID = userString.split("!|**|!")[1].trim();
+        const userOption = `
+          <option
+            permission-type="user"
+            value="${userID}"
+          >
+            ${userNameAndEmail}
+          </option>
+        `;
+        guidedUsersAndTeamsDropdown.insertAdjacentHTML("beforeend", userOption);
+      }
+
+      // Loop through the teams and add them to the dropdown
+      for (const team of teamsThatCanBeGrantedPermissions) {
+        const trimmedTeam = team.trim();
+        const teamOption = `
+          <option
+            permission-type="team"
+            value="${trimmedTeam}"
+          >
+            ${trimmedTeam}
+          </option>
+        `;
+        guidedUsersAndTeamsDropdown.insertAdjacentHTML("beforeend", teamOption);
+      }
+      console.log("guidedUsersAndTeamsDropdown: ", guidedUsersAndTeamsDropdown);
 
       // guided_bf_list_users_and_teams
       // <option>Select individuals or teams to grant permissions to</option>
-
-      guidedUpdateUsersAndTeamsDropdown(sparcUsers, sparcTeams);
 
       if (pageNeedsUpdateFromPennsieve("guided-designate-permissions-tab")) {
         // Show the loading page while the page's data is being fetched from Pennsieve
