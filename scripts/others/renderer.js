@@ -438,7 +438,7 @@ const startupServerAndApiCheck = async () => {
   // notify the user that the application is starting connecting to the server
   Swal.fire({
     icon: "info",
-    title: `Initializing SODA's background services<br /><br />This make take several minutes...`,
+    title: `Initializing SODA's background services<br /><br />This may take several minutes...`,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     confirmButtonText: "Restart now",
