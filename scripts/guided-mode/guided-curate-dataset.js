@@ -8957,6 +8957,71 @@ const dragDropSvg = `
   </div>
 `;
 
+let draggedRow;
+
+const handleContributorDragStart = (event) => {
+  draggedRow = event.target;
+};
+
+const handleContributorDragOver = async (event) => {
+  event.preventDefault();
+  const dropTargetRow = event.target.parentNode;
+
+  if (draggedRow === dropTargetRow) {
+    return;
+  }
+
+  // Check to see if the cursor is hovering over the top or bottom half of the drop target row
+  const dropTargetRowRect = dropTargetRow.getBoundingClientRect();
+  const dropTargetRowTopHalf = dropTargetRowRect.top + dropTargetRowRect.height / 2;
+  const cursorPosition = event.clientY;
+  const cursorAboveDropTargetRow = cursorPosition < dropTargetRowTopHalf;
+  console.log(cursorAboveDropTargetRow);
+
+  if (cursorAboveDropTargetRow) {
+    // Add 10px top margin to the drop target row
+    dropTargetRow.style.paddingTop = "10px";
+    dropTargetRow.style.paddingBottom = "0px";
+  } else {
+    // Add 10px bottom margin to the drop target row
+    dropTargetRow.style.paddingBottom = "10px";
+    dropTargetRow.style.paddingTop = "0px";
+  }
+};
+
+const handleContributorDrop = (event) => {
+  event.preventDefault();
+  const dropTargetRow = event.target.parentNode;
+
+  // Reset the margin of the drop target row
+  dropTargetRow.style.marginTop = "0px";
+  dropTargetRow.style.marginBottom = "0px";
+
+  // Check to see if the cursor is hovering over the top or bottom half of the drop target row
+  const dropTargetRowRect = dropTargetRow.getBoundingClientRect();
+  const dropTargetRowTopHalf = dropTargetRowRect.top + dropTargetRowRect.height / 2;
+  const cursorPosition = event.clientY;
+  const cursorAboveDropTargetRow = cursorPosition < dropTargetRowTopHalf;
+
+  const tableBody = dropTargetRow.parentNode;
+  const draggedRowClone = draggedRow.cloneNode(true);
+
+  if (cursorAboveDropTargetRow) {
+    // Insert the dragged row above the drop target row
+    tableBody.insertBefore(draggedRowClone, dropTargetRow);
+  } else {
+    // Insert the dragged row below the drop target row
+    tableBody.insertBefore(draggedRowClone, dropTargetRow.nextSibling);
+  }
+
+  // Remove the original dragged row
+  draggedRow.remove();
+
+  // Perform any additional actions you need
+
+  console.log(dropTargetRow);
+};
+
 const generateContributorTableRow = (contributorObj, contributorIndex) => {
   const contributorObjIsValid = contributorDataIsValid(contributorObj);
   const contributorFullName = contributorObj["conName"];
@@ -8964,7 +9029,13 @@ const generateContributorTableRow = (contributorObj, contributorIndex) => {
   const contributorRoleString = contributorObj["conRole"].join(", ");
 
   return `
-    <tr data-contributor-orcid=${contributorOrcid} >
+    <tr 
+      data-contributor-orcid=${contributorOrcid}
+      draggable="true"
+      ondragstart="handleContributorDragStart(event)"
+      ondragover="handleContributorDragOver(event)"
+      ondragend="handleContributorDrop(event)"
+    >
       <td class="middle aligned collapsing text-center">
         ${dragDropSvg}
       </td>
@@ -8974,7 +9045,7 @@ const generateContributorTableRow = (contributorObj, contributorIndex) => {
       <td class="middle aligned">
         ${contributorRoleString}
       </td>
-       <td class="middle aligned collapsing text-center">
+      <td class="middle aligned collapsing text-center">
         ${
           contributorObjIsValid
             ? `<span class="badge badge-pill badge-success">Valid</span>`
@@ -9003,7 +9074,6 @@ const generateContributorTableRow = (contributorObj, contributorIndex) => {
     </tr>
   `;
 };
-
 const renderDatasetDescriptionContributorsTable = () => {
   const contributorsTable = document.getElementById("guided-DD-connoributors-table");
 
