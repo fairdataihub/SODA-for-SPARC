@@ -326,12 +326,14 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
 
   setPrepublishingChecklistItemIconByStatus(
     `${curationModeID}prepublishing-checklist-icon-license`,
-    statuses.license
+    false
+    // statuses.license
   );
 
   setPrepublishingChecklistItemIconByStatus(
     `${curationModeID}prepublishing-checklist-icon-ORCID`,
-    statuses.ORCID
+    false
+    // statuses.ORCID
   );
 
   if (curationMode === "guided") {
@@ -395,10 +397,31 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
 const setPrepublishingChecklistItemIconByStatus = (iconElementId, status) => {
   console.log(iconElementId);
   console.log(status);
+  let addButton = $(`#${iconElementId}`).parent().siblings()[0];
   if (status) {
     // Change icon of iconElementId to a checkmark
     $(`#${iconElementId}`).attr("class", "check icon");
     $(`#${iconElementId}`).css("color", "green");
+    addButton.classList.remove("green-hollow-button");
+    if (iconElementId.includes("ORCID")) {
+      addButton.innerText = "ORCID iD added";
+    }
+    if (iconElementId.includes("Tags")) {
+      addButton.innerText = "Tags added";
+    }
+    if (iconElementId.includes("banner")) {
+      addButton.innerText = "Banner image added";
+    }
+    if (iconElementId.includes("license")) {
+      addButton.innerText = "License added";
+    }
+    if (iconElementId.includes("readme")) {
+      addButton.innerText = "Description added";
+    }
+    if (iconElementId.includes("subtitle")) {
+      addButton.innerText = "Subtitle added";
+    }
+    // If green remove button styling and only show as text
 
     // TODO: Dorian -> See if this is still worth doing
     // // Change text of iconElementId to let user know that the item has been linked
@@ -418,6 +441,25 @@ const setPrepublishingChecklistItemIconByStatus = (iconElementId, status) => {
     //   itemButton.innerText = asdf;
     // }
   } else {
+    addButton.classList.add("green-hollow-button");
+    if (iconElementId.includes("ORCID")) {
+      addButton.innerText = "Link ORCID iD";
+    }
+    if (iconElementId.includes("Tags")) {
+      addButton.innerText = "Add tags";
+    }
+    if (iconElementId.includes("banner")) {
+      addButton.innerText = "Add banner image";
+    }
+    if (iconElementId.includes("license")) {
+      addButton.innerText = "Add license";
+    }
+    if (iconElementId.includes("readme")) {
+      addButton.innerText = "Add description";
+    }
+    if (iconElementId.includes("subtitle")) {
+      addButton.innerText = "Add subtitle";
+    }
     $(`#${iconElementId}`).attr("class", "close icon");
     $(`#${iconElementId}`).css("color", "red");
   }
@@ -653,7 +695,7 @@ const beginPrepublishingFlow = async (curationMode) => {
       let success = await showPrePublishingStatus(true, "freeform");
       if (!success) {
         await Swal.fire({
-          title: "Cannot Being Prepublishing Workflow",
+          title: "Cannot continue this submission",
           text: `Please try again shortly.`,
           icon: "error",
           allowEscapeKey: true,

@@ -93,7 +93,6 @@ const refreshDatasetStatus = async (ev) => {
     $(`#${ev.id}`).addClass("fa-spin");
   }
   await disseminateShowPublishingStatus("", account, dataset);
-  console.log("finished");
   $(`#${ev.id}`).removeClass("fa-spin");
 };
 
