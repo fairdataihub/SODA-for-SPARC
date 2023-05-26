@@ -1732,9 +1732,24 @@ const savePageChanges = async (pageBeingLeftID) => {
         errorArray.push({
           type: "swal",
           message: `
-            You must specify one Principal Investigator (PI) for this dataset.
+            You must specify a Principal Investigator (PI) for this dataset.
             <br/><br/>
             Please add the "PrincipalInvestigator" role for one of the contributors.
+          `,
+        });
+        throw errorArray;
+      }
+
+      const correspondingAuthors = contributors.filter((contributor) =>
+        contributor["conRole"].includes("CorrespondingAuthor")
+      );
+      if (correspondingAuthors.length === 0) {
+        errorArray.push({
+          type: "swal",
+          message: `
+            You must specify at least one corresponding author for this dataset.
+            <br/><br/>
+            Please add the "CorrespondingAuthor" role for one of the contributors.
           `,
         });
         throw errorArray;
@@ -8433,25 +8448,25 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
             : ``
         }
         <div class="space-between w-100">
-            <div class="guided--flex-center mt-sm" style="width: 45%">
-              <label class="guided--form-label required">Last name: </label>
-              <input
-                class="guided--input"
-                id="guided-contributor-last-name"
-                type="text"
-                placeholder="Contributor's Last name"
-                value=""
-              />
-            </div>
-            <div class="guided--flex-center mt-sm" style="width: 45%">
-              <label class="guided--form-label required">First name: </label>
-              <input
-                class="guided--input"
-                id="guided-contributor-first-name"
-                type="text"
-                placeholder="Contributor's first name"
-                value=""
-              />
+          <div class="guided--flex-center mt-sm" style="width: 45%">
+            <label class="guided--form-label required">First name: </label>
+            <input
+              class="guided--input"
+              id="guided-contributor-first-name"
+              type="text"
+              placeholder="Contributor's first name"
+              value=""
+            />
+          </div>
+          <div class="guided--flex-center mt-sm" style="width: 45%">
+            <label class="guided--form-label required">Last name: </label>
+            <input
+              class="guided--input"
+              id="guided-contributor-last-name"
+              type="text"
+              placeholder="Contributor's Last name"
+              value=""
+            />
             </div>
           </div>
           <label class="guided--form-label mt-md required">ORCID: </label>
@@ -8701,22 +8716,22 @@ const openGuidedAddContributorSwal = async () => {
         ${handleAddContributorHeaderUI()}
         <div class="space-between w-100">
             <div class="guided--flex-center mt-sm" style="width: 45%">
-              <label class="guided--form-label required" style="font-size: 1em !important;">Last name: </label>
-              <input
-                class="guided--input"
-                id="guided-contributor-last-name"
-                type="text"
-                placeholder="Contributor's Last name"
-                value=""
-              />
-            </div>
-            <div class="guided--flex-center mt-sm" style="width: 45%">
               <label class="guided--form-label required" style="font-size: 1em !important;">First name: </label>
               <input
                 class="guided--input"
                 id="guided-contributor-first-name"
                 type="text"
                 placeholder="Contributor's first name"
+                value=""
+              />
+            </div>
+            <div class="guided--flex-center mt-sm" style="width: 45%">
+              <label class="guided--form-label required" style="font-size: 1em !important;">Last name: </label>
+              <input
+                class="guided--input"
+                id="guided-contributor-last-name"
+                type="text"
+                placeholder="Contributor's Last name"
                 value=""
               />
             </div>
