@@ -1449,6 +1449,8 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               return;
             }
 
+            $("#button-refresh-publishing-status").addClass("hidden");
+
             if (dropdownEventID === "dd-select-pennsieve-dataset") {
               $("#ds-name").val(bfDataset);
               $("#ds-description").val = $("#bf-dataset-subtitle").val;
@@ -1885,6 +1887,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
       // checkPrevDivForConfirmButton("dataset");
     }
+    $("#button-refresh-publishing-status").addClass("hidden");
 
     // TODO: MIght need to hide if clicked twice / do similar logic as above
     // for organization span in those locations instead of a dataset span

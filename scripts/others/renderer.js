@@ -3365,8 +3365,6 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
   });
 
   try {
-    // await permissionsCurationTeam(currentAccount, currentDataset, "share", "newMethod");
-
     await api.submitDatasetForPublication(
       currentAccount,
       currentDataset,
@@ -3557,8 +3555,6 @@ const withdrawReviewDataset = async (curationMode) => {
 
   try {
     await api.withdrawDatasetReviewSubmission(currentDataset, currentAccount);
-
-    // await permissionsCurationTeam(currentAccount, currentDataset, "unshare", "newMethod");
 
     logGeneralOperationsForAnalytics(
       "Success",
@@ -3910,6 +3906,7 @@ const showPublishingStatus = async (callback, curationMode = "") => {
     }
 
     if (currentDataset === "None") {
+      $("#button-refresh-publishing-status").addClass("hidden");
       resolve();
     } else {
       try {
@@ -3935,6 +3932,7 @@ const showPublishingStatus = async (callback, curationMode = "") => {
           }
 
           resolve();
+          $("#button-refresh-publishing-status").removeClass("hidden");
         } catch (error) {
           // an exception will be caught and rejected
           // if the executor function is not ready before an exception is found it is uncaught without the try catch
