@@ -3933,6 +3933,7 @@ const showPublishingStatus = async (callback, curationMode = "") => {
 
           resolve();
           $("#button-refresh-publishing-status").removeClass("hidden");
+          $("#button-refresh-publishing-status").removeClass("fa-spin");
         } catch (error) {
           // an exception will be caught and rejected
           // if the executor function is not ready before an exception is found it is uncaught without the try catch

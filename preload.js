@@ -1449,8 +1449,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               return;
             }
 
-            $("#button-refresh-publishing-status").addClass("hidden");
-
             if (dropdownEventID === "dd-select-pennsieve-dataset") {
               $("#ds-name").val(bfDataset);
               $("#ds-description").val = $("#bf-dataset-subtitle").val;
@@ -1463,6 +1461,9 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             $("#current-bf-dataset-generate").text(bfDataset);
             $(".bf-dataset-span").html(bfDataset);
             confirm_click_function();
+            $("#button-refresh-publishing-status").removeClass("hidden");
+            $("#button-refresh-publishing-status").addClass("fa-spin");
+            $("#para-review-dataset-info-disseminate").text("Fetching status...");
 
             defaultBfDataset = bfDataset;
             // document.getElementById("ds-description").innerHTML = "";

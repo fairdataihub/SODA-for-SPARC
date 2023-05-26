@@ -83,20 +83,18 @@ const disseminatePublish = async (curationMode) => {
 };
 
 const refreshDatasetStatus = async (ev) => {
-  console.log(ev);
-  console.log(ev.id);
-  $(`#${ev.id}`).addClass("fa-spin");
+  // $(`#${ev.id}`).addClass("fa-spin");
   let account = $("#current-bf-account").text();
   let dataset = $(".bf-dataset-span")
     .html()
     .replace(/^\s+|\s+$/g, "");
   if (dataset != "None") {
+    $("#para-review-dataset-info-disseminate").text("Fetching status...");
     $(`#${ev.id}`).addClass("fa-spin");
   }
   await disseminateShowPublishingStatus("", account, dataset);
   console.log("finished");
   $(`#${ev.id}`).removeClass("fa-spin");
-  // ev.removeClass("fa-spin");
 };
 
 const disseminateShowPublishingStatus = async (callback, account, dataset) => {
