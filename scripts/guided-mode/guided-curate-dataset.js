@@ -1725,10 +1725,10 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
-      const PrincipleInvestigator = contributors.find(
-        (contributor) => contributor["conRole"] === "PrincipleInvestigator"
+      const PrincipalInvestigator = contributors.find((contributor) =>
+        contributor["conRole"].includes("PrincipalInvestigator")
       );
-      if (!PrincipleInvestigator) {
+      if (!PrincipalInvestigator) {
         errorArray.push({
           type: "swal",
           message: `
@@ -6977,15 +6977,6 @@ const newEmptyFolderObj = () => {
 
 const patchPreviousGuidedModeVersions = async () => {
   //temp patch contributor affiliations if they are still a string (they were added in the previous version)
-  const contributors = sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
-  if (contributors) {
-    for (contributor of sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"]) {
-      //if contributor is in old format (string), convert to new format (array)
-      if (!Array.isArray(contributor.conAffliation)) {
-        contributor.conAffliation = [contributor.conAffliation];
-      }
-    }
-  }
 
   for (highLevelFolderManifestData in sodaJSONObj["guided-manifest-files"]) {
     if (
@@ -7011,6 +7002,24 @@ const patchPreviousGuidedModeVersions = async () => {
   if (!sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"]) {
     sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] = [];
   }
+
+  const contributors = sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+  if (contributors) {
+    for (contributor of sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"]) {
+      //if contributor is in old format (string), convert to new format (array)
+      if (!Array.isArray(contributor.conAffliation)) {
+        contributor.conAffliation = [contributor.conAffliation];
+      }
+      // Replace improperly named PrincipleInvestigator role with Principle Investigator
+      if (contributor?.["conRole"].includes("PrincipleInvestigator")) {
+        contributor["conRole"] = contributor["conRole"].filter(
+          (role) => role !== "PrincipleInvestigator"
+        );
+        contributor["conRole"].unshift("PrincipalInvestigator");
+      }
+    }
+  }
+  console.log(contributors);
 
   if (!sodaJSONObj["skipped-pages"]) {
     sodaJSONObj["skipped-pages"] = [];
@@ -8503,9 +8512,10 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
       const contributorRolesInput = document.getElementById("guided-contributor-roles-input");
       contributorRolesTagify = new Tagify(contributorRolesInput, {
         whitelist: [
-          "PrincipleInvestigator",
+          "PrincipalInvestigator",
           "Creator",
           "CoInvestigator",
+          "CorrespondingAuthor",
           "DataCollector",
           "DataCurator",
           "DataManager",
@@ -8768,9 +8778,10 @@ const openGuidedAddContributorSwal = async () => {
       const contributorRolesInput = document.getElementById("guided-contributor-roles-input");
       contributorRolesTagify = new Tagify(contributorRolesInput, {
         whitelist: [
-          "PrincipleInvestigator",
+          "PrincipalInvestigator",
           "Creator",
           "CoInvestigator",
+          "CorrespondingAuthor",
           "DataCollector",
           "DataCurator",
           "DataManager",
@@ -9071,9 +9082,10 @@ const addContributorField = () => {
   //Add a new tagify for the contributor role field for the new contributor field
   const tagify = new Tagify(newContributorRoleElement, {
     whitelist: [
-      "PrincipleInvestigator",
+      "PrincipalInvestigator",
       "Creator",
       "CoInvestigator",
+      "CorrespondingAuthor",
       "DataCollector",
       "DataCurator",
       "DataManager",

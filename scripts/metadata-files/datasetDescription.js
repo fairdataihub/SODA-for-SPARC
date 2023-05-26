@@ -160,9 +160,10 @@ const createConsRoleTagify = (inputField) => {
   // initialize Tagify on the above input node reference
   var tagify = new Tagify(input, {
     whitelist: [
-      "PrincipleInvestigator",
+      "PrincipalInvestigator",
       "Creator",
       "CoInvestigator",
+      "CorrespondingAuthor",
       "DataCollector",
       "DataCurator",
       "DataManager",
@@ -857,9 +858,10 @@ const showContributorSweetalert = (key) => {
       /// initiate tagify for contributor roles
       currentContributortagify = new Tagify(document.getElementById("input-con-role"), {
         whitelist: [
-          "PrincipleInvestigator",
+          "PrincipalInvestigator",
           "Creator",
           "CoInvestigator",
+          "CorrespondingAuthor",
           "DataCollector",
           "DataCurator",
           "DataManager",
@@ -1056,9 +1058,10 @@ const edit_current_con_id = (ev) => {
       /// initiate tagify for contributor roles
       currentContributortagify = new Tagify(document.getElementById("input-con-role"), {
         whitelist: [
-          "PrincipleInvestigator",
+          "PrincipalInvestigator",
           "Creator",
           "CoInvestigator",
+          "CorrespondingAuthor",
           "DataCollector",
           "DataCurator",
           "DataManager",
