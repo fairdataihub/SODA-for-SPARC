@@ -156,6 +156,11 @@
   border-right: 1px solid var(--color-border);
 }
 
+.guided--svg-drag-drop {
+  max-height: 30px;
+  max-width: 30px;
+}
+
 .dot {
   height: 30px;
   width: 30px;
