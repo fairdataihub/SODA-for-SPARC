@@ -162,11 +162,7 @@
                       >
                         Review status:
                       </h5>
-                      <div
-                        class="change-current-account"
-                        style="width: 100%"
-                        onclick="refreshDatasetStatus()"
-                      >
+                      <div class="change-current-account" style="width: 100%">
                         <span
                           id="para-review-dataset-info-disseminate"
                           class="prepare-metadata-review-status"
@@ -177,7 +173,8 @@
                         <i
                           class="fas fa-sync svg-change-current-account"
                           id="button-refresh-publishing-status"
-                          style="color: #000"
+                          onclick="refreshDatasetStatus(this)"
+                          style="color: #000; height: 10px; margin-top: 5px; margin-right: 4px"
                         ></i>
                       </div>
                     </div>
