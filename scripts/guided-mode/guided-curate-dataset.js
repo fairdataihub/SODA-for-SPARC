@@ -8957,69 +8957,55 @@ const dragDropSvg = `
   </div>
 `;
 
-let draggedRow;
+const switchOrderOfContributors = (draggedOrcid, targetOrcid) => {
+  const contributors = sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+  const draggedContributorIndex = contributors.findIndex(
+    (contributor) => contributor["conID"] === draggedOrcid
+  );
+  const targetContributorIndex = contributors.findIndex(
+    (contributor) => contributor["conID"] === targetOrcid
+  );
 
-const handleContributorDragStart = (event) => {
-  draggedRow = event.target;
+  // If the dragged contributor is above the target contributor
+  // then the dragged contributor should be inserted after the target contributor
+  if (draggedContributorIndex < targetContributorIndex) {
+    contributors.splice(targetContributorIndex + 1, 0, contributors[draggedContributorIndex]);
+    contributors.splice(draggedContributorIndex, 1);
+  } else {
+    // If the dragged contributor is below the target contributor
+    // then the dragged contributor should be inserted before the target contributor
+    contributors.splice(targetContributorIndex, 0, contributors[draggedContributorIndex]);
+    contributors.splice(draggedContributorIndex + 1, 1);
+  }
+  sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] = contributors;
 };
 
-const handleContributorDragOver = async (event) => {
+// Constants used for drag and drop functionality for contributors
+let draggedRow;
+let targetRow;
+
+const handleContributorDragStart = (event) => {
+  draggedRow = event.target.closest("tr");
+};
+
+const handleContributorDragOver = (event) => {
   event.preventDefault();
-  const dropTargetRow = event.target.parentNode;
-
-  if (draggedRow === dropTargetRow) {
-    return;
-  }
-
-  // Check to see if the cursor is hovering over the top or bottom half of the drop target row
-  const dropTargetRowRect = dropTargetRow.getBoundingClientRect();
-  const dropTargetRowTopHalf = dropTargetRowRect.top + dropTargetRowRect.height / 2;
-  const cursorPosition = event.clientY;
-  const cursorAboveDropTargetRow = cursorPosition < dropTargetRowTopHalf;
-  console.log(cursorAboveDropTargetRow);
-
-  if (cursorAboveDropTargetRow) {
-    // Add 10px top margin to the drop target row
-    dropTargetRow.style.paddingTop = "10px";
-    dropTargetRow.style.paddingBottom = "0px";
-  } else {
-    // Add 10px bottom margin to the drop target row
-    dropTargetRow.style.paddingBottom = "10px";
-    dropTargetRow.style.paddingTop = "0px";
-  }
+  targetRow = event.target.closest("tr");
 };
 
 const handleContributorDrop = (event) => {
   event.preventDefault();
-  const dropTargetRow = event.target.parentNode;
-
-  // Reset the margin of the drop target row
-  dropTargetRow.style.marginTop = "0px";
-  dropTargetRow.style.marginBottom = "0px";
-
-  // Check to see if the cursor is hovering over the top or bottom half of the drop target row
-  const dropTargetRowRect = dropTargetRow.getBoundingClientRect();
-  const dropTargetRowTopHalf = dropTargetRowRect.top + dropTargetRowRect.height / 2;
-  const cursorPosition = event.clientY;
-  const cursorAboveDropTargetRow = cursorPosition < dropTargetRowTopHalf;
-
-  const tableBody = dropTargetRow.parentNode;
-  const draggedRowClone = draggedRow.cloneNode(true);
-
-  if (cursorAboveDropTargetRow) {
-    // Insert the dragged row above the drop target row
-    tableBody.insertBefore(draggedRowClone, dropTargetRow);
-  } else {
-    // Insert the dragged row below the drop target row
-    tableBody.insertBefore(draggedRowClone, dropTargetRow.nextSibling);
+  if (targetRow === draggedRow) {
+    console.log("draggedRow and targetRow are the same");
+    return;
   }
 
-  // Remove the original dragged row
-  draggedRow.remove();
+  const draggedOrcid = draggedRow.dataset.contributorOrcid;
+  const targetOrcid = targetRow.dataset.contributorOrcid;
 
-  // Perform any additional actions you need
+  switchOrderOfContributors(draggedOrcid, targetOrcid);
 
-  console.log(dropTargetRow);
+  renderDatasetDescriptionContributorsTable();
 };
 
 const generateContributorTableRow = (contributorObj, contributorIndex) => {
@@ -9035,9 +9021,10 @@ const generateContributorTableRow = (contributorObj, contributorIndex) => {
       ondragstart="handleContributorDragStart(event)"
       ondragover="handleContributorDragOver(event)"
       ondragend="handleContributorDrop(event)"
+      style="cursor: move;"
     >
       <td class="middle aligned collapsing text-center">
-        ${dragDropSvg}
+        ${contributorIndex}
       </td>
       <td class="middle aligned">
         ${contributorFullName}
