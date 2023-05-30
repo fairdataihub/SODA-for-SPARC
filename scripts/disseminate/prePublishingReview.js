@@ -592,6 +592,20 @@ const beginPrepublishingFlow = async (curationMode) => {
     }
   }
   if (curationMode === "freeform") {
+    let subtitleText = $(`#prepublishing-checklist-icon-subtitle`).parent().siblings()[0];
+    let tagsText = $(`#prepublishing-checklist-icon-tags`).parent().siblings()[0];
+    let desctiptionText = $(`#prepublishing-checklist-icon-readme`).parent().siblings()[0];
+    let bannerText = $(`#prepublishing-checklist-icon-banner`).parent().siblings()[0];
+    let licenseText = $(`#prepublishing-checklist-icon-license`).parent().siblings()[0];
+    let orcidText = $(`#prepublishing-checklist-icon-ORCID`).parent().siblings()[0];
+
+    subtitleText.innerText = "Checking subtitle";
+    tagsText.innerText = "Checking tags";
+    desctiptionText.innerText = "Checking description";
+    bannerText.innerText = "Checking banner image";
+    licenseText.innerText = "Checking license";
+    orcidText.innerText = "Checking ORCID ID";
+
     Swal.fire({
       title: "Determining your dataset permissions",
       html: "Please wait...",

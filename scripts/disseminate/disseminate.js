@@ -89,7 +89,7 @@ const refreshDatasetStatus = async (ev) => {
     .html()
     .replace(/^\s+|\s+$/g, "");
   if (dataset != "None") {
-    $("#para-review-dataset-info-disseminate").text("Fetching status...");
+    $("#para-review-dataset-info-disseminate").text("None");
     $(`#${ev.id}`).addClass("fa-spin");
   }
   await disseminateShowPublishingStatus("", account, dataset);

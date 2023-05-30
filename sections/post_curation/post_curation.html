@@ -171,9 +171,8 @@
                         </span>
 
                         <i
-                          class="fas fa-sync svg-change-current-account hidden"
+                          class="fas fa-sync svg-change-current-account hidden d-none"
                           id="button-refresh-publishing-status"
-                          onclick="refreshDatasetStatus(this)"
                           style="color: #000; height: 14px; margin-top: 5px; margin-right: 4px"
                         ></i>
                       </div>
@@ -215,6 +214,19 @@
         </div>
       </div>
 
+      <div class="guided--panel mt-0 hidden" id="curation-dataset-status-loading">
+        <div class="lds-roller">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+        Fetching status...
+      </div>
       <div
         class="individual-question post-curation"
         id="submit_prepublishing_review-question-2"
@@ -278,7 +290,7 @@
                           ></i>
                         </div>
                         <button
-                          class="prepublishing-item-button ml-3"
+                          class="prepublishing-item-button ml-3 text-left"
                           onClick="transitionFromPrePublishingChecklist(this, 'add_edit_subtitle-section')"
                         >
                           Checking subtitle
@@ -296,7 +308,7 @@
                           ></i>
                         </div>
                         <button
-                          class="prepublishing-item-button ml-3"
+                          class="prepublishing-item-button ml-3 text-left"
                           onClick="transitionFromPrePublishingChecklist(this, 'add_tags-section')"
                         >
                           Checking tags
@@ -314,15 +326,14 @@
                           ></i>
                         </div>
                         <button
-                          class="prepublishing-item-button ml-3"
+                          class="prepublishing-item-button ml-3 text-left"
                           onClick="transitionFromPrePublishingChecklist(this, 'add_edit_description-section')"
                         >
                           Checking description
                         </button>
                       </td>
                       <td>
-                        Give others a detailed overview of your dataset and outline your findings
-                        and analysis.
+                        A detailed overview of your dataset and outline your findings and analysis.
                       </td>
                     </tr>
                     <tr>
@@ -335,13 +346,13 @@
                           ></i>
                         </div>
                         <button
-                          class="prepublishing-item-button ml-3"
+                          class="prepublishing-item-button ml-3 text-left"
                           onClick="transitionFromPrePublishingChecklist(this, 'add_edit_banner-section')"
                         >
                           Checking banner image
                         </button>
                       </td>
-                      <td>Add a banner image to help your dataset stand out in listings.</td>
+                      <td>A banner image helps your dataset stand out in listings.</td>
                     </tr>
                     <tr>
                       <td>
@@ -353,7 +364,7 @@
                           ></i>
                         </div>
                         <button
-                          class="prepublishing-item-button ml-3"
+                          class="prepublishing-item-button ml-3 text-left"
                           onClick="transitionFromPrePublishingChecklist(this, 'add_license-section')"
                         >
                           Checking license
@@ -371,11 +382,11 @@
                           ></i>
                         </div>
                         <button
-                          class="prepublishing-item-button ml-3"
+                          class="prepublishing-item-button ml-3 text-left"
                           id="ORCID-btn"
                           onclick="orcidSignIn(this, 'freeform')"
                         >
-                          Checking ORCID iD
+                          Checking ORCID ID
                         </button>
                       </td>
                       <td>

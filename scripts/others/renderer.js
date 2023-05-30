@@ -3385,7 +3385,7 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       confirmButtonText: "Ok",
-      title: `Could not submit your dataset for pre-publishing review`,
+      title: `Could not submit your dataset to Curation Team`,
       icon: "error",
       reverseButtons: reverseSwalButtons,
       text: userErrorMessage(error),
@@ -3879,7 +3879,8 @@ const showPrePublishingPageElements = () => {
 
   // show the "Begin Publishing" button and hide the checklist and submission section
   $("#begin-prepublishing-btn").removeClass("hidden");
-  $("#submit_prepublishing_review-question-2").addClass("show");
+  $("#submit_prepublishing_review-question-2").addClass("hidden");
+  $("#curation-dataset-status-loading").removeClass("hidden");
   $("#prepublishing-checklist-container").hide();
   $("#prepublishing-submit-btn-container").hide();
   $(".pre-publishing-continue-container").hide();
@@ -3906,7 +3907,10 @@ const showPublishingStatus = async (callback, curationMode = "") => {
     }
 
     if (currentDataset === "None") {
-      $("#button-refresh-publishing-status").addClass("hidden");
+      if (curationMode === "" || curationMode === "freeform") {
+        $("#button-refresh-publishing-status").addClass("hidden");
+        $("#curation-dataset-status-loading").addClass("hidden");
+      }
       resolve();
     } else {
       try {
@@ -3930,10 +3934,13 @@ const showPublishingStatus = async (callback, curationMode = "") => {
           if (callback === submitReviewDatasetCheck || callback === withdrawDatasetCheck) {
             return resolve(callback(res, curationMode));
           }
-
+          if (curationMode === "" || curationMode === "freeform") {
+            $("#submit_prepublishing_review-question-2").removeClass("hidden");
+            $("#curation-dataset-status-loading").addClass("hidden");
+            // $("#button-refresh-publishing-status").removeClass("hidden");
+            $("#button-refresh-publishing-status").removeClass("fa-spin");
+          }
           resolve();
-          $("#button-refresh-publishing-status").removeClass("hidden");
-          $("#button-refresh-publishing-status").removeClass("fa-spin");
         } catch (error) {
           // an exception will be caught and rejected
           // if the executor function is not ready before an exception is found it is uncaught without the try catch

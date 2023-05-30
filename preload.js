@@ -840,7 +840,7 @@ const resetFFMUI = (ev) => {
   $("#share_sparc_consortium-question-2").removeClass("show");
 
   $("#submit_prepublishing_review-question-1").removeClass("prev");
-  $("#submit_prepublishing_review-question-2").addClass("show");
+  $("#submit_prepublishing_review-question-2").addClass("hidden");
   $("#submit_prepublishing_review-question-3").removeClass("show");
   $("#submit_prepublishing_review-question-4").removeClass("show");
   $("#para-review-dataset-info-disseminate").text("None");
@@ -1461,9 +1461,9 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             $("#current-bf-dataset-generate").text(bfDataset);
             $(".bf-dataset-span").html(bfDataset);
             confirm_click_function();
-            $("#button-refresh-publishing-status").removeClass("hidden");
+            // $("#button-refresh-publishing-status").removeClass("hidden");
             $("#button-refresh-publishing-status").addClass("fa-spin");
-            $("#para-review-dataset-info-disseminate").text("Fetching status...");
+            $("#para-review-dataset-info-disseminate").text("None");
 
             defaultBfDataset = bfDataset;
             // document.getElementById("ds-description").innerHTML = "";
