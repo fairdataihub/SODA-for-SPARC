@@ -1647,6 +1647,8 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       );
     }
 
+
+
     // get the list of the user's available organizations
     //account is signed in but no datasets have been fetched or created
     //invoke dataset request to ensure no datasets have been created
@@ -1666,9 +1668,13 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
       let orgs = responseObject.data.organizations;
       organizationList = [];
+      organizationNameToIdMapping = {}
+
       // deconstruct the names to the organization list
       for (const org in orgs) {
+        console.log(org)
         organizationList.push(orgs[org]["organization"]["name"]);
+        organizationNameToIdMapping[orgs[org]["organization"]["name"]] = orgs[org]["organization"]["id"]
       }
 
       refreshOrganizationList();
@@ -1830,7 +1836,9 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           }
 
           try {
-            await api.setPreferredOrganization(login, password, bfOrganization, "soda-pennsieve");
+            let organizationId = organizationNameToIdMapping[bfOrganization]
+            console.log(organizationId)
+            await api.setPreferredOrganization(login, password, organizationId, "soda-pennsieve");
           } catch (err) {
             clientError(err);
             await Swal.fire({

@@ -81,17 +81,9 @@ def get_user_information(token):
 
 
 
-def set_preferred_organization(organization, email, password, account_name):
+def set_preferred_organization(organization_id, email, password, account_name):
     try:
         token = get_cognito_userpool_access_token(email, password)
-
-        # get the organization id from the organization name 
-        organizations = get_user_organizations()
-        organization_id = None
-        for org in organizations["organizations"]:
-           if org["organization"]["name"] == organization:
-                organization_id = org["organization"]["id"]
-                break
 
 
         # switch to the desired organization
@@ -143,6 +135,12 @@ def set_preferred_organization(organization, email, password, account_name):
 
       # create a substring of the start of the email to the @ symbol
       email_sub = email.split("@")[0]
+
+      organizations = get_user_organizations()
+      organization = None
+      for org in organizations["organizations"]:
+          if org["organization"]["id"] == organization_id:
+              organization = org["organization"]["name"]
 
       # create an updated profile name that is unqiue to the user and their workspace 
       account_name = f"{account_name}-{email_sub}-{organization}"
