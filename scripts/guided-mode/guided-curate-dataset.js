@@ -1725,9 +1725,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
-      const PrincipalInvestigator = contributors.find((contributor) =>
-        contributor["conRole"].includes("PrincipalInvestigator")
-      );
+      const PrincipalInvestigator = getContributorMarkedAsPrincipalInvestigator();
       if (!PrincipalInvestigator) {
         errorArray.push({
           type: "swal",
@@ -3119,7 +3117,7 @@ const guidedRenderProgressCards = async () => {
     });
   } else {
     progressCardsContainer.innerHTML = `
-      <h2 class="guided--text-click-continue" style="color: var(--color-bg-plum) !important">
+      <h2 class="guided--text-user-directions" style="color: var(--color-bg-plum) !important">
         No datasets in progress found.
       </h2>
     `;
@@ -8564,7 +8562,7 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
       document.getElementById("guided-contributor-orcid").value = contributorORCID;
     },
 
-    preConfirm: (inputValue) => {
+    preConfirm: async (inputValue) => {
       const contributorFirstName = document.getElementById("guided-contributor-first-name").value;
       const contributorLastName = document.getElementById("guided-contributor-last-name").value;
       const contributorOrcid = document.getElementById("guided-contributor-orcid").value;
@@ -8575,63 +8573,69 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
         !contributorFirstName ||
         !contributorLastName ||
         !contributorOrcid ||
-        !contributorAffiliations.length > 0 ||
-        !contributorRoles.length > 0
+        contributorAffiliations.length === 0 ||
+        contributorRoles.length === 0
       ) {
-        Swal.showValidationMessage("Please fill out all required fields");
-      } else {
-        if (contributorOrcid.length != 37) {
-          Swal.showValidationMessage(
-            "Please enter Orcid ID in the format: https://orcid.org/0000-0000-0000-0000"
+        return Swal.showValidationMessage("Please fill out all required fields");
+      }
+
+      if (contributorOrcid.length !== 37) {
+        return Swal.showValidationMessage(
+          "Please enter ORCID ID in the format: https://orcid.org/0000-0000-0000-0000"
+        );
+      }
+
+      if (contributorRoles.includes("PrincipalInvestigator")) {
+        if (getContributorMarkedAsPrincipalInvestigator()) {
+          return Swal.showValidationMessage(
+            "Only one contributor can be marked as Principal Investigator"
           );
-        } else {
-          if (contributorFirstName.includes(",") || contributorLastName.includes(",")) {
-            Swal.showValidationMessage("Please remove commas from the name fields");
-          } else {
-            //verify first orcid link
-            let orcidSite = contributorOrcid.substr(0, 18);
-            if (orcidSite === "https://orcid.org/") {
-              //verify digits after
-              let orcidDigits = contributorOrcid.substr(18);
-              let total = 0;
-              for (let i = 0; i < orcidDigits.length - 1; i++) {
-                const digit = parseInt(orcidDigits.substr(i, 1));
-                if (isNaN(digit)) {
-                  continue;
-                }
-                total = (total + digit) * 2;
-              }
-
-              const remainder = total % 11;
-              const result = (12 - remainder) % 11;
-              const checkDigit = result === 10 ? "X" : String(result);
-
-              if (checkDigit !== contributorOrcid.substr(-1)) {
-                Swal.showValidationMessage("ORCID iD does not exist");
-              } else {
-                try {
-                  editContributorByOrcid(
-                    contibuttorOrcidToEdit,
-                    contributorFirstName,
-                    contributorLastName,
-                    contributorOrcid,
-                    contributorAffiliations,
-                    contributorRoles
-                  );
-                } catch (error) {
-                  Swal.showValidationMessage(error);
-                }
-              }
-            } else {
-              Swal.showValidationMessage(
-                "Please enter your ORCID ID with https://orcid.org/ in the beginning"
-              );
-            }
-          }
         }
       }
 
-      //rerender the table after adding a contributor
+      if (contributorFirstName.includes(",") || contributorLastName.includes(",")) {
+        return Swal.showValidationMessage("Please remove commas from the name fields");
+      }
+
+      // Verify ORCID ID
+      const orcidSite = contributorOrcid.substr(0, 18);
+      if (orcidSite !== "https://orcid.org/") {
+        return Swal.showValidationMessage(
+          "Please enter your ORCID ID with https://orcid.org/ in the beginning"
+        );
+      }
+
+      const orcidDigits = contributorOrcid.substr(18);
+      let total = 0;
+      for (let i = 0; i < orcidDigits.length - 1; i++) {
+        const digit = parseInt(orcidDigits.substr(i, 1));
+        if (isNaN(digit)) {
+          continue;
+        }
+        total = (total + digit) * 2;
+      }
+
+      const remainder = total % 11;
+      const result = (12 - remainder) % 11;
+      const checkDigit = result === 10 ? "X" : String(result);
+
+      if (checkDigit !== contributorOrcid.substr(-1)) {
+        return Swal.showValidationMessage("ORCID iD does not exist");
+      }
+
+      try {
+        await editContributorByOrcid(
+          contibuttorOrcidToEdit,
+          contributorFirstName,
+          contributorLastName,
+          contributorOrcid,
+          contributorAffiliations,
+          contributorRoles
+        );
+      } catch (error) {
+        return Swal.showValidationMessage(error);
+      }
+
       renderDatasetDescriptionContributorsTable();
     },
   });
@@ -8865,59 +8869,65 @@ const openGuidedAddContributorSwal = async () => {
         !contributorFirstName ||
         !contributorLastName ||
         !contributorOrcid ||
-        !contributorAffiliations.length > 0 ||
-        !contributorRoles.length > 0
+        contributorAffiliations.length === 0 ||
+        contributorRoles.length === 0
       ) {
-        Swal.showValidationMessage("Please fill out all required fields");
-      } else {
-        if (contributorOrcid.length != 37) {
-          Swal.showValidationMessage(
-            "Please enter Orcid ID in the format: https://orcid.org/0000-0000-0000-0000"
+        return Swal.showValidationMessage("Please fill out all required fields");
+      }
+
+      if (contributorOrcid.length !== 37) {
+        return Swal.showValidationMessage(
+          "Please enter ORCID ID in the format: https://orcid.org/0000-0000-0000-0000"
+        );
+      }
+
+      if (contributorRoles.includes("PrincipalInvestigator")) {
+        if (getContributorMarkedAsPrincipalInvestigator()) {
+          return Swal.showValidationMessage(
+            "Only one contributor can be marked as Principal Investigator"
           );
-        } else {
-          if (contributorFirstName.includes(",") || contributorLastName.includes(",")) {
-            Swal.showValidationMessage("Please remove commas from the name fields");
-          } else {
-            //verify first orcid link
-            let orcidSite = contributorOrcid.substr(0, 18);
-            if (orcidSite === "https://orcid.org/") {
-              //verify digits after
-              let orcidDigits = contributorOrcid.substr(18);
-              let total = 0;
-              for (let i = 0; i < orcidDigits.length - 1; i++) {
-                const digit = parseInt(orcidDigits.substr(i, 1));
-                if (isNaN(digit)) {
-                  continue;
-                }
-                total = (total + digit) * 2;
-              }
-
-              const remainder = total % 11;
-              const result = (12 - remainder) % 11;
-              const checkDigit = result === 10 ? "X" : String(result);
-
-              if (checkDigit !== contributorOrcid.substr(-1)) {
-                Swal.showValidationMessage("ORCID iD does not exist");
-              } else {
-                const contributorsFullName = `${contributorLastName}, ${contributorFirstName}`;
-                try {
-                  addContributor(
-                    contributorsFullName,
-                    contributorOrcid,
-                    contributorAffiliations,
-                    contributorRoles
-                  );
-                } catch (error) {
-                  Swal.showValidationMessage(error);
-                }
-              }
-            } else {
-              Swal.showValidationMessage(
-                "Please enter your ORCID ID with https://orcid.org/ in the beginning"
-              );
-            }
-          }
         }
+      }
+
+      if (contributorFirstName.includes(",") || contributorLastName.includes(",")) {
+        return Swal.showValidationMessage("Please remove commas from the name fields");
+      }
+
+      // Verify ORCID ID
+      const orcidSite = contributorOrcid.substr(0, 18);
+      if (orcidSite !== "https://orcid.org/") {
+        return Swal.showValidationMessage(
+          "Please enter your ORCID ID with https://orcid.org/ in the beginning"
+        );
+      }
+
+      const orcidDigits = contributorOrcid.substr(18);
+      let total = 0;
+      for (let i = 0; i < orcidDigits.length - 1; i++) {
+        const digit = parseInt(orcidDigits.substr(i, 1));
+        if (isNaN(digit)) {
+          continue;
+        }
+        total = (total + digit) * 2;
+      }
+
+      const remainder = total % 11;
+      const result = (12 - remainder) % 11;
+      const checkDigit = result === 10 ? "X" : String(result);
+
+      if (checkDigit !== contributorOrcid.substr(-1)) {
+        return Swal.showValidationMessage("ORCID iD does not exist");
+      }
+
+      try {
+        addContributor(
+          contributorsFullName,
+          contributorOrcid,
+          contributorAffiliations,
+          contributorRoles
+        );
+      } catch (error) {
+        return Swal.showValidationMessage(error);
       }
 
       //rerender the table after adding a contributor
@@ -8940,22 +8950,18 @@ const contributorDataIsValid = (contributorObj) => {
   }
 };
 
-const dragDropSvg = `
-  <div class="guided--svg-drag-drop">
-    <svg xmlns="http://www.w3.org/2000/svg" width="25px" height="25px" viewBox="0 0 24 24" fill="none">
-      <g id="Interface / Drag_Vertical">
-      <g id="Vector">
-      <path d="M14 18C14 18.5523 14.4477 19 15 19C15.5523 19 16 18.5523 16 18C16 17.4477 15.5523 17 15 17C14.4477 17 14 17.4477 14 18Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M8 18C8 18.5523 8.44772 19 9 19C9.55228 19 10 18.5523 10 18C10 17.4477 9.55228 17 9 17C8.44772 17 8 17.4477 8 18Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M14 12C14 12.5523 14.4477 13 15 13C15.5523 13 16 12.5523 16 12C16 11.4477 15.5523 11 15 11C14.4477 11 14 11.4477 14 12Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M8 12C8 12.5523 8.44772 13 9 13C9.55228 13 10 12.5523 10 12C10 11.4477 9.55228 11 9 11C8.44772 11 8 11.4477 8 12Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M14 6C14 6.55228 14.4477 7 15 7C15.5523 7 16 6.55228 16 6C16 5.44772 15.5523 5 15 5C14.4477 5 14 5.44772 14 6Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      <path d="M8 6C8 6.55228 8.44772 7 9 7C9.55228 7 10 6.55228 10 6C10 5.44772 9.55228 5 9 5C8.44772 5 8 5.44772 8 6Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-      </g>
-      </g>
-    </svg>
-  </div>
-`;
+const getContributorMarkedAsPrincipalInvestigator = () => {
+  const contributors = sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+  const PrincipalInvestigator = contributors.find((contributor) =>
+    contributor["conRole"].includes("PrincipalInvestigator")
+  );
+  // If there is no Principal Investigator, return null
+  if (!PrincipalInvestigator) {
+    return null;
+  }
+  // Otherwise, return their ORCID
+  return PrincipalInvestigator["conID"];
+};
 
 const switchOrderOfContributors = (draggedOrcid, targetOrcid) => {
   const contributors = sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
@@ -8983,11 +8989,9 @@ const switchOrderOfContributors = (draggedOrcid, targetOrcid) => {
 // Constants used for drag and drop functionality for contributors
 let draggedRow;
 let targetRow;
-
 const handleContributorDragStart = (event) => {
   draggedRow = event.target.closest("tr");
 };
-
 const handleContributorDragOver = (event) => {
   event.preventDefault();
   targetRow = event.target.closest("tr");
