@@ -687,6 +687,20 @@ const transitionToValidateQuestionTwo = async () => {
 
     // transition for pennsieve dataset
     pennsieveSection.style = "display: flex;";
+
+    console.log("Executing this stuff")
+
+    // check if a dataset has been selected
+    let selectedDatasetName = document.querySelector("#bf_dataset_load_validator").textContent.trim()
+    console.log(selectedDatasetName)
+    if(selectedDatasetName !== "None") {
+      // show the validate dataset button if so 
+      document.querySelector("#validate_dataset-question-3").style.display = "flex"
+      document.querySelector("#run_validator_btn").style.display = "flex"
+    } else {
+      document.querySelector("#validate_dataset-question-3").style.display = "none"
+      // document.querySelector("#run_validator_btn").style.display = "none"
+    }
   }
 
   return true;
@@ -900,6 +914,7 @@ const questionTwoDatasetSelectionObserver = new MutationObserver(() => {
       "individual-question validate_dataset"
     );
     document.querySelector("#run_validator_btn").style.display = "flex";
+    document.querySelector("#validate_dataset-question-3").style.display = "flex"
   } else {
     $("#div-check-bf-import-validator").css("display", "none");
   }
