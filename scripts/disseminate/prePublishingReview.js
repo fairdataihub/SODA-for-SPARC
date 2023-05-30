@@ -81,7 +81,7 @@ const getPrepublishingChecklistStatuses = async (currentDataset) => {
 };
 
 // take the user to the Pennsieve account to sign up for an ORCID Id
-const orcidSignIn = async (curationMode) => {
+const orcidSignIn = async (ev, curationMode) => {
   let curationModeID = "";
   if (curationMode === "guided") {
     // This is done to ensure the right element ID is called
@@ -89,51 +89,77 @@ const orcidSignIn = async (curationMode) => {
     curationModeID = "guided--";
   }
 
-  // tell the main process to open a Modal window with the webcontents of the user's Pennsieve profile so they can add an ORCID iD
-  ipcRenderer.send(
-    "orcid",
-    "https://orcid.org/oauth/authorize?client_id=APP-DRQCE0GUWKTRCWY2&response_type=code&scope=/authenticate&redirect_uri=https://app.pennsieve.io/orcid-redirect"
-  );
-
-  // handle the reply from the asynhronous message to sign the user into Pennsieve
-  ipcRenderer.on("orcid-reply", async (event, accessCode) => {
-    if (!accessCode || accessCode === "") {
+  if (curationMode === "freeform") {
+    if (ev.classList.contains("no-pointer")) {
       return;
     }
 
-    // show a loading sweet alert
-    Swal.fire({
-      title: "Connecting your ORCID iD to Pennsieve.",
-      html: "Please wait...",
-      allowEscapeKey: false,
-      allowOutsideClick: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
+    // tell the main process to open a Modal window with the webcontents of the user's Pennsieve profile so they can add an ORCID iD
+    ipcRenderer.send(
+      "orcid",
+      "https://orcid.org/oauth/authorize?client_id=APP-DRQCE0GUWKTRCWY2&response_type=code&scope=/authenticate&redirect_uri=https://app.pennsieve.io/orcid-redirect"
+    );
 
-    log.info("Connecting orcid to Pennsieve account.");
+    // handle the reply from the asynhronous message to sign the user into Pennsieve
+    ipcRenderer.on("orcid-reply", async (event, accessCode) => {
+      if (!accessCode || accessCode === "") {
+        return;
+      }
 
-    try {
-      await client.post(
-        `/user/orcid`,
-        { access_code: accessCode },
-        {
-          params: {
-            pennsieve_account: defaultBfAccount,
-          },
-        }
-      );
-    } catch (error) {
-      clientError(error);
-      let emessage = userErrorMessage(error);
+      // show a loading sweet alert
       Swal.fire({
-        title: "An issue occurred with connecting your ORCID iD to Pennsieve.",
-        text: emessage,
-        icon: "error",
+        title: "Connecting your ORCID iD to Pennsieve.",
+        html: "Please wait...",
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      log.info("Connecting orcid to Pennsieve account.");
+
+      try {
+        await client.post(
+          `/user/orcid`,
+          { access_code: accessCode },
+          {
+            params: {
+              pennsieve_account: defaultBfAccount,
+            },
+          }
+        );
+      } catch (error) {
+        clientError(error);
+        let emessage = userErrorMessage(error);
+        Swal.fire({
+          title: "An issue occurred with connecting your ORCID iD to Pennsieve.",
+          text: emessage,
+          icon: "error",
+          allowEscapeKey: true,
+          allowOutsideClick: true,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          timerProgressBar: false,
+        });
+        logGeneralOperationsForAnalytics(
+          "Error",
+          DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
+          AnalyticsGranularity.ALL_LEVELS,
+          ["Integrate ORCID iD"]
+        );
+
+        return;
+      }
+
+      // show a success message
+      await Swal.fire({
+        title: "ORCID iD integrated with Pennsieve",
+        icon: "success",
         allowEscapeKey: true,
         allowOutsideClick: true,
         confirmButtonText: "Ok",
@@ -141,42 +167,22 @@ const orcidSignIn = async (curationMode) => {
         backdrop: "rgba(0,0,0, 0.4)",
         timerProgressBar: false,
       });
-      logGeneralOperationsForAnalytics(
-        "Error",
-        DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
-        AnalyticsGranularity.ALL_LEVELS,
-        ["Integrate ORCID iD"]
+
+      // track success
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW + " - Integrate ORCID iD",
+        defaultBfDatasetId
       );
 
-      return;
-    }
-
-    // show a success message
-    await Swal.fire({
-      title: "ORCID iD integrated with Pennsieve",
-      icon: "success",
-      allowEscapeKey: true,
-      allowOutsideClick: true,
-      confirmButtonText: "Ok",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
+      // mark the orcid item green
+      setPrepublishingChecklistItemIconByStatus(
+        `${curationModeID}prepublishing-checklist-icon-ORCID`,
+        true
+      );
     });
-
-    // track success
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW + " - Integrate ORCID iD",
-      defaultBfDatasetId
-    );
-
-    // mark the orcid item green
-    setPrepublishingChecklistItemIconByStatus(
-      `${curationModeID}prepublishing-checklist-icon-ORCID`,
-      true
-    );
-  });
+  }
 };
 
 // TODO: Dorian -> finish this function to reset the text of the checklist items
@@ -326,14 +332,12 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
 
   setPrepublishingChecklistItemIconByStatus(
     `${curationModeID}prepublishing-checklist-icon-license`,
-    false
-    // statuses.license
+    statuses.license
   );
 
   setPrepublishingChecklistItemIconByStatus(
     `${curationModeID}prepublishing-checklist-icon-ORCID`,
-    false
-    // statuses.ORCID
+    statuses.ORCID
   );
 
   if (curationMode === "guided") {
@@ -403,10 +407,11 @@ const setPrepublishingChecklistItemIconByStatus = (iconElementId, status) => {
     $(`#${iconElementId}`).attr("class", "check icon");
     $(`#${iconElementId}`).css("color", "green");
     addButton.classList.remove("green-hollow-button");
+    addButton.classList.add("no-pointer");
     if (iconElementId.includes("ORCID")) {
       addButton.innerText = "ORCID iD added";
     }
-    if (iconElementId.includes("Tags")) {
+    if (iconElementId.includes("tags")) {
       addButton.innerText = "Tags added";
     }
     if (iconElementId.includes("banner")) {
@@ -421,31 +426,13 @@ const setPrepublishingChecklistItemIconByStatus = (iconElementId, status) => {
     if (iconElementId.includes("subtitle")) {
       addButton.innerText = "Subtitle added";
     }
-    // If green remove button styling and only show as text
-
-    // TODO: Dorian -> See if this is still worth doing
-    // // Change text of iconElementId to let user know that the item has been linked
-    // let itemButton = $(`#${iconElementId}`).parent().siblings()[0];
-    // let itemButtonText = itemButton.innerText;
-    // if(itemButtonText.includes("Link")) {
-    //   let updatedButtonText = itemButtonText.replace("Link", "") + " linked";
-    //   itemButton.innerText = updatedButtonText;
-    // }
-    // if(itemButtonText.includes("Add")) {
-    //   let updatedButtonText = itemButtonText.replace("Add", "") + " added";
-    //   updatedButtonText = updatedButtonText.slice(1);
-    //   // Capitalize the first letter updatedButtonText
-    //   console.log("before updating text " + updatedButtonText)
-    //   let asdf = updatedButtonText.charAt(0).toUpperCase() + updatedButtonText.slice(1);
-    //   console.log(asdf);
-    //   itemButton.innerText = asdf;
-    // }
   } else {
     addButton.classList.add("green-hollow-button");
+    addButton.classList.remove("no-pointer");
     if (iconElementId.includes("ORCID")) {
       addButton.innerText = "Link ORCID iD";
     }
-    if (iconElementId.includes("Tags")) {
+    if (iconElementId.includes("tags")) {
       addButton.innerText = "Add tags";
     }
     if (iconElementId.includes("banner")) {

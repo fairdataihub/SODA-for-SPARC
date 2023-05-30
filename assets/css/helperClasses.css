@@ -973,6 +973,10 @@
   color: red;
 }
 
+.no-pointer {
+  cursor: initial !important;
+}
+
 /////////////////////////  SWEET ALERT CLASSES /////////////////////////
 
 .animate_fastest {
