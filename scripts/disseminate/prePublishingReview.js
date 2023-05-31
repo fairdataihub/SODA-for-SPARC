@@ -582,8 +582,6 @@ const beginPrepublishingFlow = async (curationMode) => {
   let curationModeID = "";
   let embargoDetails;
   if (curationMode === "guided") {
-    // This is done to ensure the right element ID is called
-    // Guided mode elements have 'guided--' prepended to their ID
     curationModeID = "guided--";
     currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
     currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
