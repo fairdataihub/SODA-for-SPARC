@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <section
   id="submit_prepublishing_review-section"
   class="section js-section u-category-windows"
@@ -12,7 +11,7 @@
           <h2>Disseminate Datasets - Share with Curation Team</h2>
           <a
             target="_blank"
-            href="https://docs.sodaforsparc.io/docs/disseminate-dataset/submit-for-pre-publishing-review"
+            href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/disseminate-dataset/submit-for-pre-publishing-review"
             >Need help?</a
           >
         </div>
@@ -28,7 +27,7 @@
         <div class="ui form" style="width: 100%">
           <div class="grouped fields">
             <label style="font-size: 17px; color: var(--color-bg-plum)">Select a dataset: </label>
-            <div class="field prepare-metadata-card-field">
+            <div class="field" style="margin: auto; width: 550px">
               <div
                 style="
                   display: flex;
@@ -42,9 +41,9 @@
                 "
               >
                 <div style="display: flex; flex-direction: row; justify-content: space-between">
-                  <div class="card-container prepare-metadata">
-                    <div style="display: flex; width: 100%">
-                      <h5 class="card-left" style="text-align: left; padding-right: 5px">
+                  <div class="card-container manage-dataset">
+                    <div style="display: flex">
+                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
                         Current account:
                       </h5>
                       <div
@@ -52,41 +51,7 @@
                         style="width: 100%"
                         onclick="openDropdownPrompt(this, 'bf')"
                       >
-                        <h5
-                          class="card-right bf-account-span prepare-metadata-current-account-span"
-                        >
-                          None
-                        </h5>
-
-                        <svg
-                          class="svg-change-current-account bi bi-pencil-fill"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          fill="#000"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                  <div class="card-container prepare-metadata">
-                    <div style="width: 100%">
-                      <h5 class="card-left" style="padding-right: 5px">Current workspace:</h5>
-                      <div
-                        class="change-current-account ds-dd organization"
-                        style="margin-left: 12px"
-                      >
-                        <h5
-                          class="card-right bf-organization-span prepare-metadata-organization-span"
-                        >
-                          None
-                        </h5>
+                        <h5 class="card-right bf-account-span" style="padding-left: 15px">None</h5>
 
                         <svg
                           class="svg-change-current-account organization bi bi-pencil-fill"
@@ -162,11 +127,7 @@
                       >
                         Review status:
                       </h5>
-                      <div
-                        class="change-current-account"
-                        style="width: 100%"
-                        onclick="refreshDatasetStatus()"
-                      >
+                      <div class="change-current-account" style="width: 100%">
                         <span
                           id="para-review-dataset-info-disseminate"
                           class="prepare-metadata-review-status"
@@ -175,9 +136,9 @@
                         </span>
 
                         <i
-                          class="fas fa-sync svg-change-current-account"
+                          class="fas fa-sync svg-change-current-account hidden d-none"
                           id="button-refresh-publishing-status"
-                          style="color: #000"
+                          style="color: #000; height: 14px; margin-top: 5px; margin-right: 4px"
                         ></i>
                       </div>
                     </div>
@@ -218,6 +179,19 @@
         </div>
       </div>
 
+      <div class="guided--panel mt-0 hidden" id="curation-dataset-status-loading">
+        <div class="lds-roller">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+        Fetching status...
+      </div>
       <div
         class="individual-question post-curation"
         id="submit_prepublishing_review-question-2"
@@ -281,10 +255,10 @@
                           ></i>
                         </div>
                         <button
-                          class="prepublishing-item-button green-hollow-button ml-3"
-                          onClick="transitionFromPrePublishingChecklist('add_edit_subtitle-section')"
+                          class="prepublishing-item-button ml-3 text-left"
+                          onClick="transitionFromPrePublishingChecklist(this, 'add_edit_subtitle-section')"
                         >
-                          Add subtitle
+                          Checking subtitle
                         </button>
                       </td>
                       <td>Give others a brief description of your dataset.</td>
@@ -299,10 +273,10 @@
                           ></i>
                         </div>
                         <button
-                          class="prepublishing-item-button green-hollow-button ml-3"
-                          onClick="transitionFromPrePublishingChecklist('add_tags-section')"
+                          class="prepublishing-item-button ml-3 text-left"
+                          onClick="transitionFromPrePublishingChecklist(this, 'add_tags-section')"
                         >
-                          Add tags
+                          Checking tags
                         </button>
                       </td>
                       <td>Make it easier for people to find your dataset in Discover.</td>
@@ -317,15 +291,14 @@
                           ></i>
                         </div>
                         <button
-                          class="prepublishing-item-button green-hollow-button ml-3"
-                          onClick="transitionFromPrePublishingChecklist('add_edit_description-section')"
+                          class="prepublishing-item-button ml-3 text-left"
+                          onClick="transitionFromPrePublishingChecklist(this, 'add_edit_description-section')"
                         >
-                          Add description
+                          Checking description
                         </button>
                       </td>
                       <td>
-                        Give others a detailed overview of your dataset and outline your findings
-                        and analysis.
+                        A detailed overview of your dataset and outline your findings and analysis.
                       </td>
                     </tr>
                     <tr>
@@ -338,13 +311,13 @@
                           ></i>
                         </div>
                         <button
-                          class="prepublishing-item-button green-hollow-button ml-3"
-                          onClick="transitionFromPrePublishingChecklist('add_edit_banner-section')"
+                          class="prepublishing-item-button ml-3 text-left"
+                          onClick="transitionFromPrePublishingChecklist(this, 'add_edit_banner-section')"
                         >
-                          Add banner image
+                          Checking banner image
                         </button>
                       </td>
-                      <td>Add a banner image to help your dataset stand out in listings.</td>
+                      <td>A banner image helps your dataset stand out in listings.</td>
                     </tr>
                     <tr>
                       <td>
@@ -356,10 +329,10 @@
                           ></i>
                         </div>
                         <button
-                          class="prepublishing-item-button green-hollow-button ml-3"
-                          onClick="transitionFromPrePublishingChecklist('add_license-section')"
+                          class="prepublishing-item-button ml-3 text-left"
+                          onClick="transitionFromPrePublishingChecklist(this, 'add_license-section')"
                         >
-                          Add license
+                          Checking license
                         </button>
                       </td>
                       <td>Let others know how they can use this data in their own research.</td>
@@ -374,11 +347,11 @@
                           ></i>
                         </div>
                         <button
-                          class="prepublishing-item-button green-hollow-button ml-3"
+                          class="prepublishing-item-button ml-3 text-left"
                           id="ORCID-btn"
-                          onclick="orcidSignIn('freeform')"
+                          onclick="orcidSignIn(this, 'freeform')"
                         >
-                          Link ORCID iD
+                          Checking ORCID ID
                         </button>
                       </td>
                       <td>

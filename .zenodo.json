@@ -1,7 +1,7 @@
 {
   "upload_type": "software",
   "title": "SODA (Software to Organize Data Automatically) for SPARC",
-  "publication_date": "2023-04-14",
+  "publication_date": "2023-05-24",
   "creators": [
     {
       "name": "Patel, Bhavesh",
@@ -32,5 +32,5 @@
   "access_right": "open",
   "license": "MIT",
   "keywords": ["SPARC", "FAIR", "data", "curation", "mac", "sparc-dataset", "ubuntu", "windows"],
-  "version": "11.0.0"
+  "version": "11.1.0"
 }

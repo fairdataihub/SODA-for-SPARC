@@ -90,6 +90,9 @@ const determineSwalSuccessMessage = (addEditButton) => {
 
 // illegal character name warning for new dataset names
 $("#bf-new-dataset-name").on("keyup", () => {
+  // Clear success lottie
+  $("#dataset-created-success-lottie").empty();
+  $("#dataset-success-container").addClass("hidden");
   let newName = $("#bf-new-dataset-name").val().trim();
 
   if (newName !== "") {
@@ -179,6 +182,19 @@ $("#button-create-bf-new-dataset").click(async () => {
           Swal.hideLoading();
         },
       });
+
+      let datasetCreatedLottie = document.getElementById("dataset-created-success-lottie");
+      if (datasetCreatedLottie.children.length < 1) {
+        // licenseContainer.removeChild(licenseContainer.children[1]);
+        lottie.loadAnimation({
+          container: datasetCreatedLottie,
+          animationData: licenseLottie,
+          renderer: "svg",
+          loop: true,
+          autoplay: true,
+        });
+      }
+      $("#dataset-success-container").removeClass("hidden");
 
       log.info(`Created dataset successfully`);
 
@@ -2518,9 +2534,9 @@ $("#button-submit-dataset").click(async () => {
 
         // Enable curation buttons
         organizeDatasetButton.disabled = false;
-        curateExistingDatasetButton.disabled = false;
+        guidedModeHomePageButton.disabled = false;
 
-        curateExistingDatasetButton.className = "button-prompt-container";
+        guidedModeHomePageButton.className = "button-prompt-container";
         organizeDatasetButton.className = "btn_animated generate-btn";
         organzieDatasetButtonDiv.className = "btn_animated-inside";
 
@@ -2564,9 +2580,9 @@ $("#button-submit-dataset").click(async () => {
           console.log("Finishing upload already");
           // Enable curation buttons
           organizeDatasetButton.disabled = false;
-          curateExistingDatasetButton.disabled = false;
+          guidedModeHomePageButton.disabled = false;
 
-          curateExistingDatasetButton.className = "button-prompt-container";
+          guidedModeHomePageButton.className = "button-prompt-container";
           organizeDatasetButton.className = "btn_animated generate-btn";
           organzieDatasetButtonDiv.className = "btn_animated-inside";
 
@@ -2623,9 +2639,7 @@ $("#button-submit-dataset").click(async () => {
   let cloneStatus = progressClone.children[2];
   var navError = progressError.cloneNode(true);
   let organizeDatasetButton = document.getElementById("button-generate");
-  let curateExistingDatasetButton = document.getElementById(
-    "guided-button-go-to-starting-point-selection"
-  );
+  let guidedModeHomePageButton = document.getElementById("button-homepage-guided-mode");
   let organzieDatasetButtonDiv = organizeDatasetButton.children[0];
 
   progressClone.style =
@@ -2647,15 +2661,16 @@ $("#button-submit-dataset").click(async () => {
   progressClone.appendChild(returnButton);
 
   // Disable the organize dataset button
-  curateExistingDatasetButton.disabled = true;
+  guidedModeHomePageButton.disabled = true;
   organizeDatasetButton.disabled = true;
 
   // Change the color of the buttons to look disabled
-  curateExistingDatasetButton.className = "button-prompt-container curate-disabled-button";
+  guidedModeHomePageButton.className = "button-prompt-container curate-disabled-button";
   organizeDatasetButton.className = "disabled-generate-button";
 
   organizeDatasetButton.style = "background-color: #f6f6f6";
 
+  // guidedModeHomePageButton.className = "disabled-animated-div";
   organzieDatasetButtonDiv.className = "disabled-animated-div";
 
   // reset the progress bar and progress text
@@ -2794,10 +2809,9 @@ $("#button-submit-dataset").click(async () => {
       // document.getElementById("para-progress-bar-error-status").innerHTML = emessage;
       success_upload = false;
       organizeDatasetButton.disabled = false;
-      console.log("Cancelling the disabled status");
-      curateExistingDatasetButton.disabled = false;
+      guidedModeHomePageButton.disabled = false;
 
-      curateExistingDatasetButton.className = "button-prompt-container";
+      guidedModeHomePageButton.className = "button-prompt-container";
       organizeDatasetButton.className = "btn_animated generate-btn";
       organzieDatasetButtonDiv.className = "btn_animated-inside";
 

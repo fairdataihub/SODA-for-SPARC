@@ -1,3 +1,5 @@
+const { remove } = require("fs-extra");
+
 const returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
 };
@@ -2472,6 +2474,7 @@ const guidedModifyCurationTeamAccess = async (action) => {
     if (publishPreCheckStatus[0]) {
       guidedShareWithCurationTeamButton.classList.add("hidden");
       await submitReviewDataset(embargoDetails[1], curationMode);
+      guidedUnshareMessage.classList.remove("hidden");
     }
     guidedShareWithCurationTeamButton.classList.remove("loading");
     guidedShareWithCurationTeamButton.disabled = false;
@@ -2483,7 +2486,7 @@ const guidedModifyCurationTeamAccess = async (action) => {
     guidedUnshareWithCurationTeamButton.classList.add("loading");
 
     const { value: withdraw } = await Swal.fire({
-      title: "Withdraw this dataset from review?",
+      title: "Unshare this dataset from Curation Team?",
       icon: "warning",
       showDenyButton: true,
       confirmButtonText: "Yes",
@@ -4517,6 +4520,7 @@ const guidedResetUserTeamPermissionsDropdowns = () => {
 };
 
 let addListener = true;
+let removeEventListener = false;
 const copyLink = (link) => {
   Clipboard.writeText(link);
 
@@ -6345,17 +6349,19 @@ const openPage = async (targetPageID) => {
       pennsieveDatasetLink.innerHTML = linkIcon + datasetLink;
       pennsieveDatasetLink.href = datasetLink;
 
-      pennsieveDOICopy.removeEventListener("click", () => {
-        copyLink(doiInfo), true;
-      });
+      if (removeEventListener) {
+        pennsieveDOICopy.removeEventListener("click", () => {
+          copyLink(doiInfo), true;
+        });
 
-      pennsieveCopy.removeEventListener(
-        "click",
-        () => {
-          copyLink(datasetLink);
-        },
-        true
-      );
+        pennsieveCopy.removeEventListener(
+          "click",
+          () => {
+            copyLink(datasetLink);
+          },
+          true
+        );
+      }
       if (addListener) {
         pennsieveCopy.addEventListener("click", () => {
           copyLink(datasetLink);
@@ -6365,6 +6371,7 @@ const openPage = async (targetPageID) => {
           copyLink(doiInfo);
         });
         addListener = false;
+        removeEventListener = true;
       }
 
       let pennsieveDOICheck = await api.getDatasetDOI(currentAccount, currentDataset);
@@ -11729,31 +11736,29 @@ $(document).ready(async () => {
   const freeFormItemsContainer = document.getElementById("free-form-folder-structure-container");
   const freeFormButtons = document.getElementById("organize-path-and-back-button-div");
 
-  document
-    .getElementById("guided-button-go-to-starting-point-selection")
-    .addEventListener("click", async () => {
-      //Transition file explorer elements to guided mode
-      organizeDSglobalPath = document.getElementById("guided-input-global-path");
-      organizeDSglobalPath.value = "";
-      dataset_path = document.getElementById("guided-input-global-path");
-      scroll_box = document.querySelector("#guided-body");
-      itemsContainer.innerHTML = "";
-      resetLazyLoading();
-      freeFormItemsContainer.classList.remove("freeform-file-explorer"); //add styling for free form mode
-      freeFormButtons.classList.remove("freeform-file-explorer-buttons");
-      $(".shared-folder-structure-element").appendTo($("#guided-folder-structure-container"));
+  document.getElementById("button-homepage-guided-mode").addEventListener("click", async () => {
+    //Transition file explorer elements to guided mode
+    organizeDSglobalPath = document.getElementById("guided-input-global-path");
+    organizeDSglobalPath.value = "";
+    dataset_path = document.getElementById("guided-input-global-path");
+    scroll_box = document.querySelector("#guided-body");
+    itemsContainer.innerHTML = "";
+    resetLazyLoading();
+    freeFormItemsContainer.classList.remove("freeform-file-explorer");
+    freeFormButtons.classList.remove("freeform-file-explorer-buttons");
+    $(".shared-folder-structure-element").appendTo($("#guided-folder-structure-container"));
 
-      guidedCreateSodaJSONObj();
-      attachGuidedMethodsToSodaJSONObj();
-      guidedTransitionFromHome();
+    guidedCreateSodaJSONObj();
+    attachGuidedMethodsToSodaJSONObj();
+    guidedTransitionFromHome();
 
-      guidedUnLockSideBar();
+    guidedUnLockSideBar();
 
-      guidedUnSkipPage("guided-select-starting-point-tab");
-      await openPage("guided-select-starting-point-tab");
-    });
+    guidedUnSkipPage("guided-select-starting-point-tab");
+    await openPage("guided-select-starting-point-tab");
+  });
 
-  $("#guided-button-start-modify-component").on("click", async () => {
+  $("#button-homepage-freeform-mode").on("click", async () => {
     //Free form mode will open through here
     guidedPrepareHomeScreen();
 

@@ -104,7 +104,6 @@ console.log("User OS:", os.type(), os.platform(), "version:", os.release());
 
 // Check current app version //
 const appVersion = app.getVersion();
-console.log(appVersion);
 log.info("Current SODA version:", appVersion);
 console.log("Current SODA version:", appVersion);
 
@@ -134,7 +133,7 @@ let modifyDatasetLottieContainer = document.getElementById("edit-dataset-compone
 existingDatasetLottieContainer.innerHTML = "";
 modifyDatasetLottieContainer.innerHTML = "";
 
-var existingDatasetLottie = lottie.loadAnimation({
+let existingDatasetLottie = lottie.loadAnimation({
   container: existingDatasetLottieContainer,
   animationData: existingDataset,
   renderer: "svg",
@@ -150,7 +149,7 @@ let editDatasetLottie = lottie.loadAnimation({
   autoplay: true,
 });
 
-var contact_lottie_animation = lottie.loadAnimation({
+let contact_lottie_animation = lottie.loadAnimation({
   container: contact_lottie_container,
   animationData: contact_lottie /*(json js variable, (view src/assets/lotties)*/,
   renderer: "svg",
@@ -158,7 +157,7 @@ var contact_lottie_animation = lottie.loadAnimation({
   autoplay: true,
 });
 
-var contactHeartLottie = lottie.loadAnimation({
+let contactHeartLottie = lottie.loadAnimation({
   container: madeWithLoveContainer,
   animationData: heartLottie,
   renderer: "svg",
@@ -166,7 +165,7 @@ var contactHeartLottie = lottie.loadAnimation({
   autoplay: true,
 });
 
-var documentation_lottie = lottie.loadAnimation({
+let documentation_lottie = lottie.loadAnimation({
   container: doc_lottie,
   animationData: docu_lottie /*(json js variable, (view src/assets/lotties)*/,
   renderer: "svg",
@@ -439,7 +438,7 @@ const startupServerAndApiCheck = async () => {
   // notify the user that the application is starting connecting to the server
   Swal.fire({
     icon: "info",
-    title: `Initializing SODA's background services...`,
+    title: `Initializing SODA's background services<br /><br />This may take several minutes...`,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
     confirmButtonText: "Restart now",
@@ -469,7 +468,7 @@ const startupServerAndApiCheck = async () => {
     }
     time_pass = new Date() - time_start;
     if (status) break;
-    if (time_pass > 120000) break; //break after two minutes
+    if (time_pass > 300000) break; //break after five minutes
     await wait(2000);
   }
 
@@ -477,7 +476,7 @@ const startupServerAndApiCheck = async () => {
     //two minutes pass then handle connection error
     // SWAL that the server needs to be restarted for the app to work
     clientError(error);
-    ipcRenderer.send("track-event", "Error", "Establishing Python Connection", error);
+    ipcRenderer.send("track-event", "Error", "Establishing Python Connection");
 
     await Swal.fire({
       icon: "error",
@@ -760,6 +759,8 @@ const startPennsieveAgentAndCheckVersion = async () => {
     if (result) {
       shell.openExternal(browser_download_url);
       shell.openExternal("https://docs.pennsieve.io/docs/uploading-files-programmatically");
+      // Stop the Pennsieve agent so the agent installer will not require a reboot
+      await stopPennsieveAgent();
     }
     throw Error("The installed version of the Pennsieve agent is not the latest version.");
   }
@@ -1119,7 +1120,6 @@ const check_agent_installed = async () => {
 };
 
 const check_agent_installed_version = async (agent_version) => {
-  console.log("CHecking agent version now");
   let notification = null;
   notification = notyf.open({
     type: "ps_agent",
@@ -1131,9 +1131,6 @@ const check_agent_installed_version = async (agent_version) => {
 
   // IMP: error in subfunction is handled by caller
   [browser_download_url, latest_agent_version] = await get_latest_agent_version();
-
-  console.log(agent_version);
-  console.log(latest_agent_version);
 
   if (agent_version !== latest_agent_version) {
     notyf.dismiss(notification);
@@ -3146,8 +3143,8 @@ const submitReviewDatasetCheck = async (res, curationMode) => {
   } else if (res["review_request_status"] === "requested") {
     Swal.fire({
       icon: "error",
-      title: "Cannot submit the dataset for review at this time!",
-      text: "Your dataset is already under review. Please wait until the Publishers within your organization make a decision.",
+      title: "Cannot submit the dataset at this time!",
+      text: "Your dataset is already submitted. Please wait until the Curation Team within your organization make a decision.",
       confirmButtonText: "Ok",
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
@@ -3303,7 +3300,6 @@ const submitReviewDatasetCheck = async (res, curationMode) => {
         // const checkedRadioButton = $("input:checkbox[name ='publishing-options']:checked").val();
 
         // const checkedRadioButton = $("input:checkbox[name ='publishing-options']:checked");
-        console.log(document.getElementById("embargo-date-check").checked);
 
         if (document.getElementById("embargo-date-check").checked) {
           // set the embargoDate variable if so
@@ -3347,6 +3343,9 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
   if (curationMode === "guided") {
     currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
     currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+  } else {
+    $("#pre-publishing-continue-btn").removeClass("loading");
+    $("#pre-publishing-continue-btn").disabled = false;
   }
 
   // show a SWAL loading message until the submit for prepublishing flow is successful or fails
@@ -3365,8 +3364,6 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
   });
 
   try {
-    // await permissionsCurationTeam(currentAccount, currentDataset, "share", "newMethod");
-
     await api.submitDatasetForPublication(
       currentAccount,
       currentDataset,
@@ -3387,7 +3384,7 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       confirmButtonText: "Ok",
-      title: `Could not submit your dataset for pre-publishing review`,
+      title: `Could not submit your dataset to Curation Team`,
       icon: "error",
       reverseButtons: reverseSwalButtons,
       text: userErrorMessage(error),
@@ -3557,8 +3554,6 @@ const withdrawReviewDataset = async (curationMode) => {
 
   try {
     await api.withdrawDatasetReviewSubmission(currentDataset, currentAccount);
-
-    // await permissionsCurationTeam(currentAccount, currentDataset, "unshare", "newMethod");
 
     logGeneralOperationsForAnalytics(
       "Success",
@@ -3883,7 +3878,8 @@ const showPrePublishingPageElements = () => {
 
   // show the "Begin Publishing" button and hide the checklist and submission section
   $("#begin-prepublishing-btn").removeClass("hidden");
-  $("#submit_prepublishing_review-question-2").addClass("show");
+  $("#submit_prepublishing_review-question-2").addClass("hidden");
+  $("#curation-dataset-status-loading").removeClass("hidden");
   $("#prepublishing-checklist-container").hide();
   $("#prepublishing-submit-btn-container").hide();
   $(".pre-publishing-continue-container").hide();
@@ -3910,6 +3906,10 @@ const showPublishingStatus = async (callback, curationMode = "") => {
     }
 
     if (currentDataset === "None") {
+      if (curationMode === "" || curationMode === "freeform") {
+        $("#button-refresh-publishing-status").addClass("hidden");
+        $("#curation-dataset-status-loading").addClass("hidden");
+      }
       resolve();
     } else {
       try {
@@ -3933,7 +3933,12 @@ const showPublishingStatus = async (callback, curationMode = "") => {
           if (callback === submitReviewDatasetCheck || callback === withdrawDatasetCheck) {
             return resolve(callback(res, curationMode));
           }
-
+          if (curationMode === "" || curationMode === "freeform") {
+            $("#submit_prepublishing_review-question-2").removeClass("hidden");
+            $("#curation-dataset-status-loading").addClass("hidden");
+            // $("#button-refresh-publishing-status").removeClass("hidden");
+            $("#button-refresh-publishing-status").removeClass("fa-spin");
+          }
           resolve();
         } catch (error) {
           // an exception will be caught and rejected
@@ -4520,6 +4525,25 @@ ipcRenderer.on("selected-new-dataset", async (event, filepath) => {
   }
 });
 
+const CheckFileListForServerAccess = async (fileList) => {
+  try {
+    const res = await client.post(`/curate_datasets/check_server_access_to_files`, {
+      file_list_to_check: fileList,
+    });
+    //const accessible_files = res.data.accessible_files;
+    const inaccessible_files = res.data.inaccessible_files;
+    return inaccessible_files;
+  } catch (error) {
+    console.log(userErrorMessage(error));
+    notyf.open({
+      type: "error",
+      message: `Unable to determine file/folder accessibility`,
+      duration: 7000,
+    });
+    return [];
+  }
+};
+
 //////////// FILE BROWSERS to import existing files and folders /////////////////////
 organizeDSaddFiles.addEventListener("click", function () {
   ipcRenderer.send("open-files-organize-datasets-dialog");
@@ -4551,8 +4575,29 @@ ipcRenderer.on("selected-files-organize-datasets", async (event, path) => {
       },
     });
   }
+
   if (path.length > 0) {
-    if (path.length < 0) {
+    let load_spinner_promise = new Promise(async (resolved) => {
+      let background = document.createElement("div");
+      let spinner_container = document.createElement("div");
+      let spinner_icon = document.createElement("div");
+      spinner_container.setAttribute("id", "items_loading_container");
+      spinner_icon.setAttribute("id", "item_load");
+      spinner_icon.setAttribute("class", "ui large active inline loader icon-wrapper");
+      background.setAttribute("class", "loading-items-background");
+      background.setAttribute("id", "loading-items-background-overlay");
+
+      spinner_container.append(spinner_icon);
+      document.body.prepend(background);
+      document.body.prepend(spinner_container);
+      let loading_items_spinner = document.getElementById("items_loading_container");
+      loading_items_spinner.style.display = "block";
+      if (loading_items_spinner.style.display === "block") {
+        setTimeout(() => {
+          resolved();
+        }, 100);
+      }
+    }).then(async () => {
       await addFilesfunction(
         path,
         myPath,
@@ -4561,42 +4606,11 @@ ipcRenderer.on("selected-files-organize-datasets", async (event, path) => {
         ".single-item",
         datasetStructureJSONObj
       );
-    } else {
-      let load_spinner_promise = new Promise(async (resolved) => {
-        let background = document.createElement("div");
-        let spinner_container = document.createElement("div");
-        let spinner_icon = document.createElement("div");
-        spinner_container.setAttribute("id", "items_loading_container");
-        spinner_icon.setAttribute("id", "item_load");
-        spinner_icon.setAttribute("class", "ui large active inline loader icon-wrapper");
-        background.setAttribute("class", "loading-items-background");
-        background.setAttribute("id", "loading-items-background-overlay");
-
-        spinner_container.append(spinner_icon);
-        document.body.prepend(background);
-        document.body.prepend(spinner_container);
-        let loading_items_spinner = document.getElementById("items_loading_container");
-        loading_items_spinner.style.display = "block";
-        if (loading_items_spinner.style.display === "block") {
-          setTimeout(() => {
-            resolved();
-          }, 100);
-        }
-      }).then(async () => {
-        await addFilesfunction(
-          path,
-          myPath,
-          organizeDSglobalPath,
-          "#items",
-          ".single-item",
-          datasetStructureJSONObj
-        );
-        // Swal.close();
-        document.getElementById("loading-items-background-overlay").remove();
-        document.getElementById("items_loading_container").remove();
-        // background.remove();
-      });
-    }
+      // Swal.close();
+      document.getElementById("loading-items-background-overlay").remove();
+      document.getElementById("items_loading_container").remove();
+      // background.remove();
+    });
   }
 });
 
@@ -5123,6 +5137,9 @@ const dropHelper = async (
   let doubleExtension = [];
   let loadingIcon = document.getElementById("items_loading_container");
   let loadingContainer = document.getElementById("loading-items-background-overlay");
+
+  // const filePathsInEv1 = Object.keys(ev1).map((file) => ev1[file].path);
+  // const inaccessible_files = await CheckFileListForServerAccess(filePathsInEv1);
 
   for (var i = 0; i < ev1.length; i++) {
     /// Get all the file information
@@ -7721,9 +7738,7 @@ async function initiate_generate() {
 
   let organizeDataset = document.getElementById("organize_dataset_btn");
   let uploadLocally = document.getElementById("upload_local_dataset_btn");
-  let curateExistingDatasetButton = document.getElementById(
-    "guided-button-go-to-starting-point-selection"
-  );
+  let guidedModeHomePageButton = document.getElementById("button-homepage-guided-mode");
   let organizeDataset_option_buttons = document.getElementById("div-generate-comeback");
   let statusBarContainer = document.getElementById("div-new-curate-progress");
   var statusBarClone = statusBarContainer.cloneNode(true);
@@ -7741,10 +7756,10 @@ async function initiate_generate() {
   // Disable the Organize Dataset and Upload Locally buttons
   uploadLocally.disabled = true;
   organizeDataset.disabled = true;
-  curateExistingDatasetButton.disabled = true;
+  guidedModeHomePageButton.disabled = true;
 
   // Add disabled appearance to the buttons
-  curateExistingDatasetButton.className = "button-prompt-container curate-disabled-button";
+  guidedModeHomePageButton.className = "button-prompt-container curate-disabled-button";
   organizeDataset.className = "disabled-content-button";
   uploadLocally.className = "disabled-content-button";
   organizeDataset.style = "background-color: #f6f6f6;  border: #fff;";
@@ -7925,12 +7940,12 @@ async function initiate_generate() {
       //Enable the buttons
       organizeDataset_option_buttons.style.display = "flex";
       organizeDataset.disabled = false;
-      curateExistingDatasetButton.disabled = false;
+      guidedModeHomePageButton.disabled = false;
       uploadLocally.disabled = false;
       $("#sidebarCollapse").prop("disabled", false);
 
       //Add the original classes back to the buttons
-      curateExistingDatasetButton.className = "button-prompt-container";
+      guidedModeHomePageButton.className = "button-prompt-container";
       organizeDataset.className = "content-button is-selected";
       organizeDataset.style = "background-color: #fff";
       uploadLocally.className = "content-button is-selected";
@@ -8003,11 +8018,11 @@ async function initiate_generate() {
       //Enable the buttons (organize datasets, upload locally, curate existing dataset, curate new dataset)
       organizeDataset_option_buttons.style.display = "flex";
       organizeDataset.disabled = false;
-      curateExistingDatasetButton.disabled = false;
+      guidedModeHomePageButton.disabled = false;
       uploadLocally.disabled = false;
 
       //Add the original classes back to the buttons
-      curateExistingDatasetButton.className = "button-prompt-container";
+      guidedModeHomePageButton.className = "button-prompt-container";
       organizeDataset.className = "content-button is-selected";
       organizeDataset.style = "background-color: #fff";
       uploadLocally.className = "content-button is-selected";
@@ -8043,10 +8058,10 @@ async function initiate_generate() {
       organizeDataset_option_buttons.style.display = "flex";
       organizeDataset.disabled = false;
       uploadLocally.disabled = false;
-      curateExistingDatasetButton.disabled = false;
+      guidedModeHomePageButton.disabled = false;
 
       //Add the original classes back to the buttons
-      curateExistingDatasetButton.className = "button-prompt-container";
+      guidedModeHomePageButton.className = "button-prompt-container";
       organizeDataset.className = "content-button is-selected";
       organizeDataset.style = "background-color: #fff";
       uploadLocally.className = "content-button is-selected";
@@ -8124,12 +8139,12 @@ async function initiate_generate() {
       if (successful === true) {
         //Enable the buttons (organize datasets, upload locally, curate existing dataset, curate new dataset)
         organizeDataset.disabled = false;
-        curateExistingDatasetButton.disabled = false;
+        guidedModeHomePageButton.disabled = false;
         uploadLocally.disabled = false;
 
         // Add the original classes back to the buttons
         organizeDataset_option_buttons.style.display = "flex";
-        curateExistingDatasetButton.className = "button-prompt-container";
+        guidedModeHomePageButton.className = "button-prompt-container";
         organizeDataset.className = "content-button is-selected";
         organizeDataset.style = "background-color: #fff";
         uploadLocally.className = "content-button is-selected";
@@ -8143,11 +8158,11 @@ async function initiate_generate() {
         //enable buttons anyways (organize datasets, upload locally, curate existing dataset, curate new dataset)
         organizeDataset_option_buttons.style.display = "flex";
         organizeDataset.disabled = false;
-        curateExistingDatasetButton.disabled = false;
+        guidedModeHomePageButton.disabled = false;
         uploadLocally.disabled = false;
 
         // Add the original classes back to the buttons
-        curateExistingDatasetButton.className = "button-prompt-container";
+        guidedModeHomePageButton.className = "button-prompt-container";
         organizeDataset.className = "content-button is-selected";
         organizeDataset.style = "background-color: #fff";
         uploadLocally.className = "content-button is-selected";
@@ -8208,7 +8223,6 @@ async function initiate_generate() {
   };
 } // end initiate_generate
 
-// TODO: Dorian -> update this function to go to the new sharing method
 const show_curation_shortcut = async () => {
   Swal.fire({
     backdrop: "rgba(0,0,0, 0.4)",
@@ -8547,7 +8561,7 @@ async function showBFAddAccountSweetalert() {
     backdrop: "rgba(0,0,0, 0.4)",
     heightAuto: false,
     allowOutsideClick: false,
-    footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/manage-dataset/connect-your-pennsieve-account-with-soda#how-to-login-with-api-key" style="text-decoration: none;">Help me get an API key</a>`,
+    footer: `<a target="_blank" href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/manage-dataset/connect-your-pennsieve-account-with-soda#how-to-login-with-api-key" style="text-decoration: none;">Help me get an API key</a>`,
     didOpen: () => {
       let swal_container = document.getElementsByClassName("swal2-popup")[0];
       swal_container.style.width = "43rem";
