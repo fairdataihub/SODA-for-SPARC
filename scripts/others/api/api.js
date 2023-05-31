@@ -427,7 +427,7 @@ const getNumberOfItemsInLocalDataset = async (datasetPath) => {
 
 const setPreferredOrganization = async (email, password, organization, account) => {
   const response = await client.put("/user/organizations/preferred", {
-    organization,
+    organization_id: organization,
     email,
     password,
     account,
