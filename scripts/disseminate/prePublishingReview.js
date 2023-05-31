@@ -104,6 +104,35 @@ const getPrepublishingChecklistStatuses = async (currentDataset) => {
   return statuses;
 };
 
+// once the user clicks the Begin Submission button check if they are the data set owner'
+// show the next section - which has the pre-publishing checklist - if so
+// Function returns true if the dataset has been published, false otherwise
+const resetffmPrepublishingUI = async () => {
+  // hide the begin publishing button
+  $("#begin-prepublishing-btn").addClass("hidden");
+  // resetPrePublishingChecklist();
+
+  // check what the pre-publishing status is
+  if (
+    document
+      .getElementById("para-review-dataset-info-disseminate")
+      .innerText.includes("Dataset is currently under review")
+  ) {
+    // show email curation team message to withdraw dataset
+    $("#unshare-dataset-with-curation-team-message").removeClass("hidden");
+    $(".pre-publishing-continue-container").hide();
+    $("#prepublishing-checklist-container").hide();
+
+    return true;
+  }
+
+  // show the pre-publishing checklist and the continue button
+  $("#prepublishing-checklist-container").show();
+  $(".pre-publishing-continue-container").show();
+  $("#unshare-dataset-with-curation-team-message").addClass("hidden");
+  return false;
+};
+
 // take the user to the Pennsieve account to sign up for an ORCID Id
 const orcidSignIn = async (ev, curationMode) => {
   let curationModeID = "";
@@ -233,7 +262,7 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
   console.log("Value of the curation mode ID: ", curationModeID);
   console.log(
     "Value of the disseminate field: ",
-    $(`#${curationModeID}para-review-dataset-info-disseminate`).text()
+    $(`#${curationModeID}para-review-dataset-info-disseminate`).text().trim()
   );
 
   // wait until a value has been loaded into the status field
@@ -241,14 +270,19 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
     await wait(1000);
   }
 
-  if (
-    currentDataset === "Select dataset" ||
-    $(`#${curationModeID}para-review-dataset-info-disseminate`).text() !==
-      "Dataset is not under review currently"
-  ) {
+  if (currentDataset === "Select dataset") {
     console.log(
       "Returning as it has been determined that dataset is under review currently or that the current dataset is select dataset"
     );
+    return false;
+  }
+
+  if (
+    $(`#${curationModeID}para-review-dataset-info-disseminate`).text().trim() !=
+      "Dataset is not under review currently" &&
+    $(`#${curationModeID}para-review-dataset-info-disseminate`).text().trim() !=
+      "Dataset has been rejected by your Publishing Team and may require revision"
+  ) {
     return false;
   }
 
@@ -486,36 +520,6 @@ const allPrepublishingChecklistItemsCompleted = (curationMode) => {
   return incompleteChecklistItems.length ? false : true;
 };
 
-// once the user clicks the Begin Submission button check if they are the data set owner'
-// show the next section - which has the pre-publishing checklist - if so
-// Function returns true if the dataset has been published, false otherwise
-const resetffmPrepublishingUI = async () => {
-  // hide the begin publishing button
-  $("#begin-prepublishing-btn").addClass("hidden");
-  // resetPrePublishingChecklist();
-
-  // check what the pre-publishing status is
-  if (
-    document
-      .getElementById("para-review-dataset-info-disseminate")
-      .innerText.includes("Dataset is currently under review")
-  ) {
-    // show the withdraw button
-    // TODO: Dorian -> Remove withdraw button and show message instead
-    $("#unshare-dataset-with-curation-team-message").removeClass("hidden");
-    $(".pre-publishing-continue-container").hide();
-    $("#prepublishing-checklist-container").hide();
-
-    return true;
-  }
-
-  // show the pre-publishing checklist and the continue button
-  $("#prepublishing-checklist-container").show();
-  $(".pre-publishing-continue-container").show();
-  $("#unshare-dataset-with-curation-team-message").addClass("hidden");
-  return false;
-};
-
 // transition to the final question and populate the file tree with the dataset's metadata files
 const createPrepublishingChecklist = async (curationMode) => {
   let curationModeID = "";
@@ -688,11 +692,13 @@ const beginPrepublishingFlow = async (curationMode) => {
     document.getElementById("pre-publishing-continue-btn").disabled = true;
     $("#pre-publishing-continue-btn").disabled = true;
 
+    console.log(datasetHasBeenPublished);
     if (!datasetHasBeenPublished) {
       console.log("Dataset hasnt been published");
       smoothScrollToElement("prepublishing-checklist");
 
       let success = await showPrePublishingStatus(true, "freeform");
+      console.log(success);
       if (!success) {
         await Swal.fire({
           title: "Cannot continue this submission",
@@ -705,7 +711,10 @@ const beginPrepublishingFlow = async (curationMode) => {
           backdrop: "rgba(0,0,0, 0.4)",
           timerProgressBar: false,
         });
-
+        $("#submit_prepublishing_review-question-3").removeClass("show");
+        $("#submit_prepublishing_review-question-1").removeClass("prev");
+        $("#submit_prepublishing_review-question-2").addClass("show");
+        $("#begin-prepublishing-btn").removeClass("hidden");
         return;
       }
     }
