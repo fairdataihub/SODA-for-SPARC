@@ -36,25 +36,9 @@ const getDatasetBannerImageURL = async (selected_account, selected_dataset) => {
   return banner_image;
 };
 
-const getDatasetRole = async (datasetNameOrId) => {
-  if (datasetNameOrId != undefined || datasetNameOrId != "") {
-    defaultBfDataset = datasetNameOrId;
-  }
-
-  let datasetRoleResponse = await client.get(`/datasets/${defaultBfDataset}/role`);
-
-  let { role } = datasetRoleResponse.data;
-
-  return role;
-};
-
 const isDatasetLocked = async (account, datasetNameOrId) => {
   try {
-    let datasetRoleResponse = await client.get(`/datasets/${datasetNameOrId}`, {
-      params: {
-        pennsieve_account: account,
-      },
-    });
+    let datasetRoleResponse = await client.get(`/datasets/${datasetNameOrId}`);
     // Return the dataset's lock status (true or false)
     return datasetRoleResponse.data.locked;
   } catch (err) {
@@ -65,6 +49,18 @@ const isDatasetLocked = async (account, datasetNameOrId) => {
       return false;
     }
   }
+};
+
+const getDatasetRole = async (datasetNameOrId) => {
+  if (datasetNameOrId != undefined || datasetNameOrId != "") {
+    defaultBfDataset = datasetNameOrId;
+  }
+
+  let datasetRoleResponse = await client.get(`/datasets/${defaultBfDataset}/role`);
+
+  let { role } = datasetRoleResponse.data;
+
+  return role;
 };
 
 const getDatasetInformation = async (account, datasetNameOrId) => {
@@ -133,7 +129,6 @@ const reserveDOI = async (account, dataset) => {
   // reference: https://docs.pennsieve.io/reference/reservedoi
   // information: https://docs.pennsieve.io/docs/digital-object-identifiers-dois#assigning-doi-to-your-pennsieve-dataset
 
-  // TODO: Create endpoint to reserve DOI
   try {
     let doiReserve = await client.post(`datasets/${dataset}/reserve-doi`);
     // Save DOI to SODAJSONObj

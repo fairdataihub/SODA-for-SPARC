@@ -746,6 +746,19 @@ button[data-id="guided_bf_list_users_and_teams"] {
   z-index: 10;
 }
 
+.copy-button {
+  background: var(--button-color);
+  border: none;
+  color: white;
+  height: 40px;
+  width: 45px;
+  margin-left: 2px;
+}
+
+.copy-button:hover {
+  background: #1c687e !important;
+}
+
 .div-display-details div {
   max-width: 90%;
   margin-right: 10px;

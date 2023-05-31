@@ -5,12 +5,24 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.11.1.0 - 2023-05-24
+
+## Bug fixes:
+
+- Fixed an issue allowing pre-release Pennsieve agents to be required for users
+- GM: Removed the ability to add forbidden characters to dataset names
+
+## Feature Additions:
+
+- Simplified the home page by narrowing down the flow to two buttons: End to End and Free Form curation
+- Simplified the share with curation team flow
+
 ## v.11.0.0 - 2023-03-29
 
 ## Bug fixes:
 
 - GM: Sharing with the Curation Team has been modified to notify the Curation Team.
-  -GM: For the file explorer the right click menu has been aligned with the mouse position.
+- GM: For the file explorer the right click menu has been aligned with the mouse position.
 
 - FFM: Prepare Metadata -> dataset_description.xlsx text was being modified and has been patched to display fields as the user originally wrote it.
 - FFM: Imported metadata files not resetting upon changing a dataset has been patched.

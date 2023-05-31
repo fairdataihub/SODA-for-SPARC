@@ -1614,9 +1614,15 @@ const addFilesfunction = async (
   let loadingIcon = document.getElementById("items_loading_container");
   let loadingContainer = document.getElementById("loading-items-background-overlay");
 
+  // Check for files that the server can not access
+  // const inaccessible_files = await CheckFileListForServerAccess(fileArray);
+
   // loop through the files that are trying to be imported
   for (let i = 0; i < fileArray.length; i++) {
     let filePath = fileArray[i];
+    /*if (inaccessible_files.includes(filePath)) {
+      continue;
+    }*/
     let fileBase = path.parse(filePath).base;
     let fileName = path.parse(filePath).name;
 

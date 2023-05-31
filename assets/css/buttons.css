@@ -77,6 +77,11 @@
   text-align: center;
 }
 
+.green-hollow-button {
+  color: var(--color-light-green) !important;
+  box-shadow: 0 0 0 1px var(--color-light-green) inset !important;
+}
+
 .dataset-card-button-confirm {
   background-color: var(--color-light-green) !important;
   width: 175px !important;

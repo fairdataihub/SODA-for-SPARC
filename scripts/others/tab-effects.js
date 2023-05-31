@@ -91,6 +91,10 @@ const showParentTab = (tabNow, nextOrPrev) => {
     $("#nextBtn").prop("disabled", false);
   }
   if (tabNow == 4) {
+    if (nextOrPrev === -1) {
+      return;
+    }
+
     if (document.getElementById("generate-manifest-curate").checked) {
       // need to run manifest creation
       ffmCreateManifest(sodaJSONObj);
@@ -3606,6 +3610,7 @@ $(document).ready(() => {
   });
 
   // Blackfynn transition warning message
+  //TODO: Dorian -> Remove this as it is no longer needed
   const url =
     "https://raw.githubusercontent.com/bvhpatel/SODA/master/src/assets/blackfynn-warning-message.txt";
   fetch(url).then(function (response) {
