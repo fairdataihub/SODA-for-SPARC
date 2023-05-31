@@ -1738,6 +1738,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
+      /* UNCOMMENT THIS TO REQUIRE AT LEAST ONE CORRESPONDING AUTHOR
       const correspondingAuthors = contributors.filter((contributor) =>
         contributor["conRole"].includes("CorrespondingAuthor")
       );
@@ -1751,7 +1752,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           `,
         });
         throw errorArray;
-      }
+      }*/
 
       // Make sure that all contributors have a valid fields
       for (const contributor of contributors) {
@@ -8918,6 +8919,9 @@ const openGuidedAddContributorSwal = async () => {
       if (checkDigit !== contributorOrcid.substr(-1)) {
         return Swal.showValidationMessage("ORCID iD does not exist");
       }
+
+      // Combine first and last name into full name
+      const contributorsFullName = `${contributorLastName}, ${contributorFirstName}`;
 
       try {
         addContributor(
