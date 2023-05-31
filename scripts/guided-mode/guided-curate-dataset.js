@@ -3916,6 +3916,13 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
   }
 };
 
+const guidedTestResetPennsievePage = (tabID) => {
+  sodaJSONObj["completed-tabs"] = sodaJSONObj["completed-tabs"].filter((tab) => tab != tabID);
+  sodaJSONObj["pages-fetched-from-pennsieve"] = sodaJSONObj["pages-fetched-from-pennsieve"].filter(
+    (tab) => tab != tabID
+  );
+};
+
 const guidedResetSkippedPages = () => {
   const pagesThatShouldAlwaysBeskipped = [
     "guided-dataset-generation-tab",
@@ -5349,9 +5356,6 @@ const openPage = async (targetPageID) => {
         // Show the loading page while the page's data is being fetched from Pennsieve
         setPageLoadingState(true);
         try {
-          //TODO: Have the study information be pulled from
-          // Pennsieve's dataset description rather than
-          // the dataset_description.xlsx file
           let metadata_import = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
               selected_account: defaultBfAccount,
@@ -5361,13 +5365,36 @@ const openPage = async (targetPageID) => {
           });
           // guidedLoadDescriptionDatasetInformation
           let basicInformation = metadata_import.data["Basic information"];
-          if (basicInformation[0][0] === "Type" && basicInformation[3][0] === "Keywords") {
-            const studyType = basicInformation[0][1];
+
+          // First try to get the keywords from the imported dataset description metadata
+          if (basicInformation[3][0] === "Keywords") {
             const studyKeywords = basicInformation[3].slice(1).filter((keyword) => keyword !== "");
-            sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"] = {
-              type: studyType,
-              keywords: studyKeywords,
-            };
+
+            // If more than 1 keyword is found, add store them to be loaded into the UI
+            // Otherwise, use the tags on Pennsieve
+            if (studyKeywords.length != 0) {
+              sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"][
+                "keywords"
+              ] = studyKeywords;
+            } else {
+              try {
+                const currentDatasetID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+                const tagsReq = await client.get(
+                  `/manage_datasets/datasets/${currentDatasetID}/tags`,
+                  {
+                    params: { selected_account: defaultBfAccount },
+                  }
+                );
+                const tags = tagsReq.data.tags;
+                console.log("Tags fetched from Pennsieve");
+                sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"][
+                  "keywords"
+                ] = tags;
+              } catch (error) {
+                // We don't need to do anything if this fails, but the user will have to enter the new tags before continuing
+                clientError(error);
+              }
+            }
           }
 
           // guidedLoadDescriptionStudyInformation
@@ -5463,13 +5490,15 @@ const openPage = async (targetPageID) => {
         }
       }
       const guidedLoadDescriptionDatasetInformation = () => {
-        const descriptionMetadata =
-          sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"];
-
         // Reset the keywords tags and add the stored ones if they exist in the JSON
         guidedDatasetKeywordsTagify.removeAllTags();
-        if (descriptionMetadata?.["keywords"]) {
-          guidedDatasetKeywordsTagify.addTags(descriptionMetadata["keywords"]);
+        const datasetKeyWords =
+          sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"]?.[
+            "keywords"
+          ];
+        console.log(datasetKeyWords);
+        if (datasetKeyWords) {
+          guidedDatasetKeywordsTagify.addTags(datasetKeyWords);
         }
       };
       guidedLoadDescriptionDatasetInformation();
@@ -7046,6 +7075,10 @@ const patchPreviousGuidedModeVersions = async () => {
     sodaJSONObj["skipped-pages"] = [];
   }
 
+  if (!sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"]) {
+    sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"] = {};
+  }
+
   if (!sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"]) {
     sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = [];
   }
@@ -7385,6 +7418,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"] = [];
   sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] = [];
   sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = [];
+  sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"];
   sodaJSONObj["dataset-metadata"]["README"] = "";
   sodaJSONObj["dataset-metadata"]["CHANGES"] = "";
   sodaJSONObj["digital-metadata"] = {};
@@ -15111,6 +15145,13 @@ const guidedSaveDescriptionStudyInformation = () => {
     "study data collection": studyDataCollection,
     "study primary conclusion": studyPrimaryConclusion,
     "study collection title": studyCollectionTitle,
+  };
+
+  // Generate the dataset description to be added to Pennsieve based off of the dd metadata
+  sodaJSONObj["digital-metadata"]["description"] = {
+    "study-purpose": studyPurpose,
+    "data-collection": studyDataCollection,
+    "primary-conclusion": studyPrimaryConclusion,
   };
 };
 const guidedSaveDescriptionContributorInformation = () => {

@@ -1582,11 +1582,6 @@ var datasetTagsInput = document.getElementById("tagify-dataset-tags"),
   datasetTagsTagify = new Tagify(datasetTagsInput);
 createDragSort(datasetTagsTagify);
 
-var guidedDatasetTagsInput = document.getElementById("guided-tagify-dataset-tags"),
-  // initialize Tagify on the above input node reference
-  guidedDatasetTagsTagify = new Tagify(guidedDatasetTagsInput);
-createDragSort(guidedDatasetTagsTagify);
-
 /////////////////// Provide Grant Information section /////////////////////////
 //////////////// //////////////// //////////////// //////////////// ///////////
 
