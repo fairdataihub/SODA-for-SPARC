@@ -1188,6 +1188,10 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     $(".svg-change-current-account.dataset").css("display", "none");
     $("#div-permission-list-2").css("display", "none");
     $(".ui.active.green.inline.loader.small:not(.organization-loader)").css("display", "block");
+    let currentLicenseText = currentDatasetLicense.innerText;
+    let currentPermissionsText = currentAddEditDatasetPermission.innerText;
+    console.log("currentLicenseText", currentLicenseText);
+    console.log("currentPermissionsText", currentPermissionsText);
 
     setTimeout(async function () {
       // disable the Continue btn first
@@ -1481,7 +1485,13 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
             // checkPrevDivForConfirmButton("dataset");
           } else if (result.isDismissed) {
-            currentDatasetLicense.innerText = currentDatasetLicense.innerText;
+            console.log("is dismissed");
+            console.log(currentLicenseText);
+            console.log(currentPermissionsText);
+            currentDatasetLicense.innerText = currentLicenseText;
+            currentAddEditDatasetPermission.innerText = currentPermissionsText;
+            console.log(currentDatasetLicense.innerText);
+            console.log(currentAddEditDatasetPermission.innerText);
           }
         });
 
@@ -1518,8 +1528,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
         // update the gloabl dataset id
         for (const item of datasetList) {
-          let { name } = item;
-          let { id } = item;
+          let { name, id } = item;
           if (name === bfDataset) {
             defaultBfDatasetId = id;
           }

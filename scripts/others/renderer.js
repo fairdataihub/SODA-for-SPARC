@@ -2964,6 +2964,7 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
 ///////////////////////////////END OF NEW CURATE UI CODE ADAPTATION ///////////////////////////////////////////////////
 
 const metadataDatasetlistChange = () => {
+  console.log("here");
   $("#bf-dataset-subtitle").val("");
   $("#para-dataset-banner-image-status").html("");
   showCurrentSubtitle();
@@ -4200,6 +4201,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
 
 // ///////////////////////////////////////////////////////////////////////////
 // recursively populate json object
+// TODO: Dorian -> This is the function the populates content from inside the folder to the JSON object
 const populateJSONObjFolder = (action, jsonObject, folderPath) => {
   var myitems = fs.readdirSync(folderPath);
   myitems.forEach((element) => {
@@ -4903,6 +4905,7 @@ const addFoldersfunction = async (action, nonallowedFolderArray, folderArray, cu
         }
       }
       // $("#items").empty();
+      console.log("currentLocation", currentLocation);
       listItems(currentLocation, "#items", 500, (reset = true));
       getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
       beginScrollListen();
@@ -6930,7 +6933,9 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
 };
 
 const getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
+  console.log("getInFolder Called");
   $(singleUIItem).dblclick(async function () {
+    console.log("double click called");
     if ($(this).children("h1").hasClass("myFol")) {
       start = 0;
       listed_count = 0;
@@ -6950,8 +6955,9 @@ const getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
       }
       $("#items").empty();
       already_created_elem = [];
-      let items = loadFileFolder(myPath);
+      // let items = loadFileFolder(myPath);
       //we have some items to display
+      console.log("myPath", myPath);
       listItems(myPath, "#items", 500, (reset = true));
       getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
       organizeLandingUIEffect();
@@ -7670,6 +7676,10 @@ document.getElementById("button-generate").addEventListener("click", async funct
       hideClass: {
         popup: "animate__animated animate__zoomOut animate__faster",
       },
+      didOpen: () => {
+        document.getElementById("swal2-content").style.maxHeight = "19rem";
+        document.getElementById("swal2-content").style.overflowY = "auto";
+      },
     }).then((result) => {
       if (result.isConfirmed) {
         initiate_generate();
@@ -7966,6 +7976,10 @@ async function initiate_generate() {
         hideClass: {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
+        didOpen: () => {
+          document.getElementById("swal2-content").style.maxHeight = "19rem";
+          document.getElementById("swal2-content").style.overflowY = "auto";
+        },
       }).then((result) => {
         statusBarClone.remove();
         sparc_container.style.display = "inline";
@@ -8039,6 +8053,10 @@ async function initiate_generate() {
         },
         hideClass: {
           popup: "animate__animated animate__zoomOut animate__faster",
+        },
+        didOpen: () => {
+          document.getElementById("swal2-content").style.maxHeight = "19rem";
+          document.getElementById("swal2-content").style.overflowY = "auto";
         },
       }).then((result) => {
         //statusBarClone.remove();
@@ -9216,19 +9234,7 @@ const scaleBannerImage = async (imagePath) => {
   }
 };
 
-function openFeedbackForm() {
-  let feedback_btn = document.getElementById("feedback-btn");
-  if (!feedback_btn.classList.contains("is-open")) {
-    feedback_btn.click();
-  }
-  setTimeout(() => {
-    document.getElementById("feedback-btn").scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  }, 5);
-}
-function gatherLogs() {
+const gatherLogs = () => {
   //function will be used to gather all logs on all OS's
   let homedir = os.homedir();
   let file_path = "";
@@ -9353,7 +9359,7 @@ function gatherLogs() {
       }
     }
   });
-}
+};
 
 const gettingStarted = () => {
   let getting_started = document.getElementById("main_tabs_view");

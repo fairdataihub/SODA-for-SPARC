@@ -58,7 +58,9 @@ const transitionToValidateQuestionTwo = async () => {
 const transitionToValidateQuestionThree = async () => {
   let userWantsToReset = await userWantsToResetValidation();
 
-  if (userWantsToReset === false) return userWantsToReset;
+  if (userWantsToReset === false) {
+    return userWantsToReset;
+  }
 
   // hide the confirm buttons
   let confirmDatasetBtn = document.querySelector("#validator-confirm-local-dataset-btn");
