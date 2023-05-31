@@ -9,6 +9,30 @@ Note: Some frontend elements of the workflow are in the renderer.js file as well
 ******************************************************
 */
 
+const resetSubmissionChecklistText = () => {
+  let subtitleText = $(`#prepublishing-checklist-icon-subtitle`).parent().siblings()[0];
+  let tagsText = $(`#prepublishing-checklist-icon-tags`).parent().siblings()[0];
+  let desctiptionText = $(`#prepublishing-checklist-icon-readme`).parent().siblings()[0];
+  let bannerText = $(`#prepublishing-checklist-icon-banner`).parent().siblings()[0];
+  let licenseText = $(`#prepublishing-checklist-icon-license`).parent().siblings()[0];
+  let orcidText = $(`#prepublishing-checklist-icon-ORCID`).parent().siblings()[0];
+
+  subtitleText.innerText = "Checking subtitle";
+  tagsText.innerText = "Checking tags";
+  desctiptionText.innerText = "Checking description";
+  bannerText.innerText = "Checking banner image";
+  licenseText.innerText = "Checking license";
+  orcidText.innerText = "Checking ORCID ID";
+
+  let elements = [subtitleText, tagsText, desctiptionText, bannerText, licenseText, orcidText];
+
+  elements.forEach((element) => {
+    element.classList.remove("green-hollow-button");
+    element.classList.add("text-left");
+    element.classList.add("no-pointer");
+  });
+};
+
 /**
  *
  * @param {string} currentDataset - The currently selected dataset - name
@@ -19,7 +43,7 @@ const getPrepublishingChecklistStatuses = async (currentDataset) => {
   // check that a dataset name or id is provided
   if (!currentDataset || currentDataset === "") {
     throw new Error(
-      "Error: Must provide a valid dataset to log status of pre-publishing checklist items from."
+      "Error: Must provide a valid dataset to log status of submission checklist items from."
     );
   }
 
@@ -185,37 +209,14 @@ const orcidSignIn = async (ev, curationMode) => {
   }
 };
 
-// TODO: Dorian -> finish this function to reset the text of the checklist items
-// const resetPrePublishingChecklist = (curationMode) => {
-//   let curationModeID = "";
-//   if (curationMode === "guided") {
-//     curationModeID = "guided--";
-//   }
-//   let checkListItems = $(".prepublishing-item-button");
-//   for (let i = 0; i < checkListItems.length; i++) {
-//     let item = checkListItems[i];
-//     console.log(item);
-//     let itemText = item.innerText;
-//     if (!itemText.includes("Orcid") && !itemText.includes("Add")) {
-//       let resetText = itemText.replace(" added", "");
-//       //Lowercase the first letter of the string
-//       resetText = resetText.charAt(0).toLowerCase() + resetText.slice(1);
-//       item.innerText = "Add " + resetText;
-//       console.log(item.innerText);
-//     }
-//     else if(itemText.includes("Orcid") && !itemText.includes("Link")){
-//       let resetText = itemText.replace(" linked", "");
-//       item.innerText = "Link " + resetText;
-//       console.log(item.innerText);
-//     }
-//   }
-// }
-
 //  This function is the first step to the prepublishing workflow for both guided and freeform mode
 //  Function fetches the status of each item needed to publish a dataset from the backend and updates the UI accordingly.
 //  inPrePublishing: boolean - True when the function is ran in the pre-publishing submission flow; false otherwise
 const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "") => {
+  resetSubmissionChecklistText();
   console.log("In showing prepublishing checklist statuses start");
+  document.getElementById("pre-publishing-continue-btn").disabled = true;
+  $("#pre-publishing-continue-btn").disabled = true;
   let currentDataset = defaultBfDataset;
   let curationModeID = "";
   // resetPrePublishingChecklist(curationMode);
@@ -391,6 +392,9 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
     $(`.${curationModeID}icon-wrapper`).children().css("visibility", "visible");
   }
 
+  document.getElementById("pre-publishing-continue-btn").disabled = false;
+  $("#pre-publishing-continue-btn").disabled = false;
+
   return true;
 };
 
@@ -407,6 +411,7 @@ const setPrepublishingChecklistItemIconByStatus = (iconElementId, status) => {
     $(`#${iconElementId}`).attr("class", "check icon");
     $(`#${iconElementId}`).css("color", "green");
     addButton.classList.remove("green-hollow-button");
+    addButton.classList.add("text-left");
     addButton.classList.add("no-pointer");
     if (iconElementId.includes("ORCID")) {
       addButton.innerText = "ORCID iD added";
@@ -428,6 +433,7 @@ const setPrepublishingChecklistItemIconByStatus = (iconElementId, status) => {
     }
   } else {
     addButton.classList.add("green-hollow-button");
+    addButton.classList.remove("text-left");
     addButton.classList.remove("no-pointer");
     if (iconElementId.includes("ORCID")) {
       addButton.innerText = "Link ORCID iD";
@@ -521,6 +527,7 @@ const createPrepublishingChecklist = async (curationMode) => {
 
   if (curationMode === "freeform") {
     document.getElementById("pre-publishing-continue-btn").disabled = true;
+    $("#pre-publishing-continue-btn").disabled = true;
     $("#pre-publishing-continue-btn").addClass("loading");
   }
 
@@ -555,6 +562,7 @@ const createPrepublishingChecklist = async (curationMode) => {
   if (curationMode === "freeform") {
     await disseminatePublish("freeform");
     document.getElementById("pre-publishing-continue-btn").disabled = false;
+    $("#pre-publishing-continue-btn").disabled = false;
     $("#pre-publishing-continue-btn").removeClass("loading");
     resetffmPrepublishingUI();
   }
@@ -563,6 +571,7 @@ const createPrepublishingChecklist = async (curationMode) => {
 // check if the user is the dataset owner and transition to the prepublishing checklist question if so
 // TODO: Dorian handle the freeform withdraw button and remove it
 const beginPrepublishingFlow = async (curationMode) => {
+  console.log(curationMode);
   let currentDataset = defaultBfDataset;
   let currentAccount = defaultBfAccount;
 
@@ -591,20 +600,8 @@ const beginPrepublishingFlow = async (curationMode) => {
       return false;
     }
   }
-  if (curationMode === "freeform") {
-    let subtitleText = $(`#prepublishing-checklist-icon-subtitle`).parent().siblings()[0];
-    let tagsText = $(`#prepublishing-checklist-icon-tags`).parent().siblings()[0];
-    let desctiptionText = $(`#prepublishing-checklist-icon-readme`).parent().siblings()[0];
-    let bannerText = $(`#prepublishing-checklist-icon-banner`).parent().siblings()[0];
-    let licenseText = $(`#prepublishing-checklist-icon-license`).parent().siblings()[0];
-    let orcidText = $(`#prepublishing-checklist-icon-ORCID`).parent().siblings()[0];
-
-    subtitleText.innerText = "Checking subtitle";
-    tagsText.innerText = "Checking tags";
-    desctiptionText.innerText = "Checking description";
-    bannerText.innerText = "Checking banner image";
-    licenseText.innerText = "Checking license";
-    orcidText.innerText = "Checking ORCID ID";
+  if (curationMode === "freeform" || curationMode === undefined) {
+    resetSubmissionChecklistText();
 
     Swal.fire({
       title: "Determining your dataset permissions",
@@ -688,6 +685,8 @@ const beginPrepublishingFlow = async (curationMode) => {
     $("#begin-prepublishing-btn").addClass("hidden");
     $("#submit_prepublishing_review-question-2").removeClass("show");
     $("#submit_prepublishing_review-question-3").addClass("show");
+    document.getElementById("pre-publishing-continue-btn").disabled = true;
+    $("#pre-publishing-continue-btn").disabled = true;
 
     if (!datasetHasBeenPublished) {
       console.log("Dataset hasnt been published");
