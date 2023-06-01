@@ -5376,24 +5376,6 @@ const openPage = async (targetPageID) => {
               sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"][
                 "keywords"
               ] = studyKeywords;
-            } else {
-              try {
-                const currentDatasetID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
-                const tagsReq = await client.get(
-                  `/manage_datasets/datasets/${currentDatasetID}/tags`,
-                  {
-                    params: { selected_account: defaultBfAccount },
-                  }
-                );
-                const tags = tagsReq.data.tags;
-                console.log("Tags fetched from Pennsieve");
-                sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"][
-                  "keywords"
-                ] = tags;
-              } catch (error) {
-                // We don't need to do anything if this fails, but the user will have to enter the new tags before continuing
-                clientError(error);
-              }
             }
           }
 
@@ -5488,6 +5470,28 @@ const openPage = async (targetPageID) => {
             "guided-create-description-metadata-tab"
           );
         }
+        // If the dataset keywords were not set from the imported metadata, try to get them from Pennsieve
+        const keywordsDerivedFromDescriptionMetadata =
+          sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"]?.[
+            "keywords"
+          ];
+        if (!keywordsDerivedFromDescriptionMetadata) {
+          try {
+            const currentDatasetID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+            const tagsReq = await client.get(`/manage_datasets/datasets/${currentDatasetID}/tags`, {
+              params: { selected_account: defaultBfAccount },
+            });
+            const { tags } = tagsReq.data;
+            if (tags.length > 0) {
+              sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"][
+                "keywords"
+              ] = tags;
+            }
+          } catch (error) {
+            // We don't need to do anything if this fails, but the user will have to enter the new tags before continuing
+            clientError(error);
+          }
+        }
       }
       const guidedLoadDescriptionDatasetInformation = () => {
         // Reset the keywords tags and add the stored ones if they exist in the JSON
@@ -5496,7 +5500,6 @@ const openPage = async (targetPageID) => {
           sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"]?.[
             "keywords"
           ];
-        console.log(datasetKeyWords);
         if (datasetKeyWords) {
           guidedDatasetKeywordsTagify.addTags(datasetKeyWords);
         }
