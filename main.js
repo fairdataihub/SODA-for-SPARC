@@ -116,31 +116,13 @@ const createPyProc = async () => {
 
       if (guessPackaged()) {
         log.info("Application is packaged");
-        pyflaskProcess = require("child_process").execFile(
-          script,
-          [port],
-          {
-            stdio: "ignore",
-          },
-          (error, stdout, stderr) => {
-            if (error) {
-              log.info("Failed to execute script:", error);
-            }
-            if (stderr) {
-              log.info("Script execution encountered an error:", stderr);
-            }
-            if (stdout) {
-              log.info("Script executed successfully:", stdout);
-            }
-          }
-        );
+        pyflaskProcess = require("child_process").execFile(script, [port], {
+          stdio: "ignore",
+        });
       } else {
         log.info("Application is not packaged");
         pyflaskProcess = require("child_process").spawn("python", [script, port], {
           stdio: "ignore",
-        });
-        pyflaskProcess.on("error", (err) => {
-          log.info("Error in python process" + err);
         });
       }
 
@@ -457,6 +439,26 @@ ipcMain.on("restart_app", async () => {
   log.info("quitAndInstall");
   autoUpdater.quitAndInstall();
 });
+
+const getPennsieveAgentPath = () => {
+  if (process.platform === "win32" || process.platform === "cygwin") {
+    const bit64Path = path.join("C:\\Program Files\\Pennsieve\\pennsieve.exe");
+    const bit32Path = path.join("C:\\Program Files (x86)\\Pennsieve\\pennsieve.exe");
+    if (fs.existsSync(bit64Path)) {
+      return bit64Path;
+    }
+    if (fs.existsSync(bit32Path)) {
+      return bit32Path;
+    }
+    throw new Error(`Cannot find pennsieve at ${bit64Path} or ${bit32Path}`);
+  } else {
+    pennsievePath = "/usr/local/bin/pennsieve";
+    if (fs.existsSync(pennsievePath)) {
+      return pennsievePath;
+    }
+    throw new Error(`Cannot find pennsieve at ${pennsievePath}`);
+  }
+};
 
 ipcMain.on("spawn-pennsieve-agent", async (event) => {});
 
