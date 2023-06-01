@@ -124,13 +124,13 @@ const createPyProc = async () => {
           },
           (error, stdout, stderr) => {
             if (error) {
-              console.error("Failed to execute script:", error);
+              log.info("Failed to execute script:", error);
             }
             if (stderr) {
-              console.error("Script execution encountered an error:", stderr);
+              log.info("Script execution encountered an error:", stderr);
             }
             if (stdout) {
-              console.log("Script executed successfully:", stdout);
+              log.info("Script executed successfully:", stdout);
             }
           }
         );
@@ -140,19 +140,7 @@ const createPyProc = async () => {
           stdio: "ignore",
         });
         pyflaskProcess.on("error", (err) => {
-          console.log(err);
-        });
-        pyflaskProcess.on("exit", (code, signal) => {
-          console.log("child process exited with " + `code ${code} and signal ${signal}`);
-          log.info("child process exited with " + `code ${code} and signal ${signal}`);
-        });
-        pyflaskProcess.on("close", (code, signal) => {
-          console.log("child process closed with " + `code ${code} and signal ${signal}`);
-          log.info("child process closed with " + `code ${code} and signal ${signal}`);
-        });
-        pyflaskProcess.stdout.on("data", (data) => {
-          console.log(`stdout: ${data}`);
-          log.info(`stdout: ${data}`);
+          log.info("Error in python process" + err);
         });
       }
 
