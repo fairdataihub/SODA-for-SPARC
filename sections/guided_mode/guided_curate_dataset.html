@@ -2790,9 +2790,13 @@
           </p>
           <div class="guided--section neumorphic mt-xl">
             <h2 class="text-sub-step-title mt-0">Dataset information</h2>
-            <p class="guided--text-input-instructions text-center" style="margin-top: -15px">
-              Basic information about the dataset
-            </p>
+
+            <div class="info-container container-open">
+              <p class="help-text">
+                <b>Note: </b> The Dataset keywords below will be used as tags for your dataset on
+                the SPARC Data Portal.
+              </p>
+            </div>
 
             <label class="guided--form-label mt-md required">Dataset keywords:</label>
             <div class="demo-controls-body" style="width: 100%">
@@ -2815,7 +2819,15 @@
           </div>
           <div class="guided--section neumorphic mt-xl">
             <h2 class="text-sub-step-title mt-0">Study information</h2>
-            <label class="guided--form-label mt-xl required">Study purpose:</label>
+
+            <div class="info-container container-open">
+              <p class="help-text">
+                <b>Note: </b> The Study purpose, Data collection, and Primary conclusion fields
+                below will be merged to form your dataset's description on the SPARC Data Portal.
+              </p>
+            </div>
+
+            <label class="guided--form-label mt-md required">Study purpose:</label>
             <textarea
               class="guided--input guided--text-area"
               type="text"
@@ -2827,7 +2839,7 @@
             <p class="guided--text-input-instructions mb-0">
               Enter a paragraph that explains the purpose of your study.
             </p>
-            <label class="guided--form-label mt-xl required">Data collection:</label>
+            <label class="guided--form-label mt-md required">Data collection:</label>
             <textarea
               class="guided--input guided--text-area"
               type="text"
@@ -2839,7 +2851,7 @@
             <p class="guided--text-input-instructions mb-0">
               Enter a paragraph that explains the method you used for data collection.
             </p>
-            <label class="guided--form-label mt-xl required">Primary conclusion:</label>
+            <label class="guided--form-label mt-md required">Primary conclusion:</label>
             <textarea
               class="guided--input guided--text-area"
               type="text"
@@ -2850,7 +2862,6 @@
             ></textarea>
             <p class="guided--text-input-instructions mb-0">
               Enter a paragraph that explains the primary conclusion of your study.
-              <b>Note: </b> This paragraph will be part of the
             </p>
             <label class="guided--form-label mt-xl required">Study organ system:</label>
             <div class="demo-controls-body" style="width: 100%">
