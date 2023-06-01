@@ -507,9 +507,6 @@ const showCurrentPermission = async () => {
   let selectedBfAccount = defaultBfAccount;
   let selectedBfDataset = defaultBfDataset;
 
-  currentDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
-  currentAddEditDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
-
   if (selectedBfDataset === null) {
     return;
   }
@@ -520,6 +517,8 @@ const showCurrentPermission = async () => {
     return;
   }
 
+  currentDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
+  currentAddEditDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
   log.info(`Requesting current permissions for ${selectedBfDataset}.`);
 
   try {
@@ -2281,7 +2280,7 @@ const showCurrentLicense = async () => {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
-  currentDatasetLicense.innerHTML = `Loading current license... <div class="ui active green inline loader tiny"></div>`;
+  console.log("here");
 
   if (selectedBfDataset === null) {
     return;
@@ -2292,6 +2291,7 @@ const showCurrentLicense = async () => {
     return;
   }
 
+  currentDatasetLicense.innerHTML = `Loading current license... <div class="ui active green inline loader tiny"></div>`;
   log.info(`Getting current license for dataset ${selectedBfDataset}`);
 
   try {
