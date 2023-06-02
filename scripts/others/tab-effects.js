@@ -670,12 +670,33 @@ const nextPrev = (pageIndex) => {
       currentTab = currentTab + 2;
       $("#nextBtn").prop("disabled", false);
       fixStepDone(4);
+
+      showParentTab(currentTab, pageIndex);
+
+      console.log("Executing this stuff here")
+
+      // check if skip card or the validate card have been checked
+      const validationOptionSelected = document.querySelector(
+        "#validate-dataset-tab input[type=radio]:checked"
+      );
+      console.log(validationOptionSelected);
+
+      if (validationOptionSelected) {
+        console.log("Not disabling net butn")
+        // enable the continue button
+        $("#nextBtn").prop("disabled", false);
+      } else {
+        console.log("DIsabling next button")
+        // disable the continue button
+        $("#nextBtn").prop("disabled", true);
+      }
+
     } else {
       currentTab = currentTab - 1;
       // fixStepDone(4);
       $("#nextBtn").prop("disabled", true);
+      showParentTab(currentTab, pageIndex);
     }
-    showParentTab(currentTab, pageIndex);
   } else if (
     parentTabs[currentTab].id === "manifest-file-tab" &&
     (sodaJSONObj["starting-point"]["type"] === "new" ||
