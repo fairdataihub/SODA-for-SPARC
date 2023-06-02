@@ -203,6 +203,7 @@ const killAllPreviousProcesses = async () => {
 let mainWindow = null;
 let user_restart_confirmed = false;
 let updatechecked = false;
+const buildIsBeta = true;
 let window_reloaded = false;
 
 function initialize() {
@@ -222,7 +223,9 @@ function initialize() {
 
     mainWindow.webContents.once("dom-ready", () => {
       if (updatechecked == false) {
-        autoUpdater.checkForUpdatesAndNotify();
+        if (!buildIsBeta) {
+          autoUpdater.checkForUpdatesAndNotify();
+        }
       }
     });
 
@@ -322,7 +325,9 @@ function initialize() {
           nodeStorage.setItem("announcements", false);
         }
         run_pre_flight_checks();
-        autoUpdater.checkForUpdatesAndNotify();
+        if (!buildIsBeta) {
+          autoUpdater.checkForUpdatesAndNotify();
+        }
         updatechecked = true;
       }, 6000);
     });
