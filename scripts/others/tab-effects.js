@@ -894,6 +894,29 @@ const raiseWarningGettingStarted = (ev) => {
   });
 };
 
+const handleValidateCardSelection = async (ev) => {
+  $(ev).children().find(".folder-input-check").prop("checked", true);
+  $(ev).addClass("checked");
+
+  // uncheck the other radio buttons
+  $($(ev).parents()[0]).siblings().find(".option-card.radio-button").removeClass("checked");
+  $($(ev).parents()[0]).siblings().find(".option-card.radio-button").addClass("non-selected");
+
+  // check which card is selected
+  let selectedCard = document.querySelector("#validate-dataset-tab input[type=radio]:checked");
+
+  if (selectedCard.id === "validate-organize-1-A") {
+    // run validation
+    await validateOrganizedDataset();
+
+    // scroll to the results table
+    document.querySelector("#organize--table-validation-errors").scrollIntoView();
+  } // else the user skipped validation
+
+  // enable the continue button
+  $("#nextBtn").prop("disabled", false);
+};
+
 var divList = [];
 async function transitionSubQuestions(ev, currentDiv, parentDiv, button, category) {
   if (currentDiv === "Question-getting-started-1") {
