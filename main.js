@@ -203,8 +203,11 @@ const killAllPreviousProcesses = async () => {
 let mainWindow = null;
 let user_restart_confirmed = false;
 let updatechecked = false;
-const buildIsBeta = true;
 let window_reloaded = false;
+
+// If buildIsBeta is true, the app will not check for updates
+// If it is false, the app will check for updates
+const buildIsBeta = true;
 
 function initialize() {
   const checkForAnnouncements = () => {
