@@ -7246,10 +7246,10 @@ const guidedResumeProgress = async (datasetNameToResume) => {
 
     // Delete the button status for the Pennsieve account confirmation section
     // So the user has to confirm their Pennsieve account before uploading
-    if (sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"]) {
+    if (sodaJSONObj["button-config"]?.["pennsieve-account-has-been-confirmed"]) {
       delete sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
     }
-    if (sodaJSONObj["button-config"]["organization-has-been-confirmed"]) {
+    if (sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]) {
       delete sodaJSONObj["button-config"]["organization-has-been-confirmed"];
     }
 
