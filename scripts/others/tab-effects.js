@@ -1909,6 +1909,12 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
     $("#bf-dataset-spinner").css("visibility", "hidden");
     $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
     $("#dataset-loaded-message").show();
+
+    // clear the validation table results
+    let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
+    clearValidationResults(validationErrorsTable);
+    // hide the table
+    document.querySelector("#organize--table-validation-errors").style.visibility = "hidden"
     // $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
   }
 
