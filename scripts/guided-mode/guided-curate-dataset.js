@@ -7095,11 +7095,6 @@ const patchPreviousGuidedModeVersions = async () => {
 
   // If no other conditions are met, return the page the user was last on
   return sodaJSONObj["page-before-exit"];
-
-  // if (!sodaJSONObj["special-rejoin-key"]) {
-  //   sodaJSONObj["special-rejoin-key"] = "now-i-wont-return-to-the-first-page";
-  //   return firstPageID;
-  // }
 };
 
 //Loads UI when continue curation button is pressed
@@ -7244,12 +7239,6 @@ const guidedResumeProgress = async (datasetNameToResume) => {
       pageToReturnTo = null;
     }
 
-    // console.log() console.log("") remove me before an actual release or talk to Jacob
-    if (!sodaJSONObj["special-rejoin-key"]) {
-      sodaJSONObj["special-rejoin-key"] = "now-i-wont-return-to-the-first-page";
-      pageToReturnTo = null;
-    }
-
     //If the dataset was successfully uploaded, send the user to the share with curation team
     if (datasetResumeJsonObj["previous-guided-upload-dataset-name"]) {
       pageToReturnTo = "guided-dataset-dissemination-tab";
@@ -7340,9 +7329,6 @@ const guidedUploadStatusIcon = (elementID, status) => {
 //dataset description (first page) functions
 guidedCreateSodaJSONObj = () => {
   sodaJSONObj = {};
-
-  //console.log(" remove me and remove everything that has the key special-rejoin-key it was only for the special beta rejoin release")
-  sodaJSONObj["special-rejoin-key"] = "now-i-wont-return-to-the-first-page";
 
   sodaJSONObj["guided-options"] = {};
   sodaJSONObj["bf-account-selected"] = {};

@@ -619,6 +619,7 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
 };
 
 const getPennsieveAgentVersion = async (pathToPennsieveAgent) => {
+  log.info("DING DING DING");
   return new Promise((resolve, reject) => {
     try {
       // // Timeout if the agent was not able to be retrieved within 7 seconds
