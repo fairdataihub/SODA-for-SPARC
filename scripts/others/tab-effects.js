@@ -714,6 +714,29 @@ const nextPrev = (pageIndex) => {
     currentTab = currentTab - 2;
     showParentTab(currentTab, pageIndex);
     $("#nextBtn").prop("disabled", false);
+  } else if (parentTabs[currentTab].id === "generate-dataset-tab") {
+    // Hide the current tab:
+    $(parentTabs[currentTab]).removeClass("tab-active");
+    // Increase or decrease the current tab by 1:
+    currentTab = currentTab + pageIndex;
+    // For step 1,2,3, check for High level folders input to disable Continue button
+    if (currentTab === 1 || currentTab === 2 || currentTab === 3) {
+      highLevelFoldersDisableOptions();
+    }
+    // Display the correct tab:
+    showParentTab(currentTab, pageIndex);
+
+    // check if skip card or the validate card have been checked
+    const validationOptionSelected = document.querySelector("#validate-dataset-tab input[type=radio]:checked")
+    console.log(validationOptionSelected)
+
+    if(validationOptionSelected) {
+      // enable the continue button
+      $("#nextBtn").prop("disabled", false);
+    } else {
+      // disable the continue button 
+      $("#nextBtn").prop("disabled", true);
+    }
   } else {
     // Hide the current tab:
     $(parentTabs[currentTab]).removeClass("tab-active");
