@@ -7014,6 +7014,10 @@ const patchPreviousGuidedModeVersions = async () => {
   }
   console.log(contributors);
 
+  if (!sodaJSONObj["button-config"]) {
+    sodaJSONObj["button-config"] = {};
+  }
+
   if (!sodaJSONObj["skipped-pages"]) {
     sodaJSONObj["skipped-pages"] = [];
   }
