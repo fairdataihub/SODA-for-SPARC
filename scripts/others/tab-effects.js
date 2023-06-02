@@ -673,7 +673,7 @@ const nextPrev = (pageIndex) => {
 
       showParentTab(currentTab, pageIndex);
 
-      console.log("Executing this stuff here")
+      console.log("Executing this stuff here");
 
       // check if skip card or the validate card have been checked
       const validationOptionSelected = document.querySelector(
@@ -682,15 +682,14 @@ const nextPrev = (pageIndex) => {
       console.log(validationOptionSelected);
 
       if (validationOptionSelected) {
-        console.log("Not disabling net butn")
+        console.log("Not disabling net butn");
         // enable the continue button
         $("#nextBtn").prop("disabled", false);
       } else {
-        console.log("DIsabling next button")
+        console.log("DIsabling next button");
         // disable the continue button
         $("#nextBtn").prop("disabled", true);
       }
-
     } else {
       currentTab = currentTab - 1;
       // fixStepDone(4);
@@ -748,14 +747,16 @@ const nextPrev = (pageIndex) => {
     showParentTab(currentTab, pageIndex);
 
     // check if skip card or the validate card have been checked
-    const validationOptionSelected = document.querySelector("#validate-dataset-tab input[type=radio]:checked")
-    console.log(validationOptionSelected)
+    const validationOptionSelected = document.querySelector(
+      "#validate-dataset-tab input[type=radio]:checked"
+    );
+    console.log(validationOptionSelected);
 
-    if(validationOptionSelected) {
+    if (validationOptionSelected) {
       // enable the continue button
       $("#nextBtn").prop("disabled", false);
     } else {
-      // disable the continue button 
+      // disable the continue button
       $("#nextBtn").prop("disabled", true);
     }
   } else {
@@ -1914,7 +1915,7 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
     let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
     clearValidationResults(validationErrorsTable);
     // hide the table
-    document.querySelector("#organize--table-validation-errors").style.visibility = "hidden"
+    document.querySelector("#organize--table-validation-errors").style.visibility = "hidden";
     // $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
   }
 
@@ -2606,7 +2607,7 @@ const reset_ui = () => {
   let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
   clearValidationResults(validationErrorsTable);
   // hide the table
-  document.querySelector("#organize--table-validation-errors").style.visibility = "hidden"
+  document.querySelector("#organize--table-validation-errors").style.visibility = "hidden";
 };
 
 const populate_existing_folders = (dataset_folders) => {
