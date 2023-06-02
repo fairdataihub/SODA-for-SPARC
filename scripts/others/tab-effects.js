@@ -2595,6 +2595,12 @@ const reset_ui = () => {
   $("#Question-getting-started-existing-BF-dataset").hide();
   $("#Question-getting-started-existing-BF-dataset").children().hide();
   $("#nextBtn").prop("disabled", true);
+
+  // clear the validation table results
+  let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
+  clearValidationResults(validationErrorsTable);
+  // hide the table
+  document.querySelector("#organize--table-validation-errors").style.visibility = "hidden"
 };
 
 const populate_existing_folders = (dataset_folders) => {
