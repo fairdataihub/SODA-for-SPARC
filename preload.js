@@ -840,7 +840,7 @@ const resetFFMUI = (ev) => {
   $("#share_sparc_consortium-question-2").removeClass("show");
 
   $("#submit_prepublishing_review-question-1").removeClass("prev");
-  $("#submit_prepublishing_review-question-2").addClass("show");
+  $("#submit_prepublishing_review-question-2").addClass("hidden");
   $("#submit_prepublishing_review-question-3").removeClass("show");
   $("#submit_prepublishing_review-question-4").removeClass("show");
   $("#para-review-dataset-info-disseminate").text("None");
@@ -1188,6 +1188,10 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     $(".svg-change-current-account.dataset").css("display", "none");
     $("#div-permission-list-2").css("display", "none");
     $(".ui.active.green.inline.loader.small:not(.organization-loader)").css("display", "block");
+    let currentLicenseText = currentDatasetLicense.innerText;
+    let currentPermissionsText = currentAddEditDatasetPermission.innerText;
+    console.log("currentLicenseText", currentLicenseText);
+    console.log("currentPermissionsText", currentPermissionsText);
 
     setTimeout(async function () {
       // disable the Continue btn first
@@ -1461,6 +1465,9 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             $("#current-bf-dataset-generate").text(bfDataset);
             $(".bf-dataset-span").html(bfDataset);
             confirm_click_function();
+            // $("#button-refresh-publishing-status").removeClass("hidden");
+            $("#button-refresh-publishing-status").addClass("fa-spin");
+            $("#para-review-dataset-info-disseminate").text("None");
 
             defaultBfDataset = bfDataset;
             // document.getElementById("ds-description").innerHTML = "";
@@ -1478,7 +1485,13 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
             // checkPrevDivForConfirmButton("dataset");
           } else if (result.isDismissed) {
-            currentDatasetLicense.innerText = currentDatasetLicense.innerText;
+            console.log("is dismissed");
+            console.log(currentLicenseText);
+            console.log(currentPermissionsText);
+            currentDatasetLicense.innerText = currentLicenseText;
+            currentAddEditDatasetPermission.innerText = currentPermissionsText;
+            console.log(currentDatasetLicense.innerText);
+            console.log(currentAddEditDatasetPermission.innerText);
           }
         });
 
@@ -1515,8 +1528,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
         // update the gloabl dataset id
         for (const item of datasetList) {
-          let { name } = item;
-          let { id } = item;
+          let { name, id } = item;
           if (name === bfDataset) {
             defaultBfDatasetId = id;
           }
@@ -1663,9 +1675,14 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
       let orgs = responseObject.data.organizations;
       organizationList = [];
+      organizationNameToIdMapping = {};
+
       // deconstruct the names to the organization list
       for (const org in orgs) {
+        console.log(org);
         organizationList.push(orgs[org]["organization"]["name"]);
+        organizationNameToIdMapping[orgs[org]["organization"]["name"]] =
+          orgs[org]["organization"]["id"];
       }
 
       refreshOrganizationList();
@@ -1827,7 +1844,9 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           }
 
           try {
-            await api.setPreferredOrganization(login, password, bfOrganization, "soda-pennsieve");
+            let organizationId = organizationNameToIdMapping[bfOrganization];
+            console.log(organizationId);
+            await api.setPreferredOrganization(login, password, organizationId, "soda-pennsieve");
           } catch (err) {
             clientError(err);
             await Swal.fire({
@@ -1885,6 +1904,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
       // checkPrevDivForConfirmButton("dataset");
     }
+    $("#button-refresh-publishing-status").addClass("hidden");
 
     // TODO: MIght need to hide if clicked twice / do similar logic as above
     // for organization span in those locations instead of a dataset span

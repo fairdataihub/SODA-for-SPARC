@@ -82,7 +82,7 @@
             id="curate-new-home"
             style="flex-direction: column"
           >
-            <div class="button-prompt-container" id="guided-button-go-to-starting-point-selection">
+            <div class="button-prompt-container" id="button-homepage-guided-mode">
               <div class="wide-card-text-container">
                 <h2 class="wide-card-title-text">End to End Curation</h2>
                 <p class="wide-card-subtitle-text">
@@ -93,7 +93,7 @@
               </div>
               <div id="existing-dataset-lottie" class="wide-card-lottie-container"></div>
             </div>
-            <div class="button-prompt-container" id="guided-button-start-modify-component">
+            <div class="button-prompt-container" id="button-homepage-freeform-mode">
               <div class="wide-card-text-container">
                 <h2 class="wide-card-title-text">Free Form Curation</h2>
                 <p class="wide-card-subtitle-text">
@@ -247,7 +247,7 @@
           </div>
 
           <div class="guided--section" id="guided-section-start-new-curation">
-            <h2 class="guided--text-click-continue">
+            <h2 class="guided--text-user-directions">
               Click "<span class="next-button-span"></span>" to start the End to End curation
               process for preparing and submitting a new dataset.
             </h2>
@@ -412,7 +412,7 @@
             ></div>
           </div>
           <div class="guided--section">
-            <h2 class="guided--text-click-continue">
+            <h2 class="guided--text-user-directions">
               Click the "<span class="next-button-span"></span>" button below to go to the next
               page.
             </h2>
@@ -539,13 +539,13 @@
           </div>
 
           <div class="guided--section" id="guided-section-dataset-sparc-funded">
-            <h2 class="guided--text-click-continue">
+            <h2 class="guided--text-user-directions">
               Click "<span class="next-button-span"></span>" to confirm your dataset is funded by a
               SPARC award.
             </h2>
           </div>
           <div class="guided--section" id="guided-section-dataset-re-join-funded">
-            <h2 class="guided--text-click-continue">
+            <h2 class="guided--text-user-directions">
               Click "<span class="next-button-span"></span>" to confirm your dataset is funded by a
               RE-JOIN award.
             </h2>
@@ -577,7 +577,7 @@
               </button>
             </div>
             <div class="guided--section" id="guided-section-non-sparc-user-has-contacted-sparc">
-              <h2 class="guided--text-click-continue">
+              <h2 class="guided--text-user-directions">
                 Great, click "<span class="next-button-span"></span>" to start the curation process.
               </h2>
             </div>
@@ -816,13 +816,13 @@
               </div>
             </div>
             <div class="sub-section" id="guided-sub-section-experimental-confirmation">
-              <h2 class="guided--text-click-continue">
+              <h2 class="guided--text-user-directions">
                 Click "<span class="next-button-span"></span> to begin the experimental dataset
                 curation process.
               </h2>
             </div>
             <div class="sub-section" id="guided-sub-section-computational-confirmation">
-              <h2 class="guided--text-click-continue">
+              <h2 class="guided--text-user-directions">
                 Click "<span class="next-button-span"></span>" to begin the computational dataset
                 curation process.
               </h2>
@@ -1031,7 +1031,7 @@
             ></div>
           </div>
           <div class="guided--section">
-            <h2 class="guided--text-click-continue">
+            <h2 class="guided--text-user-directions">
               Click "<span class="next-button-span"></span>" to start structuring your dataset.
             </h2>
           </div>
@@ -2317,7 +2317,7 @@
             ></div>
           </div>
           <div class="guided--section">
-            <h2 class="guided--text-click-continue">
+            <h2 class="guided--text-user-directions">
               Click "<span class="next-button-span"></span>" to start providing metadata to your
               dataset.
             </h2>
@@ -2495,6 +2495,26 @@
               individuals do not have to be authors of any publications that describe the data, but
               they should be acknowledged for their role in producing and publishing the dataset.
             </p>
+            <p class="help-text">
+              The order in which the contributors should be added is in the same way that you would
+              order them when making a publication. If you would like to rearrange the order of the
+              contributors, you can do so by dragging them up or down in the interface below.
+            </p>
+            <div class="info-dropdown">
+              <p class="info-dropdown-text" data-dropdown-type="info">
+                What are the minimal requirements for my dataset's contributors?
+              </p>
+              <i class="fas fa-chevron-right" style="transform: rotate(0deg)"></i>
+            </div>
+            <div class="info-container" style="margin-bottom: 1.5rem">
+              <p class="help-text">The minimum requirements for contributors are:</p>
+              <ul class="help-text">
+                <li class="help-text text-left mb-2">
+                  <b>Principal Investigator: </b>One and only one Principal Investigator is
+                  required.
+                </li>
+              </ul>
+            </div>
           </div>
           <div class="guided--section">
             <h2 class="text-sub-step-title mb-0">
@@ -2507,6 +2527,7 @@
             >
               <thead>
                 <tr>
+                  <th class="center aligned collapsing">Position</th>
                   <th>Name</th>
                   <th>Role(s)</th>
                   <th class="center aligned collapsing">Status</th>
@@ -2750,7 +2771,7 @@
             </button>
           </div>
           <div class="guided--section hidden" id="guided-div-wait-for-protocols">
-            <h2 class="guided--text-click-continue">
+            <h2 class="guided--text-user-directions">
               Click "<span class="next-button-span"></span>" to continue without adding protocols to
               your dataset.
             </h2>
@@ -2769,9 +2790,6 @@
           </p>
           <div class="guided--section neumorphic mt-xl">
             <h2 class="text-sub-step-title mt-0">Dataset information</h2>
-            <p class="guided--text-input-instructions text-center" style="margin-top: -15px">
-              Basic information about the dataset
-            </p>
 
             <label class="guided--form-label mt-md required">Dataset keywords:</label>
             <div class="demo-controls-body" style="width: 100%">
@@ -2787,14 +2805,15 @@
               </div>
             </div>
             <p class="guided--text-input-instructions mb-0">
-              Provide of 3-5 keywords that will aid in the search of your dataset when published on
-              the SPARC portal.<br />
+              Provide 3-5 keywords that will aid in the search of your dataset when published on the
+              SPARC portal.<br />
               <b>Hit enter after typing a keyword to add the text as a keyword.</b>
             </p>
           </div>
           <div class="guided--section neumorphic mt-xl">
             <h2 class="text-sub-step-title mt-0">Study information</h2>
-            <label class="guided--form-label mt-xl required">Study purpose:</label>
+
+            <label class="guided--form-label mt-md required">Study purpose:</label>
             <textarea
               class="guided--input guided--text-area"
               type="text"
@@ -2806,7 +2825,7 @@
             <p class="guided--text-input-instructions mb-0">
               Enter a paragraph that explains the purpose of your study.
             </p>
-            <label class="guided--form-label mt-xl required">Data collection:</label>
+            <label class="guided--form-label mt-md required">Data collection:</label>
             <textarea
               class="guided--input guided--text-area"
               type="text"
@@ -2816,11 +2835,9 @@
               style="height: 7.5em"
             ></textarea>
             <p class="guided--text-input-instructions mb-0">
-              Enter a paragraph that explains the method you used for data collection.<br /><b
-                >Refrain from using markdown.</b
-              >
+              Enter a paragraph that explains the method you used for data collection.
             </p>
-            <label class="guided--form-label mt-xl required">Primary conclusion:</label>
+            <label class="guided--form-label mt-md required">Primary conclusion:</label>
             <textarea
               class="guided--input guided--text-area"
               type="text"
@@ -2830,9 +2847,7 @@
               style="height: 7.5em"
             ></textarea>
             <p class="guided--text-input-instructions mb-0">
-              Enter a paragraph that explains the primary conclusion of your study.<br /><b
-                >Refrain from using markdown.</b
-              >
+              Enter a paragraph that explains the primary conclusion of your study.
             </p>
             <label class="guided--form-label mt-xl required">Study organ system:</label>
             <div class="demo-controls-body" style="width: 100%">
@@ -2889,7 +2904,7 @@
           </div>
           <div class="guided--section neumorphic mt-xl">
             <h2 class="text-sub-step-title mt-0">Related information</h2>
-            <label class="guided--form-label mt-xl">Additional links</label>
+            <label class="guided--form-label mt-md">Additional links</label>
             <table class="ui celled striped table" style="margin-bottom: 25px; width: 100%">
               <thead>
                 <tr>
@@ -2907,7 +2922,7 @@
           </div>
           <div class="guided--section neumorphic mt-xl mb-lg">
             <h2 class="text-sub-step-title mt-0">Additional information</h2>
-            <label class="guided--form-label mt-xl">Study collection title:</label>
+            <label class="guided--form-label mt-md">Study collection title:</label>
             <input
               class="guided--input"
               id="guided-ds-study-collection-title"
@@ -4152,7 +4167,7 @@
             </div>
           </div>
           <div class="guided--section" id="guided-section-no-computational-modeling-data">
-            <h2 class="guided--text-click-continue">
+            <h2 class="guided--text-user-directions">
               Click "<span class="next-button-span"></span>" below.
             </h2>
           </div>
@@ -4160,7 +4175,7 @@
             class="guided--section"
             id="guided-section-user-chose-not-to-update-code-description"
           >
-            <h2 class="guided--text-click-continue">
+            <h2 class="guided--text-user-directions">
               Your code_description file will remain on Pennsieve as is. Click "<span
                 class="next-button-span"
               ></span
@@ -4376,7 +4391,7 @@
             </div>
           </div>
           <div class="guided--section" id="guided-section-organization-confirmed">
-            <h2 class="guided--text-click-continue">
+            <h2 class="guided--text-user-directions">
               Click "<span class="next-button-span"></span>" to confirm your account and
               organization you will be uploading to.
             </h2>
@@ -4666,9 +4681,7 @@
                         border: 1px solid black;
                       "
                       id="guided_bf_list_users_and_teams"
-                    >
-                      <option>Select individuals or teams to grant permissions to</option>
-                    </select>
+                    ></select>
                   </div>
                 </div>
               </div>
@@ -4709,7 +4722,7 @@
                 be found can be found
                 <a
                   target="_blank"
-                  href="https://docs.sodaforsparc.io/docs/next/how-to/how-to-get-a-pennsieve-account"
+                  href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-a-pennsieve-account"
                   >here</a
                 >.
                 <br />
@@ -4720,80 +4733,6 @@
           </div>
         </div>
 
-        <div
-          id="guided-add-description-tab"
-          class="guided--page"
-          data-page-name="Pennsieve dataset description"
-        >
-          <div class="guided--section">
-            <h1 class="text-sub-step-title">Dataset description</h1>
-            <p class="help-text text-left">
-              The dataset description is a brief summary of the dataset which will allows visitors
-              of the SPARC portal to gain better insights into your work and enhance your dataset's
-              findability once the dataset is published on the SPARC Data portal. It can be similar
-              to the dataset description you previously provided for the metadata file.
-            </p>
-            <div class="guided--input-container mt-sm">
-              <label class="guided--form-label required">Study purpose:</label>
-              <textarea
-                class="guided--input guided--text-area"
-                type="text"
-                name="guided-study-purpose"
-                placeholder="Enter your study purpose here"
-                id="guided-pennsieve-study-purpose"
-              ></textarea>
-              <p class="guided--text-input-instructions">
-                Enter a paragraph that explains the purpose of your study.
-                <br /><b>Refrain from using markdown.</b>
-              </p>
-            </div>
-            <div class="guided--input-container">
-              <label class="guided--form-label required">Data collection:</label>
-              <textarea
-                class="guided--input guided--text-area"
-                type="text"
-                name="guided-data-collection"
-                placeholder="Enter your data collection here"
-                id="guided-pennsieve-study-data-collection"
-              ></textarea>
-              <p class="guided--text-input-instructions">
-                Enter a paragraph that explains the method you used for data collection.<br /><b
-                  >Refrain from using markdown.</b
-                >
-              </p>
-            </div>
-            <div class="guided--input-container">
-              <label class="guided--form-label required">Primary conclusion:</label>
-              <textarea
-                class="guided--input guided--text-area"
-                type="text"
-                name="guided-primary-conclusion"
-                placeholder="Enter your primary conclusion here"
-                id="guided-pennsieve-study-primary-conclusion"
-              ></textarea>
-              <p class="guided--text-input-instructions">
-                Enter a paragraph that explains the primary conclusion of your study. <br /><b
-                  >Refrain from using markdown.</b
-                >
-              </p>
-            </div>
-          </div>
-        </div>
-        <div id="guided-add-tags-tab" class="guided--page" data-page-name="Pennsieve dataset tags">
-          <div class="guided--section">
-            <h1 class="text-sub-step-title">Dataset tags</h1>
-            <p class="help-text mb-lg">
-              Dataset tags are keywords that indicate the key elements of your research. They will
-              improve the findability of your dataset when it is published on the SPARC Data portal.
-              The tags can be similar to the keywords you provided previously for the metadata file.
-            </p>
-            <input id="guided-tagify-dataset-tags" name="guided-tags" value="" autofocus />
-            <p class="guided--text-input-instructions">
-              Enter a keyword and press enter to add it as a tag. Double click a tag to edit its
-              contents.
-            </p>
-          </div>
-        </div>
         <div id="guided-assign-license-tab" class="guided--page" data-page-name="Sharing license">
           <div class="guided--section">
             <h1 class="text-sub-step-title">Sharing license:</h1>
@@ -5072,14 +5011,14 @@
               <h2 class="guided--text-sub-step" style="color: var(--color-bg-plum)">
                 En error occurred while validating your dataset.
               </h2>
-              <h2 class="guided--text-click-continue">
+              <h2 class="guided--text-user-directions">
                 SDS validation currently not mandatory. Click "Save and continue" to progress to
                 dataset review and generation.
               </h2>
             </div>
           </div>
           <div class="guided--section" id="guided-section-skip-validation">
-            <h2 class="guided--text-click-continue">
+            <h2 class="guided--text-user-directions">
               Click "<span class="next-button-span"></span>" to continue without validating your
               dataset
             </h2>
@@ -5508,7 +5447,7 @@
                 </tr>
               </tbody>
             </table>
-            <h2 class="guided--text-click-continue" id="guided-dataset-upload-complete-message">
+            <h2 class="guided--text-user-directions" id="guided-dataset-upload-complete-message">
               Click "<span class="next-button-span"></span>" to go to the last step of the data
               curation and sharing process
             </h2>
@@ -5802,7 +5741,7 @@
                             <button
                               id="guided--ORCID-btn"
                               class="prepublishing-item-button green-hollow-button ml-3"
-                              onclick="orcidSignIn('guided')"
+                              onclick="orcidSignIn(this, 'guided')"
                             >
                               Link ORCID iD
                             </button>

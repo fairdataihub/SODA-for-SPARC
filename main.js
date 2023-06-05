@@ -205,6 +205,10 @@ let user_restart_confirmed = false;
 let updatechecked = false;
 let window_reloaded = false;
 
+// If buildIsBeta is true, the app will not check for updates
+// If it is false, the app will check for updates
+const buildIsBeta = true;
+
 function initialize() {
   const checkForAnnouncements = () => {
     mainWindow.webContents.send("checkForAnnouncements");
@@ -222,7 +226,9 @@ function initialize() {
 
     mainWindow.webContents.once("dom-ready", () => {
       if (updatechecked == false) {
-        autoUpdater.checkForUpdatesAndNotify();
+        if (!buildIsBeta) {
+          autoUpdater.checkForUpdatesAndNotify();
+        }
       }
     });
 
@@ -322,7 +328,9 @@ function initialize() {
           nodeStorage.setItem("announcements", false);
         }
         run_pre_flight_checks();
-        autoUpdater.checkForUpdatesAndNotify();
+        if (!buildIsBeta) {
+          autoUpdater.checkForUpdatesAndNotify();
+        }
         updatechecked = true;
       }, 6000);
     });
@@ -439,6 +447,26 @@ ipcMain.on("restart_app", async () => {
   log.info("quitAndInstall");
   autoUpdater.quitAndInstall();
 });
+
+const getPennsieveAgentPath = () => {
+  if (process.platform === "win32" || process.platform === "cygwin") {
+    const bit64Path = path.join("C:\\Program Files\\Pennsieve\\pennsieve.exe");
+    const bit32Path = path.join("C:\\Program Files (x86)\\Pennsieve\\pennsieve.exe");
+    if (fs.existsSync(bit64Path)) {
+      return bit64Path;
+    }
+    if (fs.existsSync(bit32Path)) {
+      return bit32Path;
+    }
+    throw new Error(`Cannot find pennsieve at ${bit64Path} or ${bit32Path}`);
+  } else {
+    pennsievePath = "/usr/local/bin/pennsieve";
+    if (fs.existsSync(pennsievePath)) {
+      return pennsievePath;
+    }
+    throw new Error(`Cannot find pennsieve at ${pennsievePath}`);
+  }
+};
 
 ipcMain.on("spawn-pennsieve-agent", async (event) => {});
 

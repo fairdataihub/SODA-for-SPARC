@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <section
   id="submit_prepublishing_review-section"
   class="section js-section u-category-windows"
@@ -12,7 +11,7 @@
           <h2>Disseminate Datasets - Share with Curation Team</h2>
           <a
             target="_blank"
-            href="https://docs.sodaforsparc.io/docs/disseminate-dataset/submit-for-pre-publishing-review"
+            href="https://docs.sodaforsparc.io/docs/Freeform%20Mode/disseminate-dataset/submit-for-pre-publishing-review"
             >Need help?</a
           >
         </div>
@@ -162,11 +161,7 @@
                       >
                         Review status:
                       </h5>
-                      <div
-                        class="change-current-account"
-                        style="width: 100%"
-                        onclick="refreshDatasetStatus()"
-                      >
+                      <div class="change-current-account" style="width: 100%">
                         <span
                           id="para-review-dataset-info-disseminate"
                           class="prepare-metadata-review-status"
@@ -175,9 +170,9 @@
                         </span>
 
                         <i
-                          class="fas fa-sync svg-change-current-account"
+                          class="fas fa-sync svg-change-current-account hidden d-none"
                           id="button-refresh-publishing-status"
-                          style="color: #000"
+                          style="color: #000; height: 14px; margin-top: 5px; margin-right: 4px"
                         ></i>
                       </div>
                     </div>
@@ -218,6 +213,19 @@
         </div>
       </div>
 
+      <div class="guided--panel mt-0 hidden" id="curation-dataset-status-loading">
+        <div class="lds-roller">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+        Fetching status...
+      </div>
       <div
         class="individual-question post-curation"
         id="submit_prepublishing_review-question-2"
@@ -281,10 +289,10 @@
                           ></i>
                         </div>
                         <button
-                          class="prepublishing-item-button green-hollow-button ml-3"
-                          onClick="transitionFromPrePublishingChecklist('add_edit_subtitle-section')"
+                          class="prepublishing-item-button ml-3 text-left"
+                          onClick="transitionFromPrePublishingChecklist(this, 'add_edit_subtitle-section')"
                         >
-                          Add subtitle
+                          Checking subtitle
                         </button>
                       </td>
                       <td>Give others a brief description of your dataset.</td>
@@ -299,10 +307,10 @@
                           ></i>
                         </div>
                         <button
-                          class="prepublishing-item-button green-hollow-button ml-3"
-                          onClick="transitionFromPrePublishingChecklist('add_tags-section')"
+                          class="prepublishing-item-button ml-3 text-left"
+                          onClick="transitionFromPrePublishingChecklist(this, 'add_tags-section')"
                         >
-                          Add tags
+                          Checking tags
                         </button>
                       </td>
                       <td>Make it easier for people to find your dataset in Discover.</td>
@@ -317,15 +325,14 @@
                           ></i>
                         </div>
                         <button
-                          class="prepublishing-item-button green-hollow-button ml-3"
-                          onClick="transitionFromPrePublishingChecklist('add_edit_description-section')"
+                          class="prepublishing-item-button ml-3 text-left"
+                          onClick="transitionFromPrePublishingChecklist(this, 'add_edit_description-section')"
                         >
-                          Add description
+                          Checking description
                         </button>
                       </td>
                       <td>
-                        Give others a detailed overview of your dataset and outline your findings
-                        and analysis.
+                        A detailed overview of your dataset and outline your findings and analysis.
                       </td>
                     </tr>
                     <tr>
@@ -338,13 +345,13 @@
                           ></i>
                         </div>
                         <button
-                          class="prepublishing-item-button green-hollow-button ml-3"
-                          onClick="transitionFromPrePublishingChecklist('add_edit_banner-section')"
+                          class="prepublishing-item-button ml-3 text-left"
+                          onClick="transitionFromPrePublishingChecklist(this, 'add_edit_banner-section')"
                         >
-                          Add banner image
+                          Checking banner image
                         </button>
                       </td>
-                      <td>Add a banner image to help your dataset stand out in listings.</td>
+                      <td>A banner image helps your dataset stand out in listings.</td>
                     </tr>
                     <tr>
                       <td>
@@ -356,10 +363,10 @@
                           ></i>
                         </div>
                         <button
-                          class="prepublishing-item-button green-hollow-button ml-3"
-                          onClick="transitionFromPrePublishingChecklist('add_license-section')"
+                          class="prepublishing-item-button ml-3 text-left"
+                          onClick="transitionFromPrePublishingChecklist(this, 'add_license-section')"
                         >
-                          Add license
+                          Checking license
                         </button>
                       </td>
                       <td>Let others know how they can use this data in their own research.</td>
@@ -374,11 +381,11 @@
                           ></i>
                         </div>
                         <button
-                          class="prepublishing-item-button green-hollow-button ml-3"
+                          class="prepublishing-item-button ml-3 text-left"
                           id="ORCID-btn"
-                          onclick="orcidSignIn('freeform')"
+                          onclick="orcidSignIn(this, 'freeform')"
                         >
-                          Link ORCID iD
+                          Checking ORCID ID
                         </button>
                       </td>
                       <td>

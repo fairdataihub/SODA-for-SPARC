@@ -17,7 +17,9 @@ var currentTab = 0; // Current tab is set to be the first tab (0)
 
 const delay = 250;
 
-const showParentTab = (tabNow, nextOrPrev) => {
+const showParentTab = async (tabNow, nextOrPrev) => {
+  console.log(tabNow);
+  console.log(nextOrPrev);
   $("#nextBtn").prop("disabled", true);
   // check to show Save progress btn (only after step 2)
   if (tabNow >= 2) {
@@ -91,9 +93,20 @@ const showParentTab = (tabNow, nextOrPrev) => {
     $("#nextBtn").prop("disabled", false);
   }
   if (tabNow == 4) {
+    if (nextOrPrev === -1) {
+      return;
+    }
+
     if (document.getElementById("generate-manifest-curate").checked) {
+      console.log("CHECKED");
       // need to run manifest creation
-      ffmCreateManifest(sodaJSONObj);
+      //Hide the UI until the manifest card are created
+      $("#manifest-creating-loading").removeClass("hidden");
+      $("#manifest-items-container").addClass("hidden");
+      await ffmCreateManifest(sodaJSONObj);
+      $("#manifest-items-container").removeClass("hidden");
+      $("#manifest-creating-loading").addClass("hidden");
+      $("button-generate-manifest-locally").show();
     } else {
       document.getElementById("ffm-container-manifest-file-cards").innerHTML = "";
     }
@@ -657,12 +670,32 @@ const nextPrev = (pageIndex) => {
       currentTab = currentTab + 2;
       $("#nextBtn").prop("disabled", false);
       fixStepDone(4);
+
+      showParentTab(currentTab, pageIndex);
+
+      console.log("Executing this stuff here");
+
+      // check if skip card or the validate card have been checked
+      const validationOptionSelected = document.querySelector(
+        "#validate-dataset-tab input[type=radio]:checked"
+      );
+      console.log(validationOptionSelected);
+
+      if (validationOptionSelected) {
+        console.log("Not disabling net butn");
+        // enable the continue button
+        $("#nextBtn").prop("disabled", false);
+      } else {
+        console.log("DIsabling next button");
+        // disable the continue button
+        $("#nextBtn").prop("disabled", true);
+      }
     } else {
       currentTab = currentTab - 1;
       // fixStepDone(4);
       $("#nextBtn").prop("disabled", true);
+      showParentTab(currentTab, pageIndex);
     }
-    showParentTab(currentTab, pageIndex);
   } else if (
     parentTabs[currentTab].id === "manifest-file-tab" &&
     (sodaJSONObj["starting-point"]["type"] === "new" ||
@@ -701,6 +734,31 @@ const nextPrev = (pageIndex) => {
     currentTab = currentTab - 2;
     showParentTab(currentTab, pageIndex);
     $("#nextBtn").prop("disabled", false);
+  } else if (parentTabs[currentTab].id === "generate-dataset-tab") {
+    // Hide the current tab:
+    $(parentTabs[currentTab]).removeClass("tab-active");
+    // Increase or decrease the current tab by 1:
+    currentTab = currentTab + pageIndex;
+    // For step 1,2,3, check for High level folders input to disable Continue button
+    if (currentTab === 1 || currentTab === 2 || currentTab === 3) {
+      highLevelFoldersDisableOptions();
+    }
+    // Display the correct tab:
+    showParentTab(currentTab, pageIndex);
+
+    // check if skip card or the validate card have been checked
+    const validationOptionSelected = document.querySelector(
+      "#validate-dataset-tab input[type=radio]:checked"
+    );
+    console.log(validationOptionSelected);
+
+    if (validationOptionSelected) {
+      // enable the continue button
+      $("#nextBtn").prop("disabled", false);
+    } else {
+      // disable the continue button
+      $("#nextBtn").prop("disabled", true);
+    }
   } else {
     // Hide the current tab:
     $(parentTabs[currentTab]).removeClass("tab-active");
@@ -879,6 +937,29 @@ const raiseWarningGettingStarted = (ev) => {
       resolve(globalGettingStarted1stQuestionBool);
     }
   });
+};
+
+const handleValidateCardSelection = async (ev) => {
+  $(ev).children().find(".folder-input-check").prop("checked", true);
+  $(ev).addClass("checked");
+
+  // uncheck the other radio buttons
+  $($(ev).parents()[0]).siblings().find(".option-card.radio-button").removeClass("checked");
+  $($(ev).parents()[0]).siblings().find(".option-card.radio-button").addClass("non-selected");
+
+  // check which card is selected
+  let selectedCard = document.querySelector("#validate-dataset-tab input[type=radio]:checked");
+
+  if (selectedCard.id === "validate-organize-1-A") {
+    // run validation
+    await validateOrganizedDataset();
+
+    // scroll to the results table
+    document.querySelector("#organize--table-validation-errors").scrollIntoView();
+  } // else the user skipped validation
+
+  // enable the continue button
+  $("#nextBtn").prop("disabled", false);
 };
 
 var divList = [];
@@ -1829,6 +1910,12 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
     $("#bf-dataset-spinner").css("visibility", "hidden");
     $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
     $("#dataset-loaded-message").show();
+
+    // clear the validation table results
+    let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
+    clearValidationResults(validationErrorsTable);
+    // hide the table
+    document.querySelector("#organize--table-validation-errors").style.visibility = "hidden";
     // $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
   }
 
@@ -2515,6 +2602,12 @@ const reset_ui = () => {
   $("#Question-getting-started-existing-BF-dataset").hide();
   $("#Question-getting-started-existing-BF-dataset").children().hide();
   $("#nextBtn").prop("disabled", true);
+
+  // clear the validation table results
+  let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
+  clearValidationResults(validationErrorsTable);
+  // hide the table
+  document.querySelector("#organize--table-validation-errors").style.visibility = "hidden";
 };
 
 const populate_existing_folders = (dataset_folders) => {
@@ -3606,6 +3699,7 @@ $(document).ready(() => {
   });
 
   // Blackfynn transition warning message
+  //TODO: Dorian -> Remove this as it is no longer needed
   const url =
     "https://raw.githubusercontent.com/bvhpatel/SODA/master/src/assets/blackfynn-warning-message.txt";
   fetch(url).then(function (response) {
@@ -3719,7 +3813,10 @@ for (var i = 0; i < buttons.length; i++) {
 // Input:
 //  elementId:  string - id selector of the section the user will transition to from the Submit for pre-publishing tab
 // transition from the pre-publishing review tab to the given prepare metadata tabs
-const transitionFromPrePublishingChecklist = (elementId) => {
+const transitionFromPrePublishingChecklist = (ev, elementId) => {
+  if (ev.classList.contains("no-pointer")) {
+    return;
+  }
   // change is shown to the subtitle section
   $(".section.is-shown").removeClass("is-shown");
 

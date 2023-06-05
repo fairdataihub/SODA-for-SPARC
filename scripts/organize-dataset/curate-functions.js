@@ -831,6 +831,7 @@ const importOrganizeProgressPrompt = () => {
   }
 };
 
+
 $(document).ready(async function () {
   importOrganizeProgressPrompt();
 
@@ -850,6 +851,7 @@ $(document).ready(async function () {
   $("#guided_bf_list_users_and_teams").selectpicker();
   $("#guided_bf_list_users_and_teams").selectpicker("refresh");
 });
+
 
 const get_api_key = (login, password, key_name) => {
   return new Promise(async (resolve) => {
@@ -2035,9 +2037,8 @@ const ffmCreateManifest = async (sodaJson) => {
 
 $("#generate-manifest-curate").change(async function () {
   if (this.checked) {
-    $("#button-generate-manifest-locally").show();
     //display manifest generator UI here
-    $("#ffm-manifest-generator").show();
+    $("#manifest-creating-loading").removeClass("hidden");
     // create the manifest of the high level folders within sodaJSONObj
     if ("manifest-files" in sodaJSONObj === false) {
       sodaJSONObj["manifest-files"] = {
@@ -2047,11 +2048,15 @@ $("#generate-manifest-curate").change(async function () {
     }
 
     await ffmCreateManifest(sodaJSONObj);
+    $("#ffm-manifest-generator").show();
+    $("#button-generate-manifest-locally").show();
     // For the back end to know the manifest files have been created in $HOME/SODA/manifest-files/<highLvlFolder>
     sodaJSONObj["manifest-files"]["auto-generated"] = true;
+    $("#manifest-creating-loading").addClass("hidden");
   } else {
     $("#button-generate-manifest-locally").hide();
     $("#ffm-manifest-generator").hide();
+    $("#manifest-creating-loading").addClass("hidden");
     document.getElementById("ffm-container-manifest-file-cards").innerHTML = "";
     if (sodaJSONObj["manifest-files"]?.["destination"]) {
       delete sodaJSONObj["manifest-files"]["destination"];

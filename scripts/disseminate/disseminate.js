@@ -82,191 +82,29 @@ const disseminatePublish = async (curationMode) => {
   }
 };
 
-const refreshDatasetStatus = () => {
-  var account = $("#current-bf-account").text();
-  var dataset = $(".bf-dataset-span")
+const refreshDatasetStatus = async (ev) => {
+  // $(`#${ev.id}`).addClass("fa-spin");
+  let account = $("#current-bf-account").text();
+  let dataset = $(".bf-dataset-span")
     .html()
     .replace(/^\s+|\s+$/g, "");
-  disseminateShowPublishingStatus("", account, dataset);
+  if (dataset != "None") {
+    $("#para-review-dataset-info-disseminate").text("None");
+    $(`#${ev.id}`).addClass("fa-spin");
+  }
+  await disseminateShowPublishingStatus("", account, dataset);
+  $(`#${ev.id}`).removeClass("fa-spin");
 };
 
-const disseminateShowPublishingStatus = (callback, account, dataset) => {
+const disseminateShowPublishingStatus = async (callback, account, dataset) => {
   if (dataset !== "None") {
     if (callback == "noClear") {
       var nothing;
     } else {
-      showPublishingStatus("noClear");
+      await showPublishingStatus("noClear");
     }
   }
   $("#submit_prepublishing_review-spinner").hide();
-};
-
-// TODO: -> Dorian remove this function
-const permissionsCurationTeam = async (account, dataset, share_status = "", method) => {
-  // TODO -> Dorian Find out what team is needed to share with the curation team
-  // Current method is currently not sharing with the curation team
-  // Maybe the selectedTeam name was changed?
-  let selectedTeam = "SPARC Data Curation Team";
-  let selectedRole = "manager";
-
-  // $("#curation-team-share-btn").prop("disabled", true);
-  // $("#curation-team-unshare-btn").prop("disabled", true);
-
-  if (share_status === "unshare") {
-    selectedRole = "remove current permissions";
-  }
-
-  log.info(`Sharing dataset ${dataset} with ${selectedTeam} as ${selectedRole}`);
-
-  try {
-    await client.patch(
-      `/manage_datasets/bf_dataset_permissions`,
-      {
-        input_role: selectedRole,
-      },
-      {
-        params: {
-          selected_account: account,
-          selected_dataset: dataset,
-          scope: "team",
-          name: selectedTeam,
-        },
-      }
-    );
-
-    logGeneralOperationsForAnalytics(
-      "Success",
-      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
-      AnalyticsGranularity.ACTION,
-      [
-        share_status === "unshare"
-          ? "Remove Consortium's Team Permissions"
-          : "Give Consortium Team Permissions",
-      ]
-    );
-
-    disseminateShowCurrentPermission(account, dataset);
-    let selectedStatusOption = "03. Ready for Curation (Investigator)";
-
-    if (share_status === "unshare") {
-      selectedStatusOption = "02. Work In Progress (Investigator)";
-    }
-
-    try {
-      await client.put(`/manage_datasets/bf_dataset_status`, {
-        selected_bfaccount: account,
-        selected_bfdataset: dataset,
-        selected_status: selectedStatusOption,
-      });
-
-      if (method === "newMethod") {
-        return;
-      }
-      $("#share-curation-team-spinner").hide();
-
-      if (share_status === "unshare") {
-        Swal.fire({
-          title: "Successfully unshared with Curation team!",
-          text: `Removed the Curation Team's manager permissions and set dataset status to "Work In Progress"`,
-          icon: "success",
-          showConfirmButton: true,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
-        $("#curation-team-unshare-btn").hide();
-        $("#curation-team-share-btn").show();
-        logGeneralOperationsForAnalytics(
-          "Success",
-          DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
-          AnalyticsGranularity.ALL_LEVELS,
-          ["Change Dataset Status to Work In Progress"]
-        );
-      } else {
-        Swal.fire({
-          title: "Successfully shared with Curation team!",
-          text: 'This provided the Curation Team manager permissions and set your dataset status to "Ready for Curation"',
-          icon: "success",
-          showConfirmButton: true,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-        });
-        $("#curation-team-unshare-btn").show();
-        $("#curation-team-share-btn").hide();
-
-        logGeneralOperationsForAnalytics(
-          "Success",
-          DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
-          AnalyticsGranularity.ALL_LEVELS,
-          ["Change Dataset Status to Ready for Curation"]
-        );
-      }
-
-      showCurrentPermission();
-      showCurrentDatasetStatus();
-
-      disseminiateShowCurrentDatasetStatus("", account, dataset);
-      $(".spinner.post-curation").hide();
-      $("#curation-team-share-btn").prop("disabled", false);
-      $("#curation-team-unshare-btn").prop("disabled", false);
-    } catch (error) {
-      clientError(error);
-      let emessage = userErrorMessage(error);
-      if (method === "newMethod") {
-        return;
-      }
-
-      Swal.fire({
-        title: "Failed to share with Curation team!",
-        text: emessage,
-        icon: "error",
-        showConfirmButton: true,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-      });
-      $("#share-curation-team-spinner").hide();
-      $("#curation-team-share-btn").prop("disabled", false);
-      $("#curation-team-unshare-btn").prop("disabled", false);
-
-      logGeneralOperationsForAnalytics(
-        "Error",
-        DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
-        AnalyticsGranularity.ALL_LEVELS,
-        [
-          share_status === "unshare"
-            ? "Change Dataset Status to Work In Progress"
-            : "Change Dataset Status to Ready for Curation",
-        ]
-      );
-      $(".spinner.post-curation").hide();
-    }
-  } catch (error) {
-    clientError(error);
-    let emessage = userErrorMessage(error);
-
-    Swal.fire({
-      title: "Failed to share with Curation team!",
-      text: emessage,
-      icon: "error",
-      showConfirmButton: true,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-    });
-    $("#share-curation-team-spinner").hide();
-    $(".spinner.post-curation").hide();
-    $("#curation-team-share-btn").prop("disabled", false);
-    $("#curation-team-unshare-btn").prop("disabled", false);
-
-    logGeneralOperationsForAnalytics(
-      "Error",
-      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_CURATION_TEAM,
-      AnalyticsGranularity.ALL_LEVELS,
-      [
-        share_status === "unshare"
-          ? "Remove Consortium's Team Permissions"
-          : "Give Consortium Team Permissions",
-      ]
-    );
-  }
 };
 
 // TODO -> Dorian remove this function if not needed
@@ -433,11 +271,11 @@ const permissionsCurationTeam = async (account, dataset, share_status = "", meth
 // };
 
 const disseminateShowCurrentPermission = async (bfAcct, bfDS) => {
-  currentDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
   if (bfDS === "Select dataset") {
     currentDatasetPermission.innerHTML = "None";
     return;
   }
+  currentDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
 
   let permissions;
   try {

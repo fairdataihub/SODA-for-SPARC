@@ -555,7 +555,7 @@ def create_new_dataset(datasetname, accountname):
             abort(400, error)
 
         if not datasetname or datasetname.isspace():
-            error = f"{error}Please enter valid dataset name."
+            error = "Please enter valid dataset name."
             abort(400, error)
 
         token = get_access_token()
@@ -817,7 +817,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         except Exception as e:
             namespace_logger.error("Error uploading dataset files")
             namespace_logger.error(e)
-            raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a href='https://docs.sodaforsparc.io/docs/next/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
+            raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
 
         submitdatastatus = "Done"
     except Exception as e:

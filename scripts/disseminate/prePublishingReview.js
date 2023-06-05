@@ -9,6 +9,30 @@ Note: Some frontend elements of the workflow are in the renderer.js file as well
 ******************************************************
 */
 
+const resetSubmissionChecklistText = () => {
+  let subtitleText = $(`#prepublishing-checklist-icon-subtitle`).parent().siblings()[0];
+  let tagsText = $(`#prepublishing-checklist-icon-tags`).parent().siblings()[0];
+  let desctiptionText = $(`#prepublishing-checklist-icon-readme`).parent().siblings()[0];
+  let bannerText = $(`#prepublishing-checklist-icon-banner`).parent().siblings()[0];
+  let licenseText = $(`#prepublishing-checklist-icon-license`).parent().siblings()[0];
+  let orcidText = $(`#prepublishing-checklist-icon-ORCID`).parent().siblings()[0];
+
+  subtitleText.innerText = "Checking subtitle";
+  tagsText.innerText = "Checking tags";
+  desctiptionText.innerText = "Checking description";
+  bannerText.innerText = "Checking banner image";
+  licenseText.innerText = "Checking license";
+  orcidText.innerText = "Checking ORCID ID";
+
+  let elements = [subtitleText, tagsText, desctiptionText, bannerText, licenseText, orcidText];
+
+  elements.forEach((element) => {
+    element.classList.remove("green-hollow-button");
+    element.classList.add("text-left");
+    element.classList.add("no-pointer");
+  });
+};
+
 /**
  *
  * @param {string} currentDataset - The currently selected dataset - name
@@ -19,7 +43,7 @@ const getPrepublishingChecklistStatuses = async (currentDataset) => {
   // check that a dataset name or id is provided
   if (!currentDataset || currentDataset === "") {
     throw new Error(
-      "Error: Must provide a valid dataset to log status of pre-publishing checklist items from."
+      "Error: Must provide a valid dataset to log status of submission checklist items from."
     );
   }
 
@@ -80,8 +104,37 @@ const getPrepublishingChecklistStatuses = async (currentDataset) => {
   return statuses;
 };
 
+// once the user clicks the Begin Submission button check if they are the data set owner'
+// show the next section - which has the pre-publishing checklist - if so
+// Function returns true if the dataset has been published, false otherwise
+const resetffmPrepublishingUI = async () => {
+  // hide the begin publishing button
+  $("#begin-prepublishing-btn").addClass("hidden");
+  // resetPrePublishingChecklist();
+
+  // check what the pre-publishing status is
+  if (
+    document
+      .getElementById("para-review-dataset-info-disseminate")
+      .innerText.includes("Dataset is currently under review")
+  ) {
+    // show email curation team message to withdraw dataset
+    $("#unshare-dataset-with-curation-team-message").removeClass("hidden");
+    $(".pre-publishing-continue-container").hide();
+    $("#prepublishing-checklist-container").hide();
+
+    return true;
+  }
+
+  // show the pre-publishing checklist and the continue button
+  $("#prepublishing-checklist-container").show();
+  $(".pre-publishing-continue-container").show();
+  $("#unshare-dataset-with-curation-team-message").addClass("hidden");
+  return false;
+};
+
 // take the user to the Pennsieve account to sign up for an ORCID Id
-const orcidSignIn = async (curationMode) => {
+const orcidSignIn = async (ev, curationMode) => {
   let curationModeID = "";
   if (curationMode === "guided") {
     // This is done to ensure the right element ID is called
@@ -89,51 +142,77 @@ const orcidSignIn = async (curationMode) => {
     curationModeID = "guided--";
   }
 
-  // tell the main process to open a Modal window with the webcontents of the user's Pennsieve profile so they can add an ORCID iD
-  ipcRenderer.send(
-    "orcid",
-    "https://orcid.org/oauth/authorize?client_id=APP-DRQCE0GUWKTRCWY2&response_type=code&scope=/authenticate&redirect_uri=https://app.pennsieve.io/orcid-redirect"
-  );
-
-  // handle the reply from the asynhronous message to sign the user into Pennsieve
-  ipcRenderer.on("orcid-reply", async (event, accessCode) => {
-    if (!accessCode || accessCode === "") {
+  if (curationMode === "freeform") {
+    if (ev.classList.contains("no-pointer")) {
       return;
     }
 
-    // show a loading sweet alert
-    Swal.fire({
-      title: "Connecting your ORCID iD to Pennsieve.",
-      html: "Please wait...",
-      allowEscapeKey: false,
-      allowOutsideClick: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
-    });
+    // tell the main process to open a Modal window with the webcontents of the user's Pennsieve profile so they can add an ORCID iD
+    ipcRenderer.send(
+      "orcid",
+      "https://orcid.org/oauth/authorize?client_id=APP-DRQCE0GUWKTRCWY2&response_type=code&scope=/authenticate&redirect_uri=https://app.pennsieve.io/orcid-redirect"
+    );
 
-    log.info("Connecting orcid to Pennsieve account.");
+    // handle the reply from the asynhronous message to sign the user into Pennsieve
+    ipcRenderer.on("orcid-reply", async (event, accessCode) => {
+      if (!accessCode || accessCode === "") {
+        return;
+      }
 
-    try {
-      await client.post(
-        `/user/orcid`,
-        { access_code: accessCode },
-        {
-          params: {
-            pennsieve_account: defaultBfAccount,
-          },
-        }
-      );
-    } catch (error) {
-      clientError(error);
-      let emessage = userErrorMessage(error);
+      // show a loading sweet alert
       Swal.fire({
-        title: "An issue occurred with connecting your ORCID iD to Pennsieve.",
-        text: emessage,
-        icon: "error",
+        title: "Connecting your ORCID iD to Pennsieve.",
+        html: "Please wait...",
+        allowEscapeKey: false,
+        allowOutsideClick: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        timerProgressBar: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      log.info("Connecting orcid to Pennsieve account.");
+
+      try {
+        await client.post(
+          `/user/orcid`,
+          { access_code: accessCode },
+          {
+            params: {
+              pennsieve_account: defaultBfAccount,
+            },
+          }
+        );
+      } catch (error) {
+        clientError(error);
+        let emessage = userErrorMessage(error);
+        Swal.fire({
+          title: "An issue occurred with connecting your ORCID iD to Pennsieve.",
+          text: emessage,
+          icon: "error",
+          allowEscapeKey: true,
+          allowOutsideClick: true,
+          confirmButtonText: "Ok",
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          timerProgressBar: false,
+        });
+        logGeneralOperationsForAnalytics(
+          "Error",
+          DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
+          AnalyticsGranularity.ALL_LEVELS,
+          ["Integrate ORCID iD"]
+        );
+
+        return;
+      }
+
+      // show a success message
+      await Swal.fire({
+        title: "ORCID iD integrated with Pennsieve",
+        icon: "success",
         allowEscapeKey: true,
         allowOutsideClick: true,
         confirmButtonText: "Ok",
@@ -141,75 +220,32 @@ const orcidSignIn = async (curationMode) => {
         backdrop: "rgba(0,0,0, 0.4)",
         timerProgressBar: false,
       });
-      logGeneralOperationsForAnalytics(
-        "Error",
-        DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
-        AnalyticsGranularity.ALL_LEVELS,
-        ["Integrate ORCID iD"]
+
+      // track success
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW + " - Integrate ORCID iD",
+        defaultBfDatasetId
       );
 
-      return;
-    }
-
-    // show a success message
-    await Swal.fire({
-      title: "ORCID iD integrated with Pennsieve",
-      icon: "success",
-      allowEscapeKey: true,
-      allowOutsideClick: true,
-      confirmButtonText: "Ok",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      timerProgressBar: false,
+      // mark the orcid item green
+      setPrepublishingChecklistItemIconByStatus(
+        `${curationModeID}prepublishing-checklist-icon-ORCID`,
+        true
+      );
     });
-
-    // track success
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW + " - Integrate ORCID iD",
-      defaultBfDatasetId
-    );
-
-    // mark the orcid item green
-    setPrepublishingChecklistItemIconByStatus(
-      `${curationModeID}prepublishing-checklist-icon-ORCID`,
-      true
-    );
-  });
+  }
 };
-
-// TODO: Dorian -> finish this function to reset the text of the checklist items
-// const resetPrePublishingChecklist = (curationMode) => {
-//   let curationModeID = "";
-//   if (curationMode === "guided") {
-//     curationModeID = "guided--";
-//   }
-//   let checkListItems = $(".prepublishing-item-button");
-//   for (let i = 0; i < checkListItems.length; i++) {
-//     let item = checkListItems[i];
-//     console.log(item);
-//     let itemText = item.innerText;
-//     if (!itemText.includes("Orcid") && !itemText.includes("Add")) {
-//       let resetText = itemText.replace(" added", "");
-//       //Lowercase the first letter of the string
-//       resetText = resetText.charAt(0).toLowerCase() + resetText.slice(1);
-//       item.innerText = "Add " + resetText;
-//       console.log(item.innerText);
-//     }
-//     else if(itemText.includes("Orcid") && !itemText.includes("Link")){
-//       let resetText = itemText.replace(" linked", "");
-//       item.innerText = "Link " + resetText;
-//       console.log(item.innerText);
-//     }
-//   }
-// }
 
 //  This function is the first step to the prepublishing workflow for both guided and freeform mode
 //  Function fetches the status of each item needed to publish a dataset from the backend and updates the UI accordingly.
 //  inPrePublishing: boolean - True when the function is ran in the pre-publishing submission flow; false otherwise
 const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "") => {
+  resetSubmissionChecklistText();
   console.log("In showing prepublishing checklist statuses start");
+  document.getElementById("pre-publishing-continue-btn").disabled = true;
+  $("#pre-publishing-continue-btn").disabled = true;
   let currentDataset = defaultBfDataset;
   let curationModeID = "";
   // resetPrePublishingChecklist(curationMode);
@@ -226,7 +262,7 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
   console.log("Value of the curation mode ID: ", curationModeID);
   console.log(
     "Value of the disseminate field: ",
-    $(`#${curationModeID}para-review-dataset-info-disseminate`).text()
+    $(`#${curationModeID}para-review-dataset-info-disseminate`).text().trim()
   );
 
   // wait until a value has been loaded into the status field
@@ -234,14 +270,19 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
     await wait(1000);
   }
 
-  if (
-    currentDataset === "Select dataset" ||
-    $(`#${curationModeID}para-review-dataset-info-disseminate`).text() !==
-      "Dataset is not under review currently"
-  ) {
+  if (currentDataset === "Select dataset") {
     console.log(
       "Returning as it has been determined that dataset is under review currently or that the current dataset is select dataset"
     );
+    return false;
+  }
+
+  if (
+    $(`#${curationModeID}para-review-dataset-info-disseminate`).text().trim() !=
+      "Dataset is not under review currently" &&
+    $(`#${curationModeID}para-review-dataset-info-disseminate`).text().trim() !=
+      "Dataset has been rejected by your Publishing Team and may require revision"
+  ) {
     return false;
   }
 
@@ -385,6 +426,9 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
     $(`.${curationModeID}icon-wrapper`).children().css("visibility", "visible");
   }
 
+  document.getElementById("pre-publishing-continue-btn").disabled = false;
+  $("#pre-publishing-continue-btn").disabled = false;
+
   return true;
 };
 
@@ -395,29 +439,54 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
 const setPrepublishingChecklistItemIconByStatus = (iconElementId, status) => {
   console.log(iconElementId);
   console.log(status);
+  let addButton = $(`#${iconElementId}`).parent().siblings()[0];
   if (status) {
     // Change icon of iconElementId to a checkmark
     $(`#${iconElementId}`).attr("class", "check icon");
     $(`#${iconElementId}`).css("color", "green");
-
-    // TODO: Dorian -> See if this is still worth doing
-    // // Change text of iconElementId to let user know that the item has been linked
-    // let itemButton = $(`#${iconElementId}`).parent().siblings()[0];
-    // let itemButtonText = itemButton.innerText;
-    // if(itemButtonText.includes("Link")) {
-    //   let updatedButtonText = itemButtonText.replace("Link", "") + " linked";
-    //   itemButton.innerText = updatedButtonText;
-    // }
-    // if(itemButtonText.includes("Add")) {
-    //   let updatedButtonText = itemButtonText.replace("Add", "") + " added";
-    //   updatedButtonText = updatedButtonText.slice(1);
-    //   // Capitalize the first letter updatedButtonText
-    //   console.log("before updating text " + updatedButtonText)
-    //   let asdf = updatedButtonText.charAt(0).toUpperCase() + updatedButtonText.slice(1);
-    //   console.log(asdf);
-    //   itemButton.innerText = asdf;
-    // }
+    addButton.classList.remove("green-hollow-button");
+    addButton.classList.add("text-left");
+    addButton.classList.add("no-pointer");
+    if (iconElementId.includes("ORCID")) {
+      addButton.innerText = "ORCID iD added";
+    }
+    if (iconElementId.includes("tags")) {
+      addButton.innerText = "Tags added";
+    }
+    if (iconElementId.includes("banner")) {
+      addButton.innerText = "Banner image added";
+    }
+    if (iconElementId.includes("license")) {
+      addButton.innerText = "License added";
+    }
+    if (iconElementId.includes("readme")) {
+      addButton.innerText = "Description added";
+    }
+    if (iconElementId.includes("subtitle")) {
+      addButton.innerText = "Subtitle added";
+    }
   } else {
+    addButton.classList.add("green-hollow-button");
+    addButton.classList.remove("text-left");
+    addButton.classList.remove("no-pointer");
+    if (iconElementId.includes("ORCID")) {
+      addButton.innerText = "Link ORCID iD";
+    }
+    if (iconElementId.includes("tags")) {
+      addButton.innerText = "Add tags";
+    }
+    if (iconElementId.includes("banner")) {
+      addButton.innerText = "Add banner image";
+    }
+    if (iconElementId.includes("license")) {
+      addButton.innerText = "Add license";
+    }
+    if (iconElementId.includes("readme")) {
+      addButton.innerText = "Add description";
+    }
+    if (iconElementId.includes("subtitle")) {
+      addButton.innerText = "Add subtitle";
+    }
     $(`#${iconElementId}`).attr("class", "close icon");
     $(`#${iconElementId}`).css("color", "red");
   }
@@ -451,36 +520,6 @@ const allPrepublishingChecklistItemsCompleted = (curationMode) => {
   return incompleteChecklistItems.length ? false : true;
 };
 
-// once the user clicks the Begin Submission button check if they are the data set owner'
-// show the next section - which has the pre-publishing checklist - if so
-// Function returns true if the dataset has been published, false otherwise
-const resetffmPrepublishingUI = async () => {
-  // hide the begin publishing button
-  $("#begin-prepublishing-btn").addClass("hidden");
-  // resetPrePublishingChecklist();
-
-  // check what the pre-publishing status is
-  if (
-    document
-      .getElementById("para-review-dataset-info-disseminate")
-      .innerText.includes("Dataset is currently under review")
-  ) {
-    // show the withdraw button
-    // TODO: Dorian -> Remove withdraw button and show message instead
-    $("#unshare-dataset-with-curation-team-message").removeClass("hidden");
-    $(".pre-publishing-continue-container").hide();
-    $("#prepublishing-checklist-container").hide();
-
-    return true;
-  }
-
-  // show the pre-publishing checklist and the continue button
-  $("#prepublishing-checklist-container").show();
-  $(".pre-publishing-continue-container").show();
-  $("#unshare-dataset-with-curation-team-message").addClass("hidden");
-  return false;
-};
-
 // transition to the final question and populate the file tree with the dataset's metadata files
 const createPrepublishingChecklist = async (curationMode) => {
   let curationModeID = "";
@@ -492,6 +531,7 @@ const createPrepublishingChecklist = async (curationMode) => {
 
   if (curationMode === "freeform") {
     document.getElementById("pre-publishing-continue-btn").disabled = true;
+    $("#pre-publishing-continue-btn").disabled = true;
     $("#pre-publishing-continue-btn").addClass("loading");
   }
 
@@ -526,6 +566,7 @@ const createPrepublishingChecklist = async (curationMode) => {
   if (curationMode === "freeform") {
     await disseminatePublish("freeform");
     document.getElementById("pre-publishing-continue-btn").disabled = false;
+    $("#pre-publishing-continue-btn").disabled = false;
     $("#pre-publishing-continue-btn").removeClass("loading");
     resetffmPrepublishingUI();
   }
@@ -534,14 +575,13 @@ const createPrepublishingChecklist = async (curationMode) => {
 // check if the user is the dataset owner and transition to the prepublishing checklist question if so
 // TODO: Dorian handle the freeform withdraw button and remove it
 const beginPrepublishingFlow = async (curationMode) => {
+  console.log(curationMode);
   let currentDataset = defaultBfDataset;
   let currentAccount = defaultBfAccount;
 
   let curationModeID = "";
   let embargoDetails;
   if (curationMode === "guided") {
-    // This is done to ensure the right element ID is called
-    // Guided mode elements have 'guided--' prepended to their ID
     curationModeID = "guided--";
     currentAccount = sodaJSONObj["bf-account-selected"]["account-name"];
     currentDataset = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
@@ -562,7 +602,9 @@ const beginPrepublishingFlow = async (curationMode) => {
       return false;
     }
   }
-  if (curationMode === "freeform") {
+  if (curationMode === "freeform" || curationMode === undefined) {
+    resetSubmissionChecklistText();
+
     Swal.fire({
       title: "Determining your dataset permissions",
       html: "Please wait...",
@@ -645,15 +687,19 @@ const beginPrepublishingFlow = async (curationMode) => {
     $("#begin-prepublishing-btn").addClass("hidden");
     $("#submit_prepublishing_review-question-2").removeClass("show");
     $("#submit_prepublishing_review-question-3").addClass("show");
+    document.getElementById("pre-publishing-continue-btn").disabled = true;
+    $("#pre-publishing-continue-btn").disabled = true;
 
+    console.log(datasetHasBeenPublished);
     if (!datasetHasBeenPublished) {
       console.log("Dataset hasnt been published");
       smoothScrollToElement("prepublishing-checklist");
 
       let success = await showPrePublishingStatus(true, "freeform");
+      console.log(success);
       if (!success) {
         await Swal.fire({
-          title: "Cannot Being Prepublishing Workflow",
+          title: "Cannot continue this submission",
           text: `Please try again shortly.`,
           icon: "error",
           allowEscapeKey: true,
@@ -663,7 +709,10 @@ const beginPrepublishingFlow = async (curationMode) => {
           backdrop: "rgba(0,0,0, 0.4)",
           timerProgressBar: false,
         });
-
+        $("#submit_prepublishing_review-question-3").removeClass("show");
+        $("#submit_prepublishing_review-question-1").removeClass("prev");
+        $("#submit_prepublishing_review-question-2").addClass("show");
+        $("#begin-prepublishing-btn").removeClass("hidden");
         return;
       }
     }
