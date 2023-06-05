@@ -831,7 +831,6 @@ const importOrganizeProgressPrompt = () => {
   }
 };
 
-
 $(document).ready(async function () {
   importOrganizeProgressPrompt();
 
@@ -851,7 +850,6 @@ $(document).ready(async function () {
   $("#guided_bf_list_users_and_teams").selectpicker();
   $("#guided_bf_list_users_and_teams").selectpicker("refresh");
 });
-
 
 const get_api_key = (login, password, key_name) => {
   return new Promise(async (resolve) => {
