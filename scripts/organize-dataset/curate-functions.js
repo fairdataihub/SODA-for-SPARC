@@ -831,44 +831,27 @@ const importOrganizeProgressPrompt = () => {
   }
 };
 
-// $(document).ready(async function () {
-//   //Observe the paragraph
-//   this.observer = new MutationObserver(
-//     async function (mutations) {
-//       let datasets;
-//       try {
-//         datasets = await api.getDatasetsForAccount(defaultBfAccount);
-//       } catch (error) {
-//         clientError(error);
-//         return;
-//       }
 
-//       datasetList = [];
-//       datasetList = datasets;
-//       refreshDatasetList();
-//     }.bind(this)
-//   );
-//   this.observer.observe(accountDetails.get(0), {
-//     characterData: true,
-//     childList: true,
-//   });
+$(document).ready(async function () {
+  importOrganizeProgressPrompt();
 
-//   importOrganizeProgressPrompt();
+  $("#bf_list_users_pi").selectpicker();
+  $("#bf_list_users_pi").selectpicker("refresh");
+  $("#bf_list_users").selectpicker();
+  $("#bf_list_users").selectpicker("refresh");
+  $("#bf_list_roles_user").selectpicker();
+  $("#bf_list_roles_user").selectpicker("refresh");
+  $("#bf_list_teams").selectpicker();
+  $("#bf_list_teams").selectpicker("refresh");
+  $("#bf_list_roles_team").selectpicker();
+  $("#bf_list_roles_team").selectpicker("refresh");
 
-//   $("#bf_list_users_pi").selectpicker();
-//   $("#bf_list_users_pi").selectpicker("refresh");
-//   $("#bf_list_users").selectpicker();
-//   $("#bf_list_users").selectpicker("refresh");
-//   $("#bf_list_roles_user").selectpicker();
-//   $("#bf_list_roles_user").selectpicker("refresh");
-//   $("#bf_list_teams").selectpicker();
-//   $("#bf_list_teams").selectpicker("refresh");
-//   $("#bf_list_roles_team").selectpicker();
-//   $("#bf_list_roles_team").selectpicker("refresh");
+  $("#guided_bf_list_users_pi").selectpicker();
+  $("#guided_bf_list_users_pi").selectpicker("refresh");
+  $("#guided_bf_list_users_and_teams").selectpicker();
+  $("#guided_bf_list_users_and_teams").selectpicker("refresh");
+});
 
-//   $("#guided_bf_list_users_pi").selectpicker();
-//   $("#guided_bf_list_users_pi").selectpicker("refresh");
-// });
 
 const get_api_key = (login, password, key_name) => {
   return new Promise(async (resolve) => {
