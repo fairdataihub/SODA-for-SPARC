@@ -112,3 +112,25 @@ const subjectHasFilesAdded = (subjectObj) => {
   }
   return false;
 };
+
+const poolHasFilesAdded = (poolName) => {
+  for (const hlf of guidedHighLevelFolders) {
+    const poolPathInHLF = datasetStructureJSONObj["folders"]?.[hlf]?.["folders"]?.[poolName];
+    if (!folderIsEmpty(poolPathInHLF)) {
+      return true;
+    }
+  }
+  return false;
+};
+
+const guidedGetPoolsWithoutAnyFilesAdded = () => {
+  let poolsWithoutAnyFolders = [];
+
+  const pools = Object.keys(sodaJSONObj.getPools());
+  for (const pool of pools) {
+    if (!poolHasFilesAdded(pool)) {
+      poolsWithoutAnyFolders.push(pool);
+    }
+  }
+  return poolsWithoutAnyFolders;
+};
