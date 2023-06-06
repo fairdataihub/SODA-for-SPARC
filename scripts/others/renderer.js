@@ -8930,7 +8930,7 @@ const logCurationForAnalytics = (
       ipcRenderer.send("track-event", `${category}`, actionName, location, 1);
     }
   }
-}
+};
 
 const getMetadataFileNameFromStatus = (metadataFileStatus) => {
   // get the UI text that displays the file path

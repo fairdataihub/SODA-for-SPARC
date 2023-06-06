@@ -1788,6 +1788,49 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
     $("#bf-dataset-spinner").children().show();
     $("#bf-dataset-spinner").css("visibility", "visible");
 
+    // Check if dataset is locked before trying to import
+    const isDatasetLocked = await api.isDatasetLocked(defaultBfAccount, selectedDataset);
+    if (isDatasetLocked) {
+      Swal.fire({
+        icon: "info",
+        title: `${selectedDataset} is locked from editing`,
+        html: `
+              This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
+              <br />
+              <br />
+              If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
+            `,
+        width: 600,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "Ok",
+        focusConfirm: true,
+        allowOutsideClick: false,
+      });
+
+      $("#nextBtn").prop("disabled", true);
+      $("#para-continue-bf-dataset-getting-started").text("");
+      $("body").removeClass("waiting");
+      showHideDropdownButtons("dataset", "hide");
+      $("#current-bf-dataset").text("None");
+      $(datasetPermissionDiv).find("#curatebfdatasetlist").val("Select dataset").trigger("change");
+      sodaJSONObj["bf-dataset-selected"]["dataset-name"] = "";
+      $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
+      $("body").removeClass("waiting");
+
+      // log the event to analytics
+      logCurationForAnalytics(
+        "Error",
+        PrepareDatasetsAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.ACTION,
+        ["Dataset Locked"],
+        "Pennsieve",
+        true
+      );
+
+      return;
+    }
+
     let sodaObject = {};
     let manifestErrorMessage = [];
     try {
