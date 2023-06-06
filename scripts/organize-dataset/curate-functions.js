@@ -2028,7 +2028,7 @@ const ffmCreateManifest = async (sodaJson) => {
     };
   } catch (err) {
     clientError(err);
-    userError(err);
+    userErrorMessage(err);
   }
   renderFFManifestCards();
 };

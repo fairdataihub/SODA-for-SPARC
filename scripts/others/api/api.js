@@ -313,6 +313,7 @@ const uploadNewTags = async (account, dataset, tags) => {
     }
   } catch (error) {
     clientError(error);
+    return false;
   }
 
   //if response200 = true then previous call succeeded and new IDs are in newUploadedTags array
@@ -328,6 +329,7 @@ const uploadNewTags = async (account, dataset, tags) => {
       return newTagsUpload.data;
     } catch (error) {
       clientError(error);
+      return false;
     }
   }
 };
@@ -345,6 +347,7 @@ const removeCollectionTags = async (account, dataset, tags) => {
     return removedTags.data;
   } catch (error) {
     clientError(error);
+    return false;
   }
 };
 
@@ -366,6 +369,7 @@ const uploadCollectionTags = async (account, dataset, tags) => {
     return uploadedTags.data;
   } catch (error) {
     clientError(error);
+    return false;
   }
 };
 

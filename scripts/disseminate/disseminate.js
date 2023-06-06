@@ -56,7 +56,7 @@ const disseminatePublish = async (curationMode) => {
     console.error(error);
     Swal.fire({
       title: "Could not submit dataset for publication",
-      text: `${userError(error)}`,
+      text: `${userErrorMessage(error)}`,
       heightAuto: false,
       icon: "error",
       confirmButtonText: "Ok",

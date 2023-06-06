@@ -89,38 +89,50 @@ $(document).ready(function () {
       if (whiteListTags.length > 0) {
         //collection names that are already have an ID
         try {
-          await api.uploadCollectionTags(defaultBfAccount, defaultBfDataset, whiteListTags);
-          success.push(true);
+          let uploadTagsStatus = await api.uploadCollectionTags(defaultBfAccount, defaultBfDataset, whiteListTags);
+          if (uploadTagsStatus === false) {
+            success.push(false);
+          } else {
+            success.push(true);
+          }
         } catch (error) {
+          success[0] = false;
+          console.log(success);
           clientError(error);
-          success.push(false);
         }
       }
 
       if (removeTags.length > 0) {
         //remove collection names
         try {
-          await api.removeCollectionTags(defaultBfAccount, defaultBfDataset, removeTags);
-          success.push(true);
+          let removeStatus = await api.removeCollectionTags(defaultBfAccount, defaultBfDataset, removeTags);
+          if(removeStatus === false) {
+            success.push(false);
+          } else {
+            success.push(true);
+          }
         } catch (error) {
           clientError(error);
-          success.push(false);
         }
       }
 
       if (newTags.length > 0) {
         //upload tags that haven't been created on pennsieve (no ID)
         try {
-          await api.uploadNewTags(defaultBfAccount, defaultBfDataset, newTags);
-          success.push(true);
+          let newTagsStatus = await api.uploadNewTags(defaultBfAccount, defaultBfDataset, newTags);
+          if(newTagsStatus === false) {
+            success.push(false);
+          } else {
+            success.push(true);
+          }
         } catch (error) {
           clientError(error);
-          success.push(false);
         }
       }
 
       await updateCollectionWhiteList();
       Swal.close();
+      console.log(success);
       if (!success.includes(false)) {
         Swal.fire({
           title: "Successfully updated collection from " + defaultBfDataset,
@@ -132,6 +144,7 @@ $(document).ready(function () {
       } else {
         Swal.fire({
           title: "Something went wrong trying to modify collections",
+          text: "Please try again later.",
           icon: "error",
           showConfirmButton: true,
           heightAuto: false,
@@ -188,8 +201,6 @@ $(document).ready(function () {
       });
     }
 
-    console.log("defaultBfAccount", defaultBfDataset);
-    console.log("defaultBfDataset", defaultBfDataset);
     let collection_list = await api.getAllCollectionTags(defaultBfAccount);
     let current_tags = await api.getCurrentCollectionTags(defaultBfAccount, defaultBfDataset);
 

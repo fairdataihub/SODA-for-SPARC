@@ -190,7 +190,7 @@ const orcidSignIn = async (ev, curationMode) => {
         let emessage = userErrorMessage(error);
         Swal.fire({
           title: "An issue occurred with connecting your ORCID iD to Pennsieve.",
-          text: emessage,
+          html: emessage,
           icon: "error",
           allowEscapeKey: true,
           allowOutsideClick: true,

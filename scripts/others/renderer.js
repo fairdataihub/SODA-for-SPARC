@@ -3475,7 +3475,7 @@ const withdrawDatasetSubmission = async (curationMode = "") => {
     console.error(error);
     Swal.fire({
       title: "Could not withdraw dataset from publication!",
-      text: `${userError(error)}`,
+      text: `${userErrorMessage(error)}`,
       heightAuto: false,
       icon: "error",
       confirmButtonText: "Ok",
@@ -3632,29 +3632,23 @@ const withdrawReviewDataset = async (curationMode) => {
 // General //
 
 const removeOptions = (selectbox) => {
-  var i;
-  for (i = selectbox.options.length - 1; i >= 0; i--) {
+  for (let i = selectbox.options.length - 1; i >= 0; i--) {
     selectbox.remove(i);
   }
-};
-
-const userError = (error) => {
-  var myerror = error.message;
-  return myerror;
 };
 
 // Manage Datasets //
 
 const refreshBfUsersList = () => {
-  var accountSelected = defaultBfAccount;
+  let accountSelected = defaultBfAccount;
 
   removeOptions(bfListUsers);
-  var optionUser = document.createElement("option");
+  let optionUser = document.createElement("option");
   optionUser.textContent = "Select user";
   bfListUsers.appendChild(optionUser);
 
   removeOptions(bfListUsersPI);
-  var optionUserPI = document.createElement("option");
+  let optionUserPI = document.createElement("option");
   optionUserPI.textContent = "Select PI";
   bfListUsersPI.appendChild(optionUserPI);
 

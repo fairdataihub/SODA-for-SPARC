@@ -337,7 +337,7 @@ async function saveRCFile(type) {
     if (err) {
       console.log(err);
       log.error(err);
-      var emessage = userError(error);
+      var emessage = userErrorMessage(error);
       Swal.fire({
         title: `Failed to generate the existing ${type}.txt file`,
         html: emessage,
@@ -636,11 +636,11 @@ function importExistingRCFile(type) {
 }
 
 // main function to load existing README/CHANGES files
-function loadExistingRCFile(filepath, type) {
+const loadExistingRCFile = (filepath, type) => {
   // read file
   fs.readFile(filepath, "utf8", function (err, data) {
     if (err) {
-      var emessage = userError(error);
+      let emessage = userErrorMessage(error);
       console.log(err);
       log.error(err);
       Swal.fire({

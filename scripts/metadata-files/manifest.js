@@ -494,7 +494,7 @@ $(document).ready(function () {
       } catch (err) {
         clientError(err);
         console.log(err);
-        userError(err);
+        userErrorMessage(err);
       }
 
       //Create child window here

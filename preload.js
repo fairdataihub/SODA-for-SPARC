@@ -943,7 +943,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
           icon: "error",
-          text: userErrorMessage(error),
+          html: userErrorMessage(error),
           footer:
             "<a href='https://docs.pennsieve.io/docs/configuring-the-client-credentials'>Why do I have this issue?</a>",
         });

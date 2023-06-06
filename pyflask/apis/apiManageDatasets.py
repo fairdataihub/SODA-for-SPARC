@@ -40,7 +40,7 @@ from pysodaUtils import get_agent_version, start_agent
 import time 
 
 from namespaces import get_namespace, NamespaceEnum
-from errorHandlers import notBadRequestException
+from errorHandlers import notBadRequestException, handle_http_error
 from authentication import get_cognito_userpool_access_token, bf_add_account_username, get_pennsieve_api_key_secret
 
 
@@ -423,6 +423,9 @@ class DatasetSubtitle(Resource):
     try:
       return bf_get_subtitle(selected_account, selected_dataset)
     except Exception as e:
+      # if exception is an HTTPError then check if 400 or 500
+      if type(e).__name__ == "HTTPError":
+        handle_http_error(e)
       if notBadRequestException(e):
         api.abort(500, str(e))
       raise e

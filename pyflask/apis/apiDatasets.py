@@ -47,11 +47,11 @@ class Dataset(Resource):
   def get(self, dataset_name_or_id):
 
     try:
-      return get_dataset_by_id(dataset_name_or_id) 
+      return get_dataset_by_id(dataset_name_or_id)
     except Exception as e:
-      # if exception is an HTTPError then check if 400 or 500 
+      # if exception is an HTTPError then check if 400 or 500
       if type(e).__name__ == "HTTPError":
-          handle_http_error(e)
+        handle_http_error(e)
       if notBadRequestException(e):
         api.abort(500, str(e))
       raise e

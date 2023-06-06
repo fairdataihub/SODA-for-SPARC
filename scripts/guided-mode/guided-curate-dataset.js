@@ -12626,7 +12626,7 @@ $(document).ready(async () => {
       }
       log.error(error);
       console.error(error);
-      let emessage = userError(error);
+      let emessage = userErrorMessage(error);
       throw error;
     }
   };
@@ -12735,7 +12735,7 @@ $(document).ready(async () => {
       guidedUploadStatusIcon(`guided-dataset-${teamString}-permissions-upload-status`, "error");
       log.error(error);
       console.error(error);
-      let emessage = userError(error);
+      let emessage = userErrorMessage(error);
       throw error;
     }
   };
@@ -13822,7 +13822,7 @@ $(document).ready(async () => {
       if (err) {
         console.log(err);
         log.error(err);
-        var emessage = userError(error);
+        var emessage = userErrorMessage(error);
         Swal.fire({
           title: `Failed to generate the existing ${type}.txt file`,
           html: emessage,
