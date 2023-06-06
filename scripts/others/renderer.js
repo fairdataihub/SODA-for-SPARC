@@ -7649,8 +7649,19 @@ document.getElementById("button-generate").addEventListener("click", async funct
   statusText = "Please wait while we verify a few things...";
   if (dataset_destination == "Pennsieve") {
     let supplementary_checks = await run_pre_flight_checks(false);
+    console.log("Supplementart checks value, ", supplementary_checks);
     if (!supplementary_checks) {
       $("#sidebarCollapse").prop("disabled", false);
+
+      // return to the prior page
+      $($($(this).parent()[0]).parents()[0]).addClass("tab-active");
+      document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
+      document.getElementById("para-please-wait-new-curate").innerHTML = "";
+      document.getElementById("prevBtn").style.display = "inline";
+      document.getElementById("start-over-btn").style.display = "inline-block";
+      document.getElementById("div-vertical-progress-bar").style.display = "flex";
+      document.getElementById("div-generate-comeback").style.display = "flex";
+      document.getElementById("generate-dataset-progress-tab").style.display = "none";
       return;
     }
   }
