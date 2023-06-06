@@ -89,7 +89,11 @@ $(document).ready(function () {
       if (whiteListTags.length > 0) {
         //collection names that are already have an ID
         try {
-          let uploadTagsStatus = await api.uploadCollectionTags(defaultBfAccount, defaultBfDataset, whiteListTags);
+          let uploadTagsStatus = await api.uploadCollectionTags(
+            defaultBfAccount,
+            defaultBfDataset,
+            whiteListTags
+          );
           if (uploadTagsStatus === false) {
             success.push(false);
           } else {
@@ -105,8 +109,12 @@ $(document).ready(function () {
       if (removeTags.length > 0) {
         //remove collection names
         try {
-          let removeStatus = await api.removeCollectionTags(defaultBfAccount, defaultBfDataset, removeTags);
-          if(removeStatus === false) {
+          let removeStatus = await api.removeCollectionTags(
+            defaultBfAccount,
+            defaultBfDataset,
+            removeTags
+          );
+          if (removeStatus === false) {
             success.push(false);
           } else {
             success.push(true);
@@ -120,7 +128,7 @@ $(document).ready(function () {
         //upload tags that haven't been created on pennsieve (no ID)
         try {
           let newTagsStatus = await api.uploadNewTags(defaultBfAccount, defaultBfDataset, newTags);
-          if(newTagsStatus === false) {
+          if (newTagsStatus === false) {
             success.push(false);
           } else {
             success.push(true);

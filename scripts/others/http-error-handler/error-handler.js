@@ -40,7 +40,7 @@ const clientError = (error) => {
 const userErrorMessage = (error) => {
   let errorMessage = "";
   if (error.response) {
-    console.log("userResponse")
+    console.log("userResponse");
     // The request was made and the server responded with a status code
     // that falls out of the range of 2xx
     errorMessage = `${error.response.data.message}`;
@@ -52,12 +52,12 @@ const userErrorMessage = (error) => {
     errorMessage =
       "The server did not respond to the request. Please try again later or contact the soda team at help@fairdataihub.org if this issue persits.";
   } else {
-    console.log("user.message")
+    console.log("user.message");
     // Something happened in setting up the request that triggered an Error
     errorMessage = error.message;
   }
 
-  if(errorMessage.includes("423")) {
+  if (errorMessage.includes("423")) {
     errorMessage = `Your dataset is locked. If you would like to make changes to this dataset, please reach out to the SPARC Curation Team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>`;
   }
 
