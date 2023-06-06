@@ -1,0 +1,13 @@
+.container--scrollable-swal-content {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-height: 400px;
+  max-width: 500px;
+  overflow: auto;
+}
+
+.div--list-item-in-swal-container {
+  padding: 3px;
+  white-space: nowrap;
+}

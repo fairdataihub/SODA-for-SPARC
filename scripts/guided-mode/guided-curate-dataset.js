@@ -1096,10 +1096,50 @@ const savePageChanges = async (pageBeingLeftID) => {
       */
 
       const samplesWithoutAnyFolders = guidedGetSamplesWithoutAnyFilesAdded();
-      console.log("samplesWithoutAnyFolders", samplesWithoutAnyFolders);
+      if (samplesWithoutAnyFolders.length > 0) {
+        const userConfirmedToDeleteSamples = await swalWarnBeforeDoingActionOnAList(
+          samplesWithoutAnyFolders,
+          "Swal Title",
+          "Cancel Button text",
+          "Confirm Button text"
+        );
 
+        if (userConfirmedToDeleteSamples) {
+          for (const sample of samplesWithoutAnyFolders) {
+            await sodaJSONObj.deleteSample(sample, false);
+          }
+        } else {
+          errorArray.push({
+            type: "notyf",
+            message: "Please add files to the samples that do not have any files added to them",
+          });
+          throw errorArray;
+        }
+        const samplesWithoutAnyFolders2 = guidedGetSamplesWithoutAnyFilesAdded();
+
+        console.log("samplesWithoutAnyFoldersAFTERDELETE", samplesWithoutAnyFolders2);
+      }
       const subjectsWithoutAnyFolders = guidedGetSubjectsWithoutAnyFilesAdded();
-      console.log("subjectsWithoutAnyFolders", subjectsWithoutAnyFolders);
+      if (subjectsWithoutAnyFolders.length > 0) {
+        const userConfirmedToDeleteSubjects = await swalWarnBeforeDoingActionOnAList(
+          subjectsWithoutAnyFolders,
+          "Swal Title",
+          "Cancel Button text",
+          "Confirm Button text"
+        );
+
+        if (userConfirmedToDeleteSubjects) {
+          for (const subject of subjectsWithoutAnyFolders) {
+            await sodaJSONObj.deleteSubject(subject, false);
+          }
+        } else {
+          errorArray.push({
+            type: "notyf",
+            message: "Please add files to the subjects that do not have any files added to them",
+          });
+          throw errorArray;
+        }
+      }
     }
 
     if (pageBeingLeftID === "guided-code-folder-tab") {
@@ -7820,92 +7860,76 @@ const attachGuidedMethodsToSodaJSONObj = () => {
       }
     }
   };
-  sodaJSONObj.deleteSample = async function (sampleName, showWarningIfSampleFoldersExist) {
+  sodaJSONObj.deleteSample = async function (sampleName, showWarningBeforeDeletingSample) {
     const [samplesInPools, samplesOutsidePools] = sodaJSONObj.getAllSamplesFromSubjects();
     //Combine sample data from samples in and out of pools
     let samples = [...samplesInPools, ...samplesOutsidePools];
 
-    for (const sample of samples) {
-      // Variable to track if the user has been warned about deleting a subject with folders
-      let warningBeforeDeletingSampleWithFoldersSwalHasBeenShown = false;
+    const sample = samples.find((sample) => sample.sampleName === sampleName);
 
-      if (sample.sampleName === sampleName) {
-        if (sample.poolName) {
-          //Delete the samples folder in the datasetStructureJSONObj
-          for (const highLevelFolder of guidedHighLevelFolders) {
-            const sampleFolderInHighLevelFolder =
-              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
-                sample.poolName
-              ]?.["folders"]?.[sample.subjectName]?.["folders"]?.[sampleName];
+    if (!sample) {
+      console.log("sample not found");
+      return;
+    }
 
-            if (sampleFolderInHighLevelFolder) {
-              if (!warningBeforeDeletingSampleWithFoldersSwalHasBeenShown) {
-                // Warn the user if they are deleting a sample with folders
-                // If they cancel the deletion, we return and the sample or its folders are not deleted
-                const continueWithSampleDeletion = await guidedWarnBeforeDeletingEntity(
-                  "sample",
-                  sampleName
-                );
-                if (continueWithSampleDeletion) {
-                  warningBeforeDeletingSampleWithFoldersSwalHasBeenShown = true;
-                } else {
-                  return;
-                }
-              }
-
-              if (folderImportedFromPennsieve(sampleFolderInHighLevelFolder)) {
-                guidedModifyPennsieveFolder(sampleFolderInHighLevelFolder, "delete");
-              } else {
-                delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                  sample.poolName
-                ]["folders"][sample.subjectName]["folders"][sampleName];
-              }
-            }
-          }
-
-          // Remove the sample from the guided structure
-          delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
-            sample.poolName
-          ][sample.subjectName][sampleName];
-        } else {
-          //Delete the samples folder in the datasetStructureJSONObj
-          for (const highLevelFolder of guidedHighLevelFolders) {
-            const sampleFolderInHighLevelFolder =
-              datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
-                sample.subjectName
-              ]?.["folders"]?.[sampleName];
-
-            if (sampleFolderInHighLevelFolder) {
-              if (!warningBeforeDeletingSampleWithFoldersSwalHasBeenShown) {
-                // Warn the user if they are deleting a sample with folders
-                // If they cancel the deletion, we return and the sample or its folders are not deleted
-                const continueWithSampleDeletion = await guidedWarnBeforeDeletingEntity(
-                  "sample",
-                  sampleName
-                );
-                if (continueWithSampleDeletion) {
-                  warningBeforeDeletingSampleWithFoldersSwalHasBeenShown = true;
-                } else {
-                  return;
-                }
-              }
-
-              if (folderImportedFromPennsieve(sampleFolderInHighLevelFolder)) {
-                guidedModifyPennsieveFolder(sampleFolderInHighLevelFolder, "delete");
-              } else {
-                delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
-                  sample.subjectName
-                ]["folders"][sampleName];
-              }
-            }
-          }
-
-          // Remove the sample from the guided structure
-          delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
-            sample.subjectName
-          ][sampleName];
+    if (showWarningBeforeDeletingSample) {
+      if (sampleHasFilesAdded(sample)) {
+        const continueWithSampleDeletion = await guidedWarnBeforeDeletingEntity(
+          "sample",
+          sampleName
+        );
+        if (!continueWithSampleDeletion) {
+          return;
         }
       }
+    }
+
+    if (sample.poolName) {
+      //Delete the samples folder in the datasetStructureJSONObj
+      for (const highLevelFolder of guidedHighLevelFolders) {
+        const sampleFolderInHighLevelFolder =
+          datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[sample.poolName]?.[
+            "folders"
+          ]?.[sample.subjectName]?.["folders"]?.[sampleName];
+
+        if (sampleFolderInHighLevelFolder) {
+          if (folderImportedFromPennsieve(sampleFolderInHighLevelFolder)) {
+            guidedModifyPennsieveFolder(sampleFolderInHighLevelFolder, "delete");
+          } else {
+            delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName][
+              "folders"
+            ][sample.subjectName]["folders"][sampleName];
+          }
+        }
+      }
+
+      // Remove the sample from the guided structure
+      delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][sample.poolName][
+        sample.subjectName
+      ][sampleName];
+    } else {
+      //Delete the samples folder in the datasetStructureJSONObj
+      for (const highLevelFolder of guidedHighLevelFolders) {
+        const sampleFolderInHighLevelFolder =
+          datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
+            sample.subjectName
+          ]?.["folders"]?.[sampleName];
+
+        if (sampleFolderInHighLevelFolder) {
+          if (folderImportedFromPennsieve(sampleFolderInHighLevelFolder)) {
+            guidedModifyPennsieveFolder(sampleFolderInHighLevelFolder, "delete");
+          } else {
+            delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][
+              sample.subjectName
+            ]["folders"][sampleName];
+          }
+        }
+      }
+
+      // Remove the sample from the guided structure
+      delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
+        sample.subjectName
+      ][sampleName];
     }
 
     // Remove the sample from the samples metadata
