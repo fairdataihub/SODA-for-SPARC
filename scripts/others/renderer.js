@@ -6928,7 +6928,6 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
 };
 
 const getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
-  console.log("getInFolder Called");
   $(singleUIItem).dblclick(async function () {
     console.log("double click called");
     if ($(this).children("h1").hasClass("myFol")) {

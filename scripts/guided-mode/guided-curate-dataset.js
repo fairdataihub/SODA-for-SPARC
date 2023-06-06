@@ -110,7 +110,6 @@ const startOrStopAnimationsInContainer = (containerId, startOrStop) => {
 };
 
 const hideAndShowElementsDependingOnStartType = (pageElement) => {
-  console.log(pageElement);
   const startingFromPennsieve = sodaJSONObj?.["starting-point"]?.["type"] === "bf";
   const textToShowWhenStartingFromPennsieve = pageElement.querySelectorAll(
     ".showWhenStartingFromPennsieve"
@@ -1091,6 +1090,16 @@ const savePageChanges = async (pageBeingLeftID) => {
 
     if (pageBeingLeftID === "guided-derivative-data-organization-tab") {
       cleanUpEmptyFoldersFromGeneratedGuidedStructure("derivative");
+
+      /*
+        CLEAN UP SAMPLES THAT DID NOT HAVE ANY FOLDERS ADDED TO THEM
+      */
+
+      const samplesWithoutAnyFolders = guidedGetSamplesWithoutAnyFilesAdded();
+      console.log("samplesWithoutAnyFolders", samplesWithoutAnyFolders);
+
+      const subjectsWithoutAnyFolders = guidedGetSubjectsWithoutAnyFilesAdded();
+      console.log("subjectsWithoutAnyFolders", subjectsWithoutAnyFolders);
     }
 
     if (pageBeingLeftID === "guided-code-folder-tab") {
@@ -4401,7 +4410,6 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
 };
 
 const resetGuidedRadioButtons = (parentPageID) => {
-  console.log(parentPageID);
   const parentPage = document.getElementById(parentPageID);
   const guidedRadioButtons = parentPage.querySelectorAll(".guided--radio-button");
   for (const guidedRadioButton of guidedRadioButtons) {
