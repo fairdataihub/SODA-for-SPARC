@@ -618,7 +618,7 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
   });
 };
 
-const getPennsieveAgentVersion = async (pathToPennsieveAgent) => {
+const getPennsieveAgentVersion = (pathToPennsieveAgent) => {
   log.info("DING DING DING");
   return new Promise((resolve, reject) => {
     try {
@@ -735,7 +735,22 @@ const startPennsieveAgentAndCheckVersion = async () => {
   try {
     pennsieveAgentVersionObj = await getPennsieveAgentVersion(agentPath);
     pennsieveAgentVersion = pennsieveAgentVersionObj["Agent Version"];
+    console.log("Line 738 - Pennsieve Agent Version: ", pennsieveAgentVersion);
   } catch (error) {
+    await Swal.fire({
+      icon: "error",
+      text: "Unable to determine the version number of the Pennsieve Agent. Please try again. If this issue persists contact the SODA team using the 'Contact Us' section found in the sidebar.",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Ok",
+      reverseButtons: reverseSwalButtons,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
     clientError(error);
     throw error;
   }
