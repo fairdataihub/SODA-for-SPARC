@@ -1759,6 +1759,7 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
   */
 
   if (currentDiv === "Question-getting-started-BF-dataset") {
+    let selectedDataset = $("#current-bf-dataset").text();
     $("#nextBtn").prop("disabled", true);
     // $("#button-confirm-bf-dataset-getting-started").prop("disabled", true);
     sodaJSONObj = {
@@ -1778,7 +1779,8 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
     };
 
     sodaJSONObj["bf-account-selected"]["account-name"] = defaultBfAccount;
-    sodaJSONObj["bf-dataset-selected"]["dataset-name"] = $("#current-bf-dataset").text();
+    sodaJSONObj["bf-dataset-selected"]["dataset-name"] = selectedDataset;
+
     $("#para-continue-bf-dataset-getting-started").text("");
     $("body").addClass("waiting");
     $("#button-confirm-bf-dataset-getting-started").prop("disabled", true);

@@ -8862,14 +8862,14 @@ const Actions = {
   NEW: "New",
 };
 
-function logCurationForAnalytics(
+const logCurationForAnalytics = (
   category,
   analyticsActionPrefix,
   granularity,
   actions,
   location,
   generalLog
-) {
+) => {
   // if no actions to log return
   if (!actions) {
     return;

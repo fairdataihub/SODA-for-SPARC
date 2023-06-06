@@ -916,6 +916,10 @@
   color: var(--color-light-green);
 }
 
+.text-soda-plum {
+  color: var(--color-light-plum);
+}
+
 .text-transparent {
   color: transparent !important;
 }
