@@ -688,4 +688,4 @@ const loadExistingRCFile = (filepath, type) => {
       $(`#button-fake-confirm-existing-${type}-file-load`).click();
     }
   });
-}
+};
