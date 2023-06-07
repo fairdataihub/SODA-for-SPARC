@@ -9,7 +9,7 @@ from utils import (
 )
 from namespaces import NamespaceEnum, get_namespace_logger
 from flask import abort
-from authentication import get_access_token, get_cognito_userpool_access_token, bf_add_account_username, bf_delete_account, bf_delete_default_profile
+from authentication import get_access_token, get_cognito_userpool_access_token, bf_add_account_username, bf_delete_account, bf_delete_default_profile, delete_duplicate_keys
 
 logger = get_namespace_logger(NamespaceEnum.USER)
 
@@ -99,6 +99,8 @@ def set_preferred_organization(organization_id, email, password, account_name):
         raise Exception(error)
     
 
+    delete_duplicate_keys(token, "SODA-Pennsieve")
+    
     # get an api key and secret for programmatic access to the Pennsieve API
     try:
         url = "https://api.pennsieve.io/token/"
