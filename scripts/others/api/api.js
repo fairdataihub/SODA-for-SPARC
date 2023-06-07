@@ -39,33 +39,37 @@ const getDatasetBannerImageURL = async (selected_account, selected_dataset) => {
 const isDatasetLocked = async (account, datasetNameOrId) => {
   try {
     // get the logged in user's information which will be used to check if the user is a member of the "Publishers" team
-    const user = await getUserInformation();
-    const userID = user.id;
-
+    const currentUserInformation = await getUserInformation();
+    const currentUserID = currentUserInformation.id;
     const teamsReq = await client.get(
       `manage_datasets/bf_get_teams?selected_account=${defaultBfAccount}`
     );
-    const teams = teamsReq.data.teams;
-    // Get the team with the name "Publishers"
-    const publishersTeam = teams.find((teamElement) => teamElement.team.name === "Publishers");
+    const teamsInCurrentUsersOrganization = teamsReq.data.teams;
+
+    // Get the team with the name "Publishers" (if it exists)
+    const publishersTeam = teamsInCurrentUsersOrganization.find(
+      (teamElement) => teamElement.team.name === "Publishers"
+    );
+
+    // If a "Publishers" team exists, get the IDs of the team's administrators
     if (publishersTeam) {
       const publishersTeamIDs = publishersTeam.administrators.map(
         (administrator) => administrator.id
       );
-      // Check if the user is a member of the "Publishers" team
-      if (publishersTeamIDs.includes(userID)) {
-        // If the user is a member of the "Publishers" team, return false since they can access locked datasets
+      // Check too see if the current user is a member of the "Publishers" team
+      if (publishersTeamIDs.includes(currentUserID)) {
+        // If the user is a member of the "Publishers" team, return false since the dataset should not be locked for them
         return false;
-      } else {
-        console.log("User not a publisher");
       }
     }
 
-    let datasetRoleResponse = await client.get(`/datasets/${datasetNameOrId}`);
+    // If the user is not a member of the "Publishers" team, check to see if the dataset is locked
+    const datasetRoleResponse = await client.get(`/datasets/${datasetNameOrId}`);
     // Return the dataset's lock status (true or false)
     return datasetRoleResponse.data.locked;
   } catch (err) {
     clientError(err);
+    // If the dataset is locked, the server will return a 423 status code, so return true if that is the case
     if (err.response.status == 423) {
       return true;
     } else {
