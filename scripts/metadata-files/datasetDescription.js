@@ -379,6 +379,8 @@ const generateDDFile = async (uploadBFBoolean) => {
       return;
     }
 
+    // Check if the dataset is locked before uploading
+
     var { value: continueProgress } = await Swal.fire({
       title:
         "Any existing dataset_description.xlsx file in the high-level folder of the selected dataset will be replaced.",
