@@ -1834,13 +1834,19 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           const login = Swal.getPopup().querySelector("#ps_login").value;
           const password = Swal.getPopup().querySelector("#ps_password").value;
 
+          // show a loading spinner in place of the confirm button HERE
+          // $(".ui.active.green.inline.loader.small.organization-loader").css("display", "block");
+          Swal.showLoading();
+
           if (!login) {
             Swal.showValidationMessage("Please enter your email!");
+            Swal.hideLoading();
             return undefined;
           }
 
           if (!password) {
             Swal.showValidationMessage("Please enter your password!");
+            Swal.hideLoading();
             return undefined;
           }
 
@@ -1857,6 +1863,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               title: "Could Not Switch Organizations",
               text: "Please try again shortly.",
             });
+            Swal.hideLoading();
             // reset the UI to pre-org switch state
             $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
             $(".svg-change-current-account.organization").css("display", "block");
