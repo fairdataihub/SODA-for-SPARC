@@ -3825,7 +3825,7 @@ initRipple = function (buttonEle) {
   buttonEle.innerHTML = "";
   buttonEle.appendChild(inside);
   inside.addEventListener("mousedown", function () {
-    console.log(event)
+    console.log(event);
     ripple(event, this);
   });
 };
