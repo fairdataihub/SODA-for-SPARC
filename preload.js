@@ -1169,6 +1169,8 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     await addBfAccount(ev, false);
   } else if (dropdown === "dataset") {
     dropdownEventID = ev?.id ?? "";
+    console.log("ev", ev);
+    console.log("dropdownEventID", dropdownEventID);
 
     // check the value of Current Organization
     // TODO: Test heavily
@@ -1511,8 +1513,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           document.getElementById("Question-prepare-dd-2").classList.add("show");
 
           document.getElementById("dd-select-pennsieve-dataset").style.display = "block";
-          document.getElementById("ds-name").value =
-            document.getElementById("rename_dataset_name").innerText;
+          document.getElementById("ds-name").value = bfDataset;
         } else {
           // document.getElementById("Question-prepare-dd-4").classList.add("show");
           let onMyCompButton = document.getElementById("Question-prepare-dd-4-new");
