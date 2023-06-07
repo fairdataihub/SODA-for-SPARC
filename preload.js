@@ -1427,11 +1427,9 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               },
             });
 
-
-
             // Ensure the dataset is not locked except for when the user is on the disseminate page (to allow for the dataset to be unsubmitted)
             // Ensure the dataset is not locked before proceeding
-            console.log("Checking ds lock status")
+            console.log("Checking ds lock status");
             const datasetIsLocked = await api.isDatasetLocked(defaultBfAccount, bfDataset);
             if (datasetIsLocked) {
               // Show the locked swal and return
@@ -1456,7 +1454,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               // $("#begin-prepublishing-btn").addClass("hidden");
               return;
             }
-            console.log("Lock status checked")
+            console.log("Lock status checked");
 
             if (dropdownEventID === "dd-select-pennsieve-dataset") {
               $("#ds-name").val(bfDataset);
@@ -1556,7 +1554,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         $("#dataset-loaded-message").hide();
 
         showHideDropdownButtons("dataset", "show");
-        Swal.close()
+        Swal.close();
         // checkPrevDivForConfirmButton("dataset");
       }
 
