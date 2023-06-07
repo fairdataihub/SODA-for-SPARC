@@ -285,17 +285,13 @@ class BfGetUsers(Resource):
 
 
 
-
-model_bf_get_teams_response = api.model('BfGetTeamsResponse', {'teams': fields.List(fields.String, required=True, description="List of the teams in the user's organization.")})
-
 @api.route('/bf_get_teams')
 class BfGetTeams(Resource):
 
   parser_get_teams = reqparse.RequestParser(bundle_errors=True)
   parser_get_teams.add_argument('selected_account', type=str, required=True, location='args', help='The target account to retrieve inter-organization teams for.')
 
-  @api.marshal_with(model_bf_get_teams_response, False, 200)
-  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns a list of the teams in the given Pennsieve Account's organization.")
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns JSON containing the teams for the given Pennsieve account.")
   def get(self):
     try:
       # get the selected account out of the request args

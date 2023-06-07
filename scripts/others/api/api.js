@@ -38,6 +38,29 @@ const getDatasetBannerImageURL = async (selected_account, selected_dataset) => {
 
 const isDatasetLocked = async (account, datasetNameOrId) => {
   try {
+    // get the logged in user's information which will be used to check if the user is a member of the "Publishers" team
+    const user = await getUserInformation();
+    const userID = user.id;
+
+    const teamsReq = await client.get(
+      `manage_datasets/bf_get_teams?selected_account=${defaultBfAccount}`
+    );
+    const teams = teamsReq.data.teams;
+    // Get the team with the name "Publishers"
+    const publishersTeam = teams.find((teamElement) => teamElement.team.name === "Publishers");
+    if (publishersTeam) {
+      const publishersTeamIDs = publishersTeam.administrators.map(
+        (administrator) => administrator.id
+      );
+      // Check if the user is a member of the "Publishers" team
+      if (publishersTeamIDs.includes(userID)) {
+        // If the user is a member of the "Publishers" team, return false since they can access locked datasets
+        return false;
+      } else {
+        console.log("User not a publisher");
+      }
+    }
+
     let datasetRoleResponse = await client.get(`/datasets/${datasetNameOrId}`);
     // Return the dataset's lock status (true or false)
     return datasetRoleResponse.data.locked;

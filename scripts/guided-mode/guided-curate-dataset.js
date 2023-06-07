@@ -5754,7 +5754,8 @@ const openPage = async (targetPageID) => {
       );
 
       const usersThatCanBeGrantedPermissions = usersReq.data.users;
-      const teamsThatCanBeGrantedPermissions = teamsReq.data.teams;
+
+      const teamsThatCanBeGrantedPermissions = getSortedTeamStrings(teamsReq.data.teams);
 
       // Reset the dropdown with the new users and teams
       guidedAddUsersAndTeamsToDropdown(

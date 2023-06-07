@@ -3703,7 +3703,15 @@ const refreshBfUsersList = () => {
   }
 };
 
-const refreshBfTeamsList = (teamList) => {
+// Takes in a pennsieve teams JSON response and returns a sorted list of team strings
+const getSortedTeamStrings = (pennsieveTeamsJsonResponse) => {
+  const teamStrings = pennsieveTeamsJsonResponse.map((teamElement) => {
+    return teamElement.team.name;
+  });
+  return teamStrings.sort();
+};
+
+const refreshBfTeamsList = async (teamList) => {
   removeOptions(teamList);
 
   var accountSelected = defaultBfAccount;
@@ -3713,29 +3721,30 @@ const refreshBfTeamsList = (teamList) => {
   teamList.appendChild(optionTeam);
 
   if (accountSelected !== "Select") {
-    client
-      .get(`/manage_datasets/bf_get_teams?selected_account=${accountSelected}`)
-      .then((res) => {
-        let teams = res.data["teams"];
-        // The removeoptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
-        $("#bf_list_teams").selectpicker("refresh");
-        $("#bf_list_teams").find("option:not(:first)").remove();
-        $("#guided_bf_list_users_and_teams").selectpicker("refresh");
-        $("#button-add-permission-team").hide();
-        for (var myItem in teams) {
-          var myTeam = teams[myItem];
-          var optionTeam = document.createElement("option");
-          optionTeam.textContent = myTeam;
-          optionTeam.value = myTeam;
-          teamList.appendChild(optionTeam);
-        }
-        confirm_click_account_function();
-      })
-      .catch((error) => {
-        log.error(error);
-        console.error(error);
-        confirm_click_account_function();
-      });
+    try {
+      const teamsReq = await client.get(
+        `manage_datasets/bf_get_teams?selected_account=${defaultBfAccount}`
+      );
+      const teamsThatCanBeGrantedPermissions = getSortedTeamStrings(teamsReq.data.teams);
+
+      // The removeoptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
+      $("#bf_list_teams").selectpicker("refresh");
+      $("#bf_list_teams").find("option:not(:first)").remove();
+      $("#guided_bf_list_users_and_teams").selectpicker("refresh");
+      $("#button-add-permission-team").hide();
+
+      for (const teamName of teamsThatCanBeGrantedPermissions) {
+        const optionTeam = document.createElement("option");
+        optionTeam.textContent = teamName;
+        optionTeam.value = teamName;
+        teamList.appendChild(optionTeam);
+      }
+      confirm_click_account_function();
+    } catch (error) {
+      log.error(error);
+      console.error(error);
+      confirm_click_account_function();
+    }
   }
 };
 
