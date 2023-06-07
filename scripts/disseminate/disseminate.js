@@ -56,7 +56,7 @@ const disseminatePublish = async (curationMode) => {
     console.error(error);
     Swal.fire({
       title: "Could not submit dataset for publication",
-      text: `${userError(error)}`,
+      text: `${userErrorMessage(error)}`,
       heightAuto: false,
       icon: "error",
       confirmButtonText: "Ok",
@@ -271,11 +271,11 @@ const disseminateShowPublishingStatus = async (callback, account, dataset) => {
 // };
 
 const disseminateShowCurrentPermission = async (bfAcct, bfDS) => {
-  currentDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
   if (bfDS === "Select dataset") {
     currentDatasetPermission.innerHTML = "None";
     return;
   }
+  currentDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
 
   let permissions;
   try {

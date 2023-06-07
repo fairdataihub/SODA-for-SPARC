@@ -321,7 +321,7 @@ $("#button-rename-dataset").on("click", async () => {
         clientError(error);
         Swal.fire({
           title: "Failed to rename dataset",
-          text: userErrorMessage(error),
+          html: userErrorMessage(error),
           icon: "error",
           showConfirmButton: true,
           heightAuto: false,
@@ -507,9 +507,6 @@ const showCurrentPermission = async () => {
   let selectedBfAccount = defaultBfAccount;
   let selectedBfDataset = defaultBfDataset;
 
-  currentDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
-  currentAddEditDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
-
   if (selectedBfDataset === null) {
     return;
   }
@@ -520,6 +517,8 @@ const showCurrentPermission = async () => {
     return;
   }
 
+  currentDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
+  currentAddEditDatasetPermission.innerHTML = `Loading current permissions... <div class="ui active green inline loader tiny"></div>`;
   log.info(`Requesting current permissions for ${selectedBfDataset}.`);
 
   try {
@@ -836,7 +835,7 @@ $("#button-add-subtitle").click(async () => {
       let emessage = userErrorMessage(error);
       Swal.fire({
         title: "Failed to add subtitle!",
-        text: emessage,
+        html: emessage,
         icon: "error",
         showConfirmButton: true,
         heightAuto: false,
@@ -1180,11 +1179,11 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
     clientError(error);
 
     // TODO: Fix the error message since this won't be good I don't think
-    let emessage = userError(error);
+    let emessage = userErrorMessage(error);
 
     Swal.fire({
       title: "Failed to add description!",
-      text: emessage,
+      html: emessage,
       icon: "error",
       showConfirmButton: true,
       heightAuto: false,
@@ -2083,7 +2082,7 @@ $("#button-add-tags").click(async () => {
     Swal.fire({
       title: "Failed to edit your dataset tags!",
       icon: "error",
-      text: userErrorMessage(e),
+      html: userErrorMessage(e),
       showConfirmButton: true,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
@@ -2281,7 +2280,7 @@ const showCurrentLicense = async () => {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
-  currentDatasetLicense.innerHTML = `Loading current license... <div class="ui active green inline loader tiny"></div>`;
+  console.log("here");
 
   if (selectedBfDataset === null) {
     return;
@@ -2292,6 +2291,7 @@ const showCurrentLicense = async () => {
     return;
   }
 
+  currentDatasetLicense.innerHTML = `Loading current license... <div class="ui active green inline loader tiny"></div>`;
   log.info(`Getting current license for dataset ${selectedBfDataset}`);
 
   try {
@@ -2981,7 +2981,7 @@ $("#bf_list_dataset_status").on("change", async () => {
     function showErrorDatasetStatus() {
       Swal.fire({
         title: "Failed to change dataset status!",
-        text: emessage,
+        html: emessage,
         icon: "error",
         showConfirmButton: true,
         heightAuto: false,
@@ -3067,7 +3067,7 @@ const showCurrentDatasetStatus = async (callback) => {
     clientError(error);
     Swal.fire({
       title: "Failed to change dataset status!",
-      text: userErrorMessage(error),
+      html: userErrorMessage(error),
       icon: "error",
       showConfirmButton: true,
       heightAuto: false,

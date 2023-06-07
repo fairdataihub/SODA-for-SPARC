@@ -243,7 +243,28 @@ def bf_add_account_username(keyname, key, secret):
     except Exception as e:
         bf_delete_account(keyname)
         raise e
-#get_access_token()
+
+
+def delete_duplicate_keys(token, keyname):
+    try:
+        PENNSIEVE_URL = "https://api.pennsieve.io"
+
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {token}",
+        }
+
+        r = requests.get(f"{PENNSIEVE_URL}/token", headers=headers)
+        r.raise_for_status()
+
+        tokens = r.json()
+
+        for token in tokens:
+            if token["name"] == keyname:
+                r = requests.delete(f"{PENNSIEVE_URL}/token/{token['key']}", headers=headers)
+                r.raise_for_status()
+    except Exception as e:
+        raise e
 
 
 def get_pennsieve_api_key_secret(email, password, keyname):
@@ -251,6 +272,8 @@ def get_pennsieve_api_key_secret(email, password, keyname):
     api_key = get_cognito_userpool_access_token(email, password)
     
     try:
+        delete_duplicate_keys(api_key, keyname)
+
         url = "https://api.pennsieve.io/token/"
 
         payload = {"name": f"{keyname}"}

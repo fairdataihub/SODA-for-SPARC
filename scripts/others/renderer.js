@@ -618,7 +618,8 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
   });
 };
 
-const getPennsieveAgentVersion = async (pathToPennsieveAgent) => {
+const getPennsieveAgentVersion = (pathToPennsieveAgent) => {
+  log.info("DING DING DING");
   return new Promise((resolve, reject) => {
     try {
       // // Timeout if the agent was not able to be retrieved within 7 seconds
@@ -734,7 +735,22 @@ const startPennsieveAgentAndCheckVersion = async () => {
   try {
     pennsieveAgentVersionObj = await getPennsieveAgentVersion(agentPath);
     pennsieveAgentVersion = pennsieveAgentVersionObj["Agent Version"];
+    console.log("Line 738 - Pennsieve Agent Version: ", pennsieveAgentVersion);
   } catch (error) {
+    await Swal.fire({
+      icon: "error",
+      text: "Unable to determine the version number of the Pennsieve Agent. Please try again. If this issue persists contact the SODA team using the 'Contact Us' section found in the sidebar.",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Ok",
+      reverseButtons: reverseSwalButtons,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
     clientError(error);
     throw error;
   }
@@ -3474,7 +3490,7 @@ const withdrawDatasetSubmission = async (curationMode = "") => {
     console.error(error);
     Swal.fire({
       title: "Could not withdraw dataset from publication!",
-      text: `${userError(error)}`,
+      text: `${userErrorMessage(error)}`,
       heightAuto: false,
       icon: "error",
       confirmButtonText: "Ok",
@@ -3631,29 +3647,23 @@ const withdrawReviewDataset = async (curationMode) => {
 // General //
 
 const removeOptions = (selectbox) => {
-  var i;
-  for (i = selectbox.options.length - 1; i >= 0; i--) {
+  for (let i = selectbox.options.length - 1; i >= 0; i--) {
     selectbox.remove(i);
   }
-};
-
-const userError = (error) => {
-  var myerror = error.message;
-  return myerror;
 };
 
 // Manage Datasets //
 
 const refreshBfUsersList = () => {
-  var accountSelected = defaultBfAccount;
+  let accountSelected = defaultBfAccount;
 
   removeOptions(bfListUsers);
-  var optionUser = document.createElement("option");
+  let optionUser = document.createElement("option");
   optionUser.textContent = "Select user";
   bfListUsers.appendChild(optionUser);
 
   removeOptions(bfListUsersPI);
-  var optionUserPI = document.createElement("option");
+  let optionUserPI = document.createElement("option");
   optionUserPI.textContent = "Select PI";
   bfListUsersPI.appendChild(optionUserPI);
 
@@ -3687,7 +3697,15 @@ const refreshBfUsersList = () => {
   }
 };
 
-const refreshBfTeamsList = (teamList) => {
+// Takes in a pennsieve teams JSON response and returns a sorted list of team strings
+const getSortedTeamStrings = (pennsieveTeamsJsonResponse) => {
+  const teamStrings = pennsieveTeamsJsonResponse.map((teamElement) => {
+    return teamElement.team.name;
+  });
+  return teamStrings.sort();
+};
+
+const refreshBfTeamsList = async (teamList) => {
   removeOptions(teamList);
 
   var accountSelected = defaultBfAccount;
@@ -3697,29 +3715,30 @@ const refreshBfTeamsList = (teamList) => {
   teamList.appendChild(optionTeam);
 
   if (accountSelected !== "Select") {
-    client
-      .get(`/manage_datasets/bf_get_teams?selected_account=${accountSelected}`)
-      .then((res) => {
-        let teams = res.data["teams"];
-        // The removeoptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
-        $("#bf_list_teams").selectpicker("refresh");
-        $("#bf_list_teams").find("option:not(:first)").remove();
-        $("#guided_bf_list_users_and_teams").selectpicker("refresh");
-        $("#button-add-permission-team").hide();
-        for (var myItem in teams) {
-          var myTeam = teams[myItem];
-          var optionTeam = document.createElement("option");
-          optionTeam.textContent = myTeam;
-          optionTeam.value = myTeam;
-          teamList.appendChild(optionTeam);
-        }
-        confirm_click_account_function();
-      })
-      .catch((error) => {
-        log.error(error);
-        console.error(error);
-        confirm_click_account_function();
-      });
+    try {
+      const teamsReq = await client.get(
+        `manage_datasets/bf_get_teams?selected_account=${defaultBfAccount}`
+      );
+      const teamsThatCanBeGrantedPermissions = getSortedTeamStrings(teamsReq.data.teams);
+
+      // The removeoptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
+      $("#bf_list_teams").selectpicker("refresh");
+      $("#bf_list_teams").find("option:not(:first)").remove();
+      $("#guided_bf_list_users_and_teams").selectpicker("refresh");
+      $("#button-add-permission-team").hide();
+
+      for (const teamName of teamsThatCanBeGrantedPermissions) {
+        const optionTeam = document.createElement("option");
+        optionTeam.textContent = teamName;
+        optionTeam.value = teamName;
+        teamList.appendChild(optionTeam);
+      }
+      confirm_click_account_function();
+    } catch (error) {
+      log.error(error);
+      console.error(error);
+      confirm_click_account_function();
+    }
   }
 };
 
@@ -7632,8 +7651,19 @@ document.getElementById("button-generate").addEventListener("click", async funct
   statusText = "Please wait while we verify a few things...";
   if (dataset_destination == "Pennsieve") {
     let supplementary_checks = await run_pre_flight_checks(false);
+    console.log("Supplementart checks value, ", supplementary_checks);
     if (!supplementary_checks) {
       $("#sidebarCollapse").prop("disabled", false);
+
+      // return to the prior page
+      $($($(this).parent()[0]).parents()[0]).addClass("tab-active");
+      document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
+      document.getElementById("para-please-wait-new-curate").innerHTML = "";
+      document.getElementById("prevBtn").style.display = "inline";
+      document.getElementById("start-over-btn").style.display = "inline-block";
+      document.getElementById("div-vertical-progress-bar").style.display = "flex";
+      document.getElementById("div-generate-comeback").style.display = "flex";
+      document.getElementById("generate-dataset-progress-tab").style.display = "none";
       return;
     }
   }
@@ -8860,14 +8890,14 @@ const Actions = {
   NEW: "New",
 };
 
-function logCurationForAnalytics(
+const logCurationForAnalytics = (
   category,
   analyticsActionPrefix,
   granularity,
   actions,
   location,
   generalLog
-) {
+) => {
   // if no actions to log return
   if (!actions) {
     return;
@@ -8928,7 +8958,7 @@ function logCurationForAnalytics(
       ipcRenderer.send("track-event", `${category}`, actionName, location, 1);
     }
   }
-}
+};
 
 const getMetadataFileNameFromStatus = (metadataFileStatus) => {
   // get the UI text that displays the file path

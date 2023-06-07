@@ -906,6 +906,7 @@ document.querySelector("#run_validator_btn").addEventListener("click", async fun
 
 // observer for the selected dataset label in the dataset selection card in question 2
 const questionTwoDatasetSelectionObserver = new MutationObserver(() => {
+  // once a dataset has been selected show the run validator button if the current question is active
   if ($("#bf_dataset_load_validator").text().trim() !== "None") {
     // transition to the next question
     transitionFreeFormMode(
@@ -916,7 +917,18 @@ const questionTwoDatasetSelectionObserver = new MutationObserver(() => {
       "individual-question validate_dataset"
     );
     document.querySelector("#run_validator_btn").style.display = "flex";
-    document.querySelector("#validate_dataset-question-3").style.display = "flex";
+
+    // only show the whole question if the user is on the validate tab and they have selected the ps dataset flow
+    if (
+      document.querySelector("#validate_dataset-question-2").classList.contains("show") &&
+      document.querySelector("#pennsieve-question-2-container").style.display === "flex"
+    ) {
+      console.log("Showing the validator button");
+      document.querySelector("#validate_dataset-question-3").style.display = "flex";
+    } else {
+      console.log("Hiding the validator button");
+      document.querySelector("#validate_dataset-question-3").style.display = "none";
+    }
   } else {
     $("#div-check-bf-import-validator").css("display", "none");
   }

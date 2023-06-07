@@ -40,7 +40,7 @@ from pysodaUtils import get_agent_version, start_agent
 import time 
 
 from namespaces import get_namespace, NamespaceEnum
-from errorHandlers import notBadRequestException
+from errorHandlers import notBadRequestException, handle_http_error
 from authentication import get_cognito_userpool_access_token, bf_add_account_username, get_pennsieve_api_key_secret
 
 
@@ -285,17 +285,13 @@ class BfGetUsers(Resource):
 
 
 
-
-model_bf_get_teams_response = api.model('BfGetTeamsResponse', {'teams': fields.List(fields.String, required=True, description="List of the teams in the user's organization.")})
-
 @api.route('/bf_get_teams')
 class BfGetTeams(Resource):
 
   parser_get_teams = reqparse.RequestParser(bundle_errors=True)
   parser_get_teams.add_argument('selected_account', type=str, required=True, location='args', help='The target account to retrieve inter-organization teams for.')
 
-  @api.marshal_with(model_bf_get_teams_response, False, 200)
-  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns a list of the teams in the given Pennsieve Account's organization.")
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns JSON containing the teams for the given Pennsieve account.")
   def get(self):
     try:
       # get the selected account out of the request args
@@ -423,6 +419,9 @@ class DatasetSubtitle(Resource):
     try:
       return bf_get_subtitle(selected_account, selected_dataset)
     except Exception as e:
+      # if exception is an HTTPError then check if 400 or 500
+      if type(e).__name__ == "HTTPError":
+        handle_http_error(e)
       if notBadRequestException(e):
         api.abort(500, str(e))
       raise e

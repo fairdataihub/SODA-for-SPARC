@@ -5844,7 +5844,8 @@ const openPage = async (targetPageID) => {
       );
 
       const usersThatCanBeGrantedPermissions = usersReq.data.users;
-      const teamsThatCanBeGrantedPermissions = teamsReq.data.teams;
+
+      const teamsThatCanBeGrantedPermissions = getSortedTeamStrings(teamsReq.data.teams);
 
       // Reset the dropdown with the new users and teams
       guidedAddUsersAndTeamsToDropdown(
@@ -7104,6 +7105,10 @@ const patchPreviousGuidedModeVersions = async () => {
   }
   console.log(contributors);
 
+  if (!sodaJSONObj["button-config"]) {
+    sodaJSONObj["button-config"] = {};
+  }
+
   if (!sodaJSONObj["skipped-pages"]) {
     sodaJSONObj["skipped-pages"] = [];
   }
@@ -7185,11 +7190,6 @@ const patchPreviousGuidedModeVersions = async () => {
 
   // If no other conditions are met, return the page the user was last on
   return sodaJSONObj["page-before-exit"];
-
-  // if (!sodaJSONObj["special-rejoin-key"]) {
-  //   sodaJSONObj["special-rejoin-key"] = "now-i-wont-return-to-the-first-page";
-  //   return firstPageID;
-  // }
 };
 
 //Loads UI when continue curation button is pressed
@@ -7334,12 +7334,6 @@ const guidedResumeProgress = async (datasetNameToResume) => {
       pageToReturnTo = null;
     }
 
-    // console.log() console.log("") remove me before an actual release or talk to Jacob
-    if (!sodaJSONObj["special-rejoin-key"]) {
-      sodaJSONObj["special-rejoin-key"] = "now-i-wont-return-to-the-first-page";
-      pageToReturnTo = null;
-    }
-
     //If the dataset was successfully uploaded, send the user to the share with curation team
     if (datasetResumeJsonObj["previous-guided-upload-dataset-name"]) {
       pageToReturnTo = "guided-dataset-dissemination-tab";
@@ -7347,8 +7341,12 @@ const guidedResumeProgress = async (datasetNameToResume) => {
 
     // Delete the button status for the Pennsieve account confirmation section
     // So the user has to confirm their Pennsieve account before uploading
-    delete sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
-    delete sodaJSONObj["button-config"]["organization-has-been-confirmed"];
+    if (sodaJSONObj["button-config"]?.["pennsieve-account-has-been-confirmed"]) {
+      delete sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
+    }
+    if (sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]) {
+      delete sodaJSONObj["button-config"]["organization-has-been-confirmed"];
+    }
 
     // Save the skipped pages in a temp variable since guidedTransitionFromHome will remove them
     const prevSessionSkikppedPages = [...sodaJSONObj["skipped-pages"]];
@@ -7430,9 +7428,6 @@ const guidedUploadStatusIcon = (elementID, status) => {
 //dataset description (first page) functions
 guidedCreateSodaJSONObj = () => {
   sodaJSONObj = {};
-
-  //console.log(" remove me and remove everything that has the key special-rejoin-key it was only for the special beta rejoin release")
-  sodaJSONObj["special-rejoin-key"] = "now-i-wont-return-to-the-first-page";
 
   sodaJSONObj["guided-options"] = {};
   sodaJSONObj["bf-account-selected"] = {};
@@ -12694,7 +12689,7 @@ $(document).ready(async () => {
       }
       log.error(error);
       console.error(error);
-      let emessage = userError(error);
+      let emessage = userErrorMessage(error);
       throw error;
     }
   };
@@ -12803,7 +12798,7 @@ $(document).ready(async () => {
       guidedUploadStatusIcon(`guided-dataset-${teamString}-permissions-upload-status`, "error");
       log.error(error);
       console.error(error);
-      let emessage = userError(error);
+      let emessage = userErrorMessage(error);
       throw error;
     }
   };
@@ -13890,7 +13885,7 @@ $(document).ready(async () => {
       if (err) {
         console.log(err);
         log.error(err);
-        var emessage = userError(error);
+        var emessage = userErrorMessage(error);
         Swal.fire({
           title: `Failed to generate the existing ${type}.txt file`,
           html: emessage,

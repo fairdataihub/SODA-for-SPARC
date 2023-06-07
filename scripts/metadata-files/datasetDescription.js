@@ -7,7 +7,7 @@ document.querySelectorAll(".dd-change-current-account").forEach((element) => {
 
 document.querySelectorAll(".dd-change-current-ds").forEach((element) => {
   element.addEventListener("click", function () {
-    openDropdownPrompt(null, "dataset");
+    openDropdownPrompt(element, "dataset");
   });
 });
 
@@ -378,6 +378,8 @@ const generateDDFile = async (uploadBFBoolean) => {
     if (!supplementary_checks) {
       return;
     }
+
+    // Check if the dataset is locked before uploading
 
     var { value: continueProgress } = await Swal.fire({
       title:

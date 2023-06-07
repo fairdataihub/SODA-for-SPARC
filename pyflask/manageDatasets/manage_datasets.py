@@ -555,7 +555,7 @@ def create_new_dataset(datasetname, accountname):
             abort(400, error)
 
         if not datasetname or datasetname.isspace():
-            error = f"{error}Please enter valid dataset name."
+            error = "Please enter valid dataset name."
             abort(400, error)
 
         token = get_access_token()
@@ -955,10 +955,8 @@ def bf_get_teams(selected_bfaccount):
         r = requests.get(f"{PENNSIEVE_URL}/organizations/{str(org_id)}/teams", headers=create_request_headers(token))
         r.raise_for_status()
         list_teams = r.json()
-        list_teams_name = [list_teams[i]["team"]["name"] for i in range(len(list_teams))]
-
-        list_teams_name.sort()  # Returning the list of teams in alphabetical order
-        return {"teams": list_teams_name}
+        
+        return {"teams": list_teams}
     except Exception as e:
         raise e
 

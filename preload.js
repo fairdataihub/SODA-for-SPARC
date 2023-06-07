@@ -943,7 +943,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           backdrop: "rgba(0,0,0, 0.4)",
           heightAuto: false,
           icon: "error",
-          text: userErrorMessage(error),
+          html: userErrorMessage(error),
           footer:
             "<a href='https://docs.pennsieve.io/docs/configuring-the-client-credentials'>Why do I have this issue?</a>",
         });
@@ -1169,6 +1169,8 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     await addBfAccount(ev, false);
   } else if (dropdown === "dataset") {
     dropdownEventID = ev?.id ?? "";
+    console.log("ev", ev);
+    console.log("dropdownEventID", dropdownEventID);
 
     // check the value of Current Organization
     // TODO: Test heavily
@@ -1511,8 +1513,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           document.getElementById("Question-prepare-dd-2").classList.add("show");
 
           document.getElementById("dd-select-pennsieve-dataset").style.display = "block";
-          document.getElementById("ds-name").value =
-            document.getElementById("rename_dataset_name").innerText;
+          document.getElementById("ds-name").value = bfDataset;
         } else {
           // document.getElementById("Question-prepare-dd-4").classList.add("show");
           let onMyCompButton = document.getElementById("Question-prepare-dd-4-new");
@@ -1833,13 +1834,19 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           const login = Swal.getPopup().querySelector("#ps_login").value;
           const password = Swal.getPopup().querySelector("#ps_password").value;
 
+          // show a loading spinner in place of the confirm button HERE
+          // $(".ui.active.green.inline.loader.small.organization-loader").css("display", "block");
+          Swal.showLoading();
+
           if (!login) {
             Swal.showValidationMessage("Please enter your email!");
+            Swal.hideLoading();
             return undefined;
           }
 
           if (!password) {
             Swal.showValidationMessage("Please enter your password!");
+            Swal.hideLoading();
             return undefined;
           }
 
@@ -1856,6 +1863,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               title: "Could Not Switch Organizations",
               text: "Please try again shortly.",
             });
+            Swal.hideLoading();
             // reset the UI to pre-org switch state
             $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
             $(".svg-change-current-account.organization").css("display", "block");

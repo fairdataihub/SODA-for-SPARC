@@ -670,12 +670,32 @@ const nextPrev = (pageIndex) => {
       currentTab = currentTab + 2;
       $("#nextBtn").prop("disabled", false);
       fixStepDone(4);
+
+      showParentTab(currentTab, pageIndex);
+
+      console.log("Executing this stuff here");
+
+      // check if skip card or the validate card have been checked
+      const validationOptionSelected = document.querySelector(
+        "#validate-dataset-tab input[type=radio]:checked"
+      );
+      console.log(validationOptionSelected);
+
+      if (validationOptionSelected) {
+        console.log("Not disabling net butn");
+        // enable the continue button
+        $("#nextBtn").prop("disabled", false);
+      } else {
+        console.log("DIsabling next button");
+        // disable the continue button
+        $("#nextBtn").prop("disabled", true);
+      }
     } else {
       currentTab = currentTab - 1;
       // fixStepDone(4);
       $("#nextBtn").prop("disabled", true);
+      showParentTab(currentTab, pageIndex);
     }
-    showParentTab(currentTab, pageIndex);
   } else if (
     parentTabs[currentTab].id === "manifest-file-tab" &&
     (sodaJSONObj["starting-point"]["type"] === "new" ||
@@ -714,6 +734,31 @@ const nextPrev = (pageIndex) => {
     currentTab = currentTab - 2;
     showParentTab(currentTab, pageIndex);
     $("#nextBtn").prop("disabled", false);
+  } else if (parentTabs[currentTab].id === "generate-dataset-tab") {
+    // Hide the current tab:
+    $(parentTabs[currentTab]).removeClass("tab-active");
+    // Increase or decrease the current tab by 1:
+    currentTab = currentTab + pageIndex;
+    // For step 1,2,3, check for High level folders input to disable Continue button
+    if (currentTab === 1 || currentTab === 2 || currentTab === 3) {
+      highLevelFoldersDisableOptions();
+    }
+    // Display the correct tab:
+    showParentTab(currentTab, pageIndex);
+
+    // check if skip card or the validate card have been checked
+    const validationOptionSelected = document.querySelector(
+      "#validate-dataset-tab input[type=radio]:checked"
+    );
+    console.log(validationOptionSelected);
+
+    if (validationOptionSelected) {
+      // enable the continue button
+      $("#nextBtn").prop("disabled", false);
+    } else {
+      // disable the continue button
+      $("#nextBtn").prop("disabled", true);
+    }
   } else {
     // Hide the current tab:
     $(parentTabs[currentTab]).removeClass("tab-active");
@@ -892,6 +937,29 @@ const raiseWarningGettingStarted = (ev) => {
       resolve(globalGettingStarted1stQuestionBool);
     }
   });
+};
+
+const handleValidateCardSelection = async (ev) => {
+  $(ev).children().find(".folder-input-check").prop("checked", true);
+  $(ev).addClass("checked");
+
+  // uncheck the other radio buttons
+  $($(ev).parents()[0]).siblings().find(".option-card.radio-button").removeClass("checked");
+  $($(ev).parents()[0]).siblings().find(".option-card.radio-button").addClass("non-selected");
+
+  // check which card is selected
+  let selectedCard = document.querySelector("#validate-dataset-tab input[type=radio]:checked");
+
+  if (selectedCard.id === "validate-organize-1-A") {
+    // run validation
+    await validateOrganizedDataset();
+
+    // scroll to the results table
+    document.querySelector("#organize--table-validation-errors").scrollIntoView();
+  } // else the user skipped validation
+
+  // enable the continue button
+  $("#nextBtn").prop("disabled", false);
 };
 
 var divList = [];
@@ -1691,6 +1759,7 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
   */
 
   if (currentDiv === "Question-getting-started-BF-dataset") {
+    let selectedDataset = $("#current-bf-dataset").text();
     $("#nextBtn").prop("disabled", true);
     // $("#button-confirm-bf-dataset-getting-started").prop("disabled", true);
     sodaJSONObj = {
@@ -1710,13 +1779,57 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
     };
 
     sodaJSONObj["bf-account-selected"]["account-name"] = defaultBfAccount;
-    sodaJSONObj["bf-dataset-selected"]["dataset-name"] = $("#current-bf-dataset").text();
+    sodaJSONObj["bf-dataset-selected"]["dataset-name"] = selectedDataset;
+
     $("#para-continue-bf-dataset-getting-started").text("");
     $("body").addClass("waiting");
     $("#button-confirm-bf-dataset-getting-started").prop("disabled", true);
     $("#bf-dataset-spinner").show();
     $("#bf-dataset-spinner").children().show();
     $("#bf-dataset-spinner").css("visibility", "visible");
+
+    // Check if dataset is locked before trying to import
+    const isDatasetLocked = await api.isDatasetLocked(defaultBfAccount, selectedDataset);
+    if (isDatasetLocked) {
+      Swal.fire({
+        icon: "info",
+        title: `${selectedDataset} is locked from editing`,
+        html: `
+              This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
+              <br />
+              <br />
+              If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
+            `,
+        width: 600,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "Ok",
+        focusConfirm: true,
+        allowOutsideClick: false,
+      });
+
+      $("#nextBtn").prop("disabled", true);
+      $("#para-continue-bf-dataset-getting-started").text("");
+      $("body").removeClass("waiting");
+      showHideDropdownButtons("dataset", "hide");
+      $("#current-bf-dataset").text("None");
+      $(datasetPermissionDiv).find("#curatebfdatasetlist").val("Select dataset").trigger("change");
+      sodaJSONObj["bf-dataset-selected"]["dataset-name"] = "";
+      $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
+      $("body").removeClass("waiting");
+
+      // log the event to analytics
+      logCurationForAnalytics(
+        "Error",
+        PrepareDatasetsAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.ACTION,
+        ["Dataset Locked"],
+        "Pennsieve",
+        true
+      );
+
+      return;
+    }
 
     let sodaObject = {};
     let manifestErrorMessage = [];
@@ -1842,6 +1955,12 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
     $("#bf-dataset-spinner").css("visibility", "hidden");
     $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
     $("#dataset-loaded-message").show();
+
+    // clear the validation table results
+    let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
+    clearValidationResults(validationErrorsTable);
+    // hide the table
+    document.querySelector("#organize--table-validation-errors").style.visibility = "hidden";
     // $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
   }
 
@@ -2528,6 +2647,12 @@ const reset_ui = () => {
   $("#Question-getting-started-existing-BF-dataset").hide();
   $("#Question-getting-started-existing-BF-dataset").children().hide();
   $("#nextBtn").prop("disabled", true);
+
+  // clear the validation table results
+  let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
+  clearValidationResults(validationErrorsTable);
+  // hide the table
+  document.querySelector("#organize--table-validation-errors").style.visibility = "hidden";
 };
 
 const populate_existing_folders = (dataset_folders) => {
