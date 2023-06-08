@@ -699,8 +699,6 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
       return;
     }
 
-
-
     // Run pre-flight checks before uploading the submission file to Pennsieve
     let supplementary_checks = await run_pre_flight_checks(false);
     if (!supplementary_checks) {
@@ -818,7 +816,7 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
       );
 
       // get the size of the uploaded file from the result
-      const {size} = res.data;
+      const { size } = res.data;
 
       // log the size of the metadata file that was generated at varying levels of granularity
       logMetadataSizeForAnalytics(uploadBFBoolean, "submission.xlsx", size);
@@ -842,7 +840,7 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
         uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
       );
     });
-}
+};
 
 $("#submission-completion-date").change(function () {
   const text = $("#submission-completion-date").val();

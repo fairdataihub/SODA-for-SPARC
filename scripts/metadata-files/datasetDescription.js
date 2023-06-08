@@ -375,7 +375,7 @@ const generateDDFile = async (uploadBFBoolean) => {
   let bfaccountname = defaultBfAccount;
   let bf_dataset = document.getElementById("bf_dataset_load_dd").innerText.trim();
   if (uploadBFBoolean) {
-      /// get current, selected Pennsieve account
+    /// get current, selected Pennsieve account
     // Check if dataset is locked before running pre-flight checks
     const isLocked = await api.isDatasetLocked(bfaccountname, bf_dataset);
     if (isLocked) {
@@ -398,7 +398,6 @@ const generateDDFile = async (uploadBFBoolean) => {
 
       return;
     }
-
 
     // Run pre-flight checks before uploading the dataset_description file to Pennsieve
     const supplementary_checks = await run_pre_flight_checks(false);
