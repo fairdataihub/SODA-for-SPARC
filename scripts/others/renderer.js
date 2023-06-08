@@ -1806,7 +1806,7 @@ const generateSubjectsFileHelper = async (uploadBFBoolean) => {
       uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
     );
   }
-}
+};
 
 // generate samples file
 ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) => {
@@ -1861,7 +1861,7 @@ ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) 
 });
 
 const generateSamplesFileHelper = async (uploadBFBoolean) => {
-  let bfDataset = $("#bf_dataset_load_samples").text().trim()
+  let bfDataset = $("#bf_dataset_load_samples").text().trim();
   if (uploadBFBoolean) {
     // Check if dataset is locked before running pre-flight checks
     const isLocked = await api.isDatasetLocked(defaultBfAccount, bfDataset);
@@ -1885,7 +1885,6 @@ const generateSamplesFileHelper = async (uploadBFBoolean) => {
 
       return;
     }
-
 
     // Run pre-flight checks before uploading the samples file to Pennsieve
     const supplementary_checks = await run_pre_flight_checks(false);
@@ -1991,7 +1990,7 @@ const generateSamplesFileHelper = async (uploadBFBoolean) => {
       uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
     );
   }
-}
+};
 
 // import Primary folder
 ipcRenderer.on("selected-local-primary-folder", (event, primaryFolderPath) => {
