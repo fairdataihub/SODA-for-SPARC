@@ -14136,6 +14136,12 @@ $(document).ready(async () => {
       return;
     }
 
+    //NAVIGATE TO NEXT PAGE + CHANGE ACTIVE TAB/SET ACTIVE PROGRESSION TAB
+    //if more tabs in parent tab, go to next tab and update capsule
+    let targetPage = getNextPageNotSkipped(CURRENT_PAGE.id);
+    let targetPageID = targetPage.id;
+    let targetPageName = targetPage.dataset.pageName;
+
     try {
       await savePageChanges(pageBeingLeftID);
       //Save progress onto local storage with the dataset name as the key
@@ -14147,39 +14153,47 @@ $(document).ready(async () => {
         sodaJSONObj["completed-tabs"].push(pageBeingLeftID);
       }
 
-      //NAVIGATE TO NEXT PAGE + CHANGE ACTIVE TAB/SET ACTIVE PROGRESSION TAB
-      //if more tabs in parent tab, go to next tab and update capsule
-      let targetPage = getNextPageNotSkipped(CURRENT_PAGE.id);
-      let targetPageID = targetPage.id;
-
       await openPage(targetPageID);
     } catch (error) {
-      log.error(error);
-      console.log(error);
-      error.map((error) => {
-        // get the total number of words in error.message
-        if (error.type === "notyf") {
-          notyf.open({
-            duration: "7000",
-            type: "error",
-            message: error.message,
-          });
-        }
+      if (!Array.isArray(error)) {
+        const emessage = userErrorMessage(error);
+        Swal.fire({
+          icon: "error",
+          title: `Error occurred while opening ${targetPageName} page`,
+          html: emessage,
+          width: 600,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: `OK`,
+          focusConfirm: true,
+          allowOutsideClick: false,
+        });
+      } else {
+        error.map((error) => {
+          // get the total number of words in error.message
+          if (error.type === "notyf") {
+            notyf.open({
+              duration: "7000",
+              type: "error",
+              message: error.message,
+            });
+          }
 
-        if (error.type === "swal") {
-          Swal.fire({
-            icon: "error",
-            title: error.title,
-            html: error.message,
-            width: 600,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            confirmButtonText: `OK`,
-            focusConfirm: true,
-            allowOutsideClick: false,
-          });
-        }
-      });
+          if (error.type === "swal") {
+            Swal.fire({
+              icon: "error",
+              title: error.title,
+              html: error.message,
+              width: 600,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              confirmButtonText: `OK`,
+              focusConfirm: true,
+              allowOutsideClick: false,
+            });
+          }
+        });
+      }
     }
   });
 
