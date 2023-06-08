@@ -388,21 +388,7 @@
               style="display: none; flex-direction: row; justify-content: center; margin: 10px auto"
               id="div-check-bf-import-readme"
             >
-              <button
-                onclick="getRC('README.txt')"
-                style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  margin: 10px auto;
-                  width: 100px;
-                  height: 30px;
-                  background: var(--color-light-green);
-                  color: #fff;
-                  font-weight: 600;
-                  border: none;
-                  font-size: 13px;
-                "
-              >
+              <button onclick="getRC('README.txt')" class="prepare-metadata-confirm-dataset-button">
                 Confirm
               </button>
               <button
@@ -501,9 +487,11 @@
                 onclick="transitionFreeFormMode(this, 'Question-prepare-readme-2', 'create_README-tab', 'delete', 'individual-question prepare-readme')"
                 style="
                   margin: 10px;
-                  width: 140px;
+                  width: 160px;
                   border: none !important;
                   overflow: visible !important;
+                  font-size: 15px;
+                  height: 38px;
                 "
               >
                 Generate

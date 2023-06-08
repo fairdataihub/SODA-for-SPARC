@@ -310,21 +310,7 @@
               style="display: none; flex-direction: row; justify-content: center; margin: 10px auto"
               id="div-check-bf-import-dd"
             >
-              <button
-                onclick="checkBFImportDD()"
-                style="
-                  cursor: pointer;
-                  border-radius: 8px;
-                  margin: 10px auto;
-                  width: 100px;
-                  height: 30px;
-                  background: var(--color-light-green);
-                  color: #fff;
-                  font-weight: 600;
-                  border: none;
-                  font-size: 13px;
-                "
-              >
+              <button onclick="checkBFImportDD()" class="prepare-metadata-confirm-dataset-button">
                 Confirm
               </button>
               <button
@@ -1263,7 +1249,14 @@
           data-current="Generate-dd"
           id="button-generate-dd"
           onclick="transitionFreeFormMode(this, 'Question-prepare-dd-2', 'create_dataset_description-tab', 'delete', 'individual-question prepare-dd')"
-          style="margin: 10px; width: 140px; border: none !important; overflow: visible !important"
+          style="
+            margin: 10px;
+            width: 160px;
+            height: 38px;
+            border: none !important;
+            overflow: visible !important;
+            font-size: 15px;
+          "
           data-original-title=""
           title=""
         >

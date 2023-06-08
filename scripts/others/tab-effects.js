@@ -3817,16 +3817,20 @@ $("#bf_list_roles_teams").on("change", () => {
 });
 
 initRipple = function (buttonEle) {
+  console.log("initRipple function");
+  console.log(buttonEle);
   var inside = document.createElement("div");
   inside.classList.add("btn_animated-inside");
   inside.innerHTML = buttonEle.innerHTML;
   buttonEle.innerHTML = "";
   buttonEle.appendChild(inside);
   inside.addEventListener("mousedown", function () {
+    console.log(event);
     ripple(event, this);
   });
 };
 ripple = function (event, buttonEle) {
+  console.log("ripple function");
   var rippleEle = document.createElement("span");
   rippleEle.setAttribute("class", "ripple");
   rippleEle.style.top = event.offsetY + "px";

@@ -13788,7 +13788,7 @@ $(document).ready(async () => {
   });
 
   const guidedGenerateRCFilesHelper = (type) => {
-    var textValue = $(`#guided-textarea-create-${type}`).val().trim();
+    let textValue = $(`#guided-textarea-create-${type}`).val().trim();
     if (textValue === "") {
       Swal.fire({
         title: "Incomplete information",
