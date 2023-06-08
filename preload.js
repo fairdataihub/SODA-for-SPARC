@@ -1433,7 +1433,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             const datasetIsLocked = await api.isDatasetLocked(defaultBfAccount, bfDataset);
             if (datasetIsLocked) {
               // Show the locked swal and return
-              Swal.fire({
+              await Swal.fire({
                 icon: "info",
                 title: `${bfDataset} is locked from editing`,
                 html: `
