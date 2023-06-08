@@ -287,7 +287,7 @@ input[name="dataset_status_radio"]:checked ~ label {
 .btn_animated-inside {
   -webkit-mask-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAA5JREFUeNpiYGBgAAgwAAAEAAGbA+oJAAAAAElFTkSuQmCC);
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 4px;
   transition: all 0.25s;
   color: white;
   user-select: none;
@@ -295,8 +295,8 @@ input[name="dataset_status_radio"]:checked ~ label {
   background: var(--color-light-green);
   width: inherit;
   height: inherit;
-  margin-left: -8px;
-  padding-top: 8px;
+  margin-left: -10px;
+  padding-top: 9px;
 }
 
 .btn_animated .ripple {

@@ -77,6 +77,28 @@
   text-align: center;
 }
 
+.prepare-metadata-confirm-dataset-button {
+  border-radius: 4px;
+  margin: 1.2rem auto;
+  width: 110px;
+  height: 35px;
+  background: var(--color-light-green);
+  color: #fff;
+  font-size: 14px;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.prepare-metadata-generate-button {
+  margin: 10px;
+  width: 160px;
+  border: none !important;
+  font-size: 15px !important;
+  overflow: visible !important;
+  
+}
+
 .green-hollow-button {
   color: var(--color-light-green) !important;
   box-shadow: 0 0 0 1px var(--color-light-green) inset !important;

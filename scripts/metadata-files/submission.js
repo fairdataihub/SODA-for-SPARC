@@ -197,6 +197,7 @@ const helpMilestoneSubmission = async (curationMode) => {
     title: "Importing the Data Deliverables document",
     html: `<div class="container-milestone-upload" style="display: flex;margin:10px"><input class="milestone-upload-text" id="input-milestone-select" onclick="openDDDimport()" style="text-align: center;height: 40px;border-radius: 0;background: #f5f5f5; border: 1px solid #d0d0d0; width: 100%" type="text" readonly placeholder="Browse here"/></div>`,
     heightAuto: false,
+    showCancelButton: true,
     backdrop: "rgba(0,0,0, 0.4)",
     preConfirm: () => {
       if ($("#input-milestone-select").attr("placeholder") === "Browse here") {
@@ -671,14 +672,41 @@ localReadmeBtn.addEventListener(
   false
 );
 
-async function generateSubmissionHelper(uploadBFBoolean) {
+const generateSubmissionHelper = async (uploadBFBoolean) => {
+  let datasetName = $("#bf_dataset_load_submission").text().trim();
   if (uploadBFBoolean) {
+    // Check if dataset is locked before running pre-flight checks
+    const isLocked = await api.isDatasetLocked(defaultBfAccount, datasetName);
+
+    if (isLocked) {
+      Swal.fire({
+        icon: "info",
+        title: `${datasetName} is locked from editing`,
+        html: `
+          This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
+          <br />
+          <br />
+          If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
+        `,
+        width: 600,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "Ok",
+        focusConfirm: true,
+        allowOutsideClick: false,
+      });
+
+      return;
+    }
+
+
+
     // Run pre-flight checks before uploading the submission file to Pennsieve
-    const supplementary_checks = await run_pre_flight_checks(false);
+    let supplementary_checks = await run_pre_flight_checks(false);
     if (!supplementary_checks) {
       return;
     }
-    var { value: continueProgress } = await Swal.fire({
+    let { value: continueProgress } = await Swal.fire({
       title:
         "Any existing submission.xlsx file in the high-level folder of the selected dataset will be replaced.",
       text: "Are you sure you want to continue?",
@@ -695,7 +723,7 @@ async function generateSubmissionHelper(uploadBFBoolean) {
       return;
     }
   } else {
-    var { value: continueProgress } = await Swal.fire({
+    let { value: continueProgress } = await Swal.fire({
       title: "Any existing submission.xlsx file in the specified location will be replaced.",
       text: "Are you sure you want to continue?",
       allowEscapeKey: false,
@@ -748,7 +776,6 @@ async function generateSubmissionHelper(uploadBFBoolean) {
     }
   }
 
-  let datasetName = $("#bf_dataset_load_submission").text().trim();
   client
     .post(
       `/prepare_metadata/submission_file`,
@@ -765,11 +792,12 @@ async function generateSubmissionHelper(uploadBFBoolean) {
       }
     )
     .then((res) => {
+      let successMessage = "";
       if (uploadBFBoolean) {
-        var successMessage =
+        successMessage =
           "Successfully generated the submission.xlsx file on your Pennsieve dataset.";
       } else {
-        var successMessage =
+        successMessage =
           "Successfully generated the submission.xlsx file at the specified location.";
       }
       Swal.fire({
@@ -790,7 +818,7 @@ async function generateSubmissionHelper(uploadBFBoolean) {
       );
 
       // get the size of the uploaded file from the result
-      const size = res.data.size;
+      const {size} = res.data;
 
       // log the size of the metadata file that was generated at varying levels of granularity
       logMetadataSizeForAnalytics(uploadBFBoolean, "submission.xlsx", size);
