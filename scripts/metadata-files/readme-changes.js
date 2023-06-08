@@ -44,18 +44,18 @@ const generateRCFilesHelper = (type) => {
     });
     return "empty";
   }
-}
+};
 
 // generate changes or readme either locally (uploadBFBoolean=false) or onto Pennsieve (uploadBFBoolean=true)
 const generateRCFiles = async (uploadBFBoolean, fileType) => {
   let result = generateRCFilesHelper(fileType);
   let bfDataset = document.getElementById(`bf_dataset_load_${fileType}`).innerText.trim();
   let upperCaseLetters = fileType.toUpperCase() + ".txt";
-  
+
   if (result === "empty") {
     return;
   }
-  
+
   if (uploadBFBoolean) {
     // Check if dataset is locked before running pre-flight checks
     const isLocked = await api.isDatasetLocked(defaultBfAccount, bfDataset);
@@ -79,7 +79,6 @@ const generateRCFiles = async (uploadBFBoolean, fileType) => {
 
       return;
     }
-
 
     // Run pre-flight checks before uploading the changes or readme file to Pennsieve
     const supplementary_checks = await run_pre_flight_checks(false);
@@ -184,7 +183,7 @@ const generateRCFiles = async (uploadBFBoolean, fileType) => {
   } else {
     ipcRenderer.send(`open-destination-generate-${fileType}-locally`);
   }
-}
+};
 
 var changesDestinationPath = "";
 var readmeDestinationPath = "";
