@@ -372,7 +372,34 @@ const generateDatasetDescription = async () => {
 };
 
 const generateDDFile = async (uploadBFBoolean) => {
+  let bfaccountname = defaultBfAccount;
+  let bf_dataset = document.getElementById("bf_dataset_load_dd").innerText.trim();
   if (uploadBFBoolean) {
+      /// get current, selected Pennsieve account
+    // Check if dataset is locked before running pre-flight checks
+    const isLocked = await api.isDatasetLocked(bfaccountname, bf_dataset);
+    if (isLocked) {
+      Swal.fire({
+        icon: "info",
+        title: `${bf_dataset} is locked from editing`,
+        html: `
+          This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
+          <br />
+          <br />
+          If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
+        `,
+        width: 600,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "Ok",
+        focusConfirm: true,
+        allowOutsideClick: false,
+      });
+
+      return;
+    }
+
+
     // Run pre-flight checks before uploading the dataset_description file to Pennsieve
     const supplementary_checks = await run_pre_flight_checks(false);
     if (!supplementary_checks) {
@@ -381,7 +408,7 @@ const generateDDFile = async (uploadBFBoolean) => {
 
     // Check if the dataset is locked before uploading
 
-    var { value: continueProgress } = await Swal.fire({
+    let { value: continueProgress } = await Swal.fire({
       title:
         "Any existing dataset_description.xlsx file in the high-level folder of the selected dataset will be replaced.",
       text: "Are you sure you want to continue?",
@@ -398,7 +425,7 @@ const generateDDFile = async (uploadBFBoolean) => {
       return;
     }
   } else {
-    var { value: continueProgress } = await Swal.fire({
+    let { value: continueProgress } = await Swal.fire({
       title:
         "Any existing dataset_description.xlsx file in the specified location will be replaced.",
       text: "Are you sure you want to continue?",
@@ -438,33 +465,29 @@ const generateDDFile = async (uploadBFBoolean) => {
 
   // process multiple Study info tagify values - keywords
   var keywordVal = [];
-  for (var i = 0; i < datasetInfoValueObj["keywords"].length; i++) {
+  for (let i = 0; i < datasetInfoValueObj["keywords"].length; i++) {
     keywordVal.push(datasetInfoValueObj["keywords"][i].value);
   }
   /// replace raw tagify values with processed tagify values
   datasetInfoValueObj["keywords"] = keywordVal;
 
   // process multiple Study info tagify values - Study techniques, approaches, and study organ systems
-  var studyTechniqueArr = [];
-  for (var i = 0; i < studyInfoValueObject["study technique"].length; i++) {
+  let studyTechniqueArr = [];
+  for (let i = 0; i < studyInfoValueObject["study technique"].length; i++) {
     studyTechniqueArr.push(studyInfoValueObject["study technique"][i].value);
   }
-  var studyOrganSystemsArr = [];
-  for (var i = 0; i < studyInfoValueObject["study organ system"].length; i++) {
+  let studyOrganSystemsArr = [];
+  for (let i = 0; i < studyInfoValueObject["study organ system"].length; i++) {
     studyOrganSystemsArr.push(studyInfoValueObject["study organ system"][i].value);
   }
-  var studyApproachesArr = [];
-  for (var i = 0; i < studyInfoValueObject["study approach"].length; i++) {
+  let studyApproachesArr = [];
+  for (let i = 0; i < studyInfoValueObject["study approach"].length; i++) {
     studyApproachesArr.push(studyInfoValueObject["study approach"][i].value);
   }
   /// replace raw tagify values with processed tagify values
   studyInfoValueObject["study organ system"] = studyOrganSystemsArr;
   studyInfoValueObject["study technique"] = studyTechniqueArr;
   studyInfoValueObject["study approach"] = studyApproachesArr;
-
-  /// get current, selected Pennsieve account
-  var bfaccountname = defaultBfAccount;
-  let bf_dataset = document.getElementById("bf_dataset_load_dd").innerText.trim();
 
   log.info(`Generating a dataset description file.`);
   /// call python function to save file

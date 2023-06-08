@@ -90,6 +90,15 @@
   cursor: pointer;
 }
 
+.prepare-metadata-generate-button {
+  margin: 10px;
+  width: 160px;
+  border: none !important;
+  font-size: 15px !important;
+  overflow: visible !important;
+  
+}
+
 .green-hollow-button {
   color: var(--color-light-green) !important;
   box-shadow: 0 0 0 1px var(--color-light-green) inset !important;
