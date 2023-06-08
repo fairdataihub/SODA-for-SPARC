@@ -8,6 +8,7 @@ from datetime import datetime
 import pathlib
 import shutil 
 from utils import load_manifest_to_dataframe
+import time
 
 import pandas as pd
 import requests 
@@ -15,6 +16,8 @@ import requests
 from utils import create_request_headers, column_check, returnFileURL, remove_high_level_folder_from_path, get_name_extension, get_dataset_id, TZLOCAL
 
 userpath = expanduser("~")
+
+
 
 PENNSIEVE_URL = "https://api.pennsieve.io"
 
@@ -35,7 +38,6 @@ def update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level
     Updates old manifest files with new information from the dataset. Also creates new manifest files if they don't exist.
     Used in the standalone manifest workflow for Pennsieve datasets. 
     """
-
     dataset_id = get_dataset_id(ps, soda_json_structure["bf-dataset-selected"]["dataset-name"])
 
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/packages", headers=create_request_headers(ps))
@@ -62,6 +64,7 @@ def update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level
             r.raise_for_status()
 
             packageItems = r.json()["children"]
+
             for j in packageItems:
                 if j["content"]["name"] == "manifest.xlsx":
                     manifest_folder = join(manifest_path, folder_name)
@@ -80,6 +83,9 @@ def update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level
                         manifest_path, folder_name, "manifest.xlsx"
                     )
 
+                    if folder_name not in high_level_folders:
+                        continue
+                        
                     high_level_folders.remove(folder_name)
 
                     updated_manifest_dict = update_existing_pennsieve_manifest_file(dataset_structure["folders"][folder_name], manifest_df)
@@ -216,9 +222,6 @@ def create_high_level_manifest_files_existing_bf_starting_point(soda_json_struct
     manifest_files_structure = {}
     local_timezone = TZLOCAL()
 
-    # global namespace_logger
-
-    # namespace_logger.info("create_high_level_manifest_files_existing_bf_starting_point step 1")
 
     def recursive_folder_traversal(folder, dict_folder_manifest):
         if "files" in folder.keys():
