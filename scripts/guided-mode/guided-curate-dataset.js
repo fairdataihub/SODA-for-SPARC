@@ -3026,6 +3026,13 @@ const generateProgressCardElement = (progressFileJSONObj) => {
 };
 
 const guidedRenderProgressCards = async () => {
+  const progressCardsContainer = document.getElementById("guided-container-progress-cards");
+  const progressCardLoadingDiv = document.getElementById("guided-section-loading-progress-cards");
+
+  // Show the loading div and hide the progress cards container
+  progressCardsContainer.classList.add("hidden");
+  progressCardLoadingDiv.classList.remove("hidden");
+
   //Check if Guided-Progress folder exists. If not, create it.
   if (!fs.existsSync(guidedProgressFilePath)) {
     fs.mkdirSync(guidedProgressFilePath, { recursive: true });
@@ -3045,15 +3052,19 @@ const guidedRenderProgressCards = async () => {
     return new Date(b["last-modified"]) - new Date(a["last-modified"]);
   });
 
+  // If the workspace hasn't loaded yet, wait for it to load
+  // This will stop after 6 seconds
   if (!guidedGetCurrentUserWorkSpace()) {
-    //wait 3 seconds for the workspace to potentially load
-    //note this wait is not ideal, but it can be removed. If the workspace is not loaded before
-    //the progress cards are rendered, the user will be prompted to switch workspaces
-    //for all progress cards that are not in the current workspace
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    for (let i = 0; i < 60; i++) {
+      // If the workspace loaded, break out of the loop
+      if (guidedGetCurrentUserWorkSpace()) {
+        break;
+      }
+      // If the workspace didn't load, wait 100ms and try again
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
   }
 
-  const progressCardsContainer = document.getElementById("guided-section-resume-progress-cards");
   // If there are progress cards to display, display them
   if (progressFileData.length > 0) {
     // Add the title to the container
@@ -3079,6 +3090,10 @@ const guidedRenderProgressCards = async () => {
       </h2>
     `;
   }
+
+  // Hide the loading div and show the progress cards container
+  progressCardsContainer.classList.remove("hidden");
+  progressCardLoadingDiv.classList.add("hidden");
 };
 
 document
