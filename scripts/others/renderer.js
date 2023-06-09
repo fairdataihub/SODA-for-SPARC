@@ -1678,7 +1678,7 @@ const generateSubjectsFileHelper = async (uploadBFBoolean) => {
     if (isLocked) {
       Swal.fire({
         icon: "info",
-        title: `${bfDataset} is locked from editing`,
+        title: `${bfdataset} is locked from editing`,
         html: `
           This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
           <br />

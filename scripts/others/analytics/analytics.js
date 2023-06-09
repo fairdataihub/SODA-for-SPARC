@@ -17,6 +17,7 @@ if (!fs.existsSync(config_folder_path)) {
 } else {
   let dnt_file_path = require("path").join(config_folder_path, "dnt.soda");
   if (fs.existsSync(dnt_file_path)) {
+    console.log("dnt file exists")
     dnt = true;
   } else {
     dnt = false;
@@ -41,6 +42,7 @@ if (beta_app_version.includes("beta")) {
 
 // If in the dev environment, send tracking events to the dev branch
 if (process.env.NODE_ENV === "development") {
+  console.log(process.env.NODE_ENV);
   usr = ua("UA-171625608-2", userId);
   app_status = "dev";
   dnt = false;
