@@ -687,7 +687,6 @@ const transitionToValidateQuestionTwo = async () => {
     // transition for pennsieve dataset
     pennsieveSection.style = "display: flex;";
 
-
     // check if a dataset has been selected
     let selectedDatasetName = document
       .querySelector("#bf_dataset_load_validator")

@@ -56,7 +56,6 @@ const getPrepublishingChecklistStatuses = async (currentDataset) => {
     clientError(error);
   }
 
-
   // get the description - aka subtitle (unfortunate naming), tags, banner image URL, collaborators, and license
   const { description, tags, license } = dataset["content"];
 
@@ -264,9 +263,9 @@ const showPrePublishingStatus = async (inPrePublishing = false, curationMode = "
 
   if (
     $(`#${curationModeID}para-review-dataset-info-disseminate`).text().trim() !=
-    "Dataset is not under review currently" &&
+      "Dataset is not under review currently" &&
     $(`#${curationModeID}para-review-dataset-info-disseminate`).text().trim() !=
-    "Dataset has been rejected by your Publishing Team and may require revision"
+      "Dataset has been rejected by your Publishing Team and may require revision"
   ) {
     return false;
   }

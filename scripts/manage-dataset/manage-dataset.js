@@ -1028,7 +1028,7 @@ const showCurrentDescription = async () => {
     // if so add it to the first section
     $("#ds-description-study-purpose").val(
       parsedReadme[requiredSections.studyPurpose].replace(/\r?\n|\r/g, "") +
-      parsedReadme[requiredSections.invalidText].replace(/\r?\n|\r/g, "")
+        parsedReadme[requiredSections.invalidText].replace(/\r?\n|\r/g, "")
     );
   }
 };
@@ -1951,8 +1951,8 @@ $("#save-banner-image").click((event) => {
     } else {
       $("#para-dataset-banner-image-status").html(
         "<span style='color: red;'> " +
-        "Dimensions of cropped area must be at least 512 px" +
-        "</span>"
+          "Dimensions of cropped area must be at least 512 px" +
+          "</span>"
       );
     }
   } else {
@@ -2055,7 +2055,7 @@ $("#button-add-tags").click(async () => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   // get the current tags from the input inside of the manage_datasets.html file inside of the tags section
   const tags = Array.from(datasetTagsTagify.getTagElms()).map((tag) => {
@@ -2280,7 +2280,6 @@ const showCurrentLicense = async () => {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
-
   if (selectedBfDataset === null) {
     return;
   }
@@ -2434,7 +2433,6 @@ const resetUploadLocalDataset = async () => {
     cancelButtonText: "No",
   });
 
-
   if (!result) {
     return;
   }
@@ -2509,13 +2507,13 @@ $("#button-submit-dataset").click(async () => {
             }
             $("#para-progress-bar-status").html(
               fileUploadStatus +
-              statusMessage +
-              "Progress: " +
-              value.toFixed(2) +
-              "%" +
-              " (total size: " +
-              totalSizePrint +
-              ")"
+                statusMessage +
+                "Progress: " +
+                value.toFixed(2) +
+                "%" +
+                " (total size: " +
+                totalSizePrint +
+                ")"
             );
           }
         }
@@ -2601,7 +2599,7 @@ $("#button-submit-dataset").click(async () => {
             "track-event",
             "Success",
             ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-            ` - Progress track`,
+              ` - Progress track`,
             defaultBfDatasetId
           );
         }
@@ -2775,7 +2773,7 @@ $("#button-submit-dataset").click(async () => {
           "track-event",
           "Error",
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-          ` - Number of Folders`,
+            ` - Number of Folders`,
           `${datasetUploadSession.id}`
         );
         return;
