@@ -190,7 +190,6 @@ const updateOrganizationList = async (bfaccount) => {
 // per change event of current dataset span text
 const confirm_click_function = () => {
   let temp = $(".bf-dataset-span").html();
-  console.log("temp: ", temp);
   if (temp == "None" || temp == "") {
     $($(this).parents().find(".field").find(".div-confirm-button")).css("display", "none");
     $("#para-review-dataset-info-disseminate").text("None");
@@ -747,7 +746,6 @@ const resetFFMUI = (ev) => {
   let resetValidation = true;
   let resetOrganizationTab = true;
   if (ev?.parentNode?.parentNode) {
-    console.log(ev.parentNode.parentNode);
     if (ev.parentNode.parentNode.classList.contains("prepare-submission")) {
       resetSubmissionTab = false;
     }
@@ -769,7 +767,6 @@ const resetFFMUI = (ev) => {
     if (ev.parentNode.parentNode.classList.contains("organize-dataset")) {
       resetOrganizationTab = false;
       if (ev.parentNode.parentNode.id === "bf-organization-curate-first-question-container") {
-        console.log("IN here for resetting");
         $("#current-bf-dataset").text("None");
         $("#para-continue-bf-dataset-getting-started").hide();
         $("#button-confirm-bf-dataset-getting-started").css("display", "none");
@@ -825,7 +822,6 @@ const resetFFMUI = (ev) => {
   if (resetValidation) {
     // Function only resets the table and hides the validation section
     // If they have selected the first cards those will not be reset
-    console.log(resetValidation);
     // $("#div-check-bf-import-validator").css("display", "flex");
     $("#validate_dataset-question-3").removeClass("show");
     $("#validate_dataset-question-3").removeClass("prev");
@@ -1169,8 +1165,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     await addBfAccount(ev, false);
   } else if (dropdown === "dataset") {
     dropdownEventID = ev?.id ?? "";
-    console.log("ev", ev);
-    console.log("dropdownEventID", dropdownEventID);
 
     // check the value of Current Organization
     // TODO: Test heavily
@@ -1192,8 +1186,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
     $(".ui.active.green.inline.loader.small:not(.organization-loader)").css("display", "block");
     let currentLicenseText = currentDatasetLicense.innerText;
     let currentPermissionsText = currentAddEditDatasetPermission.innerText;
-    console.log("currentLicenseText", currentLicenseText);
-    console.log("currentPermissionsText", currentPermissionsText);
 
     setTimeout(async function () {
       // disable the Continue btn first
@@ -1429,7 +1421,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
             // Ensure the dataset is not locked except for when the user is on the disseminate page (to allow for the dataset to be unsubmitted)
             // Ensure the dataset is not locked before proceeding
-            console.log("Checking ds lock status");
             const datasetIsLocked = await api.isDatasetLocked(defaultBfAccount, bfDataset);
             if (datasetIsLocked) {
               // Show the locked swal and return
@@ -1454,7 +1445,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
               // $("#begin-prepublishing-btn").addClass("hidden");
               return;
             }
-            console.log("Lock status checked");
 
             if (dropdownEventID === "dd-select-pennsieve-dataset") {
               $("#ds-name").val(bfDataset);
@@ -1488,13 +1478,8 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
             // checkPrevDivForConfirmButton("dataset");
           } else if (result.isDismissed) {
-            console.log("is dismissed");
-            console.log(currentLicenseText);
-            console.log(currentPermissionsText);
             currentDatasetLicense.innerText = currentLicenseText;
             currentAddEditDatasetPermission.innerText = currentPermissionsText;
-            console.log(currentDatasetLicense.innerText);
-            console.log(currentAddEditDatasetPermission.innerText);
           }
         });
 
@@ -1682,7 +1667,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
       // deconstruct the names to the organization list
       for (const org in orgs) {
-        console.log(org);
         organizationList.push(orgs[org]["organization"]["name"]);
         organizationNameToIdMapping[orgs[org]["organization"]["name"]] =
           orgs[org]["organization"]["id"];
@@ -1780,7 +1764,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
       });
 
       if (!result) {
-        console.log("Cancelled the selection");
         $(".svg-change-current-account.organization").css("display", "block");
         $(".ui.active.green.inline.loader.small.organization-loader").css("display", "none");
         $("#license-lottie-div").css("display", "block");
@@ -1854,7 +1837,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
           try {
             let organizationId = organizationNameToIdMapping[bfOrganization];
-            console.log(organizationId);
             await api.setPreferredOrganization(login, password, organizationId, "soda-pennsieve");
           } catch (err) {
             clientError(err);
@@ -1873,7 +1855,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           }
 
           // set the new organization information in the appropriate fields
-          console.log("Falling through to set the new organization information correctly?");
           $("#current-bf-organization").text(bfOrganization);
           $("#current-bf-organization-generate").text(bfOrganization);
           $(".bf-organization-span").html(bfOrganization);

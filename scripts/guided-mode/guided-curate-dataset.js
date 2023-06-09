@@ -110,14 +110,11 @@ const startOrStopAnimationsInContainer = (containerId, startOrStop) => {
 };
 
 const hideAndShowElementsDependingOnStartType = (pageElement) => {
-  console.log(pageElement);
   const startingFromPennsieve = sodaJSONObj?.["starting-point"]?.["type"] === "bf";
   const textToShowWhenStartingFromPennsieve = pageElement.querySelectorAll(
     ".showWhenStartingFromPennsieve"
   );
   const textToShowWhenStartingNew = pageElement.querySelectorAll(".showWhenStartingNew");
-  console.log("PennsieveStartElements", textToShowWhenStartingFromPennsieve);
-  console.log("NewStartElements", textToShowWhenStartingNew);
   if (startingFromPennsieve) {
     textToShowWhenStartingFromPennsieve.forEach((element) => {
       element.classList.remove("hidden");
@@ -292,21 +289,17 @@ const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
         selected_dataset: pennsieveDatasetID,
       },
     });
-    console.log("CHANGES file exists, skipping regardless of publication status");
     const changes_text = changesRes.data.text;
     return { shouldShow: true, changesMetadata: changes_text };
   } catch (error) {
     const emessage = userErrorMessage(error);
-    console.log(emessage);
 
     const datasetInfo = await api.getDatasetInformation(defaultBfAccount, pennsieveDatasetID);
     const isPublished = datasetInfo?.publication?.status === "completed";
 
     if (isPublished) {
-      console.log("Dataset is published, we need to show changes");
       return { shouldShow: true, changesMetadata: "" };
     } else {
-      console.log("Dataset is not published, we do not need to show changes");
       return { shouldShow: false };
     }
   }
@@ -321,12 +314,10 @@ const skipOrUnSkipCodeDescriptionPage = async (pennsieveDatasetID) => {
         file_type: "code_description.xlsx",
       },
     });
-    console.log("code_description file exists, skipping page");
     // If the response resolves, the file exists, so skip the page
     guidedSkipPage("guided-add-code-metadata-tab");
   } catch (error) {
     const emessage = userErrorMessage(error);
-    console.log(emessage);
     // If there is an error or the file does not exist, unskip the page
     // (User has to add the code_description file))
     guidedUnSkipPage("guided-add-code-metadata-tab");
@@ -4416,7 +4407,6 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
 };
 
 const resetGuidedRadioButtons = (parentPageID) => {
-  console.log(parentPageID);
   const parentPage = document.getElementById(parentPageID);
   const guidedRadioButtons = parentPage.querySelectorAll(".guided--radio-button");
   for (const guidedRadioButton of guidedRadioButtons) {
@@ -4485,7 +4475,6 @@ const guidedAddUsersAndTeamsToDropdown = (usersArray, teamsArray) => {
         `;
     guidedUsersAndTeamsDropdown.insertAdjacentHTML("beforeend", teamOption);
   }
-  console.log("guidedUsersAndTeamsDropdown: ", guidedUsersAndTeamsDropdown);
 };
 
 const guidedResetUserTeamPermissionsDropdowns = () => {
@@ -6044,7 +6033,6 @@ const openPage = async (targetPageID) => {
             },
           });
           sodaJSONObj["pennsieve-dataset-has-code-metadata-file"] = "yes";
-          console.log("code_description file exists");
         } catch (error) {
           console.log("code_description file does not exist");
         }
@@ -7043,7 +7031,6 @@ const patchPreviousGuidedModeVersions = async () => {
       }
     }
   }
-  console.log(contributors);
 
   if (!sodaJSONObj["button-config"]) {
     sodaJSONObj["button-config"] = {};
@@ -7315,8 +7302,7 @@ const guidedResumeProgress = async (datasetNameToResume) => {
     // Close the loading screen, the user should be on the page they left off on now
     loadingSwal.close();
   } catch (error) {
-    console.log(userErrorMessage(error));
-    console.log(error);
+    clientError(error);
     loadingSwal.close();
     await Swal.fire({
       icon: "info",
@@ -9018,7 +9004,6 @@ const handleContributorDragOver = (event) => {
 const handleContributorDrop = (event) => {
   event.preventDefault();
   if (targetRow === draggedRow) {
-    console.log("draggedRow and targetRow are the same");
     return;
   }
 

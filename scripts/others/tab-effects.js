@@ -18,8 +18,6 @@ var currentTab = 0; // Current tab is set to be the first tab (0)
 const delay = 250;
 
 const showParentTab = async (tabNow, nextOrPrev) => {
-  console.log(tabNow);
-  console.log(nextOrPrev);
   $("#nextBtn").prop("disabled", true);
   // check to show Save progress btn (only after step 2)
   if (tabNow >= 2) {
@@ -98,7 +96,6 @@ const showParentTab = async (tabNow, nextOrPrev) => {
     }
 
     if (document.getElementById("generate-manifest-curate").checked) {
-      console.log("CHECKED");
       // need to run manifest creation
       //Hide the UI until the manifest card are created
       $("#manifest-creating-loading").removeClass("hidden");
@@ -673,20 +670,15 @@ const nextPrev = (pageIndex) => {
 
       showParentTab(currentTab, pageIndex);
 
-      console.log("Executing this stuff here");
-
       // check if skip card or the validate card have been checked
       const validationOptionSelected = document.querySelector(
         "#validate-dataset-tab input[type=radio]:checked"
       );
-      console.log(validationOptionSelected);
 
       if (validationOptionSelected) {
-        console.log("Not disabling net butn");
         // enable the continue button
         $("#nextBtn").prop("disabled", false);
       } else {
-        console.log("DIsabling next button");
         // disable the continue button
         $("#nextBtn").prop("disabled", true);
       }
@@ -750,7 +742,6 @@ const nextPrev = (pageIndex) => {
     const validationOptionSelected = document.querySelector(
       "#validate-dataset-tab input[type=radio]:checked"
     );
-    console.log(validationOptionSelected);
 
     if (validationOptionSelected) {
       // enable the continue button
@@ -2205,7 +2196,6 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
       continueProgressValidateDataset = await transitionToValidateQuestionTwo();
       break;
     case "validate_dataset-question-2":
-      console.log("here?");
       continueProgressValidateDataset = await transitionToValidateQuestionThree();
       break;
     case "Question-prepare-subjects-3":
@@ -2309,7 +2299,6 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
     let dataset_name = $(
       "#rename_dataset_BF_account_tab .change-current-account.ds-dd.dataset-name h5"
     ).text();
-    console.log("dataset_name: ", dataset_name);
     $("#bf-rename-dataset-name").val(dataset_name);
   }
 
@@ -2877,7 +2866,6 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
 // TODO: Dorian see if this function is ever used,
 // (not being called anywhere that I can see)
 function obtainDivsbyCategory(category) {
-  console.log("function is used?");
   let individualQuestions = document.getElementsByClassName("individual-question");
   let categoryQuestionList = [];
   for (let i = 0; i < individualQuestions.length; i++) {
@@ -3817,20 +3805,16 @@ $("#bf_list_roles_teams").on("change", () => {
 });
 
 initRipple = function (buttonEle) {
-  console.log("initRipple function");
-  console.log(buttonEle);
   var inside = document.createElement("div");
   inside.classList.add("btn_animated-inside");
   inside.innerHTML = buttonEle.innerHTML;
   buttonEle.innerHTML = "";
   buttonEle.appendChild(inside);
   inside.addEventListener("mousedown", function () {
-    console.log(event);
     ripple(event, this);
   });
 };
 ripple = function (event, buttonEle) {
-  console.log("ripple function");
   var rippleEle = document.createElement("span");
   rippleEle.setAttribute("class", "ripple");
   rippleEle.style.top = event.offsetY + "px";

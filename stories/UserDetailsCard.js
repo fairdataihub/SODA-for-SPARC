@@ -21,7 +21,6 @@ const UserDetailsCard = ({
   cardContainer.style.borderRadius = "5px";
 
   for (const field of fields) {
-    // console.log("Adding field: ", field);
     let fieldContainer = UserDetailsCardField({
       fieldOption: field,
       tabName: tabName,

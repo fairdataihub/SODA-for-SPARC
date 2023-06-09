@@ -735,7 +735,6 @@ const startPennsieveAgentAndCheckVersion = async () => {
   try {
     pennsieveAgentVersionObj = await getPennsieveAgentVersion(agentPath);
     pennsieveAgentVersion = pennsieveAgentVersionObj["Agent Version"];
-    console.log("Line 738 - Pennsieve Agent Version: ", pennsieveAgentVersion);
   } catch (error) {
     await Swal.fire({
       icon: "error",
@@ -3025,7 +3024,6 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
 ///////////////////////////////END OF NEW CURATE UI CODE ADAPTATION ///////////////////////////////////////////////////
 
 const metadataDatasetlistChange = () => {
-  console.log("here");
   $("#bf-dataset-subtitle").val("");
   $("#para-dataset-banner-image-status").html("");
   showCurrentSubtitle();
@@ -3916,7 +3914,6 @@ const loadDefaultAccount = async () => {
     var myitemselect = accounts[0];
     // keep the defaultBfAccount value as the user's profile config key value for reference later
     defaultBfAccount = myitemselect;
-    console.log(defaultBfAccount);
 
     // fetch the user's email and set that as the account field's value
     let userInformation = await api.getUserInformation();
@@ -4600,7 +4597,7 @@ const CheckFileListForServerAccess = async (fileList) => {
     const inaccessible_files = res.data.inaccessible_files;
     return inaccessible_files;
   } catch (error) {
-    console.log(userErrorMessage(error));
+    clientError(error);
     notyf.open({
       type: "error",
       message: `Unable to determine file/folder accessibility`,
@@ -4969,7 +4966,6 @@ const addFoldersfunction = async (action, nonallowedFolderArray, folderArray, cu
         }
       }
       // $("#items").empty();
-      console.log("currentLocation", currentLocation);
       listItems(currentLocation, "#items", 500, (reset = true));
       getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
       beginScrollListen();
@@ -6997,9 +6993,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
 };
 
 const getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
-  console.log("getInFolder Called");
   $(singleUIItem).dblclick(async function () {
-    console.log("double click called");
     if ($(this).children("h1").hasClass("myFol")) {
       start = 0;
       listed_count = 0;
@@ -7021,7 +7015,6 @@ const getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
       already_created_elem = [];
       // let items = loadFileFolder(myPath);
       //we have some items to display
-      console.log("myPath", myPath);
       listItems(myPath, "#items", 500, (reset = true));
       getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
       organizeLandingUIEffect();
@@ -7702,7 +7695,6 @@ document.getElementById("button-generate").addEventListener("click", async funct
   statusText = "Please wait while we verify a few things...";
   if (dataset_destination == "Pennsieve") {
     let supplementary_checks = await run_pre_flight_checks(false);
-    console.log("Supplementart checks value, ", supplementary_checks);
     if (!supplementary_checks) {
       $("#sidebarCollapse").prop("disabled", false);
 

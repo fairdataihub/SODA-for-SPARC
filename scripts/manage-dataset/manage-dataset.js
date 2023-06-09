@@ -2280,8 +2280,6 @@ const showCurrentLicense = async () => {
   var selectedBfAccount = defaultBfAccount;
   var selectedBfDataset = defaultBfDataset;
 
-  console.log("here");
-
   if (selectedBfDataset === null) {
     return;
   }
@@ -2435,8 +2433,6 @@ const resetUploadLocalDataset = async () => {
     cancelButtonText: "No",
   });
 
-  console.log(result);
-
   if (!result) {
     return;
   }
@@ -2577,7 +2573,6 @@ $("#button-submit-dataset").click(async () => {
       if (countDone > 1) {
         log.info("Done submit track");
         if (success_upload === true) {
-          console.log("Finishing upload already");
           // Enable curation buttons
           organizeDatasetButton.disabled = false;
           guidedModeHomePageButton.disabled = false;
