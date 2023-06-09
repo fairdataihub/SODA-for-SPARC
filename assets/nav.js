@@ -85,13 +85,11 @@ const handleSectionTrigger = async (event) => {
       const transitionWarningMessage = `
           Going back home will wipe out the progress you have made organizing your dataset.
           <br><br>
-          ${
-            buttonContinueExistingPennsieve.classList.contains("checked")
-              ? `To continue making modifications to your existing Pennsieve dataset, press Cancel.`
-              : `To save your progress, press Cancel${
-                  currentTab < 2 ? ", progress to the third step," : ""
-                } and press "Save Progress" in the Organize Dataset tab.`
-          }
+          ${buttonContinueExistingPennsieve.classList.contains("checked")
+          ? `To continue making modifications to your existing Pennsieve dataset, press Cancel.`
+          : `To save your progress, press Cancel${currentTab < 2 ? ", progress to the third step," : ""
+          } and press "Save Progress" in the Organize Dataset tab.`
+        }
         `;
 
       const warnBeforeExitCurate = await Swal.fire({
@@ -160,7 +158,6 @@ const handleSectionTrigger = async (event) => {
   }
 
   hideAllSectionsAndDeselectButtons();
-  console.log("sectionId: ", sectionId);
   if (event.detail.target) {
     let previous_section = `${event.detail.target.dataset.section}-section`;
     document.getElementById(previous_section).classList.add("is-shown");
@@ -189,10 +186,6 @@ const handleSectionTrigger = async (event) => {
   if (sectionId === "validate_dataset-section") {
     localDatasetButton = document.getElementById("validate_dataset-1-local");
     pennsieveDatasetButton = document.getElementById("validate_dataset-1-pennsieve");
-    console.log(!localDatasetButton.classList.contains("checked"));
-    console.log(!localDatasetButton.classList.contains("non-selected"));
-    console.log(!pennsieveDatasetButton.classList.contains("checked"));
-    console.log(!pennsieveDatasetButton.classList.contains("non-selected"));
 
     if (
       !localDatasetButton.classList.contains("checked") &&
@@ -202,7 +195,6 @@ const handleSectionTrigger = async (event) => {
         !pennsieveDatasetButton.classList.contains("checked") &&
         !pennsieveDatasetButton.classList.contains("non-selected")
       ) {
-        console.log("hiding");
         $("#validate_dataset-question-2").removeClass("show");
         $("#validate_dataset-question-1").removeClass("prev");
         $("#validate_dataset-question-2").removeClass("prev");

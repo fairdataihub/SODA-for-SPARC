@@ -101,7 +101,6 @@ $(document).ready(function () {
           }
         } catch (error) {
           success[0] = false;
-          console.log(success);
           clientError(error);
         }
       }
@@ -140,7 +139,6 @@ $(document).ready(function () {
 
       await updateCollectionWhiteList();
       Swal.close();
-      console.log(success);
       if (!success.includes(false)) {
         Swal.fire({
           title: "Successfully updated collection from " + defaultBfDataset,
@@ -212,7 +210,6 @@ $(document).ready(function () {
     let collection_list = await api.getAllCollectionTags(defaultBfAccount);
     let current_tags = await api.getCurrentCollectionTags(defaultBfAccount, defaultBfDataset);
 
-    console.log("current tags: ", current_tags);
     let collectionNames = Object.keys(collection_list);
     let currentCollectionNames = Object.keys(current_tags);
 

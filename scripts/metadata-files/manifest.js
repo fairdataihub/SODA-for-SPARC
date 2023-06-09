@@ -888,7 +888,7 @@ const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   await generateManifest("", type, manifestEditBoolean, ev);
 
@@ -977,7 +977,7 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
 
           // log the error to analytics
           logMetadataForAnalytics(
@@ -1006,7 +1006,7 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
           // log the error to analytics
           logMetadataForAnalytics(
             "Error",
@@ -1034,7 +1034,7 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
             didOpen: () => {
               Swal.hideLoading();
             },
-          }).then((result) => {});
+          }).then((result) => { });
           // log the error to analytics
           logMetadataForAnalytics(
             "Error",
@@ -1088,7 +1088,6 @@ const generateManifestHelper = async () => {
     }
   }
   if (dataset_destination == "Pennsieve") {
-    console.log("Here in this 1097 one");
     let supplementary_checks = await run_pre_flight_checks(false);
     if (!supplementary_checks) {
       $("#sidebarCollapse").prop("disabled", false);
@@ -1240,7 +1239,6 @@ const initiate_generate_manifest_bf = async () => {
   }
 
   let supplementary_checks = await run_pre_flight_checks(false);
-  console.log("After pre flight checks");
 
   if (!supplementary_checks) {
     // hide the progress bar as an upload will not occur yet
@@ -1663,7 +1661,7 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
 
       $("#Question-prepare-manifest-4").removeClass("show");
       $("#Question-prepare-manifest-4").removeClass("prev");
@@ -1702,7 +1700,7 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
 
       hideProgressContainer(progressContainer);
       spanManifest.style.display = "none";
@@ -1735,7 +1733,7 @@ const extractBFDatasetForManifestFile = async (editBoolean, bfaccount, bfdataset
         didOpen: () => {
           Swal.hideLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       $("#Question-prepare-manifest-4").removeClass("show");
       $("#Question-prepare-manifest-4").removeClass("prev");
       $("#Question-prepare-manifest-3").removeClass("prev");
@@ -1806,7 +1804,6 @@ const extractBFManifestFile = () => {
         }
       )
       .then((res) => {
-        console.log(res);
         resolve(res);
       })
       .catch((err) => {
@@ -1850,7 +1847,7 @@ const validateSPARCdataset = () => {
           $(".swal-popover").popover();
         },
         footer: footer,
-      }).then((result) => {});
+      }).then((result) => { });
       return false;
     } else {
       return true;
@@ -2044,7 +2041,7 @@ const generateManifestFolderLocallyForEdit = async (ev) => {
         hideClass: {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
-      }).then((result) => {});
+      }).then((result) => { });
       return;
     }
     createManifestLocally("local", true, "");
@@ -2110,7 +2107,7 @@ const createManifestLocally = async (type, editBoolean, originalDataset) => {
           hideClass: {
             popup: "animate__animated animate__zoomOut animate__faster",
           },
-        }).then((result) => {});
+        }).then((result) => { });
         $("#preview-manifest-fake-confirm").click();
         $("#Question-prepare-manifest-4").removeClass("show");
         $("#Question-prepare-manifest-4").removeClass("prev");
@@ -2211,7 +2208,7 @@ const createManifestLocally = async (type, editBoolean, originalDataset) => {
       didOpen: () => {
         Swal.hideLoading();
       },
-    }).then((result) => {});
+    }).then((result) => { });
     $("#Question-prepare-manifest-4").removeClass("show");
     $("#Question-prepare-manifest-4").removeClass("prev");
     $("#Question-prepare-manifest-3").removeClass("prev");

@@ -13,7 +13,6 @@ const FIELD_OPTIONS = {
 };
 
 const UserDetailsCardField = ({ fieldOption, tabName }) => {
-  console.log(tabName);
   // given a field name, create a field with the appropriate attributes, classnames, etc
   let field = ``;
   const fieldContainer = document.createElement("div");

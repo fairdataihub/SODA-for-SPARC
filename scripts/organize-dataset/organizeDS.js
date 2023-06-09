@@ -707,10 +707,7 @@ function loadFileFolder(myPath) {
 
 function getRecursivePath(filteredList, inputObj) {
   var myPath = inputObj;
-  console.log(filteredList);
-  console.log(inputObj);
   for (var item of filteredList) {
-    console.log(item);
     if (item.trim() !== "") {
       myPath = myPath["folders"][item];
     }
@@ -1192,7 +1189,7 @@ const handleDuplicateImports = (btnId, duplicateArray, curationMode) => {
                   if (one_input === true) {
                     confirm_button[0].disabled = true;
                   } else {
-                    input_fields.forEach(function (element) {});
+                    input_fields.forEach(function (element) { });
                     confirm_button[0].disabled = false;
                   }
                 }

@@ -670,7 +670,6 @@ const transitionToValidateQuestionTwo = async () => {
   // check if the local validation option has been checked
   let localDatasetCard = document.querySelector("#validate-1-Local");
   let validatingLocalDataset = localDatasetCard.checked;
-  console.log(localDatasetCard);
 
   // perform the transition for a local dataset
   if (validatingLocalDataset) {
@@ -688,13 +687,11 @@ const transitionToValidateQuestionTwo = async () => {
     // transition for pennsieve dataset
     pennsieveSection.style = "display: flex;";
 
-    console.log("Executing this stuff");
 
     // check if a dataset has been selected
     let selectedDatasetName = document
       .querySelector("#bf_dataset_load_validator")
       .textContent.trim();
-    console.log(selectedDatasetName);
     if (selectedDatasetName !== "None") {
       // show the validate dataset button if so
       document.querySelector("#validate_dataset-question-3").style.display = "flex";
@@ -923,10 +920,8 @@ const questionTwoDatasetSelectionObserver = new MutationObserver(() => {
       document.querySelector("#validate_dataset-question-2").classList.contains("show") &&
       document.querySelector("#pennsieve-question-2-container").style.display === "flex"
     ) {
-      console.log("Showing the validator button");
       document.querySelector("#validate_dataset-question-3").style.display = "flex";
     } else {
-      console.log("Hiding the validator button");
       document.querySelector("#validate_dataset-question-3").style.display = "none";
     }
   } else {
@@ -1023,7 +1018,6 @@ const undoOptionCardSelection = (activeOptionCard) => {
 const clearValidationResults = (validationTableElement) => {
   // remove its children
   while (validationTableElement.firstChild) {
-    console.log(validationTableElement.firstChild);
     validationTableElement.removeChild(validationTableElement.firstChild);
   }
 };

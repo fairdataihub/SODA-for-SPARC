@@ -212,8 +212,6 @@ def subscriber_metadata(ps, events_dict):
             ps.unsubscribe(10)
 
 def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_after_upload):
-    global namespace_logger
-    namespace_logger.info(f"Uploading dataset {bfdataset} with account {bfaccount}")
     ps = connect_pennsieve_client(bfaccount)
     authenticate_user_with_client(ps, bfaccount)
 
@@ -986,8 +984,6 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
     recursive_item_path_create(dataset_structure, [])
 
     high_level_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
-
-    namespace_logger.info(f"Starting to update the existing with these high level folders: {high_level_folders}")
 
     # handle updating any existing manifest files on Pennsieve
     update_existing_pennsieve_manifest_files(token, soda_json_structure, high_level_folders, manifest_progress, manifest_folder_path)

@@ -110,14 +110,11 @@ const startOrStopAnimationsInContainer = (containerId, startOrStop) => {
 };
 
 const hideAndShowElementsDependingOnStartType = (pageElement) => {
-  console.log(pageElement);
   const startingFromPennsieve = sodaJSONObj?.["starting-point"]?.["type"] === "bf";
   const textToShowWhenStartingFromPennsieve = pageElement.querySelectorAll(
     ".showWhenStartingFromPennsieve"
   );
   const textToShowWhenStartingNew = pageElement.querySelectorAll(".showWhenStartingNew");
-  console.log("PennsieveStartElements", textToShowWhenStartingFromPennsieve);
-  console.log("NewStartElements", textToShowWhenStartingNew);
   if (startingFromPennsieve) {
     textToShowWhenStartingFromPennsieve.forEach((element) => {
       element.classList.remove("hidden");
@@ -292,21 +289,17 @@ const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
         selected_dataset: pennsieveDatasetID,
       },
     });
-    console.log("CHANGES file exists, skipping regardless of publication status");
     const changes_text = changesRes.data.text;
     return { shouldShow: true, changesMetadata: changes_text };
   } catch (error) {
     const emessage = userErrorMessage(error);
-    console.log(emessage);
 
     const datasetInfo = await api.getDatasetInformation(defaultBfAccount, pennsieveDatasetID);
     const isPublished = datasetInfo?.publication?.status === "completed";
 
     if (isPublished) {
-      console.log("Dataset is published, we need to show changes");
       return { shouldShow: true, changesMetadata: "" };
     } else {
-      console.log("Dataset is not published, we do not need to show changes");
       return { shouldShow: false };
     }
   }
@@ -321,12 +314,10 @@ const skipOrUnSkipCodeDescriptionPage = async (pennsieveDatasetID) => {
         file_type: "code_description.xlsx",
       },
     });
-    console.log("code_description file exists, skipping page");
     // If the response resolves, the file exists, so skip the page
     guidedSkipPage("guided-add-code-metadata-tab");
   } catch (error) {
     const emessage = userErrorMessage(error);
-    console.log(emessage);
     // If there is an error or the file does not exist, unskip the page
     // (User has to add the code_description file))
     guidedUnSkipPage("guided-add-code-metadata-tab");
@@ -2036,9 +2027,8 @@ const renderSideBar = (activePage) => {
         const pageWithErrorName = CURRENT_PAGE.dataset.pageName;
         const { value: continueWithoutSavingCurrPageChanges } = await Swal.fire({
           title: "The current page was not able to be saved",
-          html: `The following error${
-            error.length > 1 ? "s" : ""
-          } occurred when attempting to save the ${pageWithErrorName} page:
+          html: `The following error${error.length > 1 ? "s" : ""
+            } occurred when attempting to save the ${pageWithErrorName} page:
             <br />
             <br />
             <ul>
@@ -2244,7 +2234,7 @@ const extractPoolSubSamStructureFromDataset = (datasetStructure) => {
 
         const potentialSampleFolderNames = Object.keys(
           datasetStructure["folders"][hlf]["folders"][poolFolder]["folders"][subjectFolder][
-            "folders"
+          "folders"
           ]
         );
         const sampleFoldersInSubject = potentialSampleFolderNames.filter((folder) =>
@@ -2330,8 +2320,8 @@ const guidedUnLockSideBar = () => {
   guidedNav.style.display = "none";
 };
 
-guidedHideSidebar = () => {};
-guidedUnHideSidebar = () => {};
+guidedHideSidebar = () => { };
+guidedUnHideSidebar = () => { };
 
 // This function reads the innerText of the textSharedWithCurationTeamStatus element
 // and hides or shows the share and unshare buttons accordingly
@@ -2546,9 +2536,8 @@ const guidedSaveAndExit = async () => {
 
       const { value: continueWithoutSavingCurrPageChanges } = await Swal.fire({
         title: "The current page was not able to be saved before exiting",
-        html: `The following error${
-          error.length > 1 ? "s" : ""
-        } occurred when attempting to save the ${pageWithErrorName} page:
+        html: `The following error${error.length > 1 ? "s" : ""
+          } occurred when attempting to save the ${pageWithErrorName} page:
             <br />
             <br />
             <ul>
@@ -2980,11 +2969,10 @@ const generateProgressCardElement = (progressFileJSONObj) => {
             data-trigger="hover"
             style="font-weight: 400;"
           >
-              ${
-                progressFileSubtitle.length > 70
-                  ? `${progressFileSubtitle.substring(0, 70)}...`
-                  : progressFileSubtitle
-              }
+              ${progressFileSubtitle.length > 70
+      ? `${progressFileSubtitle.substring(0, 70)}...`
+      : progressFileSubtitle
+    }
           </h1>
         </div>
         <div class="dataset-card-row">
@@ -2998,22 +2986,21 @@ const generateProgressCardElement = (progressFileJSONObj) => {
             ></i>
           </h2>
           <h1 class="dataset-card-date-text">${progressFileLastModified}</h1>
-          ${
-            savedUploadDataProgress
-              ? `
+          ${savedUploadDataProgress
+      ? `
                 <span class="badge badge-warning mx-2">Incomplete upload</span>
               `
-              : ``
-          }
+      : ``
+    }
         </div>
       </div>
       <div class="dataset-card-button-container align-right">
         ${generateProgressResumptionButton(
-          datasetStartingPoint,
-          alreadyUploadedToPennsieve,
-          progressFileName,
-          workspaceUserNeedsToSwitchTo
-        )}
+      datasetStartingPoint,
+      alreadyUploadedToPennsieve,
+      progressFileName,
+      workspaceUserNeedsToSwitchTo
+    )}
         <h2 class="dataset-card-button-delete" onclick="deleteProgressCard(this)">
           <i
             class="fas fa-trash mr-sm-1"
@@ -3803,7 +3790,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
     for (subject of subjectsInPools) {
       if (
         !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
-          "folders"
+        "folders"
         ][subject.subjectName]
       ) {
         datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName]["folders"][
@@ -3837,7 +3824,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
        */
       if (
         !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName]["folders"][
-          sample.subjectName
+        sample.subjectName
         ]
       ) {
         datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName]["folders"][
@@ -3850,7 +3837,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
        */
       if (
         !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName]["folders"][
-          sample.subjectName
+        sample.subjectName
         ]["folders"][sample.sampleName]
       ) {
         datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName]["folders"][
@@ -3873,7 +3860,7 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
        */
       if (
         !datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName][
-          "folders"
+        "folders"
         ][sample.sampleName]
       ) {
         datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName][
@@ -4020,7 +4007,7 @@ const cleanUpEmptyGuidedStructureFolders = async (
       for (const sample of samplesInPools) {
         const sampleFolder =
           datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.poolName][
-            "folders"
+          "folders"
           ][sample.subjectName]["folders"][sample.sampleName];
 
         if (sampleFolder && folderIsEmpty(sampleFolder)) {
@@ -4031,7 +4018,7 @@ const cleanUpEmptyGuidedStructureFolders = async (
       for (const sample of samplesOutsidePools) {
         const sampleFolder =
           datasetStructureJSONObj["folders"][highLevelFolder]["folders"][sample.subjectName][
-            "folders"
+          "folders"
           ][sample.sampleName];
         if (sampleFolder && folderIsEmpty(sampleFolder)) {
           samplesWithEmptyFolders.push(sample);
@@ -4046,11 +4033,11 @@ const cleanUpEmptyGuidedStructureFolders = async (
           html: `${highLevelFolder} data was not added to the following samples:<br /><br />
             <ul>
               ${samplesWithEmptyFolders
-                .map(
-                  (sample) =>
-                    `<li class="text-left">${sample.subjectName}/${sample.sampleName}</li>`
-                )
-                .join("")}
+              .map(
+                (sample) =>
+                  `<li class="text-left">${sample.subjectName}/${sample.sampleName}</li>`
+              )
+              .join("")}
             </ul>`,
           icon: "warning",
           reverseButtons: true,
@@ -4094,7 +4081,7 @@ const cleanUpEmptyGuidedStructureFolders = async (
       for (const subject of subjectsInPools) {
         const subjectFolder =
           datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
-            "folders"
+          "folders"
           ][subject.subjectName];
         if (subjectFolder && folderIsEmpty(subjectFolder)) {
           delete datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
@@ -4137,7 +4124,7 @@ const cleanUpEmptyGuidedStructureFolders = async (
       for (const subject of subjectsInPools) {
         const subjectFolder =
           datasetStructureJSONObj["folders"][highLevelFolder]["folders"][subject.poolName][
-            "folders"
+          "folders"
           ][subject.subjectName];
         if (subjectFolder && folderIsEmpty(subjectFolder)) {
           subjectsWithEmptyFolders.push(subject);
@@ -4162,8 +4149,8 @@ const cleanUpEmptyGuidedStructureFolders = async (
           html: `${highLevelFolder} data was not added to the following subjects:<br /><br />
             <ul>
               ${subjectsWithEmptyFolders
-                .map((subject) => `<li class="text-left">${subject.subjectName}</li>`)
-                .join("")}
+              .map((subject) => `<li class="text-left">${subject.subjectName}</li>`)
+              .join("")}
             </ul>`,
           reverseButtons: true,
           showCancelButton: true,
@@ -4279,7 +4266,7 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
     for (const sample of subjectsSamplesArray) {
       const sampleFolder =
         datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
-          "folders"
+        "folders"
         ]?.[subjectName]?.["folders"]?.[sample];
       // If the sample folder exists and is empty, delete it
       if (sampleFolder) {
@@ -4293,7 +4280,7 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
       // Then delete the subject folder if it is empty
       const subjectFolder =
         datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
-          "folders"
+        "folders"
         ]?.[subjectName];
       if (subjectFolder) {
         if (folderIsEmpty(subjectFolder)) {
@@ -4322,7 +4309,7 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
     for (const sample of subjectsSamplesArray) {
       const sampleFolder =
         datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[subjectName]?.[
-          "folders"
+        "folders"
         ]?.[sample];
       // If the sample folder exists and is empty, delete it
       if (sampleFolder) {
@@ -4350,7 +4337,7 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
     for (const sample of subjectsSamplesArray) {
       const sampleFolder =
         datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
-          "folders"
+        "folders"
         ]?.[subjectName]?.["folders"]?.[sample];
       // If the sample folder exists and is empty, delete it
       if (sampleFolder) {
@@ -4364,7 +4351,7 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
       // Then delete the subject folder if it is empty
       const subjectFolder =
         datasetStructureJSONObj["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
-          "folders"
+        "folders"
         ]?.[subjectName];
       if (subjectFolder) {
         if (folderIsEmpty(subjectFolder)) {
@@ -4393,7 +4380,7 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
     for (const sample of subjectsSamplesArray) {
       const sampleFolder =
         datasetStructureJSONObj["folders"]?.["primary"]?.["folders"]?.[subjectName]?.["folders"]?.[
-          sample
+        sample
         ];
       // If the sample folder exists and is empty, delete it
       if (sampleFolder) {
@@ -4416,7 +4403,6 @@ const cleanUpEmptyFoldersFromGeneratedGuidedStructure = (highLevelFolder) => {
 };
 
 const resetGuidedRadioButtons = (parentPageID) => {
-  console.log(parentPageID);
   const parentPage = document.getElementById(parentPageID);
   const guidedRadioButtons = parentPage.querySelectorAll(".guided--radio-button");
   for (const guidedRadioButton of guidedRadioButtons) {
@@ -4485,7 +4471,6 @@ const guidedAddUsersAndTeamsToDropdown = (usersArray, teamsArray) => {
         `;
     guidedUsersAndTeamsDropdown.insertAdjacentHTML("beforeend", teamOption);
   }
-  console.log("guidedUsersAndTeamsDropdown: ", guidedUsersAndTeamsDropdown);
 };
 
 const guidedResetUserTeamPermissionsDropdowns = () => {
@@ -5440,7 +5425,7 @@ const openPage = async (targetPageID) => {
         // If the dataset keywords were not set from the imported metadata, try to get them from the Pennsieve tags
         const keywordsDerivedFromDescriptionMetadata =
           sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"]?.[
-            "keywords"
+          "keywords"
           ];
         if (!keywordsDerivedFromDescriptionMetadata) {
           try {
@@ -5463,15 +5448,15 @@ const openPage = async (targetPageID) => {
         // If the study information was not set from the imported metadata, try to extract it from the Pennsieve dataset description
         const studyPurpose =
           sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
-            "study purpose"
+          "study purpose"
           ];
         const studyDataCollection =
           sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
-            "study data collection"
+          "study data collection"
           ];
         const studyPrimaryConclusion =
           sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
-            "study primary conclusion"
+          "study primary conclusion"
           ];
 
         if (!studyPurpose && !studyDataCollection && !studyPrimaryConclusion) {
@@ -5508,7 +5493,7 @@ const openPage = async (targetPageID) => {
         guidedDatasetKeywordsTagify.removeAllTags();
         const datasetKeyWords =
           sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"]?.[
-            "keywords"
+          "keywords"
           ];
         if (datasetKeyWords) {
           guidedDatasetKeywordsTagify.addTags(datasetKeyWords);
@@ -5539,7 +5524,7 @@ const openPage = async (targetPageID) => {
         // (if not, the input will remain blank)
         const studyPurpose =
           sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
-            "study purpose"
+          "study purpose"
           ];
         if (studyPurpose) {
           studyPurposeInput.value = studyPurpose;
@@ -5547,7 +5532,7 @@ const openPage = async (targetPageID) => {
 
         const studyDataCollection =
           sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
-            "study data collection"
+          "study data collection"
           ];
         if (studyDataCollection) {
           studyDataCollectionInput.value = studyDataCollection;
@@ -5555,7 +5540,7 @@ const openPage = async (targetPageID) => {
 
         const studyPrimaryConclusion =
           sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
-            "study primary conclusion"
+          "study primary conclusion"
           ];
         if (studyPrimaryConclusion) {
           studyPrimaryConclusionInput.value = studyPrimaryConclusion;
@@ -5563,7 +5548,7 @@ const openPage = async (targetPageID) => {
 
         const studyCollectionTitle =
           sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
-            "study collection title"
+          "study collection title"
           ];
         if (studyCollectionTitle) {
           studyCollectionTitleInput.value = studyCollectionTitle;
@@ -5571,7 +5556,7 @@ const openPage = async (targetPageID) => {
 
         const studyOrganSystems =
           sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
-            "study organ system"
+          "study organ system"
           ];
         if (studyOrganSystems) {
           guidedStudyOrganSystemsTagify.addTags(studyOrganSystems);
@@ -5579,7 +5564,7 @@ const openPage = async (targetPageID) => {
 
         const studyApproach =
           sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
-            "study approach"
+          "study approach"
           ];
         if (studyApproach) {
           guidedStudyApproachTagify.addTags(studyApproach);
@@ -5587,7 +5572,7 @@ const openPage = async (targetPageID) => {
 
         const studyTechniques =
           sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
-            "study technique"
+          "study technique"
           ];
         if (studyTechniques) {
           guidedStudyTechniquesTagify.addTags(studyTechniques);
@@ -5956,8 +5941,8 @@ const openPage = async (targetPageID) => {
       document.getElementById("guided-bootbox-subject-protocol-title").innerHTML = `
           <option value="">No protocols associated with this sample</option>
           ${protocols
-            .map((protocol) => {
-              return `
+          .map((protocol) => {
+            return `
                 <option
                   value="${protocol.description}"
                   data-protocol-link="${protocol.link}"
@@ -5965,8 +5950,8 @@ const openPage = async (targetPageID) => {
                   ${protocol.description}
                 </option>
               `;
-            })
-            .join("\n")}))
+          })
+          .join("\n")}))
         `;
 
       document.getElementById("guided-bootbox-subject-protocol-location").innerHTML = `
@@ -6044,7 +6029,6 @@ const openPage = async (targetPageID) => {
             },
           });
           sodaJSONObj["pennsieve-dataset-has-code-metadata-file"] = "yes";
-          console.log("code_description file exists");
         } catch (error) {
           console.log("code_description file does not exist");
         }
@@ -7043,7 +7027,6 @@ const patchPreviousGuidedModeVersions = async () => {
       }
     }
   }
-  console.log(contributors);
 
   if (!sodaJSONObj["button-config"]) {
     sodaJSONObj["button-config"] = {};
@@ -7315,8 +7298,7 @@ const guidedResumeProgress = async (datasetNameToResume) => {
     // Close the loading screen, the user should be on the page they left off on now
     loadingSwal.close();
   } catch (error) {
-    console.log(userErrorMessage(error));
-    console.log(error);
+    clientError(error)
     loadingSwal.close();
     await Swal.fire({
       icon: "info",
@@ -7549,7 +7531,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
           for (const highLevelFolder of guidedHighLevelFolders) {
             const prevNameSubjectFolderInHighLevelFolder =
               datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
-                subject.poolName
+              subject.poolName
               ]?.["folders"]?.[prevSubjectName];
 
             if (prevNameSubjectFolderInHighLevelFolder) {
@@ -7572,7 +7554,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
             newSubjectName
           ] =
             this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][subject.poolName][
-              prevSubjectName
+            prevSubjectName
             ];
           delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
             subject.poolName
@@ -7582,7 +7564,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
           for (const highLevelFolder of guidedHighLevelFolders) {
             const prevNameSubjectFolderInHighLevelFolder =
               datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
-                prevSubjectName
+              prevSubjectName
               ];
 
             if (prevNameSubjectFolderInHighLevelFolder) {
@@ -7647,7 +7629,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
             for (const highLevelFolder of guidedHighLevelFolders) {
               const prevNameSampleFolderInHighLevelFolder =
                 datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
-                  sample.poolName
+                sample.poolName
                 ]?.["folders"]?.[sample.subjectName]?.["folders"]?.[prevSampleName];
 
               if (prevNameSampleFolderInHighLevelFolder) {
@@ -7672,7 +7654,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
               sample.subjectName
             ][newSampleName] =
               this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][sample.poolName][
-                sample.subjectName
+              sample.subjectName
               ][prevSampleName];
             delete this["dataset-metadata"]["pool-subject-sample-structure"]["pools"][
               sample.poolName
@@ -7682,7 +7664,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
             for (const highLevelFolder of guidedHighLevelFolders) {
               const prevNameSampleFolderInHighLevelFolder =
                 datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
-                  sample.subjectName
+                sample.subjectName
                 ]?.["folders"]?.[prevSampleName];
 
               if (prevNameSampleFolderInHighLevelFolder) {
@@ -7705,7 +7687,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
               sample.subjectName
             ][newSampleName] =
               this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
-                sample.subjectName
+              sample.subjectName
               ][prevSampleName];
             delete this["dataset-metadata"]["pool-subject-sample-structure"]["subjects"][
               sample.subjectName
@@ -7763,7 +7745,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
           for (const highLevelFolder of guidedHighLevelFolders) {
             const subjectFolderInHighLevelFolder =
               datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
-                subject.poolName
+              subject.poolName
               ]?.["folders"]?.[subjectName];
 
             if (subjectFolderInHighLevelFolder) {
@@ -7852,7 +7834,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
           for (const highLevelFolder of guidedHighLevelFolders) {
             const sampleFolderInHighLevelFolder =
               datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
-                sample.poolName
+              sample.poolName
               ]?.["folders"]?.[sample.subjectName]?.["folders"]?.[sampleName];
 
             if (sampleFolderInHighLevelFolder) {
@@ -7889,7 +7871,7 @@ const attachGuidedMethodsToSodaJSONObj = () => {
           for (const highLevelFolder of guidedHighLevelFolders) {
             const sampleFolderInHighLevelFolder =
               datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[
-                sample.subjectName
+              sample.subjectName
               ]?.["folders"]?.[sampleName];
 
             if (sampleFolderInHighLevelFolder) {
@@ -7978,14 +7960,14 @@ const attachGuidedMethodsToSodaJSONObj = () => {
     for (const highLevelFolder of guidedHighLevelFolders) {
       const subjectFolderInPoolFolder =
         datasetStructureJSONObj?.["folders"]?.[highLevelFolder]?.["folders"]?.[poolName]?.[
-          "folders"
+        "folders"
         ]?.[subjectName];
       if (subjectFolderInPoolFolder) {
         if (folderImportedFromPennsieve(subjectFolderInPoolFolder)) {
           guidedMovePennsieveFolder(
             subjectName,
             datasetStructureJSONObj["folders"][highLevelFolder]["folders"][poolName]["folders"][
-              subjectName
+            subjectName
             ],
             datasetStructureJSONObj["folders"][highLevelFolder]
           );
@@ -8204,9 +8186,8 @@ const generateContributorField = (
         </i>
         <h2 class="text-sub-step-title">
           Enter 
-          <span class="contributor-first-name">${
-            contributorFirstName ? contributorFirstName : "contributor's"
-          }</span>'s
+          <span class="contributor-first-name">${contributorFirstName ? contributorFirstName : "contributor's"
+    }</span>'s
           contributor details
         </h2>
         <div class="space-between w-100">
@@ -8447,9 +8428,8 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
         <label class="guided--form-label centered mb-md">
           Make changes to the contributor's information below.
         </label>
-        ${
-          boolShowIncorrectFullName
-            ? `
+        ${boolShowIncorrectFullName
+        ? `
               <div class="guided--container-warning-text">
                 <p class="guided--help-text">
                   Contributor names should be in the format of "Last name, First name".
@@ -8458,8 +8438,8 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
                 </p>
               </div>
               `
-            : ``
-        }
+        : ``
+      }
         <div class="space-between w-100">
           <div class="guided--flex-center mt-sm" style="width: 45%">
             <label class="guided--form-label required">First name: </label>
@@ -9018,7 +8998,6 @@ const handleContributorDragOver = (event) => {
 const handleContributorDrop = (event) => {
   event.preventDefault();
   if (targetRow === draggedRow) {
-    console.log("draggedRow and targetRow are the same");
     return;
   }
 
@@ -9055,11 +9034,10 @@ const generateContributorTableRow = (contributorObj, contributorIndex) => {
         ${contributorRoleString}
       </td>
       <td class="middle aligned collapsing text-center">
-        ${
-          contributorObjIsValid
-            ? `<span class="badge badge-pill badge-success">Valid</span>`
-            : `<span class="badge badge-pill badge-warning">Needs Modification</span>`
-        }
+        ${contributorObjIsValid
+      ? `<span class="badge badge-pill badge-success">Valid</span>`
+      : `<span class="badge badge-pill badge-warning">Needs Modification</span>`
+    }
       </td>
       <td class="middle aligned collapsing text-center">
         <button
@@ -9414,11 +9392,10 @@ const generateProtocolField = (protocolUrl, protocolType, protocolDescription, i
         ${protocolDescription}
       </td>
       <td class="middle aligned collapsing text-center">
-        ${
-          isFair
-            ? `<span class="badge badge-pill badge-success">Valid</span>`
-            : `<span class="badge badge-pill badge-warning">Needs modification</span>`
-        }
+        ${isFair
+      ? `<span class="badge badge-pill badge-success">Valid</span>`
+      : `<span class="badge badge-pill badge-warning">Needs modification</span>`
+    }
       </td>
       <td class="middle aligned collapsing text-center">
         <button
@@ -9764,10 +9741,10 @@ const renderSubjectSampleAdditionTable = (subject) => {
       </thead>
       <tbody>
         ${subject.samples
-          .map((sample) => {
-            return generateSampleRowElement(sample);
-          })
-          .join("\n")}
+      .map((sample) => {
+        return generateSampleRowElement(sample);
+      })
+      .join("\n")}
       </tbody>
     </table>
   `;
@@ -9796,10 +9773,10 @@ const openModifySampleMetadataPage = (sampleMetadataID, samplesSubjectID) => {
   document.getElementById("guided-bootbox-wasDerivedFromSample").innerHTML = `
  <option value="">Sample not derived from another sample</option>
  ${samplesBesidesCurrSample
-   .map((sample) => {
-     return `<option value="${sample.sampleName}">${sample.sampleName}</option>`;
-   })
-   .join("\n")}))
+      .map((sample) => {
+        return `<option value="${sample.sampleName}">${sample.sampleName}</option>`;
+      })
+      .join("\n")}))
  `;
 
   //Add protocol titles to the protocol dropdown
@@ -11200,7 +11177,7 @@ const guidedAddUserPermission = (newUserPermissionObj) => {
   sodaJSONObj["digital-metadata"]["user-permissions"].push(newUserPermissionObj);
   renderPermissionsTable();
 };
-const guidedRemoveUserPermission = (userParentElement) => {};
+const guidedRemoveUserPermission = (userParentElement) => { };
 
 const guidedAddTeamPermission = (newTeamPermissionObj) => {
   //If an existing team with the same ID already exists, update the existing team's position
@@ -11218,7 +11195,7 @@ const guidedAddTeamPermission = (newTeamPermissionObj) => {
   sodaJSONObj["digital-metadata"]["team-permissions"].push(newTeamPermissionObj);
   renderPermissionsTable();
 };
-const guidedRemoveTeamPermission = (teamParentElement) => {};
+const guidedRemoveTeamPermission = (teamParentElement) => { };
 
 const setGuidedLicense = (newLicense) => {
   sodaJSONObj["digital-metadata"]["license"] = "Creative Commons Attribution";
@@ -11253,8 +11230,8 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
   for (const [poolName, subjects] of Object.entries(subjectsWithSamplesInPools)) {
     asideElementTemplateLiteral += `
     ${subjects
-      .map((subject) => {
-        return `
+        .map((subject) => {
+          return `
         <div style="display: flex; flex-direction: column; width: 100%; border-radius: 4px; margin-bottom: 1rem">
             <div class="justify-center" style="background: lightgray; padding: 5px 0 2px 0;">
               <label class="guided--form-label centered" style="color: black;">
@@ -11262,19 +11239,19 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
               </label>
               </div>
                 ${subject.samples
-                  .map((sample) => {
-                    return `
+              .map((sample) => {
+                return `
                     <a 
                       class="${highLevelFolderName}-selection-aside-item selection-aside-item"
                       data-path-suffix="${subject.poolName}/${subject.subjectName}/${sample}"
                       style="padding-left: 1rem; direction: ltr"
                     >${sample}</a>
                   `;
-                  })
-                  .join("\n")}
+              })
+              .join("\n")}
             </div>`;
-      })
-      .join("\n")}`;
+        })
+        .join("\n")}`;
   }
 
   //filter out subjects that are not in a pool
@@ -11291,16 +11268,16 @@ const renderSamplesHighLevelFolderAsideItems = (highLevelFolderName) => {
         </label>
       </div>
         ${subject.samples
-          .map((sample) => {
-            return `  
+        .map((sample) => {
+          return `  
               <a
                 class="${highLevelFolderName}-selection-aside-item selection-aside-item"
                 style="direction: ltr; padding-left: 1rem;"
                 data-path-suffix="${subject.subjectName}/${sample}"
               >${sample}</a>
 `;
-          })
-          .join("\n")}
+        })
+        .join("\n")}
     `;
   }
 
@@ -11365,9 +11342,8 @@ const renderSubjectsHighLevelFolderAsideItems = (highLevelFolderName) => {
           <a 
             class="${highLevelFolderName}-selection-aside-item selection-aside-item"
             style="align-self: center; width: 97%; direction: ltr;"
-            data-path-suffix="${subject.poolName ? subject.poolName + "/" : ""}${
-        subject.subjectName
-      }"
+            data-path-suffix="${subject.poolName ? subject.poolName + "/" : ""}${subject.subjectName
+        }"
           >${subject.subjectName}</a>
         `;
     })
@@ -14116,8 +14092,8 @@ $(document).ready(async () => {
       } else {
         $("#guided-para-dataset-banner-image-status").html(
           "<span style='color: red;'> " +
-            "Dimensions of cropped area must be at least 512 px" +
-            "</span>"
+          "Dimensions of cropped area must be at least 512 px" +
+          "</span>"
         );
       }
     } else {
