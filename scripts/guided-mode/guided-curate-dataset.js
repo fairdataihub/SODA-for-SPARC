@@ -4664,6 +4664,10 @@ const openPage = async (targetPageID) => {
   }
   guidedSetNavLoadingState(true);
 
+  const targetPage = document.getElementById(targetPageID);
+  const targetPageName = targetPage.dataset.pageName || targetPageID;
+  const targetPageParentTab = targetPage.closest(".guided--parent-tab");
+
   //when the promise completes there is a catch for error handling
   //upon resolving it will set navLoadingstate to false
   try {
@@ -6371,8 +6375,6 @@ const openPage = async (targetPageID) => {
     }
 
     let currentParentTab = CURRENT_PAGE.closest(".guided--parent-tab");
-    let targetPage = document.getElementById(targetPageID);
-    let targetPageParentTab = targetPage.closest(".guided--parent-tab");
 
     //Set all capsules to grey and set capsule of page being traversed to green
     setActiveCapsule(targetPageID);
@@ -6411,6 +6413,19 @@ const openPage = async (targetPageID) => {
     sodaJSONObj["page-before-exit"] = targetPageID;
     await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
   } catch (error) {
+    const eMessage = userErrorMessage(error);
+    Swal.fire({
+      icon: "error",
+      title: `Error opening the ${targetPageName} page`,
+      html: eMessage,
+      width: 600,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: `OK`,
+      focusConfirm: true,
+      allowOutsideClick: false,
+    });
+
     guidedSetNavLoadingState(false);
     console.log(error);
     throw error;
@@ -14155,31 +14170,32 @@ $(document).ready(async () => {
       await openPage(targetPageID);
     } catch (error) {
       log.error(error);
-      console.log(error);
-      error.map((error) => {
-        // get the total number of words in error.message
-        if (error.type === "notyf") {
-          notyf.open({
-            duration: "7000",
-            type: "error",
-            message: error.message,
-          });
-        }
+      if (Array.isArray(error)) {
+        error.map((error) => {
+          // get the total number of words in error.message
+          if (error.type === "notyf") {
+            notyf.open({
+              duration: "7000",
+              type: "error",
+              message: error.message,
+            });
+          }
 
-        if (error.type === "swal") {
-          Swal.fire({
-            icon: "error",
-            title: error.title,
-            html: error.message,
-            width: 600,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            confirmButtonText: `OK`,
-            focusConfirm: true,
-            allowOutsideClick: false,
-          });
-        }
-      });
+          if (error.type === "swal") {
+            Swal.fire({
+              icon: "error",
+              title: error.title,
+              html: error.message,
+              width: 600,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              confirmButtonText: `OK`,
+              focusConfirm: true,
+              allowOutsideClick: false,
+            });
+          }
+        });
+      }
     }
   });
 
