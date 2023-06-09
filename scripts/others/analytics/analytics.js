@@ -17,7 +17,7 @@ if (!fs.existsSync(config_folder_path)) {
 } else {
   let dnt_file_path = require("path").join(config_folder_path, "dnt.soda");
   if (fs.existsSync(dnt_file_path)) {
-    console.log("dnt file exists")
+    console.log("dnt file exists");
     dnt = true;
   } else {
     dnt = false;
