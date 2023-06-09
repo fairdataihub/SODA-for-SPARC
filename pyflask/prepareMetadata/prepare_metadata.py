@@ -1203,20 +1203,18 @@ def drop_manifest_empty_columns(manifest_file_location):
         manifest_df = pd.read_excel(
             os.path.join(manifest_file_location, high_level_folder, "manifest.xlsx"), engine="openpyxl", usecols=column_check, header=0
         )
-        custom_columns = []
-
         # get the custom columns from the data frame
         SET_COLUMNS = ['filename', 'timestamp', 'description', 'file type', 'Additional Metadata']
-        for column in manifest_df.columns: 
-            if column not in SET_COLUMNS:
-                custom_columns.append(column)
-
-
+        custom_columns = [
+            column
+            for column in manifest_df.columns
+            if column not in SET_COLUMNS
+        ]
         # for each custom column delete the column if all values are null/empty
         manifest_dict = {x:manifest_df[x].values.tolist() for x in manifest_df}
 
         for column in custom_columns:
-            if all([pd.isna(x) for x in manifest_dict[column]]):
+            if all(pd.isna(x) for x in manifest_dict[column]):
                 # remove the column from dict
                 del manifest_dict[column]
 
