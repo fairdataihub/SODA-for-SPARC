@@ -2626,6 +2626,30 @@ $("#button-submit-dataset").click(async () => {
     }
   };
 
+  // Check if dataset is locked before starting upload
+  const isLocked = await api.isDatasetLocked(defaultBfAccount, defaultBfDataset);
+  if (isLocked) {
+    $("#upload_local_dataset_progress_div").removeClass("show");
+    await Swal.fire({
+      icon: "info",
+      title: `${defaultBfDataset} is locked from editing`,
+      html: `
+        This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
+        <br />
+        <br />
+        If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
+      `,
+      width: 600,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Ok",
+      focusConfirm: true,
+      allowOutsideClick: false,
+    });
+
+    return;
+  }
+
   // Create a clone of the progress bar for the navigation menu
   let progressSubmit = document.getElementById("div-progress-submit");
   let navContainer = document.getElementById("nav-items");
