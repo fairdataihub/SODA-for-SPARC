@@ -4664,6 +4664,10 @@ const openPage = async (targetPageID) => {
   }
   guidedSetNavLoadingState(true);
 
+  const targetPage = document.getElementById(targetPageID);
+  const targetPageName = targetPage.dataset.pageName || targetPageID;
+  const targetPageParentTab = targetPage.closest(".guided--parent-tab");
+
   //when the promise completes there is a catch for error handling
   //upon resolving it will set navLoadingstate to false
   try {
@@ -6371,8 +6375,6 @@ const openPage = async (targetPageID) => {
     }
 
     let currentParentTab = CURRENT_PAGE.closest(".guided--parent-tab");
-    let targetPage = document.getElementById(targetPageID);
-    let targetPageParentTab = targetPage.closest(".guided--parent-tab");
 
     //Set all capsules to grey and set capsule of page being traversed to green
     setActiveCapsule(targetPageID);
@@ -6411,6 +6413,19 @@ const openPage = async (targetPageID) => {
     sodaJSONObj["page-before-exit"] = targetPageID;
     await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
   } catch (error) {
+    const eMessage = userErrorMessage(error);
+    Swal.fire({
+      icon: "error",
+      title: `Error opening the ${targetPageName} page`,
+      html: eMessage,
+      width: 600,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: `OK`,
+      focusConfirm: true,
+      allowOutsideClick: false,
+    });
+
     guidedSetNavLoadingState(false);
     console.log(error);
     throw error;
@@ -14136,12 +14151,6 @@ $(document).ready(async () => {
       return;
     }
 
-    //NAVIGATE TO NEXT PAGE + CHANGE ACTIVE TAB/SET ACTIVE PROGRESSION TAB
-    //if more tabs in parent tab, go to next tab and update capsule
-    let targetPage = getNextPageNotSkipped(CURRENT_PAGE.id);
-    let targetPageID = targetPage.id;
-    let targetPageName = targetPage.dataset.pageName;
-
     try {
       await savePageChanges(pageBeingLeftID);
       //Save progress onto local storage with the dataset name as the key
@@ -14153,22 +14162,15 @@ $(document).ready(async () => {
         sodaJSONObj["completed-tabs"].push(pageBeingLeftID);
       }
 
+      //NAVIGATE TO NEXT PAGE + CHANGE ACTIVE TAB/SET ACTIVE PROGRESSION TAB
+      //if more tabs in parent tab, go to next tab and update capsule
+      let targetPage = getNextPageNotSkipped(CURRENT_PAGE.id);
+      let targetPageID = targetPage.id;
+
       await openPage(targetPageID);
     } catch (error) {
-      if (!Array.isArray(error)) {
-        const emessage = userErrorMessage(error);
-        Swal.fire({
-          icon: "error",
-          title: `Error occurred while opening ${targetPageName} page`,
-          html: emessage,
-          width: 600,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: `OK`,
-          focusConfirm: true,
-          allowOutsideClick: false,
-        });
-      } else {
+      log.error(error);
+      if (Array.isArray(error)) {
         error.map((error) => {
           // get the total number of words in error.message
           if (error.type === "notyf") {
