@@ -57,18 +57,24 @@ const generateRCFiles = async (uploadBFBoolean, fileType) => {
   }
 
   if (uploadBFBoolean) {
-    // Check if dataset is locked before running pre-flight checks
+    // Run pre-flight checks before uploading the changes or readme file to Pennsieve
+    const supplementary_checks = await run_pre_flight_checks(false);
+    if (!supplementary_checks) {
+      return;
+    }
+
+    // Check if dataset is locked after running pre-flight checks
     const isLocked = await api.isDatasetLocked(defaultBfAccount, bfDataset);
     if (isLocked) {
-      Swal.fire({
+      await Swal.fire({
         icon: "info",
         title: `${bfDataset} is locked from editing`,
         html: `
-          This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
-          <br />
-          <br />
-          If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
-        `,
+              This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
+              <br />
+              <br />
+              If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
+            `,
         width: 600,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
@@ -77,12 +83,6 @@ const generateRCFiles = async (uploadBFBoolean, fileType) => {
         allowOutsideClick: false,
       });
 
-      return;
-    }
-
-    // Run pre-flight checks before uploading the changes or readme file to Pennsieve
-    const supplementary_checks = await run_pre_flight_checks(false);
-    if (!supplementary_checks) {
       return;
     }
 

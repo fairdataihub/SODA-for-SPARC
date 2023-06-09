@@ -840,7 +840,7 @@ const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
     const isLocked = await api.isDatasetLocked(defaultBfAccount, defaultBfDataset);
 
     if (isLocked) {
-      Swal.fire({
+      await Swal.fire({
         icon: "info",
         title: `${defaultBfDataset} is locked from editing`,
         html: `

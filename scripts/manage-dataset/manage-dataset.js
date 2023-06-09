@@ -2625,7 +2625,6 @@ $("#button-submit-dataset").click(async () => {
       }
     }
   };
-
   // Create a clone of the progress bar for the navigation menu
   let progressSubmit = document.getElementById("div-progress-submit");
   let navContainer = document.getElementById("nav-items");
