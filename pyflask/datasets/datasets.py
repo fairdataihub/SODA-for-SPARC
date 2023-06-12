@@ -29,6 +29,7 @@ def get_role(dataset):
         abort(500, "An internal server error prevented the request from being fulfilled. Please try again later.")
 
 
+# BE-REVIEW - Dorian - Rename function since parameter says name or id
 def get_dataset_by_id(dataset_name_or_id):
     token = get_access_token()
 
@@ -52,6 +53,7 @@ def get_dataset_by_id(dataset_name_or_id):
     return r.json()
 
 
+# BE-REVIEW - Dorian - Remove account parameter since it's not used
 def get_current_collection_names(account, dataset):
     """
     Function used to get collection names of the current dataset
@@ -65,7 +67,7 @@ def get_current_collection_names(account, dataset):
 
     return r.json()
 
-
+# BE-REVIEW - Dorian - Remove account parameter since it's not used
 def upload_collection_names(account, dataset, tags):
     """
     Function used to upload the collection tags of a dataset to Pennsieve
@@ -79,7 +81,7 @@ def upload_collection_names(account, dataset, tags):
     if not has_edit_permissions(token, selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
     
-
+    # BE-REVIEW - Dorian - rename the store variable as it seems vague
     store = []
     for tag in tags:
         jsonfile = {"collectionId": int(tag)}
@@ -106,6 +108,7 @@ def remove_collection_names(account, dataset, tags):
 
     token = get_access_token()
 
+    # BE-REVIEW - Dorian - there's a couple functions that do this, we should probably consolidate them
     if dataset.startswith("N:dataset:"):
         selected_dataset_id = dataset
     else:
