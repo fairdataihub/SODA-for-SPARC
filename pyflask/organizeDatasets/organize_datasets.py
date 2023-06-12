@@ -420,7 +420,8 @@ def create_folder_level_manifest(jsonpath, jsondescription):
     except Exception as e:
         raise e
 
-
+# BE-REVIEW - Jacob - This function and functions like it could be used to utils and shared between different functions
+# BE-REVIEW - Jacob - for example: validate_folder_name, validate_file_name, validate_subject_name, etc
 def check_forbidden_characters(my_string):
     """
     Check for forbidden characters in file/folder name
@@ -943,6 +944,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         "outputs_metadata.xlsx",
     ]
 
+    # BE-REVIEW - Jacob - Arrays like this should be standardized and imported since we have a lot of duplicates like these
     double_extensions = [
         ".ome.tiff",
         ".ome.tif",
