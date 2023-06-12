@@ -39,6 +39,9 @@ def get_access_token():
 
 
 def get_cognito_userpool_access_token(email, password):
+    # BE-REVIEW - Aaron - Add top level comment for details on hover can say:
+    # Creates a temporary access token for utilizing the Pennsieve API. Utilizes email and password to authenticate with the Pennsieve Cognito Userpool 
+    # which provides higher privileges than the API token and secret flow.
     PENNSIEVE_URL = "https://api.pennsieve.io"
 
     try:
