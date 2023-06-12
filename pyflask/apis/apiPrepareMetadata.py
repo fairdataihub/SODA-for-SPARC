@@ -20,6 +20,7 @@ from prepareMetadata import (
     edit_bf_manifest_file
 )
 from flask import request
+# BE-REVIEW - Dorian - remove unused import
 import json
 from namespaces import NamespaceEnum, get_namespace
 from flask_restx import Resource, reqparse, fields
@@ -27,6 +28,8 @@ from flask_restx.inputs import boolean
 from errorHandlers import notBadRequestException
 from utils import metadata_string_to_list
 
+# BE-REVIEW - Dorian - Should we have a standard amount of new line spacing between functions, model definitions, etc?
+# -Spacing is good, but I think we should be consistent
 
 api = get_namespace(NamespaceEnum.PREPARE_METADATA)
 
@@ -44,7 +47,7 @@ model_get_submission_file_response = api.model('getSubmissionFileResponse', {
 })
 @api.route('/submission_file')
 class SaveSubmissionFile(Resource):
-
+    # BE-REVIEW - Dorian - Should we create models for all of the requests or create them like below?
     parser_save_submission_file = reqparse.RequestParser(bundle_errors=True)
     parser_save_submission_file.add_argument('upload_boolean', type=boolean, help='Boolean to indicate whether to upload the file to the Bionimbus server', location="json", required=True)
     parser_save_submission_file.add_argument('selected_account', type=str, help='Pennsieve account name', location="args", required=True)
