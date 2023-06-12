@@ -338,7 +338,7 @@ def fillColor(color, cell):
 
 ### Prepare dataset-description file
 
-
+# BE-REVIEW - Dorian - a better name for val_obj? We pass the sodaJSONObj through this I assume? For the 4 functions below this comment
 def populate_dataset_info(ws, val_obj):
     ## name, description, type, samples, subjects
     ws["D5"] = val_obj["name"]
@@ -551,7 +551,6 @@ samplesTemplateHeaderList = [
 
 def upload_code_description_metadata(filepath, bfAccount, bfDataset):
     upload_metadata_file("code_description.xlsx", bfAccount, bfDataset, filepath, False)
-        
 
 
 def save_subjects_file(upload_boolean, bfaccount, bfdataset, filepath, datastructure):
