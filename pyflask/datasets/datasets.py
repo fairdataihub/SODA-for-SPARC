@@ -53,6 +53,7 @@ def get_dataset_by_id(dataset_name_or_id):
     return r.json()
 
 
+# BE-REVIEW - Dorian - These functions could possibly be moved to collectionsDatasets.py
 # BE-REVIEW - Dorian - Remove account parameter since it's not used
 def get_current_collection_names(account, dataset):
     """
