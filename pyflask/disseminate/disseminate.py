@@ -13,7 +13,7 @@ from authentication import get_access_token
 
 PENNSIEVE_URL = "https://api.pennsieve.io"
 
-
+# BE-REVIEW - Dorian - remove selected_account parameter since it's not used
 def bf_get_doi(selected_bfaccount, selected_bfdataset):
     """
     Function to get current doi for a selected dataset
@@ -24,8 +24,6 @@ def bf_get_doi(selected_bfaccount, selected_bfdataset):
     Return:
         Current doi or "None"
     """
-
-
     token = get_access_token()
 
     selected_dataset_id = get_dataset_id(token, selected_bfdataset)
@@ -38,7 +36,6 @@ def bf_get_doi(selected_bfaccount, selected_bfdataset):
         r.raise_for_status()
         result = r.json()
 
-        # doi_status = bf._api._get(f"/datasets/{str(selected_dataset_id)}/doi")
         return {"doi": result["doi"]}
     except Exception as e:
         if "404" in str(e):
