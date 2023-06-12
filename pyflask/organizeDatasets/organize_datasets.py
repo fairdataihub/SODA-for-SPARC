@@ -133,7 +133,8 @@ def checkLeafValue(leafName, leafNodeValue):
 
     return [True, total_dataset_size - 1]
 
-
+# BE-REVIEW - Jacob - Note: Function paramaters should be clearer and standardized for users
+# BE-REVIEW - Jacob - For example - datasetStructure or sodaJSONObj
 def traverseForLeafNodes(jsonStructure):
     total_dataset_size = 1
 
@@ -166,6 +167,7 @@ def createFiles(jsonpath, fileKey, distdir, listallfiles):
 
     srcfile = jsonpath[fileKey][0]
     distfile = distdir
+    # BE-REVIEW - Jacob - Could use comment here for clarity of listallfiles (is it for upload etc)
     listallfiles.append([srcfile, distfile])
 
 
