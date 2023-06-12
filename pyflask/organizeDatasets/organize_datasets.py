@@ -38,7 +38,7 @@ from authentication import get_access_token
 
 
 
-
+# BE-REVIEW - Jacob - These global variables may need to be scoped into the functions that use them.
 ### Global variables
 create_soda_json_progress = 0
 create_soda_json_total_items = 0
@@ -95,6 +95,7 @@ METADATA_FILES_SPARC = [
         "outputs_metadata.xlsx",
     ]
 
+# BE-REVIEW - Jacob - Change function name to get_current_timezone_info (and maybe import it from time_utils.py)
 ### Internal functions
 def TZLOCAL():
     return datetime.now(timezone.utc).astimezone().tzinfo
