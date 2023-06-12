@@ -601,7 +601,6 @@ def save_subjects_file(upload_boolean, bfaccount, bfdataset, filepath, datastruc
         ws1[cell].fill = orangeFill
         ws1[cell].font = Font(bold=True, size=12, name="Calibri")
 
-    # gevent.sleep(0)
     # 2. populate matrices
     for i, item in enumerate(refinedDatastructure):
         if i == 0:
@@ -655,12 +654,12 @@ def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastruct
 
     ws1.delete_cols(10, 15)
 
-    # 2. see if the length of datastructure[0] == length of datastructure. If yes, go ahead. If no, add new columns from headers[n-1] onward.
+    # 1. see if the length of datastructure[0] == length of datastructure. If yes, go ahead. If no, add new columns from headers[n-1] onward.
     headers_no = len(refinedDatastructure[0])
     orangeFill = PatternFill(
         start_color="FFD965", end_color="FFD965", fill_type="solid"
     )
-    # gevent.sleep(0)
+
     for column, header in zip(
         excel_columns(start_index=9), refinedDatastructure[0][9:headers_no]
     ):
@@ -669,13 +668,11 @@ def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastruct
         ws1[cell].fill = orangeFill
         ws1[cell].font = Font(bold=True, size=12, name="Calibri")
 
-    # gevent.sleep(0)
-    # 3. populate matrices
+    # 2. populate matrices
     for i, item in enumerate(refinedDatastructure):
         if i == 0:
             continue
         for column, j in zip(excel_columns(start_index=0), range(len(item))):
-            # import pdb; pdb.set_trace()
             cell = column + str(i + 1)
             ws1[cell] = refinedDatastructure[i][j] or ""
             ws1[cell].font = Font(bold=False, size=11, name="Arial")
