@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ### Import required python modules
+# BE-REVIEW - Dorian - remove unused imports
 from venv import create
 from flask import abort 
 import requests
@@ -14,6 +15,7 @@ from authentication import get_access_token
 PENNSIEVE_URL = "https://api.pennsieve.io"
 
 # BE-REVIEW - Dorian - remove selected_account parameter since it's not used
+# also changing bf to ps
 def bf_get_doi(selected_bfaccount, selected_bfdataset):
     """
     Function to get current doi for a selected dataset
@@ -43,10 +45,6 @@ def bf_get_doi(selected_bfaccount, selected_bfdataset):
         handle_http_error(e)
 
 
-
-
-
-
 def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
     """
     Function to reserve doi for a selected dataset
@@ -62,6 +60,7 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
 
     selected_dataset_id = get_dataset_id(token, selected_bfdataset)
 
+    # BE-REVIEW - Dorian - minimum permissions to reserve a doi is edit
     if not has_edit_permissions(token, selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
 
@@ -97,8 +96,8 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
         handle_http_error(e)
 
 
-
-
+# BE-REVIEW - Dorian - change function name to use ps instead of bf
+# Also remove selected_account parameter since it's not used
 def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
     """
     Function to get the review request status and publishing status of a dataset
@@ -114,11 +113,13 @@ def bf_get_publishing_status(selected_bfaccount, selected_bfdataset):
 
     selected_dataset_id = get_dataset_id(token, selected_bfdataset)
 
+    # BE-REVIEW - Dorian - get the review status of the selected dataset
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}?includePublishedDataset=true", headers=create_request_headers(token))
     r.raise_for_status()
     review_request_status = r.json()["publication"]["status"]
 
 
+    # BE-REVIEW - Dorian - get the publishing status of the selected dataset
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/published", headers=create_request_headers(token))
     r.raise_for_status()
     publishing_status = r.json()["status"]
@@ -138,7 +139,8 @@ def construct_publication_qs(publication_type, embargo_release_date):
     """
     return f"?publicationType={publication_type}&embargoReleaseDate={embargo_release_date}" if embargo_release_date else f"?publicationType={publication_type}"
 
-
+# BE-REVIEW - Dorian - change function name to use ps instead of bf
+# Also remove selected_account parameter since it's not used
 def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset, publication_type, embargo_release_date):
     """
         Function to publish for a selected dataset
@@ -151,7 +153,6 @@ def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset, publication
         Return:
             Success or error message
     """
-
     token = get_access_token()
 
     selected_dataset_id = get_dataset_id(token, selected_bfdataset)
@@ -166,12 +167,7 @@ def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset, publication
         r.raise_for_status()
         return r.json()
     except Exception as e:
-        # if "400" in str(e):
-        #     print(e)
-        #     abort(400, "Dataset cannot be published if owner does not have an ORCID ID")
         handle_http_error(e)
-
-    # return ps._api._post(f"/datasets/{selected_dataset_id}/publication/request{qs}", headers=create_request_headers(ps))
 
 
 def get_publication_type(ps_or_token, selected_dataset_id):
@@ -179,10 +175,6 @@ def get_publication_type(ps_or_token, selected_dataset_id):
     """
     Function to get the publication type of a dataset
     """
-    # TODO:
-
-     # get the dataset using the id 
-    # ds = ps._api._get(f"/datasets/{selected_dataset_id}")
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}?includePublishedDataset=true", headers=create_request_headers(ps_or_token))
     r.raise_for_status()
     ds = r.json()
@@ -195,6 +187,9 @@ def get_publication_type(ps_or_token, selected_dataset_id):
     return publication_type
 
 
+# BE-REVIEW - Dorian - change function name to use ps instead of bf
+# Also remove selected_account parameter since it's not used
+# This function might not be needed anymore since we don't let users withdraw their own datasets
 def bf_withdraw_review_dataset(selected_bfaccount, selected_bfdataset):
 
     token = get_access_token()
@@ -230,7 +225,7 @@ METADATA_FILES = [
     "subjects.xlsx"
 ]
 
-
+# BE-REVIEW - Dorian - remove pennsieve_account parameter since it's not used
 def get_metadata_files(selected_dataset, pennsieve_account):
     """
     Function to get the metadata files
