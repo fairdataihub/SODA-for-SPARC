@@ -25,6 +25,7 @@ import gevent
 import pathlib
 from datetime import datetime, timezone
 import requests 
+# BE-REVIEW - Dorian - remove unused imports
 from permissions import bf_get_current_user_permission_agent_two, has_edit_permissions
 from utils import connect_pennsieve_client, get_dataset_id, create_request_headers, authenticate_user_with_client
 from namespaces import NamespaceEnum, get_namespace_logger
@@ -61,6 +62,7 @@ start_time_bf_upload = 0
 start_submit = 0
 metadatapath = join(userpath, "SODA", "SODA_metadata")
 
+# BE-REVIEW - Dorian - change bf to ps
 bf = ""
 myds = ""
 initial_bfdataset_size = 0
@@ -141,7 +143,6 @@ def traverseForLeafNodes(jsonStructure):
 
             returnedOutput = checkLeafValue(key, jsonStructure[key])
 
-            # returnedOutput = [True, total_dataset_size-1]
             if returnedOutput[0]:
                 total_dataset_size += returnedOutput[1]
 
@@ -210,6 +211,7 @@ def generate_dataset_locally(destinationdataset, pathdataset, newdatasetname, js
     error, c = "", 0
     curated_dataset_size = 0
     start_time = 0
+    # BE-REVIEW - Dorian - change bf to ps
     upload_directly_to_bf = 0
     start_submit = 0
     initial_bfdataset_size = 0
@@ -279,6 +281,7 @@ def create_folder_level_manifest(jsonpath, jsondescription):
         shutil.rmtree(datasetpath) if isdir(datasetpath) else 0
         makedirs(datasetpath)
         folders = list(jsonpath.keys())
+        # BE-REVIEW - Dorian - do we need to remove main? I don't think we have such a folder
         if "main" in folders:
             folders.remove("main")
         # In each SPARC folder, generate a manifest file
@@ -299,6 +302,7 @@ def create_folder_level_manifest(jsonpath, jsondescription):
                 folderpath = join(datasetpath, folder)
                 allfiles = jsonpath[folder]
                 alldescription = jsondescription[folder + "_description"]
+                # BE-REVIEW - Dorian - remove unused variable
                 manifestexists = join(folderpath, "manifest.xlsx")
 
                 countpath = -1
@@ -394,6 +398,7 @@ def create_folder_level_manifest(jsonpath, jsondescription):
                 df.to_excel(manifestfile, index=None, header=True)
                 wb = load_workbook(manifestfile)
                 ws = wb.active
+                # BE-REVIEW - Dorian - use the fillColor function - maybe place fillColor in utils?
                 blueFill = PatternFill(
                     start_color="9DC3E6", fill_type="solid"
                 )
