@@ -768,6 +768,7 @@ def check_local_dataset_files_validity(soda_json_structure):
             file_type = file["type"]
             if file_type == "local":
                 file_path = file["path"]
+                # BE-REVIEW - Aaron - bf -> ps
                 if file["type"] == "bf":
                     continue
                 if not isfile(file_path):
@@ -792,12 +793,14 @@ def check_local_dataset_files_validity(soda_json_structure):
 
         if not my_folder["folders"]:
             if not my_folder["files"]:
+                # BE-REVIEW - Aaron - bf -> ps
                 if my_folder["type"] != "bf":
                     del my_folders_content[my_folder_key]
 
     error = []
     if "dataset-structure" in soda_json_structure.keys():
         dataset_structure = soda_json_structure["dataset-structure"]
+        # BE-REVIEW - Aaron - Remove 0kb files, files that can't be found, and any empty folders from the dataset data files
         if "folders" in dataset_structure:
             for folder_key, folder in dataset_structure["folders"].items():
                 relative_path = folder_key
@@ -810,6 +813,7 @@ def check_local_dataset_files_validity(soda_json_structure):
 
     if "metadata-files" in soda_json_structure.keys():
         metadata_files = soda_json_structure["metadata-files"]
+        # BE-REVIEW - Aaron - Remove specified metadata files that do net exist at the specified paths or that are empty
         for file_key in list(metadata_files.keys()):
             file = metadata_files[file_key]
             file_type = file["type"]
@@ -825,6 +829,7 @@ def check_local_dataset_files_validity(soda_json_structure):
         if not metadata_files:
             del soda_json_structure["metadata-files"]
 
+    # BE-REVIEW - Aaron - Return list of all the files that were not found. 
     if len(error) > 0:
         error_message = [
             "Error: The following local files were not found. Specify them again or remove them."
