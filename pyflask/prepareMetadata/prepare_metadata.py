@@ -19,7 +19,7 @@ import numpy as np
 import json
 from functools import partial
 from pennsieve2.pennsieve import Pennsieve
-#from pennsieve import Pennsieve
+# BE-REVIEW - Dorian - Remove unused imports
 from manageDatasets import bf_dataset_account
 from utils import ( connect_pennsieve_client, authenticate_user_with_client, get_dataset_id, create_request_headers, column_check, returnFileURL, load_manifest_to_dataframe)
 from permissions import has_edit_permissions, bf_get_current_user_permission_agent_two
@@ -189,7 +189,6 @@ def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, val_arr
 # this function saves and uploads the README/CHANGES to Pennsieve, just when users choose to generate onto Pennsieve
 ## (not used for generating locally)
 def upload_RC_file(text_string, file_type, bfaccount, bfdataset):
-
     file_path = join(METADATA_UPLOAD_BF_PATH, file_type)
 
     with open(file_path, "w") as f:
@@ -212,6 +211,7 @@ def subscriber_metadata(ps, events_dict):
             ps.unsubscribe(10)
 
 def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_after_upload):
+    # BE-REVIEW - Dorian - Do we want to use PS and then get the token?
     ps = connect_pennsieve_client(bfaccount)
     authenticate_user_with_client(ps, bfaccount)
 
@@ -229,6 +229,7 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
     r.raise_for_status()
     items = r.json()
+    # go through the content in the dataset and find the file ID of the file to be uploaded
     for item in items["children"]:
         if item["content"]["name"] == file_type:
             item_id = item["content"]["id"]
@@ -248,7 +249,6 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
         abort(500, error_message)
     
     # upload the manifest file
-    # ps.manifest.upload(m_id)
     try: 
         ps.manifest.upload(m_id)
         # create a subscriber function with ps attached so it can be used to unusbscribe
@@ -265,12 +265,13 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
     # elsewise we get an error that the file is in use and therefore cannot be deleted
     time.sleep(5)
 
-    # # delete the local file that was created for the purpose of uploading to Pennsieve
+    # delete the local file that was created for the purpose of uploading to Pennsieve
     if delete_after_upload:
         os.remove(file_path)
 
 
 def excel_columns(start_index=0):
+    # BE-REVIEW - Dorian - Perchance some better variable names here? I'm not sure what this is doing. Getting two letters as in the Row and Column?
     """
     NOTE: does not support more than 699 contributors/links
     """
