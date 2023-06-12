@@ -3084,6 +3084,7 @@ def main_curate_function(soda_json_structure):
 
         # check that the user has permissions for uploading and modifying the dataset
         main_curate_progress_message = "Checking that you have required permissions for modifying the selected dataset"
+        # BE-REVIEW - Aaron - bf -> ps + remove 'agent_two' from the function name
         role = bf_get_current_user_permission_agent_two(selected_dataset_id, token)["role"]
         if role not in ["owner", "manager", "editor"]:
             main_curate_status = "Done"
