@@ -10,6 +10,8 @@ configpath = join(userpath, ".pennsieve", "config.ini")
 PENNSIEVE_URL = "https://api.pennsieve.io"
 
 def get_access_token():
+    # BE-REVIEW - Aaron - Add top level comment for details on hover can say:
+    # Creates a temporary access token for utilizing the Pennsieve API. Reads the api token and secret from the Pennsieve config.ini file.
     # get cognito config 
     r = requests.get(f"{PENNSIEVE_URL}/authentication/cognito-config")
     r.raise_for_status()
@@ -25,7 +27,7 @@ def get_access_token():
     aws_secret_access_key="",
     )
 
-            
+
     login_response = cognito_idp_client.initiate_auth(
     AuthFlow="USER_PASSWORD_AUTH",
     AuthParameters={"USERNAME": read_from_config("api_token"), "PASSWORD": read_from_config("api_secret")},
