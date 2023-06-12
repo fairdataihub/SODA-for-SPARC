@@ -17,7 +17,7 @@ var currentTab = 0; // Current tab is set to be the first tab (0)
 
 const delay = 250;
 
-const showParentTab = (tabNow, nextOrPrev) => {
+const showParentTab = async (tabNow, nextOrPrev) => {
   $("#nextBtn").prop("disabled", true);
   // check to show Save progress btn (only after step 2)
   if (tabNow >= 2) {
@@ -97,7 +97,13 @@ const showParentTab = (tabNow, nextOrPrev) => {
 
     if (document.getElementById("generate-manifest-curate").checked) {
       // need to run manifest creation
-      ffmCreateManifest(sodaJSONObj);
+      //Hide the UI until the manifest card are created
+      $("#manifest-creating-loading").removeClass("hidden");
+      $("#manifest-items-container").addClass("hidden");
+      await ffmCreateManifest(sodaJSONObj);
+      $("#manifest-items-container").removeClass("hidden");
+      $("#manifest-creating-loading").addClass("hidden");
+      $("button-generate-manifest-locally").show();
     } else {
       document.getElementById("ffm-container-manifest-file-cards").innerHTML = "";
     }
@@ -191,8 +197,11 @@ const fill_info_details = () => {
   let new_dataset_name = "My_dataset_folder";
   $(".card-container.generate-preview").remove();
   if (sodaJSONObj["starting-point"]["type"] === "bf") {
-    add_card_detail("Pennsieve account", sodaJSONObj["bf-account-selected"]["account-name"]);
+    add_card_detail("Pennsieve account", $("#current-bf-account-generate").text());
     add_card_detail("Dataset name", sodaJSONObj["bf-dataset-selected"]["dataset-name"]);
+    let workspace = $("#bf-organization-curate-first-question").text();
+    add_card_detail("Selected workspace", workspace);
+
     new_dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
     if (manifestFileCheck.checked) {
       add_card_detail("Manifest files", "Requested from SODA", 1, "pulse-manifest-checkbox", true);
@@ -268,9 +277,10 @@ const fill_info_details = () => {
         "Question-generate-dataset-BF-account",
         true
       );
+      let workspace = $("#organization-bf-curation").text();
       add_card_detail(
-        "Account details",
-        $("#para-account-detail-curate-generate").html(),
+        "Selected workspace",
+        workspace,
         1,
         "Question-generate-dataset-BF-account",
         true
@@ -424,9 +434,9 @@ const add_card_detail = (
   let parent_element = $("#other-dataset-information-container");
 
   let new_card_element =
-    "<div class='card-container generate-preview'><h5 class='card-left' style='text-align: right;'>" +
+    "<div class='card-container generate-preview'><h5 class='card-left' style='text-align: left;'>" +
     card_left +
-    ":</h5><p class='card-right' style='margin-left: 2rem;'>" +
+    ":</h5><p class='card-right' style='width: 300px;'>" +
     card_right;
 
   if (parent_tab === -1) {
@@ -657,12 +667,27 @@ const nextPrev = (pageIndex) => {
       currentTab = currentTab + 2;
       $("#nextBtn").prop("disabled", false);
       fixStepDone(4);
+
+      showParentTab(currentTab, pageIndex);
+
+      // check if skip card or the validate card have been checked
+      const validationOptionSelected = document.querySelector(
+        "#validate-dataset-tab input[type=radio]:checked"
+      );
+
+      if (validationOptionSelected) {
+        // enable the continue button
+        $("#nextBtn").prop("disabled", false);
+      } else {
+        // disable the continue button
+        $("#nextBtn").prop("disabled", true);
+      }
     } else {
       currentTab = currentTab - 1;
       // fixStepDone(4);
       $("#nextBtn").prop("disabled", true);
+      showParentTab(currentTab, pageIndex);
     }
-    showParentTab(currentTab, pageIndex);
   } else if (
     parentTabs[currentTab].id === "manifest-file-tab" &&
     (sodaJSONObj["starting-point"]["type"] === "new" ||
@@ -701,6 +726,30 @@ const nextPrev = (pageIndex) => {
     currentTab = currentTab - 2;
     showParentTab(currentTab, pageIndex);
     $("#nextBtn").prop("disabled", false);
+  } else if (parentTabs[currentTab].id === "generate-dataset-tab") {
+    // Hide the current tab:
+    $(parentTabs[currentTab]).removeClass("tab-active");
+    // Increase or decrease the current tab by 1:
+    currentTab = currentTab + pageIndex;
+    // For step 1,2,3, check for High level folders input to disable Continue button
+    if (currentTab === 1 || currentTab === 2 || currentTab === 3) {
+      highLevelFoldersDisableOptions();
+    }
+    // Display the correct tab:
+    showParentTab(currentTab, pageIndex);
+
+    // check if skip card or the validate card have been checked
+    const validationOptionSelected = document.querySelector(
+      "#validate-dataset-tab input[type=radio]:checked"
+    );
+
+    if (validationOptionSelected) {
+      // enable the continue button
+      $("#nextBtn").prop("disabled", false);
+    } else {
+      // disable the continue button
+      $("#nextBtn").prop("disabled", true);
+    }
   } else {
     // Hide the current tab:
     $(parentTabs[currentTab]).removeClass("tab-active");
@@ -879,6 +928,29 @@ const raiseWarningGettingStarted = (ev) => {
       resolve(globalGettingStarted1stQuestionBool);
     }
   });
+};
+
+const handleValidateCardSelection = async (ev) => {
+  $(ev).children().find(".folder-input-check").prop("checked", true);
+  $(ev).addClass("checked");
+
+  // uncheck the other radio buttons
+  $($(ev).parents()[0]).siblings().find(".option-card.radio-button").removeClass("checked");
+  $($(ev).parents()[0]).siblings().find(".option-card.radio-button").addClass("non-selected");
+
+  // check which card is selected
+  let selectedCard = document.querySelector("#validate-dataset-tab input[type=radio]:checked");
+
+  if (selectedCard.id === "validate-organize-1-A") {
+    // run validation
+    await validateOrganizedDataset();
+
+    // scroll to the results table
+    document.querySelector("#organize--table-validation-errors").scrollIntoView();
+  } // else the user skipped validation
+
+  // enable the continue button
+  $("#nextBtn").prop("disabled", false);
 };
 
 var divList = [];
@@ -1678,6 +1750,7 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
   */
 
   if (currentDiv === "Question-getting-started-BF-dataset") {
+    let selectedDataset = $("#current-bf-dataset").text();
     $("#nextBtn").prop("disabled", true);
     // $("#button-confirm-bf-dataset-getting-started").prop("disabled", true);
     sodaJSONObj = {
@@ -1696,14 +1769,58 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
       },
     };
 
-    sodaJSONObj["bf-account-selected"]["account-name"] = $("#current-bf-account").text();
-    sodaJSONObj["bf-dataset-selected"]["dataset-name"] = $("#current-bf-dataset").text();
+    sodaJSONObj["bf-account-selected"]["account-name"] = defaultBfAccount;
+    sodaJSONObj["bf-dataset-selected"]["dataset-name"] = selectedDataset;
+
     $("#para-continue-bf-dataset-getting-started").text("");
     $("body").addClass("waiting");
     $("#button-confirm-bf-dataset-getting-started").prop("disabled", true);
     $("#bf-dataset-spinner").show();
     $("#bf-dataset-spinner").children().show();
     $("#bf-dataset-spinner").css("visibility", "visible");
+
+    // Check if dataset is locked before trying to import
+    const isDatasetLocked = await api.isDatasetLocked(defaultBfAccount, selectedDataset);
+    if (isDatasetLocked) {
+      Swal.fire({
+        icon: "info",
+        title: `${selectedDataset} is locked from editing`,
+        html: `
+              This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
+              <br />
+              <br />
+              If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
+            `,
+        width: 600,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "Ok",
+        focusConfirm: true,
+        allowOutsideClick: false,
+      });
+
+      $("#nextBtn").prop("disabled", true);
+      $("#para-continue-bf-dataset-getting-started").text("");
+      $("body").removeClass("waiting");
+      showHideDropdownButtons("dataset", "hide");
+      $("#current-bf-dataset").text("None");
+      $(datasetPermissionDiv).find("#curatebfdatasetlist").val("Select dataset").trigger("change");
+      sodaJSONObj["bf-dataset-selected"]["dataset-name"] = "";
+      $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
+      $("body").removeClass("waiting");
+
+      // log the event to analytics
+      logCurationForAnalytics(
+        "Error",
+        PrepareDatasetsAnalyticsPrefix.CURATE,
+        AnalyticsGranularity.ACTION,
+        ["Dataset Locked"],
+        "Pennsieve",
+        true
+      );
+
+      return;
+    }
 
     let sodaObject = {};
     let manifestErrorMessage = [];
@@ -1829,6 +1946,12 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
     $("#bf-dataset-spinner").css("visibility", "hidden");
     $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
     $("#dataset-loaded-message").show();
+
+    // clear the validation table results
+    let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
+    clearValidationResults(validationErrorsTable);
+    // hide the table
+    document.querySelector("#organize--table-validation-errors").style.visibility = "hidden";
     // $("#button-confirm-bf-dataset-getting-started").prop("disabled", false);
   }
 
@@ -1971,6 +2094,15 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
       continueProgressSubmission = await switchMetadataSubmissionQuestion();
       break;
     case "Generate-submission":
+      const checkedRadioButton = $("input:radio[name ='submission-1']:checked").attr("id");
+      if (checkedRadioButton === "submission-1-B") {
+        $("#submission-organization-field").show();
+      } else {
+        $("#submission-organization-field").hide();
+      }
+
+      // check if the user has selected start from existing pennsieve
+      // if so then hide the workspace selection field
       var res = generateSubmissionFile();
       if (res === "empty") {
         return;
@@ -1979,34 +2111,140 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
       $("#submission-title-accordion").removeClass("active");
       break;
     case "Generate-dd":
+      const checkedRadioButtonDDFirstQuestion = $("input:radio[name ='dd-1']:checked").attr("id");
+
+      // check if we selected start a new subjects file
+      if (checkedRadioButtonDDFirstQuestion === "dd-1-B") {
+        // allow users to select an organization
+        $("#dd-organization-field").show();
+      } else {
+        // starting from an existing subjects file
+        const checkedRadioButtonDDSecondQuestion = $("input:radio[name ='dd-4']:checked").attr(
+          "id"
+        );
+        // check if file is from Pennsieve
+        if (checkedRadioButtonDDSecondQuestion === "dd-4-A") {
+          // do not allow organization switching
+          $("#dd-organization-field").hide();
+        } else {
+          // show organization field to allow switching
+          $("#dd-organization-field").show();
+        }
+      }
       continueProgressGenerateDD = await generateDatasetDescription();
       break;
     case "Generate-changes":
+      const checkedRadioButtonChangesFirstQuestion = $(
+        "input:radio[name ='changes-1']:checked"
+      ).attr("id");
+
+      // check if we selected start a new subjects file
+      if (checkedRadioButtonChangesFirstQuestion === "changes-1-B") {
+        // allow users to select an organization
+        $("#changes-organization-field").show();
+      } else {
+        // starting from an existing subjects file
+        const checkedRadioButtonChangesSecondQuestion = $(
+          "input:radio[name ='changes-3']:checked"
+        ).attr("id");
+        // check if file is from Pennsieve
+        if (checkedRadioButtonChangesSecondQuestion === "changes-3-A") {
+          // do not allow organization switching
+          $("#changes-organization-field").hide();
+        } else {
+          // show organization field to allow switching
+          $("#changes-organization-field").show();
+        }
+      }
       var res = generateRCFilesHelper("changes");
       if (res === "empty") {
         return;
       }
       break;
     case "Generate-readme":
+      const checkedRadioButtonReadmeFirstQuestion = $("input:radio[name ='readme-1']:checked").attr(
+        "id"
+      );
+
+      // check if we selected start a new subjects file
+      if (checkedRadioButtonReadmeFirstQuestion === "readme-1-B") {
+        // allow users to select an organization
+        $("#readme-organization-field").show();
+      } else {
+        // starting from an existing subjects file
+        const checkedRadioButtonReadmeSecondQuestion = $(
+          "input:radio[name ='readme-3']:checked"
+        ).attr("id");
+        // check if file is from Pennsieve
+        if (checkedRadioButtonReadmeSecondQuestion === "readme-3-A") {
+          // do not allow organization switching
+          $("#readme-organization-field").hide();
+        } else {
+          // show organization field to allow switching
+          $("#readme-organization-field").show();
+        }
+      }
       var res = generateRCFilesHelper("readme");
       if (res === "empty") {
         return;
       }
       break;
-    case "submit_prepublishing_review-question-2":
-      transitionToPrepublishingQuestionThree();
-      break;
-    case "submit_prepublishing_review-question-3":
-      // createPrepublishingChecklist("");
-      transitionToPrePublishingSubmit();
     case "Question-prepare-manifest-1":
       continueProgressGenerateManifest = await switchMetadataManifestQuestion();
+      break;
+    case "validate_dataset-question-1":
+      continueProgressValidateDataset = await transitionToValidateQuestionTwo();
       break;
     case "validate_dataset-question-2":
       continueProgressValidateDataset = await transitionToValidateQuestionThree();
       break;
-    case "validate_dataset-question-1":
-      continueProgressValidateDataset = await transitionToValidateQuestionTwo();
+    case "Question-prepare-subjects-3":
+      const checkedRadioButtonSubjectsFirstQuestion = $(
+        "input:radio[name ='subjects-1']:checked"
+      ).attr("id");
+
+      // check if we selected start a new subjects file
+      if (checkedRadioButtonSubjectsFirstQuestion === "subjects-1-B") {
+        // allow users to select an organization
+        $("#subjects-organization-field").show();
+      } else {
+        // starting from an existing subjects file
+        const checkedRadioButtonSubjectsSecondQuestion = $(
+          "input:radio[name ='subjects-3']:checked"
+        ).attr("id");
+        // check if file is from Pennsieve
+        if (checkedRadioButtonSubjectsSecondQuestion === "subjects-3-A") {
+          // do not allow organization switching
+          $("#subjects-organization-field").hide();
+        } else {
+          // show organization field to allow switching
+          $("#subjects-organization-field").show();
+        }
+      }
+      break;
+    case "Question-prepare-samples-3":
+      const checkedRadioButtonSamplesFirstQuestion = $(
+        "input:radio[name ='samples-1']:checked"
+      ).attr("id");
+
+      // check if we selected start a new subjects file
+      if (checkedRadioButtonSamplesFirstQuestion === "samples-1-B") {
+        // allow users to select an organization
+        $("#samples-organization-field").show();
+      } else {
+        // starting from an existing subjects file
+        const checkedRadioButtonSamplesSecondQuestion = $(
+          "input:radio[name ='samples-3']:checked"
+        ).attr("id");
+        // check if file is from Pennsieve
+        if (checkedRadioButtonSamplesSecondQuestion === "samples-3-A") {
+          // do not allow organization switching
+          $("#samples-organization-field").hide();
+        } else {
+          // show organization field to allow switching
+          $("#samples-organization-field").show();
+        }
+      }
       break;
   }
 
@@ -2048,8 +2286,6 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
   $($(ev).parents()[0]).siblings().find(".option-card.radio-button").addClass("non-selected");
 
   // empty para elements (TODO: will convert these para elements to a swal2 alert so we don't have to clear them out)
-  $("#para-submit_prepublishing_review-status").text("");
-
   if (ev.getAttribute("data-next") === "div_make_pi_owner_permissions") {
     let nodeStorage = new JSONStorage(app.getPath("userData"));
     let previous_choice = nodeStorage.getItem("previously_selected_PI");
@@ -2060,7 +2296,9 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
   }
 
   if (ev.getAttribute("data-next") === "div-rename-bf-dataset") {
-    let dataset_name = $("#rename_dataset_name").text();
+    let dataset_name = $(
+      "#rename_dataset_BF_account_tab .change-current-account.ds-dd.dataset-name h5"
+    ).text();
     $("#bf-rename-dataset-name").val(dataset_name);
   }
 
@@ -2398,6 +2636,12 @@ const reset_ui = () => {
   $("#Question-getting-started-existing-BF-dataset").hide();
   $("#Question-getting-started-existing-BF-dataset").children().hide();
   $("#nextBtn").prop("disabled", true);
+
+  // clear the validation table results
+  let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
+  clearValidationResults(validationErrorsTable);
+  // hide the table
+  document.querySelector("#organize--table-validation-errors").style.visibility = "hidden";
 };
 
 const populate_existing_folders = (dataset_folders) => {
@@ -2619,16 +2863,19 @@ const populate_existing_metadata = (datasetStructureJSONObj) => {
   }
 };
 
+// TODO: Dorian see if this function is ever used,
+// (not being called anywhere that I can see)
 function obtainDivsbyCategory(category) {
-  var individualQuestions = document.getElementsByClassName("individual-question");
-  var categoryQuestionList = [];
-  for (var i = 0; i < individualQuestions.length; i++) {
-    var question = individualQuestions[i];
+  let individualQuestions = document.getElementsByClassName("individual-question");
+  let categoryQuestionList = [];
+  for (let i = 0; i < individualQuestions.length; i++) {
+    let question = individualQuestions[i];
 
-    if (question.getAttribute("data-id") !== null) {
-      if (question.getAttribute("data-id").includes(category)) {
-        categoryQuestionList.push(question.id);
-      }
+    if (
+      question.getAttribute("data-id") !== null &&
+      question.getAttribute("data-id").includes(category)
+    ) {
+      categoryQuestionList.push(question.id);
     }
   }
   return categoryQuestionList;
@@ -2972,12 +3219,10 @@ const updateJSONStructureGenerate = (progress = false, sodaJSONObj) => {
         };
         if ($("#current-bf-account-generate").text() !== "None") {
           if ("bf-account-selected" in sodaJSONObj) {
-            sodaJSONObj["bf-account-selected"]["account-name"] = $(
-              "#current-bf-account-generate"
-            ).text();
+            sodaJSONObj["bf-account-selected"]["account-name"] = defaultBfAccount;
           } else {
             sodaJSONObj["bf-account-selected"] = {
-              "account-name": $("#current-bf-account-generate").text(),
+              "account-name": defaultBfAccount,
             };
           }
         }
@@ -3134,6 +3379,62 @@ function raiseWarningExit(message) {
     });
   });
 }
+
+const resetCuration = () => {
+  $("#dataset-loaded-message").hide();
+  $(".vertical-progress-bar-step").removeClass("is-current");
+  $(".vertical-progress-bar-step").removeClass("done");
+  $(".getting-started").removeClass("prev");
+  $(".getting-started").removeClass("show");
+  $(".getting-started").removeClass("test2");
+  $("#Question-getting-started-1").addClass("show");
+  $("#generate-dataset-progress-tab").css("display", "none");
+
+  currentTab = 0;
+  // uncheck all radio buttons and checkboxes
+  $("#organize-section").find(".option-card").removeClass("checked");
+  $("#organize-section").find(".option-card.radio-button").removeClass("non-selected");
+  $("#organize-section").find(".option-card.high-level-folders").removeClass("disabled");
+  $("#organize-section").find(".option-card .folder-input-check").prop("checked", false);
+  $("#organize-section").find(".parent-tabs.option-card").removeClass("checked");
+  $("#organize-section").find(".parent-tabs.option-card.radio-button").removeClass("non-selected");
+  $("#organize-section")
+    .find(".parent-tabs.option-card.high-level-folders")
+    .removeClass("disabled");
+  $("#organize-section").find(".parent-tabs.option-card.folder-input-check").prop("checked", false);
+  $(".metadata-button.button-generate-dataset").removeClass("done");
+  $(".metadata-button.button-generate-dataset").removeClass("d-flex");
+  $("#organize-section input:checkbox").prop("checked", false);
+  $("#organize-section input:radio").prop("checked", false);
+
+  // set back local destination for folders to empty
+  $("#input-destination-generate-dataset-locally").val("");
+  $("#input-destination-getting-started-locally").val("");
+  $("#input-destination-getting-started-locally").prop("placeholder", "Browse here");
+  $("#input-destination-generate-dataset-locally").prop("placeholder", "Browse here");
+
+  // set metadata file paths to empty
+  $(".para-metadata-file-status").text("");
+
+  // hide the generate manifest locally button
+  $("#button-generate-manifest-locally").hide();
+
+  // set back Please continue para element
+  $("#para-continue-prepare-new-getting-started").text("");
+  $("#para-continue-bf-dataset-getting-started").text("");
+  $("#para-continue-location-dataset-getting-started").text("");
+
+  // un-show all divs from Generate dataset step
+  $($("#Question-generate-dataset").siblings()).removeClass("show");
+
+  $(".generate-dataset").removeClass("prev");
+  $(".generate-dataset").removeClass("show");
+  $(".generate-dataset").removeClass("test2");
+  $("#generate-manifest-curate").prop("checked", false);
+
+  // $("#main_tabs_view")[0].click();
+  globalGettingStarted1stQuestionBool = false;
+};
 
 const exitCurate = async (resetProgressTabs, start_over = false) => {
   $("#dataset-loaded-message").hide();
@@ -3392,17 +3693,21 @@ $(document).ready(() => {
   $(".content-button").click(function () {
     let section = $(this).data("section");
 
-    if (section === "add_edit_bf_dataset_collection") {
-      let rename_dataset_name = $("#rename_dataset_name").html();
-      if (rename_dataset_name.trim() != "None" && rename_dataset_name != "") {
-        $("#bf-rename-dataset-name").val(rename_dataset_name);
-      } else {
-        $("#bf-rename-dataset-name").val("");
-      }
-    }
+    // if (section === "add_edit_bf_dataset_collection") {
+    //   let rename_dataset_name = $(
+    //     "#rename_dataset_BF_account_tab .change-current-account.ds-dd.dataset-name h5"
+    //   ).html();
+    //   if (rename_dataset_name.trim() != "None" && rename_dataset_name != "") {
+    //     $("#bf-rename-dataset-name").val(rename_dataset_name);
+    //   } else {
+    //     $("#bf-rename-dataset-name").val("");
+    //   }
+    // }
 
     if (section === "rename_existing_bf_dataset") {
-      let rename_dataset_name = $("#rename_dataset_name").html();
+      let rename_dataset_name = $(
+        "#rename_dataset_BF_account_tab .change-current-account.ds-dd.dataset-name h5"
+      ).html();
       if (rename_dataset_name.trim() != "None" && rename_dataset_name != "") {
         $("#bf-rename-dataset-name").val(rename_dataset_name);
       } else {
@@ -3415,7 +3720,10 @@ $(document).ready(() => {
     $(".section").addClass("fullShown");
   });
 
-  $(".footer-div div button").click(() => {
+  $(".footer-div div button").click((ev) => {
+    if (ev.currentTarget.id === "reset-local-upload") {
+      return;
+    }
     $("#main-nav").removeClass("active");
     if ($("#sidebarCollapse").hasClass("active")) {
       $("#sidebarCollapse").removeClass("active");
@@ -3538,7 +3846,10 @@ for (var i = 0; i < buttons.length; i++) {
 // Input:
 //  elementId:  string - id selector of the section the user will transition to from the Submit for pre-publishing tab
 // transition from the pre-publishing review tab to the given prepare metadata tabs
-const transitionFromPrePublishingChecklist = (elementId) => {
+const transitionFromPrePublishingChecklist = (ev, elementId) => {
+  if (ev.classList.contains("no-pointer")) {
+    return;
+  }
   // change is shown to the subtitle section
   $(".section.is-shown").removeClass("is-shown");
 

@@ -45,7 +45,7 @@ from utils import (
     authenticate_user_with_client, 
     get_dataset_id
 )
-from authentication import get_access_token
+from authentication import get_access_token, get_cognito_userpool_access_token
 from users import get_user_information, update_config_account_name
 from permissions import has_edit_permissions, bf_get_current_user_permission_agent_two
 from configUtils import add_api_host_to_config, lowercase_account_names
@@ -263,117 +263,10 @@ def read_from_config(key):
         
 #     return login_response["AuthenticationResult"]["AccessToken"]
 
-def bf_add_account_username(keyname, key, secret):
-    """
-    Associated with 'Add account' button in 'Login to your Pennsieve account' section of SODA
-
-    Args:
-        keyname: Name of the account to be associated with the given credentials (string)
-        key: API key (string)
-        secret: API Secret (string)
-    Action:
-        Adds account to the Pennsieve configuration file (local machine)
-    """
-    global namespace_logger
-
-    temp_keyname = "SODA_temp_generated"
-    try:
-        keyname = keyname.strip()
-
-        bfpath = join(userpath, ".pennsieve")
-        # Load existing or create new config file
-        config = ConfigParser()
-        if exists(configpath):
-            config.read(configpath)
-        elif not exists(bfpath):
-            mkdir(bfpath)
-
-        # Add agent section
-        agentkey = "agent"
-        if not config.has_section(agentkey):
-            config.add_section(agentkey)
-            config.set(agentkey, "port", "9000")
-            config.set(agentkey, "upload_workers", "10")
-            config.set(agentkey, "upload_chunk_size", "32")
 
 
-        # ensure that if the profile already exists it has an api_host entry 
-        # if config.has_section(keyname):
-        #     config.set(keyname, "api_host", PENNSIEVE_URL)
-
-        # Add new account
-        if not config.has_section(keyname):
-            config.add_section(keyname)
-            config.set(keyname, "api_token", key)
-            config.set(keyname, "api_secret", secret)
-            # config.set(keyname, "api_host", PENNSIEVE_URL)
-
-        # set profile name in global section
-        if not config.has_section("global"):
-            config.add_section("global")
-            config.set("global", "default_profile", keyname)
-
-        
-        with open(configpath, "w") as configfile:
-            config.write(configfile)
-
-    except Exception as e:
-        raise e
-
-    # Check key and secret are valid, if not delete account from config
-    try:
-        token = get_access_token()
-    except Exception as e:
-        namespace_logger.error(e)
-        bf_delete_account(keyname)
-        abort(401, 
-            "Please check that key name, key, and secret are entered properly"
-        )
-
-    headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {token}",
-    }
-
-    # Check that the Pennsieve account is in the SPARC Consortium organization
-    r = requests.get(f"{PENNSIEVE_URL}/user", headers=headers)
-    r.raise_for_status
-    organization_id = r.json()["preferredOrganization"]
-    if organization_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
-        bf_delete_account(keyname)
-        abort(403,
-            "Please check that your account is within the SPARC Organization"
-        )
-
-    try:
-        if not config.has_section("global"):
-            config.add_section("global")
-
-        default_acc = config["global"]
-        default_acc["default_profile"] = keyname
-
-        with open(configpath, "w+") as configfile:
-            config.write(configfile)
-
-        return {"message": f"Successfully added account {keyname}"}
-
-    except Exception as e:
-        bf_delete_account(keyname)
-        raise e
 
 
-def bf_delete_account(keyname):
-    """
-    Args:
-        keyname: name of local Pennsieve account key (string)
-    Action:
-        Deletes account information from the Pennsieve config file
-    """
-    config = ConfigParser()
-    config.read(configpath)
-    config.remove_section(keyname)
-    with open(configpath, "w") as configfile:
-        config.write(configfile)
 
 
 def check_forbidden_characters_bf(my_string):
@@ -507,6 +400,7 @@ def bf_dataset_account(accountname):
     r.raise_for_status()
     datasets = r.json()
 
+
     datasets_list = []
     for ds in datasets:
         datasets_list.append({"name": ds["content"]["name"], "id": ds["content"]["id"]})
@@ -603,22 +497,20 @@ def bf_account_details(accountname):
     except Exception as e:
         abort(500, "Something went wrong while authenticating the user or connecting to Pennsieve.")
 
-    acc_details = f"User email: {user_info['email']}<br>"
-    #acc_details = f"{acc_details}Organization: {user_info['preferredOrganization']}"
+    user_email = user_info['email']
+    organization_id = user_info['preferredOrganization']
+
 
     # get the organizations this user account has access to 
     r = requests.get(f"{PENNSIEVE_URL}/organizations", headers=create_request_headers(token))
     r.raise_for_status()
 
-    org_id = ""
-
-    # add the sparc consortium as the organization name if the user is a member of the consortium
     organizations = r.json()
-    for org in organizations["organizations"]:
-        if org["organization"]["id"] == "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
-            acc_details = f"{acc_details}Organization: {org['organization']['name']}"
-            org_id = org["organization"]["id"]
 
+    organization = None
+    for org in organizations["organizations"]:
+        if org["organization"]["id"] == organization_id:
+            organization = org["organization"]["name"]
 
 
     try:
@@ -628,7 +520,7 @@ def bf_account_details(accountname):
         update_config_account_name(accountname)
         
         ## return account details and datasets where such an account has some permission
-        return {"account_details": acc_details, "organization_id": org_id}
+        return {"email": user_email, "organization": organization}
 
     except Exception as e:
         raise e
@@ -663,7 +555,7 @@ def create_new_dataset(datasetname, accountname):
             abort(400, error)
 
         if not datasetname or datasetname.isspace():
-            error = f"{error}Please enter valid dataset name."
+            error = "Please enter valid dataset name."
             abort(400, error)
 
         token = get_access_token()
@@ -835,7 +727,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
     # initialize the Pennsieve client 
     try:
-        ps = Pennsieve()
+        ps = Pennsieve(profile_name=accountname)
     except Exception as e:
         submitdatastatus = "Done"
         did_fail = True
@@ -856,7 +748,9 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
 
 
 
-    # reauthenticate the user
+    selected_dataset_id = get_dataset_id(ps, bfdataset)
+
+        # reauthenticate the user
     try:
         ps.user.reauthenticate()
     except Exception as e:
@@ -865,9 +759,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         did_upload = False
         error_message = "Could not reauthenticate this user"
         abort(400, error_message)
-
-
-    selected_dataset_id = get_dataset_id(ps, bfdataset)
 
     # select the dataset 
     try:
@@ -895,7 +786,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         did_upload = False
         abort(400, invalid_dataset_messages)
 
-    if not has_edit_permissions(ps, selected_dataset_id):
+    if not has_edit_permissions(get_access_token(), selected_dataset_id):
         submitdatastatus = "Done"
         did_fail = True
         did_upload = False
@@ -928,7 +819,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
             namespace_logger.error(e)
             raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
 
-        namespace_logger.info("Upload complete now no more messages")
         submitdatastatus = "Done"
     except Exception as e:
         submitdatastatus = "Done"
@@ -1065,10 +955,8 @@ def bf_get_teams(selected_bfaccount):
         r = requests.get(f"{PENNSIEVE_URL}/organizations/{str(org_id)}/teams", headers=create_request_headers(token))
         r.raise_for_status()
         list_teams = r.json()
-        list_teams_name = [list_teams[i]["team"]["name"] for i in range(len(list_teams))]
-
-        list_teams_name.sort()  # Returning the list of teams in alphabetical order
-        return {"teams": list_teams_name}
+        
+        return {"teams": list_teams}
     except Exception as e:
         raise e
 
@@ -1768,104 +1656,7 @@ def get_number_of_files_and_folders_locally(filepath):
     return {"totalFiles": totalFiles, "totalDir": totalDir}
 
 
-def get_pennsieve_api_key_secret(email, password, keyname):
 
-    PENNSIEVE_URL = "https://api.pennsieve.io"
-
-    try:
-        response = requests.get(f"{PENNSIEVE_URL}/authentication/cognito-config")
-        response.raise_for_status()
-        cognito_app_client_id = response.json()["userPool"]["appClientId"]
-        cognito_region = response.json()["userPool"]["region"]
-        cognito_client = boto3.client(
-            "cognito-idp",
-            region_name=cognito_region,
-            aws_access_key_id="",
-            aws_secret_access_key="",
-        )
-    except Exception as e:
-        raise Exception(e)
-
-    try:
-        login_response = cognito_client.initiate_auth(
-            AuthFlow="USER_PASSWORD_AUTH",
-            AuthParameters={"USERNAME": email, "PASSWORD": password},
-            ClientId=cognito_app_client_id,
-        )
-    except Exception as e:
-        abort(400, "Username or password was incorrect.")
-
-    try:
-        api_key = login_response["AuthenticationResult"]["AccessToken"]
-        response = requests.get(
-            f"{PENNSIEVE_URL}/user", headers={"Authorization": f"Bearer {api_key}"}
-        )
-        response.raise_for_status()
-    except Exception as e:
-        raise e
-
-    try:
-        url = "https://api.pennsieve.io/session/switch-organization"
-
-        sparc_org_id = "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
-        querystring = {
-            "organization_id": "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
-        }
-
-        headers = {"Accept": "application/json", "Authorization": f"Bearer {api_key}"}
-
-        response = requests.request("PUT", url, headers=headers, params=querystring)
-    except Exception as e:
-        raise e
-
-    try:
-        url = "https://api.pennsieve.io/session/switch-organization"
-
-        querystring = {
-            "organization_id": "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
-        }
-
-        headers = {"Accept": "application/json", "Authorization": f"Bearer {api_key}"}
-
-        response = requests.request("PUT", url, headers=headers, params=querystring)
-
-        response = requests.get(
-            f"{PENNSIEVE_URL}/user", headers={"Authorization": f"Bearer {api_key}"}
-        )
-        response.raise_for_status()
-        response = response.json()
-        if "preferredOrganization" in response:
-            if response["preferredOrganization"] != sparc_org_id:
-                error = "It looks like you don't have access to the SPARC workspace on Pennsieve. This is required to upload datasets. Please reach out to the SPARC curation team (email) to get access to the SPARC workspace and try again."
-                raise Exception(error)
-        else:
-            error = "It looks like you don't have access to the SPARC workspace on Pennsieve. This is required to upload datasets. Please reach out to the SPARC curation team (email) to get access to the SPARC workspace and try again."
-            raise Exception(error)
-    except Exception as error:
-        error = "It looks like you don't have access to the SPARC workspace on Pennsieve. This is required to upload datasets. Please reach out to the SPARC curation team (email) to get access to the SPARC workspace and try again."
-        raise Exception(error)
-
-    try:
-        url = "https://api.pennsieve.io/token/"
-
-        payload = {"name": f"{keyname}"}
-        headers = {
-            "Accept": "*/*",
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {api_key}",
-        }
-
-        response = requests.request("POST", url, json=payload, headers=headers)
-        response.raise_for_status()
-        response = response.json()
-        return { 
-            "success": "success", 
-            "key": response["key"], 
-            "secret": response["secret"], 
-            "name": response["name"]
-        }
-    except Exception as e:
-        raise e
 
 
 

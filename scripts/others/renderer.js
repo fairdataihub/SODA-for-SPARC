@@ -618,17 +618,18 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
   });
 };
 
-const getPennsieveAgentVersion = async (pathToPennsieveAgent) => {
+const getPennsieveAgentVersion = (pathToPennsieveAgent) => {
+  log.info("DING DING DING");
   return new Promise((resolve, reject) => {
     try {
-      // Timeout if the agent was not able to be retrieved within 7 seconds
+      // // Timeout if the agent was not able to be retrieved within 7 seconds
       const versionCheckTimeout = setTimeout(() => {
         reject(
           new Error(
             "Timeout Error: The agent version was not able to be verified in the allotted time"
           )
         );
-      }, 7000);
+      }, 30000);
 
       const agentVersionSpawn = execFile(pathToPennsieveAgent, ["version"]);
       agentVersionSpawn.stdout.on("data", (data) => {
@@ -661,114 +662,123 @@ const getPennsieveAgentVersion = async (pathToPennsieveAgent) => {
 // If any of the mandatory steps fail, the user will be notified on how to alleviate the issue
 // and the promise will be rejected
 const startPennsieveAgentAndCheckVersion = async () => {
-  return new Promise(async (resolve, reject) => {
-    // First get the latest Pennsieve agent version on GitHub
-    // This is to ensure the user has the latest version of the agent
-    let browser_download_url;
-    let latest_agent_version;
-    try {
-      [browser_download_url, latest_agent_version] = await get_latest_agent_version();
-    } catch (error) {
-      await Swal.fire({
-        icon: "error",
-        text: "We are unable to get the latest version of the Pennsieve Agent. Please try again later. If this issue persists please contact the SODA team at help@fairdataihub.org",
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        showCancelButton: true,
-        confirmButtonText: "Ok",
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      });
-      log.error(error);
-      reject(error);
-    }
+  // First get the latest Pennsieve agent version on GitHub
+  // This is to ensure the user has the latest version of the agent
+  let browser_download_url;
+  let latest_agent_version;
+  try {
+    [browser_download_url, latest_agent_version] = await get_latest_agent_version();
+  } catch (error) {
+    await Swal.fire({
+      icon: "error",
+      text: "We are unable to get the latest version of the Pennsieve Agent. Please try again later. If this issue persists please contact the SODA team at help@fairdataihub.org",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showCancelButton: true,
+      confirmButtonText: "Ok",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+    clientError(error);
+    throw error;
+  }
 
-    // Get the path to the Pennsieve agent
-    // If the path that the Pennsieve agent should be at is not found,
-    // alert the user and open the download page for the Pennsieve agent
-    try {
-      agentPath = getPennsieveAgentPath();
-    } catch (error) {
-      const { value: result } = await Swal.fire({
-        icon: "error",
-        title: "Pennsieve Agent Not Found",
-        text: "It looks like the Pennsieve Agent is not installed on your computer. Please download the latest version of the Pennsieve Agent and install it. Once you have installed the Pennsieve Agent, please restart SODA.",
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        showCancelButton: true,
-        reverseButtons: reverseSwalButtons,
-        confirmButtonText: "Download now",
-        cancelButtonText: "Skip for now",
-      });
-      if (result) {
-        shell.openExternal(browser_download_url);
-        shell.openExternal("https://docs.pennsieve.io/docs/uploading-files-programmatically");
-      }
-      log.error(error);
-      reject(error);
+  // Get the path to the Pennsieve agent
+  // If the path that the Pennsieve agent should be at is not found,
+  // alert the user and open the download page for the Pennsieve agent
+  try {
+    agentPath = getPennsieveAgentPath();
+  } catch (error) {
+    const { value: result } = await Swal.fire({
+      icon: "error",
+      title: "Pennsieve Agent Not Found",
+      text: "It looks like the Pennsieve Agent is not installed on your computer. Please download the latest version of the Pennsieve Agent and install it. Once you have installed the Pennsieve Agent, please restart SODA.",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showCancelButton: true,
+      reverseButtons: reverseSwalButtons,
+      confirmButtonText: "Download now",
+      cancelButtonText: "Skip for now",
+    });
+    if (result) {
+      shell.openExternal(browser_download_url);
+      shell.openExternal("https://docs.pennsieve.io/docs/uploading-files-programmatically");
     }
+    clientError(error);
+    throw error;
+  }
 
-    // Stop the Pennsieve agent if it is running
-    // This is to ensure that the agent is not running when we try to start it so no funny business happens
-    try {
-      await stopPennsieveAgent(agentPath);
-    } catch (error) {
-      // If the agent is not running then we can ignore this error
-      // But it shouldn't throw if the agent is running or not
-      log.error(error);
+  // Stop the Pennsieve agent if it is running
+  // This is to ensure that the agent is not running when we try to start it so no funny business happens
+  try {
+    await stopPennsieveAgent(agentPath);
+  } catch (error) {
+    // If the agent is not running then we can ignore this error
+    // But it shouldn't throw if the agent is running or not
+    clientError(error);
+  }
+
+  // Start the Pennsieve agent
+  try {
+    await startPennsieveAgent(agentPath);
+  } catch (error) {
+    clientError(error);
+    throw error;
+  }
+
+  // Get the version of the Pennsieve agent
+  let pennsieveAgentVersion;
+  try {
+    pennsieveAgentVersionObj = await getPennsieveAgentVersion(agentPath);
+    pennsieveAgentVersion = pennsieveAgentVersionObj["Agent Version"];
+  } catch (error) {
+    await Swal.fire({
+      icon: "error",
+      text: "Unable to determine the version number of the Pennsieve Agent. Please try again. If this issue persists contact the SODA team using the 'Contact Us' section found in the sidebar.",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: "Ok",
+      reverseButtons: reverseSwalButtons,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+    clientError(error);
+    throw error;
+  }
+
+  if (pennsieveAgentVersion !== latest_agent_version) {
+    let { value: result } = await Swal.fire({
+      icon: "warning",
+      text: "It appears that you are not running the latest version of the Pensieve Agent. Please download the latest version of the Pennsieve Agent and install it. Once you have installed the Pennsieve Agent, please restart SODA.",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      showCancelButton: true,
+      confirmButtonText: "Download now",
+      cancelButtonText: "Skip for now",
+      reverseButtons: reverseSwalButtons,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+    if (result) {
+      shell.openExternal(browser_download_url);
+      shell.openExternal("https://docs.pennsieve.io/docs/uploading-files-programmatically");
+      // Stop the Pennsieve agent so the agent installer will not require a reboot
+      await stopPennsieveAgent();
     }
-
-    // Start the Pennsieve agent
-    try {
-      await startPennsieveAgent(agentPath);
-    } catch (error) {
-      log.error(error);
-      reject(error);
-    }
-
-    // Get the version of the Pennsieve agent
-    let pennsieveAgentVersion;
-    try {
-      pennsieveAgentVersionObj = await getPennsieveAgentVersion(agentPath);
-      pennsieveAgentVersion = pennsieveAgentVersionObj["Agent Version"];
-    } catch (error) {
-      log.error(error);
-      reject(error);
-    }
-
-    if (pennsieveAgentVersion !== latest_agent_version) {
-      let { value: result } = await Swal.fire({
-        icon: "warning",
-        text: "It appears that you are not running the latest version of the Pensieve Agent. Please download the latest version of the Pennsieve Agent and install it. Once you have installed the Pennsieve Agent, please restart SODA.",
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        showCancelButton: true,
-        confirmButtonText: "Download now",
-        cancelButtonText: "Skip for now",
-        reverseButtons: reverseSwalButtons,
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      });
-      if (result) {
-        shell.openExternal(browser_download_url);
-        shell.openExternal("https://docs.pennsieve.io/docs/uploading-files-programmatically");
-        // stop the pennsieve agent so the agent installer will not require a reboot
-        await stopPennsieveAgent(agentPath);
-      }
-      reject("The installed version of the Pennsieve agent is not the latest version.");
-    }
-
-    // The Pennsieve agent is now running so we can now resolve the promise
-    resolve();
-  });
+    throw Error("The installed version of the Pennsieve agent is not the latest version.");
+  }
 };
 
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
@@ -841,6 +851,8 @@ const run_pre_flight_checks = async (check_update = true) => {
     }
   }
 
+  // set the preferred organization spans
+
   // an account is present
   // Check for an installed Pennsieve agent
   let pennsieveAgentCheckNotyf;
@@ -875,6 +887,21 @@ const run_pre_flight_checks = async (check_update = true) => {
   }
 
   await wait(500);
+
+  notyf.open({
+    type: "info",
+    message: "Verifying access to workspace.",
+  });
+
+  // make an api request to change to the organization members. If it fails with a 401 then ask them to go through the workspace change flow as SODA does not have access to the workspace.
+  try {
+    await client.get(`/manage_datasets/bf_get_users?selected_account=${defaultBfAccount}`);
+  } catch (err) {
+    clientError(err);
+    if (err.response.status) {
+      await addBfAccount(null, true);
+    }
+  }
 
   notyf.open({
     type: "final",
@@ -976,7 +1003,11 @@ const apiVersionsMatch = async () => {
 
   //Load Default/global Pennsieve account if available
   if (hasConnectedAccountWithPennsieve()) {
-    updateBfAccountList();
+    try {
+      updateBfAccountList();
+    } catch (error) {
+      clientError(error);
+    }
   }
   checkNewAppVersion(); // Added so that version will be displayed for new users
 };
@@ -1322,6 +1353,7 @@ const manifestStatus = document.querySelector("#generate-manifest");
 // Manage datasets //
 var myitem;
 var datasetList = [];
+var organizationList = [];
 var sodaCopy = {};
 var datasetStructCopy = {};
 const bfUploadRefreshDatasetBtn = document.getElementById("button-upload-refresh-dataset-list");
@@ -1363,9 +1395,6 @@ const bfListUsers = document.querySelector("#bf_list_users");
 const bfListTeams = document.querySelector("#bf_list_teams");
 const bfListRolesTeam = document.querySelector("#bf_list_roles_team");
 const bfAddPermissionTeamBtn = document.getElementById("button-add-permission-team");
-// Guided mode dropdowns
-const guidedBfListUsersPi = document.querySelector("#guided_bf_list_users_pi");
-const guidedBfListUsersAndTeams = document.querySelector("#guided_bf_list_users_and_teams");
 
 //Pennsieve dataset status
 const bfCurrentDatasetStatusProgress = document.querySelector(
@@ -1568,11 +1597,6 @@ var datasetTagsInput = document.getElementById("tagify-dataset-tags"),
   datasetTagsTagify = new Tagify(datasetTagsInput);
 createDragSort(datasetTagsTagify);
 
-var guidedDatasetTagsInput = document.getElementById("guided-tagify-dataset-tags"),
-  // initialize Tagify on the above input node reference
-  guidedDatasetTagsTagify = new Tagify(guidedDatasetTagsInput);
-createDragSort(guidedDatasetTagsTagify);
-
 /////////////////// Provide Grant Information section /////////////////////////
 //////////////// //////////////// //////////////// //////////////// ///////////
 
@@ -1644,14 +1668,40 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
   }
 });
 
-async function generateSubjectsFileHelper(uploadBFBoolean) {
+const generateSubjectsFileHelper = async (uploadBFBoolean) => {
+  let bfdataset = document.getElementById("bf_dataset_load_subjects").innerText.trim();
   if (uploadBFBoolean) {
     // Run pre-flight checks before uploading the subjects file to Pennsieve
-    const supplementary_checks = await run_pre_flight_checks(false);
+    let supplementary_checks = await run_pre_flight_checks(false);
     if (!supplementary_checks) {
       return;
     }
-    var { value: continueProgress } = await Swal.fire({
+
+    // Check if dataset is locked after running pre-flight checks
+    const isLocked = await api.isDatasetLocked(defaultBfAccount, bfdataset);
+
+    if (isLocked) {
+      await Swal.fire({
+        icon: "info",
+        title: `${bfdataset} is locked from editing`,
+        html: `
+              This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
+              <br />
+              <br />
+              If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
+            `,
+        width: 600,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "Ok",
+        focusConfirm: true,
+        allowOutsideClick: false,
+      });
+
+      return;
+    }
+
+    let { value: continueProgress } = await Swal.fire({
       title:
         "Any existing subjects.xlsx file in the high-level folder of the selected dataset will be replaced.",
       text: "Are you sure you want to continue?",
@@ -1668,7 +1718,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
       return;
     }
   } else {
-    var { value: continueProgress } = await Swal.fire({
+    let { value: continueProgress } = await Swal.fire({
       title: "Any existing subjects.xlsx file in the specified location will be replaced.",
       text: "Are you sure you want to continue?",
       allowEscapeKey: false,
@@ -1697,7 +1747,6 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
     },
   }).then((result) => {});
 
-  let bfdataset = document.getElementById("bf_dataset_load_subjects").innerText.trim();
   try {
     log.info(`Generating a subjects file.`);
     let save_locally = await client.post(
@@ -1757,7 +1806,7 @@ async function generateSubjectsFileHelper(uploadBFBoolean) {
       uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
     );
   }
-}
+};
 
 // generate samples file
 ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) => {
@@ -1811,14 +1860,39 @@ ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) 
   }
 });
 
-async function generateSamplesFileHelper(uploadBFBoolean) {
+const generateSamplesFileHelper = async (uploadBFBoolean) => {
+  let bfDataset = $("#bf_dataset_load_samples").text().trim();
   if (uploadBFBoolean) {
     // Run pre-flight checks before uploading the samples file to Pennsieve
     const supplementary_checks = await run_pre_flight_checks(false);
     if (!supplementary_checks) {
       return;
     }
-    var { value: continueProgress } = await Swal.fire({
+
+    // Check if dataset is locked after running pre-flight checks
+    const isLocked = await api.isDatasetLocked(defaultBfAccount, bfDataset);
+    if (isLocked) {
+      await Swal.fire({
+        icon: "info",
+        title: `${bfDataset} is locked from editing`,
+        html: `
+              This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
+              <br />
+              <br />
+              If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
+            `,
+        width: 600,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "Ok",
+        focusConfirm: true,
+        allowOutsideClick: false,
+      });
+
+      return;
+    }
+
+    let { value: continueProgress } = await Swal.fire({
       title:
         "Any existing samples.xlsx file in the high-level folder of the selected dataset will be replaced.",
       text: "Are you sure you want to continue?",
@@ -1835,7 +1909,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
       return;
     }
   } else {
-    var { value: continueProgress } = await Swal.fire({
+    let { value: continueProgress } = await Swal.fire({
       title: "Any existing samples.xlsx file in the specified location will be replaced.",
       text: "Are you sure you want to continue?",
       allowEscapeKey: false,
@@ -1917,7 +1991,7 @@ async function generateSamplesFileHelper(uploadBFBoolean) {
       uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
     );
   }
-}
+};
 
 // import Primary folder
 ipcRenderer.on("selected-local-primary-folder", (event, primaryFolderPath) => {
@@ -2522,6 +2596,14 @@ const clearDatasetDropdowns = () => {
   }
 };
 
+const clearOrganizationDropdowns = () => {
+  for (let list of [curateOrganizationDropdown]) {
+    removeOptions(list);
+    addOption(list, "Search here...", "Select organization");
+    list.options[0].disabled = true;
+  }
+};
+
 //////////////////////// Current Contributor(s) /////////////////////
 
 const delete_current_con = (no) => {
@@ -2901,6 +2983,7 @@ var displaySize = 1000;
 
 /// Add all BF accounts to the dropdown list, and then choose by default one option ('global' account)
 const curateDatasetDropdown = document.getElementById("curatebfdatasetlist");
+const curateOrganizationDropdown = document.getElementById("curatebforganizationlist");
 
 async function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
   let defaultBfAccount = bfaccountDropdown.options[bfaccountDropdown.selectedIndex].text;
@@ -3311,6 +3394,8 @@ ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
   $("#submit_prepublishing_review-spinner").hide();
 });
 
+// TODO: Dorian -> Exlcuded files will no longer be a thing in the future
+// Go about removing the feature and see how it effects dataset submissions
 const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
   let currentAccount = defaultBfAccount;
   let currentDataset = defaultBfDataset;
@@ -3339,8 +3424,6 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
   });
 
   try {
-    // await permissionsCurationTeam(currentAccount, currentDataset, "share", "newMethod");
-
     await api.submitDatasetForPublication(
       currentAccount,
       currentDataset,
@@ -3361,7 +3444,7 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       confirmButtonText: "Ok",
-      title: `Could not share dataset with Curation Team`,
+      title: `Could not submit your dataset to Curation Team`,
       icon: "error",
       reverseButtons: reverseSwalButtons,
       text: userErrorMessage(error),
@@ -3418,35 +3501,44 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
 };
 
 // //Withdraw dataset from review
-const withdrawDatasetSubmission = async (curationMode) => {
+const withdrawDatasetSubmission = async (curationMode = "") => {
   // show a SWAL loading message until the submit for prepublishing flow is successful or fails
 
-  if (curationMode !== "guided") {
-    Swal.fire({
-      title: `Preparing to withdraw the dataset submission`,
-      html: "Please wait...",
-      // timer: 5000,
+  if (curationMode != "guided") {
+    document.getElementById("btn-withdraw-review-dataset").disabled = true;
+    $("#btn-withdraw-review-dataset").addClass("loading");
+    $("#btn-withdraw-review-dataset").addClass("text-transparent");
+
+    const { value: withdraw } = await Swal.fire({
+      title: "Withdraw this dataset from review?",
+      icon: "warning",
+      showDenyButton: true,
+      confirmButtonText: "Yes",
+      denyButtonText: "No",
       allowEscapeKey: false,
       allowOutsideClick: false,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       timerProgressBar: false,
-      didOpen: () => {
-        Swal.showLoading();
-      },
     });
+
+    if (!withdraw) {
+      document.getElementById("btn-withdraw-review-dataset").disabled = false;
+      $("#btn-withdraw-review-dataset").removeClass("loading");
+      $("#btn-withdraw-review-dataset").removeClass("text-transparent");
+      return false;
+    }
   }
 
   // get the publishing status of the currently selected dataset
   // then check if it can be withdrawn, then withdraw it
   // catch any uncaught errors at this level (aka greacefully catch any exceptions to alert the user we cannot withdraw their dataset)
-  await showPublishingStatus(withdrawDatasetCheck, curationMode).catch((error) => {
+  let status = await showPublishingStatus(withdrawDatasetCheck, curationMode).catch((error) => {
     log.error(error);
     console.error(error);
-    var emessage = userError(error);
     Swal.fire({
       title: "Could not withdraw dataset from publication!",
-      text: `${emessage}`,
+      text: `${userErrorMessage(error)}`,
       heightAuto: false,
       icon: "error",
       confirmButtonText: "Ok",
@@ -3476,6 +3568,10 @@ const withdrawDatasetSubmission = async (curationMode) => {
   // This helps signal guided mode to update the UI
   if (curationMode === "guided") {
     return true;
+  } else {
+    document.getElementById("btn-withdraw-review-dataset").disabled = false;
+    $("#btn-withdraw-review-dataset").removeClass("loading");
+    $("#btn-withdraw-review-dataset").removeClass("text-transparent");
   }
 };
 
@@ -3499,26 +3595,12 @@ const withdrawDatasetCheck = async (res, curationMode) => {
     });
   } else {
     // show a SWAL loading message until the submit for prepublishing flow is successful or fails
-    if (curationMode !== "guided") {
-      Swal.fire({
-        title: `Withdrawing dataset submission`,
-        html: "Please wait...",
-        allowEscapeKey: false,
-        allowOutsideClick: false,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        timerProgressBar: false,
-        didOpen: () => {
-          Swal.showLoading();
-        },
-      });
-    }
     await withdrawReviewDataset(curationMode);
   }
 };
 
 const withdrawReviewDataset = async (curationMode) => {
-  bfWithdrawReviewDatasetBtn.disabled = true;
+  // bfWithdrawReviewDatasetBtn.disabled = true;
 
   let currentAccount = $("#current-bf-account").text();
   let currentDataset = $(".bf-dataset-span")
@@ -3531,8 +3613,6 @@ const withdrawReviewDataset = async (curationMode) => {
   }
 
   try {
-    await disseminateCurationTeam(currentAccount, currentDataset, "unshare", "newMethod");
-
     await api.withdrawDatasetReviewSubmission(currentDataset, currentAccount);
 
     logGeneralOperationsForAnalytics(
@@ -3562,13 +3642,7 @@ const withdrawReviewDataset = async (curationMode) => {
 
     if (curationMode != "guided") {
       // reveal the current section (question-3) again using the new publishing status value
-      await transitionFreeFormMode(
-        document.querySelector("#begin-prepublishing-btn"),
-        "submit_prepublishing_review-question-2",
-        "submit_prepublishing_review-tab",
-        "",
-        "individual-question post-curation"
-      );
+      await resetffmPrepublishingUI();
 
       bfRefreshPublishingDatasetStatusBtn.disabled = false;
       bfWithdrawReviewDatasetBtn.disabled = false;
@@ -3585,7 +3659,6 @@ const withdrawReviewDataset = async (curationMode) => {
     }
 
     // scroll to the submit button
-    // scrollToElement(".pre-publishing-continue");
   } catch (error) {
     clientError(error);
     var emessage = userErrorMessage(error);
@@ -3622,29 +3695,23 @@ const withdrawReviewDataset = async (curationMode) => {
 // General //
 
 const removeOptions = (selectbox) => {
-  var i;
-  for (i = selectbox.options.length - 1; i >= 0; i--) {
+  for (let i = selectbox.options.length - 1; i >= 0; i--) {
     selectbox.remove(i);
   }
-};
-
-const userError = (error) => {
-  var myerror = error.message;
-  return myerror;
 };
 
 // Manage Datasets //
 
 const refreshBfUsersList = () => {
-  var accountSelected = defaultBfAccount;
+  let accountSelected = defaultBfAccount;
 
   removeOptions(bfListUsers);
-  var optionUser = document.createElement("option");
+  let optionUser = document.createElement("option");
   optionUser.textContent = "Select user";
   bfListUsers.appendChild(optionUser);
 
   removeOptions(bfListUsersPI);
-  var optionUserPI = document.createElement("option");
+  let optionUserPI = document.createElement("option");
   optionUserPI.textContent = "Select PI";
   bfListUsersPI.appendChild(optionUserPI);
 
@@ -3656,15 +3723,6 @@ const refreshBfUsersList = () => {
         // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
         $("#bf_list_users").selectpicker("refresh");
         $("#bf_list_users").find("option:not(:first)").remove();
-        $("#guided_bf_list_users_and_teams").selectpicker("refresh");
-
-        //delete all elements with data-permission-type of "team"
-        const userDropdownElements = document.querySelectorAll(
-          "#guided_bf_list_users_and_teams option[permission-type='user']"
-        );
-        userDropdownElements.forEach((element) => {
-          element.remove();
-        });
 
         $("#button-add-permission-user").hide();
         $("#bf_list_users_pi").selectpicker("refresh");
@@ -3679,9 +3737,6 @@ const refreshBfUsersList = () => {
           bfListUsers.appendChild(optionUser);
           var optionUser2 = optionUser.cloneNode(true);
           bfListUsersPI.appendChild(optionUser2);
-          var guidedOptionUser = optionUser.cloneNode(true);
-          guidedOptionUser.setAttribute("permission-type", "user");
-          guidedBfListUsersAndTeams.appendChild(guidedOptionUser);
         }
       })
       .catch((error) => {
@@ -3690,7 +3745,15 @@ const refreshBfUsersList = () => {
   }
 };
 
-const refreshBfTeamsList = (teamList) => {
+// Takes in a pennsieve teams JSON response and returns a sorted list of team strings
+const getSortedTeamStrings = (pennsieveTeamsJsonResponse) => {
+  const teamStrings = pennsieveTeamsJsonResponse.map((teamElement) => {
+    return teamElement.team.name;
+  });
+  return teamStrings.sort();
+};
+
+const refreshBfTeamsList = async (teamList) => {
   removeOptions(teamList);
 
   var accountSelected = defaultBfAccount;
@@ -3700,32 +3763,30 @@ const refreshBfTeamsList = (teamList) => {
   teamList.appendChild(optionTeam);
 
   if (accountSelected !== "Select") {
-    client
-      .get(`/manage_datasets/bf_get_teams?selected_account=${accountSelected}`)
-      .then((res) => {
-        let teams = res.data["teams"];
-        // The removeoptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
-        $("#bf_list_teams").selectpicker("refresh");
-        $("#bf_list_teams").find("option:not(:first)").remove();
-        $("#guided_bf_list_users_and_teams").selectpicker("refresh");
-        $("#button-add-permission-team").hide();
-        for (var myItem in teams) {
-          var myTeam = teams[myItem];
-          var optionTeam = document.createElement("option");
-          optionTeam.textContent = myTeam;
-          optionTeam.value = myTeam;
-          teamList.appendChild(optionTeam);
-          var guidedOptionTeam = optionTeam.cloneNode(true);
-          guidedOptionTeam.setAttribute("permission-type", "team");
-          guidedBfListUsersAndTeams.appendChild(guidedOptionTeam);
-        }
-        confirm_click_account_function();
-      })
-      .catch((error) => {
-        log.error(error);
-        console.error(error);
-        confirm_click_account_function();
-      });
+    try {
+      const teamsReq = await client.get(
+        `manage_datasets/bf_get_teams?selected_account=${defaultBfAccount}`
+      );
+      const teamsThatCanBeGrantedPermissions = getSortedTeamStrings(teamsReq.data.teams);
+
+      // The removeoptions() wasn't working in some instances (creating a double list) so second removal for everything but the first element.
+      $("#bf_list_teams").selectpicker("refresh");
+      $("#bf_list_teams").find("option:not(:first)").remove();
+      $("#guided_bf_list_users_and_teams").selectpicker("refresh");
+      $("#button-add-permission-team").hide();
+
+      for (const teamName of teamsThatCanBeGrantedPermissions) {
+        const optionTeam = document.createElement("option");
+        optionTeam.textContent = teamName;
+        optionTeam.value = teamName;
+        teamList.appendChild(optionTeam);
+      }
+      confirm_click_account_function();
+    } catch (error) {
+      log.error(error);
+      console.error(error);
+      confirm_click_account_function();
+    }
   }
 };
 
@@ -3756,6 +3817,23 @@ const refreshDatasetList = () => {
   return filteredDatasets.length;
 };
 
+/**
+ *
+ * Sorts the user's available organizations and adds them to the organization picker dropdown.
+ * Prerequisite: Organizations have been fetched for the user otherwise nothing happens.
+ * @returns length of the organizations list
+ */
+const refreshOrganizationList = () => {
+  organizationList.sort(function (a, b) {
+    return a.toLowerCase().localeCompare(b.toLowerCase());
+  });
+
+  populateOrganizationDropdowns(organizationList);
+
+  // parentDSTagify.settings.whitelist = getParentDatasets();
+  return organizationList.length;
+};
+
 /// populate the dropdowns with refreshed dataset list
 const populateDatasetDropdowns = (mylist) => {
   clearDatasetDropdowns();
@@ -3773,6 +3851,21 @@ const populateDatasetDropdowns = (mylist) => {
   permissionDatasetlistChange();
   postCurationListChange();
   datasetStatusListChange();
+};
+
+const populateOrganizationDropdowns = (organizations) => {
+  clearOrganizationDropdowns();
+
+  for (const organization in organizations) {
+    var myitemselect = organizations[organization];
+    var option = document.createElement("option");
+    option.textContent = myitemselect;
+    option.value = myitemselect;
+    let option1 = option.cloneNode(true);
+    let option2 = option.cloneNode(true);
+
+    curateOrganizationDropdown.appendChild(option1);
+  }
 };
 ////////////////////////////////////END OF DATASET FILTERING FEATURE//////////////////////////////
 
@@ -3819,12 +3912,18 @@ const loadDefaultAccount = async () => {
 
   if (accounts.length > 0) {
     var myitemselect = accounts[0];
+    // keep the defaultBfAccount value as the user's profile config key value for reference later
     defaultBfAccount = myitemselect;
 
-    $("#current-bf-account").text(myitemselect);
-    $("#current-bf-account-generate").text(myitemselect);
-    $("#create_empty_dataset_BF_account_span").text(myitemselect);
-    $(".bf-account-span").text(myitemselect);
+    // fetch the user's email and set that as the account field's value
+    let userInformation = await api.getUserInformation();
+    let userEmail = userInformation.email;
+
+    $("#current-bf-account").text(userEmail);
+    $("#current-bf-account-generate").text(userEmail);
+    $("#create_empty_dataset_BF_account_span").text(userEmail);
+    $(".bf-account-span").text(userEmail);
+
     showHideDropdownButtons("account", "show");
     refreshBfUsersList();
     refreshBfTeamsList(bfListTeams);
@@ -3841,12 +3940,15 @@ const showPrePublishingPageElements = () => {
 
   // show the "Begin Publishing" button and hide the checklist and submission section
   $("#begin-prepublishing-btn").removeClass("hidden");
-  $("#submit_prepublishing_review-question-2").addClass("show");
+  $("#submit_prepublishing_review-question-2").addClass("hidden");
+  $("#curation-dataset-status-loading").removeClass("hidden");
   $("#prepublishing-checklist-container").hide();
   $("#prepublishing-submit-btn-container").hide();
   $(".pre-publishing-continue-container").hide();
 };
 
+// The callback argument is used to determine whether or not to publish or unpublish the dataset
+// If callback is empty then the dataset status will only be fetched and displayed
 const showPublishingStatus = async (callback, curationMode = "") => {
   return new Promise(async function (resolve, reject) {
     if (callback == "noClear") {
@@ -3866,6 +3968,10 @@ const showPublishingStatus = async (callback, curationMode = "") => {
     }
 
     if (currentDataset === "None") {
+      if (curationMode === "" || curationMode === "freeform") {
+        $("#button-refresh-publishing-status").addClass("hidden");
+        $("#curation-dataset-status-loading").addClass("hidden");
+      }
       resolve();
     } else {
       try {
@@ -3889,7 +3995,12 @@ const showPublishingStatus = async (callback, curationMode = "") => {
           if (callback === submitReviewDatasetCheck || callback === withdrawDatasetCheck) {
             return resolve(callback(res, curationMode));
           }
-
+          if (curationMode === "" || curationMode === "freeform") {
+            $("#submit_prepublishing_review-question-2").removeClass("hidden");
+            $("#curation-dataset-status-loading").addClass("hidden");
+            // $("#button-refresh-publishing-status").removeClass("hidden");
+            $("#button-refresh-publishing-status").removeClass("fa-spin");
+          }
           resolve();
         } catch (error) {
           // an exception will be caught and rejected
@@ -4151,6 +4262,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
 
 // ///////////////////////////////////////////////////////////////////////////
 // recursively populate json object
+// TODO: Dorian -> This is the function the populates content from inside the folder to the JSON object
 const populateJSONObjFolder = (action, jsonObject, folderPath) => {
   var myitems = fs.readdirSync(folderPath);
   myitems.forEach((element) => {
@@ -4328,22 +4440,21 @@ const showDefaultBFAccount = async () => {
             selected_account: defaultBfAccount,
           },
         });
-        let accountDetails = bf_account_details_req.data.account_details;
-        $("#para-account-detail-curate").html(accountDetails);
-        $("#current-bf-account").text(defaultBfAccount);
-        $("#current-bf-account-generate").text(defaultBfAccount);
-        $("#create_empty_dataset_BF_account_span").text(defaultBfAccount);
-        $(".bf-account-span").text(defaultBfAccount);
-        $("#card-right bf-account-details-span").html(accountDetails);
-        $("#para_create_empty_dataset_BF_account").html(accountDetails);
-        $("#para-account-detail-curate-generate").html(accountDetails);
-        $(".bf-account-details-span").html(accountDetails);
-        defaultAccountDetails = accountDetails;
+        let user_email = bf_account_details_req.data.email;
+        $("#current-bf-account").text(user_email);
+        $("#current-bf-account-generate").text(user_email);
+        $("#create_empty_dataset_BF_account_span").text(user_email);
+        $(".bf-account-span").text(user_email);
+
+        // show the preferred organization
+        let organization = bf_account_details_req.data.organization;
+        $(".bf-organization-span").text(organization);
 
         $("#div-bf-account-load-progress").css("display", "none");
         showHideDropdownButtons("account", "show");
         // refreshDatasetList()
         updateDatasetList();
+        updateOrganizationList();
       } catch (error) {
         clientError(error);
 
@@ -4486,7 +4597,7 @@ const CheckFileListForServerAccess = async (fileList) => {
     const inaccessible_files = res.data.inaccessible_files;
     return inaccessible_files;
   } catch (error) {
-    console.log(userErrorMessage(error));
+    clientError(error);
     notyf.open({
       type: "error",
       message: `Unable to determine file/folder accessibility`,
@@ -6902,7 +7013,7 @@ const getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
       }
       $("#items").empty();
       already_created_elem = [];
-      let items = loadFileFolder(myPath);
+      // let items = loadFileFolder(myPath);
       //we have some items to display
       listItems(myPath, "#items", 500, (reset = true));
       getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
@@ -7027,7 +7138,7 @@ $("#inputNewNameDataset").keyup(function () {
       $("#btn-confirm-new-dataset-name").hide();
       document.getElementById("para-new-name-dataset-message").innerHTML =
         "Error: A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.";
-      // $("#nextBtn").prop("disabled", true);
+      // $("#nextBtn").prop("disabled", true)
       $("#Question-generate-dataset-generate-div-old").removeClass("show");
       $("#div-confirm-inputNewNameDataset").css("display", "none");
       $("#btn-confirm-new-dataset-name").hide();
@@ -7261,7 +7372,7 @@ ipcRenderer.on("selected-local-destination-datasetCurate", async (event, filepat
             html: `This folder seem to have non-SPARC folders. Please select a folder that has a valid SPARC dataset structure.
               <br/>
               See the "Data Organization" section of the SPARC documentation for more
-              <a a target="_blank" href="https://sparc.science/help/3FXikFXC8shPRd8xZqhjVT#top"> details</a>`,
+              <a target="_blank" href="https://sparc.science/help/3FXikFXC8shPRd8xZqhjVT#top"> details</a>`,
             heightAuto: false,
             backdrop: "rgba(0,0,0, 0.4)",
             showConfirmButton: false,
@@ -7586,6 +7697,16 @@ document.getElementById("button-generate").addEventListener("click", async funct
     let supplementary_checks = await run_pre_flight_checks(false);
     if (!supplementary_checks) {
       $("#sidebarCollapse").prop("disabled", false);
+
+      // return to the prior page
+      $($($(this).parent()[0]).parents()[0]).addClass("tab-active");
+      document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = "";
+      document.getElementById("para-please-wait-new-curate").innerHTML = "";
+      document.getElementById("prevBtn").style.display = "inline";
+      document.getElementById("start-over-btn").style.display = "inline-block";
+      document.getElementById("div-vertical-progress-bar").style.display = "flex";
+      document.getElementById("div-generate-comeback").style.display = "flex";
+      document.getElementById("generate-dataset-progress-tab").style.display = "none";
       return;
     }
   }
@@ -7621,6 +7742,10 @@ document.getElementById("button-generate").addEventListener("click", async funct
       },
       hideClass: {
         popup: "animate__animated animate__zoomOut animate__faster",
+      },
+      didOpen: () => {
+        document.getElementById("swal2-content").style.maxHeight = "19rem";
+        document.getElementById("swal2-content").style.overflowY = "auto";
       },
     }).then((result) => {
       if (result.isConfirmed) {
@@ -7918,6 +8043,10 @@ async function initiate_generate() {
         hideClass: {
           popup: "animate__animated animate__zoomOut animate__faster",
         },
+        didOpen: () => {
+          document.getElementById("swal2-content").style.maxHeight = "19rem";
+          document.getElementById("swal2-content").style.overflowY = "auto";
+        },
       }).then((result) => {
         statusBarClone.remove();
         sparc_container.style.display = "inline";
@@ -7991,6 +8120,10 @@ async function initiate_generate() {
         },
         hideClass: {
           popup: "animate__animated animate__zoomOut animate__faster",
+        },
+        didOpen: () => {
+          document.getElementById("swal2-content").style.maxHeight = "19rem";
+          document.getElementById("swal2-content").style.overflowY = "auto";
         },
       }).then((result) => {
         //statusBarClone.remove();
@@ -8221,7 +8354,6 @@ const show_curation_shortcut = async () => {
 
       // showHideDropdownButtons("dataset", "show");
       confirm_click_function();
-
       $("#guided_mode_view").click();
       $(".swal2-confirm").click();
       $(".vertical-progress-bar-step").removeClass("is-current");
@@ -8231,6 +8363,7 @@ const show_curation_shortcut = async () => {
       $(".getting-started").removeClass("test2");
       $("#Question-getting-started-1").addClass("show");
       $("#generate-dataset-progress-tab").css("display", "none");
+
       currentTab = 0;
       await wipeOutCurateProgress();
       $("#guided-button-start-modify-component").click();
@@ -8415,217 +8548,6 @@ ipcRenderer.on("selected-metadataCurate", (event, mypath) => {
   }
 });
 
-// When mode = "update", the buttons won't be hidden or shown to prevent button flickering effect
-const curation_consortium_check = async (mode = "") => {
-  let selected_account = defaultBfAccount;
-  let selected_dataset = defaultBfDataset;
-
-  $(".spinner.post-curation").show();
-  $("#curation-team-unshare-btn").hide();
-  $("#sparc-consortium-unshare-btn").hide();
-  $("#curation-team-share-btn").hide();
-  $("#sparc-consortium-share-btn").hide();
-
-  try {
-    let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
-      params: {
-        selected_account: defaultBfAccount,
-      },
-    });
-    let res = bf_account_details_req.data;
-    let organization_id = res["organization_id"];
-    if (organization_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0") {
-      $("#current_curation_team_status").text("None");
-      $("#current_sparc_consortium_status").text("None");
-
-      Swal.fire({
-        title: "Failed to share with Curation team!",
-        text: "This account is not in the SPARC organization. Please switch accounts and try again",
-        icon: "error",
-        showConfirmButton: true,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-      });
-
-      if (mode != "update") {
-        $("#curation-team-unshare-btn").hide();
-        $("#sparc-consortium-unshare-btn").hide();
-        $("#curation-team-share-btn").hide();
-        $("#sparc-consortium-share-btn").hide();
-        $(".spinner.post-curation").hide();
-      }
-      return;
-    }
-
-    if (mode != "update") {
-      $("#curation-team-unshare-btn").hide();
-      $("#sparc-consortium-unshare-btn").hide();
-      $("#curation-team-share-btn").hide();
-      $("#sparc-consortium-share-btn").hide();
-    }
-
-    if (selected_dataset === "Select dataset") {
-      $("#current_curation_team_status").text("None");
-      $("#current_sparc_consortium_status").text("None");
-      $(".spinner.post-curation").hide();
-    } else {
-      //needs to be replaced
-      try {
-        let bf_get_permissions = await api.getDatasetPermissions(
-          selected_account,
-          selected_dataset,
-          true
-        );
-        // let bf_get_permissions = await client.get(`/manage_datasets/bf_dataset_permissions`, {
-        //   params: {
-        //     selected_account: selected_account,
-        //     selected_dataset: selected_dataset,
-        //   },
-        // });
-
-        let permissions = bf_get_permissions.permissions;
-        let team_ids = bf_get_permissions.team_ids;
-
-        let curation_permission_satisfied = false;
-        let consortium_permission_satisfied = false;
-        let curation_return_status = false;
-        let consortium_return_status = false;
-
-        for (var team of team_ids) {
-          // SPARC Data Curation Team's id
-          if (team["team_id"] == "N:team:d296053d-91db-46ae-ac80-3c137ea144e4") {
-            if (team["team_role"] == "manager") {
-              curation_permission_satisfied = true;
-            }
-          }
-
-          // SPARC Embargoed Data Sharing Group's id
-          if (team["team_id"] == "N:team:ee8d665b-d317-40f8-b63d-56874cf225a1") {
-            if (team["team_role"] == "viewer") {
-              consortium_permission_satisfied = true;
-            }
-          }
-        }
-
-        if (!curation_permission_satisfied) {
-          $("#current_curation_team_status").text("Not shared with the curation team");
-          curation_return_status = true;
-        }
-        if (!consortium_permission_satisfied) {
-          $("#current_sparc_consortium_status").text("Not shared with the SPARC Consortium");
-          consortium_return_status = true;
-        }
-
-        if (curation_return_status) {
-          if (mode != "update") {
-            $("#curation-team-share-btn").show();
-            $("#curation-team-unshare-btn").hide();
-          }
-        }
-
-        if (consortium_return_status) {
-          if (mode != "update") {
-            $("#sparc-consortium-unshare-btn").hide();
-            $("#sparc-consortium-share-btn").show();
-          }
-        }
-
-        if (curation_return_status && consortium_return_status) {
-          $("#sparc-consortium-unshare-btn").hide();
-          $("#sparc-consortium-share-btn").show();
-          $("#curation-team-unshare-btn").hide();
-          $("#curation-team-share-btn").show();
-          $(".spinner.post-curation").hide();
-          return;
-        }
-        //needs to be replaced
-        try {
-          let bf_dataset_permissions = await client.get(`/manage_datasets/bf_dataset_status`, {
-            params: {
-              selected_account: defaultBfAccount,
-              selected_dataset: defaultBfDataset,
-            },
-          });
-          let res = bf_dataset_permissions.data;
-
-          let dataset_status_value = res["current_status"];
-          let dataset_status = parseInt(dataset_status_value.substring(0, 2));
-          let curation_status_satisfied = false;
-          let consortium_status_satisfied = false;
-
-          if (dataset_status > 2) {
-            curation_status_satisfied = true;
-          }
-          if (dataset_status > 10) {
-            consortium_status_satisfied = true;
-          }
-
-          if (!curation_status_satisfied) {
-            $("#current_curation_team_status").text("Not shared with the curation team");
-            curation_return_status = true;
-          }
-          if (!consortium_status_satisfied) {
-            $("#current_sparc_consortium_status").text("Not shared with the SPARC Consortium");
-            consortium_return_status = true;
-          }
-
-          if (curation_return_status) {
-            $("#curation-team-unshare-btn").hide();
-            $("#curation-team-share-btn").show();
-          } else {
-            $("#current_curation_team_status").text("Shared with the curation team");
-            $("#curation-team-unshare-btn").show();
-            $("#curation-team-share-btn").hide();
-          }
-
-          if (consortium_return_status) {
-            $("#sparc-consortium-unshare-btn").hide();
-            $("#sparc-consortium-share-btn").show();
-          } else {
-            $("#current_sparc_consortium_status").text("Shared with the SPARC Consortium");
-            $("#sparc-consortium-unshare-btn").show();
-            $("#sparc-consortium-share-btn").hide();
-          }
-
-          if (curation_return_status && consortium_return_status) {
-            $("#sparc-consortium-unshare-btn").hide();
-            $("#sparc-consortium-share-btn").show();
-            $("#curation-team-unshare-btn").hide();
-            $("#curation-team-share-btn").show();
-            $(".spinner.post-curation").hide();
-            return;
-          }
-
-          $(".spinner.post-curation").hide();
-        } catch (error) {
-          clientError(error);
-          $("#current_curation_team_status").text("None");
-          $("#current_sparc_consortium_status").text("None");
-          $(".spinner.post-curation").hide();
-        }
-      } catch (error) {
-        clientError(error);
-        if (mode != "update") {
-          $("#current_curation_team_status").text("None");
-          $("#current_sparc_consortium_status").text("None");
-        }
-        $(".spinner.post-curation").hide();
-      }
-    }
-  } catch (error) {
-    clientError(error);
-
-    if (mode != "update") {
-      $("#curation-team-unshare-btn").hide();
-      $("#sparc-consortium-unshare-btn").hide();
-      $("#curation-team-share-btn").hide();
-      $("#sparc-consortium-share-btn").hide();
-    }
-
-    $(".spinner.post-curation").hide();
-  }
-};
-
 $("#button-generate-manifest-locally").click(() => {
   ipcRenderer.send("open-folder-dialog-save-manifest-local");
 });
@@ -8762,19 +8684,14 @@ async function showBFAddAccountSweetalert() {
                     },
                   })
                   .then((response) => {
-                    let accountDetails = response.data.account_details;
-                    $("#para-account-detail-curate").html(accountDetails);
-                    $("#current-bf-account").text(name);
-                    $("#current-bf-account-generate").text(name);
-                    $("#create_empty_dataset_BF_account_span").text(name);
-                    $(".bf-account-span").text(name);
+                    let user_email = response.data.email;
+                    $("#current-bf-account").text(user_email);
+                    $("#current-bf-account-generate").text(user_email);
+                    $("#create_empty_dataset_BF_account_span").text(user_email);
+                    $(".bf-account-span").text(user_email);
                     $("#current-bf-dataset").text("None");
                     $("#current-bf-dataset-generate").text("None");
                     $(".bf-dataset-span").html("None");
-                    $("#para-account-detail-curate-generate").html(accountDetails);
-                    $("#para_create_empty_dataset_BF_account").html(accountDetails);
-                    $("#para-account-detail-curate-generate").html(accountDetails);
-                    $(".bf-account-details-span").html(accountDetails);
                     $("#para-continue-bf-dataset-getting-started").text("");
                     showHideDropdownButtons("account", "show");
                     confirm_click_account_function();
@@ -9016,14 +8933,14 @@ const Actions = {
   NEW: "New",
 };
 
-function logCurationForAnalytics(
+const logCurationForAnalytics = (
   category,
   analyticsActionPrefix,
   granularity,
   actions,
   location,
   generalLog
-) {
+) => {
   // if no actions to log return
   if (!actions) {
     return;
@@ -9084,7 +9001,7 @@ function logCurationForAnalytics(
       ipcRenderer.send("track-event", `${category}`, actionName, location, 1);
     }
   }
-}
+};
 
 const getMetadataFileNameFromStatus = (metadataFileStatus) => {
   // get the UI text that displays the file path
@@ -9384,19 +9301,7 @@ const scaleBannerImage = async (imagePath) => {
   }
 };
 
-function openFeedbackForm() {
-  let feedback_btn = document.getElementById("feedback-btn");
-  if (!feedback_btn.classList.contains("is-open")) {
-    feedback_btn.click();
-  }
-  setTimeout(() => {
-    document.getElementById("feedback-btn").scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-    });
-  }, 5);
-}
-function gatherLogs() {
+const gatherLogs = () => {
   //function will be used to gather all logs on all OS's
   let homedir = os.homedir();
   let file_path = "";
@@ -9521,7 +9426,7 @@ function gatherLogs() {
       }
     }
   });
-}
+};
 
 const gettingStarted = () => {
   let getting_started = document.getElementById("main_tabs_view");

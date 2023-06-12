@@ -28,122 +28,12 @@
       <div
         class="individual-question manage-dataset show prev"
         id="create_empty_dataset_BF_account_tab"
-        style="height: auto; margin-bottom: 1rem"
+        style="height: auto; margin-bottom: 6rem"
       >
-        <div class="ui form" style="width: 100%">
-          <div class="grouped fields">
-            <label style="font-size: 17px; color: var(--color-bg-plum); text-align: center"
-              >Is this your Pennsieve account?</label
-            >
-            <div class="field" style="margin: auto; width: 550px">
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                  margin-top: 15px;
-                  height: auto;
-                  box-shadow: 0px 0px 10px #d5d5d5;
-                  padding: 15px 25px;
-                  border-radius: 5px;
-                "
-              >
-                <div style="display: flex; flex-direction: row; justify-content: space-between">
-                  <div class="card-container manage-dataset">
-                    <div style="display: flex">
-                      <h5
-                        class="card-left"
-                        style="
-                          text-align: right;
-                          color: #808080;
-                          font-size: 15px;
-                          padding-right: 5px;
-                        "
-                      >
-                        Current account:
-                      </h5>
-                      <div
-                        class="change-current-account md-change-current-account"
-                        style="margin-left: 10px"
-                      >
-                        <h5
-                          class="card-right bf-account-span"
-                          style="
-                            color: #000;
-                            font-weight: 600;
-                            margin-left: 8px;
-                            font-size: 15px;
-                            width: fit-content;
-                          "
-                          id="create_empty_dataset_BF_account_span"
-                        >
-                          None
-                        </h5>
-
-                        <svg
-                          class="svg-change-current-account bi bi-pencil-fill"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          fill="#000"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                          ></path>
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                  <div class="card-container manage-dataset">
-                    <div>
-                      <h5
-                        class="card-left"
-                        style="
-                          text-align: right;
-                          color: #808080;
-                          font-size: 15px;
-                          padding-right: 20px;
-                        "
-                      >
-                        Account details:
-                      </h5>
-                      <h5
-                        class="card-right bf-account-details-span"
-                        style="color: #000; font-weight: 600; margin-left: 15px; font-size: 15px"
-                        id="para_create_empty_dataset_BF_account"
-                      >
-                        None
-                      </h5>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                id="div-create_empty_dataset-account-btns"
-                class="div-confirm-button"
-                style="
-                  display: flex;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 30px auto;
-                "
-              >
-                <button
-                  id="create_empty_dataset"
-                  onclick="transitionFreeFormMode(this, 'create_empty_dataset_BF_account_tab', 'create_new_bf_dataset-tab', 'delete', 'individual-question manage-dataset')"
-                  data-next="div-create-new-empty-dataset"
-                  class="btn_animated checked"
-                  style="width: 120px; display: none"
-                >
-                  <div class="btn_animated-inside">Confirm</div>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <div
+          id="top-level-card-container-create-empty-dataset"
+          class="top-level-card-container"
+        ></div>
       </div>
 
       <div
@@ -192,7 +82,7 @@
                   color: var(--color-light-green) !important;
                   width: 100%;
                   text-align: center;
-                  /* display: none; */
+                  margin-bottom: -1rem;
                 "
                 >Dataset was successfully created!
               </label>
@@ -207,7 +97,6 @@
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
-                margin: 0 auto;
                 margin-top: 20px;
               "
             >
@@ -220,17 +109,13 @@
                   display: none;
                   border: none !important;
                   font-size: 15px;
+                  margin-top: 3rem;
                 "
               >
-                <div class="btn_animated-inside" style="margin: 0; padding: 0">Create dataset</div>
+                <div class="btn_animated-inside" style="margin: 0; padding: 0; margin-top: 0.1rem">
+                  Create dataset
+                </div>
               </button>
-              <div id="bf-create-new-dataset-spinner" class="spinner" style="visibility: hidden">
-                <div class="rect1"></div>
-                <div class="rect2"></div>
-                <div class="rect3"></div>
-                <div class="rect4"></div>
-                <div class="rect5"></div>
-              </div>
             </div>
           </div>
         </div>
@@ -306,126 +191,10 @@
             <label style="font-size: 17px; color: var(--color-bg-plum)"
               >Which Pennsieve dataset would you like to work on
             </label>
-            <div class="field" style="margin: auto; width: 550px">
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                  margin-top: 15px;
-                  height: auto;
-                  box-shadow: 0px 0px 10px #d5d5d5;
-                  padding: 15px 25px;
-                  border-radius: 5px;
-                "
-              >
-                <div style="display: flex; flex-direction: row; justify-content: space-between">
-                  <div class="card-container manage-dataset">
-                    <div style="display: flex">
-                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
-                        Current account:
-                      </h5>
-                      <div class="change-current-account" onclick="openDropdownPrompt(this, 'bf')">
-                        <h5
-                          class="card-right bf-account-span"
-                          style="width: fit-content; padding-left: 15px"
-                        >
-                          None
-                        </h5>
-
-                        <svg
-                          class="svg-change-current-account bi bi-pencil-fill"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          fill="#000"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                  <div class="card-container manage-dataset">
-                    <div>
-                      <h5 class="card-left" style="text-align: right; padding-right: 1.5rem">
-                        Account details:
-                      </h5>
-                      <h5 class="card-right bf-account-details-span">None</h5>
-                    </div>
-                  </div>
-                </div>
-                <div style="display: flex; flex-direction: row; justify-content: space-between">
-                  <div class="card-container manage-dataset">
-                    <div style="display: flex">
-                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
-                        Current dataset:
-                      </h5>
-                      <div
-                        class="change-current-account"
-                        onclick="openDropdownPrompt(this, 'dataset')"
-                      >
-                        <h5
-                          id="collection_dataset_name"
-                          class="card-right bf-dataset-span"
-                          style="width: fit-content; padding-left: 13px"
-                        >
-                          None
-                        </h5>
-
-                        <svg
-                          class="svg-change-current-account dataset bi bi-pencil-fill"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          fill="#000"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="ui active green inline loader small" style="display: none"></div>
-                </div>
-              </div>
-              <div
-                class="div-confirm-button"
-                style="
-                  display: none;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 10px auto;
-                "
-              >
-                <button
-                  id="button-collection-dataset-confirm"
-                  onclick="transitionFreeFormMode(this, 'collection_BF_account_tab', 'bf_collection-tab', 'delete', 'individual-question manage-dataset')"
-                  data-next="div-collection-bf-dataset"
-                  class="confirm-button"
-                  style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 100px;
-                    height: 30px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
-                  "
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
+            <div
+              id="top-level-card-container--add-remove-collection"
+              class="top-level-card-container"
+            ></div>
           </div>
         </div>
       </div>
@@ -477,24 +246,15 @@
                 flex-direction: column;
                 justify-content: center;
                 align-items: center;
-                margin: 0 auto;
               "
             >
               <button
                 id="button-bf-collection"
                 class="btn_animated"
-                style="width: 140px; border: none !important; margin-left: -6px !important"
+                style="width: 200px; height: 40px; border: none !important; padding-top: 3px; padding-left: 9px; font-size: 15px; margin-top: 1rem;"
               >
                 <div>Update collections</div>
               </button>
-              <div id="bf-collection-dataset-spinner" class="spinner" style="visibility: hidden">
-                <div class="rect1"></div>
-                <div class="rect2"></div>
-                <div class="rect3"></div>
-                <div class="rect4"></div>
-                <div class="rect5"></div>
-              </div>
-            </div>
             <p
               id="para-collection-dataset-status"
               style="
@@ -510,7 +270,7 @@
     </div>
 
     <div class="footer-div">
-      <div style="display: flex; flex-direction: row; width: 120px">
+      <div style="display: flex; flex-direction: row; width: 120px; margin-left: 5rem;">
         <button type="button" class="transition-btn prev" data-section="main_tabs">
           <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
         </button>
@@ -546,7 +306,7 @@
 
     <div
       id="rename_bf_dataset-tab"
-      style="overflow-y: auto; height: calc(100% - 150px); margin-left: 0px; margin-top: 1rem"
+      style="overflow-y: auto; margin-left: 0px; margin-top: 1rem"
     >
       <div
         class="individual-question manage-dataset show"
@@ -558,137 +318,16 @@
             <label style="font-size: 17px; color: var(--color-bg-plum)"
               >Which Pennsieve dataset would you like to rename?
             </label>
-            <div class="field" style="margin: auto; width: 550px">
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                  margin-top: 15px;
-                  height: auto;
-                  box-shadow: 0px 0px 10px #d5d5d5;
-                  padding: 15px 25px;
-                  border-radius: 5px;
-                "
-              >
-                <div style="display: flex; flex-direction: row; justify-content: space-between">
-                  <div class="card-container manage-dataset">
-                    <div style="display: flex">
-                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
-                        Current account:
-                      </h5>
-                      <div class="change-current-account md-change-current-account">
-                        <h5
-                          class="card-right bf-account-span"
-                          style="width: fit-content; padding-left: 14px"
-                        >
-                          None
-                        </h5>
 
-                        <svg
-                          class="svg-change-current-account bi bi-pencil-fill"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          fill="#000"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                  <div class="card-container manage-dataset">
-                    <div>
-                      <h5 class="card-left" style="text-align: right; padding-right: 20px">
-                        Account details:
-                      </h5>
-                      <h5 class="card-right bf-account-details-span">None</h5>
-                    </div>
-                  </div>
-                </div>
-                <div style="display: flex; flex-direction: row; justify-content: space-between">
-                  <div class="card-container manage-dataset">
-                    <div style="display: flex">
-                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
-                        Current dataset:
-                      </h5>
-                      <div class="change-current-account ds-dd">
-                        <h5
-                          id="rename_dataset_name"
-                          class="card-right bf-dataset-span"
-                          style="width: fit-content; padding-left: 15px"
-                        >
-                          None
-                        </h5>
-
-                        <svg
-                          class="svg-change-current-account dataset bi bi-pencil-fill"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          fill="#000"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="ui active green inline loader small" style="display: none"></div>
-                </div>
-              </div>
-            </div>
             <div
-              style="
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                align-items: center;
-                margin: 0 auto;
-              "
-            >
-              <div
-                class="div-confirm-button"
-                style="
-                  display: none;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 10px auto;
-                "
-              >
-                <button
-                  id="button-rename-dataset-confirm"
-                  onclick="transitionFreeFormMode(this, 'rename_dataset_BF_account_tab', 'rename_bf_dataset-tab', 'delete', 'individual-question manage-dataset')"
-                  data-next="div-rename-bf-dataset"
-                  class="confirm-button"
-                  style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 100px;
-                    height: 30px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
-                  "
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
+              id="top-level-card-container--rename-dataset"
+              class="top-level-card-container"
+            ></div>
+
             <p
               id="para-rename-dataset-status"
+              class="text-center"
               style="
-                text-align: center;
                 font-weight: 400;
                 color: var(--color-light-green);
                 font-size: 15px;
@@ -699,12 +338,8 @@
       </div>
     </div>
 
-    <div
-      class="individual-question manage-dataset show"
-      id="div-rename-bf-dataset"
-      style="height: auto"
-    >
-      <div class="ui form" style="width: 550px !important; display: none; align-self: center">
+    <div class="individual-question manage-dataset h-auto" id="div-rename-bf-dataset" style="margin-top: 2rem;">
+      <div class="ui form" style="width: 550px !important; align-self: center">
         <div class="grouped fields">
           <label
             style="font-size: 17px; color: var(--color-bg-plum); width: 100%; text-align: center"
@@ -749,7 +384,13 @@
             <button
               id="button-rename-dataset"
               class="btn_animated"
-              style="width: 140px; border: none !important"
+              style="
+                width: 200px;
+                border: none !important;
+                height: 40px;
+                font-size: 15px;
+                padding-top: 0.2rem;
+              "
             >
               <div>Rename dataset</div>
             </button>
@@ -825,148 +466,20 @@
                 >About</label
               >
               <p class="about-text">
-                As per SPARC rules, the PI on the SPARC award associated with the dataset must be
+                As per SPARC rules, the PI of the funding source associated with the dataset must be
                 made owner of the dataset on Pennsieve. This is because only the owner can submit a
                 dataset for publishing and SPARC requires the PI to do so. Use this feature to give
-                dataset ownership to your SPARC PI.
+                dataset ownership to your PI.
               </p>
             </div>
             <label style="font-size: 17px; color: var(--color-bg-plum)"
               >Which Pennsieve dataset would you like to work on?
             </label>
-            <div class="field" style="margin: auto; width: 550px">
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                  margin-top: 15px;
-                  height: auto;
-                  box-shadow: 0px 0px 10px #d5d5d5;
-                  padding: 15px 25px;
-                  border-radius: 5px;
-                "
-              >
-                <div style="display: flex; flex-direction: row; justify-content: space-between">
-                  <div class="card-container manage-dataset">
-                    <div style="display: flex">
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 5px; width: 140px"
-                      >
-                        Current account:
-                      </h5>
-                      <div class="change-current-account md-change-current-account">
-                        <h5 class="card-right bf-account-span" style="width: fit-content">None</h5>
 
-                        <svg
-                          class="svg-change-current-account bi bi-pencil-fill"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          fill="#000"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                  <div class="card-container manage-dataset">
-                    <div>
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 11px; width: 140px"
-                      >
-                        Account details:
-                      </h5>
-                      <h5 class="card-right bf-account-details-span">None</h5>
-                    </div>
-                  </div>
-                </div>
-                <div style="display: flex; flex-direction: row; justify-content: space-between">
-                  <div class="card-container manage-dataset">
-                    <div style="width: 100%; display: flex">
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 5px; width: 140px"
-                      >
-                        Current dataset:
-                      </h5>
-                      <div class="change-current-account ds-dd">
-                        <h5 class="card-right bf-dataset-span" style="width: fit-content">None</h5>
-
-                        <svg
-                          class="svg-change-current-account dataset bi bi-pencil-fill"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          fill="#000"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="ui active green inline loader small" style="display: none"></div>
-                </div>
-                <div style="display: flex; flex-direction: row">
-                  <div class="card-container manage-dataset" style="overflow-x: hidden">
-                    <div>
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 10px; width: 140px"
-                      >
-                        Current owner:
-                      </h5>
-                      <h5
-                        class="card-right current-permissions"
-                        id="para-dataset-permission-current"
-                      >
-                        None
-                      </h5>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="div-confirm-button"
-                style="
-                  display: none;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 10px auto;
-                "
-              >
-                <button
-                  id="button_pi_dataset_owner_confirm"
-                  onclick="transitionFreeFormMode(this, 'pi_dataset_owner_tab', 'pi_dataset_owner_parent-tab', 'delete', 'individual-question manage-dataset')"
-                  data-next="div_make_pi_owner_permissions"
-                  class="confirm-button"
-                  style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 100px;
-                    height: 30px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
-                  "
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
+            <div
+              id="top-level-card-container--make-pi-owner"
+              class="top-level-card-container"
+            ></div>
           </div>
         </div>
       </div>
@@ -999,12 +512,7 @@
             >
               <div
                 id="pi_bootstrap_select_div"
-                style="
-                  display: flex;
-                  flex-direction: row;
-                  justify-content: space-around;
-                  width: 100%;
-                "
+                style="display: flex; flex-direction: column; justify-content: space-around"
               >
                 <select
                   class="selectpicker"
@@ -1021,40 +529,43 @@
                 >
                   <option>Select PI</option>
                 </select>
-              </div>
+                <div class="info-dropdown" style="margin-top: 1rem; align-self: flex-start">
+                  <p class="info-dropdown-text" data-dropdown-type="info">
+                    Can't find your PI in the list?
+                  </p>
+                  <i class="fas fa-chevron-right" style="transform: rotate(90deg)"></i>
+                </div>
 
-              <div
-                class="info-dropdown"
-                style="margin: 1.5rem 0rem 0.1rem 10rem; align-self: flex-start"
-              >
-                <p class="info-dropdown-text" data-dropdown-type="info">
-                  Can't find your PI in the list?
-                </p>
-                <i class="fas fa-chevron-right" style="transform: rotate(90deg)"></i>
-              </div>
-
-              <div class="info-container" style="width: 550px; margin-bottom: 1rem">
-                <p class="help-text">
-                  The SPARC PI must have a Pennsieve account and have access to the SPARC
-                  Organization before you can give them ownership of the dataset. Click
-                  <a
-                    target="_blank"
-                    href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-a-pennsieve-account"
-                    >here</a
-                  >
-                  for instructions on getting a Pennsieve account and access to the SPARC
-                  Organization.
-                </p>
+                <div class="info-container" style="width: 550px; margin-bottom: 1rem">
+                  <p class="help-text">
+                    The SPARC PI must have a Pennsieve account and have access to the SPARC
+                    Organization before you can give them ownership of the dataset. Click
+                    <a
+                      target="_blank"
+                      href="https://docs.sodaforsparc.io/docs/how-to/how-to-get-a-pennsieve-account"
+                      >here</a
+                    >
+                    for instructions on getting a Pennsieve account and access to the SPARC
+                    Organization.
+                  </p>
+                </div>
               </div>
 
               <div
                 id="div-button-add-permission-pi"
-                style="flex-direction: row; justify-content: center"
+                style="flex-direction: row; justify-content: center; margin-top: 1rem"
               >
                 <button
                   id="button-add-permission-pi"
                   class="btn_animated"
-                  style="width: 140px; border: none !important; margin-top: 1rem"
+                  style="
+                    width: 200px;
+                    height: 40px;
+                    font-size: 15px;
+                    border: none !important;
+                    margin-top: 1rem;
+                    padding-top: 0.2rem;
+                  "
                 >
                   Make PI owner
                 </button>
@@ -1148,160 +659,11 @@
             <label style="font-size: 17px; color: var(--color-bg-plum)"
               >Which Pennsieve dataset would you like to work on?
             </label>
-            <div class="field" style="margin: auto; width: 550px">
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                  margin-top: 15px;
-                  height: auto;
-                  box-shadow: 0px 0px 10px #d5d5d5;
-                  padding: 15px 25px;
-                  border-radius: 5px;
-                "
-              >
-                <div style="display: flex; flex-direction: row; justify-content: space-between">
-                  <div class="card-container manage-dataset">
-                    <div style="display: flex">
-                      <h5
-                        class="card-left"
-                        style="
-                          text-align: right;
-                          padding-right: 8px;
-                          margin-left: 23px;
-                          width: 201px;
-                        "
-                      >
-                        Current account:
-                      </h5>
-                      <div
-                        class="change-current-account md-change-current-account"
-                        style="margin-left: -4px"
-                      >
-                        <h5 class="card-right bf-account-span" style="width: fit-content">None</h5>
 
-                        <svg
-                          class="svg-change-current-account bi bi-pencil-fill"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          fill="#000"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                  <div class="card-container manage-dataset">
-                    <div>
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 10px; width: 165px"
-                      >
-                        Account details:
-                      </h5>
-                      <h5 class="card-right bf-account-details-span" style="padding-left: 6px">
-                        None
-                      </h5>
-                    </div>
-                  </div>
-                </div>
-                <div style="display: flex; flex-direction: row; justify-content: space-between">
-                  <div class="card-container manage-dataset">
-                    <div style="width: 100%; display: flex">
-                      <h5
-                        class="card-left"
-                        style="
-                          text-align: right;
-                          padding-right: 5px;
-                          width: 165px;
-                          margin-left: 24px;
-                        "
-                      >
-                        Current dataset:
-                      </h5>
-                      <div class="change-current-account ds-dd">
-                        <h5
-                          class="card-right bf-dataset-span"
-                          style="width: fit-content; padding-left: 7px"
-                        >
-                          None
-                        </h5>
-
-                        <svg
-                          class="svg-change-current-account dataset bi bi-pencil-fill"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          fill="#000"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="ui active green inline loader small" style="display: none"></div>
-                </div>
-                <div style="display: flex; flex-direction: row">
-                  <div class="card-container manage-dataset" style="overflow-x: hidden">
-                    <div>
-                      <h5
-                        class="card-left"
-                        style="text-align: right; padding-right: 11px; width: 165px"
-                      >
-                        Current permissions:
-                      </h5>
-                      <h5
-                        class="card-right current-permissions"
-                        id="para-add-edit-dataset-permission-current"
-                        style="padding-left: 6px"
-                      >
-                        None
-                      </h5>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="div-confirm-button"
-                style="
-                  display: none;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 10px auto;
-                "
-              >
-                <button
-                  id="button_add_edit_permissions_confirm"
-                  onclick="transitionFreeFormMode(this, 'add_edit_permissions_choice_tab', 'add_edit_permissions_parent-tab', 'delete', 'individual-question manage-dataset')"
-                  data-next="add_edit_permissions_choice_div"
-                  class="confirm-button"
-                  style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 100px;
-                    height: 30px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
-                  "
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
+            <div
+              id="top-level-card-container--add-edit-permissions"
+              class="top-level-card-container"
+            ></div>
           </div>
         </div>
       </div>
@@ -1482,7 +844,7 @@
                   <button
                     id="button-add-permission-user"
                     class="btn_animated md"
-                    style="width: 190px; height: 40px; font-size: 15px"
+                    style="width: 220px; height: 40px; font-size: 15px; margin-top: 2rem; padding-left: 10px;"
                   >
                     Add permission for user
                   </button>
@@ -1573,7 +935,7 @@
                   <button
                     id="button-add-permission-team"
                     class="btn_animated md"
-                    style="width: 190px; height: 40px; font-size: 15px"
+                    style="width: 220px; height: 40px; font-size: 15px; margin-top: 2rem; border: none !important; padding-left: 10px;"
                   >
                     Add permission for team
                   </button>
@@ -1678,115 +1040,10 @@
               >Which Pennsieve dataset would you like to work on?
             </label>
 
-            <div class="field" style="margin: auto; width: 550px">
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                  margin-top: 15px;
-                  height: auto;
-                  box-shadow: 0px 0px 10px #d5d5d5;
-                  padding: 15px 25px;
-                  border-radius: 5px;
-                "
-              >
-                <div style="display: flex; flex-direction: row; justify-content: space-between">
-                  <div class="card-container manage-dataset">
-                    <div style="display: flex">
-                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
-                        Current account:
-                      </h5>
-                      <div
-                        class="change-current-account md-change-current-account"
-                        style="margin-left: 10px"
-                      >
-                        <h5 class="card-right bf-account-span" style="width: fit-content">None</h5>
-
-                        <svg
-                          class="svg-change-current-account bi bi-pencil-fill"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          fill="#000"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                  <div class="card-container manage-dataset">
-                    <div>
-                      <h5 class="card-left" style="text-align: right; padding-right: 21px">
-                        Account details:
-                      </h5>
-                      <h5 class="card-right bf-account-details-span">None</h5>
-                    </div>
-                  </div>
-                </div>
-                <div style="display: flex; flex-direction: row; justify-content: space-between">
-                  <div class="card-container manage-dataset">
-                    <div style="width: 100%; display: flex">
-                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
-                        Current dataset:
-                      </h5>
-                      <div class="change-current-account ds-dd" style="margin-left: 10px">
-                        <h5 class="card-right bf-dataset-span" style="width: fit-content">None</h5>
-
-                        <svg
-                          class="svg-change-current-account dataset bi bi-pencil-fill"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          fill="#000"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                    <div class="ui active green inline loader small" style="display: none"></div>
-                  </div>
-                </div>
-                <div
-                  class="div-confirm-button"
-                  style="
-                    display: none;
-                    flex-direction: row;
-                    justify-content: center;
-                    margin: 10px auto;
-                  "
-                >
-                  <button
-                    id="button_add_edit_subtitle_confirm"
-                    onclick="transitionFreeFormMode(this, 'add_edit_subtitle_tab', 'add_edit_subtitle_parent-tab', 'delete', 'individual-question manage-dataset')"
-                    data-next="div_add_edit_subtitle"
-                    class="confirm-button"
-                    style="
-                      cursor: pointer;
-                      border-radius: 8px;
-                      margin: 10px auto;
-                      width: 100px;
-                      height: 30px;
-                      background: var(--color-light-green);
-                      color: #fff;
-                      font-weight: 600;
-                      border: none;
-                      font-size: 13px;
-                    "
-                  >
-                    Confirm
-                  </button>
-                </div>
-              </div>
-            </div>
+            <div
+              id="top-level-card-container-add-edit-subtitle"
+              class="top-level-card-container"
+            ></div>
           </div>
         </div>
 
@@ -1849,7 +1106,7 @@
                     <button
                       id="button-add-subtitle"
                       class="btn_animated md"
-                      style="width: 190px; height: 40px; font-size: 15px"
+                      style="width: 190px; height: 40px; font-size: 15px; margin-top: 1rem; padding-left: 10px;"
                     >
                       Add subtitle
                     </button>
@@ -1932,115 +1189,8 @@
             <label style="font-size: 17px; color: var(--color-bg-plum)"
               >Which Pennsieve dataset would you like to work on?
             </label>
-            <div class="field" style="margin: auto; width: 550px">
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                  margin-top: 15px;
-                  height: auto;
-                  box-shadow: 0px 0px 10px #d5d5d5;
-                  padding: 15px 25px;
-                  border-radius: 5px;
-                "
-              >
-                <div style="display: flex; flex-direction: row; justify-content: space-between">
-                  <div class="card-container manage-dataset">
-                    <div style="display: flex">
-                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
-                        Current account:
-                      </h5>
-                      <div
-                        class="change-current-account md-change-current-account"
-                        style="margin-left: 10px"
-                      >
-                        <h5 class="card-right bf-account-span" style="width: fit-content">None</h5>
 
-                        <svg
-                          class="svg-change-current-account bi bi-pencil-fill"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          fill="#000"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                  <div class="card-container manage-dataset">
-                    <div>
-                      <h5 class="card-left" style="text-align: right; padding-right: 21px">
-                        Account details:
-                      </h5>
-                      <h5 class="card-right bf-account-details-span">None</h5>
-                    </div>
-                  </div>
-                </div>
-                <div style="display: flex; flex-direction: row; justify-content: space-between">
-                  <div class="card-container manage-dataset">
-                    <div style="width: 100%; display: flex">
-                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
-                        Current dataset:
-                      </h5>
-                      <div class="change-current-account ds-dd" style="margin-left: 10px">
-                        <h5 class="card-right bf-dataset-span" style="width: fit-content">None</h5>
-
-                        <svg
-                          class="svg-change-current-account dataset bi bi-pencil-fill"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          fill="#000"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="ui active green inline loader small" style="display: none"></div>
-                </div>
-              </div>
-              <div
-                class="div-confirm-button"
-                style="
-                  display: none;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 10px auto;
-                "
-              >
-                <button
-                  id="button_add_tags_confirm"
-                  onclick="transitionFreeFormMode(this, 'add_tags_tab', 'add_tags_parent-tab', 'delete', 'individual-question manage-dataset')"
-                  data-next="div_add_tags"
-                  class="confirm-button"
-                  style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 100px;
-                    height: 30px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
-                  "
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
+            <div id="top-level-card-container--add-tags" class="top-level-card-container"></div>
           </div>
         </div>
       </div>
@@ -2172,115 +1322,10 @@
               >Which Pennsieve dataset would you like to work on?</label
             >
 
-            <div class="field" style="margin: auto; width: 550px">
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                  margin-top: 15px;
-                  height: auto;
-                  box-shadow: 0px 0px 10px #d5d5d5;
-                  padding: 15px 25px;
-                  border-radius: 5px;
-                "
-              >
-                <div style="display: flex; flex-direction: row; justify-content: space-between">
-                  <div class="card-container manage-dataset">
-                    <div style="display: flex">
-                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
-                        Current account:
-                      </h5>
-                      <div
-                        class="change-current-account md-change-current-account"
-                        style="margin-left: 10px"
-                      >
-                        <h5 class="card-right bf-account-span" style="width: fit-content">None</h5>
-
-                        <svg
-                          class="svg-change-current-account bi bi-pencil-fill"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          fill="#000"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                  <div class="card-container manage-dataset">
-                    <div>
-                      <h5 class="card-left" style="text-align: right; padding-right: 21px">
-                        Account details:
-                      </h5>
-                      <h5 class="card-right bf-account-details-span">None</h5>
-                    </div>
-                  </div>
-                </div>
-                <div style="display: flex; flex-direction: row; justify-content: space-between">
-                  <div class="card-container manage-dataset">
-                    <div style="display: flex">
-                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
-                        Current dataset:
-                      </h5>
-                      <div class="change-current-account ds-dd" style="margin-left: 10px">
-                        <h5 class="card-right bf-dataset-span" style="width: fit-content">None</h5>
-
-                        <svg
-                          class="svg-change-current-account dataset bi bi-pencil-fill"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          fill="#000"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="ui active green inline loader small" style="display: none"></div>
-                </div>
-              </div>
-              <div
-                class="div-confirm-button"
-                style="
-                  display: none;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 10px auto;
-                "
-              >
-                <button
-                  id="button_add_edit_description_confirm"
-                  onclick="transitionFreeFormMode(this, 'add_edit_description_tab', 'add_edit_description_parent-tab', 'delete', 'individual-question manage-dataset')"
-                  data-next="div_add_edit_description"
-                  class="confirm-button"
-                  style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 100px;
-                    height: 30px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
-                  "
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
+            <div
+              id="top-level-card-container--add-edit-description"
+              class="top-level-card-container"
+            ></div>
           </div>
         </div>
       </div>
@@ -2571,115 +1616,11 @@
             <label style="font-size: 17px; color: var(--color-bg-plum)"
               >Which Pennsieve dataset would you like to work on?
             </label>
-            <div class="field" style="margin: auto; width: 550px">
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                  margin-top: 15px;
-                  height: auto;
-                  box-shadow: 0px 0px 10px #d5d5d5;
-                  padding: 15px 25px;
-                  border-radius: 5px;
-                "
-              >
-                <div style="display: flex; flex-direction: row; justify-content: space-between">
-                  <div class="card-container manage-dataset">
-                    <div style="display: flex">
-                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
-                        Current account:
-                      </h5>
-                      <div
-                        class="change-current-account md-change-current-account"
-                        style="margin-left: 10px"
-                      >
-                        <h5 class="card-right bf-account-span" style="width: fit-content">None</h5>
 
-                        <svg
-                          class="svg-change-current-account bi bi-pencil-fill"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          fill="#000"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                  <div class="card-container manage-dataset">
-                    <div>
-                      <h5 class="card-left" style="text-align: right; padding-right: 21px">
-                        Account details:
-                      </h5>
-                      <h5 class="card-right bf-account-details-span">None</h5>
-                    </div>
-                  </div>
-                </div>
-                <div style="display: flex; flex-direction: row; justify-content: space-between">
-                  <div class="card-container manage-dataset">
-                    <div style="display: flex">
-                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
-                        Current dataset:
-                      </h5>
-                      <div class="change-current-account ds-dd" style="margin-left: 10px">
-                        <h5 class="card-right bf-dataset-span" style="width: fit-content">None</h5>
-
-                        <svg
-                          class="svg-change-current-account dataset bi bi-pencil-fill"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          fill="#000"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="ui active green inline loader small" style="display: none"></div>
-                </div>
-                <div
-                  class="div-confirm-button"
-                  style="
-                    display: none;
-                    flex-direction: row;
-                    justify-content: center;
-                    margin: 10px auto;
-                  "
-                >
-                  <button
-                    id="button_add_edit_banner_confirm"
-                    onclick="transitionFreeFormMode(this, 'add_edit_banner_tab', 'add_edit_banner_parent-tab', 'delete', 'individual-question manage-dataset')"
-                    data-next="div_add_edit_banner"
-                    class="confirm-button"
-                    style="
-                      cursor: pointer;
-                      border-radius: 8px;
-                      margin: 10px auto;
-                      width: 100px;
-                      height: 30px;
-                      background: var(--color-light-green);
-                      color: #fff;
-                      font-weight: 600;
-                      border: none;
-                      font-size: 13px;
-                    "
-                  >
-                    Confirm
-                  </button>
-                </div>
-              </div>
-            </div>
+            <div
+              id="top-level-card-container--add-edit-banner"
+              class="top-level-card-container"
+            ></div>
           </div>
         </div>
       </div>
@@ -2725,8 +1666,8 @@
             >
               <button
                 id="edit_banner_image_button"
-                class="btn_animated md"
-                style="margin: 20px 10px 30px 0; width: 150px; height: 40px; font-size: 15px"
+                class="ui positive button soda-green-background"
+                style="margin: 20px 10px 30px 0; font-size: 15px; width: 200px; height: 40px; margin-top: 2.5rem; padding-left: 28px;"
               >
                 Edit banner image
               </button>
@@ -2925,146 +1866,8 @@
             <label style="font-size: 17px; color: var(--color-bg-plum)"
               >Which Pennsieve dataset would you like to work on?
             </label>
-            <div class="field" style="margin: auto; width: 550px">
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                  margin-top: 15px;
-                  height: auto;
-                  box-shadow: 0px 0px 10px #d5d5d5;
-                  padding: 15px 25px;
-                  border-radius: 5px;
-                "
-              >
-                <div style="display: flex; flex-direction: row; justify-content: space-between">
-                  <div class="card-container manage-dataset">
-                    <div style="display: flex">
-                      <h5 class="card-left" style="text-align: right; padding-right: 9px">
-                        Current account:
-                      </h5>
-                      <div
-                        class="change-current-account md-change-current-account"
-                        style="margin-left: 10px"
-                      >
-                        <h5
-                          class="card-right bf-account-span"
-                          style="width: fit-content; padding-left: 4px"
-                        >
-                          None
-                        </h5>
 
-                        <svg
-                          class="svg-change-current-account bi bi-pencil-fill"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          fill="#000"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                  <div class="card-container manage-dataset">
-                    <div>
-                      <h5 class="card-left" style="text-align: right; padding-right: 21px">
-                        Account details:
-                      </h5>
-                      <h5
-                        class="card-right bf-account-details-span"
-                        style="margin-left: 135px; padding-left: 7px"
-                      >
-                        None
-                      </h5>
-                    </div>
-                  </div>
-                </div>
-                <div style="display: flex; flex-direction: row; justify-content: space-between">
-                  <div class="card-container manage-dataset">
-                    <div style="display: flex">
-                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
-                        Current dataset:
-                      </h5>
-                      <div class="change-current-account ds-dd" style="margin-left: 10px">
-                        <h5
-                          class="card-right bf-dataset-span"
-                          style="width: fit-content; padding-left: 7px"
-                        >
-                          None
-                        </h5>
-
-                        <svg
-                          class="svg-change-current-account dataset bi bi-pencil-fill"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          fill="#000"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="ui active green inline loader small" style="display: none"></div>
-                </div>
-                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                  <div class="card-container manage-dataset" style="overflow-x: hidden">
-                    <div>
-                      <h5 class="card-left" style="text-align: right; padding-right: 21px">
-                        Current license:
-                      </h5>
-                      <h5
-                        id="para-dataset-license-current"
-                        class="card-right"
-                        style="margin-top: 0px; margin-left: 140px; padding-left: 6px"
-                      >
-                        None
-                      </h5>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div
-                class="div-confirm-button"
-                style="
-                  display: none;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 10px auto;
-                "
-              >
-                <button
-                  id="button_add_license_confirm"
-                  onclick="transitionFreeFormMode(this, 'add_license_tab', 'add_license_parent-tab', 'delete', 'individual-question manage-dataset')"
-                  data-next="div_add_license"
-                  class="confirm-button"
-                  style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 100px;
-                    height: 30px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
-                  "
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
+            <div id="top-level-card-container--add-license" class="top-level-card-container"></div>
           </div>
         </div>
       </div>
@@ -3214,135 +2017,24 @@
             <label style="font-size: 17px; color: var(--color-bg-plum)"
               >Which Pennsieve dataset would you like to work on?
             </label>
-            <div class="field" style="margin: auto; width: 550px">
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                  margin-top: 15px;
-                  height: auto;
-                  box-shadow: 0px 0px 10px #d5d5d5;
-                  padding: 15px 25px;
-                  border-radius: 5px;
-                "
-              >
-                <div style="display: flex; flex-direction: row; justify-content: space-between">
-                  <div class="card-container manage-dataset">
-                    <div style="display: flex">
-                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
-                        Current account:
-                      </h5>
-                      <div class="change-current-account md-change-current-account">
-                        <h5
-                          class="card-right bf-account-span"
-                          style="width: fit-content; padding-left: 15px"
-                        >
-                          None
-                        </h5>
 
-                        <svg
-                          class="svg-change-current-account bi bi-pencil-fill"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          fill="#000"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                  <div class="card-container manage-dataset">
-                    <div>
-                      <h5 class="card-left" style="text-align: right; padding-right: 19px">
-                        Account details:
-                      </h5>
-                      <h5 class="card-right bf-account-details-span">None</h5>
-                    </div>
-                  </div>
-                </div>
-                <div style="display: flex; flex-direction: row; justify-content: space-between">
-                  <div class="card-container manage-dataset">
-                    <div style="display: flex">
-                      <h5 class="card-left" style="text-align: right; padding-right: 5px">
-                        Current dataset:
-                      </h5>
-                      <div class="change-current-account ds-dd">
-                        <h5
-                          class="card-right bf-dataset-span"
-                          style="width: fit-content; padding-left: 14px"
-                        >
-                          None
-                        </h5>
-
-                        <svg
-                          class="svg-change-current-account dataset bi bi-pencil-fill"
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="18"
-                          height="18"
-                          fill="#000"
-                          viewBox="0 0 16 16"
-                        >
-                          <path
-                            d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                          />
-                        </svg>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="ui active green inline loader small" style="display: none"></div>
-                </div>
-              </div>
-              <div
-                class="div-confirm-button"
-                style="
-                  display: none;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 10px auto;
-                "
-              >
-                <button
-                  id="button_upload_local_dataset_confirm"
-                  onclick="transitionFreeFormMode(this, 'upload_local_dataset_tab', 'upload_local_dataset_parent-tab', 'delete', 'individual-question manage-dataset')"
-                  data-next="upload_local_dataset_div"
-                  class="confirm-button"
-                  style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 100px;
-                    height: 30px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
-                  "
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
+            <div
+              id="top-level-card-container--upload-local-dataset"
+              class="top-level-card-container"
+            ></div>
           </div>
         </div>
       </div>
 
       <div
-        class="individual-question manage-dataset"
+        class="individual-question manage-dataset mb-3"
         id="upload_local_dataset_div"
         style="height: auto"
       >
         <div class="ui form" style="width: 100%">
           <div class="grouped fields" style="display: flex; justify-content: center">
             <label style="font-size: 17px; color: var(--color-bg-plum)"
-              >What is the location of the dataset?</label
+              >What is the location of the local dataset to upload?</label
             >
             <div
               class="field"
@@ -3415,7 +2107,7 @@
                 data-next="upload_local_dataset_progress_div"
                 style="
                   margin: 10px auto;
-                  width: 140px;
+                  width: 185px;
                   height: 40px;
                   font-size: 15px;
                   border: none !important;
@@ -3459,10 +2151,14 @@
     </div>
   </div>
 
-  <div class="footer-div">
-    <div style="display: flex; flex-direction: row; width: 120px">
+  <div class="footer-div" style="width: 95%">
+    <div class="d-flex w-100 justify-content-between">
       <button type="button" class="transition-btn prev" data-section="main_tabs">
         <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
+      </button>
+      <button id="reset-local-upload" onclick="resetUploadLocalDataset()" class="start-over">
+        <i class="fas fa-sync-alt" style="margin-right: 10px; font-size: inherit;"></i>
+        Start over
       </button>
     </div>
   </div>
@@ -3533,117 +2229,11 @@
             <label style="font-size: 17px; color: var(--color-bg-plum)"
               >Which Pennsieve dataset would you like to view?</label
             >
-            <div class="field" style="margin: auto; width: 500px">
-              <div
-                style="
-                  display: flex;
-                  flex-direction: column;
-                  justify-content: space-between;
-                  margin-top: 15px;
-                  height: auto;
-                  box-shadow: 0px 0px 10px #d5d5d5;
-                  padding: 15px 25px;
-                  border-radius: 5px;
-                "
-              >
-                <div style="display: flex; flex-direction: row; justify-content: space-between">
-                  <div class="card-container manage-dataset">
-                    <div style="display: flex">
-                      <h5 class="card-left">Current account:</h5>
-                    </div>
-                    <div
-                      class="change-current-account md-change-current-account"
-                      style="margin-left: -210px"
-                    >
-                      <h5 class="card-right bf-account-span" style="width: fit-content">None</h5>
 
-                      <svg
-                        class="svg-change-current-account bi bi-pencil-fill"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        fill="#000"
-                        viewBox="0 0 16 16"
-                      >
-                        <path
-                          d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-                </div>
-                <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                  <div class="card-container manage-dataset">
-                    <div>
-                      <h5 class="card-left" style="margin-right: -11px">Account details:</h5>
-                      <h5 class="card-right bf-account-details-span">None</h5>
-                    </div>
-                  </div>
-                </div>
-                <div style="display: flex; flex-direction: row; justify-content: space-between">
-                  <div class="card-container manage-dataset">
-                    <div>
-                      <h5 class="card-left">Current dataset:</h5>
-                    </div>
-                    <div class="change-current-account ds-dd" style="margin-left: -212px">
-                      <h5 class="card-right bf-dataset-span" style="width: fit-content">None</h5>
-
-                      <svg
-                        class="svg-change-current-account dataset bi bi-pencil-fill"
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="18"
-                        height="18"
-                        fill="#000"
-                        viewBox="0 0 16 16"
-                      >
-                        <path
-                          d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
-                        />
-                      </svg>
-                    </div>
-                  </div>
-                  <div class="ui active green inline loader small" style="display: none"></div>
-                </div>
-
-                <div
-                  id="div-bf-current-dataset-status-progress"
-                  class="progressdiv"
-                  style="display: none; visibility: hidden"
-                >
-                  <div class="indeterminatebar"></div>
-                </div>
-              </div>
-              <div
-                class="div-confirm-button"
-                style="
-                  display: none;
-                  flex-direction: row;
-                  justify-content: center;
-                  margin: 10px auto;
-                "
-              >
-                <button
-                  id="button_view_change_dataset_status_confirm"
-                  onclick="transitionFreeFormMode(this, 'view_change_dataset_status_tab', 'view_change_dataset_status_parent-tab', 'delete', 'individual-question manage-dataset')"
-                  data-next="div_view_change_dataset_status"
-                  class="confirm-button"
-                  style="
-                    cursor: pointer;
-                    border-radius: 8px;
-                    margin: 10px auto;
-                    width: 100px;
-                    height: 30px;
-                    background: var(--color-light-green);
-                    color: #fff;
-                    font-weight: 600;
-                    border: none;
-                    font-size: 13px;
-                  "
-                >
-                  Confirm
-                </button>
-              </div>
-            </div>
+            <div
+              id="top-level-card-container--change-dataset-status"
+              class="top-level-card-container"
+            ></div>
           </div>
         </div>
       </div>

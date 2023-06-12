@@ -220,56 +220,6 @@ def bf_withdraw_review_dataset(selected_bfaccount, selected_bfdataset):
 
 
 
-def get_files_excluded_from_publishing(selected_dataset, pennsieve_account):
-    """
-    Function to get the files excluded from publishing
-
-    Args:
-        selected_dataset: name of selected Pennsieve dataset (string)
-        pennsieve_account: name of selected Pennsieve account (string)
-    Return:
-        List of files excluded from publishing
-    """
-
-    token = get_access_token()
-
-    selected_dataset_id = get_dataset_id(token, selected_dataset)
-
-    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/ignore-files", headers=create_request_headers(token))
-    r.raise_for_status()
-    resp = r.json()
-
-    if "ignoreFiles" in resp:
-        return {"ignore_files": resp["ignoreFiles"]}
-    return {"ignore_files": []}
-
-
-
-
-def update_files_excluded_from_publishing(selected_account, selected_dataset, files_excluded_from_publishing):
-    """
-    Function to update the files excluded from publishing
-
-    Args:
-        selected_dataset: name of selected Pennsieve dataset (string)
-        pennsieve_account: name of selected Pennsieve account (string)
-        files_excluded_from_publishing: list of files excluded from publishing (list)
-    Return:
-        Success or error message
-    """
-
-    token = get_access_token()
-
-    selected_dataset_id = get_dataset_id(token, selected_dataset)
-
-    r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/ignore-files", json=files_excluded_from_publishing, headers=create_request_headers(token))
-    r.raise_for_status()
-
-
-    return {"message": "Files excluded from publishing."}
-
-
-
 
 METADATA_FILES = [
     "submission.xlsx", 

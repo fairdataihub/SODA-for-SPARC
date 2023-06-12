@@ -40,7 +40,6 @@ def lowercase_account_names(config, account_name, configpath):
 
     # add the section back with the lowercase account name
     config.add_section(account_name.lower()) 
-    config.set(account_name.lower(), "api_host", config.get(account_name, "api_host"))
     config.set(account_name.lower(), "api_token", config.get(account_name, "api_token"))
     config.set(account_name.lower(), "api_secret", config.get(account_name, "api_secret"))
 

@@ -38,11 +38,38 @@ const getDatasetBannerImageURL = async (selected_account, selected_dataset) => {
 
 const isDatasetLocked = async (account, datasetNameOrId) => {
   try {
-    let datasetRoleResponse = await client.get(`/datasets/${datasetNameOrId}`);
+    // get the logged in user's information which will be used to check if the user is a member of the "Publishers" team
+    const currentUserInformation = await getUserInformation();
+    const currentUserID = currentUserInformation.id;
+    const teamsReq = await client.get(
+      `manage_datasets/bf_get_teams?selected_account=${defaultBfAccount}`
+    );
+    const teamsInCurrentUsersOrganization = teamsReq.data.teams;
+
+    // Get the team with the name "Publishers" (if it exists)
+    const publishersTeam = teamsInCurrentUsersOrganization.find(
+      (teamElement) => teamElement.team.name === "Publishers"
+    );
+
+    // If a "Publishers" team exists, get the IDs of the team's administrators
+    if (publishersTeam) {
+      const publishersTeamIDs = publishersTeam.administrators.map(
+        (administrator) => administrator.id
+      );
+      // Check too see if the current user is a member of the "Publishers" team
+      if (publishersTeamIDs.includes(currentUserID)) {
+        // If the user is a member of the "Publishers" team, return false since the dataset should not be locked for them
+        return false;
+      }
+    }
+
+    // If the user is not a member of the "Publishers" team, check to see if the dataset is locked
+    const datasetRoleResponse = await client.get(`/datasets/${datasetNameOrId}`);
     // Return the dataset's lock status (true or false)
     return datasetRoleResponse.data.locked;
   } catch (err) {
     clientError(err);
+    // If the dataset is locked, the server will return a 423 status code, so return true if that is the case
     if (err.response.status == 423) {
       return true;
     } else {
@@ -56,15 +83,21 @@ const getDatasetRole = async (datasetNameOrId) => {
     defaultBfDataset = datasetNameOrId;
   }
 
-  let datasetRoleResponse = await client.get(`/datasets/${defaultBfDataset}/role`, {
-    params: {
-      pennsieve_account: defaultBfAccount,
-    },
-  });
+  let datasetRoleResponse = await client.get(`/datasets/${defaultBfDataset}/role`);
 
   let { role } = datasetRoleResponse.data;
 
   return role;
+};
+
+const getDatasetInformation = async (account, datasetNameOrId) => {
+  const datasetInformationResponse = await client.get(`/datasets/${datasetNameOrId}`, {
+    params: {
+      pennsieve_account: account,
+    },
+  });
+  // Returns information about the dataset (locked, published, etc.)
+  return datasetInformationResponse.data;
 };
 
 /**
@@ -75,35 +108,6 @@ const getDatasetRole = async (datasetNameOrId) => {
 const withdrawDatasetReviewSubmission = async (datasetName, selected_account) => {
   await client.post(`/disseminate_datasets/datasets/${datasetName}/publication/cancel`, {
     selected_account,
-  });
-};
-
-const getFilesExcludedFromPublishing = async (datasetName) => {
-  // get the excluded files
-  let excludedFilesRes = await client.get(
-    `/disseminate_datasets/datasets/${datasetName}/ignore-files`,
-    {
-      params: {
-        selected_account: defaultBfAccount,
-      },
-    }
-  );
-
-  let { ignore_files } = excludedFilesRes.data;
-
-  return ignore_files;
-};
-
-// tell Pennsieve to ignore a set of user selected files when publishing their dataset.
-// this keeps those files hidden from the public but visible to publishers and collaboraors.
-// I:
-//  datasetIdOrName: string - dataset name
-//  files: [{fileName: string}] - An array of file name objects
-const updateDatasetExcludedFiles = async (account, datasetName, files) => {
-  // create the request options
-  await client.put(`/disseminate_datasets/datasets/${datasetName}/ignore-files`, {
-    ignore_files: files,
-    selected_account: account,
   });
 };
 
@@ -157,8 +161,13 @@ const reserveDOI = async (account, dataset) => {
     // Save DOI to SODAJSONObj
     return doiReserve.data.doi;
   } catch (err) {
+    let errorMessage = userErrorMessage(err);
     clientError(err);
-    userErrorMessage(err);
+    console.log(errorMessage);
+    if (errorMessage.includes("is locked")) {
+      return "locked";
+    }
+    return false;
   }
 };
 
@@ -169,6 +178,17 @@ const getDatasetDOI = async (account, dataset) => {
     let doi = await client.get(`datasets/${dataset}/reserve-doi`);
     return doi.data.doi;
   } catch (err) {
+    clientError(err);
+    userErrorMessage(err);
+  }
+};
+
+const getLockStatus = async (datasetNameOrId) => {
+  try {
+    let lockStatusResponse = await client.get(`/datasets/${datasetNameOrId}/lock-status`);
+    return lockStatusResponse.data;
+  } catch (err) {
+    console.log(err);
     clientError(err);
     userErrorMessage(err);
   }
@@ -320,6 +340,7 @@ const uploadNewTags = async (account, dataset, tags) => {
     }
   } catch (error) {
     clientError(error);
+    return false;
   }
 
   //if response200 = true then previous call succeeded and new IDs are in newUploadedTags array
@@ -335,6 +356,7 @@ const uploadNewTags = async (account, dataset, tags) => {
       return newTagsUpload.data;
     } catch (error) {
       clientError(error);
+      return false;
     }
   }
 };
@@ -352,6 +374,7 @@ const removeCollectionTags = async (account, dataset, tags) => {
     return removedTags.data;
   } catch (error) {
     clientError(error);
+    return false;
   }
 };
 
@@ -373,6 +396,7 @@ const uploadCollectionTags = async (account, dataset, tags) => {
     return uploadedTags.data;
   } catch (error) {
     clientError(error);
+    return false;
   }
 };
 
@@ -427,6 +451,25 @@ const getNumberOfItemsInLocalDataset = async (datasetPath) => {
   return itemCountsResponse.data;
 };
 
+const setPreferredOrganization = async (email, password, organization, account) => {
+  const response = await client.put("/user/organizations/preferred", {
+    organization_id: organization,
+    email,
+    password,
+    account,
+  });
+  return response.data;
+};
+
+const getUserPoolAccessToken = async (email, password) => {
+  const response = await client.post("/manage_datasets/userpool_access_token", {
+    email: email,
+    password: password,
+  });
+
+  return response.data;
+};
+
 const api = {
   getUserInformation,
   getDataset,
@@ -434,8 +477,6 @@ const api = {
   getDatasetBannerImageURL,
   getDatasetRole,
   withdrawDatasetReviewSubmission,
-  getFilesExcludedFromPublishing,
-  updateDatasetExcludedFiles,
   getDatasetMetadataFiles,
   getDatasetPermissions,
   getDatasetsForAccount,
@@ -451,9 +492,12 @@ const api = {
   validateLocalDataset,
   getDatasetDOI,
   reserveDOI,
+  isDatasetLocked,
+  getDatasetInformation,
   getNumberOfPackagesInDataset,
   getNumberOfItemsInLocalDataset,
-  isDatasetLocked,
+  setPreferredOrganization,
+  getUserPoolAccessToken,
 };
 
 module.exports = api;

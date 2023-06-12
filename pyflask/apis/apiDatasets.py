@@ -27,17 +27,14 @@ model_get_role_response = api.model("GetRoleResponse", {
 @api.route('/<string:dataset_name>/role')
 class DatasetRole(Resource):
   parser = reqparse.RequestParser()
-  parser.add_argument('pennsieve_account', type=str, required=True, help='Pennsieve account', location="args")
   @api.doc(params={"dataset_name": "The name of the dataset"})
 
   @api.expect(parser)
   @api.doc(responses={200: 'Success', 400: 'Bad Request', 500: "Internal server error"})
   def get(self, dataset_name):
-    args = self.parser.parse_args()
-    pennsieve_account = args.get('pennsieve_account')
 
     try:
-      return get_role(pennsieve_account, dataset_name) 
+      return get_role(dataset_name) 
     except Exception as e:
       if notBadRequestException(e):
         api.abort(500, str(e))
@@ -50,11 +47,11 @@ class Dataset(Resource):
   def get(self, dataset_name_or_id):
 
     try:
-      return get_dataset_by_id(dataset_name_or_id) 
+      return get_dataset_by_id(dataset_name_or_id)
     except Exception as e:
-      # if exception is an HTTPError then check if 400 or 500 
+      # if exception is an HTTPError then check if 400 or 500
       if type(e).__name__ == "HTTPError":
-          handle_http_error(e)
+        handle_http_error(e)
       if notBadRequestException(e):
         api.abort(500, str(e))
       raise e

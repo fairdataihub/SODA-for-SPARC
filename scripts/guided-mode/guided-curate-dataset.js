@@ -4,6 +4,134 @@ const returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
 };
 
+const handleGuidedModeOrgSwitch = async (buttonClicked) => {
+  const clickedButtonId = buttonClicked.id;
+  if (clickedButtonId === "guided-button-change-workspace-dataset-import") {
+    renderGuidedResumePennsieveDatasetSelectionDropdown();
+  }
+  if (buttonClicked.classList.contains("guided--progress-button-switch-workspace")) {
+    await guidedRenderProgressCards();
+  }
+};
+
+const guidedGetCurrentUserWorkSpace = () => {
+  // Returns null if the user has not selected a workspace
+  const workSpaceFromUI = document.getElementById(
+    "guided-pennsive-selected-organization"
+  ).innerHTML;
+  if (
+    workSpaceFromUI.includes("Click here to select workspace") ||
+    workSpaceFromUI.includes("None")
+  ) {
+    return null;
+  }
+  return workSpaceFromUI;
+};
+
+const lottieAnimationManager = {
+  animationData: {
+    "guided-curation-preparation-intro-lottie": {
+      animationData: questionList,
+      loop: true,
+      autoplay: true,
+    },
+    "guided-dataset-metadata-intro-lottie": {
+      animationData: datasetMetadataIntroLottie,
+      loop: true,
+      autoplay: true,
+    },
+    "guided-dataset-structure-intro-lottie": {
+      animationData: addScienceData,
+      loop: true,
+      autoplay: true,
+    },
+    "guided-start-new-lottie": {
+      animationData: startNew,
+      loop: true,
+      autoplay: true,
+    },
+    "guided-resume-exiting-lottie": {
+      animationData: resumeExisting,
+      loop: true,
+      autoplay: true,
+    },
+  },
+
+  animations: {},
+
+  startAnimation: function (containerElementId) {
+    const animationData = this.animationData[containerElementId].animationData;
+    const loop = this.animationData[containerElementId].loop;
+    const autoplay = this.animationData[containerElementId].autoplay;
+
+    const container = document.getElementById(containerElementId);
+    container.innerHTML = "";
+
+    const anim = lottie.loadAnimation({
+      container: container,
+      animationData: animationData,
+      renderer: "svg",
+      loop: loop,
+      autoplay: autoplay,
+    });
+    this.animations[containerElementId] = anim;
+  },
+
+  stopAnimation: function (containerElementId) {
+    const runningAnimation = this.animations[containerElementId];
+    if (runningAnimation) {
+      runningAnimation.stop();
+    }
+  },
+};
+
+/**
+ * @description Starts or stops all animations inside of a container
+ * @param {string} containerId
+ * @param {string} startOrStop
+ * @returns {void}
+ * @example
+ * startOrStopAnimationsInContainer("container-with-lottie-containers", "start");
+ * startOrStopAnimationsInContainer("container-with-lottie-containers", "stop");
+ */
+const startOrStopAnimationsInContainer = (containerId, startOrStop) => {
+  const container = document.getElementById(containerId);
+  const animationContainers = container.getElementsByClassName("lottieAnimationContainer");
+  for (const animationContainer of animationContainers) {
+    const animationContainerId = animationContainer.id;
+
+    if (startOrStop === "start") {
+      lottieAnimationManager.startAnimation(animationContainerId);
+    }
+    if (startOrStop === "stop") {
+      lottieAnimationManager.stopAnimation(animationContainerId);
+    }
+  }
+};
+
+const hideAndShowElementsDependingOnStartType = (pageElement) => {
+  const startingFromPennsieve = sodaJSONObj?.["starting-point"]?.["type"] === "bf";
+  const textToShowWhenStartingFromPennsieve = pageElement.querySelectorAll(
+    ".showWhenStartingFromPennsieve"
+  );
+  const textToShowWhenStartingNew = pageElement.querySelectorAll(".showWhenStartingNew");
+  if (startingFromPennsieve) {
+    textToShowWhenStartingFromPennsieve.forEach((element) => {
+      element.classList.remove("hidden");
+    });
+    textToShowWhenStartingNew.forEach((element) => {
+      element.classList.add("hidden");
+    });
+  } else {
+    textToShowWhenStartingFromPennsieve.forEach((element) => {
+      element.classList.add("hidden");
+    });
+    textToShowWhenStartingNew.forEach((element) => {
+      element.classList.remove("hidden");
+    });
+  }
+};
+
 const folderImportedFromPennsieve = (folderJSONPath) => {
   return folderJSONPath.type === "bf";
 };
@@ -152,6 +280,50 @@ document.getElementById("guided-button-has-docs-data").addEventListener("click",
   }
 });
 
+const checkIfChangesMetadataPageShouldBeShown = async (pennsieveDatasetID) => {
+  try {
+    const changesRes = await client.get(`/prepare_metadata/readme_changes_file`, {
+      params: {
+        file_type: "CHANGES",
+        selected_account: defaultBfAccount,
+        selected_dataset: pennsieveDatasetID,
+      },
+    });
+    const changes_text = changesRes.data.text;
+    return { shouldShow: true, changesMetadata: changes_text };
+  } catch (error) {
+    const emessage = userErrorMessage(error);
+
+    const datasetInfo = await api.getDatasetInformation(defaultBfAccount, pennsieveDatasetID);
+    const isPublished = datasetInfo?.publication?.status === "completed";
+
+    if (isPublished) {
+      return { shouldShow: true, changesMetadata: "" };
+    } else {
+      return { shouldShow: false };
+    }
+  }
+};
+
+const skipOrUnSkipCodeDescriptionPage = async (pennsieveDatasetID) => {
+  try {
+    await client.get(`/prepare_metadata/import_metadata_file`, {
+      params: {
+        selected_account: defaultBfAccount,
+        selected_dataset: pennsieveDatasetID,
+        file_type: "code_description.xlsx",
+      },
+    });
+    // If the response resolves, the file exists, so skip the page
+    guidedSkipPage("guided-add-code-metadata-tab");
+  } catch (error) {
+    const emessage = userErrorMessage(error);
+    // If there is an error or the file does not exist, unskip the page
+    // (User has to add the code_description file))
+    guidedUnSkipPage("guided-add-code-metadata-tab");
+  }
+};
+
 const setPageLoadingState = (boolLoadingState) => {
   const pageParentContainers = document.querySelectorAll(".guided--parent-tab");
 
@@ -258,6 +430,25 @@ const getGuidedProgressFileNames = () => {
     .map((progressFileName) => progressFileName.replace(".json", ""));
 };
 
+const updateGuidedDatasetName = (newDatasetName) => {
+  const previousDatasetName = sodaJSONObj["digital-metadata"]["name"];
+
+  //update old progress file with new dataset name
+  const oldProgressFilePath = `${guidedProgressFilePath}/${previousDatasetName}.json`;
+  const newProgressFilePath = `${guidedProgressFilePath}/${newDatasetName}.json`;
+  fs.renameSync(oldProgressFilePath, newProgressFilePath);
+
+  const bannerImagePathToUpdate = sodaJSONObj["digital-metadata"]["banner-image-path"];
+  if (bannerImagePathToUpdate) {
+    const newBannerImagePath = bannerImagePathToUpdate.replace(previousDatasetName, newDatasetName);
+    //Rename the old banner image folder to the new dataset name
+    fs.renameSync(bannerImagePathToUpdate, newBannerImagePath);
+    //change the banner image path in the JSON obj
+    sodaJSONObj["digital-metadata"]["banner-image-path"] = newBannerImagePath;
+  }
+  sodaJSONObj["digital-metadata"]["name"] = newDatasetName;
+};
+
 const savePageChanges = async (pageBeingLeftID) => {
   // This function is used by both the navigation bar and the side buttons,
   // and whenever it is being called, we know that the user is trying to save the changes on the current page.
@@ -268,33 +459,10 @@ const savePageChanges = async (pageBeingLeftID) => {
   try {
     //save changes to the current page
 
-    const updateGuidedDatasetName = (newDatasetName) => {
-      const previousDatasetName = sodaJSONObj["digital-metadata"]["name"];
-
-      //update old progress file with new dataset name
-      const oldProgressFilePath = `${guidedProgressFilePath}/${previousDatasetName}.json`;
-      const newProgressFilePath = `${guidedProgressFilePath}/${newDatasetName}.json`;
-      fs.renameSync(oldProgressFilePath, newProgressFilePath);
-
-      const bannerImagePathToUpdate = sodaJSONObj["digital-metadata"]["banner-image-path"];
-      if (bannerImagePathToUpdate) {
-        const newBannerImagePath = bannerImagePathToUpdate.replace(
-          previousDatasetName,
-          newDatasetName
-        );
-        //Rename the old banner image folder to the new dataset name
-        fs.renameSync(bannerImagePathToUpdate, newBannerImagePath);
-        //change the banner image path in the JSON obj
-        sodaJSONObj["digital-metadata"]["banner-image-path"] = newBannerImagePath;
-      }
-      sodaJSONObj["digital-metadata"]["name"] = newDatasetName;
-    };
-
-    if (pageBeingLeftID === "guided-resume-existing-dataset-tab") {
+    if (pageBeingLeftID === "guided-select-starting-point-tab") {
       const startingNewCuration = document
         .getElementById("guided-button-start-new-curation")
         .classList.contains("selected");
-
       const resumingExistingProgress = document
         .getElementById("guided-button-resume-progress-file")
         .classList.contains("selected");
@@ -371,6 +539,24 @@ const savePageChanges = async (pageBeingLeftID) => {
               <br />
               <br />
               If you would like to restart your progress and edit the dataset as it is on Pennsieve, go back to the main menu and click "delete progress file" on the dataset you want to restart.
+            `,
+          });
+          throw errorArray;
+        }
+
+        const datasetIsLocked = await api.isDatasetLocked(
+          defaultBfAccount,
+          selectedPennsieveDataset
+        );
+        if (datasetIsLocked) {
+          errorArray.push({
+            type: "swal",
+            title: `${selectedPennsieveDataset} is locked from editing`,
+            message: `
+              This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
+              <br />
+              <br />
+              If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
             `,
           });
           throw errorArray;
@@ -502,7 +688,6 @@ const savePageChanges = async (pageBeingLeftID) => {
             subjectsTableData = subjectsMetadataResponse.data.subject_file_rows;
           } catch (error) {
             const emessage = userErrorMessage(error);
-            console.log("Unable to fetch subjects metadata" + emessage);
             errorArray.push({
               type: "swal",
               title: "Unable to fetch subjects metadata to check dataset structure",
@@ -539,7 +724,6 @@ const savePageChanges = async (pageBeingLeftID) => {
               samplesTableData = samplesMetadataResponse.data.sample_file_rows;
             } catch (error) {
               const emessage = userErrorMessage(error);
-              console.log("Unable to fetch samples metadata" + emessage);
               errorArray.push({
                 type: "swal",
                 title: "Unable to fetch samples metadata to check dataset structure",
@@ -606,12 +790,24 @@ const savePageChanges = async (pageBeingLeftID) => {
         sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"] = selectedPennsieveDatasetID;
         sodaJSONObj["digital-metadata"]["name"] = selectedPennsieveDataset;
 
-        // Unskip the CHANGES metadata so the user can add changes since previous publication
-        guidedUnSkipPage("guided-create-changes-metadata-tab");
+        const changesCheckRes = await checkIfChangesMetadataPageShouldBeShown(
+          selectedPennsieveDatasetID
+        );
+        if (changesCheckRes.shouldShow === true) {
+          sodaJSONObj["dataset-metadata"]["CHANGES"] = changesCheckRes.changesMetadata;
+          guidedUnSkipPage("guided-create-changes-metadata-tab");
+        } else {
+          sodaJSONObj["dataset-metadata"]["CHANGES"] = "";
+          guidedSkipPage("guided-create-changes-metadata-tab");
+        }
+
+        // Skip the page where they confirm their log in and workspace because we should already have it
+        sodaJSONObj["digital-metadata"]["dataset-workspace"] = guidedGetCurrentUserWorkSpace();
+        guidedSkipPage("guided-pennsieve-intro-tab");
       }
 
       //Skip this page becausae we should not come back to it
-      guidedSkipPage("guided-resume-existing-dataset-tab");
+      guidedSkipPage("guided-select-starting-point-tab");
     }
 
     if (pageBeingLeftID === "guided-prepare-dataset-structure-tab") {
@@ -807,14 +1003,21 @@ const savePageChanges = async (pageBeingLeftID) => {
       const userSelectedDatasetIsSparcFunded = document
         .getElementById("guided-button-dataset-is-sparc-funded")
         .classList.contains("selected");
-      const userSelectedDatasetIsNotSparcFunded = document
+      const userSelectedDatasetIsReJoinFunded = document
+        .getElementById("guided-button-dataset-is-re-join-funded")
+        .classList.contains("selected");
+      const userSelectedDatasetIsOtherFunded = document
         .getElementById("guided-button-dataset-is-not-sparc-funded")
         .classList.contains("selected");
 
-      if (!userSelectedDatasetIsSparcFunded && !userSelectedDatasetIsNotSparcFunded) {
+      if (
+        !userSelectedDatasetIsSparcFunded &&
+        !userSelectedDatasetIsOtherFunded &&
+        !userSelectedDatasetIsReJoinFunded
+      ) {
         errorArray.push({
           type: "notyf",
-          message: "Please indicate if your dataset is SPARC funded",
+          message: "Please indicate the funding source for this dataset.",
         });
         throw errorArray;
       }
@@ -824,51 +1027,48 @@ const savePageChanges = async (pageBeingLeftID) => {
         // Make sure the submission metadata and validation tab are unskipped as they are required
         // for the SPARC funded dataset flow
         guidedUnSkipPage("guided-create-submission-metadata-tab");
-        guidedUnSkipPage("guided-dataset-validation-tab");
         guidedUnSkipPage("guided-protocols-tab");
       }
 
       // If the user selected that dataset is not SPARC funded, skip the submission metadata page
-      // The logic that handles the submission file is ran during uploadiyhihhihiuhihi
-      if (userSelectedDatasetIsNotSparcFunded) {
-        const userSelectedTheyHaveReachedOutToCurationTeam = document
-          .getElementById("guided-button-non-sparc-user-has-contacted-sparc")
-          .classList.contains("selected");
-        const userSelectedTheyHaveNotReachedOutToCurationTeam = document
-          .getElementById("guided-button-non-sparc-user-has-not-contacted-sparc")
-          .classList.contains("selected");
+      // The logic that handles the submission file is ran during upload
+      if (userSelectedDatasetIsReJoinFunded || userSelectedDatasetIsOtherFunded) {
+        if (userSelectedDatasetIsOtherFunded) {
+          const userSelectedTheyHaveReachedOutToCurationTeam = document
+            .getElementById("guided-button-non-sparc-user-has-contacted-sparc")
+            .classList.contains("selected");
+          const userSelectedTheyHaveNotReachedOutToCurationTeam = document
+            .getElementById("guided-button-non-sparc-user-has-not-contacted-sparc")
+            .classList.contains("selected");
 
-        if (
-          !userSelectedTheyHaveReachedOutToCurationTeam &&
-          !userSelectedTheyHaveNotReachedOutToCurationTeam
-        ) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please indicate if you have reached out to the curation team",
-          });
-          throw errorArray;
-        }
-
-        if (userSelectedTheyHaveReachedOutToCurationTeam) {
-          // We don't have to do anything here
-        }
-
-        if (userSelectedTheyHaveNotReachedOutToCurationTeam) {
-          errorArray.push({
-            type: "notyf",
-            message: "Please reach out to the curation team before continuing the curation process",
-          });
-          throw errorArray;
+          if (
+            !userSelectedTheyHaveReachedOutToCurationTeam &&
+            !userSelectedTheyHaveNotReachedOutToCurationTeam
+          ) {
+            errorArray.push({
+              type: "notyf",
+              message: "Please indicate if you have reached out to the curation team",
+            });
+            throw errorArray;
+          }
+          if (userSelectedTheyHaveNotReachedOutToCurationTeam) {
+            errorArray.push({
+              type: "notyf",
+              message:
+                "Please reach out to the curation team before continuing the curation process",
+            });
+            throw errorArray;
+          }
         }
 
         // Skip the submission metadata page
         // This can be safely skipped as the logic that handles the submission file is ran during upload
         guidedSkipPage("guided-create-submission-metadata-tab");
+        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = "EXTERNAL";
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = [""];
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = "";
 
         guidedSkipPage("guided-protocols-tab");
-
-        //Skip the validation page as non-spac funded datasets do not need to be validated
-        guidedSkipPage("guided-dataset-validation-tab");
       }
     }
 
@@ -1082,52 +1282,112 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-add-code-metadata-tab") {
-      const buttonYesComputationalModelingData = document.getElementById(
-        "guided-button-has-computational-modeling-data"
+      const startNewCodeDescYesNoContainer = document.getElementById(
+        "guided-section-start-new-code-metadata-query"
       );
-      const buttonNoComputationalModelingData = document.getElementById(
-        "guided-button-no-computational-modeling-data"
+      const startPennsieveCodeDescYesNoContainer = document.getElementById(
+        "guided-section-start-from-pennsieve-code-metadata-query"
       );
 
-      if (
-        !buttonYesComputationalModelingData.classList.contains("selected") &&
-        !buttonNoComputationalModelingData.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please specify if your dataset contains computational modeling data",
-        });
-        throw errorArray;
-      }
-
-      if (buttonYesComputationalModelingData.classList.contains("selected")) {
-        const codeDescriptionPathElement = document.getElementById(
-          "guided-code-description-para-text"
+      if (!startNewCodeDescYesNoContainer.classList.contains("hidden")) {
+        const buttonYesComputationalModelingData = document.getElementById(
+          "guided-button-has-computational-modeling-data"
         );
-        //check if the innerhtml of the code description path element is a valid path
-        if (codeDescriptionPathElement.innerHTML === "") {
+        const buttonNoComputationalModelingData = document.getElementById(
+          "guided-button-no-computational-modeling-data"
+        );
+
+        if (
+          !buttonYesComputationalModelingData.classList.contains("selected") &&
+          !buttonNoComputationalModelingData.classList.contains("selected")
+        ) {
           errorArray.push({
             type: "notyf",
-            message: "Please import your code description file",
+            message: "Please specify if your dataset contains computational modeling data",
           });
           throw errorArray;
         }
 
-        const codeDescriptionPath = codeDescriptionPathElement.innerHTML;
-        //Check if the code description file is valid
-        if (!fs.existsSync(codeDescriptionPath)) {
-          errorArray.push({
-            type: "notyf",
-            message: "The imported code_description file is not valid",
-          });
-          throw errorArray;
+        if (buttonYesComputationalModelingData.classList.contains("selected")) {
+          const codeDescriptionPathElement = document.getElementById(
+            "guided-code-description-para-text"
+          );
+          //check if the innerhtml of the code description path element is a valid path
+          if (codeDescriptionPathElement.innerHTML === "") {
+            errorArray.push({
+              type: "notyf",
+              message: "Please import your code description file",
+            });
+            throw errorArray;
+          }
+
+          const codeDescriptionPath = codeDescriptionPathElement.innerHTML;
+          //Check if the code description file is valid
+          if (!fs.existsSync(codeDescriptionPath)) {
+            errorArray.push({
+              type: "notyf",
+              message: "The imported code_description file does not exist at the selected path",
+            });
+            throw errorArray;
+          }
+        }
+
+        if (buttonNoComputationalModelingData.classList.contains("selected")) {
+          //If the user had imported a code description file, remove it
+          if (sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"]) {
+            delete sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"];
+          }
         }
       }
+      if (!startPennsieveCodeDescYesNoContainer.classList.contains("hidden")) {
+        const buttonUpdateCodeDescription = document.getElementById(
+          "guided-button-update-code-description-on-pennsieve"
+        );
+        const buttonKeepCodeDescription = document.getElementById(
+          "guided-button-keep-code-description-on-pennsieve"
+        );
 
-      if (buttonNoComputationalModelingData.classList.contains("selected")) {
-        //If the user had imported a code description file, remove it
-        if (sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"]) {
-          delete sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"];
+        if (
+          !buttonUpdateCodeDescription.classList.contains("selected") &&
+          !buttonKeepCodeDescription.classList.contains("selected")
+        ) {
+          errorArray.push({
+            type: "notyf",
+            message:
+              "Please specify if you would like to update your code_description file on Pennsieve",
+          });
+          throw errorArray;
+        }
+
+        if (buttonUpdateCodeDescription.classList.contains("selected")) {
+          const codeDescriptionPathElement = document.getElementById(
+            "guided-code-description-para-text"
+          );
+          //check if the innerhtml of the code description path element is a valid path
+          if (codeDescriptionPathElement.innerHTML === "") {
+            errorArray.push({
+              type: "notyf",
+              message: "Please import your code description file",
+            });
+            throw errorArray;
+          }
+
+          const codeDescriptionPath = codeDescriptionPathElement.innerHTML;
+          //Check if the code description file is valid
+          if (!fs.existsSync(codeDescriptionPath)) {
+            errorArray.push({
+              type: "notyf",
+              message: "The imported code_description file does not exist at the selected path",
+            });
+            throw errorArray;
+          }
+        }
+
+        if (buttonKeepCodeDescription.classList.contains("selected")) {
+          //If the user had imported a code description file, remove it
+          if (sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"]) {
+            delete sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"];
+          }
         }
       }
     }
@@ -1138,26 +1398,51 @@ const savePageChanges = async (pageBeingLeftID) => {
       );
       if (!confirmAccountbutton.classList.contains("selected")) {
         if (!defaultBfAccount) {
+          // If the user has not logged in, throw an error
           errorArray.push({
             type: "notyf",
             message: "Please sign in to Pennsieve before continuing",
           });
           throw errorArray;
         } else {
+          // If the user has not confirmed their account, throw an error
           errorArray.push({
             type: "notyf",
             message: "Please confirm your account before continuing",
           });
           throw errorArray;
         }
-      } else {
-        // Store the Pennsieve account details in the sodaJSONObj to compare with the account details when the user returns to the Pennsieve intro page
-        const pennsieveIntroAccountDetailsText = document.getElementById(
-          "guided-pennsive-intro-account-details"
-        );
-        sodaJSONObj["last-confirmed-pennsieve-account-details"] =
-          pennsieveIntroAccountDetailsText.innerHTML;
       }
+
+      const confirmOrganizationButton = document.getElementById(
+        "guided-confirm-pennsieve-organization-button"
+      );
+      const userSelectedWorkSpace = guidedGetCurrentUserWorkSpace();
+
+      if (!userSelectedWorkSpace) {
+        // If the user has not selected an organization, throw an error
+        errorArray.push({
+          type: "notyf",
+          message: "Please select an organization before continuing",
+        });
+        throw errorArray;
+      } else {
+        sodaJSONObj["digital-metadata"]["dataset-workspace"] = userSelectedWorkSpace;
+      }
+
+      if (!confirmOrganizationButton.classList.contains("selected")) {
+        // If the user has not confirmed their organization, throw an error
+        errorArray.push({
+          type: "notyf",
+          message: "Please confirm your organization before continuing",
+        });
+        throw errorArray;
+      }
+
+      const pennsieveIntroOrganizationDetailsText = document.getElementById(
+        "guided-pennsive-selected-organization"
+      );
+      sodaJSONObj["last-confirmed-pennsieve-workspace-details"] = userSelectedWorkSpace;
     }
 
     if (pageBeingLeftID === "guided-banner-image-tab") {
@@ -1171,53 +1456,6 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-designate-permissions-tab") {
-    }
-
-    if (pageBeingLeftID === "guided-add-description-tab") {
-      const studyPurposeInput = document.getElementById("guided-pennsieve-study-purpose");
-      const studyDataCollectionInput = document.getElementById(
-        "guided-pennsieve-study-data-collection"
-      );
-      const studyPrimaryConclusionInput = document.getElementById(
-        "guided-pennsieve-study-primary-conclusion"
-      );
-
-      if (studyPurposeInput.value.trim() === "") {
-        errorArray.push({
-          type: "notyf",
-          message: "Please enter your study's purpose",
-        });
-      }
-
-      if (studyDataCollectionInput.value.trim() === "") {
-        errorArray.push({
-          type: "notyf",
-          message: "Please your study's data collection method",
-        });
-      }
-
-      if (studyPrimaryConclusionInput.value.trim() === "") {
-        errorArray.push({
-          type: "notyf",
-          message: "Please enter your study's primary conclusion",
-        });
-      }
-      if (errorArray.length > 0) {
-        throw errorArray;
-      } else {
-        sodaJSONObj["digital-metadata"]["description"] = {
-          "study-purpose": studyPurposeInput.value.trim(),
-          "data-collection": studyDataCollectionInput.value.trim(),
-          "primary-conclusion": studyPrimaryConclusionInput.value.trim(),
-        };
-      }
-    }
-
-    if (pageBeingLeftID === "guided-add-tags-tab") {
-      let datasetTags = getTagsFromTagifyElement(guidedDatasetTagsTagify);
-      //remove duplicates from datasetTags
-      datasetTags = [...new Set(datasetTags)];
-      sodaJSONObj["digital-metadata"]["dataset-tags"] = datasetTags;
     }
 
     if (pageBeingLeftID === "guided-assign-license-tab") {
@@ -1384,25 +1622,6 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-manifest-file-generation-tab") {
-      const buttonYesAutoGenerateManifestFiles = document.getElementById(
-        "guided-button-auto-generate-manifest-files"
-      );
-      const buttonNoImportManifestFiles = document.getElementById(
-        "guided-button-import-manifest-files"
-      );
-
-      if (
-        !buttonYesAutoGenerateManifestFiles.classList.contains("selected") &&
-        !buttonNoImportManifestFiles.classList.contains("selected")
-      ) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please indicate how you would like to prepare your manifest files",
-        });
-        throw errorArray;
-      }
-      if (buttonYesAutoGenerateManifestFiles.classList.contains("selected")) {
-      }
     }
 
     if (pageBeingLeftID === "guided-create-submission-metadata-tab") {
@@ -1451,6 +1670,35 @@ const savePageChanges = async (pageBeingLeftID) => {
         });
         throw errorArray;
       }
+
+      const PrincipalInvestigator = getContributorMarkedAsPrincipalInvestigator();
+      if (!PrincipalInvestigator) {
+        errorArray.push({
+          type: "swal",
+          message: `
+            You must specify a Principal Investigator (PI) for this dataset.
+            <br/><br/>
+            Please add the "PrincipalInvestigator" role for one of the contributors.
+          `,
+        });
+        throw errorArray;
+      }
+
+      /* UNCOMMENT THIS TO REQUIRE AT LEAST ONE CORRESPONDING AUTHOR
+      const correspondingAuthors = contributors.filter((contributor) =>
+        contributor["conRole"].includes("CorrespondingAuthor")
+      );
+      if (correspondingAuthors.length === 0) {
+        errorArray.push({
+          type: "swal",
+          message: `
+            You must specify at least one corresponding author for this dataset.
+            <br/><br/>
+            Please add the "CorrespondingAuthor" role for one of the contributors.
+          `,
+        });
+        throw errorArray;
+      }*/
 
       // Make sure that all contributors have a valid fields
       for (const contributor of contributors) {
@@ -1559,9 +1807,6 @@ const savePageChanges = async (pageBeingLeftID) => {
       $("#guided-button-unshare-dataset-with-curation-team");
     }
 
-    // Save the current version of SODA as the user should be taken back to the first page when the app is updated
-    const currentAppVersion = document.getElementById("version").innerHTML;
-    sodaJSONObj["last-version-of-soda-used"] = currentAppVersion;
     if (pageBeingLeftID === "guided-dataset-validation-tab") {
       const guidedButtonRunValidation = document.getElementById(
         "guided-button-run-dataset-validation"
@@ -1593,6 +1838,13 @@ const savePageChanges = async (pageBeingLeftID) => {
         // We don't have to do anything here.
       }
     }
+
+    // Save the current version of SODA as the user should be taken back to the first page when the app is updated
+    const currentAppVersion = document.getElementById("version").innerHTML;
+    sodaJSONObj["last-version-of-soda-used"] = currentAppVersion;
+
+    // Stop any animations that need to be stopped
+    startOrStopAnimationsInContainer(pageBeingLeftID, "stop");
   } catch (error) {
     guidedSetNavLoadingState(false);
     console.log(error);
@@ -2142,13 +2394,6 @@ const guidedSetDOIUI = (doiInformation) => {
   }
 };
 
-const showPrepublishingReview = () => {
-  //Show the final step to select metadata files to be excluded
-  $("#guided--submit-prepublishing-review").removeClass("hidden");
-  createPrepublishingChecklist("guided");
-  smoothScrollToElement("guided--submit-prepublishing-review", "end", "nearest");
-};
-
 // This function is for when a user clicks the share/unshare with curation team (requires Dataset to be published and locked)
 const guidedModifyCurationTeamAccess = async (action) => {
   const guidedShareWithCurationTeamButton = document.getElementById(
@@ -2447,7 +2692,7 @@ const guidedTransitionFromHome = async () => {
     page.classList.add("hidden");
   });
 
-  CURRENT_PAGE = document.getElementById("guided-resume-existing-dataset-tab");
+  CURRENT_PAGE = document.getElementById("guided-select-starting-point-tab");
 
   //reset sub-page navigation (Set the first sub-page to be the active sub-page
   //for all pages with sub-pages)
@@ -2636,37 +2881,71 @@ const generateProgressCardElement = (progressFileJSONObj) => {
 
   const datasetStartingPoint = progressFileJSONObj?.["starting-point"]?.["type"];
 
+  let workspaceUserNeedsToSwitchTo = false;
+  const datasetWorkspace = progressFileJSONObj?.["digital-metadata"]?.["dataset-workspace"];
+  const currentWorkspace = guidedGetCurrentUserWorkSpace();
+  if (datasetWorkspace && datasetWorkspace !== currentWorkspace) {
+    workspaceUserNeedsToSwitchTo = datasetWorkspace;
+  }
+
   // True if the progress file has already been uploaded to Pennsieve
   const alreadyUploadedToPennsieve = !!progressFileJSONObj["previous-guided-upload-dataset-name"];
 
   // Function to generate the button used to resume progress
   const generateProgressResumptionButton = (
     datasetStartingPoint,
-    boolAlreadyUploadedToPennsieve
+    boolAlreadyUploadedToPennsieve,
+    progressFileName,
+    workspaceUserNeedsToSwitchTo
   ) => {
-    let buttonText = "";
-    let buttonClass = "";
+    if (workspaceUserNeedsToSwitchTo) {
+      // If the progress file has an organization set but the user is no longer logged in,
+      // prompt the user to log in
+      if (!defaultBfAccount) {
+        return `
+          <button
+            class="ui positive button guided--progress-button-login-to-pennsieve"
+            data-reset-guided-mode-page="true"
+            onclick="openDropdownPrompt(this, 'bf')"
+          >
+            Log in to Pennsieve to resume curation
+          </button>
+        `;
+      }
+      // If the user is logged in but the user needs to switch to a different workspace,
+      // prompt the user to switch to the correct workspace
+      return `
+        <button
+          class="ui positive button guided-change-workspace guided--progress-button-switch-workspace"
+          onClick="openDropdownPrompt(this, 'organization')"
+        >
+          Switch to ${workspaceUserNeedsToSwitchTo} workspace to resume curation
+        </button>
+      `;
+    }
+
+    let buttonText;
+    let buttonClass;
+
     if (boolAlreadyUploadedToPennsieve) {
       buttonText = "Share with the curation team";
       buttonClass = "guided--progress-button-share";
+    } else if (datasetStartingPoint === "new") {
+      buttonText = "Resume curation";
+      buttonClass = "guided--progress-button-resume-curation";
     } else {
-      if (datasetStartingPoint === "new") {
-        buttonText = "Resume curation";
-        buttonClass = "guided--progress-button-resume-curation";
-      }
-      if (datasetStartingPoint === "bf" || datasetStartingPoint === "pennsieve") {
-        buttonText = "Continue updating Pennsieve dataset";
-        buttonClass = "guided--progress-button-resume-pennsieve";
-      }
+      buttonText = "Continue updating Pennsieve dataset";
+      buttonClass = "guided--progress-button-resume-pennsieve";
     }
+
     return `
-            <button
-              class="ui positive button ${buttonClass}"
-              onClick="guidedResumeProgress($(this))"
-            >
-              ${buttonText}
-            </button>
-          `;
+    <button
+      class="ui positive button ${buttonClass}"
+      onClick="guidedResumeProgress('${progressFileName}')"
+    >
+      ${buttonText}
+    </button>
+  `;
   };
 
   return `
@@ -2720,7 +2999,12 @@ const generateProgressCardElement = (progressFileJSONObj) => {
         </div>
       </div>
       <div class="dataset-card-button-container align-right">
-        ${generateProgressResumptionButton(datasetStartingPoint, alreadyUploadedToPennsieve)}
+        ${generateProgressResumptionButton(
+          datasetStartingPoint,
+          alreadyUploadedToPennsieve,
+          progressFileName,
+          workspaceUserNeedsToSwitchTo
+        )}
         <h2 class="dataset-card-button-delete" onclick="deleteProgressCard(this)">
           <i
             class="fas fa-trash mr-sm-1"
@@ -2733,6 +3017,13 @@ const generateProgressCardElement = (progressFileJSONObj) => {
 };
 
 const guidedRenderProgressCards = async () => {
+  const progressCardsContainer = document.getElementById("guided-container-progress-cards");
+  const progressCardLoadingDiv = document.getElementById("guided-section-loading-progress-cards");
+
+  // Show the loading div and hide the progress cards container
+  progressCardsContainer.classList.add("hidden");
+  progressCardLoadingDiv.classList.remove("hidden");
+
   //Check if Guided-Progress folder exists. If not, create it.
   if (!fs.existsSync(guidedProgressFilePath)) {
     fs.mkdirSync(guidedProgressFilePath, { recursive: true });
@@ -2752,15 +3043,19 @@ const guidedRenderProgressCards = async () => {
     return new Date(b["last-modified"]) - new Date(a["last-modified"]);
   });
 
+  // If the workspace hasn't loaded yet, wait for it to load
+  // This will stop after 6 seconds
   if (!guidedGetCurrentUserWorkSpace()) {
-    //wait 3 seconds for the workspace to potentially load
-    //note this wait is not ideal, but it can be removed. If the workspace is not loaded before
-    //the progress cards are rendered, the user will be prompted to switch workspaces
-    //for all progress cards that are not in the current workspace
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    for (let i = 0; i < 60; i++) {
+      // If the workspace loaded, break out of the loop
+      if (guidedGetCurrentUserWorkSpace()) {
+        break;
+      }
+      // If the workspace didn't load, wait 100ms and try again
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
   }
 
-  const progressCardsContainer = document.getElementById("guided-section-resume-progress-cards");
   // If there are progress cards to display, display them
   if (progressFileData.length > 0) {
     // Add the title to the container
@@ -2781,82 +3076,28 @@ const guidedRenderProgressCards = async () => {
     });
   } else {
     progressCardsContainer.innerHTML = `
-      <h2 class="guided--text-click-continue" style="color: var(--color-bg-plum) !important">
+      <h2 class="guided--text-user-directions" style="color: var(--color-bg-plum) !important">
         No datasets in progress found.
       </h2>
     `;
   }
+
+  // Hide the loading div and show the progress cards container
+  progressCardsContainer.classList.remove("hidden");
+  progressCardLoadingDiv.classList.add("hidden");
 };
 
-const renderProgressCards = async () => {
-  //Check if Guided-Progress folder exists. If not, create it.
-  if (!fs.existsSync(guidedProgressFilePath)) {
-    fs.mkdirSync(guidedProgressFilePath, { recursive: true });
-  }
-
-  const guidedSavedProgressFiles = await readDirAsync(guidedProgressFilePath);
-
-  // Filter out non .json files
-  const jsonProgressFiles = guidedSavedProgressFiles.filter((file) => {
-    return file.endsWith(".json");
+document
+  .getElementById("guided-button-resume-progress-file")
+  .addEventListener("click", async () => {
+    await guidedRenderProgressCards();
   });
 
-  const progressFileData = await getAllProgressFileData(jsonProgressFiles);
-
-  //sort progressFileJSONdata by date to place newest cards on top
-  progressFileData.sort((a, b) => {
-    return new Date(b["last-modified"]) - new Date(a["last-modified"]);
-  });
-
-  //sort progressFileJSONdata into two rows one with property "previous-guided-upload-dataset-name"
-  //and one without property "previous-guided-upload-dataset-name"
-  const progressDataAlreadyUploadedToPennsieve = progressFileData.filter((progressFileJSONobj) => {
-    return progressFileJSONobj["previous-guided-upload-dataset-name"];
-  });
-  const progressDataNotYetUploadedToPennsieve = progressFileData.filter((progressFileJSONobj) => {
-    return !progressFileJSONobj["previous-guided-upload-dataset-name"];
-  });
-
-  const progressCardsContainer = document.getElementById("guided-section-resume-progress-cards");
-  // If there are progress cards to display, display them
-  if (
-    progressDataNotYetUploadedToPennsieve.length > 0 ||
-    progressDataAlreadyUploadedToPennsieve.length > 0
-  ) {
-    // Add the title to the container
-    progressCardsContainer.innerHTML = `
-      <h2 class="text-sub-step-title">
-        Select the dataset that you would like to continue working with and click "Continue"
-      </h2>
-    `;
-    //Add the progress cards that have already been uploaded to Pennsieve
-    //to their container (datasets that have the sodaJSONObj["previous-guided-upload-dataset-name"] property)
-    progressCardsContainer.innerHTML += progressDataAlreadyUploadedToPennsieve
-      .map((progressFile) => generateProgressCardElement(progressFile))
-      .join("\n");
-    //Add the progress cards that have not yet been uploaded to Pennsieve
-    //to their container (datasets that do not have the sodaJSONObj["previous-guided-upload-dataset-name"] property)
-    progressCardsContainer.innerHTML += progressDataNotYetUploadedToPennsieve
-      .map((progressFile) => generateProgressCardElement(progressFile))
-      .join("\n");
-    tippy(".progress-card-popover", {
-      allowHTML: true,
-      interactive: true,
-    });
-  } else {
-    progressCardsContainer.innerHTML = `
-      <h2 class="guided--text-sub-step mt-5">
-        No Progress files found.
-      </h2>
-    `;
-  }
-};
-
-const renderManifestCards = async () => {
+const renderManifestCards = () => {
   const guidedManifestData = sodaJSONObj["guided-manifest-files"];
-  const highLevelFoldersWithManifestData = Object.keys(guidedManifestData);
+  const highLevelnFoldersWithManifestData = Object.keys(guidedManifestData);
 
-  const manifestCards = highLevelFoldersWithManifestData
+  const manifestCards = highLevelnFoldersWithManifestData
     .map((highLevelFolder) => {
       return generateManifestEditCard(highLevelFolder);
     })
@@ -2907,39 +3148,29 @@ const updateManifestJson = async (highLvlFolderName, result) => {
 };
 
 const guidedCreateManifestFilesAndAddToDatasetStructure = async () => {
-  // if the user chose to auto-generate manifest files, create the excel files in local storage
-  // and add the paths to the manifest files in the datasetStructure object
-  if (sodaJSONObj["button-config"]["manifest-files-generated-automatically"] === "yes") {
-    /**
-     * If the user has selected to auto-generate manifest files,
-     * grab the manifest data for each high level folder, create an excel file
-     * using the manifest data, and add the excel file to the datasetStructureJSONObj
-     */
+  // First, empty the guided_manifest_files so we can add the new manifest files
+  fs.emptyDirSync(guidedManifestFilePath);
 
-    // First, empty the guided_manifest_files so we can add the new manifest files
-    fs.emptyDirSync(guidedManifestFilePath);
+  const guidedManifestData = sodaJSONObj["guided-manifest-files"];
+  for (const [highLevelFolder, manifestData] of Object.entries(guidedManifestData)) {
+    let manifestJSON = processManifestInfo(
+      guidedManifestData[highLevelFolder]["headers"],
+      guidedManifestData[highLevelFolder]["data"]
+    );
+    jsonManifest = JSON.stringify(manifestJSON);
 
-    const guidedManifestData = sodaJSONObj["guided-manifest-files"];
-    for (const [highLevelFolder, manifestData] of Object.entries(guidedManifestData)) {
-      let manifestJSON = processManifestInfo(
-        guidedManifestData[highLevelFolder]["headers"],
-        guidedManifestData[highLevelFolder]["data"]
-      );
-      jsonManifest = JSON.stringify(manifestJSON);
+    const manifestPath = path.join(guidedManifestFilePath, highLevelFolder, "manifest.xlsx");
 
-      const manifestPath = path.join(guidedManifestFilePath, highLevelFolder, "manifest.xlsx");
+    fs.mkdirSync(path.join(guidedManifestFilePath, highLevelFolder), {
+      recursive: true,
+    });
 
-      fs.mkdirSync(path.join(guidedManifestFilePath, highLevelFolder), {
-        recursive: true,
-      });
-
-      convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
-      datasetStructureJSONObj["folders"][highLevelFolder]["files"]["manifest.xlsx"] = {
-        action: ["new"],
-        path: manifestPath,
-        type: "local",
-      };
-    }
+    convertJSONToXlsx(JSON.parse(jsonManifest), manifestPath);
+    datasetStructureJSONObj["folders"][highLevelFolder]["files"]["manifest.xlsx"] = {
+      action: ["new"],
+      path: manifestPath,
+      type: "local",
+    };
   }
 };
 
@@ -3050,87 +3281,6 @@ document
   });
 
 document
-  .getElementById("guided-button-auto-generate-manifest-files")
-  .addEventListener("click", async () => {
-    //Wait for current call stack to finish
-    await new Promise((resolve) => setTimeout(resolve, 0));
-
-    const manifestFilesCardsContainer = document.getElementById(
-      "guided-container-manifest-file-cards"
-    );
-
-    manifestFilesCardsContainer.innerHTML = `
-    <div class="guided--section">
-    <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
-    </div>
-    Updating your dataset's manifest files...
-    `;
-
-    scrollToBottomOfGuidedBody();
-
-    try {
-      const sodaCopy = { ...sodaJSONObj };
-      delete sodaCopy["generate-dataset"];
-      sodaCopy["metadata-files"] = {};
-      sodaCopy["dataset-structure"] = datasetStructureJSONObj;
-
-      const cleanJson = await client.post(
-        `/curate_datasets/clean-dataset`,
-        { soda_json_structure: sodaCopy },
-        { timeout: 0 }
-      );
-      let response = cleanJson.data.soda_json_structure;
-      let responseDataStructure = response["dataset-structure"];
-
-      const res = await client.post(
-        `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
-        {
-          dataset_structure_obj: responseDataStructure,
-        },
-        { timeout: 0 }
-      );
-      const manifestRes = res.data;
-      //loop through each of the high level folders and store their manifest headers and data
-      //into the sodaJSONObj
-
-      let newManifestData = {};
-
-      for (const [highLevelFolderName, manifestFileData] of Object.entries(manifestRes)) {
-        //Only save manifest files for hlf that returned more than the headers
-        //(meaning manifest file data was generated in the response)
-        if (manifestFileData.length > 1) {
-          //Remove the first element from the array and set it as the headers
-          const manifestHeader = manifestFileData.shift();
-
-          newManifestData[highLevelFolderName] = {
-            headers: manifestHeader,
-            data: manifestFileData,
-          };
-        }
-      }
-      const existingManifestData = sodaJSONObj["guided-manifest-files"];
-      let updatedManifestData;
-
-      if (existingManifestData) {
-        updatedManifestData = diffCheckManifestFiles(newManifestData, existingManifestData);
-      } else {
-        updatedManifestData = newManifestData;
-      }
-
-      sodaJSONObj["guided-manifest-files"] = updatedManifestData;
-      // Save the sodaJSONObj with the new manifest files
-      await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-    } catch (err) {
-      console.log(err);
-      clientError(err);
-      userError(err);
-    }
-
-    //Rerender the manifest cards
-    await renderManifestCards();
-  });
-
-document
   .getElementById("guided-button-run-dataset-validation")
   .addEventListener("click", async () => {
     //Wait for current call stack to finish so page navigation happens before this function is run
@@ -3227,13 +3377,13 @@ document
           }
         );
       } catch (error) {
-        throw new Error("Failed to generate manifest files1");
+        throw new Error("Failed to generate manifest files");
       }
 
       let manifests = manifestJSONResponse.data;
       // If the manifest files are not generated, throw an error
       if (!manifests) {
-        throw new Error("Failed to generate manifest files");
+        throw new Error("Failed to generate manifest files2");
       }
 
       let clientUUID = uuid();
@@ -3308,6 +3458,12 @@ document
           });
         }
 
+        // Hide the loading div
+        validationLoadingDiv.classList.add("hidden");
+        // Show the error div
+        errorDuringValidationDiv.classList.remove("hidden");
+        guidedSetNavLoadingState(false);
+
         return;
       }
 
@@ -3362,9 +3518,9 @@ document
       let hasValidationErrors = Object.getOwnPropertyNames(validationReport).length >= 1;
 
       Swal.fire({
-        title: hasValidationErrors ? "Dataset is Invalid" : `Dataset is Valid`,
+        title: hasValidationErrors ? "Validator detected potential issues" : `Dataset is Valid`,
         text: hasValidationErrors
-          ? `Please fix the errors listed in the table below then re-run validation to check that your dataset conforms to the SDS.`
+          ? `Note that the validator is currently in beta and may contain false positives. Review the validation report and continue to the next page.`
           : `Your dataset conforms to the SPARC Dataset Structure.`,
         allowEscapeKey: true,
         allowOutsideClick: true,
@@ -3719,12 +3875,19 @@ const guidedUpdateFolderStructure = (highLevelFolder, subjectsOrSamples) => {
   }
 };
 
+const guidedTestResetPennsievePage = (tabID) => {
+  sodaJSONObj["completed-tabs"] = sodaJSONObj["completed-tabs"].filter((tab) => tab != tabID);
+  sodaJSONObj["pages-fetched-from-pennsieve"] = sodaJSONObj["pages-fetched-from-pennsieve"].filter(
+    (tab) => tab != tabID
+  );
+};
+
 const guidedResetSkippedPages = () => {
   const pagesThatShouldAlwaysBeskipped = [
     "guided-dataset-generation-tab",
     "guided-structure-folder-tab",
     "guided-dataset-dissemination-tab",
-    "guided-resume-existing-dataset-tab",
+    "guided-select-starting-point-tab",
   ];
   for (const page of pagesThatShouldAlwaysBeskipped) {
     guidedSkipPage(page);
@@ -3752,7 +3915,6 @@ const guidedSkipPage = (pageId) => {
 
   // If the page no longer exists, return
   if (!page) {
-    console.log("Page can not be Unskipped" + pageId + " because it no longer exists.");
     return;
   }
 
@@ -3780,7 +3942,6 @@ const guidedUnSkipPage = (pageId) => {
 
   // If the page no longer exists, return
   if (!page) {
-    console.log("Page can not be skipped" + pageId + " because it no longer exists.");
     return;
   }
 
@@ -4280,6 +4441,42 @@ const updateGuidedRadioButtonsFromJSON = (parentPageID) => {
   }
 };
 
+const guidedAddUsersAndTeamsToDropdown = (usersArray, teamsArray) => {
+  const guidedUsersAndTeamsDropdown = document.getElementById("guided_bf_list_users_and_teams");
+  // Reset the dropdown
+  guidedUsersAndTeamsDropdown.innerHTML =
+    "<option>Select individuals or teams to grant permissions to</option>";
+
+  // Loop through the users and add them to the dropdown
+  for (const userString of usersArray) {
+    const userNameAndEmail = userString.split("!|**|!")[0].trim();
+    const userID = userString.split("!|**|!")[1].trim();
+    const userOption = `
+          <option
+            permission-type="user"
+            value="${userID}"
+          >
+            ${userNameAndEmail}
+          </option>
+        `;
+    guidedUsersAndTeamsDropdown.insertAdjacentHTML("beforeend", userOption);
+  }
+
+  // Loop through the teams and add them to the dropdown
+  for (const team of teamsArray) {
+    const trimmedTeam = team.trim();
+    const teamOption = `
+          <option
+            permission-type="team"
+            value="${trimmedTeam}"
+          >
+            ${trimmedTeam}
+          </option>
+        `;
+    guidedUsersAndTeamsDropdown.insertAdjacentHTML("beforeend", teamOption);
+  }
+};
+
 const guidedResetUserTeamPermissionsDropdowns = () => {
   $("#guided_bf_list_users_and_teams").val("Select individuals or teams to grant permissions to");
   $("#guided_bf_list_users_and_teams").selectpicker("refresh");
@@ -4289,10 +4486,7 @@ const guidedResetUserTeamPermissionsDropdowns = () => {
 let addListener = true;
 let removeEventListener = false;
 const copyLink = (link) => {
-  const copyIcon = document.getElementById("guided-pennsieve-copy-icon");
   Clipboard.writeText(link);
-  copyIcon.classList.remove("fa-copy");
-  copyIcon.classList.add("fa-check");
 
   notyf.open({
     duration: "2000",
@@ -4459,6 +4653,10 @@ const openPage = async (targetPageID) => {
   }
   guidedSetNavLoadingState(true);
 
+  const targetPage = document.getElementById(targetPageID);
+  const targetPageName = targetPage.dataset.pageName || targetPageID;
+  const targetPageParentTab = targetPage.closest(".guided--parent-tab");
+
   //when the promise completes there is a catch for error handling
   //upon resolving it will set navLoadingstate to false
   try {
@@ -4495,7 +4693,8 @@ const openPage = async (targetPageID) => {
 
     // Hide the Header div on the resume existing dataset page
     const guidedProgressContainer = document.getElementById("guided-header-div");
-    if (targetPageID === "guided-resume-existing-dataset-tab") {
+
+    if (targetPageID === "guided-select-starting-point-tab") {
       guidedProgressContainer.classList.add("hidden");
     } else {
       guidedProgressContainer.classList.remove("hidden");
@@ -4508,11 +4707,14 @@ const openPage = async (targetPageID) => {
     const datasetName = sodaJSONObj?.["digital-metadata"]?.["name"];
     const nextButton = document.getElementById("guided-next-button");
     const saveAndExitButton = document.getElementById("guided-button-save-and-exit");
+    const nextButtonSpans = document.querySelectorAll(".next-button-span");
 
     if (!datasetName) {
       nextButton.innerHTML = "Continue";
+      nextButtonSpans.forEach((span) => {
+        span.innerHTML = "Continue";
+      });
       saveAndExitButton.innerHTML = "Return to Home Page";
-
       guidedLockSideBar(false);
     } else {
       // Set the dataset name display in the side bar
@@ -4520,6 +4722,9 @@ const openPage = async (targetPageID) => {
       datasetNameDisplay.innerHTML = datasetName;
 
       nextButton.innerHTML = "Save and Continue";
+      nextButtonSpans.forEach((span) => {
+        span.innerHTML = "Save and Continue";
+      });
       saveAndExitButton.innerHTML = `<i class="far fa-save" style="margin-right: 10px"></i>Save and Exit`;
       guidedLockSideBar(true);
     }
@@ -4534,14 +4739,12 @@ const openPage = async (targetPageID) => {
       }
     }
 
-    if (targetPageID === "guided-resume-existing-dataset-tab") {
+    if (targetPageID === "guided-select-starting-point-tab") {
       // Hide the pennsieve dataset import progress circle
       const importProgressCircle = document.querySelector(
         "#guided_loading_pennsieve_dataset-organize"
       );
       importProgressCircle.classList.add("hidden");
-
-      await renderProgressCards();
     }
 
     if (targetPageID === "guided-prepare-dataset-structure-tab") {
@@ -4628,53 +4831,63 @@ const openPage = async (targetPageID) => {
       );
     }
 
-    if (targetPageID === "guided-ask-if-submission-is-sparc-funded-tab") {
-      if (pageNeedsUpdateFromPennsieve(targetPageID)) {
-        // Show the loading page while the page's data is being fetched from Pennsieve
-        setPageLoadingState(true);
-        try {
-          const submissionMetadataRes = await client.get(`/prepare_metadata/import_metadata_file`, {
-            params: {
-              selected_account: defaultBfAccount,
-              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-              file_type: "submission.xlsx",
-            },
-          });
-          const submissionData = submissionMetadataRes.data;
-          let sparcAwardRes = submissionData["SPARC Award number"];
-          if (sparcAwardRes) {
-            sparcAwardRes = sparcAwardRes.toLowerCase().trim();
-            // If they have an external award, we can assume the submission is not SPARC funded
-            if (sparcAwardRes === "external") {
-              // Select the not sparc funded button and assume the user has contacted SPARC
-              document.getElementById("guided-button-dataset-is-not-sparc-funded").click();
-              document.getElementById("guided-button-non-sparc-user-has-contacted-sparc").click();
-            }
-            // If they have a SPARC award and the length is greater than the length of "external",
-            // we can assume the submission is SPARC funded
-            else if (sparcAwardRes.length > 8) {
-              document.getElementById("guided-button-dataset-is-sparc-funded").click();
-            } else {
-              throw new Error("Unable to determine if submission is SPARC funded");
+    if (
+      targetPageID === "guided-ask-if-submission-is-sparc-funded-tab" &&
+      pageNeedsUpdateFromPennsieve(targetPageID)
+    ) {
+      setPageLoadingState(true);
+      try {
+        const submissionMetadataRes = await client.get(`/prepare_metadata/import_metadata_file`, {
+          params: {
+            selected_account: defaultBfAccount,
+            selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+            file_type: "submission.xlsx",
+          },
+        });
+        const submissionData = submissionMetadataRes.data;
+        let sparcAwardRes = submissionData["SPARC Award number"];
+        if (sparcAwardRes) {
+          const substringsSparcAwardsShouldContain = ["ot2od", "ot3od", "u18", "tr", "u01"]; // Note: These substrings are taken from the validator...
+          sparcAwardRes = sparcAwardRes.toLowerCase().trim();
+
+          let awardIsSparcFunded = false;
+
+          // Loop through the sparcSPARCAwards and check if the sparcAwrardRes contains one of them as a substring
+          // (meaning this is a SPARC funded dataset)
+          for (const substring of substringsSparcAwardsShouldContain) {
+            if (sparcAwardRes.includes(substring)) {
+              awardIsSparcFunded = true;
+              break;
             }
           }
-        } catch (error) {
-          // If the manifest file is not found or the SPARC award number string is smaller than 8 characters,
-          // we can't assume anything about the submission so the user has to select the appropriate button
-          console.log(error);
+
+          // If the sparcAwrardRes contains one of the sparcSPARCAwards as a substring, select that the dataset is SPARC funded
+          // If not, assume the user has contacted SPARC since they have already uploaded to Pennsieve (saves them a clicks)
+          if (awardIsSparcFunded) {
+            document.getElementById("guided-button-dataset-is-sparc-funded").click();
+          } else {
+            document.getElementById("guided-button-non-sparc-user-has-contacted-sparc").click();
+          }
         }
+      } catch (error) {
+        // If the manifest file is not found or the SPARC award number string is smaller than 8 characters,
+        // we can't assume anything about the submission so the user has to select the appropriate button
+        console.log(error);
       }
     }
 
     if (targetPageID === "guided-subjects-folder-tab") {
       openSubPageNavigation(targetPageID);
     }
+
     if (targetPageID === "guided-primary-data-organization-tab") {
       openSubPageNavigation(targetPageID);
     }
+
     if (targetPageID === "guided-source-data-organization-tab") {
       openSubPageNavigation(targetPageID);
     }
+
     if (targetPageID === "guided-derivative-data-organization-tab") {
       openSubPageNavigation(targetPageID);
     }
@@ -4834,6 +5047,68 @@ const openPage = async (targetPageID) => {
           delete datasetStructureJSONObj["folders"][folder]["files"]["manifest.xlsx"];
         }
       }
+
+      const manifestFilesCardsContainer = document.getElementById(
+        "guided-container-manifest-file-cards"
+      );
+
+      // Show the loading spinner
+      manifestFilesCardsContainer.innerHTML = `
+        <div class="lds-roller"><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+        Updating your dataset's manifest files...
+      `;
+
+      const sodaCopy = { ...sodaJSONObj };
+      delete sodaCopy["generate-dataset"];
+      sodaCopy["metadata-files"] = {};
+      sodaCopy["dataset-structure"] = datasetStructureJSONObj;
+
+      const cleanJson = await client.post(
+        `/curate_datasets/clean-dataset`,
+        { soda_json_structure: sodaCopy },
+        { timeout: 0 }
+      );
+      let response = cleanJson.data.soda_json_structure;
+      let responseDataStructure = response["dataset-structure"];
+
+      const res = await client.post(
+        `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
+        {
+          dataset_structure_obj: responseDataStructure,
+        },
+        { timeout: 0 }
+      );
+      const manifestRes = res.data;
+      //loop through each of the high level folders and store their manifest headers and data
+      //into the sodaJSONObj
+
+      let newManifestData = {};
+
+      for (const [highLevelFolderName, manifestFileData] of Object.entries(manifestRes)) {
+        //Only save manifest files for hlf that returned more than the headers
+        //(meaning manifest file data was generated in the response)
+        if (manifestFileData.length > 1) {
+          //Remove the first element from the array and set it as the headers
+          const manifestHeader = manifestFileData.shift();
+
+          newManifestData[highLevelFolderName] = {
+            headers: manifestHeader,
+            data: manifestFileData,
+          };
+        }
+      }
+      const existingManifestData = sodaJSONObj["guided-manifest-files"];
+      let updatedManifestData;
+
+      if (existingManifestData) {
+        updatedManifestData = diffCheckManifestFiles(newManifestData, existingManifestData);
+      } else {
+        updatedManifestData = newManifestData;
+      }
+
+      sodaJSONObj["guided-manifest-files"] = updatedManifestData;
+      //Rerender the manifest cards
+      renderManifestCards();
     }
 
     if (targetPageID === "guided-create-submission-metadata-tab") {
@@ -4994,6 +5269,7 @@ const openPage = async (targetPageID) => {
 
       renderDatasetDescriptionContributorsTable();
     }
+
     if (targetPageID === "guided-protocols-tab") {
       if (pageNeedsUpdateFromPennsieve("guided-protocols-tab")) {
         // Show the loading page while the page's data is being fetched from Pennsieve
@@ -5041,14 +5317,12 @@ const openPage = async (targetPageID) => {
       }
       renderProtocolsTable();
     }
+
     if (targetPageID === "guided-create-description-metadata-tab") {
       if (pageNeedsUpdateFromPennsieve("guided-create-description-metadata-tab")) {
         // Show the loading page while the page's data is being fetched from Pennsieve
         setPageLoadingState(true);
         try {
-          //TODO: Have the study information be pulled from
-          // Pennsieve's dataset description rather than
-          // the dataset_description.xlsx file
           let metadata_import = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
               selected_account: defaultBfAccount,
@@ -5058,43 +5332,37 @@ const openPage = async (targetPageID) => {
           });
           // guidedLoadDescriptionDatasetInformation
           let basicInformation = metadata_import.data["Basic information"];
-          if (basicInformation[0][0] === "Type" && basicInformation[3][0] === "Keywords") {
-            const studyType = basicInformation[0][1];
+
+          // First try to get the keywords from the imported dataset description metadata
+          if (basicInformation[3][0] === "Keywords") {
             const studyKeywords = basicInformation[3].slice(1).filter((keyword) => keyword !== "");
-            sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"] = {
-              type: studyType,
-              keywords: studyKeywords,
-            };
+
+            // If more than 1 keyword is found, add store them to be loaded into the UI
+            // Otherwise, use the tags on Pennsieve
+            if (studyKeywords.length != 0) {
+              sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"][
+                "keywords"
+              ] = studyKeywords;
+            }
           }
 
           // guidedLoadDescriptionStudyInformation
           let studyInformation = metadata_import.data["Study information"];
-          if (
-            studyInformation[0][0] === "Study purpose" &&
-            studyInformation[1][0] === "Study data collection" &&
-            studyInformation[2][0] === "Study primary conclusion" &&
-            studyInformation[3][0] === "Study organ system" &&
-            studyInformation[4][0] === "Study approach" &&
-            studyInformation[5][0] === "Study technique" &&
-            studyInformation[6][0] === "Study collection title"
-          ) {
-            const studyPurpose = studyInformation[0][1];
-            const studyDataCollection = studyInformation[1][1];
-            const studyPrimaryConclusion = studyInformation[2][1];
-            const studyOrganSystem = studyInformation[3][1];
-            const studyApproach = studyInformation[4][1];
-            const studyTechnique = studyInformation[5][1];
-            const studyCollectionTitle = studyInformation[6][1];
-            sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"] = {
-              "study purpose": studyPurpose,
-              "study data collection": studyDataCollection,
-              "study primary conclusion": studyPrimaryConclusion,
-              "study organ system": studyOrganSystem,
-              "study approach": studyApproach,
-              "study technique": studyTechnique,
-              "study collection title": studyCollectionTitle,
-            };
+
+          // Declare an object and add all of the study information to it
+          const studyInformationObject = {};
+          for (let i = 0; i < studyInformation.length; i++) {
+            const studyInformationArray = studyInformation[i];
+            // Lowercase the key (e.g. Study approach -> study approach)
+            const studyInformationKey = studyInformationArray[0].toLowerCase();
+            // The value is the second element in the array
+            const studyInformationValue = studyInformationArray[1];
+
+            studyInformationObject[studyInformationKey] = studyInformationValue;
           }
+
+          sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"] =
+            studyInformationObject;
 
           // guidedLoadDescriptionStudyDesign
           let awardInformation = metadata_import.data["Award information"];
@@ -5158,15 +5426,81 @@ const openPage = async (targetPageID) => {
             "guided-create-description-metadata-tab"
           );
         }
-      }
-      const guidedLoadDescriptionDatasetInformation = () => {
-        const descriptionMetadata =
-          sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"];
+        // If the dataset keywords were not set from the imported metadata, try to get them from the Pennsieve tags
+        const keywordsDerivedFromDescriptionMetadata =
+          sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"]?.[
+            "keywords"
+          ];
+        if (!keywordsDerivedFromDescriptionMetadata) {
+          try {
+            const currentDatasetID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+            const tagsReq = await client.get(`/manage_datasets/datasets/${currentDatasetID}/tags`, {
+              params: { selected_account: defaultBfAccount },
+            });
+            const { tags } = tagsReq.data;
+            if (tags.length > 0) {
+              sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"][
+                "keywords"
+              ] = tags;
+            }
+          } catch (error) {
+            // We don't need to do anything if this fails, but the user will have to enter the new tags before continuing
+            clientError(error);
+          }
+        }
 
+        // If the study information was not set from the imported metadata, try to extract it from the Pennsieve dataset description
+        const studyPurpose =
+          sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+            "study purpose"
+          ];
+        const studyDataCollection =
+          sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+            "study data collection"
+          ];
+        const studyPrimaryConclusion =
+          sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+            "study primary conclusion"
+          ];
+
+        if (!studyPurpose && !studyDataCollection && !studyPrimaryConclusion) {
+          try {
+            const pennsieveDatasetDescription = await api.getDatasetReadme(
+              defaultBfAccount,
+              sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
+            );
+            const parsedDescription = createParsedReadme(pennsieveDatasetDescription);
+            if (parsedDescription["Study Purpose"]) {
+              sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"][
+                "study purpose"
+              ] = parsedDescription["Study Purpose"].replace(/\r?\n|\r/g, "").trim();
+            }
+            if (parsedDescription["Data Collection"]) {
+              sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"][
+                "study data collection"
+              ] = parsedDescription["Data Collection"].replace(/\r?\n|\r/g, "").trim();
+            }
+            if (parsedDescription["Primary Conclusion"]) {
+              sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"][
+                "study primary conclusion"
+              ] = parsedDescription["Primary Conclusion"].replace(/\r?\n|\r/g, "").trim();
+            }
+          } catch (error) {
+            // We don't need to do anything if this fails, but the user will have to enter the study information before continuing
+            clientError(error);
+          }
+        }
+      }
+
+      const guidedLoadDescriptionDatasetInformation = () => {
         // Reset the keywords tags and add the stored ones if they exist in the JSON
         guidedDatasetKeywordsTagify.removeAllTags();
-        if (descriptionMetadata?.["keywords"]) {
-          guidedDatasetKeywordsTagify.addTags(descriptionMetadata["keywords"]);
+        const datasetKeyWords =
+          sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"]?.[
+            "keywords"
+          ];
+        if (datasetKeyWords) {
+          guidedDatasetKeywordsTagify.addTags(datasetKeyWords);
         }
       };
       guidedLoadDescriptionDatasetInformation();
@@ -5181,32 +5515,71 @@ const openPage = async (targetPageID) => {
           "guided-ds-study-collection-title"
         );
 
-        //reset dataset descript tags
+        //reset the inputs
+        studyPurposeInput.value = "";
+        studyDataCollectionInput.value = "";
+        studyPrimaryConclusionInput.value = "";
+        studyCollectionTitleInput.value = "";
         guidedStudyOrganSystemsTagify.removeAllTags();
         guidedStudyApproachTagify.removeAllTags();
         guidedStudyTechniquesTagify.removeAllTags();
 
-        const studyInformationMetadata =
-          sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"];
+        // Set the inputs if their respective keys exist in the JSON
+        // (if not, the input will remain blank)
+        const studyPurpose =
+          sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+            "study purpose"
+          ];
+        if (studyPurpose) {
+          studyPurposeInput.value = studyPurpose;
+        }
 
-        if (studyInformationMetadata) {
-          studyPurposeInput.value = studyInformationMetadata["study purpose"];
-          studyDataCollectionInput.value = studyInformationMetadata["study data collection"];
-          studyPrimaryConclusionInput.value = studyInformationMetadata["study primary conclusion"];
-          studyCollectionTitleInput.value = studyInformationMetadata["study collection title"];
+        const studyDataCollection =
+          sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+            "study data collection"
+          ];
+        if (studyDataCollection) {
+          studyDataCollectionInput.value = studyDataCollection;
+        }
 
-          guidedStudyOrganSystemsTagify.addTags(studyInformationMetadata["study organ system"]);
-          guidedStudyApproachTagify.addTags(studyInformationMetadata["study approach"]);
-          guidedStudyTechniquesTagify.addTags(studyInformationMetadata["study technique"]);
-        } else {
-          //reset the inputs
-          studyPurposeInput.value = "";
-          studyDataCollectionInput.value = "";
-          studyPrimaryConclusionInput.value = "";
-          studyCollectionTitleInput.value = "";
-          guidedStudyOrganSystemsTagify.removeAllTags();
-          guidedStudyApproachTagify.removeAllTags();
-          guidedStudyTechniquesTagify.removeAllTags();
+        const studyPrimaryConclusion =
+          sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+            "study primary conclusion"
+          ];
+        if (studyPrimaryConclusion) {
+          studyPrimaryConclusionInput.value = studyPrimaryConclusion;
+        }
+
+        const studyCollectionTitle =
+          sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+            "study collection title"
+          ];
+        if (studyCollectionTitle) {
+          studyCollectionTitleInput.value = studyCollectionTitle;
+        }
+
+        const studyOrganSystems =
+          sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+            "study organ system"
+          ];
+        if (studyOrganSystems) {
+          guidedStudyOrganSystemsTagify.addTags(studyOrganSystems);
+        }
+
+        const studyApproach =
+          sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+            "study approach"
+          ];
+        if (studyApproach) {
+          guidedStudyApproachTagify.addTags(studyApproach);
+        }
+
+        const studyTechniques =
+          sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]?.[
+            "study technique"
+          ];
+        if (studyTechniques) {
+          guidedStudyTechniquesTagify.addTags(studyTechniques);
         }
       };
       guidedLoadDescriptionStudyInformation();
@@ -5242,6 +5615,7 @@ const openPage = async (targetPageID) => {
     if (targetPageID === "guided-samples-folder-tab") {
       renderSamplesTables();
     }
+
     if (targetPageID === "guided-pennsieve-intro-tab") {
       const confirmPennsieveAccountDiv = document.getElementById(
         "guided-confirm-pennsieve-account"
@@ -5255,38 +5629,26 @@ const openPage = async (targetPageID) => {
         selectPennsieveAccountDiv.classList.add("hidden");
 
         const pennsieveIntroText = document.getElementById("guided-pennsive-intro-bf-account");
-        pennsieveIntroText.innerHTML = defaultBfAccount;
-
-        const pennsieveIntroAccountDetailsText = document.getElementById(
-          "guided-pennsive-intro-account-details"
-        );
-        setTimeout(() => {
-          pennsieveIntroAccountDetailsText.scrollIntoView({
-            behavior: "smooth",
-            block: "start",
-          });
-        }, 0);
-        setPageLoadingState(true);
+        // fetch the user's email and set that as the account field's value
+        const userInformation = await api.getUserInformation();
+        const userEmail = userInformation.email;
+        pennsieveIntroText.innerHTML = userEmail;
 
         try {
-          const bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
-            params: {
-              selected_account: defaultBfAccount,
-            },
-          });
-          const accountDetailsRes = bf_account_details_req.data.account_details;
-          pennsieveIntroAccountDetailsText.innerHTML = accountDetailsRes;
-          // If the account details are the same as the last confirmed account details, then automatically confirm the account
-          if (sodaJSONObj["last-confirmed-pennsieve-account-details"]) {
-            if (sodaJSONObj["last-confirmed-pennsieve-account-details"] === accountDetailsRes) {
-              document.getElementById("guided-confirm-pennsieve-account-button").click();
+          if (sodaJSONObj["last-confirmed-pennsieve-workspace-details"]) {
+            if (
+              sodaJSONObj["last-confirmed-pennsieve-workspace-details"] ===
+              guidedGetCurrentUserWorkSpace()
+            ) {
+              document.getElementById("guided-confirm-pennsieve-organization-button").click();
             }
           }
         } catch (error) {
-          currentAccountDetailsText.innerHTML = "Error loading account details";
+          pennsieveIntroAccountDetailsText.innerHTML = "Error loading account details";
         }
       }
     }
+
     if (targetPageID === "guided-banner-image-tab") {
       if (pageNeedsUpdateFromPennsieve("guided-banner-image-tab")) {
         // Show the loading page while the page's data is being fetched from Pennsieve
@@ -5390,32 +5752,33 @@ const openPage = async (targetPageID) => {
         $("#guided-banner-image-preview-container").hide();
       }
     }
+
     if (targetPageID === "guided-designate-permissions-tab") {
+      const usersReq = await client.get(
+        `manage_datasets/bf_get_users?selected_account=${defaultBfAccount}`
+      );
+      const teamsReq = await client.get(
+        `manage_datasets/bf_get_teams?selected_account=${defaultBfAccount}`
+      );
+
+      const usersThatCanBeGrantedPermissions = usersReq.data.users;
+
+      const teamsThatCanBeGrantedPermissions = getSortedTeamStrings(teamsReq.data.teams);
+
+      // Reset the dropdown with the new users and teams
+      guidedAddUsersAndTeamsToDropdown(
+        usersThatCanBeGrantedPermissions,
+        teamsThatCanBeGrantedPermissions
+      );
+
       if (pageNeedsUpdateFromPennsieve("guided-designate-permissions-tab")) {
         // Show the loading page while the page's data is being fetched from Pennsieve
         setPageLoadingState(true);
         try {
-          const sparcUsersReq = await client.get(
-            `manage_datasets/bf_get_users?selected_account=${defaultBfAccount}`
-          );
-          const sparcTeamsReq = await client.get(
-            `manage_datasets/bf_get_teams?selected_account=${defaultBfAccount}`
-          );
-
-          // //Returns an array of strings with the user's name and role
-          // const currentDatasetPermissions = await api.getDatasetPermissions(
-          //   defaultBfAccount,
-          //   sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-          //   true
-          // );
-          //TODO: Check what these reponses look like compared to get dataset permissions endpoint
-          const sparcUsers = sparcUsersReq.data.users;
-          const sparcTeams = sparcTeamsReq.data.teams;
-
           let sparcUsersDivided = [];
 
           //sparc users results needs to be formatted
-          sparcUsers.forEach((element) => {
+          usersThatCanBeGrantedPermissions.forEach((element) => {
             //first two elements of this array will just be an email with no name
             sparcUsersDivided.push(element.split(" !|**|!"));
           });
@@ -5434,10 +5797,6 @@ const openPage = async (targetPageID) => {
           let partialUserDetails = [];
           let finalTeamPermissions = [];
           let piOwner = [];
-          //const filteredPermissions = ['User: Jacob Clark , role: owner', 'User: Christopher Marroquin , role: viewer', 'User: Dorian Portillo , role: editor']
-          //Store fetched users and team members and store in soda json
-          // going to need the UUID of user permissions
-          //Fetch or do we already have the info?
 
           //so check for PI owner as well
           for (const userPermission of filteredPermissions) {
@@ -5533,99 +5892,6 @@ const openPage = async (targetPageID) => {
       renderPermissionsTable();
       guidedResetUserTeamPermissionsDropdowns();
     }
-    if (targetPageID === "guided-add-description-tab") {
-      if (pageNeedsUpdateFromPennsieve("guided-add-description-tab")) {
-        // Show the loading page while the page's data is being fetched from Pennsieve
-        setPageLoadingState(true);
-        const description = await api.getDatasetReadme(
-          defaultBfAccount,
-          sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
-        );
-        const parsedDescription = createParsedReadme(description);
-        if (parsedDescription["study purpose"]) {
-          sodaJSONObj["digital-metadata"]["description"]["study-purpose"] = parsedDescription[
-            "study purpose"
-          ].replace(/\r?\n|\r/g, "");
-        }
-        if (parsedDescription["data collection"]) {
-          sodaJSONObj["digital-metadata"]["description"]["data-collection"] = parsedDescription[
-            "data collection"
-          ].replace(/\r?\n|\r/g, "");
-        }
-        if (parsedDescription["primary conclusion"]) {
-          sodaJSONObj["digital-metadata"]["description"]["primary-conclusion"] = parsedDescription[
-            "primary conclusion"
-          ].replace(/\r?\n|\r/g, "");
-        }
-      }
-
-      const studyPurposeInput = document.getElementById("guided-pennsieve-study-purpose");
-      const studyDataCollectionInput = document.getElementById(
-        "guided-pennsieve-study-data-collection"
-      );
-      const studyPrimaryConclusionInput = document.getElementById(
-        "guided-pennsieve-study-primary-conclusion"
-      );
-
-      const studyInformationFromDescriptionMetadata =
-        sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"];
-
-      const descriptionMetadata = sodaJSONObj["digital-metadata"]["description"];
-
-      if (Object.keys(descriptionMetadata).length > 0) {
-        studyPurposeInput.value = descriptionMetadata["study-purpose"] ?? "";
-        studyDataCollectionInput.value = descriptionMetadata["data-collection"] ?? "";
-        studyPrimaryConclusionInput.value = descriptionMetadata["primary-conclusion"] ?? "";
-      } else if (studyInformationFromDescriptionMetadata) {
-        studyPurposeInput.value = studyInformationFromDescriptionMetadata["study purpose"] ?? "";
-        studyDataCollectionInput.value =
-          studyInformationFromDescriptionMetadata["study data collection"] ?? "";
-        studyPrimaryConclusionInput.value =
-          studyInformationFromDescriptionMetadata["study primary conclusion"] ?? "";
-      } else {
-        studyPurposeInput.value = "";
-        studyDataCollectionInput.value = "";
-        studyPrimaryConclusionInput.value = "";
-      }
-    }
-
-    if (targetPageID === "guided-add-tags-tab") {
-      if (pageNeedsUpdateFromPennsieve("guided-add-tags-tab")) {
-        // Show the loading page while the page's data is being fetched from Pennsieve
-        setPageLoadingState(true);
-        try {
-          const currentDatasetID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
-          const tagsReq = await client.get(`/manage_datasets/datasets/${currentDatasetID}/tags`, {
-            params: { selected_account: defaultBfAccount },
-          });
-          const tags = tagsReq.data.tags;
-          sodaJSONObj["digital-metadata"]["dataset-tags"] = tags;
-          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-add-tags-tab");
-        } catch (error) {
-          clientError(error);
-          const emessage = error.response.data.message;
-          await guidedShowOptionalRetrySwal(emessage, "guided-add-tags-tab");
-          // If the user chooses not to retry re-fetching the page data, mark the page as fetched
-          // so the the fetch does not occur again
-          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-add-tags-tab");
-        }
-      }
-      const descriptionMetadata =
-        sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"];
-      const datasetTags = sodaJSONObj["digital-metadata"]["dataset-tags"];
-
-      guidedDatasetTagsTagify.removeAllTags();
-
-      //Try to add tags from a previous session if they exist
-      //If not, try to populate the keywords entered during description metadata addition
-      if (datasetTags) {
-        guidedDatasetTagsTagify.addTags(datasetTags);
-      } else if (descriptionMetadata) {
-        if (descriptionMetadata["keywords"]) {
-          guidedDatasetTagsTagify.addTags(descriptionMetadata["keywords"]);
-        }
-      }
-    }
 
     if (targetPageID === "guided-assign-license-tab") {
       if (pageNeedsUpdateFromPennsieve("guided-assign-license-tab")) {
@@ -5659,45 +5925,6 @@ const openPage = async (targetPageID) => {
         licenseCheckbox.checked = false;
       }
     }
-
-    /*
-    if (targetPageID === "guided-dataset-generate-location-tab") {
-      const currentAccountText = document.getElementById("guided-bf-account");
-      const currentAccountDetailsText = document.getElementById("guided-account-details");
-      if (defaultBfAccount) {
-        currentAccountText.innerHTML = defaultBfAccount;
-        (async () => {
-          try {
-            let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
-              params: {
-                selected_account: defaultBfAccount,
-              },
-            });
-            let accountDetailsRes = bf_account_details_req.data.account_details;
-            currentAccountDetailsText.innerHTML = accountDetailsRes;
-          } catch (error) {
-            currentAccountDetailsText.innerHTML = "Error loading account details";
-            console.log(error);
-          }
-        })();
-      } else {
-        currentAccountText.innerHTML = "None";
-        currentAccountDetailsText.innerHTML = "None";
-      }
-    }
-    */
-
-    /*
-    if (targetPageID === "guided-dataset-generate-destination-tab") {
-      const datasetName = sodaJSONObj["digital-metadata"]["name"];
-
-      const confirmDatasetGenerationNameinput = document.getElementById(
-        "guided-input-dataset-name"
-      );
-
-      confirmDatasetGenerationNameinput.value = datasetName;
-    }
-    */
 
     if (targetPageID === "guided-create-subjects-metadata-tab") {
       //remove custom fields that may have existed from a previous session
@@ -5786,7 +6013,40 @@ const openPage = async (targetPageID) => {
         ? samplesProtocolContainer.classList.remove("hidden")
         : samplesProtocolContainer.classList.add("hidden");
     }
+
     if (targetPageID === "guided-add-code-metadata-tab") {
+      const startNewCodeDescYesNoContainer = document.getElementById(
+        "guided-section-start-new-code-metadata-query"
+      );
+      const startPennsieveCodeDescYesNoContainer = document.getElementById(
+        "guided-section-start-from-pennsieve-code-metadata-query"
+      );
+      if (pageNeedsUpdateFromPennsieve("guided-add-code-metadata-tab")) {
+        // Show the loading page while the page's data is being fetched from Pennsieve
+        setPageLoadingState(true);
+        try {
+          await client.get(`/prepare_metadata/import_metadata_file`, {
+            params: {
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+              file_type: "code_description.xlsx",
+            },
+          });
+          sodaJSONObj["pennsieve-dataset-has-code-metadata-file"] = "yes";
+        } catch (error) {
+          console.log("code_description file does not exist");
+        }
+      }
+      // If the code_description file has been detected on the dataset on Pennsieve, show the
+      // "Start from Pennsieve" option, otherwise show the "Start new" option
+      if (sodaJSONObj["pennsieve-dataset-has-code-metadata-file"] === "yes") {
+        startNewCodeDescYesNoContainer.classList.add("hidden");
+        startPennsieveCodeDescYesNoContainer.classList.remove("hidden");
+      } else {
+        startNewCodeDescYesNoContainer.classList.remove("hidden");
+        startPennsieveCodeDescYesNoContainer.classList.add("hidden");
+      }
+
       const codeDescriptionPath =
         sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"];
 
@@ -5818,6 +6078,7 @@ const openPage = async (targetPageID) => {
         codeDescriptionParaText.innerHTML = "";
       }
     }
+
     if (targetPageID === "guided-create-readme-metadata-tab") {
       if (pageNeedsUpdateFromPennsieve("guided-create-readme-metadata-tab")) {
         // Show the loading page while the page's data is being fetched from Pennsieve
@@ -5855,29 +6116,6 @@ const openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-create-changes-metadata-tab") {
-      if (pageNeedsUpdateFromPennsieve("guided-create-changes-metadata-tab")) {
-        // Show the loading page while the page's data is being fetched from Pennsieve
-        setPageLoadingState(true);
-        try {
-          const changes_import = await client.get(`/prepare_metadata/readme_changes_file`, {
-            params: {
-              file_type: "CHANGES",
-              selected_account: defaultBfAccount,
-              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-            },
-          });
-          const changes_text = changes_import.data.text;
-          sodaJSONObj["dataset-metadata"]["CHANGES"] = changes_text;
-          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-changes-metadata-tab");
-        } catch (error) {
-          clientError(error);
-          const emessage = error.response.data.message;
-          await guidedShowOptionalRetrySwal(emessage, "guided-create-changes-metadata-tab");
-          // If the user chooses not to retry re-fetching the page data, mark the page as fetched
-          // so the the fetch does not occur again
-          sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-create-changes-metadata-tab");
-        }
-      }
       const changesTextArea = document.getElementById("guided-textarea-create-changes");
 
       const changes = sodaJSONObj["dataset-metadata"]["CHANGES"];
@@ -6125,8 +6363,6 @@ const openPage = async (targetPageID) => {
     }
 
     let currentParentTab = CURRENT_PAGE.closest(".guided--parent-tab");
-    let targetPage = document.getElementById(targetPageID);
-    let targetPageParentTab = targetPage.closest(".guided--parent-tab");
 
     //Set all capsules to grey and set capsule of page being traversed to green
     setActiveCapsule(targetPageID);
@@ -6155,10 +6391,29 @@ const openPage = async (targetPageID) => {
         top: 0,
       });
     }
+
+    // Start any animations that need to be started
+    startOrStopAnimationsInContainer(targetPageID, "start");
+
+    hideAndShowElementsDependingOnStartType(targetPage);
+
     // Set the last opened page and save it
     sodaJSONObj["page-before-exit"] = targetPageID;
     await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
   } catch (error) {
+    const eMessage = userErrorMessage(error);
+    Swal.fire({
+      icon: "error",
+      title: `Error opening the ${targetPageName} page`,
+      html: eMessage,
+      width: 600,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: `OK`,
+      focusConfirm: true,
+      allowOutsideClick: false,
+    });
+
     guidedSetNavLoadingState(false);
     console.log(error);
     throw error;
@@ -6732,17 +6987,8 @@ const newEmptyFolderObj = () => {
   };
 };
 
-const patchPreviousGuidedModeVersions = () => {
+const patchPreviousGuidedModeVersions = async () => {
   //temp patch contributor affiliations if they are still a string (they were added in the previous version)
-  const contributors = sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
-  if (contributors) {
-    for (contributor of sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"]) {
-      //if contributor is in old format (string), convert to new format (array)
-      if (!Array.isArray(contributor.conAffliation)) {
-        contributor.conAffliation = [contributor.conAffliation];
-      }
-    }
-  }
 
   for (highLevelFolderManifestData in sodaJSONObj["guided-manifest-files"]) {
     if (
@@ -6769,8 +7015,37 @@ const patchPreviousGuidedModeVersions = () => {
     sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] = [];
   }
 
+  const contributors = sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+  if (contributors) {
+    for (contributor of sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"]) {
+      //if contributor is in old format (string), convert to new format (array)
+      if (!Array.isArray(contributor.conAffliation)) {
+        contributor.conAffliation = [contributor.conAffliation];
+      }
+      // Replace improperly named PrincipleInvestigator role with Principle Investigator
+      if (contributor?.["conRole"].includes("PrincipleInvestigator")) {
+        contributor["conRole"] = contributor["conRole"].filter(
+          (role) => role !== "PrincipleInvestigator"
+        );
+        contributor["conRole"].unshift("PrincipalInvestigator");
+      }
+    }
+  }
+
+  if (!sodaJSONObj["button-config"]) {
+    sodaJSONObj["button-config"] = {};
+  }
+
   if (!sodaJSONObj["skipped-pages"]) {
     sodaJSONObj["skipped-pages"] = [];
+  }
+
+  if (!sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"]) {
+    sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"] = {};
+  }
+
+  if (!sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"]) {
+    sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"] = {};
   }
 
   if (!sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"]) {
@@ -6786,184 +7061,260 @@ const patchPreviousGuidedModeVersions = () => {
     // This is the first time the user has used SODA since the "last-version-of-soda-used" key was added
     sodaJSONObj["last-version-of-soda-used"] = "10.0.4";
   }
+
   // If the user started a dataset after version 10.0.4, skip CHANGES metadata pages
   if (!sodaJSONObj["skipped-pages"].includes("guided-create-changes-metadata-tab")) {
     if (sodaJSONObj["starting-point"]["type"] === "new") {
       sodaJSONObj["skipped-pages"].push("guided-create-changes-metadata-tab");
     }
   }
-};
 
-//Loads UI when continue curation button is pressed
-const guidedResumeProgress = async (resumeProgressButton) => {
-  resumeProgressButton.addClass("loading");
-  resumeProgressButton.prop("disabled", true);
-  const datasetNameToResume = resumeProgressButton
-    .parent()
-    .siblings()
-    .find($(".progress-file-name"))
-    .html();
-  const datasetResumeJsonObj = await getProgressFileData(datasetNameToResume);
+  // If the the last time the user worked on the dataset was before v11.0.0, skip the changes page unless
+  // the dataset has already been published.
+  if (sodaJSONObj["last-version-of-soda-used"] <= "11.0.0") {
+    if (sodaJSONObj["starting-point"]["type"] === "bf") {
+      const datasetsPennsieveID = sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
 
-  // Datasets successfully uploaded will have the "previous-guided-upload-dataset-name" key
-  const datasetHasAlreadyBeenSuccessfullyUploaded =
-    datasetResumeJsonObj["previous-guided-upload-dataset-name"];
-
-  // If the dataset had been previously successfully uploaded, check to make sure it exists on Pennsieve still.
-  if (datasetHasAlreadyBeenSuccessfullyUploaded) {
-    const previouslyUploadedDatasetId =
-      datasetResumeJsonObj["digital-metadata"]["pennsieve-dataset-id"];
-    const datasetToResumeExistsOnPennsieve = await checkIfDatasetExistsOnPennsieve(
-      previouslyUploadedDatasetId
-    );
-    if (!datasetToResumeExistsOnPennsieve) {
-      notyf.open({
-        type: "error",
-        message: `The dataset ${datasetResumeJsonObj["previous-guided-upload-dataset-name"]} was not found on Pennsieve therefore you can no longer modify this dataset via Guided Mode.`,
-        duration: 7000,
-      });
-      resumeProgressButton.prop("disabled", false);
-      resumeProgressButton.removeClass("loading");
-      return;
-    }
-  }
-
-  if (!datasetHasAlreadyBeenSuccessfullyUploaded) {
-    // If the dataset is being edited on Pensieve, check to make sure the folders and files are still the same.
-    if (datasetResumeJsonObj["starting-point"]?.["type"] === "bf") {
-      if (Object.keys(datasetResumeJsonObj["previously-uploaded-data"]).length > 0) {
-        await Swal.fire({
-          icon: "info",
-          title: "Resuming a Pennsieve dataset upload that previously failed",
-          html: `
-            Please note that any changes made to your dataset on Pennsieve since your last dataset upload
-            was interrupted may be overwritten.
-          `,
-          width: 500,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          confirmButtonText: `I understand`,
-          focusConfirm: true,
-          allowOutsideClick: false,
-        });
+      // Skip/unSkip the changes metadata page based on publishing status
+      // (if the changes file already exists, then still show it)
+      const changesCheckRes = await checkIfChangesMetadataPageShouldBeShown(datasetsPennsieveID);
+      if (changesCheckRes.shouldShow === true) {
+        sodaJSONObj["dataset-metadata"]["CHANGES"] = changesCheckRes.changesMetadata;
+        guidedUnSkipPage("guided-create-changes-metadata-tab");
       } else {
-        const nofiication = notyf.open({
-          type: "info",
-          message: `Checking to make sure the dataset structure on Pennsieve is the same as when you started editing this dataset.`,
-          duration: 30000,
-        });
-        let filesFoldersResponse = await client.post(
-          `/organize_datasets/dataset_files_and_folders`,
-          {
-            sodajsonobject: datasetResumeJsonObj,
-          },
-          { timeout: 0 }
-        );
-        let data = filesFoldersResponse.data;
-        const currentPennsieveDatasetStructure = data["soda_object"]["dataset-structure"];
-        notyf.dismiss(nofiication);
+        sodaJSONObj["dataset-metadata"]["CHANGES"] = "";
+        guidedSkipPage("guided-create-changes-metadata-tab");
+      }
 
-        const intitiallyPulledDatasetStructure =
-          datasetResumeJsonObj["initially-pulled-dataset-structure"];
-
-        // check to make sure current and initially pulled dataset structures are the same
-        if (
-          JSON.stringify(currentPennsieveDatasetStructure) !==
-          JSON.stringify(intitiallyPulledDatasetStructure)
-        ) {
-          await Swal.fire({
-            icon: "error",
-            title: "Dataset structure on Pennsieve has changed",
-            html: `
-          The dataset structure on Pennsieve has changed since you started editing this dataset.
-          <br />
-          <br />
-          You will need to start over from the beginning. 
-        `,
-            width: 500,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            confirmButtonText: `Ok`,
-            focusConfirm: true,
-            allowOutsideClick: false,
-          });
-          resumeProgressButton.prop("disabled", false);
-          resumeProgressButton.removeClass("loading");
-          return;
-        } else {
-          notyf.open({
-            type: "success",
-            message: `The dataset structure on Pennsieve is the same as when you started editing this dataset.`,
-            duration: 7000,
-          });
-        }
+      // Delete the saved button config for the code metadata page (The flow was slightly updated)
+      // The user will have to reselect their option If they do not have a code-description file, otherwise
+      // the new prompt will be shown.
+      if (sodaJSONObj?.["button-config"]?.["dataset-contains-code-data"]) {
+        delete sodaJSONObj["button-config"]["dataset-contains-code-data"];
       }
     }
   }
-  sodaJSONObj = datasetResumeJsonObj;
-  attachGuidedMethodsToSodaJSONObj();
 
-  datasetStructureJSONObj = sodaJSONObj["saved-datset-structure-json-obj"];
-  subjectsTableData = sodaJSONObj["subjects-table-data"];
-  samplesTableData = sodaJSONObj["samples-table-data"];
-
-  //patches the sodajsonobj if it was created in a previous version of guided mode
-  patchPreviousGuidedModeVersions();
-
-  // pageToReturnTo will be set to the page the user will return to
-  let pageToReturnTo;
-
-  // The last page the user left off on on a previous session
-  const usersPageBeforeExit = sodaJSONObj["page-before-exit"];
-
-  // If the last time the user worked on the progress file was in a previous version of SODA, then force the user to restart from the first page
-  const currentSodaVersion = document.getElementById("version").innerHTML;
-  const lastVersionOfSodaUsedOnProgressFile = sodaJSONObj["last-version-of-soda-used"];
-
-  if (lastVersionOfSodaUsedOnProgressFile === currentSodaVersion) {
-    const usersPageBeforeExit = datasetResumeJsonObj["page-before-exit"];
-    //Check to make sure the page still exists before returning to it
-    if (document.getElementById(usersPageBeforeExit)) {
-      pageToReturnTo = usersPageBeforeExit;
+  if (sodaJSONObj?.["starting-point"]?.["type"] === "bf") {
+    if (!sodaJSONObj?.["digital-metadata"]?.["dataset-workspace"]) {
+      // Skip the log in page since we no longer need it
+      guidedSkipPage("guided-pennsieve-intro-tab");
+      sodaJSONObj["digital-metadata"]["dataset-workspace"] = guidedGetCurrentUserWorkSpace();
     }
   }
 
-  // If the user left while the upload was in progress, send the user to the upload confirmation page
-  if (usersPageBeforeExit === "guided-dataset-generation-tab") {
-    pageToReturnTo = "guided-dataset-generation-confirmation-tab";
+  // No longer skip validation page for non-sparc datasts ("page should always be unskipped")
+  if (sodaJSONObj["skipped-pages"].includes("guided-dataset-validation-tab")) {
+    sodaJSONObj["skipped-pages"] = sodaJSONObj["skipped-pages"].filter(
+      (page) => page !== "guided-dataset-validation-tab"
+    );
   }
 
   //If the dataset was successfully uploaded, send the user to the share with curation team
-  if (datasetResumeJsonObj["previous-guided-upload-dataset-name"]) {
-    pageToReturnTo = "guided-dataset-dissemination-tab";
+  if (sodaJSONObj["previous-guided-upload-dataset-name"]) {
+    return "guided-dataset-dissemination-tab";
   }
 
-  // Delete the button status for the Pennsieve account confirmation section
-  // So the user has to confirm their Pennsieve account before uploading
-  delete sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
+  // If no other conditions are met, return the page the user was last on
+  return sodaJSONObj["page-before-exit"];
+};
 
-  // Save the skipped pages in a temp variable since guidedTransitionFromHome will remove them
-  const prevSessionSkikppedPages = [...sodaJSONObj["skipped-pages"]];
+//Loads UI when continue curation button is pressed
+const guidedResumeProgress = async (datasetNameToResume) => {
+  const loadingSwal = Swal.fire({
+    title: "Resuming where you last left off",
+    html: `
+    <div class="lds-roller">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  `,
+    width: 500,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    allowOutsideClick: false,
+    showConfirmButton: false,
+    showCancelButton: false,
+  });
 
-  guidedTransitionFromHome();
-  // Reskip the pages from a previous session
-  for (const pageID of prevSessionSkikppedPages) {
-    guidedSkipPage(pageID);
-  }
+  // Wait for 2 seconds so that the loading icon can at least kind of be seen (This can be removed)
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+  try {
+    const datasetResumeJsonObj = await getProgressFileData(datasetNameToResume);
 
-  // Skip this page incase it was not skipped in a previous session
-  guidedSkipPage("guided-resume-existing-dataset-tab");
+    // Datasets successfully uploaded will have the "previous-guided-upload-dataset-name" key
+    const datasetHasAlreadyBeenSuccessfullyUploaded =
+      datasetResumeJsonObj["previous-guided-upload-dataset-name"];
 
-  //Hide the sub-page navigation and show the main page navigation footer
-  //If the user traverses to a page that requires the sub-page navigation,
-  //the sub-page will be shown during openPage() function
-  hideSubNavAndShowMainNav(false);
+    // If the dataset had been previously successfully uploaded, check to make sure it exists on Pennsieve still.
+    if (datasetHasAlreadyBeenSuccessfullyUploaded) {
+      const previouslyUploadedDatasetId =
+        datasetResumeJsonObj["digital-metadata"]["pennsieve-dataset-id"];
+      const datasetToResumeExistsOnPennsieve = await checkIfDatasetExistsOnPennsieve(
+        previouslyUploadedDatasetId
+      );
+      if (!datasetToResumeExistsOnPennsieve) {
+        throw new Error(`This dataset no longer exists on Pennsieve`);
+      }
+    }
 
-  if (pageToReturnTo) {
-    await openPage(pageToReturnTo);
-  } else {
-    const firstPage = getNonSkippedGuidedModePages(document)[0];
-    await openPage(firstPage.id);
+    if (!datasetHasAlreadyBeenSuccessfullyUploaded) {
+      // If the dataset is being edited on Pensieve, check to make sure the folders and files are still the same.
+      if (datasetResumeJsonObj["starting-point"]?.["type"] === "bf") {
+        // Check to make sure the dataset is not locked
+        const datasetIsLocked = await api.isDatasetLocked(
+          defaultBfAccount,
+          datasetResumeJsonObj["digital-metadata"]["pennsieve-dataset-id"]
+        );
+        if (datasetIsLocked) {
+          throw new Error(`
+            This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
+            <br />
+            <br />
+            If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
+          `);
+        }
+
+        if (Object.keys(datasetResumeJsonObj["previously-uploaded-data"]).length > 0) {
+          await Swal.fire({
+            icon: "info",
+            title: "Resuming a Pennsieve dataset upload that previously failed",
+            html: `
+            Please note that any changes made to your dataset on Pennsieve since your last dataset upload
+            was interrupted may be overwritten.
+          `,
+            width: 500,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            confirmButtonText: `I understand`,
+            focusConfirm: true,
+            allowOutsideClick: false,
+          });
+        } else {
+          // Check to make sure the dataset structure on Pennsieve is the same as when the user started editing this dataset
+          let filesFoldersResponse = await client.post(
+            `/organize_datasets/dataset_files_and_folders`,
+            {
+              sodajsonobject: datasetResumeJsonObj,
+            },
+            { timeout: 0 }
+          );
+          let data = filesFoldersResponse.data;
+          const currentPennsieveDatasetStructure = data["soda_object"]["dataset-structure"];
+
+          const intitiallyPulledDatasetStructure =
+            datasetResumeJsonObj["initially-pulled-dataset-structure"];
+
+          // check to make sure current and initially pulled dataset structures are the same
+          if (
+            JSON.stringify(currentPennsieveDatasetStructure) !==
+            JSON.stringify(intitiallyPulledDatasetStructure)
+          ) {
+            throw new Error(
+              `The dataset structure on Pennsieve has changed since you last edited this dataset.
+              <br />
+              <br />
+              If you would like to update this dataset, please delete this progress file and start over.
+              `
+            );
+          }
+        }
+      }
+    }
+    sodaJSONObj = datasetResumeJsonObj;
+    attachGuidedMethodsToSodaJSONObj();
+
+    datasetStructureJSONObj = sodaJSONObj["saved-datset-structure-json-obj"];
+    subjectsTableData = sodaJSONObj["subjects-table-data"];
+    samplesTableData = sodaJSONObj["samples-table-data"];
+
+    //patches the sodajsonobj if it was created in a previous version of guided mode
+    await patchPreviousGuidedModeVersions();
+
+    // pageToReturnTo will be set to the page the user will return to
+    let pageToReturnTo;
+
+    // The last page the user left off on on a previous session
+    const usersPageBeforeExit = sodaJSONObj["page-before-exit"];
+
+    //Check to make sure the page still exists before returning to it
+    //Code below might still specify a different page to return to though.
+    if (document.getElementById(usersPageBeforeExit)) {
+      pageToReturnTo = usersPageBeforeExit;
+    }
+
+    // If the user left while the upload was in progress, send the user to the upload confirmation page
+    if (usersPageBeforeExit === "guided-dataset-generation-tab") {
+      pageToReturnTo = "guided-dataset-generation-confirmation-tab";
+    }
+
+    // If the last time the user worked on the progress file was in a previous version of SODA, then force the user to restart from the first page
+    const currentSodaVersion = document.getElementById("version").innerHTML;
+    const lastVersionOfSodaUsedOnProgressFile = sodaJSONObj["last-version-of-soda-used"];
+    if (lastVersionOfSodaUsedOnProgressFile != currentSodaVersion) {
+      pageToReturnTo = null;
+    }
+
+    //If the dataset was successfully uploaded, send the user to the share with curation team
+    if (datasetResumeJsonObj["previous-guided-upload-dataset-name"]) {
+      pageToReturnTo = "guided-dataset-dissemination-tab";
+    }
+
+    // Delete the button status for the Pennsieve account confirmation section
+    // So the user has to confirm their Pennsieve account before uploading
+    if (sodaJSONObj["button-config"]?.["pennsieve-account-has-been-confirmed"]) {
+      delete sodaJSONObj["button-config"]["pennsieve-account-has-been-confirmed"];
+    }
+    if (sodaJSONObj["button-config"]?.["organization-has-been-confirmed"]) {
+      delete sodaJSONObj["button-config"]["organization-has-been-confirmed"];
+    }
+
+    // Save the skipped pages in a temp variable since guidedTransitionFromHome will remove them
+    const prevSessionSkikppedPages = [...sodaJSONObj["skipped-pages"]];
+
+    guidedTransitionFromHome();
+    // Reskip the pages from a previous session
+    for (const pageID of prevSessionSkikppedPages) {
+      guidedSkipPage(pageID);
+    }
+
+    // Skip this page incase it was not skipped in a previous session
+    guidedSkipPage("guided-select-starting-point-tab");
+
+    //Hide the sub-page navigation and show the main page navigation footer
+    //If the user traverses to a page that requires the sub-page navigation,
+    //the sub-page will be shown during openPage() function
+    hideSubNavAndShowMainNav(false);
+
+    if (pageToReturnTo) {
+      await openPage(pageToReturnTo);
+    } else {
+      const firstPage = getNonSkippedGuidedModePages(document)[0];
+      await openPage(firstPage.id);
+    }
+
+    // Close the loading screen, the user should be on the page they left off on now
+    loadingSwal.close();
+  } catch (error) {
+    clientError(error);
+    loadingSwal.close();
+    await Swal.fire({
+      icon: "info",
+      title: "This dataset is not able to be resumed",
+      html: `${error.message}`,
+      width: 500,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      confirmButtonText: `I understand`,
+      focusConfirm: true,
+      allowOutsideClick: false,
+    });
   }
 };
 
@@ -7025,6 +7376,8 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"] = [];
   sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] = [];
   sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"] = [];
+  sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"] = {};
+  sodaJSONObj["dataset-metadata"]["description-metadata"]["study-information"] = {};
   sodaJSONObj["dataset-metadata"]["README"] = "";
   sodaJSONObj["dataset-metadata"]["CHANGES"] = "";
   sodaJSONObj["digital-metadata"] = {};
@@ -8094,25 +8447,25 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
             : ``
         }
         <div class="space-between w-100">
-            <div class="guided--flex-center mt-sm" style="width: 45%">
-              <label class="guided--form-label required">Last name: </label>
-              <input
-                class="guided--input"
-                id="guided-contributor-last-name"
-                type="text"
-                placeholder="Contributor's Last name"
-                value=""
-              />
-            </div>
-            <div class="guided--flex-center mt-sm" style="width: 45%">
-              <label class="guided--form-label required">First name: </label>
-              <input
-                class="guided--input"
-                id="guided-contributor-first-name"
-                type="text"
-                placeholder="Contributor's first name"
-                value=""
-              />
+          <div class="guided--flex-center mt-sm" style="width: 45%">
+            <label class="guided--form-label required">First name: </label>
+            <input
+              class="guided--input"
+              id="guided-contributor-first-name"
+              type="text"
+              placeholder="Contributor's first name"
+              value=""
+            />
+          </div>
+          <div class="guided--flex-center mt-sm" style="width: 45%">
+            <label class="guided--form-label required">Last name: </label>
+            <input
+              class="guided--input"
+              id="guided-contributor-last-name"
+              type="text"
+              placeholder="Contributor's Last name"
+              value=""
+            />
             </div>
           </div>
           <label class="guided--form-label mt-md required">ORCID: </label>
@@ -8147,7 +8500,7 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
             contenteditable="true"
           />
           <p class="guided--text-input-instructions mb-0 text-left">
-            Role(s) the contributor played in the creation of the dataset.
+            Role(s) the contributor played in the creation of the dataset. Visit <a target="_blank" href="https://schema.datacite.org/meta/kernel-4.4/doc/DataCite-MetadataKernel_v4.4.pdf">DataCite</a> for a definition of the roles.
             <br />
             <b>
               Select a role from the dropdown to add it to the list.
@@ -8173,9 +8526,10 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
       const contributorRolesInput = document.getElementById("guided-contributor-roles-input");
       contributorRolesTagify = new Tagify(contributorRolesInput, {
         whitelist: [
-          "PrincipleInvestigator",
+          "PrincipalInvestigator",
           "Creator",
           "CoInvestigator",
+          "CorrespondingAuthor",
           "DataCollector",
           "DataCurator",
           "DataManager",
@@ -8209,7 +8563,7 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
       document.getElementById("guided-contributor-orcid").value = contributorORCID;
     },
 
-    preConfirm: (inputValue) => {
+    preConfirm: async (inputValue) => {
       const contributorFirstName = document.getElementById("guided-contributor-first-name").value;
       const contributorLastName = document.getElementById("guided-contributor-last-name").value;
       const contributorOrcid = document.getElementById("guided-contributor-orcid").value;
@@ -8220,63 +8574,69 @@ const openGuidedEditContributorSwal = async (contibuttorOrcidToEdit) => {
         !contributorFirstName ||
         !contributorLastName ||
         !contributorOrcid ||
-        !contributorAffiliations.length > 0 ||
-        !contributorRoles.length > 0
+        contributorAffiliations.length === 0 ||
+        contributorRoles.length === 0
       ) {
-        Swal.showValidationMessage("Please fill out all required fields");
-      } else {
-        if (contributorOrcid.length != 37) {
-          Swal.showValidationMessage(
-            "Please enter Orcid ID in the format: https://orcid.org/0000-0000-0000-0000"
+        return Swal.showValidationMessage("Please fill out all required fields");
+      }
+
+      if (contributorOrcid.length !== 37) {
+        return Swal.showValidationMessage(
+          "Please enter ORCID ID in the format: https://orcid.org/0000-0000-0000-0000"
+        );
+      }
+
+      if (contributorRoles.includes("PrincipalInvestigator")) {
+        if (getContributorMarkedAsPrincipalInvestigator()) {
+          return Swal.showValidationMessage(
+            "Only one contributor can be marked as Principal Investigator"
           );
-        } else {
-          if (contributorFirstName.includes(",") || contributorLastName.includes(",")) {
-            Swal.showValidationMessage("Please remove commas from the name fields");
-          } else {
-            //verify first orcid link
-            let orcidSite = contributorOrcid.substr(0, 18);
-            if (orcidSite === "https://orcid.org/") {
-              //verify digits after
-              let orcidDigits = contributorOrcid.substr(18);
-              let total = 0;
-              for (let i = 0; i < orcidDigits.length - 1; i++) {
-                const digit = parseInt(orcidDigits.substr(i, 1));
-                if (isNaN(digit)) {
-                  continue;
-                }
-                total = (total + digit) * 2;
-              }
-
-              const remainder = total % 11;
-              const result = (12 - remainder) % 11;
-              const checkDigit = result === 10 ? "X" : String(result);
-
-              if (checkDigit !== contributorOrcid.substr(-1)) {
-                Swal.showValidationMessage("ORCID iD does not exist");
-              } else {
-                try {
-                  editContributorByOrcid(
-                    contibuttorOrcidToEdit,
-                    contributorFirstName,
-                    contributorLastName,
-                    contributorOrcid,
-                    contributorAffiliations,
-                    contributorRoles
-                  );
-                } catch (error) {
-                  Swal.showValidationMessage(error);
-                }
-              }
-            } else {
-              Swal.showValidationMessage(
-                "Please enter your ORCID ID with https://orcid.org/ in the beginning"
-              );
-            }
-          }
         }
       }
 
-      //rerender the table after adding a contributor
+      if (contributorFirstName.includes(",") || contributorLastName.includes(",")) {
+        return Swal.showValidationMessage("Please remove commas from the name fields");
+      }
+
+      // Verify ORCID ID
+      const orcidSite = contributorOrcid.substr(0, 18);
+      if (orcidSite !== "https://orcid.org/") {
+        return Swal.showValidationMessage(
+          "Please enter your ORCID ID with https://orcid.org/ in the beginning"
+        );
+      }
+
+      const orcidDigits = contributorOrcid.substr(18);
+      let total = 0;
+      for (let i = 0; i < orcidDigits.length - 1; i++) {
+        const digit = parseInt(orcidDigits.substr(i, 1));
+        if (isNaN(digit)) {
+          continue;
+        }
+        total = (total + digit) * 2;
+      }
+
+      const remainder = total % 11;
+      const result = (12 - remainder) % 11;
+      const checkDigit = result === 10 ? "X" : String(result);
+
+      if (checkDigit !== contributorOrcid.substr(-1)) {
+        return Swal.showValidationMessage("ORCID iD does not exist");
+      }
+
+      try {
+        await editContributorByOrcid(
+          contibuttorOrcidToEdit,
+          contributorFirstName,
+          contributorLastName,
+          contributorOrcid,
+          contributorAffiliations,
+          contributorRoles
+        );
+      } catch (error) {
+        return Swal.showValidationMessage(error);
+      }
+
       renderDatasetDescriptionContributorsTable();
     },
   });
@@ -8361,22 +8721,22 @@ const openGuidedAddContributorSwal = async () => {
         ${handleAddContributorHeaderUI()}
         <div class="space-between w-100">
             <div class="guided--flex-center mt-sm" style="width: 45%">
-              <label class="guided--form-label required" style="font-size: 1em !important;">Last name: </label>
-              <input
-                class="guided--input"
-                id="guided-contributor-last-name"
-                type="text"
-                placeholder="Contributor's Last name"
-                value=""
-              />
-            </div>
-            <div class="guided--flex-center mt-sm" style="width: 45%">
               <label class="guided--form-label required" style="font-size: 1em !important;">First name: </label>
               <input
                 class="guided--input"
                 id="guided-contributor-first-name"
                 type="text"
                 placeholder="Contributor's first name"
+                value=""
+              />
+            </div>
+            <div class="guided--flex-center mt-sm" style="width: 45%">
+              <label class="guided--form-label required" style="font-size: 1em !important;">Last name: </label>
+              <input
+                class="guided--input"
+                id="guided-contributor-last-name"
+                type="text"
+                placeholder="Contributor's Last name"
                 value=""
               />
             </div>
@@ -8413,7 +8773,7 @@ const openGuidedAddContributorSwal = async () => {
             contenteditable="true"
           />
           <p class="guided--text-input-instructions mb-0 text-left">
-            Role(s) the contributor played in the creation of the dataset.
+            Role(s) the contributor played in the creation of the dataset. Visit <a target="_blank" href="https://schema.datacite.org/meta/kernel-4.4/doc/DataCite-MetadataKernel_v4.4.pdf">DataCite</a> for a definition of the roles.
             <br />
             <b>
               Select a role from the dropdown to add it to the list.
@@ -8438,9 +8798,10 @@ const openGuidedAddContributorSwal = async () => {
       const contributorRolesInput = document.getElementById("guided-contributor-roles-input");
       contributorRolesTagify = new Tagify(contributorRolesInput, {
         whitelist: [
-          "PrincipleInvestigator",
+          "PrincipalInvestigator",
           "Creator",
           "CoInvestigator",
+          "CorrespondingAuthor",
           "DataCollector",
           "DataCurator",
           "DataManager",
@@ -8509,59 +8870,68 @@ const openGuidedAddContributorSwal = async () => {
         !contributorFirstName ||
         !contributorLastName ||
         !contributorOrcid ||
-        !contributorAffiliations.length > 0 ||
-        !contributorRoles.length > 0
+        contributorAffiliations.length === 0 ||
+        contributorRoles.length === 0
       ) {
-        Swal.showValidationMessage("Please fill out all required fields");
-      } else {
-        if (contributorOrcid.length != 37) {
-          Swal.showValidationMessage(
-            "Please enter Orcid ID in the format: https://orcid.org/0000-0000-0000-0000"
+        return Swal.showValidationMessage("Please fill out all required fields");
+      }
+
+      if (contributorOrcid.length !== 37) {
+        return Swal.showValidationMessage(
+          "Please enter ORCID ID in the format: https://orcid.org/0000-0000-0000-0000"
+        );
+      }
+
+      if (contributorRoles.includes("PrincipalInvestigator")) {
+        if (getContributorMarkedAsPrincipalInvestigator()) {
+          return Swal.showValidationMessage(
+            "Only one contributor can be marked as Principal Investigator"
           );
-        } else {
-          if (contributorFirstName.includes(",") || contributorLastName.includes(",")) {
-            Swal.showValidationMessage("Please remove commas from the name fields");
-          } else {
-            //verify first orcid link
-            let orcidSite = contributorOrcid.substr(0, 18);
-            if (orcidSite === "https://orcid.org/") {
-              //verify digits after
-              let orcidDigits = contributorOrcid.substr(18);
-              let total = 0;
-              for (let i = 0; i < orcidDigits.length - 1; i++) {
-                const digit = parseInt(orcidDigits.substr(i, 1));
-                if (isNaN(digit)) {
-                  continue;
-                }
-                total = (total + digit) * 2;
-              }
-
-              const remainder = total % 11;
-              const result = (12 - remainder) % 11;
-              const checkDigit = result === 10 ? "X" : String(result);
-
-              if (checkDigit !== contributorOrcid.substr(-1)) {
-                Swal.showValidationMessage("ORCID iD does not exist");
-              } else {
-                const contributorsFullName = `${contributorLastName}, ${contributorFirstName}`;
-                try {
-                  addContributor(
-                    contributorsFullName,
-                    contributorOrcid,
-                    contributorAffiliations,
-                    contributorRoles
-                  );
-                } catch (error) {
-                  Swal.showValidationMessage(error);
-                }
-              }
-            } else {
-              Swal.showValidationMessage(
-                "Please enter your ORCID ID with https://orcid.org/ in the beginning"
-              );
-            }
-          }
         }
+      }
+
+      if (contributorFirstName.includes(",") || contributorLastName.includes(",")) {
+        return Swal.showValidationMessage("Please remove commas from the name fields");
+      }
+
+      // Verify ORCID ID
+      const orcidSite = contributorOrcid.substr(0, 18);
+      if (orcidSite !== "https://orcid.org/") {
+        return Swal.showValidationMessage(
+          "Please enter your ORCID ID with https://orcid.org/ in the beginning"
+        );
+      }
+
+      const orcidDigits = contributorOrcid.substr(18);
+      let total = 0;
+      for (let i = 0; i < orcidDigits.length - 1; i++) {
+        const digit = parseInt(orcidDigits.substr(i, 1));
+        if (isNaN(digit)) {
+          continue;
+        }
+        total = (total + digit) * 2;
+      }
+
+      const remainder = total % 11;
+      const result = (12 - remainder) % 11;
+      const checkDigit = result === 10 ? "X" : String(result);
+
+      if (checkDigit !== contributorOrcid.substr(-1)) {
+        return Swal.showValidationMessage("ORCID iD does not exist");
+      }
+
+      // Combine first and last name into full name
+      const contributorsFullName = `${contributorLastName}, ${contributorFirstName}`;
+
+      try {
+        addContributor(
+          contributorsFullName,
+          contributorOrcid,
+          contributorAffiliations,
+          contributorRoles
+        );
+      } catch (error) {
+        return Swal.showValidationMessage(error);
       }
 
       //rerender the table after adding a contributor
@@ -8584,21 +8954,92 @@ const contributorDataIsValid = (contributorObj) => {
   }
 };
 
-const generateContributorTableRow = (contributorObj) => {
+const getContributorMarkedAsPrincipalInvestigator = () => {
+  const contributors = sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+  const PrincipalInvestigator = contributors.find((contributor) =>
+    contributor["conRole"].includes("PrincipalInvestigator")
+  );
+  // If there is no Principal Investigator, return null
+  if (!PrincipalInvestigator) {
+    return null;
+  }
+  // Otherwise, return their ORCID
+  return PrincipalInvestigator["conID"];
+};
+
+const switchOrderOfContributors = (draggedOrcid, targetOrcid) => {
+  const contributors = sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
+  const draggedContributorIndex = contributors.findIndex(
+    (contributor) => contributor["conID"] === draggedOrcid
+  );
+  const targetContributorIndex = contributors.findIndex(
+    (contributor) => contributor["conID"] === targetOrcid
+  );
+
+  // If the dragged contributor is above the target contributor
+  // then the dragged contributor should be inserted after the target contributor
+  if (draggedContributorIndex < targetContributorIndex) {
+    contributors.splice(targetContributorIndex + 1, 0, contributors[draggedContributorIndex]);
+    contributors.splice(draggedContributorIndex, 1);
+  } else {
+    // If the dragged contributor is below the target contributor
+    // then the dragged contributor should be inserted before the target contributor
+    contributors.splice(targetContributorIndex, 0, contributors[draggedContributorIndex]);
+    contributors.splice(draggedContributorIndex + 1, 1);
+  }
+  sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] = contributors;
+};
+
+// Constants used for drag and drop functionality for contributors
+let draggedRow;
+let targetRow;
+const handleContributorDragStart = (event) => {
+  draggedRow = event.target.closest("tr");
+};
+const handleContributorDragOver = (event) => {
+  event.preventDefault();
+  targetRow = event.target.closest("tr");
+};
+
+const handleContributorDrop = (event) => {
+  event.preventDefault();
+  if (targetRow === draggedRow) {
+    return;
+  }
+
+  const draggedOrcid = draggedRow.dataset.contributorOrcid;
+  const targetOrcid = targetRow.dataset.contributorOrcid;
+
+  switchOrderOfContributors(draggedOrcid, targetOrcid);
+
+  renderDatasetDescriptionContributorsTable();
+};
+
+const generateContributorTableRow = (contributorObj, contributorIndex) => {
   const contributorObjIsValid = contributorDataIsValid(contributorObj);
   const contributorFullName = contributorObj["conName"];
   const contributorOrcid = contributorObj["conID"];
   const contributorRoleString = contributorObj["conRole"].join(", ");
 
   return `
-    <tr>
+    <tr 
+      data-contributor-orcid=${contributorOrcid}
+      draggable="true"
+      ondragstart="handleContributorDragStart(event)"
+      ondragover="handleContributorDragOver(event)"
+      ondragend="handleContributorDrop(event)"
+      style="cursor: move;"
+    >
+      <td class="middle aligned collapsing text-center">
+        ${contributorIndex}
+      </td>
       <td class="middle aligned">
         ${contributorFullName}
       </td>
       <td class="middle aligned">
         ${contributorRoleString}
       </td>
-       <td class="middle aligned collapsing text-center">
+      <td class="middle aligned collapsing text-center">
         ${
           contributorObjIsValid
             ? `<span class="badge badge-pill badge-success">Valid</span>`
@@ -8627,7 +9068,6 @@ const generateContributorTableRow = (contributorObj) => {
     </tr>
   `;
 };
-
 const renderDatasetDescriptionContributorsTable = () => {
   const contributorsTable = document.getElementById("guided-DD-connoributors-table");
 
@@ -8638,7 +9078,7 @@ const renderDatasetDescriptionContributorsTable = () => {
   if (contributors.length === 0) {
     contributorsTableHTML = `
       <tr>
-        <td colspan="5">
+        <td colspan="6">
           <div style="margin-right:.5rem" class="alert alert-warning guided--alert" role="alert">
             No contributors have been added to your dataset. To add a contributor, click the "Add a new contributor" button below.
           </div>
@@ -8647,8 +9087,9 @@ const renderDatasetDescriptionContributorsTable = () => {
     `;
   } else {
     contributorsTableHTML = contributors
-      .map((contributor) => {
-        return generateContributorTableRow(contributor);
+      .map((contributor, index) => {
+        contributorIndex = index + 1;
+        return generateContributorTableRow(contributor, contributorIndex);
       })
       .join("\n");
   }
@@ -8741,9 +9182,10 @@ const addContributorField = () => {
   //Add a new tagify for the contributor role field for the new contributor field
   const tagify = new Tagify(newContributorRoleElement, {
     whitelist: [
-      "PrincipleInvestigator",
+      "PrincipalInvestigator",
       "Creator",
       "CoInvestigator",
+      "CorrespondingAuthor",
       "DataCollector",
       "DataCurator",
       "DataManager",
@@ -9592,8 +10034,8 @@ const specifySubject = (event, subjectNameInput) => {
         <div class="space-between w-100">
           <span class="subject-id">${subjectName}</span>
           <i
-            class="far fa-edit jump-back"
-            style="cursor: pointer;"
+            class="far fa-edit"
+            style="cursor: pointer; margin-top: .2rem;"
             onclick="openSubjectRenameInput($(this))"
           >
           </i>
@@ -9711,7 +10153,7 @@ const specifyPool = (event, poolNameInput) => {
         <div class="space-between" style="width: 250px;">
           <span class="pool-id">${poolName}</span>
           <i
-            class="far fa-edit jump-back"
+            class="far fa-edit"
             style="cursor: pointer;"
             onclick="openPoolRenameInput($(this))"
           >
@@ -9878,8 +10320,8 @@ const generateSubjectRowElement = (subjectName) => {
           <div class="space-between w-100">
             <span class="subject-id">${subjectName}</span>
             <i
-              class="far fa-edit jump-back"
-              style="cursor: pointer"
+              class="far fa-edit"
+              style="cursor: pointer; margin-top: .2rem"
               onclick="openSubjectRenameInput($(this))"
             >
             </i>
@@ -9938,7 +10380,7 @@ const generatePoolRowElement = (poolName) => {
           <div class="space-between" style="width: 250px">
             <span class="pool-id">${poolName}</span>
             <i
-              class="far fa-edit jump-back"
+              class="far fa-edit"
               style="cursor: pointer"
               onclick="openPoolRenameInput($(this))"
             >
@@ -10668,31 +11110,6 @@ $("#guided-submission-completion-date-manual").change(function () {
 //////////       GUIDED OBJECT ACCESSORS       //////////
 /////////////////////////////////////////////////////////
 
-const getExistingPennsieveDatasetNames = async () => {
-  // get the access token so the user can access the Pennsieve api
-  let jwt = await get_access_token();
-  const options = {
-    method: "GET",
-    headers: {
-      Accept: "*/*",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${jwt}`,
-    },
-  };
-  const datasetNamesResponse = await fetch("https://api.pennsieve.io/datasets/", options);
-
-  if (!datasetNamesResponse.ok) {
-    const message = `An error has occurred: ${response.status}`;
-    throw new Error(message);
-  }
-
-  const datasetNamesResponseJSON = await datasetNamesResponse.json();
-
-  //return an array of existing dataset names
-  return datasetNamesResponseJSON.map((dataset) => {
-    return dataset.content.name;
-  });
-};
 const getGuidedDatasetName = () => {
   return sodaJSONObj["digital-metadata"]["name"];
 };
@@ -11034,10 +11451,14 @@ const renderSubjectsMetadataAsideItems = async () => {
   let subjects = [...subjectsInPools, ...subjectsOutsidePools];
 
   const subjectMetadataCopyButton = document.getElementById("guided-button-subject-metadata-copy");
+  const subjectMetadataCopyTip = document.getElementById("guided-copy-subjects-tip");
+
   if (subjects.length > 1) {
     subjectMetadataCopyButton.classList.remove("hidden");
+    subjectMetadataCopyTip.classList.remove("hidden");
   } else {
     subjectMetadataCopyButton.classList.add("hidden");
+    subjectMetadataCopyTip.classList.add("hidden");
   }
 
   const subjectsFormNames = [...guidedSubjectsFormDiv.querySelectorAll(".subjects-form-entry")].map(
@@ -11166,10 +11587,14 @@ const renderSamplesMetadataAsideItems = async () => {
   const sampleNames = samples.map((sample) => sample.sampleName);
 
   const sampleMetadataCopyButton = document.getElementById("guided-button-sample-metadata-copy");
+  const sampleMetadataCopyTip = document.getElementById("guided-copy-samples-tip");
+
   if (samples.length > 1) {
     sampleMetadataCopyButton.classList.remove("hidden");
+    sampleMetadataCopyTip.classList.remove("hidden");
   } else {
     sampleMetadataCopyButton.classList.add("hidden");
+    sampleMetadataCopyTip.classList.add("hidden");
   }
 
   const samplesFormEntries = guidedSamplesFormDiv.querySelectorAll(".samples-form-entry");
@@ -11321,8 +11746,8 @@ $(document).ready(async () => {
 
     guidedUnLockSideBar();
 
-    guidedUnSkipPage("guided-resume-existing-dataset-tab");
-    await openPage("guided-resume-existing-dataset-tab");
+    guidedUnSkipPage("guided-select-starting-point-tab");
+    await openPage("guided-select-starting-point-tab");
   });
 
   $("#button-homepage-freeform-mode").on("click", async () => {
@@ -11350,6 +11775,7 @@ $(document).ready(async () => {
       if (newPermissionRoleElement.val().trim() === "Select role") {
         throw "Please select a role for the user or team";
       }
+
       if (
         newPermissionElement.val().trim() === sodaJSONObj["digital-metadata"]["pi-owner"]["UUID"]
       ) {
@@ -11600,6 +12026,14 @@ $(document).ready(async () => {
     notSelectedButton.removeClass("selected");
     notSelectedButton.addClass("not-selected basic");
 
+    //Hide all child containers of non-selected buttons
+    notSelectedButton.each(function () {
+      if ($(this).data("next-element")) {
+        nextQuestionID = $(this).data("next-element");
+        $(`#${nextQuestionID}`).addClass("hidden");
+      }
+    });
+
     //If button has prevent-radio-handler data attribute, other buttons, will be deselected
     //but all other radio button functions will be halted
     if (selectedButton.data("prevent-radio-handler") === true) {
@@ -11615,14 +12049,6 @@ $(document).ready(async () => {
 
     selectedButton.removeClass("not-selected basic");
     selectedButton.addClass("selected");
-
-    //Hide all child containers of non-selected buttons
-    notSelectedButton.each(function () {
-      if ($(this).data("next-element")) {
-        nextQuestionID = $(this).data("next-element");
-        $(`#${nextQuestionID}`).addClass("hidden");
-      }
-    });
 
     //Display and scroll to selected element container if data-next-element exists
     if (selectedButton.data("next-element")) {
@@ -11918,16 +12344,8 @@ $(document).ready(async () => {
           openGuidedDatasetRenameSwal();
         });
       }
-      Swal.fire({
-        title: `Failed to create a new dataset.`,
-        text: emessage,
-        showCancelButton: false,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        icon: "error",
-      });
 
-      throw emessage;
+      throw new Error(userErrorMessage(error));
     }
   };
 
@@ -11969,6 +12387,7 @@ $(document).ready(async () => {
       let emessage = userErrorMessage(error);
       datasetSubtitleUploadText.innerHTML = "Failed to add a dataset subtitle.";
       guidedUploadStatusIcon("guided-dataset-subtitle-upload-status", "error");
+      throw new Error(userErrorMessage(error));
     }
   };
 
@@ -12016,6 +12435,8 @@ $(document).ready(async () => {
     } catch (error) {
       datasetDescriptionUploadText.innerHTML = "Failed to add a dataset description.";
       guidedUploadStatusIcon("guided-dataset-description-upload-status", "error");
+
+      throw new Error(userErrorMessage(error));
     }
   };
   const guidedAddDatasetBannerImage = async (bfAccount, datasetName, bannerImagePath) => {
@@ -12054,9 +12475,10 @@ $(document).ready(async () => {
       await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       console.error(error);
-      let emessage = userErrorMessage(error);
       datasetBannerImageUploadText.innerHTML = "Failed to add a dataset banner image.";
       guidedUploadStatusIcon("guided-dataset-banner-image-upload-status", "error");
+
+      throw new Error(userErrorMessage(error));
     }
   };
   const guidedAddDatasetLicense = async (bfAccount, datasetName, datasetLicense) => {
@@ -12092,63 +12514,10 @@ $(document).ready(async () => {
       await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
     } catch (error) {
       console.error(error);
-      let emessage = userErrorMessage(error);
       datasetLicenseUploadText.innerHTML = "Failed to add a dataset license.";
       guidedUploadStatusIcon("guided-dataset-license-upload-status", "error");
-    }
-  };
 
-  const guidedAddPiOwner = async (bfAccount, datasetName, piOwnerObj) => {
-    let loggedInUserIsNotPiOwner;
-    for (user of sodaJSONObj["digital-metadata"]["user-permissions"]) {
-      if (user.loggedInUser) {
-        //if logged in user has a user permission, then someone else is set as pi owner
-        loggedInUserIsNotPiOwner = true;
-      }
-    }
-
-    document.getElementById("guided-dataset-pi-owner-upload-tr").classList.remove("hidden");
-    const datasetPiOwnerUploadText = document.getElementById("guided-dataset-pi-owner-upload-text");
-    datasetPiOwnerUploadText.innerHTML = "Adding PI owner...";
-    guidedUploadStatusIcon("guided-dataset-pi-owner-upload-status", "loading");
-
-    if (loggedInUserIsNotPiOwner) {
-      const previouslyUploadedPiOwnerObj = sodaJSONObj["previously-uploaded-data"]["pi-owner"];
-
-      if (previouslyUploadedPiOwnerObj === piOwnerObj) {
-        datasetPiOwnerUploadText.innerHTML = "PI owner already added on Pennsieve";
-        guidedUploadStatusIcon("guided-dataset-pi-owner-upload-status", "success");
-        return;
-      }
-
-      try {
-        await client.patch(
-          `/manage_datasets/bf_dataset_permissions`,
-          {
-            input_role: "owner",
-          },
-          {
-            params: {
-              selected_account: bfAccount,
-              selected_dataset: datasetName,
-              scope: "user",
-              name: piOwnerObj["UUID"],
-            },
-          }
-        );
-        datasetPiOwnerUploadText.innerHTML = `Successfully added PI: ${piOwnerObj["name"]}`;
-        guidedUploadStatusIcon("guided-dataset-pi-owner-upload-status", "success");
-        sodaJSONObj["previously-uploaded-data"]["pi-owner"] = piOwnerObj;
-        await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-      } catch (error) {
-        console.error(error);
-        let emessage = userErrorMessage(error);
-        datasetPiOwnerUploadText.innerHTML = "Failed to add a PI owner.";
-        guidedUploadStatusIcon("guided-dataset-pi-owner-upload-status", "error");
-      }
-    } else {
-      datasetPiOwnerUploadText.innerHTML = `Successfully added PI: ${piOwnerObj["name"]}`;
-      guidedUploadStatusIcon("guided-dataset-pi-owner-upload-status", "success");
+      throw new Error(userErrorMessage(error));
     }
   };
 
@@ -12184,6 +12553,8 @@ $(document).ready(async () => {
     } catch (error) {
       datasetTagsUploadText.innerHTML = "Failed to add dataset tags.";
       guidedUploadStatusIcon("guided-dataset-tags-upload-status", "error");
+
+      throw new Error(userErrorMessage(error));
     }
   };
 
@@ -12271,7 +12642,7 @@ $(document).ready(async () => {
       }
       log.error(error);
       console.error(error);
-      let emessage = userError(error);
+      let emessage = userErrorMessage(error);
       throw error;
     }
   };
@@ -12380,7 +12751,7 @@ $(document).ready(async () => {
       guidedUploadStatusIcon(`guided-dataset-${teamString}-permissions-upload-status`, "error");
       log.error(error);
       console.error(error);
-      let emessage = userError(error);
+      let emessage = userErrorMessage(error);
       throw error;
     }
   };
@@ -12452,6 +12823,7 @@ $(document).ready(async () => {
       guidedUploadStatusIcon("guided-subjects-metadata-upload-status", "error");
       subjectsMetadataUploadText.innerHTML = `Failed to upload subjects metadata`;
       clientError(error);
+      throw new Error(userErrorMessage(error));
     }
   };
   const guidedUploadSamplesMetadata = async (bfAccount, datasetName, samplesTableData) => {
@@ -12494,6 +12866,8 @@ $(document).ready(async () => {
       guidedUploadStatusIcon("guided-samples-metadata-upload-status", "error");
       samplesMetadataUploadText.innerHTML = `Failed to upload samples metadata`;
       clientError(error);
+
+      throw new Error(userErrorMessage(error));
     }
   };
   const guidedUploadSubmissionMetadata = async (bfAccount, datasetName, submissionMetadataJSON) => {
@@ -12538,6 +12912,8 @@ $(document).ready(async () => {
       guidedUploadStatusIcon("guided-submission-metadata-upload-status", "error");
       submissionMetadataUploadText.innerHTML = `Failed to upload submission metadata`;
       clientError(error);
+
+      throw new Error(userErrorMessage(error));
     }
   };
 
@@ -12608,6 +12984,8 @@ $(document).ready(async () => {
       guidedUploadStatusIcon("guided-dataset-description-metadata-upload-status", "error");
       datasetDescriptionMetadataUploadText.innerHTML = `Failed to upload dataset description metadata`;
       clientError(error);
+
+      throw new Error(userErrorMessage(error));
     }
   };
 
@@ -12637,6 +13015,8 @@ $(document).ready(async () => {
       guidedUploadStatusIcon("guided-code-description-metadata-upload-status", "error");
       codeDescriptionMetadataUploadText.innerHTML = `Failed to upload code description metadata`;
       clientError(error);
+
+      throw new Error(userErrorMessage(error));
     }
   };
 
@@ -12690,6 +13070,8 @@ $(document).ready(async () => {
       guidedUploadStatusIcon(`guided-${readmeORchanges}-metadata-upload-status`, "error");
       datasetDescriptionMetadataUploadText.innerHTML = `Failed to upload ${readmeORchanges.toUpperCase()} metadata`;
       clientError(error);
+
+      throw new Error(userErrorMessage(error));
     }
   };
 
@@ -12843,7 +13225,6 @@ $(document).ready(async () => {
       await guidedAddDatasetBannerImage(guidedBfAccount, guidedDatasetName, guidedBannerImagePath);
       await guidedAddDatasetLicense(guidedBfAccount, guidedDatasetName, guidedLicense);
       await guidedAddDatasetTags(guidedBfAccount, guidedDatasetName, guidedTags);
-      // await guidedAddPiOwner(guidedBfAccount, guidedDatasetName, guidedPIOwner);
       await guidedAddUserPermissions(guidedBfAccount, guidedDatasetName, guidedUsers);
       await guidedAddTeamPermissions(guidedBfAccount, guidedDatasetName, guidedTeams);
 
@@ -12913,7 +13294,9 @@ $(document).ready(async () => {
         }
       }
 
-      if (fs.existsSync(sodaJSONObj["dataset-metadata"]["code-metadata"]["code_description"])) {
+      // If the code_description was provided, upload to Pennsieve
+      // (This key is only set if the user choses yes to add/update code description)
+      if (sodaJSONObj?.["dataset-metadata"]?.["code-metadata"]?.["code_description"]) {
         await guidedUploadCodeDescriptionMetadata(
           guidedBfAccount,
           guidedDatasetName,
@@ -13405,7 +13788,7 @@ $(document).ready(async () => {
   });
 
   const guidedGenerateRCFilesHelper = (type) => {
-    var textValue = $(`#guided-textarea-create-${type}`).val().trim();
+    let textValue = $(`#guided-textarea-create-${type}`).val().trim();
     if (textValue === "") {
       Swal.fire({
         title: "Incomplete information",
@@ -13455,7 +13838,7 @@ $(document).ready(async () => {
       if (err) {
         console.log(err);
         log.error(err);
-        var emessage = userError(error);
+        var emessage = userErrorMessage(error);
         Swal.fire({
           title: `Failed to generate the existing ${type}.txt file`,
           html: emessage,
@@ -13521,6 +13904,84 @@ $(document).ready(async () => {
   });
 
   $("#guided-generate-dataset-button").on("click", async function () {
+    // Ensure that the current workspace is the workspace the user confirmed
+    const currentWorkspace = guidedGetCurrentUserWorkSpace();
+    const datasetWorkspace = sodaJSONObj["digital-metadata"]["dataset-workspace"];
+
+    if (!currentWorkspace) {
+      Swal.fire({
+        width: 700,
+        icon: "info",
+        title: "You are not logged in to any workspace.",
+        html: `
+          Please select a workspace by clicking on the pencil icon to the right of the Dataset workspace field
+          on this page.
+        `,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: `OK`,
+        focusConfirm: true,
+        allowOutsideClick: false,
+      });
+      return;
+    }
+
+    if (currentWorkspace != datasetWorkspace) {
+      if (sodaJSONObj?.["starting-point"]?.["type"] === "bf") {
+        Swal.fire({
+          width: 700,
+          icon: "info",
+          title: "You are not logged in to the workspace you pulled this dataset from.",
+          html: `
+          <p class="text-left">
+            You pulled this dataset from the workspace <b>${datasetWorkspace}</b>, but you are currently
+            logged in to the workspace <b>${currentWorkspace}</b>.
+          </p>
+          <br />
+          <br />
+          <p class="text-left">
+            To push the changes you made to this dataset to Pennsieve, please select
+            the workspace <b>${datasetWorkspace}</b> by clicking the pencil icon to
+            the right of the Dataset workspace field on this page.
+          </p>
+        `,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: `OK`,
+          focusConfirm: true,
+          allowOutsideClick: false,
+        });
+      } else {
+        Swal.fire({
+          width: 700,
+          icon: "info",
+          title: "You are not logged in to the workspace you confirmed earlier.",
+          html: `
+          You previously confirmed that the Dataset workspace is <b>${datasetWorkspace}</b>.
+          <br />
+          <br />
+          <p class="text-left">
+            If the workspace you would like to upload the dataset to is still <b>${datasetWorkspace}</b>,
+            you can change the workspace by clicking the pencil icon to the right of the Dataset workspace field
+            on this page.
+          </p>
+          <br />
+          <br />
+          <p class="text-left">
+            If you would like to change the dataset workspace to <b>${currentWorkspace}</b>, you can do so by
+            by clicking the Pennsieve metadata item in the left sidebar, selecting Pennsieve log in, and then
+            change your workspace to <b>${currentWorkspace}</b>.
+          </p>
+        `,
+          heightAuto: false,
+          backdrop: "rgba(0,0,0, 0.4)",
+          confirmButtonText: `OK`,
+          focusConfirm: true,
+          allowOutsideClick: false,
+        });
+      }
+      return;
+    }
     //run pre flight checks and abort if any fail
     let supplementary_checks = await run_pre_flight_checks(false);
     if (!supplementary_checks) {
@@ -13694,31 +14155,32 @@ $(document).ready(async () => {
       await openPage(targetPageID);
     } catch (error) {
       log.error(error);
-      console.log(error);
-      error.map((error) => {
-        // get the total number of words in error.message
-        if (error.type === "notyf") {
-          notyf.open({
-            duration: "7000",
-            type: "error",
-            message: error.message,
-          });
-        }
+      if (Array.isArray(error)) {
+        error.map((error) => {
+          // get the total number of words in error.message
+          if (error.type === "notyf") {
+            notyf.open({
+              duration: "7000",
+              type: "error",
+              message: error.message,
+            });
+          }
 
-        if (error.type === "swal") {
-          Swal.fire({
-            icon: "info",
-            title: error.title,
-            html: error.message,
-            width: 600,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            confirmButtonText: `OK`,
-            focusConfirm: true,
-            allowOutsideClick: false,
-          });
-        }
-      });
+          if (error.type === "swal") {
+            Swal.fire({
+              icon: "error",
+              title: error.title,
+              html: error.message,
+              width: 600,
+              heightAuto: false,
+              backdrop: "rgba(0,0,0, 0.4)",
+              confirmButtonText: `OK`,
+              focusConfirm: true,
+              allowOutsideClick: false,
+            });
+          }
+        });
+      }
     }
   });
 
@@ -14588,6 +15050,9 @@ const guidedSaveDescriptionDatasetInformation = () => {
     "number of samples": numSamples,
     "number of subjects": numSubjects,
   };
+
+  // Save keywords as the tags to be uploaded as the Pennsieve dataset tags
+  sodaJSONObj["digital-metadata"]["dataset-tags"] = keywordArray;
 };
 
 const guidedSaveDescriptionStudyInformation = () => {
@@ -14642,6 +15107,13 @@ const guidedSaveDescriptionStudyInformation = () => {
     "study data collection": studyDataCollection,
     "study primary conclusion": studyPrimaryConclusion,
     "study collection title": studyCollectionTitle,
+  };
+
+  // Generate the dataset description to be added to Pennsieve based off of the dd metadata
+  sodaJSONObj["digital-metadata"]["description"] = {
+    "study-purpose": studyPurpose,
+    "data-collection": studyDataCollection,
+    "primary-conclusion": studyPrimaryConclusion,
   };
 };
 const guidedSaveDescriptionContributorInformation = () => {

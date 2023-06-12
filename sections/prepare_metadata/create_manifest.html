@@ -179,7 +179,18 @@
           <button
             onclick="generateManifestFolderLocallyForEdit(this)"
             class="btn_animated"
-            style="width: 100px; border: none !important"
+            style="
+              border: none !important;
+              border-radius: 4px;
+              margin: 0.5rem auto;
+              width: 110px;
+              height: 35px;
+              background: var(--color-light-green);
+              color: #fff;
+              font-size: 14px;
+              font-weight: 600;
+              padding-left: 7px;
+            "
             data-next="Question-prepare-manifest-5"
           >
             Confirm
@@ -213,7 +224,7 @@
           <label style="font-size: 17px; color: var(--color-bg-plum)"
             >Is this the Pennsieve dataset you want to create the manifest files for?
           </label>
-          <div class="field" style="margin: auto; width: 550px">
+          <div class="field prepare-metadata-card-field">
             <div
               style="
                 display: flex;
@@ -227,13 +238,13 @@
               "
             >
               <div style="display: flex; flex-direction: row; justify-content: space-between">
-                <div class="card-container prepare-submission">
+                <div class="card-container prepare-manifest prepare-metadata">
                   <div style="width: 100%">
-                    <h5 class="card-left" style="text-align: right; padding-right: 18px">
-                      Current account:
-                    </h5>
+                    <h5 class="card-left" style="text-align: left">Current account:</h5>
                     <div class="change-current-account manifest-change-current-account">
-                      <h5 class="card-right bf-account-span">None</h5>
+                      <h5 class="card-right bf-account-span prepare-metadata-current-account-span">
+                        None
+                      </h5>
 
                       <svg
                         class="svg-change-current-account bi bi-pencil-fill"
@@ -252,28 +263,45 @@
                 </div>
               </div>
               <div style="display: flex; flex-direction: row; margin-bottom: 15px">
-                <div class="card-container prepare-submission">
-                  <div>
-                    <h5 class="card-left" style="text-align: right; padding-right: 5px">
-                      Account details:
-                    </h5>
-                    <h5 class="card-right bf-account-details-span" style="padding-left: 24px">
-                      None
-                    </h5>
+                <div class="card-container prepare-manifest prepare-metadata">
+                  <div style="width: 100%">
+                    <h5 class="card-left">Current workspace:</h5>
+                    <div class="change-current-account ds-dd organization">
+                      <h5
+                        class="card-right bf-organization-span prepare-metadata-organization-span"
+                        style="margin-left: 36px !important"
+                      >
+                        None
+                      </h5>
+
+                      <svg
+                        class="svg-change-current-account organization bi bi-pencil-fill"
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="18"
+                        height="18"
+                        fill="#000"
+                        viewBox="0 0 16 16"
+                      >
+                        <path
+                          d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708l-3-3zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207l6.5-6.5zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.499.499 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11l.178-.178z"
+                        />
+                      </svg>
+                    </div>
                   </div>
+                  <div
+                    class="ui active green inline loader small organization-loader"
+                    style="display: none"
+                  ></div>
                 </div>
               </div>
               <div style="display: flex; flex-direction: row; justify-content: space-between">
-                <div class="card-container prepare-submission">
+                <div class="card-container prepare-manifest prepare-metadata">
                   <div style="width: 100%">
-                    <h5 class="card-left" style="text-align: right; padding-right: 17px">
-                      Current dataset:
-                    </h5>
+                    <h5 class="card-left" style="text-align: left">Current dataset:</h5>
                     <div class="change-current-account manifest-change-current-ds">
                       <h5
                         id="bf_dataset_create_manifest"
-                        class="card-right bf-dataset-span"
-                        style="padding-left: 4px"
+                        class="card-right bf-dataset-span prepare-metadata-dataset-span"
                       >
                         None
                       </h5>
@@ -305,7 +333,18 @@
                 onclick="generateManifestFolderLocallyForEdit(this)"
                 id="btn-pull-ds-manifest"
                 class="btn_animated"
-                style="margin: 0 30px; width: 100px; border: none !important"
+                style="
+                  border: none !important;
+                  border-radius: 4px;
+                  margin: 0.5rem auto;
+                  width: 110px;
+                  height: 35px;
+                  background: var(--color-light-green);
+                  color: #fff;
+                  font-size: 14px;
+                  font-weight: 600;
+                  padding-left: 9px;
+                "
               >
                 Confirm
               </button>
@@ -429,15 +468,16 @@
               <button
                 style="
                   cursor: pointer;
-                  border-radius: 8px;
+                  border-radius: 4px;
                   margin-right: 15px;
                   background: var(--color-light-green);
                   color: #fff;
                   font-weight: 600;
                   border: none;
                   width: 160px;
+                  height: 40px;
                   padding: 10px;
-                  font-size: 14px;
+                  font-size: 15px;
                 "
                 id="show-manifest-gen-on-pennsieve-section-btn"
               >
@@ -481,7 +521,7 @@
                   color: var(--color-light-green);
                   border: 1px solid var(--color-light-green);
                   padding: 8px 10px;
-                  width: 135px;
+                  width: 240px !important;
                   height: 38px;
                   font-size: 14px;
                   font-weight: 600;
@@ -502,7 +542,7 @@
                 id="generate_step_5-manifest"
                 style="
                   cursor: pointer;
-                  border-radius: 8px;
+                  border-radius: 4px;
                   margin-right: 15px;
                   background: var(--color-light-green);
                   color: #fff;
@@ -510,7 +550,7 @@
                   border: none;
                   width: 160px;
                   padding: 10px;
-                  font-size: 14px;
+                  font-size: 15px;
                 "
               >
                 Generate now
@@ -601,7 +641,7 @@
       <i class="fas fa-arrow-left" style="margin-right: 10px"></i>Return
     </button>
     <button
-      onclick="resetManifest(false)"
+      onclick="resetManifest(true)"
       class="start-over"
       style="margin: 0; position: absolute; left: 48%; transform: translateX(-55%)"
     >

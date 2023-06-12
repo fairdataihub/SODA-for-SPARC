@@ -5,6 +5,45 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.12.0.0 - 2023-06-09
+
+## Feature Additions:
+
+- RE-JOIN support: All workflows in End to End Curation and Free Form Mode allow for viewing, modifying, creating, and uploading RE-JOIN datasets.
+- Multiple workspace support: Users can switch between their available workspaces in End to End Curation and Free Form Mode to perform curation tasks.
+- Updated Pre-Publishing Support: End to End Curation and Free Form Mode implement the new process for submitting a dataset to the Curation Team for pre-publishing review.
+- DOI Reservation is now available in End to End Curation after uploading.
+- Free Form Mode's Create a dataset section now shows an animation upon successful creation of a dataset.
+- Auto generate Manifest’s section in Free Form Mode now has a loading spinner when generating manifests. This lets users know that SODA is working on the task when large datasets may take time to create manifests.
+- Protocols.io support has been fully removed from SODA.
+- Local upload errors will now only be shown in the form of a pop up rather than both a popup and on the local dataset upload section page.
+- Icon for Curate and Share was updated.
+- Removed End to End Curation pages requiring duplicate data entry streamlining the Pennsieve metadata process
+
+## Bug fixes:
+
+- The sign on process no longer creates Duplicate Pennsieve API Keys.
+- Manifest generation no longer fails when processing datasets with non-SPARC folders at the root of the dataset.
+- Locked datasets can no longer be edited through SODA in any case.
+- The ‘Loading dataset details’ message appears after selecting a Pennsieve dataset and does not disappear until loading has completed.
+- The ‘Confirm’ and ‘Generate’ buttons in Free Form Mode’s Prepare Metadata section have been standardized.
+- The popup that appears when importing a data deliverables document in Free Form Mode’s Prepare Metadata section was not closeable.
+- In Free Form Mode’s standalone manifest generator, the option to ‘Preview Manifest Files Locally’ would prevent further manifest edits before completion of the workflow. This has been resolved. It is now possible to create a local preview and then make further edits.
+- Free Form Mode’s collection editing feature no longer shows a success message when an error occurs.
+- The error message that appears when a user tries to edit a locked dataset has been made clearer.
+- Free Form Mode’s Permissions Section’s “Can’t find PI Owner?” help box dynamically aligns with page resizing.
+- 0KB Files warning popup has been made scrollable for when large amounts of files are listed.
+- Organize Datasets -> Select high level folder -> Derivatives folder onclick being misshapen has been fixed.
+- Free Form Mode’s License and Permissions fetching data when dataset selected as None has been patched.
+- Links to SODA’s documentation have been updated as the file structure has been updated on SODA’s doc site.
+- Locked dataset popup will wait for the user’s response before continuing other processes.
+- When a dataset is pre-selected and a user tries to modify their dataset, they will get a locked error message throughout freeform mode.
+- Added a Guided Mode Sweet Alert that notifies the user as to why a page fails to open.
+
+## Known Issues:
+
+- After submitting a dataset for pre-publishing review it is not possible to edit the dataset permissions within SODA’s UIs.
+
 ## v.11.1.0 - 2023-05-24
 
 ## Bug fixes:

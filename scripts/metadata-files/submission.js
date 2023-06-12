@@ -15,39 +15,6 @@ document.querySelectorAll(".submission-change-current-ds").forEach((element) => 
   });
 });
 
-function resetSubmission() {
-  Swal.fire({
-    backdrop: "rgba(0,0,0, 0.4)",
-    confirmButtonText: "I want to start over!",
-    focusCancel: true,
-    heightAuto: false,
-    icon: "warning",
-    reverseButtons: reverseSwalButtons,
-    showCancelButton: true,
-    text: "Are you sure you want to start over and reset your progress?",
-    showClass: {
-      popup: "animate__animated animate__zoomIn animate__faster",
-    },
-    hideClass: {
-      popup: "animate__animated animate__zoomOut animate__faster",
-    },
-  }).then((result) => {
-    if (result.isConfirmed) {
-      // 1. remove Prev and Show from all individual-question except for the first one
-      // 2. empty all input, textarea, select, para-elements
-      $("#Question-prepare-submission-1").removeClass("prev");
-      $("#Question-prepare-submission-1").nextAll().removeClass("show");
-      $("#Question-prepare-submission-1").nextAll().removeClass("prev");
-      $("#Question-prepare-submission-1 .option-card")
-        .removeClass("checked")
-        .removeClass("disabled")
-        .removeClass("non-selected");
-      $("#Question-prepare-submission-1 .option-card .folder-input-check").prop("checked", false);
-      resetSubmissionFields();
-    }
-  });
-}
-
 const renderMilestoneSelectionTable = (milestoneData) => {
   //create a table row element for each description array element for each milestone key in guidedMilestoneData
   const milestoneTableRows = Object.keys(milestoneData)
@@ -71,50 +38,6 @@ const renderMilestoneSelectionTable = (milestoneData) => {
   const milestonesTableContainer = document.getElementById("milestones-table-container");
   milestonesTableContainer.innerHTML = milestoneTableRows;
 };
-
-function resetSubmissionFields() {
-  $("#existing-submission-file-destination").attr("placeholder", "Browse here");
-
-  $("#div-confirm-existing-submission-import").hide();
-
-  if ($("#bf_dataset_load_submission").text().trim() !== "None") {
-    $($("#div-check-bf-import-submission").children()[0]).show();
-    $("#div-check-bf-import-submission").css("display", "flex");
-  } else {
-    $("#div-check-bf-import-submission").hide();
-  }
-
-  var inputFields = $("#Question-prepare-submission-1").nextAll().find("input");
-  var textAreaFields = $("#Question-prepare-submission-1").nextAll().find("textarea");
-  var selectFields = $("#Question-prepare-submission-1").nextAll().find("select");
-
-  for (var field of inputFields) {
-    $(field).val("");
-  }
-  for (var field of textAreaFields) {
-    $(field).val("");
-  }
-  milestoneTagify1.removeAllTags();
-
-  // make accordion active again
-  $("#submission-title-accordion").addClass("active");
-  $("#submission-accordion").addClass("active");
-
-  // show generate button again
-  $("#button-generate-submission").show();
-
-  for (var field of selectFields) {
-    $(field).val("Select");
-  }
-  $("#submission-completion-date")
-    .empty()
-    .append('<option value="Select">Select an option</option>');
-  $("#submission-completion-date").append(
-    $("<option>", {
-      text: "Enter my own date",
-    })
-  );
-}
 
 const openSubmissionMultiStepSwal = async (sparcAward, milestoneRes) => {
   //add a custom milestone row for when the user wants to add a custom milestone
@@ -274,6 +197,7 @@ const helpMilestoneSubmission = async (curationMode) => {
     title: "Importing the Data Deliverables document",
     html: `<div class="container-milestone-upload" style="display: flex;margin:10px"><input class="milestone-upload-text" id="input-milestone-select" onclick="openDDDimport()" style="text-align: center;height: 40px;border-radius: 0;background: #f5f5f5; border: 1px solid #d0d0d0; width: 100%" type="text" readonly placeholder="Browse here"/></div>`,
     heightAuto: false,
+    showCancelButton: true,
     backdrop: "rgba(0,0,0, 0.4)",
     preConfirm: () => {
       if ($("#input-milestone-select").attr("placeholder") === "Browse here") {
@@ -748,14 +672,40 @@ localReadmeBtn.addEventListener(
   false
 );
 
-async function generateSubmissionHelper(uploadBFBoolean) {
+const generateSubmissionHelper = async (uploadBFBoolean) => {
+  let datasetName = $("#bf_dataset_load_submission").text().trim();
   if (uploadBFBoolean) {
     // Run pre-flight checks before uploading the submission file to Pennsieve
-    const supplementary_checks = await run_pre_flight_checks(false);
+    let supplementary_checks = await run_pre_flight_checks(false);
     if (!supplementary_checks) {
       return;
     }
-    var { value: continueProgress } = await Swal.fire({
+
+    // Check if dataset is locked after running pre-flight checks
+    const isLocked = await api.isDatasetLocked(defaultBfAccount, datasetName);
+
+    if (isLocked) {
+      await Swal.fire({
+        icon: "info",
+        title: `${datasetName} is locked from editing`,
+        html: `
+              This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
+              <br />
+              <br />
+              If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
+            `,
+        width: 600,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "Ok",
+        focusConfirm: true,
+        allowOutsideClick: false,
+      });
+
+      return;
+    }
+
+    let { value: continueProgress } = await Swal.fire({
       title:
         "Any existing submission.xlsx file in the high-level folder of the selected dataset will be replaced.",
       text: "Are you sure you want to continue?",
@@ -772,7 +722,7 @@ async function generateSubmissionHelper(uploadBFBoolean) {
       return;
     }
   } else {
-    var { value: continueProgress } = await Swal.fire({
+    let { value: continueProgress } = await Swal.fire({
       title: "Any existing submission.xlsx file in the specified location will be replaced.",
       text: "Are you sure you want to continue?",
       allowEscapeKey: false,
@@ -825,7 +775,6 @@ async function generateSubmissionHelper(uploadBFBoolean) {
     }
   }
 
-  let datasetName = $("#bf_dataset_load_submission").text().trim();
   client
     .post(
       `/prepare_metadata/submission_file`,
@@ -842,11 +791,12 @@ async function generateSubmissionHelper(uploadBFBoolean) {
       }
     )
     .then((res) => {
+      let successMessage = "";
       if (uploadBFBoolean) {
-        var successMessage =
+        successMessage =
           "Successfully generated the submission.xlsx file on your Pennsieve dataset.";
       } else {
-        var successMessage =
+        successMessage =
           "Successfully generated the submission.xlsx file at the specified location.";
       }
       Swal.fire({
@@ -867,7 +817,7 @@ async function generateSubmissionHelper(uploadBFBoolean) {
       );
 
       // get the size of the uploaded file from the result
-      const size = res.data.size;
+      const { size } = res.data;
 
       // log the size of the metadata file that was generated at varying levels of granularity
       logMetadataSizeForAnalytics(uploadBFBoolean, "submission.xlsx", size);
@@ -891,7 +841,7 @@ async function generateSubmissionHelper(uploadBFBoolean) {
         uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
       );
     });
-}
+};
 
 $("#submission-completion-date").change(function () {
   const text = $("#submission-completion-date").val();

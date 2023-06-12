@@ -205,6 +205,10 @@ let user_restart_confirmed = false;
 let updatechecked = false;
 let window_reloaded = false;
 
+// If buildIsBeta is true, the app will not check for updates
+// If it is false, the app will check for updates
+const buildIsBeta = false;
+
 function initialize() {
   const checkForAnnouncements = () => {
     mainWindow.webContents.send("checkForAnnouncements");
@@ -222,7 +226,9 @@ function initialize() {
 
     mainWindow.webContents.once("dom-ready", () => {
       if (updatechecked == false) {
-        autoUpdater.checkForUpdatesAndNotify();
+        if (!buildIsBeta) {
+          autoUpdater.checkForUpdatesAndNotify();
+        }
       }
     });
 
@@ -322,7 +328,9 @@ function initialize() {
           nodeStorage.setItem("announcements", false);
         }
         run_pre_flight_checks();
-        autoUpdater.checkForUpdatesAndNotify();
+        if (!buildIsBeta) {
+          autoUpdater.checkForUpdatesAndNotify();
+        }
         updatechecked = true;
       }, 6000);
     });

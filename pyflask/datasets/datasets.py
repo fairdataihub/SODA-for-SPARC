@@ -12,7 +12,7 @@ from authentication import get_access_token
 
 PENNSIEVE_URL = "https://api.pennsieve.io"
 
-def get_role(pennsieve_account, dataset):
+def get_role(dataset):
     token = get_access_token()
 
     selected_dataset_id = get_dataset_id(token, dataset)
@@ -145,6 +145,7 @@ def reserve_dataset_doi(dataset):  # sourcery skip: extract-method
         doi_request.raise_for_status()
         return {"doi": doi_request.json()["doi"]}
     except Exception as e:
+        print(e)
         if type(e).__name__ == "HTTPError":
             abort(400, e.response.json()["message"])
         abort(500, "An internal server error prevented the request from being fulfilled. Please try again later.")

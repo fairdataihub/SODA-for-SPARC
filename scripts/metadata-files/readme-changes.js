@@ -25,7 +25,7 @@ document.querySelectorAll(".readme-change-current-ds").forEach((element) => {
 });
 
 // function to raise a warning for empty fields before generating changes or readme
-function generateRCFilesHelper(type) {
+const generateRCFilesHelper = (type) => {
   var textValue = $(`#textarea-create-${type}`).val().trim();
   if (textValue === "") {
     Swal.fire({
@@ -44,15 +44,18 @@ function generateRCFilesHelper(type) {
     });
     return "empty";
   }
-}
+};
 
 // generate changes or readme either locally (uploadBFBoolean=false) or onto Pennsieve (uploadBFBoolean=true)
-async function generateRCFiles(uploadBFBoolean, fileType) {
-  var result = generateRCFilesHelper(fileType);
+const generateRCFiles = async (uploadBFBoolean, fileType) => {
+  let result = generateRCFilesHelper(fileType);
+  let bfDataset = document.getElementById(`bf_dataset_load_${fileType}`).innerText.trim();
+  let upperCaseLetters = fileType.toUpperCase() + ".txt";
+
   if (result === "empty") {
     return;
   }
-  var upperCaseLetters = fileType.toUpperCase() + ".txt";
+
   if (uploadBFBoolean) {
     // Run pre-flight checks before uploading the changes or readme file to Pennsieve
     const supplementary_checks = await run_pre_flight_checks(false);
@@ -60,7 +63,30 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
       return;
     }
 
-    var { value: continueProgress } = await Swal.fire({
+    // Check if dataset is locked after running pre-flight checks
+    const isLocked = await api.isDatasetLocked(defaultBfAccount, bfDataset);
+    if (isLocked) {
+      await Swal.fire({
+        icon: "info",
+        title: `${bfDataset} is locked from editing`,
+        html: `
+              This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
+              <br />
+              <br />
+              If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
+            `,
+        width: 600,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "Ok",
+        focusConfirm: true,
+        allowOutsideClick: false,
+      });
+
+      return;
+    }
+
+    let { value: continueProgress } = await Swal.fire({
       title: `Any existing ${upperCaseLetters} file in the high-level folder of the selected dataset will be replaced.`,
       text: "Are you sure you want to continue?",
       allowEscapeKey: false,
@@ -88,9 +114,9 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
       Swal.showLoading();
     },
   }).then((result) => {});
-  var textValue = $(`#textarea-create-${fileType}`).val().trim();
-  let bfDataset = document.getElementById(`bf_dataset_load_${fileType}`).innerText.trim();
+
   if (uploadBFBoolean) {
+    let textValue = $(`#textarea-create-${fileType}`).val().trim();
     //pass in only CHANGES or README (the extension .txt is added in the backend)
     try {
       let upload_rc_file = await client.post(
@@ -157,7 +183,7 @@ async function generateRCFiles(uploadBFBoolean, fileType) {
   } else {
     ipcRenderer.send(`open-destination-generate-${fileType}-locally`);
   }
-}
+};
 
 var changesDestinationPath = "";
 var readmeDestinationPath = "";
@@ -337,7 +363,7 @@ async function saveRCFile(type) {
     if (err) {
       console.log(err);
       log.error(err);
-      var emessage = userError(error);
+      var emessage = userErrorMessage(error);
       Swal.fire({
         title: `Failed to generate the existing ${type}.txt file`,
         html: emessage,
@@ -636,11 +662,11 @@ function importExistingRCFile(type) {
 }
 
 // main function to load existing README/CHANGES files
-function loadExistingRCFile(filepath, type) {
+const loadExistingRCFile = (filepath, type) => {
   // read file
   fs.readFile(filepath, "utf8", function (err, data) {
     if (err) {
-      var emessage = userError(error);
+      let emessage = userErrorMessage(error);
       console.log(err);
       log.error(err);
       Swal.fire({
@@ -688,4 +714,4 @@ function loadExistingRCFile(filepath, type) {
       $(`#button-fake-confirm-existing-${type}-file-load`).click();
     }
   });
-}
+};

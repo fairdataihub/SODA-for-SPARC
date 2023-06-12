@@ -1,10 +1,8 @@
 from flask_restx import Resource, fields, reqparse
 from manageDatasets import ( 
-    get_pennsieve_api_key_secret, 
     get_number_of_files_and_folders_locally,
     submit_dataset_progress,
     bf_add_account_api_key,
-    bf_add_account_username,
     bf_account_list,
     bf_dataset_account,
     bf_account_details,
@@ -42,7 +40,8 @@ from pysodaUtils import get_agent_version, start_agent
 import time 
 
 from namespaces import get_namespace, NamespaceEnum
-from errorHandlers import notBadRequestException
+from errorHandlers import notBadRequestException, handle_http_error
+from authentication import get_cognito_userpool_access_token, bf_add_account_username, get_pennsieve_api_key_secret
 
 
 ##--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -276,17 +275,15 @@ class BfGetUsers(Resource):
 
       return bf_get_users(selected_account)
     except Exception as e:
+      # TODO: Refine this app wide to handle requests errors more appropriately
       if notBadRequestException(e):
         api.abort(500, str(e))
-      raise e
+      api.abort(401, str(e))
 
 
 
 
 
-
-
-model_bf_get_teams_response = api.model('BfGetTeamsResponse', {'teams': fields.List(fields.String, required=True, description="List of the teams in the user's organization.")})
 
 @api.route('/bf_get_teams')
 class BfGetTeams(Resource):
@@ -294,8 +291,7 @@ class BfGetTeams(Resource):
   parser_get_teams = reqparse.RequestParser(bundle_errors=True)
   parser_get_teams.add_argument('selected_account', type=str, required=True, location='args', help='The target account to retrieve inter-organization teams for.')
 
-  @api.marshal_with(model_bf_get_teams_response, False, 200)
-  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns a list of the teams in the given Pennsieve Account's organization.")
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Returns JSON containing the teams for the given Pennsieve account.")
   def get(self):
     try:
       # get the selected account out of the request args
@@ -313,8 +309,8 @@ class BfGetTeams(Resource):
 
 
 model_account_details_response = api.model('AccountDetailsResponse', {
-  'account_details': fields.String(required=True, description="The email and organization for the given Pennsieve account."),
-  "organization_id": fields.String(required=True, description="The organization id for the given Pennsieve account."),
+  'email': fields.String(required=True, description="The email and organization for the given Pennsieve account."),
+  "organization": fields.String(required=True, description="The organization id for the given Pennsieve account."),
 })
 
 @api.route('/bf_account_details')
@@ -423,6 +419,9 @@ class DatasetSubtitle(Resource):
     try:
       return bf_get_subtitle(selected_account, selected_dataset)
     except Exception as e:
+      # if exception is an HTTPError then check if 400 or 500
+      if type(e).__name__ == "HTTPError":
+        handle_http_error(e)
       if notBadRequestException(e):
         api.abort(500, str(e))
       raise e
@@ -1034,3 +1033,29 @@ class BfGetDatasetTags(Resource):
           api.abort(500, str(e))
         raise e
 
+
+
+
+
+
+@api.route('/userpool_access_token')
+class BfGetUserpoolAccessToken(Resource):
+  parser = reqparse.RequestParser(bundle_errors=True)
+  parser.add_argument('email', type=str, required=True, location='json', help='The account to get the userpool access token for.')
+  parser.add_argument('password', type=str, required=True, location='json', help='The password for the account.')
+
+  @api.expect(parser)
+  @api.doc(responses={500: 'There was an internal server error', 400: 'Bad request'}, description="Get a userpool access token.")
+  @api.marshal_with(successMessage, False, 200)
+  def post(self):
+    data = self.parser.parse_args()
+
+    email = data.get('email')
+    password = data.get('password')
+
+    try:
+      return get_cognito_userpool_access_token(email, password)
+    except Exception as e:
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      raise e

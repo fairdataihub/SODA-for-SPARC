@@ -1,3 +1,7 @@
+const {
+  addDatasetAndOrganizationCardComponents,
+} = require("./components-utils/addDatasetAndOrganizationCards");
+
 function docReady(fn) {
   // see if DOM is already available
   if (document.readyState === "complete" || document.readyState === "interactive") {
@@ -56,6 +60,8 @@ document.addEventListener("DOMContentLoaded", async function () {
   };
 
   await waitForHtmlSectionsToInsertIntoDOM();
+
+  addDatasetAndOrganizationCardComponents();
 
   //Synchronously include js files
   await includeJavaScriptFile("./assets/ex-links.js");

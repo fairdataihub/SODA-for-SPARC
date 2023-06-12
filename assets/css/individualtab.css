@@ -853,11 +853,11 @@
   margin-bottom: 30px;
 }
 
-.individual-question.prepare-submission {
+.individual-question.prepare-metadata {
   width: 60%;
 }
 
-.individual-question.prepare-submission .field {
+.individual-question.prepare-metadata .field {
   margin: 15px !important;
   width: 100% !important;
 }
@@ -1064,7 +1064,7 @@
 .card-left {
   color: #808080;
   font-size: 15px;
-  width: 30%;
+  width: 60%;
   min-width: 135px;
   text-align: left;
 }
@@ -1087,10 +1087,10 @@
   width: fit-content;
 }
 
-.card-container.prepare-submission .card-left {
-  /* text-align: right; */
+.card-container.prepare-metadata .card-left {
+  text-align: left;
   float: left;
-  /* width: auto; */
+  width: auto;
 }
 
 .card-right {
@@ -1403,42 +1403,6 @@
   justify-content: center;
 }
 
-/* #pre-publication-items-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  position: relative;
-  box-shadow: 0px 0px 10px #d5d5d5;
-  margin-top: 1rem;
-} */
-
-#items-pre-publication {
-  min-height: 230px;
-  height: 230px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin-left: 38%;
-  margin-right: auto;
-}
-
-#guided--#items-pre-publication {
-  min-height: 230px;
-  height: 230px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  margin-left: 38%;
-  margin-right: auto;
-}
-
-.pre-publishing-file-viewer-file-selected {
-  font-weight: bold;
-}
-
 .pre-publishing-metadata-file-input {
   margin-right: 0.2rem;
   font-size: 20px;
@@ -1455,16 +1419,6 @@
   margin-left: 0.3rem;
   font-size: 1.1rem;
   color: black;
-}
-
-.pre-publishing-metadata-file-container {
-  width: 300px;
-  position: relative;
-}
-
-.guided--pre-publishing-metadata-file-container {
-  width: 300px;
-  position: relative;
 }
 
 .validate-raw-report_btn {
@@ -1505,4 +1459,35 @@
 
 #gather-logs-btn:hover {
   box-shadow: 0 0 6px #b0b0b0;
+}
+
+.prepare-metadata-review-status {
+  color: #000 !important;
+  font-weight: 600 !important;
+  margin-left: 68px !important;
+  font-size: 15px !important;
+}
+
+.prepare-metadata-dataset-span {
+  padding-left: 6px !important;
+  margin-left: 62px !important;
+}
+
+.prepare-metadata-organization-span {
+  width: fit-content !important;
+  margin-left: 32px !important;
+  padding-left: 15px;
+}
+
+.prepare-metadata-account-details-span {
+  padding-left: 65px !important;
+}
+
+.prepare-metadata-current-account-span {
+  margin-left: 60px !important;
+}
+
+.prepare-metadata-card-field {
+  width: 600px !important;
+  margin: 0 auto !important;
 }

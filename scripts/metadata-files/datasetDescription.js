@@ -7,7 +7,7 @@ document.querySelectorAll(".dd-change-current-account").forEach((element) => {
 
 document.querySelectorAll(".dd-change-current-ds").forEach((element) => {
   element.addEventListener("click", function () {
-    openDropdownPrompt(null, "dataset");
+    openDropdownPrompt(element, "dataset");
   });
 });
 
@@ -33,39 +33,6 @@ var sparcAwards = [];
 var ddDestinationPath = "";
 
 $(document).ready(function () {
-  // ipcRenderer.on(
-  //   "selected-metadata-ds-description",
-  //   (event, dirpath, filename) => {
-  //     if (dirpath.length > 0) {
-  //       var destinationPath = path.join(dirpath[0], filename);
-  //       if (fs.existsSync(destinationPath)) {
-  //         var emessage =
-  //           "File '" +
-  //           filename +
-  //           "' already exists in " +
-  //           dirpath[0] +
-  //           ". Do you want to replace it?";
-  //         Swal.fire({
-  //           icon: "warning",
-  //           title: "Metadata file already exists",
-  //           text: `${emessage}`,
-  //           heightAuto: false,
-  //           backdrop: "rgba(0,0,0, 0.4)",
-  //           showConfirmButton: true,
-  //           showCancelButton: true,
-  //           cancelButtonText: "No",
-  //           confirmButtonText: "Yes",
-  //         }).then((result) => {
-  //           if (result.isConfirmed) {
-  //             generateDDFile(false);
-  //           }
-  //         });
-  //       } else {
-  //         generateDDFile(false);
-  //       }
-  //     }
-  //   }
-  // );
   ipcRenderer.on("show-missing-items-ds-description", (event, index) => {
     if (index === 0) {
       ipcRenderer.send("open-folder-dialog-save-ds-description", "dataset_description.xlsx");
@@ -121,16 +88,16 @@ $(document).ready(function () {
   when users add a row and then delete it, the ID for such row is deleted (row-name-2),
   but the row count for the table (used for naming row ID) is changed and that messes up the naming and ID retrieval process
 */
-function checkForUniqueRowID(rowID, no) {
+const checkForUniqueRowID = (rowID, no) => {
   if ($("#" + rowID + no.toString()).length == 0) {
     return no;
   } else {
     no = no + 1;
     return checkForUniqueRowID(rowID, no);
   }
-}
+};
 
-function populateProtocolLink(ev) {
+const populateProtocolLink = (ev) => {
   if ($(ev).val() === "Protocol URL or DOI*") {
     // display dropdown to select protocol titles
     if ($("#select-misc-links").length > 0) {
@@ -153,10 +120,10 @@ function populateProtocolLink(ev) {
       $("#select-misc-links").css("display", "none");
     }
   }
-}
+};
 
 // check for duplicates in names of contributors
-function checkContributorNameDuplicates(table, currentRow) {
+const checkContributorNameDuplicates = (table, currentRow) => {
   var duplicate = false;
   var currentConLastName = $("#" + currentRow.cells[0].children[0].id).val();
   var currentConFirstName = $("#" + currentRow.cells[1].children[0].id).val();
@@ -173,10 +140,10 @@ function checkContributorNameDuplicates(table, currentRow) {
     }
   }
   return duplicate;
-}
+};
 
 // clone Last names of contributors to subsequent selects so we don't have to keep calling Airtable API
-function cloneConNamesSelect(selectLast) {
+const cloneConNamesSelect = (selectLast) => {
   removeOptions(document.getElementById(selectLast));
   addOption(document.getElementById(selectLast), "Select an option", "Select");
   for (var i = 0; i < currentContributorsLastNames.length; i++) {
@@ -185,17 +152,18 @@ function cloneConNamesSelect(selectLast) {
       addOption(document.getElementById(selectLast), opt, opt);
     }
   }
-}
+};
 
 // the below 2 functions initialize Tagify for each input field for a new added row (Role and Affiliation)
-function createConsRoleTagify(inputField) {
+const createConsRoleTagify = (inputField) => {
   var input = document.getElementById(inputField);
   // initialize Tagify on the above input node reference
   var tagify = new Tagify(input, {
     whitelist: [
-      "PrincipleInvestigator",
+      "PrincipalInvestigator",
       "Creator",
       "CoInvestigator",
+      "CorrespondingAuthor",
       "DataCollector",
       "DataCurator",
       "DataManager",
@@ -221,9 +189,9 @@ function createConsRoleTagify(inputField) {
     },
   });
   createDragSort(tagify);
-}
+};
 
-function createConsAffliationTagify(inputField) {
+const createConsAffliationTagify = (inputField) => {
   var input = document.getElementById(inputField);
   var tagify = new Tagify(input, {
     dropdown: {
@@ -235,19 +203,19 @@ function createConsAffliationTagify(inputField) {
     duplicates: false,
   });
   createDragSort(tagify);
-}
+};
 
-function convertDropdownToTextBox(dropdown) {
+const convertDropdownToTextBox = (dropdown) => {
   if (document.getElementById(dropdown)) {
     $($("#" + dropdown).parents()[1]).css("display", "none");
     if (dropdown == "ds-description-award-list") {
       $("#SPARC-Award-raw-input-div-dd").css("display", "flex");
     }
   }
-}
+};
 
 // resetting the dataset_description file
-function resetDDUI(table) {
+const resetDDUI = (table) => {
   var rowcount = document.getElementById(table).rows.length;
   var rowIndex = rowcount - 1;
   var currentRow =
@@ -292,9 +260,9 @@ function resetDDUI(table) {
     ")''><i class='trash alternate outline icon' style='color:red'></i></button></div></td></tr>");
   changeAwardInputDsDescription();
   cloneConNamesSelect("ds-description-contributor-list-last-" + rowIndex.toString());
-}
+};
 
-function checkEmptyConRowInfo(table, row) {
+const checkEmptyConRowInfo = (table, row) => {
   var empty = false;
   var type = ["select", "input"];
   for (var i = 0; i < row.cells.length - 2; i++) {
@@ -323,9 +291,9 @@ function checkEmptyConRowInfo(table, row) {
     }
   }
   return empty;
-}
+};
 
-function showExistingDDFile() {
+const showExistingDDFile = () => {
   if (
     $("#existing-dd-file-destination").prop("placeholder") !== "Browse here" &&
     $("#Question-prepare-dd-2").hasClass("show")
@@ -354,101 +322,11 @@ function showExistingDDFile() {
   } else {
     ipcRenderer.send("open-file-dialog-existing-DD");
   }
-}
-
-function resetDD() {
-  Swal.fire({
-    backdrop: "rgba(0,0,0, 0.4)",
-    confirmButtonText: "I want to start over!",
-    focusCancel: true,
-    heightAuto: false,
-    icon: "warning",
-    reverseButtons: reverseSwalButtons,
-    showCancelButton: true,
-    text: "Are you sure you want to start over and reset your progress?",
-    showClass: {
-      popup: "animate__animated animate__zoomIn animate__faster",
-    },
-    hideClass: {
-      popup: "animate__animated animate__zoomOut animate__faster",
-    },
-  }).then((result) => {
-    if (result.isConfirmed) {
-      // 1. remove Prev and Show from all individual-question except for the first one
-      // 2. empty all input, textarea, select, para-elements
-      $("#Question-prepare-dd-1").removeClass("prev");
-      $("#Question-prepare-dd-1").nextAll().removeClass("show");
-      $("#Question-prepare-dd-1").nextAll().removeClass("prev");
-      $("#Question-prepare-dd-1 .option-card")
-        .removeClass("checked")
-        .removeClass("disabled")
-        .removeClass("non-selected");
-      $("#Question-prepare-dd-1 .option-card .folder-input-check").prop("checked", false);
-      resetDDFields();
-    }
-  });
-}
-
-function resetDDFields() {
-  // 1. empty all input, textarea, select, para-elements
-  // 2. delete all rows from table Contributor
-  // 3. delete all rows from table Links
-  var inputFields = $("#Question-prepare-dd-2").find("input");
-  var textAreaFields = $("#Question-prepare-dd-2").find("textarea");
-
-  // var selectFields = $("#Question-prepare-dd-4-sections").find("select");
-
-  for (var field of inputFields) {
-    $(field).val("");
-  }
-  for (var field of textAreaFields) {
-    $(field).val("");
-  }
-
-  $("#existing-dd-file-destination").attr("placeholder", "Browse here");
-
-  $("#div-confirm-existing-dd-import").hide();
-
-  if ($("#bf_dataset_load_dd").text().trim() !== "None") {
-    $($("#div-check-bf-import-dd").children()[0]).show();
-    $("#div-check-bf-import-dd").css("display", "flex");
-  } else {
-    $("#div-check-bf-import-dd").hide();
-  }
-
-  // show generate button again
-  $("#button-generate-dd").show();
-
-  keywordTagify.removeAllTags();
-  otherFundingTagify.removeAllTags();
-  studyTechniquesTagify.removeAllTags();
-  studyOrganSystemsTagify.removeAllTags();
-  studyApproachesTagify.removeAllTags();
-
-  // 3. deleting table rows
-  globalContributorNameObject = {};
-  currentContributorsLastNames = [];
-  contributorArray = [];
-  $("#contributor-table-dd tr:gt(0)").remove();
-  $("#protocol-link-table-dd tr:gt(0)").remove();
-  $("#other-link-table-dd tr:gt(0)").remove();
-
-  $("#div-contributor-table-dd").css("display", "none");
-  document.getElementById("protocol-link-table-dd").style.display = "none";
-  document.getElementById("div-protocol-link-table-dd").style.display = "none";
-  document.getElementById("div-other-link-table-dd").style.display = "none";
-  document.getElementById("other-link-table-dd").style.display = "none";
-
-  $("#dd-accordion").find(".title").removeClass("active");
-  $("#dd-accordion").find(".content").removeClass("active");
-
-  $("#input-destination-generate-dd-locally").attr("placeholder", "Browse here");
-  $("#div-confirm-destination-dd-locally").css("display", "none");
-}
+};
 
 /////////////// Generate ds description file ///////////////////
 ////////////////////////////////////////////////////////////////
-async function generateDatasetDescription() {
+const generateDatasetDescription = async () => {
   var funding = $("#ds-description-award-input").val().trim();
   var allFieldsSatisfied = detectEmptyRequiredFields(funding)[0];
   var errorMessage = detectEmptyRequiredFields(funding)[1];
@@ -491,17 +369,46 @@ async function generateDatasetDescription() {
     $("#dd-accordion").find(".content").removeClass("active");
     return true;
   }
-}
+};
 
 const generateDDFile = async (uploadBFBoolean) => {
+  let bfaccountname = defaultBfAccount;
+  let bf_dataset = document.getElementById("bf_dataset_load_dd").innerText.trim();
   if (uploadBFBoolean) {
+    /// get current, selected Pennsieve account
+
     // Run pre-flight checks before uploading the dataset_description file to Pennsieve
     const supplementary_checks = await run_pre_flight_checks(false);
     if (!supplementary_checks) {
       return;
     }
 
-    var { value: continueProgress } = await Swal.fire({
+    // Check if dataset is locked after running pre-flight checks
+    const isLocked = await api.isDatasetLocked(bfaccountname, bf_dataset);
+    if (isLocked) {
+      await Swal.fire({
+        icon: "info",
+        title: `${bf_dataset} is locked from editing`,
+        html: `
+              This dataset is currently being reviewed by the SPARC curation team, therefore, has been set to read-only mode. No changes can be made to this dataset until the review is complete.
+              <br />
+              <br />
+              If you would like to make changes to this dataset, please reach out to the SPARC curation team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>
+            `,
+        width: 600,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "Ok",
+        focusConfirm: true,
+        allowOutsideClick: false,
+      });
+
+      return;
+    }
+
+    // Check if the dataset is locked before uploading
+
+    let { value: continueProgress } = await Swal.fire({
       title:
         "Any existing dataset_description.xlsx file in the high-level folder of the selected dataset will be replaced.",
       text: "Are you sure you want to continue?",
@@ -518,7 +425,7 @@ const generateDDFile = async (uploadBFBoolean) => {
       return;
     }
   } else {
-    var { value: continueProgress } = await Swal.fire({
+    let { value: continueProgress } = await Swal.fire({
       title:
         "Any existing dataset_description.xlsx file in the specified location will be replaced.",
       text: "Are you sure you want to continue?",
@@ -558,33 +465,29 @@ const generateDDFile = async (uploadBFBoolean) => {
 
   // process multiple Study info tagify values - keywords
   var keywordVal = [];
-  for (var i = 0; i < datasetInfoValueObj["keywords"].length; i++) {
+  for (let i = 0; i < datasetInfoValueObj["keywords"].length; i++) {
     keywordVal.push(datasetInfoValueObj["keywords"][i].value);
   }
   /// replace raw tagify values with processed tagify values
   datasetInfoValueObj["keywords"] = keywordVal;
 
   // process multiple Study info tagify values - Study techniques, approaches, and study organ systems
-  var studyTechniqueArr = [];
-  for (var i = 0; i < studyInfoValueObject["study technique"].length; i++) {
+  let studyTechniqueArr = [];
+  for (let i = 0; i < studyInfoValueObject["study technique"].length; i++) {
     studyTechniqueArr.push(studyInfoValueObject["study technique"][i].value);
   }
-  var studyOrganSystemsArr = [];
-  for (var i = 0; i < studyInfoValueObject["study organ system"].length; i++) {
+  let studyOrganSystemsArr = [];
+  for (let i = 0; i < studyInfoValueObject["study organ system"].length; i++) {
     studyOrganSystemsArr.push(studyInfoValueObject["study organ system"][i].value);
   }
-  var studyApproachesArr = [];
-  for (var i = 0; i < studyInfoValueObject["study approach"].length; i++) {
+  let studyApproachesArr = [];
+  for (let i = 0; i < studyInfoValueObject["study approach"].length; i++) {
     studyApproachesArr.push(studyInfoValueObject["study approach"][i].value);
   }
   /// replace raw tagify values with processed tagify values
   studyInfoValueObject["study organ system"] = studyOrganSystemsArr;
   studyInfoValueObject["study technique"] = studyTechniqueArr;
   studyInfoValueObject["study approach"] = studyApproachesArr;
-
-  /// get current, selected Pennsieve account
-  var bfaccountname = $("#current-bf-account").text();
-  let bf_dataset = document.getElementById("bf_dataset_load_dd").innerText.trim();
 
   log.info(`Generating a dataset description file.`);
   /// call python function to save file
@@ -662,7 +565,7 @@ const generateDDFile = async (uploadBFBoolean) => {
 ///// Functions to grab each piece of info to generate the dd file
 
 // contributor info
-function grabConInfoEntries() {
+const grabConInfoEntries = () => {
   var funding = $("#ds-description-award-input").val();
   var acknowledgment = $("#ds-description-acknowledgments").val();
 
@@ -684,9 +587,9 @@ function grabConInfoEntries() {
   contributorInfo["acknowledgment"] = acknowledgment;
   contributorInfo["contributors"] = contributorArray;
   return contributorInfo;
-}
+};
 
-function grabAdditionalLinkSection() {
+const grabAdditionalLinkSection = () => {
   var table = document.getElementById("other-link-table-dd");
   var rowcountLink = table.rows.length;
   var additionalLinkInfo = [];
@@ -700,9 +603,9 @@ function grabAdditionalLinkSection() {
     additionalLinkInfo.push(additionalLink);
   }
   return additionalLinkInfo;
-}
+};
 
-function grabProtocolSection() {
+const grabProtocolSection = () => {
   var table = document.getElementById("protocol-link-table-dd");
   var rowcountLink = table.rows.length;
   var protocolLinkInfo = [];
@@ -716,17 +619,17 @@ function grabProtocolSection() {
     protocolLinkInfo.push(protocol);
   }
   return protocolLinkInfo;
-}
+};
 
-function combineLinksSections() {
+const combineLinksSections = () => {
   var protocolLinks = grabProtocolSection();
   var otherLinks = grabAdditionalLinkSection();
   protocolLinks.push.apply(protocolLinks, otherLinks);
   return protocolLinks;
-}
+};
 
 // add protocol function for DD file
-async function addProtocol() {
+const addProtocol = async () => {
   const { value: values } = await Swal.fire({
     title: "Add a protocol",
     html:
@@ -789,19 +692,9 @@ async function addProtocol() {
   if (values) {
     addProtocolLinktoTableDD(values[0], values[1], values[2], values[3]);
   }
-}
+};
 
-function addExistingProtocol() {
-  var credentials = loadExistingProtocolInfo();
-  if (credentials[0]) {
-    // show email for protocol account
-    showProtocolCredentials(credentials[1], "DD");
-  } else {
-    protocolAccountQuestion("DD", false);
-  }
-}
-
-function addProtocolLinktoTableDD(protocolLink, protocolType, protocolRelation, protocolDesc) {
+const addProtocolLinktoTableDD = (protocolLink, protocolType, protocolRelation, protocolDesc) => {
   var protocolTable = document.getElementById("protocol-link-table-dd");
   protocolTable.style.display = "block";
   document.getElementById("div-protocol-link-table-dd").style.display = "block";
@@ -828,20 +721,20 @@ function addProtocolLinktoTableDD(protocolLink, protocolType, protocolRelation, 
     "</td><td class='contributor-table-row' style='display:none'>" +
     protocolDesc +
     "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_protocol_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_protocol_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
-}
+};
 
-function addAdditionalLinktoTableDD(link, linkType, linkRelation, description) {
-  var linkTable = document.getElementById("other-link-table-dd");
+const addAdditionalLinktoTableDD = (link, linkType, linkRelation, description) => {
+  let linkTable = document.getElementById("other-link-table-dd");
   linkTable.style.display = "block";
   document.getElementById("div-other-link-table-dd").style.display = "block";
-  var rowcount = linkTable.rows.length;
+  let rowcount = linkTable.rows.length;
   /// append row to table from the bottom
-  var rowIndex = rowcount;
-  var currentRow = linkTable.rows[linkTable.rows.length];
+  let rowIndex = rowcount;
+  let currentRow = linkTable.rows[linkTable.rows.length];
   // check for unique row id in case users delete old rows and append new rows (same IDs!)
-  var newRowIndex = checkForUniqueRowID("row-current-additional-link", rowIndex);
-  var indexNumber = rowIndex;
-  var row = (linkTable.insertRow(rowIndex).outerHTML =
+  let newRowIndex = checkForUniqueRowID("row-current-additional-link", rowIndex);
+  let indexNumber = rowIndex;
+  let row = (linkTable.insertRow(rowIndex).outerHTML =
     "<tr id='row-current-other" +
     newRowIndex +
     "' class='row-protocol'><td class='contributor-table-row'>" +
@@ -857,17 +750,17 @@ function addAdditionalLinktoTableDD(link, linkType, linkRelation, description) {
     "</td><td class='contributor-table-row' style='display:none'>" +
     description +
     "</td><td><div class='ui small basic icon buttons contributor-helper-buttons' style='display: flex'><button class='ui button' onclick='edit_current_additional_link_id(this)'><i class='pen icon' style='color: var(--tagify-dd-color-primary)'></i></button><button class='ui button' onclick='delete_current_additional_link_id(this)'><i class='trash alternate outline icon' style='color: red'></i></button></div></td></tr>");
-}
+};
 
-function populateSelectSPARCAward(object, id) {
+const populateSelectSPARCAward = (object, id) => {
   removeOptions(document.getElementById(id));
   addOption(document.getElementById(id), "Select an award", "Select");
-  for (var award of Object.keys(object)) {
+  for (let award of Object.keys(object)) {
     addOption(document.getElementById(id), object[award], award);
   }
-}
+};
 
-function changeAward(award) {
+const changeAward = (award) => {
   Swal.fire({
     title: "Loading your award and contributor information.",
     html: "Please wait...",
@@ -883,7 +776,7 @@ function changeAward(award) {
   }).then((result) => {});
   $("#ds-description-award-input").val(award);
   $("#submission-sparc-award").val(award);
-}
+};
 
 const generateContributorRowElement = (contributorLastName, contributorFirstName) => {
   return `
@@ -907,21 +800,21 @@ const generateContributorRowElement = (contributorLastName, contributorFirstName
 const addContributortoTableDD = (name, contributorObject) => {
   const contributorIsValid = contributorDataIsValid(contributorObject);
   const conRole = contributorObject.conRole;
-  var conTable = document.getElementById("contributor-table-dd");
-  var rowcount = conTable.rows.length;
-  var rowIndex = rowcount;
+  let conTable = document.getElementById("contributor-table-dd");
+  let rowcount = conTable.rows.length;
+  let rowIndex = rowcount;
   /// append row to table from the bottom
-  var currentRow = conTable.rows[conTable.rows.length - 1];
+  let currentRow = conTable.rows[conTable.rows.length - 1];
   // check for unique row id in case users delete old rows and append new rows (same IDs!)
-  var newRowIndex = checkForUniqueRowID("row-current-con", rowIndex);
-  var indexNumber = rowIndex;
-  var conName = name;
+  let newRowIndex = checkForUniqueRowID("row-current-con", rowIndex);
+  let indexNumber = rowIndex;
+  let conName = name;
   // var conContactPerson = contactStatus;
 
   document.getElementById("div-contributor-table-dd").style.display = "block";
   document.getElementById("contributor-table-dd").style.display = "table";
 
-  var row = (conTable.insertRow(
+  let row = (conTable.insertRow(
     rowIndex
   ).outerHTML = `<tr id='row-current-con' class='row-protocol'><td class='contributor-table-row'>
   ${conName}
@@ -990,9 +883,10 @@ const showContributorSweetalert = (key) => {
       /// initiate tagify for contributor roles
       currentContributortagify = new Tagify(document.getElementById("input-con-role"), {
         whitelist: [
-          "PrincipleInvestigator",
+          "PrincipalInvestigator",
           "Creator",
           "CoInvestigator",
+          "CorrespondingAuthor",
           "DataCollector",
           "DataCurator",
           "DataManager",
@@ -1189,9 +1083,10 @@ const edit_current_con_id = (ev) => {
       /// initiate tagify for contributor roles
       currentContributortagify = new Tagify(document.getElementById("input-con-role"), {
         whitelist: [
-          "PrincipleInvestigator",
+          "PrincipalInvestigator",
           "Creator",
           "CoInvestigator",
+          "CorrespondingAuthor",
           "DataCollector",
           "DataCurator",
           "DataManager",
@@ -1381,7 +1276,7 @@ const grabCurrentTagifyContributor = (tagify) => {
   return infoArray;
 };
 
-function checkContactPersonStatus(type, ev) {
+const checkContactPersonStatus = (type, ev) => {
   //TODO: remove this functionality as it is not needed anymore
   var allConTable = document.getElementById("contributor-table-dd");
   if (type === "edit") {
@@ -1412,15 +1307,15 @@ function checkContactPersonStatus(type, ev) {
     }
     return contactPersonExists;
   }
-}
+};
 
-function checkAtLeastOneContactPerson() {
-  var contactPersonExists = false;
-  var allConTable = document.getElementById("contributor-table-dd");
-  var rowcount = allConTable.rows.length;
+const checkAtLeastOneContactPerson = () => {
+  let contactPersonExists = false;
+  let allConTable = document.getElementById("contributor-table-dd");
+  let rowcount = allConTable.rows.length;
   if (allConTable.rows.length > 1) {
-    for (var i = 1; i < rowcount; i++) {
-      var contactLabel = allConTable.rows[i].cells[2].innerText;
+    for (let i = 1; i < rowcount; i++) {
+      let contactLabel = allConTable.rows[i].cells[2].innerText;
       if (contactLabel === "Yes") {
         contactPersonExists = true;
         break;
@@ -1428,46 +1323,46 @@ function checkAtLeastOneContactPerson() {
     }
   }
   return contactPersonExists;
-}
+};
 
-function checkDuplicateContributorName(first, last, contributorsTable) {
+const checkDuplicateContributorName = (first, last, contributorsTable) => {
   let table = contributorsTable[0];
-  var duplicate = false;
-  var name = first + ", " + last;
-  var rowcount = table.rows.length;
-  for (var i = 1; i < rowcount; i++) {
-    var currentContributorName = table.rows[i].cells[1].innerText;
+  let duplicate = false;
+  let name = first + ", " + last;
+  let rowcount = table.rows.length;
+  for (let i = 1; i < rowcount; i++) {
+    let currentContributorName = table.rows[i].cells[1].innerText;
     if (currentContributorName === name) {
       duplicate = true;
       break;
     }
   }
   return duplicate;
-}
+};
 
-function checkDuplicateLink(link, table) {
-  var duplicate = false;
-  var rowcount = document.getElementById(table).rows.length;
-  for (var i = 1; i < rowcount; i++) {
-    var currentLink = document.getElementById(table).rows[i].cells[1].innerText;
+const checkDuplicateLink = (link, table) => {
+  let duplicate = false;
+  let rowcount = document.getElementById(table).rows.length;
+  for (let i = 1; i < rowcount; i++) {
+    let currentLink = document.getElementById(table).rows[i].cells[1].innerText;
     if (currentLink === link) {
       duplicate = true;
       break;
     }
   }
   return duplicate;
-}
+};
 
 ///// Functions to grab each piece of info to generate the dd file
 
 // dataset and participant info
-function grabDSInfoEntries() {
-  var name = document.getElementById("ds-name").value;
-  var description = document.getElementById("ds-description").value;
-  var type = $("#ds-type").val();
-  var keywordArray = keywordTagify.value;
-  var samplesNo = document.getElementById("ds-samples-no").value;
-  var subjectsNo = document.getElementById("ds-subjects-no").value;
+const grabDSInfoEntries = () => {
+  let name = document.getElementById("ds-name").value;
+  let description = document.getElementById("ds-description").value;
+  let type = $("#ds-type").val();
+  let keywordArray = keywordTagify.value;
+  let samplesNo = document.getElementById("ds-samples-no").value;
+  let subjectsNo = document.getElementById("ds-subjects-no").value;
 
   return {
     name: name,
@@ -1477,17 +1372,17 @@ function grabDSInfoEntries() {
     "number of samples": samplesNo,
     "number of subjects": subjectsNo,
   };
-}
+};
 
 // study info
-function grabStudyInfoEntries() {
-  var studyOrganSystem = studyOrganSystemsTagify.value;
-  var studyApproach = studyApproachesTagify.value;
-  var studyTechnique = studyTechniquesTagify.value;
-  var studyPurpose = document.getElementById("ds-study-purpose").value;
-  var studyDataCollection = document.getElementById("ds-study-data-collection").value;
-  var studyPrimaryConclusion = document.getElementById("ds-study-primary-conclusion").value;
-  var studyCollectionTitle = document.getElementById("ds-study-collection-title").value;
+const grabStudyInfoEntries = () => {
+  let studyOrganSystem = studyOrganSystemsTagify.value;
+  let studyApproach = studyApproachesTagify.value;
+  let studyTechnique = studyTechniquesTagify.value;
+  let studyPurpose = document.getElementById("ds-study-purpose").value;
+  let studyDataCollection = document.getElementById("ds-study-data-collection").value;
+  let studyPrimaryConclusion = document.getElementById("ds-study-primary-conclusion").value;
+  let studyCollectionTitle = document.getElementById("ds-study-collection-title").value;
 
   return {
     "study organ system": studyOrganSystem,
@@ -1498,17 +1393,18 @@ function grabStudyInfoEntries() {
     "study primary conclusion": studyPrimaryConclusion,
     "study collection title": studyCollectionTitle,
   };
-}
+};
 
 // adding row for contributor table
-function addNewRow(table) {
+const addNewRow = (table) => {
   $("#para-save-link-status").text("");
   $("#para-save-contributor-status").text("");
   var rowcount = document.getElementById(table).rows.length;
-  /// append row to table from the bottom
   var rowIndex = rowcount;
   var currentRow =
     document.getElementById(table).rows[document.getElementById(table).rows.length - 1];
+
+  /// append row to table from the bottom
   if (table === "doi-table") {
     if (
       $(document.getElementById("doi-table").rows[rowIndex - 1].cells[1])
@@ -1583,10 +1479,10 @@ function addNewRow(table) {
     createConsRoleTagify("input-con-role-" + newRowIndex.toString());
     createConsAffliationTagify("input-con-affiliation-" + newRowIndex.toString());
   }
-}
+};
 
-function importExistingDDFile() {
-  var filePath = $("#existing-dd-file-destination").prop("placeholder");
+const importExistingDDFile = () => {
+  let filePath = $("#existing-dd-file-destination").prop("placeholder");
   if (filePath === "Browse here") {
     Swal.fire(
       "No file chosen",
@@ -1619,7 +1515,7 @@ function importExistingDDFile() {
       setTimeout(loadDDfileDataframe(filePath), 1000);
     }
   }
-}
+};
 
 const checkBFImportDD = async () => {
   Swal.fire({
@@ -1677,7 +1573,7 @@ const checkBFImportDD = async () => {
   }
 };
 
-async function loadDDfileDataframe(filePath) {
+const loadDDfileDataframe = async (filePath) => {
   try {
     let ddFileResponse = await client.get("/prepare_metadata/dataset_description_file", {
       params: {
@@ -1717,9 +1613,9 @@ async function loadDDfileDataframe(filePath) {
       Destinations.LOCAL
     );
   }
-}
+};
 
-function loadDDFileToUI(object, file_type) {
+const loadDDFileToUI = (object, file_type) => {
   var basicInfoObj = object["Basic information"];
   var studyInfoObj = object["Study information"];
   var contributorData = object["Contributor information"];
@@ -1804,18 +1700,18 @@ function loadDDFileToUI(object, file_type) {
     // $($("#button-fake-confirm-existing-bf-dd-file-load").siblings()[0]).hide();
     $("#button-fake-confirm-existing-bf-dd-file-load").click();
   }
-}
+};
 
-function populateTagifyDD(tagify, values) {
+const populateTagifyDD = (tagify, values) => {
   tagify.removeAllTags();
   for (var value of values) {
     if (value.trim() !== "") {
       tagify.addTags(value.trim());
     }
   }
-}
+};
 
-function loadContributorsToTable(array) {
+const loadContributorsToTable = (array) => {
   contributorArray = [];
   $("#contributor-table-dd tr:gt(0)").remove();
   $("#div-contributor-table-dd").css("display", "none");
@@ -1847,9 +1743,9 @@ function loadContributorsToTable(array) {
       addContributortoTableDD(myCurrentCon.conName, myCurrentCon);
     }
   }
-}
+};
 
-function loadRelatedInfoToTable(array) {
+const loadRelatedInfoToTable = (array) => {
   $("#protocol-link-table-dd tr:gt(0)").remove();
   $("#div-protocol-link-table-dd").css("display", "none");
   $("#other-link-table-dd tr:gt(0)").remove();
@@ -1864,11 +1760,11 @@ function loadRelatedInfoToTable(array) {
       }
     }
   }
-}
+};
 
 // check if a link is a protocol for UI import purpose (Basic version, could be improved further for accuracy)
 // (nothing will be changed for the generating purpose, just for the UI link separation between protocols and other links)
-function protocolCheck(array) {
+const protocolCheck = (array) => {
   var boolean = false;
   // if relation includes IsProtocolFor, HasProtocol OR if description includes the word "protocol"(s) at all
   if (
@@ -1880,4 +1776,4 @@ function protocolCheck(array) {
     boolean = true;
   }
   return boolean;
-}
+};

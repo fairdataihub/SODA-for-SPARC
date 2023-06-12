@@ -17,8 +17,14 @@ document
     openDropdownPrompt(this, "dataset", false);
   });
 
+// document
+//   .querySelector("#Question-generate-dataset-BF-dataset .change-current-account.organization")
+//   .addEventListener("click", function () {
+//     openDropdownPrompt(this, "organization", false);
+//   });
+
 document
-  .querySelector("#Question-generate-dataset-BF-dataset .change-current-account")
+  .querySelector("#Question-generate-dataset-BF-dataset .change-current-account:not(.organization)")
   .addEventListener("click", function () {
     openDropdownPrompt(this, "dataset", false);
   });
@@ -513,7 +519,6 @@ const importGenerateDatasetStep = async (object) => {
               selected_account: bfAccountSelected,
             },
           });
-          $("#para-account-detail-curate").html(dataset_request.data.account_details);
           updateBfAccountList();
         } catch (error) {
           clientError(error);
@@ -827,28 +832,6 @@ const importOrganizeProgressPrompt = () => {
 };
 
 $(document).ready(async function () {
-  var accountDetails = $("#para-account-detail-curate");
-  //Observe the paragraph
-  this.observer = new MutationObserver(
-    async function (mutations) {
-      let datasets;
-      try {
-        datasets = await api.getDatasetsForAccount(defaultBfAccount);
-      } catch (error) {
-        clientError(error);
-        return;
-      }
-
-      datasetList = [];
-      datasetList = datasets;
-      refreshDatasetList();
-    }.bind(this)
-  );
-  this.observer.observe(accountDetails.get(0), {
-    characterData: true,
-    childList: true,
-  });
-
   importOrganizeProgressPrompt();
 
   $("#bf_list_users_pi").selectpicker();
@@ -2045,16 +2028,15 @@ const ffmCreateManifest = async (sodaJson) => {
     };
   } catch (err) {
     clientError(err);
-    userError(err);
+    userErrorMessage(err);
   }
   renderFFManifestCards();
 };
 
 $("#generate-manifest-curate").change(async function () {
   if (this.checked) {
-    $("#button-generate-manifest-locally").show();
     //display manifest generator UI here
-    $("#ffm-manifest-generator").show();
+    $("#manifest-creating-loading").removeClass("hidden");
     // create the manifest of the high level folders within sodaJSONObj
     if ("manifest-files" in sodaJSONObj === false) {
       sodaJSONObj["manifest-files"] = {
@@ -2064,11 +2046,15 @@ $("#generate-manifest-curate").change(async function () {
     }
 
     await ffmCreateManifest(sodaJSONObj);
+    $("#ffm-manifest-generator").show();
+    $("#button-generate-manifest-locally").show();
     // For the back end to know the manifest files have been created in $HOME/SODA/manifest-files/<highLvlFolder>
     sodaJSONObj["manifest-files"]["auto-generated"] = true;
+    $("#manifest-creating-loading").addClass("hidden");
   } else {
     $("#button-generate-manifest-locally").hide();
     $("#ffm-manifest-generator").hide();
+    $("#manifest-creating-loading").addClass("hidden");
     document.getElementById("ffm-container-manifest-file-cards").innerHTML = "";
     if (sodaJSONObj["manifest-files"]?.["destination"]) {
       delete sodaJSONObj["manifest-files"]["destination"];

@@ -117,7 +117,7 @@
         data-parent-tab-name="Curation Preparation"
       >
         <div class="guided--capsule-container" id="structure-dataset-capsule-container">
-          <div class="guided--capsule" id="guided-resume-existing-dataset-capsule"></div>
+          <div class="guided--capsule" id="guided-select-starting-point-capsule"></div>
 
           <div class="guided--capsule" id="guided-curation-preparation-intro-capsule"></div>
           <div class="guided--capsule" id="guided-ask-if-submission-is-sparc-funded-capsule"></div>
@@ -126,7 +126,7 @@
           <div class="guided--capsule" id="guided-name-subtitle-capsule"></div>
         </div>
         <div
-          id="guided-resume-existing-dataset-tab"
+          id="guided-select-starting-point-tab"
           class="guided--page h-100 hidden"
           data-page-name="Select starting point"
         >
@@ -247,13 +247,28 @@
           </div>
 
           <div class="guided--section" id="guided-section-start-new-curation">
-            <h2 class="guided--text-click-continue">
-              Click "Continue" to start the End to End curation process for preparing and submitting
-              a new dataset.
+            <h2 class="guided--text-user-directions">
+              Click "<span class="next-button-span"></span>" to start the End to End curation
+              process for preparing and submitting a new dataset.
             </h2>
           </div>
 
-          <div class="guided--section" id="guided-section-resume-progress-cards"></div>
+          <div class="guided--section" id="guided-section-resume-progress-cards">
+            <div class="guided--section" id="guided-section-loading-progress-cards">
+              <div class="lds-roller">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+              Loading datasets in progress...
+            </div>
+            <div class="guided--section" id="guided-container-progress-cards"></div>
+          </div>
 
           <div
             class="guided--section"
@@ -375,8 +390,23 @@
               </div>
               <div class="info-container">
                 <p class="help-text mb-0">
-                  If you don't see your SPARC award in the dropdown above, your dataset either does
-                  not exist on Pennsieve or you do not have Owner or Manager permissions.
+                  Your current workspace is
+                  <b><span class="bf-organization-span"></span></b>
+                  <br />
+                  If your dataset is not in this workspace, click the button below to switch to a
+                  different workspace.
+                  <br />
+                  <button
+                    class="ui positive button mt-md change-current-account ds-dd organization guided-change-workspace"
+                    id="guided-button-change-workspace-dataset-import"
+                    style="background-color: var(--color-light-green) !important"
+                  >
+                    Import datasets from a different workspace
+                  </button>
+                  <br />
+                  <br />
+                  If you are in the correct workspace but don't see your dataset, you do not have
+                  Owner or Manager permissions, therefore, you are not able to modify the dataset.
                 </p>
               </div>
             </div>
@@ -391,8 +421,15 @@
             </p>
           </div>
           <div class="guided--section">
-            <h2 class="text-sub-step-title">
-              Click the "Continue" button below to go to the next page.
+            <div
+              id="guided-curation-preparation-intro-lottie"
+              class="lottieAnimationContainer guided--container-lottie-standard"
+            ></div>
+          </div>
+          <div class="guided--section">
+            <h2 class="guided--text-user-directions">
+              Click the "<span class="next-button-span"></span>" button below to go to the next
+              page.
             </h2>
           </div>
         </div>
@@ -404,38 +441,132 @@
         >
           <h1 class="text-sub-step-title">Funding information</h1>
           <div class="guided--section">
-            <h2 class="text-sub-step-title">
-              Is the dataset you are submitting funded by a SPARC award?
-            </h2>
+            <h2 class="text-sub-step-title">Select the funding source for your dataset below:</h2>
             <div class="guided--radio-button-container">
               <button
-                class="ui positive basic button guided--radio-button"
+                class="guided--radio-button tile-button"
                 id="guided-button-dataset-is-sparc-funded"
                 data-next-element="guided-section-dataset-sparc-funded"
                 data-button-config-value="dataset-is-sparc-funded"
                 data-button-config-value-state="yes"
               >
-                Yes
+                <div class="tile-button-icon">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    xmlns:xlink="http://www.w3.org/1999/xlink"
+                    viewBox="0 0 170.5327 84.5895"
+                    height="50px"
+                    width="50px"
+                  >
+                    <a href="https://sparc.science/">
+                      <defs>
+                        <linearGradient
+                          id="linear-gradient"
+                          y1="42.7643"
+                          x2="170.5327"
+                          y2="42.7643"
+                          gradientUnits="userSpaceOnUse"
+                        >
+                          <stop offset="0" stop-color="#0b00bf"></stop>
+                          <stop offset="1" stop-color="#bc00fc"></stop>
+                        </linearGradient>
+                      </defs>
+                      <title>For Sparc</title>
+                      <g id="derivative-logo">
+                        <path
+                          d="M169.0691,57.0889l-60.922-1.5a2.8941,2.8941,0,0,0-2.7225,1.7374l-.0289.0665L99.327,71.3508,87.0724,4.2313l-.0045-.03a3.9867,3.9867,0,0,0-7.8393-.0051L69.6429,55.6522,1.4623,57.3835a1.5,1.5,0,0,0,.0125,3l70.6845,1.2053a2.9235,2.9235,0,0,0,2.9-2.2814l.0259-.1154L83.01,23.8779,95.2029,82.1654l.0113.0551a3,3,0,0,0,5.684.5645l9.237-21.2451,58.9339-1.451a1.5,1.5,0,0,0,0-3Z"
+                          style="fill: url(#linear-gradient)"
+                        ></path>
+                        <path
+                          d="M11.3962.9629c6.9756,0,11.2637,4.48,11.2637,11.583V16.77H16.0681V12.5459c0-3.2637-1.7285-5.2471-4.6719-5.2471-3.0078,0-4.7353,1.9834-4.7353,5.2471a6.6109,6.6109,0,0,0,2.4316,5.0557L17.86,25.8574c2.8154,2.6875,5.3115,5.6319,5.3115,10.56,0,7.1035-4.416,11.583-11.5195,11.583-7.167,0-11.583-4.48-11.583-11.583V32.1924H6.6609V36.417c0,3.2637,1.792,5.2471,4.9912,5.2471,3.1357,0,4.9277-1.9834,4.9277-5.2471a7.4448,7.4448,0,0,0-2.6875-5.44l-8.96-8.3828C1.3494,19.2656.0691,16.45.0691,12.3545.0691,5.4424,4.3572.9629,11.3962.9629Z"
+                        ></path>
+                        <path
+                          d="M44.2927,31.9365V47.5518H37.7009V1.4111H48.9636c7.1035,0,11.583,4.48,11.583,11.583v7.3594c0,7.168-4.4795,11.583-11.583,11.583ZM48.9,25.73c3.1993,0,5.0557-1.92,5.0557-5.1836V12.8027c0-3.2-1.8564-5.1845-5.0557-5.1845H44.2927V25.73Z"
+                        ></path>
+                        <path
+                          d="M116.6443,47.5518h-6.5918V1.4111h11.583c7.1035,0,11.583,4.48,11.583,11.583v6.2715a11.1941,11.1941,0,0,1-5.0557,9.8555c1.8565,5.6318,4.48,13.3115,6.1436,18.4307h-6.72l-5.5674-16.7666h-5.375Zm4.9267-22.9747c3.2,0,5.0557-1.92,5.0557-5.1191V12.8027c0-3.2-1.8555-5.1845-5.0557-5.1845h-4.9267V24.5771Z"
+                        ></path>
+                        <path
+                          d="M170.4656,32.1924V36.417c0,7.1035-4.4151,11.583-11.5186,11.583-7.1679,0-11.583-4.48-11.583-11.583V12.5459c0-7.1035,4.4151-11.583,11.583-11.583,7.1035,0,11.5186,4.48,11.5186,11.583V16.77h-6.5908V12.5459c0-3.2637-1.792-5.2471-4.9278-5.2471-3.2,0-4.9922,1.9834-4.9922,5.2471V36.417c0,3.2637,1.792,5.2471,4.9922,5.2471,3.1358,0,4.9278-1.9834,4.9278-5.2471V32.1924Z"
+                        ></path>
+                      </g>
+                    </a>
+                  </svg>
+                </div>
+                <div class="tile-button-text">
+                  <h2>NIH SPARC program</h2>
+                </div>
               </button>
+
               <button
-                class="ui negative basic button guided--radio-button"
+                class="guided--radio-button tile-button"
+                id="guided-button-dataset-is-re-join-funded"
+                data-next-element="guided-section-dataset-re-join-funded"
+                data-button-config-value="dataset-is-sparc-funded"
+                data-button-config-value-state="re-join"
+              >
+                <div class="tile-button-icon">
+                  <img
+                    src="assets\img\rejoinLogo.png"
+                    alt="REJOINlogo"
+                    width="50px"
+                    height="50px"
+                  />
+                </div>
+                <div class="tile-button-text">
+                  <h2>NIH RE-JOIN program</h2>
+                </div>
+              </button>
+
+              <button
+                class="guided--radio-button tile-button"
                 id="guided-button-dataset-is-not-sparc-funded"
-                data-next-element="guided-section-dataset-not-sparc-funded"
+                data-next-element="guided-section-dataset-funded-by-other"
                 data-button-config-value="dataset-is-sparc-funded"
                 data-button-config-value-state="no"
               >
-                No
+                <div class="tile-button-icon">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="#000000"
+                    width="50px"
+                    height="50px"
+                    viewBox="0 0 32 32"
+                    version="1.1"
+                  >
+                    <g id="SVGRepo_bgCarrier" stroke-width="0" />
+
+                    <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round" />
+
+                    <g id="SVGRepo_iconCarrier">
+                      <title>globe</title>
+                      <path
+                        d="M16 1.25c-8.146 0-14.75 6.604-14.75 14.75s6.604 14.75 14.75 14.75c8.146 0 14.75-6.604 14.75-14.75v0c-0.010-8.142-6.608-14.74-14.749-14.75h-0.001zM16.004 29.055c-1.6-1.439-2.871-3.21-3.709-5.209l-0.036-0.096h7.501c-0.865 2.1-2.142 3.874-3.741 5.292l-0.015 0.013zM11.715 22.25c-0.535-1.635-0.867-3.519-0.918-5.474l-0.001-0.026h10.408c-0.049 1.979-0.376 3.865-0.944 5.642l0.039-0.142zM2.788 16.75h6.49c0.047 1.976 0.347 3.863 0.87 5.655l-0.039-0.155h-5.787c-0.868-1.592-1.423-3.47-1.533-5.466l-0.002-0.034zM15.996 2.946c1.662 1.487 2.971 3.333 3.809 5.419l0.035 0.098-7.682-0.037c0.864-2.174 2.172-4.010 3.823-5.467l0.015-0.013zM20.356 9.966c0.492 1.571 0.799 3.383 0.848 5.258l0.001 0.026h-10.408c0.048-1.916 0.355-3.742 0.887-5.47l-0.038 0.143zM9.278 15.25h-6.49c0.11-1.977 0.641-3.806 1.502-5.433l-0.034 0.071 5.808 0.028c-0.456 1.587-0.74 3.418-0.786 5.307l-0.001 0.027zM22.722 16.75h6.49c-0.111 2.030-0.666 3.908-1.569 5.569l0.034-0.069h-5.787c0.484-1.637 0.785-3.524 0.831-5.474l0-0.026zM22.722 15.25c-0.046-1.896-0.325-3.706-0.808-5.432l0.037 0.155 5.848 0.028c0.794 1.525 1.304 3.316 1.411 5.214l0.002 0.035zM26.909 8.497l-5.441-0.026c-0.784-2.139-1.911-3.977-3.331-5.545l0.013 0.014c3.653 0.618 6.74 2.655 8.731 5.513l0.029 0.043zM13.85 2.941c-1.396 1.54-2.516 3.36-3.262 5.363l-0.038 0.115-5.381-0.026c2.019-2.845 5.073-4.84 8.602-5.441l0.078-0.011zM5.276 23.75h5.334c0.783 2.051 1.881 3.814 3.252 5.323l-0.012-0.014c-3.547-0.602-6.557-2.542-8.548-5.272l-0.026-0.038zM18.15 29.059c1.36-1.495 2.457-3.258 3.202-5.196l0.038-0.114h5.334c-2.017 2.768-5.027 4.708-8.496 5.298l-0.078 0.011z"
+                      />
+                    </g>
+                  </svg>
+                </div>
+                <div class="tile-button-text">
+                  <h2>Other funding source</h2>
+                </div>
               </button>
             </div>
           </div>
 
-          <div class="guided--section hidden" id="guided-section-dataset-sparc-funded">
-            <h2 class="text-sub-step-title">
-              Click "Continue" to confirm your dataset is funded by a SPARC award.
+          <div class="guided--section" id="guided-section-dataset-sparc-funded">
+            <h2 class="guided--text-user-directions">
+              Click "<span class="next-button-span"></span>" to confirm your dataset is funded by a
+              SPARC award.
+            </h2>
+          </div>
+          <div class="guided--section" id="guided-section-dataset-re-join-funded">
+            <h2 class="guided--text-user-directions">
+              Click "<span class="next-button-span"></span>" to confirm your dataset is funded by a
+              RE-JOIN award.
             </h2>
           </div>
 
-          <div class="guided--section hidden" id="guided-section-dataset-not-sparc-funded">
+          <div class="guided--section" id="guided-section-dataset-funded-by-other">
             <h2 class="text-sub-step-title">
               Have you already reached out to the SPARC curation team to see if your data is
               suitable for the SPARC Data Portal?
@@ -461,8 +592,8 @@
               </button>
             </div>
             <div class="guided--section" id="guided-section-non-sparc-user-has-contacted-sparc">
-              <h2 class="text-sub-step-title">
-                Great, click "Continue" to start the curation process.
+              <h2 class="guided--text-user-directions">
+                Great, click "<span class="next-button-span"></span>" to start the curation process.
               </h2>
             </div>
             <div class="guided--section" id="guided-section-non-sparc-user-has-not-contacted-sparc">
@@ -505,7 +636,7 @@
             </div>
             <div class="guided--radio-button-container">
               <button
-                class="ui positive basic button guided--radio-button datasetTypeSelectionButton"
+                class="ui positive basic button guided--radio-button"
                 id="guided-button-dataset-contains-subjects"
                 data-next-element="guided-section-ask-if-dataset-contains-code"
                 data-button-config-value="dataset-contains-subjects"
@@ -515,7 +646,7 @@
                 Yes
               </button>
               <button
-                class="ui negative basic button guided--radio-button datasetTypeSelectionButton"
+                class="ui negative basic button guided--radio-button"
                 id="guided-button-dataset-does-not-contain-subjects"
                 data-next-element="guided-section-ask-if-dataset-contains-code"
                 data-button-config-value="dataset-contains-subjects"
@@ -535,12 +666,11 @@
 
           <div class="guided--section" id="guided-section-ask-if-dataset-contains-code">
             <label class="guided--form-label centered"
-              >Does your dataset include code files in (computational models or analysis
-              etc.)?</label
+              >Does your dataset include code files (computational models or analysis etc.)?</label
             >
             <div class="guided--radio-button-container">
               <button
-                class="ui positive basic button guided--radio-button datasetTypeSelectionButton"
+                class="ui positive basic button guided--radio-button"
                 id="guided-button-dataset-contains-code"
                 data-next-element="guided-section-dataset-type"
                 data-button-config-value="dataset-contains-code-data"
@@ -550,7 +680,7 @@
                 Yes
               </button>
               <button
-                class="ui negative basic button guided--radio-button datasetTypeSelectionButton"
+                class="ui negative basic button guided--radio-button"
                 id="guided-button-dataset-does-not-contain-code"
                 data-next-element="guided-section-dataset-type"
                 data-button-config-value="dataset-contains-code-data"
@@ -700,13 +830,15 @@
               </div>
             </div>
             <div class="sub-section" id="guided-sub-section-experimental-confirmation">
-              <h2 class="text-sub-step-title">
-                Click "Continue" to begin the experimental dataset curation process.
+              <h2 class="guided--text-user-directions">
+                Click "<span class="next-button-span"></span> to begin the experimental dataset
+                curation process.
               </h2>
             </div>
             <div class="sub-section" id="guided-sub-section-computational-confirmation">
-              <h2 class="text-sub-step-title">
-                Click "Continue" to begin the computational dataset curation process.
+              <h2 class="guided--text-user-directions">
+                Click "<span class="next-button-span"></span>" to begin the computational dataset
+                curation process.
               </h2>
             </div>
             <div class="sub-section" id="guided-sub-section-configuration-error">
@@ -746,8 +878,10 @@
           <div class="guided--section">
             <label class="guided--welcome-section-label text-center mb-3">Pennsieve Account</label>
             <p class="help-text">
-              All SPARC datasets must be uploaded on the Pennsieve data platform. You will therefore
-              need a Pennsieve account and access to the SPARC Organization on Pennsieve.
+              All SPARC datasets must be uploaded to the Pennsieve data platform. To upload your
+              dataset, you'll need a Pennsieve account with access to the appropriate workspace for
+              your dataset (e.g. "SPARC" workspace for SPARC-funded datasets, "RE-JOIN" workspace
+              for RE-JOIN funded datasets, etc.).
             </p>
             <div class="info-dropdown">
               <p class="info-dropdown-text" data-dropdown-type="warning">
@@ -757,8 +891,7 @@
             </div>
             <div class="info-container">
               <p class="help-text">
-                Get access to Pennsieve as well as the SPARC Consortium organization on Pennsieve by
-                filling out
+                To get access to Pennsieve and the workspace for your dataset, please fill out
                 <a
                   target="_blank"
                   href="https://www.wrike.com/frontend/requestforms/index.html?token=eyJhY2NvdW50SWQiOjMyMDM1ODgsInRhc2tGb3JtSWQiOjUwMzQzN30JNDgwNTg4NjU3MjA3Nwk0MTg5ZTY0ODEyZGYxNTU1ZDJkYmU5MzIxNWZiNTQyZWUwZTMzY2U4NDQ5ODI0ZWI0YzZiMWZhNjVhYzgyOTRm"
@@ -900,15 +1033,20 @@
           <div class="guided--section">
             <p class="help-text">
               The SPARC guidelines require all datasets to be organized according to a strict folder
-              structure (see image below). Over the next steps, you will be asked to specify folders
-              and files to be included in your dataset so SODA can automatically organize them
-              according to the SPARC folder structure when generating your dataset in the last step
-              of this process.
+              structure. Over the next steps, you will be asked to specify folders and files to be
+              included in your dataset so SODA can automatically organize them according to the
+              SPARC folder structure when generating your dataset in the last step of this process.
             </p>
           </div>
           <div class="guided--section">
-            <h2 class="text-sub-step-title">
-              Click "Save and Continue" to start structuring your dataset.
+            <div
+              id="guided-dataset-structure-intro-lottie"
+              class="lottieAnimationContainer guided--container-lottie-standard"
+            ></div>
+          </div>
+          <div class="guided--section">
+            <h2 class="guided--text-user-directions">
+              Click "<span class="next-button-span"></span>" to start structuring your dataset.
             </h2>
           </div>
         </div>
@@ -974,7 +1112,7 @@
                   Hit enter/click the checkbox after entering the subject ID to add a subject.
                 </p>
                 <button
-                  class="ui primary basic button mt-0"
+                  class="ui primary basic button mt-2"
                   onclick="addSubjectSpecificationTableRow()"
                 >
                   <i class="fas fa-plus" style="margin-right: 7px"></i>Add a new subject
@@ -1027,18 +1165,9 @@
                   </thead>
                   <tbody id="pools-specification-table-body"></tbody>
                 </table>
-                <button class="ui primary basic button mt-0" onclick="addPoolTableRow()">
+                <button class="ui primary basic button mt-2" onclick="addPoolTableRow()">
                   <i class="fas fa-plus" style="margin-right: 7px"></i>Add a new pool
                 </button>
-                <!--<button
-                    class="ui primary button mt-md"
-                    id="guided-button-save-pool-fields"
-                    style="
-                      background-color: var(--color-light-green) !important;
-                    "
-                  >
-                    Continue
-                  </button>-->
               </div>
             </div>
           </div>
@@ -2196,8 +2325,15 @@
             </p>
           </div>
           <div class="guided--section">
-            <h2 class="text-sub-step-title">
-              Click "Save and Continue" to start adding Metadata to your dataset.
+            <div
+              id="guided-dataset-metadata-intro-lottie"
+              class="lottieAnimationContainer guided--container-lottie-standard"
+            ></div>
+          </div>
+          <div class="guided--section">
+            <h2 class="guided--text-user-directions">
+              Click "<span class="next-button-span"></span>" to start providing metadata to your
+              dataset.
             </h2>
           </div>
         </div>
@@ -2214,159 +2350,17 @@
               files. One manifest file must be included in each high level folder. Manifest files
               are intended to contain information about all of the data files in its high level
               folder.
-              <br /><br />
-              You can request SODA to generate manifest files for you and they will be included in
-              your dataset when it is generated in the last step of the guided workflow.
             </p>
           </div>
-          <div class="guided--section">
-            <h2 class="text-sub-step-title">
-              Would you like SODA to auto-generate your manifest files?
-            </h2>
-            <div class="guided--radio-button-container">
-              <button
-                class="guided--radio-button tile-button"
-                id="guided-button-auto-generate-manifest-files"
-                data-next-element="guided-section-auto-generate-manifest-files"
-                data-button-config-value="manifest-files-generated-automatically"
-                data-button-config-value-state="yes"
-              >
-                <div class="tile-button-icon">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewbox="0 0 640 512">
-                    <path
-                      fill="currentColor"
-                      d="M320 0c17.7 0 32 14.3 32 32V96H480c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H160c-35.3 0-64-28.7-64-64V160c0-35.3 28.7-64 64-64H288V32c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H208zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H304zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H400zM264 256c0-22.1-17.9-40-40-40s-40 17.9-40 40s17.9 40 40 40s40-17.9 40-40zm152 40c22.1 0 40-17.9 40-40s-17.9-40-40-40s-40 17.9-40 40s17.9 40 40 40zM48 224H64V416H48c-26.5 0-48-21.5-48-48V272c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48v96c0 26.5-21.5 48-48 48H576V224h16z"
-                    />
-                  </svg>
-                </div>
-                <div class="tile-button-text">
-                  <h2>Yes, auto-generate my manifest files</h2>
-                </div>
-              </button>
-              <div
-                class="guided-tippy-wrapper"
-                data-tippy-content="Manifest file import coming soon"
-                rel="popover"
-                placement="bottom"
-                data-trigger="hover"
-              >
-                <button
-                  class="guided--radio-button tile-button"
-                  id="guided-button-import-manifest-files"
-                  style="opacity: 0.5; cursor: default !important; pointer-events: none"
-                >
-                  <div class="tile-button-icon">
-                    <svg
-                      height="50"
-                      width="50"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewbox="0 0 80.48 98.35"
-                    >
-                      <defs>
-                        <style>
-                          .cls-1,
-                          .cls-2 {
-                            fill: none;
-                          }
+          <div class="guided--section" id="guided-section-auto-generate-manifest-files">
+            <h2 class="text-sub-step-title">Preview/Edit manifest files</h2>
+            <p class="help-text">
+              Click on any manifest file below if you would like to preview it or add additional
+              metadata. Note that SODA will automatically include the "filename", "timestamp", and
+              "file type" in your manifest files. Click 'Save and Continue' to move on to the next
+              step.
+            </p>
 
-                          .cls-1,
-                          .cls-2,
-                          .cls-3 {
-                            stroke-miterlimit: 10;
-                          }
-
-                          .cls-1 {
-                            stroke-width: 6px;
-                          }
-
-                          .cls-2 {
-                            stroke-width: 8px;
-                          }
-                        </style>
-                      </defs>
-                      <g id="Layer_2" data-name="Layer 2">
-                        <g id="Layer_2-2" data-name="Layer 2">
-                          <rect
-                            class="cls-1"
-                            x="65.2"
-                            y="70.64"
-                            width="0.17"
-                            height="25.22"
-                            stroke="#B80D49"
-                          ></rect>
-                          <rect
-                            class="cls-1"
-                            x="65.29"
-                            y="70.64"
-                            width="0.17"
-                            height="25.22"
-                            transform="translate(148.62 17.88) rotate(90)"
-                            stroke="#B80D49"
-                          ></rect>
-                          <path
-                            class="cls-2"
-                            d="M43.72,83.16l-32.67.09a7.83,7.83,0,0,1-8-7.58V10.58A7.82,7.82,0,0,1,11.05,3H48.81L65.54,17.54V64.8"
-                            stroke="#565E6B"
-                          ></path>
-                          <path
-                            class="cls-3"
-                            d="M65.54,17.54v3.23H52.61a7.31,7.31,0,0,1-7.52-7.09V3h3.72Z"
-                            stroke="#565E6B"
-                            fill="#565E6B"
-                          ></path>
-                          <line
-                            class="cls-1"
-                            x1="4.4"
-                            y1="46.35"
-                            x2="63.26"
-                            y2="46.35"
-                            stroke="#13716D"
-                          ></line>
-                          <line
-                            class="cls-1"
-                            x1="4.4"
-                            y1="62.64"
-                            x2="63.26"
-                            y2="62.64"
-                            stroke="#13716D"
-                          ></line>
-                          <line
-                            class="cls-1"
-                            x1="22.4"
-                            y1="46.35"
-                            x2="22.4"
-                            y2="80.5"
-                            stroke="#13716D"
-                          ></line>
-                          <line
-                            class="cls-1"
-                            x1="40.4"
-                            y1="46.35"
-                            x2="40.4"
-                            y2="80.5"
-                            stroke="#13716D"
-                          ></line>
-                        </g>
-                      </g>
-                    </svg>
-                  </div>
-                  <div class="tile-button-text">
-                    <h2>No, I already have manifest files prepared</h2>
-                  </div>
-                </button>
-              </div>
-            </div>
-          </div>
-          <div class="guided--panel" id="guided-section-auto-generate-manifest-files">
-            <div class="guided--section">
-              <h2 class="text-sub-step-title">Preview/Edit manifest files</h2>
-              <p class="help-text">
-                Click on any manifest file below if you would like to preview it or add additional
-                metadata. Note that SODA will automatically include the "filename", "timestamp", and
-                "file type" in your manifest files. Click 'Save and Continue' to move on to the next
-                step.
-              </p>
-            </div>
             <div class="guided--section" id="guided-container-manifest-file-cards"></div>
           </div>
         </div>
@@ -2511,11 +2505,30 @@
           <div class="guided--section">
             <h1 class="text-sub-step-title">Contributor information</h1>
             <p class="help-text">
-              The dataset_description file requires all contributors that participated in the
-              creation of the dataset to be listed. These individuals do not have to be authors on
-              any publications describing the data, but should be acknowledged for their role in
-              producing and publishing the dataset.
+              Provide information about the individuals who contributed to this dataset. These
+              individuals do not have to be authors of any publications that describe the data, but
+              they should be acknowledged for their role in producing and publishing the dataset.
             </p>
+            <p class="help-text">
+              The order in which the contributors should be added is in the same way that you would
+              order them when making a publication. If you would like to rearrange the order of the
+              contributors, you can do so by dragging them up or down in the interface below.
+            </p>
+            <div class="info-dropdown">
+              <p class="info-dropdown-text" data-dropdown-type="info">
+                What are the minimal requirements for my dataset's contributors?
+              </p>
+              <i class="fas fa-chevron-right" style="transform: rotate(0deg)"></i>
+            </div>
+            <div class="info-container" style="margin-bottom: 1.5rem">
+              <p class="help-text">The minimum requirements for contributors are:</p>
+              <ul class="help-text">
+                <li class="help-text text-left mb-2">
+                  <b>Principal Investigator: </b>One and only one Principal Investigator is
+                  required.
+                </li>
+              </ul>
+            </div>
           </div>
           <div class="guided--section">
             <h2 class="text-sub-step-title mb-0">
@@ -2528,6 +2541,7 @@
             >
               <thead>
                 <tr>
+                  <th class="center aligned collapsing">Position</th>
                   <th>Name</th>
                   <th>Role(s)</th>
                   <th class="center aligned collapsing">Status</th>
@@ -2771,8 +2785,9 @@
             </button>
           </div>
           <div class="guided--section hidden" id="guided-div-wait-for-protocols">
-            <h2 class="text-sub-step-title">
-              Click "Save and Continue" to continue without adding protocols to your dataset.
+            <h2 class="guided--text-user-directions">
+              Click "<span class="next-button-span"></span>" to continue without adding protocols to
+              your dataset.
             </h2>
           </div>
         </div>
@@ -2785,19 +2800,10 @@
             <h1 class="text-sub-step-title">Dataset description</h1>
           </div>
           <p class="help-text">
-            All SPARC datasets must include a dataset_description metadata file that contain various
-            information about the dataset. You have already provided some of the required
-            information during the previous steps (award number, contributors, protocols, etc.). You
-            can provide the remaining information below. It is suggest to provide as much
-            information as available. SODA will use that information to automatically create the
-            dataset_description file and include it in your dataset when it is generated in the last
-            step of this guided workflow.
+            Provide as much information as possible about your dataset in the interface below.
           </p>
           <div class="guided--section neumorphic mt-xl">
             <h2 class="text-sub-step-title mt-0">Dataset information</h2>
-            <p class="guided--text-input-instructions text-center" style="margin-top: -15px">
-              Basic information about the dataset
-            </p>
 
             <label class="guided--form-label mt-md required">Dataset keywords:</label>
             <div class="demo-controls-body" style="width: 100%">
@@ -2813,14 +2819,15 @@
               </div>
             </div>
             <p class="guided--text-input-instructions mb-0">
-              Provide of 3-5 keywords that will aid in the search of your dataset when published on
-              the SPARC portal.<br />
+              Provide 3-5 keywords that will aid in the search of your dataset when published on the
+              SPARC portal.<br />
               <b>Hit enter after typing a keyword to add the text as a keyword.</b>
             </p>
           </div>
           <div class="guided--section neumorphic mt-xl">
             <h2 class="text-sub-step-title mt-0">Study information</h2>
-            <label class="guided--form-label mt-xl required">Study purpose:</label>
+
+            <label class="guided--form-label mt-md required">Study purpose:</label>
             <textarea
               class="guided--input guided--text-area"
               type="text"
@@ -2832,7 +2839,7 @@
             <p class="guided--text-input-instructions mb-0">
               Enter a paragraph that explains the purpose of your study.
             </p>
-            <label class="guided--form-label mt-xl required">Data collection:</label>
+            <label class="guided--form-label mt-md required">Data collection:</label>
             <textarea
               class="guided--input guided--text-area"
               type="text"
@@ -2842,11 +2849,9 @@
               style="height: 7.5em"
             ></textarea>
             <p class="guided--text-input-instructions mb-0">
-              Enter a paragraph that explains the method you used for data collection.<br /><b
-                >Refrain from using markdown.</b
-              >
+              Enter a paragraph that explains the method you used for data collection.
             </p>
-            <label class="guided--form-label mt-xl required">Primary conclusion:</label>
+            <label class="guided--form-label mt-md required">Primary conclusion:</label>
             <textarea
               class="guided--input guided--text-area"
               type="text"
@@ -2856,9 +2861,7 @@
               style="height: 7.5em"
             ></textarea>
             <p class="guided--text-input-instructions mb-0">
-              Enter a paragraph that explains the primary conclusion of your study.<br /><b
-                >Refrain from using markdown.</b
-              >
+              Enter a paragraph that explains the primary conclusion of your study.
             </p>
             <label class="guided--form-label mt-xl required">Study organ system:</label>
             <div class="demo-controls-body" style="width: 100%">
@@ -2915,7 +2918,7 @@
           </div>
           <div class="guided--section neumorphic mt-xl">
             <h2 class="text-sub-step-title mt-0">Related information</h2>
-            <label class="guided--form-label mt-xl">Additional links</label>
+            <label class="guided--form-label mt-md">Additional links</label>
             <table class="ui celled striped table" style="margin-bottom: 25px; width: 100%">
               <thead>
                 <tr>
@@ -2933,7 +2936,7 @@
           </div>
           <div class="guided--section neumorphic mt-xl mb-lg">
             <h2 class="text-sub-step-title mt-0">Additional information</h2>
-            <label class="guided--form-label mt-xl">Study collection title:</label>
+            <label class="guided--form-label mt-md">Study collection title:</label>
             <input
               class="guided--input"
               id="guided-ds-study-collection-title"
@@ -2981,17 +2984,16 @@
           <div class="guided--section">
             <h1 class="text-sub-step-title">Subjects metadata</h1>
             <p class="help-text">
-              All SPARC datasets involving subjects must include a subjects metadata file that
-              contain various information about the subjects (species, sex, age, etc.). You can
-              provide all the subjects-related information below. It is suggest to provide as much
-              information as available. SODA will use that information to automatically create the
-              subjects metadata file and include it in your dataset when it is generated in the last
-              step of this guided workflow.
-              <br />
-              <br />
-              Note that if the information is similar from one subject to another, you can provide
-              it for one subject then use the "Copy metadata from other subjects" button (under the
-              subject list) to copy it for all other subjects.
+              Provide as much information as possible about the subjects in your dataset in the
+              section below. SODA will use that information to automatically create the subjects
+              metadata file and include it in your dataset when it is generated in the last step of
+              this guided workflow.
+            </p>
+            <p class="help-text" id="guided-copy-subjects-tip">
+              <b>Pro tip:</b> If the metadata for one subject is similar to that of another subject,
+              you can enter it for one subject and then use the "Copy metadata from other subjects"
+              button (found under the subject list) to apply the same metadata to all other
+              subjects.
             </p>
           </div>
           <div class="guided--container-subject-samples w-100 mt-md">
@@ -3632,17 +3634,15 @@
           <div class="guided--section">
             <h1 class="text-sub-step-title">Samples metadata</h1>
             <p class="help-text">
-              All SPARC datasets involving samples must include a samples metadata file that contain
-              various information about the samples (sample type, anatomical location, etc.). You
-              can provide all the samples-related information below. It is suggest to provide as
-              much information as available. SODA will use that information to automatically create
-              the samples metadata file and include it in your dataset when it is generated in the
-              last step of this guided workflow.
-              <br />
-              <br />
-              Note that if the information is similar from one sample to another, you can provide it
-              for one sample then use the "Copy metadata from other samples" button (under the
-              sample list) to copy it for all other samples.
+              Provide as much information as possible about the samples in your dataset in the
+              section below. SODA will use that information to automatically create the samples
+              metadata file and include it in your dataset when it is generated in the last step of
+              this guided workflow.
+            </p>
+            <p class="help-text" id="guided-copy-samples-tip">
+              <b>Pro tip:</b> If the metadata for one sample is similar to that of another sample,
+              you can enter it for one sample and then use the "Copy metadata from other samples"
+              button (found under the sample list) to apply the same metadata to all other samples.
             </p>
           </div>
 
@@ -4058,23 +4058,9 @@
         <div id="guided-add-code-metadata-tab" class="guided--page" data-page-name="Code metadata">
           <div class="guided--section">
             <h1 class="text-sub-step-title">Code-related metadata</h1>
-            <p class="help-text">
-              The code_description metadata file is required for all datasets that include
-              computation modeling related code files. It contains information that describes the
-              code in terms of its quality. This file is typically prepared through
-              <a href="https://osparc.io/" target="_blank">osparc.io</a>, an interactive, online
-              simulation platform that hosts SPARC computational models and solvers. Prepare the
-              code_description metadata files on osparc then continue below. For help, please reach
-              out to
-              <a href="mailto:curation@sparc.science" target="_blank">the SPARC Curation Team.</a>
-              Alternatively, you can download the code_description.xslx template
-              <a id="guided-data-deliverables-download-button" style="text-decoration: underline"
-                >here</a
-              >
-              and fill it out manually
-            </p>
           </div>
-          <div class="guided--section">
+
+          <div class="guided--section" id="guided-section-start-new-code-metadata-query">
             <label class="guided--form-label centered">
               Does your dataset contain computational modeling-related code files?
             </label>
@@ -4100,8 +4086,66 @@
               </button>
             </div>
           </div>
+          <div class="guided--section" id="guided-section-start-from-pennsieve-code-metadata-query">
+            <label class="guided--form-label centered">
+              A code_description file already exists on Pennsieve for this dataset.
+              <br /><br />
+              Would you like to update it?
+            </label>
+
+            <div class="guided--radio-button-container">
+              <button
+                class="ui positive button guided--radio-button"
+                id="guided-button-update-code-description-on-pennsieve"
+                data-next-element="guided-section-import-computational-modeling-data"
+                data-button-config-value="update-code-description-on-pennsieve"
+                data-button-config-value-state="yes"
+              >
+                Yes
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button"
+                id="guided-button-keep-code-description-on-pennsieve"
+                data-next-element="guided-section-user-chose-not-to-update-code-description"
+                data-button-config-value="update-code-description-on-pennsieve"
+                data-button-config-value-state="no"
+              >
+                No
+              </button>
+            </div>
+          </div>
 
           <div class="guided--section" id="guided-section-import-computational-modeling-data">
+            <p class="help-text showWhenStartingFromPennsieve">
+              The code_description metadata file is required for all datasets that include
+              computation modeling related code files. It contains information that describes the
+              code in terms of its quality. This file is typically prepared through
+              <a href="https://osparc.io/" target="_blank">osparc.io</a>, an interactive, online
+              simulation platform that hosts SPARC computational models and solvers. Prepare the
+              code_description metadata files on osparc then continue below. For help, please reach
+              out to
+              <a href="mailto:curation@sparc.science" target="_blank">the SPARC Curation Team.</a>
+              Alternatively, you can download the code_description.xslx template
+              <a id="guided-data-deliverables-download-button" style="text-decoration: underline"
+                >here</a
+              >
+              and fill it out manually
+            </p>
+            <p class="help-text showWhenStartingNew">
+              The code_description metadata file is required for all datasets that include
+              computation modeling related code files. It contains information that describes the
+              code in terms of its quality. This file is typically prepared through
+              <a href="https://osparc.io/" target="_blank">osparc.io</a>, an interactive, online
+              simulation platform that hosts SPARC computational models and solvers. Prepare the
+              code_description metadata files on osparc then continue below. For help, please reach
+              out to
+              <a href="mailto:curation@sparc.science" target="_blank">the SPARC Curation Team.</a>
+              Alternatively, you can download the code_description.xslx template
+              <a id="guided-data-deliverables-download-button" style="text-decoration: underline"
+                >here</a
+              >
+              and fill it out manually
+            </p>
             <h2 class="text-sub-step-title">Import the code_description metadata file</h2>
             <p class="help-text small text-center mt-sm">
               <b>The code_description file must be in .xlsx format (code_description.xlsx)</b>
@@ -4137,10 +4181,20 @@
             </div>
           </div>
           <div class="guided--section" id="guided-section-no-computational-modeling-data">
-            <p class="help-text">
-              Your dataset does not require a code_description.xlsx file. Click "Save and Continue"
-              below.
-            </p>
+            <h2 class="guided--text-user-directions">
+              Click "<span class="next-button-span"></span>" below.
+            </h2>
+          </div>
+          <div
+            class="guided--section"
+            id="guided-section-user-chose-not-to-update-code-description"
+          >
+            <h2 class="guided--text-user-directions">
+              Your code_description file will remain on Pennsieve as is. Click "<span
+                class="next-button-span"
+              ></span
+              >" below.
+            </h2>
           </div>
         </div>
         <div id="guided-create-readme-metadata-tab" class="guided--page" data-page-name="README">
@@ -4201,9 +4255,9 @@
               denotes the changes made to the dataset since the previous publication.
             </p>
             <p class="help-text">
-              You can provide that information below. SODA will use the text provided to
-              automatically create the CHANGES metadata file and include it in your dataset when it
-              is generated in the last step of this guided workflow.
+              Please add the changes made to the dataset since its previous publication in the text
+              area below. SODA will use the text provided below to generate the CHANGES metadata
+              file.
             </p>
             <div class="guided--input-container">
               <h2 class="text-sub-step-title required">
@@ -4239,7 +4293,7 @@
         </div>
 
         <div id="guided-pennsieve-intro-tab" class="guided--page" data-page-name="Pennsieve log in">
-          <div class="guided--section" style="padding-left: 0; padding-right: 0">
+          <div class="guided--section">
             <h1 class="text-sub-step-title">Pennsieve metadata</h1>
             <p class="help-text">
               All SPARC datasets must be uploaded on
@@ -4251,102 +4305,110 @@
               shown on the landing page of your dataset when it is publised on sparc.science.
             </p>
           </div>
-          <div class="guided--section">
-            <div class="space-around" style="align-items: flex-start">
-              <img
-                src="assets/img/Pennsieve-overview-example.png"
-                alt="SPARC dataset structure example"
-                style="width: 40%; object-fit: contain"
-              />
-              <div class="justify-center" style="width: 40%">
-                <img
-                  src="assets/img/Pennsieve-metadata-example.png"
-                  alt="SPARC dataset structure example"
-                  style="width: 100%; object-fit: contain"
-                />
-              </div>
-            </div>
-          </div>
-          <div class="guided--panel">
-            <div
-              class="guided--section"
-              id="guided-confirm-pennsieve-account"
-              style="padding-left: 0; padding-right: 0"
-            >
-              <div class="guided--input-container">
-                <h2 class="text-sub-step-title">
-                  Is this the Pennsieve account you would like to work with?
-                </h2>
-                <div class="guided--container-data-display mt-sm" style="width: 100%">
-                  <div class="guided--card-dataset-info">
-                    <div class="guided--dataset-description-container">
-                      <h5 class="guided--dataset-description">Current account:</h5>
-                    </div>
-                    <div
-                      class="guided--dataset-content-container"
-                      onclick="openDropdownPrompt(this, 'bf')"
-                    >
-                      <h5
-                        id="guided-pennsive-intro-bf-account"
-                        class="guided--dataset-content"
-                      ></h5>
-                      <i class="far fa-edit jump-back" style="color: #000"></i>
-                    </div>
+
+          <div class="guided--section" id="guided-confirm-pennsieve-account">
+            <div class="guided--input-container">
+              <h2 class="text-sub-step-title">
+                Is this the Pennsieve account you would like to work with?
+              </h2>
+              <div class="guided--container-data-display mt-sm" style="width: 100%">
+                <div class="guided--card-dataset-info">
+                  <div class="guided--dataset-description-container">
+                    <h5 class="guided--dataset-description">Current account:</h5>
                   </div>
-                  <div class="guided--card-dataset-info">
-                    <div class="guided--dataset-description-container">
-                      <h5 class="guided--dataset-description">Account details:</h5>
-                    </div>
-                    <div
-                      class="guided--dataset-content-container"
-                      onclick="openDropdownPrompt(this, 'bf')"
-                    >
-                      <h5
-                        class="guided--dataset-content guidedBfAccountDetails"
-                        id="guided-pennsive-intro-account-details"
-                      >
-                        None
-                      </h5>
-                      <i class="far fa-edit jump-back" style="color: #000"></i>
-                    </div>
+                  <div
+                    class="guided--dataset-content-container"
+                    onclick="openDropdownPrompt(this, 'bf')"
+                  >
+                    <h5 id="guided-pennsive-intro-bf-account" class="guided--dataset-content"></h5>
+                    <i class="far fa-edit jump-back" style="color: #000"></i>
                   </div>
                 </div>
               </div>
-              <div class="guided--radio-button-container mb-sm" style="margin-top: 1rem">
-                <button
-                  class="ui positive basic button guided--radio-button"
-                  id="guided-confirm-pennsieve-account-button"
-                  style="width: 247px"
-                  data-button-config-value="pennsieve-account-has-been-confirmed"
-                  data-button-config-value-state="yes"
-                >
-                  Yes, this is the account
-                </button>
-                <button
-                  class="ui negative basic button guided--radio-button"
-                  data-prevent-radio-handler="true"
-                  data-reset-guided-mode-page="true"
-                  onclick="openDropdownPrompt(this, 'bf')"
-                  style="width: 247px"
-                >
-                  No, connect another account
-                </button>
-              </div>
             </div>
-            <div class="guided--section" id="guided-select-pennsieve-account">
-              <h2 class="text-sub-step-title">First, connect your Pennsieve account with SODA</h2>
+            <div class="guided--radio-button-container mb-sm" style="margin-top: 1rem">
               <button
-                class="ui positive button mt-md"
+                class="ui positive basic button guided--radio-button"
+                id="guided-confirm-pennsieve-account-button"
+                style="width: 247px"
+                data-next-element="guided-section-select-organization"
+                data-button-config-value="pennsieve-account-has-been-confirmed"
+                data-button-config-value-state="yes"
+              >
+                Yes, this is the account
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button"
+                data-prevent-radio-handler="true"
                 data-reset-guided-mode-page="true"
                 onclick="openDropdownPrompt(this, 'bf')"
-                style="
-                  background-color: var(--color-light-green) !important;
-                  width: 200px !important;
-                "
+                style="width: 247px"
               >
-                Log in to Pennsieve
+                No, connect another account
               </button>
             </div>
+          </div>
+          <div class="guided--section" id="guided-select-pennsieve-account">
+            <h2 class="text-sub-step-title">First, connect your Pennsieve account with SODA</h2>
+            <button
+              class="ui positive button mt-md"
+              data-reset-guided-mode-page="true"
+              onclick="openDropdownPrompt(this, 'bf')"
+              style="background-color: var(--color-light-green) !important; width: 200px !important"
+            >
+              Log in to Pennsieve
+            </button>
+          </div>
+          <div class="guided--section" id="guided-section-select-organization">
+            <div class="guided--input-container">
+              <h2 class="text-sub-step-title">
+                Is this the Pennsieve workspace you want to upload your dataset to?
+              </h2>
+              <div class="guided--container-data-display mt-sm" style="width: 100%">
+                <div class="guided--card-dataset-info">
+                  <div class="guided--dataset-description-container">
+                    <h5 class="guided--dataset-description">Current workspace:</h5>
+                  </div>
+                  <div
+                    class="guided--dataset-content-container change-current-account ds-dd organization guided-change-workspace"
+                  >
+                    <h5
+                      id="guided-pennsive-selected-organization"
+                      class="guided--dataset-content bf-organization-span"
+                    >
+                      Click here to select workspace
+                    </h5>
+                    <i class="far fa-edit jump-back" style="color: #000"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="guided--radio-button-container mb-sm" style="margin-top: 1rem">
+              <button
+                class="ui positive basic button guided--radio-button"
+                id="guided-confirm-pennsieve-organization-button"
+                style="width: 280px"
+                data-next-element="guided-section-organization-confirmed"
+                data-button-config-value="organization-has-been-confirmed"
+                data-button-config-value-state="yes"
+              >
+                Yes, this is the organization
+              </button>
+              <button
+                class="ui negative basic button guided--radio-button change-current-account ds-dd organization guided-change-workspace"
+                data-prevent-radio-handler="true"
+                data-reset-guided-mode-page="true"
+                style="width: 280px"
+              >
+                No, select a different organization
+              </button>
+            </div>
+          </div>
+          <div class="guided--section" id="guided-section-organization-confirmed">
+            <h2 class="guided--text-user-directions">
+              Click "<span class="next-button-span"></span>" to confirm your account and
+              organization you will be uploading to.
+            </h2>
           </div>
         </div>
         <div id="guided-banner-image-tab" class="guided--page" data-page-name="Banner image">
@@ -4633,9 +4695,7 @@
                         border: 1px solid black;
                       "
                       id="guided_bf_list_users_and_teams"
-                    >
-                      <option>Select individuals or teams to grant permissions to</option>
-                    </select>
+                    ></select>
                   </div>
                 </div>
               </div>
@@ -4687,87 +4747,11 @@
           </div>
         </div>
 
-        <div
-          id="guided-add-description-tab"
-          class="guided--page"
-          data-page-name="Pennsieve dataset description"
-        >
-          <div class="guided--section">
-            <h1 class="text-sub-step-title">Dataset description</h1>
-            <p class="help-text text-left">
-              The dataset description is a brief summary of the dataset which will allows visitors
-              of the SPARC portal to gain better insights into your work and enhance your dataset's
-              findability once the dataset is published on the SPARC Data portal. It can be similar
-              to the dataset description you previously provided for the dataset_description
-              metadata file.
-            </p>
-            <div class="guided--input-container mt-sm">
-              <label class="guided--form-label required">Study purpose:</label>
-              <textarea
-                class="guided--input guided--text-area"
-                type="text"
-                name="guided-study-purpose"
-                placeholder="Enter your study purpose here"
-                id="guided-pennsieve-study-purpose"
-              ></textarea>
-              <p class="guided--text-input-instructions">
-                Enter a paragraph that explains the purpose of your study.
-                <br /><b>Refrain from using markdown.</b>
-              </p>
-            </div>
-            <div class="guided--input-container">
-              <label class="guided--form-label required">Data collection:</label>
-              <textarea
-                class="guided--input guided--text-area"
-                type="text"
-                name="guided-data-collection"
-                placeholder="Enter your data collection here"
-                id="guided-pennsieve-study-data-collection"
-              ></textarea>
-              <p class="guided--text-input-instructions">
-                Enter a paragraph that explains the method you used for data collection.<br /><b
-                  >Refrain from using markdown.</b
-                >
-              </p>
-            </div>
-            <div class="guided--input-container">
-              <label class="guided--form-label required">Primary conclusion:</label>
-              <textarea
-                class="guided--input guided--text-area"
-                type="text"
-                name="guided-primary-conclusion"
-                placeholder="Enter your primary conclusion here"
-                id="guided-pennsieve-study-primary-conclusion"
-              ></textarea>
-              <p class="guided--text-input-instructions">
-                Enter a paragraph that explains the primary conclusion of your study. <br /><b
-                  >Refrain from using markdown.</b
-                >
-              </p>
-            </div>
-          </div>
-        </div>
-        <div id="guided-add-tags-tab" class="guided--page" data-page-name="Pennsieve dataset tags">
-          <div class="guided--section">
-            <h1 class="text-sub-step-title">Dataset tags</h1>
-            <p class="help-text mb-lg">
-              Dataset tags are keywords that indicate the key elements of your research. They will
-              improve the findability of your dataset when it is published on the SPARC Data portal.
-              The tags can be similar to the keywords you provided previously for the
-              dataset_description metadata file.
-            </p>
-            <input id="guided-tagify-dataset-tags" name="guided-tags" value="" autofocus />
-            <p class="guided--text-input-instructions">
-              Enter a keyword and press enter to add it as a tag. Double click a tag to edit its
-              contents.
-            </p>
-          </div>
-        </div>
         <div id="guided-assign-license-tab" class="guided--page" data-page-name="Sharing license">
           <div class="guided--section">
             <h1 class="text-sub-step-title">Sharing license:</h1>
             <p class="help-text">
-              As per SPARC policy, all SPARC datasets must be shared under a
+              As per SPARC policy, all datasets must be shared under a
               <b>Creative Commons Attribution (CC-BY)</b> license. The CC-BY license allows reusers
               to distribute, remix, adapt, and build upon the material in any medium or format, so
               long as attribution is given to the creator. The license allows for commercial use.
@@ -4809,9 +4793,9 @@
           <div class="guided--section">
             <h1 class="text-sub-step-title">Dataset validation</h1>
             <p class="guided--help-text">
-              Use this feature to validate a dataset against the SPARC Dataset Structure (SDS). For
-              now, we recommend that you fix as many errors as possible before uploading and sharing
-              your dataset with the SPARC Curation Team.
+              Use this feature to validate your dataset against the SPARC dataset structure. The SDS
+              validator tool is still in beta, therefore it is possible to receive false negatives.
+              You may optionally skip validation.
             </p>
           </div>
           <div class="guided--section">
@@ -5041,15 +5025,16 @@
               <h2 class="guided--text-sub-step" style="color: var(--color-bg-plum)">
                 En error occurred while validating your dataset.
               </h2>
-              <p class="help-text">
-                SDS validation is not currently a mandatory step, so you may click "Save and
-                continue" to progress to dataset review and generation.
-              </p>
+              <h2 class="guided--text-user-directions">
+                SDS validation currently not mandatory. Click "Save and continue" to progress to
+                dataset review and generation.
+              </h2>
             </div>
           </div>
           <div class="guided--section" id="guided-section-skip-validation">
-            <h2 class="guided--text-sub-step">
-              Click "Save and Continue" to continue without validating your dataset
+            <h2 class="guided--text-user-directions">
+              Click "<span class="next-button-span"></span>" to continue without validating your
+              dataset
             </h2>
           </div>
         </div>
@@ -5092,6 +5077,22 @@
               <label class="guided--form-label mt-md mb-sm" style="text-align: center"
                 >Other dataset info:</label
               >
+            </div>
+            <div class="guided--card-dataset-info">
+              <div class="guided--dataset-description-container">
+                <h5 class="guided--dataset-description">Dataset workspace:</h5>
+              </div>
+              <div
+                class="guided--dataset-content-container change-current-account ds-dd organization guided-change-workspace"
+              >
+                <h5
+                  id="guided-pennsive-selected-organization-review-generate"
+                  class="guided--dataset-content bf-organization-span"
+                >
+                  Click here to select workspace
+                </h5>
+                <i class="far fa-edit jump-back" style="color: #000"></i>
+              </div>
             </div>
             <div class="guided--card-dataset-info">
               <div class="guided--dataset-description-container">
@@ -5460,9 +5461,9 @@
                 </tr>
               </tbody>
             </table>
-            <h2 class="text-sub-step-title" id="guided-dataset-upload-complete-message">
-              Click "Save and Continue" to go to the last step of the data curation and sharing
-              process
+            <h2 class="guided--text-user-directions" id="guided-dataset-upload-complete-message">
+              Click "<span class="next-button-span"></span>" to go to the last step of the data
+              curation and sharing process
             </h2>
           </div>
           <div
@@ -5489,7 +5490,7 @@
               Review dataset on Pennsieve to ensure it has been generated as requested and all the
               data and metadata are included properly
             </p>
-            <p
+            <div
               class="help-text text-center"
               style="
                 font-size: large;
@@ -5497,15 +5498,19 @@
                 padding: 0rem 0rem 0rem 0.3rem;
                 border-radius: 5px;
                 height: 44px;
+                width: 491px;
               "
             >
               <a id="guided-pennsieve-dataset-link" target="_blank">
-                <i class="fas fa-link" style="margin-right: 0.4rem; margin-left: 0.4rem"></i>
+                <i
+                  class="fas fa-link"
+                  style="margin-right: 0.4rem; margin-left: 0.4rem; writing-mode: tbd"
+                ></i>
               </a>
-              <button id="guided-pennsieve-copy-dataset-link">
+              <button id="guided-pennsieve-copy-dataset-link" class="copy-button">
                 <i id="guided-pennsieve-copy-icon" class="fas fa-copy"></i>
               </button>
-            </p>
+            </div>
           </div>
           <div class="guided--section">
             <h2 class="text-sub-step-title mt-0">Editing this dataset</h2>
@@ -5587,7 +5592,7 @@
               Withdraw from review
             </button>
             <div
-              class="guided--section mt-3 hidden"
+              class="guided--section mt-3"
               id="guided-unshare-dataset-with-curation-team-message"
             >
               <p class="help-text text-black">
@@ -5749,8 +5754,8 @@
                             </div>
                             <button
                               id="guided--ORCID-btn"
-                              class="prepublishing-item-button ml-3"
-                              onclick="orcidSignIn('guided')"
+                              class="prepublishing-item-button green-hollow-button ml-3"
+                              onclick="orcidSignIn(this, 'guided')"
                             >
                               Link ORCID iD
                             </button>
@@ -5764,139 +5769,16 @@
                     </table>
                   </div>
                 </div>
-
-                <!--Continue Button comes before filetree and excluded files section-->
-                <div class="guided--pre-publishing-continue-container">
-                  <button
-                    id="guided--prepublishing-continue-btn"
-                    class="pre-publishing-continue btn_animated"
-                    style="width: 200px; height: 40px; font-size: 15px; margin-top: 2rem"
-                    onclick="showPrepublishingReview()"
-                  >
-                    <div style="margin-left: 0px; padding-top: 2px" class="btn_animated-inside">
-                      Continue
-                    </div>
-                  </button>
-                </div>
-
-                <!--Withdraw dataset from review when Review status shows dataset is under review-->
-                <div
-                  style="width: 100%; display: none; justify-content: center"
-                  id="guided--prepublishing-withdraw-btn-container"
-                >
-                  <button
-                    id="guided--btn-withdraw-review-dataset"
-                    onclick="withdrawDatasetSubmission('guided')"
-                    class="btn_animated md skip"
-                    style="
-                      cursor: pointer;
-                      border-radius: 8px;
-                      width: 220px;
-                      height: 40px;
-                      background: rgb(255, 255, 255);
-                      color: red;
-                      font-weight: 600;
-                      border: 1px solid red;
-                      font-size: 15px;
-                      display: none;
-                    "
-                  >
-                    <div class="btn_animated-inside">
-                      <i class="fas fa-ban" style="padding-right: 5px"></i>
-                      Withdraw from review
-                    </div>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="guided--section hidden" id="guided--submit-prepublishing-review">
-            <div class="ui form" style="width: 450px">
-              <div class="grouped fields">
-                <!--Metadata file viewer-->
-                <div id="guided--excluded-files-container">
-                  <!--Pennsieve file tree header-->
-                  <div
-                    style="
-                      display: none !important;
-                      flex-direction: column;
-                      align-items: center;
-                      justify-content: center;
-                    "
-                  >
-                    <label
-                      id="guided--pre-publishing-file-viewer-label"
-                      style="
-                        font-size: 17px;
-                        color: var(--color-bg-plum);
-                        width: 100%;
-                        text-align: center;
-                        margin-top: 1.5rem;
-                      "
-                      >Optionally exclude metadata files from publishing:
-                      <i
-                        class="fas fa-info-circle popover-tooltip"
-                        data-content="Excluded metadata files will not be visible to the public once your dataset has been published."
-                        rel="popover"
-                        data-html="true"
-                        data-placement="right"
-                        data-trigger="hover"
-                      ></i>
-                    </label>
-                  </div>
-
-                  <!--Pennsieve metadata file viewer-->
-                  <div
-                    id="guided--pre-publication-items-container"
-                    class="prepublish-items-container hidden"
-                    style="height: 12rem"
-                  >
-                    <div id="guided--items-pre-publication"></div>
-
-                    <div
-                      class="ui active medium text loader guided--items-spinner"
-                      style="position: absolute; top: 6.5rem; margin-left: auto; margin-right: auto"
-                    >
-                      Fetching Files
-                    </div>
-                  </div>
-                </div>
-
-                <!--Submit Button-->
-                <!--#submit-withdraw-prepublishing-btns-container-->
-                <div
-                  style="
-                    display: flex;
-                    flex-direction: column;
-                    align-items: center;
-                    justify-content: center;
-                  "
-                  id="guided--prepublishing-submit-btn-container"
-                >
-                  <button
-                    onclick="disseminateDataset('submit-pre-publishing', 'guided')"
-                    class="ui positive button guided--button-footer mt-lg"
-                    style="
-                      background-color: var(--color-light-green) !important;
-                      width: 281px !important;
-                      height: 3.2rem;
-                      margin-top: 0 !important;
-                    "
-                  >
-                    <i class="fas fa-sign-in-alt" style="padding-right: 5px"></i>
-                    Submit
-                  </button>
-                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <footer class="guided--footer hidden" id="guided-footer-div">
+    <footer class="footer-container hidden" id="guided-footer-div">
       <div class="guided--container-footer-buttons flex-end">
         <button
-          class="ui secondary basic button guided--button-footer"
+          class="ui secondary basic button"
           id="guided-back-button"
           style="width: 200px !important; font-family: Poppins"
         >
@@ -5905,7 +5787,7 @@
       </div>
       <div class="guided--container-footer-buttons flex-between">
         <button
-          class="ui positive button guided--button-footer"
+          class="ui positive button soda-green-background"
           id="guided-next-button"
           style="
             background-color: var(--color-light-green) !important;
@@ -5926,10 +5808,10 @@
         </button>
       </div>
     </footer>
-    <footer class="guided--footer hidden" id="guided-sub-page-navigation-footer-div">
+    <footer class="footer-container hidden" id="guided-sub-page-navigation-footer-div">
       <div class="guided--container-footer-buttons flex-end">
         <button
-          class="ui secondary basic button guided--button-footer"
+          class="ui secondary basic button"
           id="guided-button-sub-page-back"
           style="width: 130px !important; font-family: Poppins"
         >
@@ -5938,7 +5820,7 @@
       </div>
       <div class="guided--container-footer-buttons flex-between">
         <button
-          class="ui secondary basic button guided--button-footer guided--button-basic"
+          class="ui secondary basic button green-hollow-button"
           id="guided-button-sub-page-continue"
           style="width: 130px !important; font-family: Poppins"
         >
@@ -5946,7 +5828,7 @@
         ><button
           class="ui secondary basic button save-and-exit-button"
           id="guided-button-sub-page-save-and-exit"
-          style="width: 160px !important; font-family: Poppins"
+          style="width: 165px !important; font-family: Poppins"
           onclick="guidedSaveAndExit()"
         >
           <i class="far fa-save" style="margin-right: 10px"></i>

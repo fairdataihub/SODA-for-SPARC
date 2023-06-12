@@ -26,7 +26,7 @@ from permissions import has_edit_permissions, bf_get_current_user_permission_age
 from collections import defaultdict
 import requests
 from errorHandlers import is_file_not_found_exception, is_invalid_file_exception, InvalidDeliverablesDocument
-
+import time
 from authentication import get_access_token
 
 
@@ -212,20 +212,19 @@ def subscriber_metadata(ps, events_dict):
             ps.unsubscribe(10)
 
 def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_after_upload):
-    global namespace_logger
-
-
-    namespace_logger.info("Connecting to the pennsieve client")
-    
-    ps = connect_pennsieve_client()
+    ps = connect_pennsieve_client(bfaccount)
     authenticate_user_with_client(ps, bfaccount)
+
+    token = get_access_token()
     
     # check that the Pennsieve dataset is valid
-    selected_dataset_id = get_dataset_id(ps, bfdataset)
+    selected_dataset_id = get_dataset_id(token, bfdataset)
+
+
     # check that the user has permissions for uploading and modifying the dataset
-    if not has_edit_permissions(ps, selected_dataset_id):
+    if not has_edit_permissions(token, selected_dataset_id):
         abort(403, "You do not have permissions to edit this dataset.")
-    headers = create_request_headers(ps)
+    headers = create_request_headers(token)
     # handle duplicates on Pennsieve: first, obtain the existing file ID
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
     r.raise_for_status()
@@ -913,6 +912,10 @@ def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
 
             elif file_type == "samples.xlsx":
                 return convert_subjects_samples_file_to_df("samples", url, ui_fields, item_id, token)
+            
+            elif file_type == "code_description.xlsx":
+                # Simply return true since we don't currently have a UI for code_description
+                return True
 
     abort(400, 
         f"No {file_type} file was found at the root of the dataset provided."

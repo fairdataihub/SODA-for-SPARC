@@ -9,8 +9,9 @@ from utils import (
 )
 from namespaces import NamespaceEnum, get_namespace_logger
 from flask import abort
-from pennsieve2.pennsieve import Pennsieve
-from authentication import get_access_token
+from authentication import get_access_token, get_cognito_userpool_access_token, bf_add_account_username, bf_delete_account, bf_delete_default_profile, delete_duplicate_keys
+
+logger = get_namespace_logger(NamespaceEnum.USER)
 
 
 
@@ -44,7 +45,7 @@ def integrate_orcid_with_pennsieve(access_code, pennsieve_account):
     abort(400, "Invalid access code")
 
   
-def get_user(selected_account):
+def get_user():
   """
   Get a user's information.
   """
@@ -77,6 +78,103 @@ def get_user_information(token):
     return r.json()
   except Exception as e:
     raise Exception(e) from e
+
+
+
+def set_preferred_organization(organization_id, email, password, account_name):
+    try:
+        token = get_cognito_userpool_access_token(email, password)
+
+
+        # switch to the desired organization
+        url = "https://api.pennsieve.io/session/switch-organization"
+        headers = {"Accept": "*/*", "Content-Type": "application/json", "Accept-Encoding": "gzip, deflate, br", "Connection": "keep-alive", "Content-Length": "0"}
+        url += f"?organization_id={organization_id}&api_key={token}"
+        logger.info(f"URL: {url}")
+        response = requests.request("PUT", url, headers=headers)
+        response.raise_for_status()
+
+    except Exception as error:
+        error = "It looks like you don't have access to your desired organization. An organization is required to upload datasets. Please reach out to the SPARC curation team (email) to get access to your desired organization and try again."
+        raise Exception(error)
+    
+
+    delete_duplicate_keys(token, "SODA-Pennsieve")
+    
+    # get an api key and secret for programmatic access to the Pennsieve API
+    try:
+        url = "https://api.pennsieve.io/token/"
+
+        payload = {"name": "SODA-Pennsieve"}
+        headers = {
+            "Accept": "*/*",
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {token}",
+        }
+
+        response = requests.request("POST", url, json=payload, headers=headers)
+        response.raise_for_status()
+        response = response.json()
+       
+        key =  response["key"]
+        secret = response["secret"]
+    except Exception as e:
+        raise e
+    
+
+    # store the new api key for the current organization
+    # try:
+    #   # remove the current default profile if one exists 
+    #   bf_delete_default_profile()
+    # except Exception as e:
+    #   raise e
+    
+    
+    try:
+      # get the users email 
+      user_info = get_user_information(token)
+      email = user_info["email"]
+
+      # create a substring of the start of the email to the @ symbol
+      email_sub = email.split("@")[0]
+
+      organizations = get_user_organizations()
+      organization = None
+      for org in organizations["organizations"]:
+          if org["organization"]["id"] == organization_id:
+              organization = org["organization"]["name"]
+
+      # create an updated profile name that is unqiue to the user and their workspace 
+      account_name = f"{account_name}-{email_sub}-{organization}"
+             
+    except Exception as e:
+       raise e 
+    
+    try:
+      # create the new profile for the user, associate the api key and secret with the profile, and set it as the default profile
+      bf_add_account_username(account_name, key, secret)
+    except Exception as e:
+      raise e
+    
+
+
+def get_user_organizations():
+  """
+  Get a user's organizations.
+  """
+  try:
+    token = get_access_token()
+  except Exception as e:
+     abort(400, "Please select a valid Pennsieve account")
+
+
+  r = requests.get(f"{PENNSIEVE_URL}/organizations", headers=create_request_headers(token))
+  r.raise_for_status()
+
+  organizations_list = r.json()["organizations"]
+  logger.info(organizations_list)
+  
+  return {"organizations": organizations_list}
 
 
 
