@@ -583,18 +583,16 @@ def save_subjects_file(upload_boolean, bfaccount, bfdataset, filepath, datastruc
     else:
         refinedDatastructure = transposeMatrix(sortMatrix)
     
-    # 1. delete rows using delete_rows(index, amount=2) -- description and example rows
-    # ws1.delete_rows(2, 2)
     # delete all optional columns first (from the template)
     ws1.delete_cols(12, 18)
 
-    # 2. see if the length of datastructure[0] == length of datastructure. If yes, go ahead. If no, add new columns from headers[n-1] onward.
+    # 1. see if the length of datastructure[0] == length of datastructure. If yes, go ahead. If no, add new columns from headers[n-1] onward.
     headers_no = len(refinedDatastructure[0])
+    # BE-REVIEW - Dorian - use patterFill function for all places that require styling an excel cell
     orangeFill = PatternFill(
         start_color="FFD965", end_color="FFD965", fill_type="solid"
     )
 
-    # gevent.sleep(0)
     for column, header in zip(
         excel_columns(start_index=11), refinedDatastructure[0][11:headers_no]
     ):
@@ -604,7 +602,7 @@ def save_subjects_file(upload_boolean, bfaccount, bfdataset, filepath, datastruc
         ws1[cell].font = Font(bold=True, size=12, name="Calibri")
 
     # gevent.sleep(0)
-    # 3. populate matrices
+    # 2. populate matrices
     for i, item in enumerate(refinedDatastructure):
         if i == 0:
             continue
