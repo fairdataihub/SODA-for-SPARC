@@ -5,6 +5,7 @@ Routes for performing operations on datasets
 from os import walk
 from flask import abort
 import requests
+# BE-REVIEW - Dorian - Removing unused imports
 from utils import create_request_headers, connect_pennsieve_client, authenticate_user_with_client, get_dataset_id
 from permissions import has_edit_permissions, bf_get_current_user_permission_agent_two
 from authentication import get_access_token
@@ -21,7 +22,6 @@ def get_role(dataset):
         r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/role", headers=create_request_headers(token))
         r.raise_for_status()
         role = r.json()["role"]
-        # role =  ps._api._get(f"/datasets/{selected_dataset_id}/role")["role"]
         return {"role": role}
     except Exception as e:
         if type(e).__name__ == "HTTPError":
@@ -32,11 +32,13 @@ def get_role(dataset):
 def get_dataset_by_id(dataset_name_or_id):
     token = get_access_token()
 
+    # BE-REVIEW - Dorian - there's a couple functions that do this, we should probably consolidate them
     if dataset_name_or_id.startswith("N:dataset:"):
         selected_dataset_id = dataset_name_or_id
     else:
         selected_dataset_id = get_dataset_id(token, dataset_name_or_id)
 
+    # BE-REVIEW - Dorian - the headers can be gather from create_request_headers no?
     headers = {
         "Accept": "*/*",
         "Content-Type": "application/json",
