@@ -2795,6 +2795,7 @@ def bf_check_dataset_files_validity(soda_json_structure, ps):
             for folder_key, folder in my_folder["folders"].items():
                 folder_type = folder["type"]
                 relative_path = my_relative_path + "/" + folder_key
+                # BE-REVIEW - Aaron - bf -> ps
                 if folder_type == "bf":
                     package_id = folder["path"]
                     try:
@@ -2806,9 +2807,11 @@ def bf_check_dataset_files_validity(soda_json_structure, ps):
                 error = recursive_bf_dataset_check(folder, relative_path, error)
         if "files" in my_folder.keys():
             for file_key, file in my_folder["files"].items():
+                # BE-REVIEW - Aaron - remove the comment block below
                 # if file_key in ["manifest.xlsx", "manifest.csv"]:
                 #     continue
                 file_type = file["type"]
+                # BE-REVIEW - Aaron - bf -> ps
                 if file_type == "bf":
                     package_id = file["path"]
                     try:
@@ -2824,9 +2827,11 @@ def bf_check_dataset_files_validity(soda_json_structure, ps):
     if "dataset-structure" in soda_json_structure.keys():
         dataset_structure = soda_json_structure["dataset-structure"]
         if "folders" in dataset_structure:
+            # BE-REVIEW - Aaron - check that the given folder ids all represent a valid ps folder + their sub files
             for folder_key, folder in dataset_structure["folders"].items():
                 folder_type = folder["type"]
                 relative_path = folder_key
+                # BE-REVIEW - Aaron - bf -> ps
                 if folder_type == "bf":
                     package_id = folder["path"]
                     try:
@@ -2838,8 +2843,10 @@ def bf_check_dataset_files_validity(soda_json_structure, ps):
                         pass
                 error = recursive_bf_dataset_check(folder, relative_path, error)
         if "files" in dataset_structure:
+            # BE-REVIEW - Aaron - check the file ids at the root of the ds to verify they are valid ps files
             for file_key, file in dataset_structure["files"].items():
                 file_type = file["type"]
+                # BE-REVIEW - Aaron - bf -> ps
                 if file_type == "bf":
                     package_id = folder["path"]
                     try:
@@ -2853,8 +2860,10 @@ def bf_check_dataset_files_validity(soda_json_structure, ps):
 
     if "metadata-files" in soda_json_structure:
         metadata_files = soda_json_structure["metadata-files"]
+        # BE-REVIEW - Aaron - check that the given file ids for the metadata files all represent an existing ps file
         for file_key, file in metadata_files.items():
             file_type = file["type"]
+            # BE-REVIEW - Aaron - bf -> ps
             if file_type == "bf":
                 package_id = file["path"]
                 try:
