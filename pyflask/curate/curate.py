@@ -2992,6 +2992,7 @@ def main_curate_function(soda_json_structure):
     global main_curation_uploaded_files
     global uploaded_folder_counter
 
+    # BE-REVIEW - Aaron - bf -> ps
     global bf
     global myds
     global generated_dataset_id
@@ -2999,6 +3000,8 @@ def main_curate_function(soda_json_structure):
     start_generate = 0
     generate_start_time = time.time()
 
+    # BE-REVIEW - Aaron 
+    # variables for tracking the progress of the curate process on the frontend 
     main_curate_status = ""
     main_curate_progress_message = "Starting..."
     main_total_generate_dataset_size = 0
@@ -3013,9 +3016,10 @@ def main_curate_function(soda_json_structure):
     # progress_percentage_array = []
     main_generate_destination = ""
     main_initial_bfdataset_size = 0
+
+
     bf = ""
     myds = ""
-
     main_keys = soda_json_structure.keys()
     error = ""
 
@@ -3028,6 +3032,7 @@ def main_curate_function(soda_json_structure):
         main_curate_progress_message = "Checking that the local destination selected for generating your dataset is valid"
         generate_dataset = soda_json_structure["generate-dataset"]
         local_dataset_path = generate_dataset["path"]
+        # BE-REVIEW - Aaron  - Remove the below comment block
         # if generate_dataset["if-existing"] == "merge":
         #     local_dataset_path = join(local_dataset_path, generate_dataset["dataset-name"])
         if not isdir(local_dataset_path):
@@ -3042,6 +3047,7 @@ def main_curate_function(soda_json_structure):
 
     namespace_logger.info("main_curate_function step 1.2")
     
+    # BE-REVIEW - Aaron  - change bg -> ps 
     # 1.2. Check that the bf destination is valid if generate on bf, or any other bf actions are requested
     if "bf-account-selected" in soda_json_structure:
         # check that the Pennsieve account is valid
@@ -3051,13 +3057,16 @@ def main_curate_function(soda_json_structure):
             )
             accountname = soda_json_structure["bf-account-selected"]["account-name"]
             ps = connect_pennsieve_client(accountname)
+            # BE-REVIEW - Aaron - remove switch and the optional reauthenticate command as we initialize the profile in the above command now 
             ps.user.switch(accountname)
             ps.user.reauthenticate()
+            # BE-REVIEW - Aaron - remove comment
             # authenticate_user_with_client(ps, accountname)
         except Exception as e:
             main_curate_status = "Done"
             abort(400, "Please select a valid Pennsieve account.")
 
+    # BE-REVIEW - Aaron - bf -> ps 
     # if uploading on an existing bf dataset
     if "bf-dataset-selected" in soda_json_structure:
         # check that the Pennsieve dataset is valid
@@ -3117,6 +3126,7 @@ def main_curate_function(soda_json_structure):
             raise e
         
         namespace_logger.info("main_curate_function step 1.3.2")
+        # BE-REVIEW - Aaron - bf -> ps 
         # Check that bf files/folders exist
         generate_option = soda_json_structure["generate-dataset"]["generate-option"]
         if generate_option == "existing-bf":
@@ -3125,7 +3135,7 @@ def main_curate_function(soda_json_structure):
                     "Checking that the Pennsieve files and folders are valid"
                 )
                 if soda_json_structure["generate-dataset"]["destination"] == "bf":
-                    # TODO: Convert to new agent
+                    # BE-REVIEW - Aaron - bf -> ps in function name
                     if error := bf_check_dataset_files_validity(soda_json_structure, ps):
                         main_curate_status = "Done"
                         abort(400, error)
@@ -3148,6 +3158,7 @@ def main_curate_function(soda_json_structure):
                     soda_json_structure
                 )
 
+            # BE-REVIEW - Aaron - bf -> ps 
             if soda_json_structure["generate-dataset"]["destination"] == "bf":
                 main_generate_destination = soda_json_structure["generate-dataset"][
                     "destination"
@@ -3158,22 +3169,27 @@ def main_curate_function(soda_json_structure):
                         dataset_name = soda_json_structure["generate-dataset"][
                             "dataset-name"
                         ]
+                        # BE-REVIEW - Aaron - bf -> ps  in func name
                         ds = bf_create_new_dataset(dataset_name, ps)
                         selected_dataset_id = ds["content"]["id"]
 
 
                     # whether we are generating a new dataset or merging, we want the dataset information for later steps
+                    # BE-REVIEW - Aaron - pass in var named token rather than using the token function as an argument
                     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
                     r.raise_for_status()
                     myds = r.json()
                     
+                    # BE-REVIEW - Aaron - bf -> ps
                     bf_generate_new_dataset(soda_json_structure, ps, myds)
                 if generate_option == "existing-bf":
 
                     # make an api request to pennsieve to get the dataset details
+                    # BE-REVIEW - Aaron - pass in var named token rather than using the token function as an argument
                     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
                     r.raise_for_status()
                     myds = r.json()
+                    # BE-REVIEW - Aaron - bf -> ps
                     bf_update_existing_dataset(soda_json_structure, bf, myds, ps)
 
         except Exception as e:
