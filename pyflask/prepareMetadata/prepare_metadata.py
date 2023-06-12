@@ -282,6 +282,7 @@ def excel_columns(start_index=0):
 def rename_headers(workbook, max_len, start_index):
     """
     Rename header columns if values exceed 3. Change Additional Values to Value 4, 5,...
+    Adds styling to the column headers as well.
     """
 
     columns_list = excel_columns(start_index=start_index)
