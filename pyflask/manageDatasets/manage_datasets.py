@@ -798,6 +798,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     return "Done"
 
 
+# BE-REVIEW - Dorian - change function name to ps_submit_dataset_upload_details
 # sends back the current amount of files that have been uploaded by bf_submit_dataset
 def bf_submit_dataset_upload_details():
     """
@@ -851,7 +852,6 @@ def submit_dataset_progress():
             "<br>" + "Elapsed time: " + elapsed_time_formatted + "<br>"
         )
     else:
-        #uploaded_file_size = 0
         elapsed_time_formatted = 0
         elapsed_time_formatted_display = "<br>" + "Initiating..." + "<br>"
 
@@ -867,6 +867,8 @@ def submit_dataset_progress():
     }
 
 
+# BE-REVIEW - Dorian - change function name to ps_get_users
+# Also delete selected_bfaccount since it is not used
 def bf_get_users(selected_bfaccount):
     """
     Function to get list of users belonging to the organization of
@@ -905,7 +907,8 @@ def bf_get_users(selected_bfaccount):
     except Exception as e:
         raise e
 
-
+# BE-REVIEW - Dorian - change function name to ps_get_teams
+# Also remve selected_bfaccount from parameters since it isn't used
 def bf_get_teams(selected_bfaccount):
     """
     Args:
@@ -921,6 +924,7 @@ def bf_get_teams(selected_bfaccount):
 
     try:
         org_id = get_user_information(token)["preferredOrganization"]
+        # BE-REVIEW - Dorian - there's no need for the global variable here
         global PENNSIEVE_URL
         r = requests.get(f"{PENNSIEVE_URL}/organizations/{str(org_id)}/teams", headers=create_request_headers(token))
         r.raise_for_status()
@@ -930,7 +934,8 @@ def bf_get_teams(selected_bfaccount):
     except Exception as e:
         raise e
 
-
+# BE-REVIEW - Dorian - change function name to ps_get_permission
+# Also remove selected_bfaccount from parameters since it isn't used
 def bf_get_permission(selected_bfaccount, selected_bfdataset):
 
     """
@@ -949,6 +954,8 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
     selected_dataset_id = get_dataset_id(token, selected_bfdataset)
 
     try:
+        # BE-REVIEW - Dorian - I don't think this needs to be a global variable
+        # I've seen other functions that don't call PENNSIEVE_URL as a global variable
         global PENNSIEVE_URL
         headers = create_request_headers(token)
         # user permissions
@@ -1022,11 +1029,11 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
         raise e
 
 
-
+# BE-REVIEW - Dorian - change function name to ps_add_permission
+# Remove selected_bfaccount parameter since it isn't used
 def bf_add_permission(
     selected_bfaccount, selected_bfdataset, selected_user, selected_role
 ):
-
     """
     Function to add/remove permission for a user to a selected dataset
 
@@ -1049,6 +1056,7 @@ def bf_add_permission(
     headers = create_request_headers(token)
 
     try:
+        # BE-REVIEW - Dorian - change variable to count to make it clearer
         c = 0
         organization_id = get_user_information(token)["preferredOrganization"]
         r  = requests.get(f"{PENNSIEVE_URL}/organizations/{str(organization_id)}/members", headers=headers)
@@ -1064,6 +1072,7 @@ def bf_add_permission(
             c += 1
     except Exception as e:
         raise e
+    # BE-REVIEW - Dorian - should this list be in a constants file? Would clear up a little bit of space
     if selected_role not in [
         "manager",
         "viewer",
@@ -1088,6 +1097,7 @@ def bf_add_permission(
         r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", headers=headers)
         r.raise_for_status()
         list_dataset_permission = r.json()
+        # BE-REVIEW - Dorian - change variable to count to make it clearer
         c = 0
         for i in range(len(list_dataset_permission)):
             first_name = list_dataset_permission[i]["firstName"]
@@ -1121,7 +1131,6 @@ def bf_add_permission(
             return {"message": "Permission removed for " + selected_user}
         elif selected_role == "owner":
             # check if currently logged in user is owner of selected dataset (only owner can change owner)
-
             # change owner
             jsonfile = {"id": selected_user_id}
             r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/owner", json=jsonfile, headers=headers)
@@ -1135,11 +1144,11 @@ def bf_add_permission(
     except Exception as e:
         raise e
 
-
+# BE-REVIEW - Dorian - change this function name to ps_add_permission_team
+# Also remove selected_bfaccount from parameter since it isn't used
 def bf_add_permission_team(
     selected_bfaccount, selected_bfdataset, selected_team, selected_role
 ):
-
     """
     Function to add/remove permission fo a team to a selected dataset
 
@@ -1157,6 +1166,7 @@ def bf_add_permission_team(
     token = get_access_token()
 
     organization_id = get_user_information(token)["preferredOrganization"]
+    # BE-REVIEW - Dorian - merge nested if conditions (suggested by Sourcery)
     if selected_team == "SPARC Data Curation Team":
         if organization_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
             abort(403, "Please login under the Pennsieve SPARC Consortium organization to share with the Curation Team")
@@ -1164,7 +1174,7 @@ def bf_add_permission_team(
         if organization_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
             abort(403, "Please login under the Pennsieve SPARC Consortium organization to share with the SPARC consortium group")
 
-
+    # BE-REVIEW - Dorian - change variable to count to make it clearer
     c = 0
 
     try:
@@ -1189,7 +1199,7 @@ def bf_add_permission_team(
             c += 1
     except Exception as e:
         raise e
-
+    # BE-REVIEW - Dorian - this list seems to be used multiple times, so it could be a constant variable
     if selected_role not in [
         "manager",
         "viewer",
@@ -1215,12 +1225,13 @@ def bf_add_permission_team(
         r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", headers=headers)
         r.raise_for_status
         list_dataset_permission = r.json()
+        # BE-REVIEW - Dorian - change variable to count to make it clearer
         c = 0
         for i in range(len(list_dataset_permission)):
             first_name = list_dataset_permission[i]["firstName"]
             last_name = list_dataset_permission[i]["lastName"]
             role = list_dataset_permission[i]["role"]
-            # user_id = list_dataset_permission[i]['id']
+
             if (
                 first_name == first_name_current_user
                 and last_name == last_name_current_user
@@ -1246,9 +1257,8 @@ def bf_add_permission_team(
         raise e
 
 
-
-
-
+# BE-REVIEW - Dorian - change this function name to ps_get_subtitle 
+# Also remove selected_bfaccount from parameters since it is not used
 def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
     """
     Function to get current subtitle associated with a selected dataset
@@ -1259,7 +1269,6 @@ def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
     Return:
         License name, if any, or "No license" message
     """
-
     token = get_access_token()
 
     selected_dataset_id = get_dataset_id(token, selected_bfdataset)
@@ -1278,9 +1287,8 @@ def bf_get_subtitle(selected_bfaccount, selected_bfdataset):
         raise Exception(e) from e
 
 
-
-
-
+# BE-REVIEW - Dorian - change this function name to ps_add_subtitle
+# Also remove selected_bfaccount from parameters since it is not used
 def bf_add_subtitle(selected_bfaccount, selected_bfdataset, input_subtitle):
     """
     Args:
@@ -1308,7 +1316,8 @@ def bf_add_subtitle(selected_bfaccount, selected_bfdataset, input_subtitle):
         raise Exception(e)
 
 
-
+# BE-REVIEW - Dorian - change this function name to ps_get_description
+# Also remove selected_bfaccount from parameters since it is not used
 def bf_get_description(selected_bfaccount, selected_bfdataset):
     """
     Function to get current description associated with a selected dataset
@@ -1319,7 +1328,6 @@ def bf_get_description(selected_bfaccount, selected_bfdataset):
     Return:
         Description (string with markdown code)
     """
-
     token = get_access_token()
 
     selected_dataset_id = get_dataset_id(token, selected_bfdataset)
@@ -1335,9 +1343,8 @@ def bf_get_description(selected_bfaccount, selected_bfdataset):
         raise Exception(e) from e
 
 
-
-
-
+# BE-REVIEW - Dorian - change this function name to ps_add_description
+# Also remove selected_bfaccount from parameters since it is not used
 def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
     """
     Args:
@@ -1349,7 +1356,6 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
     Return:
         Success message or error
     """
-
     token = get_access_token()
 
     selected_dataset_id = get_dataset_id(token, selected_bfdataset)
@@ -1367,8 +1373,10 @@ def bf_add_description(selected_bfaccount, selected_bfdataset, markdown_input):
 
 
 
-
+# BE-REVIEW - Dorian - is there still something todo here?
 # TODO: CONTINUE HERE
+# BE-REVIEW - Dorian - change this function name to ps_get_banner_image
+# Also remove selected_bfaccount from parameters since it is not used
 def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
     """
     Function to get url of current banner image associated with a selected dataset
@@ -1379,7 +1387,6 @@ def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
     Return:
         url of banner image (string)
     """
-
     token = get_access_token()
 
     selected_dataset_id = get_dataset_id(token, selected_bfdataset)
@@ -1399,9 +1406,8 @@ def bf_get_banner_image(selected_bfaccount, selected_bfdataset):
         raise Exception(e) from e
 
 
-
-
-
+# BE-REVIEW - Dorian - change this function name to ps_add_banner_image or ps_upload_banner_image
+# Also remove selected_bfaccount from parameters since it is not used
 def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_path):
     """
     Function to add banner to a selected dataset
@@ -1420,6 +1426,7 @@ def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_pat
     if not has_edit_permissions(token, selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
 
+    # BE-REVIEW - Dorian - can we use create_request_headers() here?
     headers = {
         "Authorization": f"Bearer {token}",
     }
@@ -1446,9 +1453,8 @@ def bf_add_banner_image(selected_bfaccount, selected_bfdataset, banner_image_pat
         raise Exception(e)
 
 
-
-
-
+# BE-REVIEW - Dorian - change this function name to ps_get_license
+# Also remove selected_bfaccount from parameters since it is not used
 def bf_get_license(selected_bfaccount, selected_bfdataset):
     """
     Function to get current license associated with a selected dataset
@@ -1459,7 +1465,6 @@ def bf_get_license(selected_bfaccount, selected_bfdataset):
     Return:
         License name, if any, or "No license" message
     """
-
     token = get_access_token()
 
     selected_dataset_id = get_dataset_id(token, selected_bfdataset)
@@ -1478,9 +1483,7 @@ def bf_get_license(selected_bfaccount, selected_bfdataset):
         raise Exception(e)
 
 
-
-
-
+# BE-REVIEW - Dorian - change this function name to ps_add_license or ps_upload_license?
 def bf_add_license(selected_bfaccount, selected_bfdataset, selected_license):
     """
     Args:
@@ -1500,7 +1503,7 @@ def bf_add_license(selected_bfaccount, selected_bfdataset, selected_license):
     if not has_edit_permissions(token, selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
 
-
+    # BE-REVIEW - Dorian - this list can be placed in a constants file I'm thinking
     allowed_licenses_list = [
         "Community Data License Agreement – Permissive",
         "Community Data License Agreement – Sharing",
@@ -1528,9 +1531,8 @@ def bf_add_license(selected_bfaccount, selected_bfdataset, selected_license):
 
 
 
-
-
-
+# BE-REVIEW - Dorian - change this function name to ps_get_dataset_status
+# Also remove selected_bfaccount from parameters since it is not used
 def bf_get_dataset_status(selected_bfaccount, selected_bfdataset):
     """
     Function to get current status for a selected dataset
@@ -1542,7 +1544,6 @@ def bf_get_dataset_status(selected_bfaccount, selected_bfdataset):
         List of available status options for the account (list of string).
         Current dataset status (string)
     """
-
     token = get_access_token()
 
     selected_dataset_id = get_dataset_id(token, selected_bfdataset)
@@ -1567,7 +1568,8 @@ def bf_get_dataset_status(selected_bfaccount, selected_bfdataset):
 
 
 
-
+# BE-REVIEW - Dorian - change function name to ps_change_dataset_status
+# Also remove selected_bfaccount from parameters since it is not used
 def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_status):
     token = get_access_token()
 
@@ -1585,6 +1587,7 @@ def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_st
         )
         r.raise_for_status()
         list_status = r.json()
+        # BE-REVIEW - Dorian - change variable name to count
         c = 0
         for option in list_status:
             if option["displayName"] == selected_status:
@@ -1594,7 +1597,7 @@ def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_st
         if c == 0:
             abort(400, "Selected status is not available for this Pennsieve account.")
 
-        # gchange dataset status
+        # change dataset status
         jsonfile = {"status": new_status}
         r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", json=jsonfile, headers=headers)
         r.raise_for_status()
@@ -1627,9 +1630,7 @@ def get_number_of_files_and_folders_locally(filepath):
 
 
 
-
-
-
+# BE-REVIEW - Dorian - remove selected_account from parameters since it is not used
 def get_dataset_readme(selected_account, selected_dataset):
     """
     Function to get readme for a dataset
@@ -1652,15 +1653,15 @@ def get_dataset_readme(selected_account, selected_dataset):
     except Exception as e:
         raise Exception(e)
 
+    # BE-REVIEW - Dorian - we usually return reponses as an object/dictionary. Should this be done here or what is the response format?
     return readme
 
 
-
+# BE-REVIEW - Dorian - remove selected_account from parameters since it is not used
 def update_dataset_readme(selected_account, selected_dataset, updated_readme):
     """
     Update the readme of a dataset on Pennsieve with the given readme string.
     """
-
     token = get_access_token()
 
     selected_dataset_id = get_dataset_id(token, selected_dataset)
@@ -1676,7 +1677,7 @@ def update_dataset_readme(selected_account, selected_dataset, updated_readme):
 
     return {"message": "Readme updated"}
 
-
+# BE-REVIEW - Dorian - remove selected_account from parameters since it is not used
 def get_dataset_tags(selected_account, selected_dataset):
     """
     Function to get tags for a dataset
@@ -1687,7 +1688,6 @@ def get_dataset_tags(selected_account, selected_dataset):
         Return:
             Tags for the dataset
     """
-
     token = get_access_token()
 
     selected_dataset_id = get_dataset_id(token, selected_dataset)
@@ -1702,12 +1702,11 @@ def get_dataset_tags(selected_account, selected_dataset):
     except Exception as e:
         raise Exception(e) from e
 
-
+# BE-REVIEW - Dorian - remove selected_account from parameters since it is not used
 def update_dataset_tags(selected_account, selected_dataset, updated_tags):
     """
     Update the tags of a dataset on Pennsieve with the given tags list.
     """
-
     token = get_access_token()
 
     selected_dataset_id = get_dataset_id(token, selected_dataset)
