@@ -1,38 +1,25 @@
 # -*- coding: utf-8 -*-
 
 ### Import required python modules
-# BE-REVIEW - Dorian - Remove unused imports
 import contextlib
-import json
-from unicodedata import name
-from urllib import request
 import cv2
 import os
-from os import listdir, mkdir, walk
+from os import mkdir
 from os.path import (
     isdir,
     join,
     exists,
     expanduser,
-    dirname,
-    getsize
+    dirname
 )
 import time
 import shutil
 from configparser import ConfigParser
-import subprocess
-import socket
-import errno
 import re
-import gevent
 
 from pennsieve2.pennsieve import Pennsieve
 from threading import Thread
 
-import platform
-
-
-import boto3
 import requests
 
 from flask import abort
@@ -40,14 +27,12 @@ from namespaces import NamespaceEnum, get_namespace_logger
 from utils import ( 
     get_dataset_size, 
     create_request_headers, 
-    connect_pennsieve_client, 
-    authenticate_user_with_client, 
     get_dataset_id
 )
-from authentication import get_access_token, get_cognito_userpool_access_token
+from authentication import get_access_token
 from users import get_user_information, update_config_account_name
-from permissions import has_edit_permissions, pennsieve_get_current_user_permissions
-from configUtils import add_api_host_to_config, lowercase_account_names
+from permissions import has_edit_permissions
+from configUtils import lowercase_account_names
 from constants import PENNSIEVE_URL
 
 
