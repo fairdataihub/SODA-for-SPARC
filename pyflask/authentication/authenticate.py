@@ -40,9 +40,10 @@ def get_access_token():
 
 
 def get_cognito_userpool_access_token(email, password):
-    # BE-REVIEW - Aaron - Add top level comment for details on hover can say:
-    # Creates a temporary access token for utilizing the Pennsieve API. Utilizes email and password to authenticate with the Pennsieve Cognito Userpool 
-    # which provides higher privileges than the API token and secret flow.
+    """
+    Creates a temporary access token for utilizing the Pennsieve API. Utilizes email and password to authenticate with the Pennsieve Cognito Userpool 
+    which provides higher privileges than the API token and secret flow.
+    """
     PENNSIEVE_URL = "https://api.pennsieve.io"
 
     try:
@@ -57,7 +58,7 @@ def get_cognito_userpool_access_token(email, password):
             aws_secret_access_key="",
         )
     except Exception as e:
-        raise Exception(e)
+        raise Exception(e) from e
 
     try:
         login_response = cognito_client.initiate_auth(
@@ -76,7 +77,7 @@ def get_cognito_userpool_access_token(email, password):
         response.raise_for_status()
     except Exception as e:
         raise e
-    
+
     return access_token
 
 # get a target key's value from the config file 
@@ -121,7 +122,7 @@ def bf_delete_default_profile():
     with open(configpath, "w") as configfile:
         config.write(configfile)
 
-# BE-REVIEW - Jacob - Can we check if the profile name already exists and if so, append a number to the end of it? So it will always generate a unique profile name
+
 def create_unique_profile_name(token, email, account_name):
     try:
         # get the users email

@@ -2,7 +2,6 @@
 
 ### Import required python modules
 # BE-REVIEW - Dorian - remove unused imports
-import json
 import requests
 import platform
 import os
@@ -28,19 +27,17 @@ from pennsieve2.pennsieve import Pennsieve
 import pathlib
 from flask import abort
 import requests
-from datetime import datetime, timezone
+from datetime import datetime
 from permissions import pennsieve_get_current_user_permissions
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
-from utils import authenticate_user_with_client, connect_pennsieve_client, get_dataset_id, create_request_headers, TZLOCAL
+from utils import connect_pennsieve_client, get_dataset_id, create_request_headers, TZLOCAL
 from manifest import create_high_level_manifest_files_existing_bf_starting_point, create_high_level_manifest_files, get_auto_generated_manifest_files
 from authentication import get_access_token
 
 from pysodaUtils import (
     check_forbidden_characters_bf,
     get_agent_installation_location,
-    stop_agent,
-    start_agent
 )
 
 from organizeDatasets import import_pennsieve_dataset
@@ -63,7 +60,6 @@ generated_dataset_id = None
 # the pennsieve python client used for uploading dataset files 
 client = None 
 
-# BE-REVIEW - Dorian - these two could be placed in a constants file
 userpath = expanduser("~")
 configpath = join(userpath, ".pennsieve", "config.ini")
 submitdataprogress = " "
@@ -73,10 +69,8 @@ total_file_size = 1
 uploaded_file_size = 0
 start_time_bf_upload = 0
 start_submit = 0
-# BE-REVIEW - Dorian - same with this variable and the list below
 metadatapath = join(userpath, "SODA", "SODA_metadata")
-# BE-REVIEW - Dorian - change variable name to ps_recognised_file_extensions
-bf_recognized_file_extensions = [
+ps_recognized_file_extensions = [
     ".cram",
     ".jp2",
     ".jpx",
@@ -229,6 +223,7 @@ bf_recognized_file_extensions = [
     ".zip",
     ".zsh",
 ]
+
 # BE-REVIEW - Dorian - change variable name to ps
 bf = ""
 myds = ""
@@ -2416,7 +2411,7 @@ def ps_create_new_dataset(soda_json_structure, ps, ds):
                                 list_initial_names.append(initial_name)
 
                             my_bf_existing_files_name.append(final_name)
-                            if initial_extension in bf_recognized_file_extensions:
+                            if initial_extension in ps_recognized_file_extensions:
                                 my_bf_existing_files_name_with_extension.append(
                                     final_name
                                 )
