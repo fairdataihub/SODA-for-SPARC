@@ -5072,7 +5072,7 @@ const openPage = async (targetPageID) => {
       let responseDataStructure = response["dataset-structure"];
 
       const res = await client.post(
-        `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
+        `/curate_datasets/generate_high_level_folder_manifest_data`,
         {
           dataset_structure_obj: responseDataStructure,
         },

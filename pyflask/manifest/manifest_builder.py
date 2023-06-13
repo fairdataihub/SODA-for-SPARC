@@ -1,6 +1,7 @@
 """
 Create manifest files for the skeleton dataset validation workflow. 
 
+# BE-REVIEW - Jacob - Is this comment section still relevant? +6 months old (and at top of manifest builder file so would be nice to remove)
 # TODO: add the manifest file creation function here
 # NOTE: It seems that the import keeps teh manifest key value empty if the user is not creating a new manifest file and that organize datasets 
 # adds the generate-dataset value inside of the manifest-files key if the user is creating a new manifest file; in our case we will want to determine two things first:
