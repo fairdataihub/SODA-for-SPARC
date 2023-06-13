@@ -586,7 +586,7 @@ class DeleteManifestDummyFolders(Resource):
 
 @api.route('/manifest_files/pennsieve')
 class GenerateManifestFilesPennsieve(Resource):
-
+    # BE-REVIEW - Aaron - Remove meaningless comments
     @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request'}, 
             description="Generate manifest files locally. Used in the standalone manifest file generation feature. Can take edit-manifest keyword that stores the manifest file in a separate directory. Allows ease of editing manifest information for the client.",
             params={"soda_json_object": "SODA dataset structure", 
@@ -625,6 +625,8 @@ class GenerateManifestFilesPennsieve(Resource):
             api.abort(400, "Cannot edit manifest files without the action and type provided.")
 
         try:
+            # BE-REVIEW - Aaron - bf -> ps
+            # BE-REVIEW - Aaron - Drop empty columns ( but keep required columns ) beforing uploading the local manifest files to Pennsieve
             return edit_bf_manifest_file(edit_action, manifest_type)
         except Exception as e:
             api.abort(500, str(e))
