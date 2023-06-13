@@ -13,6 +13,7 @@ from authentication import get_access_token
 
 PENNSIEVE_URL = "https://api.pennsieve.io"
 
+# BE-REVIEW - Dorian - maybe rename function to say get_user_role? To be more explicit on who's role is being returned
 def get_role(dataset):
     token = get_access_token()
 
@@ -100,6 +101,7 @@ def upload_collection_names(account, dataset, tags):
     return {"collection": store}
 
 
+# BE-REVIEW - Dorian - Remove account parameter since it's not used
 def remove_collection_names(account, dataset, tags):
     """
     Function used to remove the tags the were assigned to a dataset
