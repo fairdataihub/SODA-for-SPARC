@@ -768,6 +768,7 @@ def check_local_dataset_files_validity(soda_json_structure):
             file_type = file["type"]
             if file_type == "local":
                 file_path = file["path"]
+                # BE-REVIEW - Aaron - bf -> ps
                 if file["type"] == "bf":
                     continue
                 if not isfile(file_path):
@@ -792,12 +793,14 @@ def check_local_dataset_files_validity(soda_json_structure):
 
         if not my_folder["folders"]:
             if not my_folder["files"]:
+                # BE-REVIEW - Aaron - bf -> ps
                 if my_folder["type"] != "bf":
                     del my_folders_content[my_folder_key]
 
     error = []
     if "dataset-structure" in soda_json_structure.keys():
         dataset_structure = soda_json_structure["dataset-structure"]
+        # BE-REVIEW - Aaron - Remove 0kb files, files that can't be found, and any empty folders from the dataset data files
         if "folders" in dataset_structure:
             for folder_key, folder in dataset_structure["folders"].items():
                 relative_path = folder_key
@@ -810,6 +813,7 @@ def check_local_dataset_files_validity(soda_json_structure):
 
     if "metadata-files" in soda_json_structure.keys():
         metadata_files = soda_json_structure["metadata-files"]
+        # BE-REVIEW - Aaron - Remove specified metadata files that do net exist at the specified paths or that are empty
         for file_key in list(metadata_files.keys()):
             file = metadata_files[file_key]
             file_type = file["type"]
@@ -825,6 +829,7 @@ def check_local_dataset_files_validity(soda_json_structure):
         if not metadata_files:
             del soda_json_structure["metadata-files"]
 
+    # BE-REVIEW - Aaron - Return list of all the files that were not found. 
     if len(error) > 0:
         error_message = [
             "Error: The following local files were not found. Specify them again or remove them."
@@ -2790,6 +2795,7 @@ def bf_check_dataset_files_validity(soda_json_structure, ps):
             for folder_key, folder in my_folder["folders"].items():
                 folder_type = folder["type"]
                 relative_path = my_relative_path + "/" + folder_key
+                # BE-REVIEW - Aaron - bf -> ps
                 if folder_type == "bf":
                     package_id = folder["path"]
                     try:
@@ -2801,9 +2807,11 @@ def bf_check_dataset_files_validity(soda_json_structure, ps):
                 error = recursive_bf_dataset_check(folder, relative_path, error)
         if "files" in my_folder.keys():
             for file_key, file in my_folder["files"].items():
+                # BE-REVIEW - Aaron - remove the comment block below
                 # if file_key in ["manifest.xlsx", "manifest.csv"]:
                 #     continue
                 file_type = file["type"]
+                # BE-REVIEW - Aaron - bf -> ps
                 if file_type == "bf":
                     package_id = file["path"]
                     try:
@@ -2819,9 +2827,11 @@ def bf_check_dataset_files_validity(soda_json_structure, ps):
     if "dataset-structure" in soda_json_structure.keys():
         dataset_structure = soda_json_structure["dataset-structure"]
         if "folders" in dataset_structure:
+            # BE-REVIEW - Aaron - check that the given folder ids all represent a valid ps folder + their sub files
             for folder_key, folder in dataset_structure["folders"].items():
                 folder_type = folder["type"]
                 relative_path = folder_key
+                # BE-REVIEW - Aaron - bf -> ps
                 if folder_type == "bf":
                     package_id = folder["path"]
                     try:
@@ -2833,8 +2843,10 @@ def bf_check_dataset_files_validity(soda_json_structure, ps):
                         pass
                 error = recursive_bf_dataset_check(folder, relative_path, error)
         if "files" in dataset_structure:
+            # BE-REVIEW - Aaron - check the file ids at the root of the ds to verify they are valid ps files
             for file_key, file in dataset_structure["files"].items():
                 file_type = file["type"]
+                # BE-REVIEW - Aaron - bf -> ps
                 if file_type == "bf":
                     package_id = folder["path"]
                     try:
@@ -2848,8 +2860,10 @@ def bf_check_dataset_files_validity(soda_json_structure, ps):
 
     if "metadata-files" in soda_json_structure:
         metadata_files = soda_json_structure["metadata-files"]
+        # BE-REVIEW - Aaron - check that the given file ids for the metadata files all represent an existing ps file
         for file_key, file in metadata_files.items():
             file_type = file["type"]
+            # BE-REVIEW - Aaron - bf -> ps
             if file_type == "bf":
                 package_id = file["path"]
                 try:
@@ -2992,6 +3006,7 @@ def main_curate_function(soda_json_structure):
     global main_curation_uploaded_files
     global uploaded_folder_counter
 
+    # BE-REVIEW - Aaron - bf -> ps
     global bf
     global myds
     global generated_dataset_id
@@ -2999,6 +3014,8 @@ def main_curate_function(soda_json_structure):
     start_generate = 0
     generate_start_time = time.time()
 
+    # BE-REVIEW - Aaron 
+    # variables for tracking the progress of the curate process on the frontend 
     main_curate_status = ""
     main_curate_progress_message = "Starting..."
     main_total_generate_dataset_size = 0
@@ -3013,9 +3030,10 @@ def main_curate_function(soda_json_structure):
     # progress_percentage_array = []
     main_generate_destination = ""
     main_initial_bfdataset_size = 0
+
+
     bf = ""
     myds = ""
-
     main_keys = soda_json_structure.keys()
     error = ""
 
@@ -3028,6 +3046,7 @@ def main_curate_function(soda_json_structure):
         main_curate_progress_message = "Checking that the local destination selected for generating your dataset is valid"
         generate_dataset = soda_json_structure["generate-dataset"]
         local_dataset_path = generate_dataset["path"]
+        # BE-REVIEW - Aaron  - Remove the below comment block
         # if generate_dataset["if-existing"] == "merge":
         #     local_dataset_path = join(local_dataset_path, generate_dataset["dataset-name"])
         if not isdir(local_dataset_path):
@@ -3042,6 +3061,7 @@ def main_curate_function(soda_json_structure):
 
     namespace_logger.info("main_curate_function step 1.2")
     
+    # BE-REVIEW - Aaron  - change bg -> ps 
     # 1.2. Check that the bf destination is valid if generate on bf, or any other bf actions are requested
     if "bf-account-selected" in soda_json_structure:
         # check that the Pennsieve account is valid
@@ -3051,13 +3071,16 @@ def main_curate_function(soda_json_structure):
             )
             accountname = soda_json_structure["bf-account-selected"]["account-name"]
             ps = connect_pennsieve_client(accountname)
+            # BE-REVIEW - Aaron - remove switch and the optional reauthenticate command as we initialize the profile in the above command now 
             ps.user.switch(accountname)
             ps.user.reauthenticate()
+            # BE-REVIEW - Aaron - remove comment
             # authenticate_user_with_client(ps, accountname)
         except Exception as e:
             main_curate_status = "Done"
             abort(400, "Please select a valid Pennsieve account.")
 
+    # BE-REVIEW - Aaron - bf -> ps 
     # if uploading on an existing bf dataset
     if "bf-dataset-selected" in soda_json_structure:
         # check that the Pennsieve dataset is valid
@@ -3075,6 +3098,7 @@ def main_curate_function(soda_json_structure):
 
         # check that the user has permissions for uploading and modifying the dataset
         main_curate_progress_message = "Checking that you have required permissions for modifying the selected dataset"
+        # BE-REVIEW - Aaron - bf -> ps + remove 'agent_two' from the function name
         role = bf_get_current_user_permission_agent_two(selected_dataset_id, token)["role"]
         if role not in ["owner", "manager", "editor"]:
             main_curate_status = "Done"
@@ -3117,6 +3141,7 @@ def main_curate_function(soda_json_structure):
             raise e
         
         namespace_logger.info("main_curate_function step 1.3.2")
+        # BE-REVIEW - Aaron - bf -> ps 
         # Check that bf files/folders exist
         generate_option = soda_json_structure["generate-dataset"]["generate-option"]
         if generate_option == "existing-bf":
@@ -3125,7 +3150,7 @@ def main_curate_function(soda_json_structure):
                     "Checking that the Pennsieve files and folders are valid"
                 )
                 if soda_json_structure["generate-dataset"]["destination"] == "bf":
-                    # TODO: Convert to new agent
+                    # BE-REVIEW - Aaron - bf -> ps in function name
                     if error := bf_check_dataset_files_validity(soda_json_structure, ps):
                         main_curate_status = "Done"
                         abort(400, error)
@@ -3148,6 +3173,7 @@ def main_curate_function(soda_json_structure):
                     soda_json_structure
                 )
 
+            # BE-REVIEW - Aaron - bf -> ps 
             if soda_json_structure["generate-dataset"]["destination"] == "bf":
                 main_generate_destination = soda_json_structure["generate-dataset"][
                     "destination"
@@ -3158,22 +3184,27 @@ def main_curate_function(soda_json_structure):
                         dataset_name = soda_json_structure["generate-dataset"][
                             "dataset-name"
                         ]
+                        # BE-REVIEW - Aaron - bf -> ps  in func name
                         ds = bf_create_new_dataset(dataset_name, ps)
                         selected_dataset_id = ds["content"]["id"]
 
 
                     # whether we are generating a new dataset or merging, we want the dataset information for later steps
+                    # BE-REVIEW - Aaron - pass in var named token rather than using the token function as an argument
                     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
                     r.raise_for_status()
                     myds = r.json()
                     
+                    # BE-REVIEW - Aaron - bf -> ps
                     bf_generate_new_dataset(soda_json_structure, ps, myds)
                 if generate_option == "existing-bf":
 
                     # make an api request to pennsieve to get the dataset details
+                    # BE-REVIEW - Aaron - pass in var named token rather than using the token function as an argument
                     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
                     r.raise_for_status()
                     myds = r.json()
+                    # BE-REVIEW - Aaron - bf -> ps
                     bf_update_existing_dataset(soda_json_structure, bf, myds, ps)
 
         except Exception as e:

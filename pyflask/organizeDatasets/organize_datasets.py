@@ -39,7 +39,7 @@ from authentication import get_access_token
 
 
 
-
+# BE-REVIEW - Jacob - These global variables may need to be scoped into the functions that use them.
 ### Global variables
 create_soda_json_progress = 0
 create_soda_json_total_items = 0
@@ -97,6 +97,7 @@ METADATA_FILES_SPARC = [
         "outputs_metadata.xlsx",
     ]
 
+# BE-REVIEW - Jacob - Change function name to get_current_timezone_info (and maybe import it from time_utils.py)
 ### Internal functions
 def TZLOCAL():
     return datetime.now(timezone.utc).astimezone().tzinfo
@@ -134,7 +135,8 @@ def checkLeafValue(leafName, leafNodeValue):
 
     return [True, total_dataset_size - 1]
 
-
+# BE-REVIEW - Jacob - Note: Function paramaters should be clearer and standardized for users
+# BE-REVIEW - Jacob - For example - datasetStructure or sodaJSONObj
 def traverseForLeafNodes(jsonStructure):
     total_dataset_size = 1
 
@@ -166,6 +168,7 @@ def createFiles(jsonpath, fileKey, distdir, listallfiles):
 
     srcfile = jsonpath[fileKey][0]
     distfile = distdir
+    # BE-REVIEW - Jacob - Could use comment here for clarity of listallfiles (is it for upload etc)
     listallfiles.append([srcfile, distfile])
 
 
@@ -422,7 +425,8 @@ def create_folder_level_manifest(jsonpath, jsondescription):
     except Exception as e:
         raise e
 
-
+# BE-REVIEW - Jacob - This function and functions like it could be used to utils and shared between different functions
+# BE-REVIEW - Jacob - for example: validate_folder_name, validate_file_name, validate_subject_name, etc
 def check_forbidden_characters(my_string):
     """
     Check for forbidden characters in file/folder name
@@ -947,6 +951,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         "outputs_metadata.xlsx",
     ]
 
+    # BE-REVIEW - Jacob - Arrays like this should be standardized and imported since we have a lot of duplicates like these
     double_extensions = [
         ".ome.tiff",
         ".ome.tif",
