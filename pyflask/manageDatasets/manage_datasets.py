@@ -235,7 +235,7 @@ def read_from_config(key):
         return config[keyname][key]
     return None
 
-
+# BE-REVIEW - Jacob - This code can be removed
 # def get_access_token():
 #     # get cognito config 
 #     r = requests.get(f"{PENNSIEVE_URL}/authentication/cognito-config")
@@ -477,7 +477,6 @@ def in_sparc_organization(token):
 
 
 
-
 def bf_account_details(accountname):
     """
     Args:
@@ -574,7 +573,7 @@ def create_new_dataset(datasetname, accountname):
     except Exception as e:
         raise e
 
-
+# BE-REVIEW - Jacob - What's up with accountName? If I understand correctly, we don't really need this for most functions?
 def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
     """
     Args:
@@ -621,7 +620,7 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
         raise Exception(e) from e
 
 
-
+# BE-REVIEW - Jacob - These variables could be scoped into their calling functions
 completed_files = []
 files_uploaded = 0
 total_files_to_upload = 0
