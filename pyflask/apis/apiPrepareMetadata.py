@@ -607,6 +607,7 @@ class GenerateManifestFilesPennsieve(Resource):
             api.abort(400, str(selected_account + selected_dataset + soda_json_object))
 
         try:
+            # BE-REVIEW - Aaron - bf -> ps
             return import_bf_manifest_file(soda_json_object, selected_account, selected_dataset)
         except Exception as e:
             api.abort(500, str(e))

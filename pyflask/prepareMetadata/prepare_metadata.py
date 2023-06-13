@@ -950,6 +950,7 @@ manifest_progress = {
     "finished": False
 }
 
+# BE-REVIEW - Aaron - Remove the below comment
 # TODO: NOTE: ESSENTIAL: Remove the manifest_file even if the user does not generate before pulling again.f
 def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
     # reset the progress tracking information
@@ -985,6 +986,7 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
     update_existing_pennsieve_manifest_files(token, soda_json_structure, high_level_folders, manifest_progress, manifest_folder_path)
 
     # create manifest files from scratch for any high level folders that don't have a manifest file on Pennsieve
+    # BE-REVIEW - Aaron - bf -> ps 
     create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, manifest_folder_path, high_level_folders, manifest_progress)
 
     # finished with the manifest generation process
