@@ -799,6 +799,7 @@ def sortedSubjectsTableData(matrix, fields):
 
 # transpose a matrix (array of arrays)
 # BE-REVIEW - Dorian - The transpose of a matrix is found by interchanging its rows into columns or columns into rows.
+# REFERENCE: https://byjus.com/maths/transpose-of-a-matrix/
 # Added definition to avoid confusion
 def transposeMatrix(matrix):
     return [[matrix[j][i] for j in range(len(matrix))] for i in range(len(matrix[0]))]
@@ -974,7 +975,7 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
     manifest_progress["manifest_files_uploaded"] = 0
 
     token = get_access_token()
-
+    # BE-REVIEW - Dorian - remove unused variable
     dataset_id = get_dataset_id(token, bfdataset)
 
     high_level_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
@@ -986,6 +987,7 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
 
     # get the count of the total number of high level folders in soda_json_structure
     for folder in list(dataset_structure["folders"]):
+        # BE-REVIEW - Dorian - Merge nested if statements
         if folder in high_level_folders:
             if dataset_structure["folders"][folder]["files"] == {} and dataset_structure["folders"][folder]["folders"] == {}:
                 manifest_progress["total_manifest_files"] += 1
@@ -1005,10 +1007,10 @@ def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
     # finished with the manifest generation process
     manifest_progress["finished"] = True
 
+    # BE-REVIEW - Dorian - remove unused variable
     no_manifest_boolean = False
     
     return {"message": "Finished"}
-
 
 
 def manifest_creation_progress():
@@ -1024,11 +1026,6 @@ def manifest_creation_progress():
     }
 
 
-
-
-
-
-
 def copytree(src, dst, symlinks=False, ignore=None):
     for item in os.listdir(src):
         s = os.path.join(src, item)
@@ -1039,11 +1036,6 @@ def copytree(src, dst, symlinks=False, ignore=None):
             shutil.copytree(s, d, symlinks, ignore)
         else:
             shutil.copy2(s, d)
-
-
-
-
-
 
 
 ## import an existing local or Pennsieve dataset_description.xlsx file
@@ -1077,11 +1069,14 @@ def load_existing_DD_file(import_type, filepath, item_id=None, token=None):
             pd.read_csv(tf.name, encoding="ISO-8859-1", usecols=column_check, header=0)
         )
 
+    # BE-REVIEW - Dorian - is this dropping empty columns and rows? If not, some details here would be helpful
+    # I think this is done in other areas as well, so it we could have a function call for this
     DD_df = DD_df.dropna(axis=0, how="all")
     DD_df = DD_df.replace(np.nan, "", regex=True)
     DD_df = DD_df.applymap(str)
     DD_df = DD_df.applymap(str.strip)
 
+    # BE-REVIEW - Dorian - add these lists to a constants file
     basicInfoHeaders = [
         "Type",
         "Title",
@@ -1150,8 +1145,6 @@ def load_existing_DD_file(import_type, filepath, item_id=None, token=None):
     # drop Description and Examples columns
     DD_df = DD_df.drop(columns=["Description", "Example"])
 
-
-
     ## convert DD_df to array of arrays (a matrix)
     DD_matrix = DD_df.to_numpy().tolist()
 
@@ -1182,7 +1175,7 @@ def load_existing_DD_file(import_type, filepath, item_id=None, token=None):
         "Related information": transposeMatrix(relatedInfoSection),
     }
 
-
+# BE-REVIEW - Dorian - what are the dummy folders?
 def delete_manifest_dummy_folders(userpath_list):
     for userpath in userpath_list:
         shutil.rmtree(userpath) if isdir(userpath) else 0
@@ -1200,10 +1193,8 @@ def edit_bf_manifest_file(edit_action, manifest_type):
     return 
 
 
-    
-
-
 def drop_manifest_empty_columns(manifest_file_location):
+    # BE-REVIEW - Dorian - isn't there a different method that imports the namespace_logger without having to pass it in?
     global namespace_logger
     # read the manifest files in the manifest files folder
     high_level_folders = os.listdir(manifest_file_location)
@@ -1248,6 +1239,7 @@ def drop_manifest_empty_columns(manifest_file_location):
         yellowFill = PatternFill(
             start_color="FFD965", fill_type="solid"
         )
+        # BE-REVIEW - Dorian - use colorFill for this
         ws['A1'].fill = blueFill
         ws['B1'].fill = greenFill
         ws['C1'].fill = greenFill
