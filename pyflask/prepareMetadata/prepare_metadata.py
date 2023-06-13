@@ -826,6 +826,7 @@ def load_existing_submission_file(filepath, item_id=None, token=None):
         if is_file_not_found_exception(e):
             abort(400, "Local submission file not found")
 
+        # BE-REVIEW - Aaron - Remove TODO
         # TODO: TEST check if error can indicate if file is not in the correct format TEST
         if is_invalid_file_exception(e):
             abort(400, "Local submission file is not in the correct format")
