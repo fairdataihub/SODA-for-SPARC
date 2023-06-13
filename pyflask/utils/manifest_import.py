@@ -1,6 +1,7 @@
 import requests
 import pandas as pd
 
+# BE-REVIEW - Aaron - Rename to metadata not manifest
 def load_manifest_to_dataframe(node_id, file_type, ps_or_token, usecols=None, header=0):
     """
     Given a manifests package id and its storage type - excel or csv - returns a pandas dataframe.

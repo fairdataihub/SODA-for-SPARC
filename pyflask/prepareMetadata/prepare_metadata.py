@@ -836,6 +836,7 @@ def load_existing_submission_file(filepath, item_id=None, token=None):
         if is_file_not_found_exception(e):
             abort(400, "Local submission file not found")
 
+        # BE-REVIEW - Aaron - Remove TODO
         # TODO: TEST check if error can indicate if file is not in the correct format TEST
         if is_invalid_file_exception(e):
             abort(400, "Local submission file is not in the correct format")
@@ -915,6 +916,7 @@ def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
                 return load_existing_submission_file(url, item_id, token)
 
             elif file_type == "dataset_description.xlsx":
+                # BE-REVIEW - Aaron - bf -> ps
                 return load_existing_DD_file("bf", url, item_id, token)
 
             elif file_type == "subjects.xlsx":
@@ -1046,11 +1048,13 @@ def load_existing_DD_file(import_type, filepath, item_id=None, token=None):
     # open given workbook
     # and store in excel object
 
+     # BE-REVIEW - Aaron -  bf -> ps
     if import_type == "bf":
         try:
             DD_df = load_manifest_to_dataframe(item_id, "excel", token, column_check, 0)
         except Exception as e:
             namespace_logger.info(e)
+            # BE-REVIEW - Aaron - submission.xlsx -> dataset_description.xlsx
             raise Exception from e (
                 "SODA cannot read this submission.xlsx file. If you are trying to retrieve a submission.xlsx file from Pennsieve, please make sure you are signed in with your Pennsieve account on SODA."
             )

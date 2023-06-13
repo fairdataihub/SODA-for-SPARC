@@ -5,7 +5,6 @@ from users import integrate_orcid_with_pennsieve, get_user, set_preferred_organi
 
 api = get_namespace(NamespaceEnum.USER)
 
-
 @api.route("/orcid")
 class Orcid(Resource):
   

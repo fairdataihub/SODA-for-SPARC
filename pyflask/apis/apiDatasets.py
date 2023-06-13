@@ -18,7 +18,7 @@ from datasets import (
 
 api = get_namespace(NamespaceEnum.DATASETS)
 
-
+# BE-REVIEW - Jacob - Can we move the model definitions inside of the endpoints?
 model_get_role_response = api.model("GetRoleResponse", {
   "role": fields.String(description="The role of the dataset")
 })
@@ -125,7 +125,7 @@ class datasetCollection(Resource):
 
 
 
-
+# BE-REVIEW - Jacob - This endpoint is not very clear. what is open?
 @api.route('/open')
 class OpenDataset(Resource):
     parser = reqparse.RequestParser()

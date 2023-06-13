@@ -241,6 +241,42 @@ def read_from_config(key):
         return config[keyname][key]
     return None
 
+<<<<<<< HEAD
+=======
+# BE-REVIEW - Jacob - This code can be removed
+# def get_access_token():
+#     # get cognito config 
+#     r = requests.get(f"{PENNSIEVE_URL}/authentication/cognito-config")
+#     r.raise_for_status()
+
+#     cognito_app_client_id = r.json()["tokenPool"]["appClientId"]
+#     cognito_region_name = r.json()["region"]
+
+#     cognito_idp_client = boto3.client(
+#     "cognito-idp",
+#     region_name=cognito_region_name,
+#     aws_access_key_id="",
+#     aws_secret_access_key="",
+#     )
+            
+#     login_response = cognito_idp_client.initiate_auth(
+#     AuthFlow="USER_PASSWORD_AUTH",
+#     AuthParameters={"USERNAME": read_from_config("api_token"), "PASSWORD": read_from_config("api_secret")},
+#     ClientId=cognito_app_client_id,
+#     )
+
+#     # write access token to a file
+#     with open("access_token.txt", "w") as f:
+#         f.write(login_response["AuthenticationResult"]["AccessToken"])
+        
+#     return login_response["AuthenticationResult"]["AccessToken"]
+
+
+
+
+
+
+>>>>>>> 4959c527bfdad42640a14ba2ff75d26602ac44b8
 
 def check_forbidden_characters_bf(my_string):
     """
@@ -448,7 +484,6 @@ def in_sparc_organization(token):
 
 
 
-
 def bf_account_details(accountname):
     """
     Args:
@@ -547,8 +582,12 @@ def create_new_dataset(datasetname, accountname):
     except Exception as e:
         raise e
 
+<<<<<<< HEAD
 # BE-REVIEW - Dorian - change function name to ps_rename_dataset
 # Also remove accountname from parameters since it is not used
+=======
+# BE-REVIEW - Jacob - What's up with accountName? If I understand correctly, we don't really need this for most functions?
+>>>>>>> 4959c527bfdad42640a14ba2ff75d26602ac44b8
 def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
     """
     Args:
@@ -596,7 +635,7 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
         raise Exception(e) from e
 
 
-
+# BE-REVIEW - Jacob - These variables could be scoped into their calling functions
 completed_files = []
 files_uploaded = 0
 total_files_to_upload = 0
@@ -1029,8 +1068,12 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
         raise e
 
 
+<<<<<<< HEAD
 # BE-REVIEW - Dorian - change function name to ps_add_permission
 # Remove selected_bfaccount parameter since it isn't used
+=======
+# BE-REVIEW - Jacob - Remove selected_bfaccount from args
+>>>>>>> 4959c527bfdad42640a14ba2ff75d26602ac44b8
 def bf_add_permission(
     selected_bfaccount, selected_bfdataset, selected_user, selected_role
 ):
@@ -1068,7 +1111,7 @@ def bf_add_permission(
                 user_present = True
                 break
         if user_present == False:
-            error = error + "Please select a valid user" + "<br>"
+            error = f"{error}Please select a valid user<br>"
             c += 1
     except Exception as e:
         raise e
@@ -1080,12 +1123,12 @@ def bf_add_permission(
         "owner",
         "remove current permissions",
     ]:
-        error = error + "Please select a valid role" + "<br>"
+        error = f"{error}Please select a valid role<br>"
         c += 1
 
     if c > 0:
         abort(400, error)
-    
+
     try:
         # check that currently logged in user is a manager or a owner of the selected dataset (only manager and owner can change dataset permission)
         r = requests.get(f"{PENNSIEVE_URL}/user", headers=headers)
@@ -1144,8 +1187,12 @@ def bf_add_permission(
     except Exception as e:
         raise e
 
+<<<<<<< HEAD
 # BE-REVIEW - Dorian - change this function name to ps_add_permission_team
 # Also remove selected_bfaccount from parameter since it isn't used
+=======
+# BE-REVIEW - Jacob - Remove selected_bfaccount from args
+>>>>>>> 4959c527bfdad42640a14ba2ff75d26602ac44b8
 def bf_add_permission_team(
     selected_bfaccount, selected_bfdataset, selected_team, selected_role
 ):

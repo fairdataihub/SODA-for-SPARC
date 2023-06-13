@@ -13,7 +13,7 @@ from curate import (
     main_curate_function,
     main_curate_function_progress,
     generate_manifest_file_locally,
-    guided_generate_manifest_file_data,
+    generate_manifest_file_data,
     check_JSON_size,
     clean_json_structure,
     check_server_access_to_files,
@@ -223,7 +223,7 @@ class GenerateManifestLocally(Resource):
 
 
 
-@api.route('/guided_generate_high_level_folder_manifest_data')
+@api.route('/generate_high_level_folder_manifest_data')
 class GenerateManifestData(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('dataset_structure_obj', type=dict, required=True, help='dataset structure used to generate manifest files for each high level folder', location='json')
@@ -234,7 +234,7 @@ class GenerateManifestData(Resource):
         data = self.parser.parse_args()
         dataset_structure_obj = data.get("dataset_structure_obj")
         try:
-            return guided_generate_manifest_file_data(dataset_structure_obj)
+            return generate_manifest_file_data(dataset_structure_obj)
         except Exception as e:
             api.abort(500, str(e))
 
