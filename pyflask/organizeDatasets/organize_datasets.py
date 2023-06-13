@@ -26,7 +26,7 @@ import pathlib
 from datetime import datetime, timezone
 import requests 
 # BE-REVIEW - Dorian - remove unused imports
-from permissions import bf_get_current_user_permission_agent_two, has_edit_permissions
+from permissions import pennsieve_get_current_user_permissions, has_edit_permissions
 from utils import connect_pennsieve_client, get_dataset_id, create_request_headers, authenticate_user_with_client
 from namespaces import NamespaceEnum, get_namespace_logger
 from openpyxl.styles import PatternFill, Font
@@ -1206,7 +1206,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
     # check that the user has permission to edit this dataset
     try:
-        role = bf_get_current_user_permission_agent_two(selected_dataset_id, token)["role"]
+        role = pennsieve_get_current_user_permissions(selected_dataset_id, token)["role"]
         if role not in ["owner", "manager", "editor"]:
             curatestatus = "Done"
             raise Exception("You don't have permissions for uploading to this Pennsieve dataset")

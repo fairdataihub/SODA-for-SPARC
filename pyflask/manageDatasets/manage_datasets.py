@@ -46,7 +46,7 @@ from utils import (
 )
 from authentication import get_access_token, get_cognito_userpool_access_token
 from users import get_user_information, update_config_account_name
-from permissions import has_edit_permissions, bf_get_current_user_permission_agent_two
+from permissions import has_edit_permissions, pennsieve_get_current_user_permissions
 from configUtils import add_api_host_to_config, lowercase_account_names
 from constants import PENNSIEVE_URL
 

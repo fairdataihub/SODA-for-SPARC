@@ -5,7 +5,7 @@
 from venv import create
 from flask import abort 
 import requests
-from permissions import bf_get_current_user_permission_agent_two, has_edit_permissions
+from permissions import pennsieve_get_current_user_permissions, has_edit_permissions
 from utils import connect_pennsieve_client, get_dataset_id, authenticate_user_with_client, create_request_headers
 from errorHandlers import handle_http_error
 from authentication import get_access_token

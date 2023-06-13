@@ -7,7 +7,7 @@ from flask import abort
 import requests
 # BE-REVIEW - Dorian - Removing unused imports
 from utils import create_request_headers, connect_pennsieve_client, authenticate_user_with_client, get_dataset_id
-from permissions import has_edit_permissions, bf_get_current_user_permission_agent_two
+from permissions import has_edit_permissions, pennsieve_get_current_user_permissions
 from authentication import get_access_token
 
 

@@ -1,6 +1,6 @@
 from flask import abort
 import requests 
-from permissions import bf_get_current_user_permission_agent_two, has_edit_permissions
+from permissions import pennsieve_get_current_user_permissions, has_edit_permissions
 from utils import get_dataset_id, connect_pennsieve_client, authenticate_user_with_client, create_request_headers
 from authentication import get_access_token
 

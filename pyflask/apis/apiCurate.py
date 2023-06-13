@@ -94,6 +94,8 @@ model_main_curation_function_response = api.model( "MainCurationFunctionResponse
     "main_curation_uploaded_files": fields.Integer(description="Number of files that are being generated. "), 
 })
 
+# TODO: Add example JSON structures for upload
+
 @api.route("/curation")
 class Curation(Resource):
 
