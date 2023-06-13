@@ -1731,6 +1731,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
     global main_total_generate_dataset_size
     global start_generate
     global main_initial_bfdataset_size
+    # BE-REVIEW - Aaron - bf -> ps
     bfsd = ""
 
     # Delete any files on Pennsieve that have been marked as deleted
