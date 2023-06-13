@@ -10,9 +10,10 @@ configpath = join(userpath, ".pennsieve", "config.ini")
 PENNSIEVE_URL = "https://api.pennsieve.io"
 
 def get_access_token():
-    # BE-REVIEW - Aaron - Add top level comment for details on hover can say:
-    # Creates a temporary access token for utilizing the Pennsieve API. Reads the api token and secret from the Pennsieve config.ini file.
-    # get cognito config 
+    """
+    Creates a temporary access token for utilizing the Pennsieve API. Reads the api token and secret from the Pennsieve config.ini file.
+    get cognito config 
+    """
     r = requests.get(f"{PENNSIEVE_URL}/authentication/cognito-config")
     r.raise_for_status()
 

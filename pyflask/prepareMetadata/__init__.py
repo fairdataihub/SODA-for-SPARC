@@ -10,12 +10,12 @@ from .prepare_metadata import (
     save_samples_file,
     load_existing_DD_file,
     load_existing_submission_file,
-    import_bf_metadata_file,
+    import_ps_metadata_file,
     import_bf_RC,
     upload_RC_file,
     delete_manifest_dummy_folders,
     set_template_path, 
-    import_bf_manifest_file,
+    import_ps_manifest_file,
     manifest_creation_progress,
-    edit_bf_manifest_file
+    edit_ps_manifest_file
 )

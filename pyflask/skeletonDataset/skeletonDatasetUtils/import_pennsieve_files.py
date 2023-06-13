@@ -84,7 +84,7 @@ def import_metadata(url, filename):
     
 
 # import existing metadata files except Readme and Changes from Pennsieve
-def import_bf_metadata_files_skeleton(bfdataset, metadata_files):
+def import_ps_metadata_files_skeleton(bfdataset, metadata_files):
 
     if not os.path.exists(path):
         os.makedirs(path)

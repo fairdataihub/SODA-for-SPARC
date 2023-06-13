@@ -895,7 +895,7 @@ def load_existing_submission_file(filepath, item_id=None, token=None):
 
 # import existing metadata files except Readme and Changes from Pennsieve
 # BE-REVIEW - Dorian - remove bfaccount parameter since it's not used
-def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
+def import_ps_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
     token = get_access_token()
 
     selected_dataset_id = get_dataset_id(token, bfdataset)
@@ -968,7 +968,7 @@ manifest_progress = {
 
 # BE-REVIEW - Aaron - Remove the below comment
 # TODO: NOTE: ESSENTIAL: Remove the manifest_file even if the user does not generate before pulling again.f
-def import_bf_manifest_file(soda_json_structure, bfaccount, bfdataset):
+def import_ps_manifest_file(soda_json_structure, bfaccount, bfdataset):
     # reset the progress tracking information
     global manifest_progress
     global manifest_folder_path
@@ -1185,7 +1185,7 @@ def delete_manifest_dummy_folders(userpath_list):
         shutil.rmtree(userpath) if isdir(userpath) else 0
 
 
-def edit_bf_manifest_file(edit_action, manifest_type):
+def edit_ps_manifest_file(edit_action, manifest_type):
     if manifest_type == "bf":
         manifest_file_location = os.path.join(userpath, "SODA", "manifest_files")
     else:
