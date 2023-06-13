@@ -45,7 +45,6 @@ total_dataset_size = 1
 curated_dataset_size = 0
 start_time = 0
 
-# BE-REVIEW - Dorian - the two variables could be place in a constants file i believe
 userpath = expanduser("~")
 configpath = join(userpath, ".pennsieve", "config.ini")
 submitdataprogress = " "
@@ -59,12 +58,10 @@ did_fail = False
 upload_folder_count = 0
 start_time_bf_upload = 0
 start_submit = 0
-# BE-REVIEW - Dorian - same with this one
 metadatapath = join(userpath, "SODA", "SODA_metadata")
 
 total_bytes_uploaded = {}
 
-# BE-REVIEW - Dorian - bf to ps
 bf = ""
 myds = ""
 initial_bfdataset_size = 0
@@ -124,8 +121,6 @@ def bf_add_account_api_key(keyname, key, secret):
         Adds account to the Pennsieve configuration file (local machine)
     """
     try:
-        # BE-REVIEW - Dorian - remove unused variable
-        error = ""
         keyname = keyname.strip()
         if (not keyname) or (not key) or (not secret):
             abort(401, "Please enter valid keyname, key, and/or secret")
