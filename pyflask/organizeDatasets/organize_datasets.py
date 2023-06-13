@@ -450,6 +450,7 @@ def folder_size(path):
         total_size: total size of the folder in bytes (integer)
     """
     total_size = 0
+    # BE-REVIEW - Dorian - remove unused variable
     start_path = "."  # To get size of current directory
     for path, dirs, files in walk(path):
         for f in files:
@@ -916,6 +917,7 @@ def monitor_local_json_progress():
 
 def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     global namespace_logger
+    # BE-REVIEW - Dorian - these are used in other functions as well. Should they be placed in constants folder?
     high_level_sparc_folders = [
         "code",
         "derivative",
@@ -1015,6 +1017,8 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         r.raise_for_status()
         subfolder = r.json()
 
+        # BE-REVIEW - Dorian - this is a bit confusing. children_content could be named better.
+        # Also variables, item and item_name could be renamed to be more descriptive.
         children_content = subfolder["children"]
         for items in children_content:
             item_name = items["content"]["name"]
@@ -1179,6 +1183,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
     # check that the Pennsieve account is valid
     try:
+        # BE-REVIEW - Dorian - remove unused variable
         bf_account_name = soda_json_structure["bf-account-selected"]["account-name"]
     except Exception as e:
         raise e 
