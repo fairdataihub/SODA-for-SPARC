@@ -661,6 +661,7 @@ def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastruct
 
     # 1. see if the length of datastructure[0] == length of datastructure. If yes, go ahead. If no, add new columns from headers[n-1] onward.
     headers_no = len(refinedDatastructure[0])
+    # BE-REVIEW - Dorian - use fillColor function for all places that require styling an excel cell
     orangeFill = PatternFill(
         start_color="FFD965", end_color="FFD965", fill_type="solid"
     )
@@ -797,11 +798,14 @@ def sortedSubjectsTableData(matrix, fields):
 
 
 # transpose a matrix (array of arrays)
+# BE-REVIEW - Dorian - The transpose of a matrix is found by interchanging its rows into columns or columns into rows.
+# Added definition to avoid confusion
 def transposeMatrix(matrix):
     return [[matrix[j][i] for j in range(len(matrix))] for i in range(len(matrix[0]))]
 
 
 # helper function to process custom fields (users add and name them) for subjects and samples files
+# BE-REVIEW - Dorian - Maybe change the function name to getMetadataCustomFields? Would seem clearer IMO
 def processMetadataCustomFields(matrix):
     return [column for column in matrix if any(column[1:])]
 
