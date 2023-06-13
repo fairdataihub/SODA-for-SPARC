@@ -28,7 +28,6 @@ from manageDatasets import (
     get_username,
     # check_agent_install,
     SODA_SPARC_API_KEY,
-    bf_submit_dataset_upload_details,
     update_dataset_readme,
     get_dataset_readme,
     get_dataset_tags,
@@ -910,25 +909,7 @@ class BfGetUploadProgress(Resource):
 
 
 
-# model_upload_details_response = api.model("UploadDetailsResponse", {
-#   'uploaded_files':  fields.Integer(required=True, description="The number of files uploaded."),
-#   'uploaded_file_size': fields.Integer(required=True, description="The size of the file being uploaded in bytes."),
-#   'did_fail': fields.Boolean(required=True, description="Whether or not the upload failed."),
-#   'did_upload': fields.Boolean(required=True, description="To inform the user that the upload failed and that it failed after uploading data - important for logging upload sessions"),
-#   'upload_folder_count': fields.Integer(required=True, description="The number of folders that have been uploaded."),
-# })
 
-# @api.route('/datasets/upload_details')
-# class BfSubmitDatasetUploadDetails(Resource):
-
-
-#   @api.doc(responses={500: 'There was an internal server error'}, description="Get the upload details required for logging the upload session correctly.")
-#   @api.marshal_with(model_upload_details_response, 200, False)
-#   def get(self):
-#     try: 
-#       return bf_submit_dataset_upload_details()
-#     except Exception as e:
-#       api.abort(500, str(e))
 
 
 

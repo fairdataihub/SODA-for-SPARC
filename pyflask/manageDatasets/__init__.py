@@ -27,7 +27,6 @@ from .manage_datasets import (
     get_username,
     # check_agent_install,
     SODA_SPARC_API_KEY,
-    bf_submit_dataset_upload_details,
     pennsieve_get_current_user_permissions,
     # bf_get_current_user_permission,
     update_dataset_readme,
