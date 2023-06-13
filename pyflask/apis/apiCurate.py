@@ -223,8 +223,7 @@ class GenerateManifestLocally(Resource):
 
 
 
-# BE-REVIEW - Aaron - We call the endpoint 'guided' and reference this in the code here. However it is also used in FFM now for the organize datasets workflow. Should rename.
-@api.route('/guided_generate_high_level_folder_manifest_data')
+@api.route('/generate_high_level_folder_manifest_data')
 class GenerateManifestData(Resource):
     parser = reqparse.RequestParser()
     parser.add_argument('dataset_structure_obj', type=dict, required=True, help='dataset structure used to generate manifest files for each high level folder', location='json')
