@@ -11,7 +11,7 @@ from manageDatasets import (
     ps_rename_dataset,
     bf_add_permission,
     ps_get_users,
-    bf_get_permission,
+    ps_get_permission,
     ps_get_teams,
     bf_add_permission_team,
     bf_add_subtitle,
@@ -533,7 +533,7 @@ class DatasetPermissions(Resource):
     selected_dataset = data.get('selected_dataset')
 
     try:
-      return bf_get_permission(selected_account, selected_dataset)
+      return ps_get_permission(selected_account, selected_dataset)
     except Exception as e:
       if notBadRequestException(e):
         api.abort(500, str(e))

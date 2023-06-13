@@ -816,8 +816,6 @@ def ps_get_users(selected_bfaccount):
     except Exception as e:
         raise e
 
-# BE-REVIEW - Dorian - change function name to ps_get_teams
-# Also remve selected_bfaccount from parameters since it isn't used
 def ps_get_teams(selected_bfaccount):
     """
     Args:
@@ -833,7 +831,6 @@ def ps_get_teams(selected_bfaccount):
 
     try:
         org_id = get_user_information(token)["preferredOrganization"]
-        # BE-REVIEW - Dorian - there's no need for the global variable here
         global PENNSIEVE_URL
         r = requests.get(f"{PENNSIEVE_URL}/organizations/{str(org_id)}/teams", headers=create_request_headers(token))
         r.raise_for_status()
@@ -845,7 +842,7 @@ def ps_get_teams(selected_bfaccount):
 
 # BE-REVIEW - Dorian - change function name to ps_get_permission
 # Also remove selected_bfaccount from parameters since it isn't used
-def bf_get_permission(selected_bfaccount, selected_bfdataset):
+def ps_get_permission(selected_bfaccount, selected_bfdataset):
 
     """
     Function to get permission for a selected dataset
