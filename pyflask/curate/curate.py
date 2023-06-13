@@ -906,6 +906,7 @@ def generate_dataset_locally(soda_json_structure):
 
     namespace_logger.info("starting generate_dataset_locally")
 
+    # BE-REVIEW - Aaron - Vars used for tracking progress on the frontend 
     global main_curate_progress_message
     global progress_percentage
     global main_total_generate_dataset_size
@@ -914,6 +915,7 @@ def generate_dataset_locally(soda_json_structure):
 
     main_curation_uploaded_files = 0
 
+    # BE-REVIEW - Aaron - Remove this comment
     # def generate(soda_json_structure):
     try:
 
@@ -963,6 +965,7 @@ def generate_dataset_locally(soda_json_structure):
 
 
         namespace_logger.info("generate_dataset_locally step 1")
+        # BE-REVIEW - Aaron - remove question mark
         # 1. Create new folder for dataset or use existing merge with existing or create new dataset?
         main_curate_progress_message = "Generating folder structure and list of files to be included in the dataset"
         dataset_absolute_path = soda_json_structure["generate-dataset"]["path"]
@@ -1077,6 +1080,7 @@ def bf_create_new_dataset(datasetname, ps):
         error, c = "", 0
         datasetname = datasetname.strip()
 
+        # BE-REVIEW - Aaron - bf -> ps
         if check_forbidden_characters_bf(datasetname):
             error = (
                 error
@@ -2098,6 +2102,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
     global namespace_logger
 
+    # BE-REVIEW - Aaron - Progress tracking variables that are used for the frontend progress bar.
     global main_curate_progress_message
     global main_total_generate_dataset_size
     global start_generate
@@ -2125,11 +2130,14 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
     current_size_of_uploaded_files = 0
 
     try:
+        # BE-REVIEW - Aaron - remove the unused comments
         # set the dataset 
             # select the user
         # ps = Pennsieve()
         # ps.user.switch(account)
         # ps.user.reauthenticate()
+
+        # BE-REVIEW - Aaron - Set the Pennsieve Python Client's dataset to the Pennsiee dataset that will be uploaded to.
         selected_id = ds["content"]["id"]
         ps.use_dataset(selected_id)
         
@@ -2150,9 +2158,13 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             my_bf_existing_folders_name = []
             my_bf_existing_folders = []
 
+            # BE-REVIEW - Aaron - Remove TODO and replace with below comment
             # TODO: Place in better spot - We need to populate the folder with their children as we go so we can tell if a folder exists for not. IMP for the existing flow when replacing or merging. 
+            # BE-REVIEW - Aaron - Check if the current folder has any child folders that already exist on Pennsieve. Important step to appropriately handle replacing and merging folders.
             if len(my_tracking_folder["children"]["folders"]) == 0:
+                # BE-REVIEW - Aaron - remove comment and replace it with below comment
                 # get the folders children - if at the root of the dataset do not since this is included when originally GETTING and blah blah
+                # BE-REVIEW - Aaron - Do not get the children at the root of the dataset as we already have them stored in the tracking folder.
                 if(my_tracking_folder["content"]["id"].find("N:dataset") == -1):
                     # do nothing 
                     r = requests.get(f"{PENNSIEVE_URL}/packages/{my_tracking_folder['content']['id']}", headers=create_request_headers(ps), json={"include": "files"})
@@ -2173,9 +2185,11 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                         else:
                             ps_folder = my_tracking_folder["children"]["folders"][folder_key]
                             normalize_tracking_folder(ps_folder)
+                            # BE-REVIEW - Aaron - Remove below comment
                             #ontinue
 
                     elif existing_folder_option == "create-duplicate":
+                        # BE-REVIEW - Aaron - Remove outddated comment.
                         # TODO: change this so that when dealing with nested folders, it creates the folders in the correct place not just the dataset root. 
                         r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json=build_create_folder_request(folder_key, my_tracking_folder['content']['id'], ds['content']['id']))
                         r.raise_for_status()
@@ -2252,9 +2266,11 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                         relative_path,
                     )
 
+            # BE-REVIEW - Aaron - Remove out of date comment
             # TODO: Test replacing metadata files from new -> Merge -> Replace onto Existing dataset to see if this stops it from working.
             if "files" in my_folder.keys() and my_tracking_folder["content"]["id"].find("N:dataset") == -1: 
 
+                # BE-REVIEW - Aaron - bf -> ps
                 # delete files to be deleted
                 (
                    # my_bf_existing_files,
@@ -2264,6 +2280,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
                 for file_key, file in my_folder["files"].items():
                     # if local then we are either adding a new file to an existing/new dataset or replacing a file in an existing dataset
+                    # BE-REVIEW - Aaron - Remove the below comments 
                     # # TODO: Test this
                     # if file_key in ["manifest.xlsx", "manifest.csv"]:
                     #     continue
@@ -2278,6 +2295,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
 
                 # create list of files to be uploaded with projected and desired names saved
+                # BE-REVIEW - Aaron - delete the below comment
                 # we do this again here because if we deleted files our tracking folder needs to be updated ??
                 (
                     # my_bf_existing_files,
@@ -2297,6 +2315,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 # add the files that are set to be uploaded to Pennsieve to a list 
                 # handle renaming files and creating duplicates
                 for file_key, file in my_folder["files"].items():
+                    # BE-REVIEW - Aaron - Remove the two below comments
                     # if file_key in ["manifest.xlsx", "manifest.csv"]:
                     #     continue
                     if file["type"] == "local":
@@ -2473,7 +2492,9 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
         normalize_tracking_folder(tracking_json_structure)
 
+        # BE-REVIEW - Aaron - options for folders are: merge, replace, skip, duplicate
         existing_folder_option = soda_json_structure["generate-dataset"]["if-existing"]
+        # BE-REVIEW - Aaron - bf -> ps
         recursive_create_folder_for_bf(
             dataset_structure, tracking_json_structure, existing_folder_option
         )
@@ -2628,6 +2649,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
             if len(list_upload_files[0][0]) > 1 or len(list_upload_files) > 1:
                 for folderInformation in list_upload_files:
                     list_file_paths = folderInformation[0]
+                    # BE-REVIEW - Aaron - Remove unused variables
                     bf_folder = folderInformation[1]
                     list_projected_names = folderInformation[2]
                     list_desired_names = folderInformation[3]
@@ -2644,8 +2666,10 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     except ValueError as e:
                         folder_name = relative_path
 
+                    # BE-REVIEW - Aaron - Remove the below outdated comment. Replace with 'Add files to manfiest" 
                     # skio the first file as it has already been uploaded
                     for file_path in list_file_paths:
+                        # BE-REVIEW - Aaron - Remove the below three comments
                         # subprocess call to the pennsieve agent to add the files to the manifest
                         # subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), file_path, "-t", folder_name[1:]])
                         # TODO: Reimpelement using the client once the Pensieve team updates the client's protocol buffers
@@ -2662,6 +2686,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
 
                 main_curate_progress_message = ("Uploading data files...")
 
+                # BE-REVIEW - Aaron - subscribe to the manifest upload so we wait until it has finished uploading before moving on
                 ps.subscribe(10, False, monitor_subscriber_progress)
             except Exception as e:
                 namespace_logger.error("Error uploading dataset files")
@@ -2725,6 +2750,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                     
                     # add the files to the manifest
                     # subprocess call to the pennsieve agent to add the files to the manifest
+                    # BE-REVIEW - Aaron - Replace with ps.manifest.add command and remove above comment
                     subprocess.run([f"{loc}", "manifest", "add", str(manifest_id), manifest_file, "-t", f"{ps_folder}"])
                 
             bytes_uploaded_per_file = {}
@@ -2742,6 +2768,7 @@ def bf_generate_new_dataset(soda_json_structure, ps, ds):
                 namespace_logger.error(e)
                 raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
 
+        # BE-REVIEW - Aaron - Remove bottom three comments and replace with 'wait for all of the Agent's processes to finish to avoid errors when deleting files on Windows'
         #wait a few memoments
         # before we can remove files we need to wait for all of the Agent's threads/subprocesses to finish
         # elsewise we get an error that the file is in use and therefore cannot be deleted
