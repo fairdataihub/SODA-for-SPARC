@@ -892,6 +892,7 @@ def load_existing_submission_file(filepath, item_id=None, token=None):
 
 
 # import existing metadata files except Readme and Changes from Pennsieve
+# BE-REVIEW - Dorian - remove bfaccount parameter since it's not used
 def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
     token = get_access_token()
 
@@ -900,6 +901,8 @@ def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(token))
     r.raise_for_status()
 
+    # BE-REVIEW - Dorian - if anyone can think of a better variable name rather than items, please add a comment
+    # I'm thinking of something like dataset_items or dataset_files
     items = r.json()["children"]
 
     for i in items:
@@ -929,8 +932,8 @@ def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
 
 
 # import readme or changes file from Pennsieve
+# BE-REVIEW - Dorian - remove bfaccount parameter since it's not used
 def import_bf_RC(bfaccount, bfdataset, file_type):
-
     file_type = file_type + ".txt"
 
     token = get_access_token()
