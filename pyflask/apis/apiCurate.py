@@ -223,6 +223,7 @@ class GenerateManifestLocally(Resource):
 
 
 
+# BE-REVIEW - Aaron - We call the endpoint 'guided' and reference this in the code here. However it is also used in FFM now for the organize datasets workflow. Should rename.
 @api.route('/guided_generate_high_level_folder_manifest_data')
 class GenerateManifestData(Resource):
     parser = reqparse.RequestParser()
@@ -234,6 +235,7 @@ class GenerateManifestData(Resource):
         data = self.parser.parse_args()
         dataset_structure_obj = data.get("dataset_structure_obj")
         try:
+            # BE-REVIEW - Aaron - Rename as it isnt used exclusively in Guided mode anymore. Also somewhat confusing for outsiders very likely.
             return guided_generate_manifest_file_data(dataset_structure_obj)
         except Exception as e:
             api.abort(500, str(e))

@@ -3396,6 +3396,7 @@ def generate_manifest_file_locally(generate_purpose, soda_json_structure):
     manifest_destination = soda_json_structure["manifest-files"]["local-destination"]
 
     recursive_item_path_create(dataset_structure, [])
+    # BE-REVIEW - Aaron - bf -> ps 
     create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, manifest_folder_path)
 
     if generate_purpose == "edit-manifest":
@@ -3592,6 +3593,7 @@ def guided_generate_manifest_file_data(dataset_structure_obj):
             # means the json is from a pennsieve dataset
             pennsieve_recursive_folder_traversal(dataset_structure_obj["folders"][high_level_folder], hlf_data_array, relative_structure_path)
         else:
+            # BE-REVIEW - Aaron - Change name to not have the guided prefix
             guided_recursive_folder_traversal(dataset_structure_obj["folders"][high_level_folder], hlf_data_array, relative_structure_path)
         hlf_manifest_data[high_level_folder] = hlf_data_array
 
