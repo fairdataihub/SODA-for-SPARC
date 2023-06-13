@@ -843,6 +843,7 @@ def load_existing_submission_file(filepath, item_id=None, token=None):
             "SODA cannot read this submission.xlsx file. If you are trying to retrieve a submission.xlsx file from Pennsieve, please make sure you are signed in with your Pennsieve account on SODA."
         ) from e
 
+    # BE-REVIEW - Dorian - remove empty rows and columns right? Maybe adding details on what's happening below
     DD_df = DD_df.dropna(axis=0, how="all")
     DD_df = DD_df.replace(np.nan, "", regex=True)
     DD_df = DD_df.applymap(str)
