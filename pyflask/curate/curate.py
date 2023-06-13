@@ -32,11 +32,11 @@ from permissions import pennsieve_get_current_user_permissions
 from openpyxl import load_workbook
 from openpyxl.styles import PatternFill
 from utils import connect_pennsieve_client, get_dataset_id, create_request_headers, TZLOCAL
-from manifest import create_high_level_manifest_files_existing_bf_starting_point, create_high_level_manifest_files, get_auto_generated_manifest_files
+from manifest import create_high_lvl_manifest_files_existing_ps_starting_point, create_high_level_manifest_files, get_auto_generated_manifest_files
 from authentication import get_access_token
 
 from pysodaUtils import (
-    check_forbidden_characters_bf,
+    check_forbidden_characters_ps,
     get_agent_installation_location,
 )
 
@@ -286,8 +286,7 @@ def folder_size(path):
         total_size: total size of the folder in bytes (integer)
     """
     total_size = 0
-    # BE-REVIEW - Dorian - remove unused variable
-    start_path = "."  # To get size of current directory
+
     for path, dirs, files in walk(path):
         for f in files:
             fp = join(path, f)
@@ -322,12 +321,10 @@ def create_folder_level_manifest(jsonpath, jsondescription):
     local_timezone = TZLOCAL()
 
     try:
-        # BE-REVIEW - Dorian - just using metadatapath directly seems better since we don't modify it
-        datasetpath = metadatapath
-        shutil.rmtree(datasetpath) if isdir(datasetpath) else 0
-        makedirs(datasetpath)
+        shutil.rmtree(metadatapath) if isdir(metadatapath) else 0
+        makedirs(metadatapath)
         folders = list(jsonpath.keys())
-        # BE-REVIEW - Dorian - where does main come from? Do datasets usually have a main folder?
+
         if "main" in folders:
             folders.remove("main")
         # In each SPARC folder, generate a manifest file
@@ -345,11 +342,9 @@ def create_folder_level_manifest(jsonpath, jsondescription):
                 )
                 # Get list of files/folders in the the folder
                 # Remove manifest file from the list if already exists
-                folderpath = join(datasetpath, folder)
+                folderpath = join(metadatapath, folder)
                 allfiles = jsonpath[folder]
                 alldescription = jsondescription[folder + "_description"]
-                # BE-REVIEW - Dorian - remove this unused variable
-                manifestexists = join(folderpath, "manifest.xlsx")
 
                 countpath = -1
                 for pathname in allfiles:
@@ -441,7 +436,7 @@ def create_folder_level_manifest(jsonpath, jsondescription):
                 df.to_excel(manifestfile, index=None, header=True)
                 wb = load_workbook(manifestfile)
                 ws = wb.active
-                # BE-REVIEW - Dorian - use colorFill function to do this
+
                 blueFill = PatternFill(
                     start_color="9DC3E6", fill_type="solid"
                 )
@@ -499,14 +494,13 @@ def return_new_path_replace(topath):
         topath: new folder name based on the availability in destination folder (string)
     """
 
-    if exists(topath):
-        i = 1
-        while True:
-            if not exists(topath + " (" + str(i) + ")"):
-                return topath + " (" + str(i) + ")"
-            i += 1
-    else:
+    if not exists(topath):
         return topath
+    i = 1
+    while True:
+        if not exists(topath + " (" + str(i) + ")"):
+            return topath + " (" + str(i) + ")"
+        i += 1
 
 
 def time_format(elapsed_time):
@@ -559,80 +553,6 @@ def mycopyfile_with_metadata(src, dst, *, follow_symlinks=True):
     return dst
 
 
-# BE-REVIEW - Dorian - rename function to something more explicit like create_dataset_locally or create_local_dataset
-def create_dataset(jsonpath, pathdataset):
-    """
-    Associated with 'Create new dataset locally' option of SODA interface
-    for creating requested folders and files to the destination path specified
-
-    Args:
-        jsonpath: all paths (dictionary, keys are SPARC folder names)
-        pathdataset: destination path for creating a new dataset as specified (string)
-    Action:
-        Creates the folders and files specified
-    """
-    global curateprogress
-
-    try:
-        mydict = jsonpath
-        folderrequired = []
-
-        # create SPARC folder structure
-        for i in mydict.keys():
-            if mydict[i] != []:
-                folderrequired.append(i)
-                if i != "main":
-                    makedirs(join(pathdataset, i))
-
-        # create all subfolders and generate a list of all files to copy
-        listallfiles = []
-        for i in folderrequired:
-            outputpath = pathdataset if i == "main" else join(pathdataset, i)
-            for tablepath in mydict[i]:
-                if isdir(tablepath):
-                    foldername = basename(tablepath)
-                    outputpathdir = join(outputpath, foldername)
-                    if not os.path.isdir(outputpathdir):
-                        os.mkdir(outputpathdir)
-                    for dirpath, dirnames, filenames in os.walk(tablepath):
-                        distdir = os.path.join(
-                            outputpathdir, os.path.relpath(dirpath, tablepath)
-                        )
-                        if not os.path.isdir(distdir):
-                            os.mkdir(distdir)
-                        for file in filenames:
-                            srcfile = os.path.join(dirpath, file)
-                            distfile = os.path.join(distdir, file)
-                            listallfiles.append([srcfile, distfile])
-                else:
-                    srcfile = tablepath
-                    file = basename(tablepath)
-                    distfile = os.path.join(outputpath, file)
-                    listallfiles.append([srcfile, distfile])
-
-        # copy all files to corresponding folders
-        for fileinfo in listallfiles:
-            srcfile = fileinfo[0]
-            distfile = fileinfo[1]
-            # BE-REVIEW - Dorian - f string used here (suggested by Sourcery)
-            curateprogress = f"Copying {str(srcfile)}"
-            mycopyfile_with_metadata(srcfile, distfile)
-
-    except Exception as e:
-        raise e
-
-
-
-"""
-# BE-REVIEW - Dorian - remove this comment block
-------------------------------------------
-NEW
-FUNCTIONS
-------------------------------------------
-
-"""
-
-
 def check_empty_files_folders(soda_json_structure):
     """
     Function to check for empty files and folders
@@ -666,12 +586,12 @@ def check_empty_files_folders(soda_json_structure):
             return error_files
 
         def recursive_empty_local_folders_check(
-            my_folder,
-            my_folder_key,
-            my_folders_content,
-            my_relative_path,
-            error_folders,
-        ):
+                    my_folder,
+                    my_folder_key,
+                    my_folders_content,
+                    my_relative_path,
+                    error_folders,
+                ):
             folders_content = my_folder["folders"]
             for folder_key in list(my_folder["folders"].keys()):
                 folder = my_folder["folders"][folder_key]
@@ -680,17 +600,14 @@ def check_empty_files_folders(soda_json_structure):
                     folder, folder_key, folders_content, relative_path, error_folders
                 )
 
-            # BE-REVIEW - Dorian - merge nested if statements
-            if not my_folder["folders"]:
-                if not my_folder["files"]:
-                    ignore = False
-                    if "type" in my_folder:
-                        if my_folder["type"] == "bf":
-                            ignore = True
-                    if ignore == False:
-                        error_message = my_relative_path
-                        error_folders.append(error_message)
-                        del my_folders_content[my_folder_key]
+            if not my_folder["folders"] and not my_folder["files"]:
+                ignore = False
+                if "type" in my_folder and my_folder["type"] == "bf":
+                    ignore = True
+                if not ignore:
+                    error_message = my_relative_path
+                    error_folders.append(error_message)
+                    del my_folders_content[my_folder_key]
             return error_folders
 
         error_files = []
@@ -844,11 +761,8 @@ def check_local_dataset_files_validity(soda_json_structure):
 
 
 # path to local SODA folder for saving manifest files
-# BE-REVIEW - Dorian - move to a constants file
 manifest_sparc = ["manifest.xlsx", "manifest.csv"]
 manifest_folder_path = join(userpath, "SODA", "manifest_files")
-
-
 
 
 
@@ -865,7 +779,7 @@ def check_JSON_size(jsonStructure):
 
             if "files" in folder.keys():
                 for file_key, file in folder["files"].items():
-                    if not "deleted" in file["action"]:
+                    if "deleted" not in file["action"]:
                         file_type = file["type"]
                         if file_type == "local":
                             file_path = file["path"]
@@ -1026,7 +940,7 @@ def generate_dataset_locally(soda_json_structure):
             srcfile = fileinfo[0]
             distfile = fileinfo[1]
             main_curate_progress_message = f"Moving file {str(srcfile)} to {str(distfile)}"
-            mymovefile_with_metadata(srcfile, distfile)
+            shutil.move(srcfile, distfile)
 
         namespace_logger.info("generate_dataset_locally step 6 copying files to new location")
         # 6. Copy files to new location
@@ -1057,10 +971,7 @@ def generate_dataset_locally(soda_json_structure):
 
     except Exception as e:
         raise e
-
-# BE-REVIEW - Dorian - function should be removed and just use shutil.move directly
-def mymovefile_with_metadata(src, dst):
-    shutil.move(src, dst)
+    
 
 
 # BE-REVIEW - Dorian - I think there's a function in manage_datasets.py that is doing that same thing (function is called create_new_dataset in manage_datasets.py)
@@ -1074,52 +985,42 @@ def ps_create_new_dataset(datasetname, ps):
         Creates dataset for the account specified
     """
     try:
-        # BE-REVIEW - Dorian - change variable name to count to make it clearer
-        error, c = "", 0
+        error, count = "", 0
         datasetname = datasetname.strip()
 
-        # BE-REVIEW - Aaron - bf -> ps
-        if check_forbidden_characters_bf(datasetname):
+        if check_forbidden_characters_ps(datasetname):
             error = (
-                error
-                + "Error: A Pennsieve dataset name cannot contain any of the following characters: "
+                f"{error}Error: A Pennsieve dataset name cannot contain any of the following characters: "
                 + forbidden_characters_bf
                 + "<br>"
             )
-            c += 1
+            count += 1
 
         if not datasetname:
             error = f"{error}Error: Please enter valid dataset name<br>"
-            c += 1
+            count += 1
 
         if datasetname.isspace():
             error = error + "Error: Please enter valid dataset name" + "<br>"
-            c += 1
+            count += 1
 
-        if c > 0:
+        if count > 0:
             abort(400, error)
 
-        dataset_list = []
         try:
             r = requests.get(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(ps))
             r.raise_for_status()
             dataset_dicts = r.json()
         except Exception as e:
-            # BE-REVIEW - Dorian - we have that now no? the handle_http_error function I believe
-            # BE-REVIEW - Jacob - Remove TODO comment
-            # TODO: Add errior handling function for http requests
             abort(500, "Error: Could not connect to Pennsieve. Please try again later.")
 
 
-        for dataset_dict in dataset_dicts:
-            dataset_list.append(dataset_dict["content"]["name"])
-
+        dataset_list = [
+            dataset_dict["content"]["name"] for dataset_dict in dataset_dicts
+        ]
         if datasetname in dataset_list:
             abort(400, "Error: Dataset name already exists")
         else:
-            # BE-REVIEW - Dorian - same for this as well
-            # BE-REVIEW - Jacob - Remove TODO comment
-            # TODO: Add error handling
             r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(ps), json={"name": datasetname})
             r.raise_for_status()
 
@@ -1128,7 +1029,6 @@ def ps_create_new_dataset(datasetname, ps):
     except Exception as e:
         raise e
 
-# BE-REVIEW - Dorian - this could be added to a constants file
 double_extensions = [
     ".ome.tiff",
     ".ome.tif",
@@ -1147,7 +1047,7 @@ double_extensions = [
 
 
 # BE-REVIEW - Dorian - remove ds from parameters since it is never used
-def create_high_level_manifest_files_existing_bf(
+def create_high_lvl_manifest_files_existing_ps(
     soda_json_structure, bf, ds, my_tracking_folder
 ):
     """
@@ -1158,7 +1058,248 @@ def create_high_level_manifest_files_existing_bf(
     Action:
         manifest_files_structure: dict including the local path of the manifest files
     """
-    # BE-REVIEW - Dorian - same list above this function, would be good to have in a constants
+        # BE-REVIEW - Dorian - move function initialization to the top of the function rather than having within the try block
+    def get_name_extension(file_name):
+        double_ext = False
+        for ext in double_extensions:
+            if file_name.find(ext) != -1:
+                double_ext = True
+                break
+        ext = ""
+        name = ""
+        if double_ext == False:
+            name = os.path.splitext(file_name)[0]
+            ext = os.path.splitext(file_name)[1]
+        else:
+            ext = (
+                os.path.splitext(os.path.splitext(file_name)[0])[1]
+                + os.path.splitext(file_name)[1]
+            )
+            name = os.path.splitext(os.path.splitext(file_name)[0])[0]
+        return name, ext
+    
+    def recursive_manifest_info_import_bf(
+        folder, my_relative_path, dict_folder_manifest, manifest_df
+    ):
+        """
+        Import manifest information from the Pennsieve dataset for the given folder and its children.
+        """
+        
+        if len(folder['children']) == 0:
+            r = requests.get(f"{PENNSIEVE_URL}/packages/{folder['content']['id']}", headers=create_request_headers(bf), json={"include": "files"})
+            r.raise_for_status()
+            ps_folder = r.json()
+            normalize_tracking_folder(ps_folder)
+            folder['children'] = ps_folder['children']
+        # BE-REVIEW - Dorian - is this still happening?
+        # BE-REVIEW - Jacob - Remove TODO comment
+        # TODO: Test for empty folder still happening here. Which would cause an Exception
+        for _, folder_item in folder["children"]["folders"].items():
+            folder_name = folder_item['content']['name']
+            relative_path = generate_relative_path(
+                my_relative_path, folder_name
+            )
+            dict_folder_manifest = recursive_manifest_info_import_bf(
+                folder_item, relative_path, dict_folder_manifest, manifest_df
+            )
+        for _, file in folder["children"]["files"].items():
+            if file['content']['name'] != "manifest":
+                file_id = file['content']['id']
+                r = requests.get(f"{PENNSIEVE_URL}/packages/{file_id}/view", headers=create_request_headers(bf))
+                r.raise_for_status()
+                file_details = r.json()
+                file_name = file_details[0]["content"]["name"]
+                file_extension = splitext(file_name)[1]
+                file_name_with_extension = (
+                    splitext(file['content']['name'])[0] + file_extension
+                )
+                relative_path = generate_relative_path(
+                    my_relative_path, file_name_with_extension
+                )
+                dict_folder_manifest["filename"].append(relative_path)
+                # file type
+                # BE-REVIEW - Dorian - remove unused variable
+                unused_file_name, file_extension = get_name_extension(file_name)
+                if file_extension == "":
+                    file_extension = "None"
+                dict_folder_manifest["file type"].append(file_extension)
+                # timestamp, description, Additional Metadata
+                if not manifest_df.empty:
+                    if relative_path in manifest_df["filename"].values:
+                        timestamp = manifest_df[
+                            manifest_df["filename"] == relative_path
+                        ]["timestamp"].iloc[0]
+                        description = manifest_df[
+                            manifest_df["filename"] == relative_path
+                        ]["description"].iloc[0]
+                        additional_metadata = manifest_df[
+                            manifest_df["filename"] == relative_path
+                        ]["Additional Metadata"].iloc[0]
+                    else:
+                        timestamp = ""
+                        description = ""
+                        additional_metadata = ""
+                    dict_folder_manifest["timestamp"].append(timestamp)
+                    dict_folder_manifest["description"].append(description)
+                    dict_folder_manifest["Additional Metadata"].append(
+                        additional_metadata
+                    )
+                else:
+                    dict_folder_manifest["timestamp"].append("")
+                    dict_folder_manifest["description"].append("")
+                    dict_folder_manifest["Additional Metadata"].append("")
+        return dict_folder_manifest
+    
+    # Merge existing folders
+    def recursive_manifest_builder_existing_bf(
+        my_folder,
+        my_bf_folder,
+        my_bf_folder_exists,
+        my_relative_path,
+        dict_folder_manifest,
+    ):
+        if "folders" in my_folder.keys():
+            if my_bf_folder_exists:
+                (
+                    my_bf_existing_folders,
+                    my_bf_existing_folders_name,
+                ) = bf_get_existing_folders_details(my_bf_folder['children']['folders'])
+            else:
+                my_bf_existing_folders = []
+                my_bf_existing_folders_name = []
+            for folder_key, folder in my_folder["folders"].items():
+                relative_path = generate_relative_path(my_relative_path, folder_key)
+                if folder_key in my_bf_existing_folders_name:
+                    bf_folder = my_bf_folder["children"]["folders"][folder_key]
+                    bf_folder_exists = True
+                else:
+                    bf_folder = ""
+                    bf_folder_exists = False
+                dict_folder_manifest = recursive_manifest_builder_existing_bf(
+                    folder,
+                    bf_folder,
+                    bf_folder_exists,
+                    relative_path,
+                    dict_folder_manifest,
+                )
+        if "files" in my_folder.keys():
+            if my_bf_folder_exists:
+                (
+                    my_bf_existing_files_name,
+                    my_bf_existing_files_name_with_extension,
+                ) = bf_get_existing_files_details(my_bf_folder, bf)
+            else:
+                my_bf_existing_files = []
+                my_bf_existing_files_name = []
+                my_bf_existing_files_name_with_extension = []
+            for file_key, file in my_folder["files"].items():
+                if file["type"] == "local":
+                    file_path = file["path"]
+                    if isfile(file_path):
+                        desired_name = splitext(file_key)[0]
+                        file_extension = splitext(file_key)[1]
+                        # manage existing file request
+                        # BE-REVIEW - Dorian - merge nested if statements
+                        if existing_file_option == "skip" and file_key in my_bf_existing_files_name_with_extension:
+                            continue
+                        # BE-REVIEW - Dorian - merge nested if statements
+                        if existing_file_option == "replace" and file_key in my_bf_existing_files_name_with_extension:
+                            # remove existing from manifest
+                            filename = generate_relative_path(
+                                my_relative_path, file_key
+                            )
+                            filename_list = dict_folder_manifest["filename"]
+                            index_file = filename_list.index(filename)
+                            del dict_folder_manifest["filename"][index_file]
+                            del dict_folder_manifest["timestamp"][index_file]
+                            del dict_folder_manifest["description"][index_file]
+                            del dict_folder_manifest["file type"][index_file]
+                            del dict_folder_manifest["Additional Metadata"][
+                                index_file
+                            ]
+                            index_name = (
+                                my_bf_existing_files_name_with_extension.index(
+                                    file_key
+                                )
+                            )
+                            del my_bf_existing_files[index_name]
+                            del my_bf_existing_files_name[index_name]
+                            del my_bf_existing_files_name_with_extension[
+                                index_name
+                            ]
+                        if desired_name not in my_bf_existing_files_name:
+                            final_name = file_key
+                        else:
+                            # expected final name
+                            count_done = 0
+                            final_name = desired_name
+                            output = get_base_file_name(desired_name)
+                            if output:
+                                base_name = output[0]
+                                count_exist = output[1]
+                                while count_done == 0:
+                                    if final_name in my_bf_existing_files_name:
+                                        count_exist += 1
+                                        final_name = (
+                                            base_name + "(" + str(count_exist) + ")"
+                                        )
+                                    else:
+                                        count_done = 1
+                            else:
+                                count_exist = 0
+                                while count_done == 0:
+                                    if final_name in my_bf_existing_files_name:
+                                        count_exist += 1
+                                        final_name = (
+                                            desired_name
+                                            + " ("
+                                            + str(count_exist)
+                                            + ")"
+                                        )
+                                    else:
+                                        count_done = 1
+                            final_name = final_name + file_extension
+                            my_bf_existing_files_name.append(
+                                splitext(final_name)[0]
+                            )
+                        # filename
+                        filename = generate_relative_path(
+                            my_relative_path, final_name
+                        )
+                        dict_folder_manifest["filename"].append(filename)
+                        # timestamp
+                        file_path = file["path"]
+                        filepath = pathlib.Path(file_path)
+                        mtime = filepath.stat().st_mtime
+                        # BE-REVIEW - Dorian - is TZLOCAL() needed here or is that different than what is going on here
+                        lastmodtime = datetime.fromtimestamp(mtime).astimezone(
+                            local_timezone
+                        )
+                        dict_folder_manifest["timestamp"].append(
+                            lastmodtime.isoformat()
+                            .replace(".", ",")
+                            .replace("+00:00", "Z")
+                        )
+                        # description
+                        if "description" in file.keys():
+                            dict_folder_manifest["description"].append(
+                                file["description"]
+                            )
+                        else:
+                            dict_folder_manifest["description"].append("")
+                        # file type
+                        if file_extension == "":
+                            file_extension = "None"
+                        dict_folder_manifest["file type"].append(file_extension)
+                        # addtional metadata
+                        if "additional-metadata" in file.keys():
+                            dict_folder_manifest["Additional Metadata"].append(
+                                file["additional-metadata"]
+                            )
+                        else:
+                            dict_folder_manifest["Additional Metadata"].append("")
+        return dict_folder_manifest
+
     double_extensions = [
         ".ome.tiff",
         ".ome.tif",
@@ -1176,279 +1317,6 @@ def create_high_level_manifest_files_existing_bf(
     ]
 
     try:
-        # BE-REVIEW - Dorian - move function initialization to the top of the function rather than having within the try block
-        def get_name_extension(file_name):
-            double_ext = False
-            for ext in double_extensions:
-                if file_name.find(ext) != -1:
-                    double_ext = True
-                    break
-
-            ext = ""
-            name = ""
-
-            if double_ext == False:
-                name = os.path.splitext(file_name)[0]
-                ext = os.path.splitext(file_name)[1]
-            else:
-                ext = (
-                    os.path.splitext(os.path.splitext(file_name)[0])[1]
-                    + os.path.splitext(file_name)[1]
-                )
-                name = os.path.splitext(os.path.splitext(file_name)[0])[0]
-            return name, ext
-
-        def recursive_manifest_info_import_bf(
-            folder, my_relative_path, dict_folder_manifest, manifest_df
-        ):
-            """
-            Import manifest information from the Pennsieve dataset for the given folder and its children.
-            """
-
-            
-
-            if len(folder['children']) == 0:
-                r = requests.get(f"{PENNSIEVE_URL}/packages/{folder['content']['id']}", headers=create_request_headers(bf), json={"include": "files"})
-                r.raise_for_status()
-                ps_folder = r.json()
-                normalize_tracking_folder(ps_folder)
-                folder['children'] = ps_folder['children']
-
-            # BE-REVIEW - Dorian - is this still happening?
-            # BE-REVIEW - Jacob - Remove TODO comment
-            # TODO: Test for empty folder still happening here. Which would cause an Exception
-
-            for _, folder_item in folder["children"]["folders"].items():
-                folder_name = folder_item['content']['name']
-                relative_path = generate_relative_path(
-                    my_relative_path, folder_name
-                )
-                dict_folder_manifest = recursive_manifest_info_import_bf(
-                    folder_item, relative_path, dict_folder_manifest, manifest_df
-                )
-            for _, file in folder["children"]["files"].items():
-                if file['content']['name'] != "manifest":
-                    file_id = file['content']['id']
-
-                    r = requests.get(f"{PENNSIEVE_URL}/packages/{file_id}/view", headers=create_request_headers(bf))
-                    r.raise_for_status()
-
-                    file_details = r.json()
-                    file_name = file_details[0]["content"]["name"]
-                    file_extension = splitext(file_name)[1]
-                    file_name_with_extension = (
-                        splitext(file['content']['name'])[0] + file_extension
-                    )
-
-                    relative_path = generate_relative_path(
-                        my_relative_path, file_name_with_extension
-                    )
-
-                    dict_folder_manifest["filename"].append(relative_path)
-
-                    # file type
-                    # BE-REVIEW - Dorian - remove unused variable
-                    unused_file_name, file_extension = get_name_extension(file_name)
-                    if file_extension == "":
-                        file_extension = "None"
-
-                    dict_folder_manifest["file type"].append(file_extension)
-
-                    # timestamp, description, Additional Metadata
-                    if not manifest_df.empty:
-                        if relative_path in manifest_df["filename"].values:
-                            timestamp = manifest_df[
-                                manifest_df["filename"] == relative_path
-                            ]["timestamp"].iloc[0]
-                            description = manifest_df[
-                                manifest_df["filename"] == relative_path
-                            ]["description"].iloc[0]
-                            additional_metadata = manifest_df[
-                                manifest_df["filename"] == relative_path
-                            ]["Additional Metadata"].iloc[0]
-                        else:
-                            timestamp = ""
-                            description = ""
-                            additional_metadata = ""
-                        dict_folder_manifest["timestamp"].append(timestamp)
-                        dict_folder_manifest["description"].append(description)
-                        dict_folder_manifest["Additional Metadata"].append(
-                            additional_metadata
-                        )
-                    else:
-                        dict_folder_manifest["timestamp"].append("")
-                        dict_folder_manifest["description"].append("")
-                        dict_folder_manifest["Additional Metadata"].append("")
-
-            return dict_folder_manifest
-
-        # Merge existing folders
-        def recursive_manifest_builder_existing_bf(
-            my_folder,
-            my_bf_folder,
-            my_bf_folder_exists,
-            my_relative_path,
-            dict_folder_manifest,
-        ):
-
-            if "folders" in my_folder.keys():
-                if my_bf_folder_exists:
-                    (
-                        my_bf_existing_folders,
-                        my_bf_existing_folders_name,
-                    ) = bf_get_existing_folders_details(my_bf_folder['children']['folders'])
-                else:
-                    my_bf_existing_folders = []
-                    my_bf_existing_folders_name = []
-
-                for folder_key, folder in my_folder["folders"].items():
-                    relative_path = generate_relative_path(my_relative_path, folder_key)
-                    if folder_key in my_bf_existing_folders_name:
-                        bf_folder = my_bf_folder["children"]["folders"][folder_key]
-                        bf_folder_exists = True
-                    else:
-                        bf_folder = ""
-                        bf_folder_exists = False
-                    dict_folder_manifest = recursive_manifest_builder_existing_bf(
-                        folder,
-                        bf_folder,
-                        bf_folder_exists,
-                        relative_path,
-                        dict_folder_manifest,
-                    )
-
-            if "files" in my_folder.keys():
-                if my_bf_folder_exists:
-                    (
-                        my_bf_existing_files_name,
-                        my_bf_existing_files_name_with_extension,
-                    ) = bf_get_existing_files_details(my_bf_folder, bf)
-                else:
-                    my_bf_existing_files = []
-                    my_bf_existing_files_name = []
-                    my_bf_existing_files_name_with_extension = []
-
-                for file_key, file in my_folder["files"].items():
-                    if file["type"] == "local":
-                        file_path = file["path"]
-                        if isfile(file_path):
-                            desired_name = splitext(file_key)[0]
-                            file_extension = splitext(file_key)[1]
-
-                            # manage existing file request
-                            # BE-REVIEW - Dorian - merge nested if statements
-                            if existing_file_option == "skip" and file_key in my_bf_existing_files_name_with_extension:
-                                continue
-
-                            # BE-REVIEW - Dorian - merge nested if statements
-                            if existing_file_option == "replace" and file_key in my_bf_existing_files_name_with_extension:
-                                # remove existing from manifest
-                                filename = generate_relative_path(
-                                    my_relative_path, file_key
-                                )
-                                filename_list = dict_folder_manifest["filename"]
-                                index_file = filename_list.index(filename)
-
-                                del dict_folder_manifest["filename"][index_file]
-                                del dict_folder_manifest["timestamp"][index_file]
-                                del dict_folder_manifest["description"][index_file]
-                                del dict_folder_manifest["file type"][index_file]
-                                del dict_folder_manifest["Additional Metadata"][
-                                    index_file
-                                ]
-
-                                index_name = (
-                                    my_bf_existing_files_name_with_extension.index(
-                                        file_key
-                                    )
-                                )
-
-                                del my_bf_existing_files[index_name]
-                                del my_bf_existing_files_name[index_name]
-                                del my_bf_existing_files_name_with_extension[
-                                    index_name
-                                ]
-
-                            if desired_name not in my_bf_existing_files_name:
-                                final_name = file_key
-                            else:
-                                # expected final name
-                                count_done = 0
-                                final_name = desired_name
-                                output = get_base_file_name(desired_name)
-                                if output:
-                                    base_name = output[0]
-                                    count_exist = output[1]
-                                    while count_done == 0:
-                                        if final_name in my_bf_existing_files_name:
-                                            count_exist += 1
-                                            final_name = (
-                                                base_name + "(" + str(count_exist) + ")"
-                                            )
-                                        else:
-                                            count_done = 1
-                                else:
-                                    count_exist = 0
-                                    while count_done == 0:
-                                        if final_name in my_bf_existing_files_name:
-                                            count_exist += 1
-                                            final_name = (
-                                                desired_name
-                                                + " ("
-                                                + str(count_exist)
-                                                + ")"
-                                            )
-                                        else:
-                                            count_done = 1
-
-                                final_name = final_name + file_extension
-                                my_bf_existing_files_name.append(
-                                    splitext(final_name)[0]
-                                )
-
-                            # filename
-                            filename = generate_relative_path(
-                                my_relative_path, final_name
-                            )
-                            dict_folder_manifest["filename"].append(filename)
-
-                            # timestamp
-                            file_path = file["path"]
-                            filepath = pathlib.Path(file_path)
-                            mtime = filepath.stat().st_mtime
-                            # BE-REVIEW - Dorian - is TZLOCAL() needed here or is that different than what is going on here
-                            lastmodtime = datetime.fromtimestamp(mtime).astimezone(
-                                local_timezone
-                            )
-                            dict_folder_manifest["timestamp"].append(
-                                lastmodtime.isoformat()
-                                .replace(".", ",")
-                                .replace("+00:00", "Z")
-                            )
-
-                            # description
-                            if "description" in file.keys():
-                                dict_folder_manifest["description"].append(
-                                    file["description"]
-                                )
-                            else:
-                                dict_folder_manifest["description"].append("")
-
-                            # file type
-                            if file_extension == "":
-                                file_extension = "None"
-                            dict_folder_manifest["file type"].append(file_extension)
-
-                            # addtional metadata
-                            if "additional-metadata" in file.keys():
-                                dict_folder_manifest["Additional Metadata"].append(
-                                    file["additional-metadata"]
-                                )
-                            else:
-                                dict_folder_manifest["Additional Metadata"].append("")
-
-            return dict_folder_manifest
-
         # create local folder to save manifest files temporarly (delete any existing one first)
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
         makedirs(manifest_folder_path)
@@ -2578,7 +2446,7 @@ def ps_create_new_dataset(soda_json_structure, ps, ds):
                 if soda_json_structure["starting-point"]["type"] == "bf":
                     # get auto generated manifest file
                     manifest_files_structure = (
-                        create_high_level_manifest_files_existing_bf_starting_point(
+                        create_high_lvl_manifest_files_existing_ps_starting_point(
                             soda_json_structure, 
                             manifest_folder_path
                         )
@@ -2594,7 +2462,7 @@ def ps_create_new_dataset(soda_json_structure, ps, ds):
                         # TODO: implement with new agent
                         # get auto generated manifest file
                         manifest_files_structure = (
-                            create_high_level_manifest_files_existing_bf(
+                            create_high_lvl_manifest_files_existing_ps(
                                 soda_json_structure, ps, ds, tracking_json_structure
                             )
                         )
@@ -3362,7 +3230,7 @@ def generate_manifest_file_locally(generate_purpose, soda_json_structure):
 
     recursive_item_path_create(dataset_structure, [])
     # BE-REVIEW - Aaron - bf -> ps 
-    create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, manifest_folder_path)
+    create_high_lvl_manifest_files_existing_ps_starting_point(soda_json_structure, manifest_folder_path)
 
     if generate_purpose == "edit-manifest":
         manifest_destination = os.path.join(manifest_destination, "SODA Manifest Files")

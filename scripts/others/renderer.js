@@ -7133,7 +7133,7 @@ $("#inputNewNameDataset").keyup(function () {
   $("#para-continue-name-dataset-generate").text("");
 
   if (newName !== "") {
-    if (check_forbidden_characters_bf(newName)) {
+    if (check_forbidden_characters_ps(newName)) {
       document.getElementById("div-confirm-inputNewNameDataset").style.display = "none";
       $("#btn-confirm-new-dataset-name").hide();
       document.getElementById("para-new-name-dataset-message").innerHTML =

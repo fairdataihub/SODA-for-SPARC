@@ -950,7 +950,7 @@ const savePageChanges = async (pageBeingLeftID) => {
           message: "Please enter a dataset name.",
         });
       }
-      if (check_forbidden_characters_bf(datasetNameInput)) {
+      if (check_forbidden_characters_ps(datasetNameInput)) {
         errorArray.push({
           type: "notyf",
           message:

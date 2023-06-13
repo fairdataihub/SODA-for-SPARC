@@ -242,7 +242,7 @@ def read_from_config(key):
     return None
 
 
-def check_forbidden_characters_bf(my_string):
+def check_forbidden_characters_ps(my_string):
     """
     Check for forbidden characters in Pennsieve file/folder name
 
@@ -517,7 +517,7 @@ def create_new_dataset(datasetname, accountname):
     try:
         datasetname = datasetname.strip()
 
-        if check_forbidden_characters_bf(datasetname):
+        if check_forbidden_characters_ps(datasetname):
             error = (
                 "A Pennsieve dataset name cannot contain any of the following characters: "
                 + forbidden_characters_bf
@@ -563,7 +563,7 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
     error, c = "", 0
     datasetname = renamed_dataset_name.strip()
 
-    if check_forbidden_characters_bf(datasetname):
+    if check_forbidden_characters_ps(datasetname):
         error = f"{error}A Pennsieve dataset name cannot contain any of the following characters: {forbidden_characters_bf}<br>"
 
         c += 1

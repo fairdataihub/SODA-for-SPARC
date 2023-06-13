@@ -41,7 +41,7 @@ from docx import Document
 from flask import abort 
 
 from pysodaUtils import stop_agent, start_agent
-from manifest import update_existing_pennsieve_manifest_files, create_high_level_manifest_files_existing_bf_starting_point, recursive_item_path_create
+from manifest import update_existing_pennsieve_manifest_files, create_high_lvl_manifest_files_existing_ps_starting_point, recursive_item_path_create
 
 from namespaces import NamespaceEnum, get_namespace_logger
 namespace_logger = get_namespace_logger(NamespaceEnum.CURATE_DATASETS)
@@ -1004,7 +1004,7 @@ def import_ps_manifest_file(soda_json_structure, bfaccount, bfdataset):
 
     # create manifest files from scratch for any high level folders that don't have a manifest file on Pennsieve
     # BE-REVIEW - Aaron - bf -> ps 
-    create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, manifest_folder_path, high_level_folders, manifest_progress)
+    create_high_lvl_manifest_files_existing_ps_starting_point(soda_json_structure, manifest_folder_path, high_level_folders, manifest_progress)
 
     # finished with the manifest generation process
     manifest_progress["finished"] = True

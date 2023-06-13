@@ -115,7 +115,7 @@ def check_forbidden_characters(my_string):
 
 
 forbidden_characters_bf = '\/:*?"<>'
-def check_forbidden_characters_bf(my_string):
+def check_forbidden_characters_ps(my_string):
     """
     Check for forbidden characters in Pennsieve file/folder name
 
