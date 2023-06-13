@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ### Import required python modules
+# BE-REVIEW - Dorian - Remove unused imports
 import contextlib
 import json
 from unicodedata import name
@@ -20,7 +21,6 @@ import time
 import shutil
 from configparser import ConfigParser
 import subprocess
-# from websocket import create_connection
 import socket
 import errno
 import re
@@ -37,7 +37,6 @@ import requests
 
 from flask import abort
 from namespaces import NamespaceEnum, get_namespace_logger
-#from utils import get_dataset, get_authenticated_ps, get_dataset_size
 from utils import ( 
     get_dataset_size, 
     create_request_headers, 
@@ -61,6 +60,7 @@ total_dataset_size = 1
 curated_dataset_size = 0
 start_time = 0
 
+# BE-REVIEW - Dorian - the two variables could be place in a constants file i believe
 userpath = expanduser("~")
 configpath = join(userpath, ".pennsieve", "config.ini")
 submitdataprogress = " "
@@ -74,10 +74,12 @@ did_fail = False
 upload_folder_count = 0
 start_time_bf_upload = 0
 start_submit = 0
+# BE-REVIEW - Dorian - same with this one
 metadatapath = join(userpath, "SODA", "SODA_metadata")
 
 total_bytes_uploaded = {}
 
+# BE-REVIEW - Dorian - bf to ps
 bf = ""
 myds = ""
 initial_bfdataset_size = 0
@@ -137,6 +139,7 @@ def bf_add_account_api_key(keyname, key, secret):
         Adds account to the Pennsieve configuration file (local machine)
     """
     try:
+        # BE-REVIEW - Dorian - remove unused variable
         error = ""
         keyname = keyname.strip()
         if (not keyname) or (not key) or (not secret):
@@ -170,7 +173,6 @@ def bf_add_account_api_key(keyname, key, secret):
         config.add_section(keyname)
         config.set(keyname, "api_token", key)
         config.set(keyname, "api_secret", secret)
-        # config.set(keyname, "api_host", PENNSIEVE_URL)
 
 
         # add the profile under the global section 
