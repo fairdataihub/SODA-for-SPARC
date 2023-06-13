@@ -31,7 +31,7 @@ from utils import (
 )
 from authentication import get_access_token
 from users import get_user_information, update_config_account_name
-from permissions import has_edit_permissions
+from permissions import has_edit_permissions, pennsieve_get_current_user_permissions
 from configUtils import lowercase_account_names
 from constants import PENNSIEVE_URL
 
