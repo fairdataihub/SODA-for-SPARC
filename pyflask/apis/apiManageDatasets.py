@@ -8,7 +8,7 @@ from manageDatasets import (
     bf_account_details,
     bf_submit_dataset,
     create_new_dataset,
-    bf_rename_dataset,
+    ps_rename_dataset,
     bf_add_permission,
     bf_get_users,
     bf_get_permission,
@@ -701,7 +701,7 @@ class BfLicense(Resource):
 
 
 
-@api.route("/bf_rename_dataset")
+@api.route("/ps_rename_dataset")
 class BfRenameDataset(Resource):
   parser_rename_dataset = reqparse.RequestParser(bundle_errors=True)
   parser_rename_dataset.add_argument('selected_account', type=str, required=True, location='args', help='The target account to rename the dataset for.')
@@ -719,7 +719,7 @@ class BfRenameDataset(Resource):
     input_new_name = data.get('input_new_name')
 
     try:
-      return bf_rename_dataset(selected_account, selected_dataset, input_new_name)
+      return ps_rename_dataset(selected_account, selected_dataset, input_new_name)
     except Exception as e:
       if notBadRequestException(e):
         api.abort(500, str(e))

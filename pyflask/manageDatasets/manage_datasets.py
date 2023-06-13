@@ -179,8 +179,6 @@ def bf_add_account_api_key(keyname, key, secret):
     try:
         org_id = get_user_information(token)["preferredOrganization"]
 
-        # CHANGE BACK
-        # BE-REVIEW - Dorian - should we be checking for REJOIN organization as well?
         if org_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
             abort(403,
                 "Please check that your account is within the SPARC Organization"
@@ -226,7 +224,6 @@ def bf_account_list():
         Returns list of accounts stored in the system
     """
     try:
-        # BE-REVIEW - Dorian - I'm curious as to why we return Select is there is no account list. Do we just read that key in the frontend?
         accountlist = ["Select"]
         if exists(configpath):
             valid_account = bf_get_accounts()
@@ -237,7 +234,6 @@ def bf_account_list():
     except Exception as e:
         raise e
 
-# BE-REVIEW - Dorian - isn't this function the same as the one above? We could delete one of them
 def bf_default_account_load():
     """
     Action:
@@ -277,7 +273,6 @@ def bf_get_accounts():
             if default_profile in sections:
                 lowercase_account_names(config, default_profile, configpath)
                 try:
-                    # BE-REVIEW - Dorian - what do we do with the access token here? Just curious if it is needed or not
                     get_access_token()
                     return default_profile.lower()
                 except Exception as e:
@@ -306,10 +301,6 @@ def bf_get_accounts():
 
 
 
-
-
-
-# BE-REVIEW - Dorian - remove accountname parameter since it is not used
 def bf_dataset_account(accountname):
     """
     This function filters dataset dropdowns across SODA by the permissions granted to users.
@@ -352,7 +343,6 @@ def bf_dataset_account(accountname):
     store = []
     threads = []
     nthreads = 8
-    # BE-REVIEW - Dorian - not sure what is going on here. Are we just sorting the datasets by name?
     # create the threads
     for i in range(nthreads):
         sub_datasets_list = datasets_list[i::nthreads]
@@ -367,7 +357,6 @@ def bf_dataset_account(accountname):
     sorted_bf_datasets = sorted(store, key=lambda k: k["name"].upper())
     return {"datasets": sorted_bf_datasets}
 
-# BE-REVIEW - Dorian - remove accountname parameter since it is not used
 def get_username(accountname):
     """
     Input: User's account name
@@ -400,7 +389,7 @@ def in_sparc_organization(token):
 
     # add the sparc consortium as the organization name if the user is a member of the consortium
     organizations = r.json()
-    # BE-REVIEW - Dorian - changed by sourcery for simplicity
+
     return any(
         org["organization"]["id"]
         == "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
@@ -445,10 +434,6 @@ def bf_account_details(accountname):
 
 
     try:
-        # BE-REVIEW - Dorian - do we still want to do this?
-        # if a user hasn't added their account name to their config file then we want to write it now
-        # TODO: Ensure this is necessary. I think we may do this just in case at startup this gets called before something else
-        #       that may also want to update the account name if possible? 
         update_config_account_name(accountname)
         
         ## return account details and datasets where such an account has some permission
@@ -464,7 +449,6 @@ def get_datasets(token):
 
     return r.json()
 
-# BE-REVIEW - Dorian - remove accountname parameter since it is not used
 def create_new_dataset(datasetname, accountname):
     """
     Associated with 'Create' button in 'Create new dataset folder'
@@ -494,7 +478,6 @@ def create_new_dataset(datasetname, accountname):
 
         datasets = get_datasets(token)
 
-        # BE-REVIEW - Dorian - if else is always true. I think we need tabbing on the else statement
         for ds in datasets:
             if ds["content"]["name"] == datasetname:
                 abort(400, "Dataset name already exists")
@@ -507,10 +490,8 @@ def create_new_dataset(datasetname, accountname):
     except Exception as e:
         raise e
 
-# BE-REVIEW - Dorian - change function name to ps_rename_dataset
-# Also remove accountname from parameters since it is not used
-# BE-REVIEW - Jacob - What's up with accountName? If I understand correctly, we don't really need this for most functions?
-def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
+
+def ps_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
     """
     Args:
         accountname: account in which the dataset needs to be created (string)

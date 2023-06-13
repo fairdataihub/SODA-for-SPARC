@@ -7,7 +7,7 @@ from .manage_datasets import (
     bf_account_details,
     bf_submit_dataset,
     create_new_dataset,
-    bf_rename_dataset,
+    ps_rename_dataset,
     bf_add_permission,
     bf_get_users,
     bf_get_permission,

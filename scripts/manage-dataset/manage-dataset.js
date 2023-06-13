@@ -306,7 +306,7 @@ $("#button-rename-dataset").on("click", async () => {
 
       try {
         await client.put(
-          `/manage_datasets/bf_rename_dataset`,
+          `/manage_datasets/ps_rename_dataset`,
           {
             input_new_name: renamedDatasetName,
           },
