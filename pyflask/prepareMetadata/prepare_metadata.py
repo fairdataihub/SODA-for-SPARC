@@ -228,6 +228,7 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
     # handle duplicates on Pennsieve: first, obtain the existing file ID
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
     r.raise_for_status()
+    # BE-REVIEW - Dorian - a better name than items would be good here
     items = r.json()
     # go through the content in the dataset and find the file ID of the file to be uploaded
     for item in items["children"]:
@@ -330,6 +331,7 @@ def grayout_single_value_rows(workbook, max_len, start_index):
         fillColor("CCCCCC", cell)
 
 
+# BE-REVIEW - Dorian - This function could be moved in a utils file since we do cell color filling in other functions as well
 def fillColor(color, cell):
     colorFill = PatternFill(start_color=color, end_color=color, fill_type="solid")
 
@@ -360,17 +362,17 @@ def populate_study_info(workbook, val_obj):
     workbook["D13"] = val_obj["study primary conclusion"]
     workbook["D17"] = val_obj["study collection title"]
 
-    ## study organ system
+    ## get study organ system
     for i, column in zip(
         range(len(val_obj["study organ system"])), excel_columns(start_index=3)
     ):
         workbook[column + "14"] = val_obj["study organ system"][i]
-    ## study approach
+    ## get study approach
     for i, column in zip(
         range(len(val_obj["study approach"])), excel_columns(start_index=3)
     ):
         workbook[column + "15"] = val_obj["study approach"][i]
-    ## study technique
+    ## get study technique
     for i, column in zip(
         range(len(val_obj["study technique"])), excel_columns(start_index=3)
     ):
@@ -384,16 +386,16 @@ def populate_study_info(workbook, val_obj):
 
 
 def populate_contributor_info(workbook, val_array):
-    ## award info
+    ## get award info
     for i, column in zip(
         range(len(val_array["funding"])), excel_columns(start_index=3)
     ):
         workbook[column + "8"] = val_array["funding"][i]
 
-    ### Acknowledgments
+    ### get Acknowledgments
     workbook["D9"] = val_array["acknowledgment"]
 
-    ### Contributors
+    ### get Contributors
     for contributor, column in zip(
         val_array["contributors"], excel_columns(start_index=3)
     ):
@@ -406,7 +408,7 @@ def populate_contributor_info(workbook, val_array):
 
 
 def populate_related_info(workbook, val_array):
-    ## related links including protocols
+    ## get related links including protocols
 
     for i, column in zip(range(len(val_array)), excel_columns(start_index=3)):
         workbook[column + "24"] = val_array[i]["description"]
@@ -438,6 +440,8 @@ def save_ds_description_file(
     shutil.copyfile(source, destination)
 
     # json array to python list
+    # BE-REVIEW - Dorian - val_obj_study, val_obj_ds, val_arr_con, val_arr_related_info are not very descriptive names
+    # Can we just use the same variable name?
     val_obj_study = study_str
     val_obj_ds = dataset_str
     val_arr_con = con_str
@@ -497,7 +501,7 @@ def save_ds_description_file(
 
     return {"size": size}
 
-
+# BE-REVIEW - Dorian - This could probably be placed into the constants folder since they will never change
 subjectsTemplateHeaderList = [
     "subject id",
     "pool id",
@@ -549,12 +553,13 @@ samplesTemplateHeaderList = [
     "protocol url or doi",
 ]
 
+# BE-REVIEW - Dorian - could we possibly just place upload_metadata_file into the api calling upload_code_description_metadata?
+# This function could be removed and the upload_metadata_file could be called directly from the api
 def upload_code_description_metadata(filepath, bfAccount, bfDataset):
     upload_metadata_file("code_description.xlsx", bfAccount, bfDataset, filepath, False)
 
 
 def save_subjects_file(upload_boolean, bfaccount, bfdataset, filepath, datastructure):
-
     source = join(TEMPLATE_PATH, "subjects.xlsx")
 
     if upload_boolean:
@@ -588,7 +593,7 @@ def save_subjects_file(upload_boolean, bfaccount, bfdataset, filepath, datastruc
 
     # 1. see if the length of datastructure[0] == length of datastructure. If yes, go ahead. If no, add new columns from headers[n-1] onward.
     headers_no = len(refinedDatastructure[0])
-    # BE-REVIEW - Dorian - use patterFill function for all places that require styling an excel cell
+    # BE-REVIEW - Dorian - use fillColor function for all places that require styling an excel cell
     orangeFill = PatternFill(
         start_color="FFD965", end_color="FFD965", fill_type="solid"
     )
