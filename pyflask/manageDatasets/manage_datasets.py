@@ -155,13 +155,10 @@ def bf_add_account_api_key(keyname, key, secret):
         config.set(keyname, "api_secret", secret)
 
 
-        # add the profile under the global section 
-        if config.has_section("global"):
-            config.set("global", "default_profile", keyname)
-        else:
+        if not config.has_section("global"):
             config.add_section("global")
-            config.set("global", "default_profile", keyname)
-
+        config.set("global", "default_profile", keyname)
+        
         with open(configpath, "w") as configfile:
             config.write(configfile)
 
