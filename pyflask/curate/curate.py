@@ -1340,7 +1340,6 @@ def create_high_level_manifest_files_existing_bf(
                     my_bf_existing_files_name_with_extension = []
 
                 for file_key, file in my_folder["files"].items():
-                    # gevent.sleep(0)
                     if file["type"] == "local":
                         file_path = file["path"]
                         if isfile(file_path):
@@ -1348,41 +1347,42 @@ def create_high_level_manifest_files_existing_bf(
                             file_extension = splitext(file_key)[1]
 
                             # manage existing file request
-                            if existing_file_option == "skip":
-                                if file_key in my_bf_existing_files_name_with_extension:
-                                    continue
+                            # BE-REVIEW - Dorian - merge nested if statements
+                            if existing_file_option == "skip" and file_key in my_bf_existing_files_name_with_extension:
+                                continue
 
-                            if existing_file_option == "replace":
-                                if file_key in my_bf_existing_files_name_with_extension:
-                                    # remove existing from manifest
-                                    filename = generate_relative_path(
-                                        my_relative_path, file_key
-                                    )
-                                    filename_list = dict_folder_manifest["filename"]
-                                    index_file = filename_list.index(filename)
-                                    del dict_folder_manifest["filename"][index_file]
-                                    del dict_folder_manifest["timestamp"][index_file]
-                                    del dict_folder_manifest["description"][index_file]
-                                    del dict_folder_manifest["file type"][index_file]
-                                    del dict_folder_manifest["Additional Metadata"][
-                                        index_file
-                                    ]
+                            # BE-REVIEW - Dorian - merge nested if statements
+                            if existing_file_option == "replace" and file_key in my_bf_existing_files_name_with_extension:
+                                # remove existing from manifest
+                                filename = generate_relative_path(
+                                    my_relative_path, file_key
+                                )
+                                filename_list = dict_folder_manifest["filename"]
+                                index_file = filename_list.index(filename)
 
-                                    index_name = (
-                                        my_bf_existing_files_name_with_extension.index(
-                                            file_key
-                                        )
+                                del dict_folder_manifest["filename"][index_file]
+                                del dict_folder_manifest["timestamp"][index_file]
+                                del dict_folder_manifest["description"][index_file]
+                                del dict_folder_manifest["file type"][index_file]
+                                del dict_folder_manifest["Additional Metadata"][
+                                    index_file
+                                ]
+
+                                index_name = (
+                                    my_bf_existing_files_name_with_extension.index(
+                                        file_key
                                     )
-                                    del my_bf_existing_files[index_name]
-                                    del my_bf_existing_files_name[index_name]
-                                    del my_bf_existing_files_name_with_extension[
-                                        index_name
-                                    ]
+                                )
+
+                                del my_bf_existing_files[index_name]
+                                del my_bf_existing_files_name[index_name]
+                                del my_bf_existing_files_name_with_extension[
+                                    index_name
+                                ]
 
                             if desired_name not in my_bf_existing_files_name:
                                 final_name = file_key
                             else:
-
                                 # expected final name
                                 count_done = 0
                                 final_name = desired_name
@@ -1427,6 +1427,7 @@ def create_high_level_manifest_files_existing_bf(
                             file_path = file["path"]
                             filepath = pathlib.Path(file_path)
                             mtime = filepath.stat().st_mtime
+                            # BE-REVIEW - Dorian - is TZLOCAL() needed here or is that different than what is going on here
                             lastmodtime = datetime.fromtimestamp(mtime).astimezone(
                                 local_timezone
                             )
@@ -1463,7 +1464,7 @@ def create_high_level_manifest_files_existing_bf(
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
         makedirs(manifest_folder_path)
 
-        # import info about files already on bf
+        # import info about files already on ps
         dataset_structure = soda_json_structure["dataset-structure"]
         manifest_dict_save = {}
         for high_level_folder_key, high_level_folder in my_tracking_folder["children"]["folders"].items():
@@ -1472,9 +1473,10 @@ def create_high_level_manifest_files_existing_bf(
             ):
 
                 relative_path = ""
+                dict_folder_manifest = {}
+                # BE-REVIEW - Dorian - remove unused variable
                 high_level_folder_id = high_level_folder['content']['id']
                 # Initialize dict where manifest info will be stored
-                dict_folder_manifest = {}
                 dict_folder_manifest["filename"] = []
                 dict_folder_manifest["timestamp"] = []
                 dict_folder_manifest["description"] = []
@@ -1482,6 +1484,7 @@ def create_high_level_manifest_files_existing_bf(
                 dict_folder_manifest["Additional Metadata"] = []
 
                 # pull manifest file into if exists 
+                # BE-REVIEW - Dorian - is the TODO still needed here?
                 # TODO: improve by using a call to get the folder then iterate locally instead of making an api call for each file to get its name
                 manifest_df = pd.DataFrame()
                 for file_key, file in high_level_folder['children']['files'].items():
@@ -1511,6 +1514,7 @@ def create_high_level_manifest_files_existing_bf(
                     high_level_folder, relative_path, dict_folder_manifest, manifest_df
                 )
 
+                # BE-REVIEW - Dorian - is this TODO still needed?
                 # TODO: Verify this key name path is sane
                 manifest_dict_save[high_level_folder_key] = {
                     "manifest": dict_folder_manifest,
@@ -1566,6 +1570,7 @@ def create_high_level_manifest_files_existing_bf(
             df.to_excel(manifestfilepath, index=None, header=True)
             wb = load_workbook(manifestfilepath)
             ws = wb.active
+            # BE-REVIEW - Dorian - use colorFill function for this
             blueFill = PatternFill(
                 start_color="9DC3E6", fill_type="solid"
             )
@@ -1607,9 +1612,11 @@ def bf_get_existing_folders_details(ps_folders):
     return ps_existing_folders, ps_existing_folders_name
 
 
+# BE-REVIEW - Dorian - rename function to ps_get_existing_files_details
+# Also remove ps from parameter since it is never used
 def bf_get_existing_files_details(ps_folder, ps):
-
     files = ps_folder["children"]["files"]
+    # BE-REVIEW - Dorian - add list to constants file
     double_extensions = [
         ".ome.tiff",
         ".ome.tif",
@@ -1625,8 +1632,6 @@ def bf_get_existing_files_details(ps_folder, ps):
         ".tar.gz",
         ".bcl.gz",
     ]
-
-    # f = open("dataset_contents.soda", "a")
 
     def verify_file_name(file_name, extension):
         if extension == "":
@@ -1653,15 +1658,15 @@ def bf_get_existing_files_details(ps_folder, ps):
         else:
             return file_name + ("." + extension)
 
-    # bf_existing_files = [file_or_folder for file_or_folder in children if children[file_or_folder]['content']["packageType"] != "Collection"]
-
     bf_existing_files_name = [splitext(files[file]['content']["name"])[0] for file in files]
     bf_existing_files_name_with_extension = []
 
     # determine if we are at the root of the dataset
+    # BE-REVIEW - Dorian - is the TODO still relevant?
     # TODO: Find out why value is in here sometimes
     content = ps_folder["content"]
     if (str(content['id'])[2:9]) == "dataset":
+        # BE-REVIEW - Dorian - is this still true?
         # TODO: Update this call. Does not fetch files at the root of the dataset. Moreover maybe just do it at the start of creating the tracking folder.
         r = requests.get(f"{PENNSIEVE_URL}/datasets/{content['id']}", headers=create_request_headers(get_access_token())) 
         r.raise_for_status()
@@ -1682,10 +1687,6 @@ def bf_get_existing_files_details(ps_folder, ps):
             bf_existing_files_name_with_extension.append(file_name_with_extension)
     else:
         #is collection - aka a folder in the dataset
-        # r = requests.get(f"{PENNSIEVE_URL}/packages/{ps_folder['content']['id']}", headers=create_request_headers(ps), json={"include": "files"}) 
-        # r.raise_for_status()
-        # folder_details = r.json()
-        # folder_content = folder_details["children"]
         for file_key, file in files.items():
             file_name_with_extension = ""
             file_name = file["content"]["name"]
@@ -1701,7 +1702,6 @@ def bf_get_existing_files_details(ps_folder, ps):
 
 
     return (
-        #bf_existing_files,
         bf_existing_files_name,
         bf_existing_files_name_with_extension,
     )
@@ -1737,8 +1737,9 @@ def get_base_file_name(file_name):
         return output
 
 
+# BE-REVIEW - Dorian - rename function to ps_update_existing_dataset
+# Also remove bf from parameters since it is never used
 def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
-
     global namespace_logger
 
     namespace_logger.info("Starting bf_update_existing_dataset")
@@ -1805,7 +1806,8 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
 
         return
 
-    # Check and create any non existing folders for the file move process
+    # Check and create any non existing folders for the file move process\
+    # BE-REVIEW - Dorian - rename function to recursive_check_and_create_ps_file_path
     def recursive_check_and_create_bf_file_path(
         folderpath, index, current_folder_structure
     ):
@@ -1813,6 +1815,7 @@ def bf_update_existing_dataset(soda_json_structure, bf, ds, ps):
 
         if folder not in current_folder_structure["folders"]:
             if index == 0:
+                # BE-REVIEW - Dorian - is this TODO still relevant?
                 # TODO: Make sure we are using the correct parent id - maybe should be using the root here? Not sure. 
                 r = requests.post(f"{PENNSIEVE_URL}/packages", json={"name": folder, "parent": f"{current_folder_structure['path']}", "packageType": "collection", "dataset": ds['content']['id']},  headers=create_request_headers(ps))
                 r.raise_for_status()
