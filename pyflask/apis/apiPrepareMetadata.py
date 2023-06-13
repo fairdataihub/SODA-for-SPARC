@@ -492,6 +492,7 @@ class ImportBFMetadataFile(Resource):
             ui_fields = list(map(str.strip, ui_fields.strip('][').replace("'", '').replace('"', '').split(',')))
 
         try:
+            # BE-REVIEW - Aaron - bf -> ps
             return import_bf_metadata_file(file_type, ui_fields, selected_account, selected_dataset)
         except Exception as e:
             if notBadRequestException(e):

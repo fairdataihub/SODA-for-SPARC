@@ -901,6 +901,7 @@ def import_bf_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
                 return load_existing_submission_file(url, item_id, token)
 
             elif file_type == "dataset_description.xlsx":
+                # BE-REVIEW - Aaron - bf -> ps
                 return load_existing_DD_file("bf", url, item_id, token)
 
             elif file_type == "subjects.xlsx":
