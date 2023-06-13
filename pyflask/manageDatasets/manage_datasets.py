@@ -439,11 +439,12 @@ def in_sparc_organization(token):
 
     # add the sparc consortium as the organization name if the user is a member of the consortium
     organizations = r.json()
-    for org in organizations["organizations"]:
-        if org["organization"]["id"] == "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
-            return True 
-    
-    return False
+    # BE-REVIEW - Dorian - changed by sourcery for simplicity
+    return any(
+        org["organization"]["id"]
+        == "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
+        for org in organizations["organizations"]
+    )
 
 
 
@@ -484,6 +485,7 @@ def bf_account_details(accountname):
 
 
     try:
+        # BE-REVIEW - Dorian - do we still want to do this?
         # if a user hasn't added their account name to their config file then we want to write it now
         # TODO: Ensure this is necessary. I think we may do this just in case at startup this gets called before something else
         #       that may also want to update the account name if possible? 
@@ -502,7 +504,7 @@ def get_datasets(token):
 
     return r.json()
 
-
+# BE-REVIEW - Dorian - remove accountname parameter since it is not used
 def create_new_dataset(datasetname, accountname):
     """
     Associated with 'Create' button in 'Create new dataset folder'
@@ -532,6 +534,7 @@ def create_new_dataset(datasetname, accountname):
 
         datasets = get_datasets(token)
 
+        # BE-REVIEW - Dorian - if else is always true. I think we need tabbing on the else statement
         for ds in datasets:
             if ds["content"]["name"] == datasetname:
                 abort(400, "Dataset name already exists")
@@ -544,7 +547,8 @@ def create_new_dataset(datasetname, accountname):
     except Exception as e:
         raise e
 
-
+# BE-REVIEW - Dorian - change function name to ps_rename_dataset
+# Also remove accountname from parameters since it is not used
 def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
     """
     Args:
@@ -555,6 +559,7 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
     Action:
         Creates dataset for the account specified
     """
+    # BE-REVIEW - Dorian - change c to count to make it clearer what it is
     error, c = "", 0
     datasetname = renamed_dataset_name.strip()
 
@@ -595,6 +600,7 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
 completed_files = []
 files_uploaded = 0
 total_files_to_upload = 0
+# BE-REVIEW - Dorian - change function name to ps_upload_folder
 def bf_submit_dataset(accountname, bfdataset, pathdataset):
     """
     Associated with 'Submit dataset' button in 'Submit new dataset' section
@@ -651,7 +657,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         global total_bytes_uploaded
 
         if events_dict["type"] == 1:  # upload status: file_id, total, current, worker_id
-            #logging.debug("UPLOAD STATUS: " + str(events_dict["upload_status"]))
             file_id = events_dict["upload_status"].file_id
             total_bytes_to_upload = events_dict["upload_status"].total
             current_bytes_uploaded = events_dict["upload_status"].current
@@ -672,12 +677,10 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
             # check if the given file has finished uploading
             if current_bytes_uploaded == total_bytes_to_upload and file_id != "":
                 files_uploaded += 1
-                # main_curation_uploaded_files += 1
 
 
             # check if the upload has finished
             if files_uploaded == total_dataset_files:
-                # namespace_logger.info("Upload complete")
                 # unsubscribe from the agent's upload messages since the upload has finished
                 ps.unsubscribe(10)
 
@@ -738,8 +741,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         did_fail = True
         did_upload = False
         error_message = "Please select a valid Pennsieve dataset"
-        # pass
-        # abort(400, error_message)
 
     # get the dataset size before starting the upload
     total_file_size, invalid_dataset_messages, total_files_to_upload = get_dataset_size(pathdataset)
@@ -778,7 +779,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     try:
         submitprintstatus = "Uploading"
         start_time_bf_upload = time.time()
-        # initial_bfdataset_size_submit = bf_dataset_size(ps, selected_dataset_id)
         start_submit = 1
         manifest_id = manifest_data.manifest_id
         try: 
