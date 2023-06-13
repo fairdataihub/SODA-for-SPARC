@@ -29,7 +29,7 @@ from utils import (
     create_request_headers, 
     get_dataset_id
 )
-from authentication import get_access_token
+from authentication import get_access_token, bf_delete_account
 from users import get_user_information, update_config_account_name
 from permissions import has_edit_permissions, pennsieve_get_current_user_permissions
 from configUtils import lowercase_account_names
@@ -173,7 +173,6 @@ def bf_add_account_api_key(keyname, key, secret):
         token = get_access_token()
     except Exception as e:
         namespace_logger.error(e)
-        # BE-REVIEW - Dorian - says this function below is not defined (import from the authenticate.py file?)
         bf_delete_account(keyname)
         abort(401, 
             "Please check that key name, key, and secret are entered properly"
