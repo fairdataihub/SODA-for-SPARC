@@ -120,7 +120,7 @@ def bf_delete_default_profile():
     with open(configpath, "w") as configfile:
         config.write(configfile)
 
-
+# BE-REVIEW - Jacob - Can we check if the profile name already exists and if so, append a number to the end of it? So it will always generate a unique profile name
 def create_unique_profile_name(token, email, account_name):
     try:
         # get the users email
