@@ -1043,11 +1043,13 @@ def load_existing_DD_file(import_type, filepath, item_id=None, token=None):
     # open given workbook
     # and store in excel object
 
+     # BE-REVIEW - Aaron -  bf -> ps
     if import_type == "bf":
         try:
             DD_df = load_manifest_to_dataframe(item_id, "excel", token, column_check, 0)
         except Exception as e:
             namespace_logger.info(e)
+            # BE-REVIEW - Aaron - submission.xlsx -> dataset_description.xlsx
             raise Exception from e (
                 "SODA cannot read this submission.xlsx file. If you are trying to retrieve a submission.xlsx file from Pennsieve, please make sure you are signed in with your Pennsieve account on SODA."
             )
