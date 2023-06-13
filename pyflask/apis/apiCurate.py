@@ -13,7 +13,7 @@ from curate import (
     main_curate_function,
     main_curate_function_progress,
     generate_manifest_file_locally,
-    guided_generate_manifest_file_data,
+    generate_manifest_file_data,
     check_JSON_size,
     clean_json_structure,
     check_server_access_to_files,
@@ -234,8 +234,7 @@ class GenerateManifestData(Resource):
         data = self.parser.parse_args()
         dataset_structure_obj = data.get("dataset_structure_obj")
         try:
-            # BE-REVIEW - Aaron - Rename as it isnt used exclusively in Guided mode anymore. Also somewhat confusing for outsiders very likely.
-            return guided_generate_manifest_file_data(dataset_structure_obj)
+            return generate_manifest_file_data(dataset_structure_obj)
         except Exception as e:
             api.abort(500, str(e))
 
