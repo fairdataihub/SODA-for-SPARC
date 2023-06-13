@@ -552,9 +552,9 @@ const addPermissionUser = async (
 ) => {
   log.info("Adding permission ${selectedRole} to ${selectedUser} for ${selectedBfDataset}");
 
-  let bf_add_permission;
+  let ps_add_permission;
   try {
-    bf_add_permission = await client.patch(
+    ps_add_permission = await client.patch(
       `/manage_datasets/bf_dataset_permissions`,
       {
         input_role: selectedRole,
@@ -590,7 +590,7 @@ const addPermissionUser = async (
     return;
   }
 
-  let res = bf_add_permission.data.message;
+  let res = ps_add_permission.data.message;
 
   Swal.fire({
     title: "Successfully changed permission!",

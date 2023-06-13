@@ -9,11 +9,11 @@ from manageDatasets import (
     bf_submit_dataset,
     create_new_dataset,
     ps_rename_dataset,
-    bf_add_permission,
+    ps_add_permission,
     ps_get_users,
     ps_get_permission,
     ps_get_teams,
-    bf_add_permission_team,
+    ps_add_permission_team,
     bf_add_subtitle,
     bf_get_subtitle,
     bf_get_description,
@@ -563,14 +563,14 @@ class DatasetPermissions(Resource):
 
     if scope == 'team':
       try:
-        return bf_add_permission_team(selected_account, selected_dataset, name, input_role)
+        return ps_add_permission_team(selected_account, selected_dataset, name, input_role)
       except Exception as e:
         if notBadRequestException(e):
           api.abort(500, str(e))
         raise e
     else:
       try:
-        return bf_add_permission(selected_account, selected_dataset, name, input_role)
+        return ps_add_permission(selected_account, selected_dataset, name, input_role)
       except Exception as e:
         if notBadRequestException(e):
           api.abort(500, str(e))

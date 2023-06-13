@@ -12609,7 +12609,7 @@ $(document).ready(async () => {
     guidedUploadStatusIcon(`guided-dataset-${userUUID}-permissions-upload-status`, "loading");
 
     try {
-      let bf_add_permission = await client.patch(
+      let ps_add_permission = await client.patch(
         `/manage_datasets/bf_dataset_permissions`,
         {
           input_role: selectedRole,
@@ -12720,7 +12720,7 @@ $(document).ready(async () => {
     guidedUploadStatusIcon(`guided-dataset-${teamString}-permissions-upload-status`, "loading");
 
     try {
-      let bf_add_permission = await client.patch(
+      let ps_add_permission = await client.patch(
         `/manage_datasets/bf_dataset_permissions`,
         {
           input_role: selectedRole,

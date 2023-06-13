@@ -840,7 +840,6 @@ def ps_get_teams(selected_bfaccount):
     except Exception as e:
         raise e
 
-# BE-REVIEW - Dorian - change function name to ps_get_permission
 # Also remove selected_bfaccount from parameters since it isn't used
 def ps_get_permission(selected_bfaccount, selected_bfdataset):
 
@@ -860,8 +859,6 @@ def ps_get_permission(selected_bfaccount, selected_bfdataset):
     selected_dataset_id = get_dataset_id(token, selected_bfdataset)
 
     try:
-        # BE-REVIEW - Dorian - I don't think this needs to be a global variable
-        # I've seen other functions that don't call PENNSIEVE_URL as a global variable
         global PENNSIEVE_URL
         headers = create_request_headers(token)
         # user permissions
@@ -935,10 +932,7 @@ def ps_get_permission(selected_bfaccount, selected_bfdataset):
         raise e
 
 
-# BE-REVIEW - Dorian - change function name to ps_add_permission
-# Remove selected_bfaccount parameter since it isn't used
-# BE-REVIEW - Jacob - Remove selected_bfaccount from args
-def bf_add_permission(
+def ps_add_permission(
     selected_bfaccount, selected_bfdataset, selected_user, selected_role
 ):
     """
@@ -963,7 +957,6 @@ def bf_add_permission(
     headers = create_request_headers(token)
 
     try:
-        # BE-REVIEW - Dorian - change variable to count to make it clearer
         c = 0
         organization_id = get_user_information(token)["preferredOrganization"]
         r  = requests.get(f"{PENNSIEVE_URL}/organizations/{str(organization_id)}/members", headers=headers)
@@ -979,7 +972,6 @@ def bf_add_permission(
             c += 1
     except Exception as e:
         raise e
-    # BE-REVIEW - Dorian - should this list be in a constants file? Would clear up a little bit of space
     if selected_role not in [
         "manager",
         "viewer",
@@ -1004,7 +996,6 @@ def bf_add_permission(
         r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", headers=headers)
         r.raise_for_status()
         list_dataset_permission = r.json()
-        # BE-REVIEW - Dorian - change variable to count to make it clearer
         c = 0
         for i in range(len(list_dataset_permission)):
             first_name = list_dataset_permission[i]["firstName"]
@@ -1051,10 +1042,8 @@ def bf_add_permission(
     except Exception as e:
         raise e
 
-# BE-REVIEW - Dorian - change this function name to ps_add_permission_team
-# Also remove selected_bfaccount from parameter since it isn't used
-# BE-REVIEW - Jacob - Remove selected_bfaccount from args
-def bf_add_permission_team(
+
+def ps_add_permission_team(
     selected_bfaccount, selected_bfdataset, selected_team, selected_role
 ):
     """
@@ -1075,13 +1064,10 @@ def bf_add_permission_team(
 
     organization_id = get_user_information(token)["preferredOrganization"]
     # BE-REVIEW - Dorian - merge nested if conditions (suggested by Sourcery)
-    if selected_team == "SPARC Data Curation Team":
-        if organization_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
-            abort(403, "Please login under the Pennsieve SPARC Consortium organization to share with the Curation Team")
-    if selected_team == "SPARC Embargoed Data Sharing Group":
-        if organization_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
-            abort(403, "Please login under the Pennsieve SPARC Consortium organization to share with the SPARC consortium group")
-
+    if selected_team == "SPARC Data Curation Team" and organization_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
+        abort(403, "Please login under the Pennsieve SPARC Consortium organization to share with the Curation Team")
+    if selected_team == "SPARC Embargoed Data Sharing Group" and organization_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
+        abort(403, "Please login under the Pennsieve SPARC Consortium organization to share with the SPARC consortium group")
     # BE-REVIEW - Dorian - change variable to count to make it clearer
     c = 0
 
