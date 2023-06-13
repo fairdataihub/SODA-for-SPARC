@@ -158,7 +158,7 @@ def bf_add_account_api_key(keyname, key, secret):
         if not config.has_section("global"):
             config.add_section("global")
         config.set("global", "default_profile", keyname)
-        
+
         with open(configpath, "w") as configfile:
             config.write(configfile)
 
@@ -198,24 +198,8 @@ def bf_add_account_api_key(keyname, key, secret):
         return {"message": f"Successfully added account {str(bf)}"}
 
     except Exception as e:
-        # BE-REVIEW - Dorian - says this function below is not defined (import from the authenticate.py file?)
         bf_delete_account(keyname)
         raise e
-
-
-# get a target key's value from the config file 
-# BE-REVIEW - Dorian - rename function to get_default_profile or get_from_config
-def read_from_config(key):
-    config = ConfigParser()
-    config.read(configpath)
-    if "global" not in config:
-        raise Exception("Profile has not been set")
-
-    keyname = config["global"]["default_profile"]
-
-    if keyname in config and key in config[keyname]:
-        return config[keyname][key]
-    return None
 
 
 
