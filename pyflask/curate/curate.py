@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ### Import required python modules
+# BE-REVIEW - Dorian - remove unused imports
 import json
 import requests
 import platform
@@ -62,6 +63,7 @@ generated_dataset_id = None
 # the pennsieve python client used for uploading dataset files 
 client = None 
 
+# BE-REVIEW - Dorian - these two could be placed in a constants file
 userpath = expanduser("~")
 configpath = join(userpath, ".pennsieve", "config.ini")
 submitdataprogress = " "
@@ -71,7 +73,9 @@ total_file_size = 1
 uploaded_file_size = 0
 start_time_bf_upload = 0
 start_submit = 0
+# BE-REVIEW - Dorian - same with this variable and the list below
 metadatapath = join(userpath, "SODA", "SODA_metadata")
+# BE-REVIEW - Dorian - change variable name to ps_recognised_file_extensions
 bf_recognized_file_extensions = [
     ".cram",
     ".jp2",
@@ -225,6 +229,7 @@ bf_recognized_file_extensions = [
     ".zip",
     ".zsh",
 ]
+# BE-REVIEW - Dorian - change variable name to ps
 bf = ""
 myds = ""
 initial_bfdataset_size = 0
@@ -286,6 +291,7 @@ def folder_size(path):
         total_size: total size of the folder in bytes (integer)
     """
     total_size = 0
+    # BE-REVIEW - Dorian - remove unused variable
     start_path = "."  # To get size of current directory
     for path, dirs, files in walk(path):
         for f in files:
@@ -321,10 +327,12 @@ def create_folder_level_manifest(jsonpath, jsondescription):
     local_timezone = TZLOCAL()
 
     try:
+        # BE-REVIEW - Dorian - just using metadatapath directly seems better since we don't modify it
         datasetpath = metadatapath
         shutil.rmtree(datasetpath) if isdir(datasetpath) else 0
         makedirs(datasetpath)
         folders = list(jsonpath.keys())
+        # BE-REVIEW - Dorian - where does main come from? Do datasets usually have a main folder?
         if "main" in folders:
             folders.remove("main")
         # In each SPARC folder, generate a manifest file
@@ -345,6 +353,7 @@ def create_folder_level_manifest(jsonpath, jsondescription):
                 folderpath = join(datasetpath, folder)
                 allfiles = jsonpath[folder]
                 alldescription = jsondescription[folder + "_description"]
+                # BE-REVIEW - Dorian - remove this unused variable
                 manifestexists = join(folderpath, "manifest.xlsx")
 
                 countpath = -1
@@ -437,6 +446,7 @@ def create_folder_level_manifest(jsonpath, jsondescription):
                 df.to_excel(manifestfile, index=None, header=True)
                 wb = load_workbook(manifestfile)
                 ws = wb.active
+                # BE-REVIEW - Dorian - use colorFill function to do this
                 blueFill = PatternFill(
                     start_color="9DC3E6", fill_type="solid"
                 )
@@ -554,6 +564,7 @@ def mycopyfile_with_metadata(src, dst, *, follow_symlinks=True):
     return dst
 
 
+# BE-REVIEW - Dorian - rename function to something more explicit like create_dataset_locally or create_local_dataset
 def create_dataset(jsonpath, pathdataset):
     """
     Associated with 'Create new dataset locally' option of SODA interface
@@ -608,7 +619,8 @@ def create_dataset(jsonpath, pathdataset):
         for fileinfo in listallfiles:
             srcfile = fileinfo[0]
             distfile = fileinfo[1]
-            curateprogress = "Copying " + str(srcfile)
+            # BE-REVIEW - Dorian - f string used here (suggested by Sourcery)
+            curateprogress = f"Copying {str(srcfile)}"
             mycopyfile_with_metadata(srcfile, distfile)
 
     except Exception as e:
@@ -617,6 +629,7 @@ def create_dataset(jsonpath, pathdataset):
 
 
 """
+# BE-REVIEW - Dorian - remove this comment block
 ------------------------------------------
 NEW
 FUNCTIONS
@@ -635,7 +648,6 @@ def check_empty_files_folders(soda_json_structure):
         error: error message with list of non valid local data files, if any
     """
     try:
-
         def recursive_empty_files_check(my_folder, my_relative_path, error_files):
             for folder_key, folder in my_folder["folders"].items():
                 relative_path = my_relative_path + "/" + folder_key
@@ -673,6 +685,7 @@ def check_empty_files_folders(soda_json_structure):
                     folder, folder_key, folders_content, relative_path, error_folders
                 )
 
+            # BE-REVIEW - Dorian - merge nested if statements
             if not my_folder["folders"]:
                 if not my_folder["files"]:
                     ignore = False
@@ -791,6 +804,7 @@ def check_local_dataset_files_validity(soda_json_structure):
             folder = my_folder["folders"][folder_key]
             recursive_empty_local_folder_remove(folder, folder_key, folders_content)
 
+        # BE-REVIEW - Dorian - merge nested if statements
         if not my_folder["folders"]:
             if not my_folder["files"]:
                 # BE-REVIEW - Aaron - bf -> ps
@@ -830,6 +844,7 @@ def check_local_dataset_files_validity(soda_json_structure):
             del soda_json_structure["metadata-files"]
 
     # BE-REVIEW - Aaron - Return list of all the files that were not found. 
+    # BE-REVIEW - Dorian - i believe that's already being done
     if len(error) > 0:
         error_message = [
             "Error: The following local files were not found. Specify them again or remove them."
@@ -840,6 +855,7 @@ def check_local_dataset_files_validity(soda_json_structure):
 
 
 # path to local SODA folder for saving manifest files
+# BE-REVIEW - Dorian - move to a constants file
 manifest_sparc = ["manifest.xlsx", "manifest.csv"]
 manifest_folder_path = join(userpath, "SODA", "manifest_files")
 
@@ -883,9 +899,9 @@ def check_JSON_size(jsonStructure):
             for file_key, file in metadata_files.items():
                 if file["type"] == "local":
                     metadata_path = file["path"]
-                    if isfile(metadata_path):
-                        if "new" in file["action"]:
-                            total_dataset_size += getsize(metadata_path)
+                    # BE-REVIEW - Dorian - merge nested if statements
+                    if isfile(metadata_path) and "new" in file["action"]:
+                        total_dataset_size += getsize(metadata_path)
 
         if "manifest-files" in jsonStructure.keys():
             manifest_files_structure = create_high_level_manifest_files(jsonStructure, manifest_folder_path)
@@ -901,7 +917,6 @@ def check_JSON_size(jsonStructure):
 
 
 def generate_dataset_locally(soda_json_structure):
-
     global namespace_logger
 
     namespace_logger.info("starting generate_dataset_locally")
@@ -915,8 +930,6 @@ def generate_dataset_locally(soda_json_structure):
 
     main_curation_uploaded_files = 0
 
-    # BE-REVIEW - Aaron - Remove this comment
-    # def generate(soda_json_structure):
     try:
 
         def recursive_dataset_scan(
@@ -965,8 +978,7 @@ def generate_dataset_locally(soda_json_structure):
 
 
         namespace_logger.info("generate_dataset_locally step 1")
-        # BE-REVIEW - Aaron - remove question mark
-        # 1. Create new folder for dataset or use existing merge with existing or create new dataset?
+        # 1. Create new folder for dataset or use existing merge with existing or create new dataset
         main_curate_progress_message = "Generating folder structure and list of files to be included in the dataset"
         dataset_absolute_path = soda_json_structure["generate-dataset"]["path"]
         if_existing = soda_json_structure["generate-dataset"]["if-existing"]
@@ -989,7 +1001,7 @@ def generate_dataset_locally(soda_json_structure):
                 folder, folderpath, list_copy_files, list_move_files
             )
 
-        
+
         # 3. Add high-level metadata files in the list
         if "metadata-files" in soda_json_structure.keys():
             namespace_logger.info("generate_dataset_locally (optional) step 3 handling metadata-files")
@@ -1025,9 +1037,8 @@ def generate_dataset_locally(soda_json_structure):
         for fileinfo in list_move_files:
             srcfile = fileinfo[0]
             distfile = fileinfo[1]
-            main_curate_progress_message = (
-                "Moving file " + str(srcfile) + " to " + str(distfile)
-            )
+            # BE-REVIEW - Dorian - use fstring here (Sourcery suggestion)
+            main_curate_progress_message = f"Moving file {str(srcfile)} to {str(distfile)}"
             mymovefile_with_metadata(srcfile, distfile)
 
         namespace_logger.info("generate_dataset_locally step 6 copying files to new location")
@@ -1037,14 +1048,13 @@ def generate_dataset_locally(soda_json_structure):
         for fileinfo in list_copy_files:
             srcfile = fileinfo[0]
             distfile = fileinfo[1]
-            main_curate_progress_message = (
-                "Copying file " + str(srcfile) + " to " + str(distfile)
-            )
+            # BE-REVIEW - Dorian - use fstring here (Sourcery suggestion)
+            main_curate_progress_message = f"Copying file {str(srcfile)} to {str(distfile)}"
             # track amount of copied files for loggin purposes
             mycopyfile_with_metadata(srcfile, distfile)
             main_curation_uploaded_files += 1
 
-       
+
         namespace_logger.info("generate_dataset_locally step 7")
         # 7. Delete manifest folder and original folder if merge requested and rename new folder
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
@@ -1062,14 +1072,15 @@ def generate_dataset_locally(soda_json_structure):
     except Exception as e:
         raise e
 
-
+# BE-REVIEW - Dorian - function should be removed and just use shutil.move directly
 def mymovefile_with_metadata(src, dst):
     shutil.move(src, dst)
 
 
+# BE-REVIEW - Dorian - I think there's a function in manage_datasets.py that is doing that same thing (function is called create_new_dataset in manage_datasets.py)
+# If they are the same we should remove one of them
 def bf_create_new_dataset(datasetname, ps):
     """
-
     Args:
         datasetname: name of the dataset to be created (string)
         bf: Pennsieve account object
@@ -1077,6 +1088,7 @@ def bf_create_new_dataset(datasetname, ps):
         Creates dataset for the account specified
     """
     try:
+        # BE-REVIEW - Dorian - change variable name to count to make it clearer
         error, c = "", 0
         datasetname = datasetname.strip()
 
@@ -1107,6 +1119,7 @@ def bf_create_new_dataset(datasetname, ps):
             r.raise_for_status()
             dataset_dicts = r.json()
         except Exception as e:
+            # BE-REVIEW - Dorian - we have that now no? the handle_http_error function I believe
             # TODO: Add errior handling function for http requests
             abort(500, "Error: Could not connect to Pennsieve. Please try again later.")
 
@@ -1117,6 +1130,7 @@ def bf_create_new_dataset(datasetname, ps):
         if datasetname in dataset_list:
             abort(400, "Error: Dataset name already exists")
         else:
+            # BE-REVIEW - Dorian - same for this as well
             # TODO: Add error handling
             r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(ps), json={"name": datasetname})
             r.raise_for_status()
@@ -1126,7 +1140,7 @@ def bf_create_new_dataset(datasetname, ps):
     except Exception as e:
         raise e
 
-
+# BE-REVIEW - Dorian - this could be added to a constants file
 double_extensions = [
     ".ome.tiff",
     ".ome.tif",
@@ -1144,11 +1158,7 @@ double_extensions = [
 ]
 
 
-
-
-
-
-
+# BE-REVIEW - Dorian - remove ds from parameters since it is never used
 def create_high_level_manifest_files_existing_bf(
     soda_json_structure, bf, ds, my_tracking_folder
 ):
@@ -1160,6 +1170,7 @@ def create_high_level_manifest_files_existing_bf(
     Action:
         manifest_files_structure: dict including the local path of the manifest files
     """
+    # BE-REVIEW - Dorian - same list above this function, would be good to have in a constants
     double_extensions = [
         ".ome.tiff",
         ".ome.tif",
@@ -1177,7 +1188,7 @@ def create_high_level_manifest_files_existing_bf(
     ]
 
     try:
-
+        # BE-REVIEW - Dorian - move function initialization to the top of the function rather than having within the try block
         def get_name_extension(file_name):
             double_ext = False
             for ext in double_extensions:
@@ -1215,6 +1226,7 @@ def create_high_level_manifest_files_existing_bf(
                 normalize_tracking_folder(ps_folder)
                 folder['children'] = ps_folder['children']
 
+            # BE-REVIEW - Dorian - is this still happening?
             # TODO: Test for empty folder still happening here. Which would cause an Exception
 
             for _, folder_item in folder["children"]["folders"].items():
@@ -1228,24 +1240,29 @@ def create_high_level_manifest_files_existing_bf(
             for _, file in folder["children"]["files"].items():
                 if file['content']['name'] != "manifest":
                     file_id = file['content']['id']
+
                     r = requests.get(f"{PENNSIEVE_URL}/packages/{file_id}/view", headers=create_request_headers(bf))
                     r.raise_for_status()
+
                     file_details = r.json()
                     file_name = file_details[0]["content"]["name"]
                     file_extension = splitext(file_name)[1]
                     file_name_with_extension = (
                         splitext(file['content']['name'])[0] + file_extension
                     )
+
                     relative_path = generate_relative_path(
                         my_relative_path, file_name_with_extension
                     )
+
                     dict_folder_manifest["filename"].append(relative_path)
 
                     # file type
+                    # BE-REVIEW - Dorian - remove unused variable
                     unused_file_name, file_extension = get_name_extension(file_name)
                     if file_extension == "":
                         file_extension = "None"
-                    # file_extension = splitext(file_name)[1]
+
                     dict_folder_manifest["file type"].append(file_extension)
 
                     # timestamp, description, Additional Metadata
@@ -1314,7 +1331,6 @@ def create_high_level_manifest_files_existing_bf(
             if "files" in my_folder.keys():
                 if my_bf_folder_exists:
                     (
-                        # my_bf_existing_files,
                         my_bf_existing_files_name,
                         my_bf_existing_files_name_with_extension,
                     ) = bf_get_existing_files_details(my_bf_folder, bf)
