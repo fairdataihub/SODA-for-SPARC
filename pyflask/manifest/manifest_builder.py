@@ -1,25 +1,6 @@
 """
 Create manifest files for the skeleton dataset validation workflow. 
 
-# BE-REVIEW - Jacob - Is this comment section still relevant? +6 months old (and at top of manifest builder file so would be nice to remove)
-# TODO: add the manifest file creation function here
-# NOTE: It seems that the import keeps teh manifest key value empty if the user is not creating a new manifest file and that organize datasets 
-# adds the generate-dataset value inside of the manifest-files key if the user is creating a new manifest file; in our case we will want to determine two things first:
-# 1. Is the user creating a new manifest file or using an old one? If creating a new one then there are existing methods to use for this that work off the soda_json_structure ( or should we update their old ones using the json structure a-la standalone to ensure nothing is missed in the validation if they are starting from Pennsieve? Hmm can be somewhat complicated on this step.)
-# 2. If using an old manifest file where are they storing it? On Pennsieve or on their local machine. Both have different import methods. 
-# IMP: How to tell what we are dealing with:
-#  The generate-dataset key has 4 properties we can use to determine what we should do:
-#     1. destination: bf or local 
-#     2. generate-option: new or existing 
-#     3. if-existing: merge, skip, create-duplicate, replace
-#     4. if-existing-files: merge, skip, create-duplicate, replace
-#  What their combinations mean:
-#     destination: bf; generate-option: existing; Tells us we are updating an existing dataset through the Update Existing flow; use the standalone man generator algo
-#     destination: bf; generate-option: new; bf-dataset-selected key is present;  Tells us we are merging a new local dataset into an existing ds; use the standalone man generator algo 
-#     destination: bf; generate-option: new; if-existing: create-duplicate; if-existing-files: create-duplicate; and DS does not exist on Pennsieve; Tells us we are creating a new dataset from scratch; use curate manifest algo  
-#     destination: local; generate-option: new; if-existing: new; Means a new local dataset is getting created; use curate manifest algo 
-#     destination: local; generate-option: new; if-existing: merge; Means a local dataset is getting merged over an existing one; Might need to create a new algo for this case.
-# TODO: add the manifest file creation function(s) here
 """
 from .manifest_writer import ManifestWriterStandaloneAlgorithm , ManifestWriterNewPennsieve, ManifestWriterStandaloneLocal, ManifestWriterNewLocal
 
