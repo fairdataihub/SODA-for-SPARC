@@ -779,7 +779,7 @@ def submit_dataset_progress():
 
 # BE-REVIEW - Dorian - change function name to ps_get_users
 # Also delete selected_bfaccount since it is not used
-def bf_get_users(selected_bfaccount):
+def ps_get_users(selected_bfaccount):
     """
     Function to get list of users belonging to the organization of
     the given Pennsieve account

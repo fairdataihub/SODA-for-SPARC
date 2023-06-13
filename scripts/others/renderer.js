@@ -895,7 +895,7 @@ const run_pre_flight_checks = async (check_update = true) => {
 
   // make an api request to change to the organization members. If it fails with a 401 then ask them to go through the workspace change flow as SODA does not have access to the workspace.
   try {
-    await client.get(`/manage_datasets/bf_get_users?selected_account=${defaultBfAccount}`);
+    await client.get(`/manage_datasets/ps_get_users?selected_account=${defaultBfAccount}`);
   } catch (err) {
     clientError(err);
     if (err.response.status) {
@@ -3717,7 +3717,7 @@ const refreshBfUsersList = () => {
 
   if (accountSelected !== "Select") {
     client
-      .get(`manage_datasets/bf_get_users?selected_account=${accountSelected}`)
+      .get(`manage_datasets/ps_get_users?selected_account=${accountSelected}`)
       .then((res) => {
         let users = res.data["users"];
         // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.

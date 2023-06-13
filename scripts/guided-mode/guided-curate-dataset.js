@@ -5755,7 +5755,7 @@ const openPage = async (targetPageID) => {
 
     if (targetPageID === "guided-designate-permissions-tab") {
       const usersReq = await client.get(
-        `manage_datasets/bf_get_users?selected_account=${defaultBfAccount}`
+        `manage_datasets/ps_get_users?selected_account=${defaultBfAccount}`
       );
       const teamsReq = await client.get(
         `manage_datasets/bf_get_teams?selected_account=${defaultBfAccount}`

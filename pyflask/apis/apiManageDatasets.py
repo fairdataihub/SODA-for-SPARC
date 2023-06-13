@@ -10,7 +10,7 @@ from manageDatasets import (
     create_new_dataset,
     ps_rename_dataset,
     bf_add_permission,
-    bf_get_users,
+    ps_get_users,
     bf_get_permission,
     bf_get_teams,
     bf_add_permission_team,
@@ -255,7 +255,7 @@ users_response_model = api.model('Users', {
   'users': fields.List(fields.String, required=True, description="List of the accounts in the user's organization."),
 })
 
-@api.route('/bf_get_users')
+@api.route('/ps_get_users')
 class BfGetUsers(Resource):
 
   parser_get_users = reqparse.RequestParser(bundle_errors=True)
@@ -272,7 +272,7 @@ class BfGetUsers(Resource):
 
       selected_account = data.get('selected_account')
 
-      return bf_get_users(selected_account)
+      return ps_get_users(selected_account)
     except Exception as e:
       # TODO: Refine this app wide to handle requests errors more appropriately
       if notBadRequestException(e):
