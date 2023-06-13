@@ -193,6 +193,7 @@ def bf_add_account_api_key(keyname, key, secret):
         token = get_access_token()
     except Exception as e:
         namespace_logger.error(e)
+        # BE-REVIEW - Dorian - says this function below is not defined (import from the authenticate.py file?)
         bf_delete_account(keyname)
         abort(401, 
             "Please check that key name, key, and secret are entered properly"
@@ -203,6 +204,7 @@ def bf_add_account_api_key(keyname, key, secret):
         org_id = get_user_information(token)["preferredOrganization"]
 
         # CHANGE BACK
+        # BE-REVIEW - Dorian - should we be checking for REJOIN organization as well?
         if org_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
             abort(403,
                 "Please check that your account is within the SPARC Organization"
@@ -220,11 +222,13 @@ def bf_add_account_api_key(keyname, key, secret):
         return {"message": f"Successfully added account {str(bf)}"}
 
     except Exception as e:
+        # BE-REVIEW - Dorian - says this function below is not defined (import from the authenticate.py file?)
         bf_delete_account(keyname)
         raise e
 
 
 # get a target key's value from the config file 
+# BE-REVIEW - Dorian - rename function to get_default_profile or get_from_config
 def read_from_config(key):
     config = ConfigParser()
     config.read(configpath)
@@ -236,39 +240,6 @@ def read_from_config(key):
     if keyname in config and key in config[keyname]:
         return config[keyname][key]
     return None
-
-
-# def get_access_token():
-#     # get cognito config 
-#     r = requests.get(f"{PENNSIEVE_URL}/authentication/cognito-config")
-#     r.raise_for_status()
-
-#     cognito_app_client_id = r.json()["tokenPool"]["appClientId"]
-#     cognito_region_name = r.json()["region"]
-
-#     cognito_idp_client = boto3.client(
-#     "cognito-idp",
-#     region_name=cognito_region_name,
-#     aws_access_key_id="",
-#     aws_secret_access_key="",
-#     )
-            
-#     login_response = cognito_idp_client.initiate_auth(
-#     AuthFlow="USER_PASSWORD_AUTH",
-#     AuthParameters={"USERNAME": read_from_config("api_token"), "PASSWORD": read_from_config("api_secret")},
-#     ClientId=cognito_app_client_id,
-#     )
-
-#     # write access token to a file
-#     with open("access_token.txt", "w") as f:
-#         f.write(login_response["AuthenticationResult"]["AccessToken"])
-        
-#     return login_response["AuthenticationResult"]["AccessToken"]
-
-
-
-
-
 
 
 def check_forbidden_characters_bf(my_string):
@@ -288,26 +259,24 @@ def check_forbidden_characters_bf(my_string):
         return True
 
 
-
 def bf_account_list():
     """
     Action:
         Returns list of accounts stored in the system
     """
     try:
+        # BE-REVIEW - Dorian - I'm curious as to why we return Select is there is no account list. Do we just read that key in the frontend?
         accountlist = ["Select"]
         if exists(configpath):
-            # # CHANGE BACK
             valid_account = bf_get_accounts()
             if valid_account != "":
                 accountlist.append(valid_account)
         return {"accounts": accountlist}
-        # My accountlist
 
     except Exception as e:
         raise e
 
-
+# BE-REVIEW - Dorian - isn't this function the same as the one above? We could delete one of them
 def bf_default_account_load():
     """
     Action:
@@ -337,7 +306,6 @@ def bf_get_accounts():
     sections = config.sections()
 
     if SODA_SPARC_API_KEY in sections:
-        # add_api_host_to_config(config, SODA_SPARC_API_KEY, configpath)
         lowercase_account_names(config, SODA_SPARC_API_KEY, configpath)
         with contextlib.suppress(Exception):
             get_access_token()
@@ -346,9 +314,9 @@ def bf_get_accounts():
         if "default_profile" in config["global"]:
             default_profile = config["global"]["default_profile"]
             if default_profile in sections:
-                # add_api_host_to_config(config, default_profile, configpath)
                 lowercase_account_names(config, default_profile, configpath)
                 try:
+                    # BE-REVIEW - Dorian - what do we do with the access token here? Just curious if it is needed or not
                     get_access_token()
                     return default_profile.lower()
                 except Exception as e:
@@ -356,7 +324,6 @@ def bf_get_accounts():
     else:
         for account in sections:
             if account != 'agent':
-                # add_api_host_to_config(config, account, configpath)
                 with contextlib.suppress(Exception):
                     token = get_access_token()
 
@@ -381,7 +348,7 @@ def bf_get_accounts():
 
 
 
-
+# BE-REVIEW - Dorian - remove accountname parameter since it is not used
 def bf_dataset_account(accountname):
     """
     This function filters dataset dropdowns across SODA by the permissions granted to users.
@@ -424,6 +391,7 @@ def bf_dataset_account(accountname):
     store = []
     threads = []
     nthreads = 8
+    # BE-REVIEW - Dorian - not sure what is going on here. Are we just sorting the datasets by name?
     # create the threads
     for i in range(nthreads):
         sub_datasets_list = datasets_list[i::nthreads]
@@ -438,7 +406,7 @@ def bf_dataset_account(accountname):
     sorted_bf_datasets = sorted(store, key=lambda k: k["name"].upper())
     return {"datasets": sorted_bf_datasets}
 
-
+# BE-REVIEW - Dorian - remove accountname parameter since it is not used
 def get_username(accountname):
     """
     Input: User's account name
