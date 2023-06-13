@@ -1051,7 +1051,7 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
         raise e
 
 
-
+# BE-REVIEW - Jacob - Remove selected_bfaccount from args
 def bf_add_permission(
     selected_bfaccount, selected_bfdataset, selected_user, selected_role
 ):
@@ -1089,7 +1089,7 @@ def bf_add_permission(
                 user_present = True
                 break
         if user_present == False:
-            error = error + "Please select a valid user" + "<br>"
+            error = f"{error}Please select a valid user<br>"
             c += 1
     except Exception as e:
         raise e
@@ -1100,12 +1100,12 @@ def bf_add_permission(
         "owner",
         "remove current permissions",
     ]:
-        error = error + "Please select a valid role" + "<br>"
+        error = f"{error}Please select a valid role<br>"
         c += 1
 
     if c > 0:
         abort(400, error)
-    
+
     try:
         # check that currently logged in user is a manager or a owner of the selected dataset (only manager and owner can change dataset permission)
         r = requests.get(f"{PENNSIEVE_URL}/user", headers=headers)
@@ -1164,7 +1164,7 @@ def bf_add_permission(
     except Exception as e:
         raise e
 
-
+# BE-REVIEW - Jacob - Remove selected_bfaccount from args
 def bf_add_permission_team(
     selected_bfaccount, selected_bfdataset, selected_team, selected_role
 ):
