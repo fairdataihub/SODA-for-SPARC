@@ -5758,7 +5758,7 @@ const openPage = async (targetPageID) => {
         `manage_datasets/ps_get_users?selected_account=${defaultBfAccount}`
       );
       const teamsReq = await client.get(
-        `manage_datasets/bf_get_teams?selected_account=${defaultBfAccount}`
+        `manage_datasets/ps_get_teams?selected_account=${defaultBfAccount}`
       );
 
       const usersThatCanBeGrantedPermissions = usersReq.data.users;

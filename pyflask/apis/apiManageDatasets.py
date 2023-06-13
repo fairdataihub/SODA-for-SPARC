@@ -12,7 +12,7 @@ from manageDatasets import (
     bf_add_permission,
     ps_get_users,
     bf_get_permission,
-    bf_get_teams,
+    ps_get_teams,
     bf_add_permission_team,
     bf_add_subtitle,
     bf_get_subtitle,
@@ -284,7 +284,7 @@ class BfGetUsers(Resource):
 
 
 
-@api.route('/bf_get_teams')
+@api.route('/ps_get_teams')
 class BfGetTeams(Resource):
 
   parser_get_teams = reqparse.RequestParser(bundle_errors=True)
@@ -296,7 +296,7 @@ class BfGetTeams(Resource):
       # get the selected account out of the request args
       selected_account = self.parser_get_teams.parse_args().get('selected_account')
       
-      return bf_get_teams(selected_account)
+      return ps_get_teams(selected_account)
     except Exception as e:
       if notBadRequestException(e):
         api.abort(500, str(e))

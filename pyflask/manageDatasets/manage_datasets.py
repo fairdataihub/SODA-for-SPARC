@@ -777,7 +777,6 @@ def submit_dataset_progress():
     }
 
 
-# BE-REVIEW - Dorian - change function name to ps_get_users
 # Also delete selected_bfaccount since it is not used
 def ps_get_users(selected_bfaccount):
     """
@@ -819,7 +818,7 @@ def ps_get_users(selected_bfaccount):
 
 # BE-REVIEW - Dorian - change function name to ps_get_teams
 # Also remve selected_bfaccount from parameters since it isn't used
-def bf_get_teams(selected_bfaccount):
+def ps_get_teams(selected_bfaccount):
     """
     Args:
       selected_bfaccount: name of selected Pennsieve account (string)

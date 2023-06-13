@@ -3765,7 +3765,7 @@ const refreshBfTeamsList = async (teamList) => {
   if (accountSelected !== "Select") {
     try {
       const teamsReq = await client.get(
-        `manage_datasets/bf_get_teams?selected_account=${defaultBfAccount}`
+        `manage_datasets/ps_get_teams?selected_account=${defaultBfAccount}`
       );
       const teamsThatCanBeGrantedPermissions = getSortedTeamStrings(teamsReq.data.teams);
 
