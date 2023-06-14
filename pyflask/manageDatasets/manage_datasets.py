@@ -200,21 +200,6 @@ def bf_add_account_api_key(keyname, key, secret):
         raise e
 
 
-
-def check_forbidden_characters_bf(my_string):
-    """
-    Check for forbidden characters in Pennsieve file/folder name
-
-    Args:
-        my_string: string with characters (string)
-    Returns:
-        False: no forbidden character
-        True: presence of forbidden character(s)
-    """
-    regex = re.compile(f"[{forbidden_characters_bf}]")
-    return regex.search(my_string) is not None or "\\" in r"%r" % my_string
-
-
 def bf_account_list():
     """
     Action:
