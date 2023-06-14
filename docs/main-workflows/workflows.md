@@ -29,9 +29,9 @@ SODA for SPARC can import, edit, and generate metadata and manifest files for da
 SODA for SPARC has two primary workflows for importing and generating manifest information. SODA for SPARC also has more standalone functions for importing
 dataset information to then be worked on outside of the context of the main workflow. These will be detailed after the two primary workflows.
 
-#### Manifest Import and Generation Primary Local Workflow
+#### Manifest Import and Generation Primary Workflow
 
-The first step in the primary workflow for creating manifest files from existing local datasets is to import the dataset. While importing a local dataset, any existing manifest information is stored in the working dataset structure object and returned to the client.
+The first step in the primary workflow for creating manifest files from existing local or Pennsieve datasets is to import the dataset. While importing a local  orPennsieve dataset, any existing manifest information is stored in the working dataset structure object and returned to the client.
 
 - [Import Local Dataset](https://github.com/fairdataihub/SODA-for-SPARC/blob/0946337f843b490b77773d5ddceaad56cea37405/pyflask/organizeDatasets/organize_datasets.py#L585)
 - [Import Pennsieve Dataset](https://github.com/fairdataihub/SODA-for-SPARC/blob/0946337f843b490b77773d5ddceaad56cea37405/pyflask/organizeDatasets/organize_datasets.py#L905)
