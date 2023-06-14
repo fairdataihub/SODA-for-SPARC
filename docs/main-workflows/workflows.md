@@ -12,3 +12,10 @@ If interested in how the curate function validates the dataset files, see the fo
 
 - [Local file validation](https://github.com/fairdataihub/SODA-for-SPARC/blob/0946337f843b490b77773d5ddceaad56cea37405/pyflask/curate/curate.py#L670)
 - [Pennsieve file validation](https://github.com/fairdataihub/SODA-for-SPARC/blob/0946337f843b490b77773d5ddceaad56cea37405/pyflask/curate/curate.py#L2528)
+
+## Dataset Validation
+
+SODA for SPARC integrates with the [SPARC Data Sturcture (SDS) Validator](https://github.com/SciCrunch/sparc-curation). SODA for SPARC takes the validation results object and parses it to return the relevant dataset validation results to the user. SODA for SPARC can validate datasets that are stored locally and on Pennsieve, however as the SDS Validator is still in development,
+the Pennsieve validation workflow does not run through all Pennsieve pipelines at this moment in time.
+
+- [Start of the dataset validation workflow](https://github.com/fairdataihub/SODA-for-SPARC-Validation-Server/blob/60a9760666bc301e8ca56999423e4bf9ec6f31f7/apis/apiValidator.py#L18)
