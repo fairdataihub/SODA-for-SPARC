@@ -11,7 +11,7 @@ from prepareMetadata import (
     load_existing_DD_file,
     load_existing_submission_file,
     import_ps_metadata_file,
-    import_bf_RC,
+    import_ps_RC,
     upload_RC_file,
     delete_manifest_dummy_folders,
     set_template_path, 
@@ -124,11 +124,10 @@ class RCFile(Resource):
         data = self.parser_get_RC_file.parse_args()
 
         file_type = data.get('file_type')
-        bfaccount = data.get('selected_account')
         bfdataset = data.get('selected_dataset')
 
         try:
-            return import_bf_RC(bfaccount, bfdataset, file_type)
+            return import_ps_RC(bfdataset, file_type)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))
@@ -485,7 +484,7 @@ class ImportBFMetadataFile(Resource):
             ui_fields = list(map(str.strip, ui_fields.strip('][').replace("'", '').replace('"', '').split(',')))
 
         try:
-            return import_ps_metadata_file(file_type, ui_fields, selected_account, selected_dataset)
+            return import_ps_metadata_file(file_type, ui_fields, selected_dataset)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))
@@ -594,7 +593,7 @@ class GenerateManifestFilesPennsieve(Resource):
             api.abort(400, str(selected_account + selected_dataset + soda_json_object))
 
         try:
-            return import_ps_manifest_file(soda_json_object, selected_account, selected_dataset)
+            return import_ps_manifest_file(soda_json_object, selected_dataset)
         except Exception as e:
             api.abort(500, str(e))
 

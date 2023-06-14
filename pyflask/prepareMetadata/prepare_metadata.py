@@ -18,11 +18,8 @@ import shutil
 import numpy as np
 import json
 from functools import partial
-from pennsieve2.pennsieve import Pennsieve
-# BE-REVIEW - Dorian - Remove unused imports
-from manageDatasets import bf_dataset_account
 from utils import ( connect_pennsieve_client, authenticate_user_with_client, get_dataset_id, create_request_headers, column_check, returnFileURL, load_manifest_to_dataframe)
-from permissions import has_edit_permissions, pennsieve_get_current_user_permissions
+from permissions import has_edit_permissions
 from collections import defaultdict
 import requests
 from errorHandlers import is_file_not_found_exception, is_invalid_file_exception, InvalidDeliverablesDocument
@@ -40,7 +37,6 @@ from docx import Document
 
 from flask import abort 
 
-from pysodaUtils import stop_agent, start_agent
 from manifest import update_existing_pennsieve_manifest_files, create_high_lvl_manifest_files_existing_ps_starting_point, recursive_item_path_create
 
 from namespaces import NamespaceEnum, get_namespace_logger
@@ -211,15 +207,10 @@ def subscriber_metadata(ps, events_dict):
             ps.unsubscribe(10)
 
 def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_after_upload):
-    # BE-REVIEW - Dorian - Do we want to use PS and then get the token?
-    ps = connect_pennsieve_client(bfaccount)
-    authenticate_user_with_client(ps, bfaccount)
 
-    token = get_access_token()
-    
+    token = get_access_token()    
     # check that the Pennsieve dataset is valid
     selected_dataset_id = get_dataset_id(token, bfdataset)
-
 
     # check that the user has permissions for uploading and modifying the dataset
     if not has_edit_permissions(token, selected_dataset_id):
@@ -228,10 +219,9 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
     # handle duplicates on Pennsieve: first, obtain the existing file ID
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
     r.raise_for_status()
-    # BE-REVIEW - Dorian - a better name than items would be good here
-    items = r.json()
+    ds_items = r.json()
     # go through the content in the dataset and find the file ID of the file to be uploaded
-    for item in items["children"]:
+    for item in ds_items["children"]:
         if item["content"]["name"] == file_type:
             item_id = item["content"]["id"]
             jsonfile = {
@@ -241,6 +231,8 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
             r = requests.post(f"{PENNSIEVE_URL}/data/delete",json=jsonfile, headers=headers)
             r.raise_for_status()
     try:
+        ps = connect_pennsieve_client(bfaccount)
+        authenticate_user_with_client(ps, bfaccount)
         # create a new manifest for the metadata file
         ps.use_dataset(selected_dataset_id)
         manifest = ps.manifest.create(file_path)
@@ -331,7 +323,6 @@ def grayout_single_value_rows(workbook, max_len, start_index):
         fillColor("CCCCCC", cell)
 
 
-# BE-REVIEW - Dorian - This function could be moved in a utils file since we do cell color filling in other functions as well
 def fillColor(color, cell):
     colorFill = PatternFill(start_color=color, end_color=color, fill_type="solid")
 
@@ -340,20 +331,19 @@ def fillColor(color, cell):
 
 ### Prepare dataset-description file
 
-# BE-REVIEW - Dorian - a better name for val_obj? We pass the sodaJSONObj through this I assume? For the 4 functions below this comment
-def populate_dataset_info(ws, val_obj):
+def populate_dataset_info(ws, ds_dict):
     ## name, description, type, samples, subjects
-    ws["D5"] = val_obj["name"]
-    ws["D6"] = val_obj["description"]
-    ws["D3"] = val_obj["type"]
-    ws["D29"] = val_obj["number of subjects"]
-    ws["D30"] = val_obj["number of samples"]
+    ws["D5"] = ds_dict["name"]
+    ws["D6"] = ds_dict["description"]
+    ws["D3"] = ds_dict["type"]
+    ws["D29"] = ds_dict["number of subjects"]
+    ws["D30"] = ds_dict["number of samples"]
 
     ## keywords
-    for i, column in zip(range(len(val_obj["keywords"])), excel_columns(start_index=3)):
-        ws[column + "7"] = val_obj["keywords"][i]
+    for i, column in zip(range(len(ds_dict["keywords"])), excel_columns(start_index=3)):
+        ws[column + "7"] = ds_dict["keywords"][i]
 
-    return val_obj["keywords"]
+    return ds_dict["keywords"]
 
 
 def populate_study_info(workbook, val_obj):
@@ -427,25 +417,14 @@ def save_ds_description_file(
     bfaccount,
     bfdataset,
     filepath,
-    dataset_str,
-    study_str,
-    con_str,
-    related_info_str,
+    dataset_dict,
+    study_info_dict,
+    constributor_info_dict,
+    additional_links_list,
 ):
     source = join(TEMPLATE_PATH, "dataset_description.xlsx")
-
     destination = join(METADATA_UPLOAD_BF_PATH, "dataset_description.xlsx") if upload_boolean else filepath
-
-
     shutil.copyfile(source, destination)
-
-    # json array to python list
-    # BE-REVIEW - Dorian - val_obj_study, val_obj_ds, val_arr_con, val_arr_related_info are not very descriptive names
-    # Can we just use the same variable name?
-    val_obj_study = study_str
-    val_obj_ds = dataset_str
-    val_arr_con = con_str
-    val_arr_related_info = related_info_str
 
     # write to excel file
     wb = load_workbook(destination)
@@ -458,15 +437,15 @@ def save_ds_description_file(
     ws1["D25"] = ""
     ws1["E25"] = ""
 
-    keyword_array = populate_dataset_info(ws1, val_obj_ds)
+    keyword_array = populate_dataset_info(ws1, dataset_dict)
 
-    study_array_len = populate_study_info(ws1, val_obj_study)
+    study_array_len = populate_study_info(ws1, study_info_dict)
 
     (funding_array, contributor_role_array) = populate_contributor_info(
-        ws1, val_arr_con
+        ws1, constributor_info_dict
     )
 
-    related_info_len = populate_related_info(ws1, val_arr_related_info)
+    related_info_len = populate_related_info(ws1, additional_links_list)
 
     # keywords length
     keyword_len = len(keyword_array)
@@ -501,7 +480,6 @@ def save_ds_description_file(
 
     return {"size": size}
 
-# BE-REVIEW - Dorian - This could probably be placed into the constants folder since they will never change
 subjectsTemplateHeaderList = [
     "subject id",
     "pool id",
@@ -553,7 +531,6 @@ samplesTemplateHeaderList = [
     "protocol url or doi",
 ]
 
-# BE-REVIEW - Dorian - could we possibly just place upload_metadata_file into the api calling upload_code_description_metadata?
 # This function could be removed and the upload_metadata_file could be called directly from the api
 def upload_code_description_metadata(filepath, bfAccount, bfDataset):
     upload_metadata_file("code_description.xlsx", bfAccount, bfDataset, filepath, False)
@@ -576,7 +553,7 @@ def save_subjects_file(upload_boolean, bfaccount, bfdataset, filepath, datastruc
 
     mandatoryFields = transposeDatastructure[:11]
     optionalFields = transposeDatastructure[11:]
-    refinedOptionalFields = processMetadataCustomFields(optionalFields)
+    refinedOptionalFields = getMetadataCustomFields(optionalFields)
 
     templateHeaderList = subjectsTemplateHeaderList
     sortMatrix = sortedSubjectsTableData(mandatoryFields, templateHeaderList)
@@ -593,7 +570,6 @@ def save_subjects_file(upload_boolean, bfaccount, bfdataset, filepath, datastruc
 
     # 1. see if the length of datastructure[0] == length of datastructure. If yes, go ahead. If no, add new columns from headers[n-1] onward.
     headers_no = len(refinedDatastructure[0])
-    # BE-REVIEW - Dorian - use fillColor function for all places that require styling an excel cell
     orangeFill = PatternFill(
         start_color="FFD965", end_color="FFD965", fill_type="solid"
     )
@@ -645,7 +621,7 @@ def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastruct
 
     mandatoryFields = transposeDatastructure[:9]
     optionalFields = transposeDatastructure[9:]
-    refinedOptionalFields = processMetadataCustomFields(optionalFields)
+    refinedOptionalFields = getMetadataCustomFields(optionalFields)
 
     templateHeaderList = samplesTemplateHeaderList
     sortMatrix = sortedSubjectsTableData(mandatoryFields, templateHeaderList)
@@ -661,7 +637,6 @@ def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastruct
 
     # 1. see if the length of datastructure[0] == length of datastructure. If yes, go ahead. If no, add new columns from headers[n-1] onward.
     headers_no = len(refinedDatastructure[0])
-    # BE-REVIEW - Dorian - use fillColor function for all places that require styling an excel cell
     orangeFill = PatternFill(
         start_color="FFD965", end_color="FFD965", fill_type="solid"
     )
@@ -798,16 +773,14 @@ def sortedSubjectsTableData(matrix, fields):
 
 
 # transpose a matrix (array of arrays)
-# BE-REVIEW - Dorian - The transpose of a matrix is found by interchanging its rows into columns or columns into rows.
+# The transpose of a matrix is found by interchanging its rows into columns or columns into rows.
 # REFERENCE: https://byjus.com/maths/transpose-of-a-matrix/
-# Added definition to avoid confusion
 def transposeMatrix(matrix):
     return [[matrix[j][i] for j in range(len(matrix))] for i in range(len(matrix[0]))]
 
 
 # helper function to process custom fields (users add and name them) for subjects and samples files
-# BE-REVIEW - Dorian - Maybe change the function name to getMetadataCustomFields? Would seem clearer IMO
-def processMetadataCustomFields(matrix):
+def getMetadataCustomFields(matrix):
     return [column for column in matrix if any(column[1:])]
 
 
@@ -836,8 +809,6 @@ def load_existing_submission_file(filepath, item_id=None, token=None):
         if is_file_not_found_exception(e):
             abort(400, "Local submission file not found")
 
-        # BE-REVIEW - Aaron - Remove TODO
-        # TODO: TEST check if error can indicate if file is not in the correct format TEST
         if is_invalid_file_exception(e):
             abort(400, "Local submission file is not in the correct format")
 
@@ -845,7 +816,7 @@ def load_existing_submission_file(filepath, item_id=None, token=None):
             "SODA cannot read this submission.xlsx file. If you are trying to retrieve a submission.xlsx file from Pennsieve, please make sure you are signed in with your Pennsieve account on SODA."
         ) from e
 
-    # BE-REVIEW - Dorian - remove empty rows and columns right? Maybe adding details on what's happening below
+    # drop rows with missing values, convert values to strings, and remove white spaces
     DD_df = DD_df.dropna(axis=0, how="all")
     DD_df = DD_df.replace(np.nan, "", regex=True)
     DD_df = DD_df.applymap(str)
@@ -894,8 +865,7 @@ def load_existing_submission_file(filepath, item_id=None, token=None):
 
 
 # import existing metadata files except Readme and Changes from Pennsieve
-# BE-REVIEW - Dorian - remove bfaccount parameter since it's not used
-def import_ps_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
+def import_ps_metadata_file(file_type, ui_fields, bfdataset):
     token = get_access_token()
 
     selected_dataset_id = get_dataset_id(token, bfdataset)
@@ -903,11 +873,9 @@ def import_ps_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(token))
     r.raise_for_status()
 
-    # BE-REVIEW - Dorian - if anyone can think of a better variable name rather than items, please add a comment
-    # I'm thinking of something like dataset_items or dataset_files
-    items = r.json()["children"]
+    ds_items = r.json()["children"]
 
-    for i in items:
+    for i in ds_items:
         if i["content"]["name"] == file_type:
             item_id = i["content"]["id"]
             url = returnFileURL(token, item_id)
@@ -916,7 +884,7 @@ def import_ps_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
                 return load_existing_submission_file(url, item_id, token)
 
             elif file_type == "dataset_description.xlsx":
-                # BE-REVIEW - Aaron - bf -> ps
+                # bf is the old signifier for pennsieve
                 return load_existing_DD_file("bf", url, item_id, token)
 
             elif file_type == "subjects.xlsx":
@@ -935,8 +903,7 @@ def import_ps_metadata_file(file_type, ui_fields, bfaccount, bfdataset):
 
 
 # import readme or changes file from Pennsieve
-# BE-REVIEW - Dorian - remove bfaccount parameter since it's not used
-def import_bf_RC(bfaccount, bfdataset, file_type):
+def import_ps_RC(bfdataset, file_type):
     file_type = file_type + ".txt"
 
     token = get_access_token()
@@ -966,9 +933,8 @@ manifest_progress = {
     "finished": False
 }
 
-# BE-REVIEW - Aaron - Remove the below comment
-# TODO: NOTE: ESSENTIAL: Remove the manifest_file even if the user does not generate before pulling again.f
-def import_ps_manifest_file(soda_json_structure, bfaccount, bfdataset):
+
+def import_ps_manifest_file(soda_json_structure, bfdataset):
     # reset the progress tracking information
     global manifest_progress
     global manifest_folder_path
@@ -977,8 +943,6 @@ def import_ps_manifest_file(soda_json_structure, bfaccount, bfdataset):
     manifest_progress["manifest_files_uploaded"] = 0
 
     token = get_access_token()
-    # BE-REVIEW - Dorian - remove unused variable
-    dataset_id = get_dataset_id(token, bfdataset)
 
     high_level_folders = ["code", "derivative", "docs", "primary", "protocol", "source"]
     # convert the string into a json object/dictionary
@@ -989,7 +953,6 @@ def import_ps_manifest_file(soda_json_structure, bfaccount, bfdataset):
 
     # get the count of the total number of high level folders in soda_json_structure
     for folder in list(dataset_structure["folders"]):
-        # BE-REVIEW - Dorian - Merge nested if statements
         if folder in high_level_folders:
             if dataset_structure["folders"][folder]["files"] == {} and dataset_structure["folders"][folder]["folders"] == {}:
                 manifest_progress["total_manifest_files"] += 1
@@ -1003,14 +966,10 @@ def import_ps_manifest_file(soda_json_structure, bfaccount, bfdataset):
     update_existing_pennsieve_manifest_files(token, soda_json_structure, high_level_folders, manifest_progress, manifest_folder_path)
 
     # create manifest files from scratch for any high level folders that don't have a manifest file on Pennsieve
-    # BE-REVIEW - Aaron - bf -> ps 
     create_high_lvl_manifest_files_existing_ps_starting_point(soda_json_structure, manifest_folder_path, high_level_folders, manifest_progress)
 
     # finished with the manifest generation process
     manifest_progress["finished"] = True
-
-    # BE-REVIEW - Dorian - remove unused variable
-    no_manifest_boolean = False
     
     return {"message": "Finished"}
 
@@ -1048,15 +1007,14 @@ def load_existing_DD_file(import_type, filepath, item_id=None, token=None):
     # open given workbook
     # and store in excel object
 
-     # BE-REVIEW - Aaron -  bf -> ps
+     # bf is the old signifier for pennsieve
     if import_type == "bf":
         try:
             DD_df = load_manifest_to_dataframe(item_id, "excel", token, column_check, 0)
         except Exception as e:
             namespace_logger.info(e)
-            # BE-REVIEW - Aaron - submission.xlsx -> dataset_description.xlsx
             raise Exception from e (
-                "SODA cannot read this submission.xlsx file. If you are trying to retrieve a submission.xlsx file from Pennsieve, please make sure you are signed in with your Pennsieve account on SODA."
+                "SODA cannot read this dataset_description.xlsx file. If you are trying to retrieve a dataset_description.xlsx file from Pennsieve, please make sure you are signed in with your Pennsieve account on SODA."
             )
 
     else:
@@ -1073,14 +1031,12 @@ def load_existing_DD_file(import_type, filepath, item_id=None, token=None):
             pd.read_csv(tf.name, encoding="ISO-8859-1", usecols=column_check, header=0)
         )
 
-    # BE-REVIEW - Dorian - is this dropping empty columns and rows? If not, some details here would be helpful
-    # I think this is done in other areas as well, so it we could have a function call for this
+    # drop emtpy rows, convert values to strings, and remove white spaces
     DD_df = DD_df.dropna(axis=0, how="all")
     DD_df = DD_df.replace(np.nan, "", regex=True)
     DD_df = DD_df.applymap(str)
     DD_df = DD_df.applymap(str.strip)
 
-    # BE-REVIEW - Dorian - add these lists to a constants file
     basicInfoHeaders = [
         "Type",
         "Title",
@@ -1179,8 +1135,10 @@ def load_existing_DD_file(import_type, filepath, item_id=None, token=None):
         "Related information": transposeMatrix(relatedInfoSection),
     }
 
-# BE-REVIEW - Dorian - what are the dummy folders?
 def delete_manifest_dummy_folders(userpath_list):
+    """
+        Delete local manifest folders when a user switches from PS to local in the standalone manifest generator without saving. 
+    """
     for userpath in userpath_list:
         shutil.rmtree(userpath) if isdir(userpath) else 0
 
@@ -1198,8 +1156,8 @@ def edit_ps_manifest_file(edit_action, manifest_type):
 
 
 def drop_manifest_empty_columns(manifest_file_location):
-    # BE-REVIEW - Dorian - isn't there a different method that imports the namespace_logger without having to pass it in?
     global namespace_logger
+
     # read the manifest files in the manifest files folder
     high_level_folders = os.listdir(manifest_file_location)
 
@@ -1243,7 +1201,6 @@ def drop_manifest_empty_columns(manifest_file_location):
         yellowFill = PatternFill(
             start_color="FFD965", fill_type="solid"
         )
-        # BE-REVIEW - Dorian - use colorFill for this
         ws['A1'].fill = blueFill
         ws['B1'].fill = greenFill
         ws['C1'].fill = greenFill

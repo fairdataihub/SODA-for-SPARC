@@ -11,7 +11,7 @@ from .prepare_metadata import (
     load_existing_DD_file,
     load_existing_submission_file,
     import_ps_metadata_file,
-    import_bf_RC,
+    import_ps_RC,
     upload_RC_file,
     delete_manifest_dummy_folders,
     set_template_path, 
