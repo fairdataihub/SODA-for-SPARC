@@ -1608,7 +1608,6 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
 
         return
 
-
     def recursive_item_path_create(folder, path):
         """
         Recursively create the path for the item    # Add a new key containing the path to all the files and folders on the
@@ -1635,8 +1634,7 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
 
         return
 
-    # Check and create any non existing folders for the file move process\
-    # BE-REVIEW - Dorian - rename function to recursive_check_and_create_ps_file_path
+    # Check and create any non existing folders for the file move process
     def recursive_check_and_create_ps_file_path(
         folderpath, index, current_folder_structure
     ):
