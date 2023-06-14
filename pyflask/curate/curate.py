@@ -3263,7 +3263,6 @@ def generate_manifest_file_data(dataset_structure_obj):
             # means the json is from a pennsieve dataset
             pennsieve_recursive_folder_traversal(dataset_structure_obj["folders"][high_level_folder], hlf_data_array, relative_structure_path)
         else:
-            # BE-REVIEW - Aaron - Change name to not have the guided prefix
             guided_recursive_folder_traversal(dataset_structure_obj["folders"][high_level_folder], hlf_data_array, relative_structure_path)
         hlf_manifest_data[high_level_folder] = hlf_data_array
 

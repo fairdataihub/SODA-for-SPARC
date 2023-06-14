@@ -13,7 +13,7 @@ import pandas as pd
 import requests
 from namespaces import NamespaceEnum, get_namespace_logger
 from authentication import get_access_token
-from utils import get_dataset_id, create_request_headers, load_manifest_to_dataframe
+from utils import get_dataset_id, create_request_headers, load_metadata_to_dataframe
 
 
 
@@ -111,7 +111,7 @@ def get_manifests(soda_json_structure):
               if subfolder_item["content"]["name"] == "manifest.xlsx":
                 # get the manifest file
                 man_id = subfolder_item["content"]["id"]
-                df = load_manifest_to_dataframe(man_id, "xlsx", token)
+                df = load_metadata_to_dataframe(man_id, "xlsx", token)
                 # convert to json
                 manifests[item_name] = df.to_json()
 

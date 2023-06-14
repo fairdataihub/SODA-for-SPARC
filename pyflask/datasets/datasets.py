@@ -5,7 +5,6 @@ Routes for performing operations on datasets
 from os import walk
 from flask import abort
 import requests
-# BE-REVIEW - Dorian - Removing unused imports
 from utils import create_request_headers, connect_pennsieve_client, authenticate_user_with_client, get_dataset_id
 from permissions import has_edit_permissions, pennsieve_get_current_user_permissions
 from authentication import get_access_token
@@ -13,7 +12,6 @@ from authentication import get_access_token
 
 PENNSIEVE_URL = "https://api.pennsieve.io"
 
-# BE-REVIEW - Dorian - maybe rename function to say get_user_role? To be more explicit on who's role is being returned
 def get_role(dataset):
     token = get_access_token()
 
@@ -30,17 +28,14 @@ def get_role(dataset):
         abort(500, "An internal server error prevented the request from being fulfilled. Please try again later.")
 
 
-# BE-REVIEW - Dorian - Rename function since parameter says name or id
 def get_dataset_by_id(dataset_name_or_id):
     token = get_access_token()
 
-    # BE-REVIEW - Dorian - there's a couple functions that do this, we should probably consolidate them
     if dataset_name_or_id.startswith("N:dataset:"):
         selected_dataset_id = dataset_name_or_id
     else:
         selected_dataset_id = get_dataset_id(token, dataset_name_or_id)
 
-    # BE-REVIEW - Dorian - the headers can be gather from create_request_headers no?
     headers = {
         "Accept": "*/*",
         "Content-Type": "application/json",
@@ -54,8 +49,7 @@ def get_dataset_by_id(dataset_name_or_id):
     return r.json()
 
 
-# BE-REVIEW - Dorian - These functions could possibly be moved to collectionsDatasets.py
-# BE-REVIEW - Dorian - Remove account parameter since it's not used
+
 def get_current_collection_names(account, dataset):
     """
     Function used to get collection names of the current dataset
@@ -69,7 +63,6 @@ def get_current_collection_names(account, dataset):
 
     return r.json()
 
-# BE-REVIEW - Dorian - Remove account parameter since it's not used
 def upload_collection_names(account, dataset, tags):
     """
     Function used to upload the collection tags of a dataset to Pennsieve
@@ -83,7 +76,6 @@ def upload_collection_names(account, dataset, tags):
     if not has_edit_permissions(token, selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
     
-    # BE-REVIEW - Dorian - rename the store variable as it seems vague
     store = []
     for tag in tags:
         jsonfile = {"collectionId": int(tag)}
@@ -101,7 +93,6 @@ def upload_collection_names(account, dataset, tags):
     return {"collection": store}
 
 
-# BE-REVIEW - Dorian - Remove account parameter since it's not used
 def remove_collection_names(account, dataset, tags):
     """
     Function used to remove the tags the were assigned to a dataset
@@ -111,7 +102,6 @@ def remove_collection_names(account, dataset, tags):
 
     token = get_access_token()
 
-    # BE-REVIEW - Dorian - there's a couple functions that do this, we should probably consolidate them
     if dataset.startswith("N:dataset:"):
         selected_dataset_id = dataset
     else:
@@ -127,7 +117,6 @@ def remove_collection_names(account, dataset, tags):
     return dict({"collection": "Collection removed"})
 
 
-# BE-REVIEW - Dorian - Might be worth adding details like this to most functions as it provides a quick overview of what takes in and returns
 def reserve_dataset_doi(dataset):  # sourcery skip: extract-method
     """
     Function used to reserve a DOI after dataset has been published
@@ -212,8 +201,6 @@ def get_total_items_in_local_dataset(dataset_path):
     for _, dirs, filenames in walk(dataset_path):
         # walk through all folders and it's subfolders
         for Dir in dirs:
-            # BE-REVIEW - Dorian - this seems like it's only checking for hidden files/folders but not manifest files?
-            # does not take hidden folders or manifest folders
             if Dir[:1] != ".":
                 create_soda_json_total_items += 1
         for fileName in filenames:

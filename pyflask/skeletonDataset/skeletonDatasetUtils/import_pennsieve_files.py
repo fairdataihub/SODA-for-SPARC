@@ -1,7 +1,7 @@
 import os.path 
 import pandas as pd
 import requests
-from utils import create_request_headers, load_manifest_to_dataframe, get_dataset_id
+from utils import create_request_headers, load_metadata_to_dataframe, get_dataset_id
 from authentication import get_access_token
 
 
@@ -111,7 +111,7 @@ def import_ps_metadata_files_skeleton(bfdataset, metadata_files):
                     r = requests.get(url)
                     metadata_files[child["content"]["name"]] = r.text
                 else:
-                    dataframe = load_manifest_to_dataframe(item_id, "xlsx", token)
+                    dataframe = load_metadata_to_dataframe(item_id, "xlsx", token)
                     metadata_json = dataframe.to_json()
                     metadata_files[child["content"]["name"]] = metadata_json
 

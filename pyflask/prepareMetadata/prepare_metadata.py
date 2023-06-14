@@ -18,7 +18,7 @@ import shutil
 import numpy as np
 import json
 from functools import partial
-from utils import ( connect_pennsieve_client, authenticate_user_with_client, get_dataset_id, create_request_headers, column_check, returnFileURL, load_manifest_to_dataframe)
+from utils import ( connect_pennsieve_client, authenticate_user_with_client, get_dataset_id, create_request_headers, column_check, returnFileURL, load_metadata_to_dataframe)
 from permissions import has_edit_permissions
 from collections import defaultdict
 import requests
@@ -264,7 +264,6 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
 
 
 def excel_columns(start_index=0):
-    # BE-REVIEW - Dorian - Perchance some better variable names here? I'm not sure what this is doing. Getting two letters as in the Row and Column?
     """
     NOTE: does not support more than 699 contributors/links
     """
@@ -675,7 +674,7 @@ def save_samples_file(upload_boolean, bfaccount, bfdataset, filepath, datastruct
 # import an existing subjects/samples files from an excel file
 def convert_subjects_samples_file_to_df(type, filepath, ui_fields, item_id=None, token=None):
     if item_id is not None: 
-        subjects_df = load_manifest_to_dataframe(item_id, "excel", token, column_check, 0)
+        subjects_df = load_metadata_to_dataframe(item_id, "excel", token, column_check, 0)
     else:
         subjects_df = pd.read_excel(
             filepath, engine="openpyxl", usecols=column_check, header=0
@@ -803,7 +802,7 @@ def load_existing_submission_file(filepath, item_id=None, token=None):
                 filepath, engine="openpyxl", usecols=column_check, header=0
             )
         else:
-            DD_df = load_manifest_to_dataframe(item_id, "excel", token, column_check, 0)
+            DD_df = load_metadata_to_dataframe(item_id, "excel", token, column_check, 0)
 
     except Exception as e:
         if is_file_not_found_exception(e):
@@ -1010,7 +1009,7 @@ def load_existing_DD_file(import_type, filepath, item_id=None, token=None):
      # bf is the old signifier for pennsieve
     if import_type == "bf":
         try:
-            DD_df = load_manifest_to_dataframe(item_id, "excel", token, column_check, 0)
+            DD_df = load_metadata_to_dataframe(item_id, "excel", token, column_check, 0)
         except Exception as e:
             namespace_logger.info(e)
             raise Exception from e (

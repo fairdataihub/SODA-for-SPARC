@@ -28,7 +28,7 @@ from utils import get_dataset_id, create_request_headers
 from namespaces import NamespaceEnum, get_namespace_logger
 from openpyxl.styles import PatternFill
 from openpyxl import load_workbook
-from utils import load_manifest_to_dataframe
+from utils import load_metadata_to_dataframe
 
 namespace_logger = get_namespace_logger(NamespaceEnum.ORGANIZE_DATASETS)
 from authentication import get_access_token
@@ -162,7 +162,6 @@ def createFiles(jsonpath, fileKey, distdir, listallfiles):
 
     srcfile = jsonpath[fileKey][0]
     distfile = distdir
-    # BE-REVIEW - Jacob - Could use comment here for clarity of listallfiles (is it for upload etc)
     listallfiles.append([srcfile, distfile])
 
 
@@ -1274,10 +1273,10 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         df = ""
                         try:                            
                             if package_name.lower() == "manifest.xlsx":
-                                df = load_manifest_to_dataframe(package_id, "excel", token)
+                                df = load_metadata_to_dataframe(package_id, "excel", token)
                                 df = df.fillna("")
                             else:
-                                df = load_manifest_to_dataframe(package_id, "csv", token)
+                                df = load_metadata_to_dataframe(package_id, "csv", token)
                                 df = df.fillna("")
                             # 
                             manifest_dict[high_lvl_folder].update(df.to_dict())
