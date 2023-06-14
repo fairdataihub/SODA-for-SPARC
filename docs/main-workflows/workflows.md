@@ -22,19 +22,23 @@ the Pennsieve validation workflow does not run through all Pennsieve pipelines a
 
 ## Manifest and Metadata Import and Generation
 
-SODA for SPARC can import, edit, and generate metadata and manifest files for datasets. 
+SODA for SPARC can import, edit, and generate metadata and manifest files for datasets.
 
-### Manifest Workflows 
-SODA for SPARC has two primary workflows for importing and generating manifest information. SODA for SPARC also has more standalone functions for importing 
+### Manifest Workflows
+
+SODA for SPARC has two primary workflows for importing and generating manifest information. SODA for SPARC also has more standalone functions for importing
 dataset information to then be worked on outside of the context of the main workflow. These will be detailed after the two primary workflows.
 
 #### Manifest Import and Generation Primary Local Workflow
-The first step in the primary workflow for creating manifest files from existing local datasets is to import the dataset. While importing a local dataset, any existing manifest information is stored in the working dataset structure object and returned to the client. 
+
+The first step in the primary workflow for creating manifest files from existing local datasets is to import the dataset. While importing a local dataset, any existing manifest information is stored in the working dataset structure object and returned to the client.
+
 - [Import Local Dataset](https://github.com/fairdataihub/SODA-for-SPARC/blob/0946337f843b490b77773d5ddceaad56cea37405/pyflask/organizeDatasets/organize_datasets.py#L585)
 
 To edit the manifest information, the user can edit the working dataset structure object by extending it with new files, folders, and manifest information. Once the user is satisfied with their edits, the user can generate their new manifest files, as well as store any new file/folder additions locally by using the main curate function detailed above.
 
 #### Manifest Generation Pennsieve Workflow
+
 - [Pennsieve manifest importing](https://github.com/fairdataihub/SODA-for-SPARC/blob/0946337f843b490b77773d5ddceaad56cea37405/pyflask/prepareMetadata/prepare_metadata.py#L936)
 
 ### Manifest Editing:
