@@ -19,3 +19,35 @@ SODA for SPARC integrates with the [SPARC Data Sturcture (SDS) Validator](https:
 the Pennsieve validation workflow does not run through all Pennsieve pipelines at this moment in time.
 
 - [Start of the dataset validation workflow](https://github.com/fairdataihub/SODA-for-SPARC-Validation-Server/blob/60a9760666bc301e8ca56999423e4bf9ec6f31f7/apis/apiValidator.py#L18)
+
+## Manifest and Metadata Import and Generation
+
+SODA for SPARC can import, edit, and generate metadata and manifest files for datasets.
+
+Manifest Importing:
+
+- [Local manifest importing]()
+- [Pennsieve manifest importing]()
+
+Manifest Editing:
+
+- [Local manifest editing]()
+
+Manifest Generation:
+
+- [Local manifest generation]()
+- [Pennsieve manifest geenration]()
+
+Metadata Importing:
+
+- [Local metadata importing]()
+- [Pennsieve metadata importing]()
+
+Metadata Editing:
+
+- [Local metadata editing]()
+
+Metadata Generation:
+
+- [Local metadata generation]()
+- [Pennsieve metadata generation]()
