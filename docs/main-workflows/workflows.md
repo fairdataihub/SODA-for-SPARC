@@ -39,16 +39,21 @@ SODA for SPARC can import, edit, and generate metadata and manifest files for da
 - [Pennsieve manifest generation](https://github.com/fairdataihub/SODA-for-SPARC/blob/0946337f843b490b77773d5ddceaad56cea37405/pyflask/curate/curate.py#L2716)
 
 ### Metadata Importing:
+
 #### Local Importing
+
 - [Local Submission File](https://github.com/fairdataihub/SODA-for-SPARC/blob/0946337f843b490b77773d5ddceaad56cea37405/pyflask/prepareMetadata/prepare_metadata.py#L797)
 - [Local Dataset Description File](https://github.com/fairdataihub/SODA-for-SPARC/blob/0946337f843b490b77773d5ddceaad56cea37405/pyflask/prepareMetadata/prepare_metadata.py#L1002)
 
 #### Pennsieve Importing
+
 - [Pennsieve metadata importing](https://github.com/fairdataihub/SODA-for-SPARC/blob/0946337f843b490b77773d5ddceaad56cea37405/pyflask/prepareMetadata/prepare_metadata.py#L867)
 - [Pennsieve README/CHANGES files import](https://github.com/fairdataihub/SODA-for-SPARC/blob/0946337f843b490b77773d5ddceaad56cea37405/pyflask/prepareMetadata/prepare_metadata.py#L905)
 
 ### Metadata Generation:
+
 #### Local Generation
+
 - [Generate Local Submission File](https://github.com/fairdataihub/SODA-for-SPARC/blob/0946337f843b490b77773d5ddceaad56cea37405/pyflask/prepareMetadata/prepare_metadata.py#L142)
 - [Generate Local Subjects File](https://github.com/fairdataihub/SODA-for-SPARC/blob/0946337f843b490b77773d5ddceaad56cea37405/pyflask/prepareMetadata/prepare_metadata.py#L538)
 - [Generate Local Samples File](https://github.com/fairdataihub/SODA-for-SPARC/blob/0946337f843b490b77773d5ddceaad56cea37405/pyflask/prepareMetadata/prepare_metadata.py#L605)
@@ -56,5 +61,6 @@ SODA for SPARC can import, edit, and generate metadata and manifest files for da
 - [Generate README/CHANGES file](https://github.com/fairdataihub/SODA-for-SPARC/blob/0946337f843b490b77773d5ddceaad56cea37405/scripts/metadata-files/readme-changes.js#L335)
 
 #### Pennsieve Generation
+
 - [Pennsieve metadata generation](https://github.com/fairdataihub/SODA-for-SPARC/blob/0946337f843b490b77773d5ddceaad56cea37405/pyflask/prepareMetadata/prepare_metadata.py#L209)
 - [Pennsieve README/CHANGES generation](https://github.com/fairdataihub/SODA-for-SPARC/blob/0946337f843b490b77773d5ddceaad56cea37405/pyflask/prepareMetadata/prepare_metadata.py#L187)
