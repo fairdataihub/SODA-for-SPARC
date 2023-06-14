@@ -870,7 +870,7 @@ def ps_get_permission(selected_bfaccount, selected_bfdataset):
                 team_name = list_dataset_permission_teams[i]["name"]
                 team_role = list_dataset_permission_teams[i]["role"]
                 list_dataset_permission_first_last_role.append(
-                    "Team: " + team_name + ", role: " + team_role
+                    f"Team: {team_name}, role: {team_role}"
                 )
                 team_id = list_dataset_permission_teams[i]["id"]
                 team_ids.append({"team_id": team_id, "team_role": team_role})
@@ -884,13 +884,10 @@ def ps_get_permission(selected_bfaccount, selected_bfdataset):
         if type(list_dataset_permission_organizations) is dict:
             organization_keys = list(list_dataset_permission_organizations.keys())
             if "role" in organization_keys:
-                organization_name = list_dataset_permission_organizations["name"]
                 organization_role = list_dataset_permission_organizations["role"]
+                organization_name = list_dataset_permission_organizations["name"]
                 list_dataset_permission_first_last_role.append(
-                    "Organization: "
-                    + organization_name
-                    + ", role: "
-                    + organization_role
+                    f"Organization: {organization_name}, role: {organization_role}"
                 )
         else:
             for i in range(len(list_dataset_permission_organizations)):
@@ -898,13 +895,10 @@ def ps_get_permission(selected_bfaccount, selected_bfdataset):
                     list_dataset_permission_organizations[i].keys()
                 )
                 if "role" in organization_keys:
-                    organization_name = list_dataset_permission_organizations[i]["name"]
                     organization_role = list_dataset_permission_organizations[i]["role"]
+                    organization_name = list_dataset_permission_organizations[i]["name"]
                     list_dataset_permission_first_last_role.append(
-                        "Organization: "
-                        + organization_name
-                        + ", role: "
-                        + organization_role
+                        f"Organization: {organization_name}, role: {organization_role}"
                     )
 
         return {"permissions": list_dataset_permission_first_last_role, "team_ids": team_ids}
@@ -1007,7 +1001,7 @@ def ps_add_permission(
                 r.raise_for_status()
             except Exception as e:
                 raise Exception(e) from e
-            return {"message": "Permission removed for " + selected_user}
+            return {"message": f"Permission removed for {selected_user}"}
         elif selected_role == "owner":
             # check if currently logged in user is owner of selected dataset (only owner can change owner)
             # change owner
@@ -1053,7 +1047,7 @@ def ps_add_permission_team(
     try:
         selected_dataset_id = get_dataset_id(token, selected_bfdataset)
     except Exception as e:
-        error = error + "Please select a valid Pennsieve dataset" + "<br>"
+        error = f"{error}Please select a valid Pennsieve dataset<br>"
         c += 1
 
     headers = create_request_headers(token)
@@ -1068,7 +1062,7 @@ def ps_add_permission_team(
             list_teams_name.append(list_teams[i]["team"]["name"])
             dict_teams[list_teams_name[i]] = list_teams[i]["team"]["id"]
         if selected_team not in list_teams_name:
-            error = error + "Please select a valid team" + "<br>"
+            error = f"{error}Please select a valid team<br>"
             c += 1
     except Exception as e:
         raise e
@@ -1078,7 +1072,7 @@ def ps_add_permission_team(
         "editor",
         "remove current permissions",
     ]:
-        error = error + "Please select a valid role" + "<br>"
+        error = f"{error}Please select a valid role<br>"
         c += 1
 
     if c > 0:
@@ -1101,12 +1095,12 @@ def ps_add_permission_team(
         for i in range(len(list_dataset_permission)):
             first_name = list_dataset_permission[i]["firstName"]
             last_name = list_dataset_permission[i]["lastName"]
-            role = list_dataset_permission[i]["role"]
-
             if (
                 first_name == first_name_current_user
                 and last_name == last_name_current_user
             ):
+                role = list_dataset_permission[i]["role"]
+
                 if role not in ["owner", "manager"]:
                     abort(403, "You must be dataset owner or manager to change its permissions")
                 else:
@@ -1118,7 +1112,7 @@ def ps_add_permission_team(
             jsonfile = {"id": selected_team_id}
             r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/teams", json=jsonfile, headers=headers)
             r.raise_for_status()
-            return {"message": "Permission removed for " + selected_team}
+            return {"message": f"Permission removed for {selected_team}"}
         else:
             jsonfile = {"id": selected_team_id, "role": selected_role}
             r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/teams", json=jsonfile, headers=headers)
@@ -1455,7 +1449,7 @@ def bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_st
         jsonfile = {"status": new_status}
         r = requests.put(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", json=jsonfile, headers=headers)
         r.raise_for_status()
-        return { "message": "Success: Changed dataset status to '" + selected_status + "'" }
+        return {"message": f"Success: Changed dataset status to '{selected_status}'"}
     except Exception as e:
         raise e
 
