@@ -27,9 +27,11 @@ SODA for SPARC can import, edit, and generate metadata and manifest files for da
 ### Manifest Importing:
 
 #### Local Workflow
+
 - [Local manifest importing](https://github.com/fairdataihub/SODA-for-SPARC/blob/0946337f843b490b77773d5ddceaad56cea37405/pyflask/manifest/manifest_writer.py#L348)
 
 #### Pennsieve Workflow
+
 - [Pennsieve manifest importing](https://github.com/fairdataihub/SODA-for-SPARC/blob/0946337f843b490b77773d5ddceaad56cea37405/pyflask/prepareMetadata/prepare_metadata.py#L936)
 
 ### Manifest Editing:
