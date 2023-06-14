@@ -7,7 +7,7 @@ from os import makedirs, remove, listdir
 from datetime import datetime
 import pathlib
 import shutil 
-from utils import load_manifest_to_dataframe
+from utils import load_metadata_to_dataframe
 import time
 
 import pandas as pd
@@ -77,7 +77,7 @@ def update_existing_pennsieve_manifest_files(ps, soda_json_structure, high_level
                     item_id = j["content"]["nodeId"]
                     # url = returnFileURL(ps, item_id)
 
-                    manifest_df = load_manifest_to_dataframe(item_id, "excel", ps, column_check, 0)
+                    manifest_df = load_metadata_to_dataframe(item_id, "excel", ps, column_check, 0)
 
                     filepath = join(
                         manifest_path, folder_name, "manifest.xlsx"
@@ -206,7 +206,7 @@ def update_existing_pennsieve_manifest_file_helper(folder, old_manifest_dict, ne
 
 
 
-def create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, manifest_path, high_level_folders=["code", "derivative", "docs", "primary", "protocol", "source" ], manifest_progress={}):
+def create_high_lvl_manifest_files_existing_ps_starting_point(soda_json_structure, manifest_path, high_level_folders=["code", "derivative", "docs", "primary", "protocol", "source" ], manifest_progress={}):
     """
     Function to create manifest files for each high-level SPARC folder for an existing Pennsieve dataset.
     Unlike the standalone manifest generator algorithm this removes any existing manifest files and replaces them with new ones.
@@ -590,7 +590,7 @@ class ManifestWriterStandaloneAlgorithm(ManifestWriter):
         recursive_item_path_create(soda_json_structure["dataset-structure"], [])
 
         # create manifest files from scratch for any high level folders that don't have a manifest file on Pennsieve
-        create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, self.manifest_path, high_level_folders, manifest_progress)
+        create_high_lvl_manifest_files_existing_ps_starting_point(soda_json_structure, self.manifest_path, high_level_folders, manifest_progress)
 
 
 class ManifestWriterStandaloneLocal(ManifestWriter):
@@ -640,7 +640,7 @@ class ManifestWriterNewPennsieve(ManifestWriter):
 
 
         # create manifest files from scratch for any high level folders that don't have a manifest file on Pennsieve
-        create_high_level_manifest_files_existing_bf_starting_point(soda_json_structure, self.manifest_path, high_level_folders, manifest_progress)
+        create_high_lvl_manifest_files_existing_ps_starting_point(soda_json_structure, self.manifest_path, high_level_folders, manifest_progress)
 
 
 

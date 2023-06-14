@@ -1,11 +1,9 @@
 ### Import required python modules
-from turtle import pensize
 from flask import abort
 import platform
 import os
 import itertools
 from os import makedirs, mkdir, walk
-from openpyxl.styles import PatternFill, Font
 from openpyxl import load_workbook
 from os.path import (
     isdir,
@@ -25,17 +23,15 @@ import gevent
 import pathlib
 from datetime import datetime, timezone
 import requests 
-from permissions import bf_get_current_user_permission_agent_two, has_edit_permissions
-from utils import connect_pennsieve_client, get_dataset_id, create_request_headers, authenticate_user_with_client
+from permissions import pennsieve_get_current_user_permissions
+from utils import get_dataset_id, create_request_headers
 from namespaces import NamespaceEnum, get_namespace_logger
-from openpyxl.styles import PatternFill, Font
+from openpyxl.styles import PatternFill
 from openpyxl import load_workbook
-from utils import load_manifest_to_dataframe
+from utils import load_metadata_to_dataframe
 
-import json
 namespace_logger = get_namespace_logger(NamespaceEnum.ORGANIZE_DATASETS)
 from authentication import get_access_token
-
 
 
 
@@ -61,10 +57,9 @@ start_time_bf_upload = 0
 start_submit = 0
 metadatapath = join(userpath, "SODA", "SODA_metadata")
 
-bf = ""
 myds = ""
 initial_bfdataset_size = 0
-upload_directly_to_bf = 0
+upload_directly_to_ps = 0
 initial_bfdataset_size_submit = 0
 
 forbidden_characters = '<>:"/\|?*'
@@ -97,6 +92,9 @@ METADATA_FILES_SPARC = [
 
 ### Internal functions
 def TZLOCAL():
+    """
+        Get current local timezone
+    """
     return datetime.now(timezone.utc).astimezone().tzinfo
 
 ## these subsequent CheckLeafValue and traverseForLeafNodes functions check for the validity of file paths,
@@ -133,26 +131,25 @@ def checkLeafValue(leafName, leafNodeValue):
     return [True, total_dataset_size - 1]
 
 
-def traverseForLeafNodes(jsonStructure):
+def traverseForLeafNodes(datasetStructure):
     total_dataset_size = 1
 
-    for key in jsonStructure:
-        if isinstance(jsonStructure[key], list):
+    for key in datasetStructure:
+        if isinstance(datasetStructure[key], list):
 
-            returnedOutput = checkLeafValue(key, jsonStructure[key])
+            returnedOutput = checkLeafValue(key, datasetStructure[key])
 
-            # returnedOutput = [True, total_dataset_size-1]
             if returnedOutput[0]:
                 total_dataset_size += returnedOutput[1]
 
         else:
 
-            if len(jsonStructure[key]) == 0:
-                returnedOutput = checkLeafValue(key, jsonStructure[key])
+            if len(datasetStructure[key]) == 0:
+                returnedOutput = checkLeafValue(key, datasetStructure[key])
 
             else:
                 # going one step down in the object tree
-                traverseForLeafNodes(jsonStructure[key])
+                traverseForLeafNodes(datasetStructure[key])
 
     return total_dataset_size
 
@@ -198,9 +195,8 @@ def generate_dataset_locally(destinationdataset, pathdataset, newdatasetname, js
     global total_dataset_size  # total size of the dataset to be generated
     global curated_dataset_size  # total size of the dataset generated (locally or on Pennsieve) at a given time
     global start_time
-    global bf
     global myds
-    global upload_directly_to_bf
+    global upload_directly_to_ps
     global start_submit
     global initial_bfdataset_size
 
@@ -210,7 +206,7 @@ def generate_dataset_locally(destinationdataset, pathdataset, newdatasetname, js
     error, c = "", 0
     curated_dataset_size = 0
     start_time = 0
-    upload_directly_to_bf = 0
+    upload_directly_to_ps = 0
     start_submit = 0
     initial_bfdataset_size = 0
 
@@ -279,8 +275,6 @@ def create_folder_level_manifest(jsonpath, jsondescription):
         shutil.rmtree(datasetpath) if isdir(datasetpath) else 0
         makedirs(datasetpath)
         folders = list(jsonpath.keys())
-        if "main" in folders:
-            folders.remove("main")
         # In each SPARC folder, generate a manifest file
         for folder in folders:
             if jsonpath[folder] != []:
@@ -299,7 +293,6 @@ def create_folder_level_manifest(jsonpath, jsondescription):
                 folderpath = join(datasetpath, folder)
                 allfiles = jsonpath[folder]
                 alldescription = jsondescription[folder + "_description"]
-                manifestexists = join(folderpath, "manifest.xlsx")
 
                 countpath = -1
                 for pathname in allfiles:
@@ -445,8 +438,8 @@ def folder_size(path):
         total_size: total size of the folder in bytes (integer)
     """
     total_size = 0
-    start_path = "."  # To get size of current directory
-    for path, dirs, files in walk(path):
+
+    for path, _, files in walk(path):
         for f in files:
             fp = join(path, f)
             total_size += getsize(fp)
@@ -1010,27 +1003,28 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         r.raise_for_status()
         subfolder = r.json()
 
-        children_content = subfolder["children"]
-        for items in children_content:
-            item_name = items["content"]["name"]
+        # Also variables, item and item_name could be renamed to be more descriptive.
+        folder_items = subfolder["children"]
+        for items in folder_items:
+            folder_item_name = items["content"]["name"]
             create_soda_json_progress += 1
             item_id = items["content"]["id"]
             if item_id[2:9] == "package":
                 # is a file name check if there are additional manifest information to attach to files
                 if (
-                    item_name[0:8] != "manifest"
+                    folder_item_name[0:8] != "manifest"
                 ):  # manifest files are not being included in json structure
 
                     #verify file name first
-                    if("extension" not in children_content):
-                        item_name = verify_file_name(item_name, "")
+                    if("extension" not in folder_items):
+                        folder_item_name = verify_file_name(folder_item_name, "")
                     else:
-                        item_name = verify_file_name(item_name, children_content["extension"])
+                        folder_item_name = verify_file_name(folder_item_name, folder_items["extension"])
                         
                     ## verify timestamps
                     timestamp = items["content"]["createdAt"]
                     formatted_timestamp = timestamp.replace('.', ',')
-                    subfolder_json["files"][item_name] = {
+                    subfolder_json["files"][folder_item_name] = {
                         "action": ["existing"],
                         "path": item_id,
                         "bfpath": [],
@@ -1040,23 +1034,23 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         "description": "",
                     }
                     for paths in subfolder_json["bfpath"]:
-                        subfolder_json["files"][item_name]["bfpath"].append(paths)
+                        subfolder_json["files"][folder_item_name]["bfpath"].append(paths)
 
                     
                     # creates path for item_name (stored in temp_name)
-                    if len(subfolder_json["files"][item_name]["bfpath"]) > 1:
+                    if len(subfolder_json["files"][folder_item_name]["bfpath"]) > 1:
                         temp_name = ""
                         for i in range(
-                            len(subfolder_json["files"][item_name]["bfpath"])
+                            len(subfolder_json["files"][folder_item_name]["bfpath"])
                         ):
                             if i == 0:
                                 continue
                             temp_name += (
-                                subfolder_json["files"][item_name]["bfpath"][i] + "/"
+                                subfolder_json["files"][folder_item_name]["bfpath"][i] + "/"
                             )
-                        temp_name += item_name
+                        temp_name += folder_item_name
                     else:
-                        temp_name = item_name
+                        temp_name = folder_item_name
                     
                     if len(manifest.keys()) > 0:
                         # Dictionary that has the required manifest headers in lowercase and without spaces as keys
@@ -1170,14 +1164,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
     # START
 
-    error = []
-
-    # check that the Pennsieve account is valid
-    try:
-        bf_account_name = soda_json_structure["bf-account-selected"]["account-name"]
-    except Exception as e:
-        raise e 
-
     token = get_access_token()
 
     # check that the Pennsieve dataset is valid
@@ -1191,7 +1177,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
     # check that the user has permission to edit this dataset
     try:
-        role = bf_get_current_user_permission_agent_two(selected_dataset_id, token)["role"]
+        role = pennsieve_get_current_user_permissions(selected_dataset_id, token)["role"]
         if role not in ["owner", "manager", "editor"]:
             curatestatus = "Done"
             raise Exception("You don't have permissions for uploading to this Pennsieve dataset")
@@ -1287,10 +1273,10 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         df = ""
                         try:                            
                             if package_name.lower() == "manifest.xlsx":
-                                df = load_manifest_to_dataframe(package_id, "excel", token)
+                                df = load_metadata_to_dataframe(package_id, "excel", token)
                                 df = df.fillna("")
                             else:
-                                df = load_manifest_to_dataframe(package_id, "csv", token)
+                                df = load_metadata_to_dataframe(package_id, "csv", token)
                                 df = df.fillna("")
                             # 
                             manifest_dict[high_lvl_folder].update(df.to_dict())

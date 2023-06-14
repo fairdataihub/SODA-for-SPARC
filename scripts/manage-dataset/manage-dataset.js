@@ -21,7 +21,7 @@ document.querySelectorAll(".ds-dd.organization").forEach((dropdownElement) => {
 
 var forbidden_characters_bf = '/:*?"<>';
 
-const check_forbidden_characters_bf = (my_string) => {
+const check_forbidden_characters_ps = (my_string) => {
   // Args:
   // my_string: string with characters (string)
   // Returns:
@@ -96,7 +96,7 @@ $("#bf-new-dataset-name").on("keyup", () => {
   let newName = $("#bf-new-dataset-name").val().trim();
 
   if (newName !== "") {
-    if (check_forbidden_characters_bf(newName)) {
+    if (check_forbidden_characters_ps(newName)) {
       Swal.fire({
         title: "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
         icon: "error",
@@ -117,7 +117,7 @@ $("#bf-rename-dataset-name").on("keyup", () => {
   let newName = $("#bf-rename-dataset-name").val().trim();
 
   if (newName !== "") {
-    if (check_forbidden_characters_bf(newName)) {
+    if (check_forbidden_characters_ps(newName)) {
       Swal.fire({
         title: "A Pennsieve dataset name cannot contain any of the following characters: /:*?'<>.",
         backdrop: "rgba(0,0,0, 0.4)",
@@ -306,7 +306,7 @@ $("#button-rename-dataset").on("click", async () => {
 
       try {
         await client.put(
-          `/manage_datasets/bf_rename_dataset`,
+          `/manage_datasets/ps_rename_dataset`,
           {
             input_new_name: renamedDatasetName,
           },
@@ -552,9 +552,9 @@ const addPermissionUser = async (
 ) => {
   log.info("Adding permission ${selectedRole} to ${selectedUser} for ${selectedBfDataset}");
 
-  let bf_add_permission;
+  let ps_add_permission;
   try {
-    bf_add_permission = await client.patch(
+    ps_add_permission = await client.patch(
       `/manage_datasets/bf_dataset_permissions`,
       {
         input_role: selectedRole,
@@ -590,7 +590,7 @@ const addPermissionUser = async (
     return;
   }
 
-  let res = bf_add_permission.data.message;
+  let res = ps_add_permission.data.message;
 
   Swal.fire({
     title: "Successfully changed permission!",

@@ -4,7 +4,7 @@
 from venv import create
 from flask import abort 
 import requests
-from permissions import bf_get_current_user_permission_agent_two, has_edit_permissions
+from permissions import pennsieve_get_current_user_permissions, has_edit_permissions
 from utils import connect_pennsieve_client, get_dataset_id, authenticate_user_with_client, create_request_headers
 from errorHandlers import handle_http_error
 from authentication import get_access_token
@@ -24,8 +24,6 @@ def bf_get_doi(selected_bfaccount, selected_bfdataset):
     Return:
         Current doi or "None"
     """
-
-
     token = get_access_token()
 
     selected_dataset_id = get_dataset_id(token, selected_bfdataset)
@@ -38,16 +36,11 @@ def bf_get_doi(selected_bfaccount, selected_bfdataset):
         r.raise_for_status()
         result = r.json()
 
-        # doi_status = bf._api._get(f"/datasets/{str(selected_dataset_id)}/doi")
         return {"doi": result["doi"]}
     except Exception as e:
         if "404" in str(e):
             return {"doi": "None"}
         handle_http_error(e)
-
-
-
-
 
 
 def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
@@ -98,7 +91,6 @@ def bf_reserve_doi(selected_bfaccount, selected_bfdataset):
         return {"message": "Done!"}
     except Exception as e:
         handle_http_error(e)
-
 
 
 
@@ -154,7 +146,6 @@ def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset, publication
         Return:
             Success or error message
     """
-
     token = get_access_token()
 
     selected_dataset_id = get_dataset_id(token, selected_bfdataset)
@@ -169,12 +160,7 @@ def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset, publication
         r.raise_for_status()
         return r.json()
     except Exception as e:
-        # if "400" in str(e):
-        #     print(e)
-        #     abort(400, "Dataset cannot be published if owner does not have an ORCID ID")
         handle_http_error(e)
-
-    # return ps._api._post(f"/datasets/{selected_dataset_id}/publication/request{qs}", headers=create_request_headers(ps))
 
 
 def get_publication_type(ps_or_token, selected_dataset_id):
@@ -182,10 +168,6 @@ def get_publication_type(ps_or_token, selected_dataset_id):
     """
     Function to get the publication type of a dataset
     """
-    # TODO:
-
-     # get the dataset using the id 
-    # ds = ps._api._get(f"/datasets/{selected_dataset_id}")
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}?includePublishedDataset=true", headers=create_request_headers(ps_or_token))
     r.raise_for_status()
     ds = r.json()
@@ -196,6 +178,7 @@ def get_publication_type(ps_or_token, selected_dataset_id):
         abort(400, "Cannot cancel publication of a dataset that is not published.")
 
     return publication_type
+
 
 
 def bf_withdraw_review_dataset(selected_bfaccount, selected_bfdataset):
@@ -232,7 +215,6 @@ METADATA_FILES = [
     "samples.xlsx", 
     "subjects.xlsx"
 ]
-
 
 def get_metadata_files(selected_dataset, pennsieve_account):
     """

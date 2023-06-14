@@ -22,6 +22,7 @@ model_get_role_response = api.model("GetRoleResponse", {
   "role": fields.String(description="The role of the dataset")
 })
 
+
 @api.route('/<string:dataset_name>/role')
 class DatasetRole(Resource):
   parser = reqparse.RequestParser()

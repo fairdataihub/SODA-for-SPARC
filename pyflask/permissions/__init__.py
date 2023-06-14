@@ -1,1 +1,1 @@
-from .permissions import has_edit_permissions, bf_get_current_user_permission_agent_two
+from .permissions import has_edit_permissions, pennsieve_get_current_user_permissions

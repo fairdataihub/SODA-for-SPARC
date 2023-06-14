@@ -1,7 +1,7 @@
 import requests
 import pandas as pd
 
-def load_manifest_to_dataframe(node_id, file_type, ps_or_token, usecols=None, header=0):
+def load_metadata_to_dataframe(node_id, file_type, ps_or_token, usecols=None, header=0):
     """
     Given a manifests package id and its storage type - excel or csv - returns a pandas dataframe.
     IMP: Pass in the pennsieve token or pennsieve object to ps_or_token for authentication.

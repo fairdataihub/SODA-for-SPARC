@@ -35,7 +35,7 @@ def get_dataset_id(ps_or_token, selected_dataset):
         Returns the dataset ID for the given dataset name.
         If the dataset ID was provided instead of the name, the ID will be returned. *Common for Guided Mode*
         Input:
-            ps: An initialized Pennsieve object
+            ps_or_token: An initialized Pennsieve object or a Pennsieve access token
             selected_dataset: Pennsieve dataset to get the ID for
     """
 

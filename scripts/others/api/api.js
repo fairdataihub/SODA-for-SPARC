@@ -42,7 +42,7 @@ const isDatasetLocked = async (account, datasetNameOrId) => {
     const currentUserInformation = await getUserInformation();
     const currentUserID = currentUserInformation.id;
     const teamsReq = await client.get(
-      `manage_datasets/bf_get_teams?selected_account=${defaultBfAccount}`
+      `manage_datasets/ps_get_teams?selected_account=${defaultBfAccount}`
     );
     const teamsInCurrentUsersOrganization = teamsReq.data.teams;
 
