@@ -43,6 +43,9 @@ SODA for SPARC can import, edit, and generate metadata and manifest files for da
 #### Local Importing
 
 - [Local Submission File](https://github.com/fairdataihub/SODA-for-SPARC/blob/0946337f843b490b77773d5ddceaad56cea37405/pyflask/prepareMetadata/prepare_metadata.py#L797)
+- [Local Subjects File](https://github.com/fairdataihub/SODA-for-SPARC/blob/0946337f843b490b77773d5ddceaad56cea37405/scripts/metadata-files/subjects-samples.js#L1649)
+- [Local Samples File](https://github.com/fairdataihub/SODA-for-SPARC/blob/0946337f843b490b77773d5ddceaad56cea37405/scripts/metadata-files/subjects-samples.js#L1728)
+- [Local README/CHANGES file](https://github.com/fairdataihub/SODA-for-SPARC/blob/0946337f843b490b77773d5ddceaad56cea37405/scripts/metadata-files/readme-changes.js#L665)
 - [Local Dataset Description File](https://github.com/fairdataihub/SODA-for-SPARC/blob/0946337f843b490b77773d5ddceaad56cea37405/pyflask/prepareMetadata/prepare_metadata.py#L1002)
 
 #### Pennsieve Importing
