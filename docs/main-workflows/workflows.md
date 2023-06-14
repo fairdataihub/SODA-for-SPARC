@@ -34,8 +34,6 @@ The first step in the primary workflow for creating manifest files from existing
 
 To edit the manifest information, the user can edit the working dataset structure object by extending it with new files, folders, and manifest information. Once the user is satisfied with their edits, the user can generate their new manifest files, as well as store any new file/folder additions locally by using the main curate function detailed above.
 
-- [Local manifest importing](https://github.com/fairdataihub/SODA-for-SPARC/blob/0946337f843b490b77773d5ddceaad56cea37405/pyflask/manifest/manifest_writer.py#L348)
-
 #### Manifest Generation Pennsieve Workflow
 - [Pennsieve manifest importing](https://github.com/fairdataihub/SODA-for-SPARC/blob/0946337f843b490b77773d5ddceaad56cea37405/pyflask/prepareMetadata/prepare_metadata.py#L936)
 
