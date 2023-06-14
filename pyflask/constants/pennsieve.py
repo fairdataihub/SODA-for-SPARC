@@ -1,4 +1,3 @@
-# BE-REVIEW - Dorian - This is included in every file. Should we just remove this or use it?
 # Add constants here
 # Add imports for constants
 PENNSIEVE_URL = "https://api.pennsieve.io"
