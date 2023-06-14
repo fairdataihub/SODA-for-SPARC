@@ -34,6 +34,7 @@ dataset information to then be worked on outside of the context of the main work
 The first step in the primary workflow for creating manifest files from existing local datasets is to import the dataset. While importing a local dataset, any existing manifest information is stored in the working dataset structure object and returned to the client.
 
 - [Import Local Dataset](https://github.com/fairdataihub/SODA-for-SPARC/blob/0946337f843b490b77773d5ddceaad56cea37405/pyflask/organizeDatasets/organize_datasets.py#L585)
+- [Import Pennsieve Dataset](https://github.com/fairdataihub/SODA-for-SPARC/blob/0946337f843b490b77773d5ddceaad56cea37405/pyflask/organizeDatasets/organize_datasets.py#L905)
 
 To edit the manifest information, the user can edit the working dataset structure object by extending it with new files, folders, and manifest information. Once the user is satisfied with their edits, the user can generate their new manifest files, as well as store any new file/folder additions locally by using the main curate function detailed above.
 
