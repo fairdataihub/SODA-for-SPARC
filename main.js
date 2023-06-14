@@ -327,7 +327,7 @@ function initialize() {
           checkForAnnouncements();
           nodeStorage.setItem("announcements", false);
         }
-        run_pre_flight_checks();
+        start_pre_flight_checks();
         if (!buildIsBeta) {
           autoUpdater.checkForUpdatesAndNotify();
         }
@@ -339,7 +339,6 @@ function initialize() {
       var first_launch = nodeStorage.getItem("firstlaunch");
       if ((first_launch == true || first_launch == undefined) && window_reloaded == false) {
       }
-      // run_pre_flight_checks();
     });
   });
 
@@ -358,9 +357,9 @@ function initialize() {
   });
 }
 
-function run_pre_flight_checks() {
+function start_pre_flight_checks() {
   console.log("Running pre-checks");
-  mainWindow.webContents.send("run_pre_flight_checks");
+  mainWindow.webContents.send("start_pre_flight_checks");
 }
 
 // Make this app a single instance app.

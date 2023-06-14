@@ -467,8 +467,12 @@ const startupServerAndApiCheck = async () => {
       status = false;
     }
     time_pass = new Date() - time_start;
-    if (status) break;
-    if (time_pass > 300000) break; //break after five minutes
+    if (status) {
+      break;
+    }
+    if (time_pass > 300000) {
+      break;
+    } //break after five minutes
     await wait(2000);
   }
 
@@ -528,7 +532,7 @@ startupServerAndApiCheck();
 // Check if we are connected to the Pysoda server
 // Check app version on current app and display in the side bar
 // Also check the core systems to make sure they are all operational
-ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
+ipcRenderer.on("start_pre_flight_checks", async (event, arg) => {
   // run pre flight checks once the server connection is confirmed
   // wait until soda is connected to the backend server
   while (!sodaIsConnected || !apiVersionChecked) {
