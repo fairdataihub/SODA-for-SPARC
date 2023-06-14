@@ -1,38 +1,25 @@
 # -*- coding: utf-8 -*-
 
 ### Import required python modules
-# BE-REVIEW - Dorian - Remove unused imports
 import contextlib
-import json
-from unicodedata import name
-from urllib import request
 import cv2
 import os
-from os import listdir, mkdir, walk
+from os import mkdir
 from os.path import (
     isdir,
     join,
     exists,
     expanduser,
-    dirname,
-    getsize
+    dirname
 )
 import time
 import shutil
 from configparser import ConfigParser
-import subprocess
-import socket
-import errno
 import re
-import gevent
 
 from pennsieve2.pennsieve import Pennsieve
 from threading import Thread
 
-import platform
-
-
-import boto3
 import requests
 
 from flask import abort
@@ -40,14 +27,12 @@ from namespaces import NamespaceEnum, get_namespace_logger
 from utils import ( 
     get_dataset_size, 
     create_request_headers, 
-    connect_pennsieve_client, 
-    authenticate_user_with_client, 
     get_dataset_id
 )
-from authentication import get_access_token, get_cognito_userpool_access_token
+from authentication import get_access_token, bf_delete_account
 from users import get_user_information, update_config_account_name
 from permissions import has_edit_permissions, pennsieve_get_current_user_permissions
-from configUtils import add_api_host_to_config, lowercase_account_names
+from configUtils import lowercase_account_names
 from constants import PENNSIEVE_URL
 
 
@@ -60,7 +45,6 @@ total_dataset_size = 1
 curated_dataset_size = 0
 start_time = 0
 
-# BE-REVIEW - Dorian - the two variables could be place in a constants file i believe
 userpath = expanduser("~")
 configpath = join(userpath, ".pennsieve", "config.ini")
 submitdataprogress = " "
@@ -74,12 +58,10 @@ did_fail = False
 upload_folder_count = 0
 start_time_bf_upload = 0
 start_submit = 0
-# BE-REVIEW - Dorian - same with this one
 metadatapath = join(userpath, "SODA", "SODA_metadata")
 
 total_bytes_uploaded = {}
 
-# BE-REVIEW - Dorian - bf to ps
 bf = ""
 myds = ""
 initial_bfdataset_size = 0
@@ -139,8 +121,6 @@ def bf_add_account_api_key(keyname, key, secret):
         Adds account to the Pennsieve configuration file (local machine)
     """
     try:
-        # BE-REVIEW - Dorian - remove unused variable
-        error = ""
         keyname = keyname.strip()
         if (not keyname) or (not key) or (not secret):
             abort(401, "Please enter valid keyname, key, and/or secret")
@@ -175,12 +155,9 @@ def bf_add_account_api_key(keyname, key, secret):
         config.set(keyname, "api_secret", secret)
 
 
-        # add the profile under the global section 
-        if config.has_section("global"):
-            config.set("global", "default_profile", keyname)
-        else:
+        if not config.has_section("global"):
             config.add_section("global")
-            config.set("global", "default_profile", keyname)
+        config.set("global", "default_profile", keyname)
 
         with open(configpath, "w") as configfile:
             config.write(configfile)
@@ -193,7 +170,6 @@ def bf_add_account_api_key(keyname, key, secret):
         token = get_access_token()
     except Exception as e:
         namespace_logger.error(e)
-        # BE-REVIEW - Dorian - says this function below is not defined (import from the authenticate.py file?)
         bf_delete_account(keyname)
         abort(401, 
             "Please check that key name, key, and secret are entered properly"
@@ -203,8 +179,6 @@ def bf_add_account_api_key(keyname, key, secret):
     try:
         org_id = get_user_information(token)["preferredOrganization"]
 
-        # CHANGE BACK
-        # BE-REVIEW - Dorian - should we be checking for REJOIN organization as well?
         if org_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
             abort(403,
                 "Please check that your account is within the SPARC Organization"
@@ -222,27 +196,12 @@ def bf_add_account_api_key(keyname, key, secret):
         return {"message": f"Successfully added account {str(bf)}"}
 
     except Exception as e:
-        # BE-REVIEW - Dorian - says this function below is not defined (import from the authenticate.py file?)
         bf_delete_account(keyname)
         raise e
 
 
-# get a target key's value from the config file 
-# BE-REVIEW - Dorian - rename function to get_default_profile or get_from_config
-def read_from_config(key):
-    config = ConfigParser()
-    config.read(configpath)
-    if "global" not in config:
-        raise Exception("Profile has not been set")
 
-    keyname = config["global"]["default_profile"]
-
-    if keyname in config and key in config[keyname]:
-        return config[keyname][key]
-    return None
-
-
-def check_forbidden_characters_ps(my_string):
+def check_forbidden_characters_bf(my_string):
     """
     Check for forbidden characters in Pennsieve file/folder name
 
@@ -265,7 +224,6 @@ def bf_account_list():
         Returns list of accounts stored in the system
     """
     try:
-        # BE-REVIEW - Dorian - I'm curious as to why we return Select is there is no account list. Do we just read that key in the frontend?
         accountlist = ["Select"]
         if exists(configpath):
             valid_account = bf_get_accounts()
@@ -276,7 +234,6 @@ def bf_account_list():
     except Exception as e:
         raise e
 
-# BE-REVIEW - Dorian - isn't this function the same as the one above? We could delete one of them
 def bf_default_account_load():
     """
     Action:
@@ -316,7 +273,6 @@ def bf_get_accounts():
             if default_profile in sections:
                 lowercase_account_names(config, default_profile, configpath)
                 try:
-                    # BE-REVIEW - Dorian - what do we do with the access token here? Just curious if it is needed or not
                     get_access_token()
                     return default_profile.lower()
                 except Exception as e:
@@ -345,10 +301,6 @@ def bf_get_accounts():
 
 
 
-
-
-
-# BE-REVIEW - Dorian - remove accountname parameter since it is not used
 def bf_dataset_account(accountname):
     """
     This function filters dataset dropdowns across SODA by the permissions granted to users.
@@ -391,7 +343,6 @@ def bf_dataset_account(accountname):
     store = []
     threads = []
     nthreads = 8
-    # BE-REVIEW - Dorian - not sure what is going on here. Are we just sorting the datasets by name?
     # create the threads
     for i in range(nthreads):
         sub_datasets_list = datasets_list[i::nthreads]
@@ -406,7 +357,6 @@ def bf_dataset_account(accountname):
     sorted_bf_datasets = sorted(store, key=lambda k: k["name"].upper())
     return {"datasets": sorted_bf_datasets}
 
-# BE-REVIEW - Dorian - remove accountname parameter since it is not used
 def get_username(accountname):
     """
     Input: User's account name
@@ -439,7 +389,7 @@ def in_sparc_organization(token):
 
     # add the sparc consortium as the organization name if the user is a member of the consortium
     organizations = r.json()
-    # BE-REVIEW - Dorian - changed by sourcery for simplicity
+
     return any(
         org["organization"]["id"]
         == "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0"
@@ -484,10 +434,6 @@ def bf_account_details(accountname):
 
 
     try:
-        # BE-REVIEW - Dorian - do we still want to do this?
-        # if a user hasn't added their account name to their config file then we want to write it now
-        # TODO: Ensure this is necessary. I think we may do this just in case at startup this gets called before something else
-        #       that may also want to update the account name if possible? 
         update_config_account_name(accountname)
         
         ## return account details and datasets where such an account has some permission
@@ -503,7 +449,6 @@ def get_datasets(token):
 
     return r.json()
 
-# BE-REVIEW - Dorian - remove accountname parameter since it is not used
 def create_new_dataset(datasetname, accountname):
     """
     Associated with 'Create' button in 'Create new dataset folder'
@@ -533,7 +478,6 @@ def create_new_dataset(datasetname, accountname):
 
         datasets = get_datasets(token)
 
-        # BE-REVIEW - Dorian - if else is always true. I think we need tabbing on the else statement
         for ds in datasets:
             if ds["content"]["name"] == datasetname:
                 abort(400, "Dataset name already exists")
@@ -546,10 +490,8 @@ def create_new_dataset(datasetname, accountname):
     except Exception as e:
         raise e
 
-# BE-REVIEW - Dorian - change function name to ps_rename_dataset
-# Also remove accountname from parameters since it is not used
-# BE-REVIEW - Jacob - What's up with accountName? If I understand correctly, we don't really need this for most functions?
-def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
+
+def ps_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
     """
     Args:
         accountname: account in which the dataset needs to be created (string)
@@ -559,7 +501,6 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
     Action:
         Creates dataset for the account specified
     """
-    # BE-REVIEW - Dorian - change c to count to make it clearer what it is
     error, c = "", 0
     datasetname = renamed_dataset_name.strip()
 
@@ -596,7 +537,6 @@ def bf_rename_dataset(accountname, current_dataset_name, renamed_dataset_name):
         raise Exception(e) from e
 
 
-# BE-REVIEW - Jacob - These variables could be scoped into their calling functions
 completed_files = []
 files_uploaded = 0
 total_files_to_upload = 0
@@ -798,36 +738,6 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
     return "Done"
 
 
-# BE-REVIEW - Dorian - change function name to ps_submit_dataset_upload_details
-# sends back the current amount of files that have been uploaded by bf_submit_dataset
-def bf_submit_dataset_upload_details():
-    """
-    Function frequently called by front end to help keep track of the amount of files that have
-    been successfully uploaded to Pennsieve, and the size of the uploaded files
-
-    Returns: 
-        uploaded_files - 
-        uploaded_file_size - 
-        did_fail - 
-        did_upload -  to inform the user that the upload failed and that it failed after uploading data - important for logging upload sessions
-        upload_folder_count - the number of folders that have been uploaded
-
-    """
-    global uploaded_file_size
-    global uploaded_files
-    global did_fail
-    global did_upload
-    global upload_folder_count
-
-    return {
-        "uploaded_files": uploaded_files,
-        "uploaded_file_size": uploaded_file_size,
-        "did_fail": did_fail,
-        "did_upload": did_upload,
-        "upload_folder_count": upload_folder_count,
-    }
-
-
 def submit_dataset_progress():
     """
     Keeps track of the dataset submission progress
@@ -867,9 +777,8 @@ def submit_dataset_progress():
     }
 
 
-# BE-REVIEW - Dorian - change function name to ps_get_users
 # Also delete selected_bfaccount since it is not used
-def bf_get_users(selected_bfaccount):
+def ps_get_users(selected_bfaccount):
     """
     Function to get list of users belonging to the organization of
     the given Pennsieve account
@@ -907,9 +816,7 @@ def bf_get_users(selected_bfaccount):
     except Exception as e:
         raise e
 
-# BE-REVIEW - Dorian - change function name to ps_get_teams
-# Also remve selected_bfaccount from parameters since it isn't used
-def bf_get_teams(selected_bfaccount):
+def ps_get_teams(selected_bfaccount):
     """
     Args:
       selected_bfaccount: name of selected Pennsieve account (string)
@@ -924,7 +831,6 @@ def bf_get_teams(selected_bfaccount):
 
     try:
         org_id = get_user_information(token)["preferredOrganization"]
-        # BE-REVIEW - Dorian - there's no need for the global variable here
         global PENNSIEVE_URL
         r = requests.get(f"{PENNSIEVE_URL}/organizations/{str(org_id)}/teams", headers=create_request_headers(token))
         r.raise_for_status()
@@ -934,9 +840,8 @@ def bf_get_teams(selected_bfaccount):
     except Exception as e:
         raise e
 
-# BE-REVIEW - Dorian - change function name to ps_get_permission
 # Also remove selected_bfaccount from parameters since it isn't used
-def bf_get_permission(selected_bfaccount, selected_bfdataset):
+def ps_get_permission(selected_bfaccount, selected_bfdataset):
 
     """
     Function to get permission for a selected dataset
@@ -954,8 +859,6 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
     selected_dataset_id = get_dataset_id(token, selected_bfdataset)
 
     try:
-        # BE-REVIEW - Dorian - I don't think this needs to be a global variable
-        # I've seen other functions that don't call PENNSIEVE_URL as a global variable
         global PENNSIEVE_URL
         headers = create_request_headers(token)
         # user permissions
@@ -1029,10 +932,7 @@ def bf_get_permission(selected_bfaccount, selected_bfdataset):
         raise e
 
 
-# BE-REVIEW - Dorian - change function name to ps_add_permission
-# Remove selected_bfaccount parameter since it isn't used
-# BE-REVIEW - Jacob - Remove selected_bfaccount from args
-def bf_add_permission(
+def ps_add_permission(
     selected_bfaccount, selected_bfdataset, selected_user, selected_role
 ):
     """
@@ -1057,7 +957,6 @@ def bf_add_permission(
     headers = create_request_headers(token)
 
     try:
-        # BE-REVIEW - Dorian - change variable to count to make it clearer
         c = 0
         organization_id = get_user_information(token)["preferredOrganization"]
         r  = requests.get(f"{PENNSIEVE_URL}/organizations/{str(organization_id)}/members", headers=headers)
@@ -1073,7 +972,6 @@ def bf_add_permission(
             c += 1
     except Exception as e:
         raise e
-    # BE-REVIEW - Dorian - should this list be in a constants file? Would clear up a little bit of space
     if selected_role not in [
         "manager",
         "viewer",
@@ -1098,7 +996,6 @@ def bf_add_permission(
         r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/collaborators/users", headers=headers)
         r.raise_for_status()
         list_dataset_permission = r.json()
-        # BE-REVIEW - Dorian - change variable to count to make it clearer
         c = 0
         for i in range(len(list_dataset_permission)):
             first_name = list_dataset_permission[i]["firstName"]
@@ -1145,10 +1042,8 @@ def bf_add_permission(
     except Exception as e:
         raise e
 
-# BE-REVIEW - Dorian - change this function name to ps_add_permission_team
-# Also remove selected_bfaccount from parameter since it isn't used
-# BE-REVIEW - Jacob - Remove selected_bfaccount from args
-def bf_add_permission_team(
+
+def ps_add_permission_team(
     selected_bfaccount, selected_bfdataset, selected_team, selected_role
 ):
     """
@@ -1169,13 +1064,10 @@ def bf_add_permission_team(
 
     organization_id = get_user_information(token)["preferredOrganization"]
     # BE-REVIEW - Dorian - merge nested if conditions (suggested by Sourcery)
-    if selected_team == "SPARC Data Curation Team":
-        if organization_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
-            abort(403, "Please login under the Pennsieve SPARC Consortium organization to share with the Curation Team")
-    if selected_team == "SPARC Embargoed Data Sharing Group":
-        if organization_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
-            abort(403, "Please login under the Pennsieve SPARC Consortium organization to share with the SPARC consortium group")
-
+    if selected_team == "SPARC Data Curation Team" and organization_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
+        abort(403, "Please login under the Pennsieve SPARC Consortium organization to share with the Curation Team")
+    if selected_team == "SPARC Embargoed Data Sharing Group" and organization_id != "N:organization:618e8dd9-f8d2-4dc4-9abb-c6aaab2e78a0":
+        abort(403, "Please login under the Pennsieve SPARC Consortium organization to share with the SPARC consortium group")
     # BE-REVIEW - Dorian - change variable to count to make it clearer
     c = 0
 

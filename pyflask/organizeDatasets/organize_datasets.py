@@ -1,11 +1,9 @@
 ### Import required python modules
-from turtle import pensize
 from flask import abort
 import platform
 import os
 import itertools
 from os import makedirs, mkdir, walk
-from openpyxl.styles import PatternFill, Font
 from openpyxl import load_workbook
 from os.path import (
     isdir,
@@ -26,14 +24,13 @@ import pathlib
 from datetime import datetime, timezone
 import requests 
 # BE-REVIEW - Dorian - remove unused imports
-from permissions import pennsieve_get_current_user_permissions, has_edit_permissions
-from utils import connect_pennsieve_client, get_dataset_id, create_request_headers, authenticate_user_with_client
+from permissions import pennsieve_get_current_user_permissions
+from utils import get_dataset_id, create_request_headers
 from namespaces import NamespaceEnum, get_namespace_logger
-from openpyxl.styles import PatternFill, Font
+from openpyxl.styles import PatternFill
 from openpyxl import load_workbook
 from utils import load_manifest_to_dataframe
 
-import json
 namespace_logger = get_namespace_logger(NamespaceEnum.ORGANIZE_DATASETS)
 from authentication import get_access_token
 

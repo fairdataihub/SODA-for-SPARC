@@ -31,7 +31,7 @@ def get_access_token():
 
     login_response = cognito_idp_client.initiate_auth(
     AuthFlow="USER_PASSWORD_AUTH",
-    AuthParameters={"USERNAME": read_from_config("api_token"), "PASSWORD": read_from_config("api_secret")},
+    AuthParameters={"USERNAME": get_profile_name_from_api_key("api_token"), "PASSWORD": get_profile_name_from_api_key("api_secret")},
     ClientId=cognito_app_client_id,
     )
         
@@ -80,8 +80,7 @@ def get_cognito_userpool_access_token(email, password):
 
     return access_token
 
-# get a target key's value from the config file 
-def read_from_config(key):
+def get_profile_name_from_api_key(key):
     config = ConfigParser()
     config.read(configpath)
     if "global" not in config:

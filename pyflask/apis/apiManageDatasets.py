@@ -8,12 +8,12 @@ from manageDatasets import (
     bf_account_details,
     bf_submit_dataset,
     create_new_dataset,
-    bf_rename_dataset,
-    bf_add_permission,
-    bf_get_users,
-    bf_get_permission,
-    bf_get_teams,
-    bf_add_permission_team,
+    ps_rename_dataset,
+    ps_add_permission,
+    ps_get_users,
+    ps_get_permission,
+    ps_get_teams,
+    ps_add_permission_team,
     bf_add_subtitle,
     bf_get_subtitle,
     bf_get_description,
@@ -28,7 +28,6 @@ from manageDatasets import (
     get_username,
     # check_agent_install,
     SODA_SPARC_API_KEY,
-    bf_submit_dataset_upload_details,
     update_dataset_readme,
     get_dataset_readme,
     get_dataset_tags,
@@ -256,7 +255,7 @@ users_response_model = api.model('Users', {
   'users': fields.List(fields.String, required=True, description="List of the accounts in the user's organization."),
 })
 
-@api.route('/bf_get_users')
+@api.route('/ps_get_users')
 class BfGetUsers(Resource):
 
   parser_get_users = reqparse.RequestParser(bundle_errors=True)
@@ -273,7 +272,7 @@ class BfGetUsers(Resource):
 
       selected_account = data.get('selected_account')
 
-      return bf_get_users(selected_account)
+      return ps_get_users(selected_account)
     except Exception as e:
       # TODO: Refine this app wide to handle requests errors more appropriately
       if notBadRequestException(e):
@@ -285,7 +284,7 @@ class BfGetUsers(Resource):
 
 
 
-@api.route('/bf_get_teams')
+@api.route('/ps_get_teams')
 class BfGetTeams(Resource):
 
   parser_get_teams = reqparse.RequestParser(bundle_errors=True)
@@ -297,7 +296,7 @@ class BfGetTeams(Resource):
       # get the selected account out of the request args
       selected_account = self.parser_get_teams.parse_args().get('selected_account')
       
-      return bf_get_teams(selected_account)
+      return ps_get_teams(selected_account)
     except Exception as e:
       if notBadRequestException(e):
         api.abort(500, str(e))
@@ -534,7 +533,7 @@ class DatasetPermissions(Resource):
     selected_dataset = data.get('selected_dataset')
 
     try:
-      return bf_get_permission(selected_account, selected_dataset)
+      return ps_get_permission(selected_account, selected_dataset)
     except Exception as e:
       if notBadRequestException(e):
         api.abort(500, str(e))
@@ -564,14 +563,14 @@ class DatasetPermissions(Resource):
 
     if scope == 'team':
       try:
-        return bf_add_permission_team(selected_account, selected_dataset, name, input_role)
+        return ps_add_permission_team(selected_account, selected_dataset, name, input_role)
       except Exception as e:
         if notBadRequestException(e):
           api.abort(500, str(e))
         raise e
     else:
       try:
-        return bf_add_permission(selected_account, selected_dataset, name, input_role)
+        return ps_add_permission(selected_account, selected_dataset, name, input_role)
       except Exception as e:
         if notBadRequestException(e):
           api.abort(500, str(e))
@@ -701,7 +700,7 @@ class BfLicense(Resource):
 
 
 
-@api.route("/bf_rename_dataset")
+@api.route("/ps_rename_dataset")
 class BfRenameDataset(Resource):
   parser_rename_dataset = reqparse.RequestParser(bundle_errors=True)
   parser_rename_dataset.add_argument('selected_account', type=str, required=True, location='args', help='The target account to rename the dataset for.')
@@ -719,7 +718,7 @@ class BfRenameDataset(Resource):
     input_new_name = data.get('input_new_name')
 
     try:
-      return bf_rename_dataset(selected_account, selected_dataset, input_new_name)
+      return ps_rename_dataset(selected_account, selected_dataset, input_new_name)
     except Exception as e:
       if notBadRequestException(e):
         api.abort(500, str(e))
@@ -910,25 +909,7 @@ class BfGetUploadProgress(Resource):
 
 
 
-# model_upload_details_response = api.model("UploadDetailsResponse", {
-#   'uploaded_files':  fields.Integer(required=True, description="The number of files uploaded."),
-#   'uploaded_file_size': fields.Integer(required=True, description="The size of the file being uploaded in bytes."),
-#   'did_fail': fields.Boolean(required=True, description="Whether or not the upload failed."),
-#   'did_upload': fields.Boolean(required=True, description="To inform the user that the upload failed and that it failed after uploading data - important for logging upload sessions"),
-#   'upload_folder_count': fields.Integer(required=True, description="The number of folders that have been uploaded."),
-# })
 
-# @api.route('/datasets/upload_details')
-# class BfSubmitDatasetUploadDetails(Resource):
-
-
-#   @api.doc(responses={500: 'There was an internal server error'}, description="Get the upload details required for logging the upload session correctly.")
-#   @api.marshal_with(model_upload_details_response, 200, False)
-#   def get(self):
-#     try: 
-#       return bf_submit_dataset_upload_details()
-#     except Exception as e:
-#       api.abort(500, str(e))
 
 
 
