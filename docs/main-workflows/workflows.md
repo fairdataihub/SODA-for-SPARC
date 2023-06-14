@@ -18,7 +18,7 @@ If interested in how the curate function validates the dataset files, see the fo
 SODA for SPARC integrates with the [SPARC Data Sturcture (SDS) Validator](https://github.com/SciCrunch/sparc-curation). SODA for SPARC takes the validation results object and parses it to return the relevant dataset validation results to the user. SODA for SPARC can validate datasets that are stored locally and on Pennsieve, however as the SDS Validator is still in development,
 the Pennsieve validation workflow does not run through all Pennsieve pipelines at this moment in time.
 
-- [Start of the dataset validation workflow](htttps://github.com/fairdataihub/SODA-for-SPARC-Validation-Server/blob/60a9760666bc301e8ca56999423e4bf9ec6f31f7/apis/apiValidator.py#L18)
+- [Start of the dataset validation workflow](https://github.com/fairdataihub/SODA-for-SPARC-Validation-Server/blob/60a9760666bc301e8ca56999423e4bf9ec6f31f7/apis/apiValidator.py#L18)
 
 ## Manifest and Metadata Import and Generation
 
