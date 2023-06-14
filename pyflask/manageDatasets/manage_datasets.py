@@ -212,10 +212,7 @@ def check_forbidden_characters_bf(my_string):
         True: presence of forbidden character(s)
     """
     regex = re.compile(f"[{forbidden_characters_bf}]")
-    if regex.search(my_string) == None and "\\" not in r"%r" % my_string:
-        return False
-    else:
-        return True
+    return regex.search(my_string) is not None or "\\" in r"%r" % my_string
 
 
 def bf_account_list():
