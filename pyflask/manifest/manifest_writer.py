@@ -162,20 +162,20 @@ def update_existing_pennsieve_manifest_file_helper(folder, old_manifest_dict, ne
 
             if row_idx is None:
                 for key in new_manifest_dict.keys():
-                    if key == "filename":
-                        new_manifest_dict["filename"].append(file_path)   
-                    elif key == "timestamp":
-                        new_manifest_dict["timestamp"].append(folder["files"][file]["timestamp"]), 
-                    elif key == "description": 
+                    if key == "Additional Metadata":
+                        new_manifest_dict["Additional Metadata"].append(folder["files"][file].get("additional-metadata", ""))
+                    elif key == "description":
                         new_manifest_dict["description"].append(folder["files"][file].get("description", ""))
                     elif key == "file type":
                         unused_file_name, file_extension = get_name_extension(file)
-                        new_manifest_dict["file type"].append(file_extension), 
-                    elif key == "Additional Metadata":
-                        new_manifest_dict["Additional Metadata"].append(folder["files"][file].get("additional-metadata", ""))
+                        new_manifest_dict["file type"].append(file_extension),
+                    elif key == "filename":
+                        new_manifest_dict["filename"].append(file_path)
+                    elif key == "timestamp":
+                        new_manifest_dict["timestamp"].append(folder["files"][file]["timestamp"]),
                     else:
                         new_manifest_dict[key].append("")
-                    
+
 
             else:
                 # add the existing rows to the new manifest dictionary's arrays
@@ -183,20 +183,19 @@ def update_existing_pennsieve_manifest_file_helper(folder, old_manifest_dict, ne
                 for column in manifest_columns:
                     if column in old_manifest_dict:
                         new_manifest_dict[column].append(old_manifest_dict[column][row_idx])
+                    elif column == "Additional Metadata":
+                        new_manifest_dict["Additional Metadata"].append(folder["files"][file].get("additional-metadata", ""))
+                    elif column == "description":
+                        new_manifest_dict["description"].append(folder["files"][file].get("description", ""))
+                    elif column == "file type":
+                        unused_file_name, file_extension = get_name_extension(file)
+                        new_manifest_dict["file type"].append(file_extension),
+                    elif column == "filename":
+                        new_manifest_dict["filename"].append(file_path)
+                    elif column == "timestamp":
+                        new_manifest_dict["timestamp"].append(folder["files"][file]["timestamp"]),
                     else:
-                        if column == "filename":
-                            new_manifest_dict["filename"].append(file_path)   
-                        elif column == "timestamp":
-                            new_manifest_dict["timestamp"].append(folder["files"][file]["timestamp"]), 
-                        elif column == "description": 
-                            new_manifest_dict["description"].append(folder["files"][file].get("description", ""))
-                        elif column == "file type":
-                            unused_file_name, file_extension = get_name_extension(file)
-                            new_manifest_dict["file type"].append(file_extension), 
-                        elif column == "Additional Metadata":
-                            new_manifest_dict["Additional Metadata"].append(folder["files"][file].get("additional-metadata", ""))
-                        else:
-                            new_manifest_dict[column].append("")
+                        new_manifest_dict[column].append("")
 
     if "folders" in folder.keys():
         for current_folder in list(folder["folders"]):
@@ -351,32 +350,33 @@ def create_high_level_manifest_files_existing_local_starting_point(dataset_path,
     """
    #  soda_manifest_folder_path = join(userpath, "SODA", "manifest_files")
 
-    if dataset_path != "":
-        for high_level_fol in listdir(dataset_path):
+    if dataset_path == "":
+        return
+    for high_level_fol in listdir(dataset_path):
 
-            if high_level_fol in [
-                "primary",
-                "derivative",
-                "docs",
-                "code",
-                "source",
-                "protocol",
-            ]:
-                onlyfiles = [
-                    join(dataset_path, high_level_fol, f)
-                    for f in listdir(join(dataset_path, high_level_fol))
-                    if isfile(join(dataset_path, high_level_fol, f))
-                ]
+        if high_level_fol in [
+            "primary",
+            "derivative",
+            "docs",
+            "code",
+            "source",
+            "protocol",
+        ]:
+            onlyfiles = [
+                join(dataset_path, high_level_fol, f)
+                for f in listdir(join(dataset_path, high_level_fol))
+                if isfile(join(dataset_path, high_level_fol, f))
+            ]
 
-                for file in onlyfiles:
-                    p = pathlib.Path(file)
-                    # create high-level folder at the temporary location
-                    folderpath = join(manifest_path, high_level_fol)
-                    if p.stem == "manifest":
-                        if not exists(folderpath):
-                            makedirs(folderpath)
-                        # make copy from this manifest path to folderpath
-                        shutil.copyfile(file, join(folderpath, p.name))
+            for file in onlyfiles:
+                p = pathlib.Path(file)
+                # create high-level folder at the temporary location
+                folderpath = join(manifest_path, high_level_fol)
+                if p.stem == "manifest":
+                    if not exists(folderpath):
+                        makedirs(folderpath)
+                    # make copy from this manifest path to folderpath
+                    shutil.copyfile(file, join(folderpath, p.name))
 
 
 def create_high_level_manifest_files(soda_json_structure, manifest_path):
@@ -450,10 +450,7 @@ def create_high_level_manifest_files(soda_json_structure, manifest_path):
 
         def file_manifest_entry(file_key, file, relative_path, dict_folder_manifest):
             # filename
-            if relative_path:
-                filename = relative_path + "/" + file_key
-            else:
-                filename = file_key
+            filename = relative_path + "/" + file_key if relative_path else file_key
             dict_folder_manifest["filename"].append(filename)
             # timestamp
             file_type = file["type"]

@@ -142,14 +142,12 @@ def traverseForLeafNodes(datasetStructure):
             if returnedOutput[0]:
                 total_dataset_size += returnedOutput[1]
 
+        elif len(datasetStructure[key]) == 0:
+            returnedOutput = checkLeafValue(key, datasetStructure[key])
+
         else:
-
-            if len(datasetStructure[key]) == 0:
-                returnedOutput = checkLeafValue(key, datasetStructure[key])
-
-            else:
-                # going one step down in the object tree
-                traverseForLeafNodes(datasetStructure[key])
+            # going one step down in the object tree
+            traverseForLeafNodes(datasetStructure[key])
 
     return total_dataset_size
 
@@ -297,10 +295,7 @@ def create_folder_level_manifest(jsonpath, jsondescription):
                 countpath = -1
                 for pathname in allfiles:
                     countpath += 1
-                    if (
-                        basename(pathname) == "manifest.csv"
-                        or basename(pathname) == "manifest.xlsx"
-                    ):
+                    if basename(pathname) in ["manifest.csv", "manifest.xlsx"]:
                         allfiles.pop(countpath)
                         alldescription.pop(countpath)
 
@@ -422,10 +417,7 @@ def check_forbidden_characters(my_string):
         True: presence of forbidden character(s)
     """
     regex = re.compile("[" + forbidden_characters + "]")
-    if regex.search(my_string) == None and "\\" not in r"%r" % my_string:
-        return False
-    else:
-        return True
+    return regex.search(my_string) is not None or "\\" in r"%r" % my_string
 
 
 def folder_size(path):
@@ -458,7 +450,7 @@ def open_file(file_path):
     """
     try:
         if platform.system() == "Windows":
-            subprocess.Popen(r"explorer /select," + str(file_path))
+            subprocess.Popen(f"explorer /select,{str(file_path)}")
         elif platform.system() == "Darwin":
             subprocess.Popen(["open", file_path])
         else:
@@ -476,10 +468,7 @@ def path_size(path):
     Returns:
         total_size: total size of the file/folder in bytes (integer)
     """
-    if isdir(path):
-        return folder_size(path)
-    else:
-        return getsize(path)
+    return folder_size(path) if isdir(path) else getsize(path)
 
 
 def mycopyfile_with_metadata(src, dst, *, follow_symlinks=True):
@@ -533,14 +522,13 @@ def return_new_path(topath):
     Returns:
         topath: new folder name based on the availability in destination folder (string)
     """
-    if exists(topath):
-        i = 2
-        while True:
-            if not exists(topath + " (" + str(i) + ")"):
-                return topath + " (" + str(i) + ")"
-            i += 1
-    else:
+    if not exists(topath):
         return topath
+    i = 2
+    while True:
+        if not exists(topath + " (" + str(i) + ")"):
+            return topath + " (" + str(i) + ")"
+        i += 1
 
 
 def create_dataset(recursivePath, jsonStructure, listallfiles):
@@ -577,7 +565,7 @@ def create_dataset(recursivePath, jsonStructure, listallfiles):
             for fileinfo in listallfiles:
                 srcfile = fileinfo[0]
                 distfile = fileinfo[1]
-                curateprogress = "Copying " + str(srcfile)
+                curateprogress = f"Copying {str(srcfile)}"
 
                 mycopyfile_with_metadata(srcfile, distfile)
 
@@ -634,9 +622,9 @@ def create_soda_json_object_backend(
 
             if os.path.isfile(item_path) is True:
                 # check manifest to add metadata
-                if entry[0:1] != ".":
+                if entry[:1] != ".":
                     create_soda_json_progress += 1
-                if entry[0:1] != "." and entry[0:8] != "manifest":
+                if entry[:1] != "." and entry[:8] != "manifest":
                     # no hidden files or manifest files included
                     if high_lvl_folder_name in soda_json_structure["starting-point"]:
                         if (
@@ -796,14 +784,14 @@ def create_soda_json_object_backend(
         # walk through all folders and it's subfolders
         for Dir in dirs:
             # does not take hidden folders or manifest folders
-            if Dir[0:1] != "." and Dir[0:8] != "manifest":
+            if Dir[:1] != "." and Dir[:8] != "manifest":
                 create_soda_json_total_items += 1
         for fileName in filenames:
             if root == root_folder_path and fileName in METADATA_FILES_SPARC:
                 # goes through all files and does not count hidden files
                 create_soda_json_total_items += 1
             else:
-                if fileName[0:1] != ".":
+                if fileName[:1] != ".":
                     create_soda_json_total_items += 1
 
     # reading high level folders
@@ -818,7 +806,7 @@ def create_soda_json_object_backend(
         item_path = root_folder_path + "/" + entry
         # high level folder paths
         if os.path.isfile(item_path) is True:
-            if entry[0:1] != "." and entry in METADATA_FILES_SPARC:
+            if entry[:1] != "." and entry in METADATA_FILES_SPARC:
                 # is not a hidden folder
                 create_soda_json_progress += 1
                 soda_json_structure["metadata-files"][entry] = {
@@ -826,7 +814,7 @@ def create_soda_json_object_backend(
                     "type": "local",
                     "action": ["existing"],
                 }
-            # do file work here
+                    # do file work here
         elif os.path.isdir(item_path) is True:
             create_soda_json_progress += 1
             # add item to soda
