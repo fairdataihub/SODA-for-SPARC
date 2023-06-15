@@ -3575,6 +3575,7 @@ const withdrawDatasetSubmission = async (curationMode = "") => {
   }
 };
 
+// TODO: Dorian -> Remove this feature as we don't allow withdraws anymore
 const withdrawDatasetCheck = async (res, curationMode) => {
   let reviewstatus = res["publishing_status"];
   let requestStatus = res["review_request_status"];
@@ -3599,6 +3600,7 @@ const withdrawDatasetCheck = async (res, curationMode) => {
   }
 };
 
+// TODO: Dorian -> Remove this feature as we don't allow withdraws anymore
 const withdrawReviewDataset = async (curationMode) => {
   // bfWithdrawReviewDatasetBtn.disabled = true;
 
@@ -3661,7 +3663,7 @@ const withdrawReviewDataset = async (curationMode) => {
     // scroll to the submit button
   } catch (error) {
     clientError(error);
-    var emessage = userErrorMessage(error);
+    let emessage = userErrorMessage(error);
     Swal.fire({
       title: "Could not withdraw dataset from publication!",
       text: `${emessage}`,
@@ -3727,15 +3729,17 @@ const refreshBfUsersList = () => {
         $("#button-add-permission-user").hide();
         $("#bf_list_users_pi").selectpicker("refresh");
         $("#bf_list_users_pi").find("option:not(:first)").remove();
-        for (var myItem in users) {
+        for (let myItem in users) {
           // returns like [..,''fname lname email !!**!! pennsieve_id',',..]
           let sep_pos = users[myItem].lastIndexOf("!|**|!");
-          var myUser = users[myItem].substring(0, sep_pos);
-          var optionUser = document.createElement("option");
+          let myUser = users[myItem].substring(0, sep_pos);
+          let optionUser = document.createElement("option");
+          let optionUser2 = document.createElement("option");
+
           optionUser.textContent = myUser;
           optionUser.value = users[myItem].substring(sep_pos + 6);
+          optionUser2 = optionUser.cloneNode(true);
           bfListUsers.appendChild(optionUser);
-          var optionUser2 = optionUser.cloneNode(true);
           bfListUsersPI.appendChild(optionUser2);
         }
       })
@@ -3756,8 +3760,8 @@ const getSortedTeamStrings = (pennsieveTeamsJsonResponse) => {
 const refreshBfTeamsList = async (teamList) => {
   removeOptions(teamList);
 
-  var accountSelected = defaultBfAccount;
-  var optionTeam = document.createElement("option");
+  let accountSelected = defaultBfAccount;
+  let optionTeam = document.createElement("option");
 
   optionTeam.textContent = "Select team";
   teamList.appendChild(optionTeam);
@@ -3800,15 +3804,15 @@ const selectOptionColor = (mylist) => {
 // this function now is only used to load all datasets ("All" permission)
 // onto the dataset_description file ds-name select
 const refreshDatasetList = () => {
-  var datasetPermission = "All";
+  let datasetPermission = "All";
+  let filteredDatasets = [];
 
-  var filteredDatasets = [];
   if (datasetPermission.toLowerCase() === "all") {
-    for (var i = 0; i < datasetList.length; i++) {
+    for (let i = 0; i < datasetList.length; i++) {
       filteredDatasets.push(datasetList[i].name);
     }
   }
-  filteredDatasets.sort(function (a, b) {
+  filteredDatasets.sort((a, b) => {
     return a.toLowerCase().localeCompare(b.toLowerCase());
   });
 
@@ -3838,12 +3842,12 @@ const refreshOrganizationList = () => {
 const populateDatasetDropdowns = (mylist) => {
   clearDatasetDropdowns();
   for (myitem in mylist) {
-    var myitemselect = mylist[myitem];
-    var option = document.createElement("option");
+    let myitemselect = mylist[myitem];
+    let option = document.createElement("option");
+    let option2 = document.createElement("option");
     option.textContent = myitemselect;
     option.value = myitemselect;
-    var option1 = option.cloneNode(true);
-    var option2 = option.cloneNode(true);
+    option2 = option.cloneNode(true);
 
     curateDatasetDropdown.appendChild(option2);
   }
@@ -3857,12 +3861,12 @@ const populateOrganizationDropdowns = (organizations) => {
   clearOrganizationDropdowns();
 
   for (const organization in organizations) {
-    var myitemselect = organizations[organization];
-    var option = document.createElement("option");
+    let myitemselect = organizations[organization];
+    let option = document.createElement("option");
+    let option1 = document.createElement("option");
     option.textContent = myitemselect;
     option.value = myitemselect;
-    let option1 = option.cloneNode(true);
-    let option2 = option.cloneNode(true);
+    option1 = option.cloneNode(true);
 
     curateOrganizationDropdown.appendChild(option1);
   }
@@ -3883,11 +3887,10 @@ const updateBfAccountList = async () => {
 
   let accountList = responseObject.data["accounts"];
   for (myitem in accountList) {
-    var myitemselect = accountList[myitem];
-    var option = document.createElement("option");
+    let myitemselect = accountList[myitem];
+    let option = document.createElement("option");
     option.textContent = myitemselect;
     option.value = myitemselect;
-    var option2 = option.cloneNode(true);
   }
   await loadDefaultAccount();
   if (accountList[0] === "Select" && accountList.length === 1) {
@@ -3911,7 +3914,7 @@ const loadDefaultAccount = async () => {
   let accounts = responseObject.data["defaultAccounts"];
 
   if (accounts.length > 0) {
-    var myitemselect = accounts[0];
+    let myitemselect = accounts[0];
     // keep the defaultBfAccount value as the user's profile config key value for reference later
     defaultBfAccount = myitemselect;
 
@@ -3931,8 +3934,8 @@ const loadDefaultAccount = async () => {
 };
 
 const showPrePublishingPageElements = () => {
-  var selectedBfAccount = defaultBfAccount;
-  var selectedBfDataset = defaultBfDataset;
+  let selectedBfAccount = defaultBfAccount;
+  let selectedBfDataset = defaultBfDataset;
 
   if (selectedBfDataset === "Select dataset") {
     return;
@@ -3952,7 +3955,7 @@ const showPrePublishingPageElements = () => {
 const showPublishingStatus = async (callback, curationMode = "") => {
   return new Promise(async function (resolve, reject) {
     if (callback == "noClear") {
-      var nothing;
+      let nothing;
     }
 
     let curationModeID = "";
@@ -4100,15 +4103,15 @@ var sodaJSONObj = {};
 
 /// back button Curate
 organizeDSbackButton.addEventListener("click", function () {
-  var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+  let slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
   if (slashCount !== 1) {
-    var filtered = getGlobalPath(organizeDSglobalPath);
+    let filtered = getGlobalPath(organizeDSglobalPath);
     if (filtered.length === 1) {
       organizeDSglobalPath.value = filtered[0] + "/";
     } else {
       organizeDSglobalPath.value = filtered.slice(0, filtered.length - 1).join("/") + "/";
     }
-    var myPath = datasetStructureJSONObj;
+    let myPath = datasetStructureJSONObj;
     for (var item of filtered.slice(1, filtered.length - 1)) {
       myPath = myPath["folders"][item];
     }
@@ -4116,7 +4119,7 @@ organizeDSbackButton.addEventListener("click", function () {
     $("#items").empty();
     already_created_elem = [];
     let items = loadFileFolder(myPath); //array -
-    let total_item_count = items[1].length + items[0].length;
+    console.log(items);
     //we have some items to display
     listItems(myPath, "#items", 500, (reset = true));
     organizeLandingUIEffect();
@@ -4128,9 +4131,9 @@ organizeDSbackButton.addEventListener("click", function () {
 // Add folder button
 organizeDSaddNewFolder.addEventListener("click", function (event) {
   event.preventDefault();
-  var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+  let slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
   if (slashCount !== 1) {
-    var newFolderName = "New Folder";
+    let newFolderName = "New Folder";
     Swal.fire({
       title: "Add new folder...",
       text: "Enter a name below:",
@@ -4153,7 +4156,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
         $(".swal2-input").attr("id", "add-new-folder-input");
         $(".swal2-confirm").attr("id", "add-new-folder-button");
         $("#add-new-folder-input").keyup(function () {
-          var val = $("#add-new-folder-input").val();
+          let val = $("#add-new-folder-input").val();
           let folderNameCheck = checkIrregularNameBoolean(val);
           if (folderNameCheck === true) {
             Swal.showValidationMessage(
@@ -4171,13 +4174,12 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
         $(".swal2-input").attr("id", "");
       },
     }).then((result) => {
-      if (result.value) {
-        if (result.value !== null && result.value !== "") {
+      if (result.value && result.value !== null && result.value !== "") {
           newFolderName = result.value.trim();
           // check for duplicate or files with the same name
-          var duplicate = false;
-          var itemDivElements = document.getElementById("items").children;
-          for (var i = 0; i < itemDivElements.length; i++) {
+          let duplicate = false;
+          let itemDivElements = document.getElementById("items").children;
+          for (let i = 0; i < itemDivElements.length; i++) {
             if (newFolderName === itemDivElements[i].innerText) {
               duplicate = true;
               break;
@@ -4200,24 +4202,16 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
               determineDatasetLocation()
             );
           } else {
-            // var appendString = "";
-            // appendString =
-            //   appendString +
-            //   '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">' +
-            //   newFolderName +
-            //   "</div></div>";
-            // $(appendString).appendTo("#items");
-
             /// update datasetStructureJSONObj
-            var currentPath = organizeDSglobalPath.value;
-            var jsonPathArray = currentPath.split("/");
-            var filtered = jsonPathArray.slice(1).filter(function (el) {
+            let currentPath = organizeDSglobalPath.value;
+            let jsonPathArray = currentPath.split("/");
+            let filtered = jsonPathArray.slice(1).filter(function (el) {
               return el != "";
             });
 
-            var myPath = getRecursivePath(filtered, datasetStructureJSONObj);
+            let myPath = getRecursivePath(filtered, datasetStructureJSONObj);
+            let renamedNewFolder = newFolderName;
             // update Json object with new folder created
-            var renamedNewFolder = newFolderName;
             myPath["folders"][renamedNewFolder] = {
               folders: {},
               files: {},
@@ -4240,7 +4234,6 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
             hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
             hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
           }
-        }
       }
     });
   } else {
@@ -4262,21 +4255,23 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
 
 // ///////////////////////////////////////////////////////////////////////////
 // recursively populate json object
-// TODO: Dorian -> This is the function the populates content from inside the folder to the JSON object
+// When importing folders to the file expolorer this function will import the content within the folder
 const populateJSONObjFolder = (action, jsonObject, folderPath) => {
-  var myitems = fs.readdirSync(folderPath);
-  myitems.forEach((element) => {
+  let folderContent = fs.readdirSync(folderPath);
+  folderContent.forEach((itemWithinFolder) => {
     //prevented here
-    var statsObj = fs.statSync(path.join(folderPath, element));
-    var addedElement = path.join(folderPath, element);
-    if (statsObj.isDirectory() && !/(^|\/)\[^\/\.]/g.test(element)) {
+    let statsObj = fs.statSync(path.join(folderPath, itemWithinFolder));
+    let addedElement = path.join(folderPath, itemWithinFolder);
+    console.log(addedElement);
+    if (statsObj.isDirectory() && !/(^|\/)\[^\/\.]/g.test(itemWithinFolder)) {
+      console.log(irregularFolderArray);
       if (irregularFolderArray.includes(addedElement)) {
-        var renamedFolderName = "";
+        let renamedFolderName = "";
         if (action !== "ignore" && action !== "") {
           if (action === "remove") {
-            renamedFolderName = removeIrregularFolders(element);
+            renamedFolderName = removeIrregularFolders(itemWithinFolder);
           } else if (action === "replace") {
-            renamedFolderName = replaceIrregularFolders(element);
+            renamedFolderName = replaceIrregularFolders(itemWithinFolder);
           }
           jsonObject["folders"][renamedFolderName] = {
             type: "local",
@@ -4285,10 +4280,12 @@ const populateJSONObjFolder = (action, jsonObject, folderPath) => {
             path: addedElement,
             action: ["new", "renamed"],
           };
-          element = renamedFolderName;
+          console.log("before reassignment", itemWithinFolder);
+          itemWithinFolder = renamedFolderName;
+          console.log("after reassignment", itemWithinFolder);
         }
       } else {
-        jsonObject["folders"][element] = {
+        jsonObject["folders"][itemWithinFolder] = {
           type: "local",
           folders: {},
           files: {},
@@ -4296,9 +4293,10 @@ const populateJSONObjFolder = (action, jsonObject, folderPath) => {
           action: ["new"],
         };
       }
-      populateJSONObjFolder(action, jsonObject["folders"][element], addedElement);
-    } else if (statsObj.isFile() && !/(^|\/)\.[^\/\.]/g.test(element)) {
-      jsonObject["files"][element] = {
+      populateJSONObjFolder(action, jsonObject["folders"][itemWithinFolder], addedElement);
+    } else if (statsObj.isFile() && !/(!\/[^\/]+)/g.test(itemWithinFolder) && itemWithinFolder !== ".DS_Store" && itemWithinFolder !== "Thumbs.db") {
+      // The check here will prevent files with a foward slash, .DS_Store and Thumbs.db files from being imported
+      jsonObject["files"][itemWithinFolder] = {
         path: addedElement,
         description: "",
         "additional-metadata": "",
@@ -4322,11 +4320,11 @@ const hideFullName = () => {
 const showFullName = (ev, element, text) => {
   /// check if the full name of the folder is overflowing or not, if so, show full name on hover
   full_name_show = true;
-  var isOverflowing =
+  let mouseX = ev.pageX - 200;
+  let mouseY = ev.pageY;
+  let isOverflowing =
     element.clientWidth < element.scrollWidth || element.clientHeight < element.scrollHeight;
   if (isOverflowing) {
-    var mouseX = ev.pageX - 200;
-    var mouseY = ev.pageY;
     fullNameValue.innerHTML = text;
     $(".hoverFullName").css({ top: mouseY, left: mouseX });
     setTimeout(() => {
@@ -4340,7 +4338,7 @@ const showFullName = (ev, element, text) => {
 
 /// hover over a function for full name
 const hoverForFullName = (ev) => {
-  var fullPath = ev.innerText;
+  let fullPath = ev.innerText;
   // ev.children[1] is the child element folder_desc of div.single-item,
   // which we will put through the overflowing check in showFullName function
   showFullName(event, ev.children[1], fullPath);
@@ -4357,7 +4355,6 @@ document.addEventListener("onmouseover", function (e) {
 // if a file/folder is clicked -> show details in right "sidebar"
 const showDetailsFile = () => {
   $(".div-display-details.file").toggleClass("show");
-  // $(".div-display-details.folders").hide()
 };
 
 const pasteFromClipboard = (event, target_element) => {
@@ -4417,7 +4414,6 @@ const retrieveBFAccounts = async () => {
         showDefaultBFAccount();
       })
       .catch((error) => {
-        // clientError(error)
         bfAccountOptionsStatus = error;
       });
   } else {
@@ -4432,7 +4428,7 @@ const showDefaultBFAccount = async () => {
     let bf_default_acc_req = await client.get("manage_datasets/bf_default_account_load");
     let accounts = bf_default_acc_req.data.defaultAccounts;
     if (accounts.length > 0) {
-      var myitemselect = accounts[0];
+      let myitemselect = accounts[0];
       defaultBfAccount = myitemselect;
       try {
         let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
