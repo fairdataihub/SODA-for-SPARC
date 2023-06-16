@@ -5,6 +5,8 @@ from flask import Flask, request
 from namespaces import configure_namespaces
 from flask_restx import Resource
 import sys
+from upload import upload_file
+from validator import val_dataset_local_pipeline
 
 configure_namespaces()
 
@@ -25,6 +27,7 @@ configureRouteHandlers(api)
 
 api.init_app(app)
 
+upload_file("Test path")
 
 @api.route("/sodaforsparc_server_shutdown", endpoint="shutdown")
 class Shutdown(Resource):
