@@ -17,12 +17,6 @@ document
     openDropdownPrompt(this, "dataset", false);
   });
 
-// document
-//   .querySelector("#Question-generate-dataset-BF-dataset .change-current-account.organization")
-//   .addEventListener("click", function () {
-//     openDropdownPrompt(this, "organization", false);
-//   });
-
 document
   .querySelector("#Question-generate-dataset-BF-dataset .change-current-account:not(.organization)")
   .addEventListener("click", function () {
@@ -35,18 +29,6 @@ document
     openDropdownPrompt(this, "bf");
   });
 
-// document
-//   .querySelector("#svg-change-current-account-generate-dropdown")
-//   .addEventListener("click", function () {
-//     openDropdownPrompt(this, "bf");
-//   });
-
-// document
-//   .querySelector("#change-current-account-new-ds-name")
-//   .addEventListener("click", function () {
-//     openDropdownPrompt(this, "dataset");
-//   });
-
 $(".button-individual-metadata.remove").click(function () {
   var metadataFileStatus = $($(this).parents()[1]).find(".para-metadata-file-status");
 
@@ -56,35 +38,32 @@ $(".button-individual-metadata.remove").click(function () {
 });
 
 // Where metadata files are imported through free form mode
-//
 $(".metadata-button").click(function () {
   metadataFile = $(this);
   $(".div-organize-generate-dataset.metadata").addClass("hide");
   var target = $(this).attr("data-next");
   $("#" + target).toggleClass("show");
-  // document.getElementById("save-progress-btn").style.display = "none";
   document.getElementById("nextBtn").style.display = "none";
   document.getElementById("prevBtn").style.display = "none";
 });
 
-function confirmMetadataFilePath(ev) {
+const confirmMetadataFilePath = (ev) => {
   $($(ev).parents()[1]).removeClass("show");
   $(".div-organize-generate-dataset.metadata").removeClass("hide");
   document.getElementById("nextBtn").style.display = "inline";
   document.getElementById("prevBtn").style.display = "inline";
-  // document.getElementById("save-progress-btn").style.display = "block";
 
   // Checking if metadata files are imported
   //// once users click "Confirm" or "Cancel", check if file is specified
   //// if yes: addClass 'done'
   //// if no: removeClass 'done'
-  var errorMetadataFileMessages = [
+  let errorMetadataFileMessages = [
     "",
     "Please only drag and drop a file!",
     "Your SPARC metadata file must be in one of the formats listed above!",
     "Your SPARC metadata file must be named and formatted exactly as listed above!",
   ];
-  var metadataFileStatus = $($(ev).parents()[1]).find(".para-metadata-file-status");
+  let metadataFileStatus = $($(ev).parents()[1]).find(".para-metadata-file-status");
 
   if (!errorMetadataFileMessages.includes($(metadataFileStatus).text())) {
     $(metadataFile).addClass("done");
@@ -123,7 +102,7 @@ function confirmMetadataFilePath(ev) {
       determineDatasetLocation()
     );
   }
-}
+};
 // $(".button-individual-metadata.confirm").click(function() {
 // })
 
@@ -134,7 +113,7 @@ $(".button-individual-metadata.go-back").click(function () {
   $(".div-organize-generate-dataset.metadata").removeClass("hide");
   document.getElementById("nextBtn").style.display = "inline";
   document.getElementById("prevBtn").style.display = "inline";
-  var errorMetadataFileMessages = [
+  let errorMetadataFileMessages = [
     "",
     "Please only drag and drop a file!",
     "Your SPARC metadata file must be in one of the formats listed above!",
@@ -625,7 +604,6 @@ const populateMetadataProgress = (populateBoolean, metadataFileName, localPath) 
 let missing_dataset_files = [];
 let missing_metadata_files = [];
 const loadProgressFile = (ev) => {
-  let return_option = "";
   missing_dataset_files = [];
   missing_metadata_files = [];
 
@@ -794,21 +772,6 @@ const recursive_remove_missing_file = (item_path, dataset_folder) => {
     }
   }
 };
-
-// const removeOptions = (selectbox) => {
-//   var i;
-//   for (i = selectbox.options.length - 1; i >= 0; i--) {
-//     selectbox.remove(i);
-//   }
-// };
-//
-// Function to add options to dropdown list
-// const addOption = (selectbox, text, value) => {
-//   var opt = document.createElement("OPTION");
-//   opt.text = text;
-//   opt.value = value;
-//   selectbox.options.add(opt);
-// };
 
 // function to load Progress dropdown
 const importOrganizeProgressPrompt = () => {
