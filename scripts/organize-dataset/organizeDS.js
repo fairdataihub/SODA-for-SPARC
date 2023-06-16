@@ -1,6 +1,6 @@
 //// option to show tool-tips for high-level folders
-function showTooltips(ev) {
-  var folderName = ev.parentElement.innerText;
+const showTooltips = (ev) => {
+  let folderName = ev.parentElement.innerText;
   Swal.fire({
     icon: "info",
     html: highLevelFolderToolTip[folderName],
@@ -19,17 +19,16 @@ const recursive_mark_sub_files_deleted = (dataset_folder, mode) => {
   if ("files" in dataset_folder) {
     for (let file in dataset_folder["files"]) {
       if ("forTreeview" in dataset_folder["files"][file]) {
+        // Manifest files usually have this key
         continue;
       }
       if (mode === "delete") {
         if (!dataset_folder["files"][file]["action"].includes("recursive_deleted")) {
           dataset_folder["files"][file]["action"].push("recursive_deleted");
         }
-      } else if (mode === "restore") {
-        if (dataset_folder["files"][file]["action"].includes("recursive_deleted")) {
+      } else if (mode === "restore" && dataset_folder["files"][file]["action"].includes("recursive_deleted")) {
           let index = dataset_folder["files"][file]["action"].indexOf("recursive_deleted");
           dataset_folder["files"][file]["action"].splice(index, 1);
-        }
       }
     }
   }
@@ -41,11 +40,9 @@ const recursive_mark_sub_files_deleted = (dataset_folder, mode) => {
           if (!dataset_folder["folders"][folder]["action"].includes("recursive_deleted")) {
             dataset_folder["folders"][folder]["action"].push("recursive_deleted");
           }
-        } else if (mode === "restore") {
-          if (dataset_folder["folders"][folder]["action"].includes("recursive_deleted")) {
+        } else if (mode === "restore" && dataset_folder["folders"][folder]["action"].includes("recursive_deleted")) {
             let index = dataset_folder["folders"][folder]["action"].indexOf("recursive_deleted");
             dataset_folder["folders"][folder]["action"].splice(index, 1);
-          }
         }
       }
     }
@@ -53,10 +50,10 @@ const recursive_mark_sub_files_deleted = (dataset_folder, mode) => {
 };
 
 ///////// Option to delete folders or files
-function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGlobal) {
-  var itemToDelete = ev.parentElement.innerText;
-  var promptVar;
-  var type; // renaming files or folders
+const delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGlobal) =>{
+  let itemToDelete = ev.parentElement.innerText;
+  let promptVar;
+  let type; // renaming files or folders
 
   if (ev.classList.value.includes("myFile")) {
     promptVar = "file";
@@ -125,9 +122,8 @@ function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
     }).then((result) => {
       if (result.isConfirmed) {
         let itemToRestore = itemToDelete;
-        var filtered = getGlobalPath(organizeCurrentLocation);
-
-        var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
+        let filtered = getGlobalPath(organizeCurrentLocation);
+        let myPath = getRecursivePath(filtered.slice(1), inputGlobal);
 
         if (filtered.length == 1) {
           let itemToRestore_new_key = itemToRestore.substring(0, itemToRestore.lastIndexOf("-"));
@@ -211,8 +207,8 @@ function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
         },
       }).then((result) => {
         if (result.isConfirmed) {
-          var filtered = getGlobalPath(organizeCurrentLocation);
-          var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
+          let filtered = getGlobalPath(organizeCurrentLocation);
+          let myPath = getRecursivePath(filtered.slice(1), inputGlobal);
 
           $("div.single-item.selected-item > .folder_desc").each(function (index, current_element) {
             itemToDelete = $(current_element).text();
@@ -308,7 +304,7 @@ function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
 }
 
 // helper function to rename files/folders
-function checkValidRenameInput(
+const checkValidRenameInput = (
   event,
   input,
   type,
@@ -316,7 +312,7 @@ function checkValidRenameInput(
   newName,
   itemElement
   // myBootboxDialog
-) {
+) => {
   double_extensions = [
     ".ome.tiff",
     ".ome.tif",
@@ -409,20 +405,20 @@ function checkValidRenameInput(
 }
 
 ///// Option to rename a folder and files
-function renameFolder(
+const renameFolder = (
   event1, //this
   organizeCurrentLocation, //current section of My_folder
   itemElement, //the elements in the container with items
   inputGlobal, //datasetStructureJSONObj
   uiItem, //container with the folders
   singleUIItem //class name
-) {
-  var promptVar;
-  var type; // renaming files or folders
-  var newName;
-  var currentName = event1.parentElement.getElementsByTagName("div")[0].innerText;
-  var nameWithoutExtension;
-  var highLevelFolderBool;
+) => {
+  let promptVar;
+  let type; // renaming files or folders
+  let newName;
+  let currentName = event1.parentElement.getElementsByTagName("div")[0].innerText;
+  let nameWithoutExtension;
+  let highLevelFolderBool;
 
   double_extensions = [
     ".ome.tiff",
@@ -507,8 +503,8 @@ function renameFolder(
         let swal_popup = document.getElementsByClassName("swal2-popup")[0];
         swal_popup.style.width = "42rem";
         $("#rename-folder-input").keyup(function () {
-          var val = $("#rename-folder-input").val();
-          for (var char of nonAllowedCharacters) {
+          let val = $("#rename-folder-input").val();
+          for (let char of nonAllowedCharacters) {
             if (val.includes(char)) {
               Swal.showValidationMessage(
                 `The folder name cannot contains the following characters ${nonAllowedCharacters}, please rename to a different name!`
@@ -528,14 +524,13 @@ function renameFolder(
       },
     }).then((result) => {
       if (result.isConfirmed) {
-        var returnedName = checkValidRenameInput(
+        let returnedName = checkValidRenameInput(
           event1,
           result.value.trim(),
           type,
           currentName,
           newName,
           itemElement
-          // myBootboxDialog
         );
         if (returnedName !== "") {
           Swal.fire({
@@ -563,8 +558,8 @@ function renameFolder(
           /// assign new name to folder or file in the UI
           event1.parentElement.children[1].innerText = returnedName;
           /// get location of current file or folder in JSON obj
-          var filtered = getGlobalPath(organizeCurrentLocation);
-          var myPath = getRecursivePath(filtered.slice(1), inputGlobal);
+          let filtered = getGlobalPath(organizeCurrentLocation);
+          let myPath = getRecursivePath(filtered.slice(1), inputGlobal);
           /// update jsonObjGlobal with the new name
           storedValue = myPath[type][currentName];
           delete myPath[type][currentName];
