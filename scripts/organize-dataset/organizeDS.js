@@ -596,23 +596,23 @@ const renameFolder = (
 };
 
 const getGlobalPath = (path) => {
-  var currentPath = path.value.trim();
-  var jsonPathArray = currentPath.split("/");
-  var filtered = jsonPathArray.filter(function (el) {
+  let currentPath = path.value.trim();
+  let jsonPathArray = currentPath.split("/");
+  let filtered = jsonPathArray.filter((el) => {
     return el != "";
   });
   return filtered;
 };
 
-function loadFileFolder(myPath) {
-  var appendString = "";
-  var sortedObj = sortObjByKeys(myPath);
+const loadFileFolder = (myPath) => {
+  let appendString = "";
+  let sortedObj = sortObjByKeys(myPath);
   let count = 0;
   let file_elem = [],
     folder_elem = [];
 
-  for (var item in sortedObj["folders"]) {
-    var emptyFolder = "";
+  for (let item in sortedObj["folders"]) {
+    let emptyFolder = "";
     count += 1;
     if (!highLevelFolders.includes(item)) {
       if (
@@ -704,11 +704,11 @@ function loadFileFolder(myPath) {
 
   let items = [folder_elem, file_elem];
   return items;
-}
+};
 
-function getRecursivePath(filteredList, inputObj) {
-  var myPath = inputObj;
-  for (var item of filteredList) {
+const getRecursivePath = (filteredList, inputObj) => {
+  let myPath = inputObj;
+  for (let item of filteredList) {
     if (item.trim() !== "") {
       myPath = myPath["folders"][item];
     }
@@ -716,7 +716,7 @@ function getRecursivePath(filteredList, inputObj) {
   if (myPath === undefined) {
     myPath = inputObj;
     filteredList.pop();
-    for (var item of filteredList) {
+    for (let item of filteredList) {
       if (item.trim() !== "") {
         myPath = myPath["folders"][item];
       }
@@ -726,10 +726,11 @@ function getRecursivePath(filteredList, inputObj) {
   } else {
     return myPath;
   }
-}
+};
 
 /// check if an array contains another array
-function checkSubArrayBool(parentArray, childArray) {
+// TODO: Dorian -> This function doesn't seem to be used, delete?
+const checkSubArrayBool = (parentArray, childArray) => {
   var bool = true;
   for (var element of childArray) {
     if (!parentArray.includes(element)) {
@@ -738,20 +739,21 @@ function checkSubArrayBool(parentArray, childArray) {
     }
   }
   return bool;
-}
+};
 
-function animate_updatedFiles() {
+// Function is used to giving a glowing effect on files that are updated in the file explorer
+// Files are updated when a duplicate file is found and they select to update the file
+const animateUpdatedFiles = () => {
   let updated_docs = document.getElementsByClassName("update-file");
 
   for (let i = 0; i < updated_docs.length; i++) {
     $(updated_docs[i].parentElement).addClass("backgroundAnimate");
   }
-}
+};
 
-function showItemsAsListBootbox(arrayOfItems) {
-  var htmlElement = "";
-  let i = 0;
-  for (var element of arrayOfItems) {
+const showItemsAsListBootbox = (arrayOfItems) => {
+  let htmlElement = "";
+  for (let element of arrayOfItems) {
     htmlElement =
       htmlElement +
       "<li style='font-size: large; margin-bottom: 5px; margin-right: 270px; margin-left: 242px;'>" +
@@ -759,28 +761,26 @@ function showItemsAsListBootbox(arrayOfItems) {
       "</li>";
   }
   return htmlElement;
-}
+};
 
-function selectAll(source) {
+const selectAll = (source) => {
   let container = document.getElementById("container");
   let checkboxes = container.querySelectorAll("input[type=checkbox]");
 
   for (let i = 0; i < checkboxes.length; i++) {
     checkboxes[i].checked = source.checked;
   }
-}
+};
 
-function showParentSwal(duplicateArray) {
-  var tempFile = [];
-  var temp = duplicateArray.substring(1, duplicateArray.length - 1);
-  temp = temp.split(",");
+const showParentSwal = (duplicateArray) => {
+  let tempFile = [];
+  let temp = duplicateArray.substring(1, duplicateArray.length - 1).split(",");
   let titleSwal = "";
   let htmlSwal = "";
   let html_word = "";
 
   for (let i = 0; i < temp.length; i++) {
     let lastSlash = temp[i].lastIndexOf("\\") + 1;
-    let fieldContainer = document.createElement("div");
     if (lastSlash === 0) {
       //in case it's on mac
       lastSlash = temp[i].lastIndexOf("/") + 1;
@@ -797,7 +797,7 @@ function showParentSwal(duplicateArray) {
     htmlSwal = "Folders with the following names are already in the current folder: ";
     html_word = "Folders";
   }
-  var listElements = showItemsAsListBootbox(tempFile);
+  let listElements = showItemsAsListBootbox(tempFile);
   newList = JSON.stringify(temp).replace(/"/g, "");
 
   return Swal.fire({
@@ -833,7 +833,7 @@ function showParentSwal(duplicateArray) {
       <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel','', 'free-form')">Cancel</button>
       </div>`,
   });
-}
+};
 
 //creates the html for sweet alert
 
@@ -857,8 +857,8 @@ const handleDuplicateImports = (btnId, duplicateArray, curationMode) => {
       tempFile[i] = list[i].substring(lastSlash, list[i].length);
 
       let para = document.createElement("p");
-      var extIndex = tempFile[i].lastIndexOf(".");
-      var justFileName = tempFile[i].substring(0, extIndex);
+      let extIndex = tempFile[i].lastIndexOf(".");
+      let justFileName = tempFile[i].substring(0, extIndex);
       let input = document.createElement("input");
       let text = document.createTextNode(tempFile[i]);
 
@@ -1524,7 +1524,7 @@ const handleDuplicateImports = (btnId, duplicateArray, curationMode) => {
             }
           }
 
-          animate_updatedFiles();
+          animateUpdatedFiles();
 
           //add glowing effect here after page is refreshed
           if (removeExt === -1) {
@@ -2162,7 +2162,7 @@ let item_box = document.querySelector("#items");
 let dataset_path = document.getElementById("input-global-path");
 
 //will observe if property of element changes to decide of eventListener is needed
-function observeElement(element, property, callback, delay = 0) {
+const observeElement = (element, property, callback, delay = 0) => {
   let elementPrototype = Object.getPrototypeOf(element);
   if (elementPrototype.hasOwnProperty(property)) {
     let descriptor = Object.getOwnPropertyDescriptor(elementPrototype, property);
@@ -2181,10 +2181,10 @@ function observeElement(element, property, callback, delay = 0) {
       },
     });
   }
-}
+};
 
 //when on top layer of dataset eventListener is removed
-function check_dataset_value() {
+const check_dataset_value = () => {
   if (dataset_path.value === "My_dataset_folder/") {
     item_box.removeEventListener("scroll", lazyLoad, true);
   }
@@ -2196,26 +2196,20 @@ function check_dataset_value() {
     getInFolder(".single-item", "#items", dataset_path, datasetStructureJSONObj);
     beginScrollListen();
   }
-}
+};
 observeElement(dataset_path, "value", check_dataset_value);
 
 var amount = 500;
 
-function beginScrollListen() {
+const beginScrollListen = () => {
   amount = 500;
   item_box.addEventListener("scroll", lazyLoad);
-}
+};
 
-async function lazyLoad() {
+const lazyLoad = async () => {
   let total_items = already_created_elem.length;
   let filtered = getGlobalPath(dataset_path);
   let myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
-
-  //if there's less than 20 items event listener will be removed
-
-  //load spinner is prepended to beginning to elements if any de-rendered
-  //itemscrollTop is > item_box.scrollHeight - 280 (for scrolling bottom)
-  //item.scrollTop is < 280 (scrolling the top)
 
   if (item_box.childElementCount != 0) {
     if (
@@ -2300,13 +2294,13 @@ async function lazyLoad() {
       });
     }
   }
-}
+};
 
 already_created_elem = [];
 let listed_count = 0;
 let start = 0;
 let preprended_items = 0;
-async function add_items_to_view(list, amount_req, reset) {
+const add_items_to_view = async (list, amount_req, reset) => {
   uiItems = "#items";
   let elements_req = amount_req / 100; //array stores 100 elements per index
   let element_items = item_box.childElementCount;
@@ -2372,7 +2366,7 @@ async function add_items_to_view(list, amount_req, reset) {
     item_box.lastChild.style.setProperty("margin-top", "5px");
     item_box.lastChild.style.setProperty("margin-bottom", "30px");
   }
-}
+};
 
 const resetLazyLoading = () => {
   already_created_elem = [];
@@ -2384,7 +2378,7 @@ const resetLazyLoading = () => {
 
 ///// function to load details to show in display once
 ///// users click Show details
-function loadDetailsContextMenu(fileName, filePath, textareaID1, textareaID2, paraLocalPath) {
+const loadDetailsContextMenu = (fileName, filePath, textareaID1, textareaID2, paraLocalPath) => {
   if ("description" in filePath["files"][fileName]) {
     document.getElementById(textareaID1).value = filePath["files"][fileName]["description"];
   } else {
@@ -2408,37 +2402,37 @@ function loadDetailsContextMenu(fileName, filePath, textareaID1, textareaID2, pa
     path_label.innerHTML = "<b>Local path:<br></b>";
     document.getElementById(paraLocalPath).innerHTML = filePath["files"][fileName]["path"];
   }
-}
+};
 
 //path_label = document.querySelector("#organize-dataset-tab > div > div > div > div.div-display-details.file > div:nth-child(2) > label");
 
-function triggerManageDetailsPrompts(ev, fileName, filePath, textareaID1, textareaID2) {
+const triggerManageDetailsPrompts = (ev, fileName, filePath, textareaID1, textareaID2) => {
   filePath["files"][fileName]["additional-metadata"] = document
     .getElementById(textareaID2)
     .value.trim();
   filePath["files"][fileName]["description"] = document.getElementById(textareaID1).value.trim();
   // check for "Apply to all files"
   if (document.getElementById("input-add-file-metadata").checked) {
-    for (var file in filePath["files"]) {
+    for (let file in filePath["files"]) {
       filePath["files"][file]["additional-metadata"] = document
         .getElementById(textareaID2)
         .value.trim();
     }
   }
   if (document.getElementById("input-add-file-description").checked) {
-    for (var file in filePath["files"]) {
+    for (let file in filePath["files"]) {
       filePath["files"][file]["description"] = document.getElementById(textareaID1).value.trim();
     }
   }
   // $(this).html("Done <i class='fas fa-check'></i>");
-}
+};
 
 // on change event (in this case: NextBtn click from Step 2 - Step 3)
 // 1. Check path: if path === "My_dataset_folder", then hideOrganizeButtons(), otherwise, showOrganizeButtons()
 // 2. How to show/hide Organize buttons:
 //    a. Hide: display: none (New folder, Import, Back button, and path)
 //    b. Show: display: flex (New folder, Import, Back button, and path) + Center the items
-function organizeLandingUIEffect() {
+const organizeLandingUIEffect = () => {
   if ($("#input-global-path").val() === "My_dataset_folder/") {
     $(".div-organize-dataset-menu").css("visibility", "hidden");
     // $("#organize-path-and-back-button-div").css("visibility", "hidden");
@@ -2447,4 +2441,4 @@ function organizeLandingUIEffect() {
     $("#organize-path-and-back-button-div").css("display", "flex");
     $(".div-organize-dataset-menu").css("visibility", "visible");
   }
-}
+};
