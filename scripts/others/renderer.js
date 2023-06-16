@@ -4175,65 +4175,65 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
       },
     }).then((result) => {
       if (result.value && result.value !== null && result.value !== "") {
-          newFolderName = result.value.trim();
-          // check for duplicate or files with the same name
-          let duplicate = false;
-          let itemDivElements = document.getElementById("items").children;
-          for (let i = 0; i < itemDivElements.length; i++) {
-            if (newFolderName === itemDivElements[i].innerText) {
-              duplicate = true;
-              break;
-            }
+        newFolderName = result.value.trim();
+        // check for duplicate or files with the same name
+        let duplicate = false;
+        let itemDivElements = document.getElementById("items").children;
+        for (let i = 0; i < itemDivElements.length; i++) {
+          if (newFolderName === itemDivElements[i].innerText) {
+            duplicate = true;
+            break;
           }
-          if (duplicate) {
-            Swal.fire({
-              icon: "error",
-              text: "Duplicate folder name: " + newFolderName,
-              confirmButtonText: "OK",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-            });
+        }
+        if (duplicate) {
+          Swal.fire({
+            icon: "error",
+            text: "Duplicate folder name: " + newFolderName,
+            confirmButtonText: "OK",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
 
-            logCurationForAnalytics(
-              "Error",
-              PrepareDatasetsAnalyticsPrefix.CURATE,
-              AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-              ["Step 3", "Add", "Folder"],
-              determineDatasetLocation()
-            );
-          } else {
-            /// update datasetStructureJSONObj
-            let currentPath = organizeDSglobalPath.value;
-            let jsonPathArray = currentPath.split("/");
-            let filtered = jsonPathArray.slice(1).filter(function (el) {
-              return el != "";
-            });
+          logCurationForAnalytics(
+            "Error",
+            PrepareDatasetsAnalyticsPrefix.CURATE,
+            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+            ["Step 3", "Add", "Folder"],
+            determineDatasetLocation()
+          );
+        } else {
+          /// update datasetStructureJSONObj
+          let currentPath = organizeDSglobalPath.value;
+          let jsonPathArray = currentPath.split("/");
+          let filtered = jsonPathArray.slice(1).filter(function (el) {
+            return el != "";
+          });
 
-            let myPath = getRecursivePath(filtered, datasetStructureJSONObj);
-            let renamedNewFolder = newFolderName;
-            // update Json object with new folder created
-            myPath["folders"][renamedNewFolder] = {
-              folders: {},
-              files: {},
-              type: "virtual",
-              action: ["new"],
-            };
+          let myPath = getRecursivePath(filtered, datasetStructureJSONObj);
+          let renamedNewFolder = newFolderName;
+          // update Json object with new folder created
+          myPath["folders"][renamedNewFolder] = {
+            folders: {},
+            files: {},
+            type: "virtual",
+            action: ["new"],
+          };
 
-            listItems(myPath, "#items", 500, (reset = true));
-            getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
+          listItems(myPath, "#items", 500, (reset = true));
+          getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
 
-            // log that the folder was successfully added
-            logCurationForAnalytics(
-              "Success",
-              PrepareDatasetsAnalyticsPrefix.CURATE,
-              AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-              ["Step 3", "Add", "Folder"],
-              determineDatasetLocation()
-            );
+          // log that the folder was successfully added
+          logCurationForAnalytics(
+            "Success",
+            PrepareDatasetsAnalyticsPrefix.CURATE,
+            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+            ["Step 3", "Add", "Folder"],
+            determineDatasetLocation()
+          );
 
-            hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-            hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
-          }
+          hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+          hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
+        }
       }
     });
   } else {
@@ -4294,7 +4294,12 @@ const populateJSONObjFolder = (action, jsonObject, folderPath) => {
         };
       }
       populateJSONObjFolder(action, jsonObject["folders"][itemWithinFolder], addedElement);
-    } else if (statsObj.isFile() && !/(!\/[^\/]+)/g.test(itemWithinFolder) && itemWithinFolder !== ".DS_Store" && itemWithinFolder !== "Thumbs.db") {
+    } else if (
+      statsObj.isFile() &&
+      !/(!\/[^\/]+)/g.test(itemWithinFolder) &&
+      itemWithinFolder !== ".DS_Store" &&
+      itemWithinFolder !== "Thumbs.db"
+    ) {
       // The check here will prevent files with a foward slash, .DS_Store and Thumbs.db files from being imported
       jsonObject["files"][itemWithinFolder] = {
         path: addedElement,

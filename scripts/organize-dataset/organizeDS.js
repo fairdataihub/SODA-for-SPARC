@@ -13,7 +13,7 @@ const showTooltips = (ev) => {
       popup: "animate__animated animate__fadeOutUp animate_fastest",
     },
   });
-}
+};
 
 const recursive_mark_sub_files_deleted = (dataset_folder, mode) => {
   if ("files" in dataset_folder) {
@@ -26,9 +26,12 @@ const recursive_mark_sub_files_deleted = (dataset_folder, mode) => {
         if (!dataset_folder["files"][file]["action"].includes("recursive_deleted")) {
           dataset_folder["files"][file]["action"].push("recursive_deleted");
         }
-      } else if (mode === "restore" && dataset_folder["files"][file]["action"].includes("recursive_deleted")) {
-          let index = dataset_folder["files"][file]["action"].indexOf("recursive_deleted");
-          dataset_folder["files"][file]["action"].splice(index, 1);
+      } else if (
+        mode === "restore" &&
+        dataset_folder["files"][file]["action"].includes("recursive_deleted")
+      ) {
+        let index = dataset_folder["files"][file]["action"].indexOf("recursive_deleted");
+        dataset_folder["files"][file]["action"].splice(index, 1);
       }
     }
   }
@@ -40,9 +43,12 @@ const recursive_mark_sub_files_deleted = (dataset_folder, mode) => {
           if (!dataset_folder["folders"][folder]["action"].includes("recursive_deleted")) {
             dataset_folder["folders"][folder]["action"].push("recursive_deleted");
           }
-        } else if (mode === "restore" && dataset_folder["folders"][folder]["action"].includes("recursive_deleted")) {
-            let index = dataset_folder["folders"][folder]["action"].indexOf("recursive_deleted");
-            dataset_folder["folders"][folder]["action"].splice(index, 1);
+        } else if (
+          mode === "restore" &&
+          dataset_folder["folders"][folder]["action"].includes("recursive_deleted")
+        ) {
+          let index = dataset_folder["folders"][folder]["action"].indexOf("recursive_deleted");
+          dataset_folder["folders"][folder]["action"].splice(index, 1);
         }
       }
     }
@@ -50,7 +56,7 @@ const recursive_mark_sub_files_deleted = (dataset_folder, mode) => {
 };
 
 ///////// Option to delete folders or files
-const delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGlobal) =>{
+const delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGlobal) => {
   let itemToDelete = ev.parentElement.innerText;
   let promptVar;
   let type; // renaming files or folders
@@ -301,7 +307,7 @@ const delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
       });
     }
   }
-}
+};
 
 // helper function to rename files/folders
 const checkValidRenameInput = (
@@ -402,7 +408,7 @@ const checkValidRenameInput = (
     }
   }
   return newName;
-}
+};
 
 ///// Option to rename a folder and files
 const renameFolder = (
@@ -587,7 +593,7 @@ const renameFolder = (
       }
     });
   }
-}
+};
 
 const getGlobalPath = (path) => {
   var currentPath = path.value.trim();
