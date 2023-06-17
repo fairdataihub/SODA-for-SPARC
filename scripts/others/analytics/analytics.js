@@ -3,12 +3,18 @@ const ua = require("universal-analytics");
 const { v4: uuid } = require("uuid");
 const { JSONStorage } = require("node-localstorage");
 const fs = require("fs");
+const axios = require("axios");
 
 const app = electron.app;
 const nodeStorage = new JSONStorage(app.getPath("userData"));
 const config_folder_path = require("path").join(app.getPath("home"), ".soda-config"); // more config files will be placed here
-
 let dnt = false;
+const url = "http://localhost:3000/api";
+
+const mongoServer = axios.create({
+  baseURL: url,
+  timeout: 0,
+});
 
 // Add a .soda-config folder in your home folder
 if (!fs.existsSync(config_folder_path)) {
@@ -58,7 +64,7 @@ if (dnt) {
 
 // Tracking function for Google Analytics
 // call this from anywhere in the app
-const trackEvent = (category, action, label, value) => {
+const trackEvent = async (category, action, label, value) => {
   if (!dnt) {
     usr
       .event({
@@ -68,6 +74,23 @@ const trackEvent = (category, action, label, value) => {
         ev: value,
       })
       .send();
+
+    const eventData = {
+      ec: category,
+      ea: action,
+      el: label,
+      ev: value,
+    };
+    axios
+      .post("http://localhost:3000/api/events", eventData)
+      .then((response) => {
+        // Handle the response
+        console.log(response.data);
+      })
+      .catch((error) => {
+        // Handle the error
+        console.error(error);
+      });
   }
 };
 
