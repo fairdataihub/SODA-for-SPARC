@@ -662,147 +662,19 @@ const getPennsieveAgentVersion = (pathToPennsieveAgent) => {
   });
 };
 
-// Start the Pennsieve agent and check the version
-// If any of the mandatory steps fail, the user will be notified on how to alleviate the issue
-// and the promise will be rejected
-const startPennsieveAgentAndCheckVersion = async () => {
-  // First get the latest Pennsieve agent version on GitHub
-  // This is to ensure the user has the latest version of the agent
-  let browser_download_url;
-  let latest_agent_version;
-  try {
-    [browser_download_url, latest_agent_version] = await get_latest_agent_version();
-  } catch (error) {
-    await Swal.fire({
-      icon: "error",
-      text: "We are unable to get the latest version of the Pennsieve Agent. Please try again later. If this issue persists please contact the SODA team at help@fairdataihub.org",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showCancelButton: true,
-      confirmButtonText: "Ok",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
-    clientError(error);
-    throw error;
-  }
-
-  // Get the path to the Pennsieve agent
-  // If the path that the Pennsieve agent should be at is not found,
-  // alert the user and open the download page for the Pennsieve agent
-  try {
-    agentPath = getPennsieveAgentPath();
-  } catch (error) {
-    const { value: result } = await Swal.fire({
-      icon: "error",
-      title: "Pennsieve Agent Not Found",
-      text: "It looks like the Pennsieve Agent is not installed on your computer. Please download the latest version of the Pennsieve Agent and install it. Once you have installed the Pennsieve Agent, please restart SODA.",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showCancelButton: true,
-      reverseButtons: reverseSwalButtons,
-      confirmButtonText: "Download now",
-      cancelButtonText: "Skip for now",
-    });
-    if (result) {
-      shell.openExternal(browser_download_url);
-      shell.openExternal("https://docs.pennsieve.io/docs/uploading-files-programmatically");
-    }
-    clientError(error);
-    throw error;
-  }
-
-  // Stop the Pennsieve agent if it is running
-  // This is to ensure that the agent is not running when we try to start it so no funny business happens
-  try {
-    await stopPennsieveAgent(agentPath);
-  } catch (error) {
-    // If the agent is not running then we can ignore this error
-    // But it shouldn't throw if the agent is running or not
-    clientError(error);
-  }
-
-  // Start the Pennsieve agent
-  try {
-    await startPennsieveAgent(agentPath);
-  } catch (error) {
-    clientError(error);
-    throw error;
-  }
-
-  // Get the version of the Pennsieve agent
-  let pennsieveAgentVersion;
-  try {
-    pennsieveAgentVersionObj = await getPennsieveAgentVersion(agentPath);
-    pennsieveAgentVersion = pennsieveAgentVersionObj["Agent Version"];
-  } catch (error) {
-    await Swal.fire({
-      icon: "error",
-      text: "Unable to determine the version number of the Pennsieve Agent. Please try again. If this issue persists contact the SODA team using the 'Contact Us' section found in the sidebar.",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: "Ok",
-      reverseButtons: reverseSwalButtons,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
-    clientError(error);
-    throw error;
-  }
-
-  if (pennsieveAgentVersion !== latest_agent_version) {
-    let { value: result } = await Swal.fire({
-      icon: "warning",
-      text: "It appears that you are not running the latest version of the Pensieve Agent. Please download the latest version of the Pennsieve Agent and install it. Once you have installed the Pennsieve Agent, please restart SODA.",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showCancelButton: true,
-      confirmButtonText: "Download now",
-      cancelButtonText: "Skip for now",
-      reverseButtons: reverseSwalButtons,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
-    if (result) {
-      shell.openExternal(browser_download_url);
-      shell.openExternal("https://docs.pennsieve.io/docs/uploading-files-programmatically");
-      // Stop the Pennsieve agent so the agent installer will not require a reboot
-      await stopPennsieveAgent();
-    }
-    throw Error("The installed version of the Pennsieve agent is not the latest version.");
-  }
-};
-
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 const run_pre_flight_checks = async (check_update = true) => {
   try {
     log.info("Running pre flight checks");
-    let connection_response = "";
-    let account_present = false;
 
     // Check the internet connection and if available check the rest.
-    connection_response = await checkInternetConnection();
-
-    if (!connection_response) {
+    const userConnectedToInternet = await checkInternetConnection();
+    if (!userConnectedToInternet) {
       throw new Error("You are not connected to the internet");
     }
 
-    // TODO: Start the agent here or while determining installation and agent version.
-
     // Check for an API key pair first. Calling the agent check without a config file, causes it to crash.
-    account_present = await check_api_key();
+    const account_present = await check_api_key();
 
     // TODO: Reimplement this section to work with the new agent
     if (!account_present) {
@@ -841,36 +713,128 @@ const run_pre_flight_checks = async (check_update = true) => {
     // an account is present
     // Check for an installed Pennsieve agent
     // /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/ YOU ARE HERE /*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/
-    try {
-      await startPennsieveAgentAndCheckVersion();
-      notyf.dismiss(pennsieveAgentCheckNotyf);
-      notyf.open({
-        type: "success",
-        message: "The latest Pennsieve Agent is installed.",
-      });
-    } catch (error) {
-      notyf.dismiss(pennsieveAgentCheckNotyf);
-      notyf.open({
-        type: "error",
-        message: "Unable to start the Pennsieve Agent.",
-      });
-      log.error(error);
 
-      return false;
+    // First get the latest Pennsieve agent version on GitHub
+    // This is to ensure the user has the latest version of the agent
+    let browser_download_url;
+    let latest_agent_version;
+    try {
+      [browser_download_url, latest_agent_version] = await get_latest_agent_version();
+    } catch (error) {
+      await Swal.fire({
+        icon: "error",
+        text: "We are unable to get the latest version of the Pennsieve Agent. Please try again later. If this issue persists please contact the SODA team at help@fairdataihub.org",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showCancelButton: true,
+        confirmButtonText: "Ok",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+      clientError(error);
+      throw error;
     }
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    // Get the path to the Pennsieve agent
+    // If the path that the Pennsieve agent should be at is not found,
+    // alert the user and open the download page for the Pennsieve agent
+    let agentPath;
+    try {
+      agentPath = getPennsieveAgentPath();
+    } catch (error) {
+      const { value: result } = await Swal.fire({
+        icon: "error",
+        title: "Pennsieve Agent Not Found",
+        text: "It looks like the Pennsieve Agent is not installed on your computer. Please download the latest version of the Pennsieve Agent and install it. Once you have installed the Pennsieve Agent, please restart SODA.",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showCancelButton: true,
+        reverseButtons: reverseSwalButtons,
+        confirmButtonText: "Download now",
+        cancelButtonText: "Skip for now",
+      });
+      if (result) {
+        shell.openExternal(browser_download_url);
+        shell.openExternal("https://docs.pennsieve.io/docs/uploading-files-programmatically");
+      }
+      clientError(error);
+      throw error;
+    }
+
+    // Stop the Pennsieve agent if it is running
+    // This is to ensure that the agent is not running when we try to start it so no funny business happens
+    try {
+      await stopPennsieveAgent(agentPath);
+    } catch (error) {
+      // Note: This error is not critical so we do not need to throw it
+      clientError(error);
+    }
+
+    // Start the Pennsieve agent
+    try {
+      await startPennsieveAgent(agentPath);
+    } catch (error) {
+      clientError(error);
+      throw error;
+    }
+
+    // Get the version of the Pennsieve agent
+    let pennsieveAgentVersion;
+    try {
+      pennsieveAgentVersionObj = await getPennsieveAgentVersion(agentPath);
+      pennsieveAgentVersion = pennsieveAgentVersionObj["Agent Version"];
+    } catch (error) {
+      await Swal.fire({
+        icon: "error",
+        text: "Unable to determine the version number of the Pennsieve Agent. Please try again. If this issue persists contact the SODA team using the 'Contact Us' section found in the sidebar.",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "Ok",
+        reverseButtons: reverseSwalButtons,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+      clientError(error);
+      throw error;
+    }
+
+    if (pennsieveAgentVersion !== latest_agent_version) {
+      let { value: result } = await Swal.fire({
+        icon: "warning",
+        text: "It appears that you are not running the latest version of the Pensieve Agent. Please download the latest version of the Pennsieve Agent and install it. Once you have installed the Pennsieve Agent, please restart SODA.",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showCancelButton: true,
+        confirmButtonText: "Download now",
+        cancelButtonText: "Skip for now",
+        reverseButtons: reverseSwalButtons,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
+      if (result) {
+        shell.openExternal(browser_download_url);
+        shell.openExternal("https://docs.pennsieve.io/docs/uploading-files-programmatically");
+        // Stop the Pennsieve agent so the agent installer will not require a reboot
+        await stopPennsieveAgent();
+      }
+      throw Error("The installed version of the Pennsieve agent is not the latest version.");
+    }
 
     if (check_update) {
       checkNewAppVersion();
     }
-
-    await wait(500);
-
-    notyf.open({
-      type: "info",
-      message: "Verifying access to workspace.",
-    });
 
     // make an api request to change to the organization members. If it fails with a 401 then ask them to go through the workspace change flow as SODA does not have access to the workspace.
     try {
