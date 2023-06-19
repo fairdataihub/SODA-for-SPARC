@@ -30,7 +30,7 @@ document
   });
 
 $(".button-individual-metadata.remove").click(function () {
-  var metadataFileStatus = $($(this).parents()[1]).find(".para-metadata-file-status");
+  let metadataFileStatus = $($(this).parents()[1]).find(".para-metadata-file-status");
 
   $(metadataFileStatus).text("");
   $($(this).parents()[1]).find(".div-metadata-confirm").css("display", "none");
@@ -41,7 +41,7 @@ $(".button-individual-metadata.remove").click(function () {
 $(".metadata-button").click(function () {
   metadataFile = $(this);
   $(".div-organize-generate-dataset.metadata").addClass("hide");
-  var target = $(this).attr("data-next");
+  let target = $(this).attr("data-next");
   $("#" + target).toggleClass("show");
   document.getElementById("nextBtn").style.display = "none";
   document.getElementById("prevBtn").style.display = "none";
@@ -103,9 +103,8 @@ const confirmMetadataFilePath = (ev) => {
     );
   }
 };
-// $(".button-individual-metadata.confirm").click(function() {
-// })
 
+// Two vars with the same name
 $(".button-individual-metadata.go-back").click(function () {
   var metadataFileStatus = $($(this).parents()[1]).find(".para-metadata-file-status");
   $(metadataFileStatus).text("");
@@ -484,7 +483,7 @@ const importGenerateDatasetStep = async (object) => {
         "bf-account-selected" in sodaJSONObj &&
         sodaJSONObj["bf-account-selected"]["account-name"] !== ""
       ) {
-        var bfAccountSelected = sodaJSONObj["bf-account-selected"]["account-name"];
+        let bfAccountSelected = sodaJSONObj["bf-account-selected"]["account-name"];
         if (bfAccountSelected != defaultBfAccount) {
           return;
         }
@@ -512,7 +511,7 @@ const importGenerateDatasetStep = async (object) => {
         ) {
           $("#generate-BF-dataset-options-existing").prop("checked", true);
           $($("#generate-BF-dataset-options-existing").parents()[2]).click();
-          var bfDatasetSelected = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+          let bfDatasetSelected = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
           setTimeout(() => {
             let valid_dataset = false;
             for (index in datasetList) {
@@ -562,7 +561,7 @@ const importGenerateDatasetStep = async (object) => {
 
 // check metadata files
 const populateMetadataProgress = (populateBoolean, metadataFileName, localPath) => {
-  var metadataButtonsArray = $(".metadata-button.button-generate-dataset");
+  let metadataButtonsArray = $(".metadata-button.button-generate-dataset");
   var correspondingMetadataParaElement = {
     submission: ["para-submission-file-path", metadataButtonsArray[0]],
     dataset_description: ["para-ds-description-file-path", metadataButtonsArray[1]],
@@ -575,7 +574,7 @@ const populateMetadataProgress = (populateBoolean, metadataFileName, localPath) 
   };
   if (populateBoolean) {
     if (metadataFileName in correspondingMetadataParaElement) {
-      var paraElement = correspondingMetadataParaElement[metadataFileName];
+      let paraElement = correspondingMetadataParaElement[metadataFileName];
       $("#" + paraElement[0]).text(localPath);
       $($("#" + paraElement[0]).parents()[1])
         .find(".div-metadata-confirm")
@@ -586,8 +585,8 @@ const populateMetadataProgress = (populateBoolean, metadataFileName, localPath) 
       $(paraElement[1]).addClass("done");
     }
   } else {
-    for (var key in correspondingMetadataParaElement) {
-      var paraElement = correspondingMetadataParaElement[key];
+    for (let key in correspondingMetadataParaElement) {
+      let paraElement = correspondingMetadataParaElement[key];
       $("#" + paraElement[0]).text("");
       $($("#" + paraElement[0]).parents()[1])
         .find(".div-metadata-confirm")
