@@ -81,8 +81,14 @@ const trackEvent = async (category, action, label, value) => {
       el: label,
       ev: value,
     };
+
     axios
-      .post("http://localhost:3000/api/events", eventData)
+      .post("http://localhost:3000/api/v1/events", eventData, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer string`,
+        },
+      })
       .then((response) => {
         // Handle the response
         console.log(response.data);
