@@ -18,7 +18,8 @@
     "commit": "cz",
     "prepare": "run-script-os",
     "prepare:win32": "husky install",
-    "prepare:darwin:linux": "husky install && chmod ug+x .husky/*  && chmod ug+x .git/hooks/*"
+    "prepare:darwin:linux": "husky install && chmod ug+x .husky/*  && chmod ug+x .git/hooks/*",
+    "test": "jest"
   },
   "lint-staged": {
     "./**/*.html|css|js|md|yml": [
@@ -148,6 +149,7 @@
     "image-data-uri": "^2.0.1",
     "ini": "^2.0.0",
     "intro.js": "^4.1.0",
+    "jest": "^29.5.0",
     "jimp": "^0.16.1",
     "jquery": "^3.6.0",
     "jstree": "^3.3.11",
