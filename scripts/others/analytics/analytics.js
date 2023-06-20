@@ -1,28 +1,44 @@
 const electron = require("electron");
 const ua = require("universal-analytics");
-const { v4: uuid } = require("uuid");
+const uuid = require("uuid").v4;
 const { JSONStorage } = require("node-localstorage");
 const fs = require("fs");
 const axios = require("axios");
+const { node } = require("prop-types");
+const { event } = require("jquery");
 
 const app = electron.app;
 const nodeStorage = new JSONStorage(app.getPath("userData"));
-const config_folder_path = require("path").join(app.getPath("home"), ".soda-config"); // more config files will be placed here
+const configFolderPath = require("path").join(app.getPath("home"), ".soda-config"); // more config files will be placed here
 let dnt = false;
-const url = "http://localhost:3000/api";
+const localMongoURL = "http://localhost:3000/api/v1";
+
+// Retrieve the userid value, and if it's not there, assign it a new uuid.
+let userId = nodeStorage.getItem("userId")
+if (userId === null) {
+  userId = uuid();
+}
+// uuid();
+// (re)save the userid, so it persists for the next app session.
+nodeStorage.setItem("userId", userId);
+console.log(`User ID: ${userId}`)
+
+let usr = ua("UA-171625608-1", userId);
+let appStatus = "packaged";
+const appVersion = app.getVersion();
 
 const mongoServer = axios.create({
-  baseURL: url,
+  baseURL: localMongoURL,
   timeout: 0,
 });
 
 // Add a .soda-config folder in your home folder
-if (!fs.existsSync(config_folder_path)) {
-  fs.mkdirSync(config_folder_path);
+if (!fs.existsSync(configFolderPath)) {
+  fs.mkdirSync(configFolderPath);
   dnt = false;
 } else {
-  let dnt_file_path = require("path").join(config_folder_path, "dnt.soda");
-  if (fs.existsSync(dnt_file_path)) {
+  let dntFilePath = require("path").join(configFolderPath, "dnt.soda");
+  if (fs.existsSync(dntFilePath)) {
     console.log("dnt file exists");
     dnt = true;
   } else {
@@ -30,73 +46,75 @@ if (!fs.existsSync(config_folder_path)) {
   }
 }
 
-// Retrieve the userid value, and if it's not there, assign it a new uuid.
-const userId = nodeStorage.getItem("userid") || uuid();
-
-// (re)save the userid, so it persists for the next app session.
-nodeStorage.setItem("userid", userId);
-
-let usr = ua("UA-171625608-1", userId);
-let app_status = "packaged";
-
 // If app is in beta, send tracking events to the beta analytics branch
-let beta_app_version = app.getVersion();
-if (beta_app_version.includes("beta")) {
+if (appVersion.includes("beta")) {
   usr = ua("UA-171625608-3", userId);
-  app_status = "beta";
+  appStatus = "beta";
 }
 
 // If in the dev environment, send tracking events to the dev branch
 if (process.env.NODE_ENV === "development") {
   console.log(process.env.NODE_ENV);
   usr = ua("UA-171625608-2", userId);
-  app_status = "dev";
+  appStatus = "dev";
   dnt = false;
 }
 
 if (dnt) {
   console.log("DNT enabled");
-  console.log(`App Status: ${app_status}`);
+  console.log(`App Status: ${appStatus}`);
 } else {
   console.log("DNT disabled");
-  console.log(`App Status: ${app_status}`);
+  console.log(`App Status: ${appStatus}`);
 }
 
 // Tracking function for Google Analytics
+const sendGoogleAnalyticsEvent = (eventData) => {
+  usr.event(eventData).send();
+};
+
+// Tracking function for Kombucha Analytics
+const sendKombuchaAnalyticsEvent = (eventData) => {
+  const userToken = nodeStorage.getItem("token");
+
+  mongoServer
+    .post("/events", eventData, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userToken}`,
+      },
+    })
+    .then((response) => {
+      // Handle the response
+      console.log(response.data);
+    })
+    .catch((error) => {
+      // Handle the error
+      console.error(error);
+    });
+}
+
 // call this from anywhere in the app
 const trackEvent = async (category, action, label, value) => {
   if (!dnt) {
-    usr
-      .event({
-        ec: category,
-        ea: action,
-        el: label,
-        ev: value,
-      })
-      .send();
-
-    const eventData = {
+    const googleTrackingEventData = {
       ec: category,
       ea: action,
       el: label,
       ev: value,
     };
 
-    axios
-      .post("http://localhost:3000/api/v1/events", eventData, {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer string`,
-        },
-      })
-      .then((response) => {
-        // Handle the response
-        console.log(response.data);
-      })
-      .catch((error) => {
-        // Handle the error
-        console.error(error);
-      });
+    const kombuchaTrackingEventData = {
+      uid: userId,
+      aid: "SODA",
+      category: category,
+      action: action,
+      label: label,
+      value: value,
+    };
+
+    sendGoogleAnalyticsEvent(googleTrackingEventData);
+    sendKombuchaAnalyticsEvent(kombuchaTrackingEventData);
   }
 };
 

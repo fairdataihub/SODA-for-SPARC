@@ -17,6 +17,7 @@ const { resolve } = require("path");
 const axios = require("axios");
 const { info } = require("console");
 const { node } = require("prop-types");
+const uuid = require("uuid").v4;
 
 log.transports.console.level = false;
 log.transports.file.level = "debug";
@@ -38,6 +39,11 @@ let pyflaskProcess = null;
 let PORT = 4242;
 let selectedPort = null;
 const portRange = 100;
+const localKombuchaURL = "http://localhost:3000/api/v1";
+const kombuchaServer = axios.create({
+  baseURL: localKombuchaURL,
+  timeout: 0,
+});
 
 /**
  * Determine if the application is running from a packaged version or from a dev version.
@@ -192,6 +198,33 @@ const killAllPreviousProcesses = async () => {
   await Promise.allSettled(promisesArray);
 };
 
+// Sends user information to Kombucha server
+const sendUserAnalytics = () => {
+  // Retrieve the userId and if it doesn't exist, create a new uuid
+  let userId = nodeStorage.getItem("userId");
+  if (userId === null) {
+    userId = uuid();
+  }
+  console.log("userId: ", userId);
+  // Resave the userid, so it persists for the next app session
+  nodeStorage.setItem("userId", userId);
+  const userData = {
+    uid: userId,
+  };
+
+  kombuchaServer
+    .post("/users", userData)
+    .then((res) => {
+      console.log("User data sent to server");
+      console.log("Response: ", res.data);
+      // Save the user's token from the server
+      nodeStorage.setItem("token", res.data.token);
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
+
 // 5.4.1 change: We call createPyProc in a spearate ready event
 // app.on("ready", createPyProc);
 // 5.4.1 change: We call exitPyreProc when all windows are killed so it has time to kill the process before closing
@@ -214,8 +247,11 @@ function initialize() {
     mainWindow.webContents.send("checkForAnnouncements");
   };
 
+  sendUserAnalytics();
+  
   makeSingleInstance();
   loadDemos();
+
   function createWindow() {
     // mainWindow.webContents.openDevTools();
 
@@ -225,10 +261,8 @@ function initialize() {
     });
 
     mainWindow.webContents.once("dom-ready", () => {
-      if (updatechecked == false) {
-        if (!buildIsBeta) {
-          autoUpdater.checkForUpdatesAndNotify();
-        }
+      if (updatechecked == false && !buildIsBeta) {
+        autoUpdater.checkForUpdatesAndNotify();
       }
     });
 
