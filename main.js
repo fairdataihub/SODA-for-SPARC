@@ -39,9 +39,9 @@ let pyflaskProcess = null;
 let PORT = 4242;
 let selectedPort = null;
 const portRange = 100;
-const localKombuchaURL = "http://localhost:3000/api/v1";
+const kombuchaURL = "https://analytics-nine-ashen.vercel.app/api/v1";
 const kombuchaServer = axios.create({
-  baseURL: localKombuchaURL,
+  baseURL: kombuchaURL,
   timeout: 0,
 });
 
@@ -206,6 +206,7 @@ const sendUserAnalytics = () => {
     userId = uuid();
   }
   console.log("userId: ", userId);
+
   // Resave the userid, so it persists for the next app session
   nodeStorage.setItem("userId", userId);
   const userData = {
@@ -401,14 +402,16 @@ function run_pre_flight_checks() {
 const gotTheLock = app.requestSingleInstanceLock();
 
 function makeSingleInstance() {
-  if (process.mas) return;
+  if (process.mas) {
+    return;
+  }
 
   if (!gotTheLock) {
     app.quit();
   } else {
     app.on("second-instance", () => {
       if (mainWindow) {
-        if (mainWindow.isMinimized()) mainWindow.restore();
+        if (mainWindow.isMinimized()) {mainWindow.restore()};
         mainWindow.focus();
       }
     });

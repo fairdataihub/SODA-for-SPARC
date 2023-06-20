@@ -11,7 +11,7 @@ const app = electron.app;
 const nodeStorage = new JSONStorage(app.getPath("userData"));
 const configFolderPath = require("path").join(app.getPath("home"), ".soda-config"); // more config files will be placed here
 let dnt = false;
-const localMongoURL = "http://localhost:3000/api/v1";
+const kombuchaURL = "https://analytics-nine-ashen.vercel.app/api/v1";
 
 // Retrieve the userid value, and if it's not there, assign it a new uuid.
 let userId = nodeStorage.getItem("userId")
@@ -28,7 +28,7 @@ let appStatus = "packaged";
 const appVersion = app.getVersion();
 
 const mongoServer = axios.create({
-  baseURL: localMongoURL,
+  baseURL: kombuchaURL,
   timeout: 0,
 });
 
@@ -95,7 +95,7 @@ const sendKombuchaAnalyticsEvent = (eventData) => {
 }
 
 // call this from anywhere in the app
-const trackEvent = async (category, action, label, value) => {
+const trackEvent = (category, action, label, value) => {
   if (!dnt) {
     const googleTrackingEventData = {
       ec: category,
@@ -107,10 +107,11 @@ const trackEvent = async (category, action, label, value) => {
     const kombuchaTrackingEventData = {
       uid: userId,
       aid: "SODA",
+      status: category,
       category: category,
       action: action,
       label: label,
-      value: value,
+      data: value,
     };
 
     sendGoogleAnalyticsEvent(googleTrackingEventData);
