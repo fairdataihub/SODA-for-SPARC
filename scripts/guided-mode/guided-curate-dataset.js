@@ -7115,6 +7115,19 @@ const patchPreviousGuidedModeVersions = async () => {
     return "guided-dataset-dissemination-tab";
   }
 
+  if (sodaJSONObj["last-version-of-soda-used"] <= "12.0.0") {
+    // Change the award number variable from sparc-award to award-number
+    if (sodaJSONObj?.["dataset-metadata"]?.["shared-metadata"]?.["sparc-award"]) {
+      sodaJSONObj["dataset-metadata"]["shared-metadata"]["award-number"] =
+        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+    }
+    if (!sodaJSONObj["dataset-metadata"]["submission-metadata"]?.["consortium-data-standard"]) {
+      sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] = "";
+    }
+    if (!sodaJSONObj["dataset-metadata"]["submission-metadata"]?.["funding-consortium"]) {
+      sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] = "";
+    }
+  }
   // If no other conditions are met, return the page the user was last on
   return sodaJSONObj["page-before-exit"];
 };
@@ -7371,6 +7384,8 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["dataset-metadata"]["subject-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["sample-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["submission-metadata"] = {};
+  sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] = "";
+  sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] = "";
   sodaJSONObj["dataset-metadata"]["description-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["code-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"] = [];
