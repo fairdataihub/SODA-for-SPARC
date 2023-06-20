@@ -507,9 +507,6 @@ const startupServerAndApiCheck = async () => {
   // dismiss the Swal
   Swal.close();
 
-  //REMOVE ME
-  await run_pre_flight_checks();
-
   // check if the API versions match
   try {
     await apiVersionsMatch();
