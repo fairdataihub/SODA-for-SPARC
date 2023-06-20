@@ -738,6 +738,7 @@ const run_pre_flight_checks = async (check_update = true) => {
     let agentPath;
     try {
       agentPath = getPennsieveAgentPath();
+      console.log("agentPath", agentPath);
     } catch (error) {
       const { value: rerunPreFlightChecks } = await Swal.fire({
         icon: "info",
