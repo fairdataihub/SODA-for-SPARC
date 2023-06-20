@@ -6997,6 +6997,38 @@ const newEmptyFolderObj = () => {
   };
 };
 
+const guidedGetPageToReturnTo = (sodaJSONObj) => {
+  // Set by openPage function
+  const usersPageBeforeExit = sodaJSONObj["page-before-exit"];
+
+  //If the dataset was successfully uploaded, send the user to the share with curation team
+  if (sodaJSONObj["previous-guided-upload-dataset-name"]) {
+    return "guided-dataset-dissemination-tab";
+  }
+
+  // returns the id of the first page of guided mode
+  const firstPageID = getNonSkippedGuidedModePages(document)[0].id;
+
+  const currentSodaVersion = document.getElementById("version").innerHTML;
+  const lastVersionOfSodaUsedOnProgressFile = sodaJSONObj["last-version-of-soda-used"];
+
+  if (lastVersionOfSodaUsedOnProgressFile != currentSodaVersion) {
+    // If the last time the user worked on the progress file was in a previous version of SODA, then force the user to restart from the first page
+    return firstPageID;
+  }
+  // If the page the user was last on no longer exists, return them to the first page
+  if (!document.getElementById(usersPageBeforeExit)) {
+    return firstPageID;
+  }
+
+  // If the user left while the upload was in progress, send the user to the upload confirmation page
+  if (usersPageBeforeExit === "guided-dataset-generation-tab") {
+    return "guided-dataset-generation-confirmation-tab";
+  }
+  // If no special cases apply, return the user to the page they were on before they left
+  return usersPageBeforeExit;
+};
+
 const patchPreviousGuidedModeVersions = async () => {
   //temp patch contributor affiliations if they are still a string (they were added in the previous version)
 
@@ -7260,35 +7292,6 @@ const guidedResumeProgress = async (datasetNameToResume) => {
     //patches the sodajsonobj if it was created in a previous version of guided mode
     await patchPreviousGuidedModeVersions();
 
-    // pageToReturnTo will be set to the page the user will return to
-    let pageToReturnTo;
-
-    // The last page the user left off on on a previous session
-    const usersPageBeforeExit = sodaJSONObj["page-before-exit"];
-
-    //Check to make sure the page still exists before returning to it
-    //Code below might still specify a different page to return to though.
-    if (document.getElementById(usersPageBeforeExit)) {
-      pageToReturnTo = usersPageBeforeExit;
-    }
-
-    // If the user left while the upload was in progress, send the user to the upload confirmation page
-    if (usersPageBeforeExit === "guided-dataset-generation-tab") {
-      pageToReturnTo = "guided-dataset-generation-confirmation-tab";
-    }
-
-    // If the last time the user worked on the progress file was in a previous version of SODA, then force the user to restart from the first page
-    const currentSodaVersion = document.getElementById("version").innerHTML;
-    const lastVersionOfSodaUsedOnProgressFile = sodaJSONObj["last-version-of-soda-used"];
-    if (lastVersionOfSodaUsedOnProgressFile != currentSodaVersion) {
-      pageToReturnTo = null;
-    }
-
-    //If the dataset was successfully uploaded, send the user to the share with curation team
-    if (datasetResumeJsonObj["previous-guided-upload-dataset-name"]) {
-      pageToReturnTo = "guided-dataset-dissemination-tab";
-    }
-
     // Delete the button status for the Pennsieve account confirmation section
     // So the user has to confirm their Pennsieve account before uploading
     if (sodaJSONObj["button-config"]?.["pennsieve-account-has-been-confirmed"]) {
@@ -7315,12 +7318,12 @@ const guidedResumeProgress = async (datasetNameToResume) => {
     //the sub-page will be shown during openPage() function
     hideSubNavAndShowMainNav(false);
 
-    if (pageToReturnTo) {
-      await openPage(pageToReturnTo);
-    } else {
-      const firstPage = getNonSkippedGuidedModePages(document)[0];
-      await openPage(firstPage.id);
-    }
+    // pageToReturnTo will be set to the page the user will return to
+    const pageToReturnTo = guidedGetPageToReturnTo(sodaJSONObj);
+
+    console.log("pageToReturnTo", pageToReturnTo);
+
+    await openPage(pageToReturnTo);
 
     // Close the loading screen, the user should be on the page they left off on now
     loadingSwal.close();
