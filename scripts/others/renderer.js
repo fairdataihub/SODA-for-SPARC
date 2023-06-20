@@ -611,8 +611,8 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
   return new Promise((resolve, reject) => {
     try {
       const agentStartSpawn = spawn(pathToPennsieveAgent, ["agent", "start"]);
-      // If the
       agentStartSpawn.stdout.on("data", (data) => {
+        console.log(data.toString());
         log.info(data.toString());
         resolve();
       });
@@ -771,7 +771,6 @@ const run_pre_flight_checks = async (check_update = true) => {
       // If the user clicks the skip button, return false which will cause the pre flight checks to fail
       return false;
     }
-    console.log("agentPath: ", agentPath);
 
     // Stop the Pennsieve agent if it is running
     // This is to ensure that the agent is not running when we try to start it so no funny business happens
