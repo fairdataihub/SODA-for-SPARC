@@ -1024,8 +1024,12 @@ const savePageChanges = async (pageBeingLeftID) => {
 
       // If the user selected that the dataset is SPARC funded, unskip the submission metadata page
       if (userSelectedDatasetIsSparcFunded) {
-        // Make sure the submission metadata and validation tab are unskipped as they are required
-        // for the SPARC funded dataset flow
+        // Auto-fill consortium data standard and funding consortium fields for SPARC funded datasets
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
+          "SPARC";
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] = "SPARC";
+
+        // Make sure pages required for SPARC funded datasets are not skipped
         guidedUnSkipPage("guided-create-submission-metadata-tab");
         guidedUnSkipPage("guided-protocols-tab");
       }
@@ -4831,49 +4835,55 @@ const openPage = async (targetPageID) => {
       );
     }
 
-    if (
-      targetPageID === "guided-ask-if-submission-is-sparc-funded-tab" &&
-      pageNeedsUpdateFromPennsieve(targetPageID)
-    ) {
-      setPageLoadingState(true);
-      try {
-        const submissionMetadataRes = await client.get(`/prepare_metadata/import_metadata_file`, {
-          params: {
-            selected_account: defaultBfAccount,
-            selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-            file_type: "submission.xlsx",
-          },
-        });
-        const submissionData = submissionMetadataRes.data;
-        let sparcAwardRes = submissionData["SPARC Award number"];
-        if (sparcAwardRes) {
-          const substringsSparcAwardsShouldContain = ["ot2od", "ot3od", "u18", "tr", "u01"]; // Note: These substrings are taken from the validator...
-          sparcAwardRes = sparcAwardRes.toLowerCase().trim();
+    if (targetPageID === "guided-ask-if-submission-is-sparc-funded-tab") {
+      if (pageNeedsUpdateFromPennsieve(targetPageID)) {
+        setPageLoadingState(true);
+        try {
+          const submissionMetadataRes = await client.get(`/prepare_metadata/import_metadata_file`, {
+            params: {
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+              file_type: "submission.xlsx",
+            },
+          });
+          const submissionData = submissionMetadataRes.data;
+          let sparcAwardRes = submissionData["SPARC Award number"];
+          if (sparcAwardRes) {
+            const substringsSparcAwardsShouldContain = ["ot2od", "ot3od", "u18", "tr", "u01"]; // Note: These substrings are taken from the validator...
+            sparcAwardRes = sparcAwardRes.toLowerCase().trim();
 
-          let awardIsSparcFunded = false;
+            let awardIsSparcFunded = false;
 
-          // Loop through the sparcSPARCAwards and check if the sparcAwrardRes contains one of them as a substring
-          // (meaning this is a SPARC funded dataset)
-          for (const substring of substringsSparcAwardsShouldContain) {
-            if (sparcAwardRes.includes(substring)) {
-              awardIsSparcFunded = true;
-              break;
+            // Loop through the sparcSPARCAwards and check if the sparcAwrardRes contains one of them as a substring
+            // (meaning this is a SPARC funded dataset)
+            for (const substring of substringsSparcAwardsShouldContain) {
+              if (sparcAwardRes.includes(substring)) {
+                awardIsSparcFunded = true;
+                break;
+              }
+            }
+
+            // If the sparcAwrardRes contains one of the sparcSPARCAwards as a substring, select that the dataset is SPARC funded
+            // If not, assume the user has contacted SPARC since they have already uploaded to Pennsieve (saves them a clicks)
+            if (awardIsSparcFunded) {
+              document.getElementById("guided-button-dataset-is-sparc-funded").click();
+            } else {
+              document.getElementById("guided-button-non-sparc-user-has-contacted-sparc").click();
             }
           }
-
-          // If the sparcAwrardRes contains one of the sparcSPARCAwards as a substring, select that the dataset is SPARC funded
-          // If not, assume the user has contacted SPARC since they have already uploaded to Pennsieve (saves them a clicks)
-          if (awardIsSparcFunded) {
-            document.getElementById("guided-button-dataset-is-sparc-funded").click();
-          } else {
-            document.getElementById("guided-button-non-sparc-user-has-contacted-sparc").click();
-          }
+        } catch (error) {
+          console.log(error);
         }
-      } catch (error) {
-        // If the manifest file is not found or the SPARC award number string is smaller than 8 characters,
-        // we can't assume anything about the submission so the user has to select the appropriate button
-        console.log(error);
       }
+
+      $("#guided-select-funding-consortium").selectpicker({
+        style: "guided--select-picker",
+      });
+      $("#guided-select-funding-consortium").selectpicker("refresh");
+      $("#guided-select-funding-consortium").on("change", function (e) {
+        const consortium = e.target.value;
+        console.log(consortium);
+      });
     }
 
     if (targetPageID === "guided-subjects-folder-tab") {
