@@ -7015,7 +7015,7 @@ const guidedGetPageToReturnTo = (sodaJSONObj) => {
   if (usersPageBeforeExit === "guided-dataset-generation-tab") {
     return "guided-dataset-generation-confirmation-tab";
   }
-
+  // If no special cases apply, return the user to the page they were on before they left
   return usersPageBeforeExit;
 };
 
