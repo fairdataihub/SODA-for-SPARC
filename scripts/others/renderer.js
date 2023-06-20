@@ -622,7 +622,7 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
       });
     } catch (error) {
       log.error(error);
-      reject(error);
+      reject(new Error(error));
     }
   });
 };
@@ -681,7 +681,9 @@ const run_pre_flight_checks = async (check_update = true) => {
     // Check the internet connection and if available check the rest.
     const userConnectedToInternet = await checkInternetConnection();
     if (!userConnectedToInternet) {
-      throw new Error("You are not connected to the internet");
+      throw new Error(
+        "It seems that you are not connected to the internet. Please check your connection and try again."
+      );
     }
 
     // Check for an API key pair first. Calling the agent check without a config file, causes it to crash.
@@ -694,7 +696,7 @@ const run_pre_flight_checks = async (check_update = true) => {
       }
 
       // If there is no API key pair, show the warning and let them add a key. Messages are dissmisable.
-      let { value: userChoseToLogIn } = await Swal.fire({
+      const { value: userChoseToLogIn } = await Swal.fire({
         icon: "warning",
         text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connected to Pennsieve. Would you like to do it now?",
         heightAuto: false,
@@ -717,7 +719,8 @@ const run_pre_flight_checks = async (check_update = true) => {
         // and then retry whatever they were doing (that called pre flight checks)
         return false;
       } else {
-        throw new Error({ promptyRetry: false, message: "Pennsieve account was not connected" });
+        // If the user chose not to log in, return false since login is required to pass pre flight checkss
+        return false;
       }
     }
 
@@ -729,7 +732,7 @@ const run_pre_flight_checks = async (check_update = true) => {
       [browser_download_url, latest_agent_version] = await get_latest_agent_version();
     } catch (error) {
       const emessage = userErrorMessage(error);
-      throw new Error(`Error getting latest agent version: ${emessage}`);
+      throw new Error(`Error getting latest Pennsieve agent version: ${emessage}`);
     }
 
     // Get the path to the Pennsieve agent
@@ -740,6 +743,9 @@ const run_pre_flight_checks = async (check_update = true) => {
       agentPath = getPennsieveAgentPath();
       console.log("agentPath", agentPath);
     } catch (error) {
+      const emessage = userErrorMessage(error);
+      log.info(`Error getting Pennsieve agent path: ${emessage}`);
+
       const { value: rerunPreFlightChecks } = await Swal.fire({
         icon: "info",
         title: "Pennsieve Agent Not Found",
@@ -787,6 +793,7 @@ const run_pre_flight_checks = async (check_update = true) => {
       await startPennsieveAgent(agentPath);
     } catch (error) {
       clientError(error);
+      log.info(`Error starting Pennsieve agent: ${error.message}`);
       throw error;
     }
 
@@ -796,23 +803,9 @@ const run_pre_flight_checks = async (check_update = true) => {
       const versionObj = await getPennsieveAgentVersion(agentPath);
       usersPennsieveAgentVersion = versionObj["Agent Version"];
     } catch (error) {
-      console.log(error);
-      await Swal.fire({
-        icon: "error",
-        text: error.message,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: "Ok",
-        reverseButtons: reverseSwalButtons,
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
-        },
-      });
-      clientError(error);
-      throw error;
+      const emessage = userErrorMessage(error);
+      log.info(`Error getting Pennsieve agent version: ${emessage}`);
+      throw new Error(`Error getting Pennsieve agent version: ${emessage}`);
     }
 
     if (usersPennsieveAgentVersion !== latest_agent_version) {
@@ -883,8 +876,13 @@ const run_pre_flight_checks = async (check_update = true) => {
     const emessage = userErrorMessage(error);
     const { value: retryChecks } = await Swal.fire({
       icon: "info",
-      title: `Error running preflight checks`,
-      html: emessage,
+      title: `Error checking SODA's background processes`,
+      html: `
+        Error message:
+        <br />
+        <br />
+        ${emessage}
+      `,
       width: 600,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
@@ -1095,9 +1093,14 @@ const get_latest_agent_version = async () => {
   let browser_download_url = undefined;
 
   // let the error raise up to the caller if one occurs
-  let releasesResponse = await axios.get(
-    "https://api.github.com/repos/Pennsieve/pennsieve-agent/releases"
-  );
+  let releasesResponse;
+  try {
+    releasesResponse = await axios.get(
+      "https://api.github.com/repos/Pennsieve/pennsieve-agent/releases"
+    );
+  } catch (error) {
+    throw new Error("Could not find the lastest release on Pennsieve's Github");
+  }
 
   let releases = releasesResponse.data;
   let targetRelease = undefined;
