@@ -30,7 +30,7 @@ let appId = "f85e3098-d7f6-4a89-988a-eac945fdc320"
 const appVersion = app.getVersion();
 
 const kombuchaServer = axios.create({
-  baseURL: localKombuchaURL,
+  baseURL: kombuchaURL,
   timeout: 0,
 });
 
