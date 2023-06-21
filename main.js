@@ -209,7 +209,7 @@ const sendUserAnalytics = () => {
   }
 
   // if (chance < 0.2) {
-  //   // 20% chance of generating new uuid for userId
+  //   // 10% chance of generating new uuid for userId
   //   console.log("GENERATING NEW USERID");
   //   userId = uuid();
   // }

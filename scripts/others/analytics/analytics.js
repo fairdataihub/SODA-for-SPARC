@@ -87,8 +87,8 @@ const userIdGeneratorForKombucha = async () => {
     userIdChanged = true;
   }
 
-  if (chance < .2) {
-    // 20% chance of generating new uuid for userId
+  if (chance < .1) {
+    // 10% chance of generating new uuid for userId
     console.log("GENERATING NEW USER ID");
     userId = uuid();
     userIdChanged = true;
@@ -161,9 +161,9 @@ const trackEvent = (category, action, label, value, datasetID) => {
     
     sendGoogleAnalyticsEvent(googleTrackingEventData);
     userIdGeneratorForKombucha().then((res) => {
-      console.log("uid", res.data.uid);
-      console.log("token", res.data.token);
-      console.log("value", value)
+      // console.log("uid", res.data.uid);
+      // console.log("token", res.data.token);
+      // console.log("value", value)
       let analyticsValue = value;
       if(analyticsValue === undefined){
         analyticsValue = '';
