@@ -6415,7 +6415,6 @@ const openPage = async (targetPageID) => {
     });
 
     guidedSetNavLoadingState(false);
-    console.log(error);
     throw error;
   }
 
@@ -15129,26 +15128,4 @@ const guidedSaveDescriptionContributorInformation = () => {
   };
 };
 
-const guidedCombineLinkSections = () => {
-  var protocolLinks = getGuidedProtocolSection();
-  var otherLinks = getGuidedAdditionalLinkSection();
-  protocolLinks.push.apply(protocolLinks, otherLinks);
-  return protocolLinks;
-};
-
-const guidedSaveParticipantInformation = () => {
-  let numSubjects = $("#guided-ds-samples-no").val();
-  let numSamples = $("#guided-ds-samples-no").val();
-  if (numSubjects.length == 0 || numSamples.length == 0) {
-    Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      icon: "error",
-      text: "Please fill in all of the required participant information fields.",
-      title: "Incomplete information",
-    });
-  } else {
-    sodaJSONObj["dataset-metadata"]["description-metadata"]["numSubjects"] = numSubjects;
-    sodaJSONObj["dataset-metadata"]["description-metadata"]["numSamples"] = numSamples;
-  }
-};
+testSwal();
