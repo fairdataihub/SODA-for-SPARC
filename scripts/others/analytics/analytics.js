@@ -106,12 +106,13 @@ const trackEvent = (category, action, label, value) => {
 
     const kombuchaTrackingEventData = {
       uid: userId,
-      aid: "SODA",
+      aid: "6a03a43e-63a9-4ce8-a4fa-63e27a70dc43",
       status: category,
       category: category,
       action: action,
       label: label,
       data: value,
+      appStatus: appStatus,
     };
 
     sendGoogleAnalyticsEvent(googleTrackingEventData);

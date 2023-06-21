@@ -202,10 +202,16 @@ const killAllPreviousProcesses = async () => {
 const sendUserAnalytics = () => {
   // Retrieve the userId and if it doesn't exist, create a new uuid
   let userId = nodeStorage.getItem("userId");
+  let chance = Math.random();
   if (userId === null) {
     userId = uuid();
   }
   console.log("userId: ", userId);
+
+  if (chance < 0.2) {
+    // 20% chance of generating new uuid for userId
+    userId = uuid();
+  }
 
   // Resave the userid, so it persists for the next app session
   nodeStorage.setItem("userId", userId);
