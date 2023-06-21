@@ -218,10 +218,10 @@ const sendUserAnalytics = () => {
   const userData = {
     uid: userId,
   };
-  
+
   kombuchaServer
-  .post("/users", userData)
-  .then((res) => {
+    .post("/users", userData)
+    .then((res) => {
       // Save the user's token and id from the server
       nodeStorage.setItem("userId", res.data.uid);
       nodeStorage.setItem("token", res.data.token);
@@ -254,7 +254,7 @@ function initialize() {
   };
 
   sendUserAnalytics();
-  
+
   makeSingleInstance();
   loadDemos();
 
@@ -416,7 +416,9 @@ function makeSingleInstance() {
   } else {
     app.on("second-instance", () => {
       if (mainWindow) {
-        if (mainWindow.isMinimized()) {mainWindow.restore()};
+        if (mainWindow.isMinimized()) {
+          mainWindow.restore();
+        }
         mainWindow.focus();
       }
     });

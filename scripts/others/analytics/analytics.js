@@ -5,13 +5,13 @@ const { JSONStorage } = require("node-localstorage");
 const fs = require("fs");
 const axios = require("axios");
 
-const {app} = electron;
+const { app } = electron;
 const nodeStorage = new JSONStorage(app.getPath("userData"));
 const configFolderPath = require("path").join(app.getPath("home"), ".soda-config"); // more config files will be placed here
 let dnt = false;
 
 const kombuchaURL = "https://analytics-nine-ashen.vercel.app/api/v1";
-const localKombuchaURL = "http://localhost:3000/api/v1"; 
+const localKombuchaURL = "http://localhost:3000/api/v1";
 
 // Retrieve the userid value, and if it's not there, assign it a new uuid.
 let userId = nodeStorage.getItem("userId");
@@ -26,7 +26,7 @@ console.log(`User ID: ${userId}`);
 let usr = ua("UA-171625608-1", userId);
 let appStatus = "packaged";
 //By default the app id is set for a packaged app
-let appId = "f85e3098-d7f6-4a89-988a-eac945fdc320"
+let appId = "f85e3098-d7f6-4a89-988a-eac945fdc320";
 const appVersion = app.getVersion();
 
 const kombuchaServer = axios.create({
@@ -84,7 +84,7 @@ const userIdGeneratorForKombucha = async () => {
     userIdChanged = true;
   }
 
-  if (chance < .1) {
+  if (chance < 0.1) {
     // 10% chance of generating new uuid for userId
     // console.log("GENERATING NEW USER ID");
     userId = uuid();
@@ -97,23 +97,22 @@ const userIdGeneratorForKombucha = async () => {
       uid: userId,
     };
 
-    try{
+    try {
       // return the user id and token
-      return await kombuchaServer.post("/users", userData)
-    }
-    catch (e){
+      return await kombuchaServer.post("/users", userData);
+    } catch (e) {
       console.log(e);
     }
   } else {
-  // return the current user id and token
-  // sourcery skip: inline-immediately-returned-variable
+    // return the current user id and token
+    // sourcery skip: inline-immediately-returned-variable
     let res = {
       data: {
         token: token,
         uid: userId,
       },
-    }
-    return res; 
+    };
+    return res;
   }
 };
 
@@ -150,15 +149,15 @@ const trackEvent = (category, action, label, value, datasetID) => {
       el: label,
       ev: value,
     };
-    
+
     sendGoogleAnalyticsEvent(googleTrackingEventData);
     userIdGeneratorForKombucha().then((res) => {
       // console.log("uid", res.data.uid);
       // console.log("token", res.data.token);
       // console.log("value", value)
       let analyticsValue = value;
-      if(analyticsValue === undefined){
-        analyticsValue = '';
+      if (analyticsValue === undefined) {
+        analyticsValue = "";
       }
 
       const kombuchaTrackingEventData = {

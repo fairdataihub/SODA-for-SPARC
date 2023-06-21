@@ -1531,7 +1531,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           "track-event",
           "Dataset ID to Dataset Name Map",
           defaultBfDatasetId,
-          defaultBfDataset,
+          defaultBfDataset
         );
 
         // document.getElementById("ds-description").innerHTML = "";
