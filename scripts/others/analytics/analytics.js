@@ -1,14 +1,11 @@
 const electron = require("electron");
-const { ipcRenderer } = require("electron");
 const ua = require("universal-analytics");
 const uuid = require("uuid").v4;
 const { JSONStorage } = require("node-localstorage");
 const fs = require("fs");
 const axios = require("axios");
-const { node } = require("prop-types");
-const { event } = require("jquery");
 
-const app = electron.app;
+const {app} = electron;
 const nodeStorage = new JSONStorage(app.getPath("userData"));
 const configFolderPath = require("path").join(app.getPath("home"), ".soda-config"); // more config files will be placed here
 let dnt = false;
@@ -89,7 +86,7 @@ const userIdGeneratorForKombucha = async () => {
 
   if (chance < .1) {
     // 10% chance of generating new uuid for userId
-    console.log("GENERATING NEW USER ID");
+    // console.log("GENERATING NEW USER ID");
     userId = uuid();
     userIdChanged = true;
   }
@@ -128,17 +125,12 @@ const sendGoogleAnalyticsEvent = (eventData) => {
 // Tracking function for Kombucha Analytics
 const sendKombuchaAnalyticsEvent = (eventData, userToken) => {
   // console.log("userToken", userToken);
-
   kombuchaServer
     .post("/events", eventData, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${userToken}`,
       },
-    })
-    .then((response) => {
-      // Handle the response
-      console.log(response.data);
     })
     .catch((error) => {
       // Handle the error
