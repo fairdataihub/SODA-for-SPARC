@@ -17,6 +17,7 @@ from curate import (
     check_JSON_size,
     clean_json_structure,
     check_server_access_to_files,
+    check_local_dataset_files_validity,
 )
 
 from manifest import create_high_level_manifest_files_existing_local_starting_point
@@ -51,18 +52,18 @@ class CheckEmptyFilesFolders(Resource):
 
 
 
-@api.route('/check_server_access_to_files')
+@api.route('/check_local_dataset_files_validity')
 class Curation(Resource):
     parser_check_file_server_access = reqparse.RequestParser(bundle_errors=True)
-    parser_check_file_server_access.add_argument('file_list_to_check', type=list, required=True, help='A list of files to check if the server can access', location="json")
+    parser_check_file_server_access.add_argument('soda_json_structure', type=dict, required=True, help='soda json object to check for missing folders/files', location="json")
     
     @api.expect(parser_check_file_server_access)
     @api.doc(responses={200: "Success", 500: "Internal Server Errors"}, description="Checks if the server can open the files passed in as a list.")
     def post(self):
         data = self.parser_check_file_server_access.parse_args()
-        file_list_to_check = data.get('file_list_to_check')
+        soda_json_structure = data.get('soda_json_structure')
         try:
-            return check_server_access_to_files(file_list_to_check)
+            return {"invalid_files": check_local_dataset_files_validity(soda_json_structure)}
         except Exception as e:
             api.abort(500, str(e))
 

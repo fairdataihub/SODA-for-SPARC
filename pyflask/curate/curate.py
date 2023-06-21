@@ -714,6 +714,9 @@ def check_local_dataset_files_validity(soda_json_structure):
         if not my_folder["folders"] and not my_folder["files"] and my_folder["type"] != "bf":
             del my_folders_content[my_folder_key]
 
+    namespace_logger.info("Checking local dataset files validity")
+    # log the soda_json_structure
+    namespace_logger.debug("soda_json_structure: %s", soda_json_structure)
     error = []
     if "dataset-structure" in soda_json_structure.keys():
         dataset_structure = soda_json_structure["dataset-structure"]

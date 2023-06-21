@@ -9,4 +9,5 @@ from .curate import (
     generate_manifest_file_data,
     clean_json_structure,
     check_server_access_to_files,
+    check_local_dataset_files_validity
 )

@@ -54,8 +54,6 @@ const sodaSwalConfirmList = async (
 };
 
 //wrap below function in async
-const testSwal = async () => {
-  // wait for 5 seconds
-  await new Promise((resolve) => setTimeout(resolve, 5000));
-  await sodaSwalConfirmList("info", "Are you sure?", itemList, "Yes, delete it!", "No, cancel!");
+const testSwal = async (icon, title, arrayToShowInUI, confirmButtonText, cancelButtonText) => {
+  await sodaSwalConfirmList(icon, title, arrayToShowInUI, confirmButtonText, cancelButtonText);
 };

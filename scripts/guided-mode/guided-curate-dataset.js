@@ -7052,6 +7052,9 @@ const patchPreviousGuidedModeVersions = async () => {
     sodaJSONObj["previously-uploaded-data"] = {};
   }
 
+  if (!sodaJSONObj["dataset-structure"] || folderIsEmpty(sodaJSONObj["dataset-structure"])) {
+    sodaJSONObj["dataset-structure"] = sodaJSONObj["saved-datset-structure-json-obj"];
+  }
   if (!sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"]) {
     sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"] = [];
   }
@@ -7172,7 +7175,38 @@ const patchPreviousGuidedModeVersions = async () => {
   // If no other conditions are met, return the page the user was last on
   return sodaJSONObj["page-before-exit"];
 };
-
+const handleReturnFromSavedProgress = async (soda_json_object) => {
+  // First check for any files previously added that are no longer accessible
+  try {
+    const localFileCheckRes = await client.post(
+      `/curate_datasets/check_local_dataset_files_validity`,
+      {
+        soda_json_structure: soda_json_object,
+      }
+    );
+    const invalid_files = localFileCheckRes.data.invalid_files;
+    console.log("Invalid files: " + invalid_files);
+    if (invalid_files.length > 0) {
+      await testSwal(
+        "info",
+        "The following files are no longer accessible and will be removed from the dataset:",
+        invalid_files,
+        "Confirm",
+        "Cancel"
+      );
+    } else {
+      console.log("No invalid files found" + invalid_files);
+    }
+  } catch (error) {
+    clientError(error);
+    notyf.open({
+      type: "error",
+      message: `Unable to determine file/folder accessibility`,
+      duration: 7000,
+    });
+    return [];
+  }
+};
 //Loads UI when continue curation button is pressed
 const guidedResumeProgress = async (datasetNameToResume) => {
   const loadingSwal = Swal.fire({
@@ -7282,6 +7316,9 @@ const guidedResumeProgress = async (datasetNameToResume) => {
       }
     }
     sodaJSONObj = datasetResumeJsonObj;
+
+    await handleReturnFromSavedProgress(sodaJSONObj);
+
     attachGuidedMethodsToSodaJSONObj();
 
     datasetStructureJSONObj = sodaJSONObj["saved-datset-structure-json-obj"];
@@ -15156,4 +15193,4 @@ const guidedSaveDescriptionContributorInformation = () => {
   };
 };
 
-testSwal();
+// testSwal();
