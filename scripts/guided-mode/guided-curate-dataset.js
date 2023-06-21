@@ -1024,8 +1024,12 @@ const savePageChanges = async (pageBeingLeftID) => {
 
       // If the user selected that the dataset is SPARC funded, unskip the submission metadata page
       if (userSelectedDatasetIsSparcFunded) {
-        // Make sure the submission metadata and validation tab are unskipped as they are required
-        // for the SPARC funded dataset flow
+        // Auto-fill consortium data standard and funding consortium fields for SPARC funded datasets
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
+          "SPARC";
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] = "SPARC";
+
+        // Make sure pages required for SPARC funded datasets are not skipped
         guidedUnSkipPage("guided-create-submission-metadata-tab");
         guidedUnSkipPage("guided-protocols-tab");
       }
@@ -4831,49 +4835,55 @@ const openPage = async (targetPageID) => {
       );
     }
 
-    if (
-      targetPageID === "guided-ask-if-submission-is-sparc-funded-tab" &&
-      pageNeedsUpdateFromPennsieve(targetPageID)
-    ) {
-      setPageLoadingState(true);
-      try {
-        const submissionMetadataRes = await client.get(`/prepare_metadata/import_metadata_file`, {
-          params: {
-            selected_account: defaultBfAccount,
-            selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-            file_type: "submission.xlsx",
-          },
-        });
-        const submissionData = submissionMetadataRes.data;
-        let sparcAwardRes = submissionData["SPARC Award number"];
-        if (sparcAwardRes) {
-          const substringsSparcAwardsShouldContain = ["ot2od", "ot3od", "u18", "tr", "u01"]; // Note: These substrings are taken from the validator...
-          sparcAwardRes = sparcAwardRes.toLowerCase().trim();
+    if (targetPageID === "guided-ask-if-submission-is-sparc-funded-tab") {
+      if (pageNeedsUpdateFromPennsieve(targetPageID)) {
+        setPageLoadingState(true);
+        try {
+          const submissionMetadataRes = await client.get(`/prepare_metadata/import_metadata_file`, {
+            params: {
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+              file_type: "submission.xlsx",
+            },
+          });
+          const submissionData = submissionMetadataRes.data;
+          let sparcAwardRes = submissionData["SPARC Award number"];
+          if (sparcAwardRes) {
+            const substringsSparcAwardsShouldContain = ["ot2od", "ot3od", "u18", "tr", "u01"]; // Note: These substrings are taken from the validator...
+            sparcAwardRes = sparcAwardRes.toLowerCase().trim();
 
-          let awardIsSparcFunded = false;
+            let awardIsSparcFunded = false;
 
-          // Loop through the sparcSPARCAwards and check if the sparcAwrardRes contains one of them as a substring
-          // (meaning this is a SPARC funded dataset)
-          for (const substring of substringsSparcAwardsShouldContain) {
-            if (sparcAwardRes.includes(substring)) {
-              awardIsSparcFunded = true;
-              break;
+            // Loop through the sparcSPARCAwards and check if the sparcAwrardRes contains one of them as a substring
+            // (meaning this is a SPARC funded dataset)
+            for (const substring of substringsSparcAwardsShouldContain) {
+              if (sparcAwardRes.includes(substring)) {
+                awardIsSparcFunded = true;
+                break;
+              }
+            }
+
+            // If the sparcAwrardRes contains one of the sparcSPARCAwards as a substring, select that the dataset is SPARC funded
+            // If not, assume the user has contacted SPARC since they have already uploaded to Pennsieve (saves them a clicks)
+            if (awardIsSparcFunded) {
+              document.getElementById("guided-button-dataset-is-sparc-funded").click();
+            } else {
+              document.getElementById("guided-button-non-sparc-user-has-contacted-sparc").click();
             }
           }
-
-          // If the sparcAwrardRes contains one of the sparcSPARCAwards as a substring, select that the dataset is SPARC funded
-          // If not, assume the user has contacted SPARC since they have already uploaded to Pennsieve (saves them a clicks)
-          if (awardIsSparcFunded) {
-            document.getElementById("guided-button-dataset-is-sparc-funded").click();
-          } else {
-            document.getElementById("guided-button-non-sparc-user-has-contacted-sparc").click();
-          }
+        } catch (error) {
+          console.log(error);
         }
-      } catch (error) {
-        // If the manifest file is not found or the SPARC award number string is smaller than 8 characters,
-        // we can't assume anything about the submission so the user has to select the appropriate button
-        console.log(error);
       }
+
+      $("#guided-select-funding-consortium").selectpicker({
+        style: "guided--select-picker",
+      });
+      $("#guided-select-funding-consortium").selectpicker("refresh");
+      $("#guided-select-funding-consortium").on("change", function (e) {
+        const consortium = e.target.value;
+        console.log(consortium);
+      });
     }
 
     if (targetPageID === "guided-subjects-folder-tab") {
@@ -6986,6 +6996,38 @@ const newEmptyFolderObj = () => {
   };
 };
 
+const guidedGetPageToReturnTo = (sodaJSONObj) => {
+  // Set by openPage function
+  const usersPageBeforeExit = sodaJSONObj["page-before-exit"];
+
+  //If the dataset was successfully uploaded, send the user to the share with curation team
+  if (sodaJSONObj["previous-guided-upload-dataset-name"]) {
+    return "guided-dataset-dissemination-tab";
+  }
+
+  // returns the id of the first page of guided mode
+  const firstPageID = getNonSkippedGuidedModePages(document)[0].id;
+
+  const currentSodaVersion = document.getElementById("version").innerHTML;
+  const lastVersionOfSodaUsedOnProgressFile = sodaJSONObj["last-version-of-soda-used"];
+
+  if (lastVersionOfSodaUsedOnProgressFile != currentSodaVersion) {
+    // If the last time the user worked on the progress file was in a previous version of SODA, then force the user to restart from the first page
+    return firstPageID;
+  }
+  // If the page the user was last on no longer exists, return them to the first page
+  if (!document.getElementById(usersPageBeforeExit)) {
+    return firstPageID;
+  }
+
+  // If the user left while the upload was in progress, send the user to the upload confirmation page
+  if (usersPageBeforeExit === "guided-dataset-generation-tab") {
+    return "guided-dataset-generation-confirmation-tab";
+  }
+  // If no special cases apply, return the user to the page they were on before they left
+  return usersPageBeforeExit;
+};
+
 const patchPreviousGuidedModeVersions = async () => {
   //temp patch contributor affiliations if they are still a string (they were added in the previous version)
 
@@ -7114,6 +7156,19 @@ const patchPreviousGuidedModeVersions = async () => {
     return "guided-dataset-dissemination-tab";
   }
 
+  if (sodaJSONObj["last-version-of-soda-used"] <= "12.0.0") {
+    // Change the award number variable from sparc-award to award-number
+    if (sodaJSONObj?.["dataset-metadata"]?.["shared-metadata"]?.["sparc-award"]) {
+      sodaJSONObj["dataset-metadata"]["shared-metadata"]["award-number"] =
+        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+    }
+    if (!sodaJSONObj["dataset-metadata"]["submission-metadata"]?.["consortium-data-standard"]) {
+      sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] = "";
+    }
+    if (!sodaJSONObj["dataset-metadata"]["submission-metadata"]?.["funding-consortium"]) {
+      sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] = "";
+    }
+  }
   // If no other conditions are met, return the page the user was last on
   return sodaJSONObj["page-before-exit"];
 };
@@ -7236,35 +7291,6 @@ const guidedResumeProgress = async (datasetNameToResume) => {
     //patches the sodajsonobj if it was created in a previous version of guided mode
     await patchPreviousGuidedModeVersions();
 
-    // pageToReturnTo will be set to the page the user will return to
-    let pageToReturnTo;
-
-    // The last page the user left off on on a previous session
-    const usersPageBeforeExit = sodaJSONObj["page-before-exit"];
-
-    //Check to make sure the page still exists before returning to it
-    //Code below might still specify a different page to return to though.
-    if (document.getElementById(usersPageBeforeExit)) {
-      pageToReturnTo = usersPageBeforeExit;
-    }
-
-    // If the user left while the upload was in progress, send the user to the upload confirmation page
-    if (usersPageBeforeExit === "guided-dataset-generation-tab") {
-      pageToReturnTo = "guided-dataset-generation-confirmation-tab";
-    }
-
-    // If the last time the user worked on the progress file was in a previous version of SODA, then force the user to restart from the first page
-    const currentSodaVersion = document.getElementById("version").innerHTML;
-    const lastVersionOfSodaUsedOnProgressFile = sodaJSONObj["last-version-of-soda-used"];
-    if (lastVersionOfSodaUsedOnProgressFile != currentSodaVersion) {
-      pageToReturnTo = null;
-    }
-
-    //If the dataset was successfully uploaded, send the user to the share with curation team
-    if (datasetResumeJsonObj["previous-guided-upload-dataset-name"]) {
-      pageToReturnTo = "guided-dataset-dissemination-tab";
-    }
-
     // Delete the button status for the Pennsieve account confirmation section
     // So the user has to confirm their Pennsieve account before uploading
     if (sodaJSONObj["button-config"]?.["pennsieve-account-has-been-confirmed"]) {
@@ -7291,12 +7317,12 @@ const guidedResumeProgress = async (datasetNameToResume) => {
     //the sub-page will be shown during openPage() function
     hideSubNavAndShowMainNav(false);
 
-    if (pageToReturnTo) {
-      await openPage(pageToReturnTo);
-    } else {
-      const firstPage = getNonSkippedGuidedModePages(document)[0];
-      await openPage(firstPage.id);
-    }
+    // pageToReturnTo will be set to the page the user will return to
+    const pageToReturnTo = guidedGetPageToReturnTo(sodaJSONObj);
+
+    console.log("pageToReturnTo", pageToReturnTo);
+
+    await openPage(pageToReturnTo);
 
     // Close the loading screen, the user should be on the page they left off on now
     loadingSwal.close();
@@ -7370,6 +7396,8 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["dataset-metadata"]["subject-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["sample-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["submission-metadata"] = {};
+  sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] = "";
+  sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] = "";
   sodaJSONObj["dataset-metadata"]["description-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["code-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"] = [];
