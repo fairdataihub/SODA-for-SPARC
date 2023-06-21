@@ -40,8 +40,9 @@ let PORT = 4242;
 let selectedPort = null;
 const portRange = 100;
 const kombuchaURL = "https://analytics-nine-ashen.vercel.app/api/v1";
+const localKombuchaURL = "http://localhost:3000/api/v1";
 const kombuchaServer = axios.create({
-  baseURL: kombuchaURL,
+  baseURL: localKombuchaURL,
   timeout: 0,
 });
 
@@ -202,29 +203,27 @@ const killAllPreviousProcesses = async () => {
 const sendUserAnalytics = () => {
   // Retrieve the userId and if it doesn't exist, create a new uuid
   let userId = nodeStorage.getItem("userId");
-  let chance = Math.random();
+  // let chance = Math.random();
   if (userId === null) {
     userId = uuid();
   }
-  console.log("userId: ", userId);
 
-  if (chance < 0.2) {
-    // 20% chance of generating new uuid for userId
-    userId = uuid();
-  }
+  // if (chance < 0.2) {
+  //   // 20% chance of generating new uuid for userId
+  //   console.log("GENERATING NEW USERID");
+  //   userId = uuid();
+  // }
 
   // Resave the userid, so it persists for the next app session
-  nodeStorage.setItem("userId", userId);
   const userData = {
     uid: userId,
   };
-
+  
   kombuchaServer
-    .post("/users", userData)
-    .then((res) => {
-      console.log("User data sent to server");
-      console.log("Response: ", res.data);
-      // Save the user's token from the server
+  .post("/users", userData)
+  .then((res) => {
+      // Save the user's token and id from the server
+      nodeStorage.setItem("userId", res.data.uid);
       nodeStorage.setItem("token", res.data.token);
     })
     .catch((err) => {
