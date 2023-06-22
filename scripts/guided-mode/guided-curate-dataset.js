@@ -3956,13 +3956,76 @@ const pageIsSkipped = (pageId) => {
 };
 
 const folderIsEmpty = (folder) => {
-  if (!folder) return true;
+  if (!folder) {
+    return true;
+  }
 
   return Object.keys(folder.folders).length === 0 && Object.keys(folder.files).length === 0;
 };
 
-const folderHasNoFiles = (folder) => {
-  return Object.keys(folder.files).length === 0;
+const folderHasFiles = (folder) => {
+  if (!folder) {
+    return false;
+  }
+  return Object.keys(folder.files).length > 0;
+};
+
+const folderIsEmptyOrOnlyContainsEmptyFolders = (folder) => {
+  // If the folder has no folders or files, return true
+  if (folderIsEmpty(folder)) {
+    console.log("Empty folder found");
+    return true;
+  }
+
+  // If the folder has files, return false
+  if (folderHasFiles(folder)) {
+    console.log("Folder with files found");
+    return false;
+  }
+
+  // At this point, we know the folder has children folders
+  // but does not have any files
+
+  // Now we need to check if the children folders have any files
+  console.log("Checking children folders");
+  const foldersInFolder = Object.keys(folder["folders"]);
+  for (const folderObject of foldersInFolder) {
+    console.log(`Checking folder ${folderObject}`);
+    const subFolder = folder["folders"][folderObject];
+    if (!folderIsEmptyOrOnlyContainsEmptyFolders(subFolder)) {
+      console.log(`Folder ${folderObject} is not empty`);
+      return false;
+    }
+  }
+
+  return true;
+};
+
+const deleteEmptyFolders = (structure) => {
+  if (!structure) {
+    return null;
+  }
+
+  const updatedFolders = {};
+
+  for (const folderName in structure.folders) {
+    const subStructure = structure.folders[folderName];
+    const shouldDeleteFolder = folderIsEmptyOrOnlyContainsEmptyFolders(subStructure);
+
+    if (!shouldDeleteFolder) {
+      const updatedSubStructure = deleteEmptyFolders(subStructure);
+      if (updatedSubStructure) {
+        updatedFolders[folderName] = updatedSubStructure;
+      }
+    } else {
+      console.log(`Deleting folder ${folderName}`);
+    }
+  }
+
+  return {
+    ...structure,
+    folders: updatedFolders,
+  };
 };
 
 const cleanUpEmptyGuidedStructureFolders = async (
@@ -7161,15 +7224,13 @@ const patchPreviousGuidedModeVersions = async () => {
   // If no other conditions are met, return the page the user was last on
   return sodaJSONObj["page-before-exit"];
 };
+
 const handleReturnFromSavedProgress = async (soda_json_object) => {
   // First check for any files previously added that are no longer accessible
   try {
-    const localFileCheckRes = await client.post(
-      `/curate_datasets/check_local_dataset_files_validity`,
-      {
-        soda_json_structure: soda_json_object,
-      }
-    );
+    const localFileCheckRes = await client.post(`/curate_datasets/get_non_accessible_files`, {
+      soda_json_structure: soda_json_object,
+    });
     const invalid_files = localFileCheckRes.data.invalid_files;
     console.log("Invalid files: " + invalid_files);
     if (invalid_files.length > 0) {
