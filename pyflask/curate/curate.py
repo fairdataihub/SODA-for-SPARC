@@ -2528,7 +2528,7 @@ def handle_duplicate_package_name_error(e, soda_json_structure):
 
     raise e
 
-def ps_check_dataset_files_validity(soda_json_structure, ps):
+def check_pennsieve_dataset_files_validity(soda_json_structure, ps):
     """
     Function to check that the bf data files and folders specified in the dataset are valid
 
@@ -2624,19 +2624,6 @@ def ps_check_dataset_files_validity(soda_json_structure, ps):
 
     return error
 
-
-def check_server_access_to_files(file_list):
-    # Return two lists, one that the server can open, and one that it can not.
-    # This is to avoid the server trying to open files that it does not have access to.cf
-    accessible_files = []
-    inaccessible_files = []
-    for file in file_list:
-        if os.path.isfile(file) or os.path.isdir(file):
-            accessible_files.append(file)
-        else:
-            inaccessible_files.append(file)
-
-    return {"accessible_files": accessible_files, "inaccessible_files": inaccessible_files}
 
 
 def clean_json_structure(soda_json_structure):
@@ -2859,7 +2846,7 @@ def main_curate_function(soda_json_structure):
                     "Checking that the Pennsieve files and folders are valid"
                 )
                 if soda_json_structure["generate-dataset"]["destination"] == "bf":
-                    if error := ps_check_dataset_files_validity(soda_json_structure, ps):
+                    if error := check_pennsieve_dataset_files_validity(soda_json_structure, ps):
                         main_curate_status = "Done"
                         abort(400, error)
             except Exception as e:

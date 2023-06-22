@@ -8,6 +8,5 @@ from .curate import (
     create_high_lvl_manifest_files_existing_ps_starting_point,
     generate_manifest_file_data,
     clean_json_structure,
-    check_server_access_to_files,
     check_local_dataset_files_validity
 )

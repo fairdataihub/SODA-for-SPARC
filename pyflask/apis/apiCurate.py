@@ -16,7 +16,6 @@ from curate import (
     generate_manifest_file_data,
     check_JSON_size,
     clean_json_structure,
-    check_server_access_to_files,
     check_local_dataset_files_validity,
 )
 
