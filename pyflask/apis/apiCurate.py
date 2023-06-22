@@ -52,15 +52,15 @@ class CheckEmptyFilesFolders(Resource):
 
 
 
-@api.route('/check_local_dataset_files_validity')
-class Curation(Resource):
-    parser_check_file_server_access = reqparse.RequestParser(bundle_errors=True)
-    parser_check_file_server_access.add_argument('soda_json_structure', type=dict, required=True, help='soda json object to check for missing folders/files', location="json")
+@api.route('/get_non_accessible_files')
+class GetNonAccessibleFiles(Resource):
+    parser_get_non_accessible_files = reqparse.RequestParser(bundle_errors=True)
+    parser_get_non_accessible_files.add_argument('soda_json_structure', type=dict, required=True, help='soda JSON object to check for missing folders/files', location="json")
     
-    @api.expect(parser_check_file_server_access)
-    @api.doc(responses={200: "Success", 500: "Internal Server Errors"}, description="Checks if the server can open the files passed in as a list.")
+    @api.expect(parser_get_non_accessible_files)
+    @api.doc(responses={200: "Success", 500: "Internal Server Errors"}, description="Checks the dataset's local files and returns a list of files that are not accessible.")
     def post(self):
-        data = self.parser_check_file_server_access.parse_args()
+        data = self.parser_get_non_accessible_files.parse_args()
         soda_json_structure = data.get('soda_json_structure')
         try:
             return {"invalid_files": check_local_dataset_files_validity(soda_json_structure)}

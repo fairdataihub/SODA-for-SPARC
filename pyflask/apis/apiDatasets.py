@@ -208,3 +208,4 @@ class PackageTypeCounts(Resource):
             if notBadRequestException(e):
                 api.abort(500, str(e))
             raise e
+      

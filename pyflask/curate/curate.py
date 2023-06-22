@@ -32,7 +32,6 @@ from openpyxl.styles import PatternFill
 from utils import connect_pennsieve_client, get_dataset_id, create_request_headers, TZLOCAL
 from manifest import create_high_lvl_manifest_files_existing_ps_starting_point, create_high_level_manifest_files, get_auto_generated_manifest_files
 from authentication import get_access_token
-
 from pysodaUtils import (
     check_forbidden_characters_ps,
     get_agent_installation_location,
@@ -665,7 +664,7 @@ def check_empty_files_folders(soda_json_structure):
 
     except Exception as e:
         raise e
-
+    
 
 def check_local_dataset_files_validity(soda_json_structure):
     """
@@ -757,6 +756,7 @@ def check_local_dataset_files_validity(soda_json_structure):
         error = error_message + error
 
     return error
+
 
 
 # path to local SODA folder for saving manifest files

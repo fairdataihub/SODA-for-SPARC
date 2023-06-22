@@ -30,7 +30,7 @@ def get_manifests(soda_json_structure):
     # check if guided mode
     if "guided-options" in soda_json_structure:
         # go through the high level folders in the dataset structure and get the manifest files
-        for folder_name, folder_information in soda_json_structure["dataset-structure"]["folders"].items():
+        for folder_name, folder_information in soda_json_structure["saved-datset-structure-json-obj"]["folders"].items():
            if "manifest.xlsx" in folder_information["files"]:
               # get the xlsx path 
               path_man = folder_information["files"]["manifest.xlsx"]["path"]
@@ -56,7 +56,7 @@ def get_manifests(soda_json_structure):
         # if there are, add them to the manifests dict
         starting_point_dict = soda_json_structure["starting-point"]
         for key in starting_point_dict.keys():
-           if key in ["primary", "code", "derivative", "source", "docs", "protocol", "derivative"]:
+           if key in ["primary", "source", "derivative", "code", "protocol", "docs"]:
                 # read the file as a dataframe
                 if "path" in starting_point_dict[key] and starting_point_dict[key]["path"] is not '':
                   df = pd.read_excel(starting_point_dict[key]["path"])
