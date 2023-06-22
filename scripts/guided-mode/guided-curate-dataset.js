@@ -3971,29 +3971,21 @@ const folderHasFiles = (folder) => {
 };
 
 const folderIsEmptyOrOnlyContainsEmptyFolders = (folder) => {
-  // If the folder has no folders or files, return true
   if (folderIsEmpty(folder)) {
     console.log("Empty folder found");
     return true;
   }
 
-  // If the folder has files, return false
   if (folderHasFiles(folder)) {
     console.log("Folder with files found");
     return false;
   }
 
-  // At this point, we know the folder has children folders
-  // but does not have any files
-
-  // Now we need to check if the children folders have any files
   console.log("Checking children folders");
-  const foldersInFolder = Object.keys(folder["folders"]);
-  for (const folderObject of foldersInFolder) {
-    console.log(`Checking folder ${folderObject}`);
-    const subFolder = folder["folders"][folderObject];
-    if (!folderIsEmptyOrOnlyContainsEmptyFolders(subFolder)) {
-      console.log(`Folder ${folderObject} is not empty`);
+  for (const folderName in folder.folders) {
+    console.log(`Checking folder ${folderName}`);
+    if (!folderIsEmptyOrOnlyContainsEmptyFolders(folder.folders[folderName])) {
+      console.log(`Folder ${folderName} is not empty`);
       return false;
     }
   }
@@ -4002,30 +3994,39 @@ const folderIsEmptyOrOnlyContainsEmptyFolders = (folder) => {
 };
 
 const deleteEmptyFolders = (structure) => {
-  if (!structure) {
-    return null;
-  }
-
-  const updatedFolders = {};
+  if (!structure) return null;
 
   for (const folderName in structure.folders) {
     const subStructure = structure.folders[folderName];
-    const shouldDeleteFolder = folderIsEmptyOrOnlyContainsEmptyFolders(subStructure);
-
-    if (!shouldDeleteFolder) {
-      const updatedSubStructure = deleteEmptyFolders(subStructure);
-      if (updatedSubStructure) {
-        updatedFolders[folderName] = updatedSubStructure;
-      }
-    } else {
+    if (folderIsEmptyOrOnlyContainsEmptyFolders(subStructure)) {
       console.log(`Deleting folder ${folderName}`);
+      delete structure.folders[folderName];
+    } else {
+      deleteEmptyFolders(subStructure);
     }
   }
 
-  return {
-    ...structure,
-    folders: updatedFolders,
-  };
+  return structure;
+};
+
+const removeFilesWithPaths = (structure, pathsArrayToRemove) => {
+  if (!structure) return null;
+
+  for (const fileObject in structure.files) {
+    console.log(`Checking file object ${fileObject}`);
+    if (fileObject["path"] && pathsArrayToRemove.includes(fileObject["path"])) {
+      console.log(`Deleting file object with path ${fileObject["path"]}`);
+      delete structure.files[fileObject];
+    }
+  }
+
+  for (const folderName in structure.folders) {
+    const subStructure = structure.folders[folderName];
+    removeFilesWithPaths(subStructure, pathsArrayToRemove);
+  }
+
+  deleteEmptyFolders(structure);
+  return structure;
 };
 
 const cleanUpEmptyGuidedStructureFolders = async (
@@ -7234,13 +7235,17 @@ const handleReturnFromSavedProgress = async (soda_json_object) => {
     const invalid_files = localFileCheckRes.data.invalid_files;
     console.log("Invalid files: " + invalid_files);
     if (invalid_files.length > 0) {
-      await testSwal(
+      const deleteInvalidFiles = await testSwal(
         "info",
         "The following files are no longer accessible and will be removed from the dataset:",
         invalid_files,
         "Confirm",
         "Cancel"
       );
+      if (deleteInvalidFiles) {
+        // Remove the invalid files from the dataset
+        datasetStructureJSONObj = removeFilesWithPaths(datasetStructureJSONObj, invalid_files);
+      }
     } else {
       console.log("No invalid files found" + invalid_files);
     }
