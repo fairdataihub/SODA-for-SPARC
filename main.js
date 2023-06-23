@@ -202,33 +202,22 @@ const killAllPreviousProcesses = async () => {
 // Sends user information to Kombucha server
 const sendUserAnalytics = () => {
   // Retrieve the userId and if it doesn't exist, create a new uuid
-  let userId = nodeStorage.getItem("userId");
-  // let chance = Math.random();
-  if (userId === null) {
-    userId = uuid();
+  let token = nodeStorage.getItem("token");
+
+  if (token === null) {
+    // send empty object for new users
+    let userData = {};
+
+    kombuchaServer
+      .post("meta/users", userData)
+      .then((res) => {
+        // Save the user token from the server
+        nodeStorage.setItem("token", res.data.token);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
   }
-
-  // if (chance < 0.2) {
-  //   // 10% chance of generating new uuid for userId
-  //   console.log("GENERATING NEW USERID");
-  //   userId = uuid();
-  // }
-
-  // Resave the userid, so it persists for the next app session
-  const userData = {
-    uid: userId,
-  };
-
-  kombuchaServer
-    .post("meta/users", userData)
-    .then((res) => {
-      // Save the user's token and id from the server
-      nodeStorage.setItem("userId", res.data.uid);
-      nodeStorage.setItem("token", res.data.token);
-    })
-    .catch((err) => {
-      console.error(err);
-    });
 };
 
 // 5.4.1 change: We call createPyProc in a spearate ready event
