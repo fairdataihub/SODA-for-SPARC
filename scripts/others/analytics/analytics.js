@@ -10,8 +10,8 @@ const nodeStorage = new JSONStorage(app.getPath("userData"));
 const configFolderPath = require("path").join(app.getPath("home"), ".soda-config"); // more config files will be placed here
 let dnt = false;
 
-const kombuchaURL = "https://analytics-nine-ashen.vercel.app/api/v1";
-const localKombuchaURL = "http://localhost:3000/api/v1";
+const kombuchaURL = "https://analytics-nine-ashen.vercel.app/api/";
+const localKombuchaURL = "http://localhost:3000/api/";
 
 // Retrieve the userid value, and if it's not there, assign it a new uuid.
 let userId = nodeStorage.getItem("userId");
@@ -30,7 +30,7 @@ let appId = "f85e3098-d7f6-4a89-988a-eac945fdc320";
 const appVersion = app.getVersion();
 
 const kombuchaServer = axios.create({
-  baseURL: kombuchaURL,
+  baseURL: localKombuchaURL,
   timeout: 0,
 });
 
@@ -99,7 +99,7 @@ const userIdGeneratorForKombucha = async () => {
 
     try {
       // return the user id and token
-      return await kombuchaServer.post("/users", userData);
+      return await kombuchaServer.post("meta/users", userData);
     } catch (e) {
       console.log(e);
     }
@@ -125,7 +125,7 @@ const sendGoogleAnalyticsEvent = (eventData) => {
 const sendKombuchaAnalyticsEvent = (eventData, userToken) => {
   // console.log("userToken", userToken);
   kombuchaServer
-    .post("/events", eventData, {
+    .post("harvest/events", eventData, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${userToken}`,

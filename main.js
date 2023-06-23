@@ -39,10 +39,10 @@ let pyflaskProcess = null;
 let PORT = 4242;
 let selectedPort = null;
 const portRange = 100;
-const kombuchaURL = "https://analytics-nine-ashen.vercel.app/api/v1";
-const localKombuchaURL = "http://localhost:3000/api/v1";
+const kombuchaURL = "https://analytics-nine-ashen.vercel.app/api";
+const localKombuchaURL = "http://localhost:3000/api";
 const kombuchaServer = axios.create({
-  baseURL: kombuchaURL,
+  baseURL: localKombuchaURL,
   timeout: 0,
 });
 
@@ -220,7 +220,7 @@ const sendUserAnalytics = () => {
   };
 
   kombuchaServer
-    .post("/users", userData)
+    .post("meta/users", userData)
     .then((res) => {
       // Save the user's token and id from the server
       nodeStorage.setItem("userId", res.data.uid);
