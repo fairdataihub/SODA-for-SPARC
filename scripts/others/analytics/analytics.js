@@ -75,28 +75,18 @@ if (dnt) {
 // Generate new userid on a chance basis
 const userIdGeneratorForKombucha = async () => {
   const chance = Math.random();
-  let userId = nodeStorage.getItem("userId");
+  // let userId = nodeStorage.getItem("userId");
   let token = nodeStorage.getItem("token");
   let userIdChanged = false;
+  let userData = {};
 
-  if (userId === null) {
-    userId = uuid();
-    userIdChanged = true;
-  }
-
-  if (chance < 0.1) {
+  if (token === null || chance < 0.1) {
     // 10% chance of generating new uuid for userId
-    // console.log("GENERATING NEW USER ID");
-    userId = uuid();
+    userData = {};
     userIdChanged = true;
   }
 
   if (userIdChanged) {
-    // Generate new user entry
-    const userData = {
-      uid: userId,
-    };
-
     try {
       // return the user id and token
       return await kombuchaServer.post("meta/users", userData);
@@ -109,7 +99,6 @@ const userIdGeneratorForKombucha = async () => {
     let res = {
       data: {
         token: token,
-        uid: userId,
       },
     };
     return res;
@@ -156,17 +145,21 @@ const trackEvent = (category, action, label, value, datasetID) => {
       // console.log("token", res.data.token);
       // console.log("value", value)
       let analyticsValue = value;
+      let analyticsLabel = label;
       if (analyticsValue === undefined) {
         analyticsValue = "";
       }
+      if (analyticsLabel === undefined) {
+        analyticsLabel = "";
+      }
 
+      console.log(label);
       const kombuchaTrackingEventData = {
-        uid: res.data.uid,
         aid: appId,
-        status: category,
-        category: category,
+        category: "analyticsLabel",
         action: action,
-        label: label,
+        status: category,
+        label: analyticsLabel,
         data: {
           value: analyticsValue,
           datasetID: "datasetID",
