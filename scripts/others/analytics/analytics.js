@@ -159,6 +159,7 @@ const trackEvent = (category, action, label, value, datasetID) => {
         category: "analyticsLabel",
         action: action,
         status: category,
+        label: analyticsLabel,
         data: {
           value: analyticsValue,
           datasetID: "datasetID",
