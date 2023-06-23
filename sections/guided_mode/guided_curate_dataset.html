@@ -568,54 +568,77 @@
           </div>
 
           <div class="guided--section" id="guided-section-dataset-funded-by-other">
-            <h2 class="text-sub-step-title">
-              Have you already reached out to the SPARC curation team to see if your data is
-              suitable for the SPARC Data Portal?
-            </h2>
+            <h2 class="text-sub-step-title">Select the funding source from the dropdown below</h2>
+
             <select
-              class="w-100"
+              class="w-100 mb-sm"
               id="guided-select-funding-consortium"
               data-live-search="true"
-              name="Dataset contributor"
+              name="Dataset funding source"
             >
               <option value="">Select a funding consortium</option>
               <option value="SPARC-2">SPARC-2</option>
               <option value="VESPA">VESPA</option>
               <option value="REVA">REVA</option>
               <option value="HORNET">HORNET</option>
-              <option value="EXTERNAL">EXTERNAL</option>
+              <option value="EXTERNAL">Funding source not listed in this dropdown</option>
             </select>
-            <div class="guided--radio-button-container">
-              <button
-                class="ui positive basic button guided--radio-button"
-                id="guided-button-non-sparc-user-has-contacted-sparc"
-                data-next-element="guided-section-non-sparc-user-has-contacted-sparc"
-                data-button-config-value="non-sparc-user-has-contacted-sparc"
-                data-button-config-value-state="yes"
-              >
-                Yes
-              </button>
-              <button
-                class="ui negative basic button guided--radio-button"
-                id="guided-button-non-sparc-user-has-not-contacted-sparc"
-                data-next-element="guided-section-non-sparc-user-has-not-contacted-sparc"
-                data-button-config-value="non-sparc-user-has-contacted-sparc"
-                data-button-config-value-state="no"
-              >
-                No
-              </button>
-            </div>
-            <div class="guided--section" id="guided-section-non-sparc-user-has-contacted-sparc">
-              <h2 class="guided--text-user-directions">
-                Great, click "<span class="next-button-span"></span>" to start the curation process.
-              </h2>
-            </div>
-            <div class="guided--section" id="guided-section-non-sparc-user-has-not-contacted-sparc">
-              <p class="help-text">
-                Please contact the SPARC curation team before continuing at
-                <a href="mailto:curation@sparc.science">curation@sparc.science</a> to ensure that
-                your dataset is suitable for the SPARC platform.
+            <div
+              class="info-dropdown mt-sm hide-when-an-other-funding-source-is-selected"
+              style="align-self: center"
+            >
+              <p class="info-dropdown-text" data-dropdown-type="info">
+                I don't see my funding source in the dropdown above
               </p>
+              <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="info-container hide-when-an-other-funding-source-is-selected">
+              <p class="help-text">
+                If you do not see your funding source in the dropdown above, please select "Funding
+                source not listed in this dropdown"
+              </p>
+            </div>
+            <div class="guided--section hide-when-an-other-funding-source-is-selected">
+              <h2 class="text-sub-step-title">
+                Have you already reached out to the SPARC curation team to see if your data is
+                suitable for the SPARC Data Portal?
+              </h2>
+              <div class="guided--radio-button-container">
+                <button
+                  class="ui positive basic button guided--radio-button"
+                  id="guided-button-non-sparc-user-has-contacted-sparc"
+                  data-next-element="guided-section-non-sparc-user-has-contacted-sparc"
+                  data-button-config-value="non-sparc-user-has-contacted-sparc"
+                  data-button-config-value-state="yes"
+                >
+                  Yes
+                </button>
+                <button
+                  class="ui negative basic button guided--radio-button"
+                  id="guided-button-non-sparc-user-has-not-contacted-sparc"
+                  data-next-element="guided-section-non-sparc-user-has-not-contacted-sparc"
+                  data-button-config-value="non-sparc-user-has-contacted-sparc"
+                  data-button-config-value-state="no"
+                >
+                  No
+                </button>
+              </div>
+              <div class="guided--section" id="guided-section-non-sparc-user-has-contacted-sparc">
+                <h2 class="guided--text-user-directions">
+                  Great, click "<span class="next-button-span"></span>" to start the curation
+                  process.
+                </h2>
+              </div>
+              <div
+                class="guided--section"
+                id="guided-section-non-sparc-user-has-not-contacted-sparc"
+              >
+                <p class="help-text">
+                  Please contact the SPARC curation team before continuing at
+                  <a href="mailto:curation@sparc.science">curation@sparc.science</a> to ensure that
+                  your dataset is suitable for the SPARC platform.
+                </p>
+              </div>
             </div>
           </div>
         </div>

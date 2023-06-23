@@ -1022,12 +1022,14 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
+      let consortiumDataStandard;
+      let fundingConsortium;
+
       // If the user selected that the dataset is SPARC funded, unskip the submission metadata page
       if (userSelectedDatasetIsSparcFunded) {
         // Auto-fill consortium data standard and funding consortium fields for SPARC funded datasets
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
-          "SPARC";
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] = "SPARC";
+        consortiumDataStandard = "SPARC";
+        fundingConsortium = "SPARC";
 
         // Make sure pages required for SPARC funded datasets are not skipped
         guidedUnSkipPage("guided-create-submission-metadata-tab");
@@ -1037,31 +1039,55 @@ const savePageChanges = async (pageBeingLeftID) => {
       // If the user selected that dataset is not SPARC funded, skip the submission metadata page
       // The logic that handles the submission file is ran during upload
       if (userSelectedDatasetIsReJoinFunded || userSelectedDatasetIsOtherFunded) {
-        if (userSelectedDatasetIsOtherFunded) {
-          const userSelectedTheyHaveReachedOutToCurationTeam = document
-            .getElementById("guided-button-non-sparc-user-has-contacted-sparc")
-            .classList.contains("selected");
-          const userSelectedTheyHaveNotReachedOutToCurationTeam = document
-            .getElementById("guided-button-non-sparc-user-has-not-contacted-sparc")
-            .classList.contains("selected");
+        // Case where user selected the RE-JOIN program tile
+        if (userSelectedDatasetIsReJoinFunded) {
+          consortiumDataStandard = "HEAL";
+          fundingConsortium = "REJOIN-HEAL";
+        }
 
-          if (
-            !userSelectedTheyHaveReachedOutToCurationTeam &&
-            !userSelectedTheyHaveNotReachedOutToCurationTeam
-          ) {
+        // Case where user selected the Other/no funding source tile
+        if (userSelectedDatasetIsOtherFunded) {
+          // Get the funding source value from the dropdown
+          const selectedFuncingSourceFromDropdown = $("#guided-select-funding-consortium").val();
+
+          // Throw an error if the user did not select a funding source from the dropdown
+          if (!selectedFuncingSourceFromDropdown) {
             errorArray.push({
               type: "notyf",
-              message: "Please indicate if you have reached out to the curation team",
+              message: "Please select a funding source from the dropdown.",
             });
             throw errorArray;
           }
-          if (userSelectedTheyHaveNotReachedOutToCurationTeam) {
-            errorArray.push({
-              type: "notyf",
-              message:
-                "Please reach out to the curation team before continuing the curation process",
-            });
-            throw errorArray;
+
+          if (selectedFuncingSourceFromDropdown != "EXTERNAL") {
+            consortiumDataStandard = "SPARC";
+            fundingConsortium = selectedFuncingSourceFromDropdown;
+          } else {
+            const userSelectedTheyHaveReachedOutToCurationTeam = document
+              .getElementById("guided-button-non-sparc-user-has-contacted-sparc")
+              .classList.contains("selected");
+            const userSelectedTheyHaveNotReachedOutToCurationTeam = document
+              .getElementById("guided-button-non-sparc-user-has-not-contacted-sparc")
+              .classList.contains("selected");
+
+            if (
+              !userSelectedTheyHaveReachedOutToCurationTeam &&
+              !userSelectedTheyHaveNotReachedOutToCurationTeam
+            ) {
+              errorArray.push({
+                type: "notyf",
+                message: "Please indicate if you have reached out to the curation team",
+              });
+              throw errorArray;
+            }
+            if (userSelectedTheyHaveNotReachedOutToCurationTeam) {
+              errorArray.push({
+                type: "notyf",
+                message:
+                  "Please reach out to the curation team before continuing the curation process",
+              });
+              throw errorArray;
+            }
           }
         }
 
@@ -1074,6 +1100,10 @@ const savePageChanges = async (pageBeingLeftID) => {
 
         guidedSkipPage("guided-protocols-tab");
       }
+      sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
+        consortiumDataStandard;
+      sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
+        fundingConsortium;
     }
 
     if (pageBeingLeftID === "guided-primary-data-organization-tab") {
@@ -4880,9 +4910,31 @@ const openPage = async (targetPageID) => {
         style: "guided--select-picker",
       });
       $("#guided-select-funding-consortium").selectpicker("refresh");
+
+      const sectionsToHideWhenAnOtherFundingSourceIsSelected = document.querySelectorAll(
+        ".hide-when-an-other-funding-source-is-selected"
+      );
+      const sectionsToShowWhenAnOtherFundingSourceIsSelected = document.querySelectorAll(
+        ".show-when-an-other-funding-source-is-selected"
+      );
+
       $("#guided-select-funding-consortium").on("change", function (e) {
         const consortium = e.target.value;
-        console.log(consortium);
+        if (consortium === "EXTERNAL" || consortium === "") {
+          sectionsToHideWhenAnOtherFundingSourceIsSelected.forEach((element) => {
+            element.classList.remove("hidden");
+          });
+          sectionsToShowWhenAnOtherFundingSourceIsSelected.forEach((element) => {
+            element.classList.add("hidden");
+          });
+        } else {
+          sectionsToHideWhenAnOtherFundingSourceIsSelected.forEach((element) => {
+            element.classList.add("hidden");
+          });
+          sectionsToShowWhenAnOtherFundingSourceIsSelected.forEach((element) => {
+            element.classList.remove("hidden");
+          });
+        }
       });
     }
 
