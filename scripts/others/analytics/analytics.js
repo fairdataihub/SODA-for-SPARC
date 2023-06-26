@@ -10,7 +10,7 @@ const nodeStorage = new JSONStorage(app.getPath("userData"));
 const configFolderPath = require("path").join(app.getPath("home"), ".soda-config"); // more config files will be placed here
 let dnt = false;
 
-const kombuchaURL = "https://analytics-nine-ashen.vercel.app/api/";
+const kombuchaURL = "https://kombucha.fairdataihub.org/api/";
 const localKombuchaURL = "http://localhost:3000/api/";
 
 // Retrieve the userid value, and if it's not there, assign it a new uuid.
@@ -30,7 +30,7 @@ let appId = "f85e3098-d7f6-4a89-988a-eac945fdc320";
 const appVersion = app.getVersion();
 
 const kombuchaServer = axios.create({
-  baseURL: localKombuchaURL,
+  baseURL: kombuchaURL,
   timeout: 0,
 });
 

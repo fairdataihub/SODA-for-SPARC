@@ -43,7 +43,7 @@ const portRange = 100;
 const kombuchaURL = "https://analytics-nine-ashen.vercel.app/api";
 const localKombuchaURL = "http://localhost:3000/api";
 const kombuchaServer = axios.create({
-  baseURL: localKombuchaURL,
+  baseURL: kombuchaURL,
   timeout: 0,
 });
 
