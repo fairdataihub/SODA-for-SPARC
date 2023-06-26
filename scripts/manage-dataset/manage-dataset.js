@@ -2870,7 +2870,7 @@ $("#button-submit-dataset").click(async () => {
 
       // log amount of folders uploaded in the given session
       const kombuchaEventData = {
-        value: datasetUploadSession.id,
+        value: num_of_folders,
         dataset_id: defaultBfDatasetId,
         dataset_name: defaultBfDataset,
       };
@@ -2954,6 +2954,21 @@ $("#button-submit-dataset").click(async () => {
         totalFileSize
       );
 
+      let kombuchaEventData = {
+        value: totalFileSize,
+        dataset_id: defaultBfDatasetId,
+        dataset_name: defaultBfDataset,
+      };
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.SIZE,
+        kombuchaEnums.Status.FAILURE,
+        kombuchaEventData
+      );
+
       let getFilesFoldersResponse;
       try {
         getFilesFoldersResponse = await client.get(
@@ -2971,6 +2986,21 @@ $("#button-submit-dataset").click(async () => {
       let num_of_folders = data["totalDir"];
 
       // log amount of folders uploaded in the given session
+      kombuchaEventData = {
+        value: num_of_folders,
+        dataset_id: defaultBfDatasetId,
+        dataset_name: defaultBfDataset,
+      };
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.FOLDERS,
+        kombuchaEnums.Status.FAILURE,
+        kombuchaEventData
+      );
+
       ipcRenderer.send(
         "track-event",
         "Error",
@@ -2981,6 +3011,21 @@ $("#button-submit-dataset").click(async () => {
 
       // track total amount of files being uploaded
       // makes it easy to see aggregate amount of files we failed to upload in Local Dataset
+      kombuchaEventData = {
+        value: num_of_files,
+        dataset_id: defaultBfDatasetId,
+        dataset_name: defaultBfDataset,
+      };
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.FILES,
+        kombuchaEnums.Status.FAILURE,
+        kombuchaEventData
+      );
+
       ipcRenderer.send(
         "track-event",
         "Error",
