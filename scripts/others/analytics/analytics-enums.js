@@ -64,6 +64,6 @@ const Label = {
 };
 
 const Status = {
-  SUCCESS: "Success",
-  FAILURE: "Failure",
+  SUCCESS: "success",
+  FAILURE: "failure",
 };

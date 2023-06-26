@@ -2823,6 +2823,7 @@ $("#button-submit-dataset").click(async () => {
       $("#button-submit-dataset").hide();
 
       // can tell us how many successful upload sessions a dataset ID had (the value is implicitly set to 1 via Total Events query in Analytics) within a given timeframe
+      // ANALYTICS: Seems like this won't be necessary for kombucha
       ipcRenderer.send(
         "track-event",
         "Success",
@@ -2838,6 +2839,21 @@ $("#button-submit-dataset").click(async () => {
         );
       } catch (error) {
         clientError(error);
+        const kombuchaEventData = {
+          value: datasetUploadSession.id,
+          dataset_id: defaultBfDatasetId,
+          dataset_name: defaultBfDataset,
+        };
+
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.MANAGE_DATASETS,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.FOLDERS,
+          kombuchaEnums.Status.FAILURE,
+          kombuchaEventData
+        );
+
         ipcRenderer.send(
           "track-event",
           "Error",
