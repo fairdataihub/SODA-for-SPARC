@@ -276,11 +276,21 @@ const logCurationSuccessToAnalytics = async (
     }
 
     if (!guidedMode) {
+      let dataset_name = "";
+
+      if (sodaJSONObj?.["bf-dataset-selected"]?.["dataset-name"] === undefined) {
+        // Existing dataset for Pennsieve
+        dataset_name = sodaJSONObj?.["bf-dataset-selected"]?.["dataset-name"];
+      } else {
+        // New dataset for Pennsieve
+        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+      }
+
       const kombuchaEventData = {
         value: high_level_folder_num,
         dataset_id: defaultBfDatasetId,
         dataset_name: dataset_name,
-        origin: sodaJSONObj["starting-point"],
+        origin: dataset_destination,
         destination: datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
       };
 

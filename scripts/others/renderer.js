@@ -7942,7 +7942,26 @@ const initiate_generate = async () => {
 
       if (dataset_destination == "bf" || dataset_destination == "Pennsieve") {
         // log the difference again to Google Analytics
+        let datasetLocation = determineDatasetLocation();
         let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
+        let kombuchaEventData = {
+          value: finalFilesCount,
+          dataset_id: defaultBfDatasetId,
+          dataset_name: dataset_name,
+          destination: dataset_destination,
+          origin: datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
+          dataset_upload_id: datasetUploadSession.id,
+        };
+
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.PREPARE_DATASETS,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.FILES,
+          kombuchaEnums.Status.SUCCESS,
+          kombuchaEventData
+        );
+
         ipcRenderer.send(
           "track-event",
           "Success",
@@ -7952,6 +7971,24 @@ const initiate_generate = async () => {
         );
 
         let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
+        kombuchaEventData = {
+          value: differenceInBytes,
+          dataset_id: defaultBfDatasetId,
+          dataset_name: dataset_name,
+          origin: sodaJSONObj["starting-point"],
+          destination: datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
+          dataset_upload_id: datasetUploadSession.id,
+        };
+
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.PREPARE_DATASETS,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.SIZE,
+          kombuchaEnums.Status.SUCCESS,
+          kombuchaEventData
+        );
+
         ipcRenderer.send(
           "track-event",
           "Success",
