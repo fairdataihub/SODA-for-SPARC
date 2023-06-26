@@ -2641,11 +2641,15 @@ $("#button-submit-dataset").click(async () => {
         $("#button-submit-dataset").prop("disabled", false);
         $("#selected-local-dataset-submit").prop("disabled", false);
 
+        // Remove <br> from the statusMessage text
+        let eventValue = statusMessage.replace(/<br>/g, "");
         const kombuchaEventData = {
-          value: statusMessage,
+          value: eventValue,
           dataset_id: defaultBfDatasetId,
           dataset_name: defaultBfDataset,
         };
+
+        console.log(kombuchaEnums);
 
         ipcRenderer.send(
           "track-kombucha",

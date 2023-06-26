@@ -11,7 +11,7 @@ require("v8-compile-cache");
 const { ipcMain } = require("electron");
 const { autoUpdater } = require("electron-updater");
 const { JSONStorage } = require("node-localstorage");
-const { trackEvent } = require("./scripts/others/analytics/analytics");
+const { trackEvent, trackKombuchaEvent } = require("./scripts/others/analytics/analytics");
 const { fstat } = require("fs");
 const { resolve } = require("path");
 const axios = require("axios");
@@ -24,6 +24,7 @@ log.transports.file.level = "debug";
 autoUpdater.channel = "latest";
 autoUpdater.logger = log;
 global.trackEvent = trackEvent;
+global.trackKombuchaEvent = trackKombuchaEvent;
 
 const nodeStorage = new JSONStorage(app.getPath("userData"));
 /*************************************************************

@@ -131,35 +131,15 @@ const sendKombuchaAnalyticsEvent = (eventData, userToken) => {
 const trackKombuchaEvent = (category, action, label, status, eventData) => {
   if (!dnt) {
     userIdGeneratorForKombucha().then((res) => {
-      // console.log("uid", res.data.uid);
-      // console.log("token", res.data.token);
-      // console.log("value", value)
-      let analyticsValue = value;
-      let analyticsLabel = label;
-      if (analyticsValue === undefined) {
-        analyticsValue = "";
-      }
-      if (analyticsLabel === undefined) {
-        analyticsLabel = "";
-      }
-
-      console.log(label);
-      // category is considerd the status for right now
-      // action is the action
-      // label is the label
       const kombuchaTrackingEventData = {
         aid: appId,
         category: category,
         action: action,
         status: status,
-        label: analyticsLabel,
-        data: {
-          value: analyticsValue,
-          datasetID: "datasetID",
-          datasetName: "test",
-        },
+        label: label,
+        data: eventData,
       };
-
+      console.log("sending data to kombucha");
       sendKombuchaAnalyticsEvent(kombuchaTrackingEventData, res.data.token);
     });
   }
@@ -180,4 +160,4 @@ const trackEvent = (category, action, label, value, datasetID) => {
   }
 };
 
-module.exports = { trackEvent };
+module.exports = { trackEvent, trackKombuchaEvent };

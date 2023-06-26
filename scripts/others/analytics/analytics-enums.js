@@ -67,3 +67,12 @@ const Status = {
   SUCCESS: "success",
   FAILURE: "failure",
 };
+
+const kombuchaEnums = {
+  Category,
+  Action,
+  Label,
+  Status,
+};
+
+module.exports = kombuchaEnums;
