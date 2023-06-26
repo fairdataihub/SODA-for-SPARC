@@ -7976,8 +7976,8 @@ const initiate_generate = async () => {
           value: differenceInBytes,
           dataset_id: defaultBfDatasetId,
           dataset_name: dataset_name,
-          origin: sodaJSONObj["starting-point"],
-          destination: datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
+          destination: dataset_destination,
+          origin: datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
           dataset_upload_id: datasetUploadSession.id,
         };
 
@@ -8030,8 +8030,8 @@ const initiate_generate = async () => {
           value: finalFilesCount,
           dataset_id: defaultBfDatasetId,
           dataset_name: dataset_name,
-          origin: sodaJSONObj["starting-point"],
-          destination: datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
+          destination: dataset_destination,
+          origin: datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
           dataset_upload_id: datasetUploadSession.id,
         };
 
@@ -8064,8 +8064,8 @@ const initiate_generate = async () => {
           value: differenceInBytes,
           dataset_id: defaultBfDatasetId,
           dataset_name: dataset_name,
-          origin: sodaJSONObj["starting-point"],
-          destination: datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
+          destination: dataset_destination,
+          origin: datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
           dataset_upload_id: datasetUploadSession.id,
         };
 
@@ -8360,9 +8360,31 @@ const initiate_generate = async () => {
   let bytesOnPreviousLogPage = 0;
   let filesOnPreviousLogPage = 0;
   const logProgressToAnalytics = (files, bytes) => {
+    let nameDestinationPair = determineDatasetDestination();
+    let datasetLocation = determineDatasetLocation();
+    let dataset_name = nameDestinationPair[0];
+    let dataset_destination = nameDestinationPair[1];
     // log every 500 files -- will log on success/failure as well so if there are less than 500 files we will log what we uploaded ( all in success case and some of them in failure case )
     if (files >= filesOnPreviousLogPage + 500) {
       filesOnPreviousLogPage += 500;
+      let kombuchaEventData = {
+        value: 500,
+        dataset_id: defaultBfDatasetId,
+        dataset_name: dataset_name,
+        destination: dataset_destination,
+        origin: datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
+        dataset_upload_id: datasetUploadSession.id,
+      };
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.PREPARE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.FILES,
+        kombuchaEnums.Status.SUCCESS,
+        kombuchaEventData
+      );
+
       ipcRenderer.send(
         "track-event",
         "Success",
@@ -8379,6 +8401,24 @@ const initiate_generate = async () => {
         PrepareDatasetsAnalyticsPrefix.CURATE + " - Step 7 - Generate - Dataset - Size",
         `${datasetUploadSession.id}`,
         differenceInBytes
+      );
+
+      kombuchaEventData = {
+        value: differenceInBytes,
+        dataset_id: defaultBfDatasetId,
+        dataset_name: dataset_name,
+        destination: dataset_destination,
+        origin: datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
+        dataset_upload_id: datasetUploadSession.id,
+      };
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.PREPARE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.SIZE,
+        kombuchaEnums.Status.SUCCESS,
+        kombuchaEventData
       );
     }
   };
