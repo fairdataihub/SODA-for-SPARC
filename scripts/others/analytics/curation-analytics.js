@@ -276,6 +276,23 @@ const logCurationSuccessToAnalytics = async (
     }
 
     if (!guidedMode) {
+      const kombuchaEventData = {
+        value: high_level_folder_num,
+        dataset_id: defaultBfDatasetId,
+        dataset_name: dataset_name,
+        origin: sodaJSONObj["starting-point"],
+        destination: datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
+      };
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.PREPARE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.MANIFEST,
+        kombuchaEnums.Status.SUCCESS,
+        kombuchaEventData
+      );
+
       ipcRenderer.send(
         "track-event",
         "Success",

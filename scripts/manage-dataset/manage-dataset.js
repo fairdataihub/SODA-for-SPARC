@@ -2649,8 +2649,6 @@ $("#button-submit-dataset").click(async () => {
           dataset_name: defaultBfDataset,
         };
 
-        console.log(kombuchaEnums);
-
         ipcRenderer.send(
           "track-kombucha",
           kombuchaEnums.Category.MANAGE_DATASETS,

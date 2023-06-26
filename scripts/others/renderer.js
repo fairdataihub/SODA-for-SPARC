@@ -7796,7 +7796,7 @@ var uploadComplete = new Notyf({
 });
 
 // Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
-async function initiate_generate() {
+const initiate_generate = async () => {
   // Disable the Guided Mode sidebar button to prevent the sodaJSONObj from being modified
   document.getElementById("guided_mode_view").style.pointerEvents = "none";
 
@@ -7930,7 +7930,7 @@ async function initiate_generate() {
       $("#sidebarCollapse").prop("disabled", false);
       log.info("Completed curate function");
 
-      // log relevant curation details about the dataset generation/Upload to Google Analytics
+      // log relevant curation details about the dataset generation/Upload to Google Analytics and Kombucha Analytics
       logCurationSuccessToAnalytics(
         manifest_files_requested,
         main_total_generate_dataset_size,
@@ -8307,7 +8307,7 @@ async function initiate_generate() {
       );
     }
   };
-} // end initiate_generate
+}; // end initiate_generate
 
 const show_curation_shortcut = async () => {
   Swal.fire({
@@ -8389,7 +8389,7 @@ const get_num_files_and_folders = (dataset_folders) => {
   return;
 };
 
-function determineDatasetDestination() {
+const determineDatasetDestination = () => {
   if (sodaJSONObj["generate-dataset"]) {
     if (sodaJSONObj["generate-dataset"]["destination"]) {
       let destination = sodaJSONObj["generate-dataset"]["destination"];
@@ -8417,7 +8417,7 @@ function determineDatasetDestination() {
   } else {
     return [document.querySelector("#inputNewNameDataset").value, "Local"];
   }
-}
+};
 
 function backend_to_frontend_warning_message(error_array) {
   if (error_array.length > 1) {
