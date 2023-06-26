@@ -460,6 +460,10 @@ ipcMain.on("track-event", (event, category, action, label, value) => {
   }
 });
 
+ipcMain.on("track-kombucha", (event, category, action, label, eventStatus, eventData) => {
+  trackKombuchaEvent(category, action, label, eventStatus, eventData);
+});
+
 ipcMain.on("app_version", (event) => {
   event.sender.send("app_version", { version: app.getVersion() });
 });

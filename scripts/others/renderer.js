@@ -42,6 +42,7 @@ const {
   logCurationSuccessToAnalytics,
 } = require("./scripts/others/analytics/curation-analytics");
 const { determineDatasetLocation } = require("./scripts/others/analytics/analytics-utils");
+const kombuchaEnums = require("./scripts/others/analytics/analytics-enums");
 const {
   clientError,
   userErrorMessage,

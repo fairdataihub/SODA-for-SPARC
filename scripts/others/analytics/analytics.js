@@ -128,18 +128,8 @@ const sendKombuchaAnalyticsEvent = (eventData, userToken) => {
     });
 };
 
-// call this from anywhere in the app
-const trackEvent = (category, action, label, value, datasetID) => {
+const trackKombuchaEvent = (category, action, label, status, eventData) => {
   if (!dnt) {
-    //20% chance of generating new uuid for userId
-    const googleTrackingEventData = {
-      ec: category,
-      ea: action,
-      el: label,
-      ev: value,
-    };
-
-    sendGoogleAnalyticsEvent(googleTrackingEventData);
     userIdGeneratorForKombucha().then((res) => {
       // console.log("uid", res.data.uid);
       // console.log("token", res.data.token);
@@ -154,11 +144,14 @@ const trackEvent = (category, action, label, value, datasetID) => {
       }
 
       console.log(label);
+      // category is considerd the status for right now
+      // action is the action
+      // label is the label
       const kombuchaTrackingEventData = {
         aid: appId,
-        category: "analyticsLabel",
+        category: category,
         action: action,
-        status: category,
+        status: status,
         label: analyticsLabel,
         data: {
           value: analyticsValue,
@@ -169,6 +162,21 @@ const trackEvent = (category, action, label, value, datasetID) => {
 
       sendKombuchaAnalyticsEvent(kombuchaTrackingEventData, res.data.token);
     });
+  }
+};
+
+// call this from anywhere in the app
+const trackEvent = (category, action, label, value, datasetID) => {
+  if (!dnt) {
+    //20% chance of generating new uuid for userId
+    const googleTrackingEventData = {
+      ec: category,
+      ea: action,
+      el: label,
+      ev: value,
+    };
+
+    sendGoogleAnalyticsEvent(googleTrackingEventData);
   }
 };
 

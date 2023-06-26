@@ -60,4 +60,10 @@ const Label = {
   SUBMISSION_XLSX_SIZE: "submission.xlsx - Size",
   README_TXT_SIZE: "README.txt - Size",
   CHANGES_TXT_SIZE: "CHANGES.txt - Size",
+  PROGRESS_TRACK: "Progress Track",
+};
+
+const Status = {
+  SUCCESS: "Success",
+  FAILURE: "Failure",
 };
