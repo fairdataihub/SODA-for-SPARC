@@ -2869,6 +2869,21 @@ $("#button-submit-dataset").click(async () => {
       let num_of_folders = data["totalDir"];
 
       // log amount of folders uploaded in the given session
+      const kombuchaEventData = {
+        value: datasetUploadSession.id,
+        dataset_id: defaultBfDatasetId,
+        dataset_name: defaultBfDataset,
+      };
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.FOLDERS,
+        kombuchaEnums.Status.SUCCESS,
+        kombuchaEventData
+      );
+
       ipcRenderer.send(
         "track-event",
         "Success",
