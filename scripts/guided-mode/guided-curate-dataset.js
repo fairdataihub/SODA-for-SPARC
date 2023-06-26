@@ -3401,6 +3401,24 @@ document
         folder_counter = 0;
         get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
         // log successful validation run to analytics
+        const kombuchaEventData = {
+          value: file_counter,
+          dataset_id: defaultBfDatasetId,
+          dataset_name: dataset_name,
+          destination: dataset_destination,
+          origin: datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
+          dataset_upload_id: datasetUploadSession.id,
+        };
+
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.GUIDED,
+          kombuchaEnums.Action.VALIDATE_DATASET,
+          kombuchaEnums.Label.FILES,
+          kombuchaEnums.Status.FAILURE,
+          kombuchaEventData
+        );
+
         ipcRenderer.send(
           "track-event",
           "Error",
