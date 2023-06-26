@@ -2532,7 +2532,7 @@ $("#button-submit-dataset").click(async () => {
           kombuchaEnums.Category.MANAGE_DATASETS,
           kombuchaEnums.Action.GENERATE_DATASET,
           kombuchaEnums.Label.PROGRESS_TRACK,
-          kombuchaEnums.Status.SUCCESS,
+          kombuchaEnums.Status.FAILURE,
           kombuchaEventData
         );
 
@@ -2610,6 +2610,21 @@ $("#button-submit-dataset").click(async () => {
         }
 
         if (statusMessage.includes("Success: COMPLETED")) {
+          const kombuchaEventData = {
+            value: statusMessage,
+            dataset_id: defaultBfDatasetId,
+            dataset_name: defaultBfDataset,
+          };
+
+          ipcRenderer.send(
+            "track-kombucha",
+            kombuchaEnums.Category.MANAGE_DATASETS,
+            kombuchaEnums.Action.GENERATE_DATASET,
+            kombuchaEnums.Label.PROGRESS_TRACK,
+            kombuchaEnums.Status.SUCCESS,
+            kombuchaEventData
+          );
+
           ipcRenderer.send(
             "track-event",
             "Success",
