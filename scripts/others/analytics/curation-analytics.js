@@ -283,7 +283,7 @@ const logCurationSuccessToAnalytics = async (
         dataset_name = sodaJSONObj?.["bf-dataset-selected"]?.["dataset-name"];
       } else {
         // New dataset for Pennsieve
-        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+        dataset_name = sodaJSONObj?.["generate-dataset"]?.["dataset-name"];
       }
 
       const kombuchaEventData = {
