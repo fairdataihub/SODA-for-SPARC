@@ -2641,6 +2641,21 @@ $("#button-submit-dataset").click(async () => {
         $("#button-submit-dataset").prop("disabled", false);
         $("#selected-local-dataset-submit").prop("disabled", false);
 
+        const kombuchaEventData = {
+          value: statusMessage,
+          dataset_id: defaultBfDatasetId,
+          dataset_name: defaultBfDataset,
+        };
+
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.MANAGE_DATASETS,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.PROGRESS_TRACK,
+          kombuchaEnums.Status.SUCCESS,
+          kombuchaEventData
+        );
+
         ipcRenderer.send(
           "track-event",
           "Success",
