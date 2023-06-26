@@ -3404,10 +3404,9 @@ document
         const kombuchaEventData = {
           value: file_counter,
           dataset_id: defaultBfDatasetId,
-          dataset_name: dataset_name,
-          destination: dataset_destination,
-          origin: datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-          dataset_upload_id: datasetUploadSession.id,
+          dataset_name: sodaJSONObj?.["digital-metadata"]?.["name"],
+          destination: "Pennsieve",
+          origin: sodaJSONObj?.["generate-dataset"]?.["generate-option"],
         };
 
         ipcRenderer.send(
@@ -3496,6 +3495,23 @@ document
         folder_counter = 0;
         get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
         // log successful validation run to analytics
+        const kombuchaEventData = {
+          value: file_counter,
+          dataset_id: sodaJSONObj?.["digital-metadata"]?.["bf-dataset-id"],
+          dataset_name: sodaJSONObj?.["digital-metadata"]?.["name"],
+          destination: "Pennsieve",
+          origin: sodaJSONObj?.["generate-dataset"]?.["generate-option"],
+        };
+
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.GUIDED,
+          kombuchaEnums.Action.VALIDATE_DATASET,
+          kombuchaEnums.Label.FILES,
+          kombuchaEnums.Status.FAILURE,
+          kombuchaEventData
+        );
+
         ipcRenderer.send(
           "track-event",
           "Error",
@@ -3515,6 +3531,23 @@ document
       get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
 
       // log successful validation run to analytics
+      const kombuchaEventData = {
+        value: file_counter,
+        dataset_id: defaultBfDatasetId,
+        dataset_name: sodaJSONObj?.["digital-metadata"]?.["name"],
+        destination: "Pennsieve",
+        origin: sodaJSONObj?.["generate-dataset"]?.["generate-option"],
+      };
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.GUIDED,
+        kombuchaEnums.Action.VALIDATE_DATASET,
+        kombuchaEnums.Label.FILES,
+        kombuchaEnums.Status.SUCCCESS,
+        kombuchaEventData
+      );
+
       ipcRenderer.send(
         "track-event",
         "Success",
