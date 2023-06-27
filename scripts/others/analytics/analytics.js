@@ -13,6 +13,12 @@ let dnt = false;
 const kombuchaURL = "https://kombucha.fairdataihub.org/api/";
 const localKombuchaURL = "http://localhost:3000/api/";
 
+// Create an axios instance for the kombucha server
+const kombuchaServer = axios.create({
+  baseURL: kombuchaURL,
+  timeout: 0,
+});
+
 // Retrieve the userid value, and if it's not there, assign it a new uuid.
 let userId = nodeStorage.getItem("userId");
 if (userId === null) {
@@ -29,10 +35,6 @@ let appStatus = "packaged";
 let appId = "f85e3098-d7f6-4a89-988a-eac945fdc320";
 const appVersion = app.getVersion();
 
-const kombuchaServer = axios.create({
-  baseURL: kombuchaURL,
-  timeout: 0,
-});
 
 // Add a .soda-config folder in your home folder
 if (!fs.existsSync(configFolderPath)) {
@@ -75,13 +77,13 @@ if (dnt) {
 // Generate new userid on a chance basis
 const userIdGeneratorForKombucha = async () => {
   const chance = Math.random();
-  // let userId = nodeStorage.getItem("userId");
   let token = nodeStorage.getItem("token");
   let userIdChanged = false;
   let userData = {};
 
   if (token === null || chance < 0.1) {
     // 10% chance of generating new uuid for userId
+    console.log("Generating new user id");
     userData = {};
     userIdChanged = true;
   }
@@ -105,14 +107,8 @@ const userIdGeneratorForKombucha = async () => {
   }
 };
 
-// Tracking function for Google Analytics
-const sendGoogleAnalyticsEvent = (eventData) => {
-  usr.event(eventData).send();
-};
-
-// Tracking function for Kombucha Analytics
+// Send the event data to Kombucha Analytics
 const sendKombuchaAnalyticsEvent = (eventData, userToken) => {
-  // console.log("userToken", userToken);
   kombuchaServer
     .post("harvest/events", eventData, {
       headers: {
@@ -124,10 +120,10 @@ const sendKombuchaAnalyticsEvent = (eventData, userToken) => {
       // Handle the error
       console.error("Error status: ", error.response.status);
       console.error("Error status text: ", error.response.statusText);
-      // console.error(error);
     });
 };
 
+// Tracking function for Kombucha Analytics
 const trackKombuchaEvent = (category, action, label, status, eventData) => {
   if (!dnt) {
     userIdGeneratorForKombucha().then((res) => {
@@ -146,6 +142,7 @@ const trackKombuchaEvent = (category, action, label, status, eventData) => {
 };
 
 // call this from anywhere in the app
+// Tracking function for Google Analytics
 const trackEvent = (category, action, label, value, datasetID) => {
   if (!dnt) {
     //20% chance of generating new uuid for userId
@@ -156,7 +153,7 @@ const trackEvent = (category, action, label, value, datasetID) => {
       ev: value,
     };
 
-    sendGoogleAnalyticsEvent(googleTrackingEventData);
+    usr.event(googleTrackingEventData).send();
   }
 };
 
