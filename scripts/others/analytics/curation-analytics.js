@@ -4,7 +4,7 @@
 
 */
 const { determineDatasetLocation } = require("./analytics-utils");
-const { getDatasetName, getDatasetOrigin } = require("../../guided-mode/guided-curate-dataset");
+// const { getDatasetName, getDatasetOrigin } = require("../../guided-mode/guided-curate-dataset");
 
 const BUCKET_SIZE = 500;
 
