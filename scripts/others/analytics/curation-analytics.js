@@ -319,17 +319,25 @@ const logCurationSuccessToAnalytics = async (
     // log files and bytes uploaded for local dataset generation
     if (dataset_destination == "Local") {
       // local logging
-      // log the dataset name as a label. Rationale: Easier to get all unique datasets touched when keeping track of the local dataset's name upon creation in a log.
+      // log the dataset name as a label. Rationale: Easier to get all unique datasets touched when keeping track of the local dataset's name upon creation in a log.      
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Local",
+        dataset_name
+      );
+
+      // tracks the total size of datasets that have been generated to Pennsieve and on the user machine
       let kombuchaEventData = {
-        value: mainTotalGenerateDatasetSize,
+        value: main_total_generate_dataset_size,
         dataset_name: dataset_name,
-        origin: determineDatasetLocation(),
+        origin: datasetLocation,
         destination: dataset_destination,
       };
   
       ipcRenderer.send(
         "track-kombucha",
-        kombuchaEnums.Category.GUIDED_MODE,
+        kombuchaEnums.Category.PREPARE_DATASETS,
         kombuchaEnums.Action.GENERATE_DATASET,
         kombuchaEnums.Label.SIZE,
         kombuchaEnums.Status.SUCCESS,
@@ -339,17 +347,25 @@ const logCurationSuccessToAnalytics = async (
       ipcRenderer.send(
         "track-event",
         "Success",
-        "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Local",
-        dataset_name
-      );
-
-      // tracks the total size of datasets that have been generated to Pennsieve and on the user machine
-      ipcRenderer.send(
-        "track-event",
-        "Success",
         `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Size`,
         datasetLocation,
         main_total_generate_dataset_size
+      );
+
+      kombuchaEventData = {
+        value: uploadedFiles,
+        dataset_name: dataset_name,
+        origin: datasetLocation,
+        destination: dataset_destination,
+      };
+  
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.PREPARE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.FILES,
+        kombuchaEnums.Status.SUCCESS,
+        kombuchaEventData
       );
 
       ipcRenderer.send(
