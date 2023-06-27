@@ -77,7 +77,32 @@ const logCurationErrorsToAnalytics = async (
   get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
 
   if (!guidedMode) {
+    let datasetName = "";
+
+    if (sodaJSONObj?.["bf-dataset-selected"]?.["dataset-name"] === undefined) {
+      // Existing dataset for Pennsieve
+      datasetName = sodaJSONObj?.["bf-dataset-selected"]?.["dataset-name"];
+    } else {
+      // New dataset for Pennsieve
+      datasetName = sodaJSONObj?.["generate-dataset"]?.["dataset-name"];
+    }
     // when we fail we want to know the total amount of files we were trying to generate; whether not not we did a Pennsieve upload or Local, New, Saved
+    let kombuchaEventData = {
+      value: file_counter,
+      dataset_name: datasetName,
+      origin: determineDatasetLocation(),
+      destination: dataset_destination,
+    };
+
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.PREPARE_DATASETS,
+      kombuchaEnums.Action.GENERATE_DATASET,
+      kombuchaEnums.Label.FILES,
+      kombuchaEnums.Status.FAILURE,
+      kombuchaEventData
+    );
+    
     ipcRenderer.send(
       "track-event",
       "Error",
