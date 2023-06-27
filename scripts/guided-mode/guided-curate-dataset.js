@@ -13189,6 +13189,10 @@ $(document).ready(async () => {
       const guidedSamplesMetadata = sodaJSONObj["samples-table-data"];
 
       //Submission Metadata variables
+      const consortiumDataStandard =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"];
+      const fundingConsortium =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
       const guidedSparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
       const guidedMilestones = sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
       const guidedCompletionDate =
@@ -13200,12 +13204,16 @@ $(document).ready(async () => {
       // The function returns either true or false
       if (datasetIsSparcFunded()) {
         guidedSubmissionMetadataArray.push({
+          fundingConsortium: fundingConsortium,
+          consortiumDataStandard: consortiumDataStandard,
           award: guidedSparcAward,
           date: guidedCompletionDate,
           milestone: guidedMilestones[0],
         });
         for (let i = 1; i < guidedMilestones.length; i++) {
           guidedSubmissionMetadataArray.push({
+            fundingConsortium: "",
+            consortiumDataStandard: "",
             award: "",
             date: "",
             milestone: guidedMilestones[i],
@@ -13213,7 +13221,9 @@ $(document).ready(async () => {
         }
       } else {
         guidedSubmissionMetadataArray.push({
-          award: "EXTERNAL",
+          fundingConsortium: fundingConsortium,
+          consortiumDataStandard: consortiumDataStandard,
+          award: "",
           date: "",
           milestone: "",
         });

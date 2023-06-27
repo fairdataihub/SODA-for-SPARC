@@ -156,13 +156,17 @@ def save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, val_arr
     wb = load_workbook(destination)
     ws1 = wb["Sheet1"]
     for column, arr in zip(excel_columns(start_index=2), val_arr):
-        ws1[column + "2"] = arr["award"]
-        ws1[column + "3"] = arr["milestone"]
-        ws1[column + "4"] = arr["date"]
+        ws1[column + "2"] = arr["consortiumDataStandard"]
+        ws1[column + "3"] = arr["fundingConsortium"]
+        ws1[column + "4"] = arr["award"]
+        ws1[column + "5"] = arr["milestone"]
+        ws1[column + "6"] = arr["date"]
 
         ws1[column + "2"].font = font_submission
         ws1[column + "3"].font = font_submission
         ws1[column + "4"].font = font_submission
+        ws1[column + "5"].font = font_submission
+        ws1[column + "6"].font = font_submission
 
     rename_headers(ws1, len(val_arr), 2)
 
