@@ -36,13 +36,15 @@ const spawn = require("child_process").spawn;
 const execFile = require("child_process").execFile;
 // TODO: Test with a build
 const { datasetUploadSession } = require("./scripts/others/analytics/upload-session-tracker");
+const { kombuchaEnums } = require("./scripts/others/analytics/analytics-enums");
+
+console.log(kombuchaEnums);
 
 const {
   logCurationErrorsToAnalytics,
   logCurationSuccessToAnalytics,
 } = require("./scripts/others/analytics/curation-analytics");
 const { determineDatasetLocation } = require("./scripts/others/analytics/analytics-utils");
-const kombuchaEnums = require("./scripts/others/analytics/analytics-enums");
 const {
   clientError,
   userErrorMessage,

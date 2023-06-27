@@ -66,7 +66,7 @@ const Label = {
 
 const Status = {
   SUCCESS: "success",
-  FAILURE: "failure",
+  FAIL: "fail",
 };
 
 const kombuchaEnums = {
@@ -76,4 +76,4 @@ const kombuchaEnums = {
   Status,
 };
 
-module.exports = kombuchaEnums;
+module.exports = { kombuchaEnums };
