@@ -35,7 +35,6 @@ let appStatus = "packaged";
 let appId = "f85e3098-d7f6-4a89-988a-eac945fdc320";
 const appVersion = app.getVersion();
 
-
 // Add a .soda-config folder in your home folder
 if (!fs.existsSync(configFolderPath)) {
   fs.mkdirSync(configFolderPath);
