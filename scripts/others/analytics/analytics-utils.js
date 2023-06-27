@@ -1,5 +1,5 @@
 // determine if we are working with a Local, Saved, or Pennsieve dataset in the current Curation flow
-function determineDatasetLocation() {
+const determineDatasetLocation = () => {
   let location = "";
 
   if ("starting-point" in sodaJSONObj) {

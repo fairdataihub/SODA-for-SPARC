@@ -11,7 +11,7 @@ const getDatasetId = (sodaJSON) => {
     return datasetId;
   }
 
-  return "none";
+  return "None";
 };
 
 const getDatasetName = (sodaJSON) => {
@@ -20,7 +20,7 @@ const getDatasetName = (sodaJSON) => {
     return datasetName;
   }
 
-  return "none";
+  return "None";
 };
 
 const getDatasetOrigin = (sodaJSON) => {
@@ -31,7 +31,7 @@ const getDatasetOrigin = (sodaJSON) => {
   }
 
   // Otherwise origin is new dataset
-  return "new";
+  return "New";
 };
 
 const handleGuidedModeOrgSwitch = async (buttonClicked) => {
@@ -3435,7 +3435,6 @@ document
           value: file_counter,
           dataset_id: getDatasetId(sodaJSONObj),
           dataset_name: getDatasetName(sodaJSONObj),
-          destination: "Pennsieve",
           origin: getDatasetOrigin(sodaJSONObj),
         };
 
@@ -3529,7 +3528,6 @@ document
           value: file_counter,
           dataset_id: getDatasetId(sodaJSONObj),
           dataset_name: getDatasetName(sodaJSONObj),
-          destination: "Pennsieve",
           origin: getDatasetOrigin(sodaJSONObj),
         };
 
@@ -3565,7 +3563,6 @@ document
         value: file_counter,
         dataset_id: getDatasetId(sodaJSONObj),
         dataset_name: getDatasetName(sodaJSONObj),
-        destination: "Pennsieve",
         origin: getDatasetOrigin(sodaJSONObj),
       };
 
