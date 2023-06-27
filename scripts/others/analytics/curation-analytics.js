@@ -320,6 +320,22 @@ const logCurationSuccessToAnalytics = async (
     if (dataset_destination == "Local") {
       // local logging
       // log the dataset name as a label. Rationale: Easier to get all unique datasets touched when keeping track of the local dataset's name upon creation in a log.
+      let kombuchaEventData = {
+        value: mainTotalGenerateDatasetSize,
+        dataset_name: dataset_name,
+        origin: determineDatasetLocation(),
+        destination: dataset_destination,
+      };
+  
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.GUIDED_MODE,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.SIZE,
+        kombuchaEnums.Status.SUCCESS,
+        kombuchaEventData
+      );
+      
       ipcRenderer.send(
         "track-event",
         "Success",
