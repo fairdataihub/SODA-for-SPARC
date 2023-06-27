@@ -1,4 +1,4 @@
-const { remove } = require("fs-extra");
+const otherSparcFundingConsortiums = ["SPARC-2", "VESPA", "REVA", "HORNET"];
 
 const returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
@@ -2647,6 +2647,19 @@ const hideEleShowEle = (elementIdToHide, elementIdToShow) => {
   elementToShow.classList.remove("hidden");
 };
 
+const hideElementsWithClass = (className) => {
+  const elements = document.querySelectorAll(`.${className}`);
+  elements.forEach((element) => {
+    element.classList.add("hidden");
+  });
+};
+const showElementsWithClass = (className) => {
+  const elements = document.querySelectorAll(`.${className}`);
+  elements.forEach((element) => {
+    element.classList.remove("hidden");
+  });
+};
+
 const hideSubNavAndShowMainNav = (navButtonToClick) => {
   $("#guided-sub-page-navigation-footer-div").hide();
   $("#guided-footer-div").removeClass("hidden");
@@ -4910,38 +4923,52 @@ const openPage = async (targetPageID) => {
         }
       }
 
+      document.getElementById("guided-select-funding-consortium").innerHTML = `
+        <option value="">Select a funding consortium</option>
+        ${otherSparcFundingConsortiums
+          .map((consortium) => {
+            return `<option value="${consortium}">${consortium}</option>`;
+          })
+          .join("\n")}
+        <option value="EXTERNAL">Funding source not listed in this dropdown</option>
+      `;
+
       $("#guided-select-funding-consortium").selectpicker({
         style: "guided--select-picker",
       });
       $("#guided-select-funding-consortium").selectpicker("refresh");
 
-      const sectionsToHideWhenAnOtherFundingSourceIsSelected = document.querySelectorAll(
-        ".hide-when-an-other-funding-source-is-selected"
-      );
-      const sectionsToShowWhenAnOtherFundingSourceIsSelected = document.querySelectorAll(
-        ".show-when-an-other-funding-source-is-selected"
-      );
-
       // Event listener that watches what the user selects and updates the UI accordingly
       $("#guided-select-funding-consortium").on("change", function (e) {
         const consortium = e.target.value;
-        if (consortium === "EXTERNAL" || consortium === "") {
-          sectionsToHideWhenAnOtherFundingSourceIsSelected.forEach((element) => {
-            element.classList.remove("hidden");
-          });
-          sectionsToShowWhenAnOtherFundingSourceIsSelected.forEach((element) => {
-            element.classList.add("hidden");
-          });
+        // If the valueLess selection is selected, hide all sections besides the help dropdown
+        if (consortium === "") {
+          hideElementsWithClass("hide-when-an-other-funding-source-is-selected");
+          hideElementsWithClass("show-when-an-other-funding-source-is-selected");
+          showElementsWithClass("funding-not-shown-dropdown");
         } else {
-          sectionsToHideWhenAnOtherFundingSourceIsSelected.forEach((element) => {
-            element.classList.add("hidden");
-          });
-          sectionsToShowWhenAnOtherFundingSourceIsSelected.forEach((element) => {
-            element.classList.remove("hidden");
-          });
-          document.getElementById("span-continue-other-award-name").innerText = consortium;
+          // If a non-null value is selected, hide the help dropdown and show the appropriate sections
+          hideElementsWithClass("funding-not-shown-dropdown");
+          if (consortium === "EXTERNAL") {
+            hideElementsWithClass("show-when-an-other-funding-source-is-selected");
+            showElementsWithClass("hide-when-an-other-funding-source-is-selected");
+          } else {
+            showElementsWithClass("show-when-an-other-funding-source-is-selected");
+            hideElementsWithClass("hide-when-an-other-funding-source-is-selected");
+
+            // Set the funding consortium text to the click continue to.. span
+            document.getElementById("span-continue-other-award-name").innerText = consortium;
+          }
         }
       });
+
+      const savedFundingConsortium =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
+      if (savedFundingConsortium && savedFundingConsortium !== "SPARC") {
+        $("#guided-select-funding-consortium").val(savedFundingConsortium);
+        $("#guided-select-funding-consortium").selectpicker("refresh");
+        $("#guided-select-funding-consortium").trigger("change");
+      }
     }
 
     if (targetPageID === "guided-subjects-folder-tab") {
@@ -12967,13 +12994,13 @@ $(document).ready(async () => {
     const previouslyUpdatedSubmissionMetadata =
       sodaJSONObj["previously-uploaded-data"]["submission-metadata"];
 
-    if (
+    /*if (
       JSON.stringify(previouslyUpdatedSubmissionMetadata) === JSON.stringify(submissionMetadataJSON)
     ) {
       guidedUploadStatusIcon("guided-submission-metadata-upload-status", "success");
       submissionMetadataUploadText.innerHTML = "Submission metadata added to Pennsieve";
       return;
-    }
+    }*/
 
     try {
       await client.post(

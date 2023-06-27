@@ -575,14 +575,20 @@
               id="guided-select-funding-consortium"
               data-live-search="true"
               name="Dataset funding source"
-            >
-              <option value="">Select a funding consortium</option>
-              <option value="SPARC-2">SPARC-2</option>
-              <option value="VESPA">VESPA</option>
-              <option value="REVA">REVA</option>
-              <option value="HORNET">HORNET</option>
-              <option value="EXTERNAL">Funding source not listed in this dropdown</option>
-            </select>
+            ></select>
+
+            <div class="info-dropdown mt-sm funding-not-shown-dropdown" style="align-self: center">
+              <p class="info-dropdown-text" data-dropdown-type="info">
+                I don't see my funding source in the dropdown above
+              </p>
+              <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="info-container funding-not-shown-dropdown">
+              <p class="help-text">
+                If you do not see your funding source in the dropdown above, please select "Funding
+                source not listed in this dropdown"
+              </p>
+            </div>
 
             <div
               class="guided--section show-when-an-other-funding-source-is-selected"
@@ -592,22 +598,6 @@
                 Click "<span class="next-button-span"></span>" to confirm your dataset is funded by
                 a <span id="span-continue-other-award-name"></span> award.
               </h2>
-            </div>
-
-            <div
-              class="info-dropdown mt-sm hide-when-an-other-funding-source-is-selected"
-              style="align-self: center"
-            >
-              <p class="info-dropdown-text" data-dropdown-type="info">
-                I don't see my funding source in the dropdown above
-              </p>
-              <i class="fas fa-chevron-right"></i>
-            </div>
-            <div class="info-container hide-when-an-other-funding-source-is-selected">
-              <p class="help-text">
-                If you do not see your funding source in the dropdown above, please select "Funding
-                source not listed in this dropdown"
-              </p>
             </div>
             <div class="guided--section hide-when-an-other-funding-source-is-selected">
               <h2 class="text-sub-step-title">
