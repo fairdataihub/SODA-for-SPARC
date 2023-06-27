@@ -4883,6 +4883,8 @@ const openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-ask-if-submission-is-sparc-funded-tab") {
+      //TEST REMOVE ME
+      guidedTestResetPennsievePage("guided-ask-if-submission-is-sparc-funded-tab");
       if (pageNeedsUpdateFromPennsieve(targetPageID)) {
         setPageLoadingState(true);
         try {
@@ -4894,6 +4896,7 @@ const openPage = async (targetPageID) => {
             },
           });
           const submissionData = submissionMetadataRes.data;
+          console.log("submissionData", submissionData);
           let sparcAwardRes = submissionData["SPARC Award number"];
           if (sparcAwardRes) {
             const substringsSparcAwardsShouldContain = ["ot2od", "ot3od", "u18", "tr", "u01"]; // Note: These substrings are taken from the validator...
@@ -4919,7 +4922,8 @@ const openPage = async (targetPageID) => {
             }
           }
         } catch (error) {
-          console.log(error);
+          const emessage = userErrorMessage(error);
+          console.log(emessage);
         }
       }
 
@@ -12994,13 +12998,13 @@ $(document).ready(async () => {
     const previouslyUpdatedSubmissionMetadata =
       sodaJSONObj["previously-uploaded-data"]["submission-metadata"];
 
-    /*if (
+    if (
       JSON.stringify(previouslyUpdatedSubmissionMetadata) === JSON.stringify(submissionMetadataJSON)
     ) {
       guidedUploadStatusIcon("guided-submission-metadata-upload-status", "success");
       submissionMetadataUploadText.innerHTML = "Submission metadata added to Pennsieve";
       return;
-    }*/
+    }
 
     try {
       await client.post(
