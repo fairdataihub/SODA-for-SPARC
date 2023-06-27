@@ -13666,6 +13666,24 @@ $(document).ready(async () => {
         );
 
         let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
+        kombuchaEventData = {
+          value: differenceInBytes,
+          dataset_id: getDatasetId(),
+          dataset_name: getDatasetName(),
+          origin: getDatasetOrigin(),
+          destination: "Pennsieve",
+          upload_session: datasetUploadSession.id,
+        };
+  
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.GUIDED,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.SIZE,
+          kombuchaEnums.Status.SUCCCESS,
+          kombuchaEventData
+        );
+        
         ipcRenderer.send(
           "track-event",
           "Success",
