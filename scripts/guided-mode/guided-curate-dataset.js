@@ -12379,6 +12379,20 @@ $(document).ready(async () => {
       );
       let createdDatasetsID = bf_new_dataset.data.id;
       datasetNameUploadText.innerHTML = `Successfully created dataset with name: ${datasetName}`;
+      const kombuchaEventData = {
+        value: 1,
+        dataset_id: createdDatasetsID,
+      };
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.GUIDED,
+        kombuchaEnums.Action.CREATE_NEW_DATASET,
+        datasetName,
+        kombuchaEnums.Status.SUCCCESS,
+        kombuchaEventData
+      );
+
       ipcRenderer.send(
         "track-event",
         "Dataset ID to Dataset Name Map",
