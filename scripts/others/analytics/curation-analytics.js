@@ -65,7 +65,7 @@ const logCurationErrorsToAnalytics = async (
       kombuchaEnums.Category.GUIDED,
       kombuchaEnums.Action.GENERATE_DATASET,
       kombuchaEnums.Label.SIZE,
-      kombuchaEnums.Status.FAILURE,
+      kombuchaEnums.Status.FAIL,
       kombuchaEventData
     );
 
@@ -100,7 +100,7 @@ const logCurationErrorsToAnalytics = async (
       kombuchaEnums.Category.PREPARE_DATASETS,
       kombuchaEnums.Action.GENERATE_DATASET,
       kombuchaEnums.Label.FILES,
-      kombuchaEnums.Status.FAILURE,
+      kombuchaEnums.Status.FAIL,
       kombuchaEventData
     );
     
@@ -126,7 +126,7 @@ const logCurationErrorsToAnalytics = async (
       kombuchaEnums.Category.PREPARE_DATASETS,
       kombuchaEnums.Action.GENERATE_DATASET,
       kombuchaEnums.Label.SIZE,
-      kombuchaEnums.Status.FAILURE,
+      kombuchaEnums.Status.FAIL,
       kombuchaEventData
     );
     

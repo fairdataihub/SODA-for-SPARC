@@ -3442,7 +3442,7 @@ document
           kombuchaEnums.Category.GUIDED,
           kombuchaEnums.Action.VALIDATE_DATASET,
           kombuchaEnums.Label.FILES,
-          kombuchaEnums.Status.FAILURE,
+          kombuchaEnums.Status.FAIL,
           kombuchaEventData
         );
 
@@ -3535,7 +3535,7 @@ document
           kombuchaEnums.Category.GUIDED,
           kombuchaEnums.Action.VALIDATE_DATASET,
           kombuchaEnums.Label.FILES,
-          kombuchaEnums.Status.FAILURE,
+          kombuchaEnums.Status.FAIL,
           kombuchaEventData
         );
 
