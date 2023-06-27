@@ -4896,30 +4896,21 @@ const openPage = async (targetPageID) => {
             },
           });
           const submissionData = submissionMetadataRes.data;
-          console.log("submissionData", submissionData);
-          let sparcAwardRes = submissionData["SPARC Award number"];
-          if (sparcAwardRes) {
-            const substringsSparcAwardsShouldContain = ["ot2od", "ot3od", "u18", "tr", "u01"]; // Note: These substrings are taken from the validator...
-            sparcAwardRes = sparcAwardRes.toLowerCase().trim();
 
-            let awardIsSparcFunded = false;
+          const lowerCaseFundingConsortium = submissionData["Funding consortium"]
+            .trim()
+            .toLowerCase();
+          console.log(lowerCaseFundingConsortium);
 
-            // Loop through the sparcSPARCAwards and check if the sparcAwrardRes contains one of them as a substring
-            // (meaning this is a SPARC funded dataset)
-            for (const substring of substringsSparcAwardsShouldContain) {
-              if (sparcAwardRes.includes(substring)) {
-                awardIsSparcFunded = true;
-                break;
-              }
-            }
-
-            // If the sparcAwrardRes contains one of the sparcSPARCAwards as a substring, select that the dataset is SPARC funded
-            // If not, assume the user has contacted SPARC since they have already uploaded to Pennsieve (saves them a clicks)
-            if (awardIsSparcFunded) {
-              document.getElementById("guided-button-dataset-is-sparc-funded").click();
-            } else {
-              document.getElementById("guided-button-non-sparc-user-has-contacted-sparc").click();
-            }
+          if (lowerCaseFundingConsortium === "sparc") {
+            sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] = "SPARC";
+            document.getElementById("guided-button-dataset-is-sparc-funded").click();
+          } else if (lowerCaseFundingConsortium === "rejoin-heal") {
+            sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
+              "REJOIN-HEAL";
+            document.getElementById("guided-button-dataset-is-re-join-funded").click();
+          } else {
+            document.getElementById("guided-button-non-sparc-user-has-contacted-sparc").click();
           }
         } catch (error) {
           const emessage = userErrorMessage(error);
@@ -4968,7 +4959,7 @@ const openPage = async (targetPageID) => {
 
       const savedFundingConsortium =
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
-      if (savedFundingConsortium && savedFundingConsortium !== "SPARC") {
+      if (savedFundingConsortium != "SPARC" && savedFundingConsortium != "REJOIN-HEAL") {
         $("#guided-select-funding-consortium").val(savedFundingConsortium);
         $("#guided-select-funding-consortium").selectpicker("refresh");
         $("#guided-select-funding-consortium").trigger("change");

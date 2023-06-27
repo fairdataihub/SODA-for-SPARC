@@ -863,7 +863,7 @@ def load_existing_submission_file(filepath, item_id=None, token=None):
 
     for i in range(3, len(submission_data_frame.columns)):
         value = submission_data_frame[f"Value {str(i - 1)}"]
-        milestones.append(value[1])
+        milestones.append(value[3])
 
     milestone_completion_data = submission_data_frame["Value"][4] or ""
 
