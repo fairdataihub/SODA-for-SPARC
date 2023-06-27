@@ -206,6 +206,7 @@ const sendUserAnalytics = () => {
   let token = nodeStorage.getItem("token");
 
   if (token === null) {
+    console.log("no token found, creating new user");
     // send empty object for new users
     let userData = {};
 
