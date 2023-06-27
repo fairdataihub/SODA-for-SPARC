@@ -77,6 +77,7 @@ const logCurationErrorsToAnalytics = async (
   get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
 
   if (!guidedMode) {
+    
     let datasetName = "";
 
     if (sodaJSONObj?.["bf-dataset-selected"]?.["dataset-name"] === undefined) {
@@ -113,6 +114,22 @@ const logCurationErrorsToAnalytics = async (
 
     // when we fail we want to know the total size that we are trying to generate; whether not not we did a Pennsieve upload or Local, New, Saved
     // does not need to be logged for Success as that isn't a good way to log the size of the aggregate successful uploads
+    kombuchaEventData = {
+      value: mainTotalGenerateDatasetSize,
+      dataset_name: datasetName,
+      origin: determineDatasetLocation(),
+      destination: dataset_destination,
+    };
+
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.PREPARE_DATASETS,
+      kombuchaEnums.Action.GENERATE_DATASET,
+      kombuchaEnums.Label.SIZE,
+      kombuchaEnums.Status.FAILURE,
+      kombuchaEventData
+    );
+    
     ipcRenderer.send(
       "track-event",
       "Error",
