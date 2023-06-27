@@ -13536,9 +13536,9 @@ $(document).ready(async () => {
         let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
         let kombuchaEventData = {
           value: finalFilesCount,
-          dataset_id: getDatasetId(),
-          dataset_name: getDatasetName(),
-          origin: getDatasetOrigin(),
+          dataset_id: getDatasetId(sodaJSONObj),
+          dataset_name: getDatasetName(sodaJSONObj),
+          origin: getDatasetOrigin(sodaJSONObj),
           destination: "Pennsieve",
           upload_session: datasetUploadSession.id,
         };
@@ -13563,9 +13563,9 @@ $(document).ready(async () => {
         let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
         kombuchaEventData = {
           value: differenceInBytes,
-          dataset_id: getDatasetId(),
-          dataset_name: getDatasetName(),
-          origin: getDatasetOrigin(),
+          dataset_id: getDatasetId(sodaJSONObj),
+          dataset_name: getDatasetName(sodaJSONObj),
+          origin: getDatasetOrigin(sodaJSONObj),
           destination: "Pennsieve",
           upload_session: datasetUploadSession.id,
         };
@@ -13641,9 +13641,9 @@ $(document).ready(async () => {
         let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
         let kombuchaEventData = {
           value: finalFilesCount,
-          dataset_id: getDatasetId(),
-          dataset_name: getDatasetName(),
-          origin: getDatasetOrigin(),
+          dataset_id: getDatasetId(sodaJSONObj),
+          dataset_name: getDatasetName(sodaJSONObj),
+          origin: getDatasetOrigin(sodaJSONObj),
           destination: "Pennsieve",
           upload_session: datasetUploadSession.id,
         };
@@ -13668,9 +13668,9 @@ $(document).ready(async () => {
         let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
         kombuchaEventData = {
           value: differenceInBytes,
-          dataset_id: getDatasetId(),
-          dataset_name: getDatasetName(),
-          origin: getDatasetOrigin(),
+          dataset_id: getDatasetId(sodaJSONObj),
+          dataset_name: getDatasetName(sodaJSONObj),
+          origin: getDatasetOrigin(sodaJSONObj),
           destination: "Pennsieve",
           upload_session: datasetUploadSession.id,
         };
@@ -13835,9 +13835,9 @@ $(document).ready(async () => {
         filesOnPreviousLogPage += 500;
         let kombuchaEventData = {
           value: filesOnPreviousLogPage,
-          dataset_id: getDatasetId(),
-          dataset_name: getDatasetName(),
-          origin: getDatasetOrigin(),
+          dataset_id: getDatasetId(sodaJSONObj),
+          dataset_name: getDatasetName(sodaJSONObj),
+          origin: getDatasetOrigin(sodaJSONObj),
           destination: "Pennsieve",
           upload_session: datasetUploadSession.id,
         };
@@ -13863,9 +13863,9 @@ $(document).ready(async () => {
         bytesOnPreviousLogPage = bytes;
         kombuchaEventData = {
           value: differenceInBytes,
-          dataset_id: getDatasetId(),
-          dataset_name: getDatasetName(),
-          origin: getDatasetOrigin(),
+          dataset_id: getDatasetId(sodaJSONObj),
+          dataset_name: getDatasetName(sodaJSONObj),
+          origin: getDatasetOrigin(sodaJSONObj),
           destination: "Pennsieve",
           upload_session: datasetUploadSession.id,
         };

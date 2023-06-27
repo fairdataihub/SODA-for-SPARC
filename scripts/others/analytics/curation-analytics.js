@@ -4,6 +4,7 @@
 
 */
 const { determineDatasetLocation } = require("./analytics-utils");
+const { getDatasetName, getDatasetOrigin } = require("../../guided-mode/guided-curate-dataset");
 
 const BUCKET_SIZE = 500;
 
@@ -298,7 +299,7 @@ const logCurationSuccessToAnalytics = async (
         "track-kombucha",
         kombuchaEnums.Category.PREPARE_DATASETS,
         kombuchaEnums.Action.GENERATE_DATASET,
-        kombuchaEnums.Label.MANIFEST,
+        kombuchaEnums.Label.MANIFEST_XLSX,
         kombuchaEnums.Status.SUCCESS,
         kombuchaEventData
       );
@@ -319,6 +320,23 @@ const logCurationSuccessToAnalytics = async (
         high_level_folder_num
       );
     } else {
+      const kombuchaEventData = {
+        value: high_level_folder_num,
+        dataset_id: defaultBfDatasetId,
+        dataset_name: getDatasetName(sodaJSONObj),
+        origin: getDatasetOrigin(sodaJSONObj),
+        destination: "Pennsieve",
+      };
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.GUIDED,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.MANIFEST_XLSX,
+        kombuchaEnums.Status.SUCCCESS,
+        kombuchaEventData
+      );
+
       ipcRenderer.send(
         "track-event",
         "Success",
