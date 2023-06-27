@@ -383,6 +383,22 @@ const logCurationSuccessToAnalytics = async (
 
   if (guidedMode) {
     // for tracking the total size of all the "saved", "new", "local", "pennsieve" datasets by category
+    let kombuchaEventData = {
+      value: main_total_generate_dataset_size,
+      dataset_name: dataset_name,
+      origin: datasetLocation,
+      destination: dataset_destination,
+    };
+
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.GENERATE_DATASET,
+      kombuchaEnums.Label.SIZE,
+      kombuchaEnums.Status.SUCCESS,
+      kombuchaEventData
+    );
+    
     ipcRenderer.send(
       "track-event",
       "Success",
