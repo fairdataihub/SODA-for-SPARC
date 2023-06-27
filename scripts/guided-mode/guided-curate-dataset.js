@@ -1,7 +1,37 @@
 const { remove } = require("fs-extra");
+const { getDataset } = require("../others/api/api");
 
 const returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
+};
+
+const getDatasetId = (sodaJSON) => {
+  let datasetId = sodaJSON?.["digital-metadata"]?.["pennsieve-dataset-id"];
+  if (datasetId != undefined) {
+    return datasetId;
+  }
+
+  return "none";
+};
+
+const getDatasetName = (sodaJSON) => {
+  let datasetName = sodaJSON?.["digital-metadata"]?.["name"];
+  if (datasetName != undefined) {
+    return datasetName;
+  }
+
+  return "none";
+};
+
+const getDatasetOrigin = (sodaJSON) => {
+  let datasetOrigin = sodaJSON?.["generate-dataset"]?.["generate-option"];
+  if (datasetOrigin === "existing-bf") {
+    // Dataset origin is from Pennsieve
+    return "Pennsieve";
+  }
+
+  // Otherwise origin is new dataset
+  return "new";
 };
 
 const handleGuidedModeOrgSwitch = async (buttonClicked) => {
@@ -3401,6 +3431,23 @@ document
         folder_counter = 0;
         get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
         // log successful validation run to analytics
+        const kombuchaEventData = {
+          value: file_counter,
+          dataset_id: getDatasetId(sodaJSONObj),
+          dataset_name: getDatasetName(sodaJSONObj),
+          destination: "Pennsieve",
+          origin: getDatasetOrigin(sodaJSONObj),
+        };
+
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.GUIDED,
+          kombuchaEnums.Action.VALIDATE_DATASET,
+          kombuchaEnums.Label.FILES,
+          kombuchaEnums.Status.FAILURE,
+          kombuchaEventData
+        );
+
         ipcRenderer.send(
           "track-event",
           "Error",
@@ -3478,6 +3525,23 @@ document
         folder_counter = 0;
         get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
         // log successful validation run to analytics
+        const kombuchaEventData = {
+          value: file_counter,
+          dataset_id: getDatasetId(sodaJSONObj),
+          dataset_name: getDatasetName(sodaJSONObj),
+          destination: "Pennsieve",
+          origin: getDatasetOrigin(sodaJSONObj),
+        };
+
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.GUIDED,
+          kombuchaEnums.Action.VALIDATE_DATASET,
+          kombuchaEnums.Label.FILES,
+          kombuchaEnums.Status.FAILURE,
+          kombuchaEventData
+        );
+
         ipcRenderer.send(
           "track-event",
           "Error",
@@ -3497,6 +3561,23 @@ document
       get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
 
       // log successful validation run to analytics
+      const kombuchaEventData = {
+        value: file_counter,
+        dataset_id: getDatasetId(sodaJSONObj),
+        dataset_name: getDatasetName(sodaJSONObj),
+        destination: "Pennsieve",
+        origin: getDatasetOrigin(sodaJSONObj),
+      };
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.GUIDED,
+        kombuchaEnums.Action.VALIDATE_DATASET,
+        kombuchaEnums.Label.FILES,
+        kombuchaEnums.Status.SUCCCESS,
+        kombuchaEventData
+      );
+
       ipcRenderer.send(
         "track-event",
         "Success",
