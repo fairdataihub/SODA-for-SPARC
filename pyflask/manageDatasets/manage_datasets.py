@@ -769,6 +769,7 @@ def submit_dataset_progress():
         'submit_print_status': submitprintstatus,
         'total_file_size': total_file_size,
         'upload_file_size': total_bytes_uploaded["value"],
+        'uploaded_files': files_uploaded,
         'elapsed_time_formatted': elapsed_time_formatted,
         'files_uploaded_status': f"Uploaded {files_uploaded} of {total_files_to_upload} files",
     }
