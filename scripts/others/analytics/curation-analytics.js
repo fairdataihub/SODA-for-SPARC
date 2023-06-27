@@ -4,7 +4,6 @@
 
 */
 const { determineDatasetLocation } = require("./analytics-utils");
-// const { getDatasetName, getDatasetOrigin } = require("../../guided-mode/guided-curate-dataset");
 
 const BUCKET_SIZE = 500;
 
@@ -190,336 +189,80 @@ const logCurationErrorsToAnalytics = async (
   }
 };
 
-/**
- * If curation was successful for a given dataset, log important information regarding size and number of files that were uploaded.
- * @param {boolean} manifest_files_requested
- * @param {number} main_total_generate_dataset_size
- * @param {string} dataset_name
- * @param {string} dataset_destination
- * @param {number} uploadedFiles
- * @param {boolean} guidedMode
- */
-const logCurationSuccessToAnalytics = async (
-  manifest_files_requested,
-  main_total_generate_dataset_size,
-  dataset_name,
-  dataset_destination,
-  uploadedFiles,
-  guidedMode
-) => {
-  // get dataset id if available
-  let datasetLocation = determineDatasetLocation();
-
-  if (manifest_files_requested) {
-    let high_level_folder_num = 0;
-    if ("dataset-structure" in sodaJSONObj) {
-      if ("folders" in sodaJSONObj["dataset-structure"]) {
-        for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
-          high_level_folder_num += 1;
-        }
-      }
-    }
-
-    if (!guidedMode) {
-      let datasetName = "";
-
-      if (sodaJSONObj?.["bf-dataset-selected"]?.["dataset-name"] === undefined) {
-        // Existing dataset for Pennsieve
-        datasetName = sodaJSONObj?.["bf-dataset-selected"]?.["dataset-name"];
-      } else {
-        // New dataset for Pennsieve
-        datasetName = sodaJSONObj?.["generate-dataset"]?.["dataset-name"];
+const logSelectedUpdateExistingDatasetOptions = (origin) => {
+  Array.from(document.querySelectorAll(".generate-preview")).forEach((card) => {
+    let header = card.querySelector("h5");
+    if (header.textContent.includes("folders")) {
+      let action = "";
+      let instruction = card.querySelector("p");
+      if (instruction.textContent === "Replace") {
+        action = kombuchaEnums.Action.REPLACE_ITEM;
+      } else if (instruction.textContent === "Merge") {
+        action = kombuchaEnums.Action.MERGE_ITEMS;
+      } else if (instruction.textContent === "Skip") {
+        action = kombuchaEnums.Action.SKIP_ITEMS;
       }
 
-      // TODO: Remove manifest file logging since it is already accounted for in the FILES logging that happened
-      const kombuchaEventData = {
-        value: high_level_folder_num,
-        dataset_id: defaultBfDatasetId,
-        dataset_name: datasetName,
-        origin: dataset_destination,
-        destination: datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-      };
-
+      // log the folder instructions to analytics
       ipcRenderer.send(
         "track-kombucha",
         kombuchaEnums.Category.PREPARE_DATASETS,
-        kombuchaEnums.Action.GENERATE_DATASET,
-        kombuchaEnums.Label.MANIFEST_XLSX,
-        kombuchaEnums.Status.SUCCESS,
-        kombuchaEventData
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        "Prepare Datasets - Organize dataset - Step 7 - Generate - Manifest",
-        datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-        high_level_folder_num
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        `Prepare Datasets - Organize dataset - Step 7 - Generate - Manifest - ${dataset_destination}`,
-        datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-        high_level_folder_num
-      );
-    } else {
-      // TODO: REmove manifest logging
-      const kombuchaEventData = {
-        value: high_level_folder_num,
-        dataset_id: defaultBfDatasetId,
-        dataset_name: getDatasetName(sodaJSONObj),
-        origin: getDatasetOrigin(sodaJSONObj),
-        destination: "Pennsieve",
-      };
-
-      ipcRenderer.send(
-        "track-kombucha",
-        kombuchaEnums.Category.GUIDED_MODE,
-        kombuchaEnums.Action.GENERATE_DATASET,
-        kombuchaEnums.Label.MANIFEST_XLSX,
-        kombuchaEnums.Status.SUCCCESS,
-        kombuchaEventData
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        "Guided Mode - Generate - Manifest",
-        defaultBfDatasetId,
-        high_level_folder_num
-      );
-    }
-  }
-
-  // TODO: Move this to inititate generate functions
-  if (dataset_destination == "Pennsieve" && !guidedMode) {
-    show_curation_shortcut();
-  }
-
-  if (!guidedMode) {
-    // track that a successful upload has occurred
-    // TODO: Simplkify this to just logging the Generate Dataset action ( we want one of these to count actions to know amount of times upload actions ccurred )
-    logCurationForAnalytics(
-      "Success",
-      PrepareDatasetsAnalyticsPrefix.CURATE,
-      AnalyticsGranularity.PREFIX,
-      [],
-      determineDatasetLocation()
-    );
-
-    // uploaded to Pennsieve so use an upload session ID
-    // TODO: Remove this log
-    logCurationForAnalytics(
-      "Success",
-      PrepareDatasetsAnalyticsPrefix.CURATE,
-      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-      ["Step 7", "Generate", "Dataset", `${dataset_destination}`],
-      datasetLocation
-    );
-
-    // log files and bytes uploaded for local dataset generation
-    if (dataset_destination == "Local") {
-      // local logging
-      // log the dataset name as a label. Rationale: Easier to get all unique datasets touched when keeping track of the local dataset's name upon creation in a log.
-      // TODO: Remove these logs and replac them with metadata to indicate where the destination was at the original log at the top of this function
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Local",
-        dataset_name
-      );
-
-      // tracks the total size of datasets that have been generated to Pennsieve and on the user machine
-      let kombuchaEventData = {
-        value: main_total_generate_dataset_size,
-        dataset_name: dataset_name,
-        origin: datasetLocation,
-        destination: dataset_destination,
-      };
-
-      ipcRenderer.send(
-        "track-kombucha",
-        kombuchaEnums.Category.PREPARE_DATASETS,
-        kombuchaEnums.Action.GENERATE_DATASET,
-        kombuchaEnums.Label.SIZE,
-        kombuchaEnums.Status.SUCCESS,
-        kombuchaEventData
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Size`,
-        datasetLocation,
-        main_total_generate_dataset_size
-      );
-
-      kombuchaEventData = {
-        value: uploadedFiles,
-        dataset_name: dataset_name,
-        origin: datasetLocation,
-        destination: dataset_destination,
-      };
-
-      ipcRenderer.send(
-        "track-kombucha",
-        kombuchaEnums.Category.PREPARE_DATASETS,
-        kombuchaEnums.Action.GENERATE_DATASET,
-        kombuchaEnums.Label.FILES,
-        kombuchaEnums.Status.SUCCESS,
-        kombuchaEventData
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Number of Files`,
-        datasetLocation,
-        uploadedFiles
-      );
-    }
-  } else {
-    // track that a successful upload has occurred
-    ipcRenderer.send("track-event", "Success", `Guided Mode - Generate - Dataset`, "Generate", 1);
-  }
-
-  // TODO:  Size and Number of Files logs can be dynamically logged at the original progress function and finish of the function.
-  if (guidedMode) {
-    // for tracking the total size of all the "saved", "new", "local", "pennsieve" datasets by category
-    let kombuchaEventData = {
-      value: main_total_generate_dataset_size,
-      dataset_name: dataset_name,
-      origin: datasetLocation,
-      destination: dataset_destination,
-    };
-
-    ipcRenderer.send(
-      "track-kombucha",
-      kombuchaEnums.Category.GUIDED_MODE,
-      kombuchaEnums.Action.GENERATE_DATASET,
-      kombuchaEnums.Label.SIZE,
-      kombuchaEnums.Status.SUCCESS,
-      kombuchaEventData
-    );
-
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      "Guided Mode - Generate - Dataset - Size",
-      datasetLocation,
-      main_total_generate_dataset_size
-    );
-
-    // track amount of files for datasets by ID or Local
-    kombuchaEventData = {
-      value: main_total_generate_dataset_size,
-      dataset_name: dataset_name,
-      origin: datasetLocation,
-      destination: dataset_destination,
-    };
-
-    ipcRenderer.send(
-      "track-kombucha",
-      kombuchaEnums.Category.GUIDED_MODE,
-      kombuchaEnums.Action.GENERATE_DATASET,
-      kombuchaEnums.Label.SIZE,
-      kombuchaEnums.Status.SUCCESS,
-      kombuchaEventData
-    );
-
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      `Guided Mode - Generate - Dataset - Number of Files`,
-      datasetLocation,
-      uploadedFiles
-    );
-  } else {
-    // Free Form Mode
-    // for tracking the total size of all the "saved", "new", "local", "pennsieve" datasets by category
-    if (dataset_destination !== "Pennsieve" && dataset_destination !== "bf") {
-      let kombuchaEventData = {
-        value: main_total_generate_dataset_size,
-        dataset_name: dataset_name,
-        origin: datasetLocation,
-        destination: dataset_destination,
-      };
-
-      ipcRenderer.send(
-        "track-kombucha",
-        kombuchaEnums.Category.GUIDED_MODE,
-        kombuchaEnums.Action.GENERATE_DATASET,
-        kombuchaEnums.Label.SIZE,
-        kombuchaEnums.Status.SUCCESS,
-        kombuchaEventData
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        "Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Size",
-        datasetLocation,
-        main_total_generate_dataset_size
-      );
-
-      // track amount of files for datasets by ID or Local
-      kombuchaEventData = {
-        value: uploadedFiles,
-        dataset_name: dataset_name,
-        origin: datasetLocation,
-        destination: dataset_destination,
-      };
-
-      ipcRenderer.send(
-        "track-kombucha",
-        kombuchaEnums.Category.GUIDED_MODE,
-        kombuchaEnums.Action.GENERATE_DATASET,
-        kombuchaEnums.Label.FILES,
-        kombuchaEnums.Status.SUCCESS,
-        kombuchaEventData
-      );
-
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Number of Files`,
-        datasetLocation,
-        uploadedFiles
-      );
-    }
-
-    if (!guidedMode) {
-      // log the preview card instructions for any files and folders being generated on Pennsieve
-      Array.from(document.querySelectorAll(".generate-preview")).forEach((card) => {
-        let header = card.querySelector("h5");
-        if (header.textContent.includes("folders")) {
-          let instruction = card.querySelector("p");
-          // log the folder instructions to analytics
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Pennsieve - ${instruction.textContent}`,
-            datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-            1
-          );
-        } else if (header.textContent.includes("existing files")) {
-          let instruction = card.querySelector("p");
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - Pennsieve - ${instruction.textContent} `,
-            datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-            1
-          );
+        action,
+        kombuchaEnums.Label.FOLDERS,
+        {
+          value: 1,
+          origin: origin,
         }
-      });
+      );
+    } else if (header.textContent.includes("existing files")) {
+      let action = "";
+      let instruction = card.querySelector("p");
+      if (instruction.textContent === "Replace") {
+        action = kombuchaEnums.Action.REPLACE_ITEM;
+      } else if (instruction.textContent === "Merge") {
+        action = kombuchaEnums.Action.MERGE_ITEMS;
+      } else if (instruction.textContent === "Skip") {
+        action = kombuchaEnums.Action.SKIP_ITEMS;
+      } else if (instruction.textContent === "Duplicate") {
+        action = kombuchaEnums.Action.DUPLICATE_ITEMS;
+      }
+
+      ipcRenderer.send(
+        "track-kombucha",
+        "Success",
+        kombuchaEnums.Category.PREPARE_DATASETS,
+        action,
+        kombuchaEnums.Label.FILES,
+        {
+          value: 1,
+          origin: origin,
+        }
+      );
     }
+  });
+};
+
+const createEventData = (value, destination, origin, dataset_name) => {
+  if (destination === "Pennsieve") {
+    return {
+      value: value,
+      dataset_id: defaultBfDatasetId,
+      dataset_name: dataset_name,
+      origin: origin,
+      destination: destination,
+    };
   }
+
+  return {
+    value: value,
+    dataset_name: dataset_name,
+    origin: origin,
+    destination: destination,
+  };
 };
 
 module.exports = {
   logCurationErrorsToAnalytics,
-  logCurationSuccessToAnalytics,
+  createEventData,
+  logSelectedUpdateExistingDatasetOptions,
 };
