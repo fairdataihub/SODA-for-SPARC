@@ -13578,7 +13578,7 @@ $(document).ready(async () => {
           kombuchaEnums.Status.SUCCCESS,
           kombuchaEventData
         );
-        
+
         ipcRenderer.send(
           "track-event",
           "Success",
@@ -13639,6 +13639,24 @@ $(document).ready(async () => {
 
         // log the difference again to Google Analytics
         let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
+        let kombuchaEventData = {
+          value: finalFilesCount,
+          dataset_id: getDatasetId(),
+          dataset_name: getDatasetName(),
+          origin: getDatasetOrigin(),
+          destination: "Pennsieve",
+          upload_session: datasetUploadSession.id,
+        };
+  
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.GUIDED,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.FILES,
+          kombuchaEnums.Status.SUCCCESS,
+          kombuchaEventData
+        );
+
         ipcRenderer.send(
           "track-event",
           "Success",
