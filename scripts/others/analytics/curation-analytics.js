@@ -153,7 +153,7 @@ const logCurationErrorsToAnalytics = async (
       kombuchaEnums.Status.FAIL,
       kombuchaEventData
     );
-    
+
     ipcRenderer.send(
       "track-event",
       "Error",
@@ -179,7 +179,7 @@ const logCurationErrorsToAnalytics = async (
       kombuchaEnums.Status.FAIL,
       kombuchaEventData
     );
-    
+
     ipcRenderer.send(
       "track-event",
       "Error",
@@ -231,6 +231,7 @@ const logCurationSuccessToAnalytics = async (
         datasetName = sodaJSONObj?.["generate-dataset"]?.["dataset-name"];
       }
 
+      // TODO: Remove manifest file logging since it is already accounted for in the FILES logging that happened
       const kombuchaEventData = {
         value: high_level_folder_num,
         dataset_id: defaultBfDatasetId,
@@ -264,6 +265,7 @@ const logCurationSuccessToAnalytics = async (
         high_level_folder_num
       );
     } else {
+      // TODO: REmove manifest logging
       const kombuchaEventData = {
         value: high_level_folder_num,
         dataset_id: defaultBfDatasetId,
@@ -298,6 +300,7 @@ const logCurationSuccessToAnalytics = async (
 
   if (!guidedMode) {
     // track that a successful upload has occurred
+    // TODO: Simplkify this to just logging the Generate Dataset action ( we want one of these to count actions to know amount of times upload actions ccurred )
     logCurationForAnalytics(
       "Success",
       PrepareDatasetsAnalyticsPrefix.CURATE,
@@ -307,6 +310,7 @@ const logCurationSuccessToAnalytics = async (
     );
 
     // uploaded to Pennsieve so use an upload session ID
+    // TODO: Remove this log
     logCurationForAnalytics(
       "Success",
       PrepareDatasetsAnalyticsPrefix.CURATE,
@@ -318,7 +322,8 @@ const logCurationSuccessToAnalytics = async (
     // log files and bytes uploaded for local dataset generation
     if (dataset_destination == "Local") {
       // local logging
-      // log the dataset name as a label. Rationale: Easier to get all unique datasets touched when keeping track of the local dataset's name upon creation in a log.      
+      // log the dataset name as a label. Rationale: Easier to get all unique datasets touched when keeping track of the local dataset's name upon creation in a log.
+      // TODO: Remove these logs and replac them with metadata to indicate where the destination was at the original log at the top of this function
       ipcRenderer.send(
         "track-event",
         "Success",
@@ -333,7 +338,7 @@ const logCurationSuccessToAnalytics = async (
         origin: datasetLocation,
         destination: dataset_destination,
       };
-  
+
       ipcRenderer.send(
         "track-kombucha",
         kombuchaEnums.Category.PREPARE_DATASETS,
@@ -342,7 +347,7 @@ const logCurationSuccessToAnalytics = async (
         kombuchaEnums.Status.SUCCESS,
         kombuchaEventData
       );
-      
+
       ipcRenderer.send(
         "track-event",
         "Success",
@@ -357,7 +362,7 @@ const logCurationSuccessToAnalytics = async (
         origin: datasetLocation,
         destination: dataset_destination,
       };
-  
+
       ipcRenderer.send(
         "track-kombucha",
         kombuchaEnums.Category.PREPARE_DATASETS,
@@ -380,6 +385,7 @@ const logCurationSuccessToAnalytics = async (
     ipcRenderer.send("track-event", "Success", `Guided Mode - Generate - Dataset`, "Generate", 1);
   }
 
+  // TODO:  Size and Number of Files logs can be dynamically logged at the original progress function and finish of the function.
   if (guidedMode) {
     // for tracking the total size of all the "saved", "new", "local", "pennsieve" datasets by category
     let kombuchaEventData = {
@@ -397,7 +403,7 @@ const logCurationSuccessToAnalytics = async (
       kombuchaEnums.Status.SUCCESS,
       kombuchaEventData
     );
-    
+
     ipcRenderer.send(
       "track-event",
       "Success",
@@ -440,7 +446,7 @@ const logCurationSuccessToAnalytics = async (
         origin: datasetLocation,
         destination: dataset_destination,
       };
-  
+
       ipcRenderer.send(
         "track-kombucha",
         kombuchaEnums.Category.GUIDED_MODE,
@@ -465,7 +471,7 @@ const logCurationSuccessToAnalytics = async (
         origin: datasetLocation,
         destination: dataset_destination,
       };
-  
+
       ipcRenderer.send(
         "track-kombucha",
         kombuchaEnums.Category.GUIDED_MODE,
@@ -474,7 +480,7 @@ const logCurationSuccessToAnalytics = async (
         kombuchaEnums.Status.SUCCESS,
         kombuchaEventData
       );
-      
+
       ipcRenderer.send(
         "track-event",
         "Success",
