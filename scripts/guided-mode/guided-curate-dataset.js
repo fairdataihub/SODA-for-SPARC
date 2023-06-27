@@ -500,9 +500,7 @@ const savePageChanges = async (pageBeingLeftID) => {
         .getElementById("guided-button-resume-pennsieve-dataset")
         .classList.contains("selected");
 
-        console.log(document
-          .getElementById("guided-button-start-new-curation")
-          .classList)
+      console.log(document.getElementById("guided-button-start-new-curation").classList);
 
       if (!startingNewCuration && !resumingExistingProgress && !resumingPennsieveDataset) {
         errorArray.push({
