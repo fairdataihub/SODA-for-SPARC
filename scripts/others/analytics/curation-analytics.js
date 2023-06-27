@@ -408,6 +408,22 @@ const logCurationSuccessToAnalytics = async (
     );
 
     // track amount of files for datasets by ID or Local
+    kombuchaEventData = {
+      value: main_total_generate_dataset_size,
+      dataset_name: dataset_name,
+      origin: datasetLocation,
+      destination: dataset_destination,
+    };
+
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.GENERATE_DATASET,
+      kombuchaEnums.Label.SIZE,
+      kombuchaEnums.Status.SUCCESS,
+      kombuchaEventData
+    );
+
     ipcRenderer.send(
       "track-event",
       "Success",
