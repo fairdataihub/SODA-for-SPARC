@@ -62,10 +62,10 @@ const logCurationErrorsToAnalytics = async (
 
     ipcRenderer.send(
       "track-kombucha",
-      kombuchaEnums.Category.GUIDED,
+      kombuchaEnums.Category.GUIDED_MODE,
       kombuchaEnums.Action.GENERATE_DATASET,
       kombuchaEnums.Label.SIZE,
-      kombuchaEnums.Status.FAILURE,
+      kombuchaEnums.Status.FAIL,
       kombuchaEventData
     );
 
@@ -99,7 +99,7 @@ const logCurationErrorsToAnalytics = async (
       kombuchaEnums.Category.PREPARE_DATASETS,
       kombuchaEnums.Action.GENERATE_DATASET,
       kombuchaEnums.Label.FILES,
-      kombuchaEnums.Status.FAILURE,
+      kombuchaEnums.Status.FAIL,
       kombuchaEventData
     );
 
@@ -125,7 +125,7 @@ const logCurationErrorsToAnalytics = async (
       kombuchaEnums.Category.PREPARE_DATASETS,
       kombuchaEnums.Action.GENERATE_DATASET,
       kombuchaEnums.Label.SIZE,
-      kombuchaEnums.Status.FAILURE,
+      kombuchaEnums.Status.FAIL,
       kombuchaEventData
     );
 
@@ -138,6 +138,22 @@ const logCurationErrorsToAnalytics = async (
     );
   } else {
     // when we fail we want to know the total amount of files we were trying to generate; whether not not we did a Pennsieve upload or Local, New, Saved
+    let kombuchaEventData = {
+      value: file_counter,
+      dataset_name: datasetName,
+      origin: getDatasetOrigin(sodaJSONObj),
+      destination: dataset_destination,
+    };
+
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.GENERATE_DATASET,
+      kombuchaEnums.Label.FILES,
+      kombuchaEnums.Status.FAIL,
+      kombuchaEventData
+    );
+
     ipcRenderer.send(
       "track-event",
       "Error",
@@ -148,6 +164,22 @@ const logCurationErrorsToAnalytics = async (
 
     // when we fail we want to know the total size that we are trying to generate; whether not not we did a Pennsieve upload or Local, New, Saved
     // does not need to be logged for Success as that isn't a good way to log the size of the aggregate successful uploads
+    kombuchaEventData = {
+      value: mainTotalGenerateDatasetSize,
+      dataset_name: datasetName,
+      origin: getDatasetOrigin(sodaJSONObj),
+      destination: dataset_destination,
+    };
+
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.GENERATE_DATASET,
+      kombuchaEnums.Label.SIZE,
+      kombuchaEnums.Status.FAIL,
+      kombuchaEventData
+    );
+
     ipcRenderer.send(
       "track-event",
       "Error",
@@ -244,7 +276,7 @@ const logCurationSuccessToAnalytics = async (
 
       ipcRenderer.send(
         "track-kombucha",
-        kombuchaEnums.Category.GUIDED,
+        kombuchaEnums.Category.GUIDED_MODE,
         kombuchaEnums.Action.GENERATE_DATASET,
         kombuchaEnums.Label.MANIFEST_XLSX,
         kombuchaEnums.Status.SUCCCESS,
@@ -300,12 +332,44 @@ const logCurationSuccessToAnalytics = async (
       );
 
       // tracks the total size of datasets that have been generated to Pennsieve and on the user machine
+      let kombuchaEventData = {
+        value: main_total_generate_dataset_size,
+        dataset_name: dataset_name,
+        origin: datasetLocation,
+        destination: dataset_destination,
+      };
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.PREPARE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.SIZE,
+        kombuchaEnums.Status.SUCCESS,
+        kombuchaEventData
+      );
+
       ipcRenderer.send(
         "track-event",
         "Success",
         `Prepare Datasets - Organize dataset - Step 7 - Generate - Dataset - ${dataset_destination} - Size`,
         datasetLocation,
         main_total_generate_dataset_size
+      );
+
+      kombuchaEventData = {
+        value: uploadedFiles,
+        dataset_name: dataset_name,
+        origin: datasetLocation,
+        destination: dataset_destination,
+      };
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.PREPARE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.FILES,
+        kombuchaEnums.Status.SUCCESS,
+        kombuchaEventData
       );
 
       ipcRenderer.send(
@@ -324,6 +388,22 @@ const logCurationSuccessToAnalytics = async (
   // TODO:  Size and Number of Files logs can be dynamically logged at the original progress function and finish of the function.
   if (guidedMode) {
     // for tracking the total size of all the "saved", "new", "local", "pennsieve" datasets by category
+    let kombuchaEventData = {
+      value: main_total_generate_dataset_size,
+      dataset_name: dataset_name,
+      origin: datasetLocation,
+      destination: dataset_destination,
+    };
+
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.GENERATE_DATASET,
+      kombuchaEnums.Label.SIZE,
+      kombuchaEnums.Status.SUCCESS,
+      kombuchaEventData
+    );
+
     ipcRenderer.send(
       "track-event",
       "Success",
@@ -333,6 +413,22 @@ const logCurationSuccessToAnalytics = async (
     );
 
     // track amount of files for datasets by ID or Local
+    kombuchaEventData = {
+      value: main_total_generate_dataset_size,
+      dataset_name: dataset_name,
+      origin: datasetLocation,
+      destination: dataset_destination,
+    };
+
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.GUIDED_MODE,
+      kombuchaEnums.Action.GENERATE_DATASET,
+      kombuchaEnums.Label.SIZE,
+      kombuchaEnums.Status.SUCCESS,
+      kombuchaEventData
+    );
+
     ipcRenderer.send(
       "track-event",
       "Success",
@@ -344,6 +440,22 @@ const logCurationSuccessToAnalytics = async (
     // Free Form Mode
     // for tracking the total size of all the "saved", "new", "local", "pennsieve" datasets by category
     if (dataset_destination !== "Pennsieve" && dataset_destination !== "bf") {
+      let kombuchaEventData = {
+        value: main_total_generate_dataset_size,
+        dataset_name: dataset_name,
+        origin: datasetLocation,
+        destination: dataset_destination,
+      };
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.GUIDED_MODE,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.SIZE,
+        kombuchaEnums.Status.SUCCESS,
+        kombuchaEventData
+      );
+
       ipcRenderer.send(
         "track-event",
         "Success",
@@ -353,6 +465,22 @@ const logCurationSuccessToAnalytics = async (
       );
 
       // track amount of files for datasets by ID or Local
+      kombuchaEventData = {
+        value: uploadedFiles,
+        dataset_name: dataset_name,
+        origin: datasetLocation,
+        destination: dataset_destination,
+      };
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.GUIDED_MODE,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.FILES,
+        kombuchaEnums.Status.SUCCESS,
+        kombuchaEventData
+      );
+
       ipcRenderer.send(
         "track-event",
         "Success",

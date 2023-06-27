@@ -3439,10 +3439,10 @@ document
 
         ipcRenderer.send(
           "track-kombucha",
-          kombuchaEnums.Category.GUIDED,
+          kombuchaEnums.Category.GUIDED_MODE,
           kombuchaEnums.Action.VALIDATE_DATASET,
           kombuchaEnums.Label.FILES,
-          kombuchaEnums.Status.FAILURE,
+          kombuchaEnums.Status.FAIL,
           kombuchaEventData
         );
 
@@ -3532,10 +3532,10 @@ document
 
         ipcRenderer.send(
           "track-kombucha",
-          kombuchaEnums.Category.GUIDED,
+          kombuchaEnums.Category.GUIDED_MODE,
           kombuchaEnums.Action.VALIDATE_DATASET,
           kombuchaEnums.Label.FILES,
-          kombuchaEnums.Status.FAILURE,
+          kombuchaEnums.Status.FAIL,
           kombuchaEventData
         );
 
@@ -3567,7 +3567,7 @@ document
 
       ipcRenderer.send(
         "track-kombucha",
-        kombuchaEnums.Category.GUIDED,
+        kombuchaEnums.Category.GUIDED_MODE,
         kombuchaEnums.Action.VALIDATE_DATASET,
         kombuchaEnums.Label.FILES,
         kombuchaEnums.Status.SUCCCESS,
@@ -12385,7 +12385,7 @@ $(document).ready(async () => {
 
       ipcRenderer.send(
         "track-kombucha",
-        kombuchaEnums.Category.GUIDED,
+        kombuchaEnums.Category.GUIDED_MODE,
         kombuchaEnums.Action.CREATE_NEW_DATASET,
         datasetName,
         kombuchaEnums.Status.SUCCCESS,
@@ -13545,7 +13545,7 @@ $(document).ready(async () => {
 
         ipcRenderer.send(
           "track-kombucha",
-          kombuchaEnums.Category.GUIDED,
+          kombuchaEnums.Category.GUIDED_MODE,
           kombuchaEnums.Action.GENERATE_DATASET,
           kombuchaEnums.Label.FILES,
           kombuchaEnums.Status.SUCCCESS,
@@ -13572,7 +13572,7 @@ $(document).ready(async () => {
 
         ipcRenderer.send(
           "track-kombucha",
-          kombuchaEnums.Category.GUIDED,
+          kombuchaEnums.Category.GUIDED_MODE,
           kombuchaEnums.Action.GENERATE_DATASET,
           kombuchaEnums.Label.SIZE,
           kombuchaEnums.Status.SUCCCESS,
@@ -13650,7 +13650,7 @@ $(document).ready(async () => {
 
         ipcRenderer.send(
           "track-kombucha",
-          kombuchaEnums.Category.GUIDED,
+          kombuchaEnums.Category.GUIDED_MODE,
           kombuchaEnums.Action.GENERATE_DATASET,
           kombuchaEnums.Label.FILES,
           kombuchaEnums.Status.SUCCCESS,
@@ -13677,7 +13677,7 @@ $(document).ready(async () => {
 
         ipcRenderer.send(
           "track-kombucha",
-          kombuchaEnums.Category.GUIDED,
+          kombuchaEnums.Category.GUIDED_MODE,
           kombuchaEnums.Action.GENERATE_DATASET,
           kombuchaEnums.Label.SIZE,
           kombuchaEnums.Status.SUCCCESS,
@@ -13844,7 +13844,7 @@ $(document).ready(async () => {
 
         ipcRenderer.send(
           "track-kombucha",
-          kombuchaEnums.Category.GUIDED,
+          kombuchaEnums.Category.GUIDED_MODE,
           kombuchaEnums.Action.GENERATE_DATASET,
           kombuchaEnums.Label.FILES,
           kombuchaEnums.Status.SUCCCESS,
@@ -13872,7 +13872,7 @@ $(document).ready(async () => {
 
         ipcRenderer.send(
           "track-kombucha",
-          kombuchaEnums.Category.GUIDED,
+          kombuchaEnums.Category.GUIDED_MODE,
           kombuchaEnums.Action.GENERATE_DATASET,
           kombuchaEnums.Label.SIZE,
           kombuchaEnums.Status.SUCCCESS,
