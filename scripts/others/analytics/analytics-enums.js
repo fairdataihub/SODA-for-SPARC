@@ -31,6 +31,7 @@ const Action = {
   GENERATE_METADATA: "Generate Metadata",
   IMPORT_METADATA: "Import Metadata",
   VALIDATE_DATASET: "Validate Dataset",
+  TEMPLATE_PATHS: "Setting Templates Paths",
 };
 
 const Label = {

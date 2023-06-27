@@ -1,5 +1,4 @@
 const { remove } = require("fs-extra");
-const { getDataset } = require("../others/api/api");
 
 const returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
@@ -13267,7 +13266,7 @@ $(document).ready(async () => {
 
       // get apps base path
       const basepath = app.getAppPath();
-      const resourcesPath = process.resourcesPath;
+      const {resourcesPath} = process;
 
       // set the templates path
       try {
@@ -13535,6 +13534,24 @@ $(document).ready(async () => {
 
         // log the difference again to Google Analytics
         let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
+        const kombuchaEventData = {
+          value: finalFilesCount,
+          dataset_id: getDatasetId(),
+          dataset_name: getDatasetName(),
+          origin: getDatasetOrigin(),
+          destination: "Pennsieve",
+          upload_session: datasetUploadSession.id,
+        };
+  
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.GUIDED,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.FILES,
+          kombuchaEnums.Status.SUCCCESS,
+          kombuchaEventData
+        );
+
         ipcRenderer.send(
           "track-event",
           "Success",

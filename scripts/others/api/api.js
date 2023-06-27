@@ -9,8 +9,7 @@ const getUserInformation = async () => {
     },
   });
 
-  let user = userResponse.data;
-  return user;
+  return userResponse.data;
 };
 
 /**
