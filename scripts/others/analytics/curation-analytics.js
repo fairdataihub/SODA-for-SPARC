@@ -53,9 +53,9 @@ const logCurationErrorsToAnalytics = async (
     // track that an Error in the upload has occurred
     let kombuchaEventData = {
       value: 1,
-      dataset_id: getDatasetId(sodaJSONObj),
-      dataset_name: getDatasetName(sodaJSONObj),
-      origin: getDatasetOrigin(sodaJSONObj),
+      dataset_id: guidedGetDatasetId(sodaJSONObj),
+      dataset_name: guidedGetDatasetName(sodaJSONObj),
+      origin: guidedGetDatasetOrigin(sodaJSONObj),
       destination: dataset_destination,
     };
 
@@ -140,7 +140,7 @@ const logCurationErrorsToAnalytics = async (
     let kombuchaEventData = {
       value: file_counter,
       dataset_name: datasetName,
-      origin: getDatasetOrigin(sodaJSONObj),
+      origin: guidedGetDatasetOrigin(sodaJSONObj),
       destination: dataset_destination,
     };
 
@@ -166,7 +166,7 @@ const logCurationErrorsToAnalytics = async (
     kombuchaEventData = {
       value: mainTotalGenerateDatasetSize,
       dataset_name: datasetName,
-      origin: getDatasetOrigin(sodaJSONObj),
+      origin: guidedGetDatasetOrigin(sodaJSONObj),
       destination: dataset_destination,
     };
 
