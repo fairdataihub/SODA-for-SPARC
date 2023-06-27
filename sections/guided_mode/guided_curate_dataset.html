@@ -583,6 +583,17 @@
               <option value="HORNET">HORNET</option>
               <option value="EXTERNAL">Funding source not listed in this dropdown</option>
             </select>
+
+            <div
+              class="guided--section show-when-an-other-funding-source-is-selected"
+              id="guided-section-dataset-other-funded"
+            >
+              <h2 class="guided--text-user-directions">
+                Click "<span class="next-button-span"></span>" to confirm your dataset is funded by
+                a <span id="span-continue-other-award-name"></span> award.
+              </h2>
+            </div>
+
             <div
               class="info-dropdown mt-sm hide-when-an-other-funding-source-is-selected"
               style="align-self: center"
@@ -600,8 +611,8 @@
             </div>
             <div class="guided--section hide-when-an-other-funding-source-is-selected">
               <h2 class="text-sub-step-title">
-                Have you already reached out to the SPARC curation team to see if your data is
-                suitable for the SPARC Data Portal?
+                Have you reached out to the SPARC curation team to see if your data is suitable for
+                the SPARC Data Portal?
               </h2>
               <div class="guided--radio-button-container">
                 <button

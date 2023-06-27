@@ -1012,8 +1012,8 @@ const savePageChanges = async (pageBeingLeftID) => {
 
       if (
         !userSelectedDatasetIsSparcFunded &&
-        !userSelectedDatasetIsOtherFunded &&
-        !userSelectedDatasetIsReJoinFunded
+        !userSelectedDatasetIsReJoinFunded &&
+        !userSelectedDatasetIsOtherFunded
       ) {
         errorArray.push({
           type: "notyf",
@@ -1059,6 +1059,7 @@ const savePageChanges = async (pageBeingLeftID) => {
             throw errorArray;
           }
 
+          // Note: Currently all other funding sources besides EXTERNAL will have "SPARC" as the consortium data standard
           if (selectedFuncingSourceFromDropdown != "EXTERNAL") {
             consortiumDataStandard = "SPARC";
             fundingConsortium = selectedFuncingSourceFromDropdown;
@@ -1088,6 +1089,9 @@ const savePageChanges = async (pageBeingLeftID) => {
               });
               throw errorArray;
             }
+
+            consortiumDataStandard = "";
+            fundingConsortium = "EXTERNAL";
           }
         }
 
@@ -1097,9 +1101,9 @@ const savePageChanges = async (pageBeingLeftID) => {
         sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = "EXTERNAL";
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = [""];
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = "";
-
         guidedSkipPage("guided-protocols-tab");
       }
+
       sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
         consortiumDataStandard;
       sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
@@ -4918,6 +4922,7 @@ const openPage = async (targetPageID) => {
         ".show-when-an-other-funding-source-is-selected"
       );
 
+      // Event listener that watches what the user selects and updates the UI accordingly
       $("#guided-select-funding-consortium").on("change", function (e) {
         const consortium = e.target.value;
         if (consortium === "EXTERNAL" || consortium === "") {
@@ -4934,6 +4939,7 @@ const openPage = async (targetPageID) => {
           sectionsToShowWhenAnOtherFundingSourceIsSelected.forEach((element) => {
             element.classList.remove("hidden");
           });
+          document.getElementById("span-continue-other-award-name").innerText = consortium;
         }
       });
     }
