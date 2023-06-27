@@ -13266,7 +13266,7 @@ $(document).ready(async () => {
 
       // get apps base path
       const basepath = app.getAppPath();
-      const {resourcesPath} = process;
+      const { resourcesPath } = process;
 
       // set the templates path
       try {
@@ -13542,7 +13542,7 @@ $(document).ready(async () => {
           destination: "Pennsieve",
           upload_session: datasetUploadSession.id,
         };
-  
+
         ipcRenderer.send(
           "track-kombucha",
           kombuchaEnums.Category.GUIDED_MODE,
@@ -13569,7 +13569,7 @@ $(document).ready(async () => {
           destination: "Pennsieve",
           upload_session: datasetUploadSession.id,
         };
-  
+
         ipcRenderer.send(
           "track-kombucha",
           kombuchaEnums.Category.GUIDED_MODE,
@@ -13647,7 +13647,7 @@ $(document).ready(async () => {
           destination: "Pennsieve",
           upload_session: datasetUploadSession.id,
         };
-  
+
         ipcRenderer.send(
           "track-kombucha",
           kombuchaEnums.Category.GUIDED_MODE,
@@ -13674,7 +13674,7 @@ $(document).ready(async () => {
           destination: "Pennsieve",
           upload_session: datasetUploadSession.id,
         };
-  
+
         ipcRenderer.send(
           "track-kombucha",
           kombuchaEnums.Category.GUIDED_MODE,
@@ -13683,7 +13683,7 @@ $(document).ready(async () => {
           kombuchaEnums.Status.SUCCCESS,
           kombuchaEventData
         );
-        
+
         ipcRenderer.send(
           "track-event",
           "Success",
@@ -13841,7 +13841,7 @@ $(document).ready(async () => {
           destination: "Pennsieve",
           upload_session: datasetUploadSession.id,
         };
-  
+
         ipcRenderer.send(
           "track-kombucha",
           kombuchaEnums.Category.GUIDED_MODE,
@@ -13869,7 +13869,7 @@ $(document).ready(async () => {
           destination: "Pennsieve",
           upload_session: datasetUploadSession.id,
         };
-  
+
         ipcRenderer.send(
           "track-kombucha",
           kombuchaEnums.Category.GUIDED_MODE,

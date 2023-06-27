@@ -40,6 +40,6 @@ const determineDatasetLocation = () => {
   }
 
   return location;
-}
+};
 
 module.exports = { determineDatasetLocation };

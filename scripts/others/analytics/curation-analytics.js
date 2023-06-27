@@ -77,7 +77,6 @@ const logCurationErrorsToAnalytics = async (
   get_num_files_and_folders(sodaJSONObj["dataset-structure"]);
 
   if (!guidedMode) {
-    
     let datasetName = "";
 
     if (sodaJSONObj?.["bf-dataset-selected"]?.["dataset-name"] === undefined) {
@@ -103,7 +102,7 @@ const logCurationErrorsToAnalytics = async (
       kombuchaEnums.Status.FAIL,
       kombuchaEventData
     );
-    
+
     ipcRenderer.send(
       "track-event",
       "Error",
@@ -129,7 +128,7 @@ const logCurationErrorsToAnalytics = async (
       kombuchaEnums.Status.FAIL,
       kombuchaEventData
     );
-    
+
     ipcRenderer.send(
       "track-event",
       "Error",
