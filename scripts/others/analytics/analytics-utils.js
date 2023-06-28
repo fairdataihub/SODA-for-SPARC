@@ -1,41 +1,30 @@
 // determine if we are working with a Local, Saved, or Pennsieve dataset in the current Curation flow
 const determineDatasetLocation = () => {
   let location = "";
-
-  if ("starting-point" in sodaJSONObj) {
-    // determine if the local dataset was saved or brought imported
-    if ("type" in sodaJSONObj["starting-point"]) {
-      //if save-progress exists then the user is curating a previously saved dataset
-      if ("save-progress" in sodaJSONObj) {
-        location = Destinations.SAVED;
-        return location;
-      } else {
-        location = sodaJSONObj["starting-point"]["type"];
-        // bf === blackfynn the old name for Pennsieve; bf means dataset was imported from Pennsieve
-        if (location === "bf") {
-          return Destinations.PENNSIEVE;
-        } else if (location === "local" || location === "Local") {
-          // imported from the user's machine
-          return Destinations.LOCAL;
-        } else {
-          // if none of the above then the dataset is new
-          return Destinations.NEW;
-        }
-      }
-    }
+  let datasetLocation = sodaJSONObj?.["starting-point"]?.["type"];
+  console.log("datasetLocation: ", datasetLocation);
+  if("save-progress" in sodaJSONObj) {
+    return Destinations.SAVED;
+  }
+  if (datasetLocation === "bf") {
+    return Destinations.PENNSIEVE;
+  }
+  if (datasetLocation === "local" || datasetLocation === "Local") {
+    return Destinations.LOCAL;
   }
 
   // determine if we are using a local or Pennsieve dataset
+  // This is checking for destination no? Not starting point
+  // Above if statements seem to return before this is reached though
   if ("bf-dataset-selected" in sodaJSONObj) {
     location = Destinations.PENNSIEVE;
-  } else if ("generate-dataset" in sodaJSONObj) {
-    if ("destination" in sodaJSONObj["generate-dataset"]) {
-      location = sodaJSONObj["generate-dataset"]["destination"];
-      if (location.toUpperCase() === "LOCAL") {
-        location = Destinations.LOCAL;
-      } else if (location.toUpperCase() === "PENNSIEVE") {
-        location = Destinations.SAVED;
-      }
+  } else if (sodaJSONObj?.["generate-dataset"]?.["destination"] != undefined){
+    location = sodaJSONObj?.["generate-dataset"]?.["destination"].toUpperCase();
+    if (location === "LOCAL") {
+      location = Destinations.LOCAL;
+    }
+    if (location === "PENNSIEVE") {
+      location = Destinations.SAVED;
     }
   }
 
