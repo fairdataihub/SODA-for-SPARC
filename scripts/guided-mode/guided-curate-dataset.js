@@ -3565,7 +3565,7 @@ document
           dataset_name: guidedGetDatasetName(sodaJSONObj),
           origin: guidedGetDatasetOrigin(sodaJSONObj),
         };
-  
+
         ipcRenderer.send(
           "track-kombucha",
           kombuchaEnums.Category.GUIDED_MODE,
@@ -13579,7 +13579,7 @@ $(document).ready(async () => {
         );
 
         let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
-        
+
         if (differenceInBytes > 0) {
           ipcRenderer.send(
             "track-kombucha",
@@ -13694,7 +13694,6 @@ $(document).ready(async () => {
             }
           );
         }
-
 
         ipcRenderer.send(
           "track-event",

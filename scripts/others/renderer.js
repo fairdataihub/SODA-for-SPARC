@@ -7981,7 +7981,6 @@ const initiate_generate = async () => {
         );
       }
 
-
       // log folder and file options selected ( can be merge, skip, replace, duplicate)
       logSelectedUpdateExistingDatasetOptions(datasetLocation);
 
@@ -8395,7 +8394,7 @@ const initiate_generate = async () => {
           origin: datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
           dataset_upload_id: datasetUploadSession.id,
         };
-  
+
         ipcRenderer.send(
           "track-kombucha",
           kombuchaEnums.Category.PREPARE_DATASETS,
