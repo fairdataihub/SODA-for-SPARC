@@ -1034,6 +1034,10 @@ const savePageChanges = async (pageBeingLeftID) => {
         // Make sure pages required for SPARC funded datasets are not skipped
         guidedUnSkipPage("guided-create-submission-metadata-tab");
         guidedUnSkipPage("guided-protocols-tab");
+      } else {
+        // Skip the SPARC submission metadata pages for non-SPARC funded datasets
+        guidedSkipPage("guided-create-submission-metadata-tab");
+        guidedSkipPage("guided-protocols-tab");
       }
 
       // If the user selected that dataset is not SPARC funded, skip the submission metadata page
@@ -1097,11 +1101,9 @@ const savePageChanges = async (pageBeingLeftID) => {
 
         // Skip the submission metadata page
         // This can be safely skipped as the logic that handles the submission file is ran during upload
-        guidedSkipPage("guided-create-submission-metadata-tab");
         sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = "EXTERNAL";
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = [""];
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = "";
-        guidedSkipPage("guided-protocols-tab");
       }
 
       sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
@@ -2499,15 +2501,15 @@ const guidedModifyCurationTeamAccess = async (action) => {
 };
 
 const checkIfDatasetExistsOnPennsieve = async (datasetNameOrID) => {
-  let datasetExists = false;
+  let datasetName = null;
   const datasetList = await api.getDatasetsForAccount(defaultBfAccount);
   for (const dataset of datasetList) {
     if (dataset.name === datasetNameOrID || dataset.id === datasetNameOrID) {
-      datasetExists = true;
+      datasetName = dataset.name;
       break;
     }
   }
-  return datasetExists;
+  return datasetName;
 };
 
 // Adds the click handlers to the info drop downs in Guided Mode
@@ -4884,10 +4886,10 @@ const openPage = async (targetPageID) => {
 
     if (targetPageID === "guided-ask-if-submission-is-sparc-funded-tab") {
       //TEST REMOVE ME
-      guidedTestResetPennsievePage("guided-ask-if-submission-is-sparc-funded-tab");
       if (pageNeedsUpdateFromPennsieve(targetPageID)) {
         setPageLoadingState(true);
         try {
+          // Get the submission metadata from Pennsieve
           const submissionMetadataRes = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
               selected_account: defaultBfAccount,
@@ -4902,14 +4904,31 @@ const openPage = async (targetPageID) => {
             .toLowerCase();
           console.log(lowerCaseFundingConsortium);
 
+          // If the funding consortium is SPARC funded, then set the funding consortium to SPARC and click the
+          // SPARC funded button
           if (lowerCaseFundingConsortium === "sparc") {
             sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] = "SPARC";
             document.getElementById("guided-button-dataset-is-sparc-funded").click();
           } else if (lowerCaseFundingConsortium === "rejoin-heal") {
+            // If the funding consortium is REJOIN-HEAL funded, then set the funding consortium to REJOIN-HEAL and click the
+            // REJOIN-HEAL funded button
             sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
               "REJOIN-HEAL";
             document.getElementById("guided-button-dataset-is-re-join-funded").click();
           } else {
+            // If the funding consortium is not SPARC or REJOIN-HEAL, set the funding consortium dropdown to the value
+            // (if it's an option we support)
+            const lowerCaseFundingConsortiumOptions = otherSparcFundingConsortiums.map(
+              (consortium) => consortium.toLowerCase()
+            );
+            if (lowerCaseFundingConsortiumOptions.includes(lowerCaseFundingConsortium)) {
+              sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
+                submissionData["Funding consortium"];
+              document.getElementById("guided-button-dataset-is-not-sparc-funded").click();
+            }
+
+            // Click the "non-SPARC user has contacted SPARC" since it's assumed they have
+            // since their data is already on Pennsieve
             document.getElementById("guided-button-non-sparc-user-has-contacted-sparc").click();
           }
         } catch (error) {
@@ -4918,6 +4937,7 @@ const openPage = async (targetPageID) => {
         }
       }
 
+      // Set the funding consortium dropdown options / set up select picker
       document.getElementById("guided-select-funding-consortium").innerHTML = `
         <option value="">Select a funding consortium</option>
         ${otherSparcFundingConsortiums
@@ -4927,7 +4947,6 @@ const openPage = async (targetPageID) => {
           .join("\n")}
         <option value="EXTERNAL">Funding source not listed in this dropdown</option>
       `;
-
       $("#guided-select-funding-consortium").selectpicker({
         style: "guided--select-picker",
       });
@@ -4957,9 +4976,17 @@ const openPage = async (targetPageID) => {
         }
       });
 
+      // Declare the current value of the funding consortium from sodaJSONObj
       const savedFundingConsortium =
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
-      if (savedFundingConsortium != "SPARC" && savedFundingConsortium != "REJOIN-HEAL") {
+
+      // If the funding consortium is not already handled by individual buttons (SPARC, REJOIN-HEAL),
+      // and it is one of the options in the dropdown, select it
+      if (
+        savedFundingConsortium != "SPARC" &&
+        savedFundingConsortium != "REJOIN-HEAL" &&
+        otherSparcFundingConsortiums.includes(savedFundingConsortium)
+      ) {
         $("#guided-select-funding-consortium").val(savedFundingConsortium);
         $("#guided-select-funding-consortium").selectpicker("refresh");
         $("#guided-select-funding-consortium").trigger("change");
@@ -5202,40 +5229,27 @@ const openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-create-submission-metadata-tab") {
-      //Reset manual submission metadata UI
-
       if (pageNeedsUpdateFromPennsieve(targetPageID)) {
         // Show the loading page while the page's data is being fetched from Pennsieve
         setPageLoadingState(true);
         try {
-          let import_metadata = await client.get(`/prepare_metadata/import_metadata_file`, {
+          const submissionMetadataRes = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
               selected_account: defaultBfAccount,
               selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
               file_type: "submission.xlsx",
             },
           });
-          let res = import_metadata.data;
-          console.log(res);
 
-          const sparcAwardRes = res["SPARC Award number"];
-          const pennsieveMileStones = res["Milestone achieved"];
-          const pennsieveCompletionDate = res["Milestone completion date"];
+          const submissionData = submissionMetadataRes.data;
+          console.log("submissionData", submissionData);
 
-          // If the SPARC award is not empty or N/A, then we can assume the dataset is SPARC
-          // We also check to see if the SPARC award is greater than 5 before clicking the dataset is SPARC button
-          if (sparcAwardRes) {
-            sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = sparcAwardRes;
-          }
-
-          if (pennsieveMileStones) {
-            sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] =
-              pennsieveMileStones;
-          }
-          if (pennsieveCompletionDate) {
-            sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] =
-              pennsieveCompletionDate;
-          }
+          sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] =
+            submissionData["Award number"];
+          sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] =
+            submissionData["Milestone achieved"];
+          sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] =
+            submissionData["Milestone completion date"];
 
           sodaJSONObj["pages-fetched-from-pennsieve"].push(targetPageID);
         } catch (error) {
@@ -12379,13 +12393,41 @@ $(document).ready(async () => {
     //If the dataset has already been created in Guided Mode, we should have an ID for the
     //dataset. If a dataset with the ID still exists on Pennsieve, we will upload to that dataset.
     if (sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]) {
-      let datasetExistsOnPennsieve = await checkIfDatasetExistsOnPennsieve(
+      const existingDatasetNameOnPennsieve = await checkIfDatasetExistsOnPennsieve(
         sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
       );
-      if (datasetExistsOnPennsieve) {
-        datasetNameUploadText.innerHTML = "Dataset already exists on Pennsieve";
-        guidedUploadStatusIcon("guided-dataset-name-upload-status", "success");
-        return sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+      if (existingDatasetNameOnPennsieve) {
+        // If the name entered in the input matches the dataset name on Pennsieve, we will upload to that dataset
+        if (existingDatasetNameOnPennsieve === datasetName) {
+          datasetNameUploadText.innerHTML = "Dataset already exists on Pennsieve";
+          guidedUploadStatusIcon("guided-dataset-name-upload-status", "success");
+          return sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+        } else {
+          // If the name entered in the input does not match the dataset name on Pennsieve, we will change
+          // the name of the dataset on Pennsieve to match the name entered in the input
+          try {
+            await client.put(
+              `/manage_datasets/ps_rename_dataset`,
+              {
+                input_new_name: datasetName,
+              },
+              {
+                params: {
+                  selected_account: bfAccount,
+                  selected_dataset: existingDatasetNameOnPennsieve,
+                },
+              }
+            );
+            datasetNameUploadText.innerHTML = `Changed dataset name from ${existingDatasetNameOnPennsieve} to ${datasetName}`;
+            guidedUploadStatusIcon("guided-dataset-name-upload-status", "success");
+            return sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+          } catch (error) {
+            const emessage = userErrorMessage(error);
+            datasetNameUploadText.innerHTML = emessage;
+            guidedUploadStatusIcon("guided-dataset-name-upload-status", "error");
+            throw new Error(emessage);
+          }
+        }
       } else {
         // if the previously uploaded dataset does not exist, wipe out the previously uploaded metadata
         // so new metadata can be uploaded to the newly created dataset
