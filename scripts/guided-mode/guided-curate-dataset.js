@@ -13534,7 +13534,7 @@ $(document).ready(async () => {
         $("#sidebarCollapse").prop("disabled", false);
         log.info("Completed curate function");
 
-        // log that a dataset upload was successful 
+        // log that a dataset upload was successful
         ipcRenderer.send(
           "track-kombucha",
           kombuchaEnums.Category.GUIDED_MODE,
@@ -13542,7 +13542,7 @@ $(document).ready(async () => {
           "Total Events",
           kombuchaEnums.Status.SUCCCESS,
           {
-            value: 1, 
+            value: 1,
             dataset_id: guidedGetDatasetId(sodaJSONObj),
             dataset_name: guidedGetDatasetName(sodaJSONObj),
             origin: guidedGetDatasetOrigin(sodaJSONObj),
@@ -13700,7 +13700,7 @@ $(document).ready(async () => {
           differenceInBytes
         );
 
-        // log the amount of files we attempted to upload -- good for knowing if a certain file amount poses the agent/our own code problems 
+        // log the amount of files we attempted to upload -- good for knowing if a certain file amount poses the agent/our own code problems
         let kombuchaEventDataFail = {
           value: uploadedFiles,
           dataset_id: guidedGetDatasetId(sodaJSONObj),
@@ -13719,8 +13719,7 @@ $(document).ready(async () => {
           kombuchaEventDataFail
         );
 
-
-        // log the size of the dataset we attempted to upload 
+        // log the size of the dataset we attempted to upload
         kombuchaEventDataFail = {
           value: main_total_generate_dataset_size,
           dataset_id: guidedGetDatasetId(sodaJSONObj),
@@ -13738,7 +13737,6 @@ $(document).ready(async () => {
           kombuchaEnums.Status.FAIL,
           kombuchaEventData
         );
-
 
         let emessage = userErrorMessage(error);
         try {
