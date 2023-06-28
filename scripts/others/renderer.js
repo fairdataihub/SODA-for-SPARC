@@ -34,14 +34,12 @@ const select2 = require("select2")();
 const DragSort = require("@yaireo/dragsort");
 const spawn = require("child_process").spawn;
 const execFile = require("child_process").execFile;
+
 // TODO: Test with a build
 const { datasetUploadSession } = require("./scripts/others/analytics/upload-session-tracker");
 const { kombuchaEnums } = require("./scripts/others/analytics/analytics-enums");
 
-console.log(kombuchaEnums);
-
 const {
-  logCurationErrorsToAnalytics,
   createEventData,
   logSelectedUpdateExistingDatasetOptions,
 } = require("./scripts/others/analytics/curation-analytics");
@@ -8004,19 +8002,21 @@ const initiate_generate = async () => {
       clientError(error);
       let emessage = userErrorMessage(error);
 
+      // log high level confirmation that a dataset was generation run failed
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.PREPARE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        "Total Events", // TODO: Create generic label for dataset generation: "Total Events"
+        kombuchaEnums.Status.FAIL,
+        createEventData(1, dataset_destination, datasetLocation, dataset_name)
+      );
+
+      // log the file and file size values to analytics for the amount that we managed to upload before we failed
       if (dataset_destination == "bf" || dataset_destination == "Pennsieve") {
         // log the difference again to Google Analytics
         let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
         let differenceInBytes = uploadedBytes - bytesOnPreviousLogPage;
-
-        let kombuchaEventData = {
-          value: finalFilesCount,
-          dataset_id: defaultBfDatasetId,
-          dataset_name: dataset_name,
-          destination: dataset_destination,
-          origin: datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-          dataset_upload_id: datasetUploadSession.id,
-        };
 
         ipcRenderer.send(
           "track-kombucha",
@@ -8024,33 +8024,8 @@ const initiate_generate = async () => {
           kombuchaEnums.Action.GENERATE_DATASET,
           kombuchaEnums.Label.FILES,
           kombuchaEnums.Status.SUCCESS,
-          kombuchaEventData
+          createEventData(fileValueToLog, dataset_destination, datasetLocation, dataset_name)
         );
-
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          PrepareDatasetsAnalyticsPrefix.CURATE + "- Step 7 - Generate - Dataset - Number of Files",
-          `${datasetUploadSession.id}`,
-          finalFilesCount
-        );
-
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          PrepareDatasetsAnalyticsPrefix.CURATE + " - Step 7 - Generate - Dataset - Size",
-          `${datasetUploadSession.id}`,
-          differenceInBytes
-        );
-
-        kombuchaEventData = {
-          value: differenceInBytes,
-          dataset_id: defaultBfDatasetId,
-          dataset_name: dataset_name,
-          destination: dataset_destination,
-          origin: datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-          dataset_upload_id: datasetUploadSession.id,
-        };
 
         ipcRenderer.send(
           "track-kombucha",
@@ -8058,19 +8033,35 @@ const initiate_generate = async () => {
           kombuchaEnums.Action.GENERATE_DATASET,
           kombuchaEnums.Label.SIZE,
           kombuchaEnums.Status.SUCCESS,
-          kombuchaEventData
+          createEventData(fileSizeValueToLog, dataset_destination, datasetLocation, dataset_name)
         );
       }
 
-      // log the curation errors to Google Analytics
-      logCurationErrorsToAnalytics(
-        0,
-        0,
-        dataset_destination,
-        main_total_generate_dataset_size,
-        increaseInFileSize,
-        datasetUploadSession,
-        false
+      // log folder and file options selected ( can be merge, skip, replace, duplicate)
+      logSelectedUpdateExistingDatasetOptions(datasetLocation);
+
+      // log the amount of files, and the total size, that we failed to upload
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.PREPARE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.FILES,
+        kombuchaEnums.Status.FAIL,
+        createEventData(uploadedFiles, dataset_destination, datasetLocation, dataset_name)
+      );
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.PREPARE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.SIZE,
+        kombuchaEnums.Status.FAIL,
+        createEventData(
+          main_total_generate_dataset_size,
+          dataset_destination,
+          datasetLocation,
+          dataset_name
+        )
       );
 
       //Enable the buttons
