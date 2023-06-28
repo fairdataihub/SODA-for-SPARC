@@ -3,26 +3,6 @@
              to justify keeping it outside of its own functions. 
 
 */
-const { determineDatasetLocation } = require("./analytics-utils");
-
-const BUCKET_SIZE = 500;
-
-// check if the user is modifying an existing local dataset for Curation
-// Has to be called after Step 6
-const editingExistingLocalDataset = () => {
-  // check if the dataset is being generated locally
-  if (sodaJSONObj["generate-dataset"]["destination"] !== "local") {
-    return false;
-  }
-
-  // check if the dataset has merge set as the value for handling existing files
-  if (sodaJSONObj["generate-dataset"]["if-existing"] === "merge") {
-    return true;
-  }
-
-  // else this is a new local dataset generation
-  return false;
-};
 
 const logSelectedUpdateExistingDatasetOptions = (origin) => {
   Array.from(document.querySelectorAll(".generate-preview")).forEach((card) => {
