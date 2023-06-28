@@ -1,6 +1,6 @@
 //// option to show tool-tips for high-level folders
-function showTooltips(ev) {
-  var folderName = ev.parentElement.innerText;
+const showTooltips = (ev) => {
+  let folderName = ev.parentElement.innerText;
   Swal.fire({
     icon: "info",
     html: highLevelFolderToolTip[folderName],
@@ -25,11 +25,12 @@ const recursive_mark_sub_files_deleted = (dataset_folder, mode) => {
         if (!dataset_folder["files"][file]["action"].includes("recursive_deleted")) {
           dataset_folder["files"][file]["action"].push("recursive_deleted");
         }
-      } else if (mode === "restore") {
-        if (dataset_folder["files"][file]["action"].includes("recursive_deleted")) {
-          let index = dataset_folder["files"][file]["action"].indexOf("recursive_deleted");
-          dataset_folder["files"][file]["action"].splice(index, 1);
-        }
+      } else if (
+        mode === "restore" &&
+        dataset_folder["files"][file]["action"].includes("recursive_deleted")
+      ) {
+        let index = dataset_folder["files"][file]["action"].indexOf("recursive_deleted");
+        dataset_folder["files"][file]["action"].splice(index, 1);
       }
     }
   }
@@ -53,7 +54,7 @@ const recursive_mark_sub_files_deleted = (dataset_folder, mode) => {
 };
 
 ///////// Option to delete folders or files
-function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGlobal) {
+const delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGlobal) => {
   var itemToDelete = ev.parentElement.innerText;
   var promptVar;
   var type; // renaming files or folders
@@ -308,7 +309,7 @@ function delFolder(ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
 }
 
 // helper function to rename files/folders
-function checkValidRenameInput(
+const checkValidRenameInput = (
   event,
   input,
   type,
@@ -316,7 +317,7 @@ function checkValidRenameInput(
   newName,
   itemElement
   // myBootboxDialog
-) {
+) => {
   double_extensions = [
     ".ome.tiff",
     ".ome.tif",
@@ -409,14 +410,14 @@ function checkValidRenameInput(
 }
 
 ///// Option to rename a folder and files
-function renameFolder(
+const renameFolder = (
   event1, //this
   organizeCurrentLocation, //current section of My_folder
   itemElement, //the elements in the container with items
   inputGlobal, //datasetStructureJSONObj
   uiItem, //container with the folders
   singleUIItem //class name
-) {
+) => {
   var promptVar;
   var type; // renaming files or folders
   var newName;
@@ -603,7 +604,7 @@ const getGlobalPath = (path) => {
   return filtered;
 };
 
-function loadFileFolder(myPath) {
+const loadFileFolder = (myPath) => {
   var appendString = "";
   var sortedObj = sortObjByKeys(myPath);
   let count = 0;
@@ -705,9 +706,9 @@ function loadFileFolder(myPath) {
   return items;
 }
 
-function getRecursivePath(filteredList, inputObj) {
+const getRecursivePath = (filteredList, inputObj) => {
   var myPath = inputObj;
-  for (var item of filteredList) {
+  for (let item of filteredList) {
     if (item.trim() !== "") {
       myPath = myPath["folders"][item];
     }
@@ -715,22 +716,21 @@ function getRecursivePath(filteredList, inputObj) {
   if (myPath === undefined) {
     myPath = inputObj;
     filteredList.pop();
-    for (var item of filteredList) {
+    for (let item of filteredList) {
       if (item.trim() !== "") {
         myPath = myPath["folders"][item];
       }
     }
-    let items = [myPath, filteredList];
-    return items;
+    return [myPath, filteredList];
   } else {
     return myPath;
   }
 }
 
 /// check if an array contains another array
-function checkSubArrayBool(parentArray, childArray) {
-  var bool = true;
-  for (var element of childArray) {
+const checkSubArrayBool = (parentArray, childArray) => {
+  let bool = true;
+  for (let element of childArray) {
     if (!parentArray.includes(element)) {
       bool = false;
       break;
@@ -739,7 +739,7 @@ function checkSubArrayBool(parentArray, childArray) {
   return bool;
 }
 
-function animate_updatedFiles() {
+const animate_updatedFiles = () => {
   let updated_docs = document.getElementsByClassName("update-file");
 
   for (let i = 0; i < updated_docs.length; i++) {
