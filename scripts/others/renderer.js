@@ -546,7 +546,7 @@ ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
 
   // get apps base path
   const basepath = app.getAppPath();
-  const resourcesPath = process.resourcesPath;
+  const {resourcesPath} = process;
 
   // set the templates path
   try {

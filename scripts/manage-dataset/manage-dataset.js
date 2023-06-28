@@ -2487,19 +2487,21 @@ $("#button-submit-dataset").click(async () => {
         let incrementInFilesUploaded = newUploadedFiles - uploadedFiles;
         // log the increment in file size
         // TODO ANALYTICS: Log less often to avoid hitting Rate Limits
-        ipcRenderer.send(
-          "track-kombucha",
-          kombuchaEnums.Category.MANAGE_DATASETS,
-          kombuchaEnums.Action.GENERATE_DATASET,
-          kombuchaEnums.Label.FILES,
-          kombuchaEnums.Status.SUCCESS,
-          {
-            value: incrementInFilesUploaded,
-            dataset_id: defaultBfDatasetId,
-            dataset_name: defaultBfDataset,
-            upload_session_id: datasetUploadSession.id,
-          }
-        );
+        if (incrementInFilesUploaded > 0) {
+          ipcRenderer.send(
+            "track-kombucha",
+            kombuchaEnums.Category.MANAGE_DATASETS,
+            kombuchaEnums.Action.GENERATE_DATASET,
+            kombuchaEnums.Label.FILES,
+            kombuchaEnums.Status.SUCCESS,
+            {
+              value: incrementInFilesUploaded,
+              dataset_id: defaultBfDatasetId,
+              dataset_name: defaultBfDataset,
+              upload_session_id: datasetUploadSession.id,
+            }
+          );
+        }
         // increase local uploaded files count variable
         uploadedFiles = newUploadedFiles;
 
@@ -2507,19 +2509,21 @@ $("#button-submit-dataset").click(async () => {
         let newUploadedFileSize = progressData["upload_file_size"];
         let incrementInFileSize = newUploadedFileSize - previousUploadedFileSize;
         // TODO ANALYTICS: Log less often to avoid hitting Rate Limits
-        ipcRenderer.send(
-          "track-kombucha",
-          kombuchaEnums.Category.MANAGE_DATASETS,
-          kombuchaEnums.Action.GENERATE_DATASET,
-          kombuchaEnums.Label.SIZE,
-          kombuchaEnums.Status.SUCCESS,
-          {
-            value: incrementInFileSize,
-            dataset_id: defaultBfDatasetId,
-            dataset_name: defaultBfDataset,
-            upload_session_id: datasetUploadSession.id,
-          }
-        );
+        if (incrementInFileSize > 0) {        
+          ipcRenderer.send(
+            "track-kombucha",
+            kombuchaEnums.Category.MANAGE_DATASETS,
+            kombuchaEnums.Action.GENERATE_DATASET,
+            kombuchaEnums.Label.SIZE,
+            kombuchaEnums.Status.SUCCESS,
+            {
+              value: incrementInFileSize,
+              dataset_id: defaultBfDatasetId,
+              dataset_name: defaultBfDataset,
+              upload_session_id: datasetUploadSession.id,
+            }
+          );
+        }
         // increase local uploaded file size count variable
         previousUploadedFileSize = newUploadedFileSize;
 
@@ -2866,34 +2870,6 @@ $("#button-submit-dataset").click(async () => {
       // hide the Upload dataset button to make sure that it isn't clickable until the user selects another dataset to upload
       $("#button-submit-dataset").hide();
 
-      ipcRenderer.send(
-        "track-kombucha",
-        kombuchaEnums.Category.MANAGE_DATASETS,
-        kombuchaEnums.Action.GENERATE_DATASET,
-        kombuchaEnums.Label.FILES,
-        kombuchaEnums.Status.SUCCESS,
-        {
-          value: uploadedFiles,
-          dataset_id: defaultBfDatasetId,
-          dataset_name: defaultBfDataset,
-          upload_session: datasetUploadSession.id,
-        }
-      );
-
-      ipcRenderer.send(
-        "track-kombucha",
-        kombuchaEnums.Category.MANAGE_DATASETS,
-        kombuchaEnums.Action.GENERATE_DATASET,
-        kombuchaEnums.Label.SIZE,
-        kombuchaEnums.Status.SUCCESS,
-        {
-          value: totalFileSize,
-          dataset_id: defaultBfDatasetId,
-          dataset_name: defaultBfDataset,
-          upload_session: datasetUploadSession.id,
-        }
-      );
-
       let getFilesFoldersResponse;
       try {
         getFilesFoldersResponse = await client.get(
@@ -2927,7 +2903,7 @@ $("#button-submit-dataset").click(async () => {
         return;
       }
 
-      let data = getFilesFoldersResponse.data;
+      let {data} = getFilesFoldersResponse;
 
       let num_of_folders = data["totalDir"];
 
@@ -3020,7 +2996,7 @@ $("#button-submit-dataset").click(async () => {
         return;
       }
 
-      let data = getFilesFoldersResponse.data;
+      let {data} = getFilesFoldersResponse;
 
       let num_of_files = data["totalFiles"];
       let num_of_folders = data["totalDir"];
