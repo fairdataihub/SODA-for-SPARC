@@ -8024,7 +8024,7 @@ const initiate_generate = async () => {
           kombuchaEnums.Action.GENERATE_DATASET,
           kombuchaEnums.Label.FILES,
           kombuchaEnums.Status.SUCCESS,
-          createEventData(fileValueToLog, dataset_destination, datasetLocation, dataset_name)
+          createEventData(finalFilesCount, dataset_destination, datasetLocation, dataset_name)
         );
 
         ipcRenderer.send(
@@ -8033,7 +8033,7 @@ const initiate_generate = async () => {
           kombuchaEnums.Action.GENERATE_DATASET,
           kombuchaEnums.Label.SIZE,
           kombuchaEnums.Status.SUCCESS,
-          createEventData(fileSizeValueToLog, dataset_destination, datasetLocation, dataset_name)
+          createEventData(differenceInBytes, dataset_destination, datasetLocation, dataset_name)
         );
       }
 
