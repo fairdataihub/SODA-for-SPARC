@@ -2509,7 +2509,7 @@ $("#button-submit-dataset").click(async () => {
         let newUploadedFileSize = progressData["upload_file_size"];
         let incrementInFileSize = newUploadedFileSize - previousUploadedFileSize;
         // TODO ANALYTICS: Log less often to avoid hitting Rate Limits
-        if (incrementInFileSize > 0) {        
+        if (incrementInFileSize > 0) {
           ipcRenderer.send(
             "track-kombucha",
             kombuchaEnums.Category.MANAGE_DATASETS,
@@ -2903,7 +2903,7 @@ $("#button-submit-dataset").click(async () => {
         return;
       }
 
-      let {data} = getFilesFoldersResponse;
+      let { data } = getFilesFoldersResponse;
 
       let num_of_folders = data["totalDir"];
 
@@ -2996,7 +2996,7 @@ $("#button-submit-dataset").click(async () => {
         return;
       }
 
-      let {data} = getFilesFoldersResponse;
+      let { data } = getFilesFoldersResponse;
 
       let num_of_files = data["totalFiles"];
       let num_of_folders = data["totalDir"];
