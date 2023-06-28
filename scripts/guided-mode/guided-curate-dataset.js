@@ -12383,7 +12383,7 @@ $(document).ready(async () => {
     }
   };
 
-  const guidedCreateDataset = async (bfAccount, datasetName) => {
+  const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
     document.getElementById("guided-dataset-name-upload-tr").classList.remove("hidden");
     const datasetNameUploadText = document.getElementById("guided-dataset-name-upload-text");
 
@@ -13372,7 +13372,7 @@ $(document).ready(async () => {
       unHideAndSmoothScrollToElement("guided-div-pennsieve-metadata-upload-status-table");
 
       // Create the dataset on Pennsieve
-      await guidedCreateDataset(guidedBfAccount, guidedDatasetName);
+      await guidedCreateOrRenameDataset(guidedBfAccount, guidedDatasetName);
 
       await guidedAddDatasetSubtitle(guidedBfAccount, guidedDatasetName, guidedDatasetSubtitle);
       await guidedAddDatasetDescription(
