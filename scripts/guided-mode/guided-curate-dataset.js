@@ -89,7 +89,7 @@ const lottieAnimationManager = {
   animations: {},
 
   startAnimation: function (containerElementId) {
-    const {animationData, loop, autoplay} = this.animationData[containerElementId];
+    const { animationData, loop, autoplay } = this.animationData[containerElementId];
 
     const container = document.getElementById(containerElementId);
     container.innerHTML = "";

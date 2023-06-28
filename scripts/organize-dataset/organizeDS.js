@@ -13,7 +13,7 @@ const showTooltips = (ev) => {
       popup: "animate__animated animate__fadeOutUp animate_fastest",
     },
   });
-}
+};
 
 const recursive_mark_sub_files_deleted = (dataset_folder, mode) => {
   if ("files" in dataset_folder) {
@@ -306,7 +306,7 @@ const delFolder = (ev, organizeCurrentLocation, uiItem, singleUIItem, inputGloba
       });
     }
   }
-}
+};
 
 // helper function to rename files/folders
 const checkValidRenameInput = (
@@ -407,7 +407,7 @@ const checkValidRenameInput = (
     }
   }
   return newName;
-}
+};
 
 ///// Option to rename a folder and files
 const renameFolder = (
@@ -593,7 +593,7 @@ const renameFolder = (
       }
     });
   }
-}
+};
 
 const getGlobalPath = (path) => {
   var currentPath = path.value.trim();
@@ -704,7 +704,7 @@ const loadFileFolder = (myPath) => {
 
   let items = [folder_elem, file_elem];
   return items;
-}
+};
 
 const getRecursivePath = (filteredList, inputObj) => {
   var myPath = inputObj;
@@ -725,7 +725,7 @@ const getRecursivePath = (filteredList, inputObj) => {
   } else {
     return myPath;
   }
-}
+};
 
 /// check if an array contains another array
 const checkSubArrayBool = (parentArray, childArray) => {
@@ -737,7 +737,7 @@ const checkSubArrayBool = (parentArray, childArray) => {
     }
   }
   return bool;
-}
+};
 
 const animate_updatedFiles = () => {
   let updated_docs = document.getElementsByClassName("update-file");
@@ -745,7 +745,7 @@ const animate_updatedFiles = () => {
   for (let i = 0; i < updated_docs.length; i++) {
     $(updated_docs[i].parentElement).addClass("backgroundAnimate");
   }
-}
+};
 
 function showItemsAsListBootbox(arrayOfItems) {
   var htmlElement = "";
