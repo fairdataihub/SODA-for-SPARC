@@ -7959,23 +7959,28 @@ const initiate_generate = async () => {
       }
 
       // log the file and file size values to analytics
-      ipcRenderer.send(
-        "track-kombucha",
-        kombuchaEnums.Category.PREPARE_DATASETS,
-        kombuchaEnums.Action.GENERATE_DATASET,
-        kombuchaEnums.Label.FILES,
-        kombuchaEnums.Status.SUCCESS,
-        createEventData(fileValueToLog, dataset_destination, datasetLocation, dataset_name)
-      );
+      if (fileValueToLog > 0) {
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.PREPARE_DATASETS,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.FILES,
+          kombuchaEnums.Status.SUCCESS,
+          createEventData(fileValueToLog, dataset_destination, datasetLocation, dataset_name)
+        );
+      }
 
-      ipcRenderer.send(
-        "track-kombucha",
-        kombuchaEnums.Category.PREPARE_DATASETS,
-        kombuchaEnums.Action.GENERATE_DATASET,
-        kombuchaEnums.Label.SIZE,
-        kombuchaEnums.Status.SUCCESS,
-        createEventData(fileSizeValueToLog, dataset_destination, datasetLocation, dataset_name)
-      );
+      if (fileSizeValueToLog > 0) {
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.PREPARE_DATASETS,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.SIZE,
+          kombuchaEnums.Status.SUCCESS,
+          createEventData(fileSizeValueToLog, dataset_destination, datasetLocation, dataset_name)
+        );
+      }
+
 
       // log folder and file options selected ( can be merge, skip, replace, duplicate)
       logSelectedUpdateExistingDatasetOptions(datasetLocation);
@@ -8018,23 +8023,27 @@ const initiate_generate = async () => {
         let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
         let differenceInBytes = uploadedBytes - bytesOnPreviousLogPage;
 
-        ipcRenderer.send(
-          "track-kombucha",
-          kombuchaEnums.Category.PREPARE_DATASETS,
-          kombuchaEnums.Action.GENERATE_DATASET,
-          kombuchaEnums.Label.FILES,
-          kombuchaEnums.Status.SUCCESS,
-          createEventData(finalFilesCount, dataset_destination, datasetLocation, dataset_name)
-        );
+        if (finalFilesCount > 0) {
+          ipcRenderer.send(
+            "track-kombucha",
+            kombuchaEnums.Category.PREPARE_DATASETS,
+            kombuchaEnums.Action.GENERATE_DATASET,
+            kombuchaEnums.Label.FILES,
+            kombuchaEnums.Status.SUCCESS,
+            createEventData(finalFilesCount, dataset_destination, datasetLocation, dataset_name)
+          );
+        }
 
-        ipcRenderer.send(
-          "track-kombucha",
-          kombuchaEnums.Category.PREPARE_DATASETS,
-          kombuchaEnums.Action.GENERATE_DATASET,
-          kombuchaEnums.Label.SIZE,
-          kombuchaEnums.Status.SUCCESS,
-          createEventData(differenceInBytes, dataset_destination, datasetLocation, dataset_name)
-        );
+        if (differenceInBytes > 0) {
+          ipcRenderer.send(
+            "track-kombucha",
+            kombuchaEnums.Category.PREPARE_DATASETS,
+            kombuchaEnums.Action.GENERATE_DATASET,
+            kombuchaEnums.Label.SIZE,
+            kombuchaEnums.Status.SUCCESS,
+            createEventData(differenceInBytes, dataset_destination, datasetLocation, dataset_name)
+          );
+        }
       }
 
       // log folder and file options selected ( can be merge, skip, replace, duplicate)
@@ -8377,23 +8386,25 @@ const initiate_generate = async () => {
         differenceInBytes
       );
 
-      kombuchaEventData = {
-        value: differenceInBytes,
-        dataset_id: defaultBfDatasetId,
-        dataset_name: dataset_name,
-        destination: dataset_destination,
-        origin: datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-        dataset_upload_id: datasetUploadSession.id,
-      };
-
-      ipcRenderer.send(
-        "track-kombucha",
-        kombuchaEnums.Category.PREPARE_DATASETS,
-        kombuchaEnums.Action.GENERATE_DATASET,
-        kombuchaEnums.Label.SIZE,
-        kombuchaEnums.Status.SUCCESS,
-        kombuchaEventData
-      );
+      if (differenceInBytes > 0) {
+        kombuchaEventData = {
+          value: differenceInBytes,
+          dataset_id: defaultBfDatasetId,
+          dataset_name: dataset_name,
+          destination: dataset_destination,
+          origin: datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
+          dataset_upload_id: datasetUploadSession.id,
+        };
+  
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.PREPARE_DATASETS,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.SIZE,
+          kombuchaEnums.Status.SUCCESS,
+          kombuchaEventData
+        );
+      }
     }
   };
 }; // end initiate_generate

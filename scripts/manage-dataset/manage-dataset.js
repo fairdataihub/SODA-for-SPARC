@@ -2460,17 +2460,11 @@ $("#button-submit-dataset").click(async () => {
   let uploadedFileSize = 0;
   let previousUploadedFileSize = 0;
 
-  console.log("Value of enums: ");
-  console.log(kombuchaEnums);
-
   const progressfunction = (kombuchaEnums) => {
     $("#upload_local_dataset_progress_div")[0].scrollIntoView({
       behavior: "smooth",
       block: "start",
     });
-
-    console.log("Inner value: ");
-    console.log(kombuchaEnums);
 
     const fillProgressBar = (progressResponse, kombuchaEnums) => {
       let progressData = progressResponse.data;
@@ -2970,19 +2964,17 @@ $("#button-submit-dataset").click(async () => {
 
       // while sessions are used for tracking file count and file size for an upload
       // we still want to know what dataset didn't upload by its pennsieve ID
-      let kombuchaEventData = {
-        value: totalFileSize,
-        dataset_id: defaultBfDatasetId,
-        dataset_name: defaultBfDataset,
-      };
-
       ipcRenderer.send(
         "track-kombucha",
         kombuchaEnums.Category.MANAGE_DATASETS,
         kombuchaEnums.Action.GENERATE_DATASET,
         kombuchaEnums.Label.SIZE,
         kombuchaEnums.Status.FAIL,
-        kombuchaEventData
+        {
+          value: totalFileSize,
+          dataset_id: defaultBfDatasetId,
+          dataset_name: defaultBfDataset,
+        }
       );
 
       let getFilesFoldersResponse;
@@ -3002,36 +2994,32 @@ $("#button-submit-dataset").click(async () => {
       let num_of_folders = data["totalDir"];
 
       // log amount of folders uploaded in the given session
-      kombuchaEventData = {
-        value: num_of_folders,
-        dataset_id: defaultBfDatasetId,
-        dataset_name: defaultBfDataset,
-      };
-
       ipcRenderer.send(
         "track-kombucha",
         kombuchaEnums.Category.MANAGE_DATASETS,
         kombuchaEnums.Action.GENERATE_DATASET,
         kombuchaEnums.Label.FOLDERS,
         kombuchaEnums.Status.FAIL,
-        kombuchaEventData
+        {
+          value: num_of_folders,
+          dataset_id: defaultBfDatasetId,
+          dataset_name: defaultBfDataset,
+        }
       );
 
       // track total amount of files being uploaded
       // makes it easy to see aggregate amount of files we failed to upload in Local Dataset
-      kombuchaEventData = {
-        value: num_of_files,
-        dataset_id: defaultBfDatasetId,
-        dataset_name: defaultBfDataset,
-      };
-
       ipcRenderer.send(
         "track-kombucha",
         kombuchaEnums.Category.MANAGE_DATASETS,
         kombuchaEnums.Action.GENERATE_DATASET,
         kombuchaEnums.Label.FILES,
         kombuchaEnums.Status.FAIL,
-        kombuchaEventData
+        {
+          value: num_of_files,
+          dataset_id: defaultBfDatasetId,
+          dataset_name: defaultBfDataset,
+        }
       );
 
       $("#upload_local_dataset_progress_div")[0].scrollIntoView({
