@@ -4983,14 +4983,15 @@ const openPage = async (targetPageID) => {
       // If the funding consortium is not already handled by individual buttons (SPARC, REJOIN-HEAL),
       // and it is one of the options in the dropdown, select it
       if (
-        savedFundingConsortium != "SPARC" &&
-        savedFundingConsortium != "REJOIN-HEAL" &&
-        otherSparcFundingConsortiums.includes(savedFundingConsortium)
+        otherSparcFundingConsortiums.includes(savedFundingConsortium) ||
+        savedFundingConsortium === "EXTERNAL"
       ) {
         $("#guided-select-funding-consortium").val(savedFundingConsortium);
-        $("#guided-select-funding-consortium").selectpicker("refresh");
-        $("#guided-select-funding-consortium").trigger("change");
+      } else {
+        $("#guided-select-funding-consortium").val("");
       }
+      $("#guided-select-funding-consortium").selectpicker("refresh");
+      $("#guided-select-funding-consortium").trigger("change");
     }
 
     if (targetPageID === "guided-subjects-folder-tab") {
