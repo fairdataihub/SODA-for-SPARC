@@ -62,6 +62,7 @@ const Label = {
   README_TXT_SIZE: "README.txt - Size",
   CHANGES_TXT_SIZE: "CHANGES.txt - Size",
   PROGRESS_TRACK: "Progress Track",
+  TOTAL_UPLOADS: "Total Uploads",
 };
 
 const Status = {

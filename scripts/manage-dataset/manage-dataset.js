@@ -1,6 +1,8 @@
 // event listeners for opening dataset or account selection dropdown
 // TODO: Add logic so this doesnt apply to the organization fields
 
+const { createEventData } = require("../others/analytics/curation-analytics");
+
 document.querySelectorAll(".ds-dd:not(.organization)").forEach((dropdownElement) => {
   dropdownElement.addEventListener("click", function () {
     openDropdownPrompt(this, "dataset");
@@ -2908,6 +2910,15 @@ $("#button-submit-dataset").click(async () => {
 
       log.info("Completed submit function");
 
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.TOTAL_UPLOADS,
+        kombuchaEnums.Status.SUCCCESS,
+        createEventData(1, "Pennsieve", "Local", defaultBfDataset)
+      );
+
       // hide the Upload dataset button to make sure that it isn't clickable until the user selects another dataset to upload
       $("#button-submit-dataset").hide();
 
@@ -2968,6 +2979,15 @@ $("#button-submit-dataset").click(async () => {
     .catch(async (error) => {
       clientError(error);
       let emessage = userErrorMessage(error);
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.TOTAL_UPLOADS,
+        kombuchaEnums.Status.FAIL,
+        createEventData(1, "Pennsieve", "Local", defaultBfDataset)
+      );
 
       $("#para-please-wait-manage-dataset").html("");
       $("#para-progress-bar-status").html("");
