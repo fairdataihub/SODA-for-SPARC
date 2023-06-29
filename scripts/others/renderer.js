@@ -638,45 +638,50 @@ const getPennsieveAgentVersion = (pathToPennsieveAgent) => {
   log.info("Getting Pennsieve agent version");
 
   return new Promise((resolve, reject) => {
-    try {
-      // // Timeout if the agent was not able to be retrieved within 20 seconds
-      const versionCheckTimeout = setTimeout(() => {
-        reject(new Error("Agent version check time limit exceeded"));
-      }, 15000);
+    // Timeout if the agent was not able to be retrieved within 20 seconds
+    const versionCheckTimeout = setTimeout(() => {
+      reject(new Error("Agent version check time limit exceeded"));
+    }, 20000);
 
-      const agentVersionSpawn = execFile(pathToPennsieveAgent, ["version"]);
+    const agentVersionSpawn = execFile(pathToPennsieveAgent, ["version"]);
 
-      agentVersionSpawn.stdout.on("data", (data) => {
-        const agentVersionOutput = data.toString();
-        console.log(agentVersionOutput);
-        log.info(agentVersionOutput);
-        const versionResult = {};
-        const regex = /(\w+ Version)\s*:\s*(\S+)/g;
-        let match;
-        while ((match = regex.exec(data)) !== null) {
-          versionResult[match[1]] = match[2];
-        }
+    // Capture standard output and parse the version
+    // Resolve the promise if the version is found
+    agentVersionSpawn.stdout.on("data", (data) => {
+      const agentVersionOutput = data.toString();
+      console.log(agentVersionOutput);
+      log.info(agentVersionOutput);
+      const versionResult = {};
+      const regex = /(\w+ Version)\s*:\s*(\S+)/g;
+      let match;
+      while ((match = regex.exec(data)) !== null) {
+        versionResult[match[1]] = match[2];
+      }
 
-        // If we were able to extract the version from the stdout, resolve the promise
-        if (versionResult["Agent Version"]) {
-          clearTimeout(versionCheckTimeout);
-          resolve(versionResult);
-        }
-      });
-
-      agentVersionSpawn.stderr.on("data", (data) => {
+      // If we were able to extract the version from the stdout, resolve the promise
+      if (versionResult["Agent Version"]) {
         clearTimeout(versionCheckTimeout);
-        const agentError = data.toString();
-        console.log(agentError);
-        log.info(agentError);
-        reject(new Error(agentError));
-      });
-    } catch (error) {
-      const eMessage = userErrorMessage(error);
-      const throwMessage = `Error verifying Pennsieve agent version: ${eMessage}`;
-      log.error(throwMessage);
-      reject(throwMessage);
-    }
+        resolve(versionResult);
+      }
+    });
+
+    // Capture standard error output and reject the promise
+    agentVersionSpawn.stderr.on("data", (data) => {
+      clearTimeout(versionCheckTimeout);
+      const agentError = data.toString();
+      console.log(agentError);
+      log.info(agentError);
+      reject(new Error(agentError));
+    });
+
+    // Capture error output and reject the promise
+    agentVersionSpawn.on("error", (error) => {
+      clearTimeout(versionCheckTimeout);
+      const agentSpawnError = error.toString();
+      console.log(agentSpawnError);
+      log.info(agentSpawnError);
+      reject(new Error(agentSpawnError));
+    });
   });
 };
 
