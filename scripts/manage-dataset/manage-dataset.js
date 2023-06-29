@@ -212,6 +212,7 @@ $("#button-create-bf-new-dataset").click(async () => {
         kombuchaEnums.Category.MANAGE_DATASETS,
         kombuchaEnums.Action.CREATE_NEW_DATASET,
         defaultBfDataset,
+        kombuchaEnums.Status.SUCCESS,
         {
           value: 1,
           dataset_id: defaultBfDatasetId,
@@ -369,6 +370,18 @@ $("#button-rename-dataset").on("click", async () => {
         },
       });
       $("#button-rename-dataset").prop("disabled", false);
+
+      ipcRenderer.send(
+        "kombucha-event",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.RENAME_DATASET,
+        defaultBfDataset,
+        kombuchaEnums.Status.SUCCESS,
+        {
+          value: 1,
+          dataset_id: defaultBfDatasetId,
+        }
+      )
 
       ipcRenderer.send(
         "track-event",
