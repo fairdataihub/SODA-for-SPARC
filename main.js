@@ -237,7 +237,7 @@ let window_reloaded = false;
 
 // If buildIsBeta is true, the app will not check for updates
 // If it is false, the app will check for updates
-const buildIsBeta = false;
+const buildIsBeta = true;
 
 function initialize() {
   const checkForAnnouncements = () => {
@@ -507,7 +507,7 @@ const getPennsieveAgentPath = () => {
   }
 };
 
-ipcMain.on("spawn-pennsieve-agent", async (event) => {});
+ipcMain.on("spawn-pennsieve-agent", async (event) => { });
 
 // passing in the spreadsheet data to pass to a modal
 // that will have a jspreadsheet for user edits
