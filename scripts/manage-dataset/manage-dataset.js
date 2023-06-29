@@ -1,6 +1,9 @@
 // event listeners for opening dataset or account selection dropdown
 // TODO: Add logic so this doesnt apply to the organization fields
 
+const { ipcRenderer } = require("electron");
+const { kombuchaEnums } = require("../others/analytics/analytics-enums");
+
 document.querySelectorAll(".ds-dd:not(.organization)").forEach((dropdownElement) => {
   dropdownElement.addEventListener("click", function () {
     openDropdownPrompt(this, "dataset");
@@ -205,6 +208,18 @@ $("#button-create-bf-new-dataset").click(async () => {
       // log a map of datasetId to dataset name to analytics
       // this will be used to help us track private datasets which are not trackable using a datasetId alone
       ipcRenderer.send(
+        "kombucha-event",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.CREATE_NEW_DATASET,
+        defaultBfDataset,
+        kombuchaEnums.Status.SUCCESS,
+        {
+          value: 1,
+          dataset_id: defaultBfDatasetId,
+        }
+      );
+
+      ipcRenderer.send(
         "track-event",
         "Dataset ID to Dataset Name Map",
         defaultBfDatasetId,
@@ -250,6 +265,17 @@ $("#button-create-bf-new-dataset").click(async () => {
       });
 
       $("#button-create-bf-new-dataset").prop("disabled", false);
+
+      ipcRenderer.send(
+        "kombucha-event",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.CREATE_NEW_DATASET,
+        bfNewDatasetName,
+        kombuchaEnums.Status.FAIL,
+        {
+          value: 1,
+        }
+      );
 
       ipcRenderer.send(
         "track-event",
@@ -336,6 +362,18 @@ $("#button-rename-dataset").on("click", async () => {
           `${defaultBfDatasetId}: ` + currentDatasetName + " to " + renamedDatasetName
         );
 
+        ipcRenderer.send(
+          "kombucha-event",
+          kombuchaEnums.Category.MANAGE_DATASETS,
+          kombuchaEnums.Action.RENAME_DATASET,
+          currentDatasetName,
+          kombuchaEnums.Status.FAIL,
+          {
+            value: 1,
+            dataset_id: defaultBfDatasetId,
+          }
+        );
+
         return;
       }
 
@@ -355,6 +393,18 @@ $("#button-rename-dataset").on("click", async () => {
         },
       });
       $("#button-rename-dataset").prop("disabled", false);
+
+      ipcRenderer.send(
+        "kombucha-event",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.RENAME_DATASET,
+        defaultBfDataset,
+        kombuchaEnums.Status.SUCCESS,
+        {
+          value: 1,
+          dataset_id: defaultBfDatasetId,
+        }
+      );
 
       ipcRenderer.send(
         "track-event",
