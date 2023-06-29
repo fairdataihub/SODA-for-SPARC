@@ -507,7 +507,7 @@ const getPennsieveAgentPath = () => {
   }
 };
 
-ipcMain.on("spawn-pennsieve-agent", async (event) => { });
+ipcMain.on("spawn-pennsieve-agent", async (event) => {});
 
 // passing in the spreadsheet data to pass to a modal
 // that will have a jspreadsheet for user edits
