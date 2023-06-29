@@ -694,6 +694,12 @@ const run_pre_flight_checks = async (check_update = true) => {
 
     // TODO: Reimplement this section to work with the new agent
     if (!account_present) {
+      // Dismiss the preflight check notification if it is still open
+      if (preFlightCheckNotyf) {
+        notyf.dismiss(preFlightCheckNotyf);
+        preFlightCheckNotyf = null;
+      }
+
       if (check_update) {
         checkNewAppVersion();
       }
@@ -716,15 +722,11 @@ const run_pre_flight_checks = async (check_update = true) => {
         },
       });
 
+      // If user chose to log in, open the dropdown prompt
       if (userChoseToLogIn) {
         await openDropdownPrompt(null, "bf");
-        // Return false after opening the account selection dropdown so that the user can select an account
-        // and then retry whatever they were doing (that called pre flight checks)
-        return false;
-      } else {
-        // If the user chose not to log in, return false since login is required to pass pre flight checkss
-        return false;
       }
+      return false;
     }
 
     // First get the latest Pennsieve agent version on GitHub
@@ -776,6 +778,11 @@ const run_pre_flight_checks = async (check_update = true) => {
       // If the user clicks the retry button, rerun the pre flight checks
       if (rerunPreFlightChecks) {
         return await run_pre_flight_checks();
+      }
+      // Dismiss the preflight check notification if it is still open
+      if (preFlightCheckNotyf) {
+        notyf.dismiss(preFlightCheckNotyf);
+        preFlightCheckNotyf = null;
       }
       // If the user clicks the skip button, return false which will cause the pre flight checks to fail
       return false;
@@ -844,6 +851,12 @@ const run_pre_flight_checks = async (check_update = true) => {
       if (rerunPreFlightChecks) {
         return await run_pre_flight_checks();
       }
+      // Dismiss the preflight check notification if it is still open
+      if (preFlightCheckNotyf) {
+        notyf.dismiss(preFlightCheckNotyf);
+        preFlightCheckNotyf = null;
+      }
+
       // If the user clicks the skip button, return false which will cause the pre flight checks to fail
       return false;
     }
@@ -870,9 +883,11 @@ const run_pre_flight_checks = async (check_update = true) => {
       launchAnnouncement = false;
     }
 
-    // Dismiss the pre flight check notification since all checks passed
-    notyf.dismiss(preFlightCheckNotyf);
-    preFlightCheckNotyf = null;
+    // Dismiss the preflight check notification if it is still open
+    if (preFlightCheckNotyf) {
+      notyf.dismiss(preFlightCheckNotyf);
+      preFlightCheckNotyf = null;
+    }
 
     notyf.open({
       type: "final",
@@ -884,9 +899,11 @@ const run_pre_flight_checks = async (check_update = true) => {
     // All pre flight checks passed, return true
     return true;
   } catch (error) {
-    // Dismiss the pre flight check notification since the checks failed
-    notyf.dismiss(preFlightCheckNotyf);
-    preFlightCheckNotyf = null;
+    // Dismiss the preflight check notification if it is still open
+    if (preFlightCheckNotyf) {
+      notyf.dismiss(preFlightCheckNotyf);
+      preFlightCheckNotyf = null;
+    }
 
     const emessage = userErrorMessage(error);
     const { value: retryChecks } = await Swal.fire({
