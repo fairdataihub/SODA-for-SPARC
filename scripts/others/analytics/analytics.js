@@ -113,10 +113,10 @@ const sendKombuchaAnalyticsEvent = async (eventData, userToken) => {
       console.error("Error status: ", error.response.status);
       console.error("Error status text: ", error.response.statusText);
       if (error.response.status === 401) {
-        console.log("Token expired")
+        console.log("Token expired");
         // Token is invalid now so generate a new one with the same userId
         const userId = nodeStorage.getItem("userId");
-        const res = await kombuchaServer.post("meta/users", {uid: userId})
+        const res = await kombuchaServer.post("meta/users", { uid: userId });
         console.log("res", res);
 
         // Save the new token
