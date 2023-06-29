@@ -205,7 +205,7 @@ $("#button-create-bf-new-dataset").click(async () => {
       // log a map of datasetId to dataset name to analytics
       // this will be used to help us track private datasets which are not trackable using a datasetId alone
       ipcRenderer.send(
-        "kombucha-event",
+        "track-kombucha",
         kombuchaEnums.Category.MANAGE_DATASETS,
         kombuchaEnums.Action.CREATE_NEW_DATASET,
         defaultBfDataset,
@@ -264,7 +264,7 @@ $("#button-create-bf-new-dataset").click(async () => {
       $("#button-create-bf-new-dataset").prop("disabled", false);
 
       ipcRenderer.send(
-        "kombucha-event",
+        "track-kombucha",
         kombuchaEnums.Category.MANAGE_DATASETS,
         kombuchaEnums.Action.CREATE_NEW_DATASET,
         bfNewDatasetName,
@@ -360,7 +360,7 @@ $("#button-rename-dataset").on("click", async () => {
         );
 
         ipcRenderer.send(
-          "kombucha-event",
+          "track-kombucha",
           kombuchaEnums.Category.MANAGE_DATASETS,
           kombuchaEnums.Action.RENAME_DATASET,
           currentDatasetName,
@@ -392,7 +392,7 @@ $("#button-rename-dataset").on("click", async () => {
       $("#button-rename-dataset").prop("disabled", false);
 
       ipcRenderer.send(
-        "kombucha-event",
+        "track-kombucha",
         kombuchaEnums.Category.MANAGE_DATASETS,
         kombuchaEnums.Action.RENAME_DATASET,
         defaultBfDataset,
