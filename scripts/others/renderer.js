@@ -610,11 +610,13 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
       const agentStartSpawn = spawn(pathToPennsieveAgent, ["agent", "start"]);
       agentStartSpawn.stdout.on("data", (data) => {
         const agentMessage = data.toString();
+        console.log("startOut", agentMessage);
         log.info(agentMessage);
         resolve();
       });
       agentStartSpawn.stderr.on("data", (data) => {
         const agentError = data.toString();
+        console.log("startErr", agentError);
         log.info(agentError);
         reject(new Error(agentError));
       });
