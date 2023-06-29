@@ -208,13 +208,12 @@ const sendUserAnalytics = () => {
   if (token === null) {
     console.log("no token found, creating new user");
     // send empty object for new users
-    let userData = {};
-
     kombuchaServer
-      .post("meta/users", userData)
+      .post("meta/users", {})
       .then((res) => {
         // Save the user token from the server
         nodeStorage.setItem("kombuchaToken", res.data.token);
+        nodeStorage.setItem("userId", res.data.userId);
       })
       .catch((err) => {
         console.error(err);
@@ -435,14 +434,14 @@ function loadDemos() {
 initialize();
 
 ipcMain.on("resize-window", (event, dir) => {
-  var x = mainWindow.getSize()[0];
-  var y = mainWindow.getSize()[1];
+  let x = mainWindow.getSize()[0];
+  let y = mainWindow.getSize()[1];
   if (dir === "up") {
-    x = x + 1;
-    y = y + 1;
+    x += 1;
+    y += 1;
   } else {
-    x = x - 1;
-    y = y - 1;
+    x -= 1;
+    y -= 1;
   }
   mainWindow.setSize(x, y);
 });

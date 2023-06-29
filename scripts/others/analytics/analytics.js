@@ -88,6 +88,7 @@ const userIdGeneratorForKombucha = async () => {
       // store and then return the token
       const res = await kombuchaServer.post("meta/users", {});
       nodeStorage.setItem("kombuchaToken", res.data.token);
+      nodeStorage.setItem("userId", res.data.userId);
       return res.data.token;
     } catch (e) {
       console.log(e);
@@ -99,19 +100,31 @@ const userIdGeneratorForKombucha = async () => {
 };
 
 // Send the event data to Kombucha Analytics
-const sendKombuchaAnalyticsEvent = (eventData, userToken) => {
-  try {
-    kombuchaServer.post("harvest/events", eventData, {
+const sendKombuchaAnalyticsEvent = async (eventData, userToken) => {
+  kombuchaServer
+    .post("harvest/events", eventData, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${userToken}`,
       },
+    })
+    .catch(async (error) => {
+      // Handle the error
+      console.error("Error status: ", error.response.status);
+      console.error("Error status text: ", error.response.statusText);
+      if (error.response.status === 401) {
+        console.log("Token expired")
+        // Token is invalid now so generate a new one with the same userId
+        const userId = nodeStorage.getItem("userId");
+        const res = await kombuchaServer.post("meta/users", {uid: userId})
+        console.log("res", res);
+
+        // Save the new token
+        nodeStorage.setItem("kombuchaToken", res.data.token);
+        // Retry sending the event data with the updated token
+        sendKombuchaAnalyticsEvent(eventData, res.data.token);
+      }
     });
-  } catch (error) {
-    // Handle the error
-    console.error("Error status: ", error.response.status);
-    console.error("Error status text: ", error.response.statusText);
-  }
 };
 
 // Tracking function for Kombucha Analytics
