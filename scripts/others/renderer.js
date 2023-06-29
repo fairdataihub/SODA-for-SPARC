@@ -676,13 +676,13 @@ const run_pre_flight_checks = async (check_update = true) => {
   try {
     log.info("Running pre flight checks");
 
-    // Show a notification that the pre flight checks are running
-    preFlightCheckNotyf = notyf.open({
-      type: "info",
-      message: "Running pre flight checks",
-    });
-
-    console.log(preFlightCheckNotyf);
+    if (!preFlightCheckNotyf) {
+      preFlightCheckNotyf = notyf.open({
+        duration: 15000,
+        type: "info",
+        message: "Checking SODA's connection to Pennsieve...",
+      });
+    }
 
     // Check the internet connection and if available check the rest.
     const userConnectedToInternet = await checkInternetConnection();
@@ -865,11 +865,6 @@ const run_pre_flight_checks = async (check_update = true) => {
       }
     }
 
-    notyf.open({
-      type: "final",
-      message: "You're all set!",
-    });
-
     // let nodeStorage = new JSONStorage(app.getPath("userData"));
     // launchAnnouncement = nodeStorage.getItem("announcements");
     if (launchAnnouncement) {
@@ -878,9 +873,24 @@ const run_pre_flight_checks = async (check_update = true) => {
       launchAnnouncement = false;
     }
 
+    // Dismiss the pre flight check notification since all checks passed
+    notyf.dismiss(preFlightCheckNotyf);
+    preFlightCheckNotyf = null;
+
+    notyf.open({
+      type: "final",
+      message: "SODA connected to Pennsieve successfully!",
+    });
+
+    log.info("All pre flight checks passed");
+
     // All pre flight checks passed, return true
     return true;
   } catch (error) {
+    // Dismiss the pre flight check notification since the checks failed
+    notyf.dismiss(preFlightCheckNotyf);
+    preFlightCheckNotyf = null;
+
     const emessage = userErrorMessage(error);
     const { value: retryChecks } = await Swal.fire({
       icon: "info",
