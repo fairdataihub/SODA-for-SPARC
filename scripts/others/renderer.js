@@ -633,12 +633,14 @@ const getPennsieveAgentVersion = (pathToPennsieveAgent) => {
       // // Timeout if the agent was not able to be retrieved within 20 seconds
       const versionCheckTimeout = setTimeout(() => {
         reject(new Error("Agent version check time limit exceeded"));
-      }, 3000);
+      }, 15000);
 
       const agentVersionSpawn = execFile(pathToPennsieveAgent, ["version"]);
 
       agentVersionSpawn.stdout.on("data", (data) => {
-        log.info(data.toString());
+        const agentVersionOutput = data.toString();
+        console.log(agentVersionOutput);
+        log.info(agentVersionOutput);
         const versionResult = {};
         const regex = /(\w+ Version)\s*:\s*(\S+)/g;
         let match;
@@ -656,6 +658,8 @@ const getPennsieveAgentVersion = (pathToPennsieveAgent) => {
       agentVersionSpawn.stderr.on("data", (data) => {
         clearTimeout(versionCheckTimeout);
         const agentError = data.toString();
+        console.log(agentError);
+        log.info(agentError);
         reject(new Error(agentError));
       });
     } catch (error) {
