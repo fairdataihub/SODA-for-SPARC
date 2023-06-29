@@ -2521,12 +2521,12 @@ $("#button-submit-dataset").click(async () => {
       let fileUploadStatus = progressData["files_uploaded_status"];
       let totalFilesUploaded = progressData["uploaded_files"];
 
-      console.log(submitprintstatus)
+      console.log(submitprintstatus);
 
       if (submitprintstatus === "Uploading") {
-        logProgressToAnalytics(totalFilesUploaded, totalUploadedFileSize)
+        logProgressToAnalytics(totalFilesUploaded, totalUploadedFileSize);
         $("#div-progress-submit").css("display", "block");
-        console.log(statusMessage)
+        console.log(statusMessage);
         if (statusMessage.includes("Success: COMPLETED!")) {
           progressBarUploadBf.value = 100;
           cloneMeter.value = 100;
@@ -2720,48 +2720,48 @@ $("#button-submit-dataset").click(async () => {
   let bytesOnPreviousLogPage = 0;
   let filesOnPreviousLogPage = 0;
   const logProgressToAnalytics = (files, bytes) => {
-        // log every 500 files -- will log on success/failure as well so if there are less than 500 files we will log what we uploaded ( all in success case and some of them in failure case )
-        if (files >= filesOnPreviousLogPage + 500) {
-          filesOnPreviousLogPage += 500;
-          ipcRenderer.send(
-            "track-kombucha",
-            kombuchaEnums.Category.MANAGE_DATASETS,
-            kombuchaEnums.Action.GENERATE_DATASET,
-            kombuchaEnums.Label.FILES,
-            kombuchaEnums.Status.SUCCESS,
-            createEventData(500, "Pennsieve", "Local", defaultBfDataset)
-          );
-    
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            PrepareDatasetsAnalyticsPrefix.CURATE + "- Step 7 - Generate - Dataset - Number of Files",
-            `${datasetUploadSession.id}`,
-            500
-          );
-    
-          let differenceInBytes = bytes - bytesOnPreviousLogPage;
-          bytesOnPreviousLogPage = bytes;
-          ipcRenderer.send(
-            "track-event",
-            "Success",
-            PrepareDatasetsAnalyticsPrefix.CURATE + " - Step 7 - Generate - Dataset - Size",
-            `${datasetUploadSession.id}`,
-            differenceInBytes
-          );
-    
-          if (differenceInBytes > 0) {    
-            ipcRenderer.send(
-              "track-kombucha",
-              kombuchaEnums.Category.MANAGE_DATASETS,
-              kombuchaEnums.Action.GENERATE_DATASET,
-              kombuchaEnums.Label.SIZE,
-              kombuchaEnums.Status.SUCCESS,
-              createEventData(differenceInBytes, "Pennsieve", "Local", defaultBfDataset)
-            );
-          }
-        }
-  }
+    // log every 500 files -- will log on success/failure as well so if there are less than 500 files we will log what we uploaded ( all in success case and some of them in failure case )
+    if (files >= filesOnPreviousLogPage + 500) {
+      filesOnPreviousLogPage += 500;
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.FILES,
+        kombuchaEnums.Status.SUCCESS,
+        createEventData(500, "Pennsieve", "Local", defaultBfDataset)
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        PrepareDatasetsAnalyticsPrefix.CURATE + "- Step 7 - Generate - Dataset - Number of Files",
+        `${datasetUploadSession.id}`,
+        500
+      );
+
+      let differenceInBytes = bytes - bytesOnPreviousLogPage;
+      bytesOnPreviousLogPage = bytes;
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        PrepareDatasetsAnalyticsPrefix.CURATE + " - Step 7 - Generate - Dataset - Size",
+        `${datasetUploadSession.id}`,
+        differenceInBytes
+      );
+
+      if (differenceInBytes > 0) {
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.MANAGE_DATASETS,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.SIZE,
+          kombuchaEnums.Status.SUCCESS,
+          createEventData(differenceInBytes, "Pennsieve", "Local", defaultBfDataset)
+        );
+      }
+    }
+  };
 
   // Check if dataset is locked before starting upload
   const isLocked = await api.isDatasetLocked(defaultBfAccount, defaultBfDataset);
