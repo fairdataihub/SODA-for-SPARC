@@ -606,25 +606,31 @@ const stopPennsieveAgent = async (pathToPennsieveAgent) => {
 
 const startPennsieveAgent = async (pathToPennsieveAgent) => {
   return new Promise((resolve, reject) => {
-    try {
-      const agentStartSpawn = spawn(pathToPennsieveAgent, ["agent", "start"]);
-      agentStartSpawn.stdout.on("data", (data) => {
-        const agentMessage = data.toString();
-        console.log("startOut", agentMessage);
-        log.info(agentMessage);
-        resolve();
-      });
-      agentStartSpawn.stderr.on("data", (data) => {
-        const agentError = data.toString();
-        console.log("startErr", agentError);
-        log.info(agentError);
-        reject(new Error(agentError));
-      });
-    } catch (error) {
-      console.log("startErr", error);
-      log.error(error);
-      reject(new Error(error));
-    }
+    const agentStartSpawn = spawn(pathToPennsieveAgent, ["agent", "start"]);
+
+    // Capture standard output
+    agentStartSpawn.stdout.on("data", (data) => {
+      const agentMessage = data.toString();
+      console.log("startOut", agentMessage);
+      log.info(agentMessage);
+      resolve();
+    });
+
+    // Capture standard error output
+    agentStartSpawn.stderr.on("data", (data) => {
+      const agentError = data.toString();
+      console.log("startErr", agentError);
+      log.info(agentError);
+      reject(new Error(agentError));
+    });
+
+    // Capture error output
+    agentStartSpawn.on("error", (error) => {
+      const agentSpawnError = error.toString();
+      console.log("startErr", agentSpawnError);
+      log.info(agentSpawnError);
+      reject(new Error(agentSpawnError));
+    });
   });
 };
 
