@@ -351,6 +351,18 @@ $("#button-rename-dataset").on("click", async () => {
           `${defaultBfDatasetId}: ` + currentDatasetName + " to " + renamedDatasetName
         );
 
+        ipcRenderer.send(
+          "kombucha-event",
+          kombuchaEnums.Category.MANAGE_DATASETS,
+          kombuchaEnums.Action.RENAME_DATASET,
+          currentDatasetName,
+          kombuchaEnums.Status.FAIL,
+          {
+            value: 1,
+            dataset_id: defaultBfDatasetId,
+          }
+        );
+
         return;
       }
 
@@ -381,7 +393,7 @@ $("#button-rename-dataset").on("click", async () => {
           value: 1,
           dataset_id: defaultBfDatasetId,
         }
-      )
+      );
 
       ipcRenderer.send(
         "track-event",
