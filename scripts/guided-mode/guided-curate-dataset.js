@@ -2461,15 +2461,15 @@ const guidedModifyCurationTeamAccess = async (action) => {
 };
 
 const checkIfDatasetExistsOnPennsieve = async (datasetNameOrID) => {
-  let datasetExists = false;
+  let datasetName = null;
   const datasetList = await api.getDatasetsForAccount(defaultBfAccount);
   for (const dataset of datasetList) {
     if (dataset.name === datasetNameOrID || dataset.id === datasetNameOrID) {
-      datasetExists = true;
+      datasetName = dataset.name;
       break;
     }
   }
-  return datasetExists;
+  return datasetName;
 };
 
 // Adds the click handlers to the info drop downs in Guided Mode
@@ -12261,7 +12261,7 @@ $(document).ready(async () => {
     }
   };
 
-  const guidedCreateDataset = async (bfAccount, datasetName) => {
+  const guidedCreateOrRenameDataset = async (bfAccount, datasetName) => {
     document.getElementById("guided-dataset-name-upload-tr").classList.remove("hidden");
     const datasetNameUploadText = document.getElementById("guided-dataset-name-upload-text");
 
@@ -12271,13 +12271,41 @@ $(document).ready(async () => {
     //If the dataset has already been created in Guided Mode, we should have an ID for the
     //dataset. If a dataset with the ID still exists on Pennsieve, we will upload to that dataset.
     if (sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]) {
-      let datasetExistsOnPennsieve = await checkIfDatasetExistsOnPennsieve(
+      const existingDatasetNameOnPennsieve = await checkIfDatasetExistsOnPennsieve(
         sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"]
       );
-      if (datasetExistsOnPennsieve) {
-        datasetNameUploadText.innerHTML = "Dataset already exists on Pennsieve";
-        guidedUploadStatusIcon("guided-dataset-name-upload-status", "success");
-        return sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+      if (existingDatasetNameOnPennsieve) {
+        // If the name entered in the input matches the dataset name on Pennsieve, we will upload to that dataset
+        if (existingDatasetNameOnPennsieve === datasetName) {
+          datasetNameUploadText.innerHTML = "Dataset already exists on Pennsieve";
+          guidedUploadStatusIcon("guided-dataset-name-upload-status", "success");
+          return sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+        } else {
+          // If the name entered in the input does not match the dataset name on Pennsieve, we will change
+          // the name of the dataset on Pennsieve to match the name entered in the input
+          try {
+            await client.put(
+              `/manage_datasets/ps_rename_dataset`,
+              {
+                input_new_name: datasetName,
+              },
+              {
+                params: {
+                  selected_account: bfAccount,
+                  selected_dataset: existingDatasetNameOnPennsieve,
+                },
+              }
+            );
+            datasetNameUploadText.innerHTML = `Changed dataset name from ${existingDatasetNameOnPennsieve} to ${datasetName}`;
+            guidedUploadStatusIcon("guided-dataset-name-upload-status", "success");
+            return sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"];
+          } catch (error) {
+            const emessage = userErrorMessage(error);
+            datasetNameUploadText.innerHTML = emessage;
+            guidedUploadStatusIcon("guided-dataset-name-upload-status", "error");
+            throw new Error(emessage);
+          }
+        }
       } else {
         // if the previously uploaded dataset does not exist, wipe out the previously uploaded metadata
         // so new metadata can be uploaded to the newly created dataset
@@ -12348,7 +12376,6 @@ $(document).ready(async () => {
       throw new Error(userErrorMessage(error));
     }
   };
-
   const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle) => {
     document.getElementById("guided-dataset-subtitle-upload-tr").classList.remove("hidden");
     const datasetSubtitleUploadText = document.getElementById(
@@ -13212,7 +13239,7 @@ $(document).ready(async () => {
       unHideAndSmoothScrollToElement("guided-div-pennsieve-metadata-upload-status-table");
 
       // Create the dataset on Pennsieve
-      await guidedCreateDataset(guidedBfAccount, guidedDatasetName);
+      await guidedCreateOrRenameDataset(guidedBfAccount, guidedDatasetName);
 
       await guidedAddDatasetSubtitle(guidedBfAccount, guidedDatasetName, guidedDatasetSubtitle);
       await guidedAddDatasetDescription(
