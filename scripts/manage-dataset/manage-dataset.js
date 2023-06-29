@@ -267,6 +267,17 @@ $("#button-create-bf-new-dataset").click(async () => {
       $("#button-create-bf-new-dataset").prop("disabled", false);
 
       ipcRenderer.send(
+        "kombucha-event",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.CREATE_NEW_DATASET,
+        bfNewDatasetName,
+        kombuchaEnums.Status.FAIL,
+        {
+          value: 1,
+        }
+      );
+
+      ipcRenderer.send(
         "track-event",
         "Error",
         ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CREATE_DATASET,
