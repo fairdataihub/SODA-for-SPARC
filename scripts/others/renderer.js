@@ -621,6 +621,7 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
         reject(new Error(agentError));
       });
     } catch (error) {
+      console.log("startErr", error);
       log.error(error);
       reject(new Error(error));
     }
