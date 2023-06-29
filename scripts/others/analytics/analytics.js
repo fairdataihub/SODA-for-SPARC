@@ -75,57 +75,49 @@ if (dnt) {
 
 // Generate new userid on a chance basis
 const userIdGeneratorForKombucha = async () => {
-  const chance = Math.random();
-  let token = nodeStorage.getItem("token");
+  const token = nodeStorage.getItem("kombuchaToken");
   let userIdChanged = false;
-  let userData = {};
 
-  if (token === null || chance < 0.1) {
-    // 10% chance of generating new uuid for userId
+  if (token === null) {
     console.log("Generating new user id");
-    userData = {};
     userIdChanged = true;
   }
 
   if (userIdChanged) {
     try {
-      // return the user id and token
-      return await kombuchaServer.post("meta/users", userData);
+      // store and then return the token
+      const res = await kombuchaServer.post("meta/users", {});
+      nodeStorage.setItem("kombuchaToken", res.data.token);
+      return res.data.token;
     } catch (e) {
       console.log(e);
     }
-  } else {
-    // return the current user id and token
-    // sourcery skip: inline-immediately-returned-variable
-    let res = {
-      data: {
-        token: token,
-      },
-    };
-    return res;
   }
+
+  // return the current token
+  return token;
 };
 
 // Send the event data to Kombucha Analytics
 const sendKombuchaAnalyticsEvent = (eventData, userToken) => {
-  kombuchaServer
-    .post("harvest/events", eventData, {
+  try {
+    kombuchaServer.post("harvest/events", eventData, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${userToken}`,
       },
-    })
-    .catch((error) => {
-      // Handle the error
-      console.error("Error status: ", error.response.status);
-      console.error("Error status text: ", error.response.statusText);
     });
+  } catch (error) {
+    // Handle the error
+    console.error("Error status: ", error.response.status);
+    console.error("Error status text: ", error.response.statusText);
+  }
 };
 
 // Tracking function for Kombucha Analytics
 const trackKombuchaEvent = (category, action, label, status, eventData) => {
   if (!dnt) {
-    userIdGeneratorForKombucha().then((res) => {
+    userIdGeneratorForKombucha().then((token) => {
       const kombuchaTrackingEventData = {
         aid: appId,
         category: category,
@@ -135,7 +127,7 @@ const trackKombuchaEvent = (category, action, label, status, eventData) => {
         data: eventData,
       };
       console.log("sending data to kombucha");
-      sendKombuchaAnalyticsEvent(kombuchaTrackingEventData, res.data.token);
+      sendKombuchaAnalyticsEvent(kombuchaTrackingEventData, token);
     });
   }
 };

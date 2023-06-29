@@ -203,7 +203,7 @@ const killAllPreviousProcesses = async () => {
 // Sends user information to Kombucha server
 const sendUserAnalytics = () => {
   // Retrieve the userId and if it doesn't exist, create a new uuid
-  let token = nodeStorage.getItem("token");
+  let token = nodeStorage.getItem("kombuchaToken");
 
   if (token === null) {
     console.log("no token found, creating new user");
@@ -214,7 +214,7 @@ const sendUserAnalytics = () => {
       .post("meta/users", userData)
       .then((res) => {
         // Save the user token from the server
-        nodeStorage.setItem("token", res.data.token);
+        nodeStorage.setItem("kombuchaToken", res.data.token);
       })
       .catch((err) => {
         console.error(err);
