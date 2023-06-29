@@ -8349,22 +8349,13 @@ const initiate_generate = async () => {
     // log every 500 files -- will log on success/failure as well so if there are less than 500 files we will log what we uploaded ( all in success case and some of them in failure case )
     if (files >= filesOnPreviousLogPage + 500) {
       filesOnPreviousLogPage += 500;
-      let kombuchaEventData = {
-        value: 500,
-        dataset_id: defaultBfDatasetId,
-        dataset_name: dataset_name,
-        destination: dataset_destination,
-        origin: datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-        dataset_upload_id: datasetUploadSession.id,
-      };
-
       ipcRenderer.send(
         "track-kombucha",
         kombuchaEnums.Category.PREPARE_DATASETS,
         kombuchaEnums.Action.GENERATE_DATASET,
         kombuchaEnums.Label.FILES,
         kombuchaEnums.Status.SUCCESS,
-        kombuchaEventData
+        createEventData(500, dataset_destination, datasetLocation, dataset_name)
       );
 
       ipcRenderer.send(
@@ -8386,22 +8377,13 @@ const initiate_generate = async () => {
       );
 
       if (differenceInBytes > 0) {
-        kombuchaEventData = {
-          value: differenceInBytes,
-          dataset_id: defaultBfDatasetId,
-          dataset_name: dataset_name,
-          destination: dataset_destination,
-          origin: datasetLocation === "Pennsieve" ? defaultBfDatasetId : datasetLocation,
-          dataset_upload_id: datasetUploadSession.id,
-        };
-
         ipcRenderer.send(
           "track-kombucha",
           kombuchaEnums.Category.PREPARE_DATASETS,
           kombuchaEnums.Action.GENERATE_DATASET,
           kombuchaEnums.Label.SIZE,
           kombuchaEnums.Status.SUCCESS,
-          kombuchaEventData
+          createEventData(differenceInBytes, dataset_destination, datasetLocation, dataset_name)
         );
       }
     }
