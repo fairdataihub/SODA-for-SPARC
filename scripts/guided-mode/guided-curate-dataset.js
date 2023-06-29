@@ -3559,20 +3559,18 @@ document
 
       // log successful validation run to analytics
       if (file_counter > 0) {
-        const kombuchaEventData = {
-          value: file_counter,
-          dataset_id: guidedGetDatasetId(sodaJSONObj),
-          dataset_name: guidedGetDatasetName(sodaJSONObj),
-          origin: guidedGetDatasetOrigin(sodaJSONObj),
-        };
-
         ipcRenderer.send(
           "track-kombucha",
           kombuchaEnums.Category.GUIDED_MODE,
           kombuchaEnums.Action.VALIDATE_DATASET,
           kombuchaEnums.Label.FILES,
           kombuchaEnums.Status.SUCCCESS,
-          kombuchaEventData
+          {
+            value: file_counter,
+            dataset_id: guidedGetDatasetId(sodaJSONObj),
+            dataset_name: guidedGetDatasetName(sodaJSONObj),
+            origin: guidedGetDatasetOrigin(sodaJSONObj),
+          }
         );
       }
 
