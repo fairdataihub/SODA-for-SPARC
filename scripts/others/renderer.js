@@ -7938,7 +7938,7 @@ const initiate_generate = async () => {
         "track-kombucha",
         kombuchaEnums.Category.PREPARE_DATASETS,
         kombuchaEnums.Action.GENERATE_DATASET,
-        "Total Events", // TODO: Create generic label for dataset generation: "Total Events"
+        kombuchaEnums.Label.TOTAL_UPLOADS,
         kombuchaEnums.Status.SUCCESS,
         createEventData(1, dataset_destination, datasetLocation, dataset_name)
       );
@@ -8011,7 +8011,7 @@ const initiate_generate = async () => {
         "track-kombucha",
         kombuchaEnums.Category.PREPARE_DATASETS,
         kombuchaEnums.Action.GENERATE_DATASET,
-        "Total Events", // TODO: Create generic label for dataset generation: "Total Events"
+        kombuchaEnums.Label.TOTAL_UPLOADS,
         kombuchaEnums.Status.FAIL,
         createEventData(1, dataset_destination, datasetLocation, dataset_name)
       );

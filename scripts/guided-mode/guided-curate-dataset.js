@@ -13539,7 +13539,7 @@ $(document).ready(async () => {
           "track-kombucha",
           kombuchaEnums.Category.GUIDED_MODE,
           kombuchaEnums.Action.GENERATE_DATASET,
-          "Total Events",
+          kombuchaEnums.Label.TOTAL_UPLOADS,
           kombuchaEnums.Status.SUCCCESS,
           {
             value: 1,
@@ -13645,6 +13645,21 @@ $(document).ready(async () => {
       .catch(async (error) => {
         guidedSetNavLoadingState(false);
         clientError(error);
+
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.GUIDED_MODE,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.TOTAL_UPLOADS,
+          kombuchaEnums.Status.FAIL,
+          {
+            value: 1,
+            dataset_id: guidedGetDatasetId(sodaJSONObj),
+            dataset_name: guidedGetDatasetName(sodaJSONObj),
+            origin: guidedGetDatasetOrigin(sodaJSONObj),
+            destination: "Pennsieve",
+          }
+        );
 
         // log the difference again to Google Analytics
         let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
