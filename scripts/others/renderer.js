@@ -608,7 +608,7 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
   return new Promise((resolve, reject) => {
     // Timeout if the agent was not able to be retrieved within 15 seconds
     const versionCheckTimeout = setTimeout(() => {
-      reject(new Error("The Pennsieve agent was not able to be started in the alotted time"));
+      reject(new Error("The Pennsieve Agent was not able to be started in the alotted time"));
     }, 15000);
     const agentStartSpawn = spawn(pathToPennsieveAgent, ["agent", "start"]);
 
@@ -840,7 +840,7 @@ const run_pre_flight_checks = async (check_update = true) => {
       const emessage = userErrorMessage(error);
       const { value: rerunPreFlightChecks } = await Swal.fire({
         icon: "info",
-        title: "Pennsieve Agent failed to start",
+        title: "The Pennsieve Agent failed to start",
         html: `
           <br />
           <div class="div--code-block-error">${emessage}</div>
