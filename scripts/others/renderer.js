@@ -610,7 +610,7 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
     const versionCheckTimeout = setTimeout(() => {
       reject(new Error("The Pennsieve agent was not able to be started in the alotted time"));
     }, 15000);
-    const agentStartSpawn = spawn(pathToPennsieveAgent, ["gent", "start"]);
+    const agentStartSpawn = spawn(pathToPennsieveAgent, ["agent", "start"]);
 
     // Capture standard output
     agentStartSpawn.stdout.on("data", (data) => {
