@@ -846,7 +846,7 @@ const run_pre_flight_checks = async (check_update = true) => {
           <div class="div--code-block-error">${emessage}</div>
           <br />
           Please view the <a href="${"https://google.com"}" target="_blank">SODA documentation</a>
-          to troubleshoot this issue. Then click the button below to ensure the issue has been fixed.
+          to troubleshoot this issue. Then click the "Try again" button below to ensure the issue has been fixed.
         `,
         width: 800,
         heightAuto: false,
