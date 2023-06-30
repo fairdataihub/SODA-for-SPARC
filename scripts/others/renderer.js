@@ -879,6 +879,13 @@ const run_pre_flight_checks = async (check_update = true) => {
     }
 
     if (usersPennsieveAgentVersion !== latest_agent_version) {
+      // Stop the Pennsieve agent if it is running to prevent any issues when updating while the agent is running
+      try {
+        await stopPennsieveAgent(agentPath);
+      } catch (error) {
+        // Note: This error is not critical so we do not need to throw it
+        clientError(error);
+      }
       const { value: rerunPreFlightChecks } = await Swal.fire({
         icon: "info",
         title: "Installed Pennsieve agent out of date",
@@ -963,6 +970,13 @@ const run_pre_flight_checks = async (check_update = true) => {
     if (preFlightCheckNotyf) {
       notyf.dismiss(preFlightCheckNotyf);
       preFlightCheckNotyf = null;
+    }
+    // Stop the Pennsieve agent if it is running
+    try {
+      await stopPennsieveAgent(agentPath);
+    } catch (error) {
+      // Note: This error is not critical so we do not need to throw it
+      clientError(error);
     }
 
     const emessage = userErrorMessage(error);
