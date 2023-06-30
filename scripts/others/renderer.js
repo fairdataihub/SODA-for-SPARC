@@ -606,14 +606,24 @@ const stopPennsieveAgent = async (pathToPennsieveAgent) => {
 
 const startPennsieveAgent = async (pathToPennsieveAgent) => {
   return new Promise((resolve, reject) => {
+    // Timeout if the agent was not able to be retrieved within 15 seconds
+    const versionCheckTimeout = setTimeout(() => {
+      reject(new Error("The Pennsieve agent was not able to be started in the alotted time"));
+    }, 15000);
     const agentStartSpawn = spawn(pathToPennsieveAgent, ["agent", "start"]);
 
     // Capture standard output
     agentStartSpawn.stdout.on("data", (data) => {
       const agentMessage = data.toString();
       console.log("startOut", agentMessage);
-      log.info(agentMessage);
-      resolve();
+      // Check if the agentMessage contains the string "Agent started"
+      if (
+        agentMessage.includes("Running Agent NOT as daemon") ||
+        agentMessage.includes("Pennsieve Agent started")
+      ) {
+        clearTimeout(versionCheckTimeout);
+        resolve();
+      }
     });
 
     // Capture standard error output
@@ -621,6 +631,7 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
       const agentError = data.toString();
       console.log("startErr", agentError);
       log.info(agentError);
+      clearTimeout(versionCheckTimeout);
       reject(new Error(agentError));
     });
 
@@ -629,6 +640,7 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
       const agentSpawnError = error.toString();
       console.log("startErr", agentSpawnError);
       log.info(agentSpawnError);
+      clearTimeout(versionCheckTimeout);
       reject(new Error(agentSpawnError));
     });
   });
@@ -638,10 +650,14 @@ const getPennsieveAgentVersion = (pathToPennsieveAgent) => {
   log.info("Getting Pennsieve agent version");
 
   return new Promise((resolve, reject) => {
-    // Timeout if the agent was not able to be retrieved within 20 seconds
+    // Timeout if the agent was not able to be retrieved within 15 seconds
     const versionCheckTimeout = setTimeout(() => {
-      reject(new Error("Agent version check time limit exceeded"));
-    }, 20000);
+      reject(
+        new Error(
+          "The installed Pennsieve agent version was not able to be retrieved in the alotted time"
+        )
+      );
+    }, 15000);
 
     const agentVersionSpawn = execFile(pathToPennsieveAgent, ["version"]);
 
@@ -667,19 +683,19 @@ const getPennsieveAgentVersion = (pathToPennsieveAgent) => {
 
     // Capture standard error output and reject the promise
     agentVersionSpawn.stderr.on("data", (data) => {
-      clearTimeout(versionCheckTimeout);
       const agentError = data.toString();
       console.log(agentError);
       log.info(agentError);
+      clearTimeout(versionCheckTimeout);
       reject(new Error(agentError));
     });
 
     // Capture error output and reject the promise
     agentVersionSpawn.on("error", (error) => {
-      clearTimeout(versionCheckTimeout);
       const agentSpawnError = error.toString();
       console.log(agentSpawnError);
       log.info(agentSpawnError);
+      clearTimeout(versionCheckTimeout);
       reject(new Error(agentSpawnError));
     });
   });
@@ -797,6 +813,7 @@ const run_pre_flight_checks = async (check_update = true) => {
       if (rerunPreFlightChecks) {
         return await run_pre_flight_checks();
       }
+
       // Dismiss the preflight check notification if it is still open
       if (preFlightCheckNotyf) {
         notyf.dismiss(preFlightCheckNotyf);
@@ -821,8 +838,42 @@ const run_pre_flight_checks = async (check_update = true) => {
     } catch (error) {
       clientError(error);
       const emessage = userErrorMessage(error);
-      log.info(`Error starting Pennsieve agent:<br />${emessage}`);
-      throw new Error(`Error starting Pennsieve agent:<br />${emessage}`);
+      const { value: rerunPreFlightChecks } = await Swal.fire({
+        icon: "info",
+        title: "Pennsieve Agent failed to start",
+        html: `
+          <b>Error message:</b>
+          <div class="div--code-block-error">${emessage}</div>
+          <br />
+          <a href="${"https://google.com"}" target="_blank">View the SODA documentation for troubleshooting this issue</a>
+          <br />
+          <br />
+          To try to reattempt starting the agent, click the button below. If the issue persists, please contact the SODA
+          team at <a href="mailto:help@fairdataihub.org" target="_blank">help@fairdataihub.org</a>
+        `,
+        width: 800,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showCancelButton: true,
+        showCloseButton: true,
+        reverseButtons: reverseSwalButtons,
+        confirmButtonText: "Try to start the Pennsieve Agent again",
+        cancelButtonText: "Skip for now",
+      });
+      // If the user clicks the retry button, rerun the pre flight checks
+      if (rerunPreFlightChecks) {
+        return await run_pre_flight_checks();
+      }
+
+      // Dismiss the preflight check notification if it is still open
+      if (preFlightCheckNotyf) {
+        notyf.dismiss(preFlightCheckNotyf);
+        preFlightCheckNotyf = null;
+      }
+      // If the user clicks the skip button, return false which will cause the pre flight checks to fail
+      return false;
     }
 
     // Get the version of the Pennsieve agent
@@ -926,7 +977,7 @@ const run_pre_flight_checks = async (check_update = true) => {
     const emessage = userErrorMessage(error);
     const { value: retryChecks } = await Swal.fire({
       icon: "info",
-      title: `Error checking SODA's background processes`,
+      title: `Error checking SODA's connection to Pennsieve`,
       html: `${emessage}`,
       width: 600,
       heightAuto: false,
