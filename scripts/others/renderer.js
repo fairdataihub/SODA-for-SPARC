@@ -842,14 +842,13 @@ const run_pre_flight_checks = async (check_update = true) => {
         icon: "info",
         title: "Pennsieve Agent failed to start",
         html: `
-          <b>Error message:</b>
+          <br />
           <div class="div--code-block-error">${emessage}</div>
           <br />
           <a href="${"https://google.com"}" target="_blank">View the SODA documentation for troubleshooting this issue</a>
           <br />
           <br />
-          To try to reattempt starting the agent, click the button below. If the issue persists, please contact the SODA
-          team at <a href="mailto:help@fairdataihub.org" target="_blank">help@fairdataihub.org</a>
+          Once you have taken the steps to troubleshoot this issue, click the button below to ensure the issue has been fixed.
         `,
         width: 800,
         heightAuto: false,
