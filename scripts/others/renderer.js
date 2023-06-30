@@ -610,7 +610,7 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
     const versionCheckTimeout = setTimeout(() => {
       reject(new Error("The Pennsieve agent was not able to be started in the alotted time"));
     }, 15000);
-    const agentStartSpawn = spawn(pathToPennsieveAgent, ["agent", "start"]);
+    const agentStartSpawn = spawn(pathToPennsieveAgent, ["gent", "start"]);
 
     // Capture standard output
     agentStartSpawn.stdout.on("data", (data) => {
@@ -845,10 +845,8 @@ const run_pre_flight_checks = async (check_update = true) => {
           <br />
           <div class="div--code-block-error">${emessage}</div>
           <br />
-          <a href="${"https://google.com"}" target="_blank">View the SODA documentation for troubleshooting this issue</a>
-          <br />
-          <br />
-          Once you have taken the steps to troubleshoot this issue, click the button below to ensure the issue has been fixed.
+          Please view the <a href="${"https://google.com"}" target="_blank">SODA documentation</a>
+          to troubleshoot this issue. Then click the button below to ensure the issue has been fixed.
         `,
         width: 800,
         heightAuto: false,
@@ -858,7 +856,7 @@ const run_pre_flight_checks = async (check_update = true) => {
         showCancelButton: true,
         showCloseButton: true,
         reverseButtons: reverseSwalButtons,
-        confirmButtonText: "Try to start the Pennsieve Agent again",
+        confirmButtonText: "Try again",
         cancelButtonText: "Skip for now",
       });
       // If the user clicks the retry button, rerun the pre flight checks
