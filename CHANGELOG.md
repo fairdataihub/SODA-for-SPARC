@@ -5,6 +5,13 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.12.0.1 - 2023-06-30
+
+## Feature Additions:
+
+- Removed calls to analytics in order to prepare for our new analytics platform
+- Updated pre_flight_checks to give better error messages and allow the user to restart the checks.
+
 ## v.12.0.0 - 2023-06-09
 
 ## Feature Additions:

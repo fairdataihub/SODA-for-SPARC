@@ -615,7 +615,6 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
     // Capture standard output
     agentStartSpawn.stdout.on("data", (data) => {
       const agentMessage = data.toString();
-      console.log("startOut", agentMessage);
       // Check if the agentMessage contains the string "Agent started"
       if (
         agentMessage.includes("Running Agent NOT as daemon") ||
@@ -629,7 +628,6 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
     // Capture standard error output
     agentStartSpawn.stderr.on("data", (data) => {
       const agentError = data.toString();
-      console.log("startErr", agentError);
       log.info(agentError);
       clearTimeout(versionCheckTimeout);
       reject(new Error(agentError));
@@ -638,7 +636,6 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
     // Capture error output
     agentStartSpawn.on("error", (error) => {
       const agentSpawnError = error.toString();
-      console.log("startErr", agentSpawnError);
       log.info(agentSpawnError);
       clearTimeout(versionCheckTimeout);
       reject(new Error(agentSpawnError));
@@ -665,7 +662,6 @@ const getPennsieveAgentVersion = (pathToPennsieveAgent) => {
     // Resolve the promise if the version is found
     agentVersionSpawn.stdout.on("data", (data) => {
       const agentVersionOutput = data.toString();
-      console.log(agentVersionOutput);
       log.info(agentVersionOutput);
       const versionResult = {};
       const regex = /(\w+ Version)\s*:\s*(\S+)/g;
@@ -684,7 +680,6 @@ const getPennsieveAgentVersion = (pathToPennsieveAgent) => {
     // Capture standard error output and reject the promise
     agentVersionSpawn.stderr.on("data", (data) => {
       const agentError = data.toString();
-      console.log(agentError);
       log.info(agentError);
       clearTimeout(versionCheckTimeout);
       reject(new Error(agentError));
@@ -693,7 +688,6 @@ const getPennsieveAgentVersion = (pathToPennsieveAgent) => {
     // Capture error output and reject the promise
     agentVersionSpawn.on("error", (error) => {
       const agentSpawnError = error.toString();
-      console.log(agentSpawnError);
       log.info(agentSpawnError);
       clearTimeout(versionCheckTimeout);
       reject(new Error(agentSpawnError));
@@ -845,7 +839,7 @@ const run_pre_flight_checks = async (check_update = true) => {
           <br />
           <div class="div--code-block-error">${emessage}</div>
           <br />
-          Please view the <a href="https://docs.pennsieve.io/docs/cant-start-the-pennsieve-agent-through-soda" target="_blank">SODA documentation</a>
+          Please view the <a href="https://docs.sodaforsparc.io/docs/common-errors/trouble-starting-the-pennsieve-agent-in-soda" target="_blank">SODA documentation</a>
           to troubleshoot this issue. Then click the "Try again" button below to ensure the issue has been fixed.
         `,
         width: 800,
