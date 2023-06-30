@@ -21,11 +21,11 @@ authors:
     family-names: Portillo
     given-names: Dorian
 cff-version: 1.2.0
-date-released: '2023-06-12'
+date-released: '2023-06-30'
 identifiers:
   - description: DOI for this software's record on Zenodo
     type: doi
-    value: https://doi.org/10.5281/zenodo.8029934
+    value: https://doi.org/10.5281/zenodo.8102936
 keywords:
   - SPARC
   - FAIR
@@ -42,4 +42,4 @@ repository-code: https://github.com/fairdataihub/SODA-for-SPARC
 title: SODA (Software to Organize Data Automatically) for SPARC
 type: software
 url: https://fairdataihub.org/
-version: 12.0.0
+version: 12.0.1
