@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Updated pre_flight_checks to give better error messages and allow the user to restart the checks.
 
 ## Bug fixes:
+
 - The file explorer can now import hidden files that are within a folder.
 - Dataset is locked pop up will wait for user to confirm pop up before continuing processes.
 - Local dataset upload throw "Dataset is Locked" pop up when trying to upload to a dataset that is locked.
