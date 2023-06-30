@@ -11,7 +11,6 @@ require("v8-compile-cache");
 const { ipcMain } = require("electron");
 const { autoUpdater } = require("electron-updater");
 const { JSONStorage } = require("node-localstorage");
-const { trackEvent } = require("./scripts/others/analytics/analytics");
 const { fstat } = require("fs");
 const { resolve } = require("path");
 const axios = require("axios");
@@ -22,7 +21,6 @@ log.transports.console.level = false;
 log.transports.file.level = "debug";
 autoUpdater.channel = "latest";
 autoUpdater.logger = log;
-global.trackEvent = trackEvent;
 
 const nodeStorage = new JSONStorage(app.getPath("userData"));
 /*************************************************************
@@ -342,10 +340,6 @@ function initialize() {
     });
   });
 
-  app.on("ready", () => {
-    trackEvent("Success", "App Launched - OS", os.platform() + "-" + os.release());
-    trackEvent("Success", "App Launched - SODA", app.getVersion());
-  });
 
   app.on("window-all-closed", async () => {
     await exitPyProc();
@@ -417,13 +411,7 @@ ipcMain.on("resize-window", (event, dir) => {
 //ipcRenderer.send('track-event', "App Backend", "Python Connection Established");
 //ipcRenderer.send('track-event', "App Backend", "Errors", "server", error);
 ipcMain.on("track-event", (event, category, action, label, value) => {
-  if (label == undefined && value == undefined) {
-    trackEvent(category, action);
-  } else if (label != undefined && value == undefined) {
-    trackEvent(category, action, label);
-  } else {
-    trackEvent(category, action, label, value);
-  }
+  // do nothing here for now
 });
 
 ipcMain.on("app_version", (event) => {
