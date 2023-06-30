@@ -10,7 +10,10 @@ configpath = join(userpath, ".pennsieve", "config.ini")
 PENNSIEVE_URL = "https://api.pennsieve.io"
 
 def get_access_token():
-    # get cognito config 
+    """
+    Creates a temporary access token for utilizing the Pennsieve API. Reads the api token and secret from the Pennsieve config.ini file.
+    get cognito config 
+    """
     r = requests.get(f"{PENNSIEVE_URL}/authentication/cognito-config")
     r.raise_for_status()
 
@@ -25,10 +28,10 @@ def get_access_token():
     aws_secret_access_key="",
     )
 
-            
+
     login_response = cognito_idp_client.initiate_auth(
     AuthFlow="USER_PASSWORD_AUTH",
-    AuthParameters={"USERNAME": read_from_config("api_token"), "PASSWORD": read_from_config("api_secret")},
+    AuthParameters={"USERNAME": get_profile_name_from_api_key("api_token"), "PASSWORD": get_profile_name_from_api_key("api_secret")},
     ClientId=cognito_app_client_id,
     )
         
@@ -37,6 +40,10 @@ def get_access_token():
 
 
 def get_cognito_userpool_access_token(email, password):
+    """
+    Creates a temporary access token for utilizing the Pennsieve API. Utilizes email and password to authenticate with the Pennsieve Cognito Userpool 
+    which provides higher privileges than the API token and secret flow.
+    """
     PENNSIEVE_URL = "https://api.pennsieve.io"
 
     try:
@@ -51,7 +58,7 @@ def get_cognito_userpool_access_token(email, password):
             aws_secret_access_key="",
         )
     except Exception as e:
-        raise Exception(e)
+        raise Exception(e) from e
 
     try:
         login_response = cognito_client.initiate_auth(
@@ -70,11 +77,10 @@ def get_cognito_userpool_access_token(email, password):
         response.raise_for_status()
     except Exception as e:
         raise e
-    
+
     return access_token
 
-# get a target key's value from the config file 
-def read_from_config(key):
+def get_profile_name_from_api_key(key):
     config = ConfigParser()
     config.read(configpath)
     if "global" not in config:

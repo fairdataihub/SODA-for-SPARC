@@ -7,13 +7,13 @@ Works within Organize Datasets to allow a user to validate their dataset before 
 import os
 import time
 from os.path import expanduser
-from .skeletonDatasetUtils import import_bf_metadata_files_skeleton
+from .skeletonDatasetUtils import import_ps_metadata_files_skeleton
 from pennsieve2.pennsieve import Pennsieve
 import pandas as pd 
 import requests
 from namespaces import NamespaceEnum, get_namespace_logger
 from authentication import get_access_token
-from utils import get_dataset_id, create_request_headers, load_manifest_to_dataframe
+from utils import get_dataset_id, create_request_headers, load_metadata_to_dataframe
 
 
 
@@ -111,7 +111,7 @@ def get_manifests(soda_json_structure):
               if subfolder_item["content"]["name"] == "manifest.xlsx":
                 # get the manifest file
                 man_id = subfolder_item["content"]["id"]
-                df = load_manifest_to_dataframe(man_id, "xlsx", token)
+                df = load_metadata_to_dataframe(man_id, "xlsx", token)
                 # convert to json
                 manifests[item_name] = df.to_json()
 
@@ -127,7 +127,7 @@ def get_metadata_files_json(soda_json_structure):
             if props["type"] == "bf": 
                 selected_dataset = soda_json_structure["bf-dataset-selected"]["dataset-name"]
                 # TODO: Update the import xlsx funcs to use the new func that avoids SSL errors
-                import_bf_metadata_files_skeleton(selected_dataset, metadata_files)
+                import_ps_metadata_files_skeleton(selected_dataset, metadata_files)
             else:
                 # get the file location from the user's computer
                 file_location = props["path"]

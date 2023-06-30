@@ -1,9 +1,0 @@
-Optional text file that contains information about the history of the dataset
-
-Changes in submssion in August, 2020
-1. Folder oragnization according the template modified by 10/30/2019
-2. Mice (male 7 and female 7, total 14) and samples (14 proximal colon) were added
-3. Materials and Methods are stated in one Word document loaded in 'protocol" folder
-4. New original confocal microscopic images added in the "primary" folder
-5. New digital traces added in "derivatives" folder
-6. Every microscopic and digital tracing image is accompanied by a png file with the same name for preview

@@ -467,8 +467,12 @@ const startupServerAndApiCheck = async () => {
       status = false;
     }
     time_pass = new Date() - time_start;
-    if (status) break;
-    if (time_pass > 300000) break; //break after five minutes
+    if (status) {
+      break;
+    }
+    if (time_pass > 300000) {
+      break;
+    } //break after five minutes
     await wait(2000);
   }
 
@@ -528,7 +532,7 @@ startupServerAndApiCheck();
 // Check if we are connected to the Pysoda server
 // Check app version on current app and display in the side bar
 // Also check the core systems to make sure they are all operational
-ipcRenderer.on("run_pre_flight_checks", async (event, arg) => {
+ipcRenderer.on("start_pre_flight_checks", async (event, arg) => {
   // run pre flight checks once the server connection is confirmed
   // wait until soda is connected to the backend server
   while (!sodaIsConnected || !apiVersionChecked) {
@@ -571,13 +575,14 @@ const getPennsieveAgentPath = () => {
     if (fs.existsSync(bit32Path)) {
       return bit32Path;
     }
+    throw new Error(`Could not find the Pennsieve agent path at ${bit64Path} or ${bit32Path}`);
   } else {
     const unixPath = "/usr/local/bin/pennsieve";
     if (fs.existsSync(unixPath)) {
       return unixPath;
     }
+    throw new Error(`Could not find the Pennsieve agent path at ${pennsievePath}`);
   }
-  throw new Error(`Cannot find pennsieve agent executable`);
 };
 
 const stopPennsieveAgent = async (pathToPennsieveAgent) => {
@@ -601,321 +606,401 @@ const stopPennsieveAgent = async (pathToPennsieveAgent) => {
 
 const startPennsieveAgent = async (pathToPennsieveAgent) => {
   return new Promise((resolve, reject) => {
-    try {
-      const agentStartSpawn = spawn(pathToPennsieveAgent, ["agent", "start"]);
-      agentStartSpawn.stdout.on("data", (data) => {
-        log.info(data.toString());
+    // Timeout if the agent was not able to be retrieved within 15 seconds
+    const versionCheckTimeout = setTimeout(() => {
+      reject(new Error("The Pennsieve Agent was not able to be started in the alotted time"));
+    }, 15000);
+    const agentStartSpawn = spawn(pathToPennsieveAgent, ["agent", "start"]);
+
+    // Capture standard output
+    agentStartSpawn.stdout.on("data", (data) => {
+      const agentMessage = data.toString();
+      // Check if the agentMessage contains the string "Agent started"
+      if (
+        agentMessage.includes("Running Agent NOT as daemon") ||
+        agentMessage.includes("Pennsieve Agent started")
+      ) {
+        clearTimeout(versionCheckTimeout);
         resolve();
-      });
-      agentStartSpawn.stderr.on("data", (data) => {
-        log.info(data.toString());
-        reject(new Error(data.toString()));
-      });
-    } catch (error) {
-      log.error(error);
-      reject(error);
-    }
+      }
+    });
+
+    // Capture standard error output
+    agentStartSpawn.stderr.on("data", (data) => {
+      const agentError = data.toString();
+      log.info(agentError);
+      clearTimeout(versionCheckTimeout);
+      reject(new Error(agentError));
+    });
+
+    // Capture error output
+    agentStartSpawn.on("error", (error) => {
+      const agentSpawnError = error.toString();
+      log.info(agentSpawnError);
+      clearTimeout(versionCheckTimeout);
+      reject(new Error(agentSpawnError));
+    });
   });
 };
 
 const getPennsieveAgentVersion = (pathToPennsieveAgent) => {
-  log.info("DING DING DING");
-  return new Promise((resolve, reject) => {
-    try {
-      // // Timeout if the agent was not able to be retrieved within 7 seconds
-      const versionCheckTimeout = setTimeout(() => {
-        reject(
-          new Error(
-            "Timeout Error: The agent version was not able to be verified in the allotted time"
-          )
-        );
-      }, 30000);
+  log.info("Getting Pennsieve agent version");
 
-      const agentVersionSpawn = execFile(pathToPennsieveAgent, ["version"]);
-      agentVersionSpawn.stdout.on("data", (data) => {
-        log.info(data.toString());
-        const versionResult = {};
-        const regex = /(\w+ Version)\s*:\s*(\S+)/g;
-        let match;
-        while ((match = regex.exec(data)) !== null) {
-          versionResult[match[1]] = match[2];
-        }
-        // If we were able to extract the version from the stdout, resolve the promise
-        if (versionResult["Agent Version"]) {
-          clearTimeout(versionCheckTimeout);
-          resolve(versionResult);
-        }
-      });
-      agentVersionSpawn.stderr.on("data", (data) => {
+  return new Promise((resolve, reject) => {
+    // Timeout if the agent was not able to be retrieved within 15 seconds
+    const versionCheckTimeout = setTimeout(() => {
+      reject(
+        new Error(
+          "The installed Pennsieve agent version was not able to be retrieved in the alotted time"
+        )
+      );
+    }, 15000);
+
+    const agentVersionSpawn = execFile(pathToPennsieveAgent, ["version"]);
+
+    // Capture standard output and parse the version
+    // Resolve the promise if the version is found
+    agentVersionSpawn.stdout.on("data", (data) => {
+      const agentVersionOutput = data.toString();
+      log.info(agentVersionOutput);
+      const versionResult = {};
+      const regex = /(\w+ Version)\s*:\s*(\S+)/g;
+      let match;
+      while ((match = regex.exec(data)) !== null) {
+        versionResult[match[1]] = match[2];
+      }
+
+      // If we were able to extract the version from the stdout, resolve the promise
+      if (versionResult["Agent Version"]) {
         clearTimeout(versionCheckTimeout);
-        log.info(data.toString());
-        reject(new Error(data.toString()));
-      });
-    } catch (error) {
-      log.error(error);
-      reject(error);
-    }
+        resolve(versionResult);
+      }
+    });
+
+    // Capture standard error output and reject the promise
+    agentVersionSpawn.stderr.on("data", (data) => {
+      const agentError = data.toString();
+      log.info(agentError);
+      clearTimeout(versionCheckTimeout);
+      reject(new Error(agentError));
+    });
+
+    // Capture error output and reject the promise
+    agentVersionSpawn.on("error", (error) => {
+      const agentSpawnError = error.toString();
+      log.info(agentSpawnError);
+      clearTimeout(versionCheckTimeout);
+      reject(new Error(agentSpawnError));
+    });
   });
 };
 
-// Start the Pennsieve agent and check the version
-// If any of the mandatory steps fail, the user will be notified on how to alleviate the issue
-// and the promise will be rejected
-const startPennsieveAgentAndCheckVersion = async () => {
-  // First get the latest Pennsieve agent version on GitHub
-  // This is to ensure the user has the latest version of the agent
-  let browser_download_url;
-  let latest_agent_version;
-  try {
-    [browser_download_url, latest_agent_version] = await get_latest_agent_version();
-  } catch (error) {
-    await Swal.fire({
-      icon: "error",
-      text: "We are unable to get the latest version of the Pennsieve Agent. Please try again later. If this issue persists please contact the SODA team at help@fairdataihub.org",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showCancelButton: true,
-      confirmButtonText: "Ok",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
-    clientError(error);
-    throw error;
-  }
-
-  // Get the path to the Pennsieve agent
-  // If the path that the Pennsieve agent should be at is not found,
-  // alert the user and open the download page for the Pennsieve agent
-  try {
-    agentPath = getPennsieveAgentPath();
-  } catch (error) {
-    const { value: result } = await Swal.fire({
-      icon: "error",
-      title: "Pennsieve Agent Not Found",
-      text: "It looks like the Pennsieve Agent is not installed on your computer. Please download the latest version of the Pennsieve Agent and install it. Once you have installed the Pennsieve Agent, please restart SODA.",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showCancelButton: true,
-      reverseButtons: reverseSwalButtons,
-      confirmButtonText: "Download now",
-      cancelButtonText: "Skip for now",
-    });
-    if (result) {
-      shell.openExternal(browser_download_url);
-      shell.openExternal("https://docs.pennsieve.io/docs/uploading-files-programmatically");
-    }
-    clientError(error);
-    throw error;
-  }
-
-  // Stop the Pennsieve agent if it is running
-  // This is to ensure that the agent is not running when we try to start it so no funny business happens
-  try {
-    await stopPennsieveAgent(agentPath);
-  } catch (error) {
-    // If the agent is not running then we can ignore this error
-    // But it shouldn't throw if the agent is running or not
-    clientError(error);
-  }
-
-  // Start the Pennsieve agent
-  try {
-    await startPennsieveAgent(agentPath);
-  } catch (error) {
-    clientError(error);
-    throw error;
-  }
-
-  // Get the version of the Pennsieve agent
-  let pennsieveAgentVersion;
-  try {
-    pennsieveAgentVersionObj = await getPennsieveAgentVersion(agentPath);
-    pennsieveAgentVersion = pennsieveAgentVersionObj["Agent Version"];
-  } catch (error) {
-    await Swal.fire({
-      icon: "error",
-      text: "Unable to determine the version number of the Pennsieve Agent. Please try again. If this issue persists contact the SODA team using the 'Contact Us' section found in the sidebar.",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: "Ok",
-      reverseButtons: reverseSwalButtons,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
-    clientError(error);
-    throw error;
-  }
-
-  if (pennsieveAgentVersion !== latest_agent_version) {
-    let { value: result } = await Swal.fire({
-      icon: "warning",
-      text: "It appears that you are not running the latest version of the Pensieve Agent. Please download the latest version of the Pennsieve Agent and install it. Once you have installed the Pennsieve Agent, please restart SODA.",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showCancelButton: true,
-      confirmButtonText: "Download now",
-      cancelButtonText: "Skip for now",
-      reverseButtons: reverseSwalButtons,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
-    if (result) {
-      shell.openExternal(browser_download_url);
-      shell.openExternal("https://docs.pennsieve.io/docs/uploading-files-programmatically");
-      // Stop the Pennsieve agent so the agent installer will not require a reboot
-      await stopPennsieveAgent();
-    }
-    throw Error("The installed version of the Pennsieve agent is not the latest version.");
-  }
-};
-
+let preFlightCheckNotyf = null;
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 const run_pre_flight_checks = async (check_update = true) => {
-  log.info("Running pre flight checks");
-  let connection_response = "";
-  let account_present = false;
+  try {
+    log.info("Running pre flight checks");
 
-  // Check the internet connection and if available check the rest.
-  connection_response = await check_internet_connection();
+    if (!preFlightCheckNotyf) {
+      preFlightCheckNotyf = notyf.open({
+        duration: 15000,
+        type: "info",
+        message: "Checking SODA's connection to Pennsieve...",
+      });
+    }
 
-  if (!connection_response) {
-    await Swal.fire({
-      title: "No Internet Connection",
-      icon: "success",
-      text: "It appears that your computer is not connected to the internet. You may continue, but you will not be able to use features of SODA related to Pennsieve and especially none of the features located under the 'Manage Datasets' section.",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: "I understand",
-      showConfirmButton: true,
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
+    // Check the internet connection and if available check the rest.
+    const userConnectedToInternet = await checkInternetConnection();
+    if (!userConnectedToInternet) {
+      throw new Error(
+        "It seems that you are not connected to the internet. Please check your connection and try again."
+      );
+    }
 
-    return false;
-  }
+    // Check for an API key pair first. Calling the agent check without a config file, causes it to crash.
+    const account_present = await check_api_key();
 
-  // TODO: Remove? Test first.
-  await wait(500);
+    // TODO: Reimplement this section to work with the new agent
+    if (!account_present) {
+      // Dismiss the preflight check notification if it is still open
+      if (preFlightCheckNotyf) {
+        notyf.dismiss(preFlightCheckNotyf);
+        preFlightCheckNotyf = null;
+      }
 
-  // TODO: Start the agent here or while determining installation and agent version.
+      if (check_update) {
+        checkNewAppVersion();
+      }
 
-  // Check for an API key pair first. Calling the agent check without a config file, causes it to crash.
-  account_present = await check_api_key();
+      // If there is no API key pair, show the warning and let them add a key. Messages are dissmisable.
+      const { value: userChoseToLogIn } = await Swal.fire({
+        icon: "warning",
+        text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connected to Pennsieve. Would you like to do it now?",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        confirmButtonText: "Yes",
+        showCancelButton: true,
+        reverseButtons: reverseSwalButtons,
+        cancelButtonText: "I'll do it later",
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      });
 
-  // TODO: Reimplement this section to work with the new agent
-  if (!account_present) {
+      // If user chose to log in, open the dropdown prompt
+      if (userChoseToLogIn) {
+        await openDropdownPrompt(null, "bf");
+      }
+      return false;
+    }
+
+    // First get the latest Pennsieve agent version on GitHub
+    // This is to ensure the user has the latest version of the agent
+    let browser_download_url;
+    let latest_agent_version;
+    try {
+      [browser_download_url, latest_agent_version] = await get_latest_agent_version();
+    } catch (error) {
+      const emessage = userErrorMessage(error);
+      throw new Error(`Error getting latest Pennsieve agent version:<br />${emessage}`);
+    }
+
+    // Get the path to the Pennsieve agent
+    // If the path that the Pennsieve agent should be at is not found,
+    // alert the user and open the download page for the Pennsieve agent
+    let agentPath;
+    try {
+      agentPath = getPennsieveAgentPath();
+    } catch (error) {
+      const emessage = userErrorMessage(error);
+      log.info(`Error getting Pennsieve agent path: ${emessage}`);
+
+      const { value: rerunPreFlightChecks } = await Swal.fire({
+        icon: "info",
+        title: "Pennsieve Agent Not Found",
+        html: `
+          It looks like the Pennsieve Agent is not installed on your computer.
+          <br />
+          To install the Pennsieve Agent, please visit the link below and follow the instructions.
+          <br />
+          <br />
+          <a href="${browser_download_url}" target="_blank">Download the Pennsieve agent</a>
+          <br />
+          <br />
+          Once you have installed the Pennsieve Agent, please click the button below to ensure that the Pennsieve agent was installed correctly.
+        `,
+        width: 800,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showCancelButton: true,
+        showCloseButton: true,
+        reverseButtons: reverseSwalButtons,
+        confirmButtonText: "Retry check for Pennsieve agent",
+        cancelButtonText: "Skip for now",
+      });
+      // If the user clicks the retry button, rerun the pre flight checks
+      if (rerunPreFlightChecks) {
+        return await run_pre_flight_checks();
+      }
+
+      // Dismiss the preflight check notification if it is still open
+      if (preFlightCheckNotyf) {
+        notyf.dismiss(preFlightCheckNotyf);
+        preFlightCheckNotyf = null;
+      }
+      // If the user clicks the skip button, return false which will cause the pre flight checks to fail
+      return false;
+    }
+
+    // Stop the Pennsieve agent if it is running
+    // This is to ensure that the agent is not running when we try to start it so no funny business happens
+    try {
+      await stopPennsieveAgent(agentPath);
+    } catch (error) {
+      // Note: This error is not critical so we do not need to throw it
+      clientError(error);
+    }
+
+    // Start the Pennsieve agent
+    try {
+      await startPennsieveAgent(agentPath);
+    } catch (error) {
+      clientError(error);
+      const emessage = userErrorMessage(error);
+      const { value: rerunPreFlightChecks } = await Swal.fire({
+        icon: "info",
+        title: "The Pennsieve Agent failed to start",
+        html: `
+          <br />
+          <div class="div--code-block-error">${emessage}</div>
+          <br />
+          Please view the <a href="https://docs.sodaforsparc.io/docs/common-errors/trouble-starting-the-pennsieve-agent-in-soda" target="_blank">SODA documentation</a>
+          to troubleshoot this issue. Then click the "Try again" button below to ensure the issue has been fixed.
+        `,
+        width: 800,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showCancelButton: true,
+        showCloseButton: true,
+        reverseButtons: reverseSwalButtons,
+        confirmButtonText: "Try again",
+        cancelButtonText: "Skip for now",
+      });
+      // If the user clicks the retry button, rerun the pre flight checks
+      if (rerunPreFlightChecks) {
+        return await run_pre_flight_checks();
+      }
+
+      // Dismiss the preflight check notification if it is still open
+      if (preFlightCheckNotyf) {
+        notyf.dismiss(preFlightCheckNotyf);
+        preFlightCheckNotyf = null;
+      }
+      // If the user clicks the skip button, return false which will cause the pre flight checks to fail
+      return false;
+    }
+
+    // Get the version of the Pennsieve agent
+    let usersPennsieveAgentVersion;
+    try {
+      const versionObj = await getPennsieveAgentVersion(agentPath);
+      usersPennsieveAgentVersion = versionObj["Agent Version"];
+    } catch (error) {
+      const emessage = userErrorMessage(error);
+      log.info(`Error getting Pennsieve agent version: ${emessage}`);
+      throw new Error(`Error getting Pennsieve agent version:<br />${emessage}`);
+    }
+
+    if (usersPennsieveAgentVersion !== latest_agent_version) {
+      // Stop the Pennsieve agent if it is running to prevent any issues when updating while the agent is running
+      try {
+        await stopPennsieveAgent(agentPath);
+      } catch (error) {
+        // Note: This error is not critical so we do not need to throw it
+        clientError(error);
+      }
+      const { value: rerunPreFlightChecks } = await Swal.fire({
+        icon: "info",
+        title: "Installed Pennsieve agent out of date",
+        html: `
+          Your Pennsieve agent version: <b>${usersPennsieveAgentVersion}</b>
+          <br />
+          Latest Pennsieve agent version: <b>${latest_agent_version}</b>
+          <br />
+          <br />
+          To update your Pennsieve Agent, please visit the link below and follow the instructions.
+          <br />
+          <br />
+          <a href="${browser_download_url}" target="_blank">Download the latest Pennsieve agent</a>
+          <br />
+          <br />
+          Once you have updated your Pennsieve agent, please click the button below to ensure that the Pennsieve agent was updated correctly.
+        `,
+        width: 800,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showCancelButton: true,
+        showCloseButton: true,
+        reverseButtons: reverseSwalButtons,
+        confirmButtonText: "Check updated Pennsieve agent version",
+        cancelButtonText: "Skip for now",
+      });
+      // If the user clicks the retry button, rerun the pre flight checks
+      if (rerunPreFlightChecks) {
+        return await run_pre_flight_checks();
+      }
+      // Dismiss the preflight check notification if it is still open
+      if (preFlightCheckNotyf) {
+        notyf.dismiss(preFlightCheckNotyf);
+        preFlightCheckNotyf = null;
+      }
+
+      // If the user clicks the skip button, return false which will cause the pre flight checks to fail
+      return false;
+    }
+
     if (check_update) {
       checkNewAppVersion();
     }
 
-    // If there is no API key pair, show the warning and let them add a key. Messages are dissmisable.
-    let { value: result } = await Swal.fire({
-      icon: "warning",
-      text: "It seems that you have not connected your Pennsieve account with SODA. We highly recommend you do that since most of the features of SODA are connected to Pennsieve. Would you like to do it now?",
+    // make an api request to change to the organization members. If it fails with a 401 then ask them to go through the workspace change flow as SODA does not have access to the workspace.
+    try {
+      await client.get(`/manage_datasets/ps_get_users?selected_account=${defaultBfAccount}`);
+    } catch (err) {
+      clientError(err);
+      if (err.response.status) {
+        await addBfAccount(null, true);
+      }
+    }
+
+    // let nodeStorage = new JSONStorage(app.getPath("userData"));
+    // launchAnnouncement = nodeStorage.getItem("announcements");
+    if (launchAnnouncement) {
+      // nodeStorage.setItem("announcements", false);
+      await checkForAnnouncements("announcements");
+      launchAnnouncement = false;
+    }
+
+    // Dismiss the preflight check notification if it is still open
+    if (preFlightCheckNotyf) {
+      notyf.dismiss(preFlightCheckNotyf);
+      preFlightCheckNotyf = null;
+    }
+
+    notyf.open({
+      type: "final",
+      message: "SODA connected to Pennsieve successfully!",
+    });
+
+    log.info("All pre flight checks passed");
+
+    // All pre flight checks passed, return true
+    return true;
+  } catch (error) {
+    // Dismiss the preflight check notification if it is still open
+    if (preFlightCheckNotyf) {
+      notyf.dismiss(preFlightCheckNotyf);
+      preFlightCheckNotyf = null;
+    }
+    // Stop the Pennsieve agent if it is running
+    try {
+      await stopPennsieveAgent(agentPath);
+    } catch (error) {
+      // Note: This error is not critical so we do not need to throw it
+      clientError(error);
+    }
+
+    const emessage = userErrorMessage(error);
+    const { value: retryChecks } = await Swal.fire({
+      icon: "info",
+      title: `Error checking SODA's connection to Pennsieve`,
+      html: `${emessage}`,
+      width: 600,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: "Yes",
       showCancelButton: true,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      confirmButtonText: "Retry",
+      cancelButtonText: "Skip for now",
       reverseButtons: reverseSwalButtons,
-      cancelButtonText: "I'll do it later",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
     });
-
-    // TODO: Especially test this part cuz its getting tricky in the conversion
-    if (result) {
-      await openDropdownPrompt(null, "bf");
-      return false;
-    } else {
-      return true;
+    // If the user clicks retry, then run the preflight checks again
+    if (retryChecks) {
+      return await run_pre_flight_checks();
     }
-  }
-
-  // set the preferred organization spans
-
-  // an account is present
-  // Check for an installed Pennsieve agent
-  let pennsieveAgentCheckNotyf;
-  try {
-    // Open a notyf to let the user know that we are checking for the agent that closes only if the agent is found.
-    pennsieveAgentCheckNotyf = notyf.open({
-      type: "info",
-      message: "Checking to make sure the latest Pennsieve Agent is installed...",
-      duration: 0, // 0 means it will not close automatically
-    });
-    await startPennsieveAgentAndCheckVersion();
-    notyf.dismiss(pennsieveAgentCheckNotyf);
-    notyf.open({
-      type: "success",
-      message: "The latest Pennsieve Agent is installed.",
-    });
-  } catch (error) {
-    notyf.dismiss(pennsieveAgentCheckNotyf);
-    notyf.open({
-      type: "error",
-      message: "Unable to start the Pennsieve Agent.",
-    });
-    log.error(error);
-
+    // If the user clicks skip for now, then return false
     return false;
   }
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  if (check_update) {
-    checkNewAppVersion();
-  }
-
-  await wait(500);
-
-  notyf.open({
-    type: "info",
-    message: "Verifying access to workspace.",
-  });
-
-  // make an api request to change to the organization members. If it fails with a 401 then ask them to go through the workspace change flow as SODA does not have access to the workspace.
-  try {
-    await client.get(`/manage_datasets/bf_get_users?selected_account=${defaultBfAccount}`);
-  } catch (err) {
-    clientError(err);
-    if (err.response.status) {
-      await addBfAccount(null, true);
-    }
-  }
-
-  notyf.open({
-    type: "final",
-    message: "You're all set!",
-  });
-
-  // let nodeStorage = new JSONStorage(app.getPath("userData"));
-  // launchAnnouncement = nodeStorage.getItem("announcements");
-  if (launchAnnouncement) {
-    // nodeStorage.setItem("announcements", false);
-    await checkForAnnouncements("announcements");
-    launchAnnouncement = false;
-  }
-  return true;
 };
 
 // Check if the Pysoda server is live
@@ -978,7 +1063,7 @@ const apiVersionsMatch = async () => {
 
     await Swal.fire({
       icon: "error",
-      html: `${appVersion} ${serverAppVersion}The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA or check to see if a previous version is running in the background with the instructions on our <a href='https://docs.sodaforsparc.io/docs/common-errors/pennsieve-agent-is-already-running' target='_blank'>documentation page.</a> If this issue occurs multiple times, please email <a href='mailto:help@fairdataihub.org'>help@fairdataihub.org</a>.`,
+      html: `${appVersion} ${serverAppVersion}The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA.`,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
       confirmButtonText: "Close now",
@@ -1012,44 +1097,15 @@ const apiVersionsMatch = async () => {
   checkNewAppVersion(); // Added so that version will be displayed for new users
 };
 
-const check_internet_connection = async (show_notification = true) => {
-  let notification = null;
-  if (show_notification) {
-    notification = notyf.open({
-      type: "loading_internet",
-      message: "Checking Internet status...",
-    });
+const checkInternetConnection = async () => {
+  try {
+    await axios.get("https://www.google.com");
+    return true;
+  } catch (error) {
+    console.error("No internet connection");
+    log.error("No internet connection");
+    return false;
   }
-  await wait(800);
-
-  return require("dns").resolve("www.google.com", async (err) => {
-    if (err) {
-      console.error("No internet connection");
-      log.error("No internet connection");
-      ipcRenderer.send("warning-no-internet-connection");
-      if (show_notification) {
-        notyf.dismiss(notification);
-        notyf.open({
-          type: "error",
-          message: "Not connected to internet",
-        });
-      }
-      connected_to_internet = false;
-      return connected_to_internet;
-    } else {
-      console.log("Connected to the internet");
-      log.info("Connected to the internet");
-      if (show_notification) {
-        notyf.dismiss(notification);
-        notyf.open({
-          type: "success",
-          message: "Connected to the internet",
-        });
-      }
-      connected_to_internet = true;
-      return connected_to_internet;
-    }
-  });
 };
 
 const check_api_key = async () => {
@@ -1134,46 +1190,18 @@ const check_agent_installed = async () => {
   return [true, agent_version];
 };
 
-const check_agent_installed_version = async (agent_version) => {
-  let notification = null;
-  notification = notyf.open({
-    type: "ps_agent",
-    message: "Checking Pennsieve Agent version...",
-  });
-  await wait(800);
-  let latest_agent_version = "";
-  let browser_download_url = "";
-
-  // IMP: error in subfunction is handled by caller
-  [browser_download_url, latest_agent_version] = await get_latest_agent_version();
-
-  if (agent_version !== latest_agent_version) {
-    notyf.dismiss(notification);
-    notyf.open({
-      type: "warning",
-      message: "A newer Pennsieve agent was found!",
-    });
-    log.warn(`Current agent version: ${agent_version}`);
-    log.warn(`Latest agent version: ${latest_agent_version}`);
-  } else {
-    notyf.dismiss(notification);
-    notyf.open({
-      type: "success",
-      message: "You have the latest Pennsieve agent!",
-    });
-    browser_download_url = "";
-    log.info("Up to date agent version found");
-  }
-  return [browser_download_url, latest_agent_version];
-};
-
 const get_latest_agent_version = async () => {
   let browser_download_url = undefined;
 
   // let the error raise up to the caller if one occurs
-  let releasesResponse = await axios.get(
-    "https://api.github.com/repos/Pennsieve/pennsieve-agent/releases"
-  );
+  let releasesResponse;
+  try {
+    releasesResponse = await axios.get(
+      "https://api.github.com/repos/Pennsieve/pennsieve-agent/releases"
+    );
+  } catch (error) {
+    throw new Error("Could not find the lastest release on Pennsieve's Github");
+  }
 
   let releases = releasesResponse.data;
   let targetRelease = undefined;
@@ -1216,8 +1244,11 @@ const get_latest_agent_version = async () => {
     });
   }
 
-  if (browser_download_url == undefined || latest_agent_version == undefined) {
-    throw new Error("Trouble getting the latest agent version.");
+  if (browser_download_url == undefined) {
+    throw new Error("Could not find a download url for the agent.");
+  }
+  if (latest_agent_version == undefined) {
+    throw new Error("Could not extract the latest agent version from the release.");
   }
 
   return [browser_download_url, latest_agent_version];
@@ -3575,6 +3606,7 @@ const withdrawDatasetSubmission = async (curationMode = "") => {
   }
 };
 
+// TODO: Dorian -> Remove this feature as we don't allow withdraws anymore
 const withdrawDatasetCheck = async (res, curationMode) => {
   let reviewstatus = res["publishing_status"];
   let requestStatus = res["review_request_status"];
@@ -3599,6 +3631,7 @@ const withdrawDatasetCheck = async (res, curationMode) => {
   }
 };
 
+// TODO: Dorian -> Remove this feature as we don't allow withdraws anymore
 const withdrawReviewDataset = async (curationMode) => {
   // bfWithdrawReviewDatasetBtn.disabled = true;
 
@@ -3661,7 +3694,7 @@ const withdrawReviewDataset = async (curationMode) => {
     // scroll to the submit button
   } catch (error) {
     clientError(error);
-    var emessage = userErrorMessage(error);
+    let emessage = userErrorMessage(error);
     Swal.fire({
       title: "Could not withdraw dataset from publication!",
       text: `${emessage}`,
@@ -3717,7 +3750,7 @@ const refreshBfUsersList = () => {
 
   if (accountSelected !== "Select") {
     client
-      .get(`manage_datasets/bf_get_users?selected_account=${accountSelected}`)
+      .get(`manage_datasets/ps_get_users?selected_account=${accountSelected}`)
       .then((res) => {
         let users = res.data["users"];
         // The removeoptions() wasn't working in some instances (creating a double dataset list) so second removal for everything but the first element.
@@ -3727,15 +3760,17 @@ const refreshBfUsersList = () => {
         $("#button-add-permission-user").hide();
         $("#bf_list_users_pi").selectpicker("refresh");
         $("#bf_list_users_pi").find("option:not(:first)").remove();
-        for (var myItem in users) {
+        for (let myItem in users) {
           // returns like [..,''fname lname email !!**!! pennsieve_id',',..]
           let sep_pos = users[myItem].lastIndexOf("!|**|!");
-          var myUser = users[myItem].substring(0, sep_pos);
-          var optionUser = document.createElement("option");
+          let myUser = users[myItem].substring(0, sep_pos);
+          let optionUser = document.createElement("option");
+          let optionUser2 = document.createElement("option");
+
           optionUser.textContent = myUser;
           optionUser.value = users[myItem].substring(sep_pos + 6);
+          optionUser2 = optionUser.cloneNode(true);
           bfListUsers.appendChild(optionUser);
-          var optionUser2 = optionUser.cloneNode(true);
           bfListUsersPI.appendChild(optionUser2);
         }
       })
@@ -3756,8 +3791,8 @@ const getSortedTeamStrings = (pennsieveTeamsJsonResponse) => {
 const refreshBfTeamsList = async (teamList) => {
   removeOptions(teamList);
 
-  var accountSelected = defaultBfAccount;
-  var optionTeam = document.createElement("option");
+  let accountSelected = defaultBfAccount;
+  let optionTeam = document.createElement("option");
 
   optionTeam.textContent = "Select team";
   teamList.appendChild(optionTeam);
@@ -3765,7 +3800,7 @@ const refreshBfTeamsList = async (teamList) => {
   if (accountSelected !== "Select") {
     try {
       const teamsReq = await client.get(
-        `manage_datasets/bf_get_teams?selected_account=${defaultBfAccount}`
+        `manage_datasets/ps_get_teams?selected_account=${defaultBfAccount}`
       );
       const teamsThatCanBeGrantedPermissions = getSortedTeamStrings(teamsReq.data.teams);
 
@@ -3800,15 +3835,15 @@ const selectOptionColor = (mylist) => {
 // this function now is only used to load all datasets ("All" permission)
 // onto the dataset_description file ds-name select
 const refreshDatasetList = () => {
-  var datasetPermission = "All";
+  let datasetPermission = "All";
+  let filteredDatasets = [];
 
-  var filteredDatasets = [];
   if (datasetPermission.toLowerCase() === "all") {
-    for (var i = 0; i < datasetList.length; i++) {
+    for (let i = 0; i < datasetList.length; i++) {
       filteredDatasets.push(datasetList[i].name);
     }
   }
-  filteredDatasets.sort(function (a, b) {
+  filteredDatasets.sort((a, b) => {
     return a.toLowerCase().localeCompare(b.toLowerCase());
   });
 
@@ -3838,12 +3873,12 @@ const refreshOrganizationList = () => {
 const populateDatasetDropdowns = (mylist) => {
   clearDatasetDropdowns();
   for (myitem in mylist) {
-    var myitemselect = mylist[myitem];
-    var option = document.createElement("option");
+    let myitemselect = mylist[myitem];
+    let option = document.createElement("option");
+    let option2 = document.createElement("option");
     option.textContent = myitemselect;
     option.value = myitemselect;
-    var option1 = option.cloneNode(true);
-    var option2 = option.cloneNode(true);
+    option2 = option.cloneNode(true);
 
     curateDatasetDropdown.appendChild(option2);
   }
@@ -3857,12 +3892,12 @@ const populateOrganizationDropdowns = (organizations) => {
   clearOrganizationDropdowns();
 
   for (const organization in organizations) {
-    var myitemselect = organizations[organization];
-    var option = document.createElement("option");
+    let myitemselect = organizations[organization];
+    let option = document.createElement("option");
+    let option1 = document.createElement("option");
     option.textContent = myitemselect;
     option.value = myitemselect;
-    let option1 = option.cloneNode(true);
-    let option2 = option.cloneNode(true);
+    option1 = option.cloneNode(true);
 
     curateOrganizationDropdown.appendChild(option1);
   }
@@ -3883,11 +3918,10 @@ const updateBfAccountList = async () => {
 
   let accountList = responseObject.data["accounts"];
   for (myitem in accountList) {
-    var myitemselect = accountList[myitem];
-    var option = document.createElement("option");
+    let myitemselect = accountList[myitem];
+    let option = document.createElement("option");
     option.textContent = myitemselect;
     option.value = myitemselect;
-    var option2 = option.cloneNode(true);
   }
   await loadDefaultAccount();
   if (accountList[0] === "Select" && accountList.length === 1) {
@@ -3911,7 +3945,7 @@ const loadDefaultAccount = async () => {
   let accounts = responseObject.data["defaultAccounts"];
 
   if (accounts.length > 0) {
-    var myitemselect = accounts[0];
+    let myitemselect = accounts[0];
     // keep the defaultBfAccount value as the user's profile config key value for reference later
     defaultBfAccount = myitemselect;
 
@@ -3931,8 +3965,8 @@ const loadDefaultAccount = async () => {
 };
 
 const showPrePublishingPageElements = () => {
-  var selectedBfAccount = defaultBfAccount;
-  var selectedBfDataset = defaultBfDataset;
+  let selectedBfAccount = defaultBfAccount;
+  let selectedBfDataset = defaultBfDataset;
 
   if (selectedBfDataset === "Select dataset") {
     return;
@@ -3952,7 +3986,7 @@ const showPrePublishingPageElements = () => {
 const showPublishingStatus = async (callback, curationMode = "") => {
   return new Promise(async function (resolve, reject) {
     if (callback == "noClear") {
-      var nothing;
+      let nothing;
     }
 
     let curationModeID = "";
@@ -4100,15 +4134,15 @@ var sodaJSONObj = {};
 
 /// back button Curate
 organizeDSbackButton.addEventListener("click", function () {
-  var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+  let slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
   if (slashCount !== 1) {
-    var filtered = getGlobalPath(organizeDSglobalPath);
+    let filtered = getGlobalPath(organizeDSglobalPath);
     if (filtered.length === 1) {
       organizeDSglobalPath.value = filtered[0] + "/";
     } else {
       organizeDSglobalPath.value = filtered.slice(0, filtered.length - 1).join("/") + "/";
     }
-    var myPath = datasetStructureJSONObj;
+    let myPath = datasetStructureJSONObj;
     for (var item of filtered.slice(1, filtered.length - 1)) {
       myPath = myPath["folders"][item];
     }
@@ -4116,7 +4150,7 @@ organizeDSbackButton.addEventListener("click", function () {
     $("#items").empty();
     already_created_elem = [];
     let items = loadFileFolder(myPath); //array -
-    let total_item_count = items[1].length + items[0].length;
+    console.log(items);
     //we have some items to display
     listItems(myPath, "#items", 500, (reset = true));
     organizeLandingUIEffect();
@@ -4128,9 +4162,9 @@ organizeDSbackButton.addEventListener("click", function () {
 // Add folder button
 organizeDSaddNewFolder.addEventListener("click", function (event) {
   event.preventDefault();
-  var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+  let slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
   if (slashCount !== 1) {
-    var newFolderName = "New Folder";
+    let newFolderName = "New Folder";
     Swal.fire({
       title: "Add new folder...",
       text: "Enter a name below:",
@@ -4153,7 +4187,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
         $(".swal2-input").attr("id", "add-new-folder-input");
         $(".swal2-confirm").attr("id", "add-new-folder-button");
         $("#add-new-folder-input").keyup(function () {
-          var val = $("#add-new-folder-input").val();
+          let val = $("#add-new-folder-input").val();
           let folderNameCheck = checkIrregularNameBoolean(val);
           if (folderNameCheck === true) {
             Swal.showValidationMessage(
@@ -4171,75 +4205,65 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
         $(".swal2-input").attr("id", "");
       },
     }).then((result) => {
-      if (result.value) {
-        if (result.value !== null && result.value !== "") {
-          newFolderName = result.value.trim();
-          // check for duplicate or files with the same name
-          var duplicate = false;
-          var itemDivElements = document.getElementById("items").children;
-          for (var i = 0; i < itemDivElements.length; i++) {
-            if (newFolderName === itemDivElements[i].innerText) {
-              duplicate = true;
-              break;
-            }
+      if (result.value && result.value !== null && result.value !== "") {
+        newFolderName = result.value.trim();
+        // check for duplicate or files with the same name
+        let duplicate = false;
+        let itemDivElements = document.getElementById("items").children;
+        for (let i = 0; i < itemDivElements.length; i++) {
+          if (newFolderName === itemDivElements[i].innerText) {
+            duplicate = true;
+            break;
           }
-          if (duplicate) {
-            Swal.fire({
-              icon: "error",
-              text: "Duplicate folder name: " + newFolderName,
-              confirmButtonText: "OK",
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-            });
+        }
+        if (duplicate) {
+          Swal.fire({
+            icon: "error",
+            text: "Duplicate folder name: " + newFolderName,
+            confirmButtonText: "OK",
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+          });
 
-            logCurationForAnalytics(
-              "Error",
-              PrepareDatasetsAnalyticsPrefix.CURATE,
-              AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-              ["Step 3", "Add", "Folder"],
-              determineDatasetLocation()
-            );
-          } else {
-            // var appendString = "";
-            // appendString =
-            //   appendString +
-            //   '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder blue"><i class="fas fa-folder"></i></h1><div class="folder_desc">' +
-            //   newFolderName +
-            //   "</div></div>";
-            // $(appendString).appendTo("#items");
+          logCurationForAnalytics(
+            "Error",
+            PrepareDatasetsAnalyticsPrefix.CURATE,
+            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+            ["Step 3", "Add", "Folder"],
+            determineDatasetLocation()
+          );
+        } else {
+          /// update datasetStructureJSONObj
+          let currentPath = organizeDSglobalPath.value;
+          let jsonPathArray = currentPath.split("/");
+          let filtered = jsonPathArray.slice(1).filter(function (el) {
+            return el != "";
+          });
 
-            /// update datasetStructureJSONObj
-            var currentPath = organizeDSglobalPath.value;
-            var jsonPathArray = currentPath.split("/");
-            var filtered = jsonPathArray.slice(1).filter(function (el) {
-              return el != "";
-            });
+          let myPath = getRecursivePath(filtered, datasetStructureJSONObj);
+          let renamedNewFolder = newFolderName;
+          // update Json object with new folder created
+          myPath["folders"][renamedNewFolder] = {
+            folders: {},
+            files: {},
+            type: "virtual",
+            action: ["new"],
+          };
 
-            var myPath = getRecursivePath(filtered, datasetStructureJSONObj);
-            // update Json object with new folder created
-            var renamedNewFolder = newFolderName;
-            myPath["folders"][renamedNewFolder] = {
-              folders: {},
-              files: {},
-              type: "virtual",
-              action: ["new"],
-            };
+          listItems(myPath, "#items", 500, (reset = true));
+          getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
 
-            listItems(myPath, "#items", 500, (reset = true));
-            getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
+          // log that the folder was successfully added
+          logCurationForAnalytics(
+            "Success",
+            PrepareDatasetsAnalyticsPrefix.CURATE,
+            AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+            ["Step 3", "Add", "Folder"],
+            determineDatasetLocation()
+          );
 
-            // log that the folder was successfully added
-            logCurationForAnalytics(
-              "Success",
-              PrepareDatasetsAnalyticsPrefix.CURATE,
-              AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-              ["Step 3", "Add", "Folder"],
-              determineDatasetLocation()
-            );
-
-            hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-            hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
-          }
+          hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+          hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
         }
       }
     });
@@ -4262,21 +4286,23 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
 
 // ///////////////////////////////////////////////////////////////////////////
 // recursively populate json object
-// TODO: Dorian -> This is the function the populates content from inside the folder to the JSON object
+// When importing folders to the file expolorer this function will import the content within the folder
 const populateJSONObjFolder = (action, jsonObject, folderPath) => {
-  var myitems = fs.readdirSync(folderPath);
-  myitems.forEach((element) => {
+  let folderContent = fs.readdirSync(folderPath);
+  folderContent.forEach((itemWithinFolder) => {
     //prevented here
-    var statsObj = fs.statSync(path.join(folderPath, element));
-    var addedElement = path.join(folderPath, element);
-    if (statsObj.isDirectory() && !/(^|\/)\[^\/\.]/g.test(element)) {
+    let statsObj = fs.statSync(path.join(folderPath, itemWithinFolder));
+    let addedElement = path.join(folderPath, itemWithinFolder);
+    console.log(addedElement);
+    if (statsObj.isDirectory() && !/(^|\/)\[^\/\.]/g.test(itemWithinFolder)) {
+      console.log(irregularFolderArray);
       if (irregularFolderArray.includes(addedElement)) {
-        var renamedFolderName = "";
+        let renamedFolderName = "";
         if (action !== "ignore" && action !== "") {
           if (action === "remove") {
-            renamedFolderName = removeIrregularFolders(element);
+            renamedFolderName = removeIrregularFolders(itemWithinFolder);
           } else if (action === "replace") {
-            renamedFolderName = replaceIrregularFolders(element);
+            renamedFolderName = replaceIrregularFolders(itemWithinFolder);
           }
           jsonObject["folders"][renamedFolderName] = {
             type: "local",
@@ -4285,10 +4311,12 @@ const populateJSONObjFolder = (action, jsonObject, folderPath) => {
             path: addedElement,
             action: ["new", "renamed"],
           };
-          element = renamedFolderName;
+          console.log("before reassignment", itemWithinFolder);
+          itemWithinFolder = renamedFolderName;
+          console.log("after reassignment", itemWithinFolder);
         }
       } else {
-        jsonObject["folders"][element] = {
+        jsonObject["folders"][itemWithinFolder] = {
           type: "local",
           folders: {},
           files: {},
@@ -4296,9 +4324,15 @@ const populateJSONObjFolder = (action, jsonObject, folderPath) => {
           action: ["new"],
         };
       }
-      populateJSONObjFolder(action, jsonObject["folders"][element], addedElement);
-    } else if (statsObj.isFile() && !/(^|\/)\.[^\/\.]/g.test(element)) {
-      jsonObject["files"][element] = {
+      populateJSONObjFolder(action, jsonObject["folders"][itemWithinFolder], addedElement);
+    } else if (
+      statsObj.isFile() &&
+      !/(!\/[^\/]+)/g.test(itemWithinFolder) &&
+      itemWithinFolder !== ".DS_Store" &&
+      itemWithinFolder !== "Thumbs.db"
+    ) {
+      // The check here will prevent files with a foward slash, .DS_Store and Thumbs.db files from being imported
+      jsonObject["files"][itemWithinFolder] = {
         path: addedElement,
         description: "",
         "additional-metadata": "",
@@ -4322,11 +4356,11 @@ const hideFullName = () => {
 const showFullName = (ev, element, text) => {
   /// check if the full name of the folder is overflowing or not, if so, show full name on hover
   full_name_show = true;
-  var isOverflowing =
+  let mouseX = ev.pageX - 200;
+  let mouseY = ev.pageY;
+  let isOverflowing =
     element.clientWidth < element.scrollWidth || element.clientHeight < element.scrollHeight;
   if (isOverflowing) {
-    var mouseX = ev.pageX - 200;
-    var mouseY = ev.pageY;
     fullNameValue.innerHTML = text;
     $(".hoverFullName").css({ top: mouseY, left: mouseX });
     setTimeout(() => {
@@ -4340,7 +4374,7 @@ const showFullName = (ev, element, text) => {
 
 /// hover over a function for full name
 const hoverForFullName = (ev) => {
-  var fullPath = ev.innerText;
+  let fullPath = ev.innerText;
   // ev.children[1] is the child element folder_desc of div.single-item,
   // which we will put through the overflowing check in showFullName function
   showFullName(event, ev.children[1], fullPath);
@@ -4357,7 +4391,6 @@ document.addEventListener("onmouseover", function (e) {
 // if a file/folder is clicked -> show details in right "sidebar"
 const showDetailsFile = () => {
   $(".div-display-details.file").toggleClass("show");
-  // $(".div-display-details.folders").hide()
 };
 
 const pasteFromClipboard = (event, target_element) => {
@@ -4417,7 +4450,6 @@ const retrieveBFAccounts = async () => {
         showDefaultBFAccount();
       })
       .catch((error) => {
-        // clientError(error)
         bfAccountOptionsStatus = error;
       });
   } else {
@@ -4432,7 +4464,7 @@ const showDefaultBFAccount = async () => {
     let bf_default_acc_req = await client.get("manage_datasets/bf_default_account_load");
     let accounts = bf_default_acc_req.data.defaultAccounts;
     if (accounts.length > 0) {
-      var myitemselect = accounts[0];
+      let myitemselect = accounts[0];
       defaultBfAccount = myitemselect;
       try {
         let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
@@ -7133,7 +7165,7 @@ $("#inputNewNameDataset").keyup(function () {
   $("#para-continue-name-dataset-generate").text("");
 
   if (newName !== "") {
-    if (check_forbidden_characters_bf(newName)) {
+    if (check_forbidden_characters_ps(newName)) {
       document.getElementById("div-confirm-inputNewNameDataset").style.display = "none";
       $("#btn-confirm-new-dataset-name").hide();
       document.getElementById("para-new-name-dataset-message").innerHTML =

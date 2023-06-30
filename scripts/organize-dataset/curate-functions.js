@@ -17,12 +17,6 @@ document
     openDropdownPrompt(this, "dataset", false);
   });
 
-// document
-//   .querySelector("#Question-generate-dataset-BF-dataset .change-current-account.organization")
-//   .addEventListener("click", function () {
-//     openDropdownPrompt(this, "organization", false);
-//   });
-
 document
   .querySelector("#Question-generate-dataset-BF-dataset .change-current-account:not(.organization)")
   .addEventListener("click", function () {
@@ -35,20 +29,8 @@ document
     openDropdownPrompt(this, "bf");
   });
 
-// document
-//   .querySelector("#svg-change-current-account-generate-dropdown")
-//   .addEventListener("click", function () {
-//     openDropdownPrompt(this, "bf");
-//   });
-
-// document
-//   .querySelector("#change-current-account-new-ds-name")
-//   .addEventListener("click", function () {
-//     openDropdownPrompt(this, "dataset");
-//   });
-
 $(".button-individual-metadata.remove").click(function () {
-  var metadataFileStatus = $($(this).parents()[1]).find(".para-metadata-file-status");
+  let metadataFileStatus = $($(this).parents()[1]).find(".para-metadata-file-status");
 
   $(metadataFileStatus).text("");
   $($(this).parents()[1]).find(".div-metadata-confirm").css("display", "none");
@@ -56,35 +38,32 @@ $(".button-individual-metadata.remove").click(function () {
 });
 
 // Where metadata files are imported through free form mode
-//
 $(".metadata-button").click(function () {
   metadataFile = $(this);
   $(".div-organize-generate-dataset.metadata").addClass("hide");
-  var target = $(this).attr("data-next");
+  let target = $(this).attr("data-next");
   $("#" + target).toggleClass("show");
-  // document.getElementById("save-progress-btn").style.display = "none";
   document.getElementById("nextBtn").style.display = "none";
   document.getElementById("prevBtn").style.display = "none";
 });
 
-function confirmMetadataFilePath(ev) {
+const confirmMetadataFilePath = (ev) => {
   $($(ev).parents()[1]).removeClass("show");
   $(".div-organize-generate-dataset.metadata").removeClass("hide");
   document.getElementById("nextBtn").style.display = "inline";
   document.getElementById("prevBtn").style.display = "inline";
-  // document.getElementById("save-progress-btn").style.display = "block";
 
   // Checking if metadata files are imported
   //// once users click "Confirm" or "Cancel", check if file is specified
   //// if yes: addClass 'done'
   //// if no: removeClass 'done'
-  var errorMetadataFileMessages = [
+  let errorMetadataFileMessages = [
     "",
     "Please only drag and drop a file!",
     "Your SPARC metadata file must be in one of the formats listed above!",
     "Your SPARC metadata file must be named and formatted exactly as listed above!",
   ];
-  var metadataFileStatus = $($(ev).parents()[1]).find(".para-metadata-file-status");
+  let metadataFileStatus = $($(ev).parents()[1]).find(".para-metadata-file-status");
 
   if (!errorMetadataFileMessages.includes($(metadataFileStatus).text())) {
     $(metadataFile).addClass("done");
@@ -123,10 +102,9 @@ function confirmMetadataFilePath(ev) {
       determineDatasetLocation()
     );
   }
-}
-// $(".button-individual-metadata.confirm").click(function() {
-// })
+};
 
+// Two vars with the same name
 $(".button-individual-metadata.go-back").click(function () {
   var metadataFileStatus = $($(this).parents()[1]).find(".para-metadata-file-status");
   $(metadataFileStatus).text("");
@@ -134,7 +112,7 @@ $(".button-individual-metadata.go-back").click(function () {
   $(".div-organize-generate-dataset.metadata").removeClass("hide");
   document.getElementById("nextBtn").style.display = "inline";
   document.getElementById("prevBtn").style.display = "inline";
-  var errorMetadataFileMessages = [
+  let errorMetadataFileMessages = [
     "",
     "Please only drag and drop a file!",
     "Your SPARC metadata file must be in one of the formats listed above!",
@@ -505,7 +483,7 @@ const importGenerateDatasetStep = async (object) => {
         "bf-account-selected" in sodaJSONObj &&
         sodaJSONObj["bf-account-selected"]["account-name"] !== ""
       ) {
-        var bfAccountSelected = sodaJSONObj["bf-account-selected"]["account-name"];
+        let bfAccountSelected = sodaJSONObj["bf-account-selected"]["account-name"];
         if (bfAccountSelected != defaultBfAccount) {
           return;
         }
@@ -533,7 +511,7 @@ const importGenerateDatasetStep = async (object) => {
         ) {
           $("#generate-BF-dataset-options-existing").prop("checked", true);
           $($("#generate-BF-dataset-options-existing").parents()[2]).click();
-          var bfDatasetSelected = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
+          let bfDatasetSelected = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
           setTimeout(() => {
             let valid_dataset = false;
             for (index in datasetList) {
@@ -583,7 +561,7 @@ const importGenerateDatasetStep = async (object) => {
 
 // check metadata files
 const populateMetadataProgress = (populateBoolean, metadataFileName, localPath) => {
-  var metadataButtonsArray = $(".metadata-button.button-generate-dataset");
+  let metadataButtonsArray = $(".metadata-button.button-generate-dataset");
   var correspondingMetadataParaElement = {
     submission: ["para-submission-file-path", metadataButtonsArray[0]],
     dataset_description: ["para-ds-description-file-path", metadataButtonsArray[1]],
@@ -596,7 +574,7 @@ const populateMetadataProgress = (populateBoolean, metadataFileName, localPath) 
   };
   if (populateBoolean) {
     if (metadataFileName in correspondingMetadataParaElement) {
-      var paraElement = correspondingMetadataParaElement[metadataFileName];
+      let paraElement = correspondingMetadataParaElement[metadataFileName];
       $("#" + paraElement[0]).text(localPath);
       $($("#" + paraElement[0]).parents()[1])
         .find(".div-metadata-confirm")
@@ -607,8 +585,8 @@ const populateMetadataProgress = (populateBoolean, metadataFileName, localPath) 
       $(paraElement[1]).addClass("done");
     }
   } else {
-    for (var key in correspondingMetadataParaElement) {
-      var paraElement = correspondingMetadataParaElement[key];
+    for (let key in correspondingMetadataParaElement) {
+      let paraElement = correspondingMetadataParaElement[key];
       $("#" + paraElement[0]).text("");
       $($("#" + paraElement[0]).parents()[1])
         .find(".div-metadata-confirm")
@@ -625,7 +603,6 @@ const populateMetadataProgress = (populateBoolean, metadataFileName, localPath) 
 let missing_dataset_files = [];
 let missing_metadata_files = [];
 const loadProgressFile = (ev) => {
-  let return_option = "";
   missing_dataset_files = [];
   missing_metadata_files = [];
 
@@ -794,21 +771,6 @@ const recursive_remove_missing_file = (item_path, dataset_folder) => {
     }
   }
 };
-
-// const removeOptions = (selectbox) => {
-//   var i;
-//   for (i = selectbox.options.length - 1; i >= 0; i--) {
-//     selectbox.remove(i);
-//   }
-// };
-//
-// Function to add options to dropdown list
-// const addOption = (selectbox, text, value) => {
-//   var opt = document.createElement("OPTION");
-//   opt.text = text;
-//   opt.value = value;
-//   selectbox.options.add(opt);
-// };
 
 // function to load Progress dropdown
 const importOrganizeProgressPrompt = () => {
@@ -1960,7 +1922,7 @@ const ffmCreateManifest = async (sodaJson) => {
   // create manifest data of all high level folders
   try {
     const res = await client.post(
-      `/curate_datasets/guided_generate_high_level_folder_manifest_data`,
+      `/curate_datasets/generate_high_level_folder_manifest_data`,
       {
         dataset_structure_obj: datasetStructCopy,
       },

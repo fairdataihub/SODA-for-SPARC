@@ -1,7 +1,7 @@
 import requests
 from flask import abort
 
-def bf_get_current_user_permission_agent_two(dataset_id, ps_or_token):
+def pennsieve_get_current_user_permissions(dataset_id, ps_or_token):
     PENNSIEVE_URL = "https://api.pennsieve.io"
 
     if type(ps_or_token) is str:
@@ -25,7 +25,7 @@ def has_edit_permissions(ps_or_token, selected_dataset_id):
             ps: Pennsieve client object of a user that has been authenticated
     """
     try:
-        role = bf_get_current_user_permission_agent_two(selected_dataset_id, ps_or_token)["role"]
+        role = pennsieve_get_current_user_permissions(selected_dataset_id, ps_or_token)["role"]
     except Exception as e:
         abort(500, "Could not get permissions for this dataset.")
 

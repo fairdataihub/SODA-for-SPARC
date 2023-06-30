@@ -1,1 +1,1 @@
-from .import_pennsieve_files import import_bf_metadata_files_skeleton
+from .import_pennsieve_files import import_ps_metadata_files_skeleton

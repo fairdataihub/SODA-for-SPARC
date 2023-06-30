@@ -6,7 +6,7 @@ from os import walk
 from flask import abort
 import requests
 from utils import create_request_headers, connect_pennsieve_client, authenticate_user_with_client, get_dataset_id
-from permissions import has_edit_permissions, bf_get_current_user_permission_agent_two
+from permissions import has_edit_permissions, pennsieve_get_current_user_permissions
 from authentication import get_access_token
 
 
@@ -21,7 +21,6 @@ def get_role(dataset):
         r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/role", headers=create_request_headers(token))
         r.raise_for_status()
         role = r.json()["role"]
-        # role =  ps._api._get(f"/datasets/{selected_dataset_id}/role")["role"]
         return {"role": role}
     except Exception as e:
         if type(e).__name__ == "HTTPError":
@@ -50,6 +49,7 @@ def get_dataset_by_id(dataset_name_or_id):
     return r.json()
 
 
+
 def get_current_collection_names(account, dataset):
     """
     Function used to get collection names of the current dataset
@@ -62,7 +62,6 @@ def get_current_collection_names(account, dataset):
     r.raise_for_status()
 
     return r.json()
-
 
 def upload_collection_names(account, dataset, tags):
     """
@@ -77,7 +76,6 @@ def upload_collection_names(account, dataset, tags):
     if not has_edit_permissions(token, selected_dataset_id):
         abort(403, "You do not have permission to edit this dataset.")
     
-
     store = []
     for tag in tags:
         jsonfile = {"collectionId": int(tag)}
@@ -182,7 +180,9 @@ def get_dataset_doi(dataset):
 
 
 def get_package_type_counts(dataset_name):
-
+    """
+    Function used to get the package type counts of a dataset (package type counts are the amount of files in a dataset)
+    """
     token = get_access_token()
 
     dataset_id = get_dataset_id(token, dataset_name)
@@ -193,12 +193,14 @@ def get_package_type_counts(dataset_name):
     return r.json()
 
 def get_total_items_in_local_dataset(dataset_path):
+    """
+    Function used to get the total amount of items in a local dataset
+    """
     # count the amount of items in folder
     create_soda_json_total_items = 0
     for _, dirs, filenames in walk(dataset_path):
         # walk through all folders and it's subfolders
         for Dir in dirs:
-            # does not take hidden folders or manifest folders
             if Dir[:1] != ".":
                 create_soda_json_total_items += 1
         for fileName in filenames:

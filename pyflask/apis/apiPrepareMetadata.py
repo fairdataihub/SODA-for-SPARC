@@ -10,23 +10,21 @@ from prepareMetadata import (
     save_samples_file,
     load_existing_DD_file,
     load_existing_submission_file,
-    import_bf_metadata_file,
-    import_bf_RC,
+    import_ps_metadata_file,
+    import_ps_RC,
     upload_RC_file,
     delete_manifest_dummy_folders,
     set_template_path, 
-    import_bf_manifest_file,
+    import_ps_manifest_file,
     manifest_creation_progress,
-    edit_bf_manifest_file
+    edit_ps_manifest_file
 )
 from flask import request
-import json
 from namespaces import NamespaceEnum, get_namespace
 from flask_restx import Resource, reqparse, fields
 from flask_restx.inputs import boolean
 from errorHandlers import notBadRequestException
 from utils import metadata_string_to_list
-
 
 api = get_namespace(NamespaceEnum.PREPARE_METADATA)
 
@@ -44,7 +42,6 @@ model_get_submission_file_response = api.model('getSubmissionFileResponse', {
 })
 @api.route('/submission_file')
 class SaveSubmissionFile(Resource):
-
     parser_save_submission_file = reqparse.RequestParser(bundle_errors=True)
     parser_save_submission_file.add_argument('upload_boolean', type=boolean, help='Boolean to indicate whether to upload the file to the Bionimbus server', location="json", required=True)
     parser_save_submission_file.add_argument('selected_account', type=str, help='Pennsieve account name', location="args", required=True)
@@ -127,11 +124,10 @@ class RCFile(Resource):
         data = self.parser_get_RC_file.parse_args()
 
         file_type = data.get('file_type')
-        bfaccount = data.get('selected_account')
         bfdataset = data.get('selected_dataset')
 
         try:
-            return import_bf_RC(bfaccount, bfdataset, file_type)
+            return import_ps_RC(bfdataset, file_type)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))
@@ -456,7 +452,6 @@ class ImportBFMetadataFile(Resource):
     parser_import_metadata_file.add_argument('ui_fields', type=str, help="Path to the metadata file on the user's machine.", location="args", required=False)
     
 
-    # @api.expect(parser_import_bf_metadata_file)
     @api.doc(description='Import a metadata file from Pennsieve. NOTE: CONTRARY TO THE SWAGGER UI THE PAYLOAD IS ONLY REQUIRED FOR SUBJECTS AND SAMPLES FILES.', 
             responses={500: "Internal Server Error", 400: "Bad Request"}
             )
@@ -489,7 +484,7 @@ class ImportBFMetadataFile(Resource):
             ui_fields = list(map(str.strip, ui_fields.strip('][').replace("'", '').replace('"', '').split(',')))
 
         try:
-            return import_bf_metadata_file(file_type, ui_fields, selected_account, selected_dataset)
+            return import_ps_metadata_file(file_type, ui_fields, selected_dataset)
         except Exception as e:
             if notBadRequestException(e):
                 api.abort(500, str(e))
@@ -583,18 +578,12 @@ class DeleteManifestDummyFolders(Resource):
 
 @api.route('/manifest_files/pennsieve')
 class GenerateManifestFilesPennsieve(Resource):
-
     @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request'}, 
             description="Generate manifest files locally. Used in the standalone manifest file generation feature. Can take edit-manifest keyword that stores the manifest file in a separate directory. Allows ease of editing manifest information for the client.",
             params={"soda_json_object": "SODA dataset structure", 
                     "selected_account": "The pennsieve account for the user", 
                     "selected_dataset": "The dataset that the user wants to generate manifest files for"})
-    # @api.marshal_with(model_generate_manifest_locally_response, False, 200)
     def post(self):
-        # data = request.get_json()
-        # selected_account = request.args.get("selected_account", "An account wasn't provided")
-        # selected_dataset = request.args.get("selected_dataset", "An dataset name wasn't provided")
-        # soda_json_object = request.args.get("soda_json_object", "An soda json object wasn't provided")
         data = request.get_json()
 
         soda_json_object = data.get("soda_json_object")
@@ -604,7 +593,7 @@ class GenerateManifestFilesPennsieve(Resource):
             api.abort(400, str(selected_account + selected_dataset + soda_json_object))
 
         try:
-            return import_bf_manifest_file(soda_json_object, selected_account, selected_dataset)
+            return import_ps_manifest_file(soda_json_object, selected_dataset)
         except Exception as e:
             api.abort(500, str(e))
 
@@ -621,7 +610,8 @@ class GenerateManifestFilesPennsieve(Resource):
             api.abort(400, "Cannot edit manifest files without the action and type provided.")
 
         try:
-            return edit_bf_manifest_file(edit_action, manifest_type)
+            # Drop empty columns ( but keep required columns ) beforing uploading the local manifest files to Pennsieve
+            return edit_ps_manifest_file(edit_action, manifest_type)
         except Exception as e:
             api.abort(500, str(e))
 
