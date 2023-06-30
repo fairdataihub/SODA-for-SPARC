@@ -340,7 +340,6 @@ function initialize() {
     });
   });
 
-
   app.on("window-all-closed", async () => {
     await exitPyProc();
     app.quit();
