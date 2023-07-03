@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## v.12.0.1 - 2023-06-30
 
+## v.12.0.1 - 2023-06-30
+
+## Bug fixes:
+
+- Fixed an issue causing the server to not connect for Window's users
+
 ## Feature Additions:
 
 - Removed calls to analytics in order to prepare for our new analytics platform

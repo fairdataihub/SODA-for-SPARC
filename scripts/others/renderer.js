@@ -615,6 +615,7 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
     // Capture standard output
     agentStartSpawn.stdout.on("data", (data) => {
       const agentMessage = data.toString();
+      log.info(agentMessage);
       // Check if the agentMessage contains the string "Agent started"
       if (
         agentMessage.includes("Running Agent NOT as daemon") ||
