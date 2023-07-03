@@ -85,7 +85,6 @@ document.addEventListener("DOMContentLoaded", async function () {
   await includeJavaScriptFile("./scripts/metadata-files/readme-changes.js");
   await includeJavaScriptFile("./scripts/metadata-files/subjects-samples.js");
   await includeJavaScriptFile("./scripts/metadata-files/submission.js");
-  await includeJavaScriptFile("./scripts/guided-mode/lottieJSON.js");
   await includeJavaScriptFile("./scripts/guided-mode/guided-curate-dataset.js");
   await includeJavaScriptFile("./scripts/collections/collections.js");
   await includeJavaScriptFile("./scripts/others/announcements.js");
