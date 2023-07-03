@@ -1052,7 +1052,9 @@ const savePageChanges = async (pageBeingLeftID) => {
         // Case where user selected the Other/no funding source tile
         if (userSelectedDatasetIsOtherFunded) {
           // Get the funding source value from the dropdown
-          const selectedFuncingSourceFromDropdown = $("#guided-select-funding-consortium").val();
+          const selectedFuncingSourceFromDropdown = $(
+            "#guided-select-sparc-funding-consortium"
+          ).val();
 
           // Throw an error if the user did not select a funding source from the dropdown
           if (!selectedFuncingSourceFromDropdown) {
@@ -4885,8 +4887,7 @@ const openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-ask-if-submission-is-sparc-funded-tab") {
-      //TEST REMOVE ME
-      if (pageNeedsUpdateFromPennsieve(targetPageID)) {
+      if (/*pageNeedsUpdateFromPennsieve(targetPageID)*/ "a" == "a") {
         setPageLoadingState(true);
         try {
           // Get the submission metadata from Pennsieve
@@ -4908,6 +4909,11 @@ const openPage = async (targetPageID) => {
           // SPARC funded button
           if (lowerCaseFundingConsortium === "sparc") {
             sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] = "SPARC";
+            // If the funding consortium is available in the funding consortium dropdown, then pre-select it
+            const lowerCaseFundingConsortiumOptions = sparcFundingConsortiums.map((consortium) =>
+              consortium.toLowerCase()
+            );
+
             document.getElementById("guided-button-dataset-is-sparc-funded").click();
           } else if (lowerCaseFundingConsortium === "rejoin-heal") {
             // If the funding consortium is REJOIN-HEAL funded, then set the funding consortium to REJOIN-HEAL and click the
@@ -4938,41 +4944,40 @@ const openPage = async (targetPageID) => {
       }
 
       // Set the funding consortium dropdown options / set up select picker
-      document.getElementById("guided-select-funding-consortium").innerHTML = `
+      document.getElementById("guided-select-sparc-funding-consortium").innerHTML = `
         <option value="">Select a funding consortium</option>
         ${otherSparcFundingConsortiums
           .map((consortium) => {
             return `<option value="${consortium}">${consortium}</option>`;
           })
           .join("\n")}
-        <option value="EXTERNAL">Funding source not listed in this dropdown</option>
       `;
-      $("#guided-select-funding-consortium").selectpicker({
+      $("#guided-select-sparc-funding-consortium").selectpicker({
         style: "guided--select-picker",
       });
-      $("#guided-select-funding-consortium").selectpicker("refresh");
-
+      $("#guided-select-sparc-funding-consortium").selectpicker("refresh");
       // Event listener that watches what the user selects and updates the UI accordingly
-      $("#guided-select-funding-consortium").on("change", function (e) {
+      $("#guided-select-sparc-funding-consortium").on("change", function (e) {
         const consortium = e.target.value;
+
+        const divClickContinueFundingConsortium = document.getElementById(
+          "guided-section-confirm-funding-consortium"
+        );
+
         // If the valueLess selection is selected, hide all sections besides the help dropdown
         if (consortium === "") {
-          hideElementsWithClass("hide-when-an-other-funding-source-is-selected");
-          hideElementsWithClass("show-when-an-other-funding-source-is-selected");
           showElementsWithClass("funding-not-shown-dropdown");
+          //Hide the click continue to.. div
+          divClickContinueFundingConsortium.classList.add("hidden");
         } else {
           // If a non-null value is selected, hide the help dropdown and show the appropriate sections
           hideElementsWithClass("funding-not-shown-dropdown");
-          if (consortium === "EXTERNAL") {
-            hideElementsWithClass("show-when-an-other-funding-source-is-selected");
-            showElementsWithClass("hide-when-an-other-funding-source-is-selected");
-          } else {
-            showElementsWithClass("show-when-an-other-funding-source-is-selected");
-            hideElementsWithClass("hide-when-an-other-funding-source-is-selected");
 
-            // Set the funding consortium text to the click continue to.. span
-            document.getElementById("span-continue-other-award-name").innerText = consortium;
-          }
+          // Show the click continue to.. div
+          divClickContinueFundingConsortium.classList.remove("hidden");
+          // Set the funding consortium text to the click continue to.. span
+          document.getElementById("span-continue-sparc-funding-consortium-name").innerText =
+            consortium;
         }
       });
 
@@ -4980,18 +4985,13 @@ const openPage = async (targetPageID) => {
       const savedFundingConsortium =
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
 
-      // If the funding consortium is not already handled by individual buttons (SPARC, REJOIN-HEAL),
-      // and it is one of the options in the dropdown, select it
-      if (
-        otherSparcFundingConsortiums.includes(savedFundingConsortium) ||
-        savedFundingConsortium === "EXTERNAL"
-      ) {
-        $("#guided-select-funding-consortium").val(savedFundingConsortium);
+      if (otherSparcFundingConsortiums.includes(savedFundingConsortium)) {
+        $("#guided-select-sparc-funding-consortium").val(savedFundingConsortium);
       } else {
-        $("#guided-select-funding-consortium").val("");
+        $("#guided-select-sparc-funding-consortium").val("");
       }
-      $("#guided-select-funding-consortium").selectpicker("refresh");
-      $("#guided-select-funding-consortium").trigger("change");
+      $("#guided-select-sparc-funding-consortium").selectpicker("refresh");
+      $("#guided-select-sparc-funding-consortium").trigger("change");
     }
 
     if (targetPageID === "guided-subjects-folder-tab") {
