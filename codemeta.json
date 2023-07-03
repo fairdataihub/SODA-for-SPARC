@@ -22,23 +22,8 @@
     "@type": "Organization",
     "@name": "National Institutes of Health (NIH)"
   },
-  "keywords": [
-    "SPARC",
-    "FAIR",
-    "data",
-    "curation",
-    "mac",
-    "sparc-dataset",
-    "ubuntu",
-    "windows"
-  ],
-  "programmingLanguage": [
-    "JavaScript",
-    "HTML",
-    "Python",
-    "CSS",
-    "Jupyter Notebook"
-  ],
+  "keywords": ["SPARC", "FAIR", "data", "curation", "mac", "sparc-dataset", "ubuntu", "windows"],
+  "programmingLanguage": ["JavaScript", "HTML", "Python", "CSS", "Jupyter Notebook"],
   "operatingSystem": [
     "Windows 10",
     "Big Sur (macOS 11)",
@@ -46,9 +31,7 @@
     "Windows 11",
     "Ubuntu"
   ],
-  "relatedLink": [
-    "https://fairdataihub.org/sodaforsparc"
-  ],
+  "relatedLink": ["https://fairdataihub.org/sodaforsparc"],
   "author": [
     {
       "@type": "Person",
