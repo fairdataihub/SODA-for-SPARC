@@ -4,7 +4,7 @@ run-name: ${{ github.actor }} is building a Windows release for SODA
 on:
   push:
     branches:
-      - none
+      - staging
 
 jobs:
   deploy-on-windows:
