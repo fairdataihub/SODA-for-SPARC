@@ -12499,7 +12499,6 @@ $(document).ready(async () => {
       throw new Error(userErrorMessage(error));
     }
   };
-
   const guidedAddDatasetSubtitle = async (bfAccount, datasetName, datasetSubtitle) => {
     document.getElementById("guided-dataset-subtitle-upload-tr").classList.remove("hidden");
     const datasetSubtitleUploadText = document.getElementById(

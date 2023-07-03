@@ -454,3 +454,11 @@
   margin: auto;
   width: 550px;
 }
+
+.div--code-block-error {
+  background-color: #444444;
+  border: 2px solid lightgray;
+  border-radius: 3px;
+  color: #f5f5f5;
+  padding: 5px;
+}
