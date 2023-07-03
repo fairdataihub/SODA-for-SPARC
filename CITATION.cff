@@ -25,7 +25,7 @@ date-released: '2023-07-03'
 identifiers:
   - description: DOI for this software's record on Zenodo
     type: doi
-    value: https://doi.org/10.5281/zenodo.8111552
+    value: https://doi.org/10.5281/zenodo.8111588
 keywords:
   - SPARC
   - FAIR
