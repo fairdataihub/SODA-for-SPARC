@@ -1092,95 +1092,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = [""];
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = "";
       }
-
-      //Submission Metadata variables
-      const cds =
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"];
-      const fc = sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
-      const guidedSparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-      const guidedMilestones = sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
-      const guidedCompletionDate =
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"];
-
-      let guidedSubmissionMetadataArray = [];
-
-      // Function that determines if the user selected whether or not their dataset is SPARC funded
-      // The function returns either true or false
-      guidedSubmissionMetadataArray.push({
-        fundingConsortium: fc,
-        consortiumDataStandard: cds,
-        award: guidedSparcAward,
-        date: guidedCompletionDate,
-        milestone: guidedMilestones[0],
-      });
-
-      if (guidedMilestones.length > 1) {
-        for (let i = 1; i < guidedMilestones.length; i++) {
-          guidedSubmissionMetadataArray.push({
-            fundingConsortium: "",
-            consortiumDataStandard: "",
-            award: "",
-            date: "",
-            milestone: guidedMilestones[i],
-          });
-        }
-      }
-      const guidedUploadSubmissionMetadata = async (
-        bfAccount,
-        datasetName,
-        submissionMetadataJSON
-      ) => {
-        document.getElementById("guided-submission-metadata-upload-tr").classList.remove("hidden");
-        const submissionMetadataUploadText = document.getElementById(
-          "guided-submission-metadata-upload-text"
-        );
-        submissionMetadataUploadText.innerHTML = "Uploading submission metadata...";
-        guidedUploadStatusIcon("guided-submission-metadata-upload-status", "loading");
-
-        const previouslyUpdatedSubmissionMetadata =
-          sodaJSONObj["previously-uploaded-data"]["submission-metadata"];
-
-        if (
-          JSON.stringify(previouslyUpdatedSubmissionMetadata) ===
-          JSON.stringify(submissionMetadataJSON)
-        ) {
-          guidedUploadStatusIcon("guided-submission-metadata-upload-status", "success");
-          submissionMetadataUploadText.innerHTML = "Submission metadata added to Pennsieve";
-          return;
-        }
-
-        try {
-          await client.post(
-            `/prepare_metadata/submission_file`,
-            {
-              submission_file_rows: submissionMetadataJSON,
-              filepath: "",
-              upload_boolean: true,
-            },
-            {
-              params: {
-                selected_account: bfAccount,
-                selected_dataset: datasetName,
-              },
-            }
-          );
-          guidedUploadStatusIcon("guided-submission-metadata-upload-status", "success");
-          submissionMetadataUploadText.innerHTML = `Submission metadata successfully uploaded`;
-          sodaJSONObj["previously-uploaded-data"]["submission-metadata"] = submissionMetadataJSON;
-          await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
-        } catch (error) {
-          guidedUploadStatusIcon("guided-submission-metadata-upload-status", "error");
-          submissionMetadataUploadText.innerHTML = `Failed to upload submission metadata`;
-          clientError(error);
-
-          throw new Error(userErrorMessage(error));
-        }
-      };
-      await guidedUploadSubmissionMetadata(
-        defaultBfAccount,
-        sodaJSONObj["digital-metadata"]["name"],
-        guidedSubmissionMetadataArray
-      );
     }
 
     if (pageBeingLeftID === "guided-primary-data-organization-tab") {
@@ -13319,8 +13230,6 @@ $(document).ready(async () => {
 
       let guidedSubmissionMetadataArray = [];
 
-      // Function that determines if the user selected whether or not their dataset is SPARC funded
-      // The function returns either true or false
       guidedSubmissionMetadataArray.push({
         fundingConsortium: fundingConsortium,
         consortiumDataStandard: consortiumDataStandard,
