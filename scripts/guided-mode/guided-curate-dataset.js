@@ -172,11 +172,7 @@ const guidedMovePennsieveFolder = (movedFolderName, folderJSONPath, newFolderJSO
 
 // Returns a boolean that indicates whether or not the user selected that the dataset is SPARC funded
 const datasetIsSparcFunded = () => {
-  // If the user has not selected this option("probably an older progress file"), return true
-  if (!sodaJSONObj["button-config"]["dataset-is-sparc-funded"]) {
-    return true;
-  }
-  return sodaJSONObj["button-config"]["dataset-is-sparc-funded"] === "yes";
+  return sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] === "SPARC";
 };
 
 const checkIfPoolsFoldersAreCorrect = (poolFolderPath) => {
@@ -1022,96 +1018,169 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
-      let consortiumDataStandard;
-      let fundingConsortium;
-
       // If the user selected that the dataset is SPARC funded, unskip the submission metadata page
       if (userSelectedDatasetIsSparcFunded) {
-        // Auto-fill consortium data standard and funding consortium fields for SPARC funded datasets
-        consortiumDataStandard = "SPARC";
-        fundingConsortium = "SPARC";
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
+          "SPARC";
+        // Get the funding source value from the dropdown
+        const selectedFuncingSourceFromDropdown = $(
+          "#guided-select-sparc-funding-consortium"
+        ).val();
 
-        // Make sure pages required for SPARC funded datasets are not skipped
+        // Throw an error if the user did not select a funding source from the dropdown
+        if (!selectedFuncingSourceFromDropdown) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please select a funding source from the dropdown.",
+          });
+          throw errorArray;
+        } else {
+          // Set the funding consortium value in the JSON
+          sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
+            selectedFuncingSourceFromDropdown;
+        }
+      }
+
+      if (userSelectedDatasetIsReJoinFunded) {
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] = "HEAL";
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
+          "REJOIN-HEAL";
+      }
+
+      if (userSelectedDatasetIsOtherFunded) {
+        const userSelectedTheyHaveReachedOutToCurationTeam = document
+          .getElementById("guided-button-non-sparc-user-has-contacted-sparc")
+          .classList.contains("selected");
+        const userSelectedTheyHaveNotReachedOutToCurationTeam = document
+          .getElementById("guided-button-non-sparc-user-has-not-contacted-sparc")
+          .classList.contains("selected");
+
+        if (
+          !userSelectedTheyHaveReachedOutToCurationTeam &&
+          !userSelectedTheyHaveNotReachedOutToCurationTeam
+        ) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please indicate if you have reached out to the curation team",
+          });
+          throw errorArray;
+        }
+        if (userSelectedTheyHaveNotReachedOutToCurationTeam) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please reach out to the curation team before continuing the curation process",
+          });
+          throw errorArray;
+        }
+
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] = "";
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] = "EXTERNAL";
+      }
+
+      const setFundingConsortium =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
+      // If the set funding consortium is SPARC, unskip the SPARC specific metadata pages
+      if (setFundingConsortium === "SPARC") {
         guidedUnSkipPage("guided-create-submission-metadata-tab");
         guidedUnSkipPage("guided-protocols-tab");
       } else {
-        // Skip the SPARC submission metadata pages for non-SPARC funded datasets
+        // If the set funding consortium is not SPARC, skip the SPARC specific metadata pages
         guidedSkipPage("guided-create-submission-metadata-tab");
         guidedSkipPage("guided-protocols-tab");
-      }
-
-      // If the user selected that dataset is not SPARC funded, skip the submission metadata page
-      // The logic that handles the submission file is ran during upload
-      if (userSelectedDatasetIsReJoinFunded || userSelectedDatasetIsOtherFunded) {
-        // Case where user selected the RE-JOIN program tile
-        if (userSelectedDatasetIsReJoinFunded) {
-          consortiumDataStandard = "HEAL";
-          fundingConsortium = "REJOIN-HEAL";
-        }
-
-        // Case where user selected the Other/no funding source tile
-        if (userSelectedDatasetIsOtherFunded) {
-          // Get the funding source value from the dropdown
-          const selectedFuncingSourceFromDropdown = $(
-            "#guided-select-sparc-funding-consortium"
-          ).val();
-
-          // Throw an error if the user did not select a funding source from the dropdown
-          if (!selectedFuncingSourceFromDropdown) {
-            errorArray.push({
-              type: "notyf",
-              message: "Please select a funding source from the dropdown.",
-            });
-            throw errorArray;
-          }
-
-          // Note: Currently all other funding sources besides EXTERNAL will have "SPARC" as the consortium data standard
-          if (selectedFuncingSourceFromDropdown != "EXTERNAL") {
-            consortiumDataStandard = "SPARC";
-            fundingConsortium = selectedFuncingSourceFromDropdown;
-          } else {
-            const userSelectedTheyHaveReachedOutToCurationTeam = document
-              .getElementById("guided-button-non-sparc-user-has-contacted-sparc")
-              .classList.contains("selected");
-            const userSelectedTheyHaveNotReachedOutToCurationTeam = document
-              .getElementById("guided-button-non-sparc-user-has-not-contacted-sparc")
-              .classList.contains("selected");
-
-            if (
-              !userSelectedTheyHaveReachedOutToCurationTeam &&
-              !userSelectedTheyHaveNotReachedOutToCurationTeam
-            ) {
-              errorArray.push({
-                type: "notyf",
-                message: "Please indicate if you have reached out to the curation team",
-              });
-              throw errorArray;
-            }
-            if (userSelectedTheyHaveNotReachedOutToCurationTeam) {
-              errorArray.push({
-                type: "notyf",
-                message:
-                  "Please reach out to the curation team before continuing the curation process",
-              });
-              throw errorArray;
-            }
-
-            consortiumDataStandard = "";
-            fundingConsortium = "EXTERNAL";
-          }
-        }
-
-        // Skip the submission metadata page
-        // This can be safely skipped as the logic that handles the submission file is ran during upload
-        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = "EXTERNAL";
+        // Manually set the SPARC award number to "EXTERNAL" for non-SPARC funded datasets (case for all non-SPARC funded datasets)
+        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = "";
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = [""];
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = "";
       }
 
-      sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
-        consortiumDataStandard;
-      sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
-        fundingConsortium;
+      //Submission Metadata variables
+      const cds =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"];
+      const fc = sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
+      const guidedSparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+      const guidedMilestones = sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
+      const guidedCompletionDate =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"];
+
+      let guidedSubmissionMetadataArray = [];
+
+      // Function that determines if the user selected whether or not their dataset is SPARC funded
+      // The function returns either true or false
+      guidedSubmissionMetadataArray.push({
+        fundingConsortium: fc,
+        consortiumDataStandard: cds,
+        award: guidedSparcAward,
+        date: guidedCompletionDate,
+        milestone: guidedMilestones[0],
+      });
+
+      if (guidedMilestones.length > 1) {
+        for (let i = 1; i < guidedMilestones.length; i++) {
+          guidedSubmissionMetadataArray.push({
+            fundingConsortium: "",
+            consortiumDataStandard: "",
+            award: "",
+            date: "",
+            milestone: guidedMilestones[i],
+          });
+        }
+      }
+      const guidedUploadSubmissionMetadata = async (
+        bfAccount,
+        datasetName,
+        submissionMetadataJSON
+      ) => {
+        document.getElementById("guided-submission-metadata-upload-tr").classList.remove("hidden");
+        const submissionMetadataUploadText = document.getElementById(
+          "guided-submission-metadata-upload-text"
+        );
+        submissionMetadataUploadText.innerHTML = "Uploading submission metadata...";
+        guidedUploadStatusIcon("guided-submission-metadata-upload-status", "loading");
+
+        const previouslyUpdatedSubmissionMetadata =
+          sodaJSONObj["previously-uploaded-data"]["submission-metadata"];
+
+        if (
+          JSON.stringify(previouslyUpdatedSubmissionMetadata) ===
+          JSON.stringify(submissionMetadataJSON)
+        ) {
+          guidedUploadStatusIcon("guided-submission-metadata-upload-status", "success");
+          submissionMetadataUploadText.innerHTML = "Submission metadata added to Pennsieve";
+          return;
+        }
+
+        try {
+          await client.post(
+            `/prepare_metadata/submission_file`,
+            {
+              submission_file_rows: submissionMetadataJSON,
+              filepath: "",
+              upload_boolean: true,
+            },
+            {
+              params: {
+                selected_account: bfAccount,
+                selected_dataset: datasetName,
+              },
+            }
+          );
+          guidedUploadStatusIcon("guided-submission-metadata-upload-status", "success");
+          submissionMetadataUploadText.innerHTML = `Submission metadata successfully uploaded`;
+          sodaJSONObj["previously-uploaded-data"]["submission-metadata"] = submissionMetadataJSON;
+          await saveGuidedProgress(sodaJSONObj["digital-metadata"]["name"]);
+        } catch (error) {
+          guidedUploadStatusIcon("guided-submission-metadata-upload-status", "error");
+          submissionMetadataUploadText.innerHTML = `Failed to upload submission metadata`;
+          clientError(error);
+
+          throw new Error(userErrorMessage(error));
+        }
+      };
+      await guidedUploadSubmissionMetadata(
+        defaultBfAccount,
+        sodaJSONObj["digital-metadata"]["name"],
+        guidedSubmissionMetadataArray
+      );
     }
 
     if (pageBeingLeftID === "guided-primary-data-organization-tab") {
@@ -4903,15 +4972,10 @@ const openPage = async (targetPageID) => {
           const pennsieveConsortiumDataStandard = submissionData["Consortium data standard"]
             .trim()
             .toUpperCase();
-          console.log(pennsieveConsortiumDataStandard);
 
           if (pennsieveConsortiumDataStandard === "SPARC") {
-            sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
-              "SPARC";
             document.getElementById("guided-button-dataset-is-sparc-funded").click();
-          } else if (pennsieveConsortiumDataStandard === "REJOIN-HEAL") {
-            sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
-              "REJOIN-HEAL";
+          } else if (pennsieveConsortiumDataStandard === "HEAL") {
             document.getElementById("guided-button-dataset-is-re-join-funded").click();
           } else {
             document.getElementById("guided-button-dataset-is-not-sparc-funded").click();
@@ -4924,7 +4988,7 @@ const openPage = async (targetPageID) => {
             .toUpperCase();
 
           if (sparcFundingConsortiums.includes(pennsieveFundingConsortium)) {
-            console.log("Funding consortium is SPARC funded");
+            // Pre-set the funding consortium so it is set in the dropdown
             sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
               pennsieveFundingConsortium;
           }
@@ -4933,8 +4997,6 @@ const openPage = async (targetPageID) => {
           console.log(emessage);
         }
       }
-
-      // END OF PENNSIEVE FETCH SECTION
 
       // Set the funding consortium dropdown options / set up select picker
       document.getElementById("guided-select-sparc-funding-consortium").innerHTML = `
@@ -13259,14 +13321,15 @@ $(document).ready(async () => {
 
       // Function that determines if the user selected whether or not their dataset is SPARC funded
       // The function returns either true or false
-      if (datasetIsSparcFunded()) {
-        guidedSubmissionMetadataArray.push({
-          fundingConsortium: fundingConsortium,
-          consortiumDataStandard: consortiumDataStandard,
-          award: guidedSparcAward,
-          date: guidedCompletionDate,
-          milestone: guidedMilestones[0],
-        });
+      guidedSubmissionMetadataArray.push({
+        fundingConsortium: fundingConsortium,
+        consortiumDataStandard: consortiumDataStandard,
+        award: guidedSparcAward,
+        date: guidedCompletionDate,
+        milestone: guidedMilestones[0],
+      });
+
+      if (guidedMilestones.length > 1) {
         for (let i = 1; i < guidedMilestones.length; i++) {
           guidedSubmissionMetadataArray.push({
             fundingConsortium: "",
@@ -13276,14 +13339,6 @@ $(document).ready(async () => {
             milestone: guidedMilestones[i],
           });
         }
-      } else {
-        guidedSubmissionMetadataArray.push({
-          fundingConsortium: fundingConsortium,
-          consortiumDataStandard: consortiumDataStandard,
-          award: "",
-          date: "",
-          milestone: "",
-        });
       }
 
       //Dataset Description Metadata variables
