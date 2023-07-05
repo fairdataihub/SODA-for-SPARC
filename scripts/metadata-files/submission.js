@@ -1097,7 +1097,7 @@ async function checkBFImportSubmission() {
       Swal.showLoading();
     },
   }).then((result) => {});
-  let bfDataset = $("#bf_dataset_load_submission").text().trim();
+  const bfDataset = $("#bf_dataset_load_submission").text().trim();
   log.info(`Loading submission file from Pennsieve dataset: ${bfDataset}`);
   try {
     let import_metadata = await client.get(`/prepare_metadata/import_metadata_file`, {

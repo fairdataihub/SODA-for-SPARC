@@ -1,4 +1,4 @@
-const otherSparcFundingConsortiums = ["SPARC-2", "VESPA", "REVA", "HORNET"];
+const sparcFundingConsortiums = ["SPARC", "SPARC-2", "VESPA", "REVA", "HORNET"];
 
 const returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
@@ -4900,42 +4900,33 @@ const openPage = async (targetPageID) => {
           });
           const submissionData = submissionMetadataRes.data;
 
-          const lowerCaseFundingConsortium = submissionData["Funding consortium"]
+          const pennsieveConsortiumDataStandard = submissionData["Consortium data standard"]
             .trim()
-            .toLowerCase();
-          console.log(lowerCaseFundingConsortium);
+            .toUpperCase();
+          console.log(pennsieveConsortiumDataStandard);
 
-          // If the funding consortium is SPARC funded, then set the funding consortium to SPARC and click the
-          // SPARC funded button
-          if (lowerCaseFundingConsortium === "sparc") {
-            sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] = "SPARC";
-            // If the funding consortium is available in the funding consortium dropdown, then pre-select it
-            const lowerCaseFundingConsortiumOptions = sparcFundingConsortiums.map((consortium) =>
-              consortium.toLowerCase()
-            );
-
+          if (pennsieveConsortiumDataStandard === "SPARC") {
+            sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
+              "SPARC";
             document.getElementById("guided-button-dataset-is-sparc-funded").click();
-          } else if (lowerCaseFundingConsortium === "rejoin-heal") {
-            // If the funding consortium is REJOIN-HEAL funded, then set the funding consortium to REJOIN-HEAL and click the
-            // REJOIN-HEAL funded button
-            sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
+          } else if (pennsieveConsortiumDataStandard === "REJOIN-HEAL") {
+            sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
               "REJOIN-HEAL";
             document.getElementById("guided-button-dataset-is-re-join-funded").click();
           } else {
-            // If the funding consortium is not SPARC or REJOIN-HEAL, set the funding consortium dropdown to the value
-            // (if it's an option we support)
-            const lowerCaseFundingConsortiumOptions = otherSparcFundingConsortiums.map(
-              (consortium) => consortium.toLowerCase()
-            );
-            if (lowerCaseFundingConsortiumOptions.includes(lowerCaseFundingConsortium)) {
-              sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
-                submissionData["Funding consortium"];
-              document.getElementById("guided-button-dataset-is-not-sparc-funded").click();
-            }
-
-            // Click the "non-SPARC user has contacted SPARC" since it's assumed they have
-            // since their data is already on Pennsieve
+            document.getElementById("guided-button-dataset-is-not-sparc-funded").click();
             document.getElementById("guided-button-non-sparc-user-has-contacted-sparc").click();
+          }
+
+          // Set the funding consortium
+          const pennsieveFundingConsortium = submissionData["Funding consortium"]
+            .trim()
+            .toUpperCase();
+
+          if (sparcFundingConsortiums.includes(pennsieveFundingConsortium)) {
+            console.log("Funding consortium is SPARC funded");
+            sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
+              pennsieveFundingConsortium;
           }
         } catch (error) {
           const emessage = userErrorMessage(error);
@@ -4943,10 +4934,12 @@ const openPage = async (targetPageID) => {
         }
       }
 
+      // END OF PENNSIEVE FETCH SECTION
+
       // Set the funding consortium dropdown options / set up select picker
       document.getElementById("guided-select-sparc-funding-consortium").innerHTML = `
         <option value="">Select a funding consortium</option>
-        ${otherSparcFundingConsortiums
+        ${sparcFundingConsortiums
           .map((consortium) => {
             return `<option value="${consortium}">${consortium}</option>`;
           })
@@ -4985,7 +4978,7 @@ const openPage = async (targetPageID) => {
       const savedFundingConsortium =
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
 
-      if (otherSparcFundingConsortiums.includes(savedFundingConsortium)) {
+      if (sparcFundingConsortiums.includes(savedFundingConsortium)) {
         $("#guided-select-sparc-funding-consortium").val(savedFundingConsortium);
       } else {
         $("#guided-select-sparc-funding-consortium").val("");
