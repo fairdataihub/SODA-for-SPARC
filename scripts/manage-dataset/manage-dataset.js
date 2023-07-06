@@ -2517,19 +2517,46 @@ $("#button-submit-dataset").click(async () => {
       let fileUploadStatus = progressData["files_uploaded_status"];
       let totalFilesUploaded = progressData["uploaded_files"];
 
-      console.log(submitprintstatus);
 
       if (submitprintstatus === "Uploading") {
         logProgressToAnalytics(totalFilesUploaded, totalUploadedFileSize);
+        console.log("totalUploadedFileSize: " + totalUploadedFileSize);
+        console.log("totalFilesUploaded: " + totalFilesUploaded);
         $("#div-progress-submit").css("display", "block");
-        console.log(statusMessage);
-        if (statusMessage.includes("Success: COMPLETED!")) {
+        if (completionStatus == "Done") {
           progressBarUploadBf.value = 100;
           cloneMeter.value = 100;
 
           $("#para-please-wait-manage-dataset").html("");
           $("#para-progress-bar-status").html(statusMessage + smileyCan);
           cloneStatus.innerHTML = statusMessage + smileyCan;
+
+          // log the last batch of files uploaded if the difference between the last batch and the total files uploaded is not 0
+          let finalFilesCount = totalFilesUploaded - filesOnPreviousLogPage;
+          let differenceInBytes = totalUploadedFileSize - bytesOnPreviousLogPage;
+
+          if (finalFilesCount > 0) {
+            ipcRenderer.send(
+              "track-kombucha",
+              kombuchaEnums.Category.MANAGE_DATASETS,
+              kombuchaEnums.Action.GENERATE_DATASET,
+              kombuchaEnums.Label.FILES,
+              kombuchaEnums.Status.SUCCESS,
+              createEventData(finalFilesCount, "Pennsieve", "Local", defaultBfDataset)
+            );
+          }
+
+          if (differenceInBytes > 0) {
+            ipcRenderer.send(
+              "track-kombucha",
+              kombuchaEnums.Category.MANAGE_DATASETS,
+              kombuchaEnums.Action.GENERATE_DATASET,
+              kombuchaEnums.Label.SIZE,
+              kombuchaEnums.Status.SUCCESS,
+              createEventData(differenceInBytes, "Pennsieve", "Local", defaultBfDataset)
+            );
+          }
+        
         } else {
           var value = (totalUploadedFileSize / totalFileSize) * 100;
 
@@ -2565,7 +2592,7 @@ $("#button-submit-dataset").click(async () => {
               ")"
           );
         }
-      }
+      } 
     };
 
     client
