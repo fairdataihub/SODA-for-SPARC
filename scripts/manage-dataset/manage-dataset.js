@@ -2500,7 +2500,10 @@ const resetUploadLocalDataset = async () => {
 };
 
 $("#button-submit-dataset").click(async () => {
-  let uploadedFileSize = 0;
+  // When true it will prevent duplicate file counts from being sent to analytics
+  let finalFilesSent = false;
+  let finalBytesSent = false;
+
   const progressfunction = (kombuchaEnums) => {
     $("#upload_local_dataset_progress_div")[0].scrollIntoView({
       behavior: "smooth",
@@ -2523,6 +2526,7 @@ $("#button-submit-dataset").click(async () => {
         console.log("totalFilesUploaded: " + totalFilesUploaded);
         $("#div-progress-submit").css("display", "block");
         if (completionStatus == "Done") {
+          console.log("Upload complete");
           progressBarUploadBf.value = 100;
           cloneMeter.value = 100;
 
@@ -2533,8 +2537,9 @@ $("#button-submit-dataset").click(async () => {
           // log the last batch of files uploaded if the difference between the last batch and the total files uploaded is not 0
           let finalFilesCount = totalFilesUploaded - filesOnPreviousLogPage;
           let differenceInBytes = totalUploadedFileSize - bytesOnPreviousLogPage;
-
-          if (finalFilesCount > 0) {
+          console.log("finalFilesCount: ", finalFilesCount);
+          console.log("finalFilesSent: ", finalFilesSent);
+          if (finalFilesCount > 0 && !finalFilesSent) {
             ipcRenderer.send(
               "track-kombucha",
               kombuchaEnums.Category.MANAGE_DATASETS,
@@ -2543,9 +2548,10 @@ $("#button-submit-dataset").click(async () => {
               kombuchaEnums.Status.SUCCESS,
               createEventData(finalFilesCount, "Pennsieve", "Local", defaultBfDataset)
             );
+            finalFilesSent = true;
           }
 
-          if (differenceInBytes > 0) {
+          if (differenceInBytes > 0 && !finalBytesSent) {
             ipcRenderer.send(
               "track-kombucha",
               kombuchaEnums.Category.MANAGE_DATASETS,
@@ -2554,21 +2560,23 @@ $("#button-submit-dataset").click(async () => {
               kombuchaEnums.Status.SUCCESS,
               createEventData(differenceInBytes, "Pennsieve", "Local", defaultBfDataset)
             );
+            finalBytesSent = true;
           }
         } else {
-          var value = (totalUploadedFileSize / totalFileSize) * 100;
+          let value = (totalUploadedFileSize / totalFileSize) * 100;
 
           progressBarUploadBf.value = value;
           cloneMeter.value = value;
+          let totalSizePrint = "";
 
           if (totalFileSize < displaySize) {
-            var totalSizePrint = totalFileSize.toFixed(2) + " B";
+            totalSizePrint = totalFileSize.toFixed(2) + " B";
           } else if (totalFileSize < displaySize * displaySize) {
-            var totalSizePrint = (totalFileSize / displaySize).toFixed(2) + " KB";
+            totalSizePrint = (totalFileSize / displaySize).toFixed(2) + " KB";
           } else if (totalFileSize < displaySize * displaySize * displaySize) {
-            var totalSizePrint = (totalFileSize / displaySize / displaySize).toFixed(2) + " MB";
+            totalSizePrint = (totalFileSize / displaySize / displaySize).toFixed(2) + " MB";
           } else {
-            var totalSizePrint =
+            totalSizePrint =
               (totalFileSize / displaySize / displaySize / displaySize).toFixed(2) + " GB";
           }
 
