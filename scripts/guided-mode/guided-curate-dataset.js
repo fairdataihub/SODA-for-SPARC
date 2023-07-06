@@ -1,5 +1,3 @@
-const sparcFundingConsortiums = ["SPARC", "SPARC-2", "VESPA", "REVA", "HORNET"];
-
 const returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
 };
@@ -4919,7 +4917,7 @@ const openPage = async (targetPageID) => {
           .join("\n")}
       `;
       $("#guided-select-sparc-funding-consortium").selectpicker({
-        style: "guided--select-picker",
+        style: "SODA-select-picker",
       });
       $("#guided-select-sparc-funding-consortium").selectpicker("refresh");
       // Event listener that watches what the user selects and updates the UI accordingly
@@ -8919,7 +8917,7 @@ const openGuidedAddContributorSwal = async () => {
       createDragSort(contributorRolesTagify);
 
       $("#guided-stored-contributors-select").selectpicker({
-        style: "guided--select-picker",
+        style: "SODA-select-picker",
       });
       $("#guided-stored-contributors-select").selectpicker("refresh");
       $("#guided-stored-contributors-select").on("change", function (e) {

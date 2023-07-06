@@ -193,8 +193,43 @@ const importSubmissionMetadataFromDataDeliverablesDocument = async (
   curationMode,
   dataDeliverablesDocumentFilePath
 ) => {
-  console.log("curationMode", curationMode);
-  console.log("dataDeliverablesDocumentFilePath", dataDeliverablesDocumentFilePath);
+  const extract_milestone = await client.get(`/prepare_metadata/import_milestone`, {
+    params: {
+      path: dataDeliverablesDocumentFilePath,
+    },
+  });
+
+  const res = extract_milestone.data;
+
+  // Get the SPARC award and milestone data from the response
+  const importedSparcAward = res["sparc_award"];
+  const milestoneObj = res["milestone_data"];
+
+  // Handle free-form mode submission data
+  if (curationMode === "free-form") {
+    informationJson = parseJson(milestonePath);
+    informationJson[award] = milestoneObj;
+    fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
+
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      timer: 3000,
+      timerProgressBar: true,
+      icon: "success",
+      text: `Successfully loaded your DataDeliverables.docx document`,
+    });
+
+    removeOptions(descriptionDateInput);
+    milestoneTagify1.removeAllTags();
+    milestoneTagify1.settings.whitelist = [];
+    changeAwardInput();
+  }
+
+  // Handle guided mode submission data
+  if (curationMode === "guided") {
+    await openSubmissionMultiStepSwal(importedSparcAward, milestoneObj);
+  }
 };
 
 document.querySelectorAll(".button-import-data-deliverables-document").forEach(async (button) => {
@@ -230,9 +265,14 @@ document.querySelectorAll(".button-import-data-deliverables-document").forEach(a
     const buttonId = button.id;
     let curationMode = null;
     if (buttonId === "button-ffm-import-data-deliverables-document") {
-      curationMode = "ffm";
+      curationMode = "free-form";
     }
     if (buttonId === "button-guided-import-data-deliverables-document") {
+      curationMode = "guided";
+    }
+
+    if (!curationMode) {
+      // REMOVE ME
       curationMode = "guided";
     }
 
@@ -516,6 +556,37 @@ function generateSubmissionFile() {
     return "empty";
   }
 }
+const sparcFundingConsortiums = ["SPARC", "SPARC-2", "VESPA", "REVA", "HORNET"];
+
+// Set the funding consortium dropdown options / set up select picker
+document.getElementById("ffm-select-sparc-funding-consortium").innerHTML = `
+        <option value="">Select a funding consortium</option>
+        ${sparcFundingConsortiums
+          .map((consortium) => {
+            return `<option value="${consortium}">${consortium}</option>`;
+          })
+          .join("\n")}
+      `;
+$("#ffm-select-sparc-funding-consortium").selectpicker({
+  style: "SODA-select-picker",
+});
+$("#ffm-select-sparc-funding-consortium").selectpicker("refresh");
+// Event listener that watches what the user selects and updates the UI accordingly
+$("#ffm-select-sparc-funding-consortium").on("change", function (e) {
+  const consortium = e.target.value;
+  // select all inputs with the classes div-dd-info and submission
+  const manualSubmissionInputs = document.querySelectorAll(".div-dd-info.submission");
+
+  if (consortium === "SPARC") {
+    manualSubmissionInputs.forEach((input) => {
+      input.classList.remove("hidden");
+    });
+  } else {
+    manualSubmissionInputs.forEach((input) => {
+      input.classList.add("hidden");
+    });
+  }
+});
 
 function changeAwardInput() {
   var ddBolean;
@@ -822,6 +893,8 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
       Swal.showLoading();
     },
   });
+
+  const fundingConsortiumFromDropdown = $("#ffm-select-sparc-funding-consortium").val();
 
   var awardRes = $("#submission-sparc-award").val();
   var dateRes = $("#submission-completion-date").val();
