@@ -189,69 +189,58 @@ const openSubmissionMultiStepSwal = async (sparcAward, milestoneRes) => {
   }
 };
 
-const helpMilestoneSubmission = async (curationMode) => {
-  var filepath = "";
-  var informationJson = {};
+const importSubmissionMetadataFromDataDeliverablesDocument = async (
+  curationMode,
+  dataDeliverablesDocumentFilePath
+) => {
+  console.log("curationMode", curationMode);
+  console.log("dataDeliverablesDocumentFilePath", dataDeliverablesDocumentFilePath);
+};
 
-  Swal.fire({
-    title: "Importing the Data Deliverables document",
-    html: `<div class="container-milestone-upload" style="display: flex;margin:10px"><input class="milestone-upload-text" id="input-milestone-select" onclick="openDDDimport()" style="text-align: center;height: 40px;border-radius: 0;background: #f5f5f5; border: 1px solid #d0d0d0; width: 100%" type="text" readonly placeholder="Browse here"/></div>`,
-    heightAuto: false,
-    showCancelButton: true,
-    backdrop: "rgba(0,0,0, 0.4)",
-    preConfirm: () => {
-      if ($("#input-milestone-select").attr("placeholder") === "Browse here") {
-        Swal.showValidationMessage("Please select a file");
-      } else {
-        filepath = $("#input-milestone-select").attr("placeholder");
-        return {
-          filepath: filepath,
-        };
-      }
-    },
-  }).then(async (result) => {
-    Swal.close();
+document.querySelectorAll(".button-import-data-deliverables-document").forEach(async (button) => {
+  button.addEventListener("click", async () => {
+    // First get the filepath from the user
+    let dataDeliverablesDocumentFilePath = "";
 
-    const filepath = result.value.filepath;
-    var award = $("#submission-sparc-award");
-    log.info(`Importing Data Deliverables document: ${filepath}`);
+    const result = await Swal.fire({
+      title: "Importing the Data Deliverables document",
+      html: `
+        <div class="container-milestone-upload" style="display: flex;margin:10px">
+          <input class="milestone-upload-text" id="input-milestone-select" onclick="openDDDimport()" style="text-align: center;height: 40px;border-radius: 0;background: #f5f5f5; border: 1px solid #d0d0d0; width: 100%" type="text" readonly placeholder="Browse here"/>
+        </div>
+      `,
+      heightAuto: false,
+      showCancelButton: true,
+      backdrop: "rgba(0,0,0, 0.4)",
+      preConfirm: () => {
+        const inputSelectDataDeliverablesPath = $("#input-milestone-select");
+        if (inputSelectDataDeliverablesPath.attr("placeholder") === "Browse here") {
+          Swal.showValidationMessage("Please select a file");
+        } else {
+          dataDeliverablesDocumentFilePath = inputSelectDataDeliverablesPath.attr("placeholder"); // Set the file path
+          return true;
+        }
+      },
+    });
+    if (!result.isConfirmed) {
+      console.log("User cancelled the operation");
+      return; // Exit early if the user does not import a file
+    }
+
+    const buttonId = button.id;
+    let curationMode = null;
+    if (buttonId === "button-ffm-import-data-deliverables-document") {
+      curationMode = "ffm";
+    }
+    if (buttonId === "button-guided-import-data-deliverables-document") {
+      curationMode = "guided";
+    }
+
     try {
-      let extract_milestone = await client.get(`/prepare_metadata/import_milestone`, {
-        params: {
-          path: filepath,
-        },
-      });
-      let res = extract_milestone.data;
-
-      // Get the SPARC award and milestone data from the response
-      const importedSparcAward = res["sparc_award"];
-      const milestoneObj = res["milestone_data"];
-
-      //Handle free-form mode submission data
-      if (curationMode === "free-form") {
-        createMetadataDir();
-        var informationJson = {};
-        informationJson = parseJson(milestonePath);
-        informationJson[award] = milestoneObj;
-        fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
-        Swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          timer: 3000,
-          timerProgressBar: true,
-          icon: "success",
-          text: `Successfully loaded your DataDeliverables.docx document`,
-        });
-        removeOptions(descriptionDateInput);
-        milestoneTagify1.removeAllTags();
-        milestoneTagify1.settings.whitelist = [];
-        changeAwardInput();
-      }
-
-      //Handle guided mode submission data
-      if (curationMode === "guided") {
-        await openSubmissionMultiStepSwal(importedSparcAward, milestoneObj);
-      }
+      await importSubmissionMetadataFromDataDeliverablesDocument(
+        curationMode,
+        dataDeliverablesDocumentFilePath
+      );
     } catch (error) {
       console.log(error);
       clientError(error);
@@ -263,6 +252,88 @@ const helpMilestoneSubmission = async (curationMode) => {
       });
     }
   });
+});
+
+const helpMilestoneSubmission = async (buttonId) => {
+  let dataDeliverablesDocumentFilePath = "";
+  let informationJson = {};
+
+  try {
+    const result = await Swal.fire({
+      title: "Importing the Data Deliverables document",
+      html: `
+        <div class="container-milestone-upload" style="display: flex;margin:10px">
+          <input class="milestone-upload-text" id="input-milestone-select" onclick="openDDDimport()" style="text-align: center;height: 40px;border-radius: 0;background: #f5f5f5; border: 1px solid #d0d0d0; width: 100%" type="text" readonly placeholder="Browse here"/>
+        </div>
+      `,
+      heightAuto: false,
+      showCancelButton: true,
+      backdrop: "rgba(0,0,0, 0.4)",
+      preConfirm: () => {
+        const inputSelectDataDeliverablesPath = $("#input-milestone-select");
+        if (inputSelectDataDeliverablesPath.attr("placeholder") === "Browse here") {
+          Swal.showValidationMessage("Please select a file");
+        } else {
+          dataDeliverablesDocumentFilePath = inputSelectDataDeliverablesPath.attr("placeholder"); // Set the file path
+          return true;
+        }
+      },
+    });
+
+    if (!result.isConfirmed) {
+      console.log("User cancelled the operation");
+      return; // Exit early if the user does not import a file
+    }
+
+    log.info(`Importing Data Deliverables document: ${dataDeliverablesDocumentFilePath}`);
+
+    const extract_milestone = await client.get(`/prepare_metadata/import_milestone`, {
+      params: {
+        path: dataDeliverablesDocumentFilePath,
+      },
+    });
+
+    const res = extract_milestone.data;
+
+    // Get the SPARC award and milestone data from the response
+    const importedSparcAward = res["sparc_award"];
+    const milestoneObj = res["milestone_data"];
+
+    // Handle free-form mode submission data
+    if (curationMode === "free-form") {
+      informationJson = parseJson(milestonePath);
+      informationJson[award] = milestoneObj;
+      fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
+
+      Swal.fire({
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        timer: 3000,
+        timerProgressBar: true,
+        icon: "success",
+        text: `Successfully loaded your DataDeliverables.docx document`,
+      });
+
+      removeOptions(descriptionDateInput);
+      milestoneTagify1.removeAllTags();
+      milestoneTagify1.settings.whitelist = [];
+      changeAwardInput();
+    }
+
+    // Handle guided mode submission data
+    if (curationMode === "guided") {
+      await openSubmissionMultiStepSwal(importedSparcAward, milestoneObj);
+    }
+  } catch (error) {
+    console.log(error);
+    clientError(error);
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      icon: "error",
+      text: userErrorMessage(error),
+    });
+  }
 };
 
 let guidedMilestoneData = {};
@@ -407,7 +478,7 @@ function onboardingSubmission() {
           steps: [
             {
               // title: "1. Help with your milestone information",
-              element: document.querySelector("#a-help-submission-milestones"),
+              element: document.querySelector("#button-ffm-import-data-deliverables-document"),
               intro:
                 "Click here to import your Data Deliverables document for SODA to automatically retrieve your milestone and completion date.",
             },
