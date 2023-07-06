@@ -4930,13 +4930,9 @@ const openPage = async (targetPageID) => {
 
         // If the valueLess selection is selected, hide all sections besides the help dropdown
         if (consortium === "") {
-          showElementsWithClass("funding-not-shown-dropdown");
           //Hide the click continue to.. div
           divClickContinueFundingConsortium.classList.add("hidden");
         } else {
-          // If a non-null value is selected, hide the help dropdown and show the appropriate sections
-          hideElementsWithClass("funding-not-shown-dropdown");
-
           // Show the click continue to.. div
           divClickContinueFundingConsortium.classList.remove("hidden");
           // Set the funding consortium text to the click continue to.. span

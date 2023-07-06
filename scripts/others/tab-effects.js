@@ -2103,8 +2103,8 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
 
       // check if the user has selected start from existing pennsieve
       // if so then hide the workspace selection field
-      var res = generateSubmissionFile();
-      if (res === "empty") {
+      const submissionFieldsAreValid = generateSubmissionFile();
+      if (!submissionFieldsAreValid) {
         return;
       }
       $("#submission-accordion").removeClass("active");

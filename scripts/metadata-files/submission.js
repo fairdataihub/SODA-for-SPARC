@@ -538,6 +538,24 @@ function onboardingSubmission() {
 
 // generateSubmissionFile function takes all the values from the preview card's spans
 function generateSubmissionFile() {
+  const fundingConsortiumFromDropdown = $("#ffm-select-sparc-funding-consortium").val();
+  if (fundingConsortiumFromDropdown === "") {
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      icon: "error",
+      text: "Please select a funding consortium.",
+      title: "Incomplete information",
+    });
+    return false;
+  }
+
+  if (fundingConsortiumFromDropdown === "SPARC") {
+    const awardNumber = $("#submission-sparc-award").val();
+    const completionDate = $("#submission-completion-date").val();
+    const milestones = [];
+  } else {
+  }
   var awardRes = $("#submission-sparc-award").val();
   var dateRes = $("#submission-completion-date").val();
   var milestonesRes = $("#selected-milestone-1").val();
@@ -560,13 +578,13 @@ const sparcFundingConsortiums = ["SPARC", "SPARC-2", "VESPA", "REVA", "HORNET"];
 
 // Set the funding consortium dropdown options / set up select picker
 document.getElementById("ffm-select-sparc-funding-consortium").innerHTML = `
-        <option value="">Select a funding consortium</option>
-        ${sparcFundingConsortiums
-          .map((consortium) => {
-            return `<option value="${consortium}">${consortium}</option>`;
-          })
-          .join("\n")}
-      `;
+  <option value="">Select a funding consortium</option>
+    ${sparcFundingConsortiums
+      .map((consortium) => {
+        return `<option value="${consortium}">${consortium}</option>`;
+      })
+      .join("\n")}
+`;
 $("#ffm-select-sparc-funding-consortium").selectpicker({
   style: "SODA-select-picker",
 });
@@ -574,9 +592,7 @@ $("#ffm-select-sparc-funding-consortium").selectpicker("refresh");
 // Event listener that watches what the user selects and updates the UI accordingly
 $("#ffm-select-sparc-funding-consortium").on("change", function (e) {
   const consortium = e.target.value;
-  // select all inputs with the classes div-dd-info and submission
   const manualSubmissionInputs = document.querySelectorAll(".div-dd-info.submission");
-
   if (consortium === "SPARC") {
     manualSubmissionInputs.forEach((input) => {
       input.classList.remove("hidden");
