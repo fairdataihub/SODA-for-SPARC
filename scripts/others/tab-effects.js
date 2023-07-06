@@ -3692,17 +3692,7 @@ $(document).ready(() => {
   $(".ui.accordion").accordion();
   $(".content-button").click(function () {
     let section = $(this).data("section");
-
-    // if (section === "add_edit_bf_dataset_collection") {
-    //   let rename_dataset_name = $(
-    //     "#rename_dataset_BF_account_tab .change-current-account.ds-dd.dataset-name h5"
-    //   ).html();
-    //   if (rename_dataset_name.trim() != "None" && rename_dataset_name != "") {
-    //     $("#bf-rename-dataset-name").val(rename_dataset_name);
-    //   } else {
-    //     $("#bf-rename-dataset-name").val("");
-    //   }
-    // }
+    console.log(section);
 
     if (section === "rename_existing_bf_dataset") {
       let rename_dataset_name = $(
@@ -3718,6 +3708,7 @@ $(document).ready(() => {
     $("#main-nav").addClass("active");
     $("#sidebarCollapse").addClass("active");
     $(".section").addClass("fullShown");
+    console.log($(".section"));
   });
 
   $(".footer-div div button").click((ev) => {
