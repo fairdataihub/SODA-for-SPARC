@@ -2517,7 +2517,6 @@ $("#button-submit-dataset").click(async () => {
       let fileUploadStatus = progressData["files_uploaded_status"];
       let totalFilesUploaded = progressData["uploaded_files"];
 
-
       if (submitprintstatus === "Uploading") {
         logProgressToAnalytics(totalFilesUploaded, totalUploadedFileSize);
         console.log("totalUploadedFileSize: " + totalUploadedFileSize);
@@ -2556,7 +2555,6 @@ $("#button-submit-dataset").click(async () => {
               createEventData(differenceInBytes, "Pennsieve", "Local", defaultBfDataset)
             );
           }
-        
         } else {
           var value = (totalUploadedFileSize / totalFileSize) * 100;
 
@@ -2592,7 +2590,7 @@ $("#button-submit-dataset").click(async () => {
               ")"
           );
         }
-      } 
+      }
     };
 
     client

@@ -20,11 +20,11 @@ const kombuchaServer = axios.create({
 });
 
 // Retrieve the userid value, and if it's not there, assign it a new uuid.
-let userId; 
+let userId;
 try {
- userId = nodeStorage.getItem("userId");
-} catch(e) {
-  userId = null
+  userId = nodeStorage.getItem("userId");
+} catch (e) {
+  userId = null;
 }
 if (userId === null) {
   userId = uuid();

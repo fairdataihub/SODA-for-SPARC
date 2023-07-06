@@ -205,9 +205,9 @@ const sendUserAnalytics = () => {
   // Retrieve the userId and if it doesn't exist, create a new uuid
   let token;
   try {
-  token = nodeStorage.getItem("kombuchaToken");
-  } catch(e) {
-    token = null
+    token = nodeStorage.getItem("kombuchaToken");
+  } catch (e) {
+    token = null;
   }
 
   if (token === null) {
@@ -217,7 +217,7 @@ const sendUserAnalytics = () => {
       .post("meta/users", {})
       .then((res) => {
         // Save the user token from the server
-        console.log(res)
+        console.log(res);
         nodeStorage.setItem("kombuchaToken", res.data.token);
         nodeStorage.setItem("userId", res.data.userId);
       })
