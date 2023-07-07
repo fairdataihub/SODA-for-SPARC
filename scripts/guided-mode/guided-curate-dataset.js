@@ -13550,7 +13550,7 @@ $(document).ready(async () => {
 
         // log the difference again to Google Analytics
         let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
-        if (fileFilesCount > 0) {
+        if (finalFilesCount > 0) {
           ipcRenderer.send(
             "track-kombucha",
             kombuchaEnums.Category.GUIDED_MODE,
