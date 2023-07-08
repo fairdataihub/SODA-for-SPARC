@@ -1026,7 +1026,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           return;
         } else {
           let key_name = SODA_SPARC_API_KEY;
-          let response = await get_api_key(login, password, key_name);
+          let response = await create_api_key_and_secret(login, password, key_name);
           if (response[0] == "failed") {
             let error_message = response[1];
             if (response[1]["message"] === "exceptions must derive from BaseException") {

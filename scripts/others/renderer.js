@@ -937,6 +937,7 @@ const run_pre_flight_checks = async (check_update = true) => {
     try {
       await client.get(`/manage_datasets/ps_get_users?selected_account=${defaultBfAccount}`);
     } catch (err) {
+      console.log("We doing this here")
       clientError(err);
       if (err.response.status) {
         await addBfAccount(null, true);
@@ -1120,6 +1121,7 @@ const check_api_key = async () => {
   let responseObject;
 
   if (!hasConnectedAccountWithPennsieve()) {
+    console.log("Failed here")
     notyf.dismiss(notification);
     notyf.open({
       type: "error",
@@ -1131,6 +1133,7 @@ const check_api_key = async () => {
   try {
     responseObject = await client.get("manage_datasets/bf_account_list");
   } catch (e) {
+    console.log("Failed here")
     notyf.dismiss(notification);
     notyf.open({
       type: "error",
@@ -1140,6 +1143,7 @@ const check_api_key = async () => {
   }
 
   let res = responseObject.data["accounts"];
+  console.log(responseObject.data)
   log.info("Found a set of valid API keys");
   if (res[0] === "Select" && res.length === 1) {
     //no api key found
@@ -1148,6 +1152,7 @@ const check_api_key = async () => {
       type: "error",
       message: "No account was found",
     });
+    console.log("Failed here")
     return false;
   } else {
     notyf.dismiss(notification);

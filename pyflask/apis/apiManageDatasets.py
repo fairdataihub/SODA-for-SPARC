@@ -218,12 +218,16 @@ account_list_model = api.model('AccountList', {
 @api.route('/bf_account_list')
 class BfAccountList(Resource):
   @api.marshal_with(account_list_model, False, 200)
-  @api.doc(responses={500: 'There was an internal server error'}, description="Returns a list of the user's accounts stored in the system.")
+  @api.doc(responses={500: 'There was an internal server error', 401: "Invalid api key and secret"}, description="Returns a list of the user's accounts stored in the system.")
   def get(self):
     try:
       return bf_account_list()
     except Exception as e:
-      api.abort(500, str(e))
+      # TODO: Refine error handling
+      if notBadRequestException(e):
+        api.abort(500, str(e))
+      api.abort(401, str(e))
+      
 
 
 

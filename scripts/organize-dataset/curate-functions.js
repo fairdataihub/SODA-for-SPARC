@@ -813,7 +813,7 @@ $(document).ready(async function () {
   $("#guided_bf_list_users_and_teams").selectpicker("refresh");
 });
 
-const get_api_key = (login, password, key_name) => {
+const create_api_key_and_secret = (login, password, key_name) => {
   return new Promise(async (resolve) => {
     try {
       let bf_get_pennsieve_secret_key = await client.post(

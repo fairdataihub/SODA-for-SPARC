@@ -261,7 +261,7 @@ def bf_get_accounts():
                     get_access_token()
                     return default_profile.lower()
                 except Exception as e:
-                    print(e)
+                    abort(401, e)
     else:
         for account in sections:
             if account != 'agent':
