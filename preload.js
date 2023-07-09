@@ -1837,7 +1837,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
           try {
             let organizationId = organizationNameToIdMapping[bfOrganization];
-            await api.setPreferredOrganization(login, password, organizationId, "soda-pennsieve");
+            await api.setPreferredOrganization(login, password, organizationId);
           } catch (err) {
             clientError(err);
             await Swal.fire({

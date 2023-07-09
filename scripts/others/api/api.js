@@ -451,12 +451,11 @@ const getNumberOfItemsInLocalDataset = async (datasetPath) => {
   return itemCountsResponse.data;
 };
 
-const setPreferredOrganization = async (email, password, organization, account) => {
+const setPreferredOrganization = async (email, password, organization) => {
   const response = await client.put("/user/organizations/preferred", {
     organization_id: organization,
     email,
     password,
-    account,
   });
   return response.data;
 };
