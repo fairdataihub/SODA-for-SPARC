@@ -101,7 +101,7 @@ def create_profile_name(token, organization_id):
             organization = org["organization"]["name"]
 
     # create an updated profile name that is unique to the user and their workspace 
-    return f"soda-pennsieve-{email_sub}-{organization}"
+    return f"SODA-Pennsieve-{email_sub}-{organization}"
              
 
 
