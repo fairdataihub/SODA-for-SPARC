@@ -40,7 +40,7 @@ import time
 
 from namespaces import get_namespace, NamespaceEnum
 from errorHandlers import notBadRequestException, handle_http_error
-from authentication import get_cognito_userpool_access_token, bf_add_account_username, get_pennsieve_api_key_secret
+from authentication import get_cognito_userpool_access_token, bf_add_account_username, create_pennsieve_api_key_secret
 
 
 ##--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -86,7 +86,7 @@ class PennsieveAPIKeyAndSecret(Resource):
     api_key = args.get('api_key')
 
     try: 
-      return get_pennsieve_api_key_secret(username, password, api_key)
+      return create_pennsieve_api_key_secret(username, password, api_key)
     except Exception as e:
       if notBadRequestException(e):
         api.abort(500, str(e))
