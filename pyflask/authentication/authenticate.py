@@ -276,30 +276,30 @@ def delete_duplicate_keys(token, keyname):
 def get_pennsieve_api_key_secret(email, password, keyname):
 
     api_key = get_cognito_userpool_access_token(email, password)
-    
-    try:
-        delete_duplicate_keys(api_key, keyname)
 
-        url = "https://api.pennsieve.io/token/"
+    profile_name = create_unique_profile_name(api_key, email, keyname)
 
-        payload = {"name": f"{keyname}"}
-        headers = {
-            "Accept": "*/*",
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {api_key}",
-        }
+    delete_duplicate_keys(api_key, keyname)
+    delete_duplicate_keys(api_key, profile_name)
 
-        response = requests.request("POST", url, json=payload, headers=headers)
-        response.raise_for_status()
-        response = response.json()
 
-        profile_name = create_unique_profile_name(api_key, email, keyname)
+    url = "https://api.pennsieve.io/token/"
 
-        return { 
-            "success": "success", 
-            "key": response["key"], 
-            "secret": response["secret"], 
-            "name": profile_name
-        }
-    except Exception as e:
-        raise e
+    payload = {"name": f"{profile_name}"}
+    headers = {
+        "Accept": "*/*",
+        "Content-Type": "application/json",
+        "Authorization": f"Bearer {api_key}",
+    }
+
+    response = requests.request("POST", url, json=payload, headers=headers)
+    response.raise_for_status()
+    response = response.json()
+
+
+    return { 
+        "success": "success", 
+        "key": response["key"], 
+        "secret": response["secret"], 
+        "name": profile_name
+    }
