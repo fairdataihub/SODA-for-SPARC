@@ -1249,7 +1249,7 @@ const moveItems = async (ev, category) => {
       }
     },
   });
-  console.log("folderDestination", folderDestination);
+
   if (folderDestination) {
     const { value: confirm } = await Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
@@ -1268,11 +1268,8 @@ const moveItems = async (ev, category) => {
       },
     });
 
-    console.log("confirm", confirm);
     if (confirm) {
       let duplicateItems = [`<ul style="text-align: center;">`];
-      // let duplicateBool = false;
-      // duplicateItems[0] = `<ul style="text-align: start;">`;
       let numberItems = $("div.single-item.selected-item").toArray().length;
       let timer = 2000;
       if (numberItems > 10) {
@@ -1398,10 +1395,6 @@ const moveItems = async (ev, category) => {
         }
         let pathAsArray = selectedPath.split("/");
         listItems(myPath, "#items", 500);
-        // organizeLandingUIEffect();
-        // reconstruct div with new elements
-        console.log(organizeDSglobalPath.value);
-
         getInFolder(".single-item", "#items", organizeDSglobalPath, myPath);
 
         // if moved into an empty folder we need to remove the class 'empty'
