@@ -22,18 +22,7 @@ def create_unique_profile_name(token, machine_username_specifier):
 
         organization_id = user_info["preferredOrganization"]
 
-        # get the organizations this user account has access to 
-        r = requests.get(f"{PENNSIEVE_URL}/organizations", headers=headers)
-        r.raise_for_status()
-
-        organizations = r.json()
-
-        organization = None
-        for org in organizations["organizations"]:
-            if org["organization"]["id"] == organization_id:
-                organization = org["organization"]["name"]
-
         # create an updated profile name that is unqiue to the user and their workspace 
-        return f"SODA-Pennsieve-{machine_username_specifier}-{email_sub}-{organization}"
+        return f"SODA-Pennsieve-{machine_username_specifier}-{email_sub}-{organization_id}"
     except Exception as e:
         raise e
