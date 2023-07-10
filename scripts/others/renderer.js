@@ -34,6 +34,7 @@ const select2 = require("select2")();
 const DragSort = require("@yaireo/dragsort");
 const spawn = require("child_process").spawn;
 const execFile = require("child_process").execFile;
+const { v4: uuidv4 } = require("uuid");
 // TODO: Test with a build
 const { datasetUploadSession } = require("./scripts/others/analytics/upload-session-tracker");
 
@@ -527,7 +528,27 @@ const startupServerAndApiCheck = async () => {
   apiVersionChecked = true;
 };
 
-startupServerAndApiCheck();
+startupServerAndApiCheck().then(() => {
+  // get the current user profile name using electron
+  const { username } = os.userInfo();
+
+  // check if a shortened uuid exists in local storage
+  if (localStorage.getItem(username)) {
+    return;
+  }
+
+  // generate a UUID
+  const uuid = uuidv4();
+
+  // get the first 4 characters of the UUID
+  const uuidShort = uuid.substring(0, 4);
+
+  // store the shortened uuid in local storage
+  // RATIONALE: this is used as a prefix that is unique per each client machine + profile name combination
+  localStorage.setItem(username, uuidShort);
+
+  console.log(localStorage.getItem(username));
+});
 
 // Check if we are connected to the Pysoda server
 // Check app version on current app and display in the side bar
