@@ -238,13 +238,14 @@ def delete_duplicate_keys(token, keyname):
         raise e
 
 
-def create_pennsieve_api_key_secret(email, password, keyname):
+def create_pennsieve_api_key_secret(email, password, machine_username_specifier):
 
     api_key = get_cognito_userpool_access_token(email, password)
 
-    profile_name = create_unique_profile_name(api_key, email, keyname)
+    # TODO: Send in computer and profile of computer from frontend to this endpoint and use it in this function
+    profile_name = create_unique_profile_name(api_key, machine_username_specifier)
 
-    delete_duplicate_keys(api_key, keyname)
+    delete_duplicate_keys(api_key, "SODA-Pennsieve")
     delete_duplicate_keys(api_key, profile_name)
 
 

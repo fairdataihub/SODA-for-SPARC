@@ -1,6 +1,6 @@
 import requests 
 
-def create_unique_profile_name(token):
+def create_unique_profile_name(token, machine_username_specifier):
     try:
         # get the users email
         PENNSIEVE_URL = "https://api.pennsieve.io"
@@ -34,6 +34,6 @@ def create_unique_profile_name(token):
                 organization = org["organization"]["name"]
 
         # create an updated profile name that is unqiue to the user and their workspace 
-        return f"SODA-Pennsieve-{email_sub}-{organization}"
+        return f"SODA-Pennsieve-{machine_username_specifier}-{email_sub}-{organization}"
     except Exception as e:
         raise e

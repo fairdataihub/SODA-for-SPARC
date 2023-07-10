@@ -68,7 +68,7 @@ class PennsieveAPIKeyAndSecret(Resource):
   api_key_parser = reqparse.RequestParser(bundle_errors=True)
   api_key_parser.add_argument('username', type=str, required=True, help='Username of the user', location="json")
   api_key_parser.add_argument('password', type=str, required=True, help='Password of the user', location="json")
-  api_key_parser.add_argument('api_key', type=str, required=True, help='API key from the Pennsieve platform', location="json")
+  api_key_parser.add_argument('machine_username_specifier', type=str, required=True, help='The machine username specifier', location="json")
 
   # the response object
   @api.marshal_with(pennsieveAPIKeyAndSecret, False, 201)
@@ -83,10 +83,10 @@ class PennsieveAPIKeyAndSecret(Resource):
     # get the username, password, and api key from the request object
     username = args.get('username')
     password = args.get('password')
-    api_key = args.get('api_key')
+    machine_username_specifier = args.get('machine_username_specifier')
 
     try: 
-      return create_pennsieve_api_key_secret(username, password, api_key)
+      return create_pennsieve_api_key_secret(username, password, machine_username_specifier)
     except Exception as e:
       if notBadRequestException(e):
         api.abort(500, str(e))

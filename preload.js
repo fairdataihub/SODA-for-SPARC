@@ -1025,8 +1025,11 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           Swal.showValidationMessage(`Please enter email and password`);
           return;
         } else {
-          let key_name = SODA_SPARC_API_KEY;
-          let response = await create_api_key_and_secret(login, password, key_name);
+          // rationale: specifies the machine and the username so when creating new API Keys we can safely do so without
+          //            obsoleting (aka deleting) ones that already exist for separate machine/profile combinations in the
+          //            user's Pennsieve profile.
+          let machineUsernameSpecifier = localStorage.getItem(os.userInfo().username);
+          let response = await create_api_key_and_secret(login, password, machineUsernameSpecifier);
           if (response[0] == "failed") {
             let error_message = response[1];
             if (response[1]["message"] === "exceptions must derive from BaseException") {
