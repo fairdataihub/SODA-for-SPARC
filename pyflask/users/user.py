@@ -10,6 +10,7 @@ from utils import (
 from namespaces import NamespaceEnum, get_namespace_logger
 from flask import abort
 from authentication import get_access_token, get_cognito_userpool_access_token, bf_add_account_username, bf_delete_account, bf_delete_default_profile, delete_duplicate_keys
+from profileUtils import create_unique_profile_name
 
 logger = get_namespace_logger(NamespaceEnum.USER)
 
@@ -105,11 +106,9 @@ def create_profile_name(token, organization_id):
              
 
 
-def set_preferred_organization(organization_id, email, password):
+def set_preferred_organization(organization_id, email, password, machine_username_specifier):
 
     token = get_cognito_userpool_access_token(email, password)
-
-    profile_name = create_profile_name(token, organization_id)
 
     try:
         # switch to the desired organization
@@ -124,6 +123,9 @@ def set_preferred_organization(organization_id, email, password):
         new_err_msg = "It looks like you don't have access to your desired organization. An organization is required to upload datasets. Please reach out to the SPARC curation team (email) to get access to your desired organization and try again."
         raise Exception(new_err_msg) from err
     
+
+     # TODO: Send in computer and profile of computer from frontend to this endpoint and use it in this function
+    profile_name = create_unique_profile_name(token, machine_username_specifier)
 
     # any users coming from versions of SODA < 12.0.2 will potentially have duplicate SODA-Pennsieve API keys on their Pennsieve profile we want to clean up for them
     delete_duplicate_keys(token, "SODA-Pennsieve")

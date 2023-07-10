@@ -1840,7 +1840,13 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
 
           try {
             let organizationId = organizationNameToIdMapping[bfOrganization];
-            await api.setPreferredOrganization(login, password, organizationId);
+            let machineUsernameSpecifier = localStorage.getItem(os.userInfo().username);
+            await api.setPreferredOrganization(
+              login,
+              password,
+              organizationId,
+              machineUsernameSpecifier
+            );
           } catch (err) {
             clientError(err);
             await Swal.fire({
