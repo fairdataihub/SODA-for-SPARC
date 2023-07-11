@@ -1920,6 +1920,18 @@ const uploadBannerImage = async () => {
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
           defaultBfDatasetId
         );
+
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.MANAGE_DATASETS,
+          kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+          kombuchaEnums.Label.BANNER_SIZE,
+          kombuchaEnums.Status.FAIL,
+          {
+            value: 0,
+            dataset_id: defaultBfDatasetId,
+          }
+        );
       }
     } else {
       //final size is greater than 5mb so compress image here (image already created and stored in temp file)
@@ -2206,6 +2218,18 @@ $("#button-add-tags").click(async () => {
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
       defaultBfDatasetId
+    );
+
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.MANAGE_DATASETS,
+      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+      kombuchaEnums.Label.TAGS,
+      kombuchaEnums.Status.FAIL,
+      {
+        value: 0,
+        dataset_id: defaultBfDatasetId,
+      }
     );
 
     // halt execution
