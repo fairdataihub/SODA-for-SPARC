@@ -2171,7 +2171,6 @@ $("#button-add-tags").click(async () => {
   Swal.fire({
     title: determineSwalLoadingMessage($("#button-add-tags")),
     html: "Please wait...",
-    // timer: 5000,
     allowEscapeKey: false,
     allowOutsideClick: false,
     heightAuto: false,
@@ -2188,7 +2187,7 @@ $("#button-add-tags").click(async () => {
   });
 
   // get the name of the currently selected dataset
-  var selectedBfDataset = defaultBfDataset;
+  let selectedBfDataset = defaultBfDataset;
 
   // Add tags to dataset
   try {
@@ -2236,28 +2235,40 @@ $("#button-add-tags").click(async () => {
     return;
   }
   // show success or failure to the user in a popup message
-  Swal.fire({
+  await Swal.fire({
     title: determineSwalSuccessMessage($("#button-add-tags")),
     icon: "success",
     showConfirmButton: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
-  }).then(() => {
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
-      defaultBfDatasetId
-    );
-
-    // run the pre-publishing checklist items to update the list found in the "Submit for pre-publishing review" section/card
-    showPrePublishingStatus();
-
-    //check if tags array is empty and set Add/Edit tags appropriately
-    tags === undefined || tags.length == 0
-      ? $("#button-add-tags").html("Add tags")
-      : $("#button-add-tags").html("Edit tags");
   });
+
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
+    defaultBfDatasetId
+  );
+
+  ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.MANAGE_DATASETS,
+    kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+    kombuchaEnums.Label.TAGS,
+    kombuchaEnums.Status.SUCCESS,
+    {
+      value: 1,
+      dataset_id: defaultBfDatasetId,
+    }
+  );
+
+  // run the pre-publishing checklist items to update the list found in the "Submit for pre-publishing review" section/card
+  showPrePublishingStatus();
+  
+  //check if tags array is empty and set Add/Edit tags appropriately
+  tags === undefined || tags.length == 0
+    ? $("#button-add-tags").html("Add tags")
+    : $("#button-add-tags").html("Edit tags");
 });
 
 // fetch a user's metadata tags
