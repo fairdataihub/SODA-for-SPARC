@@ -57,6 +57,7 @@ const logSelectedUpdateExistingDatasetOptions = (origin) => {
   });
 };
 
+// Function created for Generate Dataset events
 const createEventData = (value, destination, origin, dataset_name) => {
   if (destination === "Pennsieve") {
     return {

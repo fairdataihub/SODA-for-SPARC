@@ -1,4 +1,7 @@
 // event listeners for opening dataset or account selection dropdown
+
+const { kombuchaEnums } = require("../others/analytics/analytics-enums");
+
 // TODO: Add logic so this doesnt apply to the organization fields
 document.querySelectorAll(".ds-dd:not(.organization)").forEach((dropdownElement) => {
   dropdownElement.addEventListener("click", function () {
@@ -865,6 +868,18 @@ $("#button-add-subtitle").click(async () => {
           ? $("#button-add-subtitle").html("Add subtitle")
           : $("#button-add-subtitle").html("Edit subtitle")
       );
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+        kombuchaEnums.Label.SUBTITLE,
+        kombuchaEnums.Status.SUCCESS,
+        {
+          value: 1,
+          dataset_id: defaultBfDatasetId,
+        }
+      )
 
       ipcRenderer.send(
         "track-event",
