@@ -87,7 +87,7 @@ class PennsieveAPIKeyAndSecret(Resource):
 
     try: 
       results = create_pennsieve_api_key_secret(username, password, machine_username_specifier)
-      api.logger.info(f'New profile name: {results["name"]}')
+      api.logger.info(f'New profile name: {results["name"]} ; ending indicates which workspace we are in')
       return results
     except Exception as e:
       if notBadRequestException(e):

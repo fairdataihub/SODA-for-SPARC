@@ -3972,6 +3972,7 @@ const loadDefaultAccount = async () => {
   let accounts = responseObject.data["defaultAccounts"];
 
   if (accounts.length > 0) {
+    // TODO: Look into if this can be at times wrong?  If so this may be why they are having passing the teams authrization check but successfully retrieving the default account and user information.
     let myitemselect = accounts[0];
     // keep the defaultBfAccount value as the user's profile config key value for reference later
     defaultBfAccount = myitemselect;
@@ -3979,6 +3980,9 @@ const loadDefaultAccount = async () => {
     // fetch the user's email and set that as the account field's value
     let userInformation = await api.getUserInformation();
     let userEmail = userInformation.email;
+
+    log.info(`Loading default account user organization: ${userInformation.preferredOrganization}`);
+    log.info(`Loading default account user default profile is: ${defaultBfAccount}`);
 
     $("#current-bf-account").text(userEmail);
     $("#current-bf-account-generate").text(userEmail);
