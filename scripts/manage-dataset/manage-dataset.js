@@ -1878,6 +1878,18 @@ const uploadBannerImage = async () => {
           image_file_size
         );
 
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.MANAGE_DATASETS,
+          kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+          kombuchaEnums.Label.BANNER_SIZE,
+          kombuchaEnums.Status.SUCCESS,
+          {
+            value: image_file_size,
+            dataset_id: defaultBfDatasetId,
+          }
+        );
+
         // track the size for the given dataset
         ipcRenderer.send(
           "track-event",
