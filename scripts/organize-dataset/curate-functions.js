@@ -172,7 +172,6 @@ const dropHandler = async (
       }
       if (dataDeliverables === true) {
         let filepath = file.path;
-        var award = $("#submission-sparc-award");
         log.info(`Importing Data Deliverables document: ${filepath}`);
         try {
           let extract_milestone = await client.get(`/prepare_metadata/import_milestone`, {
@@ -181,36 +180,13 @@ const dropHandler = async (
             },
           });
           let res = extract_milestone.data;
+          console.log(res);
 
           // Get the SPARC award and milestone data from the response
           const importedSparcAward = res["sparc_award"];
           const milestoneObj = res["milestone_data"];
 
-          //Handle free-form mode submission data
-          if (curationMode === "free-form") {
-            createMetadataDir();
-            var informationJson = {};
-            informationJson = parseJson(milestonePath);
-            informationJson[award] = milestoneObj;
-            fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
-            Swal.fire({
-              backdrop: "rgba(0,0,0, 0.4)",
-              heightAuto: false,
-              timer: 3000,
-              timerProgressBar: true,
-              icon: "success",
-              text: `Successfully loaded your DataDeliverables.docx document`,
-            });
-            removeOptions(descriptionDateInput);
-            milestoneTagify1.removeAllTags();
-            milestoneTagify1.settings.whitelist = [];
-            changeAwardInput();
-          }
-
-          //Handle guided mode submission data
-          if (curationMode === "guided") {
-            await openSubmissionMultiStepSwal(importedSparcAward, milestoneObj);
-          }
+          await openSubmissionMultiStepSwal(curationMode, importedSparcAward, milestoneObj);
         } catch (error) {
           clientError(error);
           Swal.fire({

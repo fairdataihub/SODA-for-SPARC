@@ -39,7 +39,7 @@ const renderMilestoneSelectionTable = (milestoneData) => {
   milestonesTableContainer.innerHTML = milestoneTableRows;
 };
 
-const openSubmissionMultiStepSwal = async (sparcAward, milestoneRes) => {
+const openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneRes) => {
   //add a custom milestone row for when the user wants to add a custom milestone
   //not included in the dataset deliverables document
   milestoneRes["Not included in the Dataset Deliverables document"] = [
@@ -156,36 +156,63 @@ const openSubmissionMultiStepSwal = async (sparcAward, milestoneRes) => {
   ]);
 
   if (milestoneData && completionDate) {
+    console.log("curaion mode: ", curationMode);
     // Fill the SPARC award input with the imported SPARC award if it was found (otherwise it will be an empty string)
-    if (sparcAward.length > 0) {
+    if (curationMode === "free-form") {
+      document.getElementById("submission-sparc-award").value = sparcAward;
+    }
+    if (curationMode === "guided") {
       document.getElementById("guided-submission-sparc-award-manual").value = sparcAward;
     }
+
+    // // // // // // // // // // // // end sparc award // // // // // // // // // // // //
 
     // Remove duplicate milestones from milestoneData and add them to the tagify input
     const uniqueMilestones = Array.from(
       new Set(milestoneData.map((milestone) => milestone.milestone))
     );
-    guidedSubmissionTagsTagifyManual.removeAllTags();
-    guidedSubmissionTagsTagifyManual.addTags(uniqueMilestones);
 
-    // Add the completion date to the completion date dropdown and select it
-    const completionDateInput = document.getElementById("guided-submission-completion-date-manual");
-    completionDateInput.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
-    completionDateInput.value = completionDate;
+    if (curationMode === "free-form") {
+      milestoneTagify1.removeAllTags();
+      milestoneTagify1.addTags(uniqueMilestones);
+    }
+    if (curationMode === "guided") {
+      guidedSubmissionTagsTagifyManual.removeAllTags();
+      guidedSubmissionTagsTagifyManual.addTags(uniqueMilestones);
+    }
 
-    // Hide the milestone selection section and show the submission metadata section
-    const sectionThatAsksIfDataDeliverablesReady = document.getElementById(
-      "guided-section-user-has-data-deliverables-question"
-    );
-    const sectionSubmissionMetadataInputs = document.getElementById(
-      "guided-section-submission-metadata-inputs"
-    );
-    const sectionDataDeliverablesImport = document.getElementById(
-      "guided-section-import-data-deliverables-document"
-    );
-    sectionThatAsksIfDataDeliverablesReady.classList.add("hidden");
-    sectionDataDeliverablesImport.classList.add("hidden");
-    sectionSubmissionMetadataInputs.classList.remove("hidden");
+    // // // // // // // // // // // // end milestone tags // // // // // // // // // // // //
+
+    if (curationMode === "free-form") {
+      // Add the completion date to the completion date dropdown and select it
+      const completionDateInput = document.getElementById("submission-completion-date");
+      completionDateInput.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
+      completionDateInput.value = completionDate;
+    }
+    if (curationMode === "guided") {
+      // Add the completion date to the completion date dropdown and select it
+      const completionDateInput = document.getElementById(
+        "guided-submission-completion-date-manual"
+      );
+      completionDateInput.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
+      completionDateInput.value = completionDate;
+    }
+
+    if (curationMode === "guided") {
+      // Hide the milestone selection section and show the submission metadata section
+      const sectionThatAsksIfDataDeliverablesReady = document.getElementById(
+        "guided-section-user-has-data-deliverables-question"
+      );
+      const sectionSubmissionMetadataInputs = document.getElementById(
+        "guided-section-submission-metadata-inputs"
+      );
+      const sectionDataDeliverablesImport = document.getElementById(
+        "guided-section-import-data-deliverables-document"
+      );
+      sectionThatAsksIfDataDeliverablesReady.classList.add("hidden");
+      sectionDataDeliverablesImport.classList.add("hidden");
+      sectionSubmissionMetadataInputs.classList.remove("hidden");
+    }
   }
 };
 
@@ -205,31 +232,7 @@ const importSubmissionMetadataFromDataDeliverablesDocument = async (
   const importedSparcAward = res["sparc_award"];
   const milestoneObj = res["milestone_data"];
 
-  // Handle free-form mode submission data
-  if (curationMode === "free-form") {
-    informationJson = parseJson(milestonePath);
-    informationJson[award] = milestoneObj;
-    fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
-
-    Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      timer: 3000,
-      timerProgressBar: true,
-      icon: "success",
-      text: `Successfully loaded your DataDeliverables.docx document`,
-    });
-
-    removeOptions(descriptionDateInput);
-    milestoneTagify1.removeAllTags();
-    milestoneTagify1.settings.whitelist = [];
-    changeAwardInput();
-  }
-
-  // Handle guided mode submission data
-  if (curationMode === "guided") {
-    await openSubmissionMultiStepSwal(importedSparcAward, milestoneObj);
-  }
+  await openSubmissionMultiStepSwal(curationMode, importedSparcAward, milestoneObj);
 };
 
 document.querySelectorAll(".button-import-data-deliverables-document").forEach(async (button) => {
@@ -271,11 +274,6 @@ document.querySelectorAll(".button-import-data-deliverables-document").forEach(a
       curationMode = "guided";
     }
 
-    if (!curationMode) {
-      // REMOVE ME
-      curationMode = "guided";
-    }
-
     try {
       await importSubmissionMetadataFromDataDeliverablesDocument(
         curationMode,
@@ -293,88 +291,6 @@ document.querySelectorAll(".button-import-data-deliverables-document").forEach(a
     }
   });
 });
-
-const helpMilestoneSubmission = async (buttonId) => {
-  let dataDeliverablesDocumentFilePath = "";
-  let informationJson = {};
-
-  try {
-    const result = await Swal.fire({
-      title: "Importing the Data Deliverables document",
-      html: `
-        <div class="container-milestone-upload" style="display: flex;margin:10px">
-          <input class="milestone-upload-text" id="input-milestone-select" onclick="openDDDimport()" style="text-align: center;height: 40px;border-radius: 0;background: #f5f5f5; border: 1px solid #d0d0d0; width: 100%" type="text" readonly placeholder="Browse here"/>
-        </div>
-      `,
-      heightAuto: false,
-      showCancelButton: true,
-      backdrop: "rgba(0,0,0, 0.4)",
-      preConfirm: () => {
-        const inputSelectDataDeliverablesPath = $("#input-milestone-select");
-        if (inputSelectDataDeliverablesPath.attr("placeholder") === "Browse here") {
-          Swal.showValidationMessage("Please select a file");
-        } else {
-          dataDeliverablesDocumentFilePath = inputSelectDataDeliverablesPath.attr("placeholder"); // Set the file path
-          return true;
-        }
-      },
-    });
-
-    if (!result.isConfirmed) {
-      console.log("User cancelled the operation");
-      return; // Exit early if the user does not import a file
-    }
-
-    log.info(`Importing Data Deliverables document: ${dataDeliverablesDocumentFilePath}`);
-
-    const extract_milestone = await client.get(`/prepare_metadata/import_milestone`, {
-      params: {
-        path: dataDeliverablesDocumentFilePath,
-      },
-    });
-
-    const res = extract_milestone.data;
-
-    // Get the SPARC award and milestone data from the response
-    const importedSparcAward = res["sparc_award"];
-    const milestoneObj = res["milestone_data"];
-
-    // Handle free-form mode submission data
-    if (curationMode === "free-form") {
-      informationJson = parseJson(milestonePath);
-      informationJson[award] = milestoneObj;
-      fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
-
-      Swal.fire({
-        backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
-        timer: 3000,
-        timerProgressBar: true,
-        icon: "success",
-        text: `Successfully loaded your DataDeliverables.docx document`,
-      });
-
-      removeOptions(descriptionDateInput);
-      milestoneTagify1.removeAllTags();
-      milestoneTagify1.settings.whitelist = [];
-      changeAwardInput();
-    }
-
-    // Handle guided mode submission data
-    if (curationMode === "guided") {
-      await openSubmissionMultiStepSwal(importedSparcAward, milestoneObj);
-    }
-  } catch (error) {
-    console.log(error);
-    clientError(error);
-    Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      icon: "error",
-      text: userErrorMessage(error),
-    });
-  }
-};
 
 let guidedMilestoneData = {};
 
@@ -1177,6 +1093,7 @@ async function loadExistingSubmissionFile(filepath) {
 }
 
 function loadSubmissionFileToUI(data, type) {
+  console.log(data);
   milestoneTagify1.removeAllTags();
   removeOptions(descriptionDateInput);
   addOption(descriptionDateInput, "Select an option", "Select");
@@ -1187,6 +1104,7 @@ function loadSubmissionFileToUI(data, type) {
     milestoneTagify1.addTags(data["Milestone achieved"]);
   } else {
     for (var milestone of data["Milestone achieved"]) {
+      console.log(milestone);
       milestoneTagify1.addTags(milestone);
     }
   }
