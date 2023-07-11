@@ -879,7 +879,7 @@ $("#button-add-subtitle").click(async () => {
           value: 1,
           dataset_id: defaultBfDatasetId,
         }
-      )
+      );
 
       ipcRenderer.send(
         "track-event",
@@ -910,6 +910,18 @@ $("#button-add-subtitle").click(async () => {
         "Error",
         ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
         defaultBfDatasetId
+      );
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+        kombuchaEnums.Label.SUBTITLE,
+        kombuchaEnums.Status.FAIL,
+        {
+          value: 0,
+          dataset_id: defaultBfDatasetId,
+        }
       );
     }
   }, delayAnimation);
