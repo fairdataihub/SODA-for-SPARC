@@ -127,6 +127,10 @@ def set_preferred_organization(organization_id, email, password, machine_usernam
      # TODO: Send in computer and profile of computer from frontend to this endpoint and use it in this function
     profile_name = create_unique_profile_name(token, machine_username_specifier)
 
+
+    logger.info(f"Switched to organization {organization_id}")
+    logger.info(f"New profile name: {profile_name}") 
+
     # any users coming from versions of SODA < 12.0.2 will potentially have duplicate SODA-Pennsieve API keys on their Pennsieve profile we want to clean up for them
     delete_duplicate_keys(token, "SODA-Pennsieve")
 

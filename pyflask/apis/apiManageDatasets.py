@@ -86,7 +86,9 @@ class PennsieveAPIKeyAndSecret(Resource):
     machine_username_specifier = args.get('machine_username_specifier')
 
     try: 
-      return create_pennsieve_api_key_secret(username, password, machine_username_specifier)
+      results = create_pennsieve_api_key_secret(username, password, machine_username_specifier)
+      api.logger.info(f'New profile name: {results["name"]}')
+      return results
     except Exception as e:
       if notBadRequestException(e):
         api.abort(500, str(e))
