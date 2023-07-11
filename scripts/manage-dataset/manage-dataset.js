@@ -1270,6 +1270,18 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
       defaultBfDatasetId
     );
 
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.MANAGE_DATASETS,
+      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+      kombuchaEnums.Label.README_TXT,
+      kombuchaEnums.Status.FAIL,
+      {
+        value: 0,
+        dataset_id: defaultBfDatasetId,
+      }
+    );
+
     return;
   }
 
