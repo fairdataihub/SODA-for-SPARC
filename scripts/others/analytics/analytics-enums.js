@@ -19,6 +19,7 @@ const Category = {
 const Action = {
   GENERATE_DATASET: "Generate Dataset",
   ADD_EDIT_DATASET_METADATA: "Add/Edit Dataset Metadata",
+  GET_DATASET_METADATA: "Get Dataset Metadata",
   CREATE_NEW_DATASET: "Create New Dataset",
   RENAME_DATASET: "Rename Dataset",
   IMPORT_ITEMS: "Import Items",

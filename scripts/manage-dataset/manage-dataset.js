@@ -1292,6 +1292,18 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
     defaultBfDatasetId
   );
 
+  ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.MANAGE_DATASETS,
+    kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+    kombuchaEnums.Label.README_TXT,
+    kombuchaEnums.Status.SUCCESS,
+    {
+      value: 1,
+      dataset_id: defaultBfDatasetId,
+    }
+  );
+
   // alert the user the data was uploaded successfully
   Swal.fire({
     title: determineSwalSuccessMessage($("#button-add-description")),
@@ -1415,8 +1427,9 @@ const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
   if (auxillarySectionIdx !== -1) {
     let auxillarySectionIdxAltFormat = readme.search("[*][*].*[ ]*[*][*][ ]*:");
     // check if there is an auxillary section that comes before the current section that uses alternative common syntax
-    if (auxillarySectionIdxAltFormat !== -1 && auxillarySectionIdx > auxillarySectionIdxAltFormat)
+    if (auxillarySectionIdxAltFormat !== -1 && auxillarySectionIdx > auxillarySectionIdxAltFormat) {
       auxillarySectionIdx = auxillarySectionIdxAltFormat;
+    }
   } else {
     // no auxillary section could be found using the colon before the closing markdown sytnatx so try the alternative common syntax
     auxillarySectionIdx = readme.search("[*][*].*[ ]*[*][*][ ]*:");
@@ -1426,8 +1439,9 @@ const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
   if (auxillarySectionIdx !== -1) {
     let curatorsSectionIdx = readme.search("(---)");
     // check if the curator's section appears before the auxillary section that was found
-    if (curatorsSectionIdx !== -1 && auxillarySectionIdx > curatorsSectionIdx)
+    if (curatorsSectionIdx !== -1 && auxillarySectionIdx > curatorsSectionIdx) {
       auxillarySectionIdx = curatorsSectionIdx;
+    }
   } else {
     // set the auxillary section idx to the start of the curator's section idx
     auxillarySectionIdx = readme.search("(---)");
@@ -1439,7 +1453,9 @@ const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
     let invalidText = readme.slice(0, auxillarySectionIdx);
 
     // if there is no invalid text then parsing is done
-    if (!invalidText.length) return readme;
+    if (!invalidText.length) {
+      return readme;
+    }
 
     // check if the user wants to store the invalid text in a parsed readme
     if (parsedReadme) {
@@ -1497,8 +1513,8 @@ const changeDatasetUnderDD = () => {
 
 ///// grab dataset name and auto-load current description
 const showDatasetDescription = async () => {
-  var selectedBfAccount = defaultBfAccount;
-  var selectedBfDataset = defaultBfDataset;
+  let selectedBfAccount = defaultBfAccount;
+  let selectedBfDataset = defaultBfDataset;
 
   if (selectedBfDataset === "Select dataset") {
     $("#ds-description").html("");
