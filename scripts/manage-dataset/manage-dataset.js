@@ -2432,6 +2432,18 @@ $("#button-add-license").click(async () => {
         ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
         defaultBfDatasetId
       );
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+        kombuchaEnums.Label.LICENSE,
+        kombuchaEnums.Status.FAIL,
+        {
+          value: 0,
+          dataset_id: defaultBfDatasetId,
+        }
+      );
     }
   }, delayAnimation);
 });
