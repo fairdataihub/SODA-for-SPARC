@@ -2399,6 +2399,18 @@ $("#button-add-license").click(async () => {
         defaultBfDatasetId
       );
 
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+        kombuchaEnums.Label.LICENSE,
+        kombuchaEnums.Status.SUCCESS,
+        {
+          value: 1,
+          dataset_id: defaultBfDatasetId,
+        }
+      );
+
       // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
       showPrePublishingStatus();
     } catch (error) {
