@@ -43,6 +43,17 @@ const downloadTemplates = (templateItem, destinationFolder) => {
       backdrop: "rgba(0,0,0, 0.4)",
     });
     ipcRenderer.send("track-event", "Success", `Download Template - ${templateItem}`);
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.PREPARE_METADATA,
+      kombuchaEnums.Action.DOWNLOAD_TEMPLATES,
+      kombuchaEnums.Label.SUBMISSION,
+      kombuchaEnums.Status.SUCCESS,
+      {
+        value: templateItem,
+        dataset_id: defaultBfDatasetId,
+      }
+    );
   }
 };
 
