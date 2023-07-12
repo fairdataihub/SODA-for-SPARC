@@ -1837,6 +1837,7 @@ $("#button-import-banner-image").click(async () => {
   handleSelectedBannerImage(filePaths, "freeform");
 });
 
+// TODO: Dorian -> Simplify the if statement, redundent code
 const uploadBannerImage = async () => {
   $("#para-dataset-banner-image-status").html("Please wait...");
   //Save cropped image locally and check size
@@ -2008,6 +2009,18 @@ const uploadBannerImage = async () => {
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER + " - Size",
           defaultBfDatasetId,
           image_file_size
+        );
+
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.MANAGE_DATASETS,
+          kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+          kombuchaEnums.Label.BANNER_SIZE,
+          kombuchaEnums.Status.SUCCESS,
+          {
+            value: image_file_size,
+            dataset_id: defaultBfDatasetId,
+          }
         );
       } catch (error) {
         clientError(error);
