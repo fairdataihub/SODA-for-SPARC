@@ -4138,6 +4138,8 @@ organizeDSbackButton.addEventListener("click", function () {
   let slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
   if (slashCount !== 1) {
     let filtered = getGlobalPath(organizeDSglobalPath);
+    console.log(organizeDSglobalPath.value);
+    console.log(filtered);
     if (filtered.length === 1) {
       organizeDSglobalPath.value = filtered[0] + "/";
     } else {
@@ -7049,6 +7051,7 @@ const getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
       // let items = loadFileFolder(myPath);
       //we have some items to display
       listItems(myPath, "#items", 500, (reset = true));
+      console.log(organizeDSglobalPath.value);
       getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
       organizeLandingUIEffect();
       // reconstruct folders and files (child elements after emptying the Div)
