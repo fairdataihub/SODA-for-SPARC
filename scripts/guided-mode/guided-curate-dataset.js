@@ -1018,8 +1018,6 @@ const savePageChanges = async (pageBeingLeftID) => {
 
       // If the user selected that the dataset is SPARC funded, unskip the submission metadata page
       if (userSelectedDatasetIsSparcFunded) {
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
-          "SPARC";
         // Get the funding source value from the dropdown
         const selectedFuncingSourceFromDropdown = $(
           "#guided-select-sparc-funding-consortium"
@@ -1033,6 +1031,9 @@ const savePageChanges = async (pageBeingLeftID) => {
           });
           throw errorArray;
         } else {
+          // Set the consortium data standard value in the JSON
+          sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
+            "SPARC";
           // Set the funding consortium value in the JSON
           sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
             selectedFuncingSourceFromDropdown;
@@ -1075,14 +1076,14 @@ const savePageChanges = async (pageBeingLeftID) => {
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] = "EXTERNAL";
       }
 
-      const setFundingConsortium =
-        sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
-      // If the set funding consortium is SPARC, unskip the SPARC specific metadata pages
-      if (setFundingConsortium === "SPARC") {
+      const setConsortiumDataStandard =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"];
+      // If the set consortium data standard is SPARC, unskip the SPARC specific metadata pages
+      if (setConsortiumDataStandard === "SPARC") {
         guidedUnSkipPage("guided-create-submission-metadata-tab");
         guidedUnSkipPage("guided-protocols-tab");
       } else {
-        // If the set funding consortium is not SPARC, skip the SPARC specific metadata pages
+        // If the set consortium data standard is not SPARC, skip the SPARC specific metadata pages
         guidedSkipPage("guided-create-submission-metadata-tab");
         guidedSkipPage("guided-protocols-tab");
         // Manually set the SPARC award number to "EXTERNAL" for non-SPARC funded datasets (case for all non-SPARC funded datasets)

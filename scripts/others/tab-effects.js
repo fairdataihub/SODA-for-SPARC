@@ -2103,7 +2103,7 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
 
       // check if the user has selected start from existing pennsieve
       // if so then hide the workspace selection field
-      const submissionFieldsAreValid = generateSubmissionFile();
+      const submissionFieldsAreValid = validateSubmissionFileInputs();
       if (!submissionFieldsAreValid) {
         return;
       }
@@ -2389,9 +2389,6 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
   // auto-scroll to bottom of div
   if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
     document.getElementById(parentDiv).scrollTop = document.getElementById(parentDiv).scrollHeight;
-    if (ev.getAttribute("data-next") === "Question-prepare-submission-2") {
-      onboardingSubmission();
-    }
   }
 
   if (ev.getAttribute("data-next") === "Question-prepare-subjects-2") {
