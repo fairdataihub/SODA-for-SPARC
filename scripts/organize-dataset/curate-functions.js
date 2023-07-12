@@ -946,7 +946,7 @@ const create_child_node = (
     for (const [key, value] of Object.entries(oldFormatNode["folders"])) {
       if ("action" in oldFormatNode["folders"][key]) {
         if (!oldFormatNode["folders"][key]["action"].includes("deleted")) {
-          if (nodeName === "My_dataset_folder"){
+          if (nodeName === "My_dataset_folder") {
             high_lvl_folder_node = key;
           }
           console.log("high_lvl_folder_node: " + high_lvl_folder_node);
