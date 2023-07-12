@@ -1,7 +1,4 @@
 // event listeners for opening dataset or account selection dropdown
-
-const { kombuchaEnums } = require("../others/analytics/analytics-enums");
-
 // TODO: Add logic so this doesnt apply to the organization fields
 document.querySelectorAll(".ds-dd:not(.organization)").forEach((dropdownElement) => {
   dropdownElement.addEventListener("click", function () {
@@ -2113,7 +2110,6 @@ $("#save-banner-image").click((event) => {
             },
           }).then((result) => {
             if (result.isConfirmed) {
-              // uploadBannerImage();
               uploadBannerImage();
             }
           });
@@ -2136,8 +2132,8 @@ $("#save-banner-image").click((event) => {
 });
 
 const showCurrentBannerImage = async () => {
-  var selectedBfAccount = defaultBfAccount;
-  var selectedBfDataset = defaultBfDataset;
+  let selectedBfAccount = defaultBfAccount;
+  let selectedBfDataset = defaultBfDataset;
 
   if (selectedBfDataset === null) {
     return;
