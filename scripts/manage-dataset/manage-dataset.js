@@ -535,16 +535,27 @@ $("#button-add-permission-pi").click(async () => {
       } catch (error) {
         clientError(error);
         ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.MANAGE_DATASETS,
+          kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+          kombuchaEnums.Label.PI_OWNER,
+          kombuchaEnums.Status.FAILURE,
+          {
+            value: selectedUser,
+            dataset_id: defaultBfDatasetId,
+          }
+        )
+
+        ipcRenderer.send(
           "track-event",
           "Error",
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_MAKE_PI_OWNER,
           defaultBfDatasetId
         );
 
-        let emessage = userErrorMessage(error);
         Swal.fire({
           title: "Failed to change PI permission!",
-          text: emessage,
+          text: userErrorMessage(error),
           icon: "error",
           showConfirmButton: true,
           heightAuto: false,
@@ -557,7 +568,7 @@ $("#button-add-permission-pi").click(async () => {
 
 /// change PI owner status to manager
 const changeDatasetRolePI = (selectedDataset) => {
-  for (var i = 0; i < datasetList.length; i++) {
+  for (let i = 0; i < datasetList.length; i++) {
     if (datasetList[i].name === selectedDataset) {
       datasetList[i].role = "manager";
     }
