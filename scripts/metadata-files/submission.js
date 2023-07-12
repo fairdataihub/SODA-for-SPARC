@@ -461,43 +461,42 @@ function validateSubmissionFileInputs() {
     return false;
   }
 
-  if (fundingConsortiumFromDropdown === "SPARC") {
-    const awardNumber = $("#submission-sparc-award").val();
-    const completionDate = $("#submission-completion-date").val();
-    const milestones = getTagsFromTagifyElement(milestoneTagify1);
-    if (awardNumber === "") {
-      Swal.fire({
-        backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
-        icon: "error",
-        text: "Please enter an award number.",
-        title: "Incomplete information",
-      });
-      return false;
-    }
-    if (completionDate === "") {
-      Swal.fire({
-        backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
-        icon: "error",
-        text: "Please enter a completion date.",
-        title: "Incomplete information",
-      });
-      return false;
-    }
-    if (milestones.length === 0) {
-      Swal.fire({
-        backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
-        icon: "error",
-        text: "Please enter at least one milestone.",
-        title: "Incomplete information",
-      });
-      return false;
-    }
-  } else {
-    return true;
+  const awardNumber = $("#submission-sparc-award").val();
+  const completionDate = $("#submission-completion-date").val();
+  const milestones = getTagsFromTagifyElement(milestoneTagify1);
+  if (awardNumber === "") {
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      icon: "error",
+      text: "Please enter an award number.",
+      title: "Incomplete information",
+    });
+    return false;
   }
+  if (completionDate === "") {
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      icon: "error",
+      text: "Please enter a completion date.",
+      title: "Incomplete information",
+    });
+    return false;
+  }
+  if (milestones.length === 0) {
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      icon: "error",
+      text: "Please enter at least one milestone.",
+      title: "Incomplete information",
+    });
+    return false;
+  }
+
+  // If all the above checks pass, then return true
+  return true;
 }
 
 const sparcFundingConsortiums = ["SPARC", "SPARC-2", "VESPA", "REVA", "HORNET"];
@@ -524,24 +523,12 @@ $("#ffm-select-sparc-funding-consortium").on("change", function (e) {
   } else {
     generateSubmissionButton.classList.remove("hidden");
   }
-  console.log(consortium);
-  const manualSubmissionInputs = document.querySelectorAll(".div-dd-info.submission");
-  if (consortium === "SPARC") {
-    manualSubmissionInputs.forEach((input) => {
-      input.classList.remove("hidden");
-    });
-    // Show the submission onboarding if the user hasn't seen it yet
-    if (!introStatus.submission) {
-      onboardingSubmission();
-    }
-  } else {
-    manualSubmissionInputs.forEach((input) => {
-      input.classList.add("hidden");
-    });
-  }
 });
-$("#ffm-select-sparc-funding-consortium").val("").change();
+const resetFundingConsortiumDropdown = () => {
+  $("#ffm-select-sparc-funding-consortium").val("").change();
+};
 
+resetFundingConsortiumDropdown();
 var submissionDestinationPath = "";
 
 $(document).ready(function () {
