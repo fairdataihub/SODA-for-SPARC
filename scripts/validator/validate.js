@@ -187,7 +187,9 @@ const validateLocalDataset = async () => {
   let validationReportData;
   try {
     validationReportData = await createValidationReport(localSodaJsonObject);
-    if (validationReportData.status === "Error") throw new Error(validationReportData.error);
+    if (validationReportData.status === "Error") {
+      throw new Error(validationReportData.error);
+    }
   } catch (error) {
     clientError(error);
     file_counter = 0;
@@ -219,8 +221,9 @@ const validateLocalDataset = async () => {
       });
     } else if (error.response && error.response.status == 400) {
       let msg = error.response.data.message;
-      if (msg.includes("Missing required metadata files"))
+      if (msg.includes("Missing required metadata files")) {
         msg = "Please add the required metadata files then re-run validation.";
+      }
       await Swal.fire({
         title: "Validation Error",
         text: msg,
@@ -435,7 +438,9 @@ const validatePennsieveDatasetStandAlone = async () => {
   let validationReport;
   try {
     validationReport = await createValidationReport(localSodaJSONObj);
-    if (validationReport.status === "Error") throw new Error(validationReport.error);
+    if (validationReport.status === "Error") {
+      throw new Error(validationReport.error);
+    }
   } catch (error) {
     clientError(error);
     file_counter = 0;
@@ -467,8 +472,9 @@ const validatePennsieveDatasetStandAlone = async () => {
       });
     } else if (error.response && error.response.status == 400) {
       let msg = error.response.data.message;
-      if (msg.includes("Missing required metadata files"))
+      if (msg.includes("Missing required metadata files")) {
         msg = "Please add the required metadata files then re-run validation.";
+      }
       await Swal.fire({
         title: "Validation Error",
         text: msg,
