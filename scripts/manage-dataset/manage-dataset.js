@@ -207,18 +207,6 @@ $("#button-create-bf-new-dataset").click(async () => {
       // log a map of datasetId to dataset name to analytics
       // this will be used to help us track private datasets which are not trackable using a datasetId alone
       ipcRenderer.send(
-        "track-kombucha",
-        kombuchaEnums.Category.MANAGE_DATASETS,
-        kombuchaEnums.Action.CREATE_NEW_DATASET,
-        defaultBfDataset,
-        kombuchaEnums.Status.SUCCESS,
-        {
-          value: 1,
-          dataset_id: defaultBfDatasetId,
-        }
-      );
-
-      ipcRenderer.send(
         "track-event",
         "Dataset ID to Dataset Name Map",
         defaultBfDatasetId,
@@ -230,6 +218,18 @@ $("#button-create-bf-new-dataset").click(async () => {
       $("#button-create-bf-new-dataset").prop("disabled", false);
 
       addNewDatasetToList(bfNewDatasetName);
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.CREATE_NEW_DATASET,
+        defaultBfDataset,
+        kombuchaEnums.Status.SUCCESS,
+        {
+          value: 1,
+          dataset_id: defaultBfDatasetId,
+        }
+      );
+
       ipcRenderer.send(
         "track-event",
         "Success",
@@ -919,7 +919,7 @@ $("#button-add-subtitle").click(async () => {
         kombuchaEnums.Label.SUBTITLE,
         kombuchaEnums.Status.FAIL,
         {
-          value: 0,
+          value: 1,
           dataset_id: defaultBfDatasetId,
         }
       );
@@ -1277,7 +1277,7 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
       kombuchaEnums.Label.README_TXT,
       kombuchaEnums.Status.FAIL,
       {
-        value: 0,
+        value: 1,
         dataset_id: defaultBfDatasetId,
       }
     );
@@ -1928,7 +1928,7 @@ const uploadBannerImage = async () => {
           kombuchaEnums.Label.BANNER_SIZE,
           kombuchaEnums.Status.FAIL,
           {
-            value: 0,
+            value: 1,
             dataset_id: defaultBfDatasetId,
           }
         );
@@ -2226,7 +2226,7 @@ $("#button-add-tags").click(async () => {
       kombuchaEnums.Label.TAGS,
       kombuchaEnums.Status.FAIL,
       {
-        value: 0,
+        value: 1,
         dataset_id: defaultBfDatasetId,
       }
     );
@@ -2440,7 +2440,7 @@ $("#button-add-license").click(async () => {
         kombuchaEnums.Label.LICENSE,
         kombuchaEnums.Status.FAIL,
         {
-          value: 0,
+          value: 1,
           dataset_id: defaultBfDatasetId,
         }
       );
