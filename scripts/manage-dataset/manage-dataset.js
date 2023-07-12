@@ -3310,7 +3310,7 @@ $("#bf_list_dataset_status").on("change", async () => {
         value: selectedStatusOption,
         dataset_id: defaultBfDatasetId,
       }
-    )
+    );
 
     $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
     $("#bf-dataset-status-spinner").css("display", "none");
@@ -3329,6 +3329,18 @@ $("#bf_list_dataset_status").on("change", async () => {
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS,
       defaultBfDatasetId
+    );
+
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.MANAGE_DATASETS,
+      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+      kombuchaEnums.Label.STATUS,
+      kombuchaEnums.Status.FAIL,
+      {
+        value: selectedStatusOption,
+        dataset_id: defaultBfDatasetId,
+      }
     );
 
     var emessage = userErrorMessage(error);
