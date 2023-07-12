@@ -899,6 +899,7 @@ const checkPrevDivForConfirmButton = (category) => {
   }
 };
 
+let high_lvl_folder_node = "";
 const create_child_node = (
   oldFormatNode,
   nodeName,
@@ -911,6 +912,8 @@ const create_child_node = (
   viewOptions,
   parentFolder
 ) => {
+  console.log("nodeName: " + nodeName);
+  console.log("parentFolder: " + parentFolder);
   /*
   oldFormatNode: node in the format under "dataset-structure" key in SODA object
   nodeName: text to show for each node (name)
@@ -920,6 +923,12 @@ const create_child_node = (
   selectedOriginalLocation: current folder of selected items
   viewOptions: preview or moveItems
   */
+  // if (nodeName === "My_dataset_folder/"){
+  //   high_lvl_folder_node = true;
+  // } else {
+  //   false;
+  // }
+
   var newFormatNode = {
     text: nodeName,
     state: {
@@ -937,7 +946,11 @@ const create_child_node = (
     for (const [key, value] of Object.entries(oldFormatNode["folders"])) {
       if ("action" in oldFormatNode["folders"][key]) {
         if (!oldFormatNode["folders"][key]["action"].includes("deleted")) {
-          if (key === selectedOriginalLocation) {
+          if (nodeName === "My_dataset_folder"){
+            high_lvl_folder_node = key;
+          }
+          console.log("high_lvl_folder_node: " + high_lvl_folder_node);
+          if (key === selectedOriginalLocation && parentFolder === high_lvl_folder_node) {
             console.log("trye");
             newFormatNode.state.selected = true;
             newFormatNode.state.opened = true;
@@ -954,6 +967,8 @@ const create_child_node = (
               parentFolder
             );
           } else {
+            newFormatNode.state.selected = true;
+            newFormatNode.state.opened = true;
             var new_node = create_child_node(
               value,
               key,
@@ -1163,9 +1178,10 @@ $(document).ready(function () {
 });
 
 const moveItems = async (ev, category) => {
+  console.log(category);
   let filtered = getGlobalPath(organizeDSglobalPath);
   let myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
-  let parentFolder = filtered[filtered.length - 2];
+  let parentFolder = filtered[1];
   let selectedOriginalLocation = filtered[filtered.length - 1];
   let selectedItem = ev.parentElement.innerText;
 
