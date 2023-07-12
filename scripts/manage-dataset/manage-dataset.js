@@ -506,6 +506,18 @@ $("#button-add-permission-pi").click(async () => {
           defaultBfDatasetId
         );
 
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.MANAGE_DATASETS,
+          kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+          kombuchaEnums.Label.PI_OWNER,
+          kombuchaEnums.Status.SUCCESS,
+          {
+            value: selectedUser,
+            dataset_id: defaultBfDatasetId,
+          }
+        );
+
         let nodeStorage = new JSONStorage(app.getPath("userData"));
         nodeStorage.setItem("previously_selected_PI", selectedUser);
 

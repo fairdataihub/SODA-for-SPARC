@@ -63,6 +63,7 @@ const Label = {
   CHANGES_TXT_SIZE: "CHANGES.txt - Size",
   PROGRESS_TRACK: "Progress Track",
   TOTAL_UPLOADS: "Total Uploads",
+  PI_OWNER: "Change PI Owner",
 };
 
 const Status = {
