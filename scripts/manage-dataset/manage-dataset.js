@@ -2449,8 +2449,8 @@ $("#button-add-license").click(async () => {
 });
 
 const showCurrentLicense = async () => {
-  var selectedBfAccount = defaultBfAccount;
-  var selectedBfDataset = defaultBfDataset;
+  let selectedBfAccount = defaultBfAccount;
+  let selectedBfDataset = defaultBfDataset;
 
   if (selectedBfDataset === null) {
     return;
@@ -2511,56 +2511,54 @@ const showCurrentLicense = async () => {
 
 // verify the dataset is valid before allowing a user to upload
 const handleSelectedSubmitDirectory = async (filepath) => {
-  if (filepath.length > 0) {
-    if (filepath != null) {
-      $("#selected-local-dataset-submit").attr("placeholder", `${filepath[0]}`);
+  if (filepath != null && filepath.length > 0) {
+    $("#selected-local-dataset-submit").attr("placeholder", `${filepath[0]}`);
 
-      valid_dataset = verify_sparc_folder(filepath[0], "pennsieve");
+    valid_dataset = verify_sparc_folder(filepath[0], "pennsieve");
 
-      if (valid_dataset == true) {
-        $("#button_upload_local_folder_confirm").click();
-        $("#button-submit-dataset").show();
-        $("#button-submit-dataset").addClass("pulse-blue");
+    if (valid_dataset == true) {
+      $("#button_upload_local_folder_confirm").click();
+      $("#button-submit-dataset").show();
+      $("#button-submit-dataset").addClass("pulse-blue");
 
-        // remove pulse class after 4 seconds
-        // pulse animation lasts 2 seconds => 2 pulses
-        setTimeout(() => {
-          $(".pulse-blue").removeClass("pulse-blue");
-        }, 4000);
-      } else {
-        Swal.fire({
-          icon: "warning",
-          text: "This folder does not seem to be a SPARC dataset folder. Are you sure you want to proceed?",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          showCancelButton: true,
-          focusCancel: true,
-          confirmButtonText: "Yes",
-          cancelButtonText: "Cancel",
-          reverseButtons: reverseSwalButtons,
-          showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
-          },
-        }).then((result) => {
-          if (result.isConfirmed) {
-            $("#button_upload_local_folder_confirm").click();
-            $("#button-submit-dataset").show();
-            $("#button-submit-dataset").addClass("pulse-blue");
+      // remove pulse class after 4 seconds
+      // pulse animation lasts 2 seconds => 2 pulses
+      setTimeout(() => {
+        $(".pulse-blue").removeClass("pulse-blue");
+      }, 4000);
+    } else {
+      Swal.fire({
+        icon: "warning",
+        text: "This folder does not seem to be a SPARC dataset folder. Are you sure you want to proceed?",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showCancelButton: true,
+        focusCancel: true,
+        confirmButtonText: "Yes",
+        cancelButtonText: "Cancel",
+        reverseButtons: reverseSwalButtons,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $("#button_upload_local_folder_confirm").click();
+          $("#button-submit-dataset").show();
+          $("#button-submit-dataset").addClass("pulse-blue");
 
-            // remove pulse class after 4 seconds
-            // pulse animation lasts 2 seconds => 2 pulses
-            setTimeout(() => {
-              $(".pulse-blue").removeClass("pulse-blue");
-            }, 4000);
-          } else {
-            $("#input-destination-getting-started-locally").attr("placeholder", "Browse here");
-            $("#selected-local-dataset-submit").attr("placeholder", "Browse here");
-          }
-        });
-      }
+          // remove pulse class after 4 seconds
+          // pulse animation lasts 2 seconds => 2 pulses
+          setTimeout(() => {
+            $(".pulse-blue").removeClass("pulse-blue");
+          }, 4000);
+        } else {
+          $("#input-destination-getting-started-locally").attr("placeholder", "Browse here");
+          $("#selected-local-dataset-submit").attr("placeholder", "Browse here");
+        }
+      });
     }
   }
 };
@@ -2570,7 +2568,7 @@ $("#selected-local-dataset-submit").click(async () => {
   handleSelectedSubmitDirectory(datasetDirectory);
 });
 
-function walk(directory, filepaths = []) {
+const walk = (directory, filepaths = []) => {
   const files = fs.readdirSync(directory);
   for (let filename of files) {
     const filepath = path.join(directory, filename);
@@ -2618,11 +2616,7 @@ const resetUploadLocalDataset = async () => {
   $("#button-submit-dataset").hide();
 
   // reset the input text original text
-  // document.querySelector("#selected-local-dataset-submit").value = "Select a folder";
   document.querySelector("#selected-local-dataset-submit").placeholder = "Select a folder";
-
-  // $("#selected-local-dataset-submit").placeholder = "Select a folder"
-  // $("#selected-local-dataset-submit").value = "Select a folder"
 };
 
 $("#button-submit-dataset").click(async () => {
@@ -2947,16 +2941,18 @@ $("#button-submit-dataset").click(async () => {
   let navContainer = document.getElementById("nav-items");
   let progressError = document.getElementById("para-progress-bar-error-status");
 
-  var progressClone = progressSubmit.cloneNode(true);
+  let progressClone = progressSubmit.cloneNode(true);
   let cloneHeader = progressClone.children[0];
   progressClone.children[2].remove();
   cloneHeader.style = "margin: 0;";
   let cloneMeter = progressClone.children[1];
   let cloneStatus = progressClone.children[2];
-  var navError = progressError.cloneNode(true);
+  let navError = progressError.cloneNode(true);
   let organizeDatasetButton = document.getElementById("button-generate");
   let guidedModeHomePageButton = document.getElementById("button-homepage-guided-mode");
   let organzieDatasetButtonDiv = organizeDatasetButton.children[0];
+  let returnButton = document.createElement("button");
+  let returnPage = document.getElementById("upload_local_dataset_btn");
 
   progressClone.style =
     "position: absolute; width: 100%; bottom: 0px; padding: 15px; color: black;";
@@ -2965,11 +2961,9 @@ $("#button-submit-dataset").click(async () => {
   cloneStatus.setAttribute("id", "clone-para-progress-bar-status");
   cloneStatus.style = "overflow-x: hidden; margin-bottom: 3px; margin-top: 5px;";
   progressClone.setAttribute("id", "nav-progress-submit");
-  let returnButton = document.createElement("button");
   returnButton.type = "button";
   returnButton.id = "returnButton";
   returnButton.innerHTML = "Return to progress";
-  let returnPage = document.getElementById("upload_local_dataset_btn");
   returnButton.onclick = function () {
     document.getElementById("upload_local_dataset_progress_div").style.display = "flex";
     returnPage.click();
@@ -3071,7 +3065,7 @@ $("#button-submit-dataset").click(async () => {
         kombuchaEnums.Category.MANAGE_DATASETS,
         kombuchaEnums.Action.GENERATE_DATASET,
         kombuchaEnums.Label.TOTAL_UPLOADS,
-        kombuchaEnums.Status.SUCCCESS,
+        kombuchaEnums.Status.SUCCESS,
         createEventData(1, "Pennsieve", "Local", defaultBfDataset)
       );
 
@@ -3116,20 +3110,18 @@ $("#button-submit-dataset").click(async () => {
       let num_of_folders = data["totalDir"];
 
       // log amount of folders uploaded in the given session
-      const kombuchaEventData = {
-        value: num_of_folders,
-        dataset_id: defaultBfDatasetId,
-        dataset_name: defaultBfDataset,
-        upload_session: datasetUploadSession.id,
-      };
-
       ipcRenderer.send(
         "track-kombucha",
         kombuchaEnums.Category.MANAGE_DATASETS,
         kombuchaEnums.Action.GENERATE_DATASET,
         kombuchaEnums.Label.FOLDERS,
         kombuchaEnums.Status.SUCCESS,
-        kombuchaEventData
+        {
+          value: num_of_folders,
+          dataset_id: defaultBfDatasetId,
+          dataset_name: defaultBfDataset,
+          upload_session: datasetUploadSession.id,
+        }
       );
     })
     .catch(async (error) => {
@@ -3307,6 +3299,18 @@ $("#bf_list_dataset_status").on("change", async () => {
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS,
       defaultBfDatasetId
     );
+
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.MANAGE_DATASETS,
+      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+      kombuchaEnums.Label.STATUS,
+      kombuchaEnums.Status.SUCCESS,
+      {
+        value: selectedStatusOption,
+        dataset_id: defaultBfDatasetId,
+      }
+    )
 
     $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
     $("#bf-dataset-status-spinner").css("display", "none");
