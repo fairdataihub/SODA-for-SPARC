@@ -32,7 +32,7 @@ const downloadTemplates = (templateItem, destinationFolder) => {
     });
 
     ipcRenderer.send("track-event", "Error", `Download Template - ${templateItem}`);
-    
+
     ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.PREPARE_METADATA,
@@ -47,7 +47,7 @@ const downloadTemplates = (templateItem, destinationFolder) => {
   } else {
     fs.createReadStream(templatePath).pipe(fs.createWriteStream(destinationPath));
     let emessage = `Successfully saved '${templateItem}' to ${destinationFolder}`;
-    
+
     Swal.fire({
       icon: "success",
       title: "Download successful",
@@ -56,7 +56,7 @@ const downloadTemplates = (templateItem, destinationFolder) => {
       backdrop: "rgba(0,0,0, 0.4)",
     });
     ipcRenderer.send("track-event", "Success", `Download Template - ${templateItem}`);
-    
+
     ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.PREPARE_METADATA,

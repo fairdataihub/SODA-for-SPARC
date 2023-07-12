@@ -2264,7 +2264,7 @@ $("#button-add-tags").click(async () => {
 
   // run the pre-publishing checklist items to update the list found in the "Submit for pre-publishing review" section/card
   showPrePublishingStatus();
-  
+
   //check if tags array is empty and set Add/Edit tags appropriately
   tags === undefined || tags.length == 0
     ? $("#button-add-tags").html("Add tags")
@@ -2579,7 +2579,7 @@ const walk = (directory, filepaths = []) => {
     }
   }
   return filepaths;
-}
+};
 
 const logFilesForUpload = (upload_folder_path) => {
   const foundFiles = walk(upload_folder_path);
