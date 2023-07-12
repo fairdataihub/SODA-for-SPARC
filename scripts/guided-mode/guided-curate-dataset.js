@@ -1080,9 +1080,11 @@ const savePageChanges = async (pageBeingLeftID) => {
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"];
       // If the set consortium data standard is SPARC, unskip the SPARC specific metadata pages
       if (setConsortiumDataStandard === "SPARC") {
+        console.log("Showing submission metadata and protocols tabs");
         guidedUnSkipPage("guided-create-submission-metadata-tab");
         guidedUnSkipPage("guided-protocols-tab");
       } else {
+        console.log("Hiding submission metadata and protocols tabs");
         // If the set consortium data standard is not SPARC, skip the SPARC specific metadata pages
         guidedSkipPage("guided-create-submission-metadata-tab");
         guidedSkipPage("guided-protocols-tab");

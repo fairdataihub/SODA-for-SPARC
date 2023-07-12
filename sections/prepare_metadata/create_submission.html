@@ -450,40 +450,7 @@
                   padding-bottom: 15px;
                 "
               >
-                <div
-                  class="div-dd-info"
-                  style="margin-top: 10px; margin-bottom: 15px; flex-direction: column"
-                >
-                  <div
-                    class="demo-controls-head"
-                    style="text-align: left; width: 90%; margin-bottom: 5px"
-                  >
-                    <div style="width: 100%">
-                      <font style="font-weight: 600; color: #090909">
-                        SPARC Funding Consortium:
-                      </font>
-                      <i
-                        class="fas fa-info-circle popover-tooltip"
-                        data-content="SPARC award associated with the dataset."
-                        rel="popover"
-                        data-placement="right"
-                        data-html="true"
-                        data-trigger="hover"
-                        style="margin-left: 5px; color: black"
-                      ></i>
-                    </div>
-                  </div>
-
-                  <div class="demo-controls-body" style="width: 90%">
-                    <select
-                      class="w-100 mb-sm"
-                      id="ffm-select-sparc-funding-consortium"
-                      data-live-search="true"
-                      name="Dataset funding source"
-                    ></select>
-                  </div>
-                </div>
-                <div class="div-dd-info submission" style="flex-direction: column">
+                <div class="div-dd-info" style="flex-direction: column">
                   <button
                     class="ui primary basic button mt-sm button-import-data-deliverables-document"
                     id="button-ffm-import-data-deliverables-document"
@@ -493,109 +460,56 @@
                     Deliverables document in docx format
                   </button>
                 </div>
-                <div
-                  class="div-dd-info submission"
-                  style="margin-top: 10px; margin-bottom: 15px; flex-direction: column"
-                >
-                  <div
-                    class="demo-controls-head"
-                    style="text-align: left; width: 90%; margin-bottom: 5px"
-                  >
-                    <div style="width: 100%">
-                      <font style="font-weight: 600; color: #090909"> SPARC Award number: </font>
-                      <i
-                        class="fas fa-info-circle popover-tooltip"
-                        data-content="SPARC award associated with the dataset."
-                        rel="popover"
-                        data-placement="right"
-                        data-html="true"
-                        data-trigger="hover"
-                        style="margin-left: 5px; color: black"
-                      ></i>
-                    </div>
-                  </div>
+                <label class="guided--form-label">
+                  Select the funding source from the dropdown below
+                </label>
+                <select
+                  class="w-100 mb-md"
+                  id="ffm-select-sparc-funding-consortium"
+                  data-live-search="true"
+                  name="Dataset funding source"
+                ></select>
 
-                  <div class="demo-controls-body" style="width: 90%">
-                    <div class="ui input modified">
-                      <input
-                        type="text"
-                        id="submission-sparc-award"
-                        name="dataset name"
-                        placeholder="Type here..."
-                        style="font-size: 14px"
-                      />
-                    </div>
+                <label class="guided--form-label">Award number:</label>
+                <input
+                  class="guided--input"
+                  id="submission-sparc-award"
+                  type="text"
+                  placeholder="Enter your submission's award number here"
+                />
+                <p class="guided--text-input-instructions mb-md">
+                  The primary grant number supporting the milestone
+                </p>
+
+                <label class="guided--form-label">Milestone(s):</label>
+                <div class="demo-controls-body" style="width: 100%">
+                  <div class="ui input modified">
+                    <input
+                      class="guided-award-and-milestone-information"
+                      id="selected-milestone-1"
+                      name="milestone-tags"
+                      value=""
+                    />
                   </div>
                 </div>
-                <div
-                  class="div-dd-info submission"
-                  style="margin-top: 10px; margin-bottom: 15px; flex-direction: column"
-                >
-                  <div
-                    class="demo-controls-head"
-                    style="text-align: left; width: 90%; margin-bottom: 5px"
+                <p class="guided--text-input-instructions mb-md">
+                  The milestones as listed in your SPARC award's data deliverable's document.<br />
+                  <b>If the dataset is not part of the milestone, enter N/A.</b>
+                </p>
+
+                <label class="guided--form-label">Completion date:</label>
+                <select
+                  class="form-control"
+                  id="submission-completion-date"
+                  style="background-color: white !important"
+                ></select>
+                <p class="guided--text-input-instructions mb-md">
+                  Enter the completion date associated with this milestone.<br />
+                  <b
+                    >Select N/A if this dataset isn't associated with any milestone initially
+                    planned in the Data Deliverables document.</b
                   >
-                    <div style="width: 100%">
-                      <font style="font-weight: 600; color: #090909">
-                        Enter the milestone(s):
-                      </font>
-                      <i
-                        class="fas fa-info-circle popover-tooltip"
-                        data-content="Manually enter milestone(s) for your SPARC award. Enter 'Not specified in the Data Deliverables document' if this dataset isn't associated with any milestone initially planned.
-                                  <br/><br/>
-                                  Hit 'Enter' to register it."
-                        rel="popover"
-                        data-placement="right"
-                        data-html="true"
-                        data-trigger="hover"
-                        style="margin-left: 5px; color: black"
-                      ></i>
-                    </div>
-                  </div>
-                  <div class="demo-controls-body" style="width: 90%">
-                    <div class="ui input modified">
-                      <textarea
-                        id="selected-milestone-1"
-                        class="form-container-input-bf"
-                        placeholder="Type here and hit 'Enter' after each keyword."
-                      ></textarea>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="div-dd-info submission"
-                  style="margin-top: 10px; margin-bottom: 15px; flex-direction: column"
-                >
-                  <div
-                    class="demo-controls-head"
-                    style="text-align: left; width: 90%; margin-bottom: 5px"
-                  >
-                    <div style="width: 100%">
-                      <font style="font-weight: 600; color: #090909">Completion date: </font>
-                      <i
-                        class="fas fa-info-circle popover-tooltip"
-                        data-content="Enter the completion date for your milestone(s) specified above."
-                        rel="popover"
-                        data-placement="right"
-                        data-html="true"
-                        data-trigger="hover"
-                        style="margin-left: 5px; color: black"
-                      ></i>
-                    </div>
-                  </div>
-                  <div class="demo-controls-body" style="width: 90%">
-                    <div class="ui input modified">
-                      <!-- <input
-                              type="date"
-                              id="submission-completion-date"
-                            /> -->
-                      <select id="submission-completion-date">
-                        <option value="Select" selected>Select an option</option>
-                        <option value="Enter my own date">Enter my own date</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
+                </p>
               </div>
             </div>
           </div>
