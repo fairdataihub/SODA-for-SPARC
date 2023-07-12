@@ -2031,6 +2031,18 @@ const uploadBannerImage = async () => {
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
           defaultBfDatasetId
         );
+
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.MANAGE_DATASETS,
+          kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+          kombuchaEnums.Label.BANNER_SIZE,
+          kombuchaEnums.Status.FAIL,
+          {
+            value: 1,
+            dataset_id: defaultBfDatasetId,
+          }
+        )
       }
     }
   });
