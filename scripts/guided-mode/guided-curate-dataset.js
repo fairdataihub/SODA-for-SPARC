@@ -1080,9 +1080,16 @@ const savePageChanges = async (pageBeingLeftID) => {
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"];
       // If the set consortium data standard is SPARC, unskip the SPARC specific metadata pages
       if (setConsortiumDataStandard === "SPARC") {
-        console.log("Showing submission metadata and protocols tabs");
+        const fundingConsortium =
+          sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
+        if (fundingConsortium === "SPARC") {
+          // If the funding consortium is SPARC, unskip the protocols page
+          guidedUnSkipPage("guided-protocols-tab");
+        } else {
+          // If the funding consortium is not SPARC, skip the protocols page
+          guidedSkipPage("guided-protocols-tab");
+        }
         guidedUnSkipPage("guided-create-submission-metadata-tab");
-        guidedUnSkipPage("guided-protocols-tab");
       } else {
         console.log("Hiding submission metadata and protocols tabs");
         // If the set consortium data standard is not SPARC, skip the SPARC specific metadata pages
@@ -4931,10 +4938,9 @@ const openPage = async (targetPageID) => {
         }
       });
 
-      // Declare the current value of the funding consortium from sodaJSONObj
+      // Set the funding consortium dropdown to the saved value (deafult is empty string before a user selects a value)
       const savedFundingConsortium =
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
-
       if (sparcFundingConsortiums.includes(savedFundingConsortium)) {
         $("#guided-select-sparc-funding-consortium").val(savedFundingConsortium);
       } else {
