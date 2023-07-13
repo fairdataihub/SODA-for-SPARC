@@ -508,6 +508,16 @@ const startupServerAndApiCheck = async () => {
   console.log("Connected to Python back-end successfully");
   log.info("Connected to Python back-end successfully");
   ipcRenderer.send("track-event", "Success", "Establishing Python Connection");
+  ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.STARTUP,
+    kombuchaEnums.Action.APP_LAUNCHED,
+    kombuchaEnums.Label.PYTHON_CONNECTION,
+    kombuchaEnums.Status.SUCCESS,
+    {
+      value: 1,
+    }
+  );
 
   // inform observers that the app is connected to the server
   sodaIsConnected = true;
