@@ -1270,15 +1270,14 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         );
       } else {
         // there is an account; but check check that the valid api key in the default profile is for the user's current workspace
-        // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key 
+        // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key
         //           under the default profile does not mean that key is associated with the user's current workspace.
         let matching = await defaultProfileMatchesCurrentWorkspace();
-        if(!matching) {
+        if (!matching) {
           log.info("Default api key is for a different workspace");
-          await handleAuthenticationError()
+          await handleAuthenticationError();
         }
       }
-
 
       //account is signed in but no datasets have been fetched or created
       //invoke dataset request to ensure no datasets have been created
@@ -1300,7 +1299,6 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         datasetList = result;
         refreshDatasetList();
       }
-      
 
       //after request check length again
       //if 0 then no datasets have been created

@@ -48,7 +48,7 @@ const {
   userErrorMessage,
   authenticationError,
   handleAuthenticationError,
-  defaultProfileMatchesCurrentWorkspace
+  defaultProfileMatchesCurrentWorkspace,
 } = require("./scripts/others/http-error-handler/error-handler");
 const { hasConnectedAccountWithPennsieve } = require("./scripts/others/authentication/auth");
 const api = require("./scripts/others/api/api");
@@ -581,7 +581,6 @@ ipcRenderer.on("start_pre_flight_checks", async (event, arg) => {
     notyf.dismissAll();
   }
 
-
   // check integrity of all the core systems
   await run_pre_flight_checks();
 
@@ -759,7 +758,7 @@ const run_pre_flight_checks = async (check_update = true) => {
       );
     }
 
-    // Check for an API key pair in the default profile and ensure it is not obsolete. 
+    // Check for an API key pair in the default profile and ensure it is not obsolete.
     // NOTE: Calling the agent startup command without a profile setup in the config.ini file causes it to crash.
     const account_present = await check_api_key();
 
@@ -800,17 +799,15 @@ const run_pre_flight_checks = async (check_update = true) => {
       return false;
     }
 
-
     // check that the valid api key in the default profile is for the user's current workspace
-    // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key 
+    // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key
     //           under the default profile does not mean that key is associated with the user's current workspace.
     let matching = await defaultProfileMatchesCurrentWorkspace();
-    if(!matching) {
+    if (!matching) {
       log.info("Default api key is for a different workspace");
-      await handleAuthenticationError()
+      await handleAuthenticationError();
       return false;
     }
-    
 
     // First get the latest Pennsieve agent version on GitHub
     // This is to ensure the user has the latest version of the agent
@@ -987,8 +984,6 @@ const run_pre_flight_checks = async (check_update = true) => {
       checkNewAppVersion();
     }
 
-
-
     // let nodeStorage = new JSONStorage(app.getPath("userData"));
     // launchAnnouncement = nodeStorage.getItem("announcements");
     if (launchAnnouncement) {
@@ -1013,7 +1008,7 @@ const run_pre_flight_checks = async (check_update = true) => {
     // All pre flight checks passed, return true
     return true;
   } catch (error) {
-    clientError(error)
+    clientError(error);
     // Dismiss the preflight check notification if it is still open
     if (preFlightCheckNotyf) {
       notyf.dismiss(preFlightCheckNotyf);
@@ -1182,7 +1177,7 @@ const check_api_key = async () => {
   }
 
   let res = responseObject.data["accounts"];
- 
+
   if (res[0] === "Select" && res.length === 1) {
     log.info("No api keys found");
     //no api key found
@@ -4004,8 +3999,7 @@ const loadDefaultAccount = async () => {
     log.info(`Loading default account user organization: ${userInformation.preferredOrganization}`);
     log.info(`Loading default account user default profile is: ${defaultBfAccount}`);
 
-    // remove the N:organization from the account name 
-
+    // remove the N:organization from the account name
 
     $("#current-bf-account").text(userEmail);
     $("#current-bf-account-generate").text(userEmail);

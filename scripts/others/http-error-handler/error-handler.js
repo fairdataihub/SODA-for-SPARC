@@ -67,39 +67,44 @@ const userErrorMessage = (error) => {
 };
 
 const authenticationError = (error) => {
-  console.log("Is auhenticaiton error check happening")
-  if(!error.response) return false;
-  return error.response.status === 401
-}
+  console.log("Is auhenticaiton error check happening");
+  if (!error.response) return false;
+  return error.response.status === 401;
+};
 
 const defaultProfileMatchesCurrentWorkspace = async () => {
   let userInfo = await api.getUserInformation();
   let currentWorkspace = userInfo["preferredOrganization"];
-  // the default profile value, if one exists, has the current workspace id 
+  // the default profile value, if one exists, has the current workspace id
   // as a suffix: soda-pennsieve-51b6-cmarroquin-n:organization:f08e188e-2316-4668-ae2c-8a20dc88502f
   // get the workspace id that starts with n:organization out of the above string
-  // NOTE: The 'N' is lowercased when stored in the config.ini file hence the difference in casing 
-  let defaultProfileWorkspace = defaultBfAccount.slice(defaultBfAccount.indexOf("n:organization") + 15);
+  // NOTE: The 'N' is lowercased when stored in the config.ini file hence the difference in casing
+  let defaultProfileWorkspace = defaultBfAccount.slice(
+    defaultBfAccount.indexOf("n:organization") + 15
+  );
   currentWorkspace = currentWorkspace.slice(currentWorkspace.indexOf("N:organization") + 15);
 
-  console.log(defaultProfileWorkspace)
-  console.log(currentWorkspace)
+  console.log(defaultProfileWorkspace);
+  console.log(currentWorkspace);
 
-  return defaultProfileWorkspace === currentWorkspace
-}
+  return defaultProfileWorkspace === currentWorkspace;
+};
 
 const handleAuthenticationError = async () => {
+  let workspacesMatch = await defaultProfileMatchesCurrentWorkspace();
 
-  let workspacesMatch = await defaultProfileMatchesCurrentWorkspace()
-
-  if(workspacesMatch) {
-    await addBfAccount(null, false)
-    return
+  if (workspacesMatch) {
+    await addBfAccount(null, false);
+    return;
   }
 
-  await addBfAccount(null, true)
-}
+  await addBfAccount(null, true);
+};
 
-
-
-module.exports = { clientError, userErrorMessage, authenticationError, handleAuthenticationError, defaultProfileMatchesCurrentWorkspace };
+module.exports = {
+  clientError,
+  userErrorMessage,
+  authenticationError,
+  handleAuthenticationError,
+  defaultProfileMatchesCurrentWorkspace,
+};
