@@ -1665,10 +1665,24 @@ const showElementsWithClass = (className) => {
 milestoneTagify1.on("change", (e) => {
   // If e.detail.value.length string is greater than 0, then there are milestone tags entered in the tagify
   if (e.detail.value.length > 0) {
-    showElementsWithClass("completion-date-form-component");
-    console.log("Hay milestones");
+    const filteredMilestones = JSON.parse(e.detail.value)
+      .map((milestone) => {
+        return milestone.value;
+      })
+      .filter((milestone) => {
+        return milestone !== "N/A";
+      });
+
+    if (filteredMilestones.length > 0) {
+      console.log("HAY MILESTONES");
+      showElementsWithClass("completion-date-form-component");
+    } else {
+      hideElementsWithClass("completion-date-form-component");
+      $("#submission-completion-date").val("N/A");
+    }
   } else {
     hideElementsWithClass("completion-date-form-component");
+    $("#submission-completion-date").val("");
     console.log("No milestones");
   }
 });

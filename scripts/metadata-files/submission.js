@@ -461,10 +461,7 @@ function validateSubmissionFileInputs() {
     return false;
   }
 
-  const awardNumber = $("#submission-sparc-award").val();
-  const completionDate = $("#submission-completion-date").val();
-  const milestones = getTagsFromTagifyElement(milestoneTagify1);
-  if (awardNumber === "") {
+  if (fundingConsortiumFromDropdown === "SPARC" && $("#submission-sparc-award").val() === "") {
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
@@ -474,22 +471,26 @@ function validateSubmissionFileInputs() {
     });
     return false;
   }
-  if (completionDate === "") {
-    Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      icon: "error",
-      text: "Please enter a completion date.",
-      title: "Incomplete information",
-    });
-    return false;
-  }
-  if (milestones.length === 0) {
+
+  const milestones = getTagsFromTagifyElement(milestoneTagify1);
+
+  if (fundingConsortiumFromDropdown === "SPARC" && milestones.length === 0) {
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       icon: "error",
       text: "Please enter at least one milestone.",
+      title: "Incomplete information",
+    });
+    return false;
+  }
+
+  if (fundingConsortiumFromDropdown === "SPARC" && $("#submission-completion-date").val() === "") {
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      icon: "error",
+      text: "Please enter a completion date.",
       title: "Incomplete information",
     });
     return false;
@@ -828,28 +829,21 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
   });
 
   const fundingConsortiumFromDropdown = $("#ffm-select-sparc-funding-consortium").val();
-
-  const submissionIsSparc = $("#ffm-select-sparc-funding-consortium").val() === "SPARC";
-
   const awardNumber = $("#submission-sparc-award").val();
   const milestones = getTagsFromTagifyElement(milestoneTagify1);
   const completionDate = $("#submission-completion-date").val();
 
-  if (milestonesRes !== "") {
-    milestoneValue = JSON.parse(milestonesRes);
-  }
-
   const submissionMetadataArray = [];
 
   submissionMetadataArray.push({
-    fundingConsortium: "SPARC",
-    consortiumDataStandard: consortiumDataStandard,
-    award: submissionIsSparc ? awardNumber : "",
-    date: submissionIsSparc ? completionDate : "",
-    milestone: submissionIsSparc ? milestones[0] : "",
+    consortiumDataStandard: "SPARC",
+    fundingConsortium: fundingConsortiumFromDropdown,
+    award: awardNumber,
+    date: completionDate,
+    milestone: milestones[0] || "",
   });
 
-  if (submissionIsSparc && milestones.length > 1) {
+  if (milestones.length > 1) {
     for (let i = 1; i < milestones.length; i++) {
       submissionMetadataArray.push({
         fundingConsortium: "",
@@ -865,7 +859,7 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
     .post(
       `/prepare_metadata/submission_file`,
       {
-        submission_file_rows: json_arr,
+        submission_file_rows: submissionMetadataArray,
         filepath: submissionDestinationPath,
         upload_boolean: uploadBFBoolean,
       },
@@ -1103,37 +1097,38 @@ async function loadExistingSubmissionFile(filepath) {
 }
 
 function loadSubmissionFileToUI(data, type) {
-  console.log(data);
   milestoneTagify1.removeAllTags();
   removeOptions(descriptionDateInput);
-  addOption(descriptionDateInput, "Select an option", "Select");
-  $("#submission-completion-date").val("Select");
+  $("#submission-completion-date").val("");
   $("#submission-sparc-award").val("");
-  // 1. populate milestones
-  if (typeof data["Milestone achieved"] === "string") {
-    milestoneTagify1.addTags(data["Milestone achieved"]);
+  // 1. populate Funding Consortium dropdown
+  if (sparcFundingConsortiums.includes(data["Funding Consortium"])) {
+    $("#ffm-select-sparc-funding-consortium").val(data["Funding Consortium"]).change();
   } else {
-    for (var milestone of data["Milestone achieved"]) {
-      console.log(milestone);
-      milestoneTagify1.addTags(milestone);
-    }
+    // reset the funding consortium dropdown
+    $("#ffm-select-sparc-funding-consortium").val("").change();
   }
   // 2. populate SPARC award
   if (data["SPARC Award number"] !== "") {
     $("#submission-sparc-award").val(data["SPARC Award number"]);
   }
-  // 3. populate Completion date
+
+  // 3. populate milestones
+  if (typeof data["Milestone achieved"] === "string") {
+    milestoneTagify1.addTags(data["Milestone achieved"]);
+  } else {
+    for (var milestone of data["Milestone achieved"]) {
+      milestoneTagify1.addTags(milestone);
+    }
+  }
+
+  // 4. populate Completion date
   if (data["Milestone completion date"] !== "") {
+    addOption(descriptionDateInput, "Enter my own date", "Enter my own date");
     addOption(
       descriptionDateInput,
       data["Milestone completion date"],
       data["Milestone completion date"]
-    );
-    // HERE BOI
-    $("#submission-completion-date").append(
-      $("<option>", {
-        text: "Enter my own date",
-      })
     );
     $("#submission-completion-date").val(data["Milestone completion date"]);
   }

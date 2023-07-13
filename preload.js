@@ -278,6 +278,9 @@ function resetSubmissionFields() {
   }
   milestoneTagify1.removeAllTags();
 
+  // Reset the funding consortium dropdown
+  $("#ffm-select-sparc-funding-consortium").val("").change();
+
   // make accordion active again
   $("#submission-title-accordion").addClass("active");
   $("#submission-accordion").addClass("active");
