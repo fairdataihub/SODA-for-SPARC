@@ -541,7 +541,7 @@ $("#button-add-permission-pi").click(async () => {
             value: selectedUser,
             dataset_id: defaultBfDatasetId,
           }
-        )
+        );
 
         ipcRenderer.send(
           "track-event",
@@ -2039,7 +2039,7 @@ const uploadBannerImage = async () => {
             value: 1,
             dataset_id: defaultBfDatasetId,
           }
-        )
+        );
       }
     }
   });

@@ -4,7 +4,7 @@ const { v4: uuid } = require("uuid");
 // Validate the dataset that has just been organized in Organize Dataset Step 6: Validate Dataset
 // TODO: Pennsieve vs local considerations for result parsing and error handling
 const validateOrganizedDataset = async () => {
-  console.log("testdfading")
+  console.log("testdfading");
   let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
   let datasetOrigin = "";
   let datasetDestination = "";
@@ -24,7 +24,6 @@ const validateOrganizedDataset = async () => {
   if ("save-progress" in sodaJSONObj) {
     datasetOrigin = "Saved";
   }
-
 
   if (validationErrorsTable.childElementCount > 0) {
     // ask the user to confirm they want to reset their validation progress
@@ -221,7 +220,7 @@ const validateOrganizedDataset = async () => {
         value: file_counter,
         dataset_id: defaultBfDatasetId,
         origin: datasetOrigin,
-        destination: datasetDestination, 
+        destination: datasetDestination,
       }
     );
 
@@ -255,7 +254,7 @@ const validateOrganizedDataset = async () => {
       value: file_counter,
       dataset_id: defaultBfDatasetId,
       origin: datasetOrigin,
-      destination: datasetDestination, 
+      destination: datasetDestination,
     }
   );
 

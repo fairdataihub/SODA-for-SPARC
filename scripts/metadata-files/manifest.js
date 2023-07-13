@@ -1327,15 +1327,15 @@ const initiate_generate_manifest_bf = async () => {
     destination = sodaJSONObj["generate-dataset"]["destination"];
   }
 
-    // Verify the origin of dataset for kombucha tracking
-    let origin = "";
-    if ("local-path" in sodaJSONObj["starting-point"]) {
-      origin = "Local";
-    }
-  
-    if ("bf" in sodaJSONObj["starting-point"]["type"]) {
-      origin = "Pennsieve";
-    }
+  // Verify the origin of dataset for kombucha tracking
+  let origin = "";
+  if ("local-path" in sodaJSONObj["starting-point"]) {
+    origin = "Local";
+  }
+
+  if ("bf" in sodaJSONObj["starting-point"]["type"]) {
+    origin = "Pennsieve";
+  }
 
   // log the manifest file creation to analytics
   logMetadataForAnalytics(
