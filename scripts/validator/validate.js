@@ -1,4 +1,5 @@
 // Purpose: The front end logic for the Validate Dataset section
+const { kombuchaEnums } = require("../others/analytics/analytics-enums.js");
 const { handleAxiosValidationErrors } = require("./scripts/validator/axios-validator-utility.js");
 
 const { translatePipelineError } = require("./scripts/validator/parse-pipeline-errors.js");
@@ -524,6 +525,20 @@ const validatePennsieveDatasetStandAlone = async () => {
     "Number of Files",
     file_counter
   );
+
+  ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.PREPARE_DATASETS,
+    kombuchaEnums.Action.VALIDATE_DATASET,
+    kombuchaEnums.Label.FILES,
+    kombuchaEnums.Status.SUCCESS,
+    {
+      value: file_counter,
+      dataset_name: datasetName,
+      dataset_id: datasetPopulationResponse.dataset_id,
+      origin: "Pennsieve",
+    }
+  )
 
   if (validationReport.status === "Incomplete") {
     // An incomplete validation report happens when the validator is unable to generate
