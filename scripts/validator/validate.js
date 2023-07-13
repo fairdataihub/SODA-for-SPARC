@@ -455,6 +455,20 @@ const validatePennsieveDatasetStandAlone = async () => {
       "Number of Files",
       file_counter
     );
+
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.PREPARE_DATASETS,
+      kombuchaEnums.Action.VALIDATE_DATASET,
+      kombuchaEnums.Label.FILES,
+      kombuchaEnums.Status.FAIL,
+      {
+        value: file_counter,
+        dataset_name: datasetName,
+        dataset_id: datasetPopulationResponse.dataset_id,
+        origin: "Pennsieve",
+      }
+    );
     if (error.response && (error.response.status == 503 || error.response.status == 502)) {
       await Swal.fire({
         title: "Validation Service Unavailable",
@@ -538,7 +552,7 @@ const validatePennsieveDatasetStandAlone = async () => {
       dataset_id: datasetPopulationResponse.dataset_id,
       origin: "Pennsieve",
     }
-  )
+  );
 
   if (validationReport.status === "Incomplete") {
     // An incomplete validation report happens when the validator is unable to generate
