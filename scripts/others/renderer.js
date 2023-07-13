@@ -8917,7 +8917,7 @@ function logMetadataForAnalytics(
 // Inputs:
 //    uploadBFBoolean: boolean - True when the metadata file was created on Pennsieve; false when the Metadata file was created locally
 //    metadataFileName: string - the name of the metadata file that was created along with its extension
-async function logMetadataSizeForAnalytics(uploadBFBoolean, metadataFileName, size) {
+const logMetadataSizeForAnalytics = async (uploadBFBoolean, metadataFileName, size) => {
   ipcRenderer.send(
     "track-event",
     "Success",
@@ -8925,6 +8925,17 @@ async function logMetadataSizeForAnalytics(uploadBFBoolean, metadataFileName, si
     "Size of Total Metadata Files Generated",
     size
   );
+
+  ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.PREPARE_METADATA,
+    kombuchaEnums.Action.GENERATE,
+    kombuchaEnums.Label.SIZE,
+    kombuchaEnums.Status.SUCCESS,
+    {
+      value: size,
+    }
+  )
 
   let fileNameToPrefixMapping = {
     dataset_description: MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
