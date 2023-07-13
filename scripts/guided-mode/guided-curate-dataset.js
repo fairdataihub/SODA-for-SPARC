@@ -2632,19 +2632,6 @@ const hideEleShowEle = (elementIdToHide, elementIdToShow) => {
   elementToShow.classList.remove("hidden");
 };
 
-const hideElementsWithClass = (className) => {
-  const elements = document.querySelectorAll(`.${className}`);
-  elements.forEach((element) => {
-    element.classList.add("hidden");
-  });
-};
-const showElementsWithClass = (className) => {
-  const elements = document.querySelectorAll(`.${className}`);
-  elements.forEach((element) => {
-    element.classList.remove("hidden");
-  });
-};
-
 const hideSubNavAndShowMainNav = (navButtonToClick) => {
   $("#guided-sub-page-navigation-footer-div").hide();
   $("#guided-footer-div").removeClass("hidden");

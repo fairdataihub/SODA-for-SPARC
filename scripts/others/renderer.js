@@ -1646,6 +1646,33 @@ var milestoneTagify1 = new Tagify(milestoneInput1, {
     closeOnSelect: true,
   },
 });
+
+const hideElementsWithClass = (className) => {
+  const elements = document.querySelectorAll(`.${className}`);
+  elements.forEach((element) => {
+    element.classList.add("hidden");
+  });
+};
+
+const showElementsWithClass = (className) => {
+  const elements = document.querySelectorAll(`.${className}`);
+  elements.forEach((element) => {
+    element.classList.remove("hidden");
+  });
+};
+
+// Listen to the changes of the milestone tagify
+milestoneTagify1.on("change", (e) => {
+  // If e.detail.value.length string is greater than 0, then there are milestone tags entered in the tagify
+  if (e.detail.value.length > 0) {
+    showElementsWithClass("completion-date-form-component");
+    console.log("Hay milestones");
+  } else {
+    hideElementsWithClass("completion-date-form-component");
+    console.log("No milestones");
+  }
+});
+
 createDragSort(milestoneTagify1);
 
 // generate subjects file

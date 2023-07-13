@@ -523,6 +523,19 @@ $("#ffm-select-sparc-funding-consortium").on("change", function (e) {
   } else {
     generateSubmissionButton.classList.remove("hidden");
   }
+
+  const containerDddImportButton = document.getElementById("container-ddd-import-button");
+  if (consortium === "SPARC") {
+    // Show the DDD import button
+    containerDddImportButton.classList.remove("hidden");
+    // Show the submission onboarding if the user hasn't seen it yet
+    if (!introStatus.submission) {
+      onboardingSubmission();
+    }
+  } else {
+    // Hide the DDD import button
+    containerDddImportButton.classList.add("hidden");
+  }
 });
 const resetFundingConsortiumDropdown = () => {
   $("#ffm-select-sparc-funding-consortium").val("").change();

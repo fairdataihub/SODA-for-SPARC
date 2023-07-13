@@ -448,9 +448,25 @@
                   margin: 0 auto;
                   font-size: 13px;
                   padding-bottom: 15px;
+                  padding-top: 20px;
                 "
               >
-                <div class="div-dd-info" style="flex-direction: column">
+                <label class="guided--form-label"> Funding consortium:</label>
+                <select
+                  class="w-100"
+                  id="ffm-select-sparc-funding-consortium"
+                  data-live-search="true"
+                  name="Dataset funding source"
+                ></select>
+                <p class="guided--text-input-instructions mb-md">
+                  Select the funding consortium supporting your dataset submission
+                </p>
+
+                <div
+                  class="div-dd-info"
+                  style="flex-direction: column"
+                  id="container-ddd-import-button"
+                >
                   <button
                     class="ui primary basic button mt-sm button-import-data-deliverables-document"
                     id="button-ffm-import-data-deliverables-document"
@@ -460,15 +476,6 @@
                     Deliverables document in docx format
                   </button>
                 </div>
-                <label class="guided--form-label">
-                  Select the funding source from the dropdown below
-                </label>
-                <select
-                  class="w-100 mb-md"
-                  id="ffm-select-sparc-funding-consortium"
-                  data-live-search="true"
-                  name="Dataset funding source"
-                ></select>
 
                 <label class="guided--form-label">Award number:</label>
                 <input
@@ -479,6 +486,11 @@
                 />
                 <p class="guided--text-input-instructions mb-md">
                   The primary grant number supporting the milestone
+                  <br />
+                  <b
+                    >Leave this field blank if you do not have an award number attached to your
+                    submission.</b
+                  >
                 </p>
 
                 <label class="guided--form-label">Milestone(s):</label>
@@ -493,13 +505,16 @@
                   </div>
                 </div>
                 <p class="guided--text-input-instructions mb-md">
-                  The milestones as listed in your SPARC award's data deliverable's document.<br />
-                  <b>If the dataset is not part of the milestone, enter N/A.</b>
+                  The milestones as listed in your SPARC award's data deliverable's document.
+                  <br />
+                  <b>leave this field blank if the submission is not part of a milestone.</b>
                 </p>
 
-                <label class="guided--form-label">Completion date:</label>
+                <label class="guided--form-label completion-date-form-component"
+                  >Completion date:</label
+                >
                 <select
-                  class="form-control"
+                  class="form-control completion-date-form-component"
                   id="submission-completion-date"
                   style="background-color: white !important"
                 >
@@ -507,12 +522,10 @@
                   <option value="Enter my own date">Enter my own date</option>
                   <option value="N/A">N/A</option>
                 </select>
-                <p class="guided--text-input-instructions mb-md">
-                  Enter the completion date associated with this milestone.<br />
-                  <b
-                    >Select N/A if this dataset isn't associated with any milestone initially
-                    planned in the Data Deliverables document.</b
-                  >
+                <p class="guided--text-input-instructions mb-md completion-date-form-component">
+                  Enter the completion date associated with this milestone.
+                  <br />
+                  <b>leave this field blank if the submission is not part of a milestone.</b>
                 </p>
               </div>
             </div>
