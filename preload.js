@@ -1238,7 +1238,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         accountPresent = false;
       }
 
-      if (accountPresent === false) {
+      if (!accountPresent) {
         //If there is no API key pair, warning will pop up allowing user to sign in
         await Swal.fire({
           icon: "warning",
@@ -1257,7 +1257,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           },
         }).then(async (result) => {
           if (result.isConfirmed) {
-            await openDropdownPrompt(this, "bf");
+            await openDropdownPrompt(ev, "bf");
             $(".ui.active.green.inline.loader.small").css("display", "none");
             $(".svg-change-current-account.dataset").css("display", "block");
           } else {
@@ -1273,27 +1273,38 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
           1
         );
       } else {
-        //account is signed in but no datasets have been fetched or created
-        //invoke dataset request to ensure no datasets have been created
-        if (datasetList.length === 0) {
-          let responseObject;
-          try {
-            responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
-              params: {
-                selected_account: defaultBfAccount,
-              },
-            });
-          } catch (error) {
-            clientError(error);
-            return;
-          }
-
-          let result = responseObject.data.datasets;
-          datasetList = [];
-          datasetList = result;
-          refreshDatasetList();
+        // there is an account; but check check that the valid api key in the default profile is for the user's current workspace
+        // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key 
+        //           under the default profile does not mean that key is associated with the user's current workspace.
+        let matching = await defaultProfileMatchesCurrentWorkspace();
+        if(!matching) {
+          log.info("Default api key is for a different workspace");
+          await handleAuthenticationError()
         }
       }
+
+
+      //account is signed in but no datasets have been fetched or created
+      //invoke dataset request to ensure no datasets have been created
+      if (datasetList.length === 0) {
+        let responseObject;
+        try {
+          responseObject = await client.get(`manage_datasets/bf_dataset_account`, {
+            params: {
+              selected_account: defaultBfAccount,
+            },
+          });
+        } catch (error) {
+          clientError(error);
+          return;
+        }
+
+        let result = responseObject.data.datasets;
+        datasetList = [];
+        datasetList = result;
+        refreshDatasetList();
+      }
+      
 
       //after request check length again
       //if 0 then no datasets have been created

@@ -46,6 +46,9 @@ const { determineDatasetLocation } = require("./scripts/others/analytics/analyti
 const {
   clientError,
   userErrorMessage,
+  authenticationError,
+  handleAuthenticationError,
+  defaultProfileMatchesCurrentWorkspace
 } = require("./scripts/others/http-error-handler/error-handler");
 const { hasConnectedAccountWithPennsieve } = require("./scripts/others/authentication/auth");
 const api = require("./scripts/others/api/api");
@@ -562,6 +565,23 @@ ipcRenderer.on("start_pre_flight_checks", async (event, arg) => {
 
   log.info("Done with startup");
 
+  //Load Default/global Pennsieve account if available
+  if (hasConnectedAccountWithPennsieve()) {
+    notyf.open({
+      duration: 15000,
+      type: "info",
+      message: "Loading your account information...",
+    });
+    try {
+      await updateBfAccountList();
+    } catch (error) {
+      clientError(error);
+    }
+    // close the notification once it is completed
+    notyf.dismissAll();
+  }
+
+
   // check integrity of all the core systems
   await run_pre_flight_checks();
 
@@ -725,8 +745,8 @@ const run_pre_flight_checks = async (check_update = true) => {
 
     if (!preFlightCheckNotyf) {
       preFlightCheckNotyf = notyf.open({
-        duration: 15000,
         type: "info",
+        duration: "15000",
         message: "Checking SODA's connection to Pennsieve...",
       });
     }
@@ -739,10 +759,11 @@ const run_pre_flight_checks = async (check_update = true) => {
       );
     }
 
-    // Check for an API key pair first. Calling the agent check without a config file, causes it to crash.
+    // Check for an API key pair in the default profile and ensure it is not obsolete. 
+    // NOTE: Calling the agent startup command without a profile setup in the config.ini file causes it to crash.
     const account_present = await check_api_key();
 
-    // TODO: Reimplement this section to work with the new agent
+    // Add a new api key and secret for validating the user's account in the current workspace.
     if (!account_present) {
       // Dismiss the preflight check notification if it is still open
       if (preFlightCheckNotyf) {
@@ -774,10 +795,22 @@ const run_pre_flight_checks = async (check_update = true) => {
 
       // If user chose to log in, open the dropdown prompt
       if (userChoseToLogIn) {
-        await openDropdownPrompt(null, "bf");
+        await addBfAccount(null, false);
       }
       return false;
     }
+
+
+    // check that the valid api key in the default profile is for the user's current workspace
+    // IMP NOTE: There can be different API Keys for each workspace and the user can switch between workspaces. Therefore a valid api key 
+    //           under the default profile does not mean that key is associated with the user's current workspace.
+    let matching = await defaultProfileMatchesCurrentWorkspace();
+    if(!matching) {
+      log.info("Default api key is for a different workspace");
+      await handleAuthenticationError()
+      return false;
+    }
+    
 
     // First get the latest Pennsieve agent version on GitHub
     // This is to ensure the user has the latest version of the agent
@@ -954,16 +987,7 @@ const run_pre_flight_checks = async (check_update = true) => {
       checkNewAppVersion();
     }
 
-    // make an api request to change to the organization members. If it fails with a 401 then ask them to go through the workspace change flow as SODA does not have access to the workspace.
-    try {
-      await client.get(`/manage_datasets/ps_get_users?selected_account=${defaultBfAccount}`);
-    } catch (err) {
-      console.log("We doing this here");
-      clientError(err);
-      if (err.response.status) {
-        await addBfAccount(null, true);
-      }
-    }
+
 
     // let nodeStorage = new JSONStorage(app.getPath("userData"));
     // launchAnnouncement = nodeStorage.getItem("announcements");
@@ -989,6 +1013,7 @@ const run_pre_flight_checks = async (check_update = true) => {
     // All pre flight checks passed, return true
     return true;
   } catch (error) {
+    clientError(error)
     // Dismiss the preflight check notification if it is still open
     if (preFlightCheckNotyf) {
       notyf.dismiss(preFlightCheckNotyf);
@@ -1109,14 +1134,6 @@ const apiVersionsMatch = async () => {
     type: "success",
   });
 
-  //Load Default/global Pennsieve account if available
-  if (hasConnectedAccountWithPennsieve()) {
-    try {
-      updateBfAccountList();
-    } catch (error) {
-      clientError(error);
-    }
-  }
   checkNewAppVersion(); // Added so that version will be displayed for new users
 };
 
@@ -1154,7 +1171,8 @@ const check_api_key = async () => {
   try {
     responseObject = await client.get("manage_datasets/bf_account_list");
   } catch (e) {
-    console.log("Failed here");
+    log.info("Current default profile API Key is obsolete");
+    clientError(e);
     notyf.dismiss(notification);
     notyf.open({
       type: "error",
@@ -1164,9 +1182,9 @@ const check_api_key = async () => {
   }
 
   let res = responseObject.data["accounts"];
-  console.log(responseObject.data);
-  log.info("Found a set of valid API keys");
+ 
   if (res[0] === "Select" && res.length === 1) {
+    log.info("No api keys found");
     //no api key found
     notyf.dismiss(notification);
     notyf.open({
@@ -1176,6 +1194,8 @@ const check_api_key = async () => {
     console.log("Failed here");
     return false;
   } else {
+    log.info("Found non obsolete api key in default profile");
+
     notyf.dismiss(notification);
     notyf.open({
       type: "success",
@@ -3983,6 +4003,9 @@ const loadDefaultAccount = async () => {
 
     log.info(`Loading default account user organization: ${userInformation.preferredOrganization}`);
     log.info(`Loading default account user default profile is: ${defaultBfAccount}`);
+
+    // remove the N:organization from the account name 
+
 
     $("#current-bf-account").text(userEmail);
     $("#current-bf-account-generate").text(userEmail);
