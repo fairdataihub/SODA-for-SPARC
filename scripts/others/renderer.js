@@ -8918,6 +8918,9 @@ function logMetadataForAnalytics(
 //    uploadBFBoolean: boolean - True when the metadata file was created on Pennsieve; false when the Metadata file was created locally
 //    metadataFileName: string - the name of the metadata file that was created along with its extension
 const logMetadataSizeForAnalytics = async (uploadBFBoolean, metadataFileName, size) => {
+  // get the destination of the metadata file
+  let destination = uploadBFBoolean ? "Pennsieve" : "Local";
+
   ipcRenderer.send(
     "track-event",
     "Success",
@@ -8926,6 +8929,7 @@ const logMetadataSizeForAnalytics = async (uploadBFBoolean, metadataFileName, si
     size
   );
 
+  // TODO: Dorian -> verify information is correct on the analytics side
   ipcRenderer.send(
     "track-kombucha",
     kombuchaEnums.Category.PREPARE_METADATA,
@@ -8934,8 +8938,11 @@ const logMetadataSizeForAnalytics = async (uploadBFBoolean, metadataFileName, si
     kombuchaEnums.Status.SUCCESS,
     {
       value: size,
+      destination: destination,
+      origin: uploadBFBoolean ? defaultBfDatasetId : "Local",
+      dataset_name: defaultBfDataset,
     }
-  )
+  );
 
   let fileNameToPrefixMapping = {
     dataset_description: MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
@@ -8963,9 +8970,6 @@ const logMetadataSizeForAnalytics = async (uploadBFBoolean, metadataFileName, si
     "Size",
     size
   );
-
-  // get the destination of the metadata file
-  let destination = uploadBFBoolean ? "Pennsieve" : "Local";
 
   // log the size of the metadata file along with its location; label is the selected dataset's ID or a note informing us the dataset is stored locally
   ipcRenderer.send(
