@@ -17,6 +17,7 @@ const { resolve } = require("path");
 const axios = require("axios");
 const { info } = require("console");
 const { node } = require("prop-types");
+const { kombuchaEnums } = require("./scripts/others/analytics/analytics-enums");
 const uuid = require("uuid").v4;
 
 log.transports.console.level = false;
@@ -380,6 +381,16 @@ function initialize() {
   });
 
   app.on("ready", () => {
+    trackKombuchaEvent(
+      kombuchaEnums.Category.STARTUP,
+      kombuchaEnums.Action.APP_LAUNCHED,
+      kombuchaEnums.Label.VERSION,
+      kombuchaEnums.Status.SUCCESS,
+      {
+        value: app.getVersion(),
+      }
+    );
+    
     trackEvent("Success", "App Launched - OS", os.platform() + "-" + os.release());
     trackEvent("Success", "App Launched - SODA", app.getVersion());
   });
