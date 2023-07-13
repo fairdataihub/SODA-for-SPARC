@@ -36,6 +36,7 @@ const Action = {
 };
 
 const Label = {
+  PYTHON_CONNECTION: "Establishing Python Connection",
   VERSION: "Version",
   OS: "OS",
   FILES: "Files",

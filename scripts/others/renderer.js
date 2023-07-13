@@ -479,6 +479,16 @@ const startupServerAndApiCheck = async () => {
     // SWAL that the server needs to be restarted for the app to work
     clientError(error);
     ipcRenderer.send("track-event", "Error", "Establishing Python Connection");
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.STARTUP,
+      kombuchaEnums.Action.APP_LAUNCHED,
+      kombuchaEnums.Label.PYTHON_CONNECTION,
+      kombuchaEnums.Status.FAIL,
+      {
+        value: 1,
+      }
+    );
 
     await Swal.fire({
       icon: "error",
