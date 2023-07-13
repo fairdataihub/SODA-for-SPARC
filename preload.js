@@ -1,7 +1,6 @@
 // Purpose: Will become preload.js in the future. For now it is a place to put global variables/functions that are defined in javascript files
 //          needed by the renderer process in order to run.
 
-
 // Contributors table for the dataset description editing page
 const currentConTable = document.getElementById("table-current-contributors");
 
@@ -963,8 +962,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
       confirmButtonTextValue = "Grant Access";
     }
 
-    
-    let {value: result} = await Swal.fire({
+    let { value: result } = await Swal.fire({
       allowOutsideClick: false,
       backdrop: "rgba(0,0,0, 0.4)",
       cancelButtonText: "Cancel",
@@ -1030,7 +1028,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           //            user's Pennsieve profile.
           let machineUsernameSpecifier = localStorage.getItem(os.userInfo().username);
           let response = await create_api_key_and_secret(login, password, machineUsernameSpecifier);
-          console.log("Respose from api key creation: ", response)
+          console.log("Respose from api key creation: ", response);
           if (response[0] == "failed") {
             let error_message = response[1];
             if (response[1]["message"] === "exceptions must derive from BaseException") {
@@ -1051,18 +1049,18 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           }
         }
       },
-    })
+    });
 
-    if(!result) return
+    if (!result) return;
 
-    console.log("Value from preconfirm: ", result)
+    console.log("Value from preconfirm: ", result);
 
     titleText = "Adding account...";
     if (verifyingOrganization) {
       titleText = "Loading workspace details...";
     }
 
-    console.log("Loading account...")
+    console.log("Loading account...");
     Swal.fire({
       allowEscapeKey: false,
       backdrop: "rgba(0,0,0, 0.4)",
@@ -1074,7 +1072,6 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
       },
     });
 
-
     let key_name = result.name;
     let apiKey = result.key;
     let apiSecret = result.secret;
@@ -1084,7 +1081,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
     // wherein it fails to validate an account if it is not lowercase
     key_name = key_name.toLowerCase();
     //needs to be replaced
-    console.log("About to add the api key information to the backend config.ini")
+    console.log("About to add the api key information to the backend config.ini");
     try {
       console.log("Sending info to backend");
       console.log("key_name: ", key_name);
@@ -1170,7 +1167,6 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
       Swal.showValidationMessage(userErrorMessage(error));
       Swal.close();
     }
-
   }
 };
 
