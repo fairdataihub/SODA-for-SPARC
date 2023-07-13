@@ -1,6 +1,7 @@
 // Purpose: Will become preload.js in the future. For now it is a place to put global variables/functions that are defined in javascript files
 //          needed by the renderer process in order to run.
 
+
 // Contributors table for the dataset description editing page
 const currentConTable = document.getElementById("table-current-contributors");
 
@@ -962,7 +963,8 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
       confirmButtonTextValue = "Grant Access";
     }
 
-    Swal.fire({
+    
+    let {value: result} = await Swal.fire({
       allowOutsideClick: false,
       backdrop: "rgba(0,0,0, 0.4)",
       cancelButtonText: "Cancel",
@@ -981,9 +983,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
       hideClass: {
         popup: "animate__animated animate__fadeOutUp animate__faster",
       },
-
       footer: footerText,
-
       didOpen: () => {
         $(".swal-popover").popover();
         let div_footer = document.getElementsByClassName("swal2-footer")[0];
@@ -1030,6 +1030,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           //            user's Pennsieve profile.
           let machineUsernameSpecifier = localStorage.getItem(os.userInfo().username);
           let response = await create_api_key_and_secret(login, password, machineUsernameSpecifier);
+          console.log("Respose from api key creation: ", response)
           if (response[0] == "failed") {
             let error_message = response[1];
             if (response[1]["message"] === "exceptions must derive from BaseException") {
@@ -1050,114 +1051,126 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           }
         }
       },
-    }).then(async (result) => {
-      if (result.isConfirmed) {
-        let titleText = "Adding account...";
-        if (verifyingOrganization) {
-          titleText = "Loading workspace details...";
-        }
-        Swal.fire({
-          allowEscapeKey: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          showConfirmButton: false,
-          title: titleText,
-          didOpen: () => {
-            Swal.showLoading();
+    })
+
+    if(!result) return
+
+    console.log("Value from preconfirm: ", result)
+
+    titleText = "Adding account...";
+    if (verifyingOrganization) {
+      titleText = "Loading workspace details...";
+    }
+
+    console.log("Loading account...")
+    Swal.fire({
+      allowEscapeKey: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      showConfirmButton: false,
+      title: titleText,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+
+    let key_name = result.name;
+    let apiKey = result.key;
+    let apiSecret = result.secret;
+
+    // lowercase the key_name the user provided
+    // this is to prevent an issue caused by the pennsiev agent
+    // wherein it fails to validate an account if it is not lowercase
+    key_name = key_name.toLowerCase();
+    //needs to be replaced
+    console.log("About to add the api key information to the backend config.ini")
+    try {
+      console.log("Sending info to backend");
+      console.log("key_name: ", key_name);
+      console.log("apiKey: ", apiKey);
+      console.log("apiSecret: ", apiSecret);
+      await client.put(`/manage_datasets/account/username`, {
+        keyname: key_name,
+        key: apiKey,
+        secret: apiSecret,
+      });
+
+      // set the user's email to be the defaultBfAccount value
+      bfAccountOptions[key_name] = key_name;
+      defaultBfAccount = key_name;
+      defaultBfDataset = "Select dataset";
+
+      try {
+        let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
+          params: {
+            selected_account: defaultBfAccount,
           },
         });
-        let key_name = result.value.name;
-        let apiKey = result.value.key;
-        let apiSecret = result.value.secret;
+        // reset the dataset field values
+        $("#current-bf-dataset").text("None");
+        $("#current-bf-dataset-generate").text("None");
+        $(".bf-dataset-span").html("None");
+        $("#para-continue-bf-dataset-getting-started").text("");
 
-        // lowercase the key_name the user provided
-        // this is to prevent an issue caused by the pennsiev agent
-        // wherein it fails to validate an account if it is not lowercase
-        key_name = key_name.toLowerCase();
-        //needs to be replaced
-        try {
-          await client.put(`/manage_datasets/account/username`, {
-            keyname: key_name,
-            key: apiKey,
-            secret: apiSecret,
-          });
+        // set the workspace field values to the user's current workspace
+        let org = bf_account_details_req.data.organization;
+        $(".bf-organization-span").text(org);
 
-          // set the user's email to be the defaultBfAccount value
-          bfAccountOptions[key_name] = key_name;
-          defaultBfAccount = key_name;
-          defaultBfDataset = "Select dataset";
+        showHideDropdownButtons("account", "show");
+        confirm_click_account_function();
+        updateBfAccountList();
 
-          try {
-            let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
-              params: {
-                selected_account: defaultBfAccount,
-              },
-            });
-            // reset the dataset field values
-            $("#current-bf-dataset").text("None");
-            $("#current-bf-dataset-generate").text("None");
-            $(".bf-dataset-span").html("None");
-            $("#para-continue-bf-dataset-getting-started").text("");
-
-            // set the workspace field values to the user's current workspace
-            let org = bf_account_details_req.data.organization;
-            $(".bf-organization-span").text(org);
-
-            showHideDropdownButtons("account", "show");
-            confirm_click_account_function();
-            updateBfAccountList();
-
-            // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
-            // then reset the guided mode page
-            if (ev?.getAttribute("data-reset-guided-mode-page") == "true") {
-              // Get the current page that the user is on in the guided mode
-              const currentPage = CURRENT_PAGE.id;
-              if (currentPage) {
-                await openPage(currentPage);
-              }
-            }
-          } catch (error) {
-            clientError(error);
-            Swal.fire({
-              backdrop: "rgba(0,0,0, 0.4)",
-              heightAuto: false,
-              icon: "error",
-              text: "Something went wrong!",
-              footer:
-                '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
-            });
-            showHideDropdownButtons("account", "hide");
-            confirm_click_account_function();
+        // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
+        // then reset the guided mode page
+        if (ev?.getAttribute("data-reset-guided-mode-page") == "true") {
+          // Get the current page that the user is on in the guided mode
+          const currentPage = CURRENT_PAGE.id;
+          if (currentPage) {
+            await openPage(currentPage);
           }
-
-          datasetList = [];
-          defaultBfDataset = null;
-          clearDatasetDropdowns();
-
-          let titleText = "Successfully added! <br/>Loading your account details...";
-          if (verifyingOrganization) {
-            titleText = "Workspace details loaded!";
-          }
-          Swal.fire({
-            allowEscapeKey: false,
-            heightAuto: false,
-            backdrop: "rgba(0,0,0, 0.4)",
-            icon: "success",
-            showConfirmButton: false,
-            timer: 3000,
-            timerProgressBar: true,
-            title: titleText,
-            didOpen: () => {
-              Swal.showLoading();
-            },
-          });
-        } catch (error) {
-          clientError(error);
-          Swal.showValidationMessage(userErrorMessage(error));
-          Swal.close();
         }
+      } catch (error) {
+        clientError(error);
+        Swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          icon: "error",
+          text: "Something went wrong!",
+          footer:
+            '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
+        });
+        showHideDropdownButtons("account", "hide");
+        confirm_click_account_function();
       }
-    });
+
+      datasetList = [];
+      defaultBfDataset = null;
+      clearDatasetDropdowns();
+
+      let titleText = "Successfully added! <br/>Loading your account details...";
+      if (verifyingOrganization) {
+        titleText = "Workspace details loaded!";
+      }
+      Swal.fire({
+        allowEscapeKey: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        icon: "success",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        title: titleText,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+    } catch (error) {
+      clientError(error);
+      Swal.showValidationMessage(userErrorMessage(error));
+      Swal.close();
+    }
+
   }
 };
 
