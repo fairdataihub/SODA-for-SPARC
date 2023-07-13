@@ -8979,7 +8979,7 @@ const logMetadataSizeForAnalytics = async (uploadBFBoolean, metadataFileName, si
     uploadBFBoolean ? defaultBfDatasetId : "Local",
     size
   );
-}
+};
 
 // get the size of a file in bytes given a path to a file
 const getFileSizeInBytes = (path) => {

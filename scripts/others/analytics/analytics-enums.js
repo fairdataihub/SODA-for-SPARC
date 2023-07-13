@@ -32,7 +32,7 @@ const Action = {
   IMPORT_METADATA: "Import Metadata",
   VALIDATE_DATASET: "Validate Dataset",
   TEMPLATE_PATHS: "Setting Templates Paths",
-  APP_LAUNCHED: "App Launched"
+  APP_LAUNCHED: "App Launched",
 };
 
 const Label = {
