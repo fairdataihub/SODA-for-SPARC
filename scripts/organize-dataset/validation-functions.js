@@ -223,7 +223,8 @@ const validateOrganizedDataset = async () => {
         origin: datasetOrigin,
         destination: datasetDestination, 
       }
-    )
+    );
+
     return;
   }
 
@@ -242,6 +243,20 @@ const validateOrganizedDataset = async () => {
     "Validation - Number of Files",
     "Number of Files",
     file_counter
+  );
+
+  ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.PREPARE_DATASETS,
+    kombuchaEnums.Action.VALIDATE_DATASET,
+    kombuchaEnums.Label.FILES,
+    kombuchaEnums.Status.SUCCESS,
+    {
+      value: file_counter,
+      dataset_id: defaultBfDatasetId,
+      origin: datasetOrigin,
+      destination: datasetDestination, 
+    }
   );
 
   if (validationReport.status === "Incomplete") {
