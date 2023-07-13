@@ -139,7 +139,6 @@ def bf_add_account_username(keyname, key, secret):
     Action:
         Adds account to the Pennsieve configuration file (local machine)
     """
-    global namespace_logger
 
     temp_keyname = "SODA_temp_generated"
     # first delete the pre-existing default_profile entry , but not the profile itself 
@@ -176,6 +175,7 @@ def bf_add_account_username(keyname, key, secret):
         if not config.has_section(keyname):
             config.add_section(keyname)
 
+
         config.set(keyname, "api_token", key)
         config.set(keyname, "api_secret", secret)
         # config.set(keyname, "api_host", PENNSIEVE_URL)
@@ -196,7 +196,6 @@ def bf_add_account_username(keyname, key, secret):
     try:
         token = get_access_token()
     except Exception as e:
-        namespace_logger.error(e)
         bf_delete_account(keyname)
         abort(401, 
             "Please check that key name, key, and secret are entered properly"
