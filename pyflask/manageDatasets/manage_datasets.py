@@ -246,6 +246,7 @@ def bf_get_accounts():
     config = ConfigParser()
     config.read(configpath)
     sections = config.sections()
+    global namespace_logger
 
     if SODA_SPARC_API_KEY in sections:
         lowercase_account_names(config, SODA_SPARC_API_KEY, configpath)
@@ -253,6 +254,7 @@ def bf_get_accounts():
             get_access_token()
             return SODA_SPARC_API_KEY.lower()
     elif "global" in sections:
+        namespace_logger.info("Default account found")
         if "default_profile" in config["global"]:
             default_profile = config["global"]["default_profile"]
             if default_profile in sections:
@@ -261,8 +263,10 @@ def bf_get_accounts():
                     get_access_token()
                     return default_profile.lower()
                 except Exception as e:
+                    namespace_logger.info("Failed to authenticate the stored token")
                     abort(401, e)
     else:
+        namespace_logger.info("No default account found")
         for account in sections:
             if account != 'agent':
                 with contextlib.suppress(Exception):
