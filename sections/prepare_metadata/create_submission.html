@@ -451,7 +451,7 @@
                   padding-top: 20px;
                 "
               >
-                <label class="guided--form-label"> Funding consortium:</label>
+                <label class="guided--form-label required"> Funding consortium:</label>
                 <select
                   class="w-100"
                   id="ffm-select-sparc-funding-consortium"
@@ -464,7 +464,7 @@
 
                 <div
                   class="div-dd-info"
-                  style="flex-direction: column"
+                  style="flex-direction: column; margin-bottom: 25px"
                   id="container-ddd-import-button"
                 >
                   <button
@@ -472,12 +472,17 @@
                     id="button-ffm-import-data-deliverables-document"
                     style="display: flex; align-items: center; justify-content: space-around"
                   >
-                    <i class="fas fa-file-import" style="margin-right: 7px"></i>Import Data
-                    Deliverables document in docx format
+                    <i class="fas fa-file-import" style="margin-right: 7px"></i>Import submission
+                    metadata from Data Deliverables document
                   </button>
+                  <p class="guided--text-input-instructions text-center">
+                    Click this button if you have a Data Deliverables document available
+                  </p>
                 </div>
 
-                <label class="guided--form-label">Award number:</label>
+                <label class="guided--form-label submission-required-if-sparc-funding-consortium"
+                  >Award number:</label
+                >
                 <input
                   class="guided--input"
                   id="submission-sparc-award"
@@ -487,13 +492,15 @@
                 <p class="guided--text-input-instructions mb-md">
                   The primary grant number supporting the milestone
                   <br />
-                  <b
+                  <b class="non-sparc-funding-consortium-instructions"
                     >Leave this field blank if you do not have an award number attached to your
                     submission.</b
                   >
                 </p>
 
-                <label class="guided--form-label">Milestone(s):</label>
+                <label class="guided--form-label submission-required-if-sparc-funding-consortium"
+                  >Milestone(s):</label
+                >
                 <div class="demo-controls-body" style="width: 100%">
                   <div class="ui input modified">
                     <input
@@ -507,14 +514,20 @@
                 <p class="guided--text-input-instructions mb-md">
                   The milestones as listed in your SPARC award's data deliverable's document.
                   <br />
-                  <b>leave this field blank if the submission is not part of a milestone.</b>
+                  <b class="sparc-funding-consortium-instructions"
+                    >Enter 'N/A' if the submission is not related to a pre-agreed milestone
+                  </b>
+                  <b class="non-sparc-funding-consortium-instructions"
+                    >leave this field blank if the submission is not part of a milestone.</b
+                  >
                 </p>
 
-                <label class="guided--form-label completion-date-form-component"
+                <label
+                  class="guided--form-label completion-date-form-component hidden submission-required-if-sparc-funding-consortium"
                   >Completion date:</label
                 >
                 <select
-                  class="form-control completion-date-form-component"
+                  class="form-control completion-date-form-component hidden"
                   id="submission-completion-date"
                   style="background-color: white !important"
                 >
@@ -522,10 +535,14 @@
                   <option value="Enter my own date">Enter my own date</option>
                   <option value="N/A">N/A</option>
                 </select>
-                <p class="guided--text-input-instructions mb-md completion-date-form-component">
+                <p
+                  class="guided--text-input-instructions mb-md completion-date-form-component hidden"
+                >
                   Enter the completion date associated with this milestone.
                   <br />
-                  <b>leave this field blank if the submission is not part of a milestone.</b>
+                  <b
+                    >Select 'N/A' if the completion date is not related to a pre-agreed milestone</b
+                  >
                 </p>
               </div>
             </div>

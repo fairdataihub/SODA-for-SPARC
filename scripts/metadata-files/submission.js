@@ -42,7 +42,7 @@ const renderMilestoneSelectionTable = (milestoneData) => {
 const openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneRes) => {
   //add a custom milestone row for when the user wants to add a custom milestone
   //not included in the dataset deliverables document
-  milestoneRes["Not included in the Dataset Deliverables document"] = [
+  milestoneRes["N/A"] = [
     {
       "Description of data":
         "Select this option when the dataset you are submitting is not related to a pre-agreed milestone",
@@ -518,10 +518,30 @@ $("#ffm-select-sparc-funding-consortium").selectpicker("refresh");
 $("#ffm-select-sparc-funding-consortium").on("change", function (e) {
   const consortium = e.target.value;
   const generateSubmissionButton = document.getElementById("button-generate-submission");
+
+  // Show the generate submission button if the user has selected a funding consortium
   if (consortium === "") {
     generateSubmissionButton.classList.add("hidden");
   } else {
     generateSubmissionButton.classList.remove("hidden");
+  }
+
+  // Handle the instructions for the individual form fields
+  const RequiredFieldsIfSubmissionIsSparc = document.querySelectorAll(
+    ".submission-required-if-sparc-funding-consortium"
+  );
+  if (consortium === "SPARC") {
+    RequiredFieldsIfSubmissionIsSparc.forEach((label) => {
+      label.classList.add("required");
+    });
+    hideElementsWithClass("non-sparc-funding-consortium-instructions");
+    showElementsWithClass("sparc-funding-consortium-instructions");
+  } else {
+    RequiredFieldsIfSubmissionIsSparc.forEach((label) => {
+      label.classList.remove("required");
+    });
+    showElementsWithClass("non-sparc-funding-consortium-instructions");
+    hideElementsWithClass("sparc-funding-consortium-instructions");
   }
 
   const containerDddImportButton = document.getElementById("container-ddd-import-button");
