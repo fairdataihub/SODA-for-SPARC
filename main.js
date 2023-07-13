@@ -390,7 +390,17 @@ function initialize() {
         value: app.getVersion(),
       }
     );
-    
+
+    trackKombuchaEvent(
+      kombuchaEnums.Category.STARTUP,
+      kombuchaEnums.Action.APP_LAUNCHED,
+      kombuchaEnums.Label.OS,
+      kombuchaEnums.Status.SUCCESS,
+      {
+        value: os.platform() + "-" + os.release(),
+      }
+    );
+
     trackEvent("Success", "App Launched - OS", os.platform() + "-" + os.release());
     trackEvent("Success", "App Launched - SODA", app.getVersion());
   });
