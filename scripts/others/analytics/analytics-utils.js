@@ -12,7 +12,7 @@ const determineDatasetLocation = () => {
   if (
     datasetLocation === "local" ||
     datasetLocation === "Local" ||
-    "local-path" in sodaJSONObj?.["starting-point"]
+    sodaJSONObj?.["starting-point"]?.["local-path"]
   ) {
     return Destinations.LOCAL;
   }
