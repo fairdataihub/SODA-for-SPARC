@@ -5,6 +5,17 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.12.1.0 - 2023-07-14
+
+## Feature Additions:
+
+- Description Metadata updated from SDS 2.0.0 -> 2.1.0
+- Submission Metadata updated from SDS 2.0.0 -> 2.1.0
+
+## Bug fixes:
+
+- Fixed an issue causing the server to not connect for Window's users
+
 ## v.12.0.2 - 2023-07-03
 
 ## Bug fixes:

@@ -2,7 +2,6 @@
 const determineDatasetLocation = () => {
   let location = "";
   let datasetLocation = sodaJSONObj?.["starting-point"]?.["type"];
-  console.log("datasetLocation: ", datasetLocation);
   if ("save-progress" in sodaJSONObj) {
     return Destinations.SAVED;
   }

@@ -3705,7 +3705,6 @@ $(document).ready(() => {
     $("#main-nav").addClass("active");
     $("#sidebarCollapse").addClass("active");
     $(".section").addClass("fullShown");
-    console.log($(".section"));
   });
 
   $(".footer-div div button").click((ev) => {

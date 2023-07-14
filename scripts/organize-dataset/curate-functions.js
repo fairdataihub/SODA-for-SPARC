@@ -180,7 +180,6 @@ const dropHandler = async (
             },
           });
           let res = extract_milestone.data;
-          console.log(res);
 
           // Get the SPARC award and milestone data from the response
           const importedSparcAward = res["sparc_award"];
@@ -888,23 +887,6 @@ const create_child_node = (
   viewOptions,
   parentFolder
 ) => {
-  console.log("nodeName: " + nodeName);
-  console.log("parentFolder: " + parentFolder);
-  /*
-  oldFormatNode: node in the format under "dataset-structure" key in SODA object
-  nodeName: text to show for each node (name)
-  type: "folder" or "file"
-  ext: track ext of files to match with the right CSS icons
-  openedState, selectedState: states of a jstree node
-  selectedOriginalLocation: current folder of selected items
-  viewOptions: preview or moveItems
-  */
-  // if (nodeName === "My_dataset_folder/"){
-  //   high_lvl_folder_node = true;
-  // } else {
-  //   false;
-  // }
-
   var newFormatNode = {
     text: nodeName,
     state: {
@@ -925,9 +907,7 @@ const create_child_node = (
           if (nodeName === "My_dataset_folder") {
             high_lvl_folder_node = key;
           }
-          console.log("high_lvl_folder_node: " + high_lvl_folder_node);
           if (key === selectedOriginalLocation && parentFolder === high_lvl_folder_node) {
-            console.log("trye");
             newFormatNode.state.selected = true;
             newFormatNode.state.opened = true;
             var new_node = create_child_node(
@@ -1154,7 +1134,6 @@ $(document).ready(function () {
 });
 
 const moveItems = async (ev, category) => {
-  console.log(category);
   let filtered = getGlobalPath(organizeDSglobalPath);
   let myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   let parentFolder = filtered[1];
@@ -1409,11 +1388,9 @@ const moveItems = async (ev, category) => {
 };
 
 const moveItemsHelper = (item, destination, category, currentDatasetPath) => {
-  console.log(destination);
   var filtered = getGlobalPath(currentDatasetPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   var selectedNodeList = destination.split("/").slice(1);
-  console.log(selectedNodeList);
   var destinationPath = getRecursivePath(selectedNodeList, datasetStructureJSONObj);
 
   // handle duplicates in destination folder
@@ -1481,8 +1458,6 @@ const moveItemsHelper = (item, destination, category, currentDatasetPath) => {
   }
   //delete item from the original location
   delete myPath[category][item];
-  console.log(currentDatasetPath);
-  console.log(myPath);
   listItems(myPath, "#items");
   getInFolder(".single-item", "#items", currentDatasetPath, datasetStructureJSONObj);
 

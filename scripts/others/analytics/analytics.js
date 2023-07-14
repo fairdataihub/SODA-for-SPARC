@@ -31,7 +31,6 @@ if (userId === null) {
 
 // (re)save the userid, so it persists for the next app session.
 nodeStorage.setItem("userId", userId);
-console.log(`User ID: ${userId}`);
 
 let appStatus = "packaged";
 //By default the app id is set for a packaged app
@@ -80,7 +79,7 @@ const userIdGeneratorForKombucha = async () => {
   let userIdChanged = false;
 
   if (token === null) {
-    console.log("Generating new user id");
+    // Set the userIdChanged flag to true so that we can generate a new userId
     userIdChanged = true;
   }
 
@@ -110,15 +109,10 @@ const sendKombuchaAnalyticsEvent = async (eventData, userToken) => {
       },
     })
     .catch(async (error) => {
-      // Handle the error
-      console.error("Error status: ", error.response.status);
-      console.error("Error status text: ", error.response.statusText);
       if (error.response.status === 401) {
-        console.log("Token expired");
         // Token is invalid now so generate a new one with the same userId
         const userId = nodeStorage.getItem("userId");
         const res = await kombuchaServer.post("meta/users", { uid: userId });
-        console.log("res", res);
 
         // Save the new token
         nodeStorage.setItem("kombuchaToken", res.data.token);
@@ -140,7 +134,6 @@ const trackKombuchaEvent = (category, action, label, status, eventData) => {
         label: label,
         data: eventData,
       };
-      console.log("sending data to kombucha");
       sendKombuchaAnalyticsEvent(kombuchaTrackingEventData, token);
     });
   }

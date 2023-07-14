@@ -5264,7 +5264,6 @@ const openPage = async (targetPageID) => {
           });
 
           const submissionData = submissionMetadataRes.data;
-          console.log("submissionData", submissionData);
 
           sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] =
             submissionData["Award number"];
@@ -15238,8 +15237,6 @@ $(document).ready(async () => {
     var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
     if (slashCount !== 1) {
       var filtered = getGlobalPath(organizeDSglobalPath);
-      console.log(organizeDSglobalPath.value);
-      console.log(filtered);
       if (filtered.length === 1) {
         organizeDSglobalPath.value = filtered[0] + "/";
       } else {

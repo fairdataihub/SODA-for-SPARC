@@ -1677,17 +1677,17 @@ milestoneTagify1.on("change", (e) => {
         return milestone !== "N/A";
       });
 
+    // If there are milestone tags other than N/A, then show the completion date form component
     if (filteredMilestones.length > 0) {
-      console.log("HAY MILESTONES");
       showElementsWithClass("completion-date-form-component");
     } else {
+      // If there are no milestone tags other than N/A, then hide the completion date form component
       hideElementsWithClass("completion-date-form-component");
-      $("#submission-completion-date").val("N/A");
+      $("#submission-completion-date").val("");
     }
   } else {
     hideElementsWithClass("completion-date-form-component");
     $("#submission-completion-date").val("");
-    console.log("No milestones");
   }
 });
 
@@ -4183,8 +4183,7 @@ organizeDSbackButton.addEventListener("click", function () {
   let slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
   if (slashCount !== 1) {
     let filtered = getGlobalPath(organizeDSglobalPath);
-    console.log(organizeDSglobalPath.value);
-    console.log(filtered);
+
     if (filtered.length === 1) {
       organizeDSglobalPath.value = filtered[0] + "/";
     } else {
@@ -4198,7 +4197,6 @@ organizeDSbackButton.addEventListener("click", function () {
     $("#items").empty();
     already_created_elem = [];
     let items = loadFileFolder(myPath); //array -
-    console.log(items);
     //we have some items to display
     listItems(myPath, "#items", 500, (reset = true));
     organizeLandingUIEffect();
@@ -4341,9 +4339,8 @@ const populateJSONObjFolder = (action, jsonObject, folderPath) => {
     //prevented here
     let statsObj = fs.statSync(path.join(folderPath, itemWithinFolder));
     let addedElement = path.join(folderPath, itemWithinFolder);
-    console.log(addedElement);
+
     if (statsObj.isDirectory() && !/(^|\/)\[^\/\.]/g.test(itemWithinFolder)) {
-      console.log(irregularFolderArray);
       if (irregularFolderArray.includes(addedElement)) {
         let renamedFolderName = "";
         if (action !== "ignore" && action !== "") {
@@ -4359,9 +4356,7 @@ const populateJSONObjFolder = (action, jsonObject, folderPath) => {
             path: addedElement,
             action: ["new", "renamed"],
           };
-          console.log("before reassignment", itemWithinFolder);
           itemWithinFolder = renamedFolderName;
-          console.log("after reassignment", itemWithinFolder);
         }
       } else {
         jsonObject["folders"][itemWithinFolder] = {
@@ -7096,7 +7091,6 @@ const getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
       // let items = loadFileFolder(myPath);
       //we have some items to display
       listItems(myPath, "#items", 500, (reset = true));
-      console.log(organizeDSglobalPath.value);
       getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
       organizeLandingUIEffect();
       // reconstruct folders and files (child elements after emptying the Div)

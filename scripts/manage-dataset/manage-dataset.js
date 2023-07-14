@@ -2522,11 +2522,9 @@ $("#button-submit-dataset").click(async () => {
 
       if (submitprintstatus === "Uploading") {
         logProgressToAnalytics(totalFilesUploaded, totalUploadedFileSize);
-        console.log("totalUploadedFileSize: " + totalUploadedFileSize);
-        console.log("totalFilesUploaded: " + totalFilesUploaded);
+
         $("#div-progress-submit").css("display", "block");
         if (completionStatus == "Done") {
-          console.log("Upload complete");
           progressBarUploadBf.value = 100;
           cloneMeter.value = 100;
 
@@ -2537,8 +2535,6 @@ $("#button-submit-dataset").click(async () => {
           // log the last batch of files uploaded if the difference between the last batch and the total files uploaded is not 0
           let finalFilesCount = totalFilesUploaded - filesOnPreviousLogPage;
           let differenceInBytes = totalUploadedFileSize - bytesOnPreviousLogPage;
-          console.log("finalFilesCount: ", finalFilesCount);
-          console.log("finalFilesSent: ", finalFilesSent);
           if (finalFilesCount > 0 && !finalFilesSent) {
             ipcRenderer.send(
               "track-kombucha",

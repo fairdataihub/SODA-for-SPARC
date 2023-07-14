@@ -159,7 +159,6 @@ const openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneRe
   ]);
 
   if (milestoneData && completionDate) {
-    console.log("curaion mode: ", curationMode);
     // Fill the SPARC award input with the imported SPARC award if it was found (otherwise it will be an empty string)
     if (curationMode === "free-form") {
       document.getElementById("submission-sparc-award").value = sparcAward;
@@ -167,8 +166,6 @@ const openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneRe
     if (curationMode === "guided") {
       document.getElementById("guided-submission-sparc-award-manual").value = sparcAward;
     }
-
-    // // // // // // // // // // // // end sparc award // // // // // // // // // // // //
 
     // Remove duplicate milestones from milestoneData and add them to the tagify input
     const uniqueMilestones = Array.from(
@@ -183,8 +180,6 @@ const openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneRe
       guidedSubmissionTagsTagifyManual.removeAllTags();
       guidedSubmissionTagsTagifyManual.addTags(uniqueMilestones);
     }
-
-    // // // // // // // // // // // // end milestone tags // // // // // // // // // // // //
 
     if (curationMode === "free-form") {
       // Add the completion date to the completion date dropdown and select it
@@ -264,7 +259,6 @@ document.querySelectorAll(".button-import-data-deliverables-document").forEach(a
       },
     });
     if (!result.isConfirmed) {
-      console.log("User cancelled the operation");
       return; // Exit early if the user does not import a file
     }
 
@@ -1094,15 +1088,15 @@ function loadSubmissionFileToUI(data, type) {
   milestoneTagify1.removeAllTags();
   $("#submission-completion-date").val("");
   $("#submission-sparc-award").val("");
+
   // 1. populate Funding consortium dropdown
-  console.log(data["Funding consortium"]);
-  console.log(sparcFundingConsortiums.includes(data["Funding consortium"]));
   if (sparcFundingConsortiums.includes(data["Funding consortium"])) {
     $("#ffm-select-sparc-funding-consortium").val(data["Funding consortium"]).change();
   } else {
     // reset the funding consortium dropdown
     $("#ffm-select-sparc-funding-consortium").val("").change();
   }
+
   // 2. populate SPARC award
   if (data["Award number"] !== "") {
     $("#submission-sparc-award").val(data["Award number"]);
