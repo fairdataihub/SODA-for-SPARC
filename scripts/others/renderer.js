@@ -1646,6 +1646,49 @@ var milestoneTagify1 = new Tagify(milestoneInput1, {
     closeOnSelect: true,
   },
 });
+
+const hideElementsWithClass = (className) => {
+  const elements = document.querySelectorAll(`.${className}`);
+  elements.forEach((element) => {
+    element.classList.add("hidden");
+  });
+};
+
+const showElementsWithClass = (className) => {
+  const elements = document.querySelectorAll(`.${className}`);
+  elements.forEach((element) => {
+    element.classList.remove("hidden");
+  });
+};
+
+// Listen to the changes of the milestone tagify
+milestoneTagify1.on("change", (e) => {
+  // If e.detail.value.length string is greater than 0, then there are milestone tags entered in the tagify
+  if (e.detail.value.length > 0) {
+    // Filter out the N/A milestone tag
+    // Note: If only N/A is entered, the completion date will be set to N/A and remain hidden so user doesn't have to fill it out
+    const filteredMilestones = JSON.parse(e.detail.value)
+      .map((milestone) => {
+        return milestone.value;
+      })
+      .filter((milestone) => {
+        return milestone !== "N/A";
+      });
+
+    if (filteredMilestones.length > 0) {
+      console.log("HAY MILESTONES");
+      showElementsWithClass("completion-date-form-component");
+    } else {
+      hideElementsWithClass("completion-date-form-component");
+      $("#submission-completion-date").val("N/A");
+    }
+  } else {
+    hideElementsWithClass("completion-date-form-component");
+    $("#submission-completion-date").val("");
+    console.log("No milestones");
+  }
+});
+
 createDragSort(milestoneTagify1);
 
 // generate subjects file

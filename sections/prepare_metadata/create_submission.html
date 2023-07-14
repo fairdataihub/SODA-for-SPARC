@@ -441,132 +441,105 @@
               Award and milestone information
             </div>
             <div class="content active" id="submission-accordion">
-              <div style="display: block; width: 90%; margin: 0 auto; font-size: 13px">
-                <div>
-                  <div
-                    class="div-dd-info"
-                    style="margin-top: 10px; margin-bottom: 15px; flex-direction: column"
-                  >
-                    <div
-                      class="demo-controls-head"
-                      style="text-align: left; width: 90%; margin-bottom: 5px"
-                    >
-                      <div style="width: 100%">
-                        <font style="font-weight: 600; color: #090909"> SPARC Award number: </font>
-                        <i
-                          class="fas fa-info-circle popover-tooltip"
-                          data-content="SPARC award associated with the dataset."
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                          style="margin-left: 5px; color: black"
-                        ></i>
-                      </div>
-                    </div>
+              <div
+                style="
+                  display: block;
+                  width: 90%;
+                  margin: 0 auto;
+                  font-size: 13px;
+                  padding-bottom: 15px;
+                  padding-top: 20px;
+                "
+              >
+                <label class="guided--form-label required"> Funding consortium:</label>
+                <select
+                  class="w-100"
+                  id="ffm-select-sparc-funding-consortium"
+                  data-live-search="true"
+                  name="Dataset funding source"
+                ></select>
+                <p class="guided--text-input-instructions mb-md">
+                  Select the funding consortium supporting your dataset submission
+                </p>
 
-                    <div class="demo-controls-body" style="width: 90%">
-                      <div class="ui input modified">
-                        <input
-                          type="text"
-                          id="submission-sparc-award"
-                          name="dataset name"
-                          placeholder="Type here..."
-                          style="font-size: 14px"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div
-                    class="div-dd-info"
-                    style="margin-top: 10px; margin-bottom: 15px; flex-direction: column"
-                  >
-                    <div
-                      class="demo-controls-head"
-                      style="text-align: left; width: 90%; margin-bottom: 5px"
-                    >
-                      <div style="width: 100%">
-                        <font style="font-weight: 600; color: #090909">
-                          Enter the milestone(s):
-                        </font>
-                        <i
-                          class="fas fa-info-circle popover-tooltip"
-                          data-content="Manually enter milestone(s) for your SPARC award. Enter 'Not specified in the Data Deliverables document' if this dataset isn't associated with any milestone initially planned.
-                                  <br/><br/>
-                                  Hit 'Enter' to register it."
-                          rel="popover"
-                          data-placement="right"
-                          data-html="true"
-                          data-trigger="hover"
-                          style="margin-left: 5px; color: black"
-                        ></i>
-                      </div>
-                    </div>
-                    <div class="demo-controls-body" style="width: 90%">
-                      <div class="ui input modified">
-                        <textarea
-                          id="selected-milestone-1"
-                          class="form-container-input-bf"
-                          placeholder="Type here and hit 'Enter' after each keyword."
-                        ></textarea>
-                      </div>
-                    </div>
-                  </div>
-                </div>
                 <div
                   class="div-dd-info"
-                  style="margin-top: 10px; margin-bottom: 15px; flex-direction: column"
+                  style="flex-direction: column; margin-bottom: 25px"
+                  id="container-ddd-import-button"
                 >
-                  <div
-                    class="demo-controls-head"
-                    style="text-align: left; width: 90%; margin-bottom: 5px"
+                  <button
+                    class="ui primary basic button mt-sm button-import-data-deliverables-document"
+                    id="button-ffm-import-data-deliverables-document"
+                    style="display: flex; align-items: center; justify-content: space-around"
                   >
-                    <div style="width: 100%">
-                      <font style="font-weight: 600; color: #090909">Completion date: </font>
-                      <i
-                        class="fas fa-info-circle popover-tooltip"
-                        data-content="Enter the completion date for your milestone(s) specified above."
-                        rel="popover"
-                        data-placement="right"
-                        data-html="true"
-                        data-trigger="hover"
-                        style="margin-left: 5px; color: black"
-                      ></i>
-                    </div>
-                  </div>
-                  <div class="demo-controls-body" style="width: 90%">
-                    <div class="ui input modified">
-                      <!-- <input
-                              type="date"
-                              id="submission-completion-date"
-                            /> -->
-                      <select id="submission-completion-date">
-                        <option value="Select" selected>Select an option</option>
-                        <option value="Enter my own date">Enter my own date</option>
-                      </select>
-                    </div>
+                    <i class="fas fa-file-import" style="margin-right: 7px"></i>Import submission
+                    metadata from Data Deliverables document
+                  </button>
+                  <p class="guided--text-input-instructions text-center">
+                    Click this button if you have a Data Deliverables document available
+                  </p>
+                </div>
+
+                <label class="guided--form-label submission-required-if-sparc-funding-consortium"
+                  >Award number:</label
+                >
+                <input
+                  class="guided--input"
+                  id="submission-sparc-award"
+                  type="text"
+                  placeholder="Enter your submission's award number here"
+                />
+                <p class="guided--text-input-instructions mb-md">
+                  The primary grant number supporting the milestone
+                  <br />
+                  <b class="non-sparc-funding-consortium-instructions"
+                    >Leave this field blank if you do not have an award number attached to your
+                    submission.</b
+                  >
+                </p>
+
+                <label class="guided--form-label submission-required-if-sparc-funding-consortium"
+                  >Milestone(s):</label
+                >
+                <div class="demo-controls-body" style="width: 100%">
+                  <div class="ui input modified">
+                    <input
+                      class="guided-award-and-milestone-information"
+                      id="selected-milestone-1"
+                      name="milestone-tags"
+                      value=""
+                    />
                   </div>
                 </div>
-                <div
-                  style="
-                    display: flex;
-                    justify-content: center;
-                    margin: 0 auto;
-                    text-decoration: underline;
-                    text-align: center;
-                    font-size: 14px;
-                    margin-top: 25px;
-                    padding-bottom: 20px;
-                  "
+                <p class="guided--text-input-instructions mb-md">
+                  The milestones as listed in your SPARC award's data deliverable's document.
+                  <br />
+
+                  <b>Leave this field blank if the submission is not part of a milestone.</b>
+                </p>
+
+                <label
+                  class="guided--form-label completion-date-form-component hidden submission-required-if-sparc-funding-consortium"
+                  >Completion date:</label
                 >
-                  <a
-                    onclick="helpMilestoneSubmission('free-form')"
-                    id="a-help-submission-milestones"
+                <select
+                  class="form-control completion-date-form-component hidden"
+                  id="submission-completion-date"
+                  style="background-color: white !important"
+                >
+                  <option value="">Select a completion date</option>
+                  <option value="Enter my own date">Enter my own date</option>
+                  <option value="N/A">N/A</option>
+                </select>
+                <p
+                  class="guided--text-input-instructions mb-md completion-date-form-component hidden"
+                >
+                  Enter the completion date associated with this milestone.
+                  <br />
+                  <b
+                    >Select 'N/A' if the completion date is not related to a pre-agreed milestone</b
                   >
-                    Click here to import milestones from my Data Deliverables document
-                  </a>
-                </div>
+                </p>
               </div>
             </div>
           </div>
