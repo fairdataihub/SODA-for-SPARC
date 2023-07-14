@@ -451,7 +451,7 @@ const onboardingSubmission = async () => {
         introStatus.submission = true;
       })
       .start();
-  }, 500);
+  }, 1500);
 };
 
 function validateSubmissionFileInputs() {
@@ -543,7 +543,8 @@ $("#ffm-select-sparc-funding-consortium").on("change", function (e) {
 
     // Show the submission onboarding if the user hasn't seen it yet
     if (!introStatus.submission) {
-      onboardingSubmission();
+      // commented out onBoarding due to scrolling issues TODO: fix scrolling issues
+      // onboardingSubmission();
     }
   } else {
     // Hide the DDD import button

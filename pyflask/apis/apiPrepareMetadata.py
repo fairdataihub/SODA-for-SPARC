@@ -36,10 +36,13 @@ model_save_submission_file_response = api.model('saveSubmissionFileResponse', {
 })
 
 model_get_submission_file_response = api.model('getSubmissionFileResponse', {
-    "SPARC Award number": fields.String(required=True, description='SPARC Award number'),
-    "Milestone achieved": fields.List(fields.String, required=True, description='Milestone achieved'),
+    "Award number": fields.String(required=True, description='Submission award number'),
+    "Consortium data standard": fields.String(required=True, description='Submission consortium data standard'),
+    "Funding consortium": fields.String(required=True, description='Submission funding consortium'),
+    "Milestone achieved": fields.List(fields.String, required=True, description='Submission milestone(s) achieved'),
     "Milestone completion date": fields.String(required=True, description='Milestone completion date'),
 })
+
 @api.route('/submission_file')
 class SaveSubmissionFile(Resource):
     parser_save_submission_file = reqparse.RequestParser(bundle_errors=True)
