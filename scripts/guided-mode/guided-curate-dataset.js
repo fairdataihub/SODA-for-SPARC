@@ -4927,7 +4927,7 @@ const openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-ask-if-submission-is-sparc-funded-tab") {
-      if (/*pageNeedsUpdateFromPennsieve(targetPageID)*/ "a" == "a") {
+      if (pageNeedsUpdateFromPennsieve(targetPageID)) {
         setPageLoadingState(true);
         try {
           // Get the submission metadata from Pennsieve
