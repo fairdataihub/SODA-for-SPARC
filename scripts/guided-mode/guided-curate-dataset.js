@@ -13236,7 +13236,7 @@ $(document).ready(async () => {
         consortiumDataStandard: consortiumDataStandard,
         award: guidedSparcAward,
         date: guidedCompletionDate,
-        milestone: milestones[0] || "",
+        milestone: guidedMilestones[0] || "",
       });
 
       if (guidedMilestones.length > 1) {
