@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## Bug fixes:
 
 - Fixed an issue causing the server to not connect for Window's users
+- Fixed an issue where moving files in the File Explorer did not remove files from their original location
 
 ## v.12.0.2 - 2023-07-03
 
