@@ -1,5 +1,4 @@
 const electron = require("electron");
-const ua = require("universal-analytics");
 const uuid = require("uuid").v4;
 const { JSONStorage } = require("node-localstorage");
 const fs = require("fs");
@@ -34,7 +33,6 @@ if (userId === null) {
 nodeStorage.setItem("userId", userId);
 console.log(`User ID: ${userId}`);
 
-let usr = ua("UA-171625608-1", userId);
 let appStatus = "packaged";
 //By default the app id is set for a packaged app
 let appId = "f85e3098-d7f6-4a89-988a-eac945fdc320";
@@ -56,7 +54,6 @@ if (!fs.existsSync(configFolderPath)) {
 
 // If app is in beta, send tracking events to the beta analytics branch
 if (appVersion.includes("beta")) {
-  usr = ua("UA-171625608-3", userId);
   appStatus = "beta";
   appId = "dd958d89-9625-4959-96da-6524d7a82254";
 }
@@ -64,7 +61,6 @@ if (appVersion.includes("beta")) {
 // If in the dev environment, send tracking events to the dev branch
 if (process.env.NODE_ENV === "development") {
   console.log(process.env.NODE_ENV);
-  usr = ua("UA-171625608-2", userId);
   appStatus = "dev";
   appId = "6a03a43e-63a9-4ce8-a4fa-63e27a70dc43";
   dnt = false;
