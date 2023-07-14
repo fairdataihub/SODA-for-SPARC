@@ -363,7 +363,7 @@ function initialize() {
           checkForAnnouncements();
           nodeStorage.setItem("announcements", false);
         }
-        run_pre_flight_checks();
+        start_pre_flight_checks();
         if (!buildIsBeta) {
           autoUpdater.checkForUpdatesAndNotify();
         }
@@ -375,13 +375,7 @@ function initialize() {
       var first_launch = nodeStorage.getItem("firstlaunch");
       if ((first_launch == true || first_launch == undefined) && window_reloaded == false) {
       }
-      // run_pre_flight_checks();
     });
-  });
-
-  app.on("ready", () => {
-    trackEvent("Success", "App Launched - OS", os.platform() + "-" + os.release());
-    trackEvent("Success", "App Launched - SODA", app.getVersion());
   });
 
   app.on("window-all-closed", async () => {
@@ -394,9 +388,9 @@ function initialize() {
   });
 }
 
-function run_pre_flight_checks() {
+function start_pre_flight_checks() {
   console.log("Running pre-checks");
-  mainWindow.webContents.send("run_pre_flight_checks");
+  mainWindow.webContents.send("start_pre_flight_checks");
 }
 
 // Make this app a single instance app.
@@ -458,13 +452,7 @@ ipcMain.on("resize-window", (event, dir) => {
 //ipcRenderer.send('track-event', "App Backend", "Python Connection Established");
 //ipcRenderer.send('track-event', "App Backend", "Errors", "server", error);
 ipcMain.on("track-event", (event, category, action, label, value) => {
-  if (label == undefined && value == undefined) {
-    trackEvent(category, action);
-  } else if (label != undefined && value == undefined) {
-    trackEvent(category, action, label);
-  } else {
-    trackEvent(category, action, label, value);
-  }
+  // do nothing here for now
 });
 
 ipcMain.on("track-kombucha", (event, category, action, label, eventStatus, eventData) => {
@@ -491,28 +479,6 @@ ipcMain.on("restart_app", async () => {
   log.info("quitAndInstall");
   autoUpdater.quitAndInstall();
 });
-
-const getPennsieveAgentPath = () => {
-  if (process.platform === "win32" || process.platform === "cygwin") {
-    const bit64Path = path.join("C:\\Program Files\\Pennsieve\\pennsieve.exe");
-    const bit32Path = path.join("C:\\Program Files (x86)\\Pennsieve\\pennsieve.exe");
-    if (fs.existsSync(bit64Path)) {
-      return bit64Path;
-    }
-    if (fs.existsSync(bit32Path)) {
-      return bit32Path;
-    }
-    throw new Error(`Cannot find pennsieve at ${bit64Path} or ${bit32Path}`);
-  } else {
-    pennsievePath = "/usr/local/bin/pennsieve";
-    if (fs.existsSync(pennsievePath)) {
-      return pennsievePath;
-    }
-    throw new Error(`Cannot find pennsieve at ${pennsievePath}`);
-  }
-};
-
-ipcMain.on("spawn-pennsieve-agent", async (event) => {});
 
 // passing in the spreadsheet data to pass to a modal
 // that will have a jspreadsheet for user edits

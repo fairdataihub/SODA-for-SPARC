@@ -1,6 +1,0 @@
-{
-    "show-warning-message": false,
-    "warning-message-1": "<p>As you may know Blackfynn will be transitioning to Pennsieve. During this period, any features of SODA that use Blackfynn could be affected.</p>",
-    "warning-message": "<p>This version of SODA is ready to work with Pennsieve. You will be required to connect your Pennsieve account with SODA to get started. <a href='https://github.com/bvhpatel/SODA/wiki/Connect-your-Pennsieve-account-with-SODA' target='_blank'>Click here to learn more.</a> <br>As we are still thoroughly testing our integration with Pennsieve, we do expect some bugs. Please let us know if you find any at <a href='mailto:bpatel@calmi2.org'>bpatel@calmi2.org</a>.</p>"
-}
-
