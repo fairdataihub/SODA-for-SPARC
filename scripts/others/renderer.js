@@ -1683,7 +1683,7 @@ milestoneTagify1.on("change", (e) => {
     } else {
       // If there are no milestone tags other than N/A, then hide the completion date form component
       hideElementsWithClass("completion-date-form-component");
-      $("#submission-completion-date").val("");
+      $("#submission-completion-date").val("N/A");
     }
   } else {
     hideElementsWithClass("completion-date-form-component");
