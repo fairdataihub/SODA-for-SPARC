@@ -2,6 +2,35 @@ const returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
 };
 
+const guidedGetDatasetId = (sodaJSON) => {
+  let datasetId = sodaJSON?.["digital-metadata"]?.["pennsieve-dataset-id"];
+  if (datasetId != undefined) {
+    return datasetId;
+  }
+
+  return "None";
+};
+
+const guidedGetDatasetName = (sodaJSON) => {
+  let datasetName = sodaJSON?.["digital-metadata"]?.["name"];
+  if (datasetName != undefined) {
+    return datasetName;
+  }
+
+  return "None";
+};
+
+const guidedGetDatasetOrigin = (sodaJSON) => {
+  let datasetOrigin = sodaJSON?.["generate-dataset"]?.["generate-option"];
+  if (datasetOrigin === "existing-bf") {
+    // Dataset origin is from Pennsieve
+    return "Pennsieve";
+  }
+
+  // Otherwise origin is new dataset
+  return "New";
+};
+
 const handleGuidedModeOrgSwitch = async (buttonClicked) => {
   const clickedButtonId = buttonClicked.id;
   if (clickedButtonId === "guided-button-change-workspace-dataset-import") {
@@ -58,9 +87,7 @@ const lottieAnimationManager = {
   animations: {},
 
   startAnimation: function (containerElementId) {
-    const animationData = this.animationData[containerElementId].animationData;
-    const loop = this.animationData[containerElementId].loop;
-    const autoplay = this.animationData[containerElementId].autoplay;
+    const { animationData, loop, autoplay } = this.animationData[containerElementId];
 
     const container = document.getElementById(containerElementId);
     container.innerHTML = "";
@@ -464,6 +491,8 @@ const savePageChanges = async (pageBeingLeftID) => {
       const resumingPennsieveDataset = document
         .getElementById("guided-button-resume-pennsieve-dataset")
         .classList.contains("selected");
+
+      console.log(document.getElementById("guided-button-start-new-curation").classList);
 
       if (!startingNewCuration && !resumingExistingProgress && !resumingPennsieveDataset) {
         errorArray.push({
@@ -3419,6 +3448,22 @@ document
         folder_counter = 0;
         get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
         // log successful validation run to analytics
+        const kombuchaEventData = {
+          value: file_counter,
+          dataset_id: guidedGetDatasetId(sodaJSONObj),
+          dataset_name: guidedGetDatasetName(sodaJSONObj),
+          origin: guidedGetDatasetOrigin(sodaJSONObj),
+        };
+
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.GUIDED_MODE,
+          kombuchaEnums.Action.VALIDATE_DATASET,
+          kombuchaEnums.Label.FILES,
+          kombuchaEnums.Status.FAIL,
+          kombuchaEventData
+        );
+
         ipcRenderer.send(
           "track-event",
           "Error",
@@ -3496,6 +3541,22 @@ document
         folder_counter = 0;
         get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
         // log successful validation run to analytics
+        const kombuchaEventData = {
+          value: file_counter,
+          dataset_id: guidedGetDatasetId(sodaJSONObj),
+          dataset_name: guidedGetDatasetName(sodaJSONObj),
+          origin: guidedGetDatasetOrigin(sodaJSONObj),
+        };
+
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.GUIDED_MODE,
+          kombuchaEnums.Action.VALIDATE_DATASET,
+          kombuchaEnums.Label.FILES,
+          kombuchaEnums.Status.FAIL,
+          kombuchaEventData
+        );
+
         ipcRenderer.send(
           "track-event",
           "Error",
@@ -3515,6 +3576,22 @@ document
       get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
 
       // log successful validation run to analytics
+      if (file_counter > 0) {
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.GUIDED_MODE,
+          kombuchaEnums.Action.VALIDATE_DATASET,
+          kombuchaEnums.Label.FILES,
+          kombuchaEnums.Status.SUCCCESS,
+          {
+            value: file_counter,
+            dataset_id: guidedGetDatasetId(sodaJSONObj),
+            dataset_name: guidedGetDatasetName(sodaJSONObj),
+            origin: guidedGetDatasetOrigin(sodaJSONObj),
+          }
+        );
+      }
+
       ipcRenderer.send(
         "track-event",
         "Success",
@@ -12418,6 +12495,20 @@ $(document).ready(async () => {
       );
       let createdDatasetsID = bf_new_dataset.data.id;
       datasetNameUploadText.innerHTML = `Successfully created dataset with name: ${datasetName}`;
+      const kombuchaEventData = {
+        value: 1,
+        dataset_id: createdDatasetsID,
+      };
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.GUIDED_MODE,
+        kombuchaEnums.Action.CREATE_NEW_DATASET,
+        datasetName,
+        kombuchaEnums.Status.SUCCCESS,
+        kombuchaEventData
+      );
+
       ipcRenderer.send(
         "track-event",
         "Dataset ID to Dataset Name Map",
@@ -13292,7 +13383,7 @@ $(document).ready(async () => {
 
       // get apps base path
       const basepath = app.getAppPath();
-      const resourcesPath = process.resourcesPath;
+      const { resourcesPath } = process;
 
       // set the templates path
       try {
@@ -13558,8 +13649,42 @@ $(document).ready(async () => {
         $("#sidebarCollapse").prop("disabled", false);
         log.info("Completed curate function");
 
+        // log that a dataset upload was successful
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.GUIDED_MODE,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.TOTAL_UPLOADS,
+          kombuchaEnums.Status.SUCCCESS,
+          {
+            value: 1,
+            dataset_id: guidedGetDatasetId(sodaJSONObj),
+            dataset_name: guidedGetDatasetName(sodaJSONObj),
+            origin: guidedGetDatasetOrigin(sodaJSONObj),
+            destination: "Pennsieve",
+          }
+        );
+
         // log the difference again to Google Analytics
         let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
+        if (finalFilesCount > 0) {
+          ipcRenderer.send(
+            "track-kombucha",
+            kombuchaEnums.Category.GUIDED_MODE,
+            kombuchaEnums.Action.GENERATE_DATASET,
+            kombuchaEnums.Label.FILES,
+            kombuchaEnums.Status.SUCCCESS,
+            {
+              value: finalFilesCount,
+              dataset_id: guidedGetDatasetId(sodaJSONObj),
+              dataset_name: guidedGetDatasetName(sodaJSONObj),
+              origin: guidedGetDatasetOrigin(sodaJSONObj),
+              destination: "Pennsieve",
+              upload_session: datasetUploadSession.id,
+            }
+          );
+        }
+
         ipcRenderer.send(
           "track-event",
           "Success",
@@ -13569,22 +13694,31 @@ $(document).ready(async () => {
         );
 
         let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
+
+        if (differenceInBytes > 0) {
+          ipcRenderer.send(
+            "track-kombucha",
+            kombuchaEnums.Category.GUIDED_MODE,
+            kombuchaEnums.Action.GENERATE_DATASET,
+            kombuchaEnums.Label.SIZE,
+            kombuchaEnums.Status.SUCCCESS,
+            {
+              value: differenceInBytes,
+              dataset_id: guidedGetDatasetId(sodaJSONObj),
+              dataset_name: guidedGetDatasetName(sodaJSONObj),
+              origin: guidedGetDatasetOrigin(sodaJSONObj),
+              destination: "Pennsieve",
+              upload_session: datasetUploadSession.id,
+            }
+          );
+        }
+
         ipcRenderer.send(
           "track-event",
           "Success",
           "Guided Mode - Generate - Dataset - Size",
           `${datasetUploadSession.id}`,
           differenceInBytes
-        );
-
-        // log relevant curation details about the dataset generation/Upload to Google Analytics
-        logCurationSuccessToAnalytics(
-          manifest_files_requested,
-          main_total_generate_dataset_size,
-          dataset_name,
-          dataset_destination,
-          uploadedFiles,
-          true
         );
 
         updateDatasetUploadProgressTable({
@@ -13627,8 +13761,42 @@ $(document).ready(async () => {
         guidedSetNavLoadingState(false);
         clientError(error);
 
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.GUIDED_MODE,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.TOTAL_UPLOADS,
+          kombuchaEnums.Status.FAIL,
+          {
+            value: 1,
+            dataset_id: guidedGetDatasetId(sodaJSONObj),
+            dataset_name: guidedGetDatasetName(sodaJSONObj),
+            origin: guidedGetDatasetOrigin(sodaJSONObj),
+            destination: "Pennsieve",
+          }
+        );
+
         // log the difference again to Google Analytics
         let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
+
+        if (finalFilesCount > 0) {
+          ipcRenderer.send(
+            "track-kombucha",
+            kombuchaEnums.Category.GUIDED_MODE,
+            kombuchaEnums.Action.GENERATE_DATASET,
+            kombuchaEnums.Label.FILES,
+            kombuchaEnums.Status.SUCCCESS,
+            {
+              value: finalFilesCount,
+              dataset_id: guidedGetDatasetId(sodaJSONObj),
+              dataset_name: guidedGetDatasetName(sodaJSONObj),
+              origin: guidedGetDatasetOrigin(sodaJSONObj),
+              destination: "Pennsieve",
+              upload_session: datasetUploadSession.id,
+            }
+          );
+        }
+
         ipcRenderer.send(
           "track-event",
           "Success",
@@ -13638,12 +13806,67 @@ $(document).ready(async () => {
         );
 
         let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
+
+        if (differenceInBytes > 0) {
+          ipcRenderer.send(
+            "track-kombucha",
+            kombuchaEnums.Category.GUIDED_MODE,
+            kombuchaEnums.Action.GENERATE_DATASET,
+            kombuchaEnums.Label.SIZE,
+            kombuchaEnums.Status.SUCCCESS,
+            {
+              value: differenceInBytes,
+              dataset_id: guidedGetDatasetId(sodaJSONObj),
+              dataset_name: guidedGetDatasetName(sodaJSONObj),
+              origin: guidedGetDatasetOrigin(sodaJSONObj),
+              destination: "Pennsieve",
+              upload_session: datasetUploadSession.id,
+            }
+          );
+        }
+
         ipcRenderer.send(
           "track-event",
           "Success",
           "Guided Mode - Generate - Dataset - Size",
           `${datasetUploadSession.id}`,
           differenceInBytes
+        );
+
+        // log the amount of files we attempted to upload -- good for knowing if a certain file amount poses the agent/our own code problems
+        if (uploadedFiles > 0) {
+          ipcRenderer.send(
+            "track-kombucha",
+            kombuchaEnums.Category.GUIDED_MODE,
+            kombuchaEnums.Action.GENERATE_DATASET,
+            kombuchaEnums.Label.FILES,
+            kombuchaEnums.Status.FAIL,
+            {
+              value: uploadedFiles,
+              dataset_id: guidedGetDatasetId(sodaJSONObj),
+              dataset_name: guidedGetDatasetName(sodaJSONObj),
+              origin: guidedGetDatasetOrigin(sodaJSONObj),
+              destination: "Pennsieve",
+              upload_session: datasetUploadSession.id,
+            }
+          );
+        }
+
+        // log the size of the dataset we attempted to upload
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.GUIDED_MODE,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.SIZE,
+          kombuchaEnums.Status.FAIL,
+          {
+            value: main_total_generate_dataset_size,
+            dataset_id: guidedGetDatasetId(sodaJSONObj),
+            dataset_name: guidedGetDatasetName(sodaJSONObj),
+            origin: guidedGetDatasetOrigin(sodaJSONObj),
+            destination: "Pennsieve",
+            upload_session: datasetUploadSession.id,
+          }
         );
 
         let emessage = userErrorMessage(error);
@@ -13659,16 +13882,6 @@ $(document).ready(async () => {
           clientError(error);
         }
 
-        // log the curation errors to Google Analytics
-        logCurationErrorsToAnalytics(
-          0,
-          0,
-          dataset_destination,
-          main_total_generate_dataset_size,
-          increaseInFileSize,
-          datasetUploadSession,
-          true
-        );
         //make an unclosable sweet alert that forces the user to close out of the app
         await Swal.fire({
           allowOutsideClick: false,
@@ -13788,6 +14001,22 @@ $(document).ready(async () => {
       if (files >= filesOnPreviousLogPage + 500) {
         filesOnPreviousLogPage += 500;
         ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.GUIDED_MODE,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.FILES,
+          kombuchaEnums.Status.SUCCCESS,
+          {
+            value: 500,
+            dataset_id: guidedGetDatasetId(sodaJSONObj),
+            dataset_name: guidedGetDatasetName(sodaJSONObj),
+            origin: guidedGetDatasetOrigin(sodaJSONObj),
+            destination: "Pennsieve",
+            upload_session: datasetUploadSession.id,
+          }
+        );
+
+        ipcRenderer.send(
           "track-event",
           "Success",
           "Guided Mode - Generate - Dataset - Number of Files",
@@ -13797,6 +14026,23 @@ $(document).ready(async () => {
 
         let differenceInBytes = bytes - bytesOnPreviousLogPage;
         bytesOnPreviousLogPage = bytes;
+
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.GUIDED_MODE,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.SIZE,
+          kombuchaEnums.Status.SUCCCESS,
+          {
+            value: differenceInBytes,
+            dataset_id: guidedGetDatasetId(sodaJSONObj),
+            dataset_name: guidedGetDatasetName(sodaJSONObj),
+            origin: guidedGetDatasetOrigin(sodaJSONObj),
+            destination: "Pennsieve",
+            upload_session: datasetUploadSession.id,
+          }
+        );
+
         ipcRenderer.send(
           "track-event",
           "Success",

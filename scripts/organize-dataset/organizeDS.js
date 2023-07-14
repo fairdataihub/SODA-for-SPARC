@@ -721,8 +721,7 @@ const getRecursivePath = (filteredList, inputObj) => {
         myPath = myPath["folders"][item];
       }
     }
-    let items = [myPath, filteredList];
-    return items;
+    return [myPath, filteredList];
   } else {
     return myPath;
   }

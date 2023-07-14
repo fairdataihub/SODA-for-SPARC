@@ -11,16 +11,20 @@ require("v8-compile-cache");
 const { ipcMain } = require("electron");
 const { autoUpdater } = require("electron-updater");
 const { JSONStorage } = require("node-localstorage");
+const { trackEvent, trackKombuchaEvent } = require("./scripts/others/analytics/analytics");
 const { fstat } = require("fs");
 const { resolve } = require("path");
 const axios = require("axios");
 const { info } = require("console");
 const { node } = require("prop-types");
+const uuid = require("uuid").v4;
 
 log.transports.console.level = false;
 log.transports.file.level = "debug";
 autoUpdater.channel = "latest";
 autoUpdater.logger = log;
+global.trackEvent = trackEvent;
+global.trackKombuchaEvent = trackKombuchaEvent;
 
 const nodeStorage = new JSONStorage(app.getPath("userData"));
 /*************************************************************
@@ -36,6 +40,12 @@ let pyflaskProcess = null;
 let PORT = 4242;
 let selectedPort = null;
 const portRange = 100;
+const kombuchaURL = "https://analytics-nine-ashen.vercel.app/api";
+const localKombuchaURL = "http://localhost:3000/api";
+const kombuchaServer = axios.create({
+  baseURL: kombuchaURL,
+  timeout: 0,
+});
 
 /**
  * Determine if the application is running from a packaged version or from a dev version.
@@ -190,6 +200,33 @@ const killAllPreviousProcesses = async () => {
   await Promise.allSettled(promisesArray);
 };
 
+// Sends user information to Kombucha server
+const sendUserAnalytics = () => {
+  // Retrieve the userId and if it doesn't exist, create a new uuid
+  let token;
+  try {
+    token = nodeStorage.getItem("kombuchaToken");
+  } catch (e) {
+    token = null;
+  }
+
+  if (token === null) {
+    console.log("no token found, creating new user");
+    // send empty object for new users
+    kombuchaServer
+      .post("meta/users", {})
+      .then((res) => {
+        // Save the user token from the server
+        console.log(res);
+        nodeStorage.setItem("kombuchaToken", res.data.token);
+        nodeStorage.setItem("userId", res.data.userId);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }
+};
+
 // 5.4.1 change: We call createPyProc in a spearate ready event
 // app.on("ready", createPyProc);
 // 5.4.1 change: We call exitPyreProc when all windows are killed so it has time to kill the process before closing
@@ -205,15 +242,18 @@ let window_reloaded = false;
 
 // If buildIsBeta is true, the app will not check for updates
 // If it is false, the app will check for updates
-const buildIsBeta = false;
+const buildIsBeta = true;
 
 function initialize() {
   const checkForAnnouncements = () => {
     mainWindow.webContents.send("checkForAnnouncements");
   };
 
+  sendUserAnalytics();
+
   makeSingleInstance();
   loadDemos();
+
   function createWindow() {
     // mainWindow.webContents.openDevTools();
 
@@ -223,10 +263,8 @@ function initialize() {
     });
 
     mainWindow.webContents.once("dom-ready", () => {
-      if (updatechecked == false) {
-        if (!buildIsBeta) {
-          autoUpdater.checkForUpdatesAndNotify();
-        }
+      if (updatechecked == false && !buildIsBeta) {
+        autoUpdater.checkForUpdatesAndNotify();
       }
     });
 
@@ -359,14 +397,18 @@ function start_pre_flight_checks() {
 const gotTheLock = app.requestSingleInstanceLock();
 
 function makeSingleInstance() {
-  if (process.mas) return;
+  if (process.mas) {
+    return;
+  }
 
   if (!gotTheLock) {
     app.quit();
   } else {
     app.on("second-instance", () => {
       if (mainWindow) {
-        if (mainWindow.isMinimized()) mainWindow.restore();
+        if (mainWindow.isMinimized()) {
+          mainWindow.restore();
+        }
         mainWindow.focus();
       }
     });
@@ -392,14 +434,14 @@ function loadDemos() {
 initialize();
 
 ipcMain.on("resize-window", (event, dir) => {
-  var x = mainWindow.getSize()[0];
-  var y = mainWindow.getSize()[1];
+  let x = mainWindow.getSize()[0];
+  let y = mainWindow.getSize()[1];
   if (dir === "up") {
-    x = x + 1;
-    y = y + 1;
+    x += 1;
+    y += 1;
   } else {
-    x = x - 1;
-    y = y - 1;
+    x -= 1;
+    y -= 1;
   }
   mainWindow.setSize(x, y);
 });
@@ -411,6 +453,10 @@ ipcMain.on("resize-window", (event, dir) => {
 //ipcRenderer.send('track-event', "App Backend", "Errors", "server", error);
 ipcMain.on("track-event", (event, category, action, label, value) => {
   // do nothing here for now
+});
+
+ipcMain.on("track-kombucha", (event, category, action, label, eventStatus, eventData) => {
+  trackKombuchaEvent(category, action, label, eventStatus, eventData);
 });
 
 ipcMain.on("app_version", (event) => {
