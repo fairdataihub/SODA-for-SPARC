@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Feature Additions:
 
-- Description Metadata updated from SDS 2.0.0 -> 2.1.0
+- Dataset Description Metadata updated from SDS 2.0.0 -> 2.1.0
 - Submission Metadata updated from SDS 2.0.0 -> 2.1.0
 
 ## Bug fixes:
