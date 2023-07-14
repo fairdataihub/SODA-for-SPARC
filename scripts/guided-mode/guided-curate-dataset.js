@@ -1080,9 +1080,9 @@ const savePageChanges = async (pageBeingLeftID) => {
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"];
       // If the set consortium data standard is SPARC, unskip the SPARC specific metadata pages
       if (setConsortiumDataStandard === "SPARC") {
-        const fundingConsortium =
+        const setFundingConsortium =
           sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
-        if (fundingConsortium === "SPARC") {
+        if (setFundingConsortium === "SPARC") {
           // If the funding consortium is SPARC, unskip the protocols page
           guidedUnSkipPage("guided-protocols-tab");
         } else {
@@ -1661,25 +1661,13 @@ const savePageChanges = async (pageBeingLeftID) => {
         "guided-submission-completion-date-manual"
       ).value;
 
-      if (award === "") {
+      const fundingConsortiumIsSparc = datasetIsSparcFunded();
+
+      if (fundingConsortiumIsSparc && award === "") {
         errorArray.push({
           type: "notyf",
           message: "Please add a SPARC award number to your submission metadata",
         });
-      }
-      if (completionDate === "") {
-        errorArray.push({
-          type: "notyf",
-          message: "Please add a completion date to your submission metadata",
-        });
-      }
-      if (milestones.length === 0) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please add at least one milestone to your submission metadata",
-        });
-      }
-      if (errorArray.length > 0) {
         throw errorArray;
       }
 
@@ -5258,24 +5246,46 @@ const openPage = async (targetPageID) => {
         completionDateInputManual.value = completionDate;
       }
 
-      if (sparcAward && milestones) {
+      const setFundingConsortium =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
+
+      if (setFundingConsortium != "SPARC") {
+        // Hide the ddd import section since the submission is not SPARC funded
         sectionThatAsksIfDataDeliverablesReady.classList.add("hidden");
+        // Show the submission metadata inputs section so the user can enter the metadata manually
         sectionSubmissionMetadataInputs.classList.remove("hidden");
+
+        // Show the instructions for non-SPARC funded submissions
+        showElementsWithClass("guided-non-sparc-funding-consortium-instructions");
       } else {
-        sectionThatAsksIfDataDeliverablesReady.classList.remove("hidden");
-        sectionSubmissionMetadataInputs.classList.add("hidden");
-        // Load the lottie animation where the user can drag and drop the data deliverable document
-        const dataDeliverableLottieContainer = document.getElementById(
-          "data-deliverable-lottie-container"
-        );
-        dataDeliverableLottieContainer.innerHTML = "";
-        lottie.loadAnimation({
-          container: dataDeliverableLottieContainer,
-          animationData: dragDrop,
-          renderer: "svg",
-          loop: true,
-          autoplay: true,
-        });
+        // If the submission is SPARC, but they have already added their sparc award and milestones
+        // then hide the section that asks if they have data deliverables ready and show the
+        // submission metadata inputs section
+        if (sparcAward && milestones) {
+          sectionThatAsksIfDataDeliverablesReady.classList.add("hidden");
+          sectionSubmissionMetadataInputs.classList.remove("hidden");
+        } else {
+          // If the submission is SPARC and they have not added their sparc award and milestones
+          // then show the section that asks if they have data deliverables ready and hide the
+          // submission metadata inputs section
+          sectionThatAsksIfDataDeliverablesReady.classList.remove("hidden");
+          sectionSubmissionMetadataInputs.classList.add("hidden");
+          // Load the lottie animation where the user can drag and drop the data deliverable document
+          const dataDeliverableLottieContainer = document.getElementById(
+            "data-deliverable-lottie-container"
+          );
+          dataDeliverableLottieContainer.innerHTML = "";
+          lottie.loadAnimation({
+            container: dataDeliverableLottieContainer,
+            animationData: dragDrop,
+            renderer: "svg",
+            loop: true,
+            autoplay: true,
+          });
+        }
+
+        // Hide the instructions for non-SPARC funded submissions
+        hideElementsWithClass("guided-non-sparc-funding-consortium-instructions");
       }
     }
 
@@ -12976,6 +12986,7 @@ $(document).ready(async () => {
       throw new Error(userErrorMessage(error));
     }
   };
+
   const guidedUploadSubmissionMetadata = async (bfAccount, datasetName, submissionMetadataJSON) => {
     document.getElementById("guided-submission-metadata-upload-tr").classList.remove("hidden");
     const submissionMetadataUploadText = document.getElementById(
@@ -13225,7 +13236,7 @@ $(document).ready(async () => {
         consortiumDataStandard: consortiumDataStandard,
         award: guidedSparcAward,
         date: guidedCompletionDate,
-        milestone: guidedMilestones[0],
+        milestone: milestones[0] || "",
       });
 
       if (guidedMilestones.length > 1) {
@@ -13239,7 +13250,6 @@ $(document).ready(async () => {
           });
         }
       }
-
       //Dataset Description Metadata variables
       const guidedDatasetInformation =
         sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"];

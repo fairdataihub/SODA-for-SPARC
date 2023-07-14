@@ -1665,6 +1665,8 @@ const showElementsWithClass = (className) => {
 milestoneTagify1.on("change", (e) => {
   // If e.detail.value.length string is greater than 0, then there are milestone tags entered in the tagify
   if (e.detail.value.length > 0) {
+    // Filter out the N/A milestone tag
+    // Note: If only N/A is entered, the completion date will be set to N/A and remain hidden so user doesn't have to fill it out
     const filteredMilestones = JSON.parse(e.detail.value)
       .map((milestone) => {
         return milestone.value;

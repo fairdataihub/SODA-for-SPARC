@@ -2,6 +2,9 @@
 This file contains all of the functions related to the submission.xlsx file
 */
 
+// List of funding consortiums taken from the 2.1 submission file
+const sparcFundingConsortiums = ["SPARC", "SPARC-2", "VESPA", "REVA", "HORNET"];
+
 // event listeners for opendropdown prompt
 document.querySelectorAll(".submission-change-current-account").forEach((element) => {
   element.addEventListener("click", function () {
@@ -425,30 +428,34 @@ const openDDDimport = async (curationMode) => {
   }
 };
 
-function onboardingSubmission() {
-  const introOptions = {
-    steps: [
-      {
-        element: document.querySelector("#button-ffm-import-data-deliverables-document"),
-        intro:
-          "Click here to import your Data Deliverables document for SODA to automatically retrieve your milestone and completion date.",
-      },
-    ],
-    dontShowAgain: true,
-    exitOnEsc: false,
-    exitOnOverlayClick: false,
-    disableInteraction: false,
-  };
+const onboardingSubmission = async () => {
+  // Set a half second timeout to allow the page to scroll before the introjs starts
+  setTimeout(function () {
+    const introOptions = {
+      steps: [
+        {
+          element: document.querySelector("#button-ffm-import-data-deliverables-document"),
+          intro:
+            "Click here to import your Data Deliverables document for SODA to automatically retrieve your milestone and completion date.",
+        },
+      ],
+      dontShowAgain: true,
+      exitOnEsc: false,
+      exitOnOverlayClick: false,
+      disableInteraction: false,
+    };
 
-  introJs()
-    .setOptions(introOptions)
-    .onbeforeexit(() => {
-      introStatus.submission = true;
-    })
-    .start();
-}
+    introJs()
+      .setOptions(introOptions)
+      .onbeforeexit(() => {
+        introStatus.submission = true;
+      })
+      .start();
+  }, 500);
+};
 
 function validateSubmissionFileInputs() {
+  // Retrieve the value from the funding consortium dropdown and return false if it is empty
   const fundingConsortiumFromDropdown = $("#ffm-select-sparc-funding-consortium").val();
   if (fundingConsortiumFromDropdown === "") {
     Swal.fire({
@@ -461,6 +468,7 @@ function validateSubmissionFileInputs() {
     return false;
   }
 
+  // Return false if the submission is SPARC and the award number is empty (award number required for SPARC submissions)
   if (fundingConsortiumFromDropdown === "SPARC" && $("#submission-sparc-award").val() === "") {
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
@@ -472,35 +480,9 @@ function validateSubmissionFileInputs() {
     return false;
   }
 
-  const milestones = getTagsFromTagifyElement(milestoneTagify1);
-
-  if (fundingConsortiumFromDropdown === "SPARC" && milestones.length === 0) {
-    Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      icon: "error",
-      text: "Please enter at least one milestone.",
-      title: "Incomplete information",
-    });
-    return false;
-  }
-
-  if (fundingConsortiumFromDropdown === "SPARC" && $("#submission-completion-date").val() === "") {
-    Swal.fire({
-      backdrop: "rgba(0,0,0, 0.4)",
-      heightAuto: false,
-      icon: "error",
-      text: "Please enter a completion date.",
-      title: "Incomplete information",
-    });
-    return false;
-  }
-
   // If all the above checks pass, then return true
   return true;
 }
-
-const sparcFundingConsortiums = ["SPARC", "SPARC-2", "VESPA", "REVA", "HORNET"];
 
 // Set the funding consortium dropdown options / set up select picker
 document.getElementById("ffm-select-sparc-funding-consortium").innerHTML = `
@@ -515,40 +497,50 @@ $("#ffm-select-sparc-funding-consortium").selectpicker({
   style: "SODA-select-picker",
 });
 $("#ffm-select-sparc-funding-consortium").selectpicker("refresh");
+
 // Event listener that watches what the user selects and updates the UI accordingly
 $("#ffm-select-sparc-funding-consortium").on("change", function (e) {
+  // Set consortium var as the newly selected value from the dropdown
   const consortium = e.target.value;
+
+  // Get the generate submission button element
   const generateSubmissionButton = document.getElementById("button-generate-submission");
 
-  // Show the generate submission button if the user has selected a funding consortium
+  // Show or hide the generate submission button based on the selected funding consortium
   if (consortium === "") {
-    generateSubmissionButton.classList.add("hidden");
+    generateSubmissionButton.classList.add("hidden"); // Hide the button
   } else {
-    generateSubmissionButton.classList.remove("hidden");
+    generateSubmissionButton.classList.remove("hidden"); // Show the button
   }
 
-  // Handle the instructions for the individual form fields
-  const RequiredFieldsIfSubmissionIsSparc = document.querySelectorAll(
+  // Get all the form fields that are required if submission is SPARC
+  const requiredFieldsIfSubmissionIsSparc = document.querySelectorAll(
     ".submission-required-if-sparc-funding-consortium"
   );
+
   if (consortium === "SPARC") {
-    RequiredFieldsIfSubmissionIsSparc.forEach((label) => {
+    // Add the "required" class to the labels of the required fields
+    requiredFieldsIfSubmissionIsSparc.forEach((label) => {
       label.classList.add("required");
     });
-    hideElementsWithClass("non-sparc-funding-consortium-instructions");
-    showElementsWithClass("sparc-funding-consortium-instructions");
+
+    hideElementsWithClass("non-sparc-funding-consortium-instructions"); // Hide non-SPARC instructions
   } else {
-    RequiredFieldsIfSubmissionIsSparc.forEach((label) => {
+    // Remove the "required" class from the labels of the required fields
+    requiredFieldsIfSubmissionIsSparc.forEach((label) => {
       label.classList.remove("required");
     });
-    showElementsWithClass("non-sparc-funding-consortium-instructions");
-    hideElementsWithClass("sparc-funding-consortium-instructions");
+
+    showElementsWithClass("non-sparc-funding-consortium-instructions"); // Show non-SPARC instructions
   }
 
+  // Get the container DDD import button element
   const containerDddImportButton = document.getElementById("container-ddd-import-button");
+
   if (consortium === "SPARC") {
     // Show the DDD import button
     containerDddImportButton.classList.remove("hidden");
+
     // Show the submission onboarding if the user hasn't seen it yet
     if (!introStatus.submission) {
       onboardingSubmission();
@@ -1097,20 +1089,22 @@ async function loadExistingSubmissionFile(filepath) {
 }
 
 function loadSubmissionFileToUI(data, type) {
+  console.log(data);
   milestoneTagify1.removeAllTags();
-  removeOptions(descriptionDateInput);
   $("#submission-completion-date").val("");
   $("#submission-sparc-award").val("");
-  // 1. populate Funding Consortium dropdown
-  if (sparcFundingConsortiums.includes(data["Funding Consortium"])) {
-    $("#ffm-select-sparc-funding-consortium").val(data["Funding Consortium"]).change();
+  // 1. populate Funding consortium dropdown
+  console.log(data["Funding consortium"]);
+  console.log(sparcFundingConsortiums.includes(data["Funding consortium"]));
+  if (sparcFundingConsortiums.includes(data["Funding consortium"])) {
+    $("#ffm-select-sparc-funding-consortium").val(data["Funding consortium"]).change();
   } else {
     // reset the funding consortium dropdown
     $("#ffm-select-sparc-funding-consortium").val("").change();
   }
   // 2. populate SPARC award
-  if (data["SPARC Award number"] !== "") {
-    $("#submission-sparc-award").val(data["SPARC Award number"]);
+  if (data["Award number"] !== "") {
+    $("#submission-sparc-award").val(data["Award number"]);
   }
 
   // 3. populate milestones
@@ -1124,7 +1118,6 @@ function loadSubmissionFileToUI(data, type) {
 
   // 4. populate Completion date
   if (data["Milestone completion date"] !== "") {
-    addOption(descriptionDateInput, "Enter my own date", "Enter my own date");
     addOption(
       descriptionDateInput,
       data["Milestone completion date"],
