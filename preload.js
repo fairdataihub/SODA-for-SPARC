@@ -1022,31 +1022,32 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           Swal.hideLoading();
           Swal.showValidationMessage(`Please enter email and password`);
           return;
-        } else {
-          // rationale: specifies the machine and the username so when creating new API Keys we can safely do so without
-          //            obsoleting (aka deleting) ones that already exist for separate machine/profile combinations in the
-          //            user's Pennsieve profile.
-          let machineUsernameSpecifier = localStorage.getItem(os.userInfo().username);
-          let response = await create_api_key_and_secret(login, password, machineUsernameSpecifier);
-          console.log("Respose from api key creation: ", response);
-          if (response[0] == "failed") {
-            let error_message = response[1];
-            if (response[1]["message"] === "exceptions must derive from BaseException") {
-              error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">It seems that you do not have access to your desired workspace on Pennsieve. See our <a target="_blank" href="https://docs.sodaforsparc.io/docs/next/how-to/how-to-get-a-pennsieve-account">[dedicated help page]</a> to learn how to get access</div>`;
-            }
-            if (response[1]["message"] === "Error: Username or password was incorrect.") {
-              error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">Error: Username or password was incorrect</div>`;
-            }
-            Swal.hideLoading();
-            Swal.showValidationMessage(error_message);
-            document.getElementById("swal2-validation-message").style.flexDirection = "column";
-          } else if (response["success"] == "success") {
-            return {
-              key: response["key"],
-              secret: response["secret"],
-              name: response["name"],
-            };
+        }
+
+        // rationale: specifies the machine and the username so when creating new API Keys we can safely do so without
+        //            obsoleting (aka deleting) ones that already exist for separate machine/profile combinations in the
+        //            user's Pennsieve profile.
+        let machineUsernameSpecifier = localStorage.getItem(os.userInfo().username);
+
+        let response = await create_api_key_and_secret(login, password, machineUsernameSpecifier);
+        console.log("Respose from api key creation: ", response);
+        if (response[0] == "failed") {
+          let error_message = response[1];
+          if (response[1]["message"] === "exceptions must derive from BaseException") {
+            error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">It seems that you do not have access to your desired workspace on Pennsieve. See our <a target="_blank" href="https://docs.sodaforsparc.io/docs/next/how-to/how-to-get-a-pennsieve-account">[dedicated help page]</a> to learn how to get access</div>`;
           }
+          if (response[1]["message"] === "Error: Username or password was incorrect.") {
+            error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">Error: Username or password was incorrect</div>`;
+          }
+          Swal.hideLoading();
+          Swal.showValidationMessage(error_message);
+          document.getElementById("swal2-validation-message").style.flexDirection = "column";
+        } else if (response["success"] == "success") {
+          return {
+            key: response["key"],
+            secret: response["secret"],
+            name: response["name"],
+          };
         }
       },
     });
@@ -1275,7 +1276,7 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
         let matching = await defaultProfileMatchesCurrentWorkspace();
         if (!matching) {
           log.info("Default api key is for a different workspace");
-          await handleAuthenticationError();
+          await switchToCurrentWorkspace();
         }
       }
 

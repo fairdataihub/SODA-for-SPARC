@@ -466,6 +466,13 @@ const setPreferredOrganization = async (
   return response.data;
 };
 
+const setDefaultProfile = async (targetProfile) => {
+  const response = await client.put("/user/default_profile", {
+    target_profile: targetProfile,
+  });
+  return response.data;
+};
+
 const getUserPoolAccessToken = async (email, password) => {
   const response = await client.post("/manage_datasets/userpool_access_token", {
     email: email,
@@ -503,6 +510,7 @@ const api = {
   getNumberOfItemsInLocalDataset,
   setPreferredOrganization,
   getUserPoolAccessToken,
+  setDefaultProfile,
 };
 
 module.exports = api;

@@ -106,6 +106,23 @@ def create_profile_name(token, organization_id):
     return f"SODA-Pennsieve-{email_sub}-{organization}"
              
 
+def set_default_profile(profile_name):
+    """
+      If the given profile exists and has a valid API Key and Secret set it as the default profile. 
+    """
+    # check if a valid token with this profile information already exists and use that if so rather than creating another api key and secret 
+    ps_k_s = get_profile_api_key_and_secret(profile_name.lower())
+    logger.info(f"Existing api key and secret for profile {profile_name}: {ps_k_s}")
+
+    if ps_k_s[0] is None or ps_k_s[1] is None:
+      raise Exception("No valid api key and secret found for profile {profile_name}")
+    
+    # verify that the keys are valid 
+    get_access_token(ps_k_s[0], ps_k_s[1])
+
+    # set the default profile to the profile name
+    update_config_account_name(profile_name.lower())
+    logger.info(f"Reused existing valid api key and secret for profile {profile_name}") 
 
 def set_preferred_organization(organization_id, email, password, machine_username_specifier):
 
@@ -130,19 +147,11 @@ def set_preferred_organization(organization_id, email, password, machine_usernam
     logger.info(f"Switched to organization {organization_id}")
     logger.info(f"New profile name: {profile_name}") 
 
-    # check if a valid token with this profile information already exists and use that if so rather than creating another api key and secret 
-    ps_k_s = get_profile_api_key_and_secret(profile_name.lower())
-    logger.info(f"Existing api key and secret for profile {profile_name}: {ps_k_s}")
-    if ps_k_s[0] is not None and ps_k_s[1] is not None:
-       # verify that the keys are valid 
-       try: 
-          get_access_token(ps_k_s[0], ps_k_s[1])
-          # set the default profile to the profile name
-          update_config_account_name(profile_name.lower())
-          logger.info(f"Reused existing valid api key and secret for profile {profile_name}") 
-          return 
-       except Exception as e:
-          logger.info(f"Existing api key and secret for profile {profile_name} are invalid. Creating new api key and secret for profile {profile_name}")
+    try: 
+      set_default_profile(profile_name)
+      return 
+    except Exception as err:
+      logger.info(f"Existing api key and secret for profile {profile_name} are invalid. Creating new api key and secret for profile {profile_name}")
 
     # TODO: Determine where to move this and the below duplicate key deletion methods. Perhaps the bottom one stays and this one moves up before checking for existing keys. 
     # any users coming from versions of SODA < 12.0.2 will potentially have duplicate SODA-Pennsieve API keys on their Pennsieve profile we want to clean up for them
@@ -171,8 +180,6 @@ def set_preferred_organization(organization_id, email, password, machine_usernam
     
     # create the new profile for the user, associate the api key and secret with the profile, and set it as the default profile
     bf_add_account_username(profile_name, key, secret)
-
-    
 
 
 def get_user_organizations():

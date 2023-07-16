@@ -1,7 +1,7 @@
 from flask_restx import Resource, reqparse
 from namespaces import get_namespace, NamespaceEnum
 
-from users import integrate_orcid_with_pennsieve, get_user, set_preferred_organization, get_user_organizations, create_profile_name
+from users import integrate_orcid_with_pennsieve, get_user, set_preferred_organization, get_user_organizations, create_profile_name, set_default_profile
 
 api = get_namespace(NamespaceEnum.USER)
 
@@ -55,6 +55,31 @@ class User(Resource):
         data = self.parser.parse_args()
 
 
+
+
+
+
+@api.route('/default_profile')
+class DefaultProfile(Resource):
+    parser = reqparse.RequestParser(bundle_errors=True)
+    parser.add_argument("target_profile", type=str, required=True, help="The name of the profile to set as default", location="json")
+
+
+    def put(self):
+        data = self.parser.parse_args()
+        profile_name = data.get("target_profile")
+
+        try:
+            return set_default_profile(profile_name)
+        except Exception as e:
+            api.abort(500, str(e))
+
+
+
+
+
+
+
 @api.route('/organizations/preferred')
 class PreferredOrganization(Resource):
     parser = reqparse.RequestParser(bundle_errors=True)
@@ -76,6 +101,10 @@ class PreferredOrganization(Resource):
             return set_preferred_organization(organization, email, password, machine_username_specifier)
         except Exception as e:
             api.abort(500, str(e))
+
+
+
+
 
 
 @api.route('/organizations')

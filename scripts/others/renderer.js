@@ -47,7 +47,7 @@ const {
   clientError,
   userErrorMessage,
   authenticationError,
-  handleAuthenticationError,
+  switchToCurrentWorkspace,
   defaultProfileMatchesCurrentWorkspace,
 } = require("./scripts/others/http-error-handler/error-handler");
 const { hasConnectedAccountWithPennsieve } = require("./scripts/others/authentication/auth");
@@ -805,7 +805,7 @@ const run_pre_flight_checks = async (check_update = true) => {
     let matching = await defaultProfileMatchesCurrentWorkspace();
     if (!matching) {
       log.info("Default api key is for a different workspace");
-      await handleAuthenticationError();
+      await switchToCurrentWorkspace();
       return false;
     }
 

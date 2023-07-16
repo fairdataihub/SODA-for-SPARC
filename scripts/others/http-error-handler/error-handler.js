@@ -90,14 +90,90 @@ const defaultProfileMatchesCurrentWorkspace = async () => {
   return defaultProfileWorkspace === currentWorkspace;
 };
 
-const handleAuthenticationError = async () => {
+const switchToCurrentWorkspace = async () => {
   let workspacesMatch = await defaultProfileMatchesCurrentWorkspace();
 
   if (workspacesMatch) {
+    // obsolete/invalid api key and secret needs to be replaced
     await addBfAccount(null, false);
     return;
   }
 
+  // we are in the wrong workspace
+  // check if there is a profile with a valid api key and secret for this user for their current workspace
+  const { username } = os.userInfo();
+  let userInfo = await api.getUserInformation();
+  let currentWorkspace = userInfo["preferredOrganization"];
+  let emailSuffix = userInfo["email"].split("@")[0];
+
+  // let emailSuffix = defaultBfAccount.
+  let targetProfile = `SODA-Pennsieve-${localStorage.getItem(
+    username
+  )}-${emailSuffix}-${currentWorkspace}`;
+  targetProfile = targetProfile.toLowerCase();
+
+  console.log("Switching to the target profile: " + targetProfile);
+
+  try {
+    // set the target profile as the default if it is a valid profile that exists
+    await api.setDefaultProfile(targetProfile);
+    defaultBfAccount = targetProfile;
+    console.log("Switched the profile successfully");
+    // // return as we have successfully set the default profile to the one that matches the current workspace
+    // TODO: Reset the UI to reflect the new default profile
+    try {
+      let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
+        params: {
+          selected_account: defaultBfAccount,
+        },
+      });
+      // reset the dataset field values
+      $("#current-bf-dataset").text("None");
+      $("#current-bf-dataset-generate").text("None");
+      $(".bf-dataset-span").html("None");
+      $("#para-continue-bf-dataset-getting-started").text("");
+
+      // set the workspace field values to the user's current workspace
+      let org = bf_account_details_req.data.organization;
+      $(".bf-organization-span").text(org);
+
+      showHideDropdownButtons("account", "show");
+      confirm_click_account_function();
+      updateBfAccountList();
+
+      //   // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
+      //   // then reset the guided mode page
+      //   if (ev?.getAttribute("data-reset-guided-mode-page") == "true") {
+      //     // Get the current page that the user is on in the guided mode
+      //     const currentPage = CURRENT_PAGE.id;
+      //     if (currentPage) {
+      //       await openPage(currentPage);
+      //     }
+      //   }
+    } catch (error) {
+      clientError(error);
+      Swal.fire({
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        icon: "error",
+        text: "Something went wrong!",
+        footer:
+          '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
+      });
+      showHideDropdownButtons("account", "hide");
+      confirm_click_account_function();
+    }
+
+    datasetList = [];
+    defaultBfDataset = null;
+    clearDatasetDropdowns();
+    return;
+  } catch (err) {
+    clientError(err);
+    console.log("Target profile did not have a valid api key and secret for the current workspace");
+  }
+
+  // if not have them log in to add a new profile/overwrite the invalid/obsolete api key and secret for the current workspace
   await addBfAccount(null, true);
 };
 
@@ -105,6 +181,6 @@ module.exports = {
   clientError,
   userErrorMessage,
   authenticationError,
-  handleAuthenticationError,
+  switchToCurrentWorkspace,
   defaultProfileMatchesCurrentWorkspace,
 };
