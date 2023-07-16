@@ -14,14 +14,13 @@ PENNSIEVE_URL = "https://api.pennsieve.io"
 from namespaces import NamespaceEnum, get_namespace_logger
 
 
-def get_access_token():
+def get_access_token(api_key=None, api_secret=None):
     """
     Creates a temporary access token for utilizing the Pennsieve API. Reads the api token and secret from the Pennsieve config.ini file.
-    get cognito config 
+    get cognito config . If no target profile name is provided the default profile is used. 
     """
     r = requests.get(f"{PENNSIEVE_URL}/authentication/cognito-config")
     r.raise_for_status()
-
 
     cognito_app_client_id = r.json()["tokenPool"]["appClientId"]
     cognito_region_name = r.json()["region"]
@@ -33,10 +32,17 @@ def get_access_token():
     aws_secret_access_key="",
     )
 
+    # use the default profile values for auth if no api_key or api_secret is provided
+    if api_key is None or api_secret is None:
+        api_key = get_profile_name_from_api_key("api_token")
+        api_secret = get_profile_name_from_api_key("api_secret")
+
+
+
 
     login_response = cognito_idp_client.initiate_auth(
     AuthFlow="USER_PASSWORD_AUTH",
-    AuthParameters={"USERNAME": get_profile_name_from_api_key("api_token"), "PASSWORD": get_profile_name_from_api_key("api_secret")},
+    AuthParameters={"USERNAME": api_key, "PASSWORD": api_secret},
     ClientId=cognito_app_client_id,
     )
         

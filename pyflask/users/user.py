@@ -6,6 +6,7 @@ from utils import (
     create_request_headers,
     connect_pennsieve_client,
     authenticate_user_with_client,
+    get_profile_api_key_and_secret
 )
 from namespaces import NamespaceEnum, get_namespace_logger
 from flask import abort
@@ -124,13 +125,26 @@ def set_preferred_organization(organization_id, email, password, machine_usernam
         raise Exception(new_err_msg) from err
     
 
-     # TODO: Send in computer and profile of computer from frontend to this endpoint and use it in this function
     profile_name = create_unique_profile_name(token, machine_username_specifier)
-
 
     logger.info(f"Switched to organization {organization_id}")
     logger.info(f"New profile name: {profile_name}") 
 
+    # check if a valid token with this profile information already exists and use that if so rather than creating another api key and secret 
+    ps_k_s = get_profile_api_key_and_secret(profile_name.lower())
+    logger.info(f"Existing api key and secret for profile {profile_name}: {ps_k_s}")
+    if ps_k_s[0] is not None and ps_k_s[1] is not None:
+       # verify that the keys are valid 
+       try: 
+          get_access_token(ps_k_s[0], ps_k_s[1])
+          # set the default profile to the profile name
+          update_config_account_name(profile_name.lower())
+          logger.info(f"Reused existing valid api key and secret for profile {profile_name}") 
+          return 
+       except Exception as e:
+          logger.info(f"Existing api key and secret for profile {profile_name} are invalid. Creating new api key and secret for profile {profile_name}")
+
+    # TODO: Determine where to move this and the below duplicate key deletion methods. Perhaps the bottom one stays and this one moves up before checking for existing keys. 
     # any users coming from versions of SODA < 12.0.2 will potentially have duplicate SODA-Pennsieve API keys on their Pennsieve profile we want to clean up for them
     delete_duplicate_keys(token, "SODA-Pennsieve")
 
