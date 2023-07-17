@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Dataset Description Metadata updated from SDS 2.0.0 -> 2.1.0
 - Submission Metadata updated from SDS 2.0.0 -> 2.1.0
+- Files Explorer can now move files in Guided Mode (patched for Free Form Mode)
 
 ## Bug fixes:
 
