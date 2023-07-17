@@ -1035,6 +1035,7 @@ const apiVersionsMatch = async () => {
     responseObject = await client.get("/startup/minimum_api_version");
   } catch (e) {
     clientError(e);
+    log.info("Minimum API Versions do not match")
     ipcRenderer.send("track-event", "Error", "Verifying App Version", userErrorMessage(e));
 
     await Swal.fire({
