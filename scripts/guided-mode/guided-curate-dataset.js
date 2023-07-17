@@ -15089,17 +15089,6 @@ $(document).ready(async () => {
     //Get the id of the parent page that's currently open
     const currentParentPageID = CURRENT_PAGE.id;
 
-    if (currentParentPageID === "guided-create-submission-metadata-tab") {
-      if (
-        document
-          .getElementById("guided-button-enter-submission-metadata-manually")
-          .classList.contains("selected")
-      ) {
-        document.getElementById("guided-next-button").click();
-        return;
-      }
-    }
-
     //Get the id of the sub-page that's currently open
     const openSubPageID = getOpenSubPageInPage(currentParentPageID);
     try {
@@ -15144,17 +15133,6 @@ $(document).ready(async () => {
   $("#guided-button-sub-page-back").on("click", () => {
     //Get the id of the parent page that's currently open
     const currentParentPageID = CURRENT_PAGE.id;
-
-    if (currentParentPageID === "guided-create-submission-metadata-tab") {
-      if (
-        document
-          .getElementById("guided-button-enter-submission-metadata-manually")
-          .classList.contains("selected")
-      ) {
-        document.getElementById("guided-back-button").click();
-        return;
-      }
-    }
 
     //Get the id of the sub-page that's currently open
     const openSubPageID = getOpenSubPageInPage(currentParentPageID);
