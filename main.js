@@ -171,7 +171,7 @@ const exitPyProc = async () => {
 
   // check if the platform is Windows
   if (process.platform === "win32") {
-    if(pyflaskProcess !== null) killPythonProcess();
+    if (pyflaskProcess !== null) killPythonProcess();
     pyflaskProcess = null;
     PORT = null;
     return;
