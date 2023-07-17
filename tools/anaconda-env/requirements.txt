@@ -54,6 +54,7 @@ rsa==4.9
 s3transfer==0.6.0
 semver==2.13.0
 six==1.16.0
+ssl==1.16
 tqdm==4.64.1
 urllib3==2.0.3
 websocket-client==1.4.2
