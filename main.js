@@ -106,7 +106,7 @@ const selectPort = () => {
 
 const createPyProc = async () => {
   let script = getScriptPath();
-  log.info(script);
+  log.info(`Path to server executable: ${script}`);
 
   let port = "" + selectPort();
 
@@ -125,9 +125,6 @@ const createPyProc = async () => {
       if (guessPackaged()) {
         log.info("Application is packaged");
         pyflaskProcess = require("child_process").execFile(script, [port], {});
-      } else {
-        log.info("Application is not packaged");
-        pyflaskProcess = require("child_process").spawn("python", [script, port]);
 
         // Log the output from the python server
         pyflaskProcess.stdout.on("data", (data) => {
@@ -149,6 +146,9 @@ const createPyProc = async () => {
           console.log(logOutput);
           log.info(logOutput);
         });
+      } else {
+        log.info("Application is not packaged");
+        pyflaskProcess = require("child_process").spawn("python", [script, port]);
       }
 
       if (pyflaskProcess != null) {
