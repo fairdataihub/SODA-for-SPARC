@@ -124,13 +124,30 @@ const createPyProc = async () => {
 
       if (guessPackaged()) {
         log.info("Application is packaged");
-        pyflaskProcess = require("child_process").execFile(script, [port], {
-          stdio: "ignore",
-        });
+        pyflaskProcess = require("child_process").execFile(script, [port], {});
       } else {
         log.info("Application is not packaged");
-        pyflaskProcess = require("child_process").spawn("python", [script, port], {
-          stdio: "ignore",
+        pyflaskProcess = require("child_process").spawn("python", [script, port]);
+
+        // Log the output from the python server
+        pyflaskProcess.stdout.on("data", (data) => {
+          const output = data.toString();
+          const logOutput = `[pyflaskProcess stdout] ${output}`;
+          console.log(logOutput);
+          log.info(logOutput);
+        });
+
+        pyflaskProcess.stderr.on("data", (data) => {
+          const output = data.toString();
+          const logOutput = `[pyflaskProcess stderr] ${output}`;
+          console.log(logOutput);
+          log.info(logOutput);
+        });
+
+        pyflaskProcess.on("close", (code) => {
+          const logOutput = `[pyflaskProcess close] child process exited with code ${code}`;
+          console.log(logOutput);
+          log.info(logOutput);
         });
       }
 
