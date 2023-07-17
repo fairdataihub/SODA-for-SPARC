@@ -13325,8 +13325,8 @@ $(document).ready(async () => {
         fundingConsortium: fundingConsortium,
         consortiumDataStandard: consortiumDataStandard,
         award: guidedSparcAward,
-        date: guidedCompletionDate,
-        milestone: guidedMilestones[0] || "",
+        date: guidedCompletionDate || "N/A",
+        milestone: guidedMilestones[0] || "N/A",
       });
 
       if (guidedMilestones.length > 1) {
