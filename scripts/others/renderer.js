@@ -1054,6 +1054,7 @@ const apiVersionsMatch = async () => {
   let serverAppVersion = responseObject.data.version;
 
   log.info(`Server version is ${serverAppVersion}`);
+  const browser_download_url = `https://docs.sodaforsparc.io/docs/common-errors/api-version-mismatch`;
 
   if (serverAppVersion !== appVersion) {
     log.info("Server version does not match client version");
@@ -1066,14 +1067,32 @@ const apiVersionsMatch = async () => {
     );
 
     await Swal.fire({
-      icon: "error",
-      html: `${appVersion} ${serverAppVersion}The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA.`,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: "Close now",
-      allowOutsideClick: false,
-      allowEscapeKey: false,
-    });
+        icon: "error",
+        title: "Minimum App Version Mismatch",
+        html: `
+          Your API version: <b>${appVersion}</b>
+          <br />
+          Latest API version: <b>${serverAppVersion}</b>
+          <br />
+          <br />
+          To resolve this issue, please visit the link below and follow the instructions.
+          <br />
+          <br />
+          <a href="${browser_download_url}" target="_blank">API Version Mismatch</a>
+          <br />
+          <br />
+          Once you have updated the SODA Server, please restart SODA.
+        `,
+        width: 800,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showCancelButton: false,
+        showCloseButton: false,
+        reverseButtons: reverseSwalButtons,
+        confirmButtonText: "Close Application",
+      });
 
     //await checkForAnnouncements("update")
 
