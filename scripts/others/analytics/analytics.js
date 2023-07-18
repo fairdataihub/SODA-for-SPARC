@@ -102,13 +102,12 @@ const userIdGeneratorForKombucha = async () => {
 // Send the event data to Kombucha Analytics
 const sendKombuchaAnalyticsEvent = async (eventData, userToken) => {
   try {
-    kombuchaServer
-    .post("harvest/events", eventData, {
+    kombuchaServer.post("harvest/events", eventData, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${userToken}`,
       },
-    })
+    });
   } catch (error) {
     if (error.response.status === 401) {
       try {
