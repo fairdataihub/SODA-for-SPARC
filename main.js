@@ -21,7 +21,7 @@ const uuid = require("uuid").v4;
 
 log.transports.console.level = false;
 log.transports.file.level = "debug";
-autoUpdater.channel = "latest";
+autoUpdater.channel = "beta";
 autoUpdater.logger = log;
 global.trackEvent = trackEvent;
 global.trackKombuchaEvent = trackKombuchaEvent;
