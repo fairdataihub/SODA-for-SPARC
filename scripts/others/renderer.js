@@ -1067,9 +1067,9 @@ const apiVersionsMatch = async () => {
     );
 
     await Swal.fire({
-        icon: "error",
-        title: "Minimum App Version Mismatch",
-        html: `
+      icon: "error",
+      title: "Minimum App Version Mismatch",
+      html: `
           Your API version: <b>${appVersion}</b>
           <br />
           Latest API version: <b>${serverAppVersion}</b>
@@ -1083,16 +1083,16 @@ const apiVersionsMatch = async () => {
           <br />
           Once you have updated the SODA Server, please restart SODA.
         `,
-        width: 800,
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        showCancelButton: false,
-        showCloseButton: false,
-        reverseButtons: reverseSwalButtons,
-        confirmButtonText: "Close Application",
-      });
+      width: 800,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showCancelButton: false,
+      showCloseButton: false,
+      reverseButtons: reverseSwalButtons,
+      confirmButtonText: "Close Application",
+    });
 
     //await checkForAnnouncements("update")
 
