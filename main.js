@@ -165,7 +165,7 @@ const exitPyProc = async () => {
     ]);
   };
 
-  console.log("Killing the process")
+  console.log("Killing the process");
 
   await killAllPreviousProcesses();
 
@@ -177,16 +177,12 @@ const exitPyProc = async () => {
     return;
   }
 
-
   // kill signal to pyProc
-  if(pyflaskProcess != null) {
+  if (pyflaskProcess != null) {
     pyflaskProcess.kill();
     pyflaskProcess = null;
   }
-    PORT = null;
-  
-
-
+  PORT = null;
 };
 
 const killAllPreviousProcesses = async () => {
@@ -388,7 +384,7 @@ function initialize() {
   });
 
   app.on("window-all-closed", async () => {
-    console.log("All windows closed")
+    console.log("All windows closed");
     await exitPyProc();
     app.quit();
   });
