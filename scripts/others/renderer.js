@@ -1035,6 +1035,7 @@ const apiVersionsMatch = async () => {
     responseObject = await client.get("/startup/minimum_api_version");
   } catch (e) {
     clientError(e);
+    log.info("Minimum API Versions do not match");
     ipcRenderer.send("track-event", "Error", "Verifying App Version", userErrorMessage(e));
 
     await Swal.fire({
@@ -1683,7 +1684,7 @@ milestoneTagify1.on("change", (e) => {
     } else {
       // If there are no milestone tags other than N/A, then hide the completion date form component
       hideElementsWithClass("completion-date-form-component");
-      $("#submission-completion-date").val("N/A");
+      $("#submission-completion-date").val("");
     }
   } else {
     hideElementsWithClass("completion-date-form-component");

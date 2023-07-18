@@ -11,6 +11,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 - Dataset Description Metadata updated from SDS 2.0.0 -> 2.1.0
 - Submission Metadata updated from SDS 2.0.0 -> 2.1.0
+- Files Explorer can now move files in Guided Mode (patched for Free Form Mode)
+- Kombucha Analytics has been added to SODA and will be tracking user upload events. These upload events include: Guided Mode's upload, Free Form Mode's Organize dataset upload,
+  and Free Form Mode's Local upload. This will help us track the number of users using SODA and the number of datasets being uploaded through SODA.
 
 ## Bug fixes:
 

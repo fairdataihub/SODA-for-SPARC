@@ -42,6 +42,11 @@ const renderMilestoneSelectionTable = (milestoneData) => {
   milestonesTableContainer.innerHTML = milestoneTableRows;
 };
 
+const resetFundingConsortiumDropdown = () => {
+  $("#ffm-select-sparc-funding-consortium").val("").change();
+};
+resetFundingConsortiumDropdown();
+
 const openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneRes) => {
   //add a custom milestone row for when the user wants to add a custom milestone
   //not included in the dataset deliverables document
@@ -474,6 +479,22 @@ function validateSubmissionFileInputs() {
     return false;
   }
 
+  // If milestones were added, check for a completion date
+  const milestones = getTagsFromTagifyElement(milestoneTagify1);
+  if (milestones.length > 0) {
+    const selectedCompletionDate = $("#submission-completion-date").val();
+    if (selectedCompletionDate === "") {
+      Swal.fire({
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        icon: "error",
+        text: "Please select a completion date.",
+        title: "Incomplete information",
+      });
+      return false;
+    }
+  }
+
   // If all the above checks pass, then return true
   return true;
 }
@@ -545,11 +566,7 @@ $("#ffm-select-sparc-funding-consortium").on("change", function (e) {
     containerDddImportButton.classList.add("hidden");
   }
 });
-const resetFundingConsortiumDropdown = () => {
-  $("#ffm-select-sparc-funding-consortium").val("").change();
-};
 
-resetFundingConsortiumDropdown();
 var submissionDestinationPath = "";
 
 $(document).ready(function () {
@@ -826,8 +843,8 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
     consortiumDataStandard: "SPARC",
     fundingConsortium: fundingConsortiumFromDropdown,
     award: awardNumber,
-    date: completionDate,
-    milestone: milestones[0] || "",
+    date: completionDate || "N/A",
+    milestone: milestones[0] || "N/A",
   });
 
   if (milestones.length > 1) {
@@ -1084,7 +1101,6 @@ async function loadExistingSubmissionFile(filepath) {
 }
 
 function loadSubmissionFileToUI(data, type) {
-  console.log(data);
   milestoneTagify1.removeAllTags();
   $("#submission-completion-date").val("");
   $("#submission-sparc-award").val("");
@@ -1094,7 +1110,7 @@ function loadSubmissionFileToUI(data, type) {
     $("#ffm-select-sparc-funding-consortium").val(data["Funding consortium"]).change();
   } else {
     // reset the funding consortium dropdown
-    $("#ffm-select-sparc-funding-consortium").val("").change();
+    resetFundingConsortiumDropdown();
   }
 
   // 2. populate SPARC award
@@ -1102,17 +1118,32 @@ function loadSubmissionFileToUI(data, type) {
     $("#submission-sparc-award").val(data["Award number"]);
   }
 
+  // temp variable to check if any milestones were imported
+  // If this remains false, we will not set the completion date (will be left as default value)
+  let milestonesImported = false;
+
   // 3. populate milestones
   if (typeof data["Milestone achieved"] === "string") {
     milestoneTagify1.addTags(data["Milestone achieved"]);
+    milestonesImported = true;
   } else {
-    for (var milestone of data["Milestone achieved"]) {
+    // Filter out milestones that are empty strings or N/A
+    const filteredMilestones = data["Milestone achieved"].filter((milestone) => {
+      return milestone !== "" && milestone !== "N/A";
+    });
+
+    // set milestonesImported to true if there are any milestones so we know to set the completion date
+    if (filteredMilestones.length > 0) {
+      milestonesImported = true;
+    }
+
+    for (const milestone of filteredMilestones) {
       milestoneTagify1.addTags(milestone);
     }
   }
 
-  // 4. populate Completion date
-  if (data["Milestone completion date"] !== "") {
+  // 4. populate Completion date (only if milestones were imported, otherwise leave as default value)
+  if (data["Milestone completion date"] !== "" && milestonesImported) {
     addOption(
       descriptionDateInput,
       data["Milestone completion date"],
@@ -1120,6 +1151,7 @@ function loadSubmissionFileToUI(data, type) {
     );
     $("#submission-completion-date").val(data["Milestone completion date"]);
   }
+
   Swal.fire({
     title: "Loaded successfully!",
     icon: "success",

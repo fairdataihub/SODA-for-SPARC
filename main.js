@@ -165,19 +165,23 @@ const exitPyProc = async () => {
     ]);
   };
 
+  console.log("Killing the process");
+
   await killAllPreviousProcesses();
 
   // check if the platform is Windows
   if (process.platform === "win32") {
-    killPythonProcess();
+    if (pyflaskProcess !== null) killPythonProcess();
     pyflaskProcess = null;
     PORT = null;
     return;
   }
 
   // kill signal to pyProc
-  pyflaskProcess.kill();
-  pyflaskProcess = null;
+  if (pyflaskProcess != null) {
+    pyflaskProcess.kill();
+    pyflaskProcess = null;
+  }
   PORT = null;
 };
 
@@ -279,12 +283,13 @@ function initialize() {
               title: "Confirm",
               message: "Any running process will be stopped. Are you sure you want to quit?",
             })
-            .then((responseObject) => {
+            .then(async (responseObject) => {
               let { response } = responseObject;
               if (response === 0) {
                 // Runs the following if 'Yes' is clicked
                 var announcementsLaunch = nodeStorage.getItem("announcements");
                 nodeStorage.setItem("announcements", false);
+                await exitPyProc();
                 quit_app();
               }
             });
@@ -379,6 +384,7 @@ function initialize() {
   });
 
   app.on("window-all-closed", async () => {
+    console.log("All windows closed");
     await exitPyProc();
     app.quit();
   });
@@ -456,7 +462,7 @@ ipcMain.on("track-event", (event, category, action, label, value) => {
 });
 
 ipcMain.on("track-kombucha", (event, category, action, label, eventStatus, eventData) => {
-  // trackKombuchaEvent(category, action, label, eventStatus, eventData);
+  trackKombuchaEvent(category, action, label, eventStatus, eventData);
 });
 
 ipcMain.on("app_version", (event) => {
