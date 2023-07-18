@@ -101,15 +101,16 @@ const userIdGeneratorForKombucha = async () => {
 
 // Send the event data to Kombucha Analytics
 const sendKombuchaAnalyticsEvent = async (eventData, userToken) => {
-  kombuchaServer
-    .post("harvest/events", eventData, {
+  try {
+    kombuchaServer.post("harvest/events", eventData, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${userToken}`,
       },
-    })
-    .catch(async (error) => {
-      if (error.response.status === 401) {
+    });
+  } catch (error) {
+    if (error.response.status === 401) {
+      try {
         // Token is invalid now so generate a new one with the same userId
         const userId = nodeStorage.getItem("userId");
         const res = await kombuchaServer.post("meta/users", { uid: userId });
@@ -118,8 +119,11 @@ const sendKombuchaAnalyticsEvent = async (eventData, userToken) => {
         nodeStorage.setItem("kombuchaToken", res.data.token);
         // Retry sending the event data with the updated token
         sendKombuchaAnalyticsEvent(eventData, res.data.token);
+      } catch (e) {
+        console.log(e);
       }
-    });
+    }
+  }
 };
 
 // Tracking function for Kombucha Analytics
