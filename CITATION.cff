@@ -25,7 +25,7 @@ date-released: '2023-07-18'
 identifiers:
   - description: DOI for this software's record on Zenodo
     type: doi
-    value: https://doi.org/10.5281/zenodo.8161700
+    value: https://doi.org/10.5281/zenodo.8161738
 keywords:
   - SPARC
   - FAIR
@@ -42,4 +42,4 @@ repository-code: https://github.com/fairdataihub/SODA-for-SPARC
 title: SODA (Software to Organize Data Automatically) for SPARC
 type: software
 url: https://fairdataihub.org/
-version: 12.1.3-beta
+version: 12.1.5-beta
