@@ -106,7 +106,7 @@ const selectPort = () => {
 
 const createPyProc = async () => {
   let script = getScriptPath();
-  log.info(script);
+  log.info(`Path to server executable: ${script}`);
 
   let port = "" + selectPort();
 
@@ -124,8 +124,28 @@ const createPyProc = async () => {
 
       if (guessPackaged()) {
         log.info("Application is packaged");
-        pyflaskProcess = require("child_process").execFile(script, [port], {
-          stdio: "ignore",
+
+        // Store the stdout and stederr in a string to log later
+        let stdoutData = "";
+        let stderrData = "";
+
+        pyflaskProcess = require("child_process").execFile(script, [port], {});
+
+        // Log the stdout and stderr
+        pyflaskProcess.stdout.on("data", (data) => {
+          const logOutput = `[pyflaskProcess stdout] ${data.toString()}`;
+          stdoutData += `/n${logOutput}`;
+        });
+        pyflaskProcess.stderr.on("data", (data) => {
+          const logOutput = `[pyflaskProcess stderr] ${data.toString()}`;
+          stderrData += `/n${logOutput}`;
+        });
+
+        // On close, log the outputs and the exit code
+        pyflaskProcess.on("close", (code) => {
+          log.info(`child process exited with code ${code}`);
+          log.info(`stdout: ${stdoutData}`);
+          log.info(`stderr: ${stderrData}`);
         });
       } else {
         log.info("Application is not packaged");
