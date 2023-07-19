@@ -76,6 +76,22 @@ class DefaultProfile(Resource):
 
 
 
+    post_parser = reqparse.RequestParser(bundle_errors=True)
+    post_parser.add_argument("email", type=str, required=True, help="The name of the profile to set as default", location="json")
+    post_parser.add_argument("password", type=str, required=True, help="The name of the profile to set as default", location="json")
+    post_parser.add_argument("machineUsernameSpecifier", type=str, required=True, help="The specifier for the machine and username combination")
+    def post(self):
+        data = self.post_parser.parse_args()
+        email = data.get("email")
+        password = data.get("password")
+        machineUsernameSpecifier = data.get("machineUsernameSpecifier")
+
+        try:
+            return create_profile_name(machineUsernameSpecifier, email, password)
+        except Exception as e:
+            api.abort(500, str(e))
+
+
 
 
 

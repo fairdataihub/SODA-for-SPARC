@@ -82,12 +82,22 @@ def get_user_information(token):
     raise Exception(e) from e
 
 
-def create_profile_name(token, organization_id):
+def create_profile_name(machineUsernameSpecifier, email=None, password=None, token=None, organization_id=None):
     """
       Create a uniquely identifiable profile name for a user. This is used in the config.ini file to associate Pennsieve API Keys with a user and their selected workspace.
       NOTE: API Keys and Secrets are associated with a workspace at time of creation. Due to this we need to create a unqiue profile for each workspace a user has access to.
             The given organization id is used to associate the profile name with a given workspace. 
     """
+
+    if token is None:
+       # we are not logged in as the user we want to create a profile name for so get a cognito userpool token for the user 
+       token = get_cognito_userpool_access_token(email, password)
+       user_info = get_user_information(token)
+       organization_id = user_info["preferredOrganization"]
+       email_sub = email.split("@")[0]
+
+       return f"SODA-Pennsieve-{machineUsernameSpecifier}-{email_sub}-{organization_id}"
+
 
     # get the users email 
     user_info = get_user_information(token)
@@ -103,7 +113,7 @@ def create_profile_name(token, organization_id):
             organization = org["organization"]["name"]
 
     # create an updated profile name that is unique to the user and their workspace 
-    return f"SODA-Pennsieve-{email_sub}-{organization}"
+    return f"SODA-Pennsieve-{machineUsernameSpecifier}-{email_sub}-{organization}"
              
 
 def set_default_profile(profile_name):
@@ -112,10 +122,10 @@ def set_default_profile(profile_name):
     """
     # check if a valid token with this profile information already exists and use that if so rather than creating another api key and secret 
     ps_k_s = get_profile_api_key_and_secret(profile_name.lower())
-    logger.info(f"Existing api key and secret for profile {profile_name}: {ps_k_s}")
+    logger.info(f"Existing api key and secret for profile {profile_name.lower()}: {ps_k_s}")
 
     if ps_k_s[0] is None or ps_k_s[1] is None:
-      raise Exception("No valid api key and secret found for profile {profile_name}")
+      raise Exception(f"No valid api key and secret found for profile {profile_name.lower()}")
     
     # verify that the keys are valid 
     get_access_token(ps_k_s[0], ps_k_s[1])

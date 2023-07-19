@@ -473,6 +473,16 @@ const setDefaultProfile = async (targetProfile) => {
   return response.data;
 };
 
+const createProfileName = async (email, password, machineUsernameSpecifier) => {
+  const response = await client.post("/user/default_profile", {
+    email: email,
+    password: password,
+    machineUsernameSpecifier: machineUsernameSpecifier,
+  });
+
+  return response.data;
+}
+
 const getUserPoolAccessToken = async (email, password) => {
   const response = await client.post("/manage_datasets/userpool_access_token", {
     email: email,
@@ -511,6 +521,7 @@ const api = {
   setPreferredOrganization,
   getUserPoolAccessToken,
   setDefaultProfile,
+  createProfileName
 };
 
 module.exports = api;

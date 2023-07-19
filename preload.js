@@ -1029,29 +1029,42 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
         //            user's Pennsieve profile.
         let machineUsernameSpecifier = localStorage.getItem(os.userInfo().username);
 
-        let response = await create_api_key_and_secret(login, password, machineUsernameSpecifier);
-        console.log("Respose from api key creation: ", response);
-        if (response[0] == "failed") {
-          let error_message = response[1];
-          if (response[1]["message"] === "exceptions must derive from BaseException") {
-            error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">It seems that you do not have access to your desired workspace on Pennsieve. See our <a target="_blank" href="https://docs.sodaforsparc.io/docs/next/how-to/how-to-get-a-pennsieve-account">[dedicated help page]</a> to learn how to get access</div>`;
+        // create the profile name for the user
+        let profileResponse = await api.createProfileName(login, password, machineUsernameSpecifier)
+
+        // attempt to set the profile name as the default profile 
+        try {
+          await api.setDefaultProfile(profileResponse)
+          defaultBfAccount = profileResponse.toLowerCase()
+          return true
+        } catch (e) {
+          console.log("Failed to set the default profile name for the user")
+          // if it fails create a new profile key
+          let response = await create_api_key_and_secret(login, password, machineUsernameSpecifier);
+          console.log("Respose from api key creation: ", response);
+          if (response[0] == "failed") {
+            let error_message = response[1];
+            if (response[1]["message"] === "exceptions must derive from BaseException") {
+              error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">It seems that you do not have access to your desired workspace on Pennsieve. See our <a target="_blank" href="https://docs.sodaforsparc.io/docs/next/how-to/how-to-get-a-pennsieve-account">[dedicated help page]</a> to learn how to get access</div>`;
+            }
+            if (response[1]["message"] === "Error: Username or password was incorrect.") {
+              error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">Error: Username or password was incorrect</div>`;
+            }
+            Swal.hideLoading();
+            Swal.showValidationMessage(error_message);
+            document.getElementById("swal2-validation-message").style.flexDirection = "column";
+          } else if (response["success"] == "success") {
+            return {
+              key: response["key"],
+              secret: response["secret"],
+              name: response["name"],
+            };
           }
-          if (response[1]["message"] === "Error: Username or password was incorrect.") {
-            error_message = `<div style="margin-top: .5rem; margin-right: 1rem; margin-left: 1rem;">Error: Username or password was incorrect</div>`;
-          }
-          Swal.hideLoading();
-          Swal.showValidationMessage(error_message);
-          document.getElementById("swal2-validation-message").style.flexDirection = "column";
-        } else if (response["success"] == "success") {
-          return {
-            key: response["key"],
-            secret: response["secret"],
-            name: response["name"],
-          };
         }
       },
     });
 
+    // failed to create a new profile and did not set the default profile to a previously existing one
     if (!result) return;
 
     console.log("Value from preconfirm: ", result);
@@ -1073,26 +1086,97 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
       },
     });
 
-    let key_name = result.name;
-    let apiKey = result.key;
-    let apiSecret = result.secret;
+    if (result === true) {
+      defaultBfDataset = "Select dataset";
+      try {
+        let bf_account_details_req = await client.get(`/manage_datasets/bf_account_details`, {
+          params: {
+            selected_account: defaultBfAccount,
+          },
+        });
+        // reset the dataset field values
+        $("#current-bf-dataset").text("None");
+        $("#current-bf-dataset-generate").text("None");
+        $(".bf-dataset-span").html("None");
+        $("#para-continue-bf-dataset-getting-started").text("");
 
-    // lowercase the key_name the user provided
-    // this is to prevent an issue caused by the pennsiev agent
-    // wherein it fails to validate an account if it is not lowercase
-    key_name = key_name.toLowerCase();
-    //needs to be replaced
-    console.log("About to add the api key information to the backend config.ini");
-    try {
-      console.log("Sending info to backend");
-      console.log("key_name: ", key_name);
-      console.log("apiKey: ", apiKey);
-      console.log("apiSecret: ", apiSecret);
-      await client.put(`/manage_datasets/account/username`, {
-        keyname: key_name,
-        key: apiKey,
-        secret: apiSecret,
+        // set the workspace field values to the user's current workspace
+        let org = bf_account_details_req.data.organization;
+        $(".bf-organization-span").text(org);
+
+        showHideDropdownButtons("account", "show");
+        confirm_click_account_function();
+        updateBfAccountList();
+
+        // If the clicked button has the data attribute "reset-guided-mode-page" and the value is "true"
+        // then reset the guided mode page
+        if (ev?.getAttribute("data-reset-guided-mode-page") == "true") {
+          // Get the current page that the user is on in the guided mode
+          const currentPage = CURRENT_PAGE.id;
+          if (currentPage) {
+            await openPage(currentPage);
+          }
+        }
+      } catch (error) {
+        clientError(error);
+        Swal.fire({
+          backdrop: "rgba(0,0,0, 0.4)",
+          heightAuto: false,
+          icon: "error",
+          text: "Something went wrong!",
+          footer:
+            '<a target="_blank" href="https://docs.pennsieve.io/docs/configuring-the-client-credentials">Why do I have this issue?</a>',
+        });
+        showHideDropdownButtons("account", "hide");
+        confirm_click_account_function();
+      }
+
+      datasetList = [];
+      defaultBfDataset = null;
+      clearDatasetDropdowns();
+
+      titleText = "Successfully added! <br/>Loading your account details...";
+      if (verifyingOrganization) {
+        titleText = "Workspace details loaded!";
+      }
+      Swal.fire({
+        allowEscapeKey: false,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        icon: "success",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        title: titleText,
+        didOpen: () => {
+          Swal.showLoading();
+        },
       });
+
+    } else {
+
+      let key_name = result.name;
+      let apiKey = result.key;
+      let apiSecret = result.secret;
+
+      // lowercase the key_name the user provided
+      // this is to prevent an issue caused by the pennsiev agent
+      // wherein it fails to validate an account if it is not lowercase
+      key_name = key_name.toLowerCase();
+      //needs to be replaced
+      console.log("About to add the api key information to the backend config.ini");
+      try {
+        await client.put(`/manage_datasets/account/username`, {
+          keyname: key_name,
+          key: apiKey,
+          secret: apiSecret,
+        });
+      } catch (error) {
+        clientError(error);
+        Swal.showValidationMessage(userErrorMessage(error));
+        Swal.close();
+        return;
+      }
 
       // set the user's email to be the defaultBfAccount value
       bfAccountOptions[key_name] = key_name;
@@ -1146,7 +1230,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
       defaultBfDataset = null;
       clearDatasetDropdowns();
 
-      let titleText = "Successfully added! <br/>Loading your account details...";
+      titleText = "Successfully added! <br/>Loading your account details...";
       if (verifyingOrganization) {
         titleText = "Workspace details loaded!";
       }
@@ -1163,10 +1247,6 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           Swal.showLoading();
         },
       });
-    } catch (error) {
-      clientError(error);
-      Swal.showValidationMessage(userErrorMessage(error));
-      Swal.close();
     }
   }
 };
