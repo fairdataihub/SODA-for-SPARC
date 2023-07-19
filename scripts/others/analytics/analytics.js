@@ -59,7 +59,6 @@ if (appVersion.includes("beta")) {
 
 // If in the dev environment, send tracking events to the dev branch
 if (process.env.NODE_ENV === "development") {
-  console.log(process.env.NODE_ENV);
   appStatus = "dev";
   appId = "6a03a43e-63a9-4ce8-a4fa-63e27a70dc43";
   dnt = false;

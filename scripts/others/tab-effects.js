@@ -3689,7 +3689,6 @@ $(document).ready(() => {
   $(".ui.accordion").accordion();
   $(".content-button").click(function () {
     let section = $(this).data("section");
-    console.log(section);
 
     if (section === "rename_existing_bf_dataset") {
       let rename_dataset_name = $(
