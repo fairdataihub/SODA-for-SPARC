@@ -126,26 +126,25 @@ const createPyProc = async () => {
         log.info("Application is packaged");
 
         // Store the stdout and stederr in a string to log later
-        let stdoutData = "";
-        let stderrData = "";
+        let sessionServerOutput = "";
 
         pyflaskProcess = require("child_process").execFile(script, [port], {});
 
         // Log the stdout and stderr
         pyflaskProcess.stdout.on("data", (data) => {
-          const logOutput = `[pyflaskProcess stdout] ${data.toString()}`;
-          stdoutData += `/n${logOutput}`;
+          const logOutput = `[pyflaskProcess output] ${data.toString()}`;
+          sessionServerOutput += `${logOutput}`;
         });
         pyflaskProcess.stderr.on("data", (data) => {
           const logOutput = `[pyflaskProcess stderr] ${data.toString()}`;
-          stderrData += `/n${logOutput}`;
+          sessionServerOutput += `${logOutput}`;
         });
 
         // On close, log the outputs and the exit code
         pyflaskProcess.on("close", (code) => {
           log.info(`child process exited with code ${code}`);
-          log.info(`stdout: ${stdoutData}`);
-          log.info(`stderr: ${stderrData}`);
+          log.info("Server output during session found below:");
+          log.info(sessionServerOutput);
         });
       } else {
         log.info("Application is not packaged");
