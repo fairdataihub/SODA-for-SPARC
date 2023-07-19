@@ -45,7 +45,6 @@ const renderMilestoneSelectionTable = (milestoneData) => {
 const resetFundingConsortiumDropdown = () => {
   $("#ffm-select-sparc-funding-consortium").val("").change();
 };
-resetFundingConsortiumDropdown();
 
 const openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneRes) => {
   //add a custom milestone row for when the user wants to add a custom milestone
@@ -566,6 +565,8 @@ $("#ffm-select-sparc-funding-consortium").on("change", function (e) {
     containerDddImportButton.classList.add("hidden");
   }
 });
+// Reset the dropdown so it starts with the default option
+resetFundingConsortiumDropdown();
 
 var submissionDestinationPath = "";
 

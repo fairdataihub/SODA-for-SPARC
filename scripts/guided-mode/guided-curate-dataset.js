@@ -5325,7 +5325,11 @@ const openPage = async (targetPageID) => {
       const setFundingConsortium =
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
 
+      const topLevelDDDInstructionsText = document.getElementById(
+        "guided-submission-metadata-ddd-import-instructions"
+      );
       if (setFundingConsortium != "SPARC") {
+        topLevelDDDInstructionsText.classList.add("hidden");
         // Hide the ddd import section since the submission is not SPARC funded
         sectionThatAsksIfDataDeliverablesReady.classList.add("hidden");
         // Show the submission metadata inputs section so the user can enter the metadata manually
@@ -5334,6 +5338,8 @@ const openPage = async (targetPageID) => {
         // Show the instructions for non-SPARC funded submissions
         showElementsWithClass("guided-non-sparc-funding-consortium-instructions");
       } else {
+        topLevelDDDInstructionsText.classList.remove("hidden");
+
         // If the submission is SPARC, but they have already added their sparc award and milestones
         // then hide the section that asks if they have data deliverables ready and show the
         // submission metadata inputs section
