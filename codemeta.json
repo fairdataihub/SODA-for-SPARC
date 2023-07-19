@@ -9,7 +9,7 @@
   "downloadUrl": "https://fairdataihub.org/sodaforsparc",
   "issueTracker": "https://github.com/fairdataihub/SODA-for-SPARC/issues",
   "name": "SODA (Software to Organize Data Automatically) for SPARC",
-  "version": "12.1.7-beta",
+  "version": "12.1.0",
   "identifier": "https://doi.org/10.5281/zenodo.8161820",
   "description": "Simplifying data curation for researchers funded by the NIH SPARC initiative",
   "applicationCategory": "Scientific",
