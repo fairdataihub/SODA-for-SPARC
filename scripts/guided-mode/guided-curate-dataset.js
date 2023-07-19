@@ -1045,6 +1045,9 @@ const savePageChanges = async (pageBeingLeftID) => {
 
       // If the user selected that the dataset is SPARC funded, unskip the submission metadata page
       if (userSelectedDatasetIsSparcFunded) {
+        // Set the consortium data standard value in the JSON
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
+          "SPARC";
         // Get the funding source value from the dropdown
         const selectedFuncingSourceFromDropdown = $(
           "#guided-select-sparc-funding-consortium"
@@ -1058,9 +1061,6 @@ const savePageChanges = async (pageBeingLeftID) => {
           });
           throw errorArray;
         } else {
-          // Set the consortium data standard value in the JSON
-          sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
-            "SPARC";
           // Set the funding consortium value in the JSON
           sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
             selectedFuncingSourceFromDropdown;
@@ -7297,19 +7297,20 @@ const patchPreviousGuidedModeVersions = async () => {
     return "guided-dataset-dissemination-tab";
   }
 
-  if (sodaJSONObj["last-version-of-soda-used"] <= "12.0.0") {
-    // Change the award number variable from sparc-award to award-number
-    if (sodaJSONObj?.["dataset-metadata"]?.["shared-metadata"]?.["sparc-award"]) {
-      sodaJSONObj["dataset-metadata"]["shared-metadata"]["award-number"] =
-        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
-    }
-    if (!sodaJSONObj["dataset-metadata"]["submission-metadata"]?.["consortium-data-standard"]) {
-      sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] = "";
-    }
-    if (!sodaJSONObj["dataset-metadata"]["submission-metadata"]?.["funding-consortium"]) {
-      sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] = "";
-    }
+  // Change the award number variable from sparc-award to award-number
+  if (sodaJSONObj?.["dataset-metadata"]?.["shared-metadata"]?.["sparc-award"]) {
+    sodaJSONObj["dataset-metadata"]["shared-metadata"]["award-number"] =
+      sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
   }
+  // If the consortium data standard is not defined, set it to an empty string
+  if (!sodaJSONObj["dataset-metadata"]["submission-metadata"]?.["consortium-data-standard"]) {
+    sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] = "";
+  }
+  // If the funding consortium is not defined, set it to an empty string
+  if (!sodaJSONObj["dataset-metadata"]["submission-metadata"]?.["funding-consortium"]) {
+    sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] = "";
+  }
+
   // If no other conditions are met, return the page the user was last on
   return sodaJSONObj["page-before-exit"];
 };
