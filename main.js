@@ -236,13 +236,11 @@ const sendUserAnalytics = () => {
   }
 
   if (token === null) {
-    console.log("no token found, creating new user");
     // send empty object for new users
     kombuchaServer
       .post("meta/users", {})
       .then((res) => {
         // Save the user token from the server
-        console.log(res);
         nodeStorage.setItem("kombuchaToken", res.data.token);
         nodeStorage.setItem("userId", res.data.userId);
       })
@@ -326,7 +324,6 @@ function initialize() {
   }
 
   const quit_app = () => {
-    console.log("Quit app called");
     app.showExitPrompt = false;
     mainWindow.close();
     /// feedback form iframe prevents closing gracefully
@@ -405,7 +402,6 @@ function initialize() {
   });
 
   app.on("window-all-closed", async () => {
-    console.log("All windows closed");
     await exitPyProc();
     app.quit();
   });
@@ -416,7 +412,6 @@ function initialize() {
 }
 
 function start_pre_flight_checks() {
-  console.log("Running pre-checks");
   mainWindow.webContents.send("start_pre_flight_checks");
 }
 

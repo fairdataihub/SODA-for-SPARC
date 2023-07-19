@@ -492,7 +492,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         .getElementById("guided-button-resume-pennsieve-dataset")
         .classList.contains("selected");
 
-      console.log(document.getElementById("guided-button-start-new-curation").classList);
 
       if (!startingNewCuration && !resumingExistingProgress && !resumingPennsieveDataset) {
         errorArray.push({
@@ -1120,7 +1119,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         }
         guidedUnSkipPage("guided-create-submission-metadata-tab");
       } else {
-        console.log("Hiding submission metadata and protocols tabs");
         // If the set consortium data standard is not SPARC, skip the SPARC specific metadata pages
         guidedSkipPage("guided-create-submission-metadata-tab");
         guidedSkipPage("guided-protocols-tab");
@@ -7458,7 +7456,6 @@ const guidedResumeProgress = async (datasetNameToResume) => {
     // pageToReturnTo will be set to the page the user will return to
     const pageToReturnTo = guidedGetPageToReturnTo(sodaJSONObj);
 
-    console.log("pageToReturnTo", pageToReturnTo);
 
     await openPage(pageToReturnTo);
 
