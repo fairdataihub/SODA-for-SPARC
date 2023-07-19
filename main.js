@@ -21,7 +21,7 @@ const uuid = require("uuid").v4;
 
 log.transports.console.level = false;
 log.transports.file.level = "debug";
-autoUpdater.channel = "latest";
+autoUpdater.channel = "beta";
 autoUpdater.logger = log;
 global.trackEvent = trackEvent;
 global.trackKombuchaEvent = trackKombuchaEvent;
@@ -190,7 +190,9 @@ const exitPyProc = async () => {
 
   // check if the platform is Windows
   if (process.platform === "win32") {
-    if (pyflaskProcess !== null) killPythonProcess();
+    if (pyflaskProcess != null) {
+      killPythonProcess();
+    }
     pyflaskProcess = null;
     PORT = null;
     return;
