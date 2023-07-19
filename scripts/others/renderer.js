@@ -583,10 +583,7 @@ const getPennsieveAgentPath = () => {
     if (fs.existsSync(unixPath)) {
       return unixPath;
     }
-    const m1InstallPath = "/usr/local/opt/pennsieve/pennsieve";
-    if (fs.existsSync(m1InstallPath)) {
-      return m1InstallPath;
-    }
+
     throw new Error(`Could not find the Pennsieve agent path at ${pennsievePath}`);
   }
 };

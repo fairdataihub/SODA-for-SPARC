@@ -265,7 +265,7 @@ let window_reloaded = false;
 
 // If buildIsBeta is true, the app will not check for updates
 // If it is false, the app will check for updates
-const buildIsBeta = true;
+const buildIsBeta = false;
 
 function initialize() {
   const checkForAnnouncements = () => {
