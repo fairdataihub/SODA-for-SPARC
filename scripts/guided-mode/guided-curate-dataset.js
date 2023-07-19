@@ -492,7 +492,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         .getElementById("guided-button-resume-pennsieve-dataset")
         .classList.contains("selected");
 
-
       if (!startingNewCuration && !resumingExistingProgress && !resumingPennsieveDataset) {
         errorArray.push({
           type: "notyf",
@@ -7455,7 +7454,6 @@ const guidedResumeProgress = async (datasetNameToResume) => {
 
     // pageToReturnTo will be set to the page the user will return to
     const pageToReturnTo = guidedGetPageToReturnTo(sodaJSONObj);
-
 
     await openPage(pageToReturnTo);
 
