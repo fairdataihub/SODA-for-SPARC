@@ -1,6 +1,5 @@
 // event listeners for opening dataset or account selection dropdown
 // TODO: Add logic so this doesnt apply to the organization fields
-
 document.querySelectorAll(".ds-dd:not(.organization)").forEach((dropdownElement) => {
   dropdownElement.addEventListener("click", function () {
     openDropdownPrompt(this, "dataset");
@@ -205,6 +204,18 @@ $("#button-create-bf-new-dataset").click(async () => {
       // log a map of datasetId to dataset name to analytics
       // this will be used to help us track private datasets which are not trackable using a datasetId alone
       ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.CREATE_NEW_DATASET,
+        defaultBfDataset,
+        kombuchaEnums.Status.SUCCESS,
+        {
+          value: 1,
+          dataset_id: defaultBfDatasetId,
+        }
+      );
+
+      ipcRenderer.send(
         "track-event",
         "Dataset ID to Dataset Name Map",
         defaultBfDatasetId,
@@ -250,6 +261,17 @@ $("#button-create-bf-new-dataset").click(async () => {
       });
 
       $("#button-create-bf-new-dataset").prop("disabled", false);
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.CREATE_NEW_DATASET,
+        bfNewDatasetName,
+        kombuchaEnums.Status.FAIL,
+        {
+          value: 1,
+        }
+      );
 
       ipcRenderer.send(
         "track-event",
@@ -336,6 +358,18 @@ $("#button-rename-dataset").on("click", async () => {
           `${defaultBfDatasetId}: ` + currentDatasetName + " to " + renamedDatasetName
         );
 
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.MANAGE_DATASETS,
+          kombuchaEnums.Action.RENAME_DATASET,
+          currentDatasetName,
+          kombuchaEnums.Status.FAIL,
+          {
+            value: 1,
+            dataset_id: defaultBfDatasetId,
+          }
+        );
+
         return;
       }
 
@@ -355,6 +389,18 @@ $("#button-rename-dataset").on("click", async () => {
         },
       });
       $("#button-rename-dataset").prop("disabled", false);
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.RENAME_DATASET,
+        defaultBfDataset,
+        kombuchaEnums.Status.SUCCESS,
+        {
+          value: 1,
+          dataset_id: defaultBfDatasetId,
+        }
+      );
 
       ipcRenderer.send(
         "track-event",
@@ -2454,73 +2500,124 @@ const resetUploadLocalDataset = async () => {
 };
 
 $("#button-submit-dataset").click(async () => {
-  const progressfunction = () => {
+  // When true it will prevent duplicate file counts from being sent to analytics
+  let finalFilesSent = false;
+  let finalBytesSent = false;
+
+  const progressfunction = (kombuchaEnums) => {
     $("#upload_local_dataset_progress_div")[0].scrollIntoView({
       behavior: "smooth",
       block: "start",
     });
 
+    const fillProgressBar = (progressResponse) => {
+      let progressData = progressResponse.data;
+      statusMessage = progressData["progress"];
+      completionStatus = progressData["submit_dataset_status"];
+      let submitprintstatus = progressData["submit_print_status"];
+      totalFileSize = progressData["total_file_size"];
+      let totalUploadedFileSize = progressData["upload_file_size"];
+      let fileUploadStatus = progressData["files_uploaded_status"];
+      let totalFilesUploaded = progressData["uploaded_files"];
+
+      if (submitprintstatus === "Uploading") {
+        logProgressToAnalytics(totalFilesUploaded, totalUploadedFileSize);
+
+        $("#div-progress-submit").css("display", "block");
+        if (completionStatus == "Done") {
+          progressBarUploadBf.value = 100;
+          cloneMeter.value = 100;
+
+          $("#para-please-wait-manage-dataset").html("");
+          $("#para-progress-bar-status").html(statusMessage + smileyCan);
+          cloneStatus.innerHTML = statusMessage + smileyCan;
+
+          // log the last batch of files uploaded if the difference between the last batch and the total files uploaded is not 0
+          let finalFilesCount = totalFilesUploaded - filesOnPreviousLogPage;
+          let differenceInBytes = totalUploadedFileSize - bytesOnPreviousLogPage;
+          if (finalFilesCount > 0 && !finalFilesSent) {
+            ipcRenderer.send(
+              "track-kombucha",
+              kombuchaEnums.Category.MANAGE_DATASETS,
+              kombuchaEnums.Action.GENERATE_DATASET,
+              kombuchaEnums.Label.FILES,
+              kombuchaEnums.Status.SUCCESS,
+              createEventData(finalFilesCount, "Pennsieve", "Local", defaultBfDataset)
+            );
+            finalFilesSent = true;
+          }
+
+          if (differenceInBytes > 0 && !finalBytesSent) {
+            ipcRenderer.send(
+              "track-kombucha",
+              kombuchaEnums.Category.MANAGE_DATASETS,
+              kombuchaEnums.Action.GENERATE_DATASET,
+              kombuchaEnums.Label.SIZE,
+              kombuchaEnums.Status.SUCCESS,
+              createEventData(differenceInBytes, "Pennsieve", "Local", defaultBfDataset)
+            );
+            finalBytesSent = true;
+          }
+        } else {
+          let value = (totalUploadedFileSize / totalFileSize) * 100;
+
+          progressBarUploadBf.value = value;
+          cloneMeter.value = value;
+          let totalSizePrint = "";
+
+          if (totalFileSize < displaySize) {
+            totalSizePrint = totalFileSize.toFixed(2) + " B";
+          } else if (totalFileSize < displaySize * displaySize) {
+            totalSizePrint = (totalFileSize / displaySize).toFixed(2) + " KB";
+          } else if (totalFileSize < displaySize * displaySize * displaySize) {
+            totalSizePrint = (totalFileSize / displaySize / displaySize).toFixed(2) + " MB";
+          } else {
+            totalSizePrint =
+              (totalFileSize / displaySize / displaySize / displaySize).toFixed(2) + " GB";
+          }
+
+          $("#para-please-wait-manage-dataset").html("");
+          // cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%";
+          if (statusMessage.indexOf("<br")) {
+            let timeIndex = statusMessage.indexOf("<br");
+            let timePhrase = statusMessage.substring(timeIndex);
+            cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%" + timePhrase;
+          }
+          $("#para-progress-bar-status").html(
+            fileUploadStatus +
+              statusMessage +
+              "Progress: " +
+              value.toFixed(2) +
+              "%" +
+              " (total size: " +
+              totalSizePrint +
+              ")"
+          );
+        }
+      }
+    };
+
     client
       .get("/manage_datasets/datasets/upload_progress")
-      .then((progressResponse) => {
-        let progressData = progressResponse.data;
-        statusMessage = progressData["progress"];
-        completionStatus = progressData["submit_dataset_status"];
-        let submitprintstatus = progressData["submit_print_status"];
-        totalFileSize = progressData["total_file_size"];
-        let uploadedFileSize = progressData["upload_file_size"];
-        let fileUploadStatus = progressData["files_uploaded_status"];
-
-        if (submitprintstatus === "Uploading") {
-          $("#div-progress-submit").css("display", "block");
-
-          if (statusMessage.includes("Success: COMPLETED!")) {
-            progressBarUploadBf.value = 100;
-            cloneMeter.value = 100;
-
-            $("#para-please-wait-manage-dataset").html("");
-            $("#para-progress-bar-status").html(statusMessage + smileyCan);
-            cloneStatus.innerHTML = statusMessage + smileyCan;
-          } else {
-            var value = (uploadedFileSize / totalFileSize) * 100;
-
-            progressBarUploadBf.value = value;
-            cloneMeter.value = value;
-
-            if (totalFileSize < displaySize) {
-              var totalSizePrint = totalFileSize.toFixed(2) + " B";
-            } else if (totalFileSize < displaySize * displaySize) {
-              var totalSizePrint = (totalFileSize / displaySize).toFixed(2) + " KB";
-            } else if (totalFileSize < displaySize * displaySize * displaySize) {
-              var totalSizePrint = (totalFileSize / displaySize / displaySize).toFixed(2) + " MB";
-            } else {
-              var totalSizePrint =
-                (totalFileSize / displaySize / displaySize / displaySize).toFixed(2) + " GB";
-            }
-
-            $("#para-please-wait-manage-dataset").html("");
-            // cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%";
-            if (statusMessage.indexOf("<br")) {
-              let timeIndex = statusMessage.indexOf("<br");
-              let timePhrase = statusMessage.substring(timeIndex);
-              cloneStatus.innerHTML = "Progress: " + value.toFixed(2) + "%" + timePhrase;
-            }
-            $("#para-progress-bar-status").html(
-              fileUploadStatus +
-                statusMessage +
-                "Progress: " +
-                value.toFixed(2) +
-                "%" +
-                " (total size: " +
-                totalSizePrint +
-                ")"
-            );
-          }
-        }
-      })
+      .then((progressResponse) => fillProgressBar(progressResponse, kombuchaEnums))
       .catch((error) => {
         clientError(error);
         let emessage = userErrorMessage(error);
+        const kombuchaEventData = {
+          value: emessage,
+          dataset_id: defaultBfDatasetId,
+          dataset_name: defaultBfDataset,
+        };
+
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.MANAGE_DATASETS,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.PROGRESS_TRACK,
+          kombuchaEnums.Status.FAIL,
+          kombuchaEventData
+        );
+
         ipcRenderer.send(
           "track-event",
           "Error",
@@ -2595,12 +2692,19 @@ $("#button-submit-dataset").click(async () => {
         }
 
         if (statusMessage.includes("Success: COMPLETED")) {
+          const kombuchaEventData = {
+            value: statusMessage,
+            dataset_id: defaultBfDatasetId,
+            dataset_name: defaultBfDataset,
+          };
+
           ipcRenderer.send(
-            "track-event",
-            "Success",
-            ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET +
-              ` - Progress track`,
-            defaultBfDatasetId
+            "track-kombucha",
+            kombuchaEnums.Category.MANAGE_DATASETS,
+            kombuchaEnums.Action.GENERATE_DATASET,
+            kombuchaEnums.Label.PROGRESS_TRACK,
+            kombuchaEnums.Status.SUCCESS,
+            kombuchaEventData
           );
         }
 
@@ -2611,11 +2715,74 @@ $("#button-submit-dataset").click(async () => {
         $("#button-submit-dataset").prop("disabled", false);
         $("#selected-local-dataset-submit").prop("disabled", false);
 
+        // Remove <br> from the statusMessage text
+        let eventValue = statusMessage.replace(/<br>/g, "");
+        const kombuchaEventData = {
+          value: eventValue,
+          dataset_id: defaultBfDatasetId,
+          dataset_name: defaultBfDataset,
+        };
+
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.MANAGE_DATASETS,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.PROGRESS_TRACK,
+          kombuchaEnums.Status.SUCCESS,
+          kombuchaEventData
+        );
+
         ipcRenderer.send(
           "track-event",
           "Success",
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET + ` - Progress track`,
           defaultBfDatasetId
+        );
+      }
+    }
+  };
+
+  let bytesOnPreviousLogPage = 0;
+  let filesOnPreviousLogPage = 0;
+  const logProgressToAnalytics = (files, bytes) => {
+    // log every 500 files -- will log on success/failure as well so if there are less than 500 files we will log what we uploaded ( all in success case and some of them in failure case )
+    if (files >= filesOnPreviousLogPage + 500) {
+      filesOnPreviousLogPage += 500;
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.FILES,
+        kombuchaEnums.Status.SUCCESS,
+        createEventData(500, "Pennsieve", "Local", defaultBfDataset)
+      );
+
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        PrepareDatasetsAnalyticsPrefix.CURATE + "- Step 7 - Generate - Dataset - Number of Files",
+        `${datasetUploadSession.id}`,
+        500
+      );
+
+      let differenceInBytes = bytes - bytesOnPreviousLogPage;
+      bytesOnPreviousLogPage = bytes;
+      ipcRenderer.send(
+        "track-event",
+        "Success",
+        PrepareDatasetsAnalyticsPrefix.CURATE + " - Step 7 - Generate - Dataset - Size",
+        `${datasetUploadSession.id}`,
+        differenceInBytes
+      );
+
+      if (differenceInBytes > 0) {
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.MANAGE_DATASETS,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.SIZE,
+          kombuchaEnums.Status.SUCCESS,
+          createEventData(differenceInBytes, "Pennsieve", "Local", defaultBfDataset)
         );
       }
     }
@@ -2724,11 +2891,6 @@ $("#button-submit-dataset").click(async () => {
   $("#upload_local_dataset_progress_div").show();
 
   var totalFileSize;
-  let uploadedFiles = 0;
-  let incrementInFileSize = 0;
-  let uploadedFolders = 0;
-  let uploadedFileSize = 0;
-  let previousUploadedFileSize = 0;
   var err = false;
   var completionStatus = "Solving";
   var success_upload = true;
@@ -2774,16 +2936,17 @@ $("#button-submit-dataset").click(async () => {
 
       log.info("Completed submit function");
 
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.TOTAL_UPLOADS,
+        kombuchaEnums.Status.SUCCCESS,
+        createEventData(1, "Pennsieve", "Local", defaultBfDataset)
+      );
+
       // hide the Upload dataset button to make sure that it isn't clickable until the user selects another dataset to upload
       $("#button-submit-dataset").hide();
-
-      // can tell us how many successful upload sessions a dataset ID had (the value is implicitly set to 1 via Total Events query in Analytics) within a given timeframe
-      ipcRenderer.send(
-        "track-event",
-        "Success",
-        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET,
-        defaultBfDatasetId
-      );
 
       let getFilesFoldersResponse;
       try {
@@ -2793,6 +2956,21 @@ $("#button-submit-dataset").click(async () => {
         );
       } catch (error) {
         clientError(error);
+        const kombuchaEventData = {
+          value: datasetUploadSession.id,
+          dataset_id: defaultBfDatasetId,
+          dataset_name: defaultBfDataset,
+        };
+
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.MANAGE_DATASETS,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.FOLDERS,
+          kombuchaEnums.Status.FAIL,
+          kombuchaEventData
+        );
+
         ipcRenderer.send(
           "track-event",
           "Error",
@@ -2803,22 +2981,39 @@ $("#button-submit-dataset").click(async () => {
         return;
       }
 
-      let data = getFilesFoldersResponse.data;
+      let { data } = getFilesFoldersResponse;
 
       let num_of_folders = data["totalDir"];
 
       // log amount of folders uploaded in the given session
+      const kombuchaEventData = {
+        value: num_of_folders,
+        dataset_id: defaultBfDatasetId,
+        dataset_name: defaultBfDataset,
+        upload_session: datasetUploadSession.id,
+      };
+
       ipcRenderer.send(
-        "track-event",
-        "Success",
-        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET + ` - Number of Folders`,
-        `${datasetUploadSession.id}`,
-        num_of_folders
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.FOLDERS,
+        kombuchaEnums.Status.SUCCESS,
+        kombuchaEventData
       );
     })
     .catch(async (error) => {
       clientError(error);
       let emessage = userErrorMessage(error);
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.TOTAL_UPLOADS,
+        kombuchaEnums.Status.FAIL,
+        createEventData(1, "Pennsieve", "Local", defaultBfDataset)
+      );
 
       $("#para-please-wait-manage-dataset").html("");
       $("#para-progress-bar-status").html("");
@@ -2863,19 +3058,16 @@ $("#button-submit-dataset").click(async () => {
       // while sessions are used for tracking file count and file size for an upload
       // we still want to know what dataset didn't upload by its pennsieve ID
       ipcRenderer.send(
-        "track-event",
-        "Error",
-        "Manage Datasets - Upload Local Dataset",
-        defaultBfDatasetId
-      );
-
-      // get total size of the dataset that failed to upload
-      ipcRenderer.send(
-        "track-event",
-        "Error",
-        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET + " - size",
-        "Size",
-        totalFileSize
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.SIZE,
+        kombuchaEnums.Status.FAIL,
+        {
+          value: totalFileSize,
+          dataset_id: defaultBfDatasetId,
+          dataset_name: defaultBfDataset,
+        }
       );
 
       let getFilesFoldersResponse;
@@ -2889,28 +3081,38 @@ $("#button-submit-dataset").click(async () => {
         return;
       }
 
-      let data = getFilesFoldersResponse.data;
+      let { data } = getFilesFoldersResponse;
 
       let num_of_files = data["totalFiles"];
       let num_of_folders = data["totalDir"];
 
       // log amount of folders uploaded in the given session
       ipcRenderer.send(
-        "track-event",
-        "Error",
-        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET + ` - Number of Folders`,
-        "Number of folders local dataset",
-        num_of_folders
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.FOLDERS,
+        kombuchaEnums.Status.FAIL,
+        {
+          value: num_of_folders,
+          dataset_id: defaultBfDatasetId,
+          dataset_name: defaultBfDataset,
+        }
       );
 
       // track total amount of files being uploaded
       // makes it easy to see aggregate amount of files we failed to upload in Local Dataset
       ipcRenderer.send(
-        "track-event",
-        "Error",
-        ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_UPLOAD_LOCAL_DATASET + ` - Number of Files`,
-        "Number of files local dataset",
-        num_of_files
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.FILES,
+        kombuchaEnums.Status.FAIL,
+        {
+          value: num_of_files,
+          dataset_id: defaultBfDatasetId,
+          dataset_name: defaultBfDataset,
+        }
       );
 
       $("#upload_local_dataset_progress_div")[0].scrollIntoView({
@@ -2923,7 +3125,7 @@ $("#button-submit-dataset").click(async () => {
     });
 
   var countDone = 0;
-  var timerProgress = setInterval(progressfunction, 1000);
+  var timerProgress = setInterval(() => progressfunction(kombuchaEnums), 1000);
   let statusMessage = "Error";
 
   let uploadErrorChildren = document.querySelector("#para-progress-bar-error-status").childNodes;

@@ -11,16 +11,20 @@ require("v8-compile-cache");
 const { ipcMain } = require("electron");
 const { autoUpdater } = require("electron-updater");
 const { JSONStorage } = require("node-localstorage");
+const { trackEvent, trackKombuchaEvent } = require("./scripts/others/analytics/analytics");
 const { fstat } = require("fs");
 const { resolve } = require("path");
 const axios = require("axios");
 const { info } = require("console");
 const { node } = require("prop-types");
+const uuid = require("uuid").v4;
 
 log.transports.console.level = false;
 log.transports.file.level = "debug";
-autoUpdater.channel = "latest";
+autoUpdater.channel = "beta";
 autoUpdater.logger = log;
+global.trackEvent = trackEvent;
+global.trackKombuchaEvent = trackKombuchaEvent;
 
 const nodeStorage = new JSONStorage(app.getPath("userData"));
 /*************************************************************
@@ -36,6 +40,12 @@ let pyflaskProcess = null;
 let PORT = 4242;
 let selectedPort = null;
 const portRange = 100;
+const kombuchaURL = "https://analytics-nine-ashen.vercel.app/api";
+const localKombuchaURL = "http://localhost:3000/api";
+const kombuchaServer = axios.create({
+  baseURL: kombuchaURL,
+  timeout: 0,
+});
 
 /**
  * Determine if the application is running from a packaged version or from a dev version.
@@ -96,7 +106,7 @@ const selectPort = () => {
 
 const createPyProc = async () => {
   let script = getScriptPath();
-  log.info(script);
+  log.info(`Path to server executable: ${script}`);
 
   let port = "" + selectPort();
 
@@ -114,8 +124,27 @@ const createPyProc = async () => {
 
       if (guessPackaged()) {
         log.info("Application is packaged");
-        pyflaskProcess = require("child_process").execFile(script, [port], {
-          stdio: "ignore",
+
+        // Store the stdout and stederr in a string to log later
+        let sessionServerOutput = "";
+
+        pyflaskProcess = require("child_process").execFile(script, [port], {});
+
+        // Log the stdout and stderr
+        pyflaskProcess.stdout.on("data", (data) => {
+          const logOutput = `[pyflaskProcess output] ${data.toString()}`;
+          sessionServerOutput += `${logOutput}`;
+        });
+        pyflaskProcess.stderr.on("data", (data) => {
+          const logOutput = `[pyflaskProcess stderr] ${data.toString()}`;
+          sessionServerOutput += `${logOutput}`;
+        });
+
+        // On close, log the outputs and the exit code
+        pyflaskProcess.on("close", (code) => {
+          log.info(`child process exited with code ${code}`);
+          log.info("Server output during session found below:");
+          log.info(sessionServerOutput);
         });
       } else {
         log.info("Application is not packaged");
@@ -155,19 +184,25 @@ const exitPyProc = async () => {
     ]);
   };
 
+  console.log("Killing the process");
+
   await killAllPreviousProcesses();
 
   // check if the platform is Windows
   if (process.platform === "win32") {
-    killPythonProcess();
+    if (pyflaskProcess != null) {
+      killPythonProcess();
+    }
     pyflaskProcess = null;
     PORT = null;
     return;
   }
 
   // kill signal to pyProc
-  pyflaskProcess.kill();
-  pyflaskProcess = null;
+  if (pyflaskProcess != null) {
+    pyflaskProcess.kill();
+    pyflaskProcess = null;
+  }
   PORT = null;
 };
 
@@ -188,6 +223,31 @@ const killAllPreviousProcesses = async () => {
 
   // wait for all the promises to resolve
   await Promise.allSettled(promisesArray);
+};
+
+// Sends user information to Kombucha server
+const sendUserAnalytics = () => {
+  // Retrieve the userId and if it doesn't exist, create a new uuid
+  let token;
+  try {
+    token = nodeStorage.getItem("kombuchaToken");
+  } catch (e) {
+    token = null;
+  }
+
+  if (token === null) {
+    // send empty object for new users
+    kombuchaServer
+      .post("meta/users", {})
+      .then((res) => {
+        // Save the user token from the server
+        nodeStorage.setItem("kombuchaToken", res.data.token);
+        nodeStorage.setItem("userId", res.data.userId);
+      })
+      .catch((err) => {
+        console.error(err);
+      });
+  }
 };
 
 // 5.4.1 change: We call createPyProc in a spearate ready event
@@ -212,8 +272,11 @@ function initialize() {
     mainWindow.webContents.send("checkForAnnouncements");
   };
 
+  sendUserAnalytics();
+
   makeSingleInstance();
   loadDemos();
+
   function createWindow() {
     // mainWindow.webContents.openDevTools();
 
@@ -223,10 +286,8 @@ function initialize() {
     });
 
     mainWindow.webContents.once("dom-ready", () => {
-      if (updatechecked == false) {
-        if (!buildIsBeta) {
-          autoUpdater.checkForUpdatesAndNotify();
-        }
+      if (updatechecked == false && !buildIsBeta) {
+        autoUpdater.checkForUpdatesAndNotify();
       }
     });
 
@@ -241,12 +302,13 @@ function initialize() {
               title: "Confirm",
               message: "Any running process will be stopped. Are you sure you want to quit?",
             })
-            .then((responseObject) => {
+            .then(async (responseObject) => {
               let { response } = responseObject;
               if (response === 0) {
                 // Runs the following if 'Yes' is clicked
                 var announcementsLaunch = nodeStorage.getItem("announcements");
                 nodeStorage.setItem("announcements", false);
+                await exitPyProc();
                 quit_app();
               }
             });
@@ -262,7 +324,6 @@ function initialize() {
   }
 
   const quit_app = () => {
-    console.log("Quit app called");
     app.showExitPrompt = false;
     mainWindow.close();
     /// feedback form iframe prevents closing gracefully
@@ -351,7 +412,6 @@ function initialize() {
 }
 
 function start_pre_flight_checks() {
-  console.log("Running pre-checks");
   mainWindow.webContents.send("start_pre_flight_checks");
 }
 
@@ -359,14 +419,18 @@ function start_pre_flight_checks() {
 const gotTheLock = app.requestSingleInstanceLock();
 
 function makeSingleInstance() {
-  if (process.mas) return;
+  if (process.mas) {
+    return;
+  }
 
   if (!gotTheLock) {
     app.quit();
   } else {
     app.on("second-instance", () => {
       if (mainWindow) {
-        if (mainWindow.isMinimized()) mainWindow.restore();
+        if (mainWindow.isMinimized()) {
+          mainWindow.restore();
+        }
         mainWindow.focus();
       }
     });
@@ -392,14 +456,14 @@ function loadDemos() {
 initialize();
 
 ipcMain.on("resize-window", (event, dir) => {
-  var x = mainWindow.getSize()[0];
-  var y = mainWindow.getSize()[1];
+  let x = mainWindow.getSize()[0];
+  let y = mainWindow.getSize()[1];
   if (dir === "up") {
-    x = x + 1;
-    y = y + 1;
+    x += 1;
+    y += 1;
   } else {
-    x = x - 1;
-    y = y - 1;
+    x -= 1;
+    y -= 1;
   }
   mainWindow.setSize(x, y);
 });
@@ -411,6 +475,10 @@ ipcMain.on("resize-window", (event, dir) => {
 //ipcRenderer.send('track-event', "App Backend", "Errors", "server", error);
 ipcMain.on("track-event", (event, category, action, label, value) => {
   // do nothing here for now
+});
+
+ipcMain.on("track-kombucha", (event, category, action, label, eventStatus, eventData) => {
+  trackKombuchaEvent(category, action, label, eventStatus, eventData);
 });
 
 ipcMain.on("app_version", (event) => {

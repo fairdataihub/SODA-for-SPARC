@@ -5,6 +5,21 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.12.1.0 - 2023-07-19
+
+## Feature Additions:
+
+- Dataset Description Metadata updated from SDS 2.0.0 -> 2.1.0
+- Submission Metadata updated from SDS 2.0.0 -> 2.1.0
+- Files Explorer can now move files in Guided Mode (patched for Free Form Mode)
+- Kombucha Analytics has been added to SODA and will be tracking user upload events. These upload events include: Guided Mode's upload, Free Form Mode's Organize dataset upload,
+  and Free Form Mode's Local upload. This will help us track the number of users using SODA and the number of datasets being uploaded through SODA.
+
+## Bug fixes:
+
+- Fixed an issue causing the server to not connect for Window's users
+- Fixed an issue where moving files in the File Explorer did not remove files from their original location
+
 ## v.12.0.2 - 2023-07-03
 
 ## Bug fixes:

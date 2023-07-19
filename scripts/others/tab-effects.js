@@ -2103,8 +2103,8 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
 
       // check if the user has selected start from existing pennsieve
       // if so then hide the workspace selection field
-      var res = generateSubmissionFile();
-      if (res === "empty") {
+      const submissionFieldsAreValid = validateSubmissionFileInputs();
+      if (!submissionFieldsAreValid) {
         return;
       }
       $("#submission-accordion").removeClass("active");
@@ -2389,9 +2389,6 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
   // auto-scroll to bottom of div
   if (ev.getAttribute("data-next") !== "Question-prepare-dd-4-sections") {
     document.getElementById(parentDiv).scrollTop = document.getElementById(parentDiv).scrollHeight;
-    if (ev.getAttribute("data-next") === "Question-prepare-submission-2") {
-      onboardingSubmission();
-    }
   }
 
   if (ev.getAttribute("data-next") === "Question-prepare-subjects-2") {
@@ -3692,17 +3689,6 @@ $(document).ready(() => {
   $(".ui.accordion").accordion();
   $(".content-button").click(function () {
     let section = $(this).data("section");
-
-    // if (section === "add_edit_bf_dataset_collection") {
-    //   let rename_dataset_name = $(
-    //     "#rename_dataset_BF_account_tab .change-current-account.ds-dd.dataset-name h5"
-    //   ).html();
-    //   if (rename_dataset_name.trim() != "None" && rename_dataset_name != "") {
-    //     $("#bf-rename-dataset-name").val(rename_dataset_name);
-    //   } else {
-    //     $("#bf-rename-dataset-name").val("");
-    //   }
-    // }
 
     if (section === "rename_existing_bf_dataset") {
       let rename_dataset_name = $(

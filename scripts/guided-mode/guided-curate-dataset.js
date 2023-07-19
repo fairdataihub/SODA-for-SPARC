@@ -1,7 +1,34 @@
-const { remove } = require("fs-extra");
-
 const returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
+};
+
+const guidedGetDatasetId = (sodaJSON) => {
+  let datasetId = sodaJSON?.["digital-metadata"]?.["pennsieve-dataset-id"];
+  if (datasetId != undefined) {
+    return datasetId;
+  }
+
+  return "None";
+};
+
+const guidedGetDatasetName = (sodaJSON) => {
+  let datasetName = sodaJSON?.["digital-metadata"]?.["name"];
+  if (datasetName != undefined) {
+    return datasetName;
+  }
+
+  return "None";
+};
+
+const guidedGetDatasetOrigin = (sodaJSON) => {
+  let datasetOrigin = sodaJSON?.["generate-dataset"]?.["generate-option"];
+  if (datasetOrigin === "existing-bf") {
+    // Dataset origin is from Pennsieve
+    return "Pennsieve";
+  }
+
+  // Otherwise origin is new dataset
+  return "New";
 };
 
 const handleGuidedModeOrgSwitch = async (buttonClicked) => {
@@ -60,9 +87,7 @@ const lottieAnimationManager = {
   animations: {},
 
   startAnimation: function (containerElementId) {
-    const animationData = this.animationData[containerElementId].animationData;
-    const loop = this.animationData[containerElementId].loop;
-    const autoplay = this.animationData[containerElementId].autoplay;
+    const { animationData, loop, autoplay } = this.animationData[containerElementId];
 
     const container = document.getElementById(containerElementId);
     container.innerHTML = "";
@@ -172,11 +197,7 @@ const guidedMovePennsieveFolder = (movedFolderName, folderJSONPath, newFolderJSO
 
 // Returns a boolean that indicates whether or not the user selected that the dataset is SPARC funded
 const datasetIsSparcFunded = () => {
-  // If the user has not selected this option("probably an older progress file"), return true
-  if (!sodaJSONObj["button-config"]["dataset-is-sparc-funded"]) {
-    return true;
-  }
-  return sodaJSONObj["button-config"]["dataset-is-sparc-funded"] === "yes";
+  return sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] === "SPARC";
 };
 
 const checkIfPoolsFoldersAreCorrect = (poolFolderPath) => {
@@ -1012,8 +1033,8 @@ const savePageChanges = async (pageBeingLeftID) => {
 
       if (
         !userSelectedDatasetIsSparcFunded &&
-        !userSelectedDatasetIsOtherFunded &&
-        !userSelectedDatasetIsReJoinFunded
+        !userSelectedDatasetIsReJoinFunded &&
+        !userSelectedDatasetIsOtherFunded
       ) {
         errorArray.push({
           type: "notyf",
@@ -1024,51 +1045,86 @@ const savePageChanges = async (pageBeingLeftID) => {
 
       // If the user selected that the dataset is SPARC funded, unskip the submission metadata page
       if (userSelectedDatasetIsSparcFunded) {
-        // Make sure the submission metadata and validation tab are unskipped as they are required
-        // for the SPARC funded dataset flow
-        guidedUnSkipPage("guided-create-submission-metadata-tab");
-        guidedUnSkipPage("guided-protocols-tab");
+        // Get the funding source value from the dropdown
+        const selectedFuncingSourceFromDropdown = $(
+          "#guided-select-sparc-funding-consortium"
+        ).val();
+
+        // Throw an error if the user did not select a funding source from the dropdown
+        if (!selectedFuncingSourceFromDropdown) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please select a funding source from the dropdown.",
+          });
+          throw errorArray;
+        } else {
+          // Set the consortium data standard value in the JSON
+          sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] =
+            "SPARC";
+          // Set the funding consortium value in the JSON
+          sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
+            selectedFuncingSourceFromDropdown;
+        }
       }
 
-      // If the user selected that dataset is not SPARC funded, skip the submission metadata page
-      // The logic that handles the submission file is ran during upload
-      if (userSelectedDatasetIsReJoinFunded || userSelectedDatasetIsOtherFunded) {
-        if (userSelectedDatasetIsOtherFunded) {
-          const userSelectedTheyHaveReachedOutToCurationTeam = document
-            .getElementById("guided-button-non-sparc-user-has-contacted-sparc")
-            .classList.contains("selected");
-          const userSelectedTheyHaveNotReachedOutToCurationTeam = document
-            .getElementById("guided-button-non-sparc-user-has-not-contacted-sparc")
-            .classList.contains("selected");
+      if (userSelectedDatasetIsReJoinFunded) {
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] = "HEAL";
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
+          "REJOIN-HEAL";
+      }
 
-          if (
-            !userSelectedTheyHaveReachedOutToCurationTeam &&
-            !userSelectedTheyHaveNotReachedOutToCurationTeam
-          ) {
-            errorArray.push({
-              type: "notyf",
-              message: "Please indicate if you have reached out to the curation team",
-            });
-            throw errorArray;
-          }
-          if (userSelectedTheyHaveNotReachedOutToCurationTeam) {
-            errorArray.push({
-              type: "notyf",
-              message:
-                "Please reach out to the curation team before continuing the curation process",
-            });
-            throw errorArray;
-          }
+      if (userSelectedDatasetIsOtherFunded) {
+        const userSelectedTheyHaveReachedOutToCurationTeam = document
+          .getElementById("guided-button-non-sparc-user-has-contacted-sparc")
+          .classList.contains("selected");
+        const userSelectedTheyHaveNotReachedOutToCurationTeam = document
+          .getElementById("guided-button-non-sparc-user-has-not-contacted-sparc")
+          .classList.contains("selected");
+
+        if (
+          !userSelectedTheyHaveReachedOutToCurationTeam &&
+          !userSelectedTheyHaveNotReachedOutToCurationTeam
+        ) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please indicate if you have reached out to the curation team",
+          });
+          throw errorArray;
+        }
+        if (userSelectedTheyHaveNotReachedOutToCurationTeam) {
+          errorArray.push({
+            type: "notyf",
+            message: "Please reach out to the curation team before continuing the curation process",
+          });
+          throw errorArray;
         }
 
-        // Skip the submission metadata page
-        // This can be safely skipped as the logic that handles the submission file is ran during upload
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] = "";
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] = "EXTERNAL";
+      }
+
+      const setConsortiumDataStandard =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"];
+      // If the set consortium data standard is SPARC, unskip the SPARC specific metadata pages
+      if (setConsortiumDataStandard === "SPARC") {
+        const setFundingConsortium =
+          sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
+        if (setFundingConsortium === "SPARC") {
+          // If the funding consortium is SPARC, unskip the protocols page
+          guidedUnSkipPage("guided-protocols-tab");
+        } else {
+          // If the funding consortium is not SPARC, skip the protocols page
+          guidedSkipPage("guided-protocols-tab");
+        }
+        guidedUnSkipPage("guided-create-submission-metadata-tab");
+      } else {
+        // If the set consortium data standard is not SPARC, skip the SPARC specific metadata pages
         guidedSkipPage("guided-create-submission-metadata-tab");
-        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = "EXTERNAL";
+        guidedSkipPage("guided-protocols-tab");
+        // Manually set the SPARC award number to "EXTERNAL" for non-SPARC funded datasets (case for all non-SPARC funded datasets)
+        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = "";
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] = [""];
         sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] = "";
-
-        guidedSkipPage("guided-protocols-tab");
       }
     }
 
@@ -1631,25 +1687,13 @@ const savePageChanges = async (pageBeingLeftID) => {
         "guided-submission-completion-date-manual"
       ).value;
 
-      if (award === "") {
+      const fundingConsortiumIsSparc = datasetIsSparcFunded();
+
+      if (fundingConsortiumIsSparc && award === "") {
         errorArray.push({
           type: "notyf",
           message: "Please add a SPARC award number to your submission metadata",
         });
-      }
-      if (completionDate === "") {
-        errorArray.push({
-          type: "notyf",
-          message: "Please add a completion date to your submission metadata",
-        });
-      }
-      if (milestones.length === 0) {
-        errorArray.push({
-          type: "notyf",
-          message: "Please add at least one milestone to your submission metadata",
-        });
-      }
-      if (errorArray.length > 0) {
         throw errorArray;
       }
 
@@ -3401,6 +3445,22 @@ document
         folder_counter = 0;
         get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
         // log successful validation run to analytics
+        const kombuchaEventData = {
+          value: file_counter,
+          dataset_id: guidedGetDatasetId(sodaJSONObj),
+          dataset_name: guidedGetDatasetName(sodaJSONObj),
+          origin: guidedGetDatasetOrigin(sodaJSONObj),
+        };
+
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.GUIDED_MODE,
+          kombuchaEnums.Action.VALIDATE_DATASET,
+          kombuchaEnums.Label.FILES,
+          kombuchaEnums.Status.FAIL,
+          kombuchaEventData
+        );
+
         ipcRenderer.send(
           "track-event",
           "Error",
@@ -3478,6 +3538,22 @@ document
         folder_counter = 0;
         get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
         // log successful validation run to analytics
+        const kombuchaEventData = {
+          value: file_counter,
+          dataset_id: guidedGetDatasetId(sodaJSONObj),
+          dataset_name: guidedGetDatasetName(sodaJSONObj),
+          origin: guidedGetDatasetOrigin(sodaJSONObj),
+        };
+
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.GUIDED_MODE,
+          kombuchaEnums.Action.VALIDATE_DATASET,
+          kombuchaEnums.Label.FILES,
+          kombuchaEnums.Status.FAIL,
+          kombuchaEventData
+        );
+
         ipcRenderer.send(
           "track-event",
           "Error",
@@ -3497,6 +3573,22 @@ document
       get_num_files_and_folders(sodaJSONObj["saved-datset-structure-json-obj"]);
 
       // log successful validation run to analytics
+      if (file_counter > 0) {
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.GUIDED_MODE,
+          kombuchaEnums.Action.VALIDATE_DATASET,
+          kombuchaEnums.Label.FILES,
+          kombuchaEnums.Status.SUCCCESS,
+          {
+            value: file_counter,
+            dataset_id: guidedGetDatasetId(sodaJSONObj),
+            dataset_name: guidedGetDatasetName(sodaJSONObj),
+            origin: guidedGetDatasetOrigin(sodaJSONObj),
+          }
+        );
+      }
+
       ipcRenderer.send(
         "track-event",
         "Success",
@@ -4831,49 +4923,93 @@ const openPage = async (targetPageID) => {
       );
     }
 
-    if (
-      targetPageID === "guided-ask-if-submission-is-sparc-funded-tab" &&
-      pageNeedsUpdateFromPennsieve(targetPageID)
-    ) {
-      setPageLoadingState(true);
-      try {
-        const submissionMetadataRes = await client.get(`/prepare_metadata/import_metadata_file`, {
-          params: {
-            selected_account: defaultBfAccount,
-            selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
-            file_type: "submission.xlsx",
-          },
-        });
-        const submissionData = submissionMetadataRes.data;
-        let sparcAwardRes = submissionData["SPARC Award number"];
-        if (sparcAwardRes) {
-          const substringsSparcAwardsShouldContain = ["ot2od", "ot3od", "u18", "tr", "u01"]; // Note: These substrings are taken from the validator...
-          sparcAwardRes = sparcAwardRes.toLowerCase().trim();
+    if (targetPageID === "guided-ask-if-submission-is-sparc-funded-tab") {
+      if (pageNeedsUpdateFromPennsieve(targetPageID)) {
+        setPageLoadingState(true);
+        try {
+          // Get the submission metadata from Pennsieve
+          const submissionMetadataRes = await client.get(`/prepare_metadata/import_metadata_file`, {
+            params: {
+              selected_account: defaultBfAccount,
+              selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
+              file_type: "submission.xlsx",
+            },
+          });
+          const submissionData = submissionMetadataRes.data;
 
-          let awardIsSparcFunded = false;
+          const pennsieveConsortiumDataStandard = submissionData["Consortium data standard"]
+            .trim()
+            .toUpperCase();
 
-          // Loop through the sparcSPARCAwards and check if the sparcAwrardRes contains one of them as a substring
-          // (meaning this is a SPARC funded dataset)
-          for (const substring of substringsSparcAwardsShouldContain) {
-            if (sparcAwardRes.includes(substring)) {
-              awardIsSparcFunded = true;
-              break;
-            }
-          }
-
-          // If the sparcAwrardRes contains one of the sparcSPARCAwards as a substring, select that the dataset is SPARC funded
-          // If not, assume the user has contacted SPARC since they have already uploaded to Pennsieve (saves them a clicks)
-          if (awardIsSparcFunded) {
+          if (pennsieveConsortiumDataStandard === "SPARC") {
             document.getElementById("guided-button-dataset-is-sparc-funded").click();
+          } else if (pennsieveConsortiumDataStandard === "HEAL") {
+            document.getElementById("guided-button-dataset-is-re-join-funded").click();
           } else {
+            document.getElementById("guided-button-dataset-is-not-sparc-funded").click();
             document.getElementById("guided-button-non-sparc-user-has-contacted-sparc").click();
           }
+
+          // Set the funding consortium
+          const pennsieveFundingConsortium = submissionData["Funding consortium"]
+            .trim()
+            .toUpperCase();
+
+          if (sparcFundingConsortiums.includes(pennsieveFundingConsortium)) {
+            // Pre-set the funding consortium so it is set in the dropdown
+            sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] =
+              pennsieveFundingConsortium;
+          }
+        } catch (error) {
+          const emessage = userErrorMessage(error);
+          console.log(emessage);
         }
-      } catch (error) {
-        // If the manifest file is not found or the SPARC award number string is smaller than 8 characters,
-        // we can't assume anything about the submission so the user has to select the appropriate button
-        console.log(error);
       }
+
+      // Set the funding consortium dropdown options / set up select picker
+      document.getElementById("guided-select-sparc-funding-consortium").innerHTML = `
+        <option value="">Select a funding consortium</option>
+        ${sparcFundingConsortiums
+          .map((consortium) => {
+            return `<option value="${consortium}">${consortium}</option>`;
+          })
+          .join("\n")}
+      `;
+      $("#guided-select-sparc-funding-consortium").selectpicker({
+        style: "SODA-select-picker",
+      });
+      $("#guided-select-sparc-funding-consortium").selectpicker("refresh");
+      // Event listener that watches what the user selects and updates the UI accordingly
+      $("#guided-select-sparc-funding-consortium").on("change", function (e) {
+        const consortium = e.target.value;
+
+        const divClickContinueFundingConsortium = document.getElementById(
+          "guided-section-confirm-funding-consortium"
+        );
+
+        // If the valueLess selection is selected, hide all sections besides the help dropdown
+        if (consortium === "") {
+          //Hide the click continue to.. div
+          divClickContinueFundingConsortium.classList.add("hidden");
+        } else {
+          // Show the click continue to.. div
+          divClickContinueFundingConsortium.classList.remove("hidden");
+          // Set the funding consortium text to the click continue to.. span
+          document.getElementById("span-continue-sparc-funding-consortium-name").innerText =
+            consortium;
+        }
+      });
+
+      // Set the funding consortium dropdown to the saved value (deafult is empty string before a user selects a value)
+      const savedFundingConsortium =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
+      if (sparcFundingConsortiums.includes(savedFundingConsortium)) {
+        $("#guided-select-sparc-funding-consortium").val(savedFundingConsortium);
+      } else {
+        $("#guided-select-sparc-funding-consortium").val("");
+      }
+      $("#guided-select-sparc-funding-consortium").selectpicker("refresh");
+      $("#guided-select-sparc-funding-consortium").trigger("change");
     }
 
     if (targetPageID === "guided-subjects-folder-tab") {
@@ -5112,40 +5248,26 @@ const openPage = async (targetPageID) => {
     }
 
     if (targetPageID === "guided-create-submission-metadata-tab") {
-      //Reset manual submission metadata UI
-
       if (pageNeedsUpdateFromPennsieve(targetPageID)) {
         // Show the loading page while the page's data is being fetched from Pennsieve
         setPageLoadingState(true);
         try {
-          let import_metadata = await client.get(`/prepare_metadata/import_metadata_file`, {
+          const submissionMetadataRes = await client.get(`/prepare_metadata/import_metadata_file`, {
             params: {
               selected_account: defaultBfAccount,
               selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
               file_type: "submission.xlsx",
             },
           });
-          let res = import_metadata.data;
-          console.log(res);
 
-          const sparcAwardRes = res["SPARC Award number"];
-          const pennsieveMileStones = res["Milestone achieved"];
-          const pennsieveCompletionDate = res["Milestone completion date"];
+          const submissionData = submissionMetadataRes.data;
 
-          // If the SPARC award is not empty or N/A, then we can assume the dataset is SPARC
-          // We also check to see if the SPARC award is greater than 5 before clicking the dataset is SPARC button
-          if (sparcAwardRes) {
-            sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] = sparcAwardRes;
-          }
-
-          if (pennsieveMileStones) {
-            sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] =
-              pennsieveMileStones;
-          }
-          if (pennsieveCompletionDate) {
-            sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] =
-              pennsieveCompletionDate;
-          }
+          sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"] =
+            submissionData["Award number"];
+          sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"] =
+            submissionData["Milestone achieved"];
+          sodaJSONObj["dataset-metadata"]["submission-metadata"]["completion-date"] =
+            submissionData["Milestone completion date"];
 
           sodaJSONObj["pages-fetched-from-pennsieve"].push(targetPageID);
         } catch (error) {
@@ -5197,24 +5319,52 @@ const openPage = async (targetPageID) => {
         completionDateInputManual.value = completionDate;
       }
 
-      if (sparcAward && milestones) {
+      const setFundingConsortium =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
+
+      const topLevelDDDInstructionsText = document.getElementById(
+        "guided-submission-metadata-ddd-import-instructions"
+      );
+      if (setFundingConsortium != "SPARC") {
+        topLevelDDDInstructionsText.classList.add("hidden");
+        // Hide the ddd import section since the submission is not SPARC funded
         sectionThatAsksIfDataDeliverablesReady.classList.add("hidden");
+        // Show the submission metadata inputs section so the user can enter the metadata manually
         sectionSubmissionMetadataInputs.classList.remove("hidden");
+
+        // Show the instructions for non-SPARC funded submissions
+        showElementsWithClass("guided-non-sparc-funding-consortium-instructions");
       } else {
-        sectionThatAsksIfDataDeliverablesReady.classList.remove("hidden");
-        sectionSubmissionMetadataInputs.classList.add("hidden");
-        // Load the lottie animation where the user can drag and drop the data deliverable document
-        const dataDeliverableLottieContainer = document.getElementById(
-          "data-deliverable-lottie-container"
-        );
-        dataDeliverableLottieContainer.innerHTML = "";
-        lottie.loadAnimation({
-          container: dataDeliverableLottieContainer,
-          animationData: dragDrop,
-          renderer: "svg",
-          loop: true,
-          autoplay: true,
-        });
+        topLevelDDDInstructionsText.classList.remove("hidden");
+
+        // If the submission is SPARC, but they have already added their sparc award and milestones
+        // then hide the section that asks if they have data deliverables ready and show the
+        // submission metadata inputs section
+        if (sparcAward && milestones) {
+          sectionThatAsksIfDataDeliverablesReady.classList.add("hidden");
+          sectionSubmissionMetadataInputs.classList.remove("hidden");
+        } else {
+          // If the submission is SPARC and they have not added their sparc award and milestones
+          // then show the section that asks if they have data deliverables ready and hide the
+          // submission metadata inputs section
+          sectionThatAsksIfDataDeliverablesReady.classList.remove("hidden");
+          sectionSubmissionMetadataInputs.classList.add("hidden");
+          // Load the lottie animation where the user can drag and drop the data deliverable document
+          const dataDeliverableLottieContainer = document.getElementById(
+            "data-deliverable-lottie-container"
+          );
+          dataDeliverableLottieContainer.innerHTML = "";
+          lottie.loadAnimation({
+            container: dataDeliverableLottieContainer,
+            animationData: dragDrop,
+            renderer: "svg",
+            loop: true,
+            autoplay: true,
+          });
+        }
+
+        // Hide the instructions for non-SPARC funded submissions
+        hideElementsWithClass("guided-non-sparc-funding-consortium-instructions");
       }
     }
 
@@ -6987,6 +7137,38 @@ const newEmptyFolderObj = () => {
   };
 };
 
+const guidedGetPageToReturnTo = (sodaJSONObj) => {
+  // Set by openPage function
+  const usersPageBeforeExit = sodaJSONObj["page-before-exit"];
+
+  //If the dataset was successfully uploaded, send the user to the share with curation team
+  if (sodaJSONObj["previous-guided-upload-dataset-name"]) {
+    return "guided-dataset-dissemination-tab";
+  }
+
+  // returns the id of the first page of guided mode
+  const firstPageID = getNonSkippedGuidedModePages(document)[0].id;
+
+  const currentSodaVersion = document.getElementById("version").innerHTML;
+  const lastVersionOfSodaUsedOnProgressFile = sodaJSONObj["last-version-of-soda-used"];
+
+  if (lastVersionOfSodaUsedOnProgressFile != currentSodaVersion) {
+    // If the last time the user worked on the progress file was in a previous version of SODA, then force the user to restart from the first page
+    return firstPageID;
+  }
+  // If the page the user was last on no longer exists, return them to the first page
+  if (!document.getElementById(usersPageBeforeExit)) {
+    return firstPageID;
+  }
+
+  // If the user left while the upload was in progress, send the user to the upload confirmation page
+  if (usersPageBeforeExit === "guided-dataset-generation-tab") {
+    return "guided-dataset-generation-confirmation-tab";
+  }
+  // If no special cases apply, return the user to the page they were on before they left
+  return usersPageBeforeExit;
+};
+
 const patchPreviousGuidedModeVersions = async () => {
   //temp patch contributor affiliations if they are still a string (they were added in the previous version)
 
@@ -7115,6 +7297,19 @@ const patchPreviousGuidedModeVersions = async () => {
     return "guided-dataset-dissemination-tab";
   }
 
+  if (sodaJSONObj["last-version-of-soda-used"] <= "12.0.0") {
+    // Change the award number variable from sparc-award to award-number
+    if (sodaJSONObj?.["dataset-metadata"]?.["shared-metadata"]?.["sparc-award"]) {
+      sodaJSONObj["dataset-metadata"]["shared-metadata"]["award-number"] =
+        sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
+    }
+    if (!sodaJSONObj["dataset-metadata"]["submission-metadata"]?.["consortium-data-standard"]) {
+      sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] = "";
+    }
+    if (!sodaJSONObj["dataset-metadata"]["submission-metadata"]?.["funding-consortium"]) {
+      sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] = "";
+    }
+  }
   // If no other conditions are met, return the page the user was last on
   return sodaJSONObj["page-before-exit"];
 };
@@ -7237,35 +7432,6 @@ const guidedResumeProgress = async (datasetNameToResume) => {
     //patches the sodajsonobj if it was created in a previous version of guided mode
     await patchPreviousGuidedModeVersions();
 
-    // pageToReturnTo will be set to the page the user will return to
-    let pageToReturnTo;
-
-    // The last page the user left off on on a previous session
-    const usersPageBeforeExit = sodaJSONObj["page-before-exit"];
-
-    //Check to make sure the page still exists before returning to it
-    //Code below might still specify a different page to return to though.
-    if (document.getElementById(usersPageBeforeExit)) {
-      pageToReturnTo = usersPageBeforeExit;
-    }
-
-    // If the user left while the upload was in progress, send the user to the upload confirmation page
-    if (usersPageBeforeExit === "guided-dataset-generation-tab") {
-      pageToReturnTo = "guided-dataset-generation-confirmation-tab";
-    }
-
-    // If the last time the user worked on the progress file was in a previous version of SODA, then force the user to restart from the first page
-    const currentSodaVersion = document.getElementById("version").innerHTML;
-    const lastVersionOfSodaUsedOnProgressFile = sodaJSONObj["last-version-of-soda-used"];
-    if (lastVersionOfSodaUsedOnProgressFile != currentSodaVersion) {
-      pageToReturnTo = null;
-    }
-
-    //If the dataset was successfully uploaded, send the user to the share with curation team
-    if (datasetResumeJsonObj["previous-guided-upload-dataset-name"]) {
-      pageToReturnTo = "guided-dataset-dissemination-tab";
-    }
-
     // Delete the button status for the Pennsieve account confirmation section
     // So the user has to confirm their Pennsieve account before uploading
     if (sodaJSONObj["button-config"]?.["pennsieve-account-has-been-confirmed"]) {
@@ -7292,12 +7458,10 @@ const guidedResumeProgress = async (datasetNameToResume) => {
     //the sub-page will be shown during openPage() function
     hideSubNavAndShowMainNav(false);
 
-    if (pageToReturnTo) {
-      await openPage(pageToReturnTo);
-    } else {
-      const firstPage = getNonSkippedGuidedModePages(document)[0];
-      await openPage(firstPage.id);
-    }
+    // pageToReturnTo will be set to the page the user will return to
+    const pageToReturnTo = guidedGetPageToReturnTo(sodaJSONObj);
+
+    await openPage(pageToReturnTo);
 
     // Close the loading screen, the user should be on the page they left off on now
     loadingSwal.close();
@@ -7371,6 +7535,8 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["dataset-metadata"]["subject-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["sample-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["submission-metadata"] = {};
+  sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"] = "";
+  sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] = "";
   sodaJSONObj["dataset-metadata"]["description-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["code-metadata"] = {};
   sodaJSONObj["dataset-metadata"]["description-metadata"]["additional-links"] = [];
@@ -8830,7 +8996,7 @@ const openGuidedAddContributorSwal = async () => {
       createDragSort(contributorRolesTagify);
 
       $("#guided-stored-contributors-select").selectpicker({
-        style: "guided--select-picker",
+        style: "SODA-select-picker",
       });
       $("#guided-stored-contributors-select").selectpicker("refresh");
       $("#guided-stored-contributors-select").on("change", function (e) {
@@ -12329,6 +12495,20 @@ $(document).ready(async () => {
       );
       let createdDatasetsID = bf_new_dataset.data.id;
       datasetNameUploadText.innerHTML = `Successfully created dataset with name: ${datasetName}`;
+      const kombuchaEventData = {
+        value: 1,
+        dataset_id: createdDatasetsID,
+      };
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.GUIDED_MODE,
+        kombuchaEnums.Action.CREATE_NEW_DATASET,
+        datasetName,
+        kombuchaEnums.Status.SUCCCESS,
+        kombuchaEventData
+      );
+
       ipcRenderer.send(
         "track-event",
         "Dataset ID to Dataset Name Map",
@@ -12897,6 +13077,7 @@ $(document).ready(async () => {
       throw new Error(userErrorMessage(error));
     }
   };
+
   const guidedUploadSubmissionMetadata = async (bfAccount, datasetName, submissionMetadataJSON) => {
     document.getElementById("guided-submission-metadata-upload-tr").classList.remove("hidden");
     const submissionMetadataUploadText = document.getElementById(
@@ -13130,6 +13311,10 @@ $(document).ready(async () => {
       const guidedSamplesMetadata = sodaJSONObj["samples-table-data"];
 
       //Submission Metadata variables
+      const consortiumDataStandard =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["consortium-data-standard"];
+      const fundingConsortium =
+        sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"];
       const guidedSparcAward = sodaJSONObj["dataset-metadata"]["shared-metadata"]["sparc-award"];
       const guidedMilestones = sodaJSONObj["dataset-metadata"]["submission-metadata"]["milestones"];
       const guidedCompletionDate =
@@ -13137,29 +13322,25 @@ $(document).ready(async () => {
 
       let guidedSubmissionMetadataArray = [];
 
-      // Function that determines if the user selected whether or not their dataset is SPARC funded
-      // The function returns either true or false
-      if (datasetIsSparcFunded()) {
-        guidedSubmissionMetadataArray.push({
-          award: guidedSparcAward,
-          date: guidedCompletionDate,
-          milestone: guidedMilestones[0],
-        });
+      guidedSubmissionMetadataArray.push({
+        fundingConsortium: fundingConsortium,
+        consortiumDataStandard: consortiumDataStandard,
+        award: guidedSparcAward,
+        date: guidedCompletionDate || "N/A",
+        milestone: guidedMilestones[0] || "N/A",
+      });
+
+      if (guidedMilestones.length > 1) {
         for (let i = 1; i < guidedMilestones.length; i++) {
           guidedSubmissionMetadataArray.push({
+            fundingConsortium: "",
+            consortiumDataStandard: "",
             award: "",
             date: "",
             milestone: guidedMilestones[i],
           });
         }
-      } else {
-        guidedSubmissionMetadataArray.push({
-          award: "EXTERNAL",
-          date: "",
-          milestone: "",
-        });
       }
-
       //Dataset Description Metadata variables
       const guidedDatasetInformation =
         sodaJSONObj["dataset-metadata"]["description-metadata"]["dataset-information"];
@@ -13202,7 +13383,7 @@ $(document).ready(async () => {
 
       // get apps base path
       const basepath = app.getAppPath();
-      const resourcesPath = process.resourcesPath;
+      const { resourcesPath } = process;
 
       // set the templates path
       try {
@@ -13468,8 +13649,42 @@ $(document).ready(async () => {
         $("#sidebarCollapse").prop("disabled", false);
         log.info("Completed curate function");
 
+        // log that a dataset upload was successful
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.GUIDED_MODE,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.TOTAL_UPLOADS,
+          kombuchaEnums.Status.SUCCCESS,
+          {
+            value: 1,
+            dataset_id: guidedGetDatasetId(sodaJSONObj),
+            dataset_name: guidedGetDatasetName(sodaJSONObj),
+            origin: guidedGetDatasetOrigin(sodaJSONObj),
+            destination: "Pennsieve",
+          }
+        );
+
         // log the difference again to Google Analytics
         let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
+        if (finalFilesCount > 0) {
+          ipcRenderer.send(
+            "track-kombucha",
+            kombuchaEnums.Category.GUIDED_MODE,
+            kombuchaEnums.Action.GENERATE_DATASET,
+            kombuchaEnums.Label.FILES,
+            kombuchaEnums.Status.SUCCCESS,
+            {
+              value: finalFilesCount,
+              dataset_id: guidedGetDatasetId(sodaJSONObj),
+              dataset_name: guidedGetDatasetName(sodaJSONObj),
+              origin: guidedGetDatasetOrigin(sodaJSONObj),
+              destination: "Pennsieve",
+              upload_session: datasetUploadSession.id,
+            }
+          );
+        }
+
         ipcRenderer.send(
           "track-event",
           "Success",
@@ -13479,22 +13694,31 @@ $(document).ready(async () => {
         );
 
         let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
+
+        if (differenceInBytes > 0) {
+          ipcRenderer.send(
+            "track-kombucha",
+            kombuchaEnums.Category.GUIDED_MODE,
+            kombuchaEnums.Action.GENERATE_DATASET,
+            kombuchaEnums.Label.SIZE,
+            kombuchaEnums.Status.SUCCCESS,
+            {
+              value: differenceInBytes,
+              dataset_id: guidedGetDatasetId(sodaJSONObj),
+              dataset_name: guidedGetDatasetName(sodaJSONObj),
+              origin: guidedGetDatasetOrigin(sodaJSONObj),
+              destination: "Pennsieve",
+              upload_session: datasetUploadSession.id,
+            }
+          );
+        }
+
         ipcRenderer.send(
           "track-event",
           "Success",
           "Guided Mode - Generate - Dataset - Size",
           `${datasetUploadSession.id}`,
           differenceInBytes
-        );
-
-        // log relevant curation details about the dataset generation/Upload to Google Analytics
-        logCurationSuccessToAnalytics(
-          manifest_files_requested,
-          main_total_generate_dataset_size,
-          dataset_name,
-          dataset_destination,
-          uploadedFiles,
-          true
         );
 
         updateDatasetUploadProgressTable({
@@ -13537,8 +13761,42 @@ $(document).ready(async () => {
         guidedSetNavLoadingState(false);
         clientError(error);
 
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.GUIDED_MODE,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.TOTAL_UPLOADS,
+          kombuchaEnums.Status.FAIL,
+          {
+            value: 1,
+            dataset_id: guidedGetDatasetId(sodaJSONObj),
+            dataset_name: guidedGetDatasetName(sodaJSONObj),
+            origin: guidedGetDatasetOrigin(sodaJSONObj),
+            destination: "Pennsieve",
+          }
+        );
+
         // log the difference again to Google Analytics
         let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
+
+        if (finalFilesCount > 0) {
+          ipcRenderer.send(
+            "track-kombucha",
+            kombuchaEnums.Category.GUIDED_MODE,
+            kombuchaEnums.Action.GENERATE_DATASET,
+            kombuchaEnums.Label.FILES,
+            kombuchaEnums.Status.SUCCCESS,
+            {
+              value: finalFilesCount,
+              dataset_id: guidedGetDatasetId(sodaJSONObj),
+              dataset_name: guidedGetDatasetName(sodaJSONObj),
+              origin: guidedGetDatasetOrigin(sodaJSONObj),
+              destination: "Pennsieve",
+              upload_session: datasetUploadSession.id,
+            }
+          );
+        }
+
         ipcRenderer.send(
           "track-event",
           "Success",
@@ -13548,12 +13806,67 @@ $(document).ready(async () => {
         );
 
         let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
+
+        if (differenceInBytes > 0) {
+          ipcRenderer.send(
+            "track-kombucha",
+            kombuchaEnums.Category.GUIDED_MODE,
+            kombuchaEnums.Action.GENERATE_DATASET,
+            kombuchaEnums.Label.SIZE,
+            kombuchaEnums.Status.SUCCCESS,
+            {
+              value: differenceInBytes,
+              dataset_id: guidedGetDatasetId(sodaJSONObj),
+              dataset_name: guidedGetDatasetName(sodaJSONObj),
+              origin: guidedGetDatasetOrigin(sodaJSONObj),
+              destination: "Pennsieve",
+              upload_session: datasetUploadSession.id,
+            }
+          );
+        }
+
         ipcRenderer.send(
           "track-event",
           "Success",
           "Guided Mode - Generate - Dataset - Size",
           `${datasetUploadSession.id}`,
           differenceInBytes
+        );
+
+        // log the amount of files we attempted to upload -- good for knowing if a certain file amount poses the agent/our own code problems
+        if (uploadedFiles > 0) {
+          ipcRenderer.send(
+            "track-kombucha",
+            kombuchaEnums.Category.GUIDED_MODE,
+            kombuchaEnums.Action.GENERATE_DATASET,
+            kombuchaEnums.Label.FILES,
+            kombuchaEnums.Status.FAIL,
+            {
+              value: uploadedFiles,
+              dataset_id: guidedGetDatasetId(sodaJSONObj),
+              dataset_name: guidedGetDatasetName(sodaJSONObj),
+              origin: guidedGetDatasetOrigin(sodaJSONObj),
+              destination: "Pennsieve",
+              upload_session: datasetUploadSession.id,
+            }
+          );
+        }
+
+        // log the size of the dataset we attempted to upload
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.GUIDED_MODE,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.SIZE,
+          kombuchaEnums.Status.FAIL,
+          {
+            value: main_total_generate_dataset_size,
+            dataset_id: guidedGetDatasetId(sodaJSONObj),
+            dataset_name: guidedGetDatasetName(sodaJSONObj),
+            origin: guidedGetDatasetOrigin(sodaJSONObj),
+            destination: "Pennsieve",
+            upload_session: datasetUploadSession.id,
+          }
         );
 
         let emessage = userErrorMessage(error);
@@ -13569,16 +13882,6 @@ $(document).ready(async () => {
           clientError(error);
         }
 
-        // log the curation errors to Google Analytics
-        logCurationErrorsToAnalytics(
-          0,
-          0,
-          dataset_destination,
-          main_total_generate_dataset_size,
-          increaseInFileSize,
-          datasetUploadSession,
-          true
-        );
         //make an unclosable sweet alert that forces the user to close out of the app
         await Swal.fire({
           allowOutsideClick: false,
@@ -13698,6 +14001,22 @@ $(document).ready(async () => {
       if (files >= filesOnPreviousLogPage + 500) {
         filesOnPreviousLogPage += 500;
         ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.GUIDED_MODE,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.FILES,
+          kombuchaEnums.Status.SUCCCESS,
+          {
+            value: 500,
+            dataset_id: guidedGetDatasetId(sodaJSONObj),
+            dataset_name: guidedGetDatasetName(sodaJSONObj),
+            origin: guidedGetDatasetOrigin(sodaJSONObj),
+            destination: "Pennsieve",
+            upload_session: datasetUploadSession.id,
+          }
+        );
+
+        ipcRenderer.send(
           "track-event",
           "Success",
           "Guided Mode - Generate - Dataset - Number of Files",
@@ -13707,6 +14026,23 @@ $(document).ready(async () => {
 
         let differenceInBytes = bytes - bytesOnPreviousLogPage;
         bytesOnPreviousLogPage = bytes;
+
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.GUIDED_MODE,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.SIZE,
+          kombuchaEnums.Status.SUCCCESS,
+          {
+            value: differenceInBytes,
+            dataset_id: guidedGetDatasetId(sodaJSONObj),
+            dataset_name: guidedGetDatasetName(sodaJSONObj),
+            origin: guidedGetDatasetOrigin(sodaJSONObj),
+            destination: "Pennsieve",
+            upload_session: datasetUploadSession.id,
+          }
+        );
+
         ipcRenderer.send(
           "track-event",
           "Success",
@@ -14754,17 +15090,6 @@ $(document).ready(async () => {
     //Get the id of the parent page that's currently open
     const currentParentPageID = CURRENT_PAGE.id;
 
-    if (currentParentPageID === "guided-create-submission-metadata-tab") {
-      if (
-        document
-          .getElementById("guided-button-enter-submission-metadata-manually")
-          .classList.contains("selected")
-      ) {
-        document.getElementById("guided-next-button").click();
-        return;
-      }
-    }
-
     //Get the id of the sub-page that's currently open
     const openSubPageID = getOpenSubPageInPage(currentParentPageID);
     try {
@@ -14809,17 +15134,6 @@ $(document).ready(async () => {
   $("#guided-button-sub-page-back").on("click", () => {
     //Get the id of the parent page that's currently open
     const currentParentPageID = CURRENT_PAGE.id;
-
-    if (currentParentPageID === "guided-create-submission-metadata-tab") {
-      if (
-        document
-          .getElementById("guided-button-enter-submission-metadata-manually")
-          .classList.contains("selected")
-      ) {
-        document.getElementById("guided-back-button").click();
-        return;
-      }
-    }
 
     //Get the id of the sub-page that's currently open
     const openSubPageID = getOpenSubPageInPage(currentParentPageID);

@@ -34,12 +34,14 @@ const select2 = require("select2")();
 const DragSort = require("@yaireo/dragsort");
 const spawn = require("child_process").spawn;
 const execFile = require("child_process").execFile;
+
 // TODO: Test with a build
 const { datasetUploadSession } = require("./scripts/others/analytics/upload-session-tracker");
+const { kombuchaEnums } = require("./scripts/others/analytics/analytics-enums");
 
 const {
-  logCurationErrorsToAnalytics,
-  logCurationSuccessToAnalytics,
+  createEventData,
+  logSelectedUpdateExistingDatasetOptions,
 } = require("./scripts/others/analytics/curation-analytics");
 const { determineDatasetLocation } = require("./scripts/others/analytics/analytics-utils");
 const {
@@ -548,7 +550,7 @@ ipcRenderer.on("start_pre_flight_checks", async (event, arg) => {
 
   // get apps base path
   const basepath = app.getAppPath();
-  const resourcesPath = process.resourcesPath;
+  const { resourcesPath } = process;
 
   // set the templates path
   try {
@@ -581,6 +583,7 @@ const getPennsieveAgentPath = () => {
     if (fs.existsSync(unixPath)) {
       return unixPath;
     }
+
     throw new Error(`Could not find the Pennsieve agent path at ${pennsievePath}`);
   }
 };
@@ -1033,6 +1036,7 @@ const apiVersionsMatch = async () => {
     responseObject = await client.get("/startup/minimum_api_version");
   } catch (e) {
     clientError(e);
+    log.info("Minimum API Versions do not match");
     ipcRenderer.send("track-event", "Error", "Verifying App Version", userErrorMessage(e));
 
     await Swal.fire({
@@ -1051,6 +1055,7 @@ const apiVersionsMatch = async () => {
   let serverAppVersion = responseObject.data.version;
 
   log.info(`Server version is ${serverAppVersion}`);
+  const browser_download_url = `https://docs.sodaforsparc.io/docs/common-errors/api-version-mismatch`;
 
   if (serverAppVersion !== appVersion) {
     log.info("Server version does not match client version");
@@ -1064,12 +1069,30 @@ const apiVersionsMatch = async () => {
 
     await Swal.fire({
       icon: "error",
-      html: `${appVersion} ${serverAppVersion}The minimum app versions do not match. Please try restarting your computer and reinstalling the latest version of SODA.`,
+      title: "Minimum App Version Mismatch",
+      html: `
+          Your API version: <b>${appVersion}</b>
+          <br />
+          Latest API version: <b>${serverAppVersion}</b>
+          <br />
+          <br />
+          To resolve this issue, please visit the link below and follow the instructions.
+          <br />
+          <br />
+          <a href="${browser_download_url}" target="_blank">API Version Mismatch</a>
+          <br />
+          <br />
+          Once you have updated the SODA Server, please restart SODA.
+        `,
+      width: 800,
       heightAuto: false,
       backdrop: "rgba(0,0,0, 0.4)",
-      confirmButtonText: "Close now",
       allowOutsideClick: false,
       allowEscapeKey: false,
+      showCancelButton: false,
+      showCloseButton: false,
+      reverseButtons: reverseSwalButtons,
+      confirmButtonText: "Close Application",
     });
 
     //await checkForAnnouncements("update")
@@ -1646,6 +1669,49 @@ var milestoneTagify1 = new Tagify(milestoneInput1, {
     closeOnSelect: true,
   },
 });
+
+const hideElementsWithClass = (className) => {
+  const elements = document.querySelectorAll(`.${className}`);
+  elements.forEach((element) => {
+    element.classList.add("hidden");
+  });
+};
+
+const showElementsWithClass = (className) => {
+  const elements = document.querySelectorAll(`.${className}`);
+  elements.forEach((element) => {
+    element.classList.remove("hidden");
+  });
+};
+
+// Listen to the changes of the milestone tagify
+milestoneTagify1.on("change", (e) => {
+  // If e.detail.value.length string is greater than 0, then there are milestone tags entered in the tagify
+  if (e.detail.value.length > 0) {
+    // Filter out the N/A milestone tag
+    // Note: If only N/A is entered, the completion date will be set to N/A and remain hidden so user doesn't have to fill it out
+    const filteredMilestones = JSON.parse(e.detail.value)
+      .map((milestone) => {
+        return milestone.value;
+      })
+      .filter((milestone) => {
+        return milestone !== "N/A";
+      });
+
+    // If there are milestone tags other than N/A, then show the completion date form component
+    if (filteredMilestones.length > 0) {
+      showElementsWithClass("completion-date-form-component");
+    } else {
+      // If there are no milestone tags other than N/A, then hide the completion date form component
+      hideElementsWithClass("completion-date-form-component");
+      $("#submission-completion-date").val("");
+    }
+  } else {
+    hideElementsWithClass("completion-date-form-component");
+    $("#submission-completion-date").val("");
+  }
+});
+
 createDragSort(milestoneTagify1);
 
 // generate subjects file
@@ -4138,6 +4204,7 @@ organizeDSbackButton.addEventListener("click", function () {
   let slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
   if (slashCount !== 1) {
     let filtered = getGlobalPath(organizeDSglobalPath);
+
     if (filtered.length === 1) {
       organizeDSglobalPath.value = filtered[0] + "/";
     } else {
@@ -4151,7 +4218,6 @@ organizeDSbackButton.addEventListener("click", function () {
     $("#items").empty();
     already_created_elem = [];
     let items = loadFileFolder(myPath); //array -
-    console.log(items);
     //we have some items to display
     listItems(myPath, "#items", 500, (reset = true));
     organizeLandingUIEffect();
@@ -4294,9 +4360,8 @@ const populateJSONObjFolder = (action, jsonObject, folderPath) => {
     //prevented here
     let statsObj = fs.statSync(path.join(folderPath, itemWithinFolder));
     let addedElement = path.join(folderPath, itemWithinFolder);
-    console.log(addedElement);
+
     if (statsObj.isDirectory() && !/(^|\/)\[^\/\.]/g.test(itemWithinFolder)) {
-      console.log(irregularFolderArray);
       if (irregularFolderArray.includes(addedElement)) {
         let renamedFolderName = "";
         if (action !== "ignore" && action !== "") {
@@ -4312,9 +4377,7 @@ const populateJSONObjFolder = (action, jsonObject, folderPath) => {
             path: addedElement,
             action: ["new", "renamed"],
           };
-          console.log("before reassignment", itemWithinFolder);
           itemWithinFolder = renamedFolderName;
-          console.log("after reassignment", itemWithinFolder);
         }
       } else {
         jsonObject["folders"][itemWithinFolder] = {
@@ -7828,7 +7891,7 @@ var uploadComplete = new Notyf({
 });
 
 // Generates a dataset organized in the Organize Dataset feature locally, or on Pennsieve
-async function initiate_generate() {
+const initiate_generate = async () => {
   // Disable the Guided Mode sidebar button to prevent the sodaJSONObj from being modified
   document.getElementById("guided_mode_view").style.pointerEvents = "none";
 
@@ -7922,6 +7985,7 @@ async function initiate_generate() {
       }
     }
   }
+
   let dataset_destination = "";
   let dataset_name = "";
 
@@ -7937,6 +8001,7 @@ async function initiate_generate() {
 
   // determine where the dataset will be generated/uploaded
   let nameDestinationPair = determineDatasetDestination();
+  let datasetLocation = determineDatasetLocation();
   dataset_name = nameDestinationPair[0];
   dataset_destination = nameDestinationPair[1];
 
@@ -7962,36 +8027,56 @@ async function initiate_generate() {
       $("#sidebarCollapse").prop("disabled", false);
       log.info("Completed curate function");
 
-      // log relevant curation details about the dataset generation/Upload to Google Analytics
-      logCurationSuccessToAnalytics(
-        manifest_files_requested,
-        main_total_generate_dataset_size,
-        dataset_name,
-        dataset_destination,
-        uploadedFiles,
-        false
+      // log high level confirmation that a dataset was generated - helps answer how many times were datasets generated in FFMs organize dataset functionality
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.PREPARE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.TOTAL_UPLOADS,
+        kombuchaEnums.Status.SUCCESS,
+        createEventData(1, dataset_destination, datasetLocation, dataset_name)
       );
 
+      // get the correct value for files and file size for analytics
+      let fileValueToLog = 0;
+      let fileSizeValueToLog = 0;
       if (dataset_destination == "bf" || dataset_destination == "Pennsieve") {
         // log the difference again to Google Analytics
         let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          PrepareDatasetsAnalyticsPrefix.CURATE + "- Step 7 - Generate - Dataset - Number of Files",
-          `${datasetUploadSession.id}`,
-          finalFilesCount
-        );
-
         let differenceInBytes = main_total_generate_dataset_size - bytesOnPreviousLogPage;
+        fileValueToLog = finalFilesCount;
+        fileSizeValueToLog = differenceInBytes;
+      } else {
+        // when generating locally we doo not log in increments so we log the total number of files and the total size generated in one go
+        fileValueToLog = uploadedFiles;
+        fileSizeValueToLog = main_total_generate_dataset_size;
+      }
+
+      // log the file and file size values to analytics
+      if (fileValueToLog > 0) {
         ipcRenderer.send(
-          "track-event",
-          "Success",
-          PrepareDatasetsAnalyticsPrefix.CURATE + " - Step 7 - Generate - Dataset - Size",
-          `${datasetUploadSession.id}`,
-          differenceInBytes
+          "track-kombucha",
+          kombuchaEnums.Category.PREPARE_DATASETS,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.FILES,
+          kombuchaEnums.Status.SUCCESS,
+          createEventData(fileValueToLog, dataset_destination, datasetLocation, dataset_name)
         );
       }
+
+      if (fileSizeValueToLog > 0) {
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.PREPARE_DATASETS,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.SIZE,
+          kombuchaEnums.Status.SUCCESS,
+          createEventData(fileSizeValueToLog, dataset_destination, datasetLocation, dataset_name)
+        );
+      }
+
+      // log folder and file options selected ( can be merge, skip, replace, duplicate)
+      logSelectedUpdateExistingDatasetOptions(datasetLocation);
 
       //Allow guided_mode_view to be clicked again
       document.getElementById("guided_mode_view").style.pointerEvents = "";
@@ -8015,36 +8100,70 @@ async function initiate_generate() {
       clientError(error);
       let emessage = userErrorMessage(error);
 
+      // log high level confirmation that a dataset was generation run failed
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.PREPARE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.TOTAL_UPLOADS,
+        kombuchaEnums.Status.FAIL,
+        createEventData(1, dataset_destination, datasetLocation, dataset_name)
+      );
+
+      // log the file and file size values to analytics for the amount that we managed to upload before we failed
       if (dataset_destination == "bf" || dataset_destination == "Pennsieve") {
         // log the difference again to Google Analytics
         let finalFilesCount = uploadedFiles - filesOnPreviousLogPage;
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          PrepareDatasetsAnalyticsPrefix.CURATE + "- Step 7 - Generate - Dataset - Number of Files",
-          `${datasetUploadSession.id}`,
-          finalFilesCount
-        );
-
         let differenceInBytes = uploadedBytes - bytesOnPreviousLogPage;
-        ipcRenderer.send(
-          "track-event",
-          "Success",
-          PrepareDatasetsAnalyticsPrefix.CURATE + " - Step 7 - Generate - Dataset - Size",
-          `${datasetUploadSession.id}`,
-          differenceInBytes
-        );
+
+        if (finalFilesCount > 0) {
+          ipcRenderer.send(
+            "track-kombucha",
+            kombuchaEnums.Category.PREPARE_DATASETS,
+            kombuchaEnums.Action.GENERATE_DATASET,
+            kombuchaEnums.Label.FILES,
+            kombuchaEnums.Status.SUCCESS,
+            createEventData(finalFilesCount, dataset_destination, datasetLocation, dataset_name)
+          );
+        }
+
+        if (differenceInBytes > 0) {
+          ipcRenderer.send(
+            "track-kombucha",
+            kombuchaEnums.Category.PREPARE_DATASETS,
+            kombuchaEnums.Action.GENERATE_DATASET,
+            kombuchaEnums.Label.SIZE,
+            kombuchaEnums.Status.SUCCESS,
+            createEventData(differenceInBytes, dataset_destination, datasetLocation, dataset_name)
+          );
+        }
       }
 
-      // log the curation errors to Google Analytics
-      logCurationErrorsToAnalytics(
-        0,
-        0,
-        dataset_destination,
-        main_total_generate_dataset_size,
-        increaseInFileSize,
-        datasetUploadSession,
-        false
+      // log folder and file options selected ( can be merge, skip, replace, duplicate)
+      logSelectedUpdateExistingDatasetOptions(datasetLocation);
+
+      // log the amount of files, and the total size, that we failed to upload
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.PREPARE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.FILES,
+        kombuchaEnums.Status.FAIL,
+        createEventData(uploadedFiles, dataset_destination, datasetLocation, dataset_name)
+      );
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.PREPARE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.SIZE,
+        kombuchaEnums.Status.FAIL,
+        createEventData(
+          main_total_generate_dataset_size,
+          dataset_destination,
+          datasetLocation,
+          dataset_name
+        )
       );
 
       //Enable the buttons
@@ -8317,9 +8436,22 @@ async function initiate_generate() {
   let bytesOnPreviousLogPage = 0;
   let filesOnPreviousLogPage = 0;
   const logProgressToAnalytics = (files, bytes) => {
+    let nameDestinationPair = determineDatasetDestination();
+    let datasetLocation = determineDatasetLocation();
+    let dataset_name = nameDestinationPair[0];
+    let dataset_destination = nameDestinationPair[1];
     // log every 500 files -- will log on success/failure as well so if there are less than 500 files we will log what we uploaded ( all in success case and some of them in failure case )
     if (files >= filesOnPreviousLogPage + 500) {
       filesOnPreviousLogPage += 500;
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.PREPARE_DATASETS,
+        kombuchaEnums.Action.GENERATE_DATASET,
+        kombuchaEnums.Label.FILES,
+        kombuchaEnums.Status.SUCCESS,
+        createEventData(500, dataset_destination, datasetLocation, dataset_name)
+      );
+
       ipcRenderer.send(
         "track-event",
         "Success",
@@ -8337,9 +8469,20 @@ async function initiate_generate() {
         `${datasetUploadSession.id}`,
         differenceInBytes
       );
+
+      if (differenceInBytes > 0) {
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.PREPARE_DATASETS,
+          kombuchaEnums.Action.GENERATE_DATASET,
+          kombuchaEnums.Label.SIZE,
+          kombuchaEnums.Status.SUCCESS,
+          createEventData(differenceInBytes, dataset_destination, datasetLocation, dataset_name)
+        );
+      }
     }
   };
-} // end initiate_generate
+}; // end initiate_generate
 
 const show_curation_shortcut = async () => {
   Swal.fire({
@@ -8421,7 +8564,7 @@ const get_num_files_and_folders = (dataset_folders) => {
   return;
 };
 
-function determineDatasetDestination() {
+const determineDatasetDestination = () => {
   if (sodaJSONObj["generate-dataset"]) {
     if (sodaJSONObj["generate-dataset"]["destination"]) {
       let destination = sodaJSONObj["generate-dataset"]["destination"];
@@ -8449,7 +8592,7 @@ function determineDatasetDestination() {
   } else {
     return [document.querySelector("#inputNewNameDataset").value, "Local"];
   }
-}
+};
 
 function backend_to_frontend_warning_message(error_array) {
   if (error_array.length > 1) {

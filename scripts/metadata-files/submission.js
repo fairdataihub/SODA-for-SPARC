@@ -2,6 +2,9 @@
 This file contains all of the functions related to the submission.xlsx file
 */
 
+// List of funding consortiums taken from the 2.1 submission file
+const sparcFundingConsortiums = ["SPARC", "SPARC-2", "VESPA", "REVA", "HORNET"];
+
 // event listeners for opendropdown prompt
 document.querySelectorAll(".submission-change-current-account").forEach((element) => {
   element.addEventListener("click", function () {
@@ -39,10 +42,14 @@ const renderMilestoneSelectionTable = (milestoneData) => {
   milestonesTableContainer.innerHTML = milestoneTableRows;
 };
 
-const openSubmissionMultiStepSwal = async (sparcAward, milestoneRes) => {
+const resetFundingConsortiumDropdown = () => {
+  $("#ffm-select-sparc-funding-consortium").val("").change();
+};
+
+const openSubmissionMultiStepSwal = async (curationMode, sparcAward, milestoneRes) => {
   //add a custom milestone row for when the user wants to add a custom milestone
   //not included in the dataset deliverables document
-  milestoneRes["Not included in the Dataset Deliverables document"] = [
+  milestoneRes["N/A"] = [
     {
       "Description of data":
         "Select this option when the dataset you are submitting is not related to a pre-agreed milestone",
@@ -157,7 +164,10 @@ const openSubmissionMultiStepSwal = async (sparcAward, milestoneRes) => {
 
   if (milestoneData && completionDate) {
     // Fill the SPARC award input with the imported SPARC award if it was found (otherwise it will be an empty string)
-    if (sparcAward.length > 0) {
+    if (curationMode === "free-form") {
+      document.getElementById("submission-sparc-award").value = sparcAward;
+    }
+    if (curationMode === "guided") {
       document.getElementById("guided-submission-sparc-award-manual").value = sparcAward;
     }
 
@@ -165,93 +175,111 @@ const openSubmissionMultiStepSwal = async (sparcAward, milestoneRes) => {
     const uniqueMilestones = Array.from(
       new Set(milestoneData.map((milestone) => milestone.milestone))
     );
-    guidedSubmissionTagsTagifyManual.removeAllTags();
-    guidedSubmissionTagsTagifyManual.addTags(uniqueMilestones);
 
-    // Add the completion date to the completion date dropdown and select it
-    const completionDateInput = document.getElementById("guided-submission-completion-date-manual");
-    completionDateInput.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
-    completionDateInput.value = completionDate;
+    if (curationMode === "free-form") {
+      milestoneTagify1.removeAllTags();
+      milestoneTagify1.addTags(uniqueMilestones);
+    }
+    if (curationMode === "guided") {
+      guidedSubmissionTagsTagifyManual.removeAllTags();
+      guidedSubmissionTagsTagifyManual.addTags(uniqueMilestones);
+    }
 
-    // Hide the milestone selection section and show the submission metadata section
-    const sectionThatAsksIfDataDeliverablesReady = document.getElementById(
-      "guided-section-user-has-data-deliverables-question"
-    );
-    const sectionSubmissionMetadataInputs = document.getElementById(
-      "guided-section-submission-metadata-inputs"
-    );
-    const sectionDataDeliverablesImport = document.getElementById(
-      "guided-section-import-data-deliverables-document"
-    );
-    sectionThatAsksIfDataDeliverablesReady.classList.add("hidden");
-    sectionDataDeliverablesImport.classList.add("hidden");
-    sectionSubmissionMetadataInputs.classList.remove("hidden");
+    if (curationMode === "free-form") {
+      // Add the completion date to the completion date dropdown and select it
+      const completionDateInput = document.getElementById("submission-completion-date");
+      completionDateInput.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
+      completionDateInput.value = completionDate;
+    }
+    if (curationMode === "guided") {
+      // Add the completion date to the completion date dropdown and select it
+      const completionDateInput = document.getElementById(
+        "guided-submission-completion-date-manual"
+      );
+      completionDateInput.innerHTML += `<option value="${completionDate}">${completionDate}</option>`;
+      completionDateInput.value = completionDate;
+    }
+
+    if (curationMode === "guided") {
+      // Hide the milestone selection section and show the submission metadata section
+      const sectionThatAsksIfDataDeliverablesReady = document.getElementById(
+        "guided-section-user-has-data-deliverables-question"
+      );
+      const sectionSubmissionMetadataInputs = document.getElementById(
+        "guided-section-submission-metadata-inputs"
+      );
+      const sectionDataDeliverablesImport = document.getElementById(
+        "guided-section-import-data-deliverables-document"
+      );
+      sectionThatAsksIfDataDeliverablesReady.classList.add("hidden");
+      sectionDataDeliverablesImport.classList.add("hidden");
+      sectionSubmissionMetadataInputs.classList.remove("hidden");
+    }
   }
 };
 
-const helpMilestoneSubmission = async (curationMode) => {
-  var filepath = "";
-  var informationJson = {};
-
-  Swal.fire({
-    title: "Importing the Data Deliverables document",
-    html: `<div class="container-milestone-upload" style="display: flex;margin:10px"><input class="milestone-upload-text" id="input-milestone-select" onclick="openDDDimport()" style="text-align: center;height: 40px;border-radius: 0;background: #f5f5f5; border: 1px solid #d0d0d0; width: 100%" type="text" readonly placeholder="Browse here"/></div>`,
-    heightAuto: false,
-    showCancelButton: true,
-    backdrop: "rgba(0,0,0, 0.4)",
-    preConfirm: () => {
-      if ($("#input-milestone-select").attr("placeholder") === "Browse here") {
-        Swal.showValidationMessage("Please select a file");
-      } else {
-        filepath = $("#input-milestone-select").attr("placeholder");
-        return {
-          filepath: filepath,
-        };
-      }
+const importSubmissionMetadataFromDataDeliverablesDocument = async (
+  curationMode,
+  dataDeliverablesDocumentFilePath
+) => {
+  const extract_milestone = await client.get(`/prepare_metadata/import_milestone`, {
+    params: {
+      path: dataDeliverablesDocumentFilePath,
     },
-  }).then(async (result) => {
-    Swal.close();
+  });
 
-    const filepath = result.value.filepath;
-    var award = $("#submission-sparc-award");
-    log.info(`Importing Data Deliverables document: ${filepath}`);
+  const res = extract_milestone.data;
+
+  // Get the SPARC award and milestone data from the response
+  const importedSparcAward = res["sparc_award"];
+  const milestoneObj = res["milestone_data"];
+
+  await openSubmissionMultiStepSwal(curationMode, importedSparcAward, milestoneObj);
+};
+
+document.querySelectorAll(".button-import-data-deliverables-document").forEach(async (button) => {
+  button.addEventListener("click", async () => {
+    // First get the filepath from the user
+    let dataDeliverablesDocumentFilePath = "";
+
+    const result = await Swal.fire({
+      title: "Importing the Data Deliverables document",
+      html: `
+        <div class="container-milestone-upload" style="display: flex;margin:10px">
+          <input class="milestone-upload-text" id="input-milestone-select" onclick="openDDDimport()" style="text-align: center;height: 40px;border-radius: 0;background: #f5f5f5; border: 1px solid #d0d0d0; width: 100%" type="text" readonly placeholder="Browse here"/>
+        </div>
+      `,
+      heightAuto: false,
+      showCancelButton: true,
+      backdrop: "rgba(0,0,0, 0.4)",
+      preConfirm: () => {
+        const inputSelectDataDeliverablesPath = $("#input-milestone-select");
+        if (inputSelectDataDeliverablesPath.attr("placeholder") === "Browse here") {
+          Swal.showValidationMessage("Please select a file");
+        } else {
+          dataDeliverablesDocumentFilePath = inputSelectDataDeliverablesPath.attr("placeholder"); // Set the file path
+          return true;
+        }
+      },
+    });
+    if (!result.isConfirmed) {
+      return; // Exit early if the user does not import a file
+    }
+
+    const buttonId = button.id;
+    let curationMode = null;
+    if (buttonId === "button-ffm-import-data-deliverables-document") {
+      curationMode = "free-form";
+    }
+    if (buttonId === "button-guided-import-data-deliverables-document") {
+      curationMode = "guided";
+    }
+
     try {
-      let extract_milestone = await client.get(`/prepare_metadata/import_milestone`, {
-        params: {
-          path: filepath,
-        },
-      });
-      let res = extract_milestone.data;
-
-      // Get the SPARC award and milestone data from the response
-      const importedSparcAward = res["sparc_award"];
-      const milestoneObj = res["milestone_data"];
-
-      //Handle free-form mode submission data
-      if (curationMode === "free-form") {
-        createMetadataDir();
-        var informationJson = {};
-        informationJson = parseJson(milestonePath);
-        informationJson[award] = milestoneObj;
-        fs.writeFileSync(milestonePath, JSON.stringify(informationJson));
-        Swal.fire({
-          backdrop: "rgba(0,0,0, 0.4)",
-          heightAuto: false,
-          timer: 3000,
-          timerProgressBar: true,
-          icon: "success",
-          text: `Successfully loaded your DataDeliverables.docx document`,
-        });
-        removeOptions(descriptionDateInput);
-        milestoneTagify1.removeAllTags();
-        milestoneTagify1.settings.whitelist = [];
-        changeAwardInput();
-      }
-
-      //Handle guided mode submission data
-      if (curationMode === "guided") {
-        await openSubmissionMultiStepSwal(importedSparcAward, milestoneObj);
-      }
+      await importSubmissionMetadataFromDataDeliverablesDocument(
+        curationMode,
+        dataDeliverablesDocumentFilePath
+      );
     } catch (error) {
       console.log(error);
       clientError(error);
@@ -263,7 +291,7 @@ const helpMilestoneSubmission = async (curationMode) => {
       });
     }
   });
-};
+});
 
 let guidedMilestoneData = {};
 
@@ -398,95 +426,148 @@ const openDDDimport = async (curationMode) => {
   }
 };
 
-// onboarding for submission file
-function onboardingSubmission() {
+const onboardingSubmission = async () => {
+  // Set a half second timeout to allow the page to scroll before the introjs starts
   setTimeout(function () {
-    if (!introStatus.submission) {
-      introJs()
-        .setOptions({
-          steps: [
-            {
-              // title: "1. Help with your milestone information",
-              element: document.querySelector("#a-help-submission-milestones"),
-              intro:
-                "Click here to import your Data Deliverables document for SODA to automatically retrieve your milestone and completion date.",
-            },
-          ],
-          dontShowAgain: true,
-          exitOnEsc: false,
-          exitOnOverlayClick: false,
-          disableInteraction: false,
-        })
-        .onbeforeexit(function () {
-          introStatus.submission = true;
-        })
-        .start();
-    }
-  }, 1300);
-}
+    const introOptions = {
+      steps: [
+        {
+          element: document.querySelector("#button-ffm-import-data-deliverables-document"),
+          intro:
+            "Click here to import your Data Deliverables document for SODA to automatically retrieve your milestone and completion date.",
+        },
+      ],
+      dontShowAgain: true,
+      exitOnEsc: false,
+      exitOnOverlayClick: false,
+      disableInteraction: false,
+    };
 
-// generateSubmissionFile function takes all the values from the preview card's spans
-function generateSubmissionFile() {
-  var awardRes = $("#submission-sparc-award").val();
-  var dateRes = $("#submission-completion-date").val();
-  var milestonesRes = $("#selected-milestone-1").val();
-  let milestoneValue = [""];
-  if (milestonesRes !== "") {
-    milestoneValue = JSON.parse(milestonesRes);
-  }
-  if (awardRes === "" || dateRes === "Select" || milestonesRes === "") {
+    introJs()
+      .setOptions(introOptions)
+      .onbeforeexit(() => {
+        introStatus.submission = true;
+      })
+      .start();
+  }, 1500);
+};
+
+function validateSubmissionFileInputs() {
+  // Retrieve the value from the funding consortium dropdown and return false if it is empty
+  const fundingConsortiumFromDropdown = $("#ffm-select-sparc-funding-consortium").val();
+  if (fundingConsortiumFromDropdown === "") {
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       icon: "error",
-      text: "Please fill in all of the required fields.",
+      text: "Please select a funding consortium.",
       title: "Incomplete information",
     });
-    return "empty";
+    return false;
   }
-}
 
-function changeAwardInput() {
-  var ddBolean;
-  document.getElementById("submission-completion-date").value = "";
-  milestoneTagify1.removeAllTags();
-  milestoneTagify1.settings.whitelist = [];
-  removeOptions(descriptionDateInput);
-  addOption(descriptionDateInput, "Select an option", "Select");
+  // Return false if the submission is SPARC and the award number is empty (award number required for SPARC submissions)
+  if (fundingConsortiumFromDropdown === "SPARC" && $("#submission-sparc-award").val() === "") {
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      icon: "error",
+      text: "Please enter an award number.",
+      title: "Incomplete information",
+    });
+    return false;
+  }
 
-  award = $("#submission-sparc-award");
-  var informationJson = parseJson(milestonePath);
-
-  var completionDateArray = [];
-  var milestoneValueArray = [];
-  completionDateArray.push("Enter my own date");
-
-  /// when DD is provided
-  if (award in informationJson) {
-    ddBolean = true;
-    var milestoneObj = informationJson[award];
-    // Load milestone values once users choose an award number
-    var milestoneKey = Object.keys(milestoneObj);
-
-    /// add milestones to Tagify suggestion tag list and options to completion date dropdown
-    for (var i = 0; i < milestoneKey.length; i++) {
-      milestoneValueArray.push(milestoneKey[i]);
-      for (var j = 0; j < milestoneObj[milestoneKey[i]].length; j++) {
-        completionDateArray.push(milestoneObj[milestoneKey[i]][j]["Expected date of completion"]);
-      }
+  // If milestones were added, check for a completion date
+  const milestones = getTagsFromTagifyElement(milestoneTagify1);
+  if (milestones.length > 0) {
+    const selectedCompletionDate = $("#submission-completion-date").val();
+    if (selectedCompletionDate === "") {
+      Swal.fire({
+        backdrop: "rgba(0,0,0, 0.4)",
+        heightAuto: false,
+        icon: "error",
+        text: "Please select a completion date.",
+        title: "Incomplete information",
+      });
+      return false;
     }
-    milestoneValueArray.push("Not specified in the Data Deliverables document");
-  } else {
-    ddBolean = false;
   }
-  milestoneTagify1.settings.whitelist = milestoneValueArray;
-  for (var i = 0; i < completionDateArray.length; i++) {
-    addOption(descriptionDateInput, completionDateArray[i], completionDateArray[i]);
-  }
-  return ddBolean;
+
+  // If all the above checks pass, then return true
+  return true;
 }
 
-const submissionDateInput = document.getElementById("submission-completion-date");
+// Set the funding consortium dropdown options / set up select picker
+document.getElementById("ffm-select-sparc-funding-consortium").innerHTML = `
+  <option value="">Select a funding consortium</option>
+    ${sparcFundingConsortiums
+      .map((consortium) => {
+        return `<option value="${consortium}">${consortium}</option>`;
+      })
+      .join("\n")}
+`;
+$("#ffm-select-sparc-funding-consortium").selectpicker({
+  style: "SODA-select-picker",
+});
+$("#ffm-select-sparc-funding-consortium").selectpicker("refresh");
+
+// Event listener that watches what the user selects and updates the UI accordingly
+$("#ffm-select-sparc-funding-consortium").on("change", function (e) {
+  // Set consortium var as the newly selected value from the dropdown
+  const consortium = e.target.value;
+
+  // Get the generate submission button element
+  const generateSubmissionButton = document.getElementById("button-generate-submission");
+
+  // Show or hide the generate submission button based on the selected funding consortium
+  if (consortium === "") {
+    generateSubmissionButton.classList.add("hidden"); // Hide the button
+  } else {
+    generateSubmissionButton.classList.remove("hidden"); // Show the button
+  }
+
+  // Get all the form fields that are required if submission is SPARC
+  const requiredFieldsIfSubmissionIsSparc = document.querySelectorAll(
+    ".submission-required-if-sparc-funding-consortium"
+  );
+
+  if (consortium === "SPARC") {
+    // Add the "required" class to the labels of the required fields
+    requiredFieldsIfSubmissionIsSparc.forEach((label) => {
+      label.classList.add("required");
+    });
+
+    hideElementsWithClass("non-sparc-funding-consortium-instructions"); // Hide non-SPARC instructions
+  } else {
+    // Remove the "required" class from the labels of the required fields
+    requiredFieldsIfSubmissionIsSparc.forEach((label) => {
+      label.classList.remove("required");
+    });
+
+    showElementsWithClass("non-sparc-funding-consortium-instructions"); // Show non-SPARC instructions
+  }
+
+  // Get the container DDD import button element
+  const containerDddImportButton = document.getElementById("container-ddd-import-button");
+
+  if (consortium === "SPARC") {
+    // Show the DDD import button
+    containerDddImportButton.classList.remove("hidden");
+
+    // Show the submission onboarding if the user hasn't seen it yet
+    if (!introStatus.submission) {
+      // commented out onBoarding due to scrolling issues TODO: fix scrolling issues
+      // onboardingSubmission();
+    }
+  } else {
+    // Hide the DDD import button
+    containerDddImportButton.classList.add("hidden");
+  }
+});
+// Reset the dropdown so it starts with the default option
+resetFundingConsortiumDropdown();
+
 var submissionDestinationPath = "";
 
 $(document).ready(function () {
@@ -752,25 +833,29 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
     },
   });
 
-  var awardRes = $("#submission-sparc-award").val();
-  var dateRes = $("#submission-completion-date").val();
-  var milestonesRes = $("#selected-milestone-1").val();
-  let milestoneValue = [{ value: "" }];
-  if (milestonesRes !== "") {
-    milestoneValue = JSON.parse(milestonesRes);
-  }
-  var json_arr = [];
-  json_arr.push({
-    award: awardRes,
-    date: dateRes,
-    milestone: milestoneValue[0].value,
+  const fundingConsortiumFromDropdown = $("#ffm-select-sparc-funding-consortium").val();
+  const awardNumber = $("#submission-sparc-award").val();
+  const milestones = getTagsFromTagifyElement(milestoneTagify1);
+  const completionDate = $("#submission-completion-date").val();
+
+  const submissionMetadataArray = [];
+
+  submissionMetadataArray.push({
+    consortiumDataStandard: "SPARC",
+    fundingConsortium: fundingConsortiumFromDropdown,
+    award: awardNumber,
+    date: completionDate || "N/A",
+    milestone: milestones[0] || "N/A",
   });
-  if (milestoneValue.length > 0) {
-    for (var index = 1; index < milestoneValue.length; index++) {
-      json_arr.push({
+
+  if (milestones.length > 1) {
+    for (let i = 1; i < milestones.length; i++) {
+      submissionMetadataArray.push({
+        fundingConsortium: "",
+        consortiumDataStandard: "",
         award: "",
         date: "",
-        milestone: milestoneValue[index].value,
+        milestone: milestones[i],
       });
     }
   }
@@ -779,7 +864,7 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
     .post(
       `/prepare_metadata/submission_file`,
       {
-        submission_file_rows: json_arr,
+        submission_file_rows: submissionMetadataArray,
         filepath: submissionDestinationPath,
         upload_boolean: uploadBFBoolean,
       },
@@ -1018,37 +1103,56 @@ async function loadExistingSubmissionFile(filepath) {
 
 function loadSubmissionFileToUI(data, type) {
   milestoneTagify1.removeAllTags();
-  removeOptions(descriptionDateInput);
-  addOption(descriptionDateInput, "Select an option", "Select");
-  $("#submission-completion-date").val("Select");
+  $("#submission-completion-date").val("");
   $("#submission-sparc-award").val("");
-  // 1. populate milestones
+
+  // 1. populate Funding consortium dropdown
+  if (sparcFundingConsortiums.includes(data["Funding consortium"])) {
+    $("#ffm-select-sparc-funding-consortium").val(data["Funding consortium"]).change();
+  } else {
+    // reset the funding consortium dropdown
+    resetFundingConsortiumDropdown();
+  }
+
+  // 2. populate SPARC award
+  if (data["Award number"] !== "") {
+    $("#submission-sparc-award").val(data["Award number"]);
+  }
+
+  // temp variable to check if any milestones were imported
+  // If this remains false, we will not set the completion date (will be left as default value)
+  let milestonesImported = false;
+
+  // 3. populate milestones
   if (typeof data["Milestone achieved"] === "string") {
     milestoneTagify1.addTags(data["Milestone achieved"]);
+    milestonesImported = true;
   } else {
-    for (var milestone of data["Milestone achieved"]) {
+    // Filter out milestones that are empty strings or N/A
+    const filteredMilestones = data["Milestone achieved"].filter((milestone) => {
+      return milestone !== "" && milestone !== "N/A";
+    });
+
+    // set milestonesImported to true if there are any milestones so we know to set the completion date
+    if (filteredMilestones.length > 0) {
+      milestonesImported = true;
+    }
+
+    for (const milestone of filteredMilestones) {
       milestoneTagify1.addTags(milestone);
     }
   }
-  // 2. populate SPARC award
-  if (data["SPARC Award number"] !== "") {
-    $("#submission-sparc-award").val(data["SPARC Award number"]);
-  }
-  // 3. populate Completion date
-  if (data["Milestone completion date"] !== "") {
+
+  // 4. populate Completion date (only if milestones were imported, otherwise leave as default value)
+  if (data["Milestone completion date"] !== "" && milestonesImported) {
     addOption(
       descriptionDateInput,
       data["Milestone completion date"],
       data["Milestone completion date"]
     );
-    // HERE BOI
-    $("#submission-completion-date").append(
-      $("<option>", {
-        text: "Enter my own date",
-      })
-    );
     $("#submission-completion-date").val(data["Milestone completion date"]);
   }
+
   Swal.fire({
     title: "Loaded successfully!",
     icon: "success",
@@ -1097,7 +1201,7 @@ async function checkBFImportSubmission() {
       Swal.showLoading();
     },
   }).then((result) => {});
-  let bfDataset = $("#bf_dataset_load_submission").text().trim();
+  const bfDataset = $("#bf_dataset_load_submission").text().trim();
   log.info(`Loading submission file from Pennsieve dataset: ${bfDataset}`);
   try {
     let import_metadata = await client.get(`/prepare_metadata/import_metadata_file`, {

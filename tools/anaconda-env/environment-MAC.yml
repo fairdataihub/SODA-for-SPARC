@@ -29,3 +29,4 @@ dependencies:
   - protobuf == 4.21.12
   - pennsieve2 == 0.1.1
   - boto3
+  - jsonschema == 4.17.3

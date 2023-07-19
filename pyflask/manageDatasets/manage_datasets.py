@@ -201,6 +201,22 @@ def bf_add_account_api_key(keyname, key, secret):
     except Exception as e:
         bf_delete_account(keyname)
         raise e
+    
+def check_forbidden_characters_ps(my_string):
+    """
+    Check for forbidden characters in Pennsieve file/folder name
+
+    Args:
+        my_string: string with characters (string)
+    Returns:
+        False: no forbidden character
+        True: presence of forbidden character(s)
+    """
+    regex = re.compile(f"[{forbidden_characters_bf}]")
+    if regex.search(my_string) == None and "\\" not in r"%r" % my_string:
+        return False
+    else:
+        return True
 
 
 def bf_account_list():
@@ -756,6 +772,7 @@ def submit_dataset_progress():
         'submit_print_status': submitprintstatus,
         'total_file_size': total_file_size,
         'upload_file_size': total_bytes_uploaded["value"],
+        'uploaded_files': files_uploaded,
         'elapsed_time_formatted': elapsed_time_formatted,
         'files_uploaded_status': f"Uploaded {files_uploaded} of {total_files_to_upload} files",
     }

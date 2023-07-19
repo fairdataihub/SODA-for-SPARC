@@ -278,6 +278,9 @@ function resetSubmissionFields() {
   }
   milestoneTagify1.removeAllTags();
 
+  // Reset the funding consortium dropdown
+  resetFundingConsortiumDropdown();
+
   // make accordion active again
   $("#submission-title-accordion").addClass("active");
   $("#submission-accordion").addClass("active");
@@ -288,14 +291,15 @@ function resetSubmissionFields() {
   for (var field of selectFields) {
     $(field).val("Select");
   }
-  $("#submission-completion-date")
-    .empty()
-    .append('<option value="Select">Select an option</option>');
-  $("#submission-completion-date").append(
-    $("<option>", {
-      text: "Enter my own date",
-    })
-  );
+
+  // reset the completion date dropdown
+  const completionDateDropdown = document.getElementById("submission-completion-date");
+
+  completionDateDropdown.innerHTML = `
+    <option value="">Select a completion date</option>
+    <option value="Enter my own date">Enter my own date</option>
+    <option value="N/A">N/A</option>
+  `;
 }
 
 function resetDD(askToReset = true) {

@@ -36,10 +36,13 @@ model_save_submission_file_response = api.model('saveSubmissionFileResponse', {
 })
 
 model_get_submission_file_response = api.model('getSubmissionFileResponse', {
-    "SPARC Award number": fields.String(required=True, description='SPARC Award number'),
-    "Milestone achieved": fields.List(fields.String, required=True, description='Milestone achieved'),
+    "Award number": fields.String(required=True, description='Submission award number'),
+    "Consortium data standard": fields.String(required=True, description='Submission consortium data standard'),
+    "Funding consortium": fields.String(required=True, description='Submission funding consortium'),
+    "Milestone achieved": fields.List(fields.String, required=True, description='Submission milestone(s) achieved'),
     "Milestone completion date": fields.String(required=True, description='Milestone completion date'),
 })
+
 @api.route('/submission_file')
 class SaveSubmissionFile(Resource):
     parser_save_submission_file = reqparse.RequestParser(bundle_errors=True)
@@ -47,7 +50,7 @@ class SaveSubmissionFile(Resource):
     parser_save_submission_file.add_argument('selected_account', type=str, help='Pennsieve account name', location="args", required=True)
     parser_save_submission_file.add_argument('selected_dataset', type=str, help='Pennsieve dataset name', location="args", required=True)
     parser_save_submission_file.add_argument('filepath', type=str, help='Path to the file to be uploaded', location="json")
-    parser_save_submission_file.add_argument('submission_file_rows', type=list, help='List of objects that contain award, milestone, and date properties with appropriate values.', location="json", required=True)
+    parser_save_submission_file.add_argument('submission_file_rows', type=list, help='List of objects that contain the consortium data standard, funding consortium, award number, milestone(s), and date properties with appropriate values.', location="json", required=True)
 
     @api.expect(parser_save_submission_file)
     @api.response(200, 'OK', model_save_submission_file_response)
