@@ -8238,7 +8238,7 @@ const initiate_generate = async () => {
     });
 
   // Progress tracking function for main curate
-  var timerProgress = setInterval(mainProgressFunction, 50);
+  var timerProgress = setInterval(mainProgressFunction, 3000);
   var successful = false;
 
   async function mainProgressFunction() {
