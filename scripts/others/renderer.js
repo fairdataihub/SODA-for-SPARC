@@ -651,11 +651,13 @@ const getPennsieveAgentVersion = (pathToPennsieveAgent) => {
   log.info("Getting Pennsieve agent version");
 
   return new Promise((resolve, reject) => {
+    let agentLog = "";
     // Timeout if the agent was not able to be retrieved within 15 seconds
     const versionCheckTimeout = setTimeout(() => {
       reject(
         new Error(
-          "The installed Pennsieve agent version was not able to be retrieved in the alotted time"
+          "The installed Pennsieve agent version was not able to be retrieved in the alotted time" +
+            agentLog
         )
       );
     }, 15000);
@@ -666,7 +668,8 @@ const getPennsieveAgentVersion = (pathToPennsieveAgent) => {
     // Resolve the promise if the version is found
     agentVersionSpawn.stdout.on("data", (data) => {
       const agentVersionOutput = data.toString();
-      log.info(agentVersionOutput);
+      log.info(`[Pennsieve Agent Output] ${agentVersionOutput}`);
+      agentLog += `[Pennsieve Agent Output] ${agentVersionOutput}`;
       const versionResult = {};
       const regex = /(\w+ Version)\s*:\s*(\S+)/g;
       let match;
@@ -684,7 +687,8 @@ const getPennsieveAgentVersion = (pathToPennsieveAgent) => {
     // Capture standard error output and reject the promise
     agentVersionSpawn.stderr.on("data", (data) => {
       const agentError = data.toString();
-      log.info(agentError);
+      log.info(`[Pennsieve Agent Error Output] ${agentError}`);
+      agentLog += `[Pennsieve Agent Error Output] ${agentError}`;
       clearTimeout(versionCheckTimeout);
       reject(new Error(agentError));
     });
@@ -692,7 +696,8 @@ const getPennsieveAgentVersion = (pathToPennsieveAgent) => {
     // Capture error output and reject the promise
     agentVersionSpawn.on("error", (error) => {
       const agentSpawnError = error.toString();
-      log.info(agentSpawnError);
+      log.info(`[Pennsieve Agent Error] ${agentSpawnError}`);
+      agentLog += `[Pennsieve Agent Error] ${agentSpawnError}`;
       clearTimeout(versionCheckTimeout);
       reject(new Error(agentSpawnError));
     });

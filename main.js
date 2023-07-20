@@ -18,25 +18,27 @@ const axios = require("axios");
 const { info } = require("console");
 const { node } = require("prop-types");
 const uuid = require("uuid").v4;
-
+const sodaVersion = app.getVersion();
+// If buildIsBeta is true, the app will not check for updates
+// If it is false, the app will check for updates
+const buildIsBeta = sodaVersion.includes("beta");
 log.transports.console.level = false;
 log.transports.file.level = "debug";
-autoUpdater.channel = "beta";
+autoUpdater.channel = buildIsBeta ? "beta" : "latest";
 autoUpdater.logger = log;
 global.trackEvent = trackEvent;
 global.trackKombuchaEvent = trackKombuchaEvent;
-
 const nodeStorage = new JSONStorage(app.getPath("userData"));
 /*************************************************************
  * Python Process
  *************************************************************/
-
+const appVersion = app.getVersion();
+const appIsBeta = appVersion.includes("fgbeta");
 // flask setup environment variables
 const PY_FLASK_DIST_FOLDER = "pyflaskdist";
 const PY_FLASK_FOLDER = "pyflask";
 const PY_FLASK_MODULE = "app";
 let pyflaskProcess = null;
-
 let PORT = 4242;
 let selectedPort = null;
 const portRange = 100;
@@ -46,7 +48,6 @@ const kombuchaServer = axios.create({
   baseURL: kombuchaURL,
   timeout: 0,
 });
-
 /**
  * Determine if the application is running from a packaged version or from a dev version.
  * The resources path is used for Linux and Mac builds and the app.getAppPath() is used for Windows builds.
@@ -54,12 +55,9 @@ const kombuchaServer = axios.create({
  */
 const guessPackaged = () => {
   log.info("Guessing if packaged");
-
   const windowsPath = path.join(__dirname, PY_FLASK_DIST_FOLDER);
   const unixPath = path.join(process.resourcesPath, PY_FLASK_MODULE);
-
   log.info(unixPath);
-
   if (process.platform === "darwin" || process.platform === "linux") {
     if (require("fs").existsSync(unixPath)) {
       log.info("Unix path exists");
@@ -69,7 +67,6 @@ const guessPackaged = () => {
       return false;
     }
   }
-
   if (process.platform === "win32") {
     if (require("fs").existsSync(windowsPath)) {
       return true;
@@ -78,7 +75,6 @@ const guessPackaged = () => {
     }
   }
 };
-
 /**
  * Get the system path to the api server script.
  * The script is located in the resources folder for packaged Linux and Mac builds and in the app.getAppPath() for Windows builds.
@@ -91,7 +87,6 @@ const getScriptPath = () => {
     log.info(path.join(__dirname, PY_FLASK_FOLDER, PY_FLASK_MODULE + ".py"));
     return path.join(__dirname, PY_FLASK_FOLDER, PY_FLASK_MODULE + ".py");
   }
-
   if (process.platform === "win32") {
     return path.join(__dirname, PY_FLASK_DIST_FOLDER, PY_FLASK_MODULE + ".exe");
   } else {
@@ -99,37 +94,27 @@ const getScriptPath = () => {
     return path.join(process.resourcesPath, PY_FLASK_MODULE);
   }
 };
-
 const selectPort = () => {
   return PORT;
 };
-
 const createPyProc = async () => {
   let script = getScriptPath();
   log.info(`Path to server executable: ${script}`);
-
   let port = "" + selectPort();
-
   await killAllPreviousProcesses();
-
   if (require("fs").existsSync(script)) {
     log.info("server exists at specified location");
   } else {
     log.info("server does not exist at specified location");
   }
-
   fp(PORT, PORT + portRange)
     .then(([freePort]) => {
       let port = freePort;
-
       if (guessPackaged()) {
         log.info("Application is packaged");
-
         // Store the stdout and stederr in a string to log later
         let sessionServerOutput = "";
-
         pyflaskProcess = require("child_process").execFile(script, [port], {});
-
         // Log the stdout and stderr
         pyflaskProcess.stdout.on("data", (data) => {
           const logOutput = `[pyflaskProcess output] ${data.toString()}`;
@@ -139,7 +124,6 @@ const createPyProc = async () => {
           const logOutput = `[pyflaskProcess stderr] ${data.toString()}`;
           sessionServerOutput += `${logOutput}`;
         });
-
         // On close, log the outputs and the exit code
         pyflaskProcess.on("close", (code) => {
           log.info(`child process exited with code ${code}`);
@@ -152,27 +136,23 @@ const createPyProc = async () => {
           stdio: "ignore",
         });
       }
-
       if (pyflaskProcess != null) {
         console.log("child process success on port " + port);
         log.info("child process success on port " + port);
       } else {
         console.error("child process failed to start on port" + port);
       }
-
       selectedPort = port;
     })
     .catch((err) => {
       console.log(err);
     });
 };
-
 /**
  * Kill the python server process. Needs to be called before SODA closes.
  */
 const exitPyProc = async () => {
   log.info("Killing python server process");
-
   // Windows does not properly shut off the python server process. This ensures it is killed.
   const killPythonProcess = () => {
     // kill pyproc with command line
@@ -183,11 +163,8 @@ const exitPyProc = async () => {
       "/t",
     ]);
   };
-
   console.log("Killing the process");
-
   await killAllPreviousProcesses();
-
   // check if the platform is Windows
   if (process.platform === "win32") {
     if (pyflaskProcess != null) {
@@ -197,7 +174,6 @@ const exitPyProc = async () => {
     PORT = null;
     return;
   }
-
   // kill signal to pyProc
   if (pyflaskProcess != null) {
     pyflaskProcess.kill();
@@ -205,26 +181,20 @@ const exitPyProc = async () => {
   }
   PORT = null;
 };
-
 const killAllPreviousProcesses = async () => {
   console.log("Killing all previous processes");
-
   // kill all previous python processes that could be running.
   let promisesArray = [];
-
   let endRange = PORT + portRange;
-
   // create a loop of 100
   for (let currentPort = PORT; currentPort <= endRange; currentPort++) {
     promisesArray.push(
       axios.get(`http://127.0.0.1:${currentPort}/sodaforsparc_server_shutdown`, {})
     );
   }
-
   // wait for all the promises to resolve
   await Promise.allSettled(promisesArray);
 };
-
 // Sends user information to Kombucha server
 const sendUserAnalytics = () => {
   // Retrieve the userId and if it doesn't exist, create a new uuid
@@ -234,7 +204,6 @@ const sendUserAnalytics = () => {
   } catch (e) {
     token = null;
   }
-
   if (token === null) {
     // send empty object for new users
     kombuchaServer
@@ -249,48 +218,34 @@ const sendUserAnalytics = () => {
       });
   }
 };
-
 // 5.4.1 change: We call createPyProc in a spearate ready event
 // app.on("ready", createPyProc);
 // 5.4.1 change: We call exitPyreProc when all windows are killed so it has time to kill the process before closing
-
 /*************************************************************
  * Main app window
  *************************************************************/
-
 let mainWindow = null;
 let user_restart_confirmed = false;
 let updatechecked = false;
 let window_reloaded = false;
-
-// If buildIsBeta is true, the app will not check for updates
-// If it is false, the app will check for updates
-const buildIsBeta = false;
-
 function initialize() {
   const checkForAnnouncements = () => {
     mainWindow.webContents.send("checkForAnnouncements");
   };
-
   sendUserAnalytics();
-
   makeSingleInstance();
   loadDemos();
-
   function createWindow() {
     // mainWindow.webContents.openDevTools();
-
     mainWindow.webContents.on("new-window", (event, url) => {
       event.preventDefault();
       shell.openExternal(url);
     });
-
     mainWindow.webContents.once("dom-ready", () => {
       if (updatechecked == false && !buildIsBeta) {
         autoUpdater.checkForUpdatesAndNotify();
       }
     });
-
     mainWindow.on("close", async (e) => {
       if (!user_restart_confirmed) {
         if (app.showExitPrompt) {
@@ -322,7 +277,6 @@ function initialize() {
       }
     });
   }
-
   const quit_app = () => {
     app.showExitPrompt = false;
     mainWindow.close();
@@ -332,10 +286,8 @@ function initialize() {
       mainWindow.destroy();
     }
   };
-
   app.on("ready", () => {
     createPyProc();
-
     const windowOptions = {
       minWidth: 1121,
       minHeight: 735,
@@ -352,11 +304,9 @@ function initialize() {
         // preload: path.join(__dirname, "preload.js"),
       },
     };
-
     mainWindow = new BrowserWindow(windowOptions);
     require("@electron/remote/main").enable(mainWindow.webContents);
     mainWindow.loadURL(path.join("file://", __dirname, "/index.html"));
-
     const splash = new BrowserWindow({
       width: 220,
       height: 190,
@@ -366,7 +316,6 @@ function initialize() {
       transparent: true,
     });
     splash.loadURL(path.join("file://", __dirname, "/splash-screen.html"));
-
     //  if main window is ready to show, then destroy the splash window and show up the main window
     mainWindow.webContents.once("dom-ready", () => {
       setTimeout(function () {
@@ -376,7 +325,6 @@ function initialize() {
         createWindow();
         var first_launch = nodeStorage.getItem("firstlaunch");
         var announcementsLaunch = nodeStorage.getItem("announcements");
-
         if (first_launch == true || first_launch == undefined) {
           mainWindow.reload();
           mainWindow.focus();
@@ -393,36 +341,29 @@ function initialize() {
         updatechecked = true;
       }, 6000);
     });
-
     mainWindow.on("show", () => {
       var first_launch = nodeStorage.getItem("firstlaunch");
       if ((first_launch == true || first_launch == undefined) && window_reloaded == false) {
       }
     });
   });
-
   app.on("window-all-closed", async () => {
     await exitPyProc();
     app.quit();
   });
-
   app.on("will-quit", () => {
     app.quit();
   });
 }
-
 function start_pre_flight_checks() {
   mainWindow.webContents.send("start_pre_flight_checks");
 }
-
 // Make this app a single instance app.
 const gotTheLock = app.requestSingleInstanceLock();
-
 function makeSingleInstance() {
   if (process.mas) {
     return;
   }
-
   if (!gotTheLock) {
     app.quit();
   } else {
@@ -436,7 +377,6 @@ function makeSingleInstance() {
     });
   }
 }
-
 /*
 the saveImage context Menu-Item works; however, it does not notify users that a download occurs.
 If you check your download folder, you'll see it there.
@@ -444,7 +384,6 @@ See: https://github.com/nteract/nteract/issues/1655
 showSaveImageAs prompts the users where they want to save the image.
 */
 contextMenu();
-
 // Require each JS file in the main-process dir
 function loadDemos() {
   const files = glob.sync(path.join(__dirname, "main-process/**/*.js"));
@@ -452,9 +391,7 @@ function loadDemos() {
     require(file);
   });
 }
-
 initialize();
-
 ipcMain.on("resize-window", (event, dir) => {
   let x = mainWindow.getSize()[0];
   let y = mainWindow.getSize()[1];
@@ -467,7 +404,6 @@ ipcMain.on("resize-window", (event, dir) => {
   }
   mainWindow.setSize(x, y);
 });
-
 // Google analytics tracking function
 // To use, category and action is required. Label and value can be left out
 // if not needed. Sample requests from renderer.js is shown below:
@@ -476,32 +412,26 @@ ipcMain.on("resize-window", (event, dir) => {
 ipcMain.on("track-event", (event, category, action, label, value) => {
   // do nothing here for now
 });
-
 ipcMain.on("track-kombucha", (event, category, action, label, eventStatus, eventData) => {
   trackKombuchaEvent(category, action, label, eventStatus, eventData);
 });
-
 ipcMain.on("app_version", (event) => {
   event.sender.send("app_version", { version: app.getVersion() });
 });
-
 autoUpdater.on("update-available", () => {
   log.info("update_available");
   mainWindow.webContents.send("update_available");
 });
-
 autoUpdater.on("update-downloaded", () => {
   log.info("update_downloaded");
   mainWindow.webContents.send("update_downloaded");
 });
-
 ipcMain.on("restart_app", async () => {
   user_restart_confirmed = true;
   nodeStorage.setItem("announcements", true);
   log.info("quitAndInstall");
   autoUpdater.quitAndInstall();
 });
-
 // passing in the spreadsheet data to pass to a modal
 // that will have a jspreadsheet for user edits
 ipcMain.handle("spreadsheet", (event, spreadsheet) => {
@@ -521,9 +451,7 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
     parent: mainWindow,
     closable: true,
   };
-
   let spreadSheetModal = new BrowserWindow(windowOptions);
-
   spreadSheetModal.on("close", (e) => {
     mainWindow.webContents.send("spreadsheet-reply", "");
     try {
@@ -533,16 +461,13 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
       console.log(e);
     }
   });
-
   spreadSheetModal.loadFile("./sections/spreadSheetModal/spreadSheet.html");
-
   spreadSheetModal.once("ready-to-show", async () => {
     //display window when ready to show
     spreadSheetModal.show();
     //send data to child window
     spreadSheetModal.send("requested-spreadsheet", spreadsheet);
   });
-
   ipcMain.on("spreadsheet-results", async (ev, res) => {
     //send back spreadsheet data to main window
     mainWindow.webContents.send("spreadsheet-reply", res);
@@ -555,14 +480,11 @@ ipcMain.handle("spreadsheet", (event, spreadsheet) => {
     }
   });
 });
-
 const wait = async (delay) => {
   return new Promise((resolve) => setTimeout(resolve, delay));
 };
-
 // passing in the spreadsheet data to pass to a modal
 // that will have a jspreadsheet for user edits
-
 ipcMain.on("orcid", (event, url) => {
   const windowOptions = {
     minWidth: 500,
@@ -580,42 +502,33 @@ ipcMain.on("orcid", (event, url) => {
     parent: mainWindow,
     closable: true,
   };
-
   let pennsieveModal = new BrowserWindow(windowOptions);
-
   // send to client so they can use this for the Pennsieve endpoint for integrating an ORCID
   let accessCode;
-
   pennsieveModal.on("close", function () {
     // send event back to the renderer to re-run the prepublishing checks
     // this will detect if the user added their ORCID iD
     event.reply("orcid-reply", accessCode);
-
     pennsieveModal = null;
   });
   pennsieveModal.loadURL(url);
-
   pennsieveModal.once("ready-to-show", async () => {
     pennsieveModal.show();
   });
-
   // track when the page navigates
   pennsieveModal.webContents.on("did-navigate", () => {
     // get the URL
     url = pennsieveModal.webContents.getURL();
-
     // check if the url includes the access code
     if (url.includes("code=")) {
       // get the access code from the url
       let params = new URLSearchParams(url.slice(url.search(/\?/)));
       accessCode = params.get("code");
-
       // if so close the window
       pennsieveModal.close();
     }
   });
 });
-
 ipcMain.on("get-port", (event) => {
   log.info("Renderer requested port: " + selectedPort);
   event.returnValue = selectedPort;
