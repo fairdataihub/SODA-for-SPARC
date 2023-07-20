@@ -18,6 +18,7 @@ const axios = require("axios");
 const { info } = require("console");
 const { node } = require("prop-types");
 const uuid = require("uuid").v4;
+
 const sodaVersion = app.getVersion();
 // If buildIsBeta is true, the app will not check for updates
 // If it is false, the app will check for updates
@@ -32,8 +33,6 @@ const nodeStorage = new JSONStorage(app.getPath("userData"));
 /*************************************************************
  * Python Process
  *************************************************************/
-const appVersion = app.getVersion();
-const appIsBeta = appVersion.includes("fgbeta");
 // flask setup environment variables
 const PY_FLASK_DIST_FOLDER = "pyflaskdist";
 const PY_FLASK_FOLDER = "pyflask";
@@ -416,7 +415,7 @@ ipcMain.on("track-kombucha", (event, category, action, label, eventStatus, event
   trackKombuchaEvent(category, action, label, eventStatus, eventData);
 });
 ipcMain.on("app_version", (event) => {
-  event.sender.send("app_version", { version: app.getVersion() });
+  event.sender.send("app_version", { version: sodaVersion });
 });
 autoUpdater.on("update-available", () => {
   log.info("update_available");
