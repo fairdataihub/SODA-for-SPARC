@@ -481,7 +481,7 @@ const createProfileName = async (email, password, machineUsernameSpecifier) => {
   });
 
   return response.data;
-}
+};
 
 const getUserPoolAccessToken = async (email, password) => {
   const response = await client.post("/manage_datasets/userpool_access_token", {
@@ -521,7 +521,7 @@ const api = {
   setPreferredOrganization,
   getUserPoolAccessToken,
   setDefaultProfile,
-  createProfileName
+  createProfileName,
 };
 
 module.exports = api;

@@ -1030,15 +1030,19 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
         let machineUsernameSpecifier = localStorage.getItem(os.userInfo().username);
 
         // create the profile name for the user
-        let profileResponse = await api.createProfileName(login, password, machineUsernameSpecifier)
+        let profileResponse = await api.createProfileName(
+          login,
+          password,
+          machineUsernameSpecifier
+        );
 
-        // attempt to set the profile name as the default profile 
+        // attempt to set the profile name as the default profile
         try {
-          await api.setDefaultProfile(profileResponse)
-          defaultBfAccount = profileResponse.toLowerCase()
-          return true
+          await api.setDefaultProfile(profileResponse);
+          defaultBfAccount = profileResponse.toLowerCase();
+          return true;
         } catch (e) {
-          console.log("Failed to set the default profile name for the user")
+          console.log("Failed to set the default profile name for the user");
           // if it fails create a new profile key
           let response = await create_api_key_and_secret(login, password, machineUsernameSpecifier);
           console.log("Respose from api key creation: ", response);
@@ -1152,9 +1156,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           Swal.showLoading();
         },
       });
-
     } else {
-
       let key_name = result.name;
       let apiKey = result.key;
       let apiSecret = result.secret;
