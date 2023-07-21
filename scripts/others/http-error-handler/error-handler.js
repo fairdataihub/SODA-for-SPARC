@@ -107,9 +107,9 @@ const switchToCurrentWorkspace = async () => {
   let emailSuffix = userInfo["email"].split("@")[0];
 
   // let emailSuffix = defaultBfAccount.
-  let targetProfile = `SODA-Pennsieve-${localStorage.getItem(
+  let targetProfile = `soda-pennsieve-${localStorage.getItem(
     username
-  )}-${emailSuffix}-${currentWorkspace}`;
+  )}-${emailSuffix}-${currentWorkspace.toLowerCase()}`;
   targetProfile = targetProfile.toLowerCase();
 
   console.log("Switching to the target profile: " + targetProfile);

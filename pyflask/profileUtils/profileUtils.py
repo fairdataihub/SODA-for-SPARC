@@ -23,6 +23,6 @@ def create_unique_profile_name(token, machine_username_specifier):
         organization_id = user_info["preferredOrganization"]
 
         # create an updated profile name that is unqiue to the user and their workspace 
-        return f"SODA-Pennsieve-{machine_username_specifier}-{email_sub}-{organization_id}"
+        return f"soda-pennsieve-{machine_username_specifier}-{email_sub}-{organization_id.lower()}"
     except Exception as e:
         raise e

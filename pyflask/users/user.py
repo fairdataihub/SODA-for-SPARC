@@ -96,7 +96,7 @@ def create_profile_name(machineUsernameSpecifier, email=None, password=None, tok
        organization_id = user_info["preferredOrganization"]
        email_sub = email.split("@")[0]
 
-       return f"SODA-Pennsieve-{machineUsernameSpecifier}-{email_sub}-{organization_id}"
+       return f"soda-pennsieve-{machineUsernameSpecifier}-{email_sub}-{organization_id.lower()}"
 
 
     # get the users email 
@@ -113,7 +113,7 @@ def create_profile_name(machineUsernameSpecifier, email=None, password=None, tok
             organization = org["organization"]["name"]
 
     # create an updated profile name that is unique to the user and their workspace 
-    return f"SODA-Pennsieve-{machineUsernameSpecifier}-{email_sub}-{organization}"
+    return f"soda-pennsieve-{machineUsernameSpecifier}-{email_sub}-{organization.lower()}"
              
 
 def set_default_profile(profile_name):
