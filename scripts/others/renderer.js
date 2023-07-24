@@ -5293,37 +5293,37 @@ const dropHelper = async (
       },
     ],
   });
-  let nonAllowedCharacterFiles = [];
-  var folderPath = [];
-  var duplicateFolders = [];
-  var hiddenFiles = [];
-  var nonAllowedFiles = [];
-  let tripleExtension = [];
-  let doubleExtension = [];
+  
   let loadingIcon = document.getElementById("items_loading_container");
   let loadingContainer = document.getElementById("loading-items-background-overlay");
+  let nonAllowedCharacterFiles = [];
+  let folderPath = [];
+  let duplicateFolders = [];
+  let hiddenFiles = []
+  let nonAllowedFiles = [];
+  let tripleExtension = [];
+  let doubleExtension = [];
 
-  // const filePathsInEv1 = Object.keys(ev1).map((file) => ev1[file].path);
-  // const inaccessible_files = await CheckFileListForServerAccess(filePathsInEv1);
-
-  for (var i = 0; i < ev1.length; i++) {
+  for (let i = 0; i < ev1.length; i++) {
     /// Get all the file information
-    var itemPath = ev1[i].path;
-    var itemName = path.parse(itemPath).base;
-    var duplicate = false;
-    var statsObj = fs.statSync(itemPath);
+    let itemPath = ev1[i].path;
+    let itemName = path.parse(itemPath).base;
+    let duplicate = false;
+    let statsObj = fs.statSync(itemPath);
+    let slashCount = getPathSlashCount();
+
     // check for duplicate or files with the same name
-    for (var j = 0; j < ev2.children.length; j++) {
+    for (let j = 0; j < ev2.children.length; j++) {
       if (itemName === ev2.children[j].innerText) {
         duplicate = true;
         break;
       }
     }
-    let slashCount = getPathSlashCount();
+    
     /// check for File duplicate
     if (statsObj.isFile()) {
-      var nonAllowedDuplicate = false;
-      var originalFileName = path.parse(itemPath).base;
+      let nonAllowedDuplicate = false;
+      let originalFileName = path.parse(itemPath).base;
       let filePath = itemPath;
       let fileName = path.parse(filePath).name;
       let fileBase = path.parse(filePath).base;
@@ -5340,7 +5340,6 @@ const dropHelper = async (
       }
 
       let warningCharacterBool = warningCharacterCheck(fileBase);
-      // let regex = /[\+&\%#]/i;
       if (warningCharacterBool === true) {
         nonAllowedCharacterFiles.push(filePath);
         continue;
@@ -5452,13 +5451,15 @@ const dropHelper = async (
           if (myPath["folders"].hasOwnProperty(originalFolderName) === true) {
             //folder is already imported
             duplicateFolders.push(itemName);
-            folderPath.push(folderPath);
+            console.log(folderPath);
+            // folderPath.push(folderPath);
             continue;
           } else {
             if (importedFolders.hasOwnProperty(originalFolderName) === true) {
               //folder is already in to-be-imported list
               duplicateFolders.push(itemName);
-              folderPath.push(folderPath);
+              console.log(folderPath);
+              // folderPath.push(folderPath);
               continue;
             } else {
               //folder is in neither so write
@@ -5744,8 +5745,8 @@ const dropHelper = async (
     });
   }
 
-  var listElements = showItemsAsListBootbox(duplicateFolders);
-  var list = JSON.stringify(folderPath).replace(/"/g, "");
+  let listElements = showItemsAsListBootbox(duplicateFolders);
+  let list = JSON.stringify(duplicateFolders).replace(/"/g, "");
   if (duplicateFolders.length > 0) {
     if (loadingContainer != undefined) {
       loadingContainer.style.display = "none";
@@ -5794,8 +5795,8 @@ const dropHelper = async (
         )
       );
     }
-    var listElements = showItemsAsListBootbox(baseName);
-    var list = JSON.stringify(nonAllowedDuplicateFiles).replace(/"/g, "");
+    let listElements = showItemsAsListBootbox(baseName);
+    let list = JSON.stringify(nonAllowedDuplicateFiles).replace(/"/g, "");
     if (loadingContainer != undefined) {
       loadingContainer.style.display = "none";
       loadingIcon.style.display = "none";
@@ -5832,7 +5833,7 @@ const dropHelper = async (
   // // now append to UI files and folders
 
   if (Object.keys(importedFiles).length > 0) {
-    for (var element in importedFiles) {
+    for (let element in importedFiles) {
       myPath["files"][importedFiles[element]["basename"]] = {
         path: importedFiles[element]["path"],
         type: "local",
@@ -5875,7 +5876,7 @@ const dropHelper = async (
     hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
   }
   if (Object.keys(importedFolders).length > 0) {
-    for (var element in importedFolders) {
+    for (let element in importedFolders) {
       myPath["folders"][element] = {
         type: "local",
         path: importedFolders[element]["path"],
