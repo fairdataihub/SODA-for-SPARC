@@ -20,12 +20,13 @@ const { node } = require("prop-types");
 const uuid = require("uuid").v4;
 
 const sodaVersion = app.getVersion();
-// If buildIsBeta is true, the app will not check for updates
-// If it is false, the app will check for updates
+
+// If the version includes "beta", the app will not check for updates
 const buildIsBeta = sodaVersion.includes("beta");
+autoUpdater.channel = buildIsBeta ? "beta" : "latest";
+
 log.transports.console.level = false;
 log.transports.file.level = "debug";
-autoUpdater.channel = buildIsBeta ? "beta" : "latest";
 autoUpdater.logger = log;
 global.trackEvent = trackEvent;
 global.trackKombuchaEvent = trackKombuchaEvent;
