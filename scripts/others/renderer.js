@@ -609,15 +609,26 @@ const stopPennsieveAgent = async (pathToPennsieveAgent) => {
 
 const startPennsieveAgent = async (pathToPennsieveAgent) => {
   return new Promise((resolve, reject) => {
-    // Timeout if the agent was not able to be retrieved within 15 seconds
+    const pennsieveAgentOutputLog = [];
+    const agentStartTimeout = 15000;
+
+    // Throw an error if the agent doesn't start within 15 seconds
+    // Note this includes the output while trying to start the agent
     const versionCheckTimeout = setTimeout(() => {
-      reject(new Error("The Pennsieve Agent was not able to be started in the alotted time"));
-    }, 15000);
+      reject(
+        new Error(
+          `Soda was unable to start the Pennsieve agent. Agent output:<br />${pennsieveAgentOutputLog.join(
+            "<br />"
+          )}`
+        )
+      );
+    }, agentStartTimeout);
+
     const agentStartSpawn = spawn(pathToPennsieveAgent, ["agent", "start"]);
 
     // Capture standard output
     agentStartSpawn.stdout.on("data", (data) => {
-      const agentMessage = data.toString();
+      const agentMessage = `[Pennsieve Agent Output] ${data.toString()}`;
       log.info(agentMessage);
       // Check if the agentMessage contains the string "Agent started"
       if (
@@ -626,23 +637,24 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
       ) {
         clearTimeout(versionCheckTimeout);
         resolve();
+      } else {
+        // Otherwise, add the message to the log
+        pennsieveAgentOutputLog.push(agentMessage);
       }
     });
 
     // Capture standard error output
     agentStartSpawn.stderr.on("data", (data) => {
-      const agentError = data.toString();
-      log.info(agentError);
-      clearTimeout(versionCheckTimeout);
-      reject(new Error(agentError));
+      const agentStdErr = `[Pennsieve Agent Error] ${data.toString()}`;
+      log.info(agentStdErr);
+      pennsieveAgentOutputLog.push(agentStdErr);
     });
 
     // Capture error output
     agentStartSpawn.on("error", (error) => {
-      const agentSpawnError = error.toString();
+      const agentSpawnError = `[Pennsieve Agent Error] ${error.toString()}`;
       log.info(agentSpawnError);
-      clearTimeout(versionCheckTimeout);
-      reject(new Error(agentSpawnError));
+      pennsieveAgentOutputLog.push(agentSpawnError);
     });
   });
 };

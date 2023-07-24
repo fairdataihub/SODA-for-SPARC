@@ -461,4 +461,7 @@
   border-radius: 3px;
   color: #f5f5f5;
   padding: 5px;
+  text-align: left;
+  max-height: 300px;
+  overflow-y: scroll;
 }
