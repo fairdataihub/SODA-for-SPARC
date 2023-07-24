@@ -705,6 +705,7 @@ const getPennsieveAgentVersion = (pathToPennsieveAgent) => {
 };
 
 let preFlightCheckNotyf = null;
+
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 const run_pre_flight_checks = async (check_update = true) => {
   try {
@@ -8238,7 +8239,7 @@ const initiate_generate = async () => {
     });
 
   // Progress tracking function for main curate
-  var timerProgress = setInterval(mainProgressFunction, 3000);
+  var timerProgress = setInterval(mainProgressFunction, 1000);
   var successful = false;
 
   async function mainProgressFunction() {
