@@ -8930,7 +8930,7 @@ const logMetadataSizeForAnalytics = async (uploadBFBoolean, metadataFileName, si
   );
 
   // TODO: Dorian -> verify information is correct on the analytics side
-  // TODO: Aaron -> change to Ps and add dataset id field 
+  // TODO: Aaron -> change to Ps and add dataset id field
   ipcRenderer.send(
     "track-kombucha",
     kombuchaEnums.Category.PREPARE_METADATA,

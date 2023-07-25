@@ -157,7 +157,6 @@ const trackEvent = (category, action, label, value, datasetID) => {
       el: label,
       ev: value,
     };
-
   }
 };
 
