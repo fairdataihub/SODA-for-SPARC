@@ -5,6 +5,17 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## v.12.1.1 - 2023-07-25
+
+## Feature Additions:
+
+- Implemented access token caching for improved request performance
+
+## Bug fixes:
+
+- Fixed an issue when importing duplicate folders and files into the file explorer
+- Fixed an issue where the SODA server would sometimes crash on MAC due to too many import/upload status requests being made to the server
+
 ## v.12.1.0 - 2023-07-19
 
 ## Feature Additions:

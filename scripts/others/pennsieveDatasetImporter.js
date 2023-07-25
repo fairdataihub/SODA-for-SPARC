@@ -46,8 +46,8 @@ const trackPennsieveImportProgress = async (progressContainer, hide) => {
     }
   };
 
-  // update the import's progress every 500 ms if the import is not complete
-  let interval = setInterval(updateProgress, 800);
+  // update the import's progress every second if the import is not complete
+  let interval = setInterval(updateProgress, 1000);
 };
 
 /**

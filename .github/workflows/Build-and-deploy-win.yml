@@ -4,7 +4,7 @@ run-name: ${{ github.actor }} is building a Windows release for SODA
 on:
   push:
     branches:
-      - none
+      - staging
 
 jobs:
   deploy-on-windows:
@@ -26,6 +26,9 @@ jobs:
           activate-environment: env-electron-python
           environment-file: tools/anaconda-env/environment-Windows.yml
           auto-activate-base: false
+      - run: |
+          conda info
+          conda list
 
       - uses: actions/setup-node@v3
         with:

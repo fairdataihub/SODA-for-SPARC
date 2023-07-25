@@ -609,15 +609,29 @@ const stopPennsieveAgent = async (pathToPennsieveAgent) => {
 
 const startPennsieveAgent = async (pathToPennsieveAgent) => {
   return new Promise((resolve, reject) => {
-    // Timeout if the agent was not able to be retrieved within 15 seconds
+    // Keep track of the output from the agent
+    // (output is added as strings to the array)
+    const pennsieveAgentOutputLog = [];
+
+    // Throw an error if the agent doesn't start within 15 seconds
+    const agentStartTimeout = 15000; // 15 seconds
     const versionCheckTimeout = setTimeout(() => {
-      reject(new Error("The Pennsieve Agent was not able to be started in the alotted time"));
-    }, 15000);
+      reject(
+        new Error(
+          `Pennsieve Agent output while trying to start the agent:<br />${pennsieveAgentOutputLog.join(
+            "<br />"
+          )}`
+        )
+      );
+    }, agentStartTimeout);
+
+    // Start the agent by running the command "agent start" at the path of the agent
     const agentStartSpawn = spawn(pathToPennsieveAgent, ["agent", "start"]);
 
-    // Capture standard output
+    // Listen to the output from the agent and resolve the promise if the agent outputs
+    // "Running Agent NOT as daemon" or "Pennsieve Agent started"
     agentStartSpawn.stdout.on("data", (data) => {
-      const agentMessage = data.toString();
+      const agentMessage = `[Pennsieve Agent Output] ${data.toString()}`;
       log.info(agentMessage);
       // Check if the agentMessage contains the string "Agent started"
       if (
@@ -626,23 +640,24 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
       ) {
         clearTimeout(versionCheckTimeout);
         resolve();
+      } else {
+        // Otherwise, add the message to the log
+        pennsieveAgentOutputLog.push(agentMessage);
       }
     });
 
-    // Capture standard error output
+    // Capture standard error output and add it to the output log
     agentStartSpawn.stderr.on("data", (data) => {
-      const agentError = data.toString();
-      log.info(agentError);
-      clearTimeout(versionCheckTimeout);
-      reject(new Error(agentError));
+      const agentStdErr = `[Pennsieve Agent Error] ${data.toString()}`;
+      log.info(agentStdErr);
+      pennsieveAgentOutputLog.push(agentStdErr);
     });
 
-    // Capture error output
+    // Capture error output and add it to the output log
     agentStartSpawn.on("error", (error) => {
-      const agentSpawnError = error.toString();
+      const agentSpawnError = `[Pennsieve Agent Error] ${error.toString()}`;
       log.info(agentSpawnError);
-      clearTimeout(versionCheckTimeout);
-      reject(new Error(agentSpawnError));
+      pennsieveAgentOutputLog.push(agentSpawnError);
     });
   });
 };
@@ -651,29 +666,36 @@ const getPennsieveAgentVersion = (pathToPennsieveAgent) => {
   log.info("Getting Pennsieve agent version");
 
   return new Promise((resolve, reject) => {
-    // Timeout if the agent was not able to be retrieved within 15 seconds
+    // Keep track of the output from the agent
+    // (output is added as strings to the array)
+    const pennsieveAgentOutputLog = [];
+    // Throw an error if the agent doesn't start within 15 seconds
+    const timeout = 15000; // 15 seconds
     const versionCheckTimeout = setTimeout(() => {
       reject(
         new Error(
-          "The installed Pennsieve agent version was not able to be retrieved in the alotted time"
+          `Pennsieve Agent output while trying to verify the agent version:<br />${pennsieveAgentOutputLog.join(
+            "<br />"
+          )}`
         )
       );
-    }, 15000);
+    }, timeout);
 
     const agentVersionSpawn = execFile(pathToPennsieveAgent, ["version"]);
 
     // Capture standard output and parse the version
     // Resolve the promise if the version is found
     agentVersionSpawn.stdout.on("data", (data) => {
-      const agentVersionOutput = data.toString();
+      const agentVersionOutput = `[Pennsieve Agent Output] ${data.toString()}`;
       log.info(agentVersionOutput);
+      pennsieveAgentOutputLog.push(agentVersionOutput);
+
       const versionResult = {};
       const regex = /(\w+ Version)\s*:\s*(\S+)/g;
       let match;
       while ((match = regex.exec(data)) !== null) {
         versionResult[match[1]] = match[2];
       }
-
       // If we were able to extract the version from the stdout, resolve the promise
       if (versionResult["Agent Version"]) {
         clearTimeout(versionCheckTimeout);
@@ -683,23 +705,22 @@ const getPennsieveAgentVersion = (pathToPennsieveAgent) => {
 
     // Capture standard error output and reject the promise
     agentVersionSpawn.stderr.on("data", (data) => {
-      const agentError = data.toString();
-      log.info(agentError);
-      clearTimeout(versionCheckTimeout);
-      reject(new Error(agentError));
+      const agentStdErr = `[Pennsieve Agent Error] ${data.toString()}`;
+      log.info(agentStdErr);
+      pennsieveAgentOutputLog.push(agentStdErr);
     });
 
     // Capture error output and reject the promise
     agentVersionSpawn.on("error", (error) => {
-      const agentSpawnError = error.toString();
-      log.info(agentSpawnError);
-      clearTimeout(versionCheckTimeout);
-      reject(new Error(agentSpawnError));
+      const agentVersionSpawnError = `[Pennsieve Agent Error] ${error.toString()}`;
+      log.info(agentVersionSpawnError);
+      pennsieveAgentOutputLog.push(agentVersionSpawnError);
     });
   });
 };
 
 let preFlightCheckNotyf = null;
+
 // Run a set of functions that will check all the core systems to verify that a user can upload datasets with no issues.
 const run_pre_flight_checks = async (check_update = true) => {
   try {
@@ -707,7 +728,7 @@ const run_pre_flight_checks = async (check_update = true) => {
 
     if (!preFlightCheckNotyf) {
       preFlightCheckNotyf = notyf.open({
-        duration: 15000,
+        duration: 25000,
         type: "info",
         message: "Checking SODA's connection to Pennsieve...",
       });
@@ -877,9 +898,41 @@ const run_pre_flight_checks = async (check_update = true) => {
       const versionObj = await getPennsieveAgentVersion(agentPath);
       usersPennsieveAgentVersion = versionObj["Agent Version"];
     } catch (error) {
+      clientError(error);
       const emessage = userErrorMessage(error);
-      log.info(`Error getting Pennsieve agent version: ${emessage}`);
-      throw new Error(`Error getting Pennsieve agent version:<br />${emessage}`);
+      const { value: rerunPreFlightChecks } = await Swal.fire({
+        icon: "info",
+        title: "Soda was unable to get the Pennsieve Agent Version",
+        html: `
+          <br />
+          <div class="div--code-block-error">${emessage}</div>
+          <br />
+          Please view the <a href="https://docs.sodaforsparc.io/docs/common-errors/trouble-starting-the-pennsieve-agent-in-soda" target="_blank">SODA documentation</a>
+          to troubleshoot this issue. Then click the "Try again" button below to ensure the issue has been fixed.
+        `,
+        width: 800,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showCancelButton: true,
+        showCloseButton: true,
+        reverseButtons: reverseSwalButtons,
+        confirmButtonText: "Try again",
+        cancelButtonText: "Skip for now",
+      });
+      // If the user clicks the retry button, rerun the pre flight checks
+      if (rerunPreFlightChecks) {
+        return await run_pre_flight_checks();
+      }
+
+      // Dismiss the preflight check notification if it is still open
+      if (preFlightCheckNotyf) {
+        notyf.dismiss(preFlightCheckNotyf);
+        preFlightCheckNotyf = null;
+      }
+      // If the user clicks the skip button, return false which will cause the pre flight checks to fail
+      return false;
     }
 
     if (usersPennsieveAgentVersion !== latest_agent_version) {
@@ -5287,37 +5340,37 @@ const dropHelper = async (
       },
     ],
   });
-  let nonAllowedCharacterFiles = [];
-  var folderPath = [];
-  var duplicateFolders = [];
-  var hiddenFiles = [];
-  var nonAllowedFiles = [];
-  let tripleExtension = [];
-  let doubleExtension = [];
+
   let loadingIcon = document.getElementById("items_loading_container");
   let loadingContainer = document.getElementById("loading-items-background-overlay");
+  let nonAllowedCharacterFiles = [];
+  let folderPath = [];
+  let duplicateFolders = [];
+  let hiddenFiles = [];
+  let nonAllowedFiles = [];
+  let tripleExtension = [];
+  let doubleExtension = [];
 
-  // const filePathsInEv1 = Object.keys(ev1).map((file) => ev1[file].path);
-  // const inaccessible_files = await CheckFileListForServerAccess(filePathsInEv1);
-
-  for (var i = 0; i < ev1.length; i++) {
+  for (let i = 0; i < ev1.length; i++) {
     /// Get all the file information
-    var itemPath = ev1[i].path;
-    var itemName = path.parse(itemPath).base;
-    var duplicate = false;
-    var statsObj = fs.statSync(itemPath);
+    let itemPath = ev1[i].path;
+    let itemName = path.parse(itemPath).base;
+    let duplicate = false;
+    let statsObj = fs.statSync(itemPath);
+    let slashCount = getPathSlashCount();
+
     // check for duplicate or files with the same name
-    for (var j = 0; j < ev2.children.length; j++) {
+    for (let j = 0; j < ev2.children.length; j++) {
       if (itemName === ev2.children[j].innerText) {
         duplicate = true;
         break;
       }
     }
-    let slashCount = getPathSlashCount();
+
     /// check for File duplicate
     if (statsObj.isFile()) {
-      var nonAllowedDuplicate = false;
-      var originalFileName = path.parse(itemPath).base;
+      let nonAllowedDuplicate = false;
+      let originalFileName = path.parse(itemPath).base;
       let filePath = itemPath;
       let fileName = path.parse(filePath).name;
       let fileBase = path.parse(filePath).base;
@@ -5334,7 +5387,6 @@ const dropHelper = async (
       }
 
       let warningCharacterBool = warningCharacterCheck(fileBase);
-      // let regex = /[\+&\%#]/i;
       if (warningCharacterBool === true) {
         nonAllowedCharacterFiles.push(filePath);
         continue;
@@ -5446,13 +5498,15 @@ const dropHelper = async (
           if (myPath["folders"].hasOwnProperty(originalFolderName) === true) {
             //folder is already imported
             duplicateFolders.push(itemName);
-            folderPath.push(folderPath);
+            console.log(folderPath);
+            // folderPath.push(folderPath);
             continue;
           } else {
             if (importedFolders.hasOwnProperty(originalFolderName) === true) {
               //folder is already in to-be-imported list
               duplicateFolders.push(itemName);
-              folderPath.push(folderPath);
+              console.log(folderPath);
+              // folderPath.push(folderPath);
               continue;
             } else {
               //folder is in neither so write
@@ -5738,13 +5792,14 @@ const dropHelper = async (
     });
   }
 
-  var listElements = showItemsAsListBootbox(duplicateFolders);
-  var list = JSON.stringify(folderPath).replace(/"/g, "");
+  let listElements = showItemsAsListBootbox(duplicateFolders);
+  let list = JSON.stringify(duplicateFolders).replace(/"/g, "");
   if (duplicateFolders.length > 0) {
     if (loadingContainer != undefined) {
       loadingContainer.style.display = "none";
       loadingIcon.style.display = "none";
     }
+    console.log("duplicate folders");
     await Swal.fire({
       title: "Duplicate folder(s) detected",
       icon: "warning",
@@ -5788,12 +5843,13 @@ const dropHelper = async (
         )
       );
     }
-    var listElements = showItemsAsListBootbox(baseName);
-    var list = JSON.stringify(nonAllowedDuplicateFiles).replace(/"/g, "");
+    let listElements = showItemsAsListBootbox(baseName);
+    let list = JSON.stringify(nonAllowedDuplicateFiles).replace(/"/g, "");
     if (loadingContainer != undefined) {
       loadingContainer.style.display = "none";
       loadingIcon.style.display = "none";
     }
+    console.log("duplicate files popup now");
     await Swal.fire({
       title: "Duplicate file(s) detected",
       icon: "warning",
@@ -5826,7 +5882,7 @@ const dropHelper = async (
   // // now append to UI files and folders
 
   if (Object.keys(importedFiles).length > 0) {
-    for (var element in importedFiles) {
+    for (let element in importedFiles) {
       myPath["files"][importedFiles[element]["basename"]] = {
         path: importedFiles[element]["path"],
         type: "local",
@@ -5869,7 +5925,7 @@ const dropHelper = async (
     hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
   }
   if (Object.keys(importedFolders).length > 0) {
-    for (var element in importedFolders) {
+    for (let element in importedFolders) {
       myPath["folders"][element] = {
         type: "local",
         path: importedFolders[element]["path"],
@@ -8233,7 +8289,7 @@ const initiate_generate = async () => {
     });
 
   // Progress tracking function for main curate
-  var timerProgress = setInterval(mainProgressFunction, 50);
+  var timerProgress = setInterval(mainProgressFunction, 1000);
   var successful = false;
 
   async function mainProgressFunction() {

@@ -2545,9 +2545,12 @@ def ps_check_dataset_files_validity(soda_json_structure, ps):
                 if folder_type == "bf":
                     package_id = folder["path"]
                     try:
+                        namespace_logger.info(f"Checking folder {package_id} validity")
                         r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=create_request_headers(ps))
                         r.raise_for_status()
                     except Exception as e:
+                        namespace_logger.info(f"Failed to validate folder {package_id}")
+                        namespace_logger.info(f"Error: {e}")
                         error_message = relative_path + " (id: " + package_id + ")"
                         error.append(error_message)
                 error = recursive_ps_dataset_check(folder, relative_path, error)
@@ -2560,6 +2563,8 @@ def ps_check_dataset_files_validity(soda_json_structure, ps):
                         r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=create_request_headers(ps))
                         r.raise_for_status()
                     except Exception as e:
+                        namespace_logger.info(f"Failed to validate file {package_id}")
+                        namespace_logger.info(f"Error: {e}")
                         relative_path = my_relative_path + "/" + file_key
                         error_message = relative_path + " (id: " + package_id + ")"
                         error.append(error_message)
@@ -2576,9 +2581,12 @@ def ps_check_dataset_files_validity(soda_json_structure, ps):
                 if folder_type == "bf":
                     package_id = folder["path"]
                     try:
+                        namespace_logger.info(f"Checking folder {package_id} validity")
                         r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=create_request_headers(ps))
                         r.raise_for_status()
                     except Exception as e:
+                        namespace_logger.info(f"Failed to validate folder {package_id}")
+                        namespace_logger.info(f"Error: {e}")
                         error_message = relative_path + " (id: " + package_id + ")"
                         error.append(error_message)
                         pass
@@ -2593,6 +2601,8 @@ def ps_check_dataset_files_validity(soda_json_structure, ps):
                         r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=create_request_headers(ps))
                         r.raise_for_status()
                     except Exception as e:
+                        namespace_logger.info(f"Failed to validate file {package_id}")
+                        namespace_logger.info(f"Error: {e}")
                         relative_path = file_key
                         error_message = relative_path + " (id: " + package_id + ")"
                         error.append(error_message)
@@ -2857,6 +2867,7 @@ def main_curate_function(soda_json_structure):
                 )
                 if soda_json_structure["generate-dataset"]["destination"] == "bf":
                     if error := ps_check_dataset_files_validity(soda_json_structure, ps):
+                        namespace_logger.info("Failed to validate dataset files")
                         main_curate_status = "Done"
                         abort(400, error)
             except Exception as e:
