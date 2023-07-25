@@ -5752,6 +5752,7 @@ const dropHelper = async (
       loadingContainer.style.display = "none";
       loadingIcon.style.display = "none";
     }
+    console.log("duplicate folders");
     await Swal.fire({
       title: "Duplicate folder(s) detected",
       icon: "warning",
@@ -5801,6 +5802,7 @@ const dropHelper = async (
       loadingContainer.style.display = "none";
       loadingIcon.style.display = "none";
     }
+    console.log("duplicate files popup now")
     await Swal.fire({
       title: "Duplicate file(s) detected",
       icon: "warning",
