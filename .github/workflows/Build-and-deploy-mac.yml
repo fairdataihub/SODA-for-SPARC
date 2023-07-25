@@ -26,9 +26,9 @@ jobs:
           activate-environment: env-electron-python
           environment-file: tools/anaconda-env/environment-MAC.yml
           auto-activate-base: false
-
-      - name: Activate the conda environment
-        run: conda activate env-electron-pythons
+      - run: |
+          conda info
+          conda list
 
       - uses: actions/setup-node@v3
         with:
