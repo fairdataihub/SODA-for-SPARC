@@ -38,5 +38,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          conda activate env-electron-python
           npm run python-onefile-build
           npm run deploy-linux
