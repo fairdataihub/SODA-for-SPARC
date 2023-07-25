@@ -4,16 +4,34 @@ from os.path import expanduser, join, exists
 from configparser import ConfigParser
 from flask import abort
 from os import mkdir
+import time
+
+from namespaces import NamespaceEnum, get_namespace_logger
+
+namespace_logger = get_namespace_logger(NamespaceEnum.AUTHENTICATE)
 
 userpath = expanduser("~")
 configpath = join(userpath, ".pennsieve", "config.ini")
 PENNSIEVE_URL = "https://api.pennsieve.io"
+
+# Variables for token caching
+cached_access_token = None
+last_fetch_time = 0
+TOKEN_CACHE_DURATION = 60 # Amount of time in seconds to cache the access token
 
 def get_access_token():
     """
     Creates a temporary access token for utilizing the Pennsieve API. Reads the api token and secret from the Pennsieve config.ini file.
     get cognito config 
     """
+
+    current_time = time.time()
+
+    # Check if the access token has been cached and is still valid
+    if cached_access_token and current_time - last_fetch_time < TOKEN_CACHE_DURATION:
+        namespace_logger.info("Using cached access token")
+        return cached_access_token
+    
     r = requests.get(f"{PENNSIEVE_URL}/authentication/cognito-config")
     r.raise_for_status()
 
@@ -22,22 +40,24 @@ def get_access_token():
     cognito_region_name = r.json()["region"]
 
     cognito_idp_client = boto3.client(
-    "cognito-idp",
-    region_name=cognito_region_name,
-    aws_access_key_id="",
-    aws_secret_access_key="",
+        "cognito-idp",
+        region_name=cognito_region_name,
+        aws_access_key_id="",
+        aws_secret_access_key="",
     )
 
 
     login_response = cognito_idp_client.initiate_auth(
-    AuthFlow="USER_PASSWORD_AUTH",
-    AuthParameters={"USERNAME": get_profile_name_from_api_key("api_token"), "PASSWORD": get_profile_name_from_api_key("api_secret")},
-    ClientId=cognito_app_client_id,
+        AuthFlow="USER_PASSWORD_AUTH",
+        AuthParameters={"USERNAME": get_profile_name_from_api_key("api_token"), "PASSWORD": get_profile_name_from_api_key("api_secret")},
+        ClientId=cognito_app_client_id,
     )
+
+    cached_access_token = login_response["AuthenticationResult"]["AccessToken"]
+    last_fetch_time = current_time
+
+    return cached_access_token
         
-
-    return login_response["AuthenticationResult"]["AccessToken"]
-
 
 def get_cognito_userpool_access_token(email, password):
     """
