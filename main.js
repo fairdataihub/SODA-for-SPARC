@@ -20,9 +20,11 @@ const { node } = require("prop-types");
 const uuid = require("uuid").v4;
 
 const sodaVersion = app.getVersion();
-
 // If the version includes "beta", the app will not check for updates
 const buildIsBeta = sodaVersion.includes("beta");
+if (buildIsBeta) {
+  log.info("This is a beta build. Updates will not be checked.");
+}
 autoUpdater.channel = buildIsBeta ? "beta" : "latest";
 
 log.transports.console.level = false;
