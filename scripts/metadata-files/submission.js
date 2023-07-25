@@ -816,6 +816,8 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
         uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
       );
 
+      // TODO: Place kombucha event here for submission file generation
+
       // get the size of the uploaded file from the result
       const { size } = res.data;
 

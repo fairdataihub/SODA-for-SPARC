@@ -1,5 +1,4 @@
 // Purpose: The front end logic for the Validate Dataset section
-const { kombuchaEnums } = require("../others/analytics/analytics-enums.js");
 const { handleAxiosValidationErrors } = require("./scripts/validator/axios-validator-utility.js");
 
 const { translatePipelineError } = require("./scripts/validator/parse-pipeline-errors.js");
