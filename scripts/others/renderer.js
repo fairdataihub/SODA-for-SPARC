@@ -618,7 +618,7 @@ const startPennsieveAgent = async (pathToPennsieveAgent) => {
     const versionCheckTimeout = setTimeout(() => {
       reject(
         new Error(
-          `Soda was unable to start the Pennsieve agent. Agent output:<br />${pennsieveAgentOutputLog.join(
+          `Pennsieve Agent output while trying to start the agent:<br />${pennsieveAgentOutputLog.join(
             "<br />"
           )}`
         )
@@ -674,7 +674,7 @@ const getPennsieveAgentVersion = (pathToPennsieveAgent) => {
     const versionCheckTimeout = setTimeout(() => {
       reject(
         new Error(
-          `Soda was unable to get the Pennsieve Agent Version. Agent output:<br />${pennsieveAgentOutputLog.join(
+          `Pennsieve Agent output while trying to verify the agent version:<br />${pennsieveAgentOutputLog.join(
             "<br />"
           )}`
         )
@@ -902,7 +902,7 @@ const run_pre_flight_checks = async (check_update = true) => {
       const emessage = userErrorMessage(error);
       const { value: rerunPreFlightChecks } = await Swal.fire({
         icon: "info",
-        title: "The Pennsieve Agent failed to start",
+        title: "Soda was unable to get the Pennsieve Agent Version",
         html: `
           <br />
           <div class="div--code-block-error">${emessage}</div>
