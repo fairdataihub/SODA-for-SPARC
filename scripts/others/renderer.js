@@ -666,32 +666,36 @@ const getPennsieveAgentVersion = (pathToPennsieveAgent) => {
   log.info("Getting Pennsieve agent version");
 
   return new Promise((resolve, reject) => {
-    let agentLog = "";
-    // Timeout if the agent was not able to be retrieved within 15 seconds
+    // Keep track of the output from the agent
+    // (output is added as strings to the array)
+    const pennsieveAgentOutputLog = [];
+    // Throw an error if the agent doesn't start within 15 seconds
+    const timeout = 15000; // 15 seconds
     const versionCheckTimeout = setTimeout(() => {
       reject(
         new Error(
-          "The installed Pennsieve agent version was not able to be retrieved in the alotted time" +
-            agentLog
+          `Soda was unable to get the Pennsieve Agent Version. Agent output:<br />${pennsieveAgentOutputLog.join(
+            "<br />"
+          )}`
         )
       );
-    }, 15000);
+    }, timeout);
 
     const agentVersionSpawn = execFile(pathToPennsieveAgent, ["version"]);
 
     // Capture standard output and parse the version
     // Resolve the promise if the version is found
     agentVersionSpawn.stdout.on("data", (data) => {
-      const agentVersionOutput = data.toString();
-      log.info(`[Pennsieve Agent Output] ${agentVersionOutput}`);
-      agentLog += `[Pennsieve Agent Output] ${agentVersionOutput}`;
+      const agentVersionOutput = `[Pennsieve Agent Output] ${data.toString()}`;
+      log.info(agentVersionOutput);
+      pennsieveAgentOutputLog.push(agentVersionOutput);
+
       const versionResult = {};
       const regex = /(\w+ Version)\s*:\s*(\S+)/g;
       let match;
       while ((match = regex.exec(data)) !== null) {
         versionResult[match[1]] = match[2];
       }
-
       // If we were able to extract the version from the stdout, resolve the promise
       if (versionResult["Agent Version"]) {
         clearTimeout(versionCheckTimeout);
@@ -701,20 +705,16 @@ const getPennsieveAgentVersion = (pathToPennsieveAgent) => {
 
     // Capture standard error output and reject the promise
     agentVersionSpawn.stderr.on("data", (data) => {
-      const agentError = data.toString();
-      log.info(`[Pennsieve Agent Error Output] ${agentError}`);
-      agentLog += `[Pennsieve Agent Error Output] ${agentError}`;
-      clearTimeout(versionCheckTimeout);
-      reject(new Error(agentError));
+      const agentStdErr = `[Pennsieve Agent Error] ${data.toString()}`;
+      log.info(agentStdErr);
+      pennsieveAgentOutputLog.push(agentStdErr);
     });
 
     // Capture error output and reject the promise
     agentVersionSpawn.on("error", (error) => {
-      const agentSpawnError = error.toString();
-      log.info(`[Pennsieve Agent Error] ${agentSpawnError}`);
-      agentLog += `[Pennsieve Agent Error] ${agentSpawnError}`;
-      clearTimeout(versionCheckTimeout);
-      reject(new Error(agentSpawnError));
+      const agentVersionSpawnError = `[Pennsieve Agent Error] ${error.toString()}`;
+      log.info(agentVersionSpawnError);
+      pennsieveAgentOutputLog.push(agentVersionSpawnError);
     });
   });
 };
@@ -728,7 +728,7 @@ const run_pre_flight_checks = async (check_update = true) => {
 
     if (!preFlightCheckNotyf) {
       preFlightCheckNotyf = notyf.open({
-        duration: 15000,
+        duration: 25000,
         type: "info",
         message: "Checking SODA's connection to Pennsieve...",
       });
@@ -898,9 +898,41 @@ const run_pre_flight_checks = async (check_update = true) => {
       const versionObj = await getPennsieveAgentVersion(agentPath);
       usersPennsieveAgentVersion = versionObj["Agent Version"];
     } catch (error) {
+      clientError(error);
       const emessage = userErrorMessage(error);
-      log.info(`Error getting Pennsieve agent version: ${emessage}`);
-      throw new Error(`Error getting Pennsieve agent version:<br />${emessage}`);
+      const { value: rerunPreFlightChecks } = await Swal.fire({
+        icon: "info",
+        title: "The Pennsieve Agent failed to start",
+        html: `
+          <br />
+          <div class="div--code-block-error">${emessage}</div>
+          <br />
+          Please view the <a href="https://docs.sodaforsparc.io/docs/common-errors/trouble-starting-the-pennsieve-agent-in-soda" target="_blank">SODA documentation</a>
+          to troubleshoot this issue. Then click the "Try again" button below to ensure the issue has been fixed.
+        `,
+        width: 800,
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        showCancelButton: true,
+        showCloseButton: true,
+        reverseButtons: reverseSwalButtons,
+        confirmButtonText: "Try again",
+        cancelButtonText: "Skip for now",
+      });
+      // If the user clicks the retry button, rerun the pre flight checks
+      if (rerunPreFlightChecks) {
+        return await run_pre_flight_checks();
+      }
+
+      // Dismiss the preflight check notification if it is still open
+      if (preFlightCheckNotyf) {
+        notyf.dismiss(preFlightCheckNotyf);
+        preFlightCheckNotyf = null;
+      }
+      // If the user clicks the skip button, return false which will cause the pre flight checks to fail
+      return false;
     }
 
     if (usersPennsieveAgentVersion !== latest_agent_version) {

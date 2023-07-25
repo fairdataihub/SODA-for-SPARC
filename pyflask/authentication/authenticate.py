@@ -7,8 +7,7 @@ from os import mkdir
 import time
 
 from namespaces import NamespaceEnum, get_namespace_logger
-
-namespace_logger = get_namespace_logger(NamespaceEnum.AUTHENTICATE)
+namespace_logger = get_namespace_logger(NamespaceEnum.USER)
 
 userpath = expanduser("~")
 configpath = join(userpath, ".pennsieve", "config.ini")
@@ -21,10 +20,11 @@ TOKEN_CACHE_DURATION = 60 # Amount of time in seconds to cache the access token
 
 def get_access_token():
     """
-    Creates a temporary access token for utilizing the Pennsieve API. Reads the api token and secret from the Pennsieve config.ini file.
-    get cognito config 
+        Creates a temporary access token for utilizing the Pennsieve API. Reads the api token and secret from the Pennsieve config.ini file.
+        get cognito config 
     """
-
+    global cached_access_token, last_fetch_time, TOKEN_CACHE_DURATION # Variables used for token caching
+    global namespace_logger
     current_time = time.time()
 
     # Check if the access token has been cached and is still valid
