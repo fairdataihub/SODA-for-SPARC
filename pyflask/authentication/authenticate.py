@@ -27,10 +27,15 @@ def get_access_token():
     global namespace_logger
     current_time = time.time()
 
-    # Check if the access token has been cached and is still valid
-    if cached_access_token and current_time - last_fetch_time < TOKEN_CACHE_DURATION:
-        namespace_logger.info("Using cached access token")
-        return cached_access_token
+    # Check if the access token is cached and if it is still valid
+    if cached_access_token:
+        if current_time - last_fetch_time < TOKEN_CACHE_DURATION:
+            namespace_logger.info("Using cached access token")
+            return cached_access_token
+        else:
+            namespace_logger.info("Cached access token has expired. Fetching new access token.")
+    else:
+        namespace_logger.info("No cached access token. Fetching a new access token.")
     
     r = requests.get(f"{PENNSIEVE_URL}/authentication/cognito-config")
     r.raise_for_status()
