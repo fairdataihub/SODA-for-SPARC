@@ -27,6 +27,9 @@ jobs:
           environment-file: tools/anaconda-env/environment-Linux.yml
           auto-activate-base: false
 
+      - name: Activate the conda environment
+        run: conda activate env-electron-python
+
       - uses: actions/setup-node@v3
         with:
           node-version: "18.14.0"
