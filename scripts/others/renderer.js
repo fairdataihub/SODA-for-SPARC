@@ -5308,13 +5308,13 @@ const dropHelper = async (
       },
     ],
   });
-  
+
   let loadingIcon = document.getElementById("items_loading_container");
   let loadingContainer = document.getElementById("loading-items-background-overlay");
   let nonAllowedCharacterFiles = [];
   let folderPath = [];
   let duplicateFolders = [];
-  let hiddenFiles = []
+  let hiddenFiles = [];
   let nonAllowedFiles = [];
   let tripleExtension = [];
   let doubleExtension = [];
@@ -5334,7 +5334,7 @@ const dropHelper = async (
         break;
       }
     }
-    
+
     /// check for File duplicate
     if (statsObj.isFile()) {
       let nonAllowedDuplicate = false;
@@ -5817,7 +5817,7 @@ const dropHelper = async (
       loadingContainer.style.display = "none";
       loadingIcon.style.display = "none";
     }
-    console.log("duplicate files popup now")
+    console.log("duplicate files popup now");
     await Swal.fire({
       title: "Duplicate file(s) detected",
       icon: "warning",

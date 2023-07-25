@@ -1137,231 +1137,221 @@ const handleDuplicateImports = async (btnId, duplicateArray, curationMode) => {
       header = "Rename Files";
     }
     // Swal.close();
-    await Swal
-      .fire({
-        title: header,
-        confirmButtonText: "Save",
-        allowOutsideClick: false,
-        focusConfirm: false,
-        heightAuto: false,
-        customClass: "wide-swal",
-        showCloseButton: true,
-        showCancelButton: true,
-        backdrop: "rgba(0, 0, 0, 0.4)",
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate_animated animate_zoomout animate__faster",
-        },
-        html: container,
-        didOpen: () => {
-          var confirm_button = document.getElementsByClassName("swal2-confirm");
-          var container = document.getElementById("container");
-          let input_fields = container.querySelectorAll("input[type=text]");
-          let fileExt = input_fields[0].id.lastIndexOf(".");
-          var keyCheck;
-          if (fileExt === -1) {
-            //working with a folder
-            keyCheck = myPath["folders"];
-          } else {
-            //working with a file
-            keyCheck = myPath["files"];
-          }
+    await Swal.fire({
+      title: header,
+      confirmButtonText: "Save",
+      allowOutsideClick: false,
+      focusConfirm: false,
+      heightAuto: false,
+      customClass: "wide-swal",
+      showCloseButton: true,
+      showCancelButton: true,
+      backdrop: "rgba(0, 0, 0, 0.4)",
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate_animated animate_zoomout animate__faster",
+      },
+      html: container,
+      didOpen: () => {
+        var confirm_button = document.getElementsByClassName("swal2-confirm");
+        var container = document.getElementById("container");
+        let input_fields = container.querySelectorAll("input[type=text]");
+        let fileExt = input_fields[0].id.lastIndexOf(".");
+        var keyCheck;
+        if (fileExt === -1) {
+          //working with a folder
+          keyCheck = myPath["folders"];
+        } else {
+          //working with a file
+          keyCheck = myPath["files"];
+        }
 
-          confirm_button[0].disabled = true;
-          input_fields.forEach(function (element) {
-            element.addEventListener("input", function () {
-              if (fileExt != -1) {
-                let first_ext = element.id.lastIndexOf(".");
-                let extType = element.id.substring(first_ext, element.id.length);
-                if (element.value === "" || keyCheck.hasOwnProperty(element.value + extType)) {
-                  confirm_button[0].disabled = true;
-                } else {
-                  let one_input = false;
-                  for (let i = 0; i < input_fields.length; i++) {
-                    let file_Ext = input_fields[i].id.lastIndexOf(".");
-                    extType = input_fields[i].id.substring(file_Ext, input_fields[i].id.length);
-                    if (
-                      input_fields[i].value === "" ||
-                      keyCheck.hasOwnProperty(input_fields[i].value + extType)
-                    ) {
-                      one_input = true;
-                      break;
-                    }
-                  }
-                  if (one_input === true) {
-                    confirm_button[0].disabled = true;
-                  } else {
-                    input_fields.forEach(function (element) {});
-                    confirm_button[0].disabled = false;
+        confirm_button[0].disabled = true;
+        input_fields.forEach(function (element) {
+          element.addEventListener("input", function () {
+            if (fileExt != -1) {
+              let first_ext = element.id.lastIndexOf(".");
+              let extType = element.id.substring(first_ext, element.id.length);
+              if (element.value === "" || keyCheck.hasOwnProperty(element.value + extType)) {
+                confirm_button[0].disabled = true;
+              } else {
+                let one_input = false;
+                for (let i = 0; i < input_fields.length; i++) {
+                  let file_Ext = input_fields[i].id.lastIndexOf(".");
+                  extType = input_fields[i].id.substring(file_Ext, input_fields[i].id.length);
+                  if (
+                    input_fields[i].value === "" ||
+                    keyCheck.hasOwnProperty(input_fields[i].value + extType)
+                  ) {
+                    one_input = true;
+                    break;
                   }
                 }
-              } else {
-                //working with folders
-                if (element.value === "" || keyCheck.hasOwnProperty(element.value)) {
+                if (one_input === true) {
                   confirm_button[0].disabled = true;
                 } else {
-                  let one_input = false;
-                  for (let i = 0; i < input_fields.length; i++) {
-                    if (input_fields[i].value === "" || keyCheck.hasOwnProperty(element.value)) {
-                      one_input = true;
-                      break;
-                    }
-                  }
-                  if (one_input === true) {
-                    confirm_button[0].disabed = true;
-                  } else {
-                    confirm_button[0].disabled = false;
-                  }
+                  input_fields.forEach(function (element) {});
+                  confirm_button[0].disabled = false;
                 }
               }
-            });
-          });
-        },
-        preConfirm: () => {
-          //check the same name isn't being used
-          var fileNames = [];
-          var fileLocation = [];
-          sameName = [];
-
-          for (var i = 0; i < tempFile.length; i++) {
-            let inputField = tempFile[i];
-            document.getElementById(inputField).style.borderColor = "";
-            extIndex = tempFile[i].lastIndexOf(".");
-            if (extIndex === -1) {
-              //if extIndex === -1 then we are working with a folder not file
-              var folder = true;
-              justFileName = tempFile[i];
-              let newName = document.getElementById(inputField).value;
-              if (myPath["folders"].hasOwnProperty(newName) || newName === "") {
-                //checks if newName has already been used
-                document.getElementById(inputField).style.borderColor = "red";
-                document.getElementById(inputField).value = "";
-                document.getElementById(inputField).placeholder = "Provide a new name";
-                sameName.push(true);
-              } else {
-                //if all elements are false then all newNames are original
-                sameName.push(false);
-              }
-              if (
-                justFileName != newName &&
-                newName != "" &&
-                fileNames.includes(newName) === false
-              ) {
-                fileNames.push(newName);
-                fileLocation.push(temp[i]);
-              }
             } else {
-              //else we are working with a file
-              justFileName = tempFile[i].substring(0, extIndex);
-              let newName = document.getElementById(inputField).value;
-
-              let filewithExt = tempFile[i].substring(extIndex, tempFile[i].length);
-              newNamewithExt = newName.concat(filewithExt);
-              if (myPath["files"].hasOwnProperty(newNamewithExt) || newName == "") {
-                document.getElementById(inputField).style.borderColor = "red";
-                document.getElementById(inputField).value = "";
-                document.getElementById(inputField).placeholder = "Provide a new name";
-                sameName.push(true);
+              //working with folders
+              if (element.value === "" || keyCheck.hasOwnProperty(element.value)) {
+                confirm_button[0].disabled = true;
               } else {
-                sameName.push(false);
-              }
-              if (
-                justFileName != newName &&
-                newName != "" &&
-                fileNames.includes(newName) === false
-              ) {
-                fileNames.push(newName.concat(tempFile[i].substring(extIndex, tempFile[i].length)));
-                fileLocation.push(temp[i]);
+                let one_input = false;
+                for (let i = 0; i < input_fields.length; i++) {
+                  if (input_fields[i].value === "" || keyCheck.hasOwnProperty(element.value)) {
+                    one_input = true;
+                    break;
+                  }
+                }
+                if (one_input === true) {
+                  confirm_button[0].disabed = true;
+                } else {
+                  confirm_button[0].disabled = false;
+                }
               }
             }
-          }
-          if (folder === true) {
-            //working with folders
-            if (sameName.includes(true) === true) {
-              sameName = [];
-              i = 0;
-              return false;
-              $("swal2-confirm swal2-styled").removeAttr("disabled");
+          });
+        });
+      },
+      preConfirm: () => {
+        //check the same name isn't being used
+        var fileNames = [];
+        var fileLocation = [];
+        sameName = [];
+
+        for (var i = 0; i < tempFile.length; i++) {
+          let inputField = tempFile[i];
+          document.getElementById(inputField).style.borderColor = "";
+          extIndex = tempFile[i].lastIndexOf(".");
+          if (extIndex === -1) {
+            //if extIndex === -1 then we are working with a folder not file
+            var folder = true;
+            justFileName = tempFile[i];
+            let newName = document.getElementById(inputField).value;
+            if (myPath["folders"].hasOwnProperty(newName) || newName === "") {
+              //checks if newName has already been used
+              document.getElementById(inputField).style.borderColor = "red";
+              document.getElementById(inputField).value = "";
+              document.getElementById(inputField).placeholder = "Provide a new name";
+              sameName.push(true);
             } else {
-              //add files to json and ui
-              //update json action
-              for (let index = 0; index < temp.length; index++) {
-                myPath["folders"][fileNames[index]] = {
-                  files: myPath["folders"][tempFile[index]].files,
-                  folders: myPath["folders"][tempFile[index]].folders,
-                  path: myPath["folders"][tempFile[index]].path,
-                  type: "local",
-                  action: ["new", "renamed"],
-                };
-                listItems(myPath, "#items");
-                getInFolder("#items", "#items", organizeDSglobalPath, datasetStructureJSONObj);
-                hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-                hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
-              }
+              //if all elements are false then all newNames are original
+              sameName.push(false);
+            }
+            if (justFileName != newName && newName != "" && fileNames.includes(newName) === false) {
+              fileNames.push(newName);
+              fileLocation.push(temp[i]);
             }
           } else {
-            //working with files
-            //update file json
-            if (sameName.includes(true) === true) {
-              sameName = [];
-              i = 0;
-              return false;
-              $("swal2-confirm swal2-styled").removeAttr("disabled");
-            } else {
-              //update json action
-              for (let index = 0; index < temp.length; index++) {
-                myPath["files"][fileNames[index]] = {
-                  path: fileLocation[index],
-                  basename: fileNames[index],
-                  type: "local",
-                  description: "",
-                  "additional-metadata": "",
-                  action: ["new", "renamed"],
-                };
-                var appendString =
-                  '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)"  style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
-                  myPath["files"][fileNames[index]]["basename"] +
-                  "</div></div>";
+            //else we are working with a file
+            justFileName = tempFile[i].substring(0, extIndex);
+            let newName = document.getElementById(inputField).value;
 
-                $("#items").html(appendString);
-                listItems(myPath, "#items");
-                getInFolder("#items", "#items", organizeDSglobalPath, datasetStructureJSONObj);
-              }
+            let filewithExt = tempFile[i].substring(extIndex, tempFile[i].length);
+            newNamewithExt = newName.concat(filewithExt);
+            if (myPath["files"].hasOwnProperty(newNamewithExt) || newName == "") {
+              document.getElementById(inputField).style.borderColor = "red";
+              document.getElementById(inputField).value = "";
+              document.getElementById(inputField).placeholder = "Provide a new name";
+              sameName.push(true);
+            } else {
+              sameName.push(false);
+            }
+            if (justFileName != newName && newName != "" && fileNames.includes(newName) === false) {
+              fileNames.push(newName.concat(tempFile[i].substring(extIndex, tempFile[i].length)));
+              fileLocation.push(temp[i]);
             }
           }
-        },
-      })
-      .then((result) => {
-        if (result.isConfirmed) {
-          //folders are no clickable unless page is refreshed
-          //automated the refresh
-          var section = organizeDSglobalPath.value;
-          let lastSlash = section.indexOf("/") + 1;
-          section = section.substring(lastSlash, section.length - 1);
-          if (section.includes("/")) {
-            let lastSlash = section.lastIndexOf("/") + 1;
-            section = section.substring(lastSlash, section.length);
-          }
-          var back_button = document.getElementById("button-back");
-          back_button.click();
-          var folders = document.getElementById("items").getElementsByClassName("folder_desc");
-          for (let i = 0; i < folders.length; i++) {
-            if (folders[i].innerText === section) {
-              folders[i].parentNode.dispatchEvent(new Event("dblclick"));
+        }
+        if (folder === true) {
+          //working with folders
+          if (sameName.includes(true) === true) {
+            sameName = [];
+            i = 0;
+            return false;
+            $("swal2-confirm swal2-styled").removeAttr("disabled");
+          } else {
+            //add files to json and ui
+            //update json action
+            for (let index = 0; index < temp.length; index++) {
+              myPath["folders"][fileNames[index]] = {
+                files: myPath["folders"][tempFile[index]].files,
+                folders: myPath["folders"][tempFile[index]].folders,
+                path: myPath["folders"][tempFile[index]].path,
+                type: "local",
+                action: ["new", "renamed"],
+              };
+              listItems(myPath, "#items");
+              getInFolder("#items", "#items", organizeDSglobalPath, datasetStructureJSONObj);
+              hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+              hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
             }
           }
-          toastUpdate.open({
-            type: "file_updated",
-            message: "Successfully Imported and Renamed!",
-          });
+        } else {
+          //working with files
+          //update file json
+          if (sameName.includes(true) === true) {
+            sameName = [];
+            i = 0;
+            return false;
+            $("swal2-confirm swal2-styled").removeAttr("disabled");
+          } else {
+            //update json action
+            for (let index = 0; index < temp.length; index++) {
+              myPath["files"][fileNames[index]] = {
+                path: fileLocation[index],
+                basename: fileNames[index],
+                type: "local",
+                description: "",
+                "additional-metadata": "",
+                action: ["new", "renamed"],
+              };
+              var appendString =
+                '<div class="single-item" onmouseover="hoverForFullName(this)" onmouseleave="hideFullName()"><h1 class="folder file"><i class="far fa-file-alt"  oncontextmenu="fileContextMenu(this)"  style="margin-bottom:10px"></i></h1><div class="folder_desc">' +
+                myPath["files"][fileNames[index]]["basename"] +
+                "</div></div>";
+
+              $("#items").html(appendString);
+              listItems(myPath, "#items");
+              getInFolder("#items", "#items", organizeDSglobalPath, datasetStructureJSONObj);
+            }
+          }
         }
-        if (!result.isConfirmed) {
-          showParentSwal(duplicateArray);
+      },
+    }).then((result) => {
+      if (result.isConfirmed) {
+        //folders are no clickable unless page is refreshed
+        //automated the refresh
+        var section = organizeDSglobalPath.value;
+        let lastSlash = section.indexOf("/") + 1;
+        section = section.substring(lastSlash, section.length - 1);
+        if (section.includes("/")) {
+          let lastSlash = section.lastIndexOf("/") + 1;
+          section = section.substring(lastSlash, section.length);
         }
-      });
-      // Swal.close();
+        var back_button = document.getElementById("button-back");
+        back_button.click();
+        var folders = document.getElementById("items").getElementsByClassName("folder_desc");
+        for (let i = 0; i < folders.length; i++) {
+          if (folders[i].innerText === section) {
+            folders[i].parentNode.dispatchEvent(new Event("dblclick"));
+          }
+        }
+        toastUpdate.open({
+          type: "file_updated",
+          message: "Successfully Imported and Renamed!",
+        });
+      }
+      if (!result.isConfirmed) {
+        showParentSwal(duplicateArray);
+      }
+    });
+    // Swal.close();
   }
   if (btnId === "replace") {
     var tempFile = [];
@@ -2026,7 +2016,7 @@ const addFilesfunction = async (
         )
       );
     }
-    
+
     //alert giving a list of files + path that cannot be copied bc theyre duplicates
     let list = JSON.stringify(nonAllowedDuplicateFiles).replace(/"/g, "");
     let listElements = showItemsAsListBootbox(baseName);
