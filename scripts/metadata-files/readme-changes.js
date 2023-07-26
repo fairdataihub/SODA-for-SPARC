@@ -158,6 +158,21 @@ const generateRCFiles = async (uploadBFBoolean, fileType) => {
         upperCaseLetters === "CHANGES.txt" ? "CHANGES.txt" : "README.txt",
         size
       );
+
+      // TODO: Kombucha analytics log goes here w/ new utility function for eventData
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.PREPARE_METADATA,
+        kombuchaEnums.Action.GENERATE,
+        kombuchaEnums.Label.SIZE,
+        kombuchaEnums.Status.SUCCESS,
+        {
+          value: size,
+          destination: destination,
+          origin: uploadBFBoolean ? defaultBfDatasetId : "Local",
+          dataset_name: defaultBfDataset,
+        }
+      );
     } catch (error) {
       clientError(error);
       let emessage = error.response.data.message;

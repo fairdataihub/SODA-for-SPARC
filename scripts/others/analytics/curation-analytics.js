@@ -58,6 +58,10 @@ const logSelectedUpdateExistingDatasetOptions = (origin) => {
 };
 
 // Function created for Generate Dataset events
+/*
+    Purpose: Create an event data object to be sent to Kombucha for logging generate dataset events in the Organize Dataset, 
+             and Guided Mode generate features.
+*/
 const createEventData = (value, destination, origin, dataset_name) => {
   if (destination === "Pennsieve") {
     return {
