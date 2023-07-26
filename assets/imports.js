@@ -10,7 +10,7 @@ const docReady = (fn) => {
   } else {
     document.addEventListener("DOMContentLoaded", fn);
   }
-}
+};
 
 // adds the apps HTML pages to the DOM
 document.addEventListener("DOMContentLoaded", async function () {
