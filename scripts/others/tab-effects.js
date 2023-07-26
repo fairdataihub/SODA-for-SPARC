@@ -1956,7 +1956,8 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
   }
 
   // first, handle target or the next div to show
-  var target = document.getElementById(ev.getAttribute("data-next"));
+  let target = document.getElementById(ev.getAttribute("data-next"));
+  console.log("target", target);
   hidePrevDivs(currentDiv, category);
   // display the target tab (data-next tab)
   if (!target.classList.contains("show")) {
@@ -2015,34 +2016,37 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
   // auto-scroll to bottom of div
   document.getElementById(parentDiv).scrollTop = document.getElementById(parentDiv).scrollHeight;
 
-  if (ev.getAttribute("data-next") === "Question-getting-started-final") {
-    if ($("#existing-bf").is(":checked")) {
-      $("#nextBtn").prop("disabled", true);
-      if (sodaJSONObj["dataset-structure"] != {}) {
-        $("#nextBtn").prop("disabled", false);
-      }
+  if (
+    ev.getAttribute("data-next") === "Question-getting-started-final" &&
+    $("#existing-bf").is(":checked")
+  ) {
+    $("#nextBtn").prop("disabled", true);
+    if (sodaJSONObj["dataset-structure"] != {}) {
+      $("#nextBtn").prop("disabled", false);
     }
   }
 
-  if (ev.getAttribute("data-next") === "input-destination-getting-started-locally") {
-    if ($("#existing-local").is(":checked") && currentDiv == "Question-getting-started-1") {
-      sodaJSONObj = {
-        "bf-account-selected": {},
-        "bf-dataset-selected": {},
-        "dataset-structure": {},
-        "metadata-files": {},
-        "manifest-files": {},
-        "generate-dataset": {},
-        "starting-point": {
-          type: "local",
-          "local-path": "",
-        },
-      };
+  if (
+    ev.getAttribute("data-next") === "input-destination-getting-started-locally" &&
+    $("#existing-local").is(":checked") &&
+    currentDiv == "Question-getting-started-1"
+  ) {
+    sodaJSONObj = {
+      "bf-account-selected": {},
+      "bf-dataset-selected": {},
+      "dataset-structure": {},
+      "metadata-files": {},
+      "manifest-files": {},
+      "generate-dataset": {},
+      "starting-point": {
+        type: "local",
+        "local-path": "",
+      },
+    };
 
-      // this should run after a folder is selected
-      reset_ui();
-      $("#nextBtn").prop("disabled", true);
-    }
+    // this should run after a folder is selected
+    reset_ui();
+    $("#nextBtn").prop("disabled", true);
   }
 };
 
@@ -2160,8 +2164,8 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
           $("#changes-organization-field").show();
         }
       }
-      var res = generateRCFilesHelper("changes");
-      if (res === "empty") {
+      let changesFilesHelper = generateRCFilesHelper("changes");
+      if (changesFilesHelper === "empty") {
         return;
       }
       break;
@@ -2188,8 +2192,8 @@ const transitionFreeFormMode = async (ev, currentDiv, parentDiv, button, categor
           $("#readme-organization-field").show();
         }
       }
-      var res = generateRCFilesHelper("readme");
-      if (res === "empty") {
+      let readMeFilesHelper = generateRCFilesHelper("readme");
+      if (readMeFilesHelper === "empty") {
         return;
       }
       break;
