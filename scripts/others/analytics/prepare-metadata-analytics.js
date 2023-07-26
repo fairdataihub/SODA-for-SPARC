@@ -1,5 +1,21 @@
 
 
-const createEventDataPrepareMetadata = (destination, value, dataset_) => {
-    if (data.upload)
+const createEventDataPrepareMetadata = (destination, value) => {
+    if (destination === "Pennsieve") {
+        return {
+            value, 
+            destination: "Pennsieve",
+            dataset_name: defaultBfDataset, 
+            dataset_id: defaultBfDatasetId
+        }
+    }
+
+    return {
+        value,
+        destination
+    }
+}
+
+module.exports = {
+    createEventDataPrepareMetadata
 }

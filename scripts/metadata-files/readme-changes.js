@@ -113,7 +113,7 @@ const generateRCFiles = async (uploadBFBoolean, fileType) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
 
   if (uploadBFBoolean) {
     let textValue = $(`#textarea-create-${fileType}`).val().trim();
@@ -141,37 +141,22 @@ const generateRCFiles = async (uploadBFBoolean, fileType) => {
         backdrop: "rgba(0,0,0, 0.4)",
       });
 
-      logMetadataForAnalytics(
-        "Success",
-        upperCaseLetters === "CHANGES.txt"
-          ? MetadataAnalyticsPrefix.CHANGES
-          : MetadataAnalyticsPrefix.README,
-        AnalyticsGranularity.ALL_LEVELS,
-        "Generate",
-        Destinations.PENNSIEVE
-      );
-
-      const size = res["size"];
-
-      logMetadataSizeForAnalytics(
-        true,
-        upperCaseLetters === "CHANGES.txt" ? "CHANGES.txt" : "README.txt",
-        size
-      );
-
-      // TODO: Kombucha analytics log goes here w/ new utility function for eventData
       ipcRenderer.send(
         "track-kombucha",
         kombuchaEnums.Category.PREPARE_METADATA,
-        kombuchaEnums.Action.GENERATE,
-        kombuchaEnums.Label.SIZE,
+        kombuchaEnums.Action.GENERATE_METADATA,
+        upperCaseLetters === "README.txt" ? kombuchaEnums.Label.README_TXT : kombuchaEnums.Label.CHANGES_TXT,
         kombuchaEnums.Status.SUCCESS,
-        {
-          value: size,
-          destination: destination,
-          origin: uploadBFBoolean ? defaultBfDatasetId : "Local",
-          dataset_name: defaultBfDataset,
-        }
+        createEventDataPrepareMetadata("Pennsieve", 1)
+      );
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.PREPARE_METADATA,
+        kombuchaEnums.Action.GENERATE_METADATA,
+        upperCaseLetters === "README.txt" ? kombuchaEnums.Label.README_TXT_SIZE : kombuchaEnums.Label.CHANGES_TXT_SIZE,
+        kombuchaEnums.Status.SUCCESS,
+        createEventDataPrepareMetadata("Pennsieve", size)
       );
     } catch (error) {
       clientError(error);
@@ -185,14 +170,13 @@ const generateRCFiles = async (uploadBFBoolean, fileType) => {
         backdrop: "rgba(0,0,0, 0.4)",
       });
 
-      logMetadataForAnalytics(
-        "Error",
-        upperCaseLetters === "CHANGES.txt"
-          ? MetadataAnalyticsPrefix.CHANGES
-          : MetadataAnalyticsPrefix.README,
-        AnalyticsGranularity.ALL_LEVELS,
-        "Generate",
-        Destinations.PENNSIEVE
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.PREPARE_METADATA,
+        kombuchaEnums.Action.GENERATE_METADATA,
+        upperCaseLetters === "README.txt" ? kombuchaEnums.Label.README_TXT : kombuchaEnums.Label.CHANGES_TXT,
+        kombuchaEnums.Status.FAIL,
+        createEventDataPrepareMetadata("Pennsieve", 1)
       );
     }
   } else {
@@ -418,12 +402,13 @@ async function saveRCFile(type) {
             },
           });
 
-          logMetadataForAnalytics(
-            "Error",
-            type === "changes" ? MetadataAnalyticsPrefix.CHANGES : MetadataAnalyticsPrefix.README,
-            AnalyticsGranularity.ALL_LEVELS,
-            "Generate",
-            Destinations.LOCAL
+          ipcRenderer.send(
+            "track-kombucha",
+            kombuchaEnums.Category.PREPARE_METADATA,
+            kombuchaEnums.Action.GENERATE_METADATA,
+            type === "changes" ? kombuchaEnums.Label.CHANGES_TXT : kombuchaEnums.Label.README_TXT,
+            kombuchaEnums.Status.FAIL,
+            createEventDataPrepareMetadata("Local", 1)
           );
         } else {
           Swal.fire({
@@ -437,20 +422,25 @@ async function saveRCFile(type) {
             },
           });
 
-          logMetadataForAnalytics(
-            "Success",
-            type === "changes" ? MetadataAnalyticsPrefix.CHANGES : MetadataAnalyticsPrefix.README,
-            AnalyticsGranularity.ALL_LEVELS,
-            "Generate",
-            Destinations.LOCAL
-          );
-
           // log the size of the metadata file that was generated at varying levels of granularity
           let size = await getFileSizeInBytes(destinationPath);
-          logMetadataSizeForAnalytics(
-            false,
-            type === "changes" ? "changes.txt" : "readme.txt",
-            size
+
+          ipcRenderer.send(
+            "track-kombucha",
+            kombuchaEnums.Category.PREPARE_METADATA,
+            kombuchaEnums.Action.GENERATE_METADATA,
+            type === "changes" ? kombuchaEnums.Label.CHANGES_TXT : kombuchaEnums.Label.README_TXT,
+            kombuchaEnums.Status.SUCCESS,
+            createEventDataPrepareMetadata("Local", 1)
+          );
+
+          ipcRenderer.send(
+            "track-kombucha",
+            kombuchaEnums.Category.PREPARE_METADATA,
+            kombuchaEnums.Action.GENERATE_METADATA,
+            type === "changes" ? kombuchaEnums.Label.CHANGES_TXT_SIZE : kombuchaEnums.Label.README_TXT_SIZE,
+            kombuchaEnums.Status.SUCCESS,
+            createEventDataPrepareMetadata("Local", size)
           );
         }
       });
@@ -548,7 +538,7 @@ const getRC = async (type) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => {});
+  }).then((result) => { });
   if (type === "CHANGES.txt") {
     var shortName = "changes";
   } else {
@@ -670,7 +660,7 @@ function importExistingRCFile(type) {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => {});
+      }).then((result) => { });
       setTimeout(loadExistingRCFile(filePath, type), 1000);
     }
   }
