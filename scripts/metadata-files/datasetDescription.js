@@ -534,7 +534,7 @@ const generateDDFile = async (uploadBFBoolean) => {
       kombuchaEnums.Action.GENERATE_METADATA,
       kombuchaEnums.Label.DATASET_DESCRIPTION_XLSX,
       kombuchaEnums.Status.SUCCESS,
-      createEventDataPrepareMetadata(uploadBFBoolean ? "Pennsieve" :  "Local", 1)
+      createEventDataPrepareMetadata(uploadBFBoolean ? "Pennsieve" : "Local", 1)
     );
 
     // log the size of the metadata file that was generated at varying levels of granularity
@@ -545,7 +545,7 @@ const generateDDFile = async (uploadBFBoolean) => {
       kombuchaEnums.Action.GENERATE_METADATA,
       kombuchaEnums.Label.DATASET_DESCRIPTION_XLSX_SIZE,
       kombuchaEnums.Status.SUCCESS,
-      createEventDataPrepareMetadata(uploadBFBoolean ? "Pennsieve" :  "Local", size)
+      createEventDataPrepareMetadata(uploadBFBoolean ? "Pennsieve" : "Local", size)
     );
   } catch (error) {
     clientError(error);
@@ -566,7 +566,7 @@ const generateDDFile = async (uploadBFBoolean) => {
       kombuchaEnums.Action.GENERATE_METADATA,
       kombuchaEnums.Label.DATASET_DESCRIPTION_XLSX,
       kombuchaEnums.Status.FAIL,
-      createEventDataPrepareMetadata(uploadBFBoolean ? "Pennsieve" :  "Local", 1)
+      createEventDataPrepareMetadata(uploadBFBoolean ? "Pennsieve" : "Local", 1)
     );
   }
 };
