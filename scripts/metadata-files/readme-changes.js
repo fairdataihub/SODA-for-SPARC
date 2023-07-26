@@ -133,6 +133,8 @@ const generateRCFiles = async (uploadBFBoolean, fileType) => {
         }
       );
       let res = upload_rc_file.data;
+      const size = res["size"];
+
 
       Swal.fire({
         title: `Successfully generated the ${upperCaseLetters} file on your Pennsieve dataset.`,
