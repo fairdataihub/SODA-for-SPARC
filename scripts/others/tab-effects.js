@@ -954,7 +954,7 @@ const handleValidateCardSelection = async (ev) => {
 };
 
 var divList = [];
-async function transitionSubQuestions(ev, currentDiv, parentDiv, button, category) {
+const transitionSubQuestions = async (ev, currentDiv, parentDiv, button, category) => {
   if (currentDiv === "Question-getting-started-1") {
     // log the start of a new curation process from scratch
     // logCurationForAnalytics(
@@ -1206,7 +1206,7 @@ async function transitionSubQuestions(ev, currentDiv, parentDiv, button, categor
       $("#nextBtn").prop("disabled", true);
     }
   }
-}
+};
 
 // Create the dataset structure for sodaJSONObj
 const create_json_object = (action, sodaJSONObj, root_folder_path) => {
@@ -1977,6 +1977,10 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
   // if buttons: Add account and Confirm account were hidden, show them again here
   if (ev.getAttribute("data-next") === "Question-generate-dataset-BF-account") {
     $("#" + ev.getAttribute("data-next") + " button").show();
+  }
+
+  if (ev.getAttribute("data-next") === "Question-generate-dataset-BF-workspace") {
+    document.getElementById("btn-bf-workspace").style.display = "block";
   }
 
   if (ev.getAttribute("data-next") === "Question-generate-dataset-generate-div-old") {
