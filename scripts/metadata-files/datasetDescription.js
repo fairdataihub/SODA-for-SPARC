@@ -528,19 +528,25 @@ const generateDDFile = async (uploadBFBoolean) => {
     });
 
     // log the successful attempt to generate the description file in analytics at this step in the Generation process
-    logMetadataForAnalytics(
-      "Success",
-      MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
-      AnalyticsGranularity.ALL_LEVELS,
-      "Generate",
-      uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.PREPARE_METADATA,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.DATASET_DESCRIPTION_XLSX,
+      kombuchaEnums.Status.SUCCESS,
+      createEventDataPrepareMetadata("Pennsieve", 1)
     );
-
-    // TODO: Generate dataset decription Kombucha event here
 
     // log the size of the metadata file that was generated at varying levels of granularity
     const size = res;
-    logMetadataSizeForAnalytics(uploadBFBoolean, "dataset_description.xlsx", size);
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.PREPARE_METADATA,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.DATASET_DESCRIPTION_XLSX_SIZE,
+      kombuchaEnums.Status.SUCCESS,
+      createEventDataPrepareMetadata("Pennsieve", size)
+    );
   } catch (error) {
     clientError(error);
     let emessage = userErrorMessage(error);
@@ -554,12 +560,13 @@ const generateDDFile = async (uploadBFBoolean) => {
     });
 
     // log the failure to generate the description file to analytics at this step in the Generation process
-    logMetadataForAnalytics(
-      "Error",
-      MetadataAnalyticsPrefix.DATASET_DESCRIPTION,
-      AnalyticsGranularity.ALL_LEVELS,
-      "Generate",
-      uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.PREPARE_METADATA,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.DATASET_DESCRIPTION_XLSX,
+      kombuchaEnums.Status.FAIL,
+      createEventDataPrepareMetadata("Pennsieve", 1)
     );
   }
 };
