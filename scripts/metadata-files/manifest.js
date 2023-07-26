@@ -770,9 +770,15 @@ const convertJSONToXlsx = (jsondata, excelfile) => {
   let headingColumnIndex = 1;
   headingColumnNames.forEach((heading) => {
     let styleObject = yellowHeaderStyle;
-    if (blueHeader.includes(heading)) styleObject = blueHeaderStyle;
-    if (yellowHeader.includes(heading)) styleObject = yellowHeaderStyle;
-    if (greenHeader.includes(heading)) styleObject = greenHeaderStyle;
+    if (blueHeader.includes(heading)) {
+      styleObject = blueHeaderStyle;
+    }
+    if (yellowHeader.includes(heading)) {
+      styleObject = yellowHeaderStyle;
+    }
+    if (greenHeader.includes(heading)) {
+      styleObject = greenHeaderStyle;
+    }
 
     ws.cell(1, headingColumnIndex++)
       .string(heading)

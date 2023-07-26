@@ -2,7 +2,7 @@ const {
   addDatasetAndOrganizationCardComponents,
 } = require("./components-utils/addDatasetAndOrganizationCards");
 
-function docReady(fn) {
+const docReady = (fn) => {
   // see if DOM is already available
   if (document.readyState === "complete" || document.readyState === "interactive") {
     // call on next available tick
@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 const includeJavaScriptFile = async (filePath) => {
   return new Promise((resolve, reject) => {
-    var script = document.createElement("script");
+    let script = document.createElement("script");
     script.type = "text/javascript";
     script.src = filePath;
     script.async = false;
