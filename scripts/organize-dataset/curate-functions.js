@@ -502,12 +502,12 @@ const importGenerateDatasetStep = async (object) => {
             $("#button-confirm-bf-dataset").click();
             // Step 4: Handle existing files and folders
             if ("if-existing" in sodaJSONObj["generate-dataset"]) {
-              var existingFolderOption = sodaJSONObj["generate-dataset"]["if-existing"];
+              let existingFolderOption = sodaJSONObj["generate-dataset"]["if-existing"];
               $("#existing-folders-" + existingFolderOption).prop("checked", true);
               $($("#existing-folders-" + existingFolderOption).parents()[2]).click();
             }
             if ("if-existing-files" in sodaJSONObj["generate-dataset"]) {
-              var existingFileOption = sodaJSONObj["generate-dataset"]["if-existing-files"];
+              let existingFileOption = sodaJSONObj["generate-dataset"]["if-existing-files"];
               $("#existing-files-" + existingFileOption).prop("checked", true);
               $($("#existing-files-" + existingFileOption).parents()[2]).click();
             }
@@ -585,7 +585,7 @@ const loadProgressFile = (ev) => {
     return;
   }
 
-  var jsonContent = progressFileParse(ev);
+  let jsonContent = progressFileParse(ev);
 
   $("#para-progress-file-status").html("");
   // $("#nextBtn").prop("disabled", true);
