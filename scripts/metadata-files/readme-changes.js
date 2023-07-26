@@ -113,7 +113,7 @@ const generateRCFiles = async (uploadBFBoolean, fileType) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   if (uploadBFBoolean) {
     let textValue = $(`#textarea-create-${fileType}`).val().trim();
@@ -145,7 +145,9 @@ const generateRCFiles = async (uploadBFBoolean, fileType) => {
         "track-kombucha",
         kombuchaEnums.Category.PREPARE_METADATA,
         kombuchaEnums.Action.GENERATE_METADATA,
-        upperCaseLetters === "README.txt" ? kombuchaEnums.Label.README_TXT : kombuchaEnums.Label.CHANGES_TXT,
+        upperCaseLetters === "README.txt"
+          ? kombuchaEnums.Label.README_TXT
+          : kombuchaEnums.Label.CHANGES_TXT,
         kombuchaEnums.Status.SUCCESS,
         createEventDataPrepareMetadata("Pennsieve", 1)
       );
@@ -154,7 +156,9 @@ const generateRCFiles = async (uploadBFBoolean, fileType) => {
         "track-kombucha",
         kombuchaEnums.Category.PREPARE_METADATA,
         kombuchaEnums.Action.GENERATE_METADATA,
-        upperCaseLetters === "README.txt" ? kombuchaEnums.Label.README_TXT_SIZE : kombuchaEnums.Label.CHANGES_TXT_SIZE,
+        upperCaseLetters === "README.txt"
+          ? kombuchaEnums.Label.README_TXT_SIZE
+          : kombuchaEnums.Label.CHANGES_TXT_SIZE,
         kombuchaEnums.Status.SUCCESS,
         createEventDataPrepareMetadata("Pennsieve", size)
       );
@@ -174,7 +178,9 @@ const generateRCFiles = async (uploadBFBoolean, fileType) => {
         "track-kombucha",
         kombuchaEnums.Category.PREPARE_METADATA,
         kombuchaEnums.Action.GENERATE_METADATA,
-        upperCaseLetters === "README.txt" ? kombuchaEnums.Label.README_TXT : kombuchaEnums.Label.CHANGES_TXT,
+        upperCaseLetters === "README.txt"
+          ? kombuchaEnums.Label.README_TXT
+          : kombuchaEnums.Label.CHANGES_TXT,
         kombuchaEnums.Status.FAIL,
         createEventDataPrepareMetadata("Pennsieve", 1)
       );
@@ -438,7 +444,9 @@ async function saveRCFile(type) {
             "track-kombucha",
             kombuchaEnums.Category.PREPARE_METADATA,
             kombuchaEnums.Action.GENERATE_METADATA,
-            type === "changes" ? kombuchaEnums.Label.CHANGES_TXT_SIZE : kombuchaEnums.Label.README_TXT_SIZE,
+            type === "changes"
+              ? kombuchaEnums.Label.CHANGES_TXT_SIZE
+              : kombuchaEnums.Label.README_TXT_SIZE,
             kombuchaEnums.Status.SUCCESS,
             createEventDataPrepareMetadata("Local", size)
           );
@@ -538,7 +546,7 @@ const getRC = async (type) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   if (type === "CHANGES.txt") {
     var shortName = "changes";
   } else {
@@ -660,7 +668,7 @@ function importExistingRCFile(type) {
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => { });
+      }).then((result) => {});
       setTimeout(loadExistingRCFile(filePath, type), 1000);
     }
   }

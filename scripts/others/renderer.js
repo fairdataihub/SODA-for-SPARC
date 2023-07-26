@@ -43,7 +43,9 @@ const {
   createEventData,
   logSelectedUpdateExistingDatasetOptions,
 } = require("./scripts/others/analytics/curation-analytics");
-const { createEventDataPrepareMetadata } = require("./scripts/others/analytics/prepare-metadata-analytics");
+const {
+  createEventDataPrepareMetadata,
+} = require("./scripts/others/analytics/prepare-metadata-analytics");
 const { determineDatasetLocation } = require("./scripts/others/analytics/analytics-utils");
 const {
   clientError,
