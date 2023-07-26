@@ -51,7 +51,7 @@
       "publish": [
         "github"
       ],
-      "asar": false,
+      "asar": true,
       "target": "nsis",
       "icon": "assets/app-icon/win/icon.ico"
     },
