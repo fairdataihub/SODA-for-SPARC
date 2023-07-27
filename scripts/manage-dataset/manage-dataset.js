@@ -1,4 +1,8 @@
 // event listeners for opening dataset or account selection dropdown
+
+const { ipcRenderer } = require("electron");
+const { kombuchaEnums } = require("../others/analytics/analytics-enums");
+
 // TODO: Add logic so this doesnt apply to the organization fields
 document.querySelectorAll(".ds-dd:not(.organization)").forEach((dropdownElement) => {
   dropdownElement.addEventListener("click", function () {
@@ -654,6 +658,19 @@ const addPermissionUser = async (
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
       AnalyticsGranularity.ALL_LEVELS,
       ["Add User Permissions"]
+    );
+
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.MANAGE_DATASETS,
+      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+      kombuchaEnums.Label.PERMISSIONS,
+      kombuchaEnums.Status.FAIL,
+      {
+        value: 1,
+        dataset_id: defaultBfDatasetId,
+        dataset_name: defaultBfDataset
+      }
     );
 
     return;
