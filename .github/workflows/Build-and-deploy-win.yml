@@ -43,10 +43,22 @@ jobs:
 
       - name: Test the python server executable
         run: |
-          nohup ./pyflaskdist/app.exe 4242 & disown
+          nohup ./pyflaskdist/app.exe 4242 > server_output.txt 2>&1 &
           sleep 30
-          cat nohup.out
-          rm nohup.out
+          cat server_output.txt
+
+          # Check if the server started successfully
+          if grep -q "Running on http://127.0.0.1:4242/" server_output.txt; then
+            echo "Server started successfully."
+          else
+            echo "Error: Server failed to start."
+            # You can perform additional error handling or cleanup here if needed
+            # For example, you may want to exit the workflow with an error code
+            exit 1
+          fi
+
+          # Clean up the temporary output file
+          rm server_output.txt
 
       - name: Deploy the application
         env:
