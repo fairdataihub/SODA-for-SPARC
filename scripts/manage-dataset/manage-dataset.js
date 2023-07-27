@@ -773,6 +773,11 @@ $("#button-add-permission-team").click(async () => {
   setTimeout(async () => {
     log.info("Adding a permission for a team on a dataset");
 
+    let selectedBfAccount = defaultBfAccount;
+    let selectedBfDataset = defaultBfDataset;
+    let selectedTeam = $("#bf_list_teams").val();
+    let selectedRole = $("#bf_list_roles_team").val();
+
     Swal.fire({
       title: `Adding a permission for your selected team`,
       html: "Please wait...",
@@ -786,11 +791,6 @@ $("#button-add-permission-team").click(async () => {
         Swal.showLoading();
       },
     });
-
-    let selectedBfAccount = defaultBfAccount;
-    let selectedBfDataset = defaultBfDataset;
-    let selectedTeam = $("#bf_list_teams").val();
-    let selectedRole = $("#bf_list_roles_team").val();
 
     try {
       let bf_add_team_permission = await client.patch(
@@ -815,6 +815,19 @@ $("#button-add-permission-team").click(async () => {
         ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
         AnalyticsGranularity.ALL_LEVELS,
         ["Add Team Permissions"]
+      );
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+        kombuchaEnums.Label.TEAM_PERMISSIONS,
+        kombuchaEnums.Status.SUCCESS,
+        {
+          value: 1,
+          dataset_id: defaultBfDatasetId,
+          dataset_name: defaultBfDataset
+        }
       );
 
       Swal.fire({
