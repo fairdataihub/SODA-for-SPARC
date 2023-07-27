@@ -44,7 +44,7 @@ jobs:
       - name: Test the python server executable
         run: |
           Start-process -noNewWindow -FilePath .\pyflaskdist\app.exe -ArgumentList "4242"
-          Start-Sleep -Seconds 10
+          Start-Sleep -Seconds 30
           curl http://127.0.0.1:4242/
 
       - name: Deploy the application
