@@ -687,6 +687,19 @@ const addPermissionUser = async (
     backdrop: "rgba(0,0,0, 0.4)",
   });
 
+  ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.MANAGE_DATASETS,
+    kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+    kombuchaEnums.Label.PERMISSIONS,
+    kombuchaEnums.Status.FAIL,
+    {
+      value: 1,
+      dataset_id: defaultBfDatasetId,
+      dataset_name: defaultBfDataset
+    }
+  );
+
   log.info("Added permission ${selectedRole} to ${selectedUser} for ${selectedBfDataset}");
 
   logGeneralOperationsForAnalytics(
