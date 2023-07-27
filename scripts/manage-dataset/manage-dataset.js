@@ -664,7 +664,7 @@ const addPermissionUser = async (
       "track-kombucha",
       kombuchaEnums.Category.MANAGE_DATASETS,
       kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
-      kombuchaEnums.Label.PERMISSIONS,
+      kombuchaEnums.Label.USER_PERMISSIONS,
       kombuchaEnums.Status.FAIL,
       {
         value: 1,
@@ -691,7 +691,7 @@ const addPermissionUser = async (
     "track-kombucha",
     kombuchaEnums.Category.MANAGE_DATASETS,
     kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
-    kombuchaEnums.Label.PERMISSIONS,
+    kombuchaEnums.Label.USER_PERMISSIONS,
     kombuchaEnums.Status.FAIL,
     {
       value: 1,
