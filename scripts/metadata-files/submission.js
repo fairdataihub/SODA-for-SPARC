@@ -791,6 +791,7 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
       }
     )
     .then((res) => {
+      Swal.close();
       let successMessage = "";
       if (uploadBFBoolean) {
         successMessage =
