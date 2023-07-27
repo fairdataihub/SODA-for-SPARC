@@ -4,6 +4,7 @@ attrs==22.2.0
 biopython==1.79
 boto3
 botocore
+urllib3
 certifi==2021.10.8
 cffi==1.15.1
 chardet==4.0.0
@@ -55,7 +56,6 @@ s3transfer==0.6.0
 semver==2.13.0
 six==1.16.0
 tqdm==4.64.1
-urllib3
 websocket-client==1.4.2
 Werkzeug==2.0.2
 wincertstore==0.2
