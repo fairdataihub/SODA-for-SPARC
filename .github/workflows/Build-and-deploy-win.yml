@@ -37,9 +37,19 @@ jobs:
       - name: Install package.json modules and their dependencies
         run: npm install --ignore-scripts
 
-      - name: Build and deploy on Windows
+      - name: Build the python server executable
+        run: |
+          npm run python-onefile-build
+
+      - name: Test the python server executable
+        run: |
+          npm run python-onefile-test
+          Start-process -noNewWindow -FilePath .\pyflaskdist\app.exe -ArgumentList "4242"
+          Start-Sleep -Seconds 10
+          curl http://127.0.0.1:4242/
+
+      - name: Deploy the application
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          npm run python-onefile-build
           npm run deploy-win
