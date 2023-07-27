@@ -721,7 +721,7 @@ const addPermissionUser = async (
     let { username } = get_username.data;
 
     if (selectedRole === "owner") {
-      for (var i = 0; i < datasetList.length; i++) {
+      for (let i = 0; i < datasetList.length; i++) {
         if (datasetList[i].name === selectedBfDataset) {
           datasetList[i].role = "manager";
         }
@@ -729,7 +729,7 @@ const addPermissionUser = async (
     }
     if (selectedUser === username) {
       // then change role of dataset and refresh dataset list
-      for (var i = 0; i < datasetList.length; i++) {
+      for (let i = 0; i < datasetList.length; i++) {
         if (datasetList[i].name === selectedBfDataset) {
           datasetList[i].role = selectedRole.toLowerCase();
         }
@@ -851,9 +851,9 @@ $("#button-add-permission-team").click(async () => {
 });
 
 // Character count for subtitle //
-function countCharacters(textelement, pelement) {
-  var textEntered = textelement.value;
-  var counter = 255 - textEntered.length;
+const countCharacters = (textelement, pelement) => {
+  let textEntered = textelement.value;
+  let counter = 255 - textEntered.length;
   pelement.innerHTML = counter + " characters remaining";
   return textEntered.length;
 }
@@ -1040,8 +1040,8 @@ dsAccordion.accordion("open", 0);
 
 // fires whenever a user selects a dataset, from any card
 const showCurrentDescription = async () => {
-  var selectedBfAccount = defaultBfAccount;
-  var selectedBfDataset = defaultBfDataset;
+  let selectedBfAccount = defaultBfAccount;
+  let selectedBfDataset = defaultBfDataset;
 
   if (selectedBfDataset === "Select dataset" || selectedBfDataset === null) {
     return;
