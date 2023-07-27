@@ -752,21 +752,24 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
     },
   });
 
-  var awardRes = $("#submission-sparc-award").val();
-  var dateRes = $("#submission-completion-date").val();
-  var milestonesRes = $("#selected-milestone-1").val();
+  let awardRes = $("#submission-sparc-award").val();
+  let dateRes = $("#submission-completion-date").val();
+  let milestonesRes = $("#selected-milestone-1").val();
   let milestoneValue = [{ value: "" }];
+  let json_arr = [];
+
   if (milestonesRes !== "") {
     milestoneValue = JSON.parse(milestonesRes);
   }
-  var json_arr = [];
+
   json_arr.push({
     award: awardRes,
     date: dateRes,
     milestone: milestoneValue[0].value,
   });
+
   if (milestoneValue.length > 0) {
-    for (var index = 1; index < milestoneValue.length; index++) {
+    for (let index = 1; index < milestoneValue.length; index++) {
       json_arr.push({
         award: "",
         date: "",
@@ -775,8 +778,8 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
     }
   }
 
-  client
-    .post(
+  try {
+    let res = await client.post(
       `/prepare_metadata/submission_file`,
       {
         submission_file_rows: json_arr,
@@ -789,76 +792,74 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
           selected_dataset: datasetName,
         },
       }
-    )
-    .then((res) => {
-      Swal.close();
-      let successMessage = "";
-      if (uploadBFBoolean) {
-        successMessage =
-          "Successfully generated the submission.xlsx file on your Pennsieve dataset.";
-      } else {
-        successMessage =
-          "Successfully generated the submission.xlsx file at the specified location.";
-      }
-      Swal.fire({
-        title: successMessage,
-        icon: "success",
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: "Ok",
-        allowOutsideClick: true,
-      });
-
-      logMetadataForAnalytics(
-        "Success",
-        MetadataAnalyticsPrefix.SUBMISSION,
-        AnalyticsGranularity.ALL_LEVELS,
-        "Generate",
-        uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
-      );
-
-      ipcRenderer.send(
-        "track-kombucha",
-        kombuchaEnums.Category.PREPARE_METADATA,
-        kombuchaEnums.Action.GENERATE_METADATA,
-        kombuchaEnums.Label.SUBMISSION_XLSX,
-        kombuchaEnums.Status.SUCCESS,
-        createEventDataPrepareMetadata(uploadBFBoolean ? "Pennsieve" : "Local", 1)
-      );
-
-      // get the size of the uploaded file from the result
-      const { size } = res.data;
-
-      // log the size of the metadata file that was generated at varying levels of granularity
-      ipcRenderer.send(
-        "track-kombucha",
-        kombuchaEnums.Category.PREPARE_METADATA,
-        kombuchaEnums.Action.GENERATE_METADATA,
-        kombuchaEnums.Label.SUBMISSION_XLSX_SIZE,
-        kombuchaEnums.Status.SUCCESS,
-        createEventDataPrepareMetadata(uploadBFBoolean ? "Pennsieve" : "Local", size)
-      );
-    })
-    .catch((error) => {
-      clientError(error);
-      let emessage = userErrorMessage(error);
-      Swal.fire({
-        backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
-        icon: "error",
-        html: emessage,
-        title: "Failed to generate the submission file",
-      });
-
-      ipcRenderer.send(
-        "track-kombucha",
-        kombuchaEnums.Category.PREPARE_METADATA,
-        kombuchaEnums.Action.GENERATE_METADATA,
-        kombuchaEnums.Label.SUBMISSION_XLSX,
-        kombuchaEnums.Status.FAIL,
-        createEventDataPrepareMetadata(uploadBFBoolean ? "Pennsieve" : "Local", 1)
-      );
+    );
+  } catch (e) {
+    clientError(error);
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      icon: "error",
+      html: userErrorMessage(error),
+      title: "Failed to generate the submission file",
     });
+
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.PREPARE_METADATA,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.SUBMISSION_XLSX,
+      kombuchaEnums.Status.FAIL,
+      createEventDataPrepareMetadata(uploadBFBoolean ? "Pennsieve" : "Local", 1)
+    );
+
+    return;
+  }
+
+  Swal.close();
+  let successMessage = "";
+  if (uploadBFBoolean) {
+    successMessage = "Successfully generated the submission.xlsx file on your Pennsieve dataset.";
+  } else {
+    successMessage = "Successfully generated the submission.xlsx file at the specified location.";
+  }
+  Swal.fire({
+    title: successMessage,
+    icon: "success",
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    confirmButtonText: "Ok",
+    allowOutsideClick: true,
+  });
+
+  logMetadataForAnalytics(
+    "Success",
+    MetadataAnalyticsPrefix.SUBMISSION,
+    AnalyticsGranularity.ALL_LEVELS,
+    "Generate",
+    uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+  );
+
+  ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.PREPARE_METADATA,
+    kombuchaEnums.Action.GENERATE_METADATA,
+    kombuchaEnums.Label.SUBMISSION_XLSX,
+    kombuchaEnums.Status.SUCCESS,
+    createEventDataPrepareMetadata(uploadBFBoolean ? "Pennsieve" : "Local", 1)
+  );
+
+  // get the size of the uploaded file from the result
+  const { size } = res.data;
+
+  // log the size of the metadata file that was generated at varying levels of granularity
+  ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.PREPARE_METADATA,
+    kombuchaEnums.Action.GENERATE_METADATA,
+    kombuchaEnums.Label.SUBMISSION_XLSX_SIZE,
+    kombuchaEnums.Status.SUCCESS,
+    createEventDataPrepareMetadata(uploadBFBoolean ? "Pennsieve" : "Local", size)
+  );
 };
 
 $("#submission-completion-date").change(function () {

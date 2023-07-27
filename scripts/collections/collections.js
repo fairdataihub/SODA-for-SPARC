@@ -147,7 +147,7 @@ $(document).ready(function () {
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
-        
+
         ipcRenderer.send(
           "track-kombucha",
           kombuchaEnums.Category.MANAGE_DATASETS,

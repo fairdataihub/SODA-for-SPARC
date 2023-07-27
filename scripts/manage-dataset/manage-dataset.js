@@ -666,7 +666,7 @@ const addPermissionUser = async (
       {
         value: 1,
         dataset_id: defaultBfDatasetId,
-        dataset_name: defaultBfDataset
+        dataset_name: defaultBfDataset,
       }
     );
 
@@ -693,7 +693,7 @@ const addPermissionUser = async (
     {
       value: 1,
       dataset_id: defaultBfDatasetId,
-      dataset_name: defaultBfDataset
+      dataset_name: defaultBfDataset,
     }
   );
 
@@ -823,7 +823,7 @@ $("#button-add-permission-team").click(async () => {
         {
           value: 1,
           dataset_id: defaultBfDatasetId,
-          dataset_name: defaultBfDataset
+          dataset_name: defaultBfDataset,
         }
       );
 
@@ -859,9 +859,9 @@ $("#button-add-permission-team").click(async () => {
         {
           value: 1,
           dataset_id: defaultBfDatasetId,
-          dataset_name: defaultBfDataset
+          dataset_name: defaultBfDataset,
         }
-      )
+      );
 
       logGeneralOperationsForAnalytics(
         "Error",
@@ -879,7 +879,7 @@ const countCharacters = (textelement, pelement) => {
   let counter = 255 - textEntered.length;
   pelement.innerHTML = counter + " characters remaining";
   return textEntered.length;
-}
+};
 
 $(document).ready(() => {
   bfDatasetSubtitle.addEventListener("keyup", function () {
