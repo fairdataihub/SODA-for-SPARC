@@ -64,7 +64,7 @@ const downloadTemplates = (templateItem, destinationFolder) => {
       return label === templateItem;
     });
 
-    console.log(templateLabel)
+    console.log(templateLabel);
 
     ipcRenderer.send(
       "track-kombucha",
