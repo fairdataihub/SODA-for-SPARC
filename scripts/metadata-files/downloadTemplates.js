@@ -33,15 +33,18 @@ const downloadTemplates = (templateItem, destinationFolder) => {
 
     ipcRenderer.send("track-event", "Error", `Download Template - ${templateItem}`);
 
+    let templateLabel = Object.values(kombuchaEnums.Label).find((label) => {
+      return label === templateItem;
+    });
+
     ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.PREPARE_METADATA,
       kombuchaEnums.Action.DOWNLOAD_TEMPLATES,
-      kombuchaEnums.Label.SUBMISSION,
-      kombuchaEnums.Status.FAIL,
+      templateLabel,
+      kombuchaEnums.Status.SUCCESS,
       {
-        value: templateItem,
-        dataset_id: defaultBfDatasetId,
+        value: 1,
       }
     );
   } else {
@@ -57,15 +60,20 @@ const downloadTemplates = (templateItem, destinationFolder) => {
     });
     ipcRenderer.send("track-event", "Success", `Download Template - ${templateItem}`);
 
+    let templateLabel = Object.values(kombuchaEnums.Label).find((label) => {
+      return label === templateItem;
+    });
+
+    console.log(templateLabel)
+
     ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.PREPARE_METADATA,
       kombuchaEnums.Action.DOWNLOAD_TEMPLATES,
-      kombuchaEnums.Label.SUBMISSION,
+      templateLabel,
       kombuchaEnums.Status.SUCCESS,
       {
-        value: templateItem,
-        dataset_id: defaultBfDatasetId,
+        value: 1,
       }
     );
   }
