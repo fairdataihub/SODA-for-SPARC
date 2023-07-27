@@ -1,8 +1,5 @@
 // event listeners for opening dataset or account selection dropdown
 
-const { ipcRenderer } = require("electron");
-const { kombuchaEnums } = require("../others/analytics/analytics-enums");
-
 // TODO: Add logic so this doesnt apply to the organization fields
 document.querySelectorAll(".ds-dd:not(.organization)").forEach((dropdownElement) => {
   dropdownElement.addEventListener("click", function () {

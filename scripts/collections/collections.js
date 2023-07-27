@@ -1,6 +1,3 @@
-const { ipcRenderer } = require("electron");
-const { kombuchaEnums } = require("../others/analytics/analytics-enums");
-
 // this function runs when the DOM is ready, i.e. when the document has been parsed
 $(document).ready(function () {
   //upload new collection tags or check if none
@@ -172,7 +169,7 @@ $(document).ready(function () {
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
-        
+
         ipcRenderer.send(
           "track-kombucha",
           kombuchaEnums.Category.MANAGE_DATASETS,
