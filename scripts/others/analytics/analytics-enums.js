@@ -68,6 +68,7 @@ const Label = {
   PROGRESS_TRACK: "Progress Track",
   TOTAL_UPLOADS: "Total Uploads",
   PI_OWNER: "Change PI Owner",
+  RESERVE_DOI: "Reserve DOI",
 };
 
 const Status = {
