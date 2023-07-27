@@ -4,7 +4,7 @@ run-name: ${{ github.actor }} is building a MAC release for SODA
 on:
   push:
     branches:
-      - staging
+      - fix-win-build-action
 
 jobs:
   deploy-on-mac:
@@ -48,6 +48,5 @@ jobs:
           appleId: ${{ secrets.APPLE_ID }}
           appleIdPassword: ${{ secrets.APPLE_PASSWORD }}
         run: |
-          conda activate env-electron-python
           npm run python-onefile-build
           npm run deploy-mac

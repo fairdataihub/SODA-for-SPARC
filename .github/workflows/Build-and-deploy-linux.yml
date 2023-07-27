@@ -4,7 +4,7 @@ run-name: ${{ github.actor }} is building a linux release for SODA
 on:
   push:
     branches:
-      - staging
+      - fix-win-build-action
 
 jobs:
   deploy-on-linux:
@@ -41,6 +41,5 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          conda activate env-electron-python
           npm run python-onefile-build
           npm run deploy-linux
