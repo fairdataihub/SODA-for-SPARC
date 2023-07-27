@@ -44,6 +44,7 @@ const Label = {
   SIZE: "Size",
   BANNER_SIZE: "Banner - Size",
   DESCRIPTION: "Description",
+  COLLECTIONS: "Collection",
   TAGS: "Tags",
   PERMISSIONS: "Permissions",
   README: "README",

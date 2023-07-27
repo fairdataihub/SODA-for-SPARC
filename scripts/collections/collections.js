@@ -1,3 +1,6 @@
+const { ipcRenderer } = require("electron");
+const { kombuchaEnums } = require("../others/analytics/analytics-enums");
+
 // this function runs when the DOM is ready, i.e. when the document has been parsed
 $(document).ready(function () {
   //upload new collection tags or check if none
@@ -147,6 +150,19 @@ $(document).ready(function () {
           heightAuto: false,
           backdrop: "rgba(0,0,0, 0.4)",
         });
+
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.MANAGE_DATASETS,
+          kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+          kombuchaEnums.Label.COLLECTIONS,
+          kombuchaEnums.Status.SUCCESS,
+          {
+            value: whiteListTags.length + newTags.length - removeTags.length,
+            dataset_name: defaultBfDataset,
+            dataset_id: defaultBfDatasetId,
+          }
+        );
       } else {
         Swal.fire({
           title: "Something went wrong trying to modify collections",
