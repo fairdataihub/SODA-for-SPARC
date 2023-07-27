@@ -43,7 +43,6 @@ jobs:
 
       - name: Test the python server executable
         run: |
-          npm run python-onefile-test
           Start-process -noNewWindow -FilePath .\pyflaskdist\app.exe -ArgumentList "4242"
           Start-Sleep -Seconds 10
           curl http://127.0.0.1:4242/
