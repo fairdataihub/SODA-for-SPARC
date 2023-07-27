@@ -332,19 +332,18 @@ const getCheckedMilestones = () => {
   const checkedMilestones = document.querySelectorAll("input[name='milestone']:checked");
   const checkedMilestonesArray = Array.from(checkedMilestones);
   //get first tr parent for each checkedMilestonesArray element
-  const checkedMilestoneData = checkedMilestonesArray.map((checkMilestone) => {
-    const tableRow = checkMilestone.parentElement.parentElement.parentElement;
-    const description = tableRow.children[1].innerHTML.trim();
-    const milestone = tableRow.children[2].innerHTML.trim();
-    const completionDate = tableRow.children[3].innerHTML.trim();
-
-    return {
-      description: description,
-      milestone: milestone,
-      completionDate: completionDate,
-    };
-  });
-  return checkedMilestoneData;
+  return checkedMilestonesArray.map((checkMilestone) => {
+      const tableRow = checkMilestone.parentElement.parentElement.parentElement;
+      const description = tableRow.children[1].innerHTML.trim();
+      const milestone = tableRow.children[2].innerHTML.trim();
+      const completionDate = tableRow.children[3].innerHTML.trim();
+  
+      return {
+        description: description,
+        milestone: milestone,
+        completionDate: completionDate,
+      };
+    });
 };
 
 const openDDDimport = async (curationMode) => {
@@ -446,32 +445,32 @@ function generateSubmissionFile() {
   }
 }
 
-function changeAwardInput() {
-  var ddBolean;
+const changeAwardInput = () => {
+  let ddBolean;
+  let informationJson = parseJson(milestonePath);
+  let completionDateArray = [];
+  let milestoneValueArray = [];
+
+  award = $("#submission-sparc-award");
   document.getElementById("submission-completion-date").value = "";
+  completionDateArray.push("Enter my own date");
   milestoneTagify1.removeAllTags();
   milestoneTagify1.settings.whitelist = [];
   removeOptions(descriptionDateInput);
   addOption(descriptionDateInput, "Select an option", "Select");
 
-  award = $("#submission-sparc-award");
-  var informationJson = parseJson(milestonePath);
-
-  var completionDateArray = [];
-  var milestoneValueArray = [];
-  completionDateArray.push("Enter my own date");
 
   /// when DD is provided
   if (award in informationJson) {
-    ddBolean = true;
-    var milestoneObj = informationJson[award];
     // Load milestone values once users choose an award number
-    var milestoneKey = Object.keys(milestoneObj);
+    let milestoneObj = informationJson[award];
+    let milestoneKey = Object.keys(milestoneObj);
+    ddBolean = true;
 
     /// add milestones to Tagify suggestion tag list and options to completion date dropdown
-    for (var i = 0; i < milestoneKey.length; i++) {
+    for (let i = 0; i < milestoneKey.length; i++) {
       milestoneValueArray.push(milestoneKey[i]);
-      for (var j = 0; j < milestoneObj[milestoneKey[i]].length; j++) {
+      for (let j = 0; j < milestoneObj[milestoneKey[i]].length; j++) {
         completionDateArray.push(milestoneObj[milestoneKey[i]][j]["Expected date of completion"]);
       }
     }
@@ -479,10 +478,12 @@ function changeAwardInput() {
   } else {
     ddBolean = false;
   }
+
   milestoneTagify1.settings.whitelist = milestoneValueArray;
-  for (var i = 0; i < completionDateArray.length; i++) {
+  for (let i = 0; i < completionDateArray.length; i++) {
     addOption(descriptionDateInput, completionDateArray[i], completionDateArray[i]);
   }
+
   return ddBolean;
 }
 
@@ -558,8 +559,8 @@ $(document).ready(function () {
 //At most the metadata files should be no bigger than 3MB
 //Function checks the selected storage device to ensure at least 3MB are available
 const checkStorage = (id) => {
-  var location = id;
-  var threeMB = 3145728;
+  let location = id;
+  let threeMB = 3145728;
   checkDiskSpace(location).then((diskSpace) => {
     freeMem = diskSpace.free;
     if (freeMem < threeMB) {
@@ -600,6 +601,7 @@ const checkStorage = (id) => {
     );
   });
 };
+
 const localSubmissionBtn = document.getElementById("btn-confirm-local-submission-destination");
 const localDDBtn = document.getElementById("btn-confirm-local-dd-destination");
 const localSubjectsBtn = document.getElementById("btn-confirm-local-subjects-destination");
@@ -921,7 +923,7 @@ $("#cancel-reupload-DDD").click(function () {
 });
 
 // import existing Changes/README file
-function showExistingSubmissionFile(type) {
+const showExistingSubmissionFile = (type) => {
   if (
     $(`#existing-submission-file-destination`).prop("placeholder") !== "Browse here" &&
     $(`#Question-prepare-submission-2`).hasClass("show")
@@ -952,12 +954,12 @@ function showExistingSubmissionFile(type) {
   }
 }
 
-function openFileBrowserDestination(metadataType) {
+const openFileBrowserDestination = (metadataType) => {
   ipcRenderer.send(`open-destination-generate-${metadataType}-locally`);
 }
 
-function importExistingSubmissionFile(type) {
-  var filePath = $(`#existing-submission-file-destination`).prop("placeholder");
+const importExistingSubmissionFile = (type) => {
+  let filePath = $(`#existing-submission-file-destination`).prop("placeholder");
   if (filePath === "Browse here") {
     Swal.fire("No file chosen", `Please select a path to your submission.xlsx file`, "error");
 
@@ -1004,7 +1006,7 @@ function importExistingSubmissionFile(type) {
 }
 
 // function to load existing submission files
-async function loadExistingSubmissionFile(filepath) {
+const loadExistingSubmissionFile = async (filepath) => {
   log.info(`Loading existing submission file: ${filepath}`);
   try {
     let load_submission_file = await client.get(`/prepare_metadata/submission_file`, {
@@ -1035,7 +1037,7 @@ async function loadExistingSubmissionFile(filepath) {
   }
 }
 
-function loadSubmissionFileToUI(data, type) {
+const loadSubmissionFileToUI = (data, type) => {
   milestoneTagify1.removeAllTags();
   removeOptions(descriptionDateInput);
   addOption(descriptionDateInput, "Select an option", "Select");
@@ -1101,7 +1103,7 @@ function loadSubmissionFileToUI(data, type) {
 }
 
 // function to check for existing submission file on Penn
-async function checkBFImportSubmission() {
+const checkBFImportSubmission = async () => {
   Swal.fire({
     title: "Importing the submission.xlsx file",
     html: "Please wait...",
