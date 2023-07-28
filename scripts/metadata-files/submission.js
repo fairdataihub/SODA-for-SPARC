@@ -333,17 +333,17 @@ const getCheckedMilestones = () => {
   const checkedMilestonesArray = Array.from(checkedMilestones);
   //get first tr parent for each checkedMilestonesArray element
   return checkedMilestonesArray.map((checkMilestone) => {
-      const tableRow = checkMilestone.parentElement.parentElement.parentElement;
-      const description = tableRow.children[1].innerHTML.trim();
-      const milestone = tableRow.children[2].innerHTML.trim();
-      const completionDate = tableRow.children[3].innerHTML.trim();
-  
-      return {
-        description: description,
-        milestone: milestone,
-        completionDate: completionDate,
-      };
-    });
+    const tableRow = checkMilestone.parentElement.parentElement.parentElement;
+    const description = tableRow.children[1].innerHTML.trim();
+    const milestone = tableRow.children[2].innerHTML.trim();
+    const completionDate = tableRow.children[3].innerHTML.trim();
+
+    return {
+      description: description,
+      milestone: milestone,
+      completionDate: completionDate,
+    };
+  });
 };
 
 const openDDDimport = async (curationMode) => {
@@ -459,7 +459,6 @@ const changeAwardInput = () => {
   removeOptions(descriptionDateInput);
   addOption(descriptionDateInput, "Select an option", "Select");
 
-
   /// when DD is provided
   if (award in informationJson) {
     // Load milestone values once users choose an award number
@@ -485,7 +484,7 @@ const changeAwardInput = () => {
   }
 
   return ddBolean;
-}
+};
 
 const submissionDateInput = document.getElementById("submission-completion-date");
 var submissionDestinationPath = "";
@@ -953,11 +952,11 @@ const showExistingSubmissionFile = (type) => {
   } else {
     ipcRenderer.send(`open-file-dialog-existing-submission`);
   }
-}
+};
 
 const openFileBrowserDestination = (metadataType) => {
   ipcRenderer.send(`open-destination-generate-${metadataType}-locally`);
-}
+};
 
 const importExistingSubmissionFile = (type) => {
   let filePath = $(`#existing-submission-file-destination`).prop("placeholder");
@@ -1004,7 +1003,7 @@ const importExistingSubmissionFile = (type) => {
       setTimeout(loadExistingSubmissionFile(filePath), 1000);
     }
   }
-}
+};
 
 // function to load existing submission files
 const loadExistingSubmissionFile = async (filepath) => {
@@ -1036,7 +1035,7 @@ const loadExistingSubmissionFile = async (filepath) => {
       Destinations.LOCAL
     );
   }
-}
+};
 
 const loadSubmissionFileToUI = (data, type) => {
   milestoneTagify1.removeAllTags();
@@ -1101,7 +1100,7 @@ const loadSubmissionFileToUI = (data, type) => {
     $($("#div-check-bf-import-submission button")[0]).hide();
     $("#button-fake-confirm-existing-bf-submission-file-load").click();
   }
-}
+};
 
 // function to check for existing submission file on Penn
 const checkBFImportSubmission = async () => {
@@ -1149,4 +1148,4 @@ const checkBFImportSubmission = async () => {
       Destinations.PENNSIEVE
     );
   }
-}
+};
