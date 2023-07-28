@@ -4,6 +4,7 @@ channels:
   - conda-forge
 dependencies:
 - python = 3.9.7
+- PyInstaller = 4.7
 - nodejs = 16.14.2
 - pywin32 = 303
 - git = 2.20.1
