@@ -759,6 +759,7 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
   let milestonesRes = $("#selected-milestone-1").val();
   let milestoneValue = [{ value: "" }];
   let json_arr = [];
+  let res = "";
 
   if (milestonesRes !== "") {
     milestoneValue = JSON.parse(milestonesRes);
@@ -781,7 +782,7 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
   }
 
   try {
-    let res = await client.post(
+    res = await client.post(
       `/prepare_metadata/submission_file`,
       {
         submission_file_rows: json_arr,
