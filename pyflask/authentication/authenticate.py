@@ -5,6 +5,9 @@ from configparser import ConfigParser
 from flask import abort
 from os import mkdir
 import time
+import ssl
+print("ssl.OPENSSL_VERSION: ")
+print(ssl.OPENSSL_VERSION)
 
 from namespaces import NamespaceEnum, get_namespace_logger
 namespace_logger = get_namespace_logger(NamespaceEnum.USER)
