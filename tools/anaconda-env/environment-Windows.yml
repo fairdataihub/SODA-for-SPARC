@@ -27,7 +27,7 @@ dependencies:
   - flask_restx
   - PyInstaller == 4.7
   - opencv-python == 4.5.3.56
-  - certifi == 2021.10.8
+  - certifi == 2023.7.22
   - requests
   - boto3 
   - numpy == 1.23.0
