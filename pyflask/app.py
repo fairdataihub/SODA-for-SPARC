@@ -5,9 +5,12 @@ from flask import Flask, request
 from namespaces import configure_namespaces
 from flask_restx import Resource
 import sys
-import ssl
-print("ssl version: ", ssl.OPENSSL_VERSION)
-
+try:
+    import ssl
+    print("ssl version: ", ssl.OPENSSL_VERSION)
+except ImportError as e:
+    print("Failed to import ssl module: ", e)
+    
 configure_namespaces()
 
 from setupUtils import (configureLogger, configureRouteHandlers, configureAPI)
