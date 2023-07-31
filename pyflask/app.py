@@ -8,9 +8,13 @@ import sys
 try:
     import ssl
     print("ssl version: ", ssl.OPENSSL_VERSION)
+    # print the path that ssl is using
+    print("ssl module file: ", ssl.__file__)
+    # print everything about ssl
+    print("ssl module: ", ssl.__dict__)
 except ImportError as e:
     print("Failed to import ssl module: ", e)
-    
+
 configure_namespaces()
 
 from setupUtils import (configureLogger, configureRouteHandlers, configureAPI)
