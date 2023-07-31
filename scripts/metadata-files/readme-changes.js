@@ -26,7 +26,7 @@ document.querySelectorAll(".readme-change-current-ds").forEach((element) => {
 
 // function to raise a warning for empty fields before generating changes or readme
 const generateRCFilesHelper = (type) => {
-  var textValue = $(`#textarea-create-${type}`).val().trim();
+  let textValue = $(`#textarea-create-${type}`).val().trim();
   if (textValue === "") {
     Swal.fire({
       title: "Incomplete information",
