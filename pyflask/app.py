@@ -5,6 +5,8 @@ from flask import Flask, request
 from namespaces import configure_namespaces
 from flask_restx import Resource
 import sys
+import ssl
+print("ssl version: ", ssl.OPENSSL_VERSION)
 
 configure_namespaces()
 
