@@ -48,7 +48,7 @@ const portRange = 100;
 const kombuchaURL = "https://analytics-nine-ashen.vercel.app/api";
 const localKombuchaURL = "http://localhost:3000/api";
 const kombuchaServer = axios.create({
-  baseURL: kombuchaURL,
+  baseURL: localKombuchaURL,
   timeout: 0,
 });
 /**
@@ -202,19 +202,26 @@ const killAllPreviousProcesses = async () => {
 const sendUserAnalytics = () => {
   // Retrieve the userId and if it doesn't exist, create a new uuid
   let token;
+  let userCreated;
   try {
     token = nodeStorage.getItem("kombuchaToken");
   } catch (e) {
     token = null;
   }
-  if (token === null) {
+  try {
+    userCreated = nodeStorage.getItem("kombuchaUserCreated");
+  } catch (e) {
+    userCreated = null;
+  }
+  if (token === null || userCreated === null) {
     // send empty object for new users
     kombuchaServer
       .post("meta/users", {})
       .then((res) => {
         // Save the user token from the server
         nodeStorage.setItem("kombuchaToken", res.data.token);
-        nodeStorage.setItem("userId", res.data.userId);
+        nodeStorage.setItem("userId", res.data.uid);
+        nodeStorage.setItem("kombuchaUserCreated", true);
       })
       .catch((err) => {
         console.error(err);
