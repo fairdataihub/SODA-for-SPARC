@@ -2395,6 +2395,14 @@ const guidedReserveAndSaveDOI = async () => {
   $("#curate-button-reserve-doi").disabled = true;
 
   let doiInformation = await api.reserveDOI(account, dataset);
+  ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Categories.DISSEMINATE_DATASETS,
+    kombuchaEnums.Action.GUIDED_MODE,
+    kombuchaEnums.Label.RESERVE_DOI,
+    kombuchaEnums.STATUS.SUCCESS,
+    { value: 1 }
+  );
   guidedSetDOIUI(doiInformation);
 };
 

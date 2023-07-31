@@ -1,4 +1,5 @@
 // event listeners for opening dataset or account selection dropdown
+
 // TODO: Add logic so this doesnt apply to the organization fields
 document.querySelectorAll(".ds-dd:not(.organization)").forEach((dropdownElement) => {
   dropdownElement.addEventListener("click", function () {
@@ -204,18 +205,6 @@ $("#button-create-bf-new-dataset").click(async () => {
       // log a map of datasetId to dataset name to analytics
       // this will be used to help us track private datasets which are not trackable using a datasetId alone
       ipcRenderer.send(
-        "track-kombucha",
-        kombuchaEnums.Category.MANAGE_DATASETS,
-        kombuchaEnums.Action.CREATE_NEW_DATASET,
-        defaultBfDataset,
-        kombuchaEnums.Status.SUCCESS,
-        {
-          value: 1,
-          dataset_id: defaultBfDatasetId,
-        }
-      );
-
-      ipcRenderer.send(
         "track-event",
         "Dataset ID to Dataset Name Map",
         defaultBfDatasetId,
@@ -227,6 +216,18 @@ $("#button-create-bf-new-dataset").click(async () => {
       $("#button-create-bf-new-dataset").prop("disabled", false);
 
       addNewDatasetToList(bfNewDatasetName);
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.CREATE_NEW_DATASET,
+        defaultBfDataset,
+        kombuchaEnums.Status.SUCCESS,
+        {
+          value: 1,
+          dataset_id: defaultBfDatasetId,
+        }
+      );
+
       ipcRenderer.send(
         "track-event",
         "Success",
@@ -503,6 +504,18 @@ $("#button-add-permission-pi").click(async () => {
           defaultBfDatasetId
         );
 
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.MANAGE_DATASETS,
+          kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+          kombuchaEnums.Label.PI_OWNER,
+          kombuchaEnums.Status.SUCCESS,
+          {
+            value: selectedUser,
+            dataset_id: defaultBfDatasetId,
+          }
+        );
+
         let nodeStorage = new JSONStorage(app.getPath("userData"));
         nodeStorage.setItem("previously_selected_PI", selectedUser);
 
@@ -520,16 +533,27 @@ $("#button-add-permission-pi").click(async () => {
       } catch (error) {
         clientError(error);
         ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.MANAGE_DATASETS,
+          kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+          kombuchaEnums.Label.PI_OWNER,
+          kombuchaEnums.Status.FAILURE,
+          {
+            value: selectedUser,
+            dataset_id: defaultBfDatasetId,
+          }
+        );
+
+        ipcRenderer.send(
           "track-event",
           "Error",
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_MAKE_PI_OWNER,
           defaultBfDatasetId
         );
 
-        let emessage = userErrorMessage(error);
         Swal.fire({
           title: "Failed to change PI permission!",
-          text: emessage,
+          text: userErrorMessage(error),
           icon: "error",
           showConfirmButton: true,
           heightAuto: false,
@@ -542,7 +566,7 @@ $("#button-add-permission-pi").click(async () => {
 
 /// change PI owner status to manager
 const changeDatasetRolePI = (selectedDataset) => {
-  for (var i = 0; i < datasetList.length; i++) {
+  for (let i = 0; i < datasetList.length; i++) {
     if (datasetList[i].name === selectedDataset) {
       datasetList[i].role = "manager";
     }
@@ -633,6 +657,19 @@ const addPermissionUser = async (
       ["Add User Permissions"]
     );
 
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.MANAGE_DATASETS,
+      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+      kombuchaEnums.Label.USER_PERMISSIONS,
+      kombuchaEnums.Status.FAIL,
+      {
+        value: 1,
+        dataset_id: defaultBfDatasetId,
+        dataset_name: defaultBfDataset,
+      }
+    );
+
     return;
   }
 
@@ -646,6 +683,19 @@ const addPermissionUser = async (
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
   });
+
+  ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.MANAGE_DATASETS,
+    kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+    kombuchaEnums.Label.USER_PERMISSIONS,
+    kombuchaEnums.Status.FAIL,
+    {
+      value: 1,
+      dataset_id: defaultBfDatasetId,
+      dataset_name: defaultBfDataset,
+    }
+  );
 
   log.info("Added permission ${selectedRole} to ${selectedUser} for ${selectedBfDataset}");
 
@@ -668,7 +718,7 @@ const addPermissionUser = async (
     let { username } = get_username.data;
 
     if (selectedRole === "owner") {
-      for (var i = 0; i < datasetList.length; i++) {
+      for (let i = 0; i < datasetList.length; i++) {
         if (datasetList[i].name === selectedBfDataset) {
           datasetList[i].role = "manager";
         }
@@ -676,7 +726,7 @@ const addPermissionUser = async (
     }
     if (selectedUser === username) {
       // then change role of dataset and refresh dataset list
-      for (var i = 0; i < datasetList.length; i++) {
+      for (let i = 0; i < datasetList.length; i++) {
         if (datasetList[i].name === selectedBfDataset) {
           datasetList[i].role = selectedRole.toLowerCase();
         }
@@ -720,6 +770,11 @@ $("#button-add-permission-team").click(async () => {
   setTimeout(async () => {
     log.info("Adding a permission for a team on a dataset");
 
+    let selectedBfAccount = defaultBfAccount;
+    let selectedBfDataset = defaultBfDataset;
+    let selectedTeam = $("#bf_list_teams").val();
+    let selectedRole = $("#bf_list_roles_team").val();
+
     Swal.fire({
       title: `Adding a permission for your selected team`,
       html: "Please wait...",
@@ -733,11 +788,6 @@ $("#button-add-permission-team").click(async () => {
         Swal.showLoading();
       },
     });
-
-    let selectedBfAccount = defaultBfAccount;
-    let selectedBfDataset = defaultBfDataset;
-    let selectedTeam = $("#bf_list_teams").val();
-    let selectedRole = $("#bf_list_roles_team").val();
 
     try {
       let bf_add_team_permission = await client.patch(
@@ -764,6 +814,19 @@ $("#button-add-permission-team").click(async () => {
         ["Add Team Permissions"]
       );
 
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+        kombuchaEnums.Label.TEAM_PERMISSIONS,
+        kombuchaEnums.Status.SUCCESS,
+        {
+          value: 1,
+          dataset_id: defaultBfDatasetId,
+          dataset_name: defaultBfDataset,
+        }
+      );
+
       Swal.fire({
         title: "Successfully changed permission",
         text: res,
@@ -787,6 +850,19 @@ $("#button-add-permission-team").click(async () => {
         backdrop: "rgba(0,0,0, 0.4)",
       });
 
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+        kombuchaEnums.Label.TEAM_PERMISSIONS,
+        kombuchaEnums.Status.FAIL,
+        {
+          value: 1,
+          dataset_id: defaultBfDatasetId,
+          dataset_name: defaultBfDataset,
+        }
+      );
+
       logGeneralOperationsForAnalytics(
         "Error",
         ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_PERMISSIONS,
@@ -798,12 +874,12 @@ $("#button-add-permission-team").click(async () => {
 });
 
 // Character count for subtitle //
-function countCharacters(textelement, pelement) {
-  var textEntered = textelement.value;
-  var counter = 255 - textEntered.length;
+const countCharacters = (textelement, pelement) => {
+  let textEntered = textelement.value;
+  let counter = 255 - textEntered.length;
   pelement.innerHTML = counter + " characters remaining";
   return textEntered.length;
-}
+};
 
 $(document).ready(() => {
   bfDatasetSubtitle.addEventListener("keyup", function () {
@@ -867,6 +943,18 @@ $("#button-add-subtitle").click(async () => {
       );
 
       ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+        kombuchaEnums.Label.SUBTITLE,
+        kombuchaEnums.Status.SUCCESS,
+        {
+          value: 1,
+          dataset_id: defaultBfDatasetId,
+        }
+      );
+
+      ipcRenderer.send(
         "track-event",
         "Success",
         ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
@@ -895,6 +983,18 @@ $("#button-add-subtitle").click(async () => {
         "Error",
         ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_SUBTITLE,
         defaultBfDatasetId
+      );
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+        kombuchaEnums.Label.SUBTITLE,
+        kombuchaEnums.Status.FAIL,
+        {
+          value: 1,
+          dataset_id: defaultBfDatasetId,
+        }
       );
     }
   }, delayAnimation);
@@ -963,8 +1063,8 @@ dsAccordion.accordion("open", 0);
 
 // fires whenever a user selects a dataset, from any card
 const showCurrentDescription = async () => {
-  var selectedBfAccount = defaultBfAccount;
-  var selectedBfDataset = defaultBfDataset;
+  let selectedBfAccount = defaultBfAccount;
+  let selectedBfDataset = defaultBfDataset;
 
   if (selectedBfDataset === "Select dataset" || selectedBfDataset === null) {
     return;
@@ -1243,6 +1343,18 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
       defaultBfDatasetId
     );
 
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.MANAGE_DATASETS,
+      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+      kombuchaEnums.Label.README_TXT,
+      kombuchaEnums.Status.FAIL,
+      {
+        value: 1,
+        dataset_id: defaultBfDatasetId,
+      }
+    );
+
     return;
   }
 
@@ -1251,6 +1363,18 @@ const addDescription = async (selectedBfDataset, userMarkdownInput) => {
     "Success",
     ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_README,
     defaultBfDatasetId
+  );
+
+  ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.MANAGE_DATASETS,
+    kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+    kombuchaEnums.Label.README_TXT,
+    kombuchaEnums.Status.SUCCESS,
+    {
+      value: 1,
+      dataset_id: defaultBfDatasetId,
+    }
   );
 
   // alert the user the data was uploaded successfully
@@ -1376,8 +1500,9 @@ const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
   if (auxillarySectionIdx !== -1) {
     let auxillarySectionIdxAltFormat = readme.search("[*][*].*[ ]*[*][*][ ]*:");
     // check if there is an auxillary section that comes before the current section that uses alternative common syntax
-    if (auxillarySectionIdxAltFormat !== -1 && auxillarySectionIdx > auxillarySectionIdxAltFormat)
+    if (auxillarySectionIdxAltFormat !== -1 && auxillarySectionIdx > auxillarySectionIdxAltFormat) {
       auxillarySectionIdx = auxillarySectionIdxAltFormat;
+    }
   } else {
     // no auxillary section could be found using the colon before the closing markdown sytnatx so try the alternative common syntax
     auxillarySectionIdx = readme.search("[*][*].*[ ]*[*][*][ ]*:");
@@ -1387,8 +1512,9 @@ const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
   if (auxillarySectionIdx !== -1) {
     let curatorsSectionIdx = readme.search("(---)");
     // check if the curator's section appears before the auxillary section that was found
-    if (curatorsSectionIdx !== -1 && auxillarySectionIdx > curatorsSectionIdx)
+    if (curatorsSectionIdx !== -1 && auxillarySectionIdx > curatorsSectionIdx) {
       auxillarySectionIdx = curatorsSectionIdx;
+    }
   } else {
     // set the auxillary section idx to the start of the curator's section idx
     auxillarySectionIdx = readme.search("(---)");
@@ -1400,7 +1526,9 @@ const stripInvalidTextFromReadme = (readme, parsedReadme = undefined) => {
     let invalidText = readme.slice(0, auxillarySectionIdx);
 
     // if there is no invalid text then parsing is done
-    if (!invalidText.length) return readme;
+    if (!invalidText.length) {
+      return readme;
+    }
 
     // check if the user wants to store the invalid text in a parsed readme
     if (parsedReadme) {
@@ -1458,8 +1586,8 @@ const changeDatasetUnderDD = () => {
 
 ///// grab dataset name and auto-load current description
 const showDatasetDescription = async () => {
-  var selectedBfAccount = defaultBfAccount;
-  var selectedBfDataset = defaultBfDataset;
+  let selectedBfAccount = defaultBfAccount;
+  let selectedBfDataset = defaultBfDataset;
 
   if (selectedBfDataset === "Select dataset") {
     $("#ds-description").html("");
@@ -1759,6 +1887,7 @@ $("#button-import-banner-image").click(async () => {
   handleSelectedBannerImage(filePaths, "freeform");
 });
 
+// TODO: Dorian -> Simplify the if statement, redundent code
 const uploadBannerImage = async () => {
   $("#para-dataset-banner-image-status").html("Please wait...");
   //Save cropped image locally and check size
@@ -1823,6 +1952,18 @@ const uploadBannerImage = async () => {
           image_file_size
         );
 
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.MANAGE_DATASETS,
+          kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+          kombuchaEnums.Label.BANNER_SIZE,
+          kombuchaEnums.Status.SUCCESS,
+          {
+            value: image_file_size,
+            dataset_id: defaultBfDatasetId,
+          }
+        );
+
         // track the size for the given dataset
         ipcRenderer.send(
           "track-event",
@@ -1852,6 +1993,18 @@ const uploadBannerImage = async () => {
           "Error",
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
           defaultBfDatasetId
+        );
+
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.MANAGE_DATASETS,
+          kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+          kombuchaEnums.Label.BANNER_SIZE,
+          kombuchaEnums.Status.FAIL,
+          {
+            value: 1,
+            dataset_id: defaultBfDatasetId,
+          }
         );
       }
     } else {
@@ -1907,6 +2060,18 @@ const uploadBannerImage = async () => {
           defaultBfDatasetId,
           image_file_size
         );
+
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.MANAGE_DATASETS,
+          kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+          kombuchaEnums.Label.BANNER_SIZE,
+          kombuchaEnums.Status.SUCCESS,
+          {
+            value: image_file_size,
+            dataset_id: defaultBfDatasetId,
+          }
+        );
       } catch (error) {
         clientError(error);
 
@@ -1915,6 +2080,18 @@ const uploadBannerImage = async () => {
           "Error",
           ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_BANNER,
           defaultBfDatasetId
+        );
+
+        ipcRenderer.send(
+          "track-kombucha",
+          kombuchaEnums.Category.MANAGE_DATASETS,
+          kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+          kombuchaEnums.Label.BANNER_SIZE,
+          kombuchaEnums.Status.FAIL,
+          {
+            value: 1,
+            dataset_id: defaultBfDatasetId,
+          }
         );
       }
     }
@@ -1986,7 +2163,6 @@ $("#save-banner-image").click((event) => {
             },
           }).then((result) => {
             if (result.isConfirmed) {
-              // uploadBannerImage();
               uploadBannerImage();
             }
           });
@@ -2009,8 +2185,8 @@ $("#save-banner-image").click((event) => {
 });
 
 const showCurrentBannerImage = async () => {
-  var selectedBfAccount = defaultBfAccount;
-  var selectedBfDataset = defaultBfDataset;
+  let selectedBfAccount = defaultBfAccount;
+  let selectedBfDataset = defaultBfDataset;
 
   if (selectedBfDataset === null) {
     return;
@@ -2092,7 +2268,6 @@ $("#button-add-tags").click(async () => {
   Swal.fire({
     title: determineSwalLoadingMessage($("#button-add-tags")),
     html: "Please wait...",
-    // timer: 5000,
     allowEscapeKey: false,
     allowOutsideClick: false,
     heightAuto: false,
@@ -2109,7 +2284,7 @@ $("#button-add-tags").click(async () => {
   });
 
   // get the name of the currently selected dataset
-  var selectedBfDataset = defaultBfDataset;
+  let selectedBfDataset = defaultBfDataset;
 
   // Add tags to dataset
   try {
@@ -2141,32 +2316,56 @@ $("#button-add-tags").click(async () => {
       defaultBfDatasetId
     );
 
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.MANAGE_DATASETS,
+      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+      kombuchaEnums.Label.TAGS,
+      kombuchaEnums.Status.FAIL,
+      {
+        value: 1,
+        dataset_id: defaultBfDatasetId,
+      }
+    );
+
     // halt execution
     return;
   }
   // show success or failure to the user in a popup message
-  Swal.fire({
+  await Swal.fire({
     title: determineSwalSuccessMessage($("#button-add-tags")),
     icon: "success",
     showConfirmButton: true,
     heightAuto: false,
     backdrop: "rgba(0,0,0, 0.4)",
-  }).then(() => {
-    ipcRenderer.send(
-      "track-event",
-      "Success",
-      ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
-      defaultBfDatasetId
-    );
-
-    // run the pre-publishing checklist items to update the list found in the "Submit for pre-publishing review" section/card
-    showPrePublishingStatus();
-
-    //check if tags array is empty and set Add/Edit tags appropriately
-    tags === undefined || tags.length == 0
-      ? $("#button-add-tags").html("Add tags")
-      : $("#button-add-tags").html("Edit tags");
   });
+
+  ipcRenderer.send(
+    "track-event",
+    "Success",
+    ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ADD_EDIT_TAGS,
+    defaultBfDatasetId
+  );
+
+  ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.MANAGE_DATASETS,
+    kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+    kombuchaEnums.Label.TAGS,
+    kombuchaEnums.Status.SUCCESS,
+    {
+      value: 1,
+      dataset_id: defaultBfDatasetId,
+    }
+  );
+
+  // run the pre-publishing checklist items to update the list found in the "Submit for pre-publishing review" section/card
+  showPrePublishingStatus();
+
+  //check if tags array is empty and set Add/Edit tags appropriately
+  tags === undefined || tags.length == 0
+    ? $("#button-add-tags").html("Add tags")
+    : $("#button-add-tags").html("Edit tags");
 });
 
 // fetch a user's metadata tags
@@ -2297,6 +2496,18 @@ $("#button-add-license").click(async () => {
         defaultBfDatasetId
       );
 
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+        kombuchaEnums.Label.LICENSE,
+        kombuchaEnums.Status.SUCCESS,
+        {
+          value: 1,
+          dataset_id: defaultBfDatasetId,
+        }
+      );
+
       // run the pre-publishing checklist validation -- this is displayed in the pre-publishing section
       showPrePublishingStatus();
     } catch (error) {
@@ -2318,13 +2529,25 @@ $("#button-add-license").click(async () => {
         ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_ASSIGN_LICENSE,
         defaultBfDatasetId
       );
+
+      ipcRenderer.send(
+        "track-kombucha",
+        kombuchaEnums.Category.MANAGE_DATASETS,
+        kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+        kombuchaEnums.Label.LICENSE,
+        kombuchaEnums.Status.FAIL,
+        {
+          value: 1,
+          dataset_id: defaultBfDatasetId,
+        }
+      );
     }
   }, delayAnimation);
 });
 
 const showCurrentLicense = async () => {
-  var selectedBfAccount = defaultBfAccount;
-  var selectedBfDataset = defaultBfDataset;
+  let selectedBfAccount = defaultBfAccount;
+  let selectedBfDataset = defaultBfDataset;
 
   if (selectedBfDataset === null) {
     return;
@@ -2385,56 +2608,54 @@ const showCurrentLicense = async () => {
 
 // verify the dataset is valid before allowing a user to upload
 const handleSelectedSubmitDirectory = async (filepath) => {
-  if (filepath.length > 0) {
-    if (filepath != null) {
-      $("#selected-local-dataset-submit").attr("placeholder", `${filepath[0]}`);
+  if (filepath != null && filepath.length > 0) {
+    $("#selected-local-dataset-submit").attr("placeholder", `${filepath[0]}`);
 
-      valid_dataset = verify_sparc_folder(filepath[0], "pennsieve");
+    valid_dataset = verify_sparc_folder(filepath[0], "pennsieve");
 
-      if (valid_dataset == true) {
-        $("#button_upload_local_folder_confirm").click();
-        $("#button-submit-dataset").show();
-        $("#button-submit-dataset").addClass("pulse-blue");
+    if (valid_dataset == true) {
+      $("#button_upload_local_folder_confirm").click();
+      $("#button-submit-dataset").show();
+      $("#button-submit-dataset").addClass("pulse-blue");
 
-        // remove pulse class after 4 seconds
-        // pulse animation lasts 2 seconds => 2 pulses
-        setTimeout(() => {
-          $(".pulse-blue").removeClass("pulse-blue");
-        }, 4000);
-      } else {
-        Swal.fire({
-          icon: "warning",
-          text: "This folder does not seem to be a SPARC dataset folder. Are you sure you want to proceed?",
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          showCancelButton: true,
-          focusCancel: true,
-          confirmButtonText: "Yes",
-          cancelButtonText: "Cancel",
-          reverseButtons: reverseSwalButtons,
-          showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
-          },
-          hideClass: {
-            popup: "animate__animated animate__zoomOut animate__faster",
-          },
-        }).then((result) => {
-          if (result.isConfirmed) {
-            $("#button_upload_local_folder_confirm").click();
-            $("#button-submit-dataset").show();
-            $("#button-submit-dataset").addClass("pulse-blue");
+      // remove pulse class after 4 seconds
+      // pulse animation lasts 2 seconds => 2 pulses
+      setTimeout(() => {
+        $(".pulse-blue").removeClass("pulse-blue");
+      }, 4000);
+    } else {
+      Swal.fire({
+        icon: "warning",
+        text: "This folder does not seem to be a SPARC dataset folder. Are you sure you want to proceed?",
+        heightAuto: false,
+        backdrop: "rgba(0,0,0, 0.4)",
+        showCancelButton: true,
+        focusCancel: true,
+        confirmButtonText: "Yes",
+        cancelButtonText: "Cancel",
+        reverseButtons: reverseSwalButtons,
+        showClass: {
+          popup: "animate__animated animate__zoomIn animate__faster",
+        },
+        hideClass: {
+          popup: "animate__animated animate__zoomOut animate__faster",
+        },
+      }).then((result) => {
+        if (result.isConfirmed) {
+          $("#button_upload_local_folder_confirm").click();
+          $("#button-submit-dataset").show();
+          $("#button-submit-dataset").addClass("pulse-blue");
 
-            // remove pulse class after 4 seconds
-            // pulse animation lasts 2 seconds => 2 pulses
-            setTimeout(() => {
-              $(".pulse-blue").removeClass("pulse-blue");
-            }, 4000);
-          } else {
-            $("#input-destination-getting-started-locally").attr("placeholder", "Browse here");
-            $("#selected-local-dataset-submit").attr("placeholder", "Browse here");
-          }
-        });
-      }
+          // remove pulse class after 4 seconds
+          // pulse animation lasts 2 seconds => 2 pulses
+          setTimeout(() => {
+            $(".pulse-blue").removeClass("pulse-blue");
+          }, 4000);
+        } else {
+          $("#input-destination-getting-started-locally").attr("placeholder", "Browse here");
+          $("#selected-local-dataset-submit").attr("placeholder", "Browse here");
+        }
+      });
     }
   }
 };
@@ -2444,7 +2665,7 @@ $("#selected-local-dataset-submit").click(async () => {
   handleSelectedSubmitDirectory(datasetDirectory);
 });
 
-function walk(directory, filepaths = []) {
+const walk = (directory, filepaths = []) => {
   const files = fs.readdirSync(directory);
   for (let filename of files) {
     const filepath = path.join(directory, filename);
@@ -2455,7 +2676,7 @@ function walk(directory, filepaths = []) {
     }
   }
   return filepaths;
-}
+};
 
 const logFilesForUpload = (upload_folder_path) => {
   const foundFiles = walk(upload_folder_path);
@@ -2492,11 +2713,7 @@ const resetUploadLocalDataset = async () => {
   $("#button-submit-dataset").hide();
 
   // reset the input text original text
-  // document.querySelector("#selected-local-dataset-submit").value = "Select a folder";
   document.querySelector("#selected-local-dataset-submit").placeholder = "Select a folder";
-
-  // $("#selected-local-dataset-submit").placeholder = "Select a folder"
-  // $("#selected-local-dataset-submit").value = "Select a folder"
 };
 
 $("#button-submit-dataset").click(async () => {
@@ -2817,16 +3034,18 @@ $("#button-submit-dataset").click(async () => {
   let navContainer = document.getElementById("nav-items");
   let progressError = document.getElementById("para-progress-bar-error-status");
 
-  var progressClone = progressSubmit.cloneNode(true);
+  let progressClone = progressSubmit.cloneNode(true);
   let cloneHeader = progressClone.children[0];
   progressClone.children[2].remove();
   cloneHeader.style = "margin: 0;";
   let cloneMeter = progressClone.children[1];
   let cloneStatus = progressClone.children[2];
-  var navError = progressError.cloneNode(true);
+  let navError = progressError.cloneNode(true);
   let organizeDatasetButton = document.getElementById("button-generate");
   let guidedModeHomePageButton = document.getElementById("button-homepage-guided-mode");
   let organzieDatasetButtonDiv = organizeDatasetButton.children[0];
+  let returnButton = document.createElement("button");
+  let returnPage = document.getElementById("upload_local_dataset_btn");
 
   progressClone.style =
     "position: absolute; width: 100%; bottom: 0px; padding: 15px; color: black;";
@@ -2835,11 +3054,9 @@ $("#button-submit-dataset").click(async () => {
   cloneStatus.setAttribute("id", "clone-para-progress-bar-status");
   cloneStatus.style = "overflow-x: hidden; margin-bottom: 3px; margin-top: 5px;";
   progressClone.setAttribute("id", "nav-progress-submit");
-  let returnButton = document.createElement("button");
   returnButton.type = "button";
   returnButton.id = "returnButton";
   returnButton.innerHTML = "Return to progress";
-  let returnPage = document.getElementById("upload_local_dataset_btn");
   returnButton.onclick = function () {
     document.getElementById("upload_local_dataset_progress_div").style.display = "flex";
     returnPage.click();
@@ -2941,7 +3158,7 @@ $("#button-submit-dataset").click(async () => {
         kombuchaEnums.Category.MANAGE_DATASETS,
         kombuchaEnums.Action.GENERATE_DATASET,
         kombuchaEnums.Label.TOTAL_UPLOADS,
-        kombuchaEnums.Status.SUCCCESS,
+        kombuchaEnums.Status.SUCCESS,
         createEventData(1, "Pennsieve", "Local", defaultBfDataset)
       );
 
@@ -2986,20 +3203,18 @@ $("#button-submit-dataset").click(async () => {
       let num_of_folders = data["totalDir"];
 
       // log amount of folders uploaded in the given session
-      const kombuchaEventData = {
-        value: num_of_folders,
-        dataset_id: defaultBfDatasetId,
-        dataset_name: defaultBfDataset,
-        upload_session: datasetUploadSession.id,
-      };
-
       ipcRenderer.send(
         "track-kombucha",
         kombuchaEnums.Category.MANAGE_DATASETS,
         kombuchaEnums.Action.GENERATE_DATASET,
         kombuchaEnums.Label.FOLDERS,
         kombuchaEnums.Status.SUCCESS,
-        kombuchaEventData
+        {
+          value: num_of_folders,
+          dataset_id: defaultBfDatasetId,
+          dataset_name: defaultBfDataset,
+          upload_session: datasetUploadSession.id,
+        }
       );
     })
     .catch(async (error) => {
@@ -3178,6 +3393,18 @@ $("#bf_list_dataset_status").on("change", async () => {
       defaultBfDatasetId
     );
 
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.MANAGE_DATASETS,
+      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+      kombuchaEnums.Label.STATUS,
+      kombuchaEnums.Status.SUCCESS,
+      {
+        value: selectedStatusOption,
+        dataset_id: defaultBfDatasetId,
+      }
+    );
+
     $(bfCurrentDatasetStatusProgress).css("visibility", "hidden");
     $("#bf-dataset-status-spinner").css("display", "none");
 
@@ -3195,6 +3422,18 @@ $("#bf_list_dataset_status").on("change", async () => {
       "Error",
       ManageDatasetsAnalyticsPrefix.MANAGE_DATASETS_CHANGE_STATUS,
       defaultBfDatasetId
+    );
+
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.MANAGE_DATASETS,
+      kombuchaEnums.Action.ADD_EDIT_DATASET_METADATA,
+      kombuchaEnums.Label.STATUS,
+      kombuchaEnums.Status.FAIL,
+      {
+        value: selectedStatusOption,
+        dataset_id: defaultBfDatasetId,
+      }
     );
 
     var emessage = userErrorMessage(error);

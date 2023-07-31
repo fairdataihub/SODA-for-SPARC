@@ -17,6 +17,7 @@ const { resolve } = require("path");
 const axios = require("axios");
 const { info } = require("console");
 const { node } = require("prop-types");
+const { kombuchaEnums } = require("./scripts/others/analytics/analytics-enums");
 const uuid = require("uuid").v4;
 
 const sodaVersion = app.getVersion();
@@ -349,6 +350,32 @@ function initialize() {
       }
     });
   });
+
+  app.on("ready", () => {
+    trackKombuchaEvent(
+      kombuchaEnums.Category.STARTUP,
+      kombuchaEnums.Action.APP_LAUNCHED,
+      kombuchaEnums.Label.VERSION,
+      kombuchaEnums.Status.SUCCESS,
+      {
+        value: app.getVersion(),
+      }
+    );
+
+    trackKombuchaEvent(
+      kombuchaEnums.Category.STARTUP,
+      kombuchaEnums.Action.APP_LAUNCHED,
+      kombuchaEnums.Label.OS,
+      kombuchaEnums.Status.SUCCESS,
+      {
+        value: os.platform() + "-" + os.release(),
+      }
+    );
+
+    trackEvent("Success", "App Launched - OS", os.platform() + "-" + os.release());
+    trackEvent("Success", "App Launched - SODA", app.getVersion());
+  });
+
   app.on("window-all-closed", async () => {
     await exitPyProc();
     app.quit();
@@ -409,8 +436,6 @@ ipcMain.on("resize-window", (event, dir) => {
 // Google analytics tracking function
 // To use, category and action is required. Label and value can be left out
 // if not needed. Sample requests from renderer.js is shown below:
-//ipcRenderer.send('track-event', "App Backend", "Python Connection Established");
-//ipcRenderer.send('track-event', "App Backend", "Errors", "server", error);
 ipcMain.on("track-event", (event, category, action, label, value) => {
   // do nothing here for now
 });

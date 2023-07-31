@@ -32,16 +32,22 @@ const Action = {
   IMPORT_METADATA: "Import Metadata",
   VALIDATE_DATASET: "Validate Dataset",
   TEMPLATE_PATHS: "Setting Templates Paths",
+  APP_LAUNCHED: "App Launched",
 };
 
 const Label = {
+  PYTHON_CONNECTION: "Establishing Python Connection",
+  VERSION: "Version",
+  OS: "OS",
   FILES: "Files",
   FOLDERS: "Folders",
   SIZE: "Size",
   BANNER_SIZE: "Banner - Size",
   DESCRIPTION: "Description",
+  COLLECTIONS: "Collection",
   TAGS: "Tags",
-  PERMISSIONS: "Permissions",
+  USER_PERMISSIONS: "User Permissions",
+  TEAM_PERMISSIONS: "Team Permissions",
   README: "README",
   STATUS: "status",
   SUBTITLE: "Subtitle",
@@ -63,6 +69,8 @@ const Label = {
   CHANGES_TXT_SIZE: "CHANGES.txt - Size",
   PROGRESS_TRACK: "Progress Track",
   TOTAL_UPLOADS: "Total Uploads",
+  PI_OWNER: "Change PI Owner",
+  RESERVE_DOI: "Reserve DOI",
 };
 
 const Status = {

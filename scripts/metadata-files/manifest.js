@@ -1,6 +1,6 @@
 const { platform } = require("os");
-
 const { copyFile, readdir } = require("fs").promises;
+const { join } = require("path");
 let openedEdit = false;
 
 // opendropdown event listeners
@@ -16,7 +16,7 @@ document.querySelectorAll(".manifest-change-current-ds").forEach((element) => {
   });
 });
 
-var jstreePreviewManifest = document.getElementById("div-dataset-tree-preview-manifest");
+const jstreePreviewManifest = document.getElementById("div-dataset-tree-preview-manifest");
 
 const guidedJsTreePreviewManifest = document.getElementById(
   "guided-div-dataset-tree-preview-manifest"
@@ -1215,26 +1215,22 @@ const initiate_generate_manifest_bf = async () => {
   generatingBoolean = true;
   // Initiate curation by calling Python function
   let manifest_files_requested = false;
-  var main_curate_status = "Solving";
-  var main_total_generate_dataset_size;
-
-  let dataset_name = "";
-  let dataset_destination = "";
 
   if ("bf-dataset-selected" in sodaJSONObj) {
     dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
     dataset_destination = "Pennsieve";
-  } else if ("generate-dataset" in sodaJSONObj) {
-    if ("destination" in sodaJSONObj["generate-dataset"]) {
-      let destination = sodaJSONObj["generate-dataset"]["destination"];
-      if (destination == "local") {
-        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-        dataset_destination = "Local";
-      }
-      if (destination == "bf") {
-        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-        dataset_destination = "Pennsieve";
-      }
+  } else if (
+    "generate-dataset" in sodaJSONObj &&
+    "destination" in sodaJSONObj["generate-dataset"]
+  ) {
+    let destination = sodaJSONObj["generate-dataset"]["destination"];
+    if (destination == "local") {
+      dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+      dataset_destination = "Local";
+    }
+    if (destination == "bf") {
+      dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+      dataset_destination = "Pennsieve";
     }
   }
 
@@ -1289,10 +1285,11 @@ const initiate_generate_manifest_bf = async () => {
     // determine if working with a Local dataset or Pennsieve
     if ("bf-dataset-selected" in sodaJSONObj) {
       destination = "Pennsieve";
-    } else if ("generate-dataset" in sodaJSONObj) {
-      if ("destination" in sodaJSONObj["generate-dataset"]) {
-        destination = sodaJSONObj["generate-dataset"]["destination"];
-      }
+    } else if (
+      "generate-dataset" in sodaJSONObj &&
+      "destination" in sodaJSONObj["generate-dataset"]
+    ) {
+      destination = sodaJSONObj["generate-dataset"]["destination"];
     }
 
     // log the error to analytics
@@ -1310,22 +1307,34 @@ const initiate_generate_manifest_bf = async () => {
   let res = curationResponse.data;
 
   let high_level_folder_num = 0;
-  if (manifest_files_requested) {
-    if ("dataset-structure" in sodaJSONObj) {
-      if ("folders" in sodaJSONObj["dataset-structure"]) {
-        for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
-          high_level_folder_num += 1;
-        }
-      }
+  if (
+    manifest_files_requested &&
+    "dataset-structure" in sodaJSONObj &&
+    "folders" in sodaJSONObj["dataset-structure"]
+  ) {
+    for (folder in sodaJSONObj["dataset-structure"]["folders"]) {
+      high_level_folder_num += 1;
     }
   }
+
   // determine if working with a Local dataset or Pennsieve
   if ("bf-dataset-selected" in sodaJSONObj) {
     destination = "Pennsieve";
-  } else if ("generate-dataset" in sodaJSONObj) {
-    if ("destination" in sodaJSONObj["generate-dataset"]) {
-      destination = sodaJSONObj["generate-dataset"]["destination"];
-    }
+  } else if (
+    "generate-dataset" in sodaJSONObj &&
+    "destination" in sodaJSONObj["generate-dataset"]
+  ) {
+    destination = sodaJSONObj["generate-dataset"]["destination"];
+  }
+
+  // Verify the origin of dataset for kombucha tracking
+  let origin = "";
+  if ("local-path" in sodaJSONObj["starting-point"]) {
+    origin = "Local";
+  }
+
+  if ("bf" in sodaJSONObj["starting-point"]["type"]) {
+    origin = "Pennsieve";
   }
 
   // log the manifest file creation to analytics
@@ -1346,7 +1355,21 @@ const initiate_generate_manifest_bf = async () => {
     high_level_folder_num
   );
 
-  logMetadataSizeForAnalytics(destination === "Pennsieve" ? true : false, "manifest.xlsx", res[1]);
+  ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.PREPARE_METADATA,
+    kombuchaEnums.Action.GENERATE_METADATA,
+    kombuchaEnums.Label.FILES,
+    kombuchaEnums.Status.SUCCESS,
+    {
+      value: high_level_folder_num,
+      dataset_id: defaultBfDatasetId,
+      origin: origin,
+      destination: destination,
+    }
+  );
+
+  logMetadataSizeForAnalytics(!!(destination === "Pennsieve"), "manifest.xlsx", res[1]);
 
   sodaJSONObj = {
     "starting-point": { type: "" },
