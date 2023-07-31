@@ -14,7 +14,7 @@ const localKombuchaURL = "http://localhost:3000/api/";
 
 // Create an axios instance for the kombucha server
 const kombuchaServer = axios.create({
-  baseURL: localKombuchaURL,
+  baseURL: kombuchaURL,
   timeout: 0,
 });
 
