@@ -8,6 +8,8 @@ import sys
 try:
     import ssl
     print("ssl version: ", ssl.OPENSSL_VERSION)
+    print("SSL:")
+    print(ssl)
     # print the path that ssl is using
     print("ssl module file: ", ssl.__file__)
     # print everything about ssl
