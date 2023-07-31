@@ -222,7 +222,7 @@ const sendUserAnalytics = () => {
         // Save the user token from the server
         nodeStorage.setItem("kombuchaToken", res.data.token);
         nodeStorage.setItem("userId", res.data.uid);
-        nodeStorage.setItem("kombuchaUserCreated", true);
+        // nodeStorage.setItem("kombuchaUserCreated", true);
       })
       .catch((err) => {
         console.error(err);
