@@ -142,15 +142,36 @@ const startOrStopAnimationsInContainer = (containerId, startOrStop) => {
 const guidedLicenseOptions = [
   {
     licenseName: "Creative Commons Attribution",
-    licenseDescription: "CC BY",
+    licenseDescription: "This license ....",
+    datasetTypes: ["experimental"],
   },
   {
-    licenseName: "Creative Commons Attribution",
-    licenseDescription: "CC BY",
+    licenseName: "MIT",
+    licenseDescription: "This license .... blah blah",
+    datasetTypes: ["computational"],
   },
   {
-    licenseName: "Creative Commons Attribution",
-    licenseDescription: "CC BY",
+    licenseName: "GNU General Public License v3.0",
+    licenseDescription: "This license .... blah blah",
+    datasetTypes: ["computational"],
+  },
+  {
+    licenseName: "Dummy license 1",
+    licenseDescription:
+      "This license .... blah blah and now the text is getting longer i guess this text should only take up a finite amount of characters but like you never really know how long a description should be so we're just going to test a long description here and see how it looks on the page.",
+    datasetTypes: ["computational", "experimental"],
+  },
+  {
+    licenseName: "Dummy license 2",
+    licenseDescription:
+      "This license .... blah blah and now the text is getting longer i guess this text should only take up a finite amount of characters but like you never really know how long a description should be so we're just going to test a long description here and see how it looks on the page.",
+    datasetTypes: ["computational", "experimental"],
+  },
+  {
+    licenseName: "Dummy license 3fg",
+    licenseDescription:
+      "This license .... blah blah and now the text is getting longer i guess this text should only take up a finite amount of characters but like you never really know how long a description should be so we're just going to test a long description here and see how it looks on the page.",
+    datasetTypes: ["computational", "experimental"],
   },
 ];
 
@@ -6094,6 +6115,32 @@ const openPage = async (targetPageID) => {
         }
       }
       const datasetType = guidedGetDatasetType();
+
+      console.log("datasetType: ", datasetType);
+
+      const selectableLicenses = guidedLicenseOptions.filter((license) => {
+        return license.datasetTypes.includes(datasetType);
+      });
+
+      console.log("selectableLicenses: ", selectableLicenses);
+
+      const licenseRadioButtonContainer = document.getElementById(
+        "guided-license-radio-button-container"
+      );
+      const licenseRadioButtonElements = selectableLicenses
+        .map((license) => {
+          return `
+              <label for="guided-license-radio-button-${license.licenseName}" class="guided--container-license-radio-button">
+                <input type="radio" id="guided-license-radio-button-${license.licenseName}" name="guided-license-radio-button" value="${license.licenseName}" />
+                <span class="guided-license-radio-button-text">${license.licenseName}</span>
+                <span class="guided-license-radio-button-text">${license.licenseName}</span>
+              </label>
+          `;
+        })
+        .join("\n");
+      licenseRadioButtonContainer.innerHTML = licenseRadioButtonElements;
+      //document.querySelector('input[name="guided-license-radio-button"]:checked'); TO GET THE SELECTED RADIO BUTTON
+      console.log("selectableLicenses: ", selectableLicenses);
       // If the dataset is experimental, the license is always CC-BY
       if (datasetType === "experimental") {
         const licenseCheckbox = document.getElementById("guided-license-checkbox");
