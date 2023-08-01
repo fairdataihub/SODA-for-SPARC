@@ -8,20 +8,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## v.12.2.0 - 2023-08-01
 
 ## Feature Additions:
-- Windows builds are created with the ASAR flag set to true. This allows
-for the application to be packaged as a single file. This will speed up
-the installation process for Windows users.
-- Analytics for SODA have been converted to Kombucha. Fully replacing 
-Google Analytics.
-- usersCreated field added to the Kombucha User ID. This will allow us to
-track when a new user is created in SODA.
 
+- Windows builds are created with the ASAR flag set to true. This allows
+  for the application to be packaged as a single file. This will speed up
+  the installation process for Windows users.
+- Analytics for SODA have been converted to Kombucha. Fully replacing
+  Google Analytics.
+- usersCreated field added to the Kombucha User ID. This will allow us to
+  track when a new user is created in SODA.
 
 ## Bug fixes:
-- Showing confirm button for workspace selection in Free Form Mode (Step 6)
-after the first upload.
-- Kombucha User ID is being correctly stored in the user's local storage.
 
+- Showing confirm button for workspace selection in Free Form Mode (Step 6)
+  after the first upload.
+- Kombucha User ID is being correctly stored in the user's local storage.
 
 ## v.12.1.1 - 2023-07-25
 
