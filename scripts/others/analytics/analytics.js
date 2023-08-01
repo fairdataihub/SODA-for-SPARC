@@ -79,7 +79,7 @@ const userIdGeneratorForKombucha = async () => {
   let userIdChanged = false;
 
   if (token === null || kombuchaUserCreated === null) {
-  // if (token === null) {
+    // if (token === null) {
     // Set the userIdChanged flag to true so that we can generate a new userId
     userIdChanged = true;
   }

@@ -214,7 +214,7 @@ const sendUserAnalytics = () => {
     userCreated = null;
   }
   if (token === null || userCreated === null) {
-  // if (token === null) {
+    // if (token === null) {
     // send empty object for new users
     kombuchaServer
       .post("meta/users", {})
