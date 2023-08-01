@@ -53,7 +53,13 @@
       ],
       "asar": true,
       "target": "nsis",
-      "icon": "assets/app-icon/win/icon.ico"
+      "icon": "assets/app-icon/win/icon.ico",
+      "extraResources": [
+        {
+          "from": "./file_templates",
+          "to": "./file_templates"
+        }
+      ]
     },
     "mac": {
       "publish": [
