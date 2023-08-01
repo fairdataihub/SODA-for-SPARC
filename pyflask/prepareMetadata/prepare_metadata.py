@@ -69,6 +69,8 @@ def set_template_path(soda_base_path, soda_resources_path):
         # we are in production and we need to use the Resources folder for the file_templates folder
         TEMPLATE_PATH = join(soda_resources_path, "file_templates")
 
+    if not exists(TEMPLATE_PATH):
+        TEMPLATE_PATH = join(soda_base_path, "file_templates")
 
 
 
