@@ -360,7 +360,7 @@ const getCheckedMilestones = () => {
   const checkedMilestones = document.querySelectorAll("input[name='milestone']:checked");
   const checkedMilestonesArray = Array.from(checkedMilestones);
   //get first tr parent for each checkedMilestonesArray element
-  const checkedMilestoneData = checkedMilestonesArray.map((checkMilestone) => {
+  return checkedMilestonesArray.map((checkMilestone) => {
     const tableRow = checkMilestone.parentElement.parentElement.parentElement;
     const description = tableRow.children[1].innerHTML.trim();
     const milestone = tableRow.children[2].innerHTML.trim();
@@ -372,7 +372,6 @@ const getCheckedMilestones = () => {
       completionDate: completionDate,
     };
   });
-  return checkedMilestoneData;
 };
 
 const openDDDimport = async (curationMode) => {
@@ -540,12 +539,7 @@ $("#ffm-select-sparc-funding-consortium").on("change", function (e) {
 
     hideElementsWithClass("non-sparc-funding-consortium-instructions"); // Hide non-SPARC instructions
   } else {
-    // Remove the "required" class from the labels of the required fields
-    requiredFieldsIfSubmissionIsSparc.forEach((label) => {
-      label.classList.remove("required");
-    });
-
-    showElementsWithClass("non-sparc-funding-consortium-instructions"); // Show non-SPARC instructions
+    generateSubmissionButton.classList.remove("hidden"); // Show the button
   }
 
   // Get the container DDD import button element
@@ -639,8 +633,8 @@ $(document).ready(function () {
 //At most the metadata files should be no bigger than 3MB
 //Function checks the selected storage device to ensure at least 3MB are available
 const checkStorage = (id) => {
-  var location = id;
-  var threeMB = 3145728;
+  let location = id;
+  let threeMB = 3145728;
   checkDiskSpace(location).then((diskSpace) => {
     freeMem = diskSpace.free;
     if (freeMem < threeMB) {
@@ -681,6 +675,7 @@ const checkStorage = (id) => {
     );
   });
 };
+
 const localSubmissionBtn = document.getElementById("btn-confirm-local-submission-destination");
 const localDDBtn = document.getElementById("btn-confirm-local-dd-destination");
 const localSubjectsBtn = document.getElementById("btn-confirm-local-subjects-destination");
@@ -860,8 +855,8 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
     }
   }
 
-  client
-    .post(
+  try {
+    res = await client.post(
       `/prepare_metadata/submission_file`,
       {
         submission_file_rows: submissionMetadataArray,
@@ -874,58 +869,74 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
           selected_dataset: datasetName,
         },
       }
-    )
-    .then((res) => {
-      let successMessage = "";
-      if (uploadBFBoolean) {
-        successMessage =
-          "Successfully generated the submission.xlsx file on your Pennsieve dataset.";
-      } else {
-        successMessage =
-          "Successfully generated the submission.xlsx file at the specified location.";
-      }
-      Swal.fire({
-        title: successMessage,
-        icon: "success",
-        heightAuto: false,
-        backdrop: "rgba(0,0,0, 0.4)",
-        confirmButtonText: "Ok",
-        allowOutsideClick: true,
-      });
-
-      logMetadataForAnalytics(
-        "Success",
-        MetadataAnalyticsPrefix.SUBMISSION,
-        AnalyticsGranularity.ALL_LEVELS,
-        "Generate",
-        uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
-      );
-
-      // get the size of the uploaded file from the result
-      const { size } = res.data;
-
-      // log the size of the metadata file that was generated at varying levels of granularity
-      logMetadataSizeForAnalytics(uploadBFBoolean, "submission.xlsx", size);
-    })
-    .catch((error) => {
-      clientError(error);
-      let emessage = userErrorMessage(error);
-      Swal.fire({
-        backdrop: "rgba(0,0,0, 0.4)",
-        heightAuto: false,
-        icon: "error",
-        html: emessage,
-        title: "Failed to generate the submission file",
-      });
-
-      logMetadataForAnalytics(
-        "Error",
-        MetadataAnalyticsPrefix.SUBMISSION,
-        AnalyticsGranularity.ALL_LEVELS,
-        "Generate",
-        uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
-      );
+    );
+  } catch (e) {
+    clientError(error);
+    Swal.fire({
+      backdrop: "rgba(0,0,0, 0.4)",
+      heightAuto: false,
+      icon: "error",
+      html: userErrorMessage(error),
+      title: "Failed to generate the submission file",
     });
+
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.PREPARE_METADATA,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.SUBMISSION_XLSX,
+      kombuchaEnums.Status.FAIL,
+      createEventDataPrepareMetadata(uploadBFBoolean ? "Pennsieve" : "Local", 1)
+    );
+
+    return;
+  }
+
+  Swal.close();
+  let successMessage = "";
+  if (uploadBFBoolean) {
+    successMessage = "Successfully generated the submission.xlsx file on your Pennsieve dataset.";
+  } else {
+    successMessage = "Successfully generated the submission.xlsx file at the specified location.";
+  }
+  Swal.fire({
+    title: successMessage,
+    icon: "success",
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    confirmButtonText: "Ok",
+    allowOutsideClick: true,
+  });
+
+  logMetadataForAnalytics(
+    "Success",
+    MetadataAnalyticsPrefix.SUBMISSION,
+    AnalyticsGranularity.ALL_LEVELS,
+    "Generate",
+    uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+  );
+
+  ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.PREPARE_METADATA,
+    kombuchaEnums.Action.GENERATE_METADATA,
+    kombuchaEnums.Label.SUBMISSION_XLSX,
+    kombuchaEnums.Status.SUCCESS,
+    createEventDataPrepareMetadata(uploadBFBoolean ? "Pennsieve" : "Local", 1)
+  );
+
+  // get the size of the uploaded file from the result
+  const { size } = res.data;
+
+  // log the size of the metadata file that was generated at varying levels of granularity
+  ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.PREPARE_METADATA,
+    kombuchaEnums.Action.GENERATE_METADATA,
+    kombuchaEnums.Label.SUBMISSION_XLSX_SIZE,
+    kombuchaEnums.Status.SUCCESS,
+    createEventDataPrepareMetadata(uploadBFBoolean ? "Pennsieve" : "Local", size)
+  );
 };
 
 $("#submission-completion-date").change(function () {
@@ -987,7 +998,7 @@ $("#cancel-reupload-DDD").click(function () {
 });
 
 // import existing Changes/README file
-function showExistingSubmissionFile(type) {
+const showExistingSubmissionFile = (type) => {
   if (
     $(`#existing-submission-file-destination`).prop("placeholder") !== "Browse here" &&
     $(`#Question-prepare-submission-2`).hasClass("show")
@@ -1016,14 +1027,14 @@ function showExistingSubmissionFile(type) {
   } else {
     ipcRenderer.send(`open-file-dialog-existing-submission`);
   }
-}
+};
 
-function openFileBrowserDestination(metadataType) {
+const openFileBrowserDestination = (metadataType) => {
   ipcRenderer.send(`open-destination-generate-${metadataType}-locally`);
-}
+};
 
-function importExistingSubmissionFile(type) {
-  var filePath = $(`#existing-submission-file-destination`).prop("placeholder");
+const importExistingSubmissionFile = (type) => {
+  let filePath = $(`#existing-submission-file-destination`).prop("placeholder");
   if (filePath === "Browse here") {
     Swal.fire("No file chosen", `Please select a path to your submission.xlsx file`, "error");
 
@@ -1067,10 +1078,10 @@ function importExistingSubmissionFile(type) {
       setTimeout(loadExistingSubmissionFile(filePath), 1000);
     }
   }
-}
+};
 
 // function to load existing submission files
-async function loadExistingSubmissionFile(filepath) {
+const loadExistingSubmissionFile = async (filepath) => {
   log.info(`Loading existing submission file: ${filepath}`);
   try {
     let load_submission_file = await client.get(`/prepare_metadata/submission_file`, {
@@ -1099,9 +1110,9 @@ async function loadExistingSubmissionFile(filepath) {
       Destinations.LOCAL
     );
   }
-}
+};
 
-function loadSubmissionFileToUI(data, type) {
+const loadSubmissionFileToUI = (data, type) => {
   milestoneTagify1.removeAllTags();
   $("#submission-completion-date").val("");
   $("#submission-sparc-award").val("");
@@ -1183,10 +1194,10 @@ function loadSubmissionFileToUI(data, type) {
     $($("#div-check-bf-import-submission button")[0]).hide();
     $("#button-fake-confirm-existing-bf-submission-file-load").click();
   }
-}
+};
 
 // function to check for existing submission file on Penn
-async function checkBFImportSubmission() {
+const checkBFImportSubmission = async () => {
   Swal.fire({
     title: "Importing the submission.xlsx file",
     html: "Please wait...",
@@ -1231,4 +1242,4 @@ async function checkBFImportSubmission() {
       Destinations.PENNSIEVE
     );
   }
-}
+};

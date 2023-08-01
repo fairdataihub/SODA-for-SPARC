@@ -75,9 +75,11 @@ if (dnt) {
 // Generate new userid on a chance basis
 const userIdGeneratorForKombucha = async () => {
   const token = nodeStorage.getItem("kombuchaToken");
+  const kombuchaUserCreated = nodeStorage.getItem("kombuchaUserCreated");
   let userIdChanged = false;
 
-  if (token === null) {
+  if (token === null || kombuchaUserCreated === null) {
+    // if (token === null) {
     // Set the userIdChanged flag to true so that we can generate a new userId
     userIdChanged = true;
   }
@@ -87,7 +89,8 @@ const userIdGeneratorForKombucha = async () => {
       // store and then return the token
       const res = await kombuchaServer.post("meta/users", {});
       nodeStorage.setItem("kombuchaToken", res.data.token);
-      nodeStorage.setItem("userId", res.data.userId);
+      nodeStorage.setItem("userId", res.data.uid);
+      nodeStorage.setItem("kombuchaUserCreated", true);
       return res.data.token;
     } catch (e) {
       console.log(e);
@@ -153,8 +156,6 @@ const trackEvent = (category, action, label, value, datasetID) => {
       el: label,
       ev: value,
     };
-
-    usr.event(googleTrackingEventData).send();
   }
 };
 

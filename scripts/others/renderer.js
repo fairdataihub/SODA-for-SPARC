@@ -43,6 +43,9 @@ const {
   createEventData,
   logSelectedUpdateExistingDatasetOptions,
 } = require("./scripts/others/analytics/curation-analytics");
+const {
+  createEventDataPrepareMetadata,
+} = require("./scripts/others/analytics/prepare-metadata-analytics");
 const { determineDatasetLocation } = require("./scripts/others/analytics/analytics-utils");
 const {
   clientError,
@@ -483,6 +486,16 @@ const startupServerAndApiCheck = async () => {
     // SWAL that the server needs to be restarted for the app to work
     clientError(error);
     ipcRenderer.send("track-event", "Error", "Establishing Python Connection");
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.STARTUP,
+      kombuchaEnums.Action.APP_LAUNCHED,
+      kombuchaEnums.Label.PYTHON_CONNECTION,
+      kombuchaEnums.Status.FAIL,
+      {
+        value: 1,
+      }
+    );
 
     await Swal.fire({
       icon: "error",
@@ -502,6 +515,16 @@ const startupServerAndApiCheck = async () => {
   console.log("Connected to Python back-end successfully");
   log.info("Connected to Python back-end successfully");
   ipcRenderer.send("track-event", "Success", "Establishing Python Connection");
+  ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.STARTUP,
+    kombuchaEnums.Action.APP_LAUNCHED,
+    kombuchaEnums.Label.PYTHON_CONNECTION,
+    kombuchaEnums.Status.SUCCESS,
+    {
+      value: 1,
+    }
+  );
 
   // inform observers that the app is connected to the server
   sodaIsConnected = true;
@@ -1925,17 +1948,30 @@ const generateSubjectsFileHelper = async (uploadBFBoolean) => {
     });
 
     // log the success to Pennsieve
-    logMetadataForAnalytics(
-      "Success",
-      MetadataAnalyticsPrefix.SUBJECTS,
-      AnalyticsGranularity.ALL_LEVELS,
-      "Generate",
-      uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.PREPARE_METADATA,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.SUBJECTS_XLSX,
+      kombuchaEnums.Status.SUCCESS,
+      createEventDataPrepareMetadata(
+        uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL,
+        1
+      )
     );
 
-    // log the size of the metadata file that was generated at varying levels of granularity
     const size = res;
-    logMetadataSizeForAnalytics(uploadBFBoolean, "subjects.xlsx", size);
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.PREPARE_METADATA,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.SUBJECTS_XLSX_SIZE,
+      kombuchaEnums.Status.SUCCESS,
+      createEventDataPrepareMetadata(
+        uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL,
+        size
+      )
+    );
   } catch (error) {
     clientError(error);
     let emessage = userErrorMessage(error);
@@ -1949,12 +1985,16 @@ const generateSubjectsFileHelper = async (uploadBFBoolean) => {
     });
 
     // log the error to analytics
-    logMetadataForAnalytics(
-      "Error",
-      MetadataAnalyticsPrefix.SUBJECTS,
-      AnalyticsGranularity.ALL_LEVELS,
-      "Generate",
-      uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.PREPARE_METADATA,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.SUBJECTS_XLSX,
+      kombuchaEnums.Status.FAIL,
+      createEventDataPrepareMetadata(
+        uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL,
+        1
+      )
     );
   }
 };
@@ -2112,17 +2152,31 @@ const generateSamplesFileHelper = async (uploadBFBoolean) => {
       backdrop: "rgba(0,0,0, 0.4)",
     });
 
-    logMetadataForAnalytics(
-      "Success",
-      MetadataAnalyticsPrefix.SAMPLES,
-      AnalyticsGranularity.ALL_LEVELS,
-      "Generate",
-      uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.PREPARE_METADATA,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.SAMPLES_XLSX,
+      kombuchaEnums.Status.SUCCESS,
+      createEventDataPrepareMetadata(
+        uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL,
+        1
+      )
     );
 
     // log the size of the metadata file that was generated at varying levels of granularity
     const { size } = samplesFileResponse.data;
-    logMetadataSizeForAnalytics(uploadBFBoolean, "samples.xlsx", size);
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.PREPARE_METADATA,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.SAMPLES_XLSX_SIZE,
+      kombuchaEnums.Status.SUCCESS,
+      createEventDataPrepareMetadata(
+        uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL,
+        size
+      )
+    );
   } catch (error) {
     clientError(error);
     var emessage = userErrorMessage(error);
@@ -2134,12 +2188,16 @@ const generateSamplesFileHelper = async (uploadBFBoolean) => {
       icon: "error",
     });
 
-    logMetadataForAnalytics(
-      "Error",
-      MetadataAnalyticsPrefix.SAMPLES,
-      AnalyticsGranularity.ALL_LEVELS,
-      "Generate",
-      uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.PREPARE_METADATA,
+      kombuchaEnums.Action.GENERATE_METADATA,
+      kombuchaEnums.Label.SAMPLES_XLSX,
+      kombuchaEnums.Status.FAIL,
+      createEventDataPrepareMetadata(
+        uploadBFBoolean ? Destinations.PENNSIEVE : Destinations.LOCAL,
+        1
+      )
     );
   }
 };
@@ -3583,11 +3641,16 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
     );
   } catch (error) {
     clientError(error);
-    logGeneralOperationsForAnalytics(
-      "Error",
-      DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
-      AnalyticsGranularity.ALL_LEVELS,
-      ["Submit dataset"]
+    ipcRenderer.send(
+      "track-kombucha",
+      kombuchaEnums.Category.DISSEMINATE_DATASETS,
+      kombuchaEnums.Action.SHARE_WITH_CURATION_TEAM,
+      kombuchaEnums.Label.SUBMISSION,
+      kombuchaEnums.Status.FAIL,
+      {
+        value: 1,
+        dataset_id: defaultBfDatasetId,
+      }
     );
 
     // alert the user of an error
@@ -3615,11 +3678,16 @@ const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
   await showPublishingStatus("noClear", curationMode);
 
   // track success
-  logGeneralOperationsForAnalytics(
-    "Success",
-    DisseminateDatasetsAnalyticsPrefix.DISSEMINATE_REVIEW,
-    AnalyticsGranularity.ALL_LEVELS,
-    ["Submit dataset"]
+  ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.DISSEMINATE_DATASETS,
+    kombuchaEnums.Action.SHARE_WITH_CURATION_TEAM,
+    kombuchaEnums.Label.SUBMISSION,
+    kombuchaEnums.Status.SUCCESS,
+    {
+      value: 1,
+      dataset_id: defaultBfDatasetId,
+    }
   );
 
   // alert the user the submission was successful
@@ -5498,14 +5566,12 @@ const dropHelper = async (
           if (myPath["folders"].hasOwnProperty(originalFolderName) === true) {
             //folder is already imported
             duplicateFolders.push(itemName);
-            console.log(folderPath);
             // folderPath.push(folderPath);
             continue;
           } else {
             if (importedFolders.hasOwnProperty(originalFolderName) === true) {
               //folder is already in to-be-imported list
               duplicateFolders.push(itemName);
-              console.log(folderPath);
               // folderPath.push(folderPath);
               continue;
             } else {
@@ -5799,7 +5865,6 @@ const dropHelper = async (
       loadingContainer.style.display = "none";
       loadingIcon.style.display = "none";
     }
-    console.log("duplicate folders");
     await Swal.fire({
       title: "Duplicate folder(s) detected",
       icon: "warning",
@@ -5849,7 +5914,6 @@ const dropHelper = async (
       loadingContainer.style.display = "none";
       loadingIcon.style.display = "none";
     }
-    console.log("duplicate files popup now");
     await Swal.fire({
       title: "Duplicate file(s) detected",
       icon: "warning",
@@ -9047,13 +9111,32 @@ function logMetadataForAnalytics(
 // Inputs:
 //    uploadBFBoolean: boolean - True when the metadata file was created on Pennsieve; false when the Metadata file was created locally
 //    metadataFileName: string - the name of the metadata file that was created along with its extension
-async function logMetadataSizeForAnalytics(uploadBFBoolean, metadataFileName, size) {
+const logMetadataSizeForAnalytics = async (uploadBFBoolean, metadataFileName, size) => {
+  // get the destination of the metadata file
+  let destination = uploadBFBoolean ? "Pennsieve" : "Local";
+
   ipcRenderer.send(
     "track-event",
     "Success",
     "Prepare Metadata - Generate",
     "Size of Total Metadata Files Generated",
     size
+  );
+
+  // TODO: Dorian -> verify information is correct on the analytics side
+  // TODO: Aaron -> change to Ps and add dataset id field
+  ipcRenderer.send(
+    "track-kombucha",
+    kombuchaEnums.Category.PREPARE_METADATA,
+    kombuchaEnums.Action.GENERATE,
+    kombuchaEnums.Label.SIZE,
+    kombuchaEnums.Status.SUCCESS,
+    {
+      value: size,
+      destination: destination,
+      origin: uploadBFBoolean ? defaultBfDatasetId : "Local",
+      dataset_name: defaultBfDataset,
+    }
   );
 
   let fileNameToPrefixMapping = {
@@ -9083,9 +9166,6 @@ async function logMetadataSizeForAnalytics(uploadBFBoolean, metadataFileName, si
     size
   );
 
-  // get the destination of the metadata file
-  let destination = uploadBFBoolean ? "Pennsieve" : "Local";
-
   // log the size of the metadata file along with its location; label is the selected dataset's ID or a note informing us the dataset is stored locally
   ipcRenderer.send(
     "track-event",
@@ -9094,7 +9174,7 @@ async function logMetadataSizeForAnalytics(uploadBFBoolean, metadataFileName, si
     uploadBFBoolean ? defaultBfDatasetId : "Local",
     size
   );
-}
+};
 
 // get the size of a file in bytes given a path to a file
 const getFileSizeInBytes = (path) => {

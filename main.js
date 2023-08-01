@@ -17,6 +17,7 @@ const { resolve } = require("path");
 const axios = require("axios");
 const { info } = require("console");
 const { node } = require("prop-types");
+const { kombuchaEnums } = require("./scripts/others/analytics/analytics-enums");
 const uuid = require("uuid").v4;
 
 const sodaVersion = app.getVersion();
@@ -201,19 +202,26 @@ const killAllPreviousProcesses = async () => {
 const sendUserAnalytics = () => {
   // Retrieve the userId and if it doesn't exist, create a new uuid
   let token;
+  let userCreated;
   try {
     token = nodeStorage.getItem("kombuchaToken");
   } catch (e) {
     token = null;
   }
-  if (token === null) {
+  try {
+    userCreated = nodeStorage.getItem("kombuchaUserCreated");
+  } catch (e) {
+    userCreated = null;
+  }
+  if (token === null || userCreated === null) {
     // send empty object for new users
     kombuchaServer
       .post("meta/users", {})
       .then((res) => {
         // Save the user token from the server
         nodeStorage.setItem("kombuchaToken", res.data.token);
-        nodeStorage.setItem("userId", res.data.userId);
+        nodeStorage.setItem("userId", res.data.uid);
+        nodeStorage.setItem("kombuchaUserCreated", true);
       })
       .catch((err) => {
         console.error(err);
@@ -349,6 +357,32 @@ function initialize() {
       }
     });
   });
+
+  app.on("ready", () => {
+    trackKombuchaEvent(
+      kombuchaEnums.Category.STARTUP,
+      kombuchaEnums.Action.APP_LAUNCHED,
+      kombuchaEnums.Label.VERSION,
+      kombuchaEnums.Status.SUCCESS,
+      {
+        value: app.getVersion(),
+      }
+    );
+
+    trackKombuchaEvent(
+      kombuchaEnums.Category.STARTUP,
+      kombuchaEnums.Action.APP_LAUNCHED,
+      kombuchaEnums.Label.OS,
+      kombuchaEnums.Status.SUCCESS,
+      {
+        value: os.platform() + "-" + os.release(),
+      }
+    );
+
+    trackEvent("Success", "App Launched - OS", os.platform() + "-" + os.release());
+    trackEvent("Success", "App Launched - SODA", app.getVersion());
+  });
+
   app.on("window-all-closed", async () => {
     await exitPyProc();
     app.quit();
@@ -409,8 +443,6 @@ ipcMain.on("resize-window", (event, dir) => {
 // Google analytics tracking function
 // To use, category and action is required. Label and value can be left out
 // if not needed. Sample requests from renderer.js is shown below:
-//ipcRenderer.send('track-event', "App Backend", "Python Connection Established");
-//ipcRenderer.send('track-event', "App Backend", "Errors", "server", error);
 ipcMain.on("track-event", (event, category, action, label, value) => {
   // do nothing here for now
 });

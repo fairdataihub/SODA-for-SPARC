@@ -4,6 +4,7 @@ channels:
   - conda-forge
 dependencies:
 - python = 3.9.7
+- PyInstaller = 4.7
 - nodejs = 16.14.2
 - pywin32 = 303
 - git = 2.20.1
@@ -33,3 +34,4 @@ dependencies:
   - protobuf == 4.21.12
   - pennsieve2 == 0.1.1
   - jsonschema == 4.17.3
+  - urllib3 

@@ -62,12 +62,15 @@ def set_template_path(soda_base_path, soda_resources_path):
     # it creates an archive that slef extracts to an OS-specific temp directory.
     # Due to this we can no longer use a relative path from the pysoda directory to the file_templates folder.
     # When running in dev mode this also works
-    TEMPLATE_PATH = join(soda_base_path, "file_templates")
+    # TEMPLATE_PATH = join(soda_base_path, "file_templates")
 
     # check if os is Darwin/Linux
-    if platform.system() in ["Darwin", "Linux"] and not exists(TEMPLATE_PATH):
+    if platform.system() in ["Darwin", "Linux", "Windows"] and not exists(TEMPLATE_PATH):
         # we are in production and we need to use the Resources folder for the file_templates folder
         TEMPLATE_PATH = join(soda_resources_path, "file_templates")
+
+    if not exists(TEMPLATE_PATH):
+        TEMPLATE_PATH = join(soda_base_path, "file_templates")
 
 
 
