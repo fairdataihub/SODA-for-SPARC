@@ -20,6 +20,11 @@ const guidedGetDatasetName = (sodaJSON) => {
   return "None";
 };
 
+guidedGetDatasetType = () => {
+  // Returns the dataset type (e.g. "computational" or "experimental")
+  return sodaJSONObj?.["dataset-type"];
+};
+
 const guidedGetDatasetOrigin = (sodaJSON) => {
   let datasetOrigin = sodaJSON?.["generate-dataset"]?.["generate-option"];
   if (datasetOrigin === "existing-bf") {
@@ -133,6 +138,21 @@ const startOrStopAnimationsInContainer = (containerId, startOrStop) => {
     }
   }
 };
+
+const guidedLicenseOptions = [
+  {
+    licenseName: "Creative Commons Attribution",
+    licenseDescription: "CC BY",
+  },
+  {
+    licenseName: "Creative Commons Attribution",
+    licenseDescription: "CC BY",
+  },
+  {
+    licenseName: "Creative Commons Attribution",
+    licenseDescription: "CC BY",
+  },
+];
 
 const hideAndShowElementsDependingOnStartType = (pageElement) => {
   const startingFromPennsieve = sodaJSONObj?.["starting-point"]?.["type"] === "bf";
@@ -1509,9 +1529,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         });
         throw errorArray;
       }
-    }
-
-    if (pageBeingLeftID === "guided-designate-permissions-tab") {
     }
 
     if (pageBeingLeftID === "guided-assign-license-tab") {
@@ -6063,9 +6080,9 @@ const openPage = async (targetPageID) => {
             },
           });
           const license = licenseReq.data.license;
-          if (license === "Creative Commons Attribution") {
-            sodaJSONObj["digital-metadata"]["license"] = "Creative Commons Attribution";
-          }
+          console.log("Setting license as: ", license);
+          sodaJSONObj["digital-metadata"]["license"] = license;
+
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-assign-license-tab");
         } catch (error) {
           clientError(error);
@@ -6076,11 +6093,18 @@ const openPage = async (targetPageID) => {
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-assign-license-tab");
         }
       }
-      const licenseCheckbox = document.getElementById("guided-license-checkbox");
-      if (sodaJSONObj["digital-metadata"]["license"]) {
-        licenseCheckbox.checked = true;
-      } else {
-        licenseCheckbox.checked = false;
+      const datasetType = guidedGetDatasetType();
+      // If the dataset is experimental, the license is always CC-BY
+      if (datasetType === "experimental") {
+        const licenseCheckbox = document.getElementById("guided-license-checkbox");
+        if (sodaJSONObj["digital-metadata"]["license"] === "Creative Commons Attribution") {
+          licenseCheckbox.checked = true;
+        } else {
+          licenseCheckbox.checked = false;
+        }
+      }
+      // If the dataset is computational, the license can be either MIT or GNU
+      if (datasetType === "computational") {
       }
     }
 
@@ -7319,6 +7343,10 @@ const patchPreviousGuidedModeVersions = async () => {
     sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] = "";
   }
 
+  if (!sodaJSONObj["digital-metadata"]?.["license"]) {
+    sodaJSONObj["digital-metadata"]["license"] = "";
+  }
+
   // If no other conditions are met, return the page the user was last on
   return sodaJSONObj["page-before-exit"];
 };
@@ -7561,6 +7589,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["digital-metadata"]["pi-owner"] = {};
   sodaJSONObj["digital-metadata"]["user-permissions"] = [];
   sodaJSONObj["digital-metadata"]["team-permissions"] = [];
+  sodaJSONObj["digital-metadata"]["license"] = "";
   sodaJSONObj["completed-tabs"] = [];
   sodaJSONObj["skipped-pages"] = [];
   sodaJSONObj["last-modified"] = "";
