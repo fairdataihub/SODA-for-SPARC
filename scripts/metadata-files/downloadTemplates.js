@@ -64,7 +64,6 @@ const downloadTemplates = (templateItem, destinationFolder) => {
       return label === templateItem;
     });
 
-
     ipcRenderer.send(
       "track-kombucha",
       kombuchaEnums.Category.PREPARE_METADATA,
