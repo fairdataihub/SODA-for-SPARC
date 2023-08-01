@@ -213,8 +213,8 @@ const sendUserAnalytics = () => {
   } catch (e) {
     userCreated = null;
   }
-  // if (token === null || userCreated === null) {
-  if (token === null) {
+  if (token === null || userCreated === null) {
+  // if (token === null) {
     // send empty object for new users
     kombuchaServer
       .post("meta/users", {})
@@ -222,7 +222,7 @@ const sendUserAnalytics = () => {
         // Save the user token from the server
         nodeStorage.setItem("kombuchaToken", res.data.token);
         nodeStorage.setItem("userId", res.data.uid);
-        // nodeStorage.setItem("kombuchaUserCreated", true);
+        nodeStorage.setItem("kombuchaUserCreated", true);
       })
       .catch((err) => {
         console.error(err);

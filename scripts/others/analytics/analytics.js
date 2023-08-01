@@ -78,8 +78,8 @@ const userIdGeneratorForKombucha = async () => {
   const kombuchaUserCreated = nodeStorage.getItem("kombuchaUserCreated");
   let userIdChanged = false;
 
-  // if (token === null || kombuchaUserCreated === null) {
-  if (token === null) {
+  if (token === null || kombuchaUserCreated === null) {
+  // if (token === null) {
     // Set the userIdChanged flag to true so that we can generate a new userId
     userIdChanged = true;
   }
@@ -90,7 +90,7 @@ const userIdGeneratorForKombucha = async () => {
       const res = await kombuchaServer.post("meta/users", {});
       nodeStorage.setItem("kombuchaToken", res.data.token);
       nodeStorage.setItem("userId", res.data.uid);
-      // nodeStorage.setItem("kombuchaUserCreated", true);
+      nodeStorage.setItem("kombuchaUserCreated", true);
       return res.data.token;
     } catch (e) {
       console.log(e);
