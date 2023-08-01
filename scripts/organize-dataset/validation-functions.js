@@ -4,7 +4,6 @@ const { v4: uuid } = require("uuid");
 // Validate the dataset that has just been organized in Organize Dataset Step 6: Validate Dataset
 // TODO: Pennsieve vs local considerations for result parsing and error handling
 const validateOrganizedDataset = async () => {
-  console.log("testdfading");
   let validationErrorsTable = document.querySelector("#organize--table-validation-errors tbody");
   let datasetOrigin = "";
   let datasetDestination = "";

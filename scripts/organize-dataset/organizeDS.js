@@ -1691,7 +1691,6 @@ const addFilesfunction = async (
         };
       } else {
         //check if file name in key of filesToImport (search for duplicate)
-        console.log(filesToImport);
         if (fileBase in filesToImport) {
           nonAllowedDuplicateFiles.push(filePath);
           nonAllowedDuplicate = true;

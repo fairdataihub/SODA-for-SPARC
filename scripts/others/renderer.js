@@ -5566,14 +5566,12 @@ const dropHelper = async (
           if (myPath["folders"].hasOwnProperty(originalFolderName) === true) {
             //folder is already imported
             duplicateFolders.push(itemName);
-            console.log(folderPath);
             // folderPath.push(folderPath);
             continue;
           } else {
             if (importedFolders.hasOwnProperty(originalFolderName) === true) {
               //folder is already in to-be-imported list
               duplicateFolders.push(itemName);
-              console.log(folderPath);
               // folderPath.push(folderPath);
               continue;
             } else {
@@ -5867,7 +5865,6 @@ const dropHelper = async (
       loadingContainer.style.display = "none";
       loadingIcon.style.display = "none";
     }
-    console.log("duplicate folders");
     await Swal.fire({
       title: "Duplicate folder(s) detected",
       icon: "warning",
@@ -5917,7 +5914,6 @@ const dropHelper = async (
       loadingContainer.style.display = "none";
       loadingIcon.style.display = "none";
     }
-    console.log("duplicate files popup now");
     await Swal.fire({
       title: "Duplicate file(s) detected",
       icon: "warning",
