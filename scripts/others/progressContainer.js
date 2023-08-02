@@ -80,7 +80,7 @@ const updateProgressContainerManifest = (
     right_progress_bar.style.transform = `rotate(${manifestProgressPercentage * 0.01 * 180}deg)`;
   }
 
-  let finished = manifestProgress.finished;
+  let {finished} = manifestProgress;
 
   if (finished) {
     percentage_text.innerText = "100%";
@@ -88,7 +88,9 @@ const updateProgressContainerManifest = (
     right_progress_bar.style.transform = `rotate(180deg)`;
     right_progress_bar.classList.remove("notransition");
 
-    if (!hide) return;
+    if (!hide) {
+      return;
+    }
 
     setTimeout(() => {
       progress_container.style.display = "none";
@@ -119,7 +121,7 @@ const updateProgressContainerPennsieveImport = (
   if (percentage_amount === 0) {
     percentage_amount = 0.0;
   }
-  let finished = pennsieveImportProgress["import_completed_items"];
+  const finished = pennsieveImportProgress["import_completed_items"];
   percentage_text.innerText = percentage_amount + "%";
   if (percentage_amount <= 50) {
     left_progress_bar.style.transform = `rotate(${percentage_amount * 0.01 * 360}deg)`;
@@ -136,7 +138,9 @@ const updateProgressContainerPennsieveImport = (
     right_progress_bar.style.transform = `rotate(180deg)`;
     right_progress_bar.classList.remove("notransition");
 
-    if (!hide) return;
+    if (!hide) {
+      return;
+    }
 
     setTimeout(() => {
       progress_container.style.display = "none";
