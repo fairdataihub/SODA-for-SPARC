@@ -14,8 +14,7 @@ const saveStoredContributors = (contributors) => {
 const loadStoredContributors = () => {
   try {
     const contributorFileData = fs.readFileSync(storedContributorsPath);
-    const arrayOfStoredContributors = JSON.parse(contributorFileData);
-    return arrayOfStoredContributors;
+    return JSON.parse(contributorFileData);
   } catch (err) {
     return [];
   }
@@ -23,7 +22,7 @@ const loadStoredContributors = () => {
 
 // Add a new contributor to the JSON file
 // If a contributor with the same ORCiD already exists, update the existing contributor
-function addOrUpdateStoredContributor(firstName, lastName, ORCiD, affiliationsArray, rolesArray) {
+const addOrUpdateStoredContributor = (firstName, lastName, ORCiD, affiliationsArray, rolesArray) => {
   if (typeof firstName !== "string" || !firstName.length > 0) {
     log.info("Attempted to add contributor with invalid first name");
     return;
