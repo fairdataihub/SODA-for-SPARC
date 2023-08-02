@@ -32,8 +32,7 @@ const doiRegex = require("doi-regex");
 const lottie = require("lottie-web");
 const select2 = require("select2")();
 const DragSort = require("@yaireo/dragsort");
-const spawn = require("child_process").spawn;
-const execFile = require("child_process").execFile;
+const {spawn, execFile} = require("child_process");
 
 // TODO: Test with a build
 const { datasetUploadSession } = require("./scripts/others/analytics/upload-session-tracker");
@@ -63,14 +62,14 @@ const { backOff } = require("exponential-backoff");
 
 // const prevent_sleep_id = "";
 // const electron_app = electron.app;
-const app = remote.app;
+const {app} = remote;
 const Clipboard = electron.clipboard;
 
-var nextBtnDisabledVariable = true;
-var reverseSwalButtons = false;
+let nextBtnDisabledVariable = true;
+let reverseSwalButtons = false;
 let organizeDSglobalPath = "";
 
-var datasetStructureJSONObj = {
+let datasetStructureJSONObj = {
   folders: {},
   files: {},
   type: "",
@@ -115,7 +114,6 @@ console.log("Current SODA version:", appVersion);
 // Here is where the lotties are created and loaded for the main tabs.
 // A mutation observer watches for when the overview tab element has
 // a class change to 'is-shown' to know when to load and unload the lotties
-// let over_view_section = document.getElementById("getting_started-section");
 
 // LOTTIES FOR DOCUMENTATION AND CONTACT US PAGE
 let guidedModeSection = document.getElementById("guided_mode-section");
@@ -128,12 +126,6 @@ let madeWithLoveContainer = document.getElementById("made-with-love-lottie");
 // LOTTIES FOR CURATE AND SHARE PAGE
 let existingDatasetLottieContainer = document.getElementById("existing-dataset-lottie");
 let modifyDatasetLottieContainer = document.getElementById("edit-dataset-component-lottie");
-
-//LOTTIES FOR OVERVIEW PAGE
-// let column1 = document.getElementById("lottie1");
-// let column2 = document.getElementById("lottie2");
-// let column3 = document.getElementById("lottie3");
-// let heart_lottie = document.getElementById("heart_lottie");
 
 existingDatasetLottieContainer.innerHTML = "";
 modifyDatasetLottieContainer.innerHTML = "";
@@ -178,40 +170,11 @@ let documentation_lottie = lottie.loadAnimation({
   autoplay: true,
 });
 
-// var column1_lottie = lottie.loadAnimation({
-//   container: column1,
-//   animationData: column1Lottie /*(json js variable, (view src/assets/lotties)*/,
-//   renderer: "svg",
-//   loop: true /*controls looping*/,
-//   autoplay: true,
-// });
-// var column2_lottie = lottie.loadAnimation({
-//   container: column2,
-//   animationData: column2Lottie /*(json js variable, (view src/assets/lotties)*/,
-//   renderer: "svg",
-//   loop: true /*controls looping*/,
-//   autoplay: true,
-// });
-// var column3_lottie = lottie.loadAnimation({
-//   container: column3,
-//   animationData: column3Lottie,
-//   renderer: "svg",
-//   loop: true,
-//   autoplay: true,
-// });
-// var heart_container = lottie.loadAnimation({
-//   container: heart_lottie,
-//   animationData: heartLottie,
-//   renderer: "svg",
-//   loop: true,
-//   autoplay: true,
-// });
-
 // A mutation observer (watches the classes of the given element)
 // On changes this will do some work with the lotties
-var sectionObserver = new MutationObserver(function (mutations) {
+let sectionObserver = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
-    var attributeValue = $(mutation.target).prop(mutation.attributeName);
+    let attributeValue = $(mutation.target).prop(mutation.attributeName);
 
     if (attributeValue.includes("is-shown") == true) {
       //add lotties
@@ -226,13 +189,9 @@ var sectionObserver = new MutationObserver(function (mutations) {
   });
 });
 
-// contact_lottie_animation.pause();
-// documentation_lottie.pause();
-// contactHeartLottieLottie.pause();
-
-var documentation_lottie_observer = new MutationObserver(function (mutations) {
+let documentation_lottie_observer = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
-    var attributeValue = $(mutation.target).prop(mutation.attributeName);
+    let attributeValue = $(mutation.target).prop(mutation.attributeName);
     if (attributeValue.includes("is-shown") == true) {
       //play lottie
       documentation_lottie.play();
@@ -243,9 +202,9 @@ var documentation_lottie_observer = new MutationObserver(function (mutations) {
   });
 });
 
-var contact_us_lottie_observer = new MutationObserver(function (mutations) {
+let contact_us_lottie_observer = new MutationObserver(function (mutations) {
   mutations.forEach(function (mutation) {
-    var attributeValue = $(mutation.target).prop(mutation.attributeName);
+    let attributeValue = $(mutation.target).prop(mutation.attributeName);
     if (attributeValue.includes("is-shown") == true) {
       //play lottie
       contact_lottie_animation.play();
@@ -1095,7 +1054,7 @@ const serverIsLiveStartup = async () => {
 
   let echoResponse = echoResponseObject.data;
 
-  return echoResponse === "server ready" ? true : false;
+  return !!(echoResponse === "server ready")
 };
 
 // Check if the Pysoda server API version and the package.json versions match
@@ -1450,11 +1409,11 @@ const menuHighLevelFolders = document.querySelector(".menu.high-level-folder");
 const organizeNextStepBtn = document.getElementById("button-organize-confirm-create");
 const organizePrevStepBtn = document.getElementById("button-organize-prev");
 const manifestFileCheck = document.getElementById("generate-manifest-curate");
-var bfAccountOptions;
-var defaultBfAccount;
-var defaultBfDataset = "Select dataset";
-var defaultBfDatasetId = undefined;
-var bfAccountOptionsStatus;
+let bfAccountOptions;
+let defaultBfAccount;
+let defaultBfDataset = "Select dataset";
+let defaultBfDatasetId = undefined;
+let bfAccountOptionsStatus;
 
 // Organize dataset //
 const selectImportFileOrganizationBtn = document.getElementById(
@@ -1474,7 +1433,6 @@ const validateLocalProgressBar = document.getElementById("div-indetermiate-bar-v
 const validateSODAProgressBar = document.getElementById("div-indetermiate-bar-validate-soda");
 
 // Generate dataset //
-
 var subjectsTableData = [];
 var samplesTableData = [];
 
@@ -1482,11 +1440,11 @@ const newDatasetName = document.querySelector("#new-dataset-name");
 const manifestStatus = document.querySelector("#generate-manifest");
 
 // Manage datasets //
-var myitem;
-var datasetList = [];
-var organizationList = [];
-var sodaCopy = {};
-var datasetStructCopy = {};
+let myitem;
+let datasetList = [];
+let organizationList = [];
+let sodaCopy = {};
+let datasetStructCopy = {};
 const bfUploadRefreshDatasetBtn = document.getElementById("button-upload-refresh-dataset-list");
 
 const pathSubmitDataset = document.querySelector("#selected-local-dataset-submit");
@@ -1554,7 +1512,7 @@ const delayAnimation = 250;
 //////////////////////////////////
 
 // Sidebar Navigation //
-var open = false;
+let open = false;
 const openSidebar = (buttonElement) => {
   if (!open) {
     ipcRenderer.send("resize-window", "up");
@@ -1595,20 +1553,20 @@ dragselect_area.subscribe("dragstart", ({ items, event, isDragging }) => {
 ///// Global variables for this section
 
 /////// Save and load award and milestone info
-var metadataPath = path.join(homeDirectory, "SODA", "METADATA");
-var awardFileName = "awards.json";
-var affiliationFileName = "affiliations.json";
-var milestoneFileName = "milestones.json";
-var protocolConfigFileName = "protocol-config.json";
-var affiliationConfigPath = path.join(metadataPath, affiliationFileName);
-var milestonePath = path.join(metadataPath, milestoneFileName);
-var progressFilePath = path.join(homeDirectory, "SODA", "Progress");
-var guidedProgressFilePath = path.join(homeDirectory, "SODA", "Guided-Progress");
+let metadataPath = path.join(homeDirectory, "SODA", "METADATA");
+let awardFileName = "awards.json";
+let affiliationFileName = "affiliations.json";
+let milestoneFileName = "milestones.json";
+let protocolConfigFileName = "protocol-config.json";
+let affiliationConfigPath = path.join(metadataPath, affiliationFileName);
+let milestonePath = path.join(metadataPath, milestoneFileName);
+let progressFilePath = path.join(homeDirectory, "SODA", "Progress");
+let guidedProgressFilePath = path.join(homeDirectory, "SODA", "Guided-Progress");
 const guidedManifestFilePath = path.join(homeDirectory, "SODA", "guided_manifest_files");
-var protocolConfigPath = path.join(metadataPath, protocolConfigFileName);
-var allCollectionTags = {};
-var currentTags = {};
-var currentCollectionTags = [];
+let protocolConfigPath = path.join(metadataPath, protocolConfigFileName);
+let allCollectionTags = {};
+let currentTags = {};
+let currentCollectionTags = [];
 
 if (process.platform === "linux") {
   //check if data exists inside of the Soda folder, and if it does, move it into the capitalized SODA folder
