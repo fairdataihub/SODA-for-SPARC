@@ -57,6 +57,7 @@ const userErrorMessage = (error) => {
     errorMessage = error.message;
   }
 
+  // If the error message contains a 423, it means the dataset is locked.
   if (errorMessage.includes("423")) {
     errorMessage = `Your dataset is locked. If you would like to make changes to this dataset, please reach out to the SPARC Curation Team at <a href="mailto:curation@sparc.science" target="_blank">curation@sparc.science.</a>`;
   }
