@@ -1553,15 +1553,21 @@ const savePageChanges = async (pageBeingLeftID) => {
     }
 
     if (pageBeingLeftID === "guided-assign-license-tab") {
-      const licenseCheckbox = document.getElementById("guided-license-checkbox");
-      if (!licenseCheckbox.checked) {
+      const licenseRadioButtonContainer = document.getElementById(
+        "guided-license-radio-button-container"
+      );
+      // Get the button that contains the class selected
+      const selectedLicenseButton =
+        licenseRadioButtonContainer.getElementsByClassName("selected")[0];
+      if (!selectedLicenseButton) {
         errorArray.push({
           type: "notyf",
-          message: "Please accept the application of the CC-BY license to your dataset.",
+          message: "Please select a license",
         });
         throw errorArray;
       }
-      setGuidedLicense("Creative Commons Attribution (CC-BY)");
+      const selectedLicense = selectedLicenseButton.dataset.value;
+      sodaJSONObj["digital-metadata"]["license"] = selectedLicense;
     }
     /*
     if (pageBeingLeftID === "guided-dataset-generate-location-tab") {
@@ -6114,44 +6120,57 @@ const openPage = async (targetPageID) => {
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-assign-license-tab");
         }
       }
+      // Get the selected dataset type ("computational" or "experimental")
       const datasetType = guidedGetDatasetType();
 
-      console.log("datasetType: ", datasetType);
-
+      // Get the license options that are applicable for the selected dataset type
       const selectableLicenses = guidedLicenseOptions.filter((license) => {
         return license.datasetTypes.includes(datasetType);
       });
 
-      console.log("selectableLicenses: ", selectableLicenses);
-
+      // Render the license radio buttons
       const licenseRadioButtonContainer = document.getElementById(
         "guided-license-radio-button-container"
       );
       const licenseRadioButtonElements = selectableLicenses
         .map((license) => {
           return `
-              <label for="guided-license-radio-button-${license.licenseName}" class="guided--container-license-radio-button">
-                <input type="radio" id="guided-license-radio-button-${license.licenseName}" name="guided-license-radio-button" value="${license.licenseName}" />
-                <span class="guided-license-radio-button-text">${license.licenseName}</span>
-                <span class="guided-license-radio-button-text">${license.licenseName}</span>
-              </label>
-          `;
+          <button class="guided--simple-radio-button" data-value="${license.licenseName}">
+            <p class="help-text"><b>${license.licenseName}</b></p>
+            <p class="help-text">${license.licenseDescription}</p>
+          </button>
+        `;
         })
         .join("\n");
       licenseRadioButtonContainer.innerHTML = licenseRadioButtonElements;
-      //document.querySelector('input[name="guided-license-radio-button"]:checked'); TO GET THE SELECTED RADIO BUTTON
-      console.log("selectableLicenses: ", selectableLicenses);
-      // If the dataset is experimental, the license is always CC-BY
-      if (datasetType === "experimental") {
-        const licenseCheckbox = document.getElementById("guided-license-checkbox");
-        if (sodaJSONObj["digital-metadata"]["license"] === "Creative Commons Attribution") {
-          licenseCheckbox.checked = true;
-        } else {
-          licenseCheckbox.checked = false;
-        }
-      }
-      // If the dataset is computational, the license can be either MIT or GNU
-      if (datasetType === "computational") {
+
+      // Add event listeners to the license radio buttons that add the selected class to the clicked button
+      // and deselects all other buttons
+      document.querySelectorAll(".guided--simple-radio-button").forEach((button) => {
+        button.addEventListener("click", (event) => {
+          const licenseName = button.dataset.value;
+          console.log("licenseName: ", licenseName);
+
+          // Remove selected class from all radio buttons
+          licenseRadioButtonContainer
+            .querySelectorAll(".guided--simple-radio-button")
+            .forEach((button) => {
+              button.classList.remove("selected");
+            });
+
+          // Add selected class to the clicked radio button
+          button.classList.add("selected");
+        });
+      });
+
+      // If a license has already been selected, select the corresponding radio button
+      const selectedLicense = sodaJSONObj["digital-metadata"]["license"];
+      if (selectedLicense) {
+        console.log("Setting already selected license: ", selectedLicense);
+        const selectedLicenseRadioButton = licenseRadioButtonContainer.querySelector(
+          `[data-value="${selectedLicense}"]`
+        );
+        selectedLicenseRadioButton.click();
       }
     }
 
