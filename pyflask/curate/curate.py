@@ -1875,6 +1875,7 @@ current_files_in_subscriber_session = 0
 bytes_uploaded_per_file = {}
 total_bytes_uploaded = {"value": 0}
 current_files_in_subscriber_session = 0
+# This is the main function to upload to a new Pennsieve dataset
 def ps_upload_to_dataset(soda_json_structure, ps, ds):
     global namespace_logger
 
@@ -2759,7 +2760,7 @@ def main_curate_function(soda_json_structure):
 
     namespace_logger.info("main_curate_function step 1")
 
-    # 1.1. Check that the local destination is valid if generate dataset locally is requested
+    # 1.1. If the dataset is being generated locally then check that the local destination is valid
     if "generate-dataset" in main_keys and soda_json_structure["generate-dataset"]["destination"] == "local":
         main_curate_progress_message = "Checking that the local destination selected for generating your dataset is valid"
         generate_dataset = soda_json_structure["generate-dataset"]
@@ -2776,7 +2777,7 @@ def main_curate_function(soda_json_structure):
 
     namespace_logger.info("main_curate_function step 1.2")
     
-    # 1.2. Check that the bf destination is valid if generate on bf, or any other bf actions are requested
+    # 1.2. If generating dataset to Pennsieve or any other Pennsieve actions are requested check that the destination is valid
     if "bf-account-selected" in soda_json_structure:
         # check that the Pennsieve account is valid
         try:
@@ -2842,13 +2843,12 @@ def main_curate_function(soda_json_structure):
             if not soda_json_structure["dataset-structure"]["folders"] and "metadata-files" not in soda_json_structure:
                 main_curate_status = "Done"
                 abort(400, "Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset.")
-
         except Exception as e:
             main_curate_status = "Done"
             raise e
         
         namespace_logger.info("main_curate_function step 1.3.2")
-        # Check that bf files/folders exist
+        # Check that bf files/folders exist (Only used for when generating from an existing Pennsieve dataset)
         generate_option = soda_json_structure["generate-dataset"]["generate-option"]
         if generate_option == "existing-bf":
             try:
