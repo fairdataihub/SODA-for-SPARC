@@ -640,7 +640,7 @@ const addPermissionUser = async (
     );
   } catch (error) {
     clientError(error);
-    
+
     Swal.fire({
       title: "Failed to change permission!",
       text: userErrorMessage(error),
@@ -837,7 +837,7 @@ $("#button-add-permission-team").click(async () => {
       showCurrentPermission();
     } catch (error) {
       clientError(error);
-      
+
       Swal.fire({
         title: "Failed to change permission",
         text: userErrorMessage(error),
@@ -934,7 +934,9 @@ $("#button-add-subtitle").click(async () => {
         backdrop: "rgba(0,0,0, 0.4)",
       }).then(
         //check if subtitle text is empty and set Add/Edit button appropriately
-        $("#bf-dataset-subtitle").val() ? $("#button-add-subtitle").html("Edit subtitle") : $("#button-add-subtitle").html("Add subtitle")
+        $("#bf-dataset-subtitle").val()
+          ? $("#button-add-subtitle").html("Edit subtitle")
+          : $("#button-add-subtitle").html("Add subtitle")
       );
 
       ipcRenderer.send(

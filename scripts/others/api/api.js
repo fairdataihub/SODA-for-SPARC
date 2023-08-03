@@ -130,9 +130,7 @@ const getDatasetMetadataFiles = async (datasetName) => {
   return metadata_files;
 };
 
-const setDatasetPermissions = async (selected_account, selected_dataset, params) => {
-
-};
+const setDatasetPermissions = async (selected_account, selected_dataset, params) => {};
 
 const getDatasetPermissions = async (selected_account, selected_dataset, boolReturnAll) => {
   let getDatasetPermissionsResponse = await client.get(`/manage_datasets/bf_dataset_permissions`, {
