@@ -110,7 +110,7 @@ const createPyProc = async () => {
   if (require("fs").existsSync(script)) {
     log.info("server exists at specified location");
   } else {
-    log.info("server does not exist at specified location");
+    log.info("server doesn't exist at specified location");
   }
   fp(PORT, PORT + portRange)
     .then(([freePort]) => {
