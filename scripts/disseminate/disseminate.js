@@ -10,7 +10,6 @@ Note: Some frontend elements of the workflow are in the renderer.js file as well
 */
 
 // Helper functions
-// TODO -> Dorian use this $(".spinner.post-curation").show();
 const disseminatePublish = async (curationMode) => {
   if (curationMode === "freeform") {
     $("#prepublishing-submit-btn").disabled = true;
@@ -83,7 +82,6 @@ const disseminatePublish = async (curationMode) => {
 };
 
 const refreshDatasetStatus = async (ev) => {
-  // $(`#${ev.id}`).addClass("fa-spin");
   let account = $("#current-bf-account").text();
   let dataset = $(".bf-dataset-span")
     .html()

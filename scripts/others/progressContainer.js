@@ -80,7 +80,7 @@ const updateProgressContainerManifest = (
     right_progress_bar.style.transform = `rotate(${manifestProgressPercentage * 0.01 * 180}deg)`;
   }
 
-  let {finished} = manifestProgress;
+  let { finished } = manifestProgress;
 
   if (finished) {
     percentage_text.innerText = "100%";

@@ -32,7 +32,7 @@ const doiRegex = require("doi-regex");
 const lottie = require("lottie-web");
 const select2 = require("select2")();
 const DragSort = require("@yaireo/dragsort");
-const {spawn, execFile} = require("child_process");
+const { spawn, execFile } = require("child_process");
 
 // TODO: Test with a build
 const { datasetUploadSession } = require("./scripts/others/analytics/upload-session-tracker");
@@ -62,7 +62,7 @@ const { backOff } = require("exponential-backoff");
 
 // const prevent_sleep_id = "";
 // const electron_app = electron.app;
-const {app} = remote;
+const { app } = remote;
 const Clipboard = electron.clipboard;
 
 let nextBtnDisabledVariable = true;
@@ -1054,7 +1054,7 @@ const serverIsLiveStartup = async () => {
 
   let echoResponse = echoResponseObject.data;
 
-  return !!(echoResponse === "server ready")
+  return !!(echoResponse === "server ready");
 };
 
 // Check if the Pysoda server API version and the package.json versions match

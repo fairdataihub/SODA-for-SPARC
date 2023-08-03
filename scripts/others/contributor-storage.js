@@ -22,7 +22,13 @@ const loadStoredContributors = () => {
 
 // Add a new contributor to the JSON file
 // If a contributor with the same ORCiD already exists, update the existing contributor
-const addOrUpdateStoredContributor = (firstName, lastName, ORCiD, affiliationsArray, rolesArray) => {
+const addOrUpdateStoredContributor = (
+  firstName,
+  lastName,
+  ORCiD,
+  affiliationsArray,
+  rolesArray
+) => {
   if (typeof firstName !== "string" || !firstName.length > 0) {
     log.info("Attempted to add contributor with invalid first name");
     return;
@@ -77,4 +83,4 @@ const addOrUpdateStoredContributor = (firstName, lastName, ORCiD, affiliationsAr
   }
   // Write the updated array to the JSON file
   saveStoredContributors(storedContributorsArray);
-}
+};
