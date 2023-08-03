@@ -1,3 +1,5 @@
+// sourcery skip: merge-nested-ifs
+
 const returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
 };
@@ -142,36 +144,21 @@ const startOrStopAnimationsInContainer = (containerId, startOrStop) => {
 const guidedLicenseOptions = [
   {
     licenseName: "Creative Commons Attribution",
-    licenseDescription: "This license ....",
+    licenseDescription:
+      "A permissive license commonly used for open data collections that allows others to use, modify, and distribute your work provided appropriate credit is given.",
     datasetTypes: ["experimental"],
   },
   {
     licenseName: "MIT",
-    licenseDescription: "This license .... blah blah",
+    licenseDescription:
+      "A permissive license that allows others to use, modify, and distribute your work provided they grant you credit.",
     datasetTypes: ["computational"],
   },
   {
     licenseName: "GNU General Public License v3.0",
-    licenseDescription: "This license .... blah blah",
+    licenseDescription:
+      "A copyleft license that allows others to use, modify, and distribute your work provided they grant you credit and distribute their modifications under the GNU GPL license as well.",
     datasetTypes: ["computational"],
-  },
-  {
-    licenseName: "Dummy license 1",
-    licenseDescription:
-      "This license .... blah blah and now the text is getting longer i guess this text should only take up a finite amount of characters but like you never really know how long a description should be so we're just going to test a long description here and see how it looks on the page.",
-    datasetTypes: ["computational", "experimental"],
-  },
-  {
-    licenseName: "Dummy license 2",
-    licenseDescription:
-      "This license .... blah blah and now the text is getting longer i guess this text should only take up a finite amount of characters but like you never really know how long a description should be so we're just going to test a long description here and see how it looks on the page.",
-    datasetTypes: ["computational", "experimental"],
-  },
-  {
-    licenseName: "Dummy license 3fg",
-    licenseDescription:
-      "This license .... blah blah and now the text is getting longer i guess this text should only take up a finite amount of characters but like you never really know how long a description should be so we're just going to test a long description here and see how it looks on the page.",
-    datasetTypes: ["computational", "experimental"],
   },
 ];
 
@@ -6107,9 +6094,7 @@ const openPage = async (targetPageID) => {
             },
           });
           const license = licenseReq.data.license;
-          console.log("Setting license as: ", license);
           sodaJSONObj["digital-metadata"]["license"] = license;
-
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-assign-license-tab");
         } catch (error) {
           clientError(error);
@@ -6123,12 +6108,29 @@ const openPage = async (targetPageID) => {
       // Get the selected dataset type ("computational" or "experimental")
       const datasetType = guidedGetDatasetType();
 
+      // Update the license select instructions based on the selected dataset type
+      const licenseSelectInstructions = document.getElementById("license-select-text");
+      if (datasetType === "computational") {
+        licenseSelectInstructions.innerHTML = `
+          Select a license for your computational dataset from the options below.
+        `;
+      }
+      if (datasetType === "experimental") {
+        licenseSelectInstructions.innerHTML = `
+          As per SPARC policy, all experimental datasets must be shared under the
+          <b>Creative Commons Attribution (CC-BY)</b> license.
+          <br />
+          <br />
+          Select the button below to consent to sharing your dataset under the Creative Commons Attribution license.
+        `;
+      }
+
       // Get the license options that are applicable for the selected dataset type
       const selectableLicenses = guidedLicenseOptions.filter((license) => {
         return license.datasetTypes.includes(datasetType);
       });
 
-      // Render the license radio buttons
+      // Render the license radio buttons into their container
       const licenseRadioButtonContainer = document.getElementById(
         "guided-license-radio-button-container"
       );
@@ -6136,8 +6138,11 @@ const openPage = async (targetPageID) => {
         .map((license) => {
           return `
           <button class="guided--simple-radio-button" data-value="${license.licenseName}">
-            <p class="help-text"><b>${license.licenseName}</b></p>
-            <p class="help-text">${license.licenseDescription}</p>
+            <input type="radio" name="license" value="${license.licenseName}" style="margin-right: 5px; cursor: pointer; margin-top: 5px;" />
+            <div style=" display: flex; flex-direction: column; align-items: flex-start; flex-grow: 1;">
+              <p class="help-text mb-0"><b>${license.licenseName}</b></p>
+              <p class="guided--text-input-instructions text-left">${license.licenseDescription}</p>
+            </div>
           </button>
         `;
         })
@@ -6147,10 +6152,7 @@ const openPage = async (targetPageID) => {
       // Add event listeners to the license radio buttons that add the selected class to the clicked button
       // and deselects all other buttons
       document.querySelectorAll(".guided--simple-radio-button").forEach((button) => {
-        button.addEventListener("click", (event) => {
-          const licenseName = button.dataset.value;
-          console.log("licenseName: ", licenseName);
-
+        button.addEventListener("click", () => {
           // Remove selected class from all radio buttons
           licenseRadioButtonContainer
             .querySelectorAll(".guided--simple-radio-button")
@@ -6160,17 +6162,20 @@ const openPage = async (targetPageID) => {
 
           // Add selected class to the clicked radio button
           button.classList.add("selected");
+          // Click the radio button input
+          button.querySelector("input").click();
         });
       });
 
-      // If a license has already been selected, select the corresponding radio button
+      // If a license has already been selected, select the corresponding radio button (Only if the license is still selectable)
       const selectedLicense = sodaJSONObj["digital-metadata"]["license"];
       if (selectedLicense) {
-        console.log("Setting already selected license: ", selectedLicense);
         const selectedLicenseRadioButton = licenseRadioButtonContainer.querySelector(
           `[data-value="${selectedLicense}"]`
         );
-        selectedLicenseRadioButton.click();
+        if (selectedLicenseRadioButton) {
+          selectedLicenseRadioButton.click();
+        }
       }
     }
 

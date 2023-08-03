@@ -705,7 +705,6 @@
   opacity: 0.75;
 }
 
-/* Styling for tile buttons when selected/not-selected */
 .guided--radio-button.tile-button.selected {
   border: 1px solid var(--color-light-green);
   box-shadow: 0px 0px 3px 0px var(--color-light-green);
@@ -716,10 +715,10 @@
 .guided--simple-radio-button {
   width: 100%;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: flex-start;
-  padding: 2px 10px;
-  border: none;
+  padding: 10px;
+  border: 1px solid transparent; /* Set a transparent border by default to prevent layout shift */
   border-radius: 5px;
   box-shadow: 0px 0px 10px #d5d5d5;
   margin: 5px 0px;
