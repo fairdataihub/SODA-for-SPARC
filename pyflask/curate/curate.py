@@ -1622,7 +1622,7 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
 
         return
 
-    # Check and create any non existing folders for the file move process
+    # Check and create any non existing folders for the file move process (Used in the recursive_check_moved_files function)
     def recursive_check_and_create_ps_file_path(
         folderpath, index, current_folder_structure
     ):
@@ -1685,6 +1685,7 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
                     "renamed" in folder["files"][item]["action"]
                     and folder["files"][item]["type"] == "bf"
                 ):
+                    # rename the file on Pennsieve
                     r = requests.put(f"{PENNSIEVE_URL}/packages/{folder['files'][item]['path']}?updateStorage=true", json={"name": item}, headers=create_request_headers(ps))
                     r.raise_for_status()
 
@@ -1692,7 +1693,6 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
             recursive_file_rename(folder["folders"][item])
 
         return
-
 
     def recursive_folder_delete(folder):
         """
@@ -1875,7 +1875,7 @@ current_files_in_subscriber_session = 0
 bytes_uploaded_per_file = {}
 total_bytes_uploaded = {"value": 0}
 current_files_in_subscriber_session = 0
-# This is the main function to upload to a new Pennsieve dataset
+
 def ps_upload_to_dataset(soda_json_structure, ps, ds):
     global namespace_logger
 
@@ -1907,12 +1907,10 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
     current_size_of_uploaded_files = 0
 
     try:
-        # Set the Pennsieve Python Client's dataset to the Pennsiee dataset that will be uploaded to.
+        # Set the Pennsieve Python Client's dataset to the Pennsieve dataset that will be uploaded to.
         selected_id = ds["content"]["id"]
         ps.use_dataset(selected_id)
         
-        
-
         def recursive_create_folder_for_ps(
             my_folder, my_tracking_folder, existing_folder_option
         ):
@@ -1987,6 +1985,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                     recursive_create_folder_for_ps(
                         folder, tracking_folder, existing_folder_option
                     )
+        
         def recursive_dataset_scan_for_ps(
             my_folder,
             my_tracking_folder,
@@ -2267,7 +2266,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
         
 
 
-        # main_curate_progress_message = "About to update after doing recursive dataset scan"
         # 3. Add high-level metadata files to a list
         list_upload_metadata_files = []
         if "metadata-files" in soda_json_structure.keys():
@@ -2868,10 +2866,11 @@ def main_curate_function(soda_json_structure):
 
     namespace_logger.info("main_curate_function step 3")
 
-    # 3] Generate
+    # 2] Generate
     if "generate-dataset" in main_keys:
         main_curate_progress_message = "Generating dataset"
         try:
+            # Generate dataset locally
             if soda_json_structure["generate-dataset"]["destination"] == "local":
                 main_generate_destination = soda_json_structure["generate-dataset"][
                     "destination"
@@ -2880,6 +2879,7 @@ def main_curate_function(soda_json_structure):
                     soda_json_structure
                 )
 
+            # Generate dataset to Pennsieve
             if soda_json_structure["generate-dataset"]["destination"] == "bf":
                 main_generate_destination = soda_json_structure["generate-dataset"][
                     "destination"
@@ -2894,6 +2894,7 @@ def main_curate_function(soda_json_structure):
                         selected_dataset_id = ds["content"]["id"]
 
 
+                    print("after ps create new datset", selected_dataset_id)
                     # whether we are generating a new dataset or merging, we want the dataset information for later steps
                     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
                     r.raise_for_status()
@@ -2901,7 +2902,7 @@ def main_curate_function(soda_json_structure):
                     
                     ps_upload_to_dataset(soda_json_structure, ps, myds)
                 if generate_option == "existing-bf":
-
+                    print("existing bf dataset id", selected_dataset_id)
                     # make an api request to pennsieve to get the dataset details
                     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
                     r.raise_for_status()
