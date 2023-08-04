@@ -1796,10 +1796,10 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
     main_curate_progress_message = "Deletion of additional folders complete"
 
     # 7. Rename any Pennsieve folders that are marked as renamed.
-    namespace_logger.info("ps_update_existing_dataset step 7 rename any Pennsieve folders that are marked as renamed")
-    main_curate_progress_message = "Renaming any folders requested by the user"
-    recursive_folder_rename(dataset_structure, "renamed")
-    main_curate_progress_message = "Renamed all folders requested by the user"
+    # namespace_logger.info("ps_update_existing_dataset step 7 rename any Pennsieve folders that are marked as renamed")
+    # main_curate_progress_message = "Renaming any folders requested by the user"
+    # recursive_folder_rename(dataset_structure, "renamed")
+    # main_curate_progress_message = "Renamed all folders requested by the user"
 
     # 8. Delete any metadata files that are marked as deleted.
     namespace_logger.info("ps_update_existing_dataset step 8 delete any metadata files that are marked as deleted")
