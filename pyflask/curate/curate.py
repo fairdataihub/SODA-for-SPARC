@@ -1754,6 +1754,8 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
     main_curate_progress_message = "Folders on Pennsieve have been marked for deletion"
 
     # 2.5 Rename folders that need to be in the final destination.
+    # Function seems to be called twice?
+    # TODO: Dorian -> Why is this function called twice?
     namespace_logger.info("ps_update_existing_dataset step 2.5 rename folders that need to be in the final destination")
     main_curate_progress_message = "Renaming any folders requested by the user"
     recursive_folder_rename(dataset_structure, "renamed")
