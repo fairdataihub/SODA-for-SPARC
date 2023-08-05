@@ -1666,7 +1666,7 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
                     new_folder_id = ""
                     # create the folders if they do not exist
                     new_folder_id = recursive_check_and_create_ps_file_path(
-                        folder["files"][item]["folderpath"].copy(), 0, bfsd
+                        folder["files"][item]["folderpath"].copy(), 0, ps
                     )
                     # move the file into the target folder on Pennsieve
                     r = requests.post(f"{PENNSIEVE_URL}/data/move",  json={"things": [folder["files"][item]["path"]], "destination": new_folder_id}, headers=create_request_headers(ps),)
