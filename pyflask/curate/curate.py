@@ -1626,6 +1626,9 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
     def recursive_check_and_create_ps_file_path(
         folderpath, index, current_folder_structure
     ):
+        namespace_logger.info("Starting recursive_check_and_create_ps_file_path")
+        namespace_logger.info(f"folderpath: {folderpath}")
+        namespace_logger.info(f"current_folder_structure: {current_folder_structure}")
         folder = folderpath[index]
 
         if folder not in current_folder_structure["folders"]:
@@ -1665,9 +1668,12 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
                 ):
                     new_folder_id = ""
                     # create the folders if they do not exist
+                    namespace_logger.info(f"this is the new third parameter for the function: {folder['files'][item]}")
+                    namespace_logger.info(f"item is: {item}")
                     new_folder_id = recursive_check_and_create_ps_file_path(
-                        folder["files"][item]["folderpath"].copy(), 0, ps
+                        folder["files"][item]["folderpath"].copy(), 0, dataset_structure
                     )
+                    namespace_logger.info(f"moving file with this folder is {new_folder_id}")
                     # move the file into the target folder on Pennsieve
                     r = requests.post(f"{PENNSIEVE_URL}/data/move",  json={"things": [folder["files"][item]["path"]], "destination": new_folder_id}, headers=create_request_headers(ps),)
                     r.raise_for_status()
