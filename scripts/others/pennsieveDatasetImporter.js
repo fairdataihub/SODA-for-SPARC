@@ -71,6 +71,8 @@ const bf_request_and_populate_dataset = async (
     trackPennsieveImportProgress(progressContainer, hide);
   }
 
+  console.log(JSON.stringify(sodaJSONObj));
+
   try {
     let filesFoldersResponse = await client.post(
       `/organize_datasets/dataset_files_and_folders`,

@@ -1001,10 +1001,9 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
         r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}", headers=headers)
         r.raise_for_status()
-        subfolder = r.json()
+        subfolder = r.json()["children"]
 
-        folder_items = subfolder["children"]
-        for items in folder_items:
+        for items in subfolder:
             folder_item_name = items["content"]["name"]
             create_soda_json_progress += 1
             item_id = items["content"]["id"]
@@ -1015,42 +1014,46 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                 ):  # manifest files are not being included in json structure
 
                     #verify file name first
-                    if("extension" not in folder_items):
+                    # Doesn't seem necessary
+                    if("extension" not in subfolder):
                         folder_item_name = verify_file_name(folder_item_name, "")
                     else:
-                        folder_item_name = verify_file_name(folder_item_name, folder_items["extension"])
+                        folder_item_name = verify_file_name(folder_item_name, subfolder["extension"])
                         
                     ## verify timestamps
-                    timestamp = items["content"]["createdAt"]
-                    formatted_timestamp = timestamp.replace('.', ',')
+                    timestamp = items["content"]["createdAt"].replace('.', ',')
+                    paths_list = [*subfolder_json["bfpath"]]
                     subfolder_json["files"][folder_item_name] = {
                         "action": ["existing"],
                         "path": item_id,
-                        "bfpath": [],
-                        "timestamp": formatted_timestamp,
+                        "bfpath": paths_list,
+                        "timestamp": timestamp,
                         "type": "bf",
                         "additional-metadata": "",
                         "description": "",
                     }
                     # TODO: Dorian -> Array spread?
-                    for paths in subfolder_json["bfpath"]:
-                        subfolder_json["files"][folder_item_name]["bfpath"].append(paths)
+                    # for paths in subfolder_json["bfpath"]:
+                    #     subfolder_json["files"][folder_item_name]["bfpath"].append(paths)
 
                     
                     # creates path for folder_item_name (stored in temp_name)
                     if len(subfolder_json["files"][folder_item_name]["bfpath"]) > 1:
-                        temp_name = ""
-                        for i in range(
-                            len(subfolder_json["files"][folder_item_name]["bfpath"])
-                        ):
-                            if i == 0:
-                                continue
-                            temp_name += (
-                                subfolder_json["files"][folder_item_name]["bfpath"][i] + "/"
-                            )
-                        temp_name += folder_item_name
+                        temp_name = '/'.join(subfolder_json["files"][folder_item_name]["bfpath"][1:]) + "/" + folder_item_name
+                        # temp_name = ""
+                        # for i in range(
+                        #     len(subfolder_json["files"][folder_item_name]["bfpath"])
+                        # ):
+                        #     if i == 0:
+                        #         continue
+                        #     temp_name += (
+                        #         subfolder_json["files"][folder_item_name]["bfpath"][i] + "/"
+                        #     )
+                        # temp_name += folder_item_name
                     else:
                         temp_name = folder_item_name
+
+                    print(f"temp_name: {temp_name}")
                     
                     if len(manifest.keys()) > 0:
                         # Dictionary that has the required manifest headers in lowercase and without spaces as keys
@@ -1145,17 +1148,18 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                                             subfolder_json["files"][folder_item_name]["extra_columns"][manifestKey] = updated_manifest[manifestKey][location_index]
 
             else:  # another subfolder found
+                paths_list = [*subfolder_json["bfpath"], folder_item_name]
                 subfolder_json["folders"][folder_item_name] = {
                     "action": ["existing"],
                     "path": item_id,
-                    "bfpath": [],
+                    "bfpath": paths_list,
                     "files": {},
                     "folders": {},
                     "type": "bf",
                 }
-                for paths in subfolder_json["bfpath"]:
-                    subfolder_json["folders"][folder_item_name]["bfpath"].append(paths)
-                subfolder_json["folders"][folder_item_name]["bfpath"].append(folder_item_name)
+                # for paths in subfolder_json["bfpath"]:
+                #     subfolder_json["folders"][folder_item_name]["bfpath"].append(paths)
+                # subfolder_json["folders"][folder_item_name]["bfpath"].append(folder_item_name)
 
         if len(subfolder_json["folders"].keys()) != 0:  # there are subfolders
             for folder in subfolder_json["folders"].keys():
@@ -1197,10 +1201,10 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
 
     # root of dataset is pulled here (high level folders/files are gathered here)
-    # root_children is the files and folders within root
+    # root_folder is the files and folders within root
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
     r.raise_for_status()
-    root_children = r.json()["children"]
+    root_folder = r.json()["children"]
 
     # Get the amount of files/folders in the dataset
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/packageTypeCounts", headers=headers)
@@ -1211,10 +1215,9 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     # root's children files
     for count in packages_list.values():
         create_soda_json_total_items += int(count)
-    # root_children = root_folder["children"]
 
     # Go through the content in the root folder
-    for items in root_children:
+    for items in root_folder:
         item_id = items["content"]["id"]
         item_name = items["content"]["name"]
         # If package type is Collection, then it is a folder
@@ -1249,27 +1252,27 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
             r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}", headers=headers)
             r.raise_for_status()
-            subfolder = r.json()
+            subfolder = r.json()["children"]
 
-            children_content = subfolder["children"]
+            # children_content = subfolder["children"]
             manifest_dict[high_lvl_folder] = {}
-            if len(children_content) > 0:
+            if len(subfolder) > 0:
                 # Iterate through folder contents to see if a manifest exists
-                for items in children_content:
+                for items in subfolder:
                     # check subfolders surface to see if manifest files exist to then use within recursive_subfolder_check
                     package_name = items["content"]["name"]
                     package_id = items["content"]["id"]
                     if package_name in manifest_sparc:
                         # item is manifest
                         # TODO: Dorian -> These endpoints might not be needed at all
-                        r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=headers)
-                        r.raise_for_status()
-                        file_details = r.json()
+                        # r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=headers)
+                        # r.raise_for_status()
+                        # file_details = r.json()
 
-                        file_id = file_details[0]["content"]["id"]
+                        # file_id = file_details[0]["content"]["id"]
                         # TODO: Dorian -> Check if this endpoint is needed
-                        r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/files/{file_id}", headers=headers)
-                        r.raise_for_status()
+                        # r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/files/{file_id}", headers=headers)
+                        # r.raise_for_status()
                         # manifest_url = r.json()["url"]
 
                         df = ""
@@ -1282,8 +1285,8 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                                 df = df.fillna("")
 
                             # add manifest information to manifest_dict
-                            namespace_logger.info("Manifest file found")
-                            namespace_logger.info(f"MANIFEST DICT: {df.to_dict()}")
+                            # namespace_logger.info("Manifest file found")
+                            # namespace_logger.info(f"MANIFEST DICT: {df.to_dict()}")
                             manifest_dict[high_lvl_folder].update(df.to_dict())
                         except Exception as e:
                             manifest_error_message.append(
