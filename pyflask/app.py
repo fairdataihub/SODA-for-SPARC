@@ -5,17 +5,6 @@ from flask import Flask, request
 from namespaces import configure_namespaces
 from flask_restx import Resource
 import sys
-try:
-    import ssl
-    print("ssl version: ", ssl.OPENSSL_VERSION)
-    print("SSL:")
-    print(ssl)
-    # print the path that ssl is using
-    print("ssl module file: ", ssl.__file__)
-    # print everything about ssl
-    print("ssl module: ", ssl.__dict__)
-except ImportError as e:
-    print("Failed to import ssl module: ", e)
 
 configure_namespaces()
 
