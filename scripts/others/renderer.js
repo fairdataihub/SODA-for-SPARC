@@ -4830,6 +4830,7 @@ organizeDSaddFiles.addEventListener("click", function () {
 });
 
 ipcRenderer.on("selected-files-organize-datasets", async (event, path) => {
+  console.log("selected files from import files button", path);
   var filtered = getGlobalPath(organizeDSglobalPath);
   var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
   let hidden_files_present = false;
@@ -4898,136 +4899,17 @@ organizeDSaddFolders.addEventListener("click", function () {
   ipcRenderer.send("open-folders-organize-datasets-dialog");
 });
 
-ipcRenderer.on("selected-folders-organize-datasets", async (event, pathElement) => {
+// Event listener for when folder(s) are imported into the file explorer
+ipcRenderer.on("selected-folders-organize-datasets", async (event, importedFolders) => {
+  console.log("selected folders from import folders button", pathElement);
   // var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
   irregularFolderArray = [];
-  var filtered = getGlobalPath(organizeDSglobalPath);
-  var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
-  for (var ele of pathElement) {
-    detectIrregularFolders(path.basename(ele), ele);
-  }
-  if (irregularFolderArray.length > 0) {
-    Swal.fire({
-      title:
-        "As per the SPARC Data Standards, folder names must contain only alphanumeric values 0-9, A-Z (no special characters, no empty spaces). The folders listed below don't comply with these guidlines. What would you like to do?",
-      html:
-        "<div style='max-height:300px; overflow-y:auto'>" +
-        irregularFolderArray.join("</br>") +
-        "</div>",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showDenyButton: true,
-      showCancelButton: true,
-      confirmButtonText: "Replace forbidden characters with '-')",
-      denyButtonText: "Remove forbidden characters",
-      cancelButtonText: "Skip these folders",
-      didOpen: () => {
-        $(".swal-popover").popover();
-        let swalTitle = document.getElementById("swal-title");
-        swalTitle.style.textAlign = "justify";
-        let swalContainer = document.getElementsByClassName("swal2-popup")[0];
-        let swal_content = document.getElementsByClassName("swal2-content")[0];
-        let swalDenyButton = document.getElementsByClassName("swal2-deny")[0];
-        swalContainer.style.width = "600px";
-        // swalContainer.style.padding = "1.5rem";
-        swal_content.style.textAlign = "justify";
-        swalDenyButton.style.backgroundColor = "#086dd3";
-      },
-    }).then(async (result) => {
-      /* Read more about isConfirmed, isDenied below */
-      if (result.isConfirmed) {
-        if (pathElement.length > 0) {
-          let load_spinner_promise = new Promise(async (resolved) => {
-            let background = document.createElement("div");
-            let spinner_container = document.createElement("div");
-            let spinner_icon = document.createElement("div");
-            spinner_container.setAttribute("id", "items_loading_container");
-            spinner_icon.setAttribute("id", "item_load");
-            spinner_icon.setAttribute("class", "ui large active inline loader icon-wrapper");
-            background.setAttribute("class", "loading-items-background");
-            background.setAttribute("id", "loading-items-background-overlay");
+  var filtered = getGlobalPath(organizeDSglobalPath); // ['My_dataset_folder', 'code']
+  console.log("filtered", filtered);
+  var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')
+  console.log("myPath", myPath);
 
-            spinner_container.append(spinner_icon);
-            document.body.prepend(background);
-            document.body.prepend(spinner_container);
-            let loading_items_spinner = document.getElementById("items_loading_container");
-            loading_items_spinner.style.display = "block";
-            if (loading_items_spinner.style.display === "block") {
-              setTimeout(() => {
-                resolved();
-              }, 100);
-            }
-          }).then(async () => {
-            await addFoldersfunction("replace", irregularFolderArray, pathElement, myPath);
-            document.getElementById("loading-items-background-overlay").remove();
-            document.getElementById("items_loading_container").remove();
-          });
-        } else {
-          await addFoldersfunction("replace", irregularFolderArray, pathElement, myPath);
-        }
-      } else if (result.isDenied) {
-        if (pathElement.length > 0) {
-          let load_spinner_promise = new Promise(async (resolved) => {
-            let background = document.createElement("div");
-            let spinner_container = document.createElement("div");
-            let spinner_icon = document.createElement("div");
-            spinner_container.setAttribute("id", "items_loading_container");
-            spinner_icon.setAttribute("id", "item_load");
-            spinner_icon.setAttribute("class", "ui large active inline loader icon-wrapper");
-            background.setAttribute("class", "loading-items-background");
-            background.setAttribute("id", "loading-items-background-overlay");
-
-            spinner_container.append(spinner_icon);
-            document.body.prepend(background);
-            document.body.prepend(spinner_container);
-            let loading_items_spinner = document.getElementById("items_loading_container");
-            loading_items_spinner.style.display = "block";
-            if (loading_items_spinner.style.display === "block") {
-              setTimeout(() => {
-                resolved();
-              }, 100);
-            }
-          }).then(async () => {
-            await addFoldersfunction("remove", irregularFolderArray, pathElement, myPath);
-            document.getElementById("loading-items-background-overlay").remove();
-            document.getElementById("items_loading_container").remove();
-          });
-        } else {
-          await addFoldersfunction("remove", irregularFolderArray, pathElement, myPath);
-        }
-      }
-    });
-  } else {
-    if (pathElement.length > 0) {
-      let load_spinner_promise = new Promise(async (resolved) => {
-        let background = document.createElement("div");
-        let spinner_container = document.createElement("div");
-        let spinner_icon = document.createElement("div");
-        spinner_container.setAttribute("id", "items_loading_container");
-        spinner_icon.setAttribute("id", "item_load");
-        spinner_icon.setAttribute("class", "ui large active inline loader icon-wrapper");
-        background.setAttribute("class", "loading-items-background");
-        background.setAttribute("id", "loading-items-background-overlay");
-
-        spinner_container.append(spinner_icon);
-        document.body.prepend(background);
-        document.body.prepend(spinner_container);
-        let loading_items_spinner = document.getElementById("items_loading_container");
-        loading_items_spinner.style.display = "block";
-        if (loading_items_spinner.style.display === "block") {
-          setTimeout(() => {
-            resolved();
-          }, 100);
-        }
-      }).then(async () => {
-        await addFoldersfunction("", irregularFolderArray, pathElement, myPath);
-        document.getElementById("loading-items-background-overlay").remove();
-        document.getElementById("items_loading_container").remove();
-      });
-    } else {
-      await addFoldersfunction("", irregularFolderArray, pathElement, myPath);
-    }
-  }
+  await addFoldersfunction("", irregularFolderArray, pathElement, myPath);
 });
 
 const addFoldersfunction = async (action, nonallowedFolderArray, folderArray, currentLocation) => {
@@ -5566,12 +5448,14 @@ const dropHelper = async (
           if (myPath["folders"].hasOwnProperty(originalFolderName) === true) {
             //folder is already imported
             duplicateFolders.push(itemName);
+            console.log(folderPath);
             // folderPath.push(folderPath);
             continue;
           } else {
             if (importedFolders.hasOwnProperty(originalFolderName) === true) {
               //folder is already in to-be-imported list
               duplicateFolders.push(itemName);
+              console.log(folderPath);
               // folderPath.push(folderPath);
               continue;
             } else {
@@ -5865,6 +5749,7 @@ const dropHelper = async (
       loadingContainer.style.display = "none";
       loadingIcon.style.display = "none";
     }
+    console.log("duplicate folders");
     await Swal.fire({
       title: "Duplicate folder(s) detected",
       icon: "warning",
@@ -5914,6 +5799,7 @@ const dropHelper = async (
       loadingContainer.style.display = "none";
       loadingIcon.style.display = "none";
     }
+    console.log("duplicate files popup now");
     await Swal.fire({
       title: "Duplicate file(s) detected",
       icon: "warning",
