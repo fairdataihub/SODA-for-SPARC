@@ -17,16 +17,19 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: 3.9
 
       - uses: conda-incubator/setup-miniconda@v2
         with:
+          miniconda-version: "latest"
           activate-environment: env-electron-python
           environment-file: tools/anaconda-env/environment-Windows.yml
+          auto-update-conda: true
           auto-activate-base: false
       - run: |
+          conda activate env-electron-python
           conda info
           conda list
 
@@ -37,9 +40,12 @@ jobs:
       - name: Install package.json modules and their dependencies
         run: npm install --ignore-scripts
 
-      - name: Build and deploy on Windows
+      - name: Build the python server executable
+        run: |
+          npm run python-onefile-build-win
+
+      - name: Deploy the app to GitHub
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          npm run python-onefile-build
           npm run deploy-win

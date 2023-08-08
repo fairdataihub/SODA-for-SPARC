@@ -3,5 +3,5 @@ import os
 def get_api_version():
     """
     Returns the version of the API
-    """ 
-    return {'version': os.getenv('API_VERSION', "12.2.0")}
+    """
+    return {'version': os.getenv('API_VERSION', "12.2.1-beta")}
