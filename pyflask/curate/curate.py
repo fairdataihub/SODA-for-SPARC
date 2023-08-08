@@ -2541,83 +2541,77 @@ def ps_check_dataset_files_validity(soda_json_structure, ps):
     Output:
         error: error message with list of non valid local data files, if any
     """
-    global PENNSIEVE_URL
+    def check_folder_validity(folder_id, folder_dict, folder_path, error):
+        """
+        Function to verify that the subfolders and files specified in the dataset are valid
 
-    def recursive_ps_dataset_check(my_folder, my_relative_path, error):
-        if "folders" in my_folder.keys():
-            for folder_key, folder in my_folder["folders"].items():
-                folder_type = folder["type"]
-                relative_path = my_relative_path + "/" + folder_key
-                if folder_type == "bf":
-                    package_id = folder["path"]
-                    try:
-                        r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=create_request_headers(ps))
-                        r.raise_for_status()
-                    except Exception as e:
-                        error_message = relative_path + " (id: " + package_id + ")"
-                        error.append(error_message)
-                error = recursive_ps_dataset_check(folder, relative_path, error)
-        if "files" in my_folder.keys():
-            for file_key, file in my_folder["files"].items():
+        Args:
+            folder_id: id of the folder in the dataset
+            folder_dict: dict with information about the folder
+            folder_path: path of the folder in the dataset
+            error: error message with list of non valid files/folders, if any
+        Output:
+            error: error message with list of non valid files/folders, if any
+        """
+        global PENNSIEVE_URL
+        # get the folder content through Pennsieve api
+        r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}", headers=create_request_headers(ps))
+        r.raise_for_status()
+        folder_content = r.json()["children"]
+
+        # check that the subfolders and files specified in the dataset are valid
+        if "files" in folder_dict.keys():
+            for file_key, file in folder_dict["files"].items():
                 file_type = file["type"]
+                relative_path = (f"{folder_path}/{file_key}")
                 if file_type == "bf":
-                    package_id = file["path"]
-                    try:
-                        r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=create_request_headers(ps))
-                        r.raise_for_status()
-                    except Exception as e:
-                        relative_path = my_relative_path + "/" + file_key
-                        error_message = relative_path + " (id: " + package_id + ")"
-                        error.append(error_message)
+                    file_id = file["path"]
+                    if next((item for item in folder_content if item["content"]["id"] == file_id), None) is None:
+                        error.append(f"{relative_path} id: {file_id}")
+        
+        if "folders" in folder_dict.keys():
+            for folder_key, folder in folder_dict["folders"].items():
+                folder_type = folder["type"]
+                relative_path = (f"{folder_path}/{folder_key}")
+                if folder_type == "bf":
+                    folder_id = folder["path"]
+                    if next((item for item in folder_content if item["content"]["id"] == folder_id), None) is None:
+                        error.append(f"{relative_path} id: {folder_id}")
+                    else:
+                        check_folder_validity(folder_id, folder, relative_path, error)
+
         return error
 
+    global PENNSIEVE_URL
     error = []
+    # check that the files and folders specified in the dataset are valid
+    dataset_name = soda_json_structure["bf-dataset-selected"]["dataset-name"]
+    dataset_id = get_dataset_id(ps, dataset_name)
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(ps))
+    r.raise_for_status()
+    root_folder = r.json()["children"]
+
     if "dataset-structure" in soda_json_structure.keys():
         dataset_structure = soda_json_structure["dataset-structure"]
         if "folders" in dataset_structure:
-            # check that the given folder ids all represent a valid ps folder + their sub files
             for folder_key, folder in dataset_structure["folders"].items():
                 folder_type = folder["type"]
                 relative_path = folder_key
                 if folder_type == "bf":
-                    package_id = folder["path"]
-                    try:
-                        r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=create_request_headers(ps))
-                        r.raise_for_status()
-                    except Exception as e:
-                        error_message = relative_path + " (id: " + package_id + ")"
-                        error.append(error_message)
-                        pass
-                error = recursive_ps_dataset_check(folder, relative_path, error)
-        if "files" in dataset_structure:
-            # check the file ids at the root of the ds to verify they are valid ps files
-            for file_key, file in dataset_structure["files"].items():
-                file_type = file["type"]
-                if file_type == "bf":
-                    package_id = folder["path"]
-                    try:
-                        r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=create_request_headers(ps))
-                        r.raise_for_status()
-                    except Exception as e:
-                        relative_path = file_key
-                        error_message = relative_path + " (id: " + package_id + ")"
-                        error.append(error_message)
-                        pass
+                    collection_id = folder["path"]
+                    if next((item for item in root_folder if item["content"]["id"] == collection_id), None) is None:
+                        error.append(f"{relative_path} id: {collection_id}")
+                    else:
+                        # recursively check all files + subfolders of collection_id
+                        error = check_folder_validity(collection_id, folder, relative_path, error)
 
-    if "metadata-files" in soda_json_structure:
-        metadata_files = soda_json_structure["metadata-files"]
-        # check that the given file ids for the metadata files all represent an existing ps file
-        for file_key, file in metadata_files.items():
-            file_type = file["type"]
-            if file_type == "bf":
-                package_id = file["path"]
-                try:
-                    r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=create_request_headers(ps))
-                    r.raise_for_status()
-                except Exception as e:
-                    error_message = file_key + " (id: " + package_id + ")"
-                    error.append(error_message)
-                    pass
+    if "metadata-files" in soda_json_structure.keys():
+        # check that the metadata files specified in the dataset are valid
+        for file_key, file in soda_json_structure["metadata-files"].items():
+            if file["type"] == "bf":
+                file_id = file["path"]
+                if next((item for item in root_folder if item["content"]["id"] == file_id), None) is None:
+                    error.append(f"{file_key} id: {file_id}")
 
     if len(error) > 0:
         error_message = [
