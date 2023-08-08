@@ -4901,41 +4901,28 @@ organizeDSaddFolders.addEventListener("click", function () {
 
 // Event listener for when folder(s) are imported into the file explorer
 ipcRenderer.on("selected-folders-organize-datasets", async (event, importedFolders) => {
-  console.log("selected folders from import folders button", pathElement);
-  // var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
-  irregularFolderArray = [];
-  var filtered = getGlobalPath(organizeDSglobalPath); // ['My_dataset_folder', 'code']
-  console.log("filtered", filtered);
-  var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')
-  console.log("myPath", myPath);
+  console.log("selected folders from import folders button", importedFolders);
+  const currentPathArray = getGlobalPath(organizeDSglobalPath); // ['My_dataset_folder', 'code']
+  const currentContentsAtDatasetPath = getRecursivePath(
+    currentPathArray.slice(1),
+    datasetStructureJSONObj
+  ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')
+  console.log("currentContentsAtDatasetPath", currentContentsAtDatasetPath);
 
-  await addFoldersfunction("", irregularFolderArray, pathElement, myPath);
+  await addFoldersfunction(importedFolders, currentContentsAtDatasetPath);
 });
 
-const addFoldersfunction = async (action, nonallowedFolderArray, folderArray, currentLocation) => {
-  let importToast = new Notyf({
-    position: { x: "right", y: "bottom" },
-    ripple: true,
-    dismissible: true,
-    ripple: false,
-    types: [
-      {
-        type: "success",
-        background: "#13716D",
-        icon: {
-          className: "fas fa-check-circle",
-          tagName: "i",
-          color: "white",
-        },
-        duration: 2500,
-      },
-    ],
-  });
-  var uiFolders = {};
-  var importedFolders = {};
-  var duplicateFolders = [];
-  var folderPath = [];
+const addFoldersfunction = async (importedFolders, currentContentsAtDatasetPath) => {
+  const foldersInPath = Object.keys(currentContentsAtDatasetPath["folders"]);
+  const filesInPath = Object.keys(currentContentsAtDatasetPath["files"]);
+  console.log("foldersInPath", foldersInPath);
+  console.log("filesInPath", filesInPath);
 
+  // STEP 1: Check if any of the imported folders are already in the current path
+  const importedFoldersInCurrentPath = importedFolders.filter((folder) =>
+    foldersInPath.includes(folder)
+  );
+  console.log("importedFoldersInCurrentPath", importedFoldersInCurrentPath);
   if (JSON.stringify(currentLocation["folders"]) !== "{}") {
     for (var folder in currentLocation["folders"]) {
       uiFolders[folder] = 1;
