@@ -32,6 +32,8 @@ from openpyxl.styles import PatternFill
 from utils import connect_pennsieve_client, get_dataset_id, create_request_headers, TZLOCAL
 from manifest import create_high_lvl_manifest_files_existing_ps_starting_point, create_high_level_manifest_files, get_auto_generated_manifest_files
 from authentication import get_access_token
+from errorHandlers import raiseUnexpectedPennsieveException
+from werkzeug.exceptions import InternalServerError, ServiceUnavailable
 
 from pysodaUtils import (
     check_forbidden_characters_ps,
@@ -2797,11 +2799,14 @@ def main_curate_function(soda_json_structure):
                 "Checking that the selected Pennsieve dataset is valid"
             )
             bfdataset = soda_json_structure["bf-dataset-selected"]["dataset-name"]
+            # TODO: This is an overwrite case and good for testing out the second bullet point; since this is raising a new error from any error from get_access_token ( improved-ps-500-error-handling)
+            # TODO: Technically this can fail from obsolete keys. So handle that case in the error handling as well as right now we do not. (improved-ps-500-error-handling)
             token = get_access_token()
             selected_dataset_id = get_dataset_id(token, bfdataset)
             
         except Exception as e:
             main_curate_status = "Done"
+            raiseUnexpectedPennsieveException(e)
             abort(400, "Error: Please select a valid Pennsieve dataset")
 
         # check that the user has permissions for uploading and modifying the dataset

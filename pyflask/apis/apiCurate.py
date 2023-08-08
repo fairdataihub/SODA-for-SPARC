@@ -21,6 +21,7 @@ from curate import (
 
 from manifest import create_high_level_manifest_files_existing_local_starting_point
 from errorHandlers.notBadRequestException import notBadRequestException
+from errorHandlers.httpError import httpError
 userpath = expanduser("~")
 
 api = get_namespace(NamespaceEnum.CURATE_DATASETS)
@@ -115,7 +116,8 @@ class Curation(Resource):
         try:
             return main_curate_function(soda_json_structure)
         except Exception as e:
-            if notBadRequestException(e):
+            # if not an HTTP Error then it is an unexpected error and we raise it as a 500
+            if not httpError(e):
                 api.abort(500, str(e))
             raise e
 
