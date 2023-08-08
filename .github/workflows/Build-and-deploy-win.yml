@@ -16,6 +16,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+
       - uses: actions/setup-python@v4
         with:
           python-version: 3.9
@@ -28,7 +29,6 @@ jobs:
           auto-update-conda: true
           auto-activate-base: false
       - run: |
-          conda activate env-electron-python
           conda info
           conda list
 
@@ -41,7 +41,7 @@ jobs:
 
       - name: Build the python server executable
         run: |
-          npm run python-onefile-build
+          npm run python-onefile-build-win
 
       - name: Test the python server executable
         run: |

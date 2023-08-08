@@ -23,8 +23,10 @@ jobs:
 
       - uses: conda-incubator/setup-miniconda@v2
         with:
+          miniconda-version: "latest"
           activate-environment: env-electron-python
           environment-file: tools/anaconda-env/environment-MAC.yml
+          auto-update-conda: true
           auto-activate-base: false
       - run: |
           conda info
@@ -42,11 +44,36 @@ jobs:
           p12-file-base64: ${{ secrets.MACOS_CERTIFICATE }}
           p12-password: ${{ secrets.MACOS_CERTIFICATE_PWD }}
 
-      - name: Build and deploy on MAC
+      - name: Build the python server executable
+        run: |
+          npm run python-onefile-build-unix
+
+      - name: Test the python server executable
+        run: |
+          # Run the executable in the background
+          ./pyflaskdist/app.exe 4242 > server_output.txt 2>&1 &
+
+          # Wait for the server to start
+          sleep 30
+
+          # Display the server output
+          cat server_output.txt
+
+          # Check the server output for the "Running on" line
+          if grep -q "Running on http://127.0.0.1:4242/" server_output.txt; then
+            echo "Server started successfully."
+          else
+            echo "Error: Server failed to start."
+            # You can perform additional error handling or cleanup here if needed
+            # For example, you may want to exit the workflow with an error code
+            exit 1
+          fi
+
+          # Clean up the temporary output file
+          rm server_output.txt
+
+      - name: Deploy the application
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          appleId: ${{ secrets.APPLE_ID }}
-          appleIdPassword: ${{ secrets.APPLE_PASSWORD }}
         run: |
-          npm run python-onefile-build
           npm run deploy-mac
