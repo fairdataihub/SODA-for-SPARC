@@ -29,6 +29,7 @@ jobs:
           auto-update-conda: true
           auto-activate-base: false
       - run: |
+          conda activate env-electron-python
           conda info
           conda list
 

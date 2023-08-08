@@ -29,6 +29,7 @@ jobs:
           auto-update-conda: true
           auto-activate-base: false
       - run: |
+          conda activate env-electron-python
           conda info
           conda list
 
@@ -67,7 +68,7 @@ jobs:
           # Clean up the temporary output file
           rm server_output.txt
 
-      - name: Deploy the application
+      - name: Deploy the app to GitHub
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
