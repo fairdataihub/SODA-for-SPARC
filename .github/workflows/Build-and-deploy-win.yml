@@ -16,11 +16,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@v4
         with:
           python-version: 3.9
-          architecture: x86
 
       - uses: conda-incubator/setup-miniconda@v2
         with:
