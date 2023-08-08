@@ -33,7 +33,6 @@ from utils import connect_pennsieve_client, get_dataset_id, create_request_heade
 from manifest import create_high_lvl_manifest_files_existing_ps_starting_point, create_high_level_manifest_files, get_auto_generated_manifest_files
 from authentication import get_access_token
 from errorHandlers import raiseUnexpectedPennsieveException
-from werkzeug.exceptions import InternalServerError, ServiceUnavailable
 
 from pysodaUtils import (
     check_forbidden_characters_ps,

@@ -9,7 +9,7 @@ def service_is_down(requestsException):
 
 def service_500_error(requestsException):
     # indicates the server is up but the request was not processed correctly
-    return requestsException.response.status_code in [500, 501, 502, 503, 504]
+    return requestsException.response and requestsException.response.statuse_code and requestsException.response.status_code in [500, 501, 502, 503, 504]
 
 
 def raisePennsieveDownError(error):

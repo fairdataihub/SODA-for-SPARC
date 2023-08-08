@@ -6,6 +6,8 @@ from os.path import (
     expanduser,
     join,
 )
+from errorHandlers import raiseUnexpectedPennsieveException
+
 
 from curate import (
     create_folder_level_manifest,
@@ -119,6 +121,8 @@ class Curation(Resource):
             # if not an HTTP Error then it is an unexpected error and we raise it as a 500
             if not httpError(e):
                 api.abort(500, str(e))
+            # if the error is a Pennsieve error of the kind 5xx or a ConnectionError or Timeout then we raise again with a specific error for the client
+            raiseUnexpectedPennsieveException(e)
             raise e
 
 
