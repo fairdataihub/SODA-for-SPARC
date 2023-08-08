@@ -1008,8 +1008,8 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
             folder_item_name = items["content"]["name"]
             create_soda_json_progress += 1
             item_id = items["content"]["id"]
+            # is a file name check if there are additional manifest information to attach to files
             if item_id[2:9] == "package":
-                # is a file name check if there are additional manifest information to attach to files
                 if (
                     folder_item_name[0:8] != "manifest"
                 ):  # manifest files are not being included in json structure
@@ -1032,6 +1032,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         "additional-metadata": "",
                         "description": "",
                     }
+                    # TODO: Dorian -> Array spread?
                     for paths in subfolder_json["bfpath"]:
                         subfolder_json["files"][folder_item_name]["bfpath"].append(paths)
 
@@ -1162,7 +1163,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                 createFolderStructure(subfolder, pennsieve_client_or_token, manifest)
 
     # START
-
     token = get_access_token()
 
     # check that the Pennsieve dataset is valid
@@ -1172,7 +1172,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         raise e
 
     selected_dataset_id = get_dataset_id(token, bf_dataset_name)
-
 
     # check that the user has permission to edit this dataset
     try:
@@ -1197,13 +1196,13 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     headers = create_request_headers(token)
 
 
-    # root of dataset is pulled here
+    # root of dataset is pulled here (high level folders/files are gathered here)
     # root_children is the files and folders within root
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
     r.raise_for_status()
-    root_folder = r.json()
+    root_children = r.json()["children"]
 
-    # root's packages 
+    # Get the amount of files/folders in the dataset
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/packageTypeCounts", headers=headers)
     r.raise_for_status()
     packages_list = r.json()
@@ -1212,14 +1211,15 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     # root's children files
     for count in packages_list.values():
         create_soda_json_total_items += int(count)
-    root_children = root_folder["children"]
+    # root_children = root_folder["children"]
 
+    # Go through the content in the root folder
     for items in root_children:
         item_id = items["content"]["id"]
         item_name = items["content"]["name"]
+        # If package type is Collection, then it is a folder
         if items["content"]["packageType"] == "Collection" and item_name in high_level_sparc_folders:
             create_soda_json_progress += 1
-            # is a SPARC folder and will be checked recursively
             soda_json_structure["dataset-structure"]["folders"][item_name] = {
                 "type": "bf",
                 "path": item_id,
@@ -1229,9 +1229,9 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                 "bfpath": [item_name],
             }
         else:
+            # Item is a metadata file
             if item_name in high_level_metadata_sparc:
                 create_soda_json_progress += 1
-                # is a metadata file
                 if "metadata-files" in soda_json_structure.keys():
                     soda_json_structure["metadata-files"][item_name] = {
                         "type": "bf",
@@ -1241,7 +1241,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
 
     # manifest information is needed so it is looked for before the recursive calls are made
-    if len(soda_json_structure["dataset-structure"]["folders"].keys()) != 0:
+    if len(soda_json_structure["dataset-structure"]["folders"].keys()) != 0:            # there are subfolders is length of high level folders is not 0
         for high_lvl_folder in soda_json_structure["dataset-structure"]["folders"].keys():
             collection_id = soda_json_structure["dataset-structure"]["folders"][high_lvl_folder][
                 "path"
@@ -1254,20 +1254,23 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
             children_content = subfolder["children"]
             manifest_dict[high_lvl_folder] = {}
             if len(children_content) > 0:
+                # Iterate through folder contents to see if a manifest exists
                 for items in children_content:
                     # check subfolders surface to see if manifest files exist to then use within recursive_subfolder_check
                     package_name = items["content"]["name"]
                     package_id = items["content"]["id"]
                     if package_name in manifest_sparc:
                         # item is manifest
+                        # TODO: Dorian -> These endpoints might not be needed at all
                         r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=headers)
                         r.raise_for_status()
                         file_details = r.json()
 
                         file_id = file_details[0]["content"]["id"]
+                        # TODO: Dorian -> Check if this endpoint is needed
                         r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/files/{file_id}", headers=headers)
                         r.raise_for_status()
-                        manifest_url = r.json()["url"]
+                        # manifest_url = r.json()["url"]
 
                         df = ""
                         try:                            
@@ -1277,7 +1280,10 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                             else:
                                 df = load_metadata_to_dataframe(package_id, "csv", token)
                                 df = df.fillna("")
-                            # 
+
+                            # add manifest information to manifest_dict
+                            namespace_logger.info("Manifest file found")
+                            namespace_logger.info(f"MANIFEST DICT: {df.to_dict()}")
                             manifest_dict[high_lvl_folder].update(df.to_dict())
                         except Exception as e:
                             manifest_error_message.append(

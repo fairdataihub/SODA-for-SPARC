@@ -1609,6 +1609,7 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
                 if item in ["manifest.xslx", "manifest.csv"]:
                     continue
                 if "folderpath" not in folder["files"][item]:
+                    namespace_logger.info(f"FOLDERPATH FOR FILE (path[:]) for recursive_item_path_create: {path[:]}")
                     folder["files"][item]["folderpath"] = path[:]
 
         if "folders" in folder.keys():
@@ -1616,6 +1617,7 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
                 if "folderpath" not in folder["folders"][item]:
                     folder["folders"][item]["folderpath"] = path[:]
                     folder["folders"][item]["folderpath"].append(item)
+                namespace_logger.info(f"FOLDERPATH FOR FOLDER (path[:]) for recursive_item_path_create: {folder['folders'][item]['folderpath'][:]}")
                 recursive_item_path_create(
                     folder["folders"][item], folder["folders"][item]["folderpath"][:]
                 )
@@ -1666,14 +1668,11 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
                     "moved" in folder["files"][item]["action"]
                     and folder["files"][item]["type"] == "bf"
                 ):
-                    new_folder_id = ""
                     # create the folders if they do not exist
-                    namespace_logger.info(f"this is the new third parameter for the function: {folder['files'][item]}")
-                    namespace_logger.info(f"item is: {item}")
+                    new_folder_id = ""
                     new_folder_id = recursive_check_and_create_ps_file_path(
                         folder["files"][item]["folderpath"].copy(), 0, dataset_structure
                     )
-                    namespace_logger.info(f"moving file with this folder is {new_folder_id}")
                     # move the file into the target folder on Pennsieve
                     r = requests.post(f"{PENNSIEVE_URL}/data/move",  json={"things": [folder["files"][item]["path"]], "destination": new_folder_id}, headers=create_request_headers(ps),)
                     r.raise_for_status()
@@ -2902,7 +2901,6 @@ def main_curate_function(soda_json_structure):
                         selected_dataset_id = ds["content"]["id"]
 
 
-                    print("after ps create new datset", selected_dataset_id)
                     # whether we are generating a new dataset or merging, we want the dataset information for later steps
                     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
                     r.raise_for_status()
@@ -2910,8 +2908,8 @@ def main_curate_function(soda_json_structure):
                     
                     ps_upload_to_dataset(soda_json_structure, ps, myds)
                 if generate_option == "existing-bf":
-                    print("existing bf dataset id", selected_dataset_id)
                     # make an api request to pennsieve to get the dataset details
+                    namespace_logger.info(f"this is the selected_dataset_id for existing-bf {selected_dataset_id}")
                     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
                     r.raise_for_status()
                     myds = r.json()
