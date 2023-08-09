@@ -2,7 +2,7 @@ from flask_restx import Resource, reqparse
 from namespaces import get_namespace, NamespaceEnum
 
 from users import integrate_orcid_with_pennsieve, get_user, set_preferred_organization, get_user_organizations
-
+from errorHandlers import handle_error
 api = get_namespace(NamespaceEnum.USER)
 
 @api.route("/orcid")
@@ -25,7 +25,7 @@ class Orcid(Resource):
           try:
               return integrate_orcid_with_pennsieve(access_code, pennsieve_account)
           except Exception as e:
-              api.abort(500, str(e))
+              handle_error(e)
 
 
 
@@ -40,7 +40,7 @@ class User(Resource):
         try:
             return get_user()
         except Exception as e:
-            api.abort(500, str(e))
+            handle_error(e)
 
 
     def put(self):
@@ -68,7 +68,7 @@ class PreferredOrganization(Resource):
         try:
             return set_preferred_organization(organization, email, password, account)
         except Exception as e:
-            api.abort(500, str(e))
+            handle_error(e)
 
 
 @api.route('/organizations')
@@ -77,4 +77,4 @@ class Organizations(Resource):
         try:
             return get_user_organizations()
         except Exception as e:
-            api.abort(500, str(e))
+            handle_error(e)
