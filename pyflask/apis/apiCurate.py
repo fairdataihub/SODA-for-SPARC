@@ -6,7 +6,7 @@ from os.path import (
     expanduser,
     join,
 )
-from errorHandlers import raiseUnexpectedPennsieveException
+from errorHandlers import raiseUnexpectedPennsieveException, handle_error
 
 
 from curate import (
@@ -118,12 +118,7 @@ class Curation(Resource):
         try:
             return main_curate_function(soda_json_structure)
         except Exception as e:
-            # if not an HTTP Error then it is an unexpected error and we raise it as a 500
-            if not httpError(e):
-                api.abort(500, str(e))
-            # if the error is a Pennsieve error of the kind 5xx or a ConnectionError or Timeout then we raise again with a specific error for the client
-            raiseUnexpectedPennsieveException(e)
-            raise e
+            handle_error(e)
 
 
 

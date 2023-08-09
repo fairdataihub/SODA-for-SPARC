@@ -5,3 +5,4 @@ from .invalidDataDeliverablesDocument import InvalidDeliverablesDocument
 from .handleHTTPError import handle_http_error
 from .pennsieveUnexpectedError import raiseUnexpectedPennsieveException
 from .httpError import httpError
+from .errorHandler import handle_error

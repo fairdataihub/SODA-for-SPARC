@@ -2719,7 +2719,8 @@ def main_curate_function(soda_json_structure):
 
     namespace_logger.info("Starting main_curate_function")
     namespace_logger.info(f"main_curate_function metadata generate-options={soda_json_structure['generate-dataset']}")
-        
+
+
     global main_curate_status
     global main_curate_progress_message
     global main_total_generate_dataset_size
@@ -2736,6 +2737,7 @@ def main_curate_function(soda_json_structure):
 
     start_generate = 0
     generate_start_time = time.time()
+
 
     # variables for tracking the progress of the curate process on the frontend 
     main_curate_status = ""
