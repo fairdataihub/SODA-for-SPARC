@@ -2923,7 +2923,7 @@ def main_curate_function(soda_json_structure):
     main_curate_status = "Done"
     main_curate_progress_message = "Success: COMPLETED!"
     end = timer()
-    print(f"Time to upload dataset: {timedelta(seconds=end - start)}")
+    namespace_logger.info(f"Time for main_curate_function: {timedelta(seconds=end - start)}")
 
     return {
         "main_curate_progress_message": main_curate_progress_message,
