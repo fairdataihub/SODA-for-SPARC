@@ -2556,8 +2556,17 @@ def ps_check_dataset_files_validity(soda_json_structure, ps):
             for file_key, file in folder_dict["files"].items():
                 file_type = file["type"]
                 relative_path = (f"{folder_path}/{file_key}")
+                # If file is from Pennsieve we verify if file exists on Pennsieve
                 if file_type == "bf":
                     file_id = file["path"]
+                    file_actions = file["action"]
+                    if "moved" in file_actions:
+                        try:
+                            r = requests.get(f"{PENNSIEVE_URL}/packages/{file_id}/view", headers=create_request_headers(ps))
+                            r.raise_for_status()
+                        except Exception as e:
+                            error.append(f"{relative_path} id: {file_id}")
+                        continue
                     if next((item for item in folder_content if item["content"]["id"] == file_id), None) is None:
                         error.append(f"{relative_path} id: {file_id}")
         
@@ -2567,6 +2576,14 @@ def ps_check_dataset_files_validity(soda_json_structure, ps):
                 relative_path = (f"{folder_path}/{folder_key}")
                 if folder_type == "bf":
                     folder_id = folder["path"]
+                    folder_action = folder["action"]
+                    if "moved" in folder_action:
+                        try:
+                            r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}/view", headers=create_request_headers(ps))
+                            r.raise_for_status()
+                        except Exception as e:
+                            error.append(f"{relative_path} id: {folder_id}")
+                        continue
                     if next((item for item in folder_content if item["content"]["id"] == folder_id), None) is None:
                         error.append(f"{relative_path} id: {folder_id}")
                     else:
@@ -2591,6 +2608,14 @@ def ps_check_dataset_files_validity(soda_json_structure, ps):
                 relative_path = folder_key
                 if folder_type == "bf":
                     collection_id = folder["path"]
+                    collection_actions = folder["action"]
+                    if "moved" in collection_actions:
+                        try:
+                            r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}/view", headers=create_request_headers(ps))
+                            r.raise_for_status()
+                        except Exception as e:
+                            error.append(f"{relative_path} id: {collection_id}")
+                        continue
                     if next((item for item in root_folder if item["content"]["id"] == collection_id), None) is None:
                         error.append(f"{relative_path} id: {collection_id}")
                     else:
