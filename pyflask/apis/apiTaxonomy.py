@@ -2,6 +2,7 @@ from flask_restx import Resource, reqparse
 from namespaces import get_namespace, NamespaceEnum
 from taxonomy import load_taxonomy_species
 from flask import request
+from errorHandlers import handle_error
 
 api = get_namespace(NamespaceEnum.TAXONOMY)
 
@@ -21,4 +22,4 @@ class Species(Resource):
         try:
             return load_taxonomy_species(animal_request)
         except Exception as e:
-            api.abort(500, str(e))
+            handle_error(e)
