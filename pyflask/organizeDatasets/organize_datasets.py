@@ -1012,14 +1012,13 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                     folder_item_name[0:8] != "manifest"
                 ):  # manifest files are not being included in json structure
 
-                    #verify file name first
-                    # Doesn't seem necessary
+                    # verify file name first (used for legacy Pennsieve datasets)
                     if("extension" not in subfolder):
                         folder_item_name = verify_file_name(folder_item_name, "")
                     else:
                         folder_item_name = verify_file_name(folder_item_name, subfolder["extension"])
                         
-                    ## verify timestamps
+                    # verify timestamps
                     timestamp = items["content"]["createdAt"].replace('.', ',')
                     paths_list = [*subfolder_json["bfpath"]]
                     subfolder_json["files"][folder_item_name] = {
@@ -1037,8 +1036,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         temp_name = '/'.join(subfolder_json["files"][folder_item_name]["bfpath"][1:]) + "/" + folder_item_name
                     else:
                         temp_name = folder_item_name
-
-                    print(f"temp_name: {temp_name}")
                     
                     if len(manifest.keys()) > 0:
                         # Dictionary that has the required manifest headers in lowercase and without spaces as keys
@@ -1142,9 +1139,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                     "folders": {},
                     "type": "bf",
                 }
-                # for paths in subfolder_json["bfpath"]:
-                #     subfolder_json["folders"][folder_item_name]["bfpath"].append(paths)
-                # subfolder_json["folders"][folder_item_name]["bfpath"].append(folder_item_name)
 
         if len(subfolder_json["folders"].keys()) != 0:  # there are subfolders
             for folder in subfolder_json["folders"].keys():
