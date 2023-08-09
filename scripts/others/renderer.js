@@ -4903,16 +4903,22 @@ organizeDSaddFolders.addEventListener("click", function () {
 ipcRenderer.on("selected-folders-organize-datasets", async (event, importedFolders) => {
   console.log("selected folders from import folders button", importedFolders);
   const currentPathArray = getGlobalPath(organizeDSglobalPath); // ['My_dataset_folder', 'code']
-  const currentContentsAtDatasetPath = getRecursivePath(
+  /*const currentContentsAtDatasetPath = getRecursivePath(
     currentPathArray.slice(1),
+    datasetStructureJSONObj
+  ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')*/
+
+  await addFoldersfunction(importedFolders, currentPathArray);
+});
+
+const addFoldersfunction = async (importedFolders, virtualFolderPath) => {
+  console.log(virtualFolderPath);
+  const currentContentsAtDatasetPath = getRecursivePath(
+    virtualFolderPath.slice(1),
     datasetStructureJSONObj
   ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')
   console.log("currentContentsAtDatasetPath", currentContentsAtDatasetPath);
 
-  await addFoldersfunction(importedFolders, currentContentsAtDatasetPath);
-});
-
-const addFoldersfunction = async (importedFolders, currentContentsAtDatasetPath) => {
   const foldersInPath = Object.keys(currentContentsAtDatasetPath["folders"]);
   const filesInPath = Object.keys(currentContentsAtDatasetPath["files"]);
   console.log("foldersInPath", foldersInPath);

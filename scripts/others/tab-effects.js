@@ -609,9 +609,16 @@ const nextPrev = (pageIndex) => {
     }
 
     if (missingFiles.length > 0) {
-      var notIncludedMessage = `<div style='text-align: left'>You did not include the following metadata files that are typically expected for all SPARC datasets: <br><ol style='text-align: left'>${missingFiles.join(
-        ""
-      )} </ol>Are you sure you want to continue?</div>`;
+      var notIncludedMessage = `
+        <div style='text-align: left'>
+          You did not include the following metadata files that are typically expected for all SPARC datasets:
+          <br>
+          <ol style='text-align: left'>
+            ${missingFiles.join("")}
+          </ol>
+          Are you sure you want to continue?
+        </div>
+      `;
       Swal.fire({
         allowOutsideClick: false,
         allowEscapeKey: false,
