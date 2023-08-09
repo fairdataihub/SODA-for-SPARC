@@ -2735,7 +2735,7 @@ def main_curate_function(soda_json_structure):
 
     namespace_logger.info("Starting main_curate_function")
     namespace_logger.info(f"main_curate_function metadata generate-options={soda_json_structure['generate-dataset']}")
-        
+
     global main_curate_status
     global main_curate_progress_message
     global main_total_generate_dataset_size
@@ -2792,7 +2792,7 @@ def main_curate_function(soda_json_structure):
             abort(400, error)
 
     namespace_logger.info("main_curate_function step 1.2")
-    
+
     # 1.2. If generating dataset to Pennsieve or any other Pennsieve actions are requested check that the destination is valid
     if "bf-account-selected" in soda_json_structure:
         # check that the Pennsieve account is valid
@@ -2816,7 +2816,7 @@ def main_curate_function(soda_json_structure):
             bfdataset = soda_json_structure["bf-dataset-selected"]["dataset-name"]
             token = get_access_token()
             selected_dataset_id = get_dataset_id(token, bfdataset)
-            
+
         except Exception as e:
             main_curate_status = "Done"
             abort(400, "Error: Please select a valid Pennsieve dataset")
@@ -2862,7 +2862,7 @@ def main_curate_function(soda_json_structure):
         except Exception as e:
             main_curate_status = "Done"
             raise e
-        
+
         namespace_logger.info("main_curate_function step 1.3.2")
         # Check that bf files/folders exist (Only used for when generating from an existing Pennsieve dataset)
         generate_option = soda_json_structure["generate-dataset"]["generate-option"]
@@ -2902,7 +2902,15 @@ def main_curate_function(soda_json_structure):
                 main_generate_destination = soda_json_structure["generate-dataset"][
                     "destination"
                 ]
-                if generate_option == "new":
+                if generate_option == "existing-bf":
+                    # make an api request to pennsieve to get the dataset details
+                    namespace_logger.info(f"this is the selected_dataset_id for existing-bf {selected_dataset_id}")
+                    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
+                    r.raise_for_status()
+                    myds = r.json()
+                    ps_update_existing_dataset(soda_json_structure, myds, ps)
+
+                elif generate_option == "new":
                     # if dataset name is in the generate-dataset section, we are generating a new dataset
                     if "dataset-name" in soda_json_structure["generate-dataset"]:
                         dataset_name = soda_json_structure["generate-dataset"][
@@ -2916,16 +2924,8 @@ def main_curate_function(soda_json_structure):
                     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
                     r.raise_for_status()
                     myds = r.json()
-                    
-                    ps_upload_to_dataset(soda_json_structure, ps, myds)
-                if generate_option == "existing-bf":
-                    # make an api request to pennsieve to get the dataset details
-                    namespace_logger.info(f"this is the selected_dataset_id for existing-bf {selected_dataset_id}")
-                    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=create_request_headers(get_access_token()))
-                    r.raise_for_status()
-                    myds = r.json()
-                    ps_update_existing_dataset(soda_json_structure, myds, ps)
 
+                    ps_upload_to_dataset(soda_json_structure, ps, myds)
         except Exception as e:
             main_curate_status = "Done"
             raise e
