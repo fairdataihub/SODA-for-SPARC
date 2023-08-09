@@ -932,7 +932,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         "inputs_metadata.xlsx",
         "outputs_metadata.xlsx",
     ]
-
     double_extensions = [
         ".ome.tiff",
         ".ome.tif",
@@ -1185,7 +1184,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     # headers for making requests to Pennsieve's api
     headers = create_request_headers(token)
 
-
     # root of dataset is pulled here (high level folders/files are gathered here)
     # root_folder is the files and folders within root
     r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}", headers=headers)
@@ -1227,10 +1225,10 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
             if len(folder_content) > 0:
                 for package in folder_content:
                     package_name = package["content"]["name"]
-                    package_id = package["content"]["id"]
                     if package_name in manifest_sparc:
                         # item is manifest
                         df = ""
+                        package_id = package["content"]["id"]
                         try:                            
                             if package_name.lower() == "manifest.xlsx":
                                 df = load_metadata_to_dataframe(package_id, "excel", token)
@@ -1264,51 +1262,6 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         "action": ["existing"],
                         "path": item_id,
                     }
-
-
-    # manifest information is needed so it is looked for before the recursive calls are made
-    # if len(soda_json_structure["dataset-structure"]["folders"].keys()) != 0:            # there are subfolders is length of high level folders is not 0
-    #     for high_lvl_folder in soda_json_structure["dataset-structure"]["folders"].keys():
-    #         collection_id = soda_json_structure["dataset-structure"]["folders"][high_lvl_folder][
-    #             "path"
-    #         ]
-
-    #         r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}", headers=headers)
-    #         r.raise_for_status()
-    #         subfolder = r.json()["children"]
-
-    #         # children_content = subfolder["children"]
-    #         manifest_dict[high_lvl_folder] = {}
-    #         if len(subfolder) > 0:
-    #             # Iterate through folder contents to see if a manifest exists
-    #             for items in subfolder:
-    #                 # check subfolders surface to see if manifest files exist to then use within recursive_subfolder_check
-    #                 package_name = items["content"]["name"]
-    #                 package_id = items["content"]["id"]
-    #                 if package_name in manifest_sparc:
-    #                     # item is manifest
-    #                     df = ""
-    #                     try:                            
-    #                         if package_name.lower() == "manifest.xlsx":
-    #                             df = load_metadata_to_dataframe(package_id, "excel", token)
-    #                             df = df.fillna("")
-    #                         else:
-    #                             df = load_metadata_to_dataframe(package_id, "csv", token)
-    #                             df = df.fillna("")
-    #                         manifest_dict[high_lvl_folder].update(df.to_dict())
-    #                     except Exception as e:
-    #                         manifest_error_message.append(
-    #                             items["content"]["name"]
-    #                         )
-
-    #             high_lvl_folder_dict = soda_json_structure["dataset-structure"]["folders"][
-    #                 high_lvl_folder
-    #             ]
-
-    #             if high_lvl_folder in manifest_dict:
-    #                 createFolderStructure(
-    #                     high_lvl_folder_dict, token, manifest_dict[high_lvl_folder]
-    #                 )  # passing item's json and the collection ID
 
     success_message = (
         "Data files under a valid high-level SPARC folders have been imported"
