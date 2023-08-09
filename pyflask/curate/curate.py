@@ -1445,6 +1445,7 @@ def ps_get_existing_folders_details(ps_folders):
 
 
 def ps_get_existing_files_details(ps_folder, ps):
+    # TODO: Dorian -> ["extensions doesn't seem to be returned anymore by the endpoint"]
     def verify_file_name(file_name, extension):
         if extension == "":
             return file_name
@@ -2557,7 +2558,15 @@ def ps_check_dataset_files_validity(soda_json_structure, ps):
                 file_type = file["type"]
                 relative_path = (f"{folder_path}/{file_key}")
                 if file_type == "bf":
+                    file_actions = file["action"]
                     file_id = file["path"]
+                    if "moved" in file_actions:
+                        try:
+                            r = requests.get(f"{PENNSIEVE_URL}/packages/{file_id}/view", headers=create_request_headers(ps))
+                            r.raise_for_status()
+                        except Exception as e:
+                            error.append(f"{relative_path} id: {file_id}")
+                        continue
                     if next((item for item in folder_content if item["content"]["id"] == file_id), None) is None:
                         error.append(f"{relative_path} id: {file_id}")
         
@@ -2567,6 +2576,14 @@ def ps_check_dataset_files_validity(soda_json_structure, ps):
                 relative_path = (f"{folder_path}/{folder_key}")
                 if folder_type == "bf":
                     folder_id = folder["path"]
+                    folder_action = folder["action"]
+                    if "moved" in folder_action:
+                        try:
+                            r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}", headers=create_request_headers(ps))
+                            r.raise_for_status()
+                        except Exception as e:
+                            error.append(f"{relative_path} id: {folder_id}")
+                        continue
                     if next((item for item in folder_content if item["content"]["id"] == folder_id), None) is None:
                         error.append(f"{relative_path} id: {folder_id}")
                     else:
@@ -2604,6 +2621,8 @@ def ps_check_dataset_files_validity(soda_json_structure, ps):
                 file_id = file["path"]
                 if next((item for item in root_folder if item["content"]["id"] == file_id), None) is None:
                     error.append(f"{file_key} id: {file_id}")
+
+    # if there are items in the error list, check if they have been "moved"
 
     if len(error) > 0:
         error_message = [
