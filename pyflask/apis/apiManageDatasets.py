@@ -39,7 +39,7 @@ from pysodaUtils import get_agent_version, start_agent
 import time 
 
 from namespaces import get_namespace, NamespaceEnum
-from errorHandlers import notBadRequestException, handle_http_error
+from errorHandlers import notBadRequestException, handle_http_error, handle_error
 from authentication import get_cognito_userpool_access_token, bf_add_account_username, get_pennsieve_api_key_secret
 
 
@@ -88,9 +88,7 @@ class PennsieveAPIKeyAndSecret(Resource):
     try: 
       return get_pennsieve_api_key_secret(username, password, api_key)
     except Exception as e:
-      if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+      handle_error(e)
 
 
 
@@ -124,6 +122,7 @@ class GetNumberOfFilesAndFoldersLocally(Resource):
     try:
       return get_number_of_files_and_folders_locally(filepath)
     except Exception as e:
+      # TODO: Investigate this further (improved-ps-500-error-handling)
       api.abort(500, e.args[0])
     
 
@@ -177,9 +176,7 @@ class BfChangeDatasetStatus(Resource):
       return bf_change_dataset_status(selected_bfaccount, selected_bfdataset, selected_status)
     except Exception as e:
       # something unexpected happened so abort with a 500
-      if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+      handle_error(e)
 
 
   parser_dataset_status = reqparse.RequestParser(bundle_errors=True)
@@ -201,9 +198,7 @@ class BfChangeDatasetStatus(Resource):
       return bf_get_dataset_status(selected_bfaccount, selected_bfdataset)
     except Exception as e:
       # something unexpected happened so abort with a 500
-      if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+      handle_error(e)
 
 
 
@@ -223,7 +218,7 @@ class BfAccountList(Resource):
     try:
       return bf_account_list()
     except Exception as e:
-      api.abort(500, str(e))
+      handle_error(e)
 
 
 
@@ -243,7 +238,7 @@ class BfDefaultAccountLoad(Resource):
     try:
       return bf_default_account_load()
     except Exception as e:
-      api.abort(500, str(e))
+      handle_error(e)
 
 
 
@@ -275,9 +270,7 @@ class BfGetUsers(Resource):
       return ps_get_users(selected_account)
     except Exception as e:
       # TODO: Refine this app wide to handle requests errors more appropriately
-      if notBadRequestException(e):
-        api.abort(500, str(e))
-      api.abort(401, str(e))
+      handle_error(e)
 
 
 
@@ -298,9 +291,7 @@ class BfGetTeams(Resource):
       
       return ps_get_teams(selected_account)
     except Exception as e:
-      if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+      handle_error(e)
 
 
 
@@ -327,9 +318,7 @@ class BfAccountDetails(Resource):
       selected_account = self.parser_account_details.parse_args().get('selected_account')
       return bf_account_details(selected_account)
     except Exception as e:
-      if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+      handle_error(e)
 
 
 
@@ -350,7 +339,7 @@ class CheckAgentInstall(Resource):
       return get_agent_version()
     except Exception as e:
       # if the exception is an AgentError, then return a 500 
-      api.abort(500, str(e))
+      handle_error(e)
 
 
 
@@ -384,9 +373,7 @@ class BfDatasetAccount(Resource):
       selected_account = self.parser_dataset_account.parse_args().get('selected_account')
       return bf_dataset_account(selected_account)
     except Exception as e:
-      if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+      handle_error(e)
 
 
 
@@ -418,12 +405,7 @@ class DatasetSubtitle(Resource):
     try:
       return bf_get_subtitle(selected_account, selected_dataset)
     except Exception as e:
-      # if exception is an HTTPError then check if 400 or 500
-      if type(e).__name__ == "HTTPError":
-        handle_http_error(e)
-      if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+      handle_error(e)
 
   parser_add_dataset_subtitle = parser_dataset_subtitle.copy()
   parser_add_dataset_subtitle.add_argument('input_subtitle', type=str, required=True, location='json', help='The subtitle to add to the dataset.')
@@ -442,9 +424,7 @@ class DatasetSubtitle(Resource):
     try:
       return bf_add_subtitle(selected_account, selected_dataset, input_subtitle)
     except Exception as e:
-      if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+      handle_error(e)
 
 
 
@@ -474,9 +454,7 @@ class DatasetDescription(Resource):
       try:
         return bf_get_description(selected_account, selected_dataset)
       except Exception as e:
-        if notBadRequestException(e):
-          api.abort(500, str(e))
-        raise e
+        handle_error(e)
 
 
     parser_add_dataset_description = parser_dataset_description.copy()
@@ -496,9 +474,7 @@ class DatasetDescription(Resource):
       try:
         return bf_add_description(selected_account, selected_dataset, input_description)
       except Exception as e:
-        if notBadRequestException(e):
-          api.abort(500, str(e))
-        raise e
+        handle_error(e)
 
 
 
@@ -535,9 +511,7 @@ class DatasetPermissions(Resource):
     try:
       return ps_get_permission(selected_account, selected_dataset)
     except Exception as e:
-      if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+      handle_error(e)
 
   
   parser_add_dataset_permissions = parser_dataset_permissions.copy()
@@ -565,16 +539,12 @@ class DatasetPermissions(Resource):
       try:
         return ps_add_permission_team(selected_account, selected_dataset, name, input_role)
       except Exception as e:
-        if notBadRequestException(e):
-          api.abort(500, str(e))
-        raise e
+        handle_error(e)
     else:
       try:
         return ps_add_permission(selected_account, selected_dataset, name, input_role)
       except Exception as e:
-        if notBadRequestException(e):
-          api.abort(500, str(e))
-        raise e
+        handle_error(e)
 
 
 scale_image_model = api.model("postScaledImage", {
@@ -595,7 +565,7 @@ class scaleBannerImage(Resource):
     try:
       return scale_image(image_path)
     except Exception as e:
-      api.abort(500, str(e))
+      handle_error(e)
 
 
 model_get_banner_image_response = api.model('GetBannerImageResponse', {
@@ -619,9 +589,7 @@ class BfBannerImage(Resource):
     try:
       return bf_get_banner_image(selected_account, selected_dataset)
     except Exception as e:
-      if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+      handle_error(e)
 
 
   parser_add_banner_image = parser_banner_image.copy()
@@ -641,9 +609,7 @@ class BfBannerImage(Resource):
     try:
       return bf_add_banner_image(selected_account, selected_dataset, input_banner_image_path)
     except Exception as e:
-      if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+      handle_error(e)
 
 
 model_get_license_response = api.model('GetLicenseResponse', {
@@ -668,9 +634,7 @@ class BfLicense(Resource):
     try:
       return bf_get_license(selected_account, selected_dataset)
     except Exception as e:
-      if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+      handle_error(e)
 
   
   parser_add_license = parser_license.copy()
@@ -690,9 +654,7 @@ class BfLicense(Resource):
     try:
       return bf_add_license(selected_account, selected_dataset, input_license)
     except Exception as e:
-      if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+      handle_error(e)
 
 
 
@@ -720,9 +682,7 @@ class BfRenameDataset(Resource):
     try:
       return ps_rename_dataset(selected_account, selected_dataset, input_new_name)
     except Exception as e:
-      if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+      handle_error(e)
 
 
 
@@ -754,9 +714,7 @@ class BfGetUsername(Resource):
     try:
       return get_username(selected_account)
     except Exception as e:
-      if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+      handle_error(e)
 
   
   parser_add_username = reqparse.RequestParser(bundle_errors=True)
@@ -780,9 +738,7 @@ class BfGetUsername(Resource):
     try:
       return bf_add_account_username(keyname, key, secret)
     except Exception as e:
-      if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+      handle_error(e)
 
 
 
@@ -812,9 +768,7 @@ class BfAddAccountApiKey(Resource):
     try:
       return bf_add_account_api_key(keyname, key, secret)
     except Exception as e:
-      if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+      handle_error(e)
 
 
 
@@ -845,9 +799,7 @@ class BfCreateDatasetFolder(Resource):
     try:
       return create_new_dataset(dataset_name, selected_account)
     except Exception as e:
-      if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+      handle_error(e)
 
 
   parser_submit_dataset = reqparse.RequestParser(bundle_errors=True)
@@ -871,10 +823,7 @@ class BfCreateDatasetFolder(Resource):
     try:
       return bf_submit_dataset(selected_account, selected_dataset, filepath)
     except Exception as e:
-      if notBadRequestException(e): 
-        api.abort(500, str(e))
-      else:
-        raise e
+      handle_error(e)
 
 
 
@@ -902,7 +851,7 @@ class BfGetUploadProgress(Resource):
     try:
       return submit_dataset_progress()
     except Exception as e:
-      api.abort(500, str(e))
+      handle_error(e)
 
 
 
@@ -939,9 +888,7 @@ class BfGetDatasetReadme(Resource):
     try:
       return update_dataset_readme(selected_account, dataset_name_or_id , updated_readme)
     except Exception as e:
-      if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+      handle_error(e)
 
 
 
@@ -959,9 +906,7 @@ class BfGetDatasetReadme(Resource):
     try:
       return get_dataset_readme(selected_account, dataset_name_or_id)
     except Exception as e:
-      if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+      handle_error(e)
 
 
 
@@ -990,9 +935,7 @@ class BfGetDatasetTags(Resource):
       try:
         return get_dataset_tags(selected_account, dataset_name_or_id)
       except Exception as e:
-        if notBadRequestException(e):
-          api.abort(500, str(e))
-        raise e
+        handle_error(e)
 
     
 
@@ -1011,9 +954,7 @@ class BfGetDatasetTags(Resource):
       try:
         return update_dataset_tags(selected_account, dataset_name_or_id, tags)
       except Exception as e:
-        if notBadRequestException(e):
-          api.abort(500, str(e))
-        raise e
+        handle_error(e)
 
 
 
@@ -1038,6 +979,4 @@ class BfGetUserpoolAccessToken(Resource):
     try:
       return get_cognito_userpool_access_token(email, password)
     except Exception as e:
-      if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+      handle_error(e)
