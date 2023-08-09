@@ -50,7 +50,7 @@ class CheckEmptyFilesFolders(Resource):
         try:
             return check_empty_files_folders(soda_json_structure)
         except Exception as e:
-            api.abort(500, str(e))
+            handle_error(e)
 
 
 
@@ -67,7 +67,7 @@ class Curation(Resource):
         try:
             return check_server_access_to_files(file_list_to_check)
         except Exception as e:
-            api.abort(500, str(e))
+            handle_error(e)
 
 
 @api.route("/clean-dataset")
@@ -85,9 +85,7 @@ class Curation(Resource):
         try:
             return clean_json_structure(soda_json_structure)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)
 
 
 
@@ -145,7 +143,7 @@ class CurationProgress(Resource):
         try:
             return main_curate_function_progress()
         except Exception as e:
-            api.abort(500, str(e))
+            handle_error(e)
 
 
 
@@ -186,7 +184,7 @@ class GenerateManifestFiles(Resource):
         try:
             return create_high_level_manifest_files_existing_local_starting_point(filepath, join(userpath, "SODA", "manifest_files"))
         except Exception as e:
-            api.abort(500, str(e))
+            handle_error(e)
 
 
 
@@ -217,7 +215,7 @@ class GenerateManifestLocally(Resource):
         try:
             return generate_manifest_file_locally(generate_purpose, soda_json_object)
         except Exception as e:
-            api.abort(500, str(e))
+            handle_error(e)
 
 
 
@@ -239,7 +237,7 @@ class GenerateManifestData(Resource):
         try:
             return generate_manifest_file_data(dataset_structure_obj)
         except Exception as e:
-            api.abort(500, str(e))
+            handle_error(e)
 
 
             
@@ -267,4 +265,4 @@ class DatasetSize(Resource):
         try:
             return check_JSON_size(soda_json_structure)
         except Exception as e:
-            api.abort(500, str(e))
+            handle_error(e)
