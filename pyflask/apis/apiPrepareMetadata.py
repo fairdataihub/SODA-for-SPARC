@@ -23,7 +23,7 @@ from flask import request
 from namespaces import NamespaceEnum, get_namespace
 from flask_restx import Resource, reqparse, fields
 from flask_restx.inputs import boolean
-from errorHandlers import notBadRequestException
+from errorHandlers import notBadRequestException, handle_error
 from utils import metadata_string_to_list
 
 api = get_namespace(NamespaceEnum.PREPARE_METADATA)
@@ -71,9 +71,7 @@ class SaveSubmissionFile(Resource):
         try:
             return save_submission_file(upload_boolean, bfaccount, bfdataset, filepath, json_str)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)
 
 
 
@@ -91,9 +89,7 @@ class SaveSubmissionFile(Resource):
         try:
             return load_existing_submission_file(filepath)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)
 
 
 
@@ -132,9 +128,7 @@ class RCFile(Resource):
         try:
             return import_ps_RC(bfdataset, file_type)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)
 
 
     parser_create_RC_file = parser_get_RC_file.copy()
@@ -155,9 +149,7 @@ class RCFile(Resource):
         try:
             return upload_RC_file(text, file_type, bfaccount, bfdataset)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)
     
 
 
@@ -200,9 +192,7 @@ class DatasetDescriptionFile(Resource):
         try:
             return load_existing_DD_file(import_type, filepath, None, None)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)
 
     
 
@@ -244,9 +234,7 @@ class DatasetDescriptionFile(Resource):
         try:
             return save_ds_description_file(upload_boolean, selected_account, selected_dataset, filepath, dataset_str, study_str, contributor_str, related_info_str)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)
 
 
 
@@ -274,9 +262,7 @@ class CodeDescriptionFile(Resource):
         try:
             return upload_code_description_metadata(filepath, selected_account, selected_dataset)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)
 
 
 
@@ -314,9 +300,7 @@ class SubjectsFile(Resource):
         try:
             return save_subjects_file(upload_boolean, selected_account, selected_dataset, filepath, subjects_str)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)
 
 
     parser_create_data_frames = reqparse.RequestParser(bundle_errors=True)
@@ -341,9 +325,7 @@ class SubjectsFile(Resource):
         try:
             return convert_subjects_samples_file_to_df(file_type, filepath, ui_fields, None, None)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)
 
 
 
@@ -395,9 +377,7 @@ class SamplesFile(Resource):
         try:
             return save_samples_file(upload_boolean, selected_account, selected_dataset, filepath, samples_str)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)
     
     
     parser_create_data_frames = reqparse.RequestParser(bundle_errors=True)
@@ -430,9 +410,7 @@ class SamplesFile(Resource):
         try:
             return convert_subjects_samples_file_to_df(file_type, filepath, ui_fields, None, None)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)
 
 
 
@@ -489,9 +467,7 @@ class ImportBFMetadataFile(Resource):
         try:
             return import_ps_metadata_file(file_type, ui_fields, selected_dataset)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)
 
 
 
@@ -520,7 +496,7 @@ class SetTemplatePath(Resource):
         try:
             return set_template_path(basepath, resourcesPath)
         except Exception as e:
-            api.abort(500, str(e))
+            handle_error(e)
 
 
 
@@ -546,12 +522,14 @@ class ImportMilestone(Resource):
                 "sparc_award": sparc_award
             }
         except Exception as e:
-            # check if invalidDataDeliverablesDocument exception
-            if type(e).__name__  == 'InvalidDataDeliverablesDocument':
-                api.abort(400, str(e))
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            # TODO: add this error to the error handler? (improved-ps-500-error-handling)
+            handle_error(e)
+            # # check if invalidDataDeliverablesDocument exception
+            # if type(e).__name__  == 'InvalidDataDeliverablesDocument':
+            #     api.abort(400, str(e))
+            # if notBadRequestException(e):
+            #     api.abort(500, str(e))
+            # raise e
 
 
 
@@ -574,7 +552,7 @@ class DeleteManifestDummyFolders(Resource):
         try:
             return delete_manifest_dummy_folders(paths)
         except Exception as e:
-            api.abort(500, str(e))
+            handle_error(e)
 
 
 
@@ -598,7 +576,7 @@ class GenerateManifestFilesPennsieve(Resource):
         try:
             return import_ps_manifest_file(soda_json_object, selected_dataset)
         except Exception as e:
-            api.abort(500, str(e))
+            handle_error(e)
 
 
     @api.doc(responses={500: 'There was an internal server error', 400: 'Bad Request'},
@@ -616,7 +594,7 @@ class GenerateManifestFilesPennsieve(Resource):
             # Drop empty columns ( but keep required columns ) beforing uploading the local manifest files to Pennsieve
             return edit_ps_manifest_file(edit_action, manifest_type)
         except Exception as e:
-            api.abort(500, str(e))
+            handle_error(e)
 
 
 manifest_creation_progress_model = api.model('ManifestCreationProgress', {
@@ -635,4 +613,4 @@ class GetManifestFilesPennsieveProgress(Resource):
             try:
                 return manifest_creation_progress()
             except Exception as e:
-                api.abort(500, str(e))
+                handle_error(e)
