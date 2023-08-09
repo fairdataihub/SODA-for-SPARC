@@ -1266,7 +1266,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     create_soda_json_completed = 1
 
     end = timer()
-    print(timedelta(seconds=end - start))
+    print(f"Time to import dataset: {timedelta(seconds=end - start)}")
     return {
         "soda_object": soda_json_structure,
         "success_message": success_message,
