@@ -19,6 +19,8 @@ from os.path import (
 )
 import pandas as pd
 import time
+from timeit import default_timer as timer
+from datetime import timedelta
 import shutil
 import subprocess
 import gevent
@@ -1736,7 +1738,7 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
         return
 
     ps_dataset = ""
-    
+    start = timer()
     # 1. Remove all existing files on Pennsieve, that the user deleted.
     namespace_logger.info("ps_update_existing_dataset step 1 remove existing files on Pennsieve the user deleted")
     main_curate_progress_message = "Checking Pennsieve for deleted files"
@@ -1821,7 +1823,8 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
         "if-existing-files": "replace",
     }
 
-
+    end = timer()
+    namespace_logger.info(f"Time for ps_update_existing_dataset function: {timedelta(seconds=end - start)}")
     ps_upload_to_dataset(soda_json_structure, ps, ds)
 
     return
@@ -1904,6 +1907,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
     uploaded_folder_counter = 0
     current_size_of_uploaded_files = 0
+    start = timer()
 
     try:
         # Set the Pennsieve Python Client's dataset to the Pennsiee dataset that will be uploaded to.
@@ -2500,7 +2504,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
         time.sleep(1)
 
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
-
+        end = timer()
+        namespace_logger.info(f"Time for ps_upload_to_dataset function: {timedelta(seconds=end - start)}")
     except Exception as e:
         raise e
 
@@ -2735,6 +2740,7 @@ def main_curate_function(soda_json_structure):
 
     start_generate = 0
     generate_start_time = time.time()
+    start = timer()
 
     # variables for tracking the progress of the curate process on the frontend 
     main_curate_status = ""
@@ -2916,6 +2922,8 @@ def main_curate_function(soda_json_structure):
 
     main_curate_status = "Done"
     main_curate_progress_message = "Success: COMPLETED!"
+    end = timer()
+    print(f"Time to upload dataset: {timedelta(seconds=end - start)}")
 
     return {
         "main_curate_progress_message": main_curate_progress_message,

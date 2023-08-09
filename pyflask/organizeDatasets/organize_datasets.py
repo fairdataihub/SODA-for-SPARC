@@ -16,6 +16,8 @@ from os.path import (
 )
 import pandas as pd
 import time
+from datetime import timedelta
+from timeit import default_timer as timer
 import shutil
 import subprocess
 import re
@@ -1162,7 +1164,7 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                 createFolderStructure(subfolder, pennsieve_client_or_token, manifest)
 
     # START
-
+    start = timer()
     token = get_access_token()
 
     # check that the Pennsieve dataset is valid
@@ -1298,7 +1300,8 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
     )
     create_soda_json_completed = 1
 
-    
+    end = timer()
+    print(f"Time to import dataset: {timedelta(seconds=end - start)}")
     return {
         "soda_object": soda_json_structure,
         "success_message": success_message,
