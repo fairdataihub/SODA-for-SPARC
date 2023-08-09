@@ -1032,24 +1032,10 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                         "additional-metadata": "",
                         "description": "",
                     }
-                    # TODO: Dorian -> Array spread?
-                    # for paths in subfolder_json["bfpath"]:
-                    #     subfolder_json["files"][folder_item_name]["bfpath"].append(paths)
-
                     
                     # creates path for folder_item_name (stored in temp_name)
                     if len(subfolder_json["files"][folder_item_name]["bfpath"]) > 1:
                         temp_name = '/'.join(subfolder_json["files"][folder_item_name]["bfpath"][1:]) + "/" + folder_item_name
-                        # temp_name = ""
-                        # for i in range(
-                        #     len(subfolder_json["files"][folder_item_name]["bfpath"])
-                        # ):
-                        #     if i == 0:
-                        #         continue
-                        #     temp_name += (
-                        #         subfolder_json["files"][folder_item_name]["bfpath"][i] + "/"
-                        #     )
-                        # temp_name += folder_item_name
                     else:
                         temp_name = folder_item_name
 
@@ -1231,6 +1217,43 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
                 "folders": {},
                 "bfpath": [item_name],
             }
+
+            manifest_dict[item_name] = {}
+            # Check the content of the folder to see if a manifest file exists
+            r = requests.get(f"{PENNSIEVE_URL}/packages/{item_id}", headers=headers)
+            r.raise_for_status()
+            folder_content = r.json()["children"]
+
+            if len(folder_content) > 0:
+                for package in folder_content:
+                    package_name = package["content"]["name"]
+                    package_id = package["content"]["id"]
+                    if package_name in manifest_sparc:
+                        # item is manifest
+                        df = ""
+                        try:                            
+                            if package_name.lower() == "manifest.xlsx":
+                                df = load_metadata_to_dataframe(package_id, "excel", token)
+                                df = df.fillna("")
+                            else:
+                                df = load_metadata_to_dataframe(package_id, "csv", token)
+                                df = df.fillna("")
+                            manifest_dict[item_name].update(df.to_dict())
+                        except Exception as e:
+                            manifest_error_message.append(
+                                items["content"]["name"]
+                            )
+
+                high_lvl_folder_dict = soda_json_structure["dataset-structure"]["folders"][
+                    item_name
+                ]
+
+                if item_name in manifest_dict:
+                    createFolderStructure(
+                        high_lvl_folder_dict, token, manifest_dict[item_name]
+                    )  # passing item's json and the collection ID
+
+
         else:
             # Item is a metadata file
             if item_name in high_level_metadata_sparc:
@@ -1244,63 +1267,48 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
 
 
     # manifest information is needed so it is looked for before the recursive calls are made
-    if len(soda_json_structure["dataset-structure"]["folders"].keys()) != 0:            # there are subfolders is length of high level folders is not 0
-        for high_lvl_folder in soda_json_structure["dataset-structure"]["folders"].keys():
-            collection_id = soda_json_structure["dataset-structure"]["folders"][high_lvl_folder][
-                "path"
-            ]
+    # if len(soda_json_structure["dataset-structure"]["folders"].keys()) != 0:            # there are subfolders is length of high level folders is not 0
+    #     for high_lvl_folder in soda_json_structure["dataset-structure"]["folders"].keys():
+    #         collection_id = soda_json_structure["dataset-structure"]["folders"][high_lvl_folder][
+    #             "path"
+    #         ]
 
-            r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}", headers=headers)
-            r.raise_for_status()
-            subfolder = r.json()["children"]
+    #         r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}", headers=headers)
+    #         r.raise_for_status()
+    #         subfolder = r.json()["children"]
 
-            # children_content = subfolder["children"]
-            manifest_dict[high_lvl_folder] = {}
-            if len(subfolder) > 0:
-                # Iterate through folder contents to see if a manifest exists
-                for items in subfolder:
-                    # check subfolders surface to see if manifest files exist to then use within recursive_subfolder_check
-                    package_name = items["content"]["name"]
-                    package_id = items["content"]["id"]
-                    if package_name in manifest_sparc:
-                        # item is manifest
-                        # TODO: Dorian -> These endpoints might not be needed at all
-                        # r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=headers)
-                        # r.raise_for_status()
-                        # file_details = r.json()
+    #         # children_content = subfolder["children"]
+    #         manifest_dict[high_lvl_folder] = {}
+    #         if len(subfolder) > 0:
+    #             # Iterate through folder contents to see if a manifest exists
+    #             for items in subfolder:
+    #                 # check subfolders surface to see if manifest files exist to then use within recursive_subfolder_check
+    #                 package_name = items["content"]["name"]
+    #                 package_id = items["content"]["id"]
+    #                 if package_name in manifest_sparc:
+    #                     # item is manifest
+    #                     df = ""
+    #                     try:                            
+    #                         if package_name.lower() == "manifest.xlsx":
+    #                             df = load_metadata_to_dataframe(package_id, "excel", token)
+    #                             df = df.fillna("")
+    #                         else:
+    #                             df = load_metadata_to_dataframe(package_id, "csv", token)
+    #                             df = df.fillna("")
+    #                         manifest_dict[high_lvl_folder].update(df.to_dict())
+    #                     except Exception as e:
+    #                         manifest_error_message.append(
+    #                             items["content"]["name"]
+    #                         )
 
-                        # file_id = file_details[0]["content"]["id"]
-                        # TODO: Dorian -> Check if this endpoint is needed
-                        # r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/files/{file_id}", headers=headers)
-                        # r.raise_for_status()
-                        # manifest_url = r.json()["url"]
+    #             high_lvl_folder_dict = soda_json_structure["dataset-structure"]["folders"][
+    #                 high_lvl_folder
+    #             ]
 
-                        df = ""
-                        try:                            
-                            if package_name.lower() == "manifest.xlsx":
-                                df = load_metadata_to_dataframe(package_id, "excel", token)
-                                df = df.fillna("")
-                            else:
-                                df = load_metadata_to_dataframe(package_id, "csv", token)
-                                df = df.fillna("")
-
-                            # add manifest information to manifest_dict
-                            # namespace_logger.info("Manifest file found")
-                            # namespace_logger.info(f"MANIFEST DICT: {df.to_dict()}")
-                            manifest_dict[high_lvl_folder].update(df.to_dict())
-                        except Exception as e:
-                            manifest_error_message.append(
-                                items["content"]["name"]
-                            )
-
-                high_lvl_folder_dict = soda_json_structure["dataset-structure"]["folders"][
-                    high_lvl_folder
-                ]
-
-                if high_lvl_folder in manifest_dict:
-                    createFolderStructure(
-                        high_lvl_folder_dict, token, manifest_dict[high_lvl_folder]
-                    )  # passing item's json and the collection ID
+    #             if high_lvl_folder in manifest_dict:
+    #                 createFolderStructure(
+    #                     high_lvl_folder_dict, token, manifest_dict[high_lvl_folder]
+    #                 )  # passing item's json and the collection ID
 
     success_message = (
         "Data files under a valid high-level SPARC folders have been imported"
