@@ -1759,8 +1759,6 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
     main_curate_progress_message = "Folders on Pennsieve have been marked for deletion"
 
     # 2.5 Rename folders that need to be in the final destination.
-    # Function seems to be called twice?
-    # TODO: Dorian -> Why is this function called twice?
     namespace_logger.info("ps_update_existing_dataset step 2.5 rename folders that need to be in the final destination")
     main_curate_progress_message = "Renaming any folders requested by the user"
     recursive_folder_rename(dataset_structure, "renamed")
@@ -1800,19 +1798,13 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
     recursive_folder_delete(dataset_structure)
     main_curate_progress_message = "Deletion of additional folders complete"
 
-    # 7. Rename any Pennsieve folders that are marked as renamed.
-    # namespace_logger.info("ps_update_existing_dataset step 7 rename any Pennsieve folders that are marked as renamed")
-    # main_curate_progress_message = "Renaming any folders requested by the user"
-    # recursive_folder_rename(dataset_structure, "renamed")
-    # main_curate_progress_message = "Renamed all folders requested by the user"
-
-    # 8. Delete any metadata files that are marked as deleted.
+    # 7. Delete any metadata files that are marked as deleted.
     namespace_logger.info("ps_update_existing_dataset step 8 delete any metadata files that are marked as deleted")
     main_curate_progress_message = "Removing any metadata files marked for deletion"
     metadata_file_delete(soda_json_structure)
     main_curate_progress_message = "Removed metadata files marked for deletion"
 
-    # 9. Run the original code to upload any new files added to the dataset.
+    # 8. Run the original code to upload any new files added to the dataset.
     namespace_logger.info("ps_update_existing_dataset step 9 run the ps_create_new_dataset code to upload any new files added to the dataset")
     if "manifest-files" in soda_json_structure.keys():
         if "auto-generated" in soda_json_structure["manifest-files"].keys():
