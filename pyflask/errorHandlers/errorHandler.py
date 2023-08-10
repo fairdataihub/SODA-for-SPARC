@@ -4,7 +4,6 @@ Purpose: Given a base excetpion, requests Exception, or Werkzeug Exception, retu
 from werkzeug.exceptions import HTTPException, InternalServerError, Forbidden, Unauthorized, BadRequest, Locked
 from .pennsieveUnexpectedError import raiseUnexpectedPennsieveException
 from .httpError import httpError
-
 # keys: status_code, method, resource=None
 # error_message_table = {
 #     "400": {
@@ -82,8 +81,12 @@ def handle_error(err):
         # raise werkzeug exceptions as is since these are our custom errors that are already translated for 400s, 401s, etc 
         raise err
     else:
+        print(type(err))
         if type(err).__name__  == 'InvalidDataDeliverablesDocument':
             raise BadRequest(str(err)) from err
+        # TODO: Increase specificity to botocore to avoid overlaps
+        if type(err).__name__ == "NotAuthorizedException":
+            raise BadRequest("Invalid username or password or invalid api key and secret. Please try again after reconnecting your account with Pennsieve through SODA for SPARC.") from err
         # the exception is an unexpected generic Python error from a flaw in our code
         raise InternalServerError("SODA for SPARC received an unexpected error while trying to process your request. Please try again later.") from err
 

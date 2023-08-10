@@ -2759,10 +2759,8 @@ def main_curate_function(soda_json_structure):
     main_keys = soda_json_structure.keys()
     error = ""
 
-    token = get_access_token()
-    bfdataset = soda_json_structure["bf-dataset-selected"]["dataset-name"]
-    selected_dataset_id = get_dataset_id(token, bfdataset)
-    pennsieve_get_current_user_permissions(selected_dataset_id, token)["role"]
+    # get_access_token()
+
 
     # 1] Check for potential errors
 

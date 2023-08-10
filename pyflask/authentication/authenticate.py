@@ -245,13 +245,9 @@ def bf_add_account_username(keyname, key, secret):
     try:
         get_access_token()
     except Exception as e:
-        # TODO: TESTING RETURN VALUE  should it be a 401? (improved-ps-500-error-handling)
-        # TODO: Can use this response message if I add the resource checker in the central error handler. I would just need to know the status code for this instance as mentioned above.(improved-ps-500-error-handling)
         namespace_logger.error(e)
         bf_delete_account(keyname)
-        abort(401, 
-            "Please check that key name, key, and secret are entered properly"
-        )
+        raise e 
 
     try:
         if not config.has_section("global"):
