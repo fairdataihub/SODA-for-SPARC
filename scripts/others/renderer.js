@@ -4957,6 +4957,7 @@ const addDataArrayToDatasetStructureAtPath = async (importedData, virtualFolderP
 
   // STEP 1: Ensure all paths are able to be accessed by the server
   const inaccessible_files = await findInaccessibleItems(importedData);
+
   console.log("inaccessible_files", inaccessible_files);
 
   // STEP 2: Check for duplicates
