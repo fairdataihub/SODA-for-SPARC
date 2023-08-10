@@ -4861,44 +4861,64 @@ const localPathIsFile = (localPath) => {
   return fs.statSync(localPath).isFile();
 };
 
-const findInaccessibleItems = async (itemPaths) => {
+const buildDatasetStructureJsonFromImportedData = async (itemPaths) => {
   let importedFileCount = 0;
   const inaccessibleItems = [];
+  const datasetStructure = {};
 
-  const explorePath = async (pathToExplore) => {
-    console.log("exploring path: " + pathToExplore);
+  const traverseAndBuildJson = async (pathToExplore, currentStructure) => {
+    currentStructure["folders"] = currentStructure["folders"] || {}; // Initialize within the currentStructure parameter
+    currentStructure["files"] = currentStructure["files"] || {}; // Initialize within the currentStructure parameter
+
     try {
       // Check to see if the folder/file at this path is accessible by node
       const fsStatsObj = await fs.stat(pathToExplore);
 
-      // Note: If the path is a file, we don't have to do anything else because we already know it's accessible
-      // Now for folders, we need to check if we can read the contents of the folder
       if (fsStatsObj.isDirectory()) {
         try {
+          const folderName = path.basename(pathToExplore);
+          currentStructure["folders"][folderName] = {
+            path: pathToExplore,
+            type: "local",
+            files: {},
+            folders: {},
+            action: ["new"],
+          };
+
           const folderContents = await fs.readdir(pathToExplore);
           for (const item of folderContents) {
             const itemPath = path.join(pathToExplore, item);
-            await explorePath(itemPath);
+            await traverseAndBuildJson(itemPath, currentStructure["folders"][folderName]);
           }
         } catch (error) {
-          console.log("error reading folder contents: " + pathToExplore);
-          console.log(error);
+          console.log("Error reading folder contents:", pathToExplore);
+          console.error(error);
           inaccessibleItems.push(pathToExplore);
         }
+      } else if (fsStatsObj.isFile()) {
+        const fileName = path.basename(pathToExplore);
+        currentStructure["files"][fileName] = {
+          path: pathToExplore,
+          type: "local",
+          description: "",
+          action: ["new"],
+        };
       }
     } catch (error) {
-      console.log("error reading folder contents2: " + pathToExplore);
+      console.log("Error accessing path:", pathToExplore);
+      console.error(error);
       inaccessibleItems.push(pathToExplore);
     }
   };
 
   for (const itemPath of itemPaths) {
-    await explorePath(itemPath);
+    await traverseAndBuildJson(itemPath, datasetStructure);
   }
-  console.log("checked file count: " + importedFileCount);
-  console.log("inaccessible items: ");
-  console.log(inaccessibleItems);
-  return inaccessibleItems;
+
+  console.log("datasetStructure", datasetStructure);
+
+  // Optionally return or do something with the resulting datasetStructure and inaccessibleItems
+  return { datasetStructure, inaccessibleItems };
 };
 
 const checkForDuplicateFolderAndFileNames = async (importedFolders, itemsAtPath) => {
@@ -4955,159 +4975,53 @@ const addDataArrayToDatasetStructureAtPath = async (importedData, virtualFolderP
   console.log("foldersInPath", foldersInPath);
   console.log("filesInPath", filesInPath);
 
-  // STEP 1: Ensure all paths are able to be accessed by the server
-  const inaccessible_files = await findInaccessibleItems(importedData);
+  // STEP 1: Build the JSON object from the imported data
+  // (This will also check for inaccessible items but they will not be added to the dataset structure)
+  const { datasetStructure, inaccessibleItems } = await buildJsonFromImportedDataArray(itemPaths);
+  console.log("builtDatasetStructure", datasetStructure);
+  console.log("inaccessibleItemsWhileBuildingDatasetStructure", inaccessibleItems);
 
-  console.log("inaccessible_files", inaccessible_files);
-
-  // STEP 2: Check for duplicates
-  const duplicateFolders = await checkForDuplicateFolderAndFileNames(
-    importedFolders,
-    currentContentsAtDatasetPath
-  );
-  const importedFoldersInCurrentPath = importedFolders.filter((folder) =>
-    foldersInPath.includes(folder)
-  );
-  console.log("importedFoldersInCurrentPath", importedFoldersInCurrentPath);
-  if (JSON.stringify(currentLocation["folders"]) !== "{}") {
-    for (var folder in currentLocation["folders"]) {
-      uiFolders[folder] = 1;
+  const removeItemsWithPathFromDatasetStructure = (datasetStructure, itemsToRemove) => {
+    const currentFoldersAtPath = Object.keys(datasetStructure.folders);
+    const currentFilesAtPath = Object.keys(datasetStructure.files);
+    for (const folder of currentFoldersAtPath) {
+      const folderPath = datasetStructure.folders[folder].path;
+      if (itemsToRemove.includes(folderPath)) {
+        delete datasetStructure["folders"][folder];
+      }
+      removeItemsWithPathFromDatasetStructure(datasetStructure.folders[folder], itemsToRemove);
     }
-  }
+    for (const file of currentFilesAtPath) {
+      const filePath = datasetStructure.files[file].path;
+      if (itemsToRemove.includes(filePath)) {
+        delete datasetStructure["files"][file];
+      }
+    }
+  };
 
-  // if non-allowed characters are detected, do the action
-  // AND
-  // check for duplicates/folders with the same name
-  for (var i = 0; i < folderArray.length; i++) {
-    var j = 1;
-    er;
-    var originalFolderName = path.basename(folderArray[i]);
-    var renamedFolderName = originalFolderName;
-
-    if (originalFolderName in currentLocation["folders"]) {
-      //folder matches object key
-      folderPath.push(folderArray[i]);
-      duplicateFolders.push(originalFolderName);
-    } else {
-      if (originalFolderName in importedFolders) {
-        folderPath.push(folderArray[i]);
-        duplicateFolders.push(originalFolderName);
-      } else {
-        if (nonallowedFolderArray.includes(folderArray[i])) {
-          if (action !== "ignore" && action !== "") {
-            if (action === "remove") {
-              renamedFolderName = removeIrregularFolders(folderArray[i]);
-            } else if (action === "replace") {
-              renamedFolderName = replaceIrregularFolders(folderArray[i]);
-            }
-            importedFolders[renamedFolderName] = {
-              path: folderArray[i],
-              "original-basename": originalFolderName,
-            };
-          }
-        } else {
-          importedFolders[originalFolderName] = {
-            path: folderArray[i],
-            "original-basename": originalFolderName,
-          };
+  const checkDatasetStructureForHiddenFiles = (datasetStructure) => {
+    const hiddenFiles = [];
+    const checkForHiddenFiles = (datasetStructure) => {
+      const currentFoldersAtPath = Object.keys(datasetStructure.folders);
+      const currentFilesAtPath = Object.keys(datasetStructure.files);
+      for (const folder of currentFoldersAtPath) {
+        if (folder.startsWith(".")) {
+          hiddenFiles.push(folder);
+        }
+        checkForHiddenFiles(datasetStructure.folders[folder]);
+      }
+      for (const file of currentFilesAtPath) {
+        if (file.startsWith(".")) {
+          hiddenFiles.push(file);
         }
       }
-    }
+    };
+    checkForHiddenFiles(datasetStructure);
+    return hiddenFiles;
+  };
 
-    if (nonallowedFolderArray.includes(folderArray[i])) {
-      if (action !== "ignore" && action !== "") {
-        if (action === "remove") {
-          renamedFolderName = removeIrregularFolders(folderArray[i]);
-        } else if (action === "replace") {
-          renamedFolderName = replaceIrregularFolders(folderArray[i]);
-        }
-        importedFolders[renamedFolderName] = {
-          path: folderArray[i],
-          "original-basename": originalFolderName,
-        };
-      }
-    } else {
-      var listElements = showItemsAsListBootbox(duplicateFolders);
-      var list = JSON.stringify(folderPath).replace(/"/g, "");
-      if (duplicateFolders.length > 0) {
-        Swal.fire({
-          title: "Duplicate folder(s) detected",
-          icon: "warning",
-          showConfirmButton: false,
-          allowOutsideClick: false,
-          showCloseButton: true,
-          customClass: "wide-swal-auto",
-          backdrop: "rgba(0, 0, 0, 0.4)",
-          showClass: {
-            popup: "animate__animated animate__zoomIn animate__faster",
-          },
-          hideClass: {
-            popup: "animate_animated animate_zoomout animate__faster",
-          },
-          html:
-            `
-            <div class="caption">
-              <p>Folders with the following names are already in the current folder: <p><ul style="text-align: start;">${listElements}</ul></p></p>
-            </div>
-            <div class="swal-button-container">
-              <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
-            list +
-            `', 'free-form')">Skip Folders</button>
-              <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}', 'free-form')">Replace Existing Folders</button>
-              <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}', 'free-form')">Import Duplicates</button>
-              <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel', '', 'free-form')">Cancel</button>
-              </div>`,
-        });
-      }
-    }
-  }
-
-  if (Object.keys(importedFolders).length > 0) {
-    for (var element in importedFolders) {
-      currentLocation["folders"][element] = {
-        type: "local",
-        path: importedFolders[element]["path"],
-        folders: {},
-        files: {},
-        action: ["new"],
-      };
-      populateJSONObjFolder(
-        action,
-        currentLocation["folders"][element],
-        importedFolders[element]["path"]
-      );
-      // check if a folder has to be renamed due to duplicate reason
-      if (element !== importedFolders[element]["original-basename"]) {
-        currentLocation["folders"][element]["action"].push("renamed");
-      }
-    }
-    // $("#items").empty();
-    listItems(currentLocation, "#items", 500, (reset = true));
-    getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
-    beginScrollListen();
-    if (Object.keys(importedFolders).length > 1) {
-      importToast.open({
-        type: "success",
-        message: "Successfully Imported Folders",
-      });
-    } else {
-      importToast.open({
-        type: "success",
-        message: "Successfully Imported Folder",
-      });
-    }
-    hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-    hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
-
-    // log the success
-    logCurationForAnalytics(
-      "Success",
-      PrepareDatasetsAnalyticsPrefix.CURATE,
-      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-      ["Step 3", "Import", "Folder"],
-      determineDatasetLocation()
-    );
-  }
+  // Check for hidden files
+  const hiddenFiles = checkDatasetStructureForHiddenFiles(datasetStructure);
 };
 
 //// Step 3. Organize dataset: Add files or folders with drag&drop
