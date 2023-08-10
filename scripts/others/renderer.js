@@ -4831,68 +4831,7 @@ organizeDSaddFiles.addEventListener("click", function () {
 
 ipcRenderer.on("selected-files-organize-datasets", async (event, path) => {
   console.log("selected files from import files button", path);
-  var filtered = getGlobalPath(organizeDSglobalPath);
-  var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
-  let hidden_files_present = false;
-  path = path.filter(
-    (file_path) => fs.statSync(file_path).isFile() && !/(^|\/)\.[^\/\.]/g.test(file_path)
-  );
-  path.forEach((file_path) => {
-    if (/(^|\/)\.[^\/\.]/g.test(file_path)) {
-      hidden_files_present = true;
-    }
-  });
-  if (hidden_files_present == true) {
-    Swal.fire({
-      icon: "warning",
-      text: "We found some hidden files. These will be ignored when importing.",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showClass: {
-        popup: "animate__animated animate__zoomIn animate__faster",
-      },
-      hideClass: {
-        popup: "animate__animated animate__zoomOut animate__faster",
-      },
-    });
-  }
-
-  if (path.length > 0) {
-    let load_spinner_promise = new Promise(async (resolved) => {
-      let background = document.createElement("div");
-      let spinner_container = document.createElement("div");
-      let spinner_icon = document.createElement("div");
-      spinner_container.setAttribute("id", "items_loading_container");
-      spinner_icon.setAttribute("id", "item_load");
-      spinner_icon.setAttribute("class", "ui large active inline loader icon-wrapper");
-      background.setAttribute("class", "loading-items-background");
-      background.setAttribute("id", "loading-items-background-overlay");
-
-      spinner_container.append(spinner_icon);
-      document.body.prepend(background);
-      document.body.prepend(spinner_container);
-      let loading_items_spinner = document.getElementById("items_loading_container");
-      loading_items_spinner.style.display = "block";
-      if (loading_items_spinner.style.display === "block") {
-        setTimeout(() => {
-          resolved();
-        }, 100);
-      }
-    }).then(async () => {
-      await addFilesfunction(
-        path,
-        myPath,
-        organizeDSglobalPath,
-        "#items",
-        ".single-item",
-        datasetStructureJSONObj
-      );
-      // Swal.close();
-      document.getElementById("loading-items-background-overlay").remove();
-      document.getElementById("items_loading_container").remove();
-      // background.remove();
-    });
-  }
+  await addDataArrayToDatasetStructureAtPath(path, ["My_dataset_folder", "code"]);
 });
 
 organizeDSaddFolders.addEventListener("click", function () {
@@ -4908,7 +4847,10 @@ ipcRenderer.on("selected-folders-organize-datasets", async (event, importedFolde
     datasetStructureJSONObj
   ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')*/
 
-  await addFoldersfunction(importedFolders, ["My_dataset_folder", "code"] /*currentPathArray*/);
+  await addDataArrayToDatasetStructureAtPath(
+    importedFolders,
+    ["My_dataset_folder", "code"] /*currentPathArray*/
+  );
 });
 
 const localPathIsFolder = (localPath) => {
@@ -4924,10 +4866,13 @@ const findInaccessibleItems = async (itemPaths) => {
   const inaccessibleItems = [];
 
   const explorePath = async (pathToExplore) => {
+    console.log("exploring path: " + pathToExplore);
     try {
+      // Check to see if the folder/file at this path is accessible by node
       const fsStatsObj = await fs.stat(pathToExplore);
-      importedFileCount++;
 
+      // Note: If the path is a file, we don't have to do anything else because we already know it's accessible
+      // Now for folders, we need to check if we can read the contents of the folder
       if (fsStatsObj.isDirectory()) {
         try {
           const folderContents = await fs.readdir(pathToExplore);
@@ -4943,7 +4888,6 @@ const findInaccessibleItems = async (itemPaths) => {
       }
     } catch (error) {
       console.log("error reading folder contents2: " + pathToExplore);
-      console.log(error);
       inaccessibleItems.push(pathToExplore);
     }
   };
@@ -4960,11 +4904,28 @@ const findInaccessibleItems = async (itemPaths) => {
 const checkForDuplicateFolderAndFileNames = async (importedFolders, itemsAtPath) => {
   const duplicateFolderNames = [];
   const duplicateFileNames = [];
+
+  const checkForDuplicateNames = async (importedFolders, itemsAtPath) => {
+    const currentFoldersAtPath = Object.keys(itemsAtPath.folders);
+    const currentFilesAtPath = Object.keys(itemsAtPath.files);
+    for (const folder of importedFolders) {
+      folderName = path.basename(folder);
+      if (currentFoldersAtPath.includes(folderName)) {
+        duplicateFolderNames.push(folderName);
+      }
+      const folderContents = await fs.readdir(folder);
+    }
+    for (const fileName of importedFiles) {
+      if (currentFilesAtPath.includes(fileName)) {
+        duplicateFileNames.push(fileName);
+      }
+    }
+  };
 };
 
-const addFoldersfunction = async (importedFolders, virtualFolderPath) => {
-  console.log("Imported folders");
-  console.log(importedFolders);
+const addDataArrayToDatasetStructureAtPath = async (importedData, virtualFolderPath) => {
+  console.log("Imported folders and/or files:");
+  console.log(importedData);
   const slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
   if (slashCount == 1) {
     Swal.fire({
@@ -4986,10 +4947,7 @@ const addFoldersfunction = async (importedFolders, virtualFolderPath) => {
   }
 
   console.log(virtualFolderPath);
-  const currentContentsAtDatasetPath = getRecursivePath(
-    ["My_dataset_folder", "code"],
-    datasetStructureJSONObj
-  ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')
+  const currentContentsAtDatasetPath = getRecursivePath(["code"], datasetStructureJSONObj); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')
   console.log("currentContentsAtDatasetPath", currentContentsAtDatasetPath);
 
   const foldersInPath = Object.keys(currentContentsAtDatasetPath["folders"]);
@@ -4998,13 +4956,13 @@ const addFoldersfunction = async (importedFolders, virtualFolderPath) => {
   console.log("filesInPath", filesInPath);
 
   // STEP 1: Ensure all paths are able to be accessed by the server
-  const inaccessible_files = await findInaccessibleItems(importedFolders);
+  const inaccessible_files = await findInaccessibleItems(importedData);
   console.log("inaccessible_files", inaccessible_files);
 
   // STEP 2: Check for duplicates
   const duplicateFolders = await checkForDuplicateFolderAndFileNames(
     importedFolders,
-    foldersInPath
+    currentContentsAtDatasetPath
   );
   const importedFoldersInCurrentPath = importedFolders.filter((folder) =>
     foldersInPath.includes(folder)
