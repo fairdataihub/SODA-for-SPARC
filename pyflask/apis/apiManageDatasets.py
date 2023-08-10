@@ -122,8 +122,7 @@ class GetNumberOfFilesAndFoldersLocally(Resource):
     try:
       return get_number_of_files_and_folders_locally(filepath)
     except Exception as e:
-      # TODO: Investigate this further (improved-ps-500-error-handling)
-      api.abort(500, e.args[0])
+      handle_error(e)
     
 
 
