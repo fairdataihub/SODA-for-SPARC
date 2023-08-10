@@ -4377,7 +4377,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
         $("#add-new-folder-input").keyup(function () {
           let val = $("#add-new-folder-input").val();
           let folderNameCheck = checkIrregularNameBoolean(val);
-          if (folderNameCheck === true) {
+          if (folderNameCheck === false) {
             Swal.showValidationMessage(
               `The folder name contains non-allowed characters. To follow the SPARC Data Standards, please create a folder name with only alphanumberic characters and hyphens '-'`
             );
@@ -4911,31 +4911,54 @@ ipcRenderer.on("selected-folders-organize-datasets", async (event, importedFolde
   await addFoldersfunction(importedFolders, currentPathArray);
 });
 
-const addFoldersfunction = async (importedFolders, virtualFolderPath) => {
-  console.log(virtualFolderPath);
-  const currentContentsAtDatasetPath = getRecursivePath(
-    virtualFolderPath.slice(1),
-    datasetStructureJSONObj
-  ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')
-  console.log("currentContentsAtDatasetPath", currentContentsAtDatasetPath);
+const localPathIsFolder = (localPath) => {
+  return fs.statSync(localPath).isDirectory();
+};
 
-  const foldersInPath = Object.keys(currentContentsAtDatasetPath["folders"]);
-  const filesInPath = Object.keys(currentContentsAtDatasetPath["files"]);
-  console.log("foldersInPath", foldersInPath);
-  console.log("filesInPath", filesInPath);
+const localPathIsFile = (localPath) => {
+  return fs.statSync(localPath).isFile();
+};
 
-  // STEP 1: Check if any of the imported folders are already in the current path
-  const importedFoldersInCurrentPath = importedFolders.filter((folder) =>
-    foldersInPath.includes(folder)
-  );
-  console.log("importedFoldersInCurrentPath", importedFoldersInCurrentPath);
-  if (JSON.stringify(currentLocation["folders"]) !== "{}") {
-    for (var folder in currentLocation["folders"]) {
-      uiFolders[folder] = 1;
+const findInaccessibleItems = async (itemPath) => {
+  let importedFileCount = 0;
+  const inaccessibleItems = [];
+
+  const explorePath = async (pathToExplore) => {
+    try {
+      const fsStatsObj = await fs.stat(pathToExplore);
+      importedFileCount++;
+
+      if (fsStatsObj.isDirectory()) {
+        try {
+          const folderContents = await fs.readdir(pathToExplore);
+          for (const item of folderContents) {
+            const itemPath = path.join(pathToExplore, item);
+            await explorePath(itemPath);
+          }
+        } catch (error) {
+          console.log("error reading folder contents: " + pathToExplore);
+          console.log(error);
+          inaccessibleItems.push(pathToExplore);
+        }
+      }
+    } catch (error) {
+      console.log("error reading folder contents2: " + pathToExplore);
+      console.log(error);
+      inaccessibleItems.push(pathToExplore);
     }
-  }
-  var slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
-  if (slashCount === 1) {
+  };
+
+  await explorePath(itemPath);
+
+  console.log("checked file count: " + importedFileCount);
+  console.log("inaccessible items: ");
+  console.log(inaccessibleItems);
+  return inaccessibleItems;
+};
+
+const addFoldersfunction = async (importedFolders, virtualFolderPath) => {
+  const slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
+  if (slashCount == 1) {
     Swal.fire({
       icon: "error",
       text: "Only SPARC folders can be added at this level. To add a new SPARC folder, please go back to Step 2.",
@@ -4951,139 +4974,165 @@ const addFoldersfunction = async (importedFolders, virtualFolderPath) => {
       ["Step 3", "Import", "Folder"],
       determineDatasetLocation()
     );
-  } else {
-    // if non-allowed characters are detected, do the action
-    // AND
-    // check for duplicates/folders with the same name
-    for (var i = 0; i < folderArray.length; i++) {
-      var j = 1;
-      var originalFolderName = path.basename(folderArray[i]);
-      var renamedFolderName = originalFolderName;
+  }
 
-      if (originalFolderName in currentLocation["folders"]) {
-        //folder matches object key
+  console.log(virtualFolderPath);
+  const currentContentsAtDatasetPath = getRecursivePath(
+    virtualFolderPath.slice(1),
+    datasetStructureJSONObj
+  ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')
+  console.log("currentContentsAtDatasetPath", currentContentsAtDatasetPath);
+
+  const foldersInPath = Object.keys(currentContentsAtDatasetPath["folders"]);
+  const filesInPath = Object.keys(currentContentsAtDatasetPath["files"]);
+  console.log("foldersInPath", foldersInPath);
+  console.log("filesInPath", filesInPath);
+
+  // STEP 1: Ensure all paths are able to be accessed by the server
+  const inaccessible_files = await CheckFileListForServerAccess(importedFolders);
+  console.log("inaccessible_files", inaccessible_files);
+  const importedFoldersInCurrentPath = importedFolders.filter((folder) =>
+    foldersInPath.includes(folder)
+  );
+  console.log("importedFoldersInCurrentPath", importedFoldersInCurrentPath);
+  if (JSON.stringify(currentLocation["folders"]) !== "{}") {
+    for (var folder in currentLocation["folders"]) {
+      uiFolders[folder] = 1;
+    }
+  }
+
+  // if non-allowed characters are detected, do the action
+  // AND
+  // check for duplicates/folders with the same name
+  for (var i = 0; i < folderArray.length; i++) {
+    var j = 1;
+    er;
+    var originalFolderName = path.basename(folderArray[i]);
+    var renamedFolderName = originalFolderName;
+
+    if (originalFolderName in currentLocation["folders"]) {
+      //folder matches object key
+      folderPath.push(folderArray[i]);
+      duplicateFolders.push(originalFolderName);
+    } else {
+      if (originalFolderName in importedFolders) {
         folderPath.push(folderArray[i]);
         duplicateFolders.push(originalFolderName);
       } else {
-        if (originalFolderName in importedFolders) {
-          folderPath.push(folderArray[i]);
-          duplicateFolders.push(originalFolderName);
-        } else {
-          if (nonallowedFolderArray.includes(folderArray[i])) {
-            if (action !== "ignore" && action !== "") {
-              if (action === "remove") {
-                renamedFolderName = removeIrregularFolders(folderArray[i]);
-              } else if (action === "replace") {
-                renamedFolderName = replaceIrregularFolders(folderArray[i]);
-              }
-              importedFolders[renamedFolderName] = {
-                path: folderArray[i],
-                "original-basename": originalFolderName,
-              };
+        if (nonallowedFolderArray.includes(folderArray[i])) {
+          if (action !== "ignore" && action !== "") {
+            if (action === "remove") {
+              renamedFolderName = removeIrregularFolders(folderArray[i]);
+            } else if (action === "replace") {
+              renamedFolderName = replaceIrregularFolders(folderArray[i]);
             }
-          } else {
-            importedFolders[originalFolderName] = {
+            importedFolders[renamedFolderName] = {
               path: folderArray[i],
               "original-basename": originalFolderName,
             };
           }
-        }
-      }
-
-      if (nonallowedFolderArray.includes(folderArray[i])) {
-        if (action !== "ignore" && action !== "") {
-          if (action === "remove") {
-            renamedFolderName = removeIrregularFolders(folderArray[i]);
-          } else if (action === "replace") {
-            renamedFolderName = replaceIrregularFolders(folderArray[i]);
-          }
-          importedFolders[renamedFolderName] = {
+        } else {
+          importedFolders[originalFolderName] = {
             path: folderArray[i],
             "original-basename": originalFolderName,
           };
         }
-      } else {
-        var listElements = showItemsAsListBootbox(duplicateFolders);
-        var list = JSON.stringify(folderPath).replace(/"/g, "");
-        if (duplicateFolders.length > 0) {
-          Swal.fire({
-            title: "Duplicate folder(s) detected",
-            icon: "warning",
-            showConfirmButton: false,
-            allowOutsideClick: false,
-            showCloseButton: true,
-            customClass: "wide-swal-auto",
-            backdrop: "rgba(0, 0, 0, 0.4)",
-            showClass: {
-              popup: "animate__animated animate__zoomIn animate__faster",
-            },
-            hideClass: {
-              popup: "animate_animated animate_zoomout animate__faster",
-            },
-            html:
-              `
+      }
+    }
+
+    if (nonallowedFolderArray.includes(folderArray[i])) {
+      if (action !== "ignore" && action !== "") {
+        if (action === "remove") {
+          renamedFolderName = removeIrregularFolders(folderArray[i]);
+        } else if (action === "replace") {
+          renamedFolderName = replaceIrregularFolders(folderArray[i]);
+        }
+        importedFolders[renamedFolderName] = {
+          path: folderArray[i],
+          "original-basename": originalFolderName,
+        };
+      }
+    } else {
+      var listElements = showItemsAsListBootbox(duplicateFolders);
+      var list = JSON.stringify(folderPath).replace(/"/g, "");
+      if (duplicateFolders.length > 0) {
+        Swal.fire({
+          title: "Duplicate folder(s) detected",
+          icon: "warning",
+          showConfirmButton: false,
+          allowOutsideClick: false,
+          showCloseButton: true,
+          customClass: "wide-swal-auto",
+          backdrop: "rgba(0, 0, 0, 0.4)",
+          showClass: {
+            popup: "animate__animated animate__zoomIn animate__faster",
+          },
+          hideClass: {
+            popup: "animate_animated animate_zoomout animate__faster",
+          },
+          html:
+            `
             <div class="caption">
               <p>Folders with the following names are already in the current folder: <p><ul style="text-align: start;">${listElements}</ul></p></p>
             </div>
             <div class="swal-button-container">
               <button id="skip" class="btn skip-btn" onclick="handleDuplicateImports('skip', '` +
-              list +
-              `', 'free-form')">Skip Folders</button>
+            list +
+            `', 'free-form')">Skip Folders</button>
               <button id="replace" class="btn replace-btn" onclick="handleDuplicateImports('replace', '${list}', 'free-form')">Replace Existing Folders</button>
               <button id="rename" class="btn rename-btn" onclick="handleDuplicateImports('rename', '${list}', 'free-form')">Import Duplicates</button>
               <button id="cancel" class="btn cancel-btn" onclick="handleDuplicateImports('cancel', '', 'free-form')">Cancel</button>
               </div>`,
-          });
-        }
+        });
       }
     }
+  }
 
-    if (Object.keys(importedFolders).length > 0) {
-      for (var element in importedFolders) {
-        currentLocation["folders"][element] = {
-          type: "local",
-          path: importedFolders[element]["path"],
-          folders: {},
-          files: {},
-          action: ["new"],
-        };
-        populateJSONObjFolder(
-          action,
-          currentLocation["folders"][element],
-          importedFolders[element]["path"]
-        );
-        // check if a folder has to be renamed due to duplicate reason
-        if (element !== importedFolders[element]["original-basename"]) {
-          currentLocation["folders"][element]["action"].push("renamed");
-        }
-      }
-      // $("#items").empty();
-      listItems(currentLocation, "#items", 500, (reset = true));
-      getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
-      beginScrollListen();
-      if (Object.keys(importedFolders).length > 1) {
-        importToast.open({
-          type: "success",
-          message: "Successfully Imported Folders",
-        });
-      } else {
-        importToast.open({
-          type: "success",
-          message: "Successfully Imported Folder",
-        });
-      }
-      hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
-      hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
-
-      // log the success
-      logCurationForAnalytics(
-        "Success",
-        PrepareDatasetsAnalyticsPrefix.CURATE,
-        AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
-        ["Step 3", "Import", "Folder"],
-        determineDatasetLocation()
+  if (Object.keys(importedFolders).length > 0) {
+    for (var element in importedFolders) {
+      currentLocation["folders"][element] = {
+        type: "local",
+        path: importedFolders[element]["path"],
+        folders: {},
+        files: {},
+        action: ["new"],
+      };
+      populateJSONObjFolder(
+        action,
+        currentLocation["folders"][element],
+        importedFolders[element]["path"]
       );
+      // check if a folder has to be renamed due to duplicate reason
+      if (element !== importedFolders[element]["original-basename"]) {
+        currentLocation["folders"][element]["action"].push("renamed");
+      }
     }
+    // $("#items").empty();
+    listItems(currentLocation, "#items", 500, (reset = true));
+    getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
+    beginScrollListen();
+    if (Object.keys(importedFolders).length > 1) {
+      importToast.open({
+        type: "success",
+        message: "Successfully Imported Folders",
+      });
+    } else {
+      importToast.open({
+        type: "success",
+        message: "Successfully Imported Folder",
+      });
+    }
+    hideMenu("folder", menuFolder, menuHighLevelFolders, menuFile);
+    hideMenu("high-level-folder", menuFolder, menuHighLevelFolders, menuFile);
+
+    // log the success
+    logCurationForAnalytics(
+      "Success",
+      PrepareDatasetsAnalyticsPrefix.CURATE,
+      AnalyticsGranularity.ACTION_AND_ACTION_WITH_DESTINATION,
+      ["Step 3", "Import", "Folder"],
+      determineDatasetLocation()
+    );
   }
 };
 

@@ -15353,7 +15353,7 @@ $("#guided-new-folder").on("click", () => {
         $("#add-new-folder-input").keyup(function () {
           var val = $("#add-new-folder-input").val();
           let folderNameCheck = checkIrregularNameBoolean(val);
-          if (folderNameCheck === true) {
+          if (folderNameCheck === false) {
             Swal.showValidationMessage(
               `The folder name contains non-allowed characters. To follow SPARC Data Standards, please create a folder name with only alphanumberic characters and hyphens '-'`
             );
