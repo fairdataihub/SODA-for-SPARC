@@ -82,6 +82,8 @@ def handle_error(err):
         # raise werkzeug exceptions as is since these are our custom errors that are already translated for 400s, 401s, etc 
         raise err
     else:
+        if type(err).__name__  == 'InvalidDataDeliverablesDocument':
+            raise BadRequest(str(err)) from err
         # the exception is an unexpected generic Python error from a flaw in our code
         raise InternalServerError("SODA for SPARC received an unexpected error while trying to process your request. Please try again later.") from err
 

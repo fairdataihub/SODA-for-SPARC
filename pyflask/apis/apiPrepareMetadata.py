@@ -522,14 +522,7 @@ class ImportMilestone(Resource):
                 "sparc_award": sparc_award
             }
         except Exception as e:
-            # TODO: add this error to the error handler? (improved-ps-500-error-handling)
             handle_error(e)
-            # # check if invalidDataDeliverablesDocument exception
-            # if type(e).__name__  == 'InvalidDataDeliverablesDocument':
-            #     api.abort(400, str(e))
-            # if notBadRequestException(e):
-            #     api.abort(500, str(e))
-            # raise e
 
 
 
