@@ -237,15 +237,16 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
             # then, delete it using Pennsieve method delete(id)\vf = Pennsieve()
             r = requests.post(f"{PENNSIEVE_URL}/data/delete",json=jsonfile, headers=headers)
             r.raise_for_status()
+    
+    ps = connect_pennsieve_client(bfaccount)
+    authenticate_user_with_client(ps, bfaccount)
+
     try:
-        ps = connect_pennsieve_client(bfaccount)
-        authenticate_user_with_client(ps, bfaccount)
         # create a new manifest for the metadata file
         ps.use_dataset(selected_dataset_id)
         manifest = ps.manifest.create(file_path)
         m_id = manifest.manifest_id
     except Exception as e:
-        # TODO: break this up as there are different errors here besides a 500 (improved-ps-500-error-handling)
         error_message = "Could not create manifest file for this dataset"
         abort(500, error_message)
     
