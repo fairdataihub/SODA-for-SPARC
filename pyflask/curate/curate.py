@@ -1914,6 +1914,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
         selected_id = ds["content"]["id"]
         ps.use_dataset(selected_id)
         
+        # See how to create folders with the Pennsieve agent
         def recursive_create_folder_for_ps(
             my_folder, my_tracking_folder, existing_folder_option
         ):
@@ -2271,10 +2272,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
             total_dataset_files += file_paths_count
             
         
-        # step2TimerEnd = timer()
-        # namespace_logger.info(f"Step 2 took {timedelta(seconds=step2TimerEnd - step2Timer)} seconds")
         # 3. Add high-level metadata files to a list
-        # step3Timer = timer()
         list_upload_metadata_files = []
         if "metadata-files" in soda_json_structure.keys():
             namespace_logger.info("ps_create_new_dataset (optional) step 3 create high level metadata list")
@@ -2306,10 +2304,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                         main_total_generate_dataset_size += getsize(metadata_path)
                         total_files += 1
                         total_metadata_files += 1
-        # step3TimerEnd = timer()
-        # namespace_logger.info(f"Step 3 took {timedelta(seconds=step3TimerEnd - step3Timer)} seconds")
+
         # 4. Prepare and add manifest files to a list
-        # step4Timer = timer()
         list_upload_manifest_files = []
         if "manifest-files" in soda_json_structure.keys():
             namespace_logger.info("ps_create_new_dataset (optional) step 4 create manifest list")
@@ -2365,12 +2361,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                 total_files += 1
                 total_manifest_files += 1
                 main_total_generate_dataset_size += getsize(manifestpath)
-        # step4TimerEnd = timer()
-        # namespace_logger.info(f"Step 4 took {timedelta(seconds=step4TimerEnd - step4Timer)} seconds")
         # 5. Upload files, rename, and add to tracking list
-        # step5Timer = timer()
         # namespace_logger.info("ps_create_new_dataset step 5 upload files, rename and add to tracking list")
-        #main_initial_bfdataset_size = bf_dataset_size()
         start_generate = 1
 
 
@@ -2430,11 +2422,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                 raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
 
 
-            
-        # step5TimerEnd = timer()
-        # namespace_logger.info(f"Step 5 took {timedelta(seconds=step5TimerEnd - step5Timer)} seconds")
         # 6. Upload metadata files
-        # step6Timer = timer()
         if list_upload_metadata_files:
             namespace_logger.info("ps_create_new_dataset (optional) step 6 upload metadata files")
             main_curate_progress_message = (
@@ -2470,10 +2458,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                 namespace_logger.error(e)
                 raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
 
-        # step6TimerEnd = timer()
-        # namespace_logger.info(f"Step 6 took {timedelta(seconds=step6TimerEnd - step6Timer)} seconds")
         # 7. Upload manifest files
-        # step7Timer = timer()
         if list_upload_manifest_files:
             namespace_logger.info("ps_create_new_dataset (optional) step 7 upload manifest files")
 
@@ -2511,8 +2496,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                 namespace_logger.error(e)
                 raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
 
-        # step7TimerEnd = timer()
-        # namespace_logger.info(f"Step 7 took {timedelta(seconds=step7TimerEnd - step7Timer)} seconds")
         # wait for all of the Agent's processes to finish to avoid errors when deleting files on Windows
         time.sleep(1)
 
