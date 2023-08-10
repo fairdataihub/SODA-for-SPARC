@@ -65,19 +65,17 @@ def get_cognito_userpool_access_token(email, password):
     """
     PENNSIEVE_URL = "https://api.pennsieve.io"
 
-    try:
-        response = requests.get(f"{PENNSIEVE_URL}/authentication/cognito-config")
-        response.raise_for_status()
-        cognito_app_client_id = response.json()["userPool"]["appClientId"]
-        cognito_region = response.json()["userPool"]["region"]
-        cognito_client = boto3.client(
-            "cognito-idp",
-            region_name=cognito_region,
-            aws_access_key_id="",
-            aws_secret_access_key="",
-        )
-    except Exception as e:
-        raise Exception(e) from e
+
+    response = requests.get(f"{PENNSIEVE_URL}/authentication/cognito-config")
+    response.raise_for_status()
+    cognito_app_client_id = response.json()["userPool"]["appClientId"]
+    cognito_region = response.json()["userPool"]["region"]
+    cognito_client = boto3.client(
+        "cognito-idp",
+        region_name=cognito_region,
+        aws_access_key_id="",
+        aws_secret_access_key="",
+    )
 
     try:
         login_response = cognito_client.initiate_auth(
@@ -245,8 +243,10 @@ def bf_add_account_username(keyname, key, secret):
 
     # Check key and secret are valid, if not delete account from config
     try:
-        token = get_access_token()
+        get_access_token()
     except Exception as e:
+        # TODO: TESTING RETURN VALUE  should it be a 401? (improved-ps-500-error-handling)
+        # TODO: Can use this response message if I add the resource checker in the central error handler. I would just need to know the status code for this instance as mentioned above.(improved-ps-500-error-handling)
         namespace_logger.error(e)
         bf_delete_account(keyname)
         abort(401, 

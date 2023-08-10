@@ -17,15 +17,11 @@ def get_role(dataset):
 
     selected_dataset_id = get_dataset_id(token, dataset)
 
-    try:
-        r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/role", headers=create_request_headers(token))
-        r.raise_for_status()
-        role = r.json()["role"]
-        return {"role": role}
-    except Exception as e:
-        if type(e).__name__ == "HTTPError":
-            abort(400, e.response.json()["message"])
-        abort(500, "An internal server error prevented the request from being fulfilled. Please try again later.")
+    r = requests.get(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/role", headers=create_request_headers(token))
+    r.raise_for_status()
+    role = r.json()["role"]
+    return {"role": role}
+
 
 
 def get_dataset_by_id(dataset_name_or_id):
@@ -138,15 +134,10 @@ def reserve_dataset_doi(dataset):  # sourcery skip: extract-method
 
     dataset_id = get_dataset_id(token, dataset)
 
-    try:
-        doi_request = requests.post(f"{PENNSIEVE_URL}/datasets/{dataset_id}/doi", headers=create_request_headers(token))
-        doi_request.raise_for_status()
-        return {"doi": doi_request.json()["doi"]}
-    except Exception as e:
-        print(e)
-        if type(e).__name__ == "HTTPError":
-            abort(400, e.response.json()["message"])
-        abort(500, "An internal server error prevented the request from being fulfilled. Please try again later.")
+    doi_request = requests.post(f"{PENNSIEVE_URL}/datasets/{dataset_id}/doi", headers=create_request_headers(token))
+    doi_request.raise_for_status()
+    return {"doi": doi_request.json()["doi"]}
+
 
 def get_dataset_doi(dataset):
     """
@@ -167,16 +158,13 @@ def get_dataset_doi(dataset):
     token = get_access_token()
 
     dataset_id = get_dataset_id(token, dataset)
-    try:
-        doi_request = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/doi", headers=create_request_headers(token))
-        if doi_request.status_code == 404:
-            return {"doi": "No DOI found for this dataset"}
-        doi_request.raise_for_status()
-        return {"doi": doi_request.json()["doi"]}
-    except Exception as e:
-        if type(e).__name__ == "HTTPError":
-            abort(400, e.response.json()["message"])
-        abort(500, "An internal server error prevented the request from being fulfilled. Please try again later.")
+
+    doi_request = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/doi", headers=create_request_headers(token))
+    if doi_request.status_code == 404:
+        return {"doi": "No DOI found for this dataset"}
+    doi_request.raise_for_status()
+    return {"doi": doi_request.json()["doi"]}
+
 
 
 def get_package_type_counts(dataset_name):

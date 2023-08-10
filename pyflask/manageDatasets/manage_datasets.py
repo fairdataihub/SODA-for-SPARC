@@ -366,16 +366,12 @@ def get_username(accountname):
     """
 
     # ensure the given account name is a valid profile saved in the .pennsieve/config file 
-    try:
-        token = get_access_token()
-    except Exception as e:
-        abort(400, "Please select a valid Pennsieve account.")
+    token = get_access_token()
+
 
     # request the user's first and last name stored on Pennsieve
-    try:
-        user_info = get_user_information(token)
-    except Exception as e:
-        abort(500, "Something went wrong while authenticating the user or connecting to Pennsieve.")
+    user_info = get_user_information(token)
+
     
     username = f"{user_info['firstName']} {user_info['lastName']}"
 
@@ -408,15 +404,11 @@ def bf_account_details(accountname):
     Action:
         Returns: return details of user associated with the account
     """
-    try:
-        token = get_access_token()
-    except Exception as e:
-        abort(400, "Please select a valid Pennsieve account.")
 
-    try:
-        user_info = get_user_information(token)
-    except Exception as e:
-        abort(500, "Something went wrong while authenticating the user or connecting to Pennsieve.")
+    token = get_access_token()
+
+    user_info = get_user_information(token)
+
 
     user_email = user_info['email']
     organization_id = user_info['preferredOrganization']
@@ -646,7 +638,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         did_fail = True
         did_upload = False
         error_message = "Please select a valid Pennsieve account"
-        abort(500, e)
+        raise e
 
 
     # select the user

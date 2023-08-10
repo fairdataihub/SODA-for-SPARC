@@ -25,11 +25,9 @@ def integrate_orcid_with_pennsieve(access_code, pennsieve_account):
     abort(400, "Cannot integrate your ORCID iD to Pennsieve without an access code.")
 
   # verify Pennsieve account
-  try:
-    ps = connect_pennsieve_client()
-    authenticate_user_with_client(ps, pennsieve_account)
-  except Exception as e:
-     abort(400, "Error: Please select a valid Pennsieve account")
+  ps = connect_pennsieve_client()
+  authenticate_user_with_client(ps, pennsieve_account)
+
     
   
   try:
@@ -42,7 +40,7 @@ def integrate_orcid_with_pennsieve(access_code, pennsieve_account):
     # If status is 400 then the orcid is already linked to users account
     if r.status_code == 400:
       abort(409, "ORCID iD is already linked to your Pennsieve account.")
-    abort(400, "Invalid access code")
+    raise e
 
   
 def get_user():
@@ -162,10 +160,9 @@ def get_user_organizations():
   """
   Get a user's organizations.
   """
-  try:
-    token = get_access_token()
-  except Exception as e:
-     abort(400, "Please select a valid Pennsieve account")
+
+  token = get_access_token()
+
 
 
   r = requests.get(f"{PENNSIEVE_URL}/organizations", headers=create_request_headers(token))

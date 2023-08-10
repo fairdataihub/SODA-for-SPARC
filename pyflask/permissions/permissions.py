@@ -24,9 +24,8 @@ def has_edit_permissions(ps_or_token, selected_dataset_id):
             selected_dataset_id: Pennsieve dataset ID to check permissions for
             ps: Pennsieve client object of a user that has been authenticated
     """
-    try:
-        role = pennsieve_get_current_user_permissions(selected_dataset_id, ps_or_token)["role"]
-    except Exception as e:
-        abort(500, "Could not get permissions for this dataset.")
+
+    role = pennsieve_get_current_user_permissions(selected_dataset_id, ps_or_token)["role"]
+
 
     return role in ["owner", "manager"]  

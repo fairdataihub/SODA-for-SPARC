@@ -1179,9 +1179,10 @@ def import_pennsieve_dataset(soda_json_structure, requested_sparc_only=True):
         role = pennsieve_get_current_user_permissions(selected_dataset_id, token)["role"]
         if role not in ["owner", "manager", "editor"]:
             curatestatus = "Done"
-            raise Exception("You don't have permissions for uploading to this Pennsieve dataset")
+            abort(403, "You don't have permissions for uploading to this Pennsieve dataset")
     except Exception as e:
-        abort(401, "You do not have permissions to edit upload this Pennsieve dataset.")
+        curatestatus = "Done"
+        raise e
 
 
     # surface layer of dataset is pulled. then go through through the children to get information on subfolders
