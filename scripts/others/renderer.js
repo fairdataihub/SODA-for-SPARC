@@ -8088,6 +8088,7 @@ const initiate_generate = async () => {
     datasetUploadSession.startSession();
   }
 
+  let start = performance.now();
   client
     .post(
       `/curate_datasets/curation`,
@@ -8097,6 +8098,9 @@ const initiate_generate = async () => {
       { timeout: 0 }
     )
     .then(async (response) => {
+      let end = performance.now();
+      let time = (end - start) / 1000;
+      console.log("Time to complete curate function: " + time + " seconds");
       let { data } = response;
 
       main_total_generate_dataset_size = data["main_total_generate_dataset_size"];
