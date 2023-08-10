@@ -2361,12 +2361,10 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                 total_files += 1
                 total_manifest_files += 1
                 main_total_generate_dataset_size += getsize(manifestpath)
+        
         # 5. Upload files, rename, and add to tracking list
         # namespace_logger.info("ps_create_new_dataset step 5 upload files, rename and add to tracking list")
         start_generate = 1
-
-
-
         main_curate_progress_message = ("Queuing dataset files for upload with the Pennsieve Agent..." + "<br>" + "This may take some time.")
 
         # create a manifest - IMP: We use a single file to start with since creating a manifest requires a file path.  We need to remove this at the end. 
@@ -2387,9 +2385,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                 for folderInformation in list_upload_files:
                     list_file_paths = folderInformation[0]
                     relative_path = folderInformation[6]
-
+                    # print(f"list upload files: {list_upload_files}")
                     
-
                     # get the substring from the string relative_path that starts at the index of the / and contains the rest of the string
                     # this is the folder name
                     try:
@@ -2397,8 +2394,12 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                     except ValueError as e:
                         folder_name = relative_path
 
+                    # print(f"list file paths: {list_file_paths}")
+                    # print(f"folder name: {folder_name}")
+                    # print(f"relative path: {relative_path}")
                     # Add files to manfiest"
                     for file_path in list_file_paths:
+                        # print(f"file path: {file_path}")
                         ps.manifest.add(file_path, folder_name[1:], manifest_id)
 
             # reset global variables used in the subscriber monitoring function
@@ -2700,7 +2701,8 @@ def clean_json_structure(soda_json_structure):
         for folder_item in list(folder["folders"]):
             if folder["folders"][folder_item]["type"] == "bf":
                 if "deleted" in folder["folders"][folder_item]["action"]:
-                    del folder_item["folders"][folder_item]
+                    namespace_logger.info(f"Deleting folder {folder_item}")
+                    del folder["folders"][folder_item]
                 else:
                     recursive_folder_delete(folder["folders"][folder_item])
             else:

@@ -8088,6 +8088,7 @@ const initiate_generate = async () => {
     datasetUploadSession.startSession();
   }
 
+  console.log(JSON.stringify(sodaJSONObj))
   let start = performance.now();
   client
     .post(
