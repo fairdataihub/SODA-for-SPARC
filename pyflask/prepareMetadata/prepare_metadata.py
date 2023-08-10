@@ -245,6 +245,7 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
         manifest = ps.manifest.create(file_path)
         m_id = manifest.manifest_id
     except Exception as e:
+        # TODO: break this up as there are different errors here besides a 500 (improved-ps-500-error-handling)
         error_message = "Could not create manifest file for this dataset"
         abort(500, error_message)
     
@@ -258,7 +259,7 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
     except Exception as e:
         namespace_logger.error("Error uploading dataset files")
         namespace_logger.error(e)
-        raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
+        abort(500, "The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
 
 
     # before we can remove files we need to wait for all of the Agent's threads/subprocesses to finish
