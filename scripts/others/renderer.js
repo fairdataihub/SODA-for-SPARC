@@ -4908,7 +4908,7 @@ ipcRenderer.on("selected-folders-organize-datasets", async (event, importedFolde
     datasetStructureJSONObj
   ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')*/
 
-  await addFoldersfunction(importedFolders, currentPathArray);
+  await addFoldersfunction(importedFolders, ["My_dataset_folder", "code"] /*currentPathArray*/);
 });
 
 const localPathIsFolder = (localPath) => {
@@ -4919,7 +4919,7 @@ const localPathIsFile = (localPath) => {
   return fs.statSync(localPath).isFile();
 };
 
-const findInaccessibleItems = async (itemPath) => {
+const findInaccessibleItems = async (itemPaths) => {
   let importedFileCount = 0;
   const inaccessibleItems = [];
 
@@ -4948,15 +4948,23 @@ const findInaccessibleItems = async (itemPath) => {
     }
   };
 
-  await explorePath(itemPath);
-
+  for (const itemPath of itemPaths) {
+    await explorePath(itemPath);
+  }
   console.log("checked file count: " + importedFileCount);
   console.log("inaccessible items: ");
   console.log(inaccessibleItems);
   return inaccessibleItems;
 };
 
+const checkForDuplicateFolderAndFileNames = async (importedFolders, itemsAtPath) => {
+  const duplicateFolderNames = [];
+  const duplicateFileNames = [];
+};
+
 const addFoldersfunction = async (importedFolders, virtualFolderPath) => {
+  console.log("Imported folders");
+  console.log(importedFolders);
   const slashCount = organizeDSglobalPath.value.trim().split("/").length - 1;
   if (slashCount == 1) {
     Swal.fire({
@@ -4974,11 +4982,12 @@ const addFoldersfunction = async (importedFolders, virtualFolderPath) => {
       ["Step 3", "Import", "Folder"],
       determineDatasetLocation()
     );
+    return;
   }
 
   console.log(virtualFolderPath);
   const currentContentsAtDatasetPath = getRecursivePath(
-    virtualFolderPath.slice(1),
+    ["My_dataset_folder", "code"],
     datasetStructureJSONObj
   ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')
   console.log("currentContentsAtDatasetPath", currentContentsAtDatasetPath);
@@ -4989,8 +4998,14 @@ const addFoldersfunction = async (importedFolders, virtualFolderPath) => {
   console.log("filesInPath", filesInPath);
 
   // STEP 1: Ensure all paths are able to be accessed by the server
-  const inaccessible_files = await CheckFileListForServerAccess(importedFolders);
+  const inaccessible_files = await findInaccessibleItems(importedFolders);
   console.log("inaccessible_files", inaccessible_files);
+
+  // STEP 2: Check for duplicates
+  const duplicateFolders = await checkForDuplicateFolderAndFileNames(
+    importedFolders,
+    foldersInPath
+  );
   const importedFoldersInCurrentPath = importedFolders.filter((folder) =>
     foldersInPath.includes(folder)
   );
