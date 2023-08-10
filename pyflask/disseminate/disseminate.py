@@ -155,12 +155,10 @@ def bf_submit_review_dataset(selected_bfaccount, selected_bfdataset, publication
         
     qs = construct_publication_qs(publication_type, embargo_release_date)
 
-    try:
-        r = requests.post(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/publication/request{qs}", headers=create_request_headers(token))
-        r.raise_for_status()
-        return r.json()
-    except Exception as e:
-        handle_http_error(e)
+    r = requests.post(f"{PENNSIEVE_URL}/datasets/{selected_dataset_id}/publication/request{qs}", headers=create_request_headers(token))
+    r.raise_for_status()
+    return r.json()
+
 
 
 def get_publication_type(ps_or_token, selected_dataset_id):

@@ -142,13 +142,7 @@ class PublicationRequest(Resource):
         try:
             return bf_submit_review_dataset(selected_account, dataset_name, publication_type, embargo_release_date)
         except Exception as e:
-            # TODO: Update to have the specificity of the 400 written below (improved-ps-500-error-handling)
             handle_error(e)
-            # if type(e).__name__ == "HTTPError":
-            #     api.abort(400, "Ensure the publication type is valid and that the embargo release date is no more than a year out.")
-            # if notBadRequestException(e):
-            #     api.abort(500, str(e))
-            # raise e
 
 
 

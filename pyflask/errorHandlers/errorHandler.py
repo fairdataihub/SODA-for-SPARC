@@ -5,7 +5,6 @@ from werkzeug.exceptions import HTTPException, InternalServerError, Forbidden, U
 from .pennsieveUnexpectedError import raiseUnexpectedPennsieveException
 from .httpError import httpError
 
-
 # keys: status_code, method, resource=None
 # error_message_table = {
 #     "400": {
@@ -14,15 +13,31 @@ from .httpError import httpError
     
 # }
 
+def get_resource_name(err):
+    """
+    Precondition: Given a requests HTTP Error spawned from a call to the Pennsieve API
+    Return: The requested resource in the URL. 
+    """
+    url = err.request.url
+
+    # if url has '/publication/request' in it, then we know the resource is a publication
+    if "/publication/request" in url:
+        return "publication_request"
+
+
 
 def handle_error(err):
     # check if the exception is a requests HTTP error
     # in these cases we want to raise a new error with a user friendly message - these will be generic but the extra detail doesn't help them anyways
     # IMP: We log the errors here so we can see what is going on
+
     if httpError(err):
         # check the status code of the exception
         status_code = err.response.status_code
         if status_code == 400:
+            resource = get_resource_name(err)
+            if resource == "publication_request" and err.request.method == "POST":
+                raise BadRequest("Ensure the publication type is valid and that the embargo release date is no more than a year out.")
             # raise this error to the client
             raise err
         # check if the status code is a 401 
