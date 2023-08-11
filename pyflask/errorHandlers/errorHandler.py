@@ -46,25 +46,25 @@ def handle_error(err):
             # check the method of the request 
             if err.request.method == "GET":
                 # create a new error message with the text 'Not authorized to access this resource. Please try again later.'
-                raise Unauthorized("Not authorized to access this resource. Please try again after verifying your credentials with Pennsieve.") from err
+                raise Unauthorized("You are not authorized to access a requested Pennsieve entity necessary for this operation. Please try again after verifying your credentials with Pennsieve.") from err
             # check if the method of the request is a POST
             elif err.request.method in ["POST", "PUT", "PATCH", "DELETE"]:
-                raise Unauthorized("Not authorized to modify this resource. Please try again after verifying your credentials with Pennsieve.") from err
+                raise Unauthorized("You are not authorized to modify a requested Pennsieve entity necessary for this operation. Please try again after verifying your credentials with Pennsieve.") from err
         # check if the status code is a 403
         elif status_code == 403:
             # check the method of the request 
             if err.request.method == "GET":
                 # create a new error message with the text 'Not authorized to access this resource. Please try again later.'
-                raise Forbidden("You do not have permission to access this resource.") from err
+                raise Forbidden("You do not have permission to access a requested Pennsieve entity necessary for this operation.") from err
             # check if the method of the request is a POST
             elif err.request.method in ["POST", "PUT", "PATCH", "DELETE"]:
-                raise Forbidden("You do not have permission to modify this resource.") from err
+                raise Forbidden("You do not have permission to modify a requested Pennsieve entity necessary for this operation.") from err
         # check if the status code is a 404
         elif status_code == 404:
             # check the method of the request 
             # IMP: Send back a 400 as a 404 raised from Flask treats the 404 as if the SODA server route does not exist and not the Pennsieve resource
             # create a new error message with the text 'Not authorized to access this resource. Please try again later.'
-            raise BadRequest("The requested resource does not exist.") from err
+            raise BadRequest("A requested Pennsieve entity necessary for this operation could not be found on Pennsieve.") from err
         # check if the status code is a 423
         elif status_code == 423:
             # check the method of the request 
@@ -91,7 +91,7 @@ def handle_error(err):
         if type(err).__name__ == "NotAuthorizedException":
             raise BadRequest("Invalid username or password or invalid api key and secret. Please try again after reconnecting your account with Pennsieve through SODA for SPARC.") from err
         # the exception is an unexpected generic Python error from a flaw in our code
-        raise InternalServerError("SODA for SPARC received an unexpected error while trying to process your request. Please try again later.") from err
+        raise InternalServerError("SODA for SPARC encountered an unexpected error while trying to process your request. Please try again later. If this issue persists please contact us at help@fairdataihub.org.") from err
 
 
 
