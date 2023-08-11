@@ -4,12 +4,12 @@ from werkzeug.exceptions import InternalServerError, ServiceUnavailable
 # NOTE: For now we do not make API requests anywhere but Pennsieve. If we change that this needs to be modified to take the URL into account. 
 def service_is_down(requestsException):
     # indicates the server is down or did not respond in time 
-    return type(requestsException) in [requests.exceptions.ConnectionError, requests.exceptions.Timeout]
+    return type(requestsException) in [requests.exceptions.ConnectionError, requests.exceptions.Timeout] or (requestsException.response and requestsException.response.statuse_code and requestsException.response.status_code in [503, 504])
 
 
 def service_500_error(requestsException):
     # indicates the server is up but the request was not processed correctly
-    return requestsException.response and requestsException.response.statuse_code and requestsException.response.status_code in [500, 501, 502, 503, 504]
+    return requestsException.response and requestsException.response.statuse_code and requestsException.response.status_code in [500, 501, 502, 505, 506, 507, 508, 510, 511]
 
 
 def raisePennsieveDownError(error):
@@ -19,7 +19,7 @@ def raisePennsieveDownError(error):
 
     # indicates the server is down or did not respond in time 
     # there is variation between  a timeout and a service being unavailable but for our purposes we can treat them the same
-    raise ServiceUnavailable("Pennsieve services are not responding to SODA for SPARC at this time. It is possible the services have become temporarily unavailable. Please try again later.") from error
+    raise InternalServerError("Pennsieve services are not responding to SODA for SPARC at this time. It is possible certain services have become temporarily unavailable. Please try again later.") from error
     
     
 def raisePennsieveUnexpectedError(error):
