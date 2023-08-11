@@ -27,8 +27,7 @@ def get_resource_name(err):
 def handle_error(err):
     # check if the exception is a requests HTTP error
     # in these cases we want to raise a new error with a user friendly message - these will be generic but the extra detail doesn't help them anyways
-    # IMP: We log the errors here so we can see what is going on
-
+    # NOTE: All details of the error are logged so we can debug on our end
 
     if httpError(err):
         # log the requests error 
@@ -74,10 +73,9 @@ def handle_error(err):
             # check if the method of the request is a POST
             elif err.request.method in ["POST", "PUT", "PATCH", "DELETE"]:
                 raise Locked("The requested resource is currently locked for modification.") from err
-        # status code is a 5xx [ TODO: Confirm as this is a big assumption ]
         else:
             raiseUnexpectedPennsieveException(err)
-            # if it wasn't one of the expected Pennsieve errors, raise the error directly 
+            # if it wasn't one of the expected 5xx / unavailable service Pennsieve errors, raise the error directly 
             raise err
     elif isinstance(err, HTTPException):
         error_handler_logger.error(err, exc_info=True)
