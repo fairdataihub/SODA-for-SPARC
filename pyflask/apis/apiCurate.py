@@ -1,5 +1,5 @@
 from flask_restx import Resource, fields, reqparse
-from namespaces import NamespaceEnum, get_namespace
+from namespaces import NamespaceEnum, get_namespace, get_namespace_logger
 from flask import request
 import json
 from os.path import (
@@ -27,6 +27,8 @@ from errorHandlers.httpError import httpError
 userpath = expanduser("~")
 
 api = get_namespace(NamespaceEnum.CURATE_DATASETS)
+namespace_logger = get_namespace_logger(NamespaceEnum.CURATE_DATASETS)
+
 
 model_check_empty_files_folders_response = api.model( "CheckEmptyFilesFoldersResponse", {
     "empty_files": fields.List(fields.String),
@@ -104,6 +106,7 @@ class Curation(Resource):
     description="Given a sodajsonobject generate a dataset. Used in the final step of Organize Datasets.")   
     @api.marshal_with(model_main_curation_function_response)
     def post(self):
+
         data = request.get_json()
 
         if "soda_json_structure" not in data:

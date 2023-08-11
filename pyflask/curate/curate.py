@@ -34,6 +34,7 @@ from manifest import create_high_lvl_manifest_files_existing_ps_starting_point, 
 from authentication import get_access_token
 from errorHandlers import service_500_error, service_is_down
 
+
 from pysodaUtils import (
     check_forbidden_characters_ps,
     get_agent_installation_location,
@@ -2760,8 +2761,6 @@ def main_curate_function(soda_json_structure):
     myds = ""
     main_keys = soda_json_structure.keys()
     error = ""
-
-    # get_access_token()
 
 
     # 1] Check for potential errors

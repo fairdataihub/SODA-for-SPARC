@@ -4,13 +4,12 @@ Purpose: Given a base excetpion, requests Exception, or Werkzeug Exception, retu
 from werkzeug.exceptions import HTTPException, InternalServerError, Forbidden, Unauthorized, BadRequest, Locked
 from .pennsieveUnexpectedError import raiseUnexpectedPennsieveException
 from .httpError import httpError
-# keys: status_code, method, resource=None
-# error_message_table = {
-#     "400": {
+from namespaces import NamespaceEnum, get_namespace_logger
 
-#     }
-    
-# }
+
+# TODO: Get a more specific logger for this module 
+error_handler_logger = get_namespace_logger(NamespaceEnum.CURATE_DATASETS)
+
 
 def get_resource_name(err):
     """
@@ -29,6 +28,8 @@ def handle_error(err):
     # check if the exception is a requests HTTP error
     # in these cases we want to raise a new error with a user friendly message - these will be generic but the extra detail doesn't help them anyways
     # IMP: We log the errors here so we can see what is going on
+    error_handler_logger.error(err, exc_info=True)
+
 
     if httpError(err):
         # check the status code of the exception
