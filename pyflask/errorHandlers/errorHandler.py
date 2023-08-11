@@ -88,10 +88,11 @@ def handle_error(err):
         if type(err).__name__  == 'InvalidDataDeliverablesDocument':
             raise BadRequest(str(err)) from err
         # TODO: Increase specificity to botocore to avoid overlaps
+        # This error occurs when the user's provided credentials are invalid and thus cause access token retrieval failure
         if type(err).__name__ == "NotAuthorizedException":
             raise BadRequest("Invalid username or password or invalid api key and secret. Please try again after reconnecting your account with Pennsieve through SODA for SPARC.") from err
         # the exception is an unexpected generic Python error from a flaw in our code
-        raise InternalServerError("SODA for SPARC encountered an unexpected error while trying to process your request. Please try again later. If this issue persists please contact us at help@fairdataihub.org.") from err
+        raise InternalServerError("An unexpected error was encountered while trying to process your request. Please try again later. If this issue persists please contact us at help@fairdataihub.org.") from err
 
 
 
