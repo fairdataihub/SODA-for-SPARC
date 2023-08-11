@@ -1926,16 +1926,13 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                 existing_folder_option: Dictates whether to merge, duplicate, replace, or skip existing folders.
             """
 
-            # Check if the current folder has any child folders that already exist on Pennsieve. Important step to appropriately handle replacing and merging folders.
-            if len(my_tracking_folder["children"]["folders"]) == 0:
-                # Do not get the children at the root of the dataset as we already have them stored in the tracking folder.
-                if(my_tracking_folder["content"]["id"].find("N:dataset") == -1):
-                    # do nothing 
-                    r = requests.get(f"{PENNSIEVE_URL}/packages/{my_tracking_folder['content']['id']}", headers=create_request_headers(ps), json={"include": "files"})
-                    r.raise_for_status()
-                    ps_folder = r.json()
-                    normalize_tracking_folder(ps_folder)
-                    my_tracking_folder["children"] = ps_folder["children"]
+            # Check if the current folder has any subfolders that already exist on Pennsieve. Important step to appropriately handle replacing and merging folders.
+            if len(my_tracking_folder["children"]["folders"]) == 0 and my_tracking_folder["content"]["id"].find("N:dataset") == -1:
+                r = requests.get(f"{PENNSIEVE_URL}/packages/{my_tracking_folder['content']['id']}", headers=create_request_headers(ps), json={"include": "files"})
+                r.raise_for_status()
+                ps_folder = r.json()
+                normalize_tracking_folder(ps_folder)
+                my_tracking_folder["children"] = ps_folder["children"]
 
             # create/replace/skip folder
             if "folders" in my_folder.keys():
