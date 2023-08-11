@@ -28,10 +28,11 @@ def handle_error(err):
     # check if the exception is a requests HTTP error
     # in these cases we want to raise a new error with a user friendly message - these will be generic but the extra detail doesn't help them anyways
     # IMP: We log the errors here so we can see what is going on
-    error_handler_logger.error(err, exc_info=True)
 
 
     if httpError(err):
+        # log the requests error 
+        error_handler_logger.error(err, exc_info=True)
         # check the status code of the exception
         status_code = err.response.status_code
         if status_code == 400:
@@ -79,10 +80,11 @@ def handle_error(err):
             # if it wasn't one of the expected Pennsieve errors, raise the error directly 
             raise err
     elif isinstance(err, HTTPException):
+        error_handler_logger.error(err, exc_info=True)
         # raise werkzeug exceptions as is since these are our custom errors that are already translated for 400s, 401s, etc 
         raise err
     else:
-        print(type(err))
+        # base exceptions are automatically logged by Flask
         if type(err).__name__  == 'InvalidDataDeliverablesDocument':
             raise BadRequest(str(err)) from err
         # TODO: Increase specificity to botocore to avoid overlaps
