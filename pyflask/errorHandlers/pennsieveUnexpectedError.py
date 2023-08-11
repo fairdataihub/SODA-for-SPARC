@@ -27,7 +27,7 @@ def raisePennsieveUnexpectedError(error):
       Check if the given error is a Pennsieve 5xx error and raise a specific error for the client if it is.
     """
     # there is variation between the types of 500s we can get from Pennsieve but for our purposes we can treat them all the same way
-    raise InternalServerError(500, "SODA for SPARC received an unexpected error from Pennsieve while trying to process your request. Please try again later.") from error
+    raise InternalServerError("SODA for SPARC received an unexpected error from Pennsieve while trying to process your request. Please try again later.") from error
 
 
 def raiseUnexpectedPennsieveException(error):
