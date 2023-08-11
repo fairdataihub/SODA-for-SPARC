@@ -123,6 +123,7 @@ def bf_add_account_api_key(keyname, key, secret):
     Action:
         Adds account to the Pennsieve configuration file (local machine)
     """
+
     try:
         keyname = keyname.strip()
         if (not keyname) or (not key) or (not secret):
@@ -693,7 +694,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         submitdatastatus = "Done"
         did_fail = True
         did_upload = False
-        abort(403, "You don't have permissions for uploading to this Pennsieve dataset")
+        abort(403, "You don't have permissions for uploading to this Pennsieve dataset")    
 
 
     # create the manifest file for the dataset
@@ -703,8 +704,7 @@ def bf_submit_dataset(accountname, bfdataset, pathdataset):
         submitdatastatus = "Done"
         did_fail = True
         did_upload = False
-        error_message = "Could not create manifest file for this dataset"
-        abort(500, e)
+        abort(500, str(e))
     
 
     # upload the dataset
