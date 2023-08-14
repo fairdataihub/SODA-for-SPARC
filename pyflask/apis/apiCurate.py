@@ -1,11 +1,13 @@
 from flask_restx import Resource, fields, reqparse
-from namespaces import NamespaceEnum, get_namespace
+from namespaces import NamespaceEnum, get_namespace, get_namespace_logger
 from flask import request
 import json
 from os.path import (
     expanduser,
     join,
 )
+from errorHandlers import raiseUnexpectedPennsieveException, handle_error
+
 
 from curate import (
     create_folder_level_manifest,
@@ -21,9 +23,12 @@ from curate import (
 
 from manifest import create_high_level_manifest_files_existing_local_starting_point
 from errorHandlers.notBadRequestException import notBadRequestException
+from errorHandlers.httpError import httpError
 userpath = expanduser("~")
 
 api = get_namespace(NamespaceEnum.CURATE_DATASETS)
+namespace_logger = get_namespace_logger(NamespaceEnum.CURATE_DATASETS)
+
 
 model_check_empty_files_folders_response = api.model( "CheckEmptyFilesFoldersResponse", {
     "empty_files": fields.List(fields.String),
@@ -47,7 +52,7 @@ class CheckEmptyFilesFolders(Resource):
         try:
             return check_empty_files_folders(soda_json_structure)
         except Exception as e:
-            api.abort(500, str(e))
+            handle_error(e)
 
 
 
@@ -64,7 +69,7 @@ class Curation(Resource):
         try:
             return check_server_access_to_files(file_list_to_check)
         except Exception as e:
-            api.abort(500, str(e))
+            handle_error(e)
 
 
 @api.route("/clean-dataset")
@@ -82,9 +87,7 @@ class Curation(Resource):
         try:
             return clean_json_structure(soda_json_structure)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)
 
 
 
@@ -103,6 +106,7 @@ class Curation(Resource):
     description="Given a sodajsonobject generate a dataset. Used in the final step of Organize Datasets.")   
     @api.marshal_with(model_main_curation_function_response)
     def post(self):
+
         data = request.get_json()
 
         if "soda_json_structure" not in data:
@@ -115,9 +119,7 @@ class Curation(Resource):
         try:
             return main_curate_function(soda_json_structure)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)
 
 
 
@@ -144,7 +146,7 @@ class CurationProgress(Resource):
         try:
             return main_curate_function_progress()
         except Exception as e:
-            api.abort(500, str(e))
+            handle_error(e)
 
 
 
@@ -185,7 +187,7 @@ class GenerateManifestFiles(Resource):
         try:
             return create_high_level_manifest_files_existing_local_starting_point(filepath, join(userpath, "SODA", "manifest_files"))
         except Exception as e:
-            api.abort(500, str(e))
+            handle_error(e)
 
 
 
@@ -216,7 +218,7 @@ class GenerateManifestLocally(Resource):
         try:
             return generate_manifest_file_locally(generate_purpose, soda_json_object)
         except Exception as e:
-            api.abort(500, str(e))
+            handle_error(e)
 
 
 
@@ -238,7 +240,7 @@ class GenerateManifestData(Resource):
         try:
             return generate_manifest_file_data(dataset_structure_obj)
         except Exception as e:
-            api.abort(500, str(e))
+            handle_error(e)
 
 
             
@@ -266,4 +268,4 @@ class DatasetSize(Resource):
         try:
             return check_JSON_size(soda_json_structure)
         except Exception as e:
-            api.abort(500, str(e))
+            handle_error(e)

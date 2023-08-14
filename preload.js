@@ -1844,12 +1844,13 @@ const openDropdownPrompt = async (ev, dropdown, show_timer = true) => {
             await api.setPreferredOrganization(login, password, organizationId, "soda-pennsieve");
           } catch (err) {
             clientError(err);
+            msg = userErrorMessage(err);
             await Swal.fire({
               backdrop: "rgba(0,0,0, 0.4)",
               heightAuto: false,
               icon: "error",
               title: "Could Not Switch Organizations",
-              text: "Please try again shortly.",
+              text: msg,
             });
             Swal.hideLoading();
             // reset the UI to pre-org switch state

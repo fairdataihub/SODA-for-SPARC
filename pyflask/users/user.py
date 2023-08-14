@@ -10,6 +10,7 @@ from utils import (
 from namespaces import NamespaceEnum, get_namespace_logger
 from flask import abort
 from authentication import get_access_token, get_cognito_userpool_access_token, bf_add_account_username, bf_delete_account, bf_delete_default_profile, delete_duplicate_keys
+from errorHandlers import service_500_error, service_is_down
 
 logger = get_namespace_logger(NamespaceEnum.USER)
 
@@ -25,11 +26,9 @@ def integrate_orcid_with_pennsieve(access_code, pennsieve_account):
     abort(400, "Cannot integrate your ORCID iD to Pennsieve without an access code.")
 
   # verify Pennsieve account
-  try:
-    ps = connect_pennsieve_client()
-    authenticate_user_with_client(ps, pennsieve_account)
-  except Exception as e:
-     abort(400, "Error: Please select a valid Pennsieve account")
+  ps = connect_pennsieve_client()
+  authenticate_user_with_client(ps, pennsieve_account)
+
     
   
   try:
@@ -42,7 +41,7 @@ def integrate_orcid_with_pennsieve(access_code, pennsieve_account):
     # If status is 400 then the orcid is already linked to users account
     if r.status_code == 400:
       abort(409, "ORCID iD is already linked to your Pennsieve account.")
-    abort(400, "Invalid access code")
+    raise e
 
   
 def get_user():
@@ -82,21 +81,28 @@ def get_user_information(token):
 
 
 def set_preferred_organization(organization_id, email, password, account_name):
+
+    token = get_cognito_userpool_access_token(email, password)
+
     try:
-        token = get_cognito_userpool_access_token(email, password)
-
-
         # switch to the desired organization
         url = "https://api.pennsieve.io/session/switch-organization"
         headers = {"Accept": "*/*", "Content-Type": "application/json", "Accept-Encoding": "gzip, deflate, br", "Connection": "keep-alive", "Content-Length": "0"}
-        url += f"?organization_id={organization_id}&api_key={token}"
+        url += f"?organization_id={organization_id}s&api_key={token}"
         logger.info(f"URL: {url}")
         response = requests.request("PUT", url, headers=headers)
         response.raise_for_status()
 
     except Exception as error:
-        error = "It looks like you don't have access to your desired organization. An organization is required to upload datasets. Please reach out to the SPARC curation team (email) to get access to your desired organization and try again."
-        raise Exception(error)
+        # Since there is no easily available list of organizations i cannot check if trying to access an organization without permission is a 403 or a 400 error
+        # so for now I am just assumming if it is not a 5xx or service down error then it is a 403 and I send the custom error for that situation to the error 
+        # handler in this step. 
+        if not service_is_down(error) and not service_500_error(error):
+          error = "It looks like you don't have access to your desired organization. An organization is required to upload datasets. Please reach out to the SPARC curation team (email) to get access to your desired organization and try again."
+          abort(403, error)
+
+        # raise the error as is so we send the client back the pennsieve unecxcpected error message 
+        raise error
     
 
     delete_duplicate_keys(token, "SODA-Pennsieve")
@@ -162,10 +168,9 @@ def get_user_organizations():
   """
   Get a user's organizations.
   """
-  try:
-    token = get_access_token()
-  except Exception as e:
-     abort(400, "Please select a valid Pennsieve account")
+
+  token = get_access_token()
+
 
 
   r = requests.get(f"{PENNSIEVE_URL}/organizations", headers=create_request_headers(token))

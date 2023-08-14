@@ -237,9 +237,11 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
             # then, delete it using Pennsieve method delete(id)\vf = Pennsieve()
             r = requests.post(f"{PENNSIEVE_URL}/data/delete",json=jsonfile, headers=headers)
             r.raise_for_status()
+    
+    ps = connect_pennsieve_client(bfaccount)
+    authenticate_user_with_client(ps, bfaccount)
+
     try:
-        ps = connect_pennsieve_client(bfaccount)
-        authenticate_user_with_client(ps, bfaccount)
         # create a new manifest for the metadata file
         ps.use_dataset(selected_dataset_id)
         manifest = ps.manifest.create(file_path)
@@ -258,7 +260,7 @@ def upload_metadata_file(file_type, bfaccount, bfdataset, file_path, delete_afte
     except Exception as e:
         namespace_logger.error("Error uploading dataset files")
         namespace_logger.error(e)
-        raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
+        abort(500, "The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
 
 
     # before we can remove files we need to wait for all of the Agent's threads/subprocesses to finish

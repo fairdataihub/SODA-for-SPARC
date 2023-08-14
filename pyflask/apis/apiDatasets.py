@@ -1,6 +1,6 @@
 from flask_restx import Resource, reqparse, fields
 from namespaces import get_namespace, NamespaceEnum
-from errorHandlers import notBadRequestException, handle_http_error
+from errorHandlers import notBadRequestException, handle_http_error, handle_error
 import platform 
 import subprocess
 import os
@@ -35,9 +35,7 @@ class DatasetRole(Resource):
     try:
       return get_role(dataset_name) 
     except Exception as e:
-      if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+      handle_error(e)
 
 
 @api.route('/<string:dataset_name_or_id>')
@@ -48,12 +46,7 @@ class Dataset(Resource):
     try:
       return get_dataset_by_id(dataset_name_or_id)
     except Exception as e:
-      # if exception is an HTTPError then check if 400 or 500
-      if type(e).__name__ == "HTTPError":
-        handle_http_error(e)
-      if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+      handle_error(e)
 
 
 
@@ -78,9 +71,7 @@ class datasetCollection(Resource):
         try:
             return get_current_collection_names(selected_account, dataset_name)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)
 
     #remove selected dataset from add argument
     #change the urls to have dataset ids when being used
@@ -100,9 +91,7 @@ class datasetCollection(Resource):
         try:
             return upload_collection_names(selected_account, dataset_name, collection_tags)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)
 
     parser_remove_collections = reqparse.RequestParser(bundle_errors=True)
     parser_remove_collections.add_argument('selected_account', type=str, required=True, help="The target account to work with.", location="args")
@@ -118,9 +107,7 @@ class datasetCollection(Resource):
         try:
             return remove_collection_names(selected_account, dataset_name, collection_ids)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)
 
 
 
@@ -150,7 +137,7 @@ class OpenDataset(Resource):
 
           return "SUCCESS"
         except Exception as e:
-          api.abort(500, str(e))
+           handle_error(e)
 
 
 
@@ -164,17 +151,13 @@ class DatasetDOI(Resource):
     try:
       return reserve_dataset_doi(dataset_name)
     except Exception as e:
-      if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+      handle_error(e)
     
   def get(self, dataset_name):
     try:
       return get_dataset_doi(dataset_name)
     except Exception as e:
-      if notBadRequestException(e):
-        api.abort(500, str(e))
-      raise e
+      handle_error(e)
     
 
 @api.route('/<string:dataset_name>/packageTypeCounts')
@@ -184,9 +167,7 @@ class PackageTypeCounts(Resource):
         try:
             return get_package_type_counts(dataset_name)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)
         
 
 
@@ -205,6 +186,4 @@ class PackageTypeCounts(Resource):
         try:
             return get_total_items_in_local_dataset(dataset_path)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)

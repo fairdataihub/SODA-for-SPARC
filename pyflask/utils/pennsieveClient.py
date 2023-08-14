@@ -9,7 +9,7 @@ def connect_pennsieve_client(account_name):
     try:
         return Pennsieve(profile_name=account_name)
     except Exception as e:
-        abort(500, f"Could not connect to the Pennsieve agent: {e}")
+        abort(500, f"Could not connect to the Pennsieve agent due to the following reason: {e}")
 
 
 def authenticate_user_with_client(ps, selected_account):
@@ -53,8 +53,12 @@ def get_dataset_id(ps_or_token, selected_dataset):
                 return dataset["content"]["id"]
 
         abort(400, "Please select a valid Pennsieve dataset.")
+
+
+    ds_set = ps_or_token.get_datasets()
+
     try:
-        return ps_or_token.get_datasets()[selected_dataset]
+        return ds_set[selected_dataset]
     except Exception as e:
         abort(400, "Please select a valid Pennsieve dataset.")
 

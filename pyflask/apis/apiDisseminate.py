@@ -8,7 +8,7 @@ from disseminate import (
 )
 from flask_restx import Resource, fields, reqparse
 from namespaces import NamespaceEnum, get_namespace
-from errorHandlers import notBadRequestException, handle_http_error
+from errorHandlers import notBadRequestException, handle_http_error, handle_error
 from flask import request
 
 api = get_namespace(NamespaceEnum.DISSEMINATE_DATASETS)
@@ -39,9 +39,7 @@ class BfGetDoi(Resource):
         try:
             return bf_get_doi(selected_bfaccount, dataset_name)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)
 
 
     @api.expect(parser)
@@ -55,9 +53,8 @@ class BfGetDoi(Resource):
         try:
             return bf_reserve_doi(selected_bfaccount, dataset_name)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)
+
 
 
 
@@ -83,9 +80,8 @@ class BfMetadataFiles(Resource):
         try:
             return get_metadata_files(dataset_name,  selected_bfaccount)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)
+
 
 
 
@@ -116,9 +112,7 @@ class PublishingStatus(Resource):
         try:
             return bf_get_publishing_status(selected_bfaccount, dataset_name)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)
 
 
 
@@ -148,11 +142,7 @@ class PublicationRequest(Resource):
         try:
             return bf_submit_review_dataset(selected_account, dataset_name, publication_type, embargo_release_date)
         except Exception as e:
-            if type(e).__name__ == "HTTPError":
-                api.abort(400, "Ensure the publication type is valid and that the embargo release date is no more than a year out.")
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)
 
 
 
@@ -175,6 +165,5 @@ class PublicationCancel(Resource):
             try:
                 return bf_withdraw_review_dataset(selected_account, dataset_name)
             except Exception as e:
-                if notBadRequestException(e):
-                    api.abort(500, str(e))
-                raise e
+                handle_error(e)
+

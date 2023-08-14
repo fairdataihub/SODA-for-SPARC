@@ -8,8 +8,7 @@ from organizeDatasets import (
 
 from namespaces import NamespaceEnum, get_namespace
 from flask_restx import Resource, fields, reqparse
-from errorHandlers import notBadRequestException
-import json
+from errorHandlers import notBadRequestException, handle_error
 from flask import request
 
 api = get_namespace(NamespaceEnum.ORGANIZE_DATASETS)
@@ -35,9 +34,7 @@ class BfGetDatasetFilesFolders(Resource):
         try:
             return import_pennsieve_dataset(sodajsonobject)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)
 
 
 
@@ -67,9 +64,7 @@ class GenerateDatasetLocally(Resource):
         try:
             return generate_dataset_locally(generation_type, generation_destination_path, dataset_name, soda_json_directory_structure)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)
 
 
 
@@ -100,7 +95,7 @@ class ImportDataset(Resource):
         try:
             return create_soda_json_object_backend(sodajsonobject, root_folder_path, irregular_folders, replaced)
         except Exception as e:
-            api.abort(500, str(e))
+            handle_error(e)
 
 
 
@@ -130,7 +125,7 @@ class ImportDatasetOrganizeDatasetsProgress(Resource):
         try: 
             return monitor_local_json_progress()
         except Exception as e:
-            api.abort(500, str(e))
+            handle_error(e)
 
 
 @api.route('/dataset_files_and_folders/progress')
@@ -140,5 +135,5 @@ class ImportDatasetPennsieveProgress(Resource):
         try: 
             return monitor_pennsieve_json_progress()
         except Exception as e:
-            api.abort(500, str(e))
+            handle_error(e)
 

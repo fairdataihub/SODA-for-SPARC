@@ -1,11 +1,11 @@
 from flask_restx import Resource, reqparse, fields
 from namespaces import get_namespace, NamespaceEnum
+from errorHandlers import  handle_error
 from collectionsDataset import (
     get_all_collections,
     upload_new_names
 )
 
-from errorHandlers import notBadRequestException
 
 api = get_namespace(NamespaceEnum.COLLECTIONS)
 
@@ -33,9 +33,7 @@ class organizationCollections(Resource):
         try: 
             return get_all_collections(account)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)
 
     parser_new_names = reqparse.RequestParser(bundle_errors=True)
     parser_new_names.add_argument('selected_account', type=str, required=True, help="The target account to work with.", location="args")
@@ -55,6 +53,4 @@ class organizationCollections(Resource):
         try:
             return upload_new_names(account, dataset_name, collection_names)
         except Exception as e:
-                if notBadRequestException(e):
-                    api.abort(500, str(e))
-                raise e
+                handle_error(e)

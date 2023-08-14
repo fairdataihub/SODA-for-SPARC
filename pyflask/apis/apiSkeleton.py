@@ -3,7 +3,7 @@ from flask_restx import Resource, fields
 from flask import request
 from namespaces import get_namespace, NamespaceEnum
 from skeletonDataset import get_manifests, get_metadata_files_json
-from errorHandlers import notBadRequestException
+from errorHandlers import notBadRequestException, handle_error
 
 api = get_namespace(NamespaceEnum.SKELETON_DATASET)
 
@@ -28,9 +28,7 @@ class SkeletonDatasetManifest(Resource):
         try:
             return get_manifests(sodajsonobject)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)
 
 
 @api.route('/metadata_json')
@@ -47,6 +45,4 @@ class SkeletonDatasetMetadata(Resource):
         try:
             return get_metadata_files_json(sodajsonobject)
         except Exception as e:
-            if notBadRequestException(e):
-                api.abort(500, str(e))
-            raise e
+            handle_error(e)

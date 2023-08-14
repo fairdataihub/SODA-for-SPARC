@@ -32,6 +32,8 @@ from openpyxl.styles import PatternFill
 from utils import connect_pennsieve_client, get_dataset_id, create_request_headers, TZLOCAL
 from manifest import create_high_lvl_manifest_files_existing_ps_starting_point, create_high_level_manifest_files, get_auto_generated_manifest_files
 from authentication import get_access_token
+from errorHandlers import service_500_error, service_is_down
+
 
 from pysodaUtils import (
     check_forbidden_characters_ps,
@@ -828,145 +830,144 @@ def generate_dataset_locally(soda_json_structure):
 
     main_curation_uploaded_files = 0
 
-    try:
-
-        def recursive_dataset_scan(
-            my_folder, my_folderpath, list_copy_files, list_move_files
-        ):
-            global main_total_generate_dataset_size
-
-            if "folders" in my_folder.keys():
-                for folder_key, folder in my_folder["folders"].items():
-                    folderpath = join(my_folderpath, folder_key)
-                    if not isdir(folderpath):
-                        mkdir(folderpath)
-                    list_copy_files, list_move_files = recursive_dataset_scan(
-                        folder, folderpath, list_copy_files, list_move_files
-                    )
-
-            if "files" in my_folder.keys():
-                for file_key, file in my_folder["files"].items():
-                    if "deleted" not in file["action"]:
-                        file_type = file["type"]
-                        if file_type == "local":
-                            file_path = file["path"]
-                            if isfile(file_path):
-                                destination_path = abspath(
-                                    join(my_folderpath, file_key)
-                                )
-                                if not isfile(destination_path):
-                                    if (
-                                        "existing" in file["action"]
-                                        and soda_json_structure["generate-dataset"][
-                                            "if-existing"
-                                        ]
-                                        == "merge"
-                                    ):
-                                        list_move_files.append(
-                                            [file_path, destination_path]
-                                        )
-                                    else:
-                                        main_total_generate_dataset_size += getsize(
-                                            file_path
-                                        )
-                                        list_copy_files.append(
-                                            [file_path, destination_path]
-                                        )
-            return list_copy_files, list_move_files
 
 
-        namespace_logger.info("generate_dataset_locally step 1")
-        # 1. Create new folder for dataset or use existing merge with existing or create new dataset
-        main_curate_progress_message = "Generating folder structure and list of files to be included in the dataset"
-        dataset_absolute_path = soda_json_structure["generate-dataset"]["path"]
-        if_existing = soda_json_structure["generate-dataset"]["if-existing"]
-        dataset_name = soda_json_structure["generate-dataset"]["dataset-name"]
-        datasetpath = join(dataset_absolute_path, dataset_name)
-        datasetpath = return_new_path(datasetpath)
-        mkdir(datasetpath)
+    def recursive_dataset_scan(
+        my_folder, my_folderpath, list_copy_files, list_move_files
+    ):
+        global main_total_generate_dataset_size
 
-        namespace_logger.info("generate_dataset_locally step 2")
-        # 2. Scan the dataset structure and:
-        # 2.1. Create all folders (with new name if renamed)
-        # 2.2. Compile a list of files to be copied and a list of files to be moved (with new name recorded if renamed)
-        list_copy_files = []
-        list_move_files = []
-        dataset_structure = soda_json_structure["dataset-structure"]
-        for folder_key, folder in dataset_structure["folders"].items():
-            folderpath = join(datasetpath, folder_key)
-            mkdir(folderpath)
-            list_copy_files, list_move_files = recursive_dataset_scan(
-                folder, folderpath, list_copy_files, list_move_files
-            )
+        if "folders" in my_folder.keys():
+            for folder_key, folder in my_folder["folders"].items():
+                folderpath = join(my_folderpath, folder_key)
+                if not isdir(folderpath):
+                    mkdir(folderpath)
+                list_copy_files, list_move_files = recursive_dataset_scan(
+                    folder, folderpath, list_copy_files, list_move_files
+                )
 
-
-        # 3. Add high-level metadata files in the list
-        if "metadata-files" in soda_json_structure.keys():
-            namespace_logger.info("generate_dataset_locally (optional) step 3 handling metadata-files")
-            metadata_files = soda_json_structure["metadata-files"]
-            for file_key, file in metadata_files.items():
-                if file["type"] == "local":
-                    metadata_path = file["path"]
-                    if isfile(metadata_path):
-                        destination_path = join(datasetpath, file_key)
-                        if "existing" in file["action"]:
-                            list_move_files.append([metadata_path, destination_path])
-                        elif "new" in file["action"]:
-                            main_total_generate_dataset_size += getsize(metadata_path)
-                            list_copy_files.append([metadata_path, destination_path])
-
-        # 4. Add manifest files in the list
-        if "manifest-files" in soda_json_structure.keys():
-            namespace_logger.info("generate_dataset_locally (optional) step 4 handling manifest-files")
-            main_curate_progress_message = "Preparing manifest files"
-            manifest_files_structure = create_high_level_manifest_files(
-                soda_json_structure, manifest_folder_path
-            )
-            for key in manifest_files_structure.keys():
-                manifestpath = manifest_files_structure[key]
-                if isfile(manifestpath):
-                    destination_path = join(datasetpath, key, "manifest.xlsx")
-                    main_total_generate_dataset_size += getsize(manifestpath)
-                    list_copy_files.append([manifestpath, destination_path])
-
-        namespace_logger.info("generate_dataset_locally step 5 moving files to new location")
-        # 5. Move files to new location
-        main_curate_progress_message = "Moving files to new location"
-        for fileinfo in list_move_files:
-            srcfile = fileinfo[0]
-            distfile = fileinfo[1]
-            main_curate_progress_message = f"Moving file {str(srcfile)} to {str(distfile)}"
-            shutil.move(srcfile, distfile)
-
-        namespace_logger.info("generate_dataset_locally step 6 copying files to new location")
-        # 6. Copy files to new location
-        main_curate_progress_message = "Copying files to new location"
-        start_generate = 1
-        for fileinfo in list_copy_files:
-            srcfile = fileinfo[0]
-            distfile = fileinfo[1]
-            main_curate_progress_message = f"Copying file {str(srcfile)} to {str(distfile)}"
-            # track amount of copied files for loggin purposes
-            mycopyfile_with_metadata(srcfile, distfile)
-            main_curation_uploaded_files += 1
+        if "files" in my_folder.keys():
+            for file_key, file in my_folder["files"].items():
+                if "deleted" not in file["action"]:
+                    file_type = file["type"]
+                    if file_type == "local":
+                        file_path = file["path"]
+                        if isfile(file_path):
+                            destination_path = abspath(
+                                join(my_folderpath, file_key)
+                            )
+                            if not isfile(destination_path):
+                                if (
+                                    "existing" in file["action"]
+                                    and soda_json_structure["generate-dataset"][
+                                        "if-existing"
+                                    ]
+                                    == "merge"
+                                ):
+                                    list_move_files.append(
+                                        [file_path, destination_path]
+                                    )
+                                else:
+                                    main_total_generate_dataset_size += getsize(
+                                        file_path
+                                    )
+                                    list_copy_files.append(
+                                        [file_path, destination_path]
+                                    )
+        return list_copy_files, list_move_files
 
 
-        namespace_logger.info("generate_dataset_locally step 7")
-        # 7. Delete manifest folder and original folder if merge requested and rename new folder
-        shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
-        if if_existing == "merge":
-            namespace_logger.info("generate_dataset_locally (optional) step 7.1 delete manifest folder if merge requested")
-            main_curate_progress_message = "Finalizing dataset"
-            original_dataset_path = join(dataset_absolute_path, dataset_name)
-            shutil.rmtree(original_dataset_path)
-            rename(datasetpath, original_dataset_path)
-            open_file(join(dataset_absolute_path, original_dataset_path))
-        else:
-            open_file(join(dataset_absolute_path, datasetpath))
-        return datasetpath, main_total_generate_dataset_size
+    namespace_logger.info("generate_dataset_locally step 1")
+    # 1. Create new folder for dataset or use existing merge with existing or create new dataset
+    main_curate_progress_message = "Generating folder structure and list of files to be included in the dataset"
+    dataset_absolute_path = soda_json_structure["generate-dataset"]["path"]
+    if_existing = soda_json_structure["generate-dataset"]["if-existing"]
+    dataset_name = soda_json_structure["generate-dataset"]["dataset-name"]
+    datasetpath = join(dataset_absolute_path, dataset_name)
+    datasetpath = return_new_path(datasetpath)
+    mkdir(datasetpath)
 
-    except Exception as e:
-        raise e
+    namespace_logger.info("generate_dataset_locally step 2")
+    # 2. Scan the dataset structure and:
+    # 2.1. Create all folders (with new name if renamed)
+    # 2.2. Compile a list of files to be copied and a list of files to be moved (with new name recorded if renamed)
+    list_copy_files = []
+    list_move_files = []
+    dataset_structure = soda_json_structure["dataset-structure"]
+    for folder_key, folder in dataset_structure["folders"].items():
+        folderpath = join(datasetpath, folder_key)
+        mkdir(folderpath)
+        list_copy_files, list_move_files = recursive_dataset_scan(
+            folder, folderpath, list_copy_files, list_move_files
+        )
+
+
+    # 3. Add high-level metadata files in the list
+    if "metadata-files" in soda_json_structure.keys():
+        namespace_logger.info("generate_dataset_locally (optional) step 3 handling metadata-files")
+        metadata_files = soda_json_structure["metadata-files"]
+        for file_key, file in metadata_files.items():
+            if file["type"] == "local":
+                metadata_path = file["path"]
+                if isfile(metadata_path):
+                    destination_path = join(datasetpath, file_key)
+                    if "existing" in file["action"]:
+                        list_move_files.append([metadata_path, destination_path])
+                    elif "new" in file["action"]:
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        list_copy_files.append([metadata_path, destination_path])
+
+    # 4. Add manifest files in the list
+    if "manifest-files" in soda_json_structure.keys():
+        namespace_logger.info("generate_dataset_locally (optional) step 4 handling manifest-files")
+        main_curate_progress_message = "Preparing manifest files"
+        manifest_files_structure = create_high_level_manifest_files(
+            soda_json_structure, manifest_folder_path
+        )
+        for key in manifest_files_structure.keys():
+            manifestpath = manifest_files_structure[key]
+            if isfile(manifestpath):
+                destination_path = join(datasetpath, key, "manifest.xlsx")
+                main_total_generate_dataset_size += getsize(manifestpath)
+                list_copy_files.append([manifestpath, destination_path])
+
+    namespace_logger.info("generate_dataset_locally step 5 moving files to new location")
+    # 5. Move files to new location
+    main_curate_progress_message = "Moving files to new location"
+    for fileinfo in list_move_files:
+        srcfile = fileinfo[0]
+        distfile = fileinfo[1]
+        main_curate_progress_message = f"Moving file {str(srcfile)} to {str(distfile)}"
+        shutil.move(srcfile, distfile)
+
+    namespace_logger.info("generate_dataset_locally step 6 copying files to new location")
+    # 6. Copy files to new location
+    main_curate_progress_message = "Copying files to new location"
+    start_generate = 1
+    for fileinfo in list_copy_files:
+        srcfile = fileinfo[0]
+        distfile = fileinfo[1]
+        main_curate_progress_message = f"Copying file {str(srcfile)} to {str(distfile)}"
+        # track amount of copied files for loggin purposes
+        mycopyfile_with_metadata(srcfile, distfile)
+        main_curation_uploaded_files += 1
+
+
+    namespace_logger.info("generate_dataset_locally step 7")
+    # 7. Delete manifest folder and original folder if merge requested and rename new folder
+    shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
+    if if_existing == "merge":
+        namespace_logger.info("generate_dataset_locally (optional) step 7.1 delete manifest folder if merge requested")
+        main_curate_progress_message = "Finalizing dataset"
+        original_dataset_path = join(dataset_absolute_path, dataset_name)
+        shutil.rmtree(original_dataset_path)
+        rename(datasetpath, original_dataset_path)
+        open_file(join(dataset_absolute_path, original_dataset_path))
+    else:
+        open_file(join(dataset_absolute_path, datasetpath))
+    return datasetpath, main_total_generate_dataset_size
+
+
     
 
 
@@ -1001,19 +1002,16 @@ def ps_create_new_dataset(datasetname, ps):
         if count > 0:
             abort(400, error)
 
-        try:
-            r = requests.get(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(ps))
-            r.raise_for_status()
-            dataset_dicts = r.json()
-        except Exception as e:
-            abort(500, "Error: Could not connect to Pennsieve. Please try again later.")
+        r = requests.get(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(ps))
+        r.raise_for_status()
+        dataset_dicts = r.json()
 
 
         dataset_list = [
             dataset_dict["content"]["name"] for dataset_dict in dataset_dicts
         ]
         if datasetname in dataset_list:
-            abort(400, "Error: Dataset name already exists")
+            abort(400, "Dataset name already exists")
         else:
             r = requests.post(f"{PENNSIEVE_URL}/datasets", headers=create_request_headers(ps), json={"name": datasetname})
             r.raise_for_status()
@@ -2548,8 +2546,10 @@ def ps_check_dataset_files_validity(soda_json_structure, ps):
                         r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=create_request_headers(ps))
                         r.raise_for_status()
                     except Exception as e:
-                        error_message = relative_path + " (id: " + package_id + ")"
-                        error.append(error_message)
+                        if not service_500_error(e) and not service_is_down(e):
+                            error_message = relative_path + " (id: " + package_id + ")"
+                            error.append(error_message)
+                        raise e
                 error = recursive_ps_dataset_check(folder, relative_path, error)
         if "files" in my_folder.keys():
             for file_key, file in my_folder["files"].items():
@@ -2560,9 +2560,11 @@ def ps_check_dataset_files_validity(soda_json_structure, ps):
                         r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=create_request_headers(ps))
                         r.raise_for_status()
                     except Exception as e:
-                        relative_path = my_relative_path + "/" + file_key
-                        error_message = relative_path + " (id: " + package_id + ")"
-                        error.append(error_message)
+                        if not service_500_error(e) and not service_is_down(e):
+                            relative_path = my_relative_path + "/" + file_key
+                            error_message = relative_path + " (id: " + package_id + ")"
+                            error.append(error_message)
+                        raise e
         return error
 
     error = []
@@ -2579,9 +2581,10 @@ def ps_check_dataset_files_validity(soda_json_structure, ps):
                         r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=create_request_headers(ps))
                         r.raise_for_status()
                     except Exception as e:
-                        error_message = relative_path + " (id: " + package_id + ")"
-                        error.append(error_message)
-                        pass
+                        if not service_500_error(e) and not service_is_down(e):
+                            error_message = relative_path + " (id: " + package_id + ")"
+                            error.append(error_message)
+                        raise e
                 error = recursive_ps_dataset_check(folder, relative_path, error)
         if "files" in dataset_structure:
             # check the file ids at the root of the ds to verify they are valid ps files
@@ -2593,10 +2596,11 @@ def ps_check_dataset_files_validity(soda_json_structure, ps):
                         r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=create_request_headers(ps))
                         r.raise_for_status()
                     except Exception as e:
-                        relative_path = file_key
-                        error_message = relative_path + " (id: " + package_id + ")"
-                        error.append(error_message)
-                        pass
+                        if not service_500_error(e) and not service_is_down(e):
+                            relative_path = file_key
+                            error_message = relative_path + " (id: " + package_id + ")"
+                            error.append(error_message)
+                        raise e
 
     if "metadata-files" in soda_json_structure:
         metadata_files = soda_json_structure["metadata-files"]
@@ -2609,9 +2613,10 @@ def ps_check_dataset_files_validity(soda_json_structure, ps):
                     r = requests.get(f"{PENNSIEVE_URL}/packages/{package_id}/view", headers=create_request_headers(ps))
                     r.raise_for_status()
                 except Exception as e:
-                    error_message = file_key + " (id: " + package_id + ")"
-                    error.append(error_message)
-                    pass
+                    if not service_500_error(e) and not service_is_down(e):
+                        error_message = file_key + " (id: " + package_id + ")"
+                        error.append(error_message)
+                    raise e
 
     if len(error) > 0:
         error_message = [
@@ -2718,7 +2723,8 @@ def main_curate_function(soda_json_structure):
 
     namespace_logger.info("Starting main_curate_function")
     namespace_logger.info(f"main_curate_function metadata generate-options={soda_json_structure['generate-dataset']}")
-        
+
+
     global main_curate_status
     global main_curate_progress_message
     global main_total_generate_dataset_size
@@ -2735,6 +2741,7 @@ def main_curate_function(soda_json_structure):
 
     start_generate = 0
     generate_start_time = time.time()
+
 
     # variables for tracking the progress of the curate process on the frontend 
     main_curate_status = ""
@@ -2754,6 +2761,7 @@ def main_curate_function(soda_json_structure):
     myds = ""
     main_keys = soda_json_structure.keys()
     error = ""
+
 
     # 1] Check for potential errors
 
@@ -2787,7 +2795,7 @@ def main_curate_function(soda_json_structure):
             ps = connect_pennsieve_client(accountname)
         except Exception as e:
             main_curate_status = "Done"
-            abort(400, "Please select a valid Pennsieve account.")
+            raise e
 
     # if uploading on an existing bf dataset
     if "bf-dataset-selected" in soda_json_structure:
@@ -2802,14 +2810,14 @@ def main_curate_function(soda_json_structure):
             
         except Exception as e:
             main_curate_status = "Done"
-            abort(400, "Error: Please select a valid Pennsieve dataset")
+            raise e
 
         # check that the user has permissions for uploading and modifying the dataset
         main_curate_progress_message = "Checking that you have required permissions for modifying the selected dataset"
         role = pennsieve_get_current_user_permissions(selected_dataset_id, token)["role"]
         if role not in ["owner", "manager", "editor"]:
             main_curate_status = "Done"
-            abort(403, "Error: You don't have permissions for uploading to this Pennsieve dataset")
+            abort(403, "You do not have permissions to upload to this Pennsieve dataset")
 
     namespace_logger.info("main_curate_function step 1.3")
 
@@ -2818,17 +2826,14 @@ def main_curate_function(soda_json_structure):
     if "generate-dataset" in main_keys:
 
         # Check at least one file or folder are added to the dataset
-        try:
-            main_curate_progress_message = "Checking that the dataset is not empty"
-            if (
-                "dataset-structure" not in soda_json_structure
-                and "metadata-files" not in soda_json_structure
-            ):
-                main_curate_status = "Done" 
-                abort(400, "Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset.")
-        except Exception as e:
-            main_curate_status = "Done"
-            raise e
+        main_curate_progress_message = "Checking that the dataset is not empty"
+        if (
+            "dataset-structure" not in soda_json_structure
+            and "metadata-files" not in soda_json_structure
+        ):
+            main_curate_status = "Done" 
+            abort(400, "Your dataset is empty. Please add valid files and non-empty folders to your dataset.")
+
 
         namespace_logger.info("main_curate_function step 1.3.1")
 
@@ -2841,9 +2846,10 @@ def main_curate_function(soda_json_structure):
             # check that dataset is not empty after removing all the empty files and folders
             if not soda_json_structure["dataset-structure"]["folders"] and "metadata-files" not in soda_json_structure:
                 main_curate_status = "Done"
-                abort(400, "Error: Your dataset is empty. Please add valid files and non-empty folders to your dataset.")
+                abort(400, "Your dataset is empty. Please add valid files and non-empty folders to your dataset.")
 
         except Exception as e:
+            # in case of unexpected error (e.g. file not found), catch here and set curate status to Done before raising the error
             main_curate_status = "Done"
             raise e
         
