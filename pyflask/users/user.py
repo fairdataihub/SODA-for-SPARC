@@ -80,9 +80,10 @@ def get_user_information(token):
 
 
 def set_preferred_organization(organization_id, email, password, account_name):
-    try:
-        token = get_cognito_userpool_access_token(email, password)
 
+    token = get_cognito_userpool_access_token(email, password)
+
+    try:
 
         # switch to the desired organization
         url = "https://api.pennsieve.io/session/switch-organization"
@@ -94,7 +95,7 @@ def set_preferred_organization(organization_id, email, password, account_name):
 
     except Exception as error:
         error = "It looks like you don't have access to your desired organization. An organization is required to upload datasets. Please reach out to the SPARC curation team (email) to get access to your desired organization and try again."
-        raise Exception(error)
+        abort(error)
     
 
     delete_duplicate_keys(token, "SODA-Pennsieve")
