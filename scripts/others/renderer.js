@@ -4853,9 +4853,103 @@ ipcRenderer.on("selected-folders-organize-datasets", async (event, importedFolde
   );
 });
 
+/* ################################################################################## */
+/* ################################################################################## */
+/* ################################################################################## */
+
+const replaceProblematicFoldersWithSDSCompliantNames = (
+  datasetStructure,
+  problematicFolderNames
+) => {
+  const currentFoldersAtPath = Object.keys(datasetStructure.folders);
+
+  for (const folderKey of currentFoldersAtPath) {
+    const folderObj = datasetStructure["folders"][folderKey];
+    const folderPath = folderObj["path"];
+
+    if (problematicFolderNames.includes(folderPath)) {
+      console.log("This needs to be renamed");
+      console.log(folderObj);
+      console.log(folderKey);
+      const newFolderName = folderKey.replace("@", "-");
+      const newfolderObj = { ...folderObj };
+      if (!newfolderObj["action"].includes("renamed")) {
+        newfolderObj["action"].push("renamed");
+      }
+      delete datasetStructure["folders"][folderKey];
+      datasetStructure["folders"][newFolderName] = newfolderObj;
+    }
+
+    replaceProblematicFoldersWithSDSCompliantNames(folderObj, problematicFolderNames);
+  }
+};
+
+const replaceProblematicFilesWithSDSCompliantNames = (datasetStructure, problematicFileNames) => {
+  const currentFoldersAtPath = Object.keys(datasetStructure.folders);
+  const currentFilesAtPath = Object.keys(datasetStructure.files);
+
+  for (const folderKey of currentFoldersAtPath) {
+    const folderObj = datasetStructure["folders"][folderKey];
+    replaceProblematicFilesWithSDSCompliantNames(folderObj, problematicFileNames);
+  }
+  for (const fileKey of currentFilesAtPath) {
+    const fileObj = datasetStructure["files"][fileKey];
+    const filePath = fileObj["path"];
+
+    if (problematicFileNames.includes(filePath)) {
+      console.log("This needs to be renamed");
+      console.log(fileObj);
+      console.log(fileKey);
+      const newFileName = fileKey.replace("@", "-");
+      const newFileObj = { ...fileObj };
+      if (!newFileObj["action"].includes("renamed")) {
+        newFileObj["action"].push("renamed");
+      }
+      delete datasetStructure["files"][fileKey];
+      datasetStructure["files"][newFileName] = newFileObj;
+    }
+  }
+};
+const forbiddenFileNames = [
+  ".DS_Store", // Mac OS
+  "Thumbs.db", // Windows
+  "desktop.ini", // Windows
+  "Icon\r", // Mac OS
+  "._.DS_Store", // Mac OS
+  "._Thumbs.db", // Windows
+  "._desktop.ini", // Windows
+  "._Icon\r", // Mac OS
+  "._", // Mac OS
+  "._.Trashes", // Mac OS
+  "._.TemporaryItems", // Mac OS
+  "._.fseventsd", // Mac OS
+  "._.Spotlight-V100", // Mac OS
+  "._.Spotlight-V100", // Mac OS
+  "._.fseventsd", // Mac OS
+  "._.TemporaryItems", // Mac OS
+  "._.Trashes", // Mac OS
+  "._.fseventsd", // Mac OS
+  "._.Spotlight-V100", // Mac OS
+  "._.Trashes", // Mac OS
+  "._.TemporaryItems", // Mac OS
+  "._.fseventsd", // Mac OS
+  "._.Spotlight-V100", // Mac OS
+  "._.Trashes", // Mac OS
+  "._.TemporaryItems", // Mac OS
+  "._.fseventsd", // Mac OS
+  "._.Spotlight-V100", // Mac OS
+  "._.Trashes", // Mac OS
+  "._.TemporaryItems", // Mac OS
+  "._.fseventsd", // Mac OS
+  "._.Spotlight-V100", // Mac OS
+];
 const buildDatasetStructureJsonFromImportedData = async (itemPaths) => {
   let importedFileCount = 0;
   const inaccessibleItems = [];
+  const hiddenItems = [];
+  const forbiddenFileNames = [];
+  const problematicFolderNames = [];
+  const problematicFileNames = [];
   const datasetStructure = {};
 
   const traverseAndBuildJson = async (pathToExplore, currentStructure) => {
@@ -4869,6 +4963,10 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths) => {
       if (fsStatsObj.isDirectory()) {
         try {
           const folderName = path.basename(pathToExplore);
+          if (folderName.includes("@")) {
+            console.log("Found problematic folder name:", pathToExplore);
+            problematicFolderNames.push(pathToExplore);
+          }
           currentStructure["folders"][folderName] = {
             path: pathToExplore,
             type: "local",
@@ -4889,6 +4987,15 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths) => {
         }
       } else if (fsStatsObj.isFile()) {
         const fileName = path.basename(pathToExplore);
+        if (fileName.includes("@")) {
+          console.log("Found problematic file name:", pathToExplore);
+          problematicFileNames.push(pathToExplore);
+        }
+        if (forbiddenFileNames.includes(fileName)) {
+          console.log("Found forbidden file name:", pathToExplore);
+          forbiddenFileNames.push(pathToExplore);
+          throw new Error("Forbidden file name");
+        }
         currentStructure["files"][fileName] = {
           path: pathToExplore,
           type: "local",
@@ -4908,10 +5015,30 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths) => {
     await traverseAndBuildJson(itemPath, datasetStructure);
   }
 
-  console.log("datasetStructure", datasetStructure);
+  console.log("Raw Dataset Structure", datasetStructure);
+  if (inaccessibleItems.length > 0) {
+    console.log("Inaccessible Items", inaccessibleItems);
+  }
+  console.log("problematicFolderNames", problematicFolderNames);
+  if (problematicFolderNames.length > 0) {
+    console.log("problematicFolderNames", problematicFolderNames);
+    replaceProblematicFoldersWithSDSCompliantNames(datasetStructure, problematicFolderNames);
+  }
 
-  // Optionally return or do something with the resulting datasetStructure and inaccessibleItems
-  return { datasetStructure, inaccessibleItems };
+  if (problematicFileNames.length > 0) {
+    console.log("problematicFileNames", problematicFileNames);
+    replaceProblematicFilesWithSDSCompliantNames(datasetStructure, problematicFileNames);
+  }
+
+  if (forbiddenFileNames.length > 0) {
+    console.log("forbiddenFileNames", forbiddenFileNames);
+  }
+
+  if (hiddenItems.length > 0) {
+    console.log("hiddenItems", hiddenItems);
+  }
+
+  return datasetStructure;
 };
 
 const checkForDuplicateFolderAndFileNames = async (importedFolders, itemsAtPath) => {
@@ -4936,16 +5063,7 @@ const checkForDuplicateFolderAndFileNames = async (importedFolders, itemsAtPath)
   };
 };
 
-const swalConfirmActionOnFileList = async (fileList, title, icon, optionalThirdOPtionText) => {
-  const swalOptions = {
-    title: title,
-    icon: icon,
-    buttons: {
-      cancel: true,
-      confirm: true,
-    },
-  };
-};
+const swalConfirmActionOnFileList = async (fileList, title, icon, optionalThirdOPtionText) => {};
 
 const addDataArrayToDatasetStructureAtPath = async (importedData, virtualFolderPath) => {
   console.log("Imported folders and/or files:");
@@ -4960,154 +5078,31 @@ const addDataArrayToDatasetStructureAtPath = async (importedData, virtualFolderP
   console.log("filesInPath", filesInPath);
 
   // STEP 1: Build the JSON object from the imported data
-  // (This will also check for inaccessible items but they will not be added to the dataset structure)
-  const { datasetStructure, inaccessibleItems } = await buildDatasetStructureJsonFromImportedData(
-    importedData
-  );
+  // (This function handles bad folders/files, inaccessible folders/files, etc and returns a clean dataset structure)
+  const datasetStructure = await buildDatasetStructureJsonFromImportedData(importedData);
+  console.log("clean datasetStructure", datasetStructure);
+
+  delete currentContentsAtDatasetPath["folders"];
+  console.log(getRecursivePath(["code"], datasetStructureJSONObj));
+
+  // Step 2: Add the imported data to the dataset structure
+  // This step handles duplicate folder/file names, etc
+  //await addImportedDataToDatasetStructure(currentContentsAtDatasetPath, datasetStructure);
   // STEP 1B: Remove inaccessible items from the dataset structure
   // ask the user if they want to continue with the import (if there are inaccessible items)
-  if (inaccessibleItems.length > 0) {
-    // Show a swal that asks if the uswer would like to continue with the import
-    // without the inaccessible items
-    console.log("inaccessibleItems", inaccessibleItems);
-  }
 
-  const checkForNonSDSCompliantNames = async (datasetStructure) => {
-    const problematicFolderNames = [];
-    const problematicFileNames = [];
-    const searchStruct = (datasetStructure) => {
-      const currentFoldersAtPath = Object.keys(datasetStructure.folders);
-      const currentFilesAtPath = Object.keys(datasetStructure.files);
-      for (const folder of currentFoldersAtPath) {
-        const folderObj = datasetStructure["folders"][folder];
-        const folderPath = folderObj["path"];
-        const folderName = path.basename(folderPath);
-        if (folderName.includes("@")) {
-          console.log("Found problematic folder name:", folderPath);
-          problematicFolderNames.push(folderPath);
-        }
-
-        searchStruct(folderObj);
-      }
-      for (const file of currentFilesAtPath) {
-        const fileObj = datasetStructure["files"][file];
-        const filePath = fileObj["path"];
-        const fileName = path.basename(filePath);
-        if (fileName.includes("@")) {
-          console.log("Found problematic file name:", filePath);
-          problematicFileNames.push(filePath);
-        }
-      }
-    };
-
-    searchStruct(datasetStructure);
-
-    console.log("problematicFolderNames returned", problematicFolderNames);
-    console.log("problematicFileNames returned", problematicFileNames);
-    return { problematicFolderNames, problematicFileNames };
-  };
-
-  const replaceProblematicFoldersWithSDSCompliantNames = (
-    datasetStructure,
-    problematicFolderNames
-  ) => {
-    const currentFoldersAtPath = Object.keys(datasetStructure.folders);
-
-    for (const folderKey of currentFoldersAtPath) {
-      const folderObj = datasetStructure["folders"][folderKey];
-      const folderPath = folderObj["path"];
-
-      if (problematicFolderNames.includes(folderPath)) {
-        console.log("This needs to be renamed");
-        console.log(folderObj);
-        console.log(folderKey);
-        const newFolderName = folderKey.replace("@", "-");
-        const newfolderObj = { ...folderObj };
-        if (!newfolderObj["action"].includes("renamed")) {
-          newfolderObj["action"].push("renamed");
-        }
-        delete datasetStructure["folders"][folderKey];
-        datasetStructure["folders"][newFolderName] = newfolderObj;
-      }
-
-      replaceProblematicFoldersWithSDSCompliantNames(folderObj, problematicFolderNames);
-    }
-  };
-
-  const replaceProblematicFilesWithSDSCompliantNames = (datasetStructure, problematicFileNames) => {
-    const currentFoldersAtPath = Object.keys(datasetStructure.folders);
-    const currentFilesAtPath = Object.keys(datasetStructure.files);
-
-    for (const folderKey of currentFoldersAtPath) {
-      const folderObj = datasetStructure["folders"][folderKey];
-      replaceProblematicFilesWithSDSCompliantNames(folderObj, problematicFileNames);
-    }
-    for (const fileKey of currentFilesAtPath) {
-      const fileObj = datasetStructure["files"][fileKey];
-      const filePath = fileObj["path"];
-
-      if (problematicFileNames.includes(filePath)) {
-        console.log("This needs to be renamed");
-        console.log(fileObj);
-        console.log(fileKey);
-        const newFileName = fileKey.replace("@", "-");
-        const newFileObj = { ...fileObj };
-        if (!newFileObj["action"].includes("renamed")) {
-          newFileObj["action"].push("renamed");
-        }
-        delete datasetStructure["files"][fileKey];
-        datasetStructure["files"][newFileName] = newFileObj;
-      }
-    }
-  };
-
-  // STEP 2: Check for folders and files with non-SDS compliant names
-  const { problematicFolderNames, problematicFileNames } = await checkForNonSDSCompliantNames(
-    datasetStructure
-  );
   // STEP 2B: Remove problematic items from the dataset structure
   // ask the user if they want to continue with the import (if there are problematic items)
-  console.log("problematicFolderNames", problematicFolderNames);
-  if (problematicFolderNames.length > 0) {
-    console.log("problematicFolderNames", problematicFolderNames);
-    replaceProblematicFoldersWithSDSCompliantNames(datasetStructure, problematicFolderNames);
-  }
-
-  if (problematicFileNames.length > 0) {
-    console.log("problematicFileNames", problematicFileNames);
-    replaceProblematicFilesWithSDSCompliantNames(datasetStructure, problematicFileNames);
-  }
 
   console.log("NEW DATASET STRUCTURE");
   console.log(datasetStructure);
 
   console.log("builtDatasetStructure", datasetStructure);
-  console.log("inaccessibleItemsWhileBuildingDatasetStructure", inaccessibleItems);
-
-  const checkDatasetStructureForHiddenFiles = (datasetStructure) => {
-    const hiddenFiles = [];
-    const checkForHiddenFiles = (datasetStructure) => {
-      const currentFoldersAtPath = Object.keys(datasetStructure.folders);
-      const currentFilesAtPath = Object.keys(datasetStructure.files);
-      for (const folder of currentFoldersAtPath) {
-        if (folder.startsWith(".")) {
-          hiddenFiles.push(folder);
-        }
-        checkForHiddenFiles(datasetStructure.folders[folder]);
-      }
-      for (const file of currentFilesAtPath) {
-        if (file.startsWith(".")) {
-          hiddenFiles.push(file);
-        }
-      }
-    };
-    checkForHiddenFiles(datasetStructure);
-    return hiddenFiles;
-  };
-
-  // Check for hidden files
-  const hiddenFiles = checkDatasetStructureForHiddenFiles(datasetStructure);
 };
+
+/* ################################################################################## */
+/* ################################################################################## */
+/* ################################################################################## */
 
 //// Step 3. Organize dataset: Add files or folders with drag&drop
 const allowDrop = (ev) => {
@@ -5134,6 +5129,7 @@ const drop = async (ev) => {
   irregularFolderArray = [];
   var action = "";
   filesElement = ev.dataTransfer.files;
+  console.log("filesElement", filesElement);
   targetElement = ev.target;
   var importedFiles = {};
   var importedFolders = {};
