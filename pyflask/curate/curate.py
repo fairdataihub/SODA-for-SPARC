@@ -1929,9 +1929,20 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
             If the folder does not existing yet on Pennsieve the agent will create it.
             """
             print("recursive_dataset_scan_for_upload")
+            list_of_local_file_paths = []
+            # First loop will take place in the root of the dataset
             if "folders" in dataset_structure.keys():
                 for folder_key, folder in dataset_structure["folders"].items():
                     relative_path = generate_relative_path(my_relative_path, folder_key)
+                    if "files" in folder.keys():
+                        for file_key, file in folder["files"].items():
+                            list_of_local_file_paths.append(file["path"])
+                            total_files += 1
+                    if "folders" in folder.keys():
+                        # Before we recurse we want to add what we have so far to list_upload_files
+                        # This will allow us to create the folders on Pennsieve before we upload the files
+                        list_upload_files.append((list_of_local_file_paths, relative_path))
+                        recursive_dataset_scan_for_new_upload(folder, relative_path)
                     
         
         # See how to create folders with the Pennsieve agent
