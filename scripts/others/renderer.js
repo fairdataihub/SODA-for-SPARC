@@ -4944,7 +4944,6 @@ const forbiddenFileNames = [
   "._.Spotlight-V100", // Mac OS
 ];
 const buildDatasetStructureJsonFromImportedData = async (itemPaths) => {
-  let importedFileCount = 0;
   const inaccessibleItems = [];
   const hiddenItems = [];
   const forbiddenFileNames = [];
@@ -5041,6 +5040,43 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths) => {
   return datasetStructure;
 };
 
+const mergeLocalAndRemoteDatasetStructure = async (
+  datasetStructureToMerge,
+  datasetStructureBeingMergedInto
+) => {
+  const duplicateFiles = [];
+
+  const traverseAndMergeDatasetJsonObjects = async (
+    datasetStructureToMerge,
+    datasetStructureBeingMergedInto
+  ) => {
+    const ExistingFoldersAtPath = Object.keys(datasetStructureBeingMergedInto["folders"]);
+    const ExistingFilesAtPath = Object.keys(datasetStructureBeingMergedInto["files"]);
+
+    const foldersBeingMergedToPath = Object.keys(datasetStructureToMerge["folders"]);
+    const filesBeingMergedToPath = Object.keys(datasetStructureToMerge["files"]);
+
+    for (const folder of foldersBeingMergedToPath) {
+      if (ExistingFoldersAtPath.includes(folder)) {
+        console.log("Duplicate folder name:", folder);
+      } else {
+        datasetStructureBeingMergedInto["folders"][folder] =
+          datasetStructureToMerge["folders"][folder];
+      }
+    }
+
+    console.log("ExistingFoldersAtPath", ExistingFoldersAtPath);
+    console.log("ExistingFilesAtPath", ExistingFilesAtPath);
+    console.log("foldersBeingMergedToPath", foldersBeingMergedToPath);
+    console.log("filesBeingMergedToPath", filesBeingMergedToPath);
+  };
+
+  await traverseAndMergeDatasetJsonObjects(
+    datasetStructureToMerge,
+    datasetStructureBeingMergedInto
+  );
+};
+
 const checkForDuplicateFolderAndFileNames = async (importedFolders, itemsAtPath) => {
   const duplicateFolderNames = [];
   const duplicateFileNames = [];
@@ -5069,7 +5105,12 @@ const addDataArrayToDatasetStructureAtPath = async (importedData, virtualFolderP
   console.log("Imported folders and/or files:");
   console.log(importedData);
   console.log(virtualFolderPath);
-  const currentContentsAtDatasetPath = getRecursivePath(["code"], datasetStructureJSONObj); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')
+  const currentGlobalPath = getGlobalPath(organizeDSglobalPath);
+  const currentContentsAtDatasetPath = getRecursivePath(
+    currentGlobalPath.slice(1),
+    datasetStructureJSONObj
+  ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')
+
   console.log("currentContentsAtDatasetPath", currentContentsAtDatasetPath);
 
   const foldersInPath = Object.keys(currentContentsAtDatasetPath["folders"]);
@@ -5080,10 +5121,15 @@ const addDataArrayToDatasetStructureAtPath = async (importedData, virtualFolderP
   // STEP 1: Build the JSON object from the imported data
   // (This function handles bad folders/files, inaccessible folders/files, etc and returns a clean dataset structure)
   const datasetStructure = await buildDatasetStructureJsonFromImportedData(importedData);
-  console.log("clean datasetStructure", datasetStructure);
 
-  delete currentContentsAtDatasetPath["folders"];
-  console.log(getRecursivePath(["code"], datasetStructureJSONObj));
+  console.log("NEW DATASET STRUCTURE");
+  console.log(datasetStructure);
+  console.log("Going to step 2 to merge the new data with the existing data");
+
+  const mergedDataStructure = mergeLocalAndRemoteDatasetStructure(
+    datasetStructure,
+    currentContentsAtDatasetPath
+  );
 
   // Step 2: Add the imported data to the dataset structure
   // This step handles duplicate folder/file names, etc
@@ -5093,11 +5139,6 @@ const addDataArrayToDatasetStructureAtPath = async (importedData, virtualFolderP
 
   // STEP 2B: Remove problematic items from the dataset structure
   // ask the user if they want to continue with the import (if there are problematic items)
-
-  console.log("NEW DATASET STRUCTURE");
-  console.log(datasetStructure);
-
-  console.log("builtDatasetStructure", datasetStructure);
 };
 
 /* ################################################################################## */
