@@ -1914,6 +1914,26 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
         selected_id = ds["content"]["id"]
         ps.use_dataset(selected_id)
         
+        def recursive_dataset_scan_for_new_upload(dataset_structure, my_relative_path):
+            """
+            This function recursively gathers the files and folders in the dataset that will be uploaded to Pennsieve.
+            It assumes the dataset is new based on the generate_option value and will spend less time comparing what is on Pennsieve.
+            It will gather all the relative paths for the files and folders to pass along to the Pennsieve agent.
+            Input:
+            dataset_structure,
+            my_relative_path
+
+            Output:
+            two lists in one tuple, the first list will have all the local file paths that will be uploaded to Pennsieve
+            The second list will have the relative files paths according to the dataset structure.
+            If the folder does not existing yet on Pennsieve the agent will create it.
+            """
+            print("recursive_dataset_scan_for_upload")
+            if "folders" in dataset_structure.keys():
+                for folder_key, folder in dataset_structure["folders"].items():
+                    relative_path = generate_relative_path(my_relative_path, folder_key)
+                    
+        
         # See how to create folders with the Pennsieve agent
         def recursive_create_folder_for_ps(
             my_folder, my_tracking_folder, existing_folder_option
@@ -2223,51 +2243,43 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                     # unsubscribe from the agent's upload messages since the upload has finished
                     ps.unsubscribe(10)
 
-        namespace_logger.info("ps_create_new_dataset step 1 create non-existent folders")
-        # 1. Scan the dataset structure to create all non-existent folders
-        # create a tracking dict which would track the generation of the dataset on Pennsieve
-        # step_one_timer = timer()
-        main_curate_progress_message = "Creating folder structure"
+        main_curate_progress_message = "Creating list of files to upload to the dataset"
+        # Gather all necessary information to upload files to the dataset
         dataset_structure = soda_json_structure["dataset-structure"]
-        tracking_json_structure = ds
-
-        normalize_tracking_folder(tracking_json_structure)
-
-        # options for folders are: merge, replace, skip, duplicate
+        relative_path = ds["content"]["name"]
+        generate_option = soda_json_structure["generate-dataset"]["generate-option"]
+        list_upload_files = []
         existing_folder_option = soda_json_structure["generate-dataset"]["if-existing"]
-        recursive_create_folder_for_ps(
-            dataset_structure, tracking_json_structure, existing_folder_option
-        )
-
-        # step_one_timer_end = timer()
-        # namespace_logger.info(f"Step 1 took {timedelta(seconds=step_one_timer_end - step_one_timer)} seconds")
-        namespace_logger.info("ps_create_new_dataset step 2 create list of files to be uploaded and handle renaming")
-        # 2. Scan the dataset structure and compile a list of files to be uploaded along with desired renaming
-        # step2Timer = timer()
-        main_curate_progress_message = "Preparing a list of files to upload"
         existing_file_option = soda_json_structure["generate-dataset"][
             "if-existing-files"
         ]
-        list_upload_files = []
-        relative_path = ds["content"]["name"]
-
-        list_upload_files = recursive_dataset_scan_for_ps(
-            dataset_structure,
-            tracking_json_structure,
-            existing_file_option,
-            list_upload_files,
-            relative_path,
-        )
-
-
-        # calculate the number of files in the dataset that will be uploaded
-        # the total is shown to the front end client to communicate how many files have been uploaded so far
-        # the total also determines when the upload subscribers should stop listening to the dataset upload progress ( when files uploaded == total files stop listening )
-        for folderInformation in list_upload_files:
-            file_paths_count = len(folderInformation[0])
-            total_files += file_paths_count
-            total_dataset_files += file_paths_count
+             
+        main_curate_progress_message = "Preparing a list of files to upload"
+        if generate_option == "new":
+            # we can assume no files/folders exist in the dataset
+            # therefore, we can assume the dataset structure is the same as the tracking structure
+            print('yes')
+            list_upload_files = recursive_dataset_scan_for_new_upload(dataset_structure, relative_path)
+        else:
+            # we will need a tracking structure to compare against
+            tracking_json_structure = ds
+            normalize_tracking_folder(tracking_json_structure)
+            list_upload_files = recursive_dataset_scan_for_ps(
+                dataset_structure,
+                tracking_json_structure,
+                existing_file_option,
+                list_upload_files,
+                relative_path,
+            )
             
+            # the number of files to upload and the total also determines when the upload subscribers should stop listening to the dataset upload progress ( when files uploaded == total files stop listening )
+            for folderInformation in list_upload_files:
+                file_paths_count = len(folderInformation[0])
+                total_files += file_paths_count
+                total_dataset_files += file_paths_count
+
+
+        # Scan the dataset structure and create a list of files/folders to be uploaded with the desired renaming
         
         # 3. Add high-level metadata files to a list
         list_upload_metadata_files = []
