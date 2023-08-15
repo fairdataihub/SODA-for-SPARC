@@ -19,7 +19,7 @@ def raisePennsieveDownError(error):
 
     # indicates the server is down or did not respond in time 
     # there is variation between  a timeout and a service being unavailable but for our purposes we can treat them the same
-    raise InternalServerError("Pennsieve services are not responding to SODA for SPARC at this time. It is possible certain services have become temporarily unavailable. Please try again later.") from error
+    raise InternalServerError("Pennsieve services are not responding to SODA for SPARC's requests at this time. It is possible some Pennsieve services have become temporarily unavailable. Please try again later. If this issue persists please contact help@fairdataihub.org for assistance.") from error
     
     
 def raisePennsieveUnexpectedError(error):
@@ -27,7 +27,7 @@ def raisePennsieveUnexpectedError(error):
       Check if the given error is a Pennsieve 5xx error and raise a specific error for the client if it is.
     """
     # there is variation between the types of 500s we can get from Pennsieve but for our purposes we can treat them all the same way
-    raise InternalServerError("SODA for SPARC received an unexpected error from Pennsieve while trying to process your request. Please try again later.") from error
+    raise InternalServerError("SODA for SPARC has received an unexpected error from Pennsieve while trying to process your request. Please try again later. If this issue persists please contact help@fairdataihub.org for assistance.") from error
 
 
 def raiseUnexpectedPennsieveException(error):
