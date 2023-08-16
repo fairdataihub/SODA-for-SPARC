@@ -1914,7 +1914,34 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
         selected_id = ds["content"]["id"]
         ps.use_dataset(selected_id)
         
-        def recursive_dataset_scan_for_new_upload(dataset_structure, my_relative_path):
+        def gather_manifest_files(soda_json_structure):
+            """
+            Gather the manifest files from the soda json structure.
+            Output: A list of the file path of the manifest files.
+            """
+            if "auto-generated" in soda_json_structure["manifest-files"] and soda_json_structure["manifest-files"]["auto-generated"] == True:
+                    manifest_files_structure = get_auto_generated_manifest_files(soda_json_structure)
+        
+        def gather_metadata_files(soda_json_structure):
+            """
+            Gather the metadata files from the soda json structure.
+            Output: A list of the file path of the metadata files.
+            """
+            global main_total_generate_dataset_size
+            metadata_files = soda_json_structure["metadata-files"]
+            metadata_files_list = []
+            for file_key, file in metadata_files.items():
+                if file["type"] == "local":
+                    metadata_path = file["path"]
+                    if isfile(metadata_path):
+                        metadata_files_list.append(metadata_path)
+                        main_total_generate_dataset_size += getsize(metadata_path)
+                        total_files += 1
+                        total_metadata_files += 1
+
+            return metadata_files_list
+
+        def recursive_dataset_scan_for_new_upload(dataset_structure, list_upload_files, my_relative_path):
             """
             This function recursively gathers the files and folders in the dataset that will be uploaded to Pennsieve.
             It assumes the dataset is new based on the generate_option value and will spend less time comparing what is on Pennsieve.
@@ -1929,21 +1956,50 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
             If the folder does not existing yet on Pennsieve the agent will create it.
             """
             print("recursive_dataset_scan_for_upload")
+            global main_total_generate_dataset_size
             list_of_local_file_paths = []
             # First loop will take place in the root of the dataset
             if "folders" in dataset_structure.keys():
                 for folder_key, folder in dataset_structure["folders"].items():
                     relative_path = generate_relative_path(my_relative_path, folder_key)
-                    if "files" in folder.keys():
-                        for file_key, file in folder["files"].items():
-                            list_of_local_file_paths.append(file["path"])
-                            total_files += 1
-                    if "folders" in folder.keys():
-                        # Before we recurse we want to add what we have so far to list_upload_files
-                        # This will allow us to create the folders on Pennsieve before we upload the files
-                        list_upload_files.append((list_of_local_file_paths, relative_path))
-                        recursive_dataset_scan_for_new_upload(folder, relative_path)
-                    
+                    list_upload_files = recursive_dataset_scan_for_new_upload(folder, list_upload_files, relative_path)
+            if "files" in dataset_structure.keys():
+                list_local_files = []
+                list_projected_names = []
+                list_desired_names = []
+                list_final_names = []
+                additional_upload_lists = []
+
+                list_initial_names = []
+                for file_key, file in dataset_structure["files"].items():
+                    # relative_path = generate_relative_path(my_relative_path, file_key)
+                    file_path = file["path"]
+                    if isfile(file_path) and file["type"] == "local":
+                        projected_name = splitext(basename(file_path))[0]
+                        projected_extension = splitext(basename(file_path))[1]
+                        projected_name_w_extension = basename(file_path)
+                        desired_name = splitext(file_key)[0]
+                        desired_extension = splitext(file_key)[1]
+                        desired_name_with_extension = file_key
+
+                        list_local_files.append(file_path)
+                        list_projected_names.append(projected_name_w_extension)
+                        list_desired_names.append(desired_name_with_extension)
+                        list_final_names.append(desired_name)
+                        list_initial_names.append(projected_name)
+
+                        main_total_generate_dataset_size += getsize(file_path)
+
+                if list_local_files:
+                    list_upload_files.append([
+                        list_local_files,
+                        list_projected_names,
+                        list_desired_names,
+                        list_final_names,
+                        my_relative_path
+                    ])
+
+            return list_upload_files
         
         # See how to create folders with the Pennsieve agent
         def recursive_create_folder_for_ps(
@@ -2259,6 +2315,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
         dataset_structure = soda_json_structure["dataset-structure"]
         relative_path = ds["content"]["name"]
         generate_option = soda_json_structure["generate-dataset"]["generate-option"]
+        starting_point = soda_json_structure["starting-point"]["type"]
         list_upload_files = []
         existing_folder_option = soda_json_structure["generate-dataset"]["if-existing"]
         existing_file_option = soda_json_structure["generate-dataset"][
@@ -2266,11 +2323,19 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
         ]
              
         main_curate_progress_message = "Preparing a list of files to upload"
-        if generate_option == "new":
-            # we can assume no files/folders exist in the dataset
+        if generate_option == "new" and starting_point == "new":
+            # we can assume no files/folders exist in the dataset since the generate option is new and starting point is also new
             # therefore, we can assume the dataset structure is the same as the tracking structure
             print('yes')
-            list_upload_files = recursive_dataset_scan_for_new_upload(dataset_structure, relative_path)
+            list_upload_files = recursive_dataset_scan_for_new_upload(dataset_structure, list_upload_files, relative_path)
+            namespace_logger.info(list_upload_files)
+            list_upload_metadata_files = []
+            list_upload_manifest_files = []
+            if "metadata-files" in soda_json_structure.keys():
+                list_upload_metadata_files = gather_metadata_files(soda_json_structure)
+            
+            if "manifest-files" in soda_json_structure.keys():
+                list_upload_manifest_files = gather_manifest_files(soda_json_structure)
         else:
             # we will need a tracking structure to compare against
             tracking_json_structure = ds
