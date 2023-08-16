@@ -814,7 +814,7 @@ const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
   pennsievePreview = false;
 
   // check if manifest is being generated from Pennsieve
-  const type = selectedCardCreateManifest === "generate-manifest-from-Penn" ? "bf" : "local";
+  const type = selectedCardCreateManifest === "generate-manifest-from-Penn" ? "Pennsieve" : "Local";
 
   exitCurate();
   sodaJSONObj["starting-point"] = {};
@@ -822,11 +822,11 @@ const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
   datasetStructureJSONObj = { folders: {}, files: {} };
   sodaJSONObj["metadata-files"] = {};
 
-  if (type === "bf") {
+  if (type === "Pennsieve") {
     titleTerm = "on Pennsieve";
-  } else if (type != "bf" && !pennsievePreview) {
+  }
+  if (type === "Local") {
     continueProgressValidateDataset = validateSPARCdataset();
-
     if (!continueProgressValidateDataset) {
       return;
     }
@@ -900,7 +900,7 @@ const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
 
 const generateManifest = async (action, type, manifestEditBoolean, ev) => {
   // Case 1: Local dataset
-  if (type === "local") {
+  if (type === "Local") {
     if (finalManifestGenerationPath === "") {
       let localManifestGeneratePath = document.querySelector(
         "#input-manifest-local-gen-location"
@@ -941,7 +941,7 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
         );
       } else {
         if (pennsievePreview) {
-          generateAfterEdits();
+          generateAfterEdits(type);
           return;
         }
         logMetadataForAnalytics(
@@ -1056,7 +1056,7 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
   } else {
     // Case 2: bf dataset
     if (manifestEditBoolean) {
-      generateAfterEdits();
+      generateAfterEdits(type);
     } else {
       sodaJSONObj["bf-account-selected"] = { "account-name": defaultBfAccount };
       sodaJSONObj["bf-dataset-selected"] = { "dataset-name": defaultBfDataset };
@@ -1066,63 +1066,6 @@ const generateManifest = async (action, type, manifestEditBoolean, ev) => {
 };
 
 const generateManifestHelper = async () => {
-  updateJSONStructureManifestGenerate();
-  // now call the upload function including generating the manifest file(s)
-  if (sodaJSONObj["starting-point"]["type"] === "local") {
-    sodaJSONObj["starting-point"]["type"] = "new";
-  }
-  let dataset_name = "";
-  let dataset_destination = "";
-
-  if ("bf-dataset-selected" in sodaJSONObj) {
-    dataset_name = sodaJSONObj["bf-dataset-selected"]["dataset-name"];
-    dataset_destination = "Pennsieve";
-  } else if ("generate-dataset" in sodaJSONObj) {
-    if ("destination" in sodaJSONObj["generate-dataset"]) {
-      let destination = sodaJSONObj["generate-dataset"]["destination"];
-      if (destination == "local") {
-        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-        dataset_destination = "Local";
-      }
-      if (destination == "bf") {
-        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
-        dataset_destination = "Pennsieve";
-      }
-    }
-  }
-  if (dataset_destination == "Pennsieve") {
-    let supplementary_checks = await run_pre_flight_checks(false);
-    if (!supplementary_checks) {
-      $("#sidebarCollapse").prop("disabled", false);
-      return;
-    } else {
-      if (generatingBoolean) {
-      }
-    }
-  }
-};
-
-const generateManifestPreview = async (ev) => {
-  // open a file dialog so the user can select their dataset folder
-  ipcRenderer.send("open-folder-dialog-save-manifest-local");
-};
-
-/**
- *  Before a user uploads their manifest files to Pennsieve or generates them locally remove empty custom  columns.
- *  It is important that the SPARC SDS 2.0 mandated columns remain even if they are empty.
- */
-const dropEmptyManifestColumns = async () => {
-  try {
-    await client.put("/prepare_metadata/manifest_files/pennsieve", {
-      action: "drop_empty_manifest_columns",
-      type: "bf",
-    });
-  } catch (error) {
-    clientError(error);
-  }
-};
-
-const updateJSONStructureManifestGenerate = () => {
   let starting_point = sodaJSONObj["starting-point"]["type"];
   if (starting_point == "bf") {
     sodaJSONObj["generate-dataset"] = {
@@ -1149,6 +1092,54 @@ const updateJSONStructureManifestGenerate = () => {
       delete sodaJSONObj["bf-dataset-selected"];
     }
     sodaJSONObj["starting-point"]["type"] = "new";
+  }
+
+  // now call the upload function including generating the manifest file(s)
+  if (sodaJSONObj["starting-point"]["type"] === "local") {
+    sodaJSONObj["starting-point"]["type"] = "new";
+  }
+  let dataset_name = "";
+  let dataset_destination = "";
+
+  if ("generate-dataset" in sodaJSONObj) {
+    if ("destination" in sodaJSONObj["generate-dataset"]) {
+      let destination = sodaJSONObj["generate-dataset"]["destination"];
+      if (destination == "local") {
+        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+        dataset_destination = "Local";
+      }
+      if (destination == "bf") {
+        dataset_name = sodaJSONObj["generate-dataset"]["dataset-name"];
+        dataset_destination = "Pennsieve";
+      }
+    }
+  }
+  if (dataset_destination == "Pennsieve") {
+    let supplementary_checks = await run_pre_flight_checks(false);
+    if (!supplementary_checks) {
+      $("#sidebarCollapse").prop("disabled", false);
+      return;
+    }
+  }
+};
+
+const generateManifestPreview = async (ev) => {
+  // open a file dialog so the user can select their dataset folder
+  ipcRenderer.send("open-folder-dialog-save-manifest-local");
+};
+
+/**
+ *  Before a user uploads their manifest files to Pennsieve or generates them locally remove empty custom  columns.
+ *  It is important that the SPARC SDS 2.0 mandated columns remain even if they are empty.
+ */
+const dropEmptyManifestColumns = async () => {
+  try {
+    await client.put("/prepare_metadata/manifest_files/pennsieve", {
+      action: "drop_empty_manifest_columns",
+      type: "bf",
+    });
+  } catch (error) {
+    clientError(error);
   }
 };
 
@@ -1329,6 +1320,8 @@ const initiate_generate_manifest_bf = async () => {
   ) {
     destination = sodaJSONObj["generate-dataset"]["destination"];
   }
+
+  console.log(JSON.stringify(sodaJSONObj, null, 2));
 
   // Verify the origin of dataset for kombucha tracking
   let origin = "";
@@ -2440,7 +2433,7 @@ const checkInvalidHighLevelFolders = (datasetStructure) => {
 };
 
 // function to generate edited manifest files onto Pennsieve (basically just upload the local SODA Manifest Files folder to Pennsieve)
-const generateAfterEdits = async () => {
+const generateAfterEdits = async (startingPointType) => {
   let dir = path.join(homeDirectory, "SODA", "manifest_files");
   // set up sodaJSonObject
   sodaJSONObj = {
@@ -2452,7 +2445,7 @@ const generateAfterEdits = async () => {
     "starting-point": {},
   };
   sodaJSONObj["starting-point"]["local-path"] = dir;
-  sodaJSONObj["starting-point"]["type"] = "local";
+  sodaJSONObj["starting-point"]["type"] = startingPointType;
   create_json_object_include_manifest("", sodaJSONObj, dir);
   datasetStructureJSONObj = sodaJSONObj["dataset-structure"];
   populate_existing_folders(datasetStructureJSONObj);
