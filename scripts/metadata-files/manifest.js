@@ -803,7 +803,6 @@ var finalManifestGenerationPath = "";
 let pennsievePreview = false;
 
 const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
-  let type = "local";
   let continueProgressValidateDataset = true;
   let titleTerm = "folder";
   let localGenerationDifferentDestination = false;
@@ -811,13 +810,11 @@ const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
   let localManifestGeneratePath = document.querySelector(
     "#input-manifest-local-gen-location"
   ).placeholder;
-  let selectedCardCreateManifest = $('input[name="generate-manifest-1"]:checked').prop("id");
+  const selectedCardCreateManifest = $('input[name="generate-manifest-1"]:checked').prop("id");
   pennsievePreview = false;
 
   // check if manifest is being generated from Pennsieve
-  if (selectedCardCreateManifest === "generate-manifest-from-Penn") {
-    type = "bf";
-  }
+  const type = selectedCardCreateManifest === "generate-manifest-from-Penn" ? "bf" : "local";
 
   exitCurate();
   sodaJSONObj["starting-point"] = {};
