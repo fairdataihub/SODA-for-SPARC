@@ -1335,13 +1335,18 @@ const initiate_generate_manifest_bf = async () => {
 
   // Verify the origin of dataset for kombucha tracking
   let origin = "";
-  if ("local-path" in sodaJSONObj["starting-point"]) {
-    origin = "Local";
+  if (document.getElementById("create_manifest-section").classList.contains("is-shown")) {
+    // If the standalone manifest generator tab is currently shown
+    origin = "standalone-manifest-generator";
+  } else if (sodaJSONObj?.["cuartion-mode"] === "guided") {
+    // If the special guided mode curation-mode key is found
+    origin = "guided-mode-manifest-generator";
+  } else {
+    // Otherwise the manifest files were generated in FFM
+    origin = "free-form-mode-manifest-gerator";
   }
 
-  if ("bf" in sodaJSONObj["starting-point"]["type"]) {
-    origin = "Pennsieve";
-  }
+  console.log("origin", origin);
 
   // log the manifest file creation to analytics
   logMetadataForAnalytics(

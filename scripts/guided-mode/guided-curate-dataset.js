@@ -7415,6 +7415,9 @@ const patchPreviousGuidedModeVersions = async () => {
     sodaJSONObj["digital-metadata"]["license"] = "";
   }
 
+  if (!sodaJSONObj["curation-mode"]) {
+    sodaJSONObj["cuartion-mode"] = "guided";
+  }
   // If no other conditions are met, return the page the user was last on
   return sodaJSONObj["page-before-exit"];
 };
@@ -7625,6 +7628,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj = {};
 
   sodaJSONObj["guided-options"] = {};
+  sodaJSONObj["cuartion-mode"] = "guided";
   sodaJSONObj["bf-account-selected"] = {};
   sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
   sodaJSONObj["generate-dataset"] = {};
