@@ -5052,12 +5052,12 @@ const mergeLocalAndRemoteDatasetStructure = async (
   ) => {
     const ExistingFoldersAtPath = Object.keys(datasetStructureBeingMergedInto["folders"]);
     const ExistingFilesAtPath = Object.keys(datasetStructureBeingMergedInto["files"]);
-
     const foldersBeingMergedToPath = Object.keys(datasetStructureToMerge["folders"]);
     const filesBeingMergedToPath = Object.keys(datasetStructureToMerge["files"]);
 
     for (const folder of foldersBeingMergedToPath) {
       if (ExistingFoldersAtPath.includes(folder)) {
+        // Maybe we don't have to do anything here because the folder already exists
         console.log("Duplicate folder name:", folder);
       } else {
         datasetStructureBeingMergedInto["folders"][folder] =
@@ -5065,16 +5065,35 @@ const mergeLocalAndRemoteDatasetStructure = async (
       }
     }
 
+    for (const file of filesBeingMergedToPath) {
+      if (ExistingFilesAtPath.includes(file)) {
+        duplicateFiles.push(file);
+      } else {
+        datasetStructureBeingMergedInto["files"][file] = datasetStructureToMerge["files"][file];
+      }
+    }
+
     console.log("ExistingFoldersAtPath", ExistingFoldersAtPath);
     console.log("ExistingFilesAtPath", ExistingFilesAtPath);
     console.log("foldersBeingMergedToPath", foldersBeingMergedToPath);
     console.log("filesBeingMergedToPath", filesBeingMergedToPath);
+
+    for (const folder of foldersBeingMergedToPath) {
+      await traverseAndMergeDatasetJsonObjects(
+        datasetStructureToMerge["folders"][folder],
+        datasetStructureBeingMergedInto["folders"][folder]
+      );
+    }
   };
 
   await traverseAndMergeDatasetJsonObjects(
     datasetStructureToMerge,
     datasetStructureBeingMergedInto
   );
+
+  if (duplicateFiles.length > 0) {
+    console.log("duplicateFiles", duplicateFiles);
+  }
 };
 
 const checkForDuplicateFolderAndFileNames = async (importedFolders, itemsAtPath) => {
@@ -5084,6 +5103,7 @@ const checkForDuplicateFolderAndFileNames = async (importedFolders, itemsAtPath)
   const checkForDuplicateNames = async (importedFolders, itemsAtPath) => {
     const currentFoldersAtPath = Object.keys(itemsAtPath.folders);
     const currentFilesAtPath = Object.keys(itemsAtPath.files);
+    fg;
     for (const folder of importedFolders) {
       folderName = path.basename(folder);
       if (currentFoldersAtPath.includes(folderName)) {
@@ -5120,14 +5140,14 @@ const addDataArrayToDatasetStructureAtPath = async (importedData, virtualFolderP
 
   // STEP 1: Build the JSON object from the imported data
   // (This function handles bad folders/files, inaccessible folders/files, etc and returns a clean dataset structure)
-  const datasetStructure = await buildDatasetStructureJsonFromImportedData(importedData);
+  const builtDatasetStructure = await buildDatasetStructureJsonFromImportedData(importedData);
 
   console.log("NEW DATASET STRUCTURE");
-  console.log(datasetStructure);
+  console.log(builtDatasetStructure);
   console.log("Going to step 2 to merge the new data with the existing data");
 
   const mergedDataStructure = mergeLocalAndRemoteDatasetStructure(
-    datasetStructure,
+    builtDatasetStructure,
     currentContentsAtDatasetPath
   );
 
@@ -5157,7 +5177,6 @@ const drop = async (ev) => {
   const itemPaths = Array.from(itemsDroppedInFileExplorer).map((item) => item.path);
   console.log("itemsDroppedInFileExplorer", itemsDroppedInFileExplorer);
   await addDataArrayToDatasetStructureAtPath(itemPaths, ["My_dataset_folder", "code"]);
-  targetElement = ev.target;
 };
 
 const dropHelper = async (
