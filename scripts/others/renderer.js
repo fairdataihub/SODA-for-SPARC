@@ -4377,7 +4377,7 @@ organizeDSaddNewFolder.addEventListener("click", function (event) {
         $("#add-new-folder-input").keyup(function () {
           let val = $("#add-new-folder-input").val();
           let folderNameCheck = checkIrregularNameBoolean(val);
-          if (folderNameCheck === false) {
+          if (folderNameCheck === true) {
             Swal.showValidationMessage(
               `The folder name contains non-allowed characters. To follow the SPARC Data Standards, please create a folder name with only alphanumberic characters and hyphens '-'`
             );
@@ -5153,164 +5153,11 @@ const allowDrop = (ev) => {
 var filesElement;
 var targetElement;
 const drop = async (ev) => {
-  irregularFolderArray = [];
-  let renamedFolderName = "";
-  let replaced = [];
-  var action = "";
-  filesElement = ev.dataTransfer.files;
+  const itemsDroppedInFileExplorer = ev.dataTransfer.files;
+  const itemPaths = Array.from(itemsDroppedInFileExplorer).map((item) => item.path);
+  console.log("itemsDroppedInFileExplorer", itemsDroppedInFileExplorer);
+  await addDataArrayToDatasetStructureAtPath(itemPaths, ["My_dataset_folder", "code"]);
   targetElement = ev.target;
-  // get global path
-  var currentPath = organizeDSglobalPath.value;
-  var jsonPathArray = currentPath.split("/");
-  var filtered = jsonPathArray.slice(1).filter(function (el) {
-    return el != "";
-  });
-
-  var myPath = getRecursivePath(filtered, datasetStructureJSONObj);
-  irregularFolderArray = [];
-  var action = "";
-  filesElement = ev.dataTransfer.files;
-  console.log("filesElement", filesElement);
-  targetElement = ev.target;
-  var importedFiles = {};
-  var importedFolders = {};
-  var nonAllowedDuplicateFiles = [];
-  ev.preventDefault();
-  var uiFiles = {};
-  var uiFolders = {};
-
-  $("body").addClass("waiting");
-
-  for (var file in myPath["files"]) {
-    uiFiles[path.parse(file).base] = 1;
-  }
-  for (var folder in myPath["folders"]) {
-    uiFolders[path.parse(folder).name] = 1;
-  }
-  for (var i = 0; i < ev.dataTransfer.files.length; i++) {
-    var ele = ev.dataTransfer.files[i].path;
-    if (path.basename(ele).indexOf(".") === -1) {
-      detectIrregularFolders(path.basename(ele), ele);
-    }
-  }
-  var footer = `<a style='text-decoration: none !important' class='swal-popover' data-content='A folder name cannot contain any of the following special characters: <br> ${nonAllowedCharacters}' rel='popover' data-html='true' data-placement='right' data-trigger='hover'>What characters are not allowed?</a>`;
-  if (irregularFolderArray.length > 0) {
-    Swal.fire({
-      title:
-        "The following folders contain non-allowed characters in their names. How should we handle them?",
-      html:
-        "<div style='max-height:300px; overflow-y:auto'>" +
-        irregularFolderArray.join("</br>") +
-        "</div>",
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showDenyButton: true,
-      showCancelButton: true,
-      confirmButtonText: "Replace characters with (-)",
-      denyButtonText: "Remove characters",
-      cancelButtonText: "Cancel",
-      footer: footer,
-      didOpen: () => {
-        $(".swal-popover").popover();
-      },
-    }).then(async (result) => {
-      /* Read more about isConfirmed, isDenied below */
-      if (result.isConfirmed) {
-        action = "replace";
-        if (irregularFolderArray.length > 0) {
-          for (let i = 0; i < irregularFolderArray.length; i++) {
-            renamedFolderName = replaceIrregularFolders(irregularFolderArray[i]);
-            replaced.push(renamedFolderName);
-          }
-        }
-      } else if (result.isDenied) {
-        action = "remove";
-        if (irregularFolderArray.length > 0) {
-          for (let i = 0; i < irregularFolderArray.length; i++) {
-            renamedFolderName = removeIrregularFolders(irregularFolderArray[i]);
-            replaced.push(renamedFolderName);
-          }
-        }
-      } else {
-        return;
-      }
-      let load_spinner_promise = new Promise(async (resolved) => {
-        let background = document.createElement("div");
-        let spinner_container = document.createElement("div");
-        let spinner_icon = document.createElement("div");
-        spinner_container.setAttribute("id", "items_loading_container");
-        spinner_icon.setAttribute("id", "item_load");
-        spinner_icon.setAttribute("class", "ui large active inline loader icon-wrapper");
-        background.setAttribute("class", "loading-items-background");
-        background.setAttribute("id", "loading-items-background-overlay");
-
-        spinner_container.append(spinner_icon);
-        document.body.prepend(background);
-        document.body.prepend(spinner_container);
-        let loading_items_spinner = document.getElementById("items_loading_container");
-        loading_items_spinner.style.display = "block";
-        if (loading_items_spinner.style.display === "block") {
-          setTimeout(() => {
-            resolved();
-          }, 100);
-        }
-      }).then(async () => {
-        await dropHelper(
-          filesElement,
-          targetElement,
-          action,
-          myPath,
-          importedFiles,
-          importedFolders,
-          nonAllowedDuplicateFiles,
-          uiFiles,
-          uiFolders
-        );
-        // Swal.close();
-        document.getElementById("loading-items-background-overlay").remove();
-        document.getElementById("items_loading_container").remove();
-        // background.remove();
-      });
-    });
-  } else {
-    let load_spinner_promise = new Promise(async (resolved) => {
-      let background = document.createElement("div");
-      let spinner_container = document.createElement("div");
-      let spinner_icon = document.createElement("div");
-      spinner_container.setAttribute("id", "items_loading_container");
-      spinner_icon.setAttribute("id", "item_load");
-      spinner_icon.setAttribute("class", "ui large active inline loader icon-wrapper");
-      background.setAttribute("class", "loading-items-background");
-      background.setAttribute("id", "loading-items-background-overlay");
-
-      spinner_container.append(spinner_icon);
-      document.body.prepend(background);
-      document.body.prepend(spinner_container);
-      let loading_items_spinner = document.getElementById("items_loading_container");
-      loading_items_spinner.style.display = "block";
-      if (loading_items_spinner.style.display === "block") {
-        setTimeout(() => {
-          resolved();
-        }, 100);
-      }
-    }).then(async () => {
-      await dropHelper(
-        filesElement,
-        targetElement,
-        "",
-        myPath,
-        importedFiles,
-        importedFolders,
-        nonAllowedDuplicateFiles,
-        uiFiles,
-        uiFolders
-      );
-      // Swal.close();
-      document.getElementById("loading-items-background-overlay").remove();
-      document.getElementById("items_loading_container").remove();
-      // background.remove();
-    });
-  }
 };
 
 const dropHelper = async (
