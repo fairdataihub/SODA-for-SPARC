@@ -1998,12 +1998,20 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                         desired_name = splitext(file_key)[0]
                         desired_extension = splitext(file_key)[1]
                         desired_name_with_extension = file_key
+                        
 
-                        list_local_files.append(file_path)
-                        list_projected_names.append(projected_name_w_extension)
-                        list_desired_names.append(desired_name_with_extension)
-                        list_final_names.append(desired_name)
-                        list_initial_names.append(projected_name)
+                        if projected_name != desired_name:
+                            list_initial_names.append(projected_name)
+                            list_local_files.append(file_path)
+                            list_projected_names.append(projected_name_w_extension)
+                            list_desired_names.append(desired_name_with_extension)
+                            list_final_names.append(desired_name)
+                        else:
+                            list_local_files.append(file_path)
+                            list_projected_names.append(projected_name_w_extension)
+                            list_desired_names.append(desired_name_with_extension)
+                            list_final_names.append(desired_name)
+                            list_initial_names.append(projected_name)
 
                         main_total_generate_dataset_size += getsize(file_path)
 
