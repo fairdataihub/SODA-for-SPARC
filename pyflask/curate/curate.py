@@ -2556,11 +2556,15 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                 relative_path = key.split("/")
                 # get the high lvl folder name
                 high_lvl_folder_name = relative_path[0]
+                last_folder_name = relative_path[-1]
                 subfolder_level = 1
                 subfolder_amount = len(relative_path) - 1
                 namespace_logger.info(f"ps_create_new_dataset step 8 rename files - subfolder_amount: {subfolder_amount}")
                 namespace_logger.info(f"ps_create_new_dataset step 8 rename files - subfolder_level: {subfolder_level}")
                 namespace_logger.info(f"ps_create_new_dataset step 8 rename files - relative_path list: {relative_path}")
+                namespace_logger.info(f"LAST FOLDER NEED: {last_folder_name}")
+
+
                 if high_lvl_folder_name in collection_ids:
                     # subfolder_amount will be the amount of subfolders we need to call until we can get the file ID to rename
                     while subfolder_amount > 0:
@@ -2605,33 +2609,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                         if subfolder_amount != 0: subfolder_amount -= 1
                         subfolder_level += 1
             namespace_logger.info(f"This is how the list_of_files_to_renamed looks like after the for loop: {list_of_files_to_renamed}")
-
-        # # high lvl folders have been gathered, not seek what package ids we need to find based on the relative path in list_of_files_to_renamed and the high lvl folders in collections_ids
-        # for key in list_of_files_to_renamed.keys():
-        #     # get the relative path of the file to be renamed
-        #     relative_path = key
-        #     # get the high lvl folder name
-        #     high_lvl_folder_name = relative_path[: relative_path.index("/")]
-        #     # get the high lvl folder id
-        #     high_lvl_folder_id = list(collection_ids.keys())[
-        #         list(collection_ids.values()).index({"name": high_lvl_folder_name})
-        #     ]
-        #     # get the high lvl folder's children
-        #     r = requests.get(f"{PENNSIEVE_URL}/packages/{high_lvl_folder_id}/view", headers=create_request_headers(ps))
-        #     r.raise_for_status()
-        #     high_lvl_folder_content = r.json()["children"]
-        #     # get the package id of the file to be renamed
-        #     package_id = list(high_lvl_folder_content.keys())[
-        #         list(high_lvl_folder_content.values()).index(
-        #             {"name": list_of_files_to_renamed[key]["current_name"]}
-        #         )
-        #     ]
-        #     # save the package id to the list of files to be renamed
-        #     list_of_files_to_renamed[key]["package_id"] = package_id
-
-
-
-
 
 
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
