@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## Bug fixes:
 
-- Free Form Mode's Standalone Validator feature no longer shows a validation results table when validation fails due to a user missing required metadata files. 
+- Free Form Mode's Standalone Validator feature no longer shows a validation results table when validation fails due to a user missing required metadata files.
 - Linking your ORCID ID with Pennsieve through SODA for SPARC no longer fails to authenticate when given a valid user profile.
 
 ## v.12.2.0 - 2023-08-01
