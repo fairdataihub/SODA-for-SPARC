@@ -2567,7 +2567,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
                 if high_lvl_folder_name in collection_ids:
                     # subfolder_amount will be the amount of subfolders we need to call until we can get the file ID to rename
-                    while subfolder_amount > 0:
+                    while last_folder_name > 0:
                         # get the high lvl folder id
                         high_lvl_folder_id = collection_ids[high_lvl_folder_name]["id"]
                         # get the high lvl folder's children
