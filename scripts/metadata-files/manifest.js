@@ -1,7 +1,6 @@
 const { platform } = require("os");
 const { copyFile, readdir } = require("fs").promises;
 const { join } = require("path");
-const { kombuchaEnums } = require("../others/analytics/analytics-enums");
 let openedEdit = false;
 
 // opendropdown event listeners
