@@ -800,7 +800,7 @@ const convertJSONToXlsx = (jsondata, excelfile) => {
 
 const determineStandaloneManifestGeneratorOrigin = () => {
   const selectedCardCreateManifest = $('input[name="generate-manifest-1"]:checked').prop("id");
-  return selectedCardCreateManifest === "generate-manifest-from-Penn" ? "bf" : "Local";
+  return selectedCardCreateManifest === "generate-manifest-from-Penn" ? "bf" : "local";
 };
 
 var localDatasetFolderPath = "";
@@ -815,11 +815,9 @@ const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
   let localManifestGeneratePath = document.querySelector(
     "#input-manifest-local-gen-location"
   ).placeholder;
-  let selectedCardCreateManifest = $('input[name="generate-manifest-1"]:checked').prop("id");
   pennsievePreview = false;
-
-  // check if manifest is being generated from Pennsieve
   const type = determineStandaloneManifestGeneratorOrigin();
+
   exitCurate();
   sodaJSONObj["starting-point"] = {};
   sodaJSONObj["dataset-structure"] = {};
