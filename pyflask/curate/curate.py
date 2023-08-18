@@ -1909,8 +1909,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
         # Set the Pennsieve Python Client's dataset to the Pennsiee dataset that will be uploaded to.
         selected_id = ds["content"]["id"]
         ps.use_dataset(selected_id)
-        
-        
+
+
 
         def recursive_create_folder_for_ps(
             my_folder, my_tracking_folder, existing_folder_option
@@ -1986,6 +1986,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                     recursive_create_folder_for_ps(
                         folder, tracking_folder, existing_folder_option
                     )
+
         def recursive_dataset_scan_for_ps(
             my_folder,
             my_tracking_folder,
@@ -2214,7 +2215,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                 if current_bytes_uploaded == total_bytes_to_upload and  file_id != "":
                     files_uploaded += 1
                     main_curation_uploaded_files += 1
-                    
+
 
                 # check if the upload has finished
                 if files_uploaded == current_files_in_subscriber_session:
@@ -2262,8 +2263,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
             file_paths_count = len(folderInformation[0])
             total_files += file_paths_count
             total_dataset_files += file_paths_count
-            
-        
+
+
 
 
         # main_curate_progress_message = "About to update after doing recursive dataset scan"
@@ -2366,11 +2367,22 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
         main_curate_progress_message = ("Queuing dataset files for upload with the Pennsieve Agent..." + "<br>" + "This may take some time.")
 
-        # create a manifest - IMP: We use a single file to start with since creating a manifest requires a file path.  We need to remove this at the end. 
+        # create a manifest - IMP: We use a single file to start with since creating a manifest requires a file path.  We need to remove this at the end.
         if len(list_upload_files) > 0:
+            list_of_files_to_renamed = {}
             first_file_local_path = list_upload_files[0][0][0]
             first_relative_path = list_upload_files[0][6]
+            first_final_name = list_upload_files[0][4][0]
             folder_name = first_relative_path[first_relative_path.index("/"):]
+
+            if first_final_name != basename(first_file_local_path):
+                # save the relative path, final name, and local path of the file to be renamed in a dictionary
+                list_of_files_to_renamed[folder_name[1:]] = {
+                    "rename_name": folder_name[1:],
+                    "current_name": basename(first_file_local_path),
+                }
+
+            # create the manifest to upload using the first file in the list of files to upload
             manifest_data = ps.manifest.create(first_file_local_path, folder_name[1:])
             manifest_id = manifest_data.manifest_id
 
@@ -2381,11 +2393,13 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
             # there are files to add to the manifest if there are more than one file in the first folder or more than one folder
             if len(list_upload_files[0][0]) > 1 or len(list_upload_files) > 1:
+                index_skip = True
                 for folderInformation in list_upload_files:
                     list_file_paths = folderInformation[0]
                     relative_path = folderInformation[6]
+                    final_file_name_list = folderInformation[4]
 
-                    
+
 
                     # get the substring from the string relative_path that starts at the index of the / and contains the rest of the string
                     # this is the folder name
@@ -2394,8 +2408,17 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                     except ValueError as e:
                         folder_name = relative_path
 
+                    final_files_index = 1 if index_skip else 0
+                    index_skip = False
                     # Add files to manfiest"
                     for file_path in list_file_paths:
+                        final_file_name = final_file_name_list[final_files_index]
+                        if final_file_name != basename(file_path):
+                            # save the relative path, final name, and local path of the file to be renamed in a dictionary
+                            list_of_files_to_renamed[folder_name[1:]] = {
+                                "rename_name": final_file_name,
+                                "current_name": basename(file_path),
+                            }
                         ps.manifest.add(file_path, folder_name[1:], manifest_id)
 
             # reset global variables used in the subscriber monitoring function
@@ -2404,7 +2427,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
             total_bytes_uploaded = {"value": 0}
             current_files_in_subscriber_session = total_dataset_files
 
-            
+
             # upload the manifest files
             try: 
                 ps.manifest.upload(manifest_id)
@@ -2419,7 +2442,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                 raise Exception("The Pennsieve Agent has encountered an issue while uploading. Please retry the upload. If this issue persists please follow this <a href='https://docs.sodaforsparc.io/docs/how-to/how-to-reinstall-the-pennsieve-agent'> guide</a> on performing a full reinstallation of the Pennsieve Agent to fix the problem.")
 
 
-            
+
 
         # 6. Upload metadata files
         if list_upload_metadata_files:
@@ -2473,11 +2496,11 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                     manifest_file = item[0][0]
                     ps_folder = item[1]
                     main_curate_progress_message = ( f"Uploading manifest file in {ps_folder} folder" )
-                    
+
                     # add the files to the manifest
                     ps.manifest.add(manifest_file, ps_folder, manifest_id)
 
-                    
+
 
             # reset global variable used in the subscriber monitoring function
             bytes_uploaded_per_file = {}
@@ -2498,6 +2521,36 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
         # wait for all of the Agent's processes to finish to avoid errors when deleting files on Windows
         time.sleep(1)
+
+        # 8. Rename files
+        namespace_logger.info("ps_create_new_dataset step 8 rename files")
+        main_curate_progress_message = ("Renaming files...")
+        # get the dataset id to gather the dataset's files
+        dataset_id = ds["content"]["id"]
+        # get the dataset's files
+        collection_ids = {}
+        package_ids = {}
+        r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}/packages", headers=create_request_headers(ps))
+        r.raise_for_status()
+        packages = r.json()["packages"]
+
+        for package in packages:
+            if package["content"]["packageType"] == "Collection":
+                # append the collection name and id to the list of collections, make the collection name the key
+                collection_ids[package["content"]["nodeId"]] = {
+                    "name": package["content"]["name"]
+                }
+            else:
+                # get the package's files
+                package_ids[package["content"]["nodeId"]] = {
+                    "name": package["content"]["name"]
+                }
+
+        # for file in list_of_files_to_renamed:
+
+
+
+
 
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
 
