@@ -78,11 +78,17 @@ const Status = {
   FAIL: "fail",
 };
 
+const Origin = {
+  PENNSIEVE: "Pennsieve",
+  LOCAL: "Local",
+};
+
 const kombuchaEnums = {
   Category,
   Action,
   Label,
   Status,
+  Origin,
 };
 
 module.exports = { kombuchaEnums };

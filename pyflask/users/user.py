@@ -4,18 +4,16 @@ from configparser import ConfigParser
 from constants import PENNSIEVE_URL
 from utils import (
     create_request_headers,
-    connect_pennsieve_client,
-    authenticate_user_with_client,
 )
 from namespaces import NamespaceEnum, get_namespace_logger
 from flask import abort
-from authentication import get_access_token, get_cognito_userpool_access_token, bf_add_account_username, bf_delete_account, bf_delete_default_profile, delete_duplicate_keys
+from authentication import get_access_token, get_cognito_userpool_access_token, bf_add_account_username, delete_duplicate_keys
 
 logger = get_namespace_logger(NamespaceEnum.USER)
 
 
 
-def integrate_orcid_with_pennsieve(access_code, pennsieve_account):
+def integrate_orcid_with_pennsieve(access_code):
   """
   Given an OAuth access code link a user's ORCID ID to their Pennsieve account.
   This is required in order to publish a dataset for review with the SPARC Consortium.
@@ -24,17 +22,11 @@ def integrate_orcid_with_pennsieve(access_code, pennsieve_account):
   if access_code == "" or access_code is None:
     abort(400, "Cannot integrate your ORCID iD to Pennsieve without an access code.")
 
-  # verify Pennsieve account
-  try:
-    ps = connect_pennsieve_client()
-    authenticate_user_with_client(ps, pennsieve_account)
-  except Exception as e:
-     abort(400, "Error: Please select a valid Pennsieve account")
+  token = get_access_token()
     
-  
   try:
     jsonfile = {"authorizationCode": access_code}
-    r = requests.post(f"{PENNSIEVE_URL}/user/orcid", json=jsonfile, headers=create_request_headers(ps))
+    r = requests.post(f"{PENNSIEVE_URL}/user/orcid", json=jsonfile, headers=create_request_headers(token))
     r.raise_for_status()
 
     return r.json()

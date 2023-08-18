@@ -1,7 +1,7 @@
 {
   "name": "soda-for-sparc",
   "productName": "SODA for SPARC",
-  "version": "12.2.0",
+  "version": "12.2.1",
   "description": "Keep Calm and Curate ",
   "main": "main.js",
   "scripts": {
@@ -12,7 +12,8 @@
     "deploy-win": "electron-builder build --win --publish always",
     "deploy-mac": "electron-builder build --mac --publish always",
     "deploy-linux": "electron-builder build --linux --publish always",
-    "python-onefile-build": "python -m PyInstaller --onefile --clean ./pyflask/app.py --distpath ./pyflaskdist",
+    "python-onefile-build-unix": "python -m PyInstaller --onefile --clean ./pyflask/app.py --distpath ./pyflaskdist",
+    "python-onefile-build-win": "python -m PyInstaller --onefile --add-data libcrypto-1_1-x64.dll;. --add-data libssl-1_1-x64.dll;. --clean ./pyflask/app.py --distpath ./pyflaskdist",
     "postinstall": "electron-builder install-app-deps",
     "format": "prettier --ignore-path .gitignore --ignore-path .prettierignore \"./**/*.+(html|css|js|md|yml)\" --write",
     "commit": "cz",

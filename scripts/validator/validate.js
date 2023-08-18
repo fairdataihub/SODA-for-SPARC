@@ -203,6 +203,9 @@ const validateLocalDataset = async () => {
       "Number of Files",
       file_counter
     );
+    // hide the validation question
+    $("#validate_dataset-question-4").removeClass("show");
+
     if (error.response && (error.response.status == 503 || error.response.status == 502)) {
       await Swal.fire({
         title: "Validation Service Unavailable",
@@ -446,6 +449,8 @@ const validatePennsieveDatasetStandAlone = async () => {
     file_counter = 0;
     folder_counter = 0;
     get_num_files_and_folders(localSodaJSONObj["dataset-structure"]);
+    // hide the validation question
+    $("#validate_dataset-question-4").removeClass("show");
     // log successful validation run to analytics
     ipcRenderer.send(
       "track-event",
@@ -899,6 +904,7 @@ document.querySelector("#validate-local-dataset-path").addEventListener("click",
 
 // start dataset validation
 document.querySelector("#run_validator_btn").addEventListener("click", async function (evt) {
+  console.log(evt);
   // check if validating a local or pennsieve dataset
   let localDatasetCard = document.querySelector("#validate-1-Local");
   let validatingLocalDataset = localDatasetCard.checked;
@@ -927,10 +933,19 @@ document.querySelector("#run_validator_btn").addEventListener("click", async fun
 
   if (validatingLocalDataset) {
     await validateLocalDataset();
-
-    scrollToElement("#validation-errors-container");
   } else {
     await validatePennsieveDatasetStandAlone();
+  }
+
+  if (getValidationResultsCount() > 0) {
+    transitionFreeFormMode(
+      this,
+      "validate_dataset-question-3",
+      "validate_dataset-tab",
+      "",
+      "individual-question validate_dataset"
+    );
+    scrollToElement("#validation-errors-container");
   }
 });
 

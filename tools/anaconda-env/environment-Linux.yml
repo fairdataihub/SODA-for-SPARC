@@ -3,11 +3,11 @@ channels:
   - defaults
   - conda-forge
 dependencies:
-- python = 3.9
+- python = 3.9.7
 - PyInstaller = 4.7
 - nodejs = 16.14.2
-- libgcc = 7.2.0
 - git = 2.20.1
+- libgcc = 7.2.0
 - pip
 - pip:
   - chardet == 4.0.0
