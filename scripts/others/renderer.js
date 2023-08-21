@@ -66,6 +66,8 @@ const { backOff } = require("exponential-backoff");
 const app = remote.app;
 const Clipboard = electron.clipboard;
 
+let nodeStorage = new JSONStorage(app.getPath("userData"));
+
 var nextBtnDisabledVariable = true;
 var reverseSwalButtons = false;
 let organizeDSglobalPath = "";
@@ -275,12 +277,31 @@ contact_us_lottie_observer.observe(contact_section, {
 
 document.getElementById("guided_mode_view").click();
 
-let launchAnnouncement = false;
-ipcRenderer.on("checkForAnnouncements", (event, index) => {
-  launchAnnouncement = true;
-  let nodeStorage = new JSONStorage(app.getPath("userData"));
-  nodeStorage.setItem("announcements", false);
-});
+let firstLaunch = nodeStorage.getItem("freshLaunch");
+console.log("First launch from storage value: ", firstLaunch);
+// if firstlaunch is undefined then it is a fresh install of the app; so set first launch to true
+if (firstLaunch === undefined || firstLaunch === null) firstLaunch = true;
+// if launchAnnouncements is undefined then announcements havent been launched yet; so set launchAnnouncements to true
+let launchAnnouncement = nodeStorage.getItem("launchAnnouncements");
+console.log("Launch announcements from storage value: ", launchAnnouncement);
+if (launchAnnouncement === undefined || firstLaunch === null) launchAnnouncement = true;
+
+console.log(process.platform);
+
+// first launch on MacOS seems to cause a reload; so only set launch announcements to false if it isnt first launch
+if (firstLaunch && process.platform !== "darwin") {
+  // NOTE: launchAnnouncements is only set to true during the auto update process
+  nodeStorage.setItem("launchAnnouncements", false);
+} else if (!firstLaunch && process.platform === "darwin") {
+  console.log("We are setting launch announcements to false");
+  nodeStorage.setItem("launchAnnouncements", false);
+}
+// now that the app has been launched set first launch to false
+// NOTE: First launch is set to true only in main.js after the app has been auto updated
+nodeStorage.setItem("freshLaunch", false);
+
+console.log("First launch: ", firstLaunch);
+console.log("Launch announcements: ", launchAnnouncement);
 
 //////////////////////////////////
 // Connect to Python back-end

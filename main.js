@@ -276,17 +276,16 @@ function initialize() {
               let { response } = responseObject;
               if (response === 0) {
                 // Runs the following if 'Yes' is clicked
-                var announcementsLaunch = nodeStorage.getItem("announcements");
-                nodeStorage.setItem("announcements", false);
                 await exitPyProc();
                 quit_app();
               }
             });
         }
       } else {
-        var first_launch = nodeStorage.getItem("firstlaunch");
-        nodeStorage.setItem("firstlaunch", true);
-        nodeStorage.setItem("announcements", true);
+        // set firstLaunch and launchAnnouncements to true so that when SODA restarts after the auto update the renderer process knows
+        // to consider the launch as a fresh launch wherein we show the announcements
+        nodeStorage.setItem("freshLaunch", true);
+        nodeStorage.setItem("launchAnnouncements", true);
         await exitPyProc();
         app.exit();
       }
@@ -338,12 +337,12 @@ function initialize() {
         //mainWindow.maximize();
         mainWindow.show();
         createWindow();
-        var first_launch = nodeStorage.getItem("firstlaunch");
+        var first_launch = nodeStorage.getItem("firstLaunch");
         var announcementsLaunch = nodeStorage.getItem("announcements");
         if (first_launch == true || first_launch == undefined) {
           mainWindow.reload();
           mainWindow.focus();
-          nodeStorage.setItem("firstlaunch", false);
+          // nodeStorage.setItem("firstlaunch", false);
         }
         if (announcementsLaunch == true || announcementsLaunch == undefined) {
           checkForAnnouncements();
@@ -357,9 +356,9 @@ function initialize() {
       }, 6000);
     });
     mainWindow.on("show", () => {
-      var first_launch = nodeStorage.getItem("firstlaunch");
-      if ((first_launch == true || first_launch == undefined) && window_reloaded == false) {
-      }
+      var first_launch = nodeStorage.getItem("firstLaunch");
+      // if ((first_launch == true || first_launch == undefined) && window_reloaded == false) {
+      // }
     });
   });
 
