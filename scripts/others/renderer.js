@@ -544,6 +544,7 @@ const startupServerAndApiCheck = async () => {
   // launchAnnouncement = nodeStorage.getItem("announcements");
   if (launchAnnouncement) {
     // nodeStorage.setItem("announcements", false);
+    console.log("Checking for announcements on base startup");
     await checkForAnnouncements("announcements");
     launchAnnouncement = false;
     nodeStorage.setItem("announcements", false);
@@ -1026,6 +1027,7 @@ const run_pre_flight_checks = async (check_update = true) => {
     // launchAnnouncement = nodeStorage.getItem("announcements");
     if (launchAnnouncement) {
       // nodeStorage.setItem("announcements", false);
+      console.log("Checking for announcements on base startup");
       await checkForAnnouncements("announcements");
       launchAnnouncement = false;
     }
@@ -1406,6 +1408,7 @@ ipcRenderer.on("update_downloaded", async () => {
   update_downloaded_notification.on("click", async ({ target, event }) => {
     restartApp();
     //a sweet alert will pop up announcing user to manually update if SODA fails to restart
+    console.log("Checking for announcements on auto update startup");
     checkForAnnouncements("update");
   });
 });
