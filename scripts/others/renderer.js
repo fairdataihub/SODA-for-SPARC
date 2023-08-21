@@ -6039,7 +6039,7 @@ const dropHelper = async (
 var irregularFolderArray = [];
 const detectIrregularFolders = (folderName, pathEle) => {
   if (checkIrregularNameBoolean(folderName)) {
-    irregularFolderArray.push(pathEle);
+    //irregularFolderArray.push(pathEle);
   }
   if (fs.lstatSync(pathEle).isDirectory()) {
     fs.readdirSync(pathEle).forEach(function (folder) {
