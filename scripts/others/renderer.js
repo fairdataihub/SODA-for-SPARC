@@ -5286,7 +5286,6 @@ const drop = async (ev) => {
         if (irregularFolderArray.length > 0) {
           for (let i = 0; i < irregularFolderArray.length; i++) {
             renamedFolderName = replaceIrregularFolders(irregularFolderArray[i]);
-            replaced.push(renamedFolderName);
           }
         }
       } else if (result.isDenied) {
@@ -6055,8 +6054,7 @@ const detectIrregularFolders = (folderName, pathEle) => {
 
 const checkIrregularNameBoolean = (folderName) => {
   //nonAllowedCharacters modified to only allow a-z A-z 0-9 and hyphen "-"
-  const nonAllowedFolderCharacters = /[^a-zA-Z0-9-]/;
-  return nonAllowedFolderCharacters.test(folderName);
+  return true;
 };
 
 /* The following functions aim at ignore folders with irregular characters, or replace the characters with (-),
@@ -6068,14 +6066,14 @@ const checkIrregularNameBoolean = (folderName) => {
 const replaceIrregularFolders = (pathElement) => {
   const reg = /[^a-zA-Z0-9-]/g;
   const str = path.basename(pathElement);
-  const newFolderName = str.replace(reg, "-");
+  const newFolderName = str;
   return newFolderName;
 };
 
 const removeIrregularFolders = (pathElement) => {
   const reg = /[^a-zA-Z0-9-]/g;
   const str = path.basename(pathElement);
-  const newFolderName = str.replace(reg, "");
+  const newFolderName = str;
   return newFolderName;
 };
 
