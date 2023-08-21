@@ -12,6 +12,7 @@ const checkForAnnouncements = async (state) => {
     //retrieve the announcements from the SODA repo (announcements.json)
     let result = await axiosInstance.get();
     let res = result.data;
+    console.log("Announcements result: ", res);
 
     let platform = String(os.platform);
 
