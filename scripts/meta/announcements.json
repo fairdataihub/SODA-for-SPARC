@@ -8,7 +8,7 @@
     }
   },
 
-  "12.2.1": {
+  "12.2.2-beta": {
     "win32": {
       "show": true,
       "title": "Welcome to version 12.2.1 for Windows!",
