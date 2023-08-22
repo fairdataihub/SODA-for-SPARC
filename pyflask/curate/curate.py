@@ -2378,10 +2378,12 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
             if first_final_name != basename(first_file_local_path):
                 # save the relative path, final name, and local path of the file to be renamed in a dictionary
                 if folder_name[1:] not in list_of_files_to_renamed:
-                    list_of_files_to_renamed[folder_name[1:]] = []  # Create an empty list for the key
-                list_of_files_to_renamed[folder_name[1:]].append(
-                    [folder_name[1:], basename(first_file_local_path),]
-                )
+                    list_of_files_to_renamed[folder_name[1:]] = {}  # Create an empty list for the key
+                if basename(first_file_local_path) not in list_of_files_to_renamed[folder_name[1:]]:
+                    list_of_files_to_renamed[folder_name[1:]][basename(first_file_local_path)] = {
+                        "final_file_name": first_final_name,
+                        "id": "",
+                    }
 
             # create the manifest to upload using the first file in the list of files to upload
             manifest_data = ps.manifest.create(first_file_local_path, folder_name[1:])
@@ -2418,11 +2420,14 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                             namespace_logger.info(f"names do not match, final_file_name: {final_file_name}, basename(file_path): {basename(file_path)}")
                             # save the relative path, final name, and local path of the file to be renamed in a dictionary
                             if folder_name[1:] not in list_of_files_to_renamed:
-                                list_of_files_to_renamed[folder_name[1:]] = []  # Create an empty list for the key
+                                list_of_files_to_renamed[folder_name[1:]] = {}
+                            if basename(file_path) not in list_of_files_to_renamed[folder_name[1:]]:
+                                list_of_files_to_renamed[folder_name[1:]][basename(file_path)] = {
+                                    "final_file_name": final_file_name,
+                                    "id": "",
+                                }
 
-                            list_of_files_to_renamed[folder_name[1:]].append(
-                                [folder_name[1:], basename(file_path),]
-                            )
+
                         ps.manifest.add(file_path, folder_name[1:], manifest_id)
                         final_files_index += 1
 
@@ -2557,7 +2562,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                 # get the high lvl folder name
                 high_lvl_folder_name = relative_path[0]
                 last_folder_name = relative_path[-1]
-                subfolder_level = 1
+                subfolder_level = 0
                 subfolder_amount = len(relative_path) - 1
                 namespace_logger.info(f"ps_create_new_dataset step 8 rename files - subfolder_amount: {subfolder_amount}")
                 namespace_logger.info(f"ps_create_new_dataset step 8 rename files - subfolder_level: {subfolder_level}")
@@ -2567,48 +2572,106 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
                 if high_lvl_folder_name in collection_ids:
                     # subfolder_amount will be the amount of subfolders we need to call until we can get the file ID to rename
-                    while last_folder_name > 0:
-                        # get the high lvl folder id
-                        high_lvl_folder_id = collection_ids[high_lvl_folder_name]["id"]
-                        # get the high lvl folder's children
-                        r = requests.get(f"{PENNSIEVE_URL}/packages/{high_lvl_folder_id}", headers=create_request_headers(ps))
-                        r.raise_for_status()
-                        high_lvl_folder_content = r.json()["children"]
-                        
-                        if subfolder_amount == subfolder_level:
-                            # we are at the last subfolder and all we need is the file id
-                            # iterate through the high_lvl_folder_content to find the file id
-                            # get the children content of that high lvl folder
-                            namespace_logger.info(f"getting the final level of folder: {high_lvl_folder_name}")
-                            r = requests.get(f"{PENNSIEVE_URL}/packages/{high_lvl_folder_id}", headers=create_request_headers(ps))
+                    namespace_logger.info(f"getting content for high_lvl_folder_name: {high_lvl_folder_name}, with id: {collection_ids[high_lvl_folder_name]['id']}")
+                    r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_ids[high_lvl_folder_name]['id']}", headers=create_request_headers(ps))
+                    r.raise_for_status()
+                    dataset_content = r.json()["children"]
+                    if dataset_content == []:
+                        # request until there is children content
+                        while dataset_content == []:
+                            r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_ids[high_lvl_folder_name]['id']}", headers=create_request_headers(ps))
                             r.raise_for_status()
-                            high_lvl_folder_content = r.json()["children"]
-                            for item in high_lvl_folder_content:
-                                # iterate through the lists in list_of_files_to_renamed[key] to find the file to be renamed
-                                for file_to_rename in list_of_files_to_renamed[key]:
-                                    namespace_logger.info(f"step 8 rename files - file_to_rename: {file_to_rename} for high_lvl_folder_name: {high_lvl_folder_name}")
-                                    namespace_logger.info(f"item: {item['content']['name']}")
-                                    namespace_logger.info(f"file_to_rename[1]: {file_to_rename[1]}")
-                                    if item["content"]["name"] == file_to_rename[1]:
-                                        file_to_rename[0] = item["content"]["nodeId"]
-                                        break
-                        else:
-                            # we are not at the last subfolder and we need to get the next high lvl folder id
-                            # iterate through the high_lvl_folder_content to find the next high lvl folder id
-                            for item in high_lvl_folder_content:
-                                if item["content"]["name"] == relative_path[subfolder_level]:
-                                    collection_ids[relative_path[subfolder_level]] = {
-                                        "id": item["content"]["nodeId"]
-                                    }
-                                    # api call to get the next high lvl folder's children
-                                    r = requests.get(f"{PENNSIEVE_URL}/packages/{item['content']['nodeId']}", headers=create_request_headers(ps))
-                                    r.raise_for_status()
-                                    high_lvl_folder_content = r.json()["children"]
-                                    break
-                        
-                        if subfolder_amount != 0: subfolder_amount -= 1
-                        subfolder_level += 1
+                            dataset_content = r.json()["children"]
+                    if subfolder_amount == 0:
+                        # we are at the last folder in the relative path, we can get the file id
+                        namespace_logger.info("ps_create_new_dataset step 8 rename files - last_folder_name == high_lvl_folder_name")
+                        namespace_logger.info(f"This is the dataset_content: {dataset_content}")
+                        found_file = False
+                        if "id" not in list_of_files_to_renamed[key]:
+                            list_of_files_to_renamed[key]["id"] = {
+                                collection_ids[high_lvl_folder_name]['id']
+                            }
+                        for item in dataset_content:
+                            namespace_logger.info(f"this is the packageType for item: {item['content']['packageType']}, item_name: {item['content']['name']}")
+                            if item["content"]["packageType"] != "Collection":
+                                namespace_logger.info(f"okay cool this is a file: {item['content']['name']}")
+                                file_name = item["content"]["name"]
+                                file_id = item["content"]["nodeId"]
+                                namespace_logger.info(f"This is the file_name: {file_name}")
+                                namespace_logger.info(f"This is the file_id: {file_id}")
+                                namespace_logger.info(f"checking content within list_of_files_to_renamed[{key}]: {list_of_files_to_renamed[key]}")
+                                if file_name in list_of_files_to_renamed[key]:
+                                    list_of_files_to_renamed[key][file_name]["id"] = file_id
+                    else:
+                        # we need to iterate through the subfolders to get the file id
+                        namespace_logger.info("ps_create_new_dataset step 8 rename files - last_folder_name != high_lvl_folder_name")
+                        while subfolder_level != subfolder_amount:
+                            namespace_logger.info(f"ps_create_new_dataset step 8 rename files - subfolder_level: {subfolder_level}")
+                            namespace_logger.info(f"ps_create_new_dataset step 8 rename files - subfolder_amount: {subfolder_amount}")
+                            # recursively iterate through the subfolders to get the file id
+                            for item in dataset_content:
+                                if item["content"]["packageType"] == "Collection":
+                                    folder_name = item["content"]["name"]
+                                    folder_id = item["content"]["nodeId"]
+                                    if folder_name in relative_path:
+                                        # we have found the folder we need to iterate through
+                                        subfolder_level += 1
+                                        r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}", headers=create_request_headers(ps))
+                                        r.raise_for_status()
+                                        if subfolder_level != subfolder_amount:
+                                            dataset_content = r.json()["children"]
+                                            break
+                                        else:
+                                            # we are at the last folder in the relative path, we can get the file id
+                                            if "id" not in list_of_files_to_renamed[key]:
+                                                list_of_files_to_renamed[key]["id"] = {
+                                                    folder_id
+                                                }
+                                            for item in r.json()["children"]:
+                                                if item["content"]["packageType"] != "Collection":
+                                                    file_id = item["content"]["nodeId"]
+                                                    file_name = item["content"]["name"]
+                                                    if file_name in list_of_files_to_renamed[key]:
+                                                        list_of_files_to_renamed[key][file_name]["id"] = file_id
+
+
+
             namespace_logger.info(f"This is how the list_of_files_to_renamed looks like after the for loop: {list_of_files_to_renamed}")
+
+            # ids have been fetched now rename the files
+            for relative_path in list_of_files_to_renamed.keys():
+                for file, file_details in list_of_files_to_renamed[relative_path].items():
+                    if file == "id":
+                        collection_id = list_of_files_to_renamed[relative_path][file]
+                        continue
+                    namespace_logger.info(f"file_details: {file_details}")
+                    namespace_logger.info(f"file: {file}")
+                    new_name = list_of_files_to_renamed[relative_path][file]["final_file_name"]
+                    file_id = list_of_files_to_renamed[relative_path][file]["id"]
+                    if file_id != "":
+                        # id was found so make api call to rename with final_file_name
+                        r = requests.put(f"{PENNSIEVE_URL}/packages/{file_id}?updateStorage=true", json={"name": new_name}, headers=create_request_headers(ps))
+                        r.raise_for_status()
+                    else:
+                        # id was not found so keep trying to find the id
+                        all_ids_found = False
+                        while not all_ids_found:
+                            r = requests.get(f"{PENNSIEVE_URL}/packages/{collection_id}", headers=create_request_headers(ps))
+                            r.raise_for_status()
+                            dataset_content = r.json()["children"]
+                            for item in dataset_content:
+                                if item["content"]["packageType"] != "Collection":
+                                    file_name = item["content"]["name"]
+                                    file_id = item["content"]["nodeId"]
+                                    if file_name == file:
+                                        # id was found so make api call to rename with final_file_name
+                                        r = requests.put(f"{PENNSIEVE_URL}/packages/{file_id}?updateStorage=true", json={"name": new_name}, headers=create_request_headers(ps))
+                                        r.raise_for_status()
+                                        all_ids_found = True
+                                        break
+
+
+
 
 
         shutil.rmtree(manifest_folder_path) if isdir(manifest_folder_path) else 0
