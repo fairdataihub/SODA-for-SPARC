@@ -604,6 +604,13 @@ const getGlobalPath = (path) => {
   return filtered;
 };
 
+const getGlobalPathFromString = (pathString) => {
+  let jsonPathArray = pathString.split("/");
+  return jsonPathArray.filter((el) => {
+    return el != "";
+  });
+};
+
 const loadFileFolder = (myPath) => {
   let appendString = "";
   let sortedObj = sortObjByKeys(myPath);

@@ -5118,17 +5118,14 @@ const getJsonOpenInFileExplorer = async () => {
 
 const mergeLocalAndRemoteDatasetStructure = async (
   datasetStructureToMerge,
-  currentNestedDatasetPaths
+  currentFileExplorerPath
 ) => {
   const duplicateFiles = [];
 
-  const traverseAndMergeDatasetJsonObjects = async (
-    datasetStructureToMerge,
-    currentRecursivePath
-  ) => {
-    const currentPathArray = getGlobalPath(organizeDSglobalPath); // ['My_dataset_folder', 'code']
+  const traverseAndMergeDatasetJsonObjects = async (datasetStructureToMerge, recursedFilePath) => {
+    const currentNestedPathArray = getGlobalPathFromString(recursedFilePath);
     const existingDatasetJsonAtPath = getRecursivePath(
-      currentPathArray.slice(1),
+      currentNestedPathArray.slice(1),
       datasetStructureJSONObj
     ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')
     const ExistingFoldersAtPath = Object.keys(existingDatasetJsonAtPath["folders"]);
@@ -5136,7 +5133,7 @@ const mergeLocalAndRemoteDatasetStructure = async (
     const foldersBeingMergedToPath = Object.keys(datasetStructureToMerge["folders"]);
     const filesBeingMergedToPath = Object.keys(datasetStructureToMerge["files"]);
     console.log("/////////////////////////////////////////////");
-    console.log("path:", currentRecursivePath);
+    console.log("path:", recursedFilePath);
     console.log("ExistingFoldersAtPath", ExistingFoldersAtPath);
     console.log("ExistingFilesAtPath", ExistingFilesAtPath);
     console.log("foldersBeingMergedToPath", foldersBeingMergedToPath);
@@ -5160,9 +5157,15 @@ const mergeLocalAndRemoteDatasetStructure = async (
     }
 
     for (const file of filesBeingMergedToPath) {
+      console.log("FILE:", file);
       if (ExistingFilesAtPath.includes(file)) {
+        console.log("recursed file path", recursedFilePath);
         console.log("Existing files at time of duplicate finding:", file);
-        duplicateFiles.push(file);
+        duplicateFiles.push({
+          fileName: file,
+          virtualFilePath: recursedFilePath,
+          fileObject: datasetStructureToMerge["files"][file],
+        });
       } else {
         existingDatasetJsonAtPath["files"][file] = datasetStructureToMerge["files"][file];
       }
@@ -5171,23 +5174,44 @@ const mergeLocalAndRemoteDatasetStructure = async (
     for (const folder of foldersBeingMergedToPath) {
       await traverseAndMergeDatasetJsonObjects(
         datasetStructureToMerge["folders"][folder],
-        `${currentRecursivePath}/${folder}`
+        `${recursedFilePath}/${folder}`
       );
     }
   };
 
-  await traverseAndMergeDatasetJsonObjects(datasetStructureToMerge, currentNestedDatasetPaths);
+  // DO THE MERGING
+  await traverseAndMergeDatasetJsonObjects(datasetStructureToMerge, currentFileExplorerPath);
 
   if (duplicateFiles.length > 0) {
     console.log("duplicateFiles", duplicateFiles);
-    await swalFileListConfirmAction(
-      duplicateFiles,
+    const virtualFilePaths = duplicateFiles.map((file) => file.virtualFilePath);
+    const userConfirmedFileOverwrite = await swalFileListConfirmAction(
+      virtualFilePaths,
       "Duplicate files found",
       "warning",
       "Overwrite existing files",
       "Skip duplicate files",
       "What to do with existing files"
     );
+    if (userConfirmedFileOverwrite) {
+      console.log("overwriting files");
+      for (const file of duplicateFiles) {
+        const currentNestedPathArray = getGlobalPathFromString(file.virtualFilePath);
+        // remove first and last elements from array
+        currentNestedPathArray.shift();
+        console.log("nested array", currentNestedPathArray);
+        const existingDatasetJsonAtPath = getRecursivePath(
+          currentNestedPathArray,
+          datasetStructureJSONObj
+        );
+        console.log("existingDatasetJsonAtPath");
+        console.log(existingDatasetJsonAtPath["files"]);
+        console.log("Data to overwrite with");
+        console.log(file.fileObject);
+
+        existingDatasetJsonAtPath["files"][file.fileName] = file.fileObject;
+      }
+    }
   }
 };
 
@@ -5261,7 +5285,9 @@ const addDataArrayToDatasetStructureAtPath = async (importedData, virtualFolderP
   console.log(importedData);
   console.log("File path before recursion", virtualFolderPath);
 
-  await mergeLocalAndRemoteDatasetStructure(builtDatasetStructure, organizeDSglobalPath);
+  const currentFileExplorerPath = organizeDSglobalPath.value.trim().slice(0, -1); // 'My_dataset_folder/code' (remove the trailing slash)
+
+  await mergeLocalAndRemoteDatasetStructure(builtDatasetStructure, currentFileExplorerPath);
 
   // Step 3: Update the UI
   const currentPathArray = getGlobalPath(organizeDSglobalPath); // ['My_dataset_folder', 'code']g
