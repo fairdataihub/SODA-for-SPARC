@@ -4943,6 +4943,59 @@ const forbiddenFileNames = [
   "._.fseventsd", // Mac OS
   "._.Spotlight-V100", // Mac OS
 ];
+
+const swalFileListSingleAction = async (fileList, title, icon, postActionText) => {
+  await Swal.fire({
+    title: title,
+    icon: icon,
+    html: `
+      <div class="swal-file-list">
+        ${fileList.map((file) => `<div class="swal-file-row">${file}</div>`).join("")}
+      </div>
+      <b>${postActionText}</b>
+    `,
+    width: 800,
+    heightAuto: false,
+    width: 800,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showCancelButton: false,
+    showCloseButton: false,
+  });
+};
+
+const swalFileListConfirmAction = async (
+  fileList,
+  title,
+  icon,
+  confirmButtonText,
+  cancelButtonText,
+  confirmationText
+) => {
+  const { value: action } = await Swal.fire({
+    title: title,
+    icon: icon,
+    html: `
+      <div class="swal-file-list">
+        ${fileList.map((file) => `<div class="swal-file-row">${file}</div>`).join("")}
+      </div>
+      <b>${confirmationText}</b>
+    `,
+    width: 800,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showCancelButton: true,
+    showCloseButton: false,
+    confirmButtonText: confirmButtonText,
+    cancelButtonText: cancelButtonText,
+  });
+  console.log("Action from swalFileListConfirmAction:", action);
+  return action;
+};
 const buildDatasetStructureJsonFromImportedData = async (itemPaths) => {
   const inaccessibleItems = [];
   const hiddenItems = [];
@@ -5016,6 +5069,12 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths) => {
 
   console.log("Raw Dataset Structure", datasetStructure);
   if (inaccessibleItems.length > 0) {
+    await swalFileListSingleAction(
+      inaccessibleItems,
+      "Some items could not be accessed",
+      "warning",
+      "These items will be ignored"
+    );
     console.log("Inaccessible Items", inaccessibleItems);
   }
   console.log("problematicFolderNames", problematicFolderNames);
@@ -5119,7 +5178,31 @@ const checkForDuplicateFolderAndFileNames = async (importedFolders, itemsAtPath)
   };
 };
 
-const swalConfirmActionOnFileList = async (fileList, title, icon, optionalThirdOPtionText) => {};
+/*
+  icon: "info",
+  title: "Pennsieve Agent Not Found",
+  html: `
+    It looks like the Pennsieve Agent is not installed on your computer.
+    <br />
+    To install the Pennsieve Agent, please visit the link below and follow the instructions.
+    <br />
+    <br />
+    <a href="${browser_download_url}" target="_blank">Download the Pennsieve agent</a>
+    <br />
+    <br />
+    Once you have installed the Pennsieve Agent, please click the button below to ensure that the Pennsieve agent was installed correctly.
+  `,
+  width: 800,
+  heightAuto: false,
+  backdrop: "rgba(0,0,0, 0.4)",
+  allowOutsideClick: false,
+  allowEscapeKey: false,
+  showCancelButton: true,
+  showCloseButton: true,
+  reverseButtons: reverseSwalButtons,
+  confirmButtonText: "Retry check for Pennsieve agent",
+  cancelButtonText: "Skip for now",
+*/
 
 const addDataArrayToDatasetStructureAtPath = async (importedData, virtualFolderPath) => {
   console.log("Imported folders and/or files:");
