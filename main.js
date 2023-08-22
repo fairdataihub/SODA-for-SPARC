@@ -292,6 +292,7 @@ function initialize() {
     });
   }
   const quit_app = () => {
+    // TODO: CHeck if an update was downloaded here and reset the launchAnnouncements and freshLaunch flags to true [ HERE ]
     app.showExitPrompt = false;
     mainWindow.close();
     /// feedback form iframe prevents closing gracefully
@@ -462,6 +463,9 @@ autoUpdater.on("update-available", () => {
 });
 autoUpdater.on("update-downloaded", () => {
   log.info("update_downloaded");
+  // set the announcements and freshLaunch flags to true so that when SODA restarts after the auto update the renderer process knows
+  nodeStorage.setItem("freshLaunch", true);
+  nodeStorage.setItem("launchAnnouncements", true);
   mainWindow.webContents.send("update_downloaded");
 });
 ipcMain.on("restart_app", async () => {
