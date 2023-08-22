@@ -4017,6 +4017,14 @@ const selectOptionColor = (mylist) => {
   mylist.style.color = mylist.options[mylist.selectedIndex].style.color;
 };
 
+const sdsRegexTest = (regexToTest, regexCase) => {
+  const regexCases = {
+    "dataset-name": /^[a-zA-Z0-9_]+$/,
+    "dataset-description": /^[a-zA-Z0-9_]+$/,
+    "dataset-identifier": /^[a-zA-Z0-9_]+$/,
+  };
+  return regexCases[regexCase].test(regexToTest);
+};
 ////////////////////////////////DATASET FILTERING FEATURE/////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -5113,29 +5121,37 @@ const mergeLocalAndRemoteDatasetStructure = async (
     const ExistingFilesAtPath = Object.keys(datasetStructureBeingMergedInto["files"]);
     const foldersBeingMergedToPath = Object.keys(datasetStructureToMerge["folders"]);
     const filesBeingMergedToPath = Object.keys(datasetStructureToMerge["files"]);
+    console.log("/////////////////////////////////////////////");
+    console.log("ExistingFoldersAtPath", ExistingFoldersAtPath);
+    console.log("ExistingFilesAtPath", ExistingFilesAtPath);
+    console.log("foldersBeingMergedToPath", foldersBeingMergedToPath);
+    console.log("filesBeingMergedToPath", filesBeingMergedToPath);
+    console.log("/////////////////////////////////////////////");
 
     for (const folder of foldersBeingMergedToPath) {
       if (ExistingFoldersAtPath.includes(folder)) {
         // Maybe we don't have to do anything here because the folder already exists
-        console.log("Duplicate folder name:", folder);
+        console.log("Not adding folder because it already exists:", folder);
       } else {
-        datasetStructureBeingMergedInto["folders"][folder] =
-          datasetStructureToMerge["folders"][folder];
+        console.log("Adding folder because it doesn't exist:", folder);
+        datasetStructureBeingMergedInto["folders"][folder] = {
+          path: "Not/sure/what/path/to/use/here",
+          type: "local",
+          files: {},
+          folders: {},
+          action: ["new"],
+        };
       }
     }
 
     for (const file of filesBeingMergedToPath) {
       if (ExistingFilesAtPath.includes(file)) {
+        console.log("Existing files at time of duplicate finding:", file);
         duplicateFiles.push(file);
       } else {
         datasetStructureBeingMergedInto["files"][file] = datasetStructureToMerge["files"][file];
       }
     }
-
-    console.log("ExistingFoldersAtPath", ExistingFoldersAtPath);
-    console.log("ExistingFilesAtPath", ExistingFilesAtPath);
-    console.log("foldersBeingMergedToPath", foldersBeingMergedToPath);
-    console.log("filesBeingMergedToPath", filesBeingMergedToPath);
 
     for (const folder of foldersBeingMergedToPath) {
       await traverseAndMergeDatasetJsonObjects(
@@ -5152,6 +5168,14 @@ const mergeLocalAndRemoteDatasetStructure = async (
 
   if (duplicateFiles.length > 0) {
     console.log("duplicateFiles", duplicateFiles);
+    await swalFileListConfirmAction(
+      duplicateFiles,
+      "Duplicate files found",
+      "warning",
+      "Overwrite existing files",
+      "Skip duplicate files",
+      "What to do with existing files"
+    );
   }
 };
 
@@ -5228,6 +5252,12 @@ const addDataArrayToDatasetStructureAtPath = async (importedData, virtualFolderP
   console.log("NEW DATASET STRUCTURE");
   console.log(builtDatasetStructure);
   console.log("Going to step 2 to merge the new data with the existing data");
+  console.log("******************************************************");
+  console.log("Merging");
+  console.log(builtDatasetStructure);
+  console.log("into");
+  console.log(currentContentsAtDatasetPath);
+  console.log("******************************************************");
 
   const mergedDataStructure = mergeLocalAndRemoteDatasetStructure(
     builtDatasetStructure,
