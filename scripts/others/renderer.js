@@ -5118,19 +5118,25 @@ const getJsonOpenInFileExplorer = async () => {
 
 const mergeLocalAndRemoteDatasetStructure = async (
   datasetStructureToMerge,
-  datasetStructureBeingMergedInto
+  currentNestedDatasetPaths
 ) => {
   const duplicateFiles = [];
 
   const traverseAndMergeDatasetJsonObjects = async (
     datasetStructureToMerge,
-    datasetStructureBeingMergedInto
+    currentRecursivePath
   ) => {
-    const ExistingFoldersAtPath = Object.keys(datasetStructureBeingMergedInto["folders"]);
-    const ExistingFilesAtPath = Object.keys(datasetStructureBeingMergedInto["files"]);
+    const currentPathArray = getGlobalPath(organizeDSglobalPath); // ['My_dataset_folder', 'code']
+    const existingDatasetJsonAtPath = getRecursivePath(
+      currentPathArray.slice(1),
+      datasetStructureJSONObj
+    ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')
+    const ExistingFoldersAtPath = Object.keys(existingDatasetJsonAtPath["folders"]);
+    const ExistingFilesAtPath = Object.keys(existingDatasetJsonAtPath["files"]);
     const foldersBeingMergedToPath = Object.keys(datasetStructureToMerge["folders"]);
     const filesBeingMergedToPath = Object.keys(datasetStructureToMerge["files"]);
     console.log("/////////////////////////////////////////////");
+    console.log("path:", currentRecursivePath);
     console.log("ExistingFoldersAtPath", ExistingFoldersAtPath);
     console.log("ExistingFilesAtPath", ExistingFilesAtPath);
     console.log("foldersBeingMergedToPath", foldersBeingMergedToPath);
@@ -5143,7 +5149,7 @@ const mergeLocalAndRemoteDatasetStructure = async (
         console.log("Not adding folder because it already exists:", folder);
       } else {
         console.log("Adding folder because it doesn't exist:", folder);
-        datasetStructureBeingMergedInto["folders"][folder] = {
+        existingDatasetJsonAtPath["folders"][folder] = {
           path: "Not/sure/what/path/to/use/here",
           type: "local",
           files: {},
@@ -5158,22 +5164,19 @@ const mergeLocalAndRemoteDatasetStructure = async (
         console.log("Existing files at time of duplicate finding:", file);
         duplicateFiles.push(file);
       } else {
-        datasetStructureBeingMergedInto["files"][file] = datasetStructureToMerge["files"][file];
+        existingDatasetJsonAtPath["files"][file] = datasetStructureToMerge["files"][file];
       }
     }
 
     for (const folder of foldersBeingMergedToPath) {
       await traverseAndMergeDatasetJsonObjects(
         datasetStructureToMerge["folders"][folder],
-        datasetStructureBeingMergedInto["folders"][folder]
+        `${currentRecursivePath}/${folder}`
       );
     }
   };
 
-  await traverseAndMergeDatasetJsonObjects(
-    datasetStructureToMerge,
-    datasetStructureBeingMergedInto
-  );
+  await traverseAndMergeDatasetJsonObjects(datasetStructureToMerge, currentNestedDatasetPaths);
 
   if (duplicateFiles.length > 0) {
     console.log("duplicateFiles", duplicateFiles);
@@ -5249,7 +5252,6 @@ const addDataArrayToDatasetStructureAtPath = async (importedData, virtualFolderP
   console.log("Merging");
   console.log(builtDatasetStructure);
   console.log("into");
-  console.log(currentContentsAtDatasetPath);
   console.log("******************************************************");
 
   // Step 2: Add the imported data to the dataset structure
@@ -5257,21 +5259,9 @@ const addDataArrayToDatasetStructureAtPath = async (importedData, virtualFolderP
 
   console.log("Imported folders and/or files:");
   console.log(importedData);
-  console.log(virtualFolderPath);
-  const currentGlobalPath = getGlobalPath(organizeDSglobalPath); // ['My_dataset_folder', 'code']
-  const currentContentsAtDatasetPath = getRecursivePath(
-    currentGlobalPath.slice(1),
-    datasetStructureJSONObj
-  ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')
+  console.log("File path before recursion", virtualFolderPath);
 
-  console.log("currentContentsAtDatasetPath", currentContentsAtDatasetPath);
-
-  const foldersInPath = Object.keys(currentContentsAtDatasetPath["folders"]);
-  const filesInPath = Object.keys(currentContentsAtDatasetPath["files"]);
-  console.log("foldersInPath", foldersInPath);
-  console.log("filesInPath", filesInPath);
-
-  await mergeLocalAndRemoteDatasetStructure(builtDatasetStructure, currentContentsAtDatasetPath);
+  await mergeLocalAndRemoteDatasetStructure(builtDatasetStructure, organizeDSglobalPath);
 
   // Step 3: Update the UI
   const currentPathArray = getGlobalPath(organizeDSglobalPath); // ['My_dataset_folder', 'code']g
