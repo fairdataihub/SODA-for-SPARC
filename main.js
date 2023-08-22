@@ -257,7 +257,7 @@ function initialize() {
       shell.openExternal(url);
     });
     mainWindow.webContents.once("dom-ready", () => {
-      if (updatechecked == false && !buildIsBeta) {
+      if (updatechecked == false && buildIsBeta) {
         autoUpdater.checkForUpdatesAndNotify();
       }
     });
@@ -350,7 +350,7 @@ function initialize() {
           nodeStorage.setItem("announcements", false);
         }
         start_pre_flight_checks();
-        if (!buildIsBeta) {
+        if (buildIsBeta) {
           autoUpdater.checkForUpdatesAndNotify();
         }
         updatechecked = true;
