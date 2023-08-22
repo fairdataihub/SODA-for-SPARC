@@ -292,6 +292,7 @@ console.log(process.platform);
 if (firstLaunch) {
   // NOTE: launchAnnouncements is only set to true during the auto update process
   nodeStorage.setItem("launchAnnouncements", false);
+}
 // } else if (!firstLaunch && process.platform === "darwin") {
 //   console.log("We are setting launch announcements to false");
 //   nodeStorage.setItem("launchAnnouncements", false);
