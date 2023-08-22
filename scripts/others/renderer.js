@@ -289,13 +289,13 @@ if (launchAnnouncement === undefined || firstLaunch === null) launchAnnouncement
 console.log(process.platform);
 
 // first launch on MacOS seems to cause a reload; so only set launch announcements to false if it isnt first launch
-if (firstLaunch && process.platform !== "darwin") {
+if (firstLaunch) {
   // NOTE: launchAnnouncements is only set to true during the auto update process
   nodeStorage.setItem("launchAnnouncements", false);
-} else if (!firstLaunch && process.platform === "darwin") {
-  console.log("We are setting launch announcements to false");
-  nodeStorage.setItem("launchAnnouncements", false);
-}
+// } else if (!firstLaunch && process.platform === "darwin") {
+//   console.log("We are setting launch announcements to false");
+//   nodeStorage.setItem("launchAnnouncements", false);
+// }
 // now that the app has been launched set first launch to false
 // NOTE: First launch is set to true only in main.js after the app has been auto updated
 nodeStorage.setItem("freshLaunch", false);
