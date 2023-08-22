@@ -5107,6 +5107,15 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths) => {
   return datasetStructure;
 };
 
+const getJsonOpenInFileExplorer = async () => {
+  const currentPathOpenInFileExplorer = organizeDSglobalPath.value.trim(); // EG 'My_dataset_folder/code/'
+  const currentPathArray = getGlobalPath(organizeDSglobalPath); // ['My_dataset_folder', 'code']
+  const nestedJsonDatasetStructure = getRecursivePath(
+    currentPathArray.slice(1),
+    datasetStructureJSONObj
+  ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')
+};
+
 const mergeLocalAndRemoteDatasetStructure = async (
   datasetStructureToMerge,
   datasetStructureBeingMergedInto
@@ -5229,22 +5238,6 @@ const checkForDuplicateFolderAndFileNames = async (importedFolders, itemsAtPath)
 */
 
 const addDataArrayToDatasetStructureAtPath = async (importedData, virtualFolderPath) => {
-  console.log("Imported folders and/or files:");
-  console.log(importedData);
-  console.log(virtualFolderPath);
-  const currentGlobalPath = getGlobalPath(organizeDSglobalPath);
-  const currentContentsAtDatasetPath = getRecursivePath(
-    currentGlobalPath.slice(1),
-    datasetStructureJSONObj
-  ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')
-
-  console.log("currentContentsAtDatasetPath", currentContentsAtDatasetPath);
-
-  const foldersInPath = Object.keys(currentContentsAtDatasetPath["folders"]);
-  const filesInPath = Object.keys(currentContentsAtDatasetPath["files"]);
-  console.log("foldersInPath", foldersInPath);
-  console.log("filesInPath", filesInPath);
-
   // STEP 1: Build the JSON object from the imported data
   // (This function handles bad folders/files, inaccessible folders/files, etc and returns a clean dataset structure)
   const builtDatasetStructure = await buildDatasetStructureJsonFromImportedData(importedData);
@@ -5259,19 +5252,35 @@ const addDataArrayToDatasetStructureAtPath = async (importedData, virtualFolderP
   console.log(currentContentsAtDatasetPath);
   console.log("******************************************************");
 
-  const mergedDataStructure = mergeLocalAndRemoteDatasetStructure(
-    builtDatasetStructure,
-    currentContentsAtDatasetPath
-  );
-
   // Step 2: Add the imported data to the dataset structure
   // This step handles duplicate folder/file names, etc
-  //await addImportedDataToDatasetStructure(currentContentsAtDatasetPath, datasetStructure);
-  // STEP 1B: Remove inaccessible items from the dataset structure
-  // ask the user if they want to continue with the import (if there are inaccessible items)
 
-  // STEP 2B: Remove problematic items from the dataset structure
-  // ask the user if they want to continue with the import (if there are problematic items)
+  console.log("Imported folders and/or files:");
+  console.log(importedData);
+  console.log(virtualFolderPath);
+  const currentGlobalPath = getGlobalPath(organizeDSglobalPath); // ['My_dataset_folder', 'code']
+  const currentContentsAtDatasetPath = getRecursivePath(
+    currentGlobalPath.slice(1),
+    datasetStructureJSONObj
+  ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')
+
+  console.log("currentContentsAtDatasetPath", currentContentsAtDatasetPath);
+
+  const foldersInPath = Object.keys(currentContentsAtDatasetPath["folders"]);
+  const filesInPath = Object.keys(currentContentsAtDatasetPath["files"]);
+  console.log("foldersInPath", foldersInPath);
+  console.log("filesInPath", filesInPath);
+
+  await mergeLocalAndRemoteDatasetStructure(builtDatasetStructure, currentContentsAtDatasetPath);
+
+  // Step 3: Update the UI
+  const currentPathArray = getGlobalPath(organizeDSglobalPath); // ['My_dataset_folder', 'code']g
+  const nestedJsonDatasetStructure = getRecursivePath(
+    currentPathArray.slice(1),
+    datasetStructureJSONObj
+  );
+  listItems(nestedJsonDatasetStructure, "#items", 500, (reset = true));
+  getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
 };
 
 /* ################################################################################## */
