@@ -37,7 +37,7 @@ pandas==1.4.2
 pefile==2022.5.30
 pennsieve2==0.1.1
 protobuf==4.21.12
-psutil==5.9.4
+psutil==5.9.5
 pyasn1==0.4.8
 pycparser==2.21
 pyinstaller==4.7
