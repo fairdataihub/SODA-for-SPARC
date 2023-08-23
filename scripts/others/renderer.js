@@ -36,6 +36,7 @@ const spawn = require("child_process").spawn;
 const execFile = require("child_process").execFile;
 
 console.log("Test for new config");
+console.log("Test for new config");
 
 // TODO: Test with a build
 const { datasetUploadSession } = require("./scripts/others/analytics/upload-session-tracker");
