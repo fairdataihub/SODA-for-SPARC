@@ -4904,57 +4904,47 @@ const getNestedObjectsFromDatasetStructureByPath = (datasetStructure, path) => {
   return currentObject;
 };
 
-const replaceProblematicFilesWithSDSCompliantNames = (datasetStructure, problematicFileNames) => {
-  for (const file of problematicFileNames) {
-    console.log("Fixing problematic file:", file);
-    const fileName = file.fileName;
-    const folderObj = getNestedObjectsFromDatasetStructureByPath(
-      datasetStructure,
-      file.relativePath
-    );
-
-    const newFileName = fileName.replace("@", "-");
-    const newFileObj = { ...folderObj["files"][fileName] };
-    if (!newFileObj["action"].includes("renamed")) {
-      newFileObj["action"].push("renamed");
+const removeHiddenFilesFromDatasetStructure = (datasetStructure) => {
+  const currentFilesAtPath = Object.keys(datasetStructure.files);
+  for (const fileKey of currentFilesAtPath) {
+    if (validateStringAgainstSdsRequirements(fileKey, "hidden-files-check")) {
+      delete datasetStructure["files"][fileKey];
     }
-    delete folderObj["files"][fileName];
-    folderObj["files"][newFileName] = newFileObj;
   }
 };
-const forbiddenFileNames = [
-  ".DS_Store", // Mac OS
-  "Thumbs.db", // Windows
-  "desktop.ini", // Windows
-  "Icon\r", // Mac OS
-  "._.DS_Store", // Mac OS
-  "._Thumbs.db", // Windows
-  "._desktop.ini", // Windows
-  "._Icon\r", // Mac OS
-  "._", // Mac OS
-  "._.Trashes", // Mac OS
-  "._.TemporaryItems", // Mac OS
-  "._.fseventsd", // Mac OS
-  "._.Spotlight-V100", // Mac OS
-  "._.Spotlight-V100", // Mac OS
-  "._.fseventsd", // Mac OS
-  "._.TemporaryItems", // Mac OS
-  "._.Trashes", // Mac OS
-  "._.fseventsd", // Mac OS
-  "._.Spotlight-V100", // Mac OS
-  "._.Trashes", // Mac OS
-  "._.TemporaryItems", // Mac OS
-  "._.fseventsd", // Mac OS
-  "._.Spotlight-V100", // Mac OS
-  "._.Trashes", // Mac OS
-  "._.TemporaryItems", // Mac OS
-  "._.fseventsd", // Mac OS
-  "._.Spotlight-V100", // Mac OS
-  "._.Trashes", // Mac OS
-  "._.TemporaryItems", // Mac OS
-  "._.fseventsd", // Mac OS
-  "._.Spotlight-V100", // Mac OS
-];
+
+const replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
+  const currentFilesAtPath = Object.keys(datasetStructure.files);
+  for (const fileKey of currentFilesAtPath) {
+    console.log("fileKey", fileKey);
+    if (validateStringAgainstSdsRequirements(fileKey, "folder-and-file-names")) {
+      const newFileName = fileKey.replace("@", "-");
+      const newFileObj = { ...datasetStructure["files"][fileKey] };
+      if (!newFileObj["action"].includes("renamed")) {
+        newFileObj["action"].push("renamed");
+      }
+      delete datasetStructure["files"][fileKey];
+    }
+  }
+  const currentFoldersAtPath = Object.keys(datasetStructure.folders);
+  for (const folderKey of currentFoldersAtPath) {
+    replaceProblematicFilesWithSDSCompliantNames(datasetStructure["folders"][folderKey]);
+  }
+};
+
+const deleteProblematicFilesFromDatasetStructure = (datasetStructure) => {
+  const currentFilesAtPath = Object.keys(datasetStructure.files);
+  for (const fileKey of currentFilesAtPath) {
+    if (validateStringAgainstSdsRequirements(fileKey, "folder-and-file-names")) {
+      delete datasetStructure["files"][fileKey];
+    }
+  }
+
+  const currentFoldersAtPath = Object.keys(datasetStructure.folders);
+  for (const folderKey of currentFoldersAtPath) {
+    deleteProblematicFilesFromDatasetStructure(datasetStructure["folders"][folderKey]);
+  }
+};
 
 const swalFileListSingleAction = async (fileList, title, icon, postActionText) => {
   await Swal.fire({
@@ -5008,6 +4998,21 @@ const swalFileListConfirmAction = async (
   console.log("Action from swalFileListConfirmAction:", action);
   return action;
 };
+
+const namesOfForbiddenFiles = {
+  ".DS_Store": true,
+  "Thumbs.db": true,
+};
+
+const validateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
+  const testCases = {
+    "folder-and-file-names": stringToTest.includes("@"),
+    "hidden-files-check": stringToTest.startsWith("."),
+    "forbidden-files-check": namesOfForbiddenFiles?.[stringToTest],
+  };
+  return testCases[stringCase];
+};
+
 const buildDatasetStructureJsonFromImportedData = async (itemPaths) => {
   const inaccessibleItems = [];
   const forbiddenFileNames = [];
@@ -5017,7 +5022,7 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths) => {
   const hiddenItems = [];
 
   // Function to traverse and build JSON structure
-  const traverseAndBuildJson = async (pathToExplore, currentStructure, currentSquiggle) => {
+  const traverseAndBuildJson = async (pathToExplore, currentStructure, currentStructurePath) => {
     currentStructure["folders"] = currentStructure["folders"] || {};
     currentStructure["files"] = currentStructure["files"] || {};
 
@@ -5045,30 +5050,27 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths) => {
             await traverseAndBuildJson(
               itemPath,
               currentStructure["folders"][folderName],
-              `${currentSquiggle}/${folderName}`
+              `${currentStructurePath}${folderName}`
             );
           })
         );
       } else if (fsStatsObj.isFile()) {
         const fileName = path.basename(pathToExplore);
-        const relativePathToFileObject = currentSquiggle;
-        if (fileName.includes("@")) {
+        const relativePathToFileObject = currentStructurePath;
+        const fileObject = {
+          relativePath: `${relativePathToFileObject}/${fileName}`,
+          localFilePath: pathToExplore,
+          fileName: fileName,
+        };
+        if (validateStringAgainstSdsRequirements(fileName, "folder-and-file-names")) {
           console.log("Found problematic file name:", pathToExplore);
-          problematicFileNames.push({
-            relativePath: relativePathToFileObject,
-            localFilePath: pathToExplore,
-            fileName: fileName,
-          });
+          problematicFileNames.push(fileObject);
         }
-        if (fileName.startsWith(".")) {
+        if (validateStringAgainstSdsRequirements(fileName, "hidden-files-check")) {
           console.log("Found hidden file name:", pathToExplore);
-          hiddenItems.push({
-            relativePath: relativePathToFileObject,
-            localFilePath: pathToExplore,
-            fileName: fileName,
-          });
+          hiddenItems.push(fileObject);
         }
-        if (forbiddenFileNames.includes(fileName)) {
+        if (validateStringAgainstSdsRequirements(fileName, "forbidden-files-check")) {
           console.log("Found forbidden file name:", pathToExplore);
           forbiddenFileNames.push(pathToExplore);
           throw new Error("Forbidden file name");
@@ -5113,28 +5115,41 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths) => {
   }
 
   if (problematicFileNames.length > 0) {
-    console.log("problematicFileNames", problematicFileNames);
-    replaceProblematicFilesWithSDSCompliantNames(datasetStructure, problematicFileNames);
+    console.log(problematicFileNames);
+    const replaceFileNames = await swalFileListConfirmAction(
+      problematicFileNames.map((file) => file.relativePath),
+      "Some files have problematic names",
+      "warning",
+      "Replace problematic file names",
+      "Do not import problematic files",
+      "What to do with problematic file names"
+    );
+    if (replaceFileNames) {
+      replaceProblematicFilesWithSDSCompliantNames(datasetStructure);
+    } else {
+      deleteProblematicFilesFromDatasetStructure(datasetStructure);
+    }
   }
 
   if (forbiddenFileNames.length > 0) {
-    console.log("forbiddenFileNames", forbiddenFileNames);
   }
 
   if (hiddenItems.length > 0) {
-    console.log("hiddenItems", hiddenItems);
+    const keepHiddenFiles = await swalFileListConfirmAction(
+      forbiddenFileNames.map((file) => file.relativePath),
+      "Some files have forbidden names",
+      "warning",
+      "Keep hidden files",
+      "Do not import hidden files",
+      "What to do with hidden files"
+    );
+    // If the user
+    if (!keepHiddenFiles) {
+      replaceProblematicFilesWithSDSCompliantNames(datasetStructure);
+    }
   }
 
   return datasetStructure;
-};
-
-const getJsonOpenInFileExplorer = async () => {
-  const currentPathOpenInFileExplorer = organizeDSglobalPath.value.trim(); // EG 'My_dataset_folder/code/'
-  const currentPathArray = getGlobalPath(organizeDSglobalPath); // ['My_dataset_folder', 'code']
-  const nestedJsonDatasetStructure = getRecursivePath(
-    currentPathArray.slice(1),
-    datasetStructureJSONObj
-  ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')
 };
 
 const mergeLocalAndRemoteDatasetStructure = async (
@@ -5151,6 +5166,7 @@ const mergeLocalAndRemoteDatasetStructure = async (
     ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')
     const ExistingFoldersAtPath = Object.keys(existingDatasetJsonAtPath["folders"]);
     const ExistingFilesAtPath = Object.keys(existingDatasetJsonAtPath["files"]);
+    console.log(recursedFilePath);
     const foldersBeingMergedToPath = Object.keys(datasetStructureToMerge["folders"]);
     const filesBeingMergedToPath = Object.keys(datasetStructureToMerge["files"]);
     console.log("/////////////////////////////////////////////");
@@ -5306,7 +5322,7 @@ const addDataArrayToDatasetStructureAtPath = async (importedData, virtualFolderP
   console.log(importedData);
   console.log("File path before recursion", virtualFolderPath);
 
-  const currentFileExplorerPath = organizeDSglobalPath.value.trim().slice(0, -1); // 'My_dataset_folder/code' (remove the trailing slash)
+  const currentFileExplorerPath = organizeDSglobalPath.value.trim(); // 'My_dataset_folder/code'
 
   await mergeLocalAndRemoteDatasetStructure(builtDatasetStructure, currentFileExplorerPath);
 

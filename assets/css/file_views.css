@@ -10,7 +10,7 @@
 .swal-file-row {
   display: flex;
   width: 100%;
-  justify-content: flex-start;
+  align-items: flex-start;
   padding: 5px;
   border-bottom: 1px solid #eee;
 }
