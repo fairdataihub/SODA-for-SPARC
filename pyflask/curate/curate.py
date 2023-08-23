@@ -2485,12 +2485,26 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
         # create a manifest - IMP: We use a single file to start with since creating a manifest requires a file path.  We need to remove this at the end. 
         if len(list_upload_files) > 0:
+            list_of_files_to_rename = {}
             first_file_local_path = list_upload_files[0][0][0]
             if brand_new_dataset:
                 first_relative_path = list_upload_files[0][4]
+                first_final_name = list_upload_files[0][3][0]
             else:
                 first_relative_path = list_upload_files[0][6]
+                first_final_name = list_upload_files[0][4][0]
+
             folder_name = first_relative_path[first_relative_path.index("/")+1:]
+            if first_final_name != basename(first_file_local_path):
+                # if file name is not the same as local path, then it has been renamed in SODA
+                if folder_name not in list_of_files_to_rename:
+                    list_of_files_to_rename[folder_name] = {}
+                if basename(first_file_local_path) not in list_of_files_to_rename[folder_name]:
+                    list_of_files_to_rename[folder_name][basename(first_file_local_path)] = {
+                        "final_file_name": first_final_name,
+                        "id": "",
+                    }
+
             manifest_data = ps.manifest.create(first_file_local_path, folder_name)
             manifest_id = manifest_data.manifest_id
 
@@ -2501,12 +2515,15 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
             # there are files to add to the manifest if there are more than one file in the first folder or more than one folder
             if len(list_upload_files[0][0]) > 1 or len(list_upload_files) > 1:
+                index_skip = True
                 for folderInformation in list_upload_files:
                     list_file_paths = folderInformation[0]
                     if brand_new_dataset:
                         relative_path = folderInformation[4]
+                        final_file_name_list = folderInformation[3]
                     else:
                         relative_path = folderInformation[6]
+                        final_file_name_list = folderInformation[4]
                     # get the substring from the string relative_path that starts at the index of the / and contains the rest of the string
                     # this is the folder name
                     try:
@@ -2515,9 +2532,22 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                         folder_name = relative_path
 
                     # Add files to manfiest"
+                    final_files_index = 1 if index_skip else 0
+                    index_skip = False
                     namespace_logger.info(f"files folder names: {folder_name}")
                     for file_path in list_file_paths:
+                        file_file_name = final_file_name_list[final_files_index]
+                        if file_file_name != basename(file_path):
+                            # save the relative path, final name and local path of the file to be renamed
+                            if folder_name not in list_of_files_to_rename:
+                                list_of_files_to_rename[folder_name] = {}
+                            if basename(file_path) not in list_of_files_to_rename[folder_name]:
+                                list_of_files_to_rename[folder_name][basename(file_path)] = {
+                                    "final_file_name": file_file_name,
+                                    "id": "",
+                                }
                         ps.manifest.add(file_path, folder_name, manifest_id)
+                        final_files_index += 1
 
             # reset global variables used in the subscriber monitoring function
             bytes_uploaded_per_file = {}
