@@ -7,7 +7,7 @@ from utils import (
 )
 from namespaces import NamespaceEnum, get_namespace_logger
 from flask import abort
-from authentication import get_access_token, get_cognito_userpool_access_token, bf_add_account_username, delete_duplicate_keys,  clear_cached_access_token()
+from authentication import get_access_token, get_cognito_userpool_access_token, bf_add_account_username, delete_duplicate_keys,  clear_cached_access_token
 
 logger = get_namespace_logger(NamespaceEnum.USER)
 
