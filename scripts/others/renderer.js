@@ -4838,8 +4838,7 @@ organizeDSaddFiles.addEventListener("click", function () {
 });
 
 ipcRenderer.on("selected-files-organize-datasets", async (event, importedFiles) => {
-  console.log("selected files from import files button", importedFiles);
-  await addDataArrayToDatasetStructureAtPath(importedFiles, ["My_dataset_folder", "code"]);
+  await addDataArrayToDatasetStructureAtPath(importedFiles);
 });
 
 organizeDSaddFolders.addEventListener("click", function () {
@@ -4848,17 +4847,13 @@ organizeDSaddFolders.addEventListener("click", function () {
 
 // Event listener for when folder(s) are imported into the file explorer
 ipcRenderer.on("selected-folders-organize-datasets", async (event, importedFolders) => {
-  console.log("selected folders from import folders button", importedFolders);
   const currentPathArray = getGlobalPath(organizeDSglobalPath); // ['My_dataset_folder', 'code']
   /*const currentContentsAtDatasetPath = getRecursivePath(
     currentPathArray.slice(1),
     datasetStructureJSONObj
   ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')*/
 
-  await addDataArrayToDatasetStructureAtPath(
-    importedFolders,
-    ["My_dataset_folder", "code"] /*currentPathArray*/
-  );
+  await addDataArrayToDatasetStructureAtPath(importedFolders);
 });
 
 /* ################################################################################## */
@@ -4876,9 +4871,6 @@ const replaceProblematicFoldersWithSDSCompliantNames = (
     const folderPath = folderObj["path"];
 
     if (problematicFolderNames.includes(folderPath)) {
-      console.log("This needs to be renamed");
-      console.log(folderObj);
-      console.log(folderKey);
       const newFolderName = folderKey.replace("@", "-");
       const newfolderObj = { ...folderObj };
       if (!newfolderObj["action"].includes("renamed")) {
@@ -4893,14 +4885,11 @@ const replaceProblematicFoldersWithSDSCompliantNames = (
 };
 
 const getNestedObjectsFromDatasetStructureByPath = (datasetStructure, path) => {
-  console.log("path", path);
   const pathArray = path.split("/").filter((item) => item !== "");
-  console.log("pathArray", pathArray);
   let currentObject = datasetStructure;
   for (const item of pathArray) {
     currentObject = currentObject["folders"][item];
   }
-  console.log("return", currentObject);
   return currentObject;
 };
 
@@ -4935,7 +4924,6 @@ const removeHiddenFilesFromDatasetStructure = (datasetStructure) => {
 const replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
   const currentFilesAtPath = Object.keys(datasetStructure.files);
   for (const fileKey of currentFilesAtPath) {
-    console.log("fileKey", fileKey);
     if (validateStringAgainstSdsRequirements(fileKey, "folder-and-file-names")) {
       const newFileName = fileKey.replace("@", "-");
       const newFileObj = { ...datasetStructure["files"][fileKey] };
@@ -5014,7 +5002,6 @@ const swalFileListConfirmAction = async (
     confirmButtonText: confirmButtonText,
     cancelButtonText: cancelButtonText,
   });
-  console.log("Action from swalFileListConfirmAction:", action);
   return action;
 };
 
@@ -5061,6 +5048,8 @@ const closeFileImportLoadingSweetAlert = () => {
 };
 
 const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileExplorerPath) => {
+  console.log("itemPaths", itemPaths);
+  console.log("currentFileExplorerPath", currentFileExplorerPath);
   const inaccessibleItems = [];
   const forbiddenFileNames = [];
   const problematicFolderNames = [];
@@ -5081,7 +5070,6 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
       if (fsStatsObj.isDirectory()) {
         const folderName = path.basename(pathToExplore);
         if (folderName.includes("@")) {
-          console.log("Found problematic folder name:", pathToExplore);
           problematicFolderNames.push(pathToExplore);
         }
         currentStructure["folders"][folderName] = {
@@ -5112,15 +5100,12 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
           fileName: fileName,
         };
         if (validateStringAgainstSdsRequirements(fileName, "folder-and-file-names")) {
-          console.log("Found problematic file name:", pathToExplore);
           problematicFileNames.push(fileObject);
         }
         if (validateStringAgainstSdsRequirements(fileName, "hidden-files-check")) {
-          console.log("Found hidden file name:", pathToExplore);
           hiddenItems.push(fileObject);
         }
         if (validateStringAgainstSdsRequirements(fileName, "forbidden-files-check")) {
-          console.log("Found forbidden file name:", pathToExplore);
           forbiddenFileNames.push(fileObject);
         }
         currentStructure["files"][fileName] = {
@@ -5147,8 +5132,6 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
 
   closeFileImportLoadingSweetAlert();
 
-  console.log("Raw Dataset Structure", datasetStructure);
-
   if (inaccessibleItems.length > 0) {
     await swalFileListSingleAction(
       inaccessibleItems,
@@ -5168,13 +5151,11 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
     removeForbiddenFilesFromDatasetStructure(datasetStructure);
   }
 
-  console.log("problematicFolderNames", problematicFolderNames);
   if (problematicFolderNames.length > 0) {
     //replaceProblematicFoldersWithSDSCompliantNames(datasetStructure, problematicFolderNames);
   }
 
   if (problematicFileNames.length > 0) {
-    console.log(problematicFileNames);
     const replaceFileNames = await swalFileListConfirmAction(
       problematicFileNames.map((file) => file.relativePath),
       "Some files have problematic names",
@@ -5216,25 +5197,20 @@ const mergeLocalAndRemoteDatasetStructure = async (
 
   const traverseAndMergeDatasetJsonObjects = async (datasetStructureToMerge, recursedFilePath) => {
     const currentNestedPathArray = getGlobalPathFromString(recursedFilePath);
-    console.log("currentNestedPathArray", currentNestedPathArray);
     const existingDatasetJsonAtPath = getRecursivePath(
       currentNestedPathArray.slice(1),
       datasetStructureJSONObj
     ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')
-    console.log("datasetStructureToMerge", datasetStructureToMerge);
-    console.log("existingDatasetJsonAtPath", existingDatasetJsonAtPath);
+
     const ExistingFoldersAtPath = Object.keys(existingDatasetJsonAtPath["folders"]);
     const ExistingFilesAtPath = Object.keys(existingDatasetJsonAtPath["files"]);
-    console.log(recursedFilePath);
     const foldersBeingMergedToPath = Object.keys(datasetStructureToMerge["folders"]);
     const filesBeingMergedToPath = Object.keys(datasetStructureToMerge["files"]);
 
     for (const folder of foldersBeingMergedToPath) {
       if (ExistingFoldersAtPath.includes(folder)) {
         // Maybe we don't have to do anything here because the folder already exists
-        console.log("Not adding folder because it already exists:", folder);
       } else {
-        console.log("Adding folder because it doesn't exist:", folder);
         existingDatasetJsonAtPath["folders"][folder] = {
           path: "Not/sure/what/path/to/use/here",
           type: "local",
@@ -5246,10 +5222,8 @@ const mergeLocalAndRemoteDatasetStructure = async (
     }
 
     for (const file of filesBeingMergedToPath) {
-      console.log("FILE:", file);
       if (ExistingFilesAtPath.includes(file)) {
         console.log("recursed file path", recursedFilePath);
-        console.log("Existing files at time of duplicate finding:", file);
         duplicateFiles.push({
           fileName: file,
           virtualFilePath: recursedFilePath,
@@ -5263,7 +5237,7 @@ const mergeLocalAndRemoteDatasetStructure = async (
     for (const folder of foldersBeingMergedToPath) {
       await traverseAndMergeDatasetJsonObjects(
         datasetStructureToMerge["folders"][folder],
-        `${recursedFilePath}/${folder}`
+        `${recursedFilePath}${folder}/`
       );
     }
   };
@@ -5276,7 +5250,6 @@ const mergeLocalAndRemoteDatasetStructure = async (
   closeFileImportLoadingSweetAlert();
 
   if (duplicateFiles.length > 0) {
-    console.log("duplicateFiles", duplicateFiles);
     const userConfirmedFileOverwrite = await swalFileListConfirmAction(
       duplicateFiles.map((file) => `${file.virtualFilePath}${file.fileName}`),
       "Duplicate files found",
@@ -5286,7 +5259,6 @@ const mergeLocalAndRemoteDatasetStructure = async (
       "What to do with existing files"
     );
     if (userConfirmedFileOverwrite) {
-      console.log("overwriting files");
       for (const file of duplicateFiles) {
         console.log("file", file);
         const currentNestedPathArray = getGlobalPathFromString(file.virtualFilePath);
@@ -5340,71 +5312,52 @@ const checkForDuplicateFolderAndFileNames = async (importedFolders, itemsAtPath)
   };
 };
 
-/*
-  icon: "info",
-  title: "Pennsieve Agent Not Found",
-  html: `
-    It looks like the Pennsieve Agent is not installed on your computer.
-    <br />
-    To install the Pennsieve Agent, please visit the link below and follow the instructions.
-    <br />
-    <br />
-    <a href="${browser_download_url}" target="_blank">Download the Pennsieve agent</a>
-    <br />
-    <br />
-    Once you have installed the Pennsieve Agent, please click the button below to ensure that the Pennsieve agent was installed correctly.
-  `,
-  width: 800,
-  heightAuto: false,
-  backdrop: "rgba(0,0,0, 0.4)",
-  allowOutsideClick: false,
-  allowEscapeKey: false,
-  showCancelButton: true,
-  showCloseButton: true,
-  reverseButtons: reverseSwalButtons,
-  confirmButtonText: "Retry check for Pennsieve agent",
-  cancelButtonText: "Skip for now",
-*/
+const addDataArrayToDatasetStructureAtPath = async (importedData) => {
+  try {
+    // STEP 1: Build the JSON object from the imported data
+    // (This function handles bad folders/files, inaccessible folders/files, etc and returns a clean dataset structure)
 
-const addDataArrayToDatasetStructureAtPath = async (importedData, virtualFolderPath) => {
-  // STEP 1: Build the JSON object from the imported data
-  // (This function handles bad folders/files, inaccessible folders/files, etc and returns a clean dataset structure)
+    const currentFileExplorerPath = organizeDSglobalPath.value.trim();
 
-  const currentFileExplorerPath = organizeDSglobalPath.value.trim();
+    const builtDatasetStructure = await buildDatasetStructureJsonFromImportedData(
+      importedData,
+      currentFileExplorerPath
+    );
+    if (!builtDatasetStructure?.["folders"] || !builtDatasetStructure?.["files"]) {
+      throw new Error("Error building dataset structure");
+    }
 
-  const builtDatasetStructure = await buildDatasetStructureJsonFromImportedData(
-    importedData,
-    currentFileExplorerPath
-  );
+    console.log("NEW DATASET STRUCTURE");
+    console.log(builtDatasetStructure);
+    console.log("Going to step 2 to merge the new data with the existing data");
+    console.log("******************************************************");
+    console.log("Merging");
+    console.log(builtDatasetStructure);
+    console.log("into");
+    console.log("******************************************************");
 
-  console.log("NEW DATASET STRUCTURE");
-  console.log(builtDatasetStructure);
-  console.log("Going to step 2 to merge the new data with the existing data");
-  console.log("******************************************************");
-  console.log("Merging");
-  console.log(builtDatasetStructure);
-  console.log("into");
-  console.log("******************************************************");
+    // Step 2: Add the imported data to the dataset structure
+    // This step handles duplicate folder/file names, etc
 
-  // Step 2: Add the imported data to the dataset structure
-  // This step handles duplicate folder/file names, etc
+    console.log("Imported folders and/or files:");
+    console.log(importedData);
 
-  console.log("Imported folders and/or files:");
-  console.log(importedData);
-  console.log("File path before recursion", virtualFolderPath);
+    // 'My_dataset_folder/code'
 
-  // 'My_dataset_folder/code'
+    await mergeLocalAndRemoteDatasetStructure(builtDatasetStructure, currentFileExplorerPath);
 
-  await mergeLocalAndRemoteDatasetStructure(builtDatasetStructure, currentFileExplorerPath);
-
-  // Step 3: Update the UI
-  const currentPathArray = getGlobalPath(organizeDSglobalPath); // ['My_dataset_folder', 'code']
-  const nestedJsonDatasetStructure = getRecursivePath(
-    currentPathArray.slice(1),
-    datasetStructureJSONObj
-  );
-  listItems(nestedJsonDatasetStructure, "#items", 500, (reset = true));
-  getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
+    // Step 3: Update the UI
+    const currentPathArray = getGlobalPath(organizeDSglobalPath); // ['My_dataset_folder', 'code']
+    const nestedJsonDatasetStructure = getRecursivePath(
+      currentPathArray.slice(1),
+      datasetStructureJSONObj
+    );
+    listItems(nestedJsonDatasetStructure, "#items", 500, (reset = true));
+    getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
+  } catch (error) {
+    console.log("Error adding data to dataset structure");
+    closeFileImportLoadingSweetAlert();
+  }
 };
 
 /* ################################################################################## */
@@ -5422,7 +5375,7 @@ const drop = async (ev) => {
   const itemsDroppedInFileExplorer = ev.dataTransfer.files;
   const itemPaths = Array.from(itemsDroppedInFileExplorer).map((item) => item.path);
   console.log("itemsDroppedInFileExplorer", itemsDroppedInFileExplorer);
-  await addDataArrayToDatasetStructureAtPath(itemPaths, ["My_dataset_folder", "code"]);
+  await addDataArrayToDatasetStructureAtPath(itemPaths);
 };
 
 const dropHelper = async (
@@ -5913,7 +5866,6 @@ const dropHelper = async (
       loadingContainer.style.display = "none";
       loadingIcon.style.display = "none";
     }
-    console.log("duplicate folders");
     await Swal.fire({
       title: "Duplicate folder(s) detected",
       icon: "warning",
@@ -5963,7 +5915,6 @@ const dropHelper = async (
       loadingContainer.style.display = "none";
       loadingIcon.style.display = "none";
     }
-    console.log("duplicate files popup now");
     await Swal.fire({
       title: "Duplicate file(s) detected",
       icon: "warning",
