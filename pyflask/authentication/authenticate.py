@@ -58,6 +58,12 @@ def get_access_token():
     return cached_access_token
         
 
+def clear_cached_access_token():
+    global cached_access_token
+    cached_access_token = None
+
+
+
 def get_cognito_userpool_access_token(email, password):
     """
     Creates a temporary access token for utilizing the Pennsieve API. Utilizes email and password to authenticate with the Pennsieve Cognito Userpool 
@@ -313,6 +319,8 @@ def get_pennsieve_api_key_secret(email, password, keyname):
         response = response.json()
 
         profile_name = create_unique_profile_name(api_key, email, keyname)
+
+        clear_cached_access_token()
 
         return { 
             "success": "success", 
