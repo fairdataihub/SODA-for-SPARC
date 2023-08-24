@@ -1816,11 +1816,12 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
             soda_json_structure["manifest-files"] = {"destination": "bf"}
 
 
-
+    namespace_logger.info(f"before modifying generate dataset: {soda_json_structure['generate-dataset']}")
     soda_json_structure["generate-dataset"] = {
         "destination": "bf",
         "if-existing": "merge",
         "if-existing-files": "replace",
+        "generate-option": "existing-bf"
     }
 
     end = timer()
@@ -2337,14 +2338,15 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
         main_curate_progress_message = "Creating list of files to upload to the dataset"
         # Gather all necessary information to upload files to the dataset
-        dataset_structure = soda_json_structure["dataset-structure"]
-        relative_path = ds["content"]["name"]
-        generate_option = soda_json_structure["generate-dataset"]["generate-option"]
-        starting_point = soda_json_structure["starting-point"]["type"]
         list_upload_files = []
         list_upload_metadata_files = []
         list_upload_manifest_files = []
+        list_of_files_to_rename = {}
         brand_new_dataset = False
+        dataset_structure = soda_json_structure["dataset-structure"]
+        generate_option = soda_json_structure["generate-dataset"]["generate-option"]
+        starting_point = soda_json_structure["starting-point"]["type"]
+        relative_path = ds["content"]["name"]
         existing_folder_option = soda_json_structure["generate-dataset"]["if-existing"]
         existing_file_option = soda_json_structure["generate-dataset"][
             "if-existing-files"
@@ -2357,10 +2359,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
             # we can assume no files/folders exist in the dataset since the generate option is new and starting point is also new
             # therefore, we can assume the dataset structure is the same as the tracking structure
             list_upload_files = recursive_dataset_scan_for_new_upload(dataset_structure, list_upload_files, relative_path)
-            for folderInformation in list_upload_files:
-                files_paths_count = len(folderInformation[0])
-                total_files += files_paths_count
-                total_dataset_files += files_paths_count
 
             namespace_logger.info(list_upload_files)
             if "metadata-files" in soda_json_structure.keys():
@@ -2373,6 +2371,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
             # we will need a tracking structure to compare against
             tracking_json_structure = ds
             normalize_tracking_folder(tracking_json_structure)
+            recursive_create_folder_for_ps(dataset_structure, tracking_json_structure, existing_folder_option)
             list_upload_files = recursive_dataset_scan_for_ps(
                 dataset_structure,
                 tracking_json_structure,
@@ -2380,14 +2379,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                 list_upload_files,
                 relative_path,
             )
-            
-            # the number of files to upload and the total also determines when the upload subscribers should stop listening to the dataset upload progress ( when files uploaded == total files stop listening )
-            for folderInformation in list_upload_files:
-                file_paths_count = len(folderInformation[0])
-                total_files += file_paths_count
-                total_dataset_files += file_paths_count
-
-                    # Scan the dataset structure and create a list of files/folders to be uploaded with the desired renaming
         
             # 3. Add high-level metadata files to a list
             if "metadata-files" in soda_json_structure.keys():
@@ -2459,7 +2450,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                             )
 
                 # add manifest files to list after deleting existing ones
-                list_upload_manifest_files = []
                 for key in manifest_files_structure.keys():
                     manifestpath = manifest_files_structure[key]
                     folder = tracking_json_structure["children"]["folders"][key]
@@ -2473,19 +2463,25 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                             r.raise_for_status()
 
                     # upload new manifest files
-                    list_upload_manifest_files.append([[manifestpath], key])
+                    list_upload_manifest_files.append([manifestpath, key])
                     total_files += 1
                     total_manifest_files += 1
                     main_total_generate_dataset_size += getsize(manifestpath)
         
+                    # the number of files to upload and the total also determines when the upload subscribers should stop listening to the dataset upload progress ( when files uploaded == total files stop listening )
+        
+        # Count how many files will be uploaded to inform frontend
+        for folderInformation in list_upload_files:
+            file_paths_count = len(folderInformation[0])
+            total_files += file_paths_count
+            total_dataset_files += file_paths_count
+
         # 5. Upload files, rename, and add to tracking list
-        # namespace_logger.info("ps_create_new_dataset step 5 upload files, rename and add to tracking list")
         start_generate = 1
         main_curate_progress_message = ("Queuing dataset files for upload with the Pennsieve Agent..." + "<br>" + "This may take some time.")
 
         # create a manifest - IMP: We use a single file to start with since creating a manifest requires a file path.  We need to remove this at the end. 
         if len(list_upload_files) > 0:
-            list_of_files_to_rename = {}
             first_file_local_path = list_upload_files[0][0][0]
             namespace_logger.info(f"first_file_local_path: {list_upload_files[0][3]}")
             if brand_new_dataset:
@@ -2504,7 +2500,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                     list_of_files_to_rename[folder_name][basename(first_file_local_path)] = {
                         "final_file_name": first_final_name,
                         "id": "",
-                    }
+                    },
 
             manifest_data = ps.manifest.create(first_file_local_path, folder_name)
             manifest_id = manifest_data.manifest_id
@@ -2611,10 +2607,10 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
             namespace_logger.info("ps_create_new_dataset (optional) step 7 upload manifest files")
 
             ps_folder = list_upload_manifest_files[0][1]
+            namespace_logger.info(f"ps_folder: {ps_folder}")
+            namespace_logger.info(f"should be first manifest file: {list_upload_manifest_files[0][0]}")
             manifest_data = ps.manifest.create(list_upload_manifest_files[0][0], ps_folder)
             manifest_id = manifest_data.manifest_id
-            namespace_logger.info(f"ps_folder: {ps_folder}")
-            namespace_logger.info(f"something: {list_upload_manifest_files[0][0]}")
 
             loc = get_agent_installation_location()
 
@@ -2672,12 +2668,19 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                     r.raise_for_status()
                     dataset_content = r.json()["children"]
 
-            for item in dataset_content:
-                # high lvl folders' ids are stored to be used to find the file IDS
-                if item["content"]["packageType"] == "Collection":
-                    collection_ids[item["content"]["name"]] = {
-                        "id": item["content"]["nodeId"],
-                    }
+            collections_found = False
+            while not collections_found:
+                for item in dataset_content:
+                    # high lvl folders' ids are stored to be used to find the file IDS
+                    if item["content"]["packageType"] == "Collection":
+                        collections_found = True
+                        collection_ids[item["content"]["name"]] = {
+                            "id": item["content"]["nodeId"],
+                        }
+                if not collections_found:
+                    r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(ps))
+                    r.raise_for_status()
+                    dataset_content = r.json()["children"]
 
             for key in list_of_files_to_rename.keys():
                 # split the key up if there are multiple folders in the relative path
@@ -2775,8 +2778,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
             # 8.5 Rename files - All or most ids have been fetched now rename the files or gather the ids again if not all files have been processed at this time
             namespace_logger.info(f"list of files to rename after: {list_of_files_to_rename}")
             for relative_path in list_of_files_to_rename.keys():
-                collection_id = list_of_files_to_rename[relative_path]["id"]
                 for file in list_of_files_to_rename[relative_path].keys():
+                    collection_id = list_of_files_to_rename[relative_path]["id"]
                     if file == "id":
                         continue
                     new_name = list_of_files_to_rename[relative_path][file]["final_file_name"]
