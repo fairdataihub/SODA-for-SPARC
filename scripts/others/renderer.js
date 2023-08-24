@@ -5031,14 +5031,44 @@ const validateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
   };
   return testCases[stringCase];
 };
+let loadingSweetAlert;
+let loadingSweetAlertTimer;
 
-const buildDatasetStructureJsonFromImportedData = async (itemPaths) => {
+const showFileImportLoadingSweetAlert = () => {
+  // Clear any existing timer
+  if (loadingSweetAlertTimer) {
+    clearTimeout(loadingSweetAlertTimer);
+  }
+
+  // Set a new timer
+  loadingSweetAlertTimer = setTimeout(() => {
+    loadingSweetAlert = Swal.fire({
+      title: "Importing files",
+      html: "Please wait while we import the files...",
+    });
+  }, 500);
+};
+
+const closeFileImportLoadingSweetAlert = () => {
+  // Clear any existing timer
+  if (loadingSweetAlertTimer) {
+    clearTimeout(loadingSweetAlertTimer);
+  }
+
+  if (loadingSweetAlert) {
+    loadingSweetAlert.close();
+  }
+};
+
+const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileExplorerPath) => {
   const inaccessibleItems = [];
   const forbiddenFileNames = [];
   const problematicFolderNames = [];
   const problematicFileNames = [];
   const datasetStructure = {};
   const hiddenItems = [];
+
+  showFileImportLoadingSweetAlert();
 
   // Function to traverse and build JSON structure
   const traverseAndBuildJson = async (pathToExplore, currentStructure, currentStructurePath) => {
@@ -5069,7 +5099,7 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths) => {
             await traverseAndBuildJson(
               itemPath,
               currentStructure["folders"][folderName],
-              `${currentStructurePath}${folderName}`
+              `${currentStructurePath}${folderName}/`
             );
           })
         );
@@ -5077,7 +5107,7 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths) => {
         const fileName = path.basename(pathToExplore);
         const relativePathToFileObject = currentStructurePath;
         const fileObject = {
-          relativePath: `${relativePathToFileObject}/${fileName}`,
+          relativePath: `${relativePathToFileObject}${fileName}`,
           localFilePath: pathToExplore,
           fileName: fileName,
         };
@@ -5111,9 +5141,11 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths) => {
   // Process itemPaths in parallel
   await Promise.all(
     itemPaths.map(async (itemPath) => {
-      await traverseAndBuildJson(itemPath, datasetStructure, "");
+      await traverseAndBuildJson(itemPath, datasetStructure, currentFileExplorerPath);
     })
   );
+
+  closeFileImportLoadingSweetAlert();
 
   console.log("Raw Dataset Structure", datasetStructure);
 
@@ -5236,13 +5268,17 @@ const mergeLocalAndRemoteDatasetStructure = async (
     }
   };
 
+  showFileImportLoadingSweetAlert();
+
   // DO THE MERGING
   await traverseAndMergeDatasetJsonObjects(datasetStructureToMerge, currentFileExplorerPath);
+
+  closeFileImportLoadingSweetAlert();
 
   if (duplicateFiles.length > 0) {
     console.log("duplicateFiles", duplicateFiles);
     const userConfirmedFileOverwrite = await swalFileListConfirmAction(
-      duplicateFiles.map((file) => file.virtualFilePath),
+      duplicateFiles.map((file) => `${file.virtualFilePath}${file.fileName}`),
       "Duplicate files found",
       "warning",
       "Overwrite existing files",
@@ -5333,7 +5369,13 @@ const checkForDuplicateFolderAndFileNames = async (importedFolders, itemsAtPath)
 const addDataArrayToDatasetStructureAtPath = async (importedData, virtualFolderPath) => {
   // STEP 1: Build the JSON object from the imported data
   // (This function handles bad folders/files, inaccessible folders/files, etc and returns a clean dataset structure)
-  const builtDatasetStructure = await buildDatasetStructureJsonFromImportedData(importedData);
+
+  const currentFileExplorerPath = organizeDSglobalPath.value.trim();
+
+  const builtDatasetStructure = await buildDatasetStructureJsonFromImportedData(
+    importedData,
+    currentFileExplorerPath
+  );
 
   console.log("NEW DATASET STRUCTURE");
   console.log(builtDatasetStructure);
@@ -5351,29 +5393,12 @@ const addDataArrayToDatasetStructureAtPath = async (importedData, virtualFolderP
   console.log(importedData);
   console.log("File path before recursion", virtualFolderPath);
 
-  const currentFileExplorerPath = organizeDSglobalPath.value.trim(); // 'My_dataset_folder/code'
-  // Show a swal loading screen while the merge is happening and close it after
-  const loadingSwal = Swal.fire({
-    title: "Merging folders and files",
-    html: "Loading...",
-    allowOutsideClick: false,
-    allowEscapeKey: false,
-    showCancelButton: false,
-    showCloseButton: false,
-    showConfirmButton: false,
-    heightAuto: false,
-    backdrop: "rgba(0,0,0, 0.4)",
-    onBeforeOpen: () => {
-      Swal.showLoading();
-    },
-  });
+  // 'My_dataset_folder/code'
 
   await mergeLocalAndRemoteDatasetStructure(builtDatasetStructure, currentFileExplorerPath);
 
-  loadingSwal.close();
-
   // Step 3: Update the UI
-  const currentPathArray = getGlobalPath(organizeDSglobalPath); // ['My_dataset_folder', 'code']g
+  const currentPathArray = getGlobalPath(organizeDSglobalPath); // ['My_dataset_folder', 'code']
   const nestedJsonDatasetStructure = getRecursivePath(
     currentPathArray.slice(1),
     datasetStructureJSONObj
