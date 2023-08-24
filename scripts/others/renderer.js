@@ -4904,12 +4904,31 @@ const getNestedObjectsFromDatasetStructureByPath = (datasetStructure, path) => {
   return currentObject;
 };
 
+const removeForbiddenFilesFromDatasetStructure = (datasetStructure) => {
+  const currentFilesAtPath = Object.keys(datasetStructure.files);
+  for (const fileKey of currentFilesAtPath) {
+    if (validateStringAgainstSdsRequirements(fileKey, "forbidden-files-check")) {
+      delete datasetStructure["files"][fileKey];
+    }
+  }
+
+  const currentFoldersAtPath = Object.keys(datasetStructure.folders);
+  for (const folderKey of currentFoldersAtPath) {
+    removeForbiddenFilesFromDatasetStructure(datasetStructure["folders"][folderKey]);
+  }
+};
+
 const removeHiddenFilesFromDatasetStructure = (datasetStructure) => {
   const currentFilesAtPath = Object.keys(datasetStructure.files);
   for (const fileKey of currentFilesAtPath) {
     if (validateStringAgainstSdsRequirements(fileKey, "hidden-files-check")) {
       delete datasetStructure["files"][fileKey];
     }
+  }
+
+  const currentFoldersAtPath = Object.keys(datasetStructure.folders);
+  for (const folderKey of currentFoldersAtPath) {
+    removeHiddenFilesFromDatasetStructure(datasetStructure["folders"][folderKey]);
   }
 };
 
@@ -5072,8 +5091,7 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths) => {
         }
         if (validateStringAgainstSdsRequirements(fileName, "forbidden-files-check")) {
           console.log("Found forbidden file name:", pathToExplore);
-          forbiddenFileNames.push(pathToExplore);
-          throw new Error("Forbidden file name");
+          forbiddenFileNames.push(fileObject);
         }
         currentStructure["files"][fileName] = {
           path: pathToExplore,
@@ -5106,7 +5124,16 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths) => {
       "warning",
       "These items will be ignored"
     );
-    console.log("Inaccessible Items", inaccessibleItems);
+  }
+
+  if (forbiddenFileNames.length > 0) {
+    await swalFileListSingleAction(
+      forbiddenFileNames.map((file) => file.relativePath),
+      "Some files have forbidden names",
+      "warning",
+      "These files will be ignored"
+    );
+    removeForbiddenFilesFromDatasetStructure(datasetStructure);
   }
 
   console.log("problematicFolderNames", problematicFolderNames);
@@ -5131,13 +5158,10 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths) => {
     }
   }
 
-  if (forbiddenFileNames.length > 0) {
-  }
-
   if (hiddenItems.length > 0) {
     const keepHiddenFiles = await swalFileListConfirmAction(
-      forbiddenFileNames.map((file) => file.relativePath),
-      "Some files have forbidden names",
+      hiddenItems.map((file) => file.relativePath),
+      "Some files have hidden names",
       "warning",
       "Keep hidden files",
       "Do not import hidden files",
@@ -5145,7 +5169,7 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths) => {
     );
     // If the user
     if (!keepHiddenFiles) {
-      replaceProblematicFilesWithSDSCompliantNames(datasetStructure);
+      removeHiddenFilesFromDatasetStructure(datasetStructure);
     }
   }
 
@@ -5160,22 +5184,18 @@ const mergeLocalAndRemoteDatasetStructure = async (
 
   const traverseAndMergeDatasetJsonObjects = async (datasetStructureToMerge, recursedFilePath) => {
     const currentNestedPathArray = getGlobalPathFromString(recursedFilePath);
+    console.log("currentNestedPathArray", currentNestedPathArray);
     const existingDatasetJsonAtPath = getRecursivePath(
       currentNestedPathArray.slice(1),
       datasetStructureJSONObj
     ); // {folders: {...}, files: {...}} (The actual file object of the folder 'code')
+    console.log("datasetStructureToMerge", datasetStructureToMerge);
+    console.log("existingDatasetJsonAtPath", existingDatasetJsonAtPath);
     const ExistingFoldersAtPath = Object.keys(existingDatasetJsonAtPath["folders"]);
     const ExistingFilesAtPath = Object.keys(existingDatasetJsonAtPath["files"]);
     console.log(recursedFilePath);
     const foldersBeingMergedToPath = Object.keys(datasetStructureToMerge["folders"]);
     const filesBeingMergedToPath = Object.keys(datasetStructureToMerge["files"]);
-    console.log("/////////////////////////////////////////////");
-    console.log("path:", recursedFilePath);
-    console.log("ExistingFoldersAtPath", ExistingFoldersAtPath);
-    console.log("ExistingFilesAtPath", ExistingFilesAtPath);
-    console.log("foldersBeingMergedToPath", foldersBeingMergedToPath);
-    console.log("filesBeingMergedToPath", filesBeingMergedToPath);
-    console.log("/////////////////////////////////////////////");
 
     for (const folder of foldersBeingMergedToPath) {
       if (ExistingFoldersAtPath.includes(folder)) {
@@ -5221,9 +5241,8 @@ const mergeLocalAndRemoteDatasetStructure = async (
 
   if (duplicateFiles.length > 0) {
     console.log("duplicateFiles", duplicateFiles);
-    const virtualFilePaths = duplicateFiles.map((file) => file.virtualFilePath);
     const userConfirmedFileOverwrite = await swalFileListConfirmAction(
-      virtualFilePaths,
+      duplicateFiles.map((file) => file.virtualFilePath),
       "Duplicate files found",
       "warning",
       "Overwrite existing files",
@@ -5233,20 +5252,30 @@ const mergeLocalAndRemoteDatasetStructure = async (
     if (userConfirmedFileOverwrite) {
       console.log("overwriting files");
       for (const file of duplicateFiles) {
+        console.log("file", file);
         const currentNestedPathArray = getGlobalPathFromString(file.virtualFilePath);
         // remove first and last elements from array
         currentNestedPathArray.shift();
         console.log("nested array", currentNestedPathArray);
-        const existingDatasetJsonAtPath = getRecursivePath(
+        const folderContainingFileToOverwrite = getRecursivePath(
           currentNestedPathArray,
           datasetStructureJSONObj
         );
-        console.log("existingDatasetJsonAtPath");
-        console.log(existingDatasetJsonAtPath["files"]);
-        console.log("Data to overwrite with");
-        console.log(file.fileObject);
+        console.log("folderContainingFileToOverwrite", folderContainingFileToOverwrite);
 
-        existingDatasetJsonAtPath["files"][file.fileName] = file.fileObject;
+        const fileTypeOfObjectToOverwrite =
+          folderContainingFileToOverwrite["files"][file.fileName]?.["type"];
+
+        // overwrite the existing file with the new file
+        folderContainingFileToOverwrite["files"][file.fileName] = file.fileObject;
+
+        // if the file being overwritten was from Pennsieve, add the "updated" action to the file
+        if (
+          fileTypeOfObjectToOverwrite === "bf" &&
+          !folderContainingFileToOverwrite["files"][file.fileName]["action"].includes("updated")
+        ) {
+          folderContainingFileToOverwrite["files"][file.fileName]["action"].push("updated");
+        }
       }
     }
   }
@@ -5323,8 +5352,25 @@ const addDataArrayToDatasetStructureAtPath = async (importedData, virtualFolderP
   console.log("File path before recursion", virtualFolderPath);
 
   const currentFileExplorerPath = organizeDSglobalPath.value.trim(); // 'My_dataset_folder/code'
+  // Show a swal loading screen while the merge is happening and close it after
+  const loadingSwal = Swal.fire({
+    title: "Merging folders and files",
+    html: "Loading...",
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showCancelButton: false,
+    showCloseButton: false,
+    showConfirmButton: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    onBeforeOpen: () => {
+      Swal.showLoading();
+    },
+  });
 
   await mergeLocalAndRemoteDatasetStructure(builtDatasetStructure, currentFileExplorerPath);
+
+  loadingSwal.close();
 
   // Step 3: Update the UI
   const currentPathArray = getGlobalPath(organizeDSglobalPath); // ['My_dataset_folder', 'code']g
