@@ -2679,9 +2679,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                         "id": item["content"]["nodeId"],
                     }
 
-            namespace_logger.info(f"COLLECTION_IDS {collection_ids}")
-            # namespace_logger.info(f"ps_create_new_dataset (optional) step 8 rename files list of files to be renamed: {list_of_files_to_rename}")
-
             for key in list_of_files_to_rename.keys():
                 # split the key up if there are multiple folders in the relative path
                 relative_path = key.split("/")
@@ -2726,10 +2723,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                                     list_of_files_to_rename[key][file_name]["id"] = file_id
                     else:
                         # file is within a subfolder and we recursively iterate until we get to the last subfolder needed
-                        namespace_logger.info(f"ps_create_new_dataset (optional) step 8 rename files - subfolder: {relative_path}")
-                        namespace_logger.info(f"ps_create_new_dataset (optional) step 8 rename files - subfolder_amount: {subfolder_amount}")
-                        namespace_logger.info(f"ps_create_new_dataset (optional) step 8 rename files - subfolder_level: {subfolder_level}")
-                        namespace_logger.info(f"dataset_content: {dataset_content}")
                         subfolder_id = collection_ids[high_lvl_folder_name]["id"]
                         while subfolder_level != subfolder_amount:
                             if dataset_content == []:
@@ -2753,13 +2746,11 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
                                         if subfolder_level != subfolder_amount:
                                             dataset_content = r.json()["children"]
-                                            namespace_logger.info(f"DATA CONTNENT FOR FOLDER: {folder_name}: {dataset_content}")
                                             if dataset_content == []:
                                                 while dataset_content == []:
                                                     r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}", headers=create_request_headers(ps))
                                                     r.raise_for_status()
                                                     dataset_content = r.json()["children"]
-                                            namespace_logger.info(f"DATA CONTNENT FOR FOLDER: {folder_name}: {dataset_content}")
                                             namespace_logger.info(f"subfolder_amount: {subfolder_amount}")
                                             namespace_logger.info(f"subfolder_level: {subfolder_level}")
                                             namespace_logger.info(f"subfolder id for {folder_name}: {subfolder_id}")
@@ -2781,12 +2772,11 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                                     else:
                                         continue
 
-            # 8.5 all/most ids have been fetched now rename the files or gather the ids again if not all files have been processed at this time
+            # 8.5 Rename files - All or most ids have been fetched now rename the files or gather the ids again if not all files have been processed at this time
             namespace_logger.info(f"list of files to rename after: {list_of_files_to_rename}")
             for relative_path in list_of_files_to_rename.keys():
                 collection_id = list_of_files_to_rename[relative_path]["id"]
-                for file, files_details in list_of_files_to_rename[relative_path].items():
-                    # namespace_logger.info(f"relative path id: list_of_files_to_rename[relative_path]: {list_of_files_to_rename[relative_path]}")
+                for file in list_of_files_to_rename[relative_path].keys():
                     if file == "id":
                         continue
                     new_name = list_of_files_to_rename[relative_path][file]["final_file_name"]
