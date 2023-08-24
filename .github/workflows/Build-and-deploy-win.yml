@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - staging
+      - support-identifier-conventions
 
 jobs:
   deploy-on-windows:
