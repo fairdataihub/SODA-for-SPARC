@@ -5,12 +5,11 @@ All notable changes to SODA will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-
 ## v.12.2.2 - 2023-08-24
 
 ## Bug fixes:
 
-- Fixed an issue where switching workspaces in Free Form Mode and Guided Mode would sometimes disallow access to the target workspace for up to a minute. 
+- Fixed an issue where switching workspaces in Free Form Mode and Guided Mode would sometimes disallow access to the target workspace for up to a minute.
 
 ## v.12.2.1 - 2023-08-18
 
