@@ -2397,10 +2397,10 @@ const guidedReserveAndSaveDOI = async () => {
   let doiInformation = await api.reserveDOI(account, dataset);
   ipcRenderer.send(
     "track-kombucha",
-    kombuchaEnums.Categories.DISSEMINATE_DATASETS,
+    kombuchaEnums.Category.DISSEMINATE_DATASETS,
     kombuchaEnums.Action.GUIDED_MODE,
     kombuchaEnums.Label.RESERVE_DOI,
-    kombuchaEnums.STATUS.SUCCESS,
+    kombuchaEnums.Status.SUCCESS,
     { value: 1 }
   );
   guidedSetDOIUI(doiInformation);
