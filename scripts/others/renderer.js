@@ -9748,10 +9748,19 @@ const gatherLogs = () => {
  * purged.
  */
 const displayClientId = () => {
+  const { clipboard } = require('electron')
+  clipboard.writeText('Example string', 'selection')
+  console.log(clipboard.readText('selection'))
   let clientId = nodeStorage.getItem("userId")
+
+  const copyClientIdToClipboard = () => {
+    clipboard.writeText(clientId, "clipboard")
+  }
+  copyClientIdToClipboard()
+  let copyIcon = `<i class="fas fa-copy" id="copy-icon-client-id" click="${copyClientIdToClipboard()}" ></i>`
   Swal.fire({
-    title: "Your client ID",
-    html: `<div style="margin-bottom:1rem;">${clientId}</div>`,
+    title: "Click the Copy Icon to Copy Your Client ID",
+    html: `<div style="margin-bottom:1rem;">${clientId} ${copyIcon}</div>`,
     heightAuto: false,
     allowOutsideClick: false,
     allowEscapeKey: true,
