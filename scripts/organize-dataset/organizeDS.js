@@ -2186,10 +2186,10 @@ const observeElement = (element, property, callback, delay = 0) => {
 
 //when on top layer of dataset eventListener is removed
 const check_dataset_value = () => {
-  if (dataset_path.value === "My_dataset_folder/") {
+  if (dataset_path.value === "dataset_root/") {
     item_box.removeEventListener("scroll", lazyLoad, true);
   }
-  if (dataset_path.value != "My_dataset_folder/") {
+  if (dataset_path.value != "dataset_root/") {
     var filtered = getGlobalPath(dataset_path);
     var myPath = getRecursivePath(filtered.slice(1), datasetStructureJSONObj);
     amount = 500;
@@ -2313,7 +2313,7 @@ const add_items_to_view = async (list, amount_req, reset) => {
   if (already_created_elem.length === 0) {
     listed_count = already_created_elem.length;
   }
-  if (reset === true || dataset_path === "My_dataset_folder/") {
+  if (reset === true || dataset_path === "dataset_root/") {
     $("#items").empty();
 
     start = 0;
@@ -2429,12 +2429,12 @@ const triggerManageDetailsPrompts = (ev, fileName, filePath, textareaID1, textar
 };
 
 // on change event (in this case: NextBtn click from Step 2 - Step 3)
-// 1. Check path: if path === "My_dataset_folder", then hideOrganizeButtons(), otherwise, showOrganizeButtons()
+// 1. Check path: if path === "dataset_root", then hideOrganizeButtons(), otherwise, showOrganizeButtons()
 // 2. How to show/hide Organize buttons:
 //    a. Hide: display: none (New folder, Import, Back button, and path)
 //    b. Show: display: flex (New folder, Import, Back button, and path) + Center the items
 const organizeLandingUIEffect = () => {
-  if ($("#input-global-path").val() === "My_dataset_folder/") {
+  if ($("#input-global-path").val() === "dataset_root/") {
     $(".div-organize-dataset-menu").css("visibility", "hidden");
     // $("#organize-path-and-back-button-div").css("visibility", "hidden");
     $("#organize-path-and-back-button-div").css("display", "none");

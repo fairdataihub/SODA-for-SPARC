@@ -194,7 +194,7 @@ const showParentTab = async (tabNow, nextOrPrev) => {
 
 // function to fill the card details in the preview tab of step 7
 const fill_info_details = () => {
-  let new_dataset_name = "My_dataset_folder";
+  let new_dataset_name = "dataset_root";
   $(".card-container.generate-preview").remove();
   if (sodaJSONObj["starting-point"]["type"] === "bf") {
     add_card_detail("Pennsieve account", $("#current-bf-account-generate").text());
@@ -2947,7 +2947,7 @@ const hidePrevDivs = (currentDiv, category) => {
 };
 
 const updateJSONStructureGettingStarted = () => {
-  document.getElementById("input-global-path").value = "My_dataset_folder/";
+  document.getElementById("input-global-path").value = "dataset_root/";
 };
 
 // function to populate metadata files
@@ -3302,7 +3302,7 @@ const updateJSONStructureGenerate = (progress = false, sodaJSONObj) => {
 // function to call when users click on Continue at each step
 const updateOverallJSONStructure = (id) => {
   if (id === allParentStepsJSON["high-level-folders"]) {
-    document.getElementById("input-global-path").value = "My_dataset_folder/";
+    document.getElementById("input-global-path").value = "dataset_root/";
     var optionCards = document.getElementsByClassName("option-card high-level-folders");
     var newDatasetStructureJSONObj = { folders: {}, files: {} };
     var keys = [];

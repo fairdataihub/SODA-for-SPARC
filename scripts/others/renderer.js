@@ -4847,7 +4847,7 @@ organizeDSaddFolders.addEventListener("click", function () {
 
 // Event listener for when folder(s) are imported into the file explorer
 ipcRenderer.on("selected-folders-organize-datasets", async (event, importedFolders) => {
-  const currentPathArray = getGlobalPath(organizeDSglobalPath); // ['My_dataset_folder', 'code']
+  const currentPathArray = getGlobalPath(organizeDSglobalPath); // ['dataset_root', 'code']
   /*const currentContentsAtDatasetPath = getRecursivePath(
     currentPathArray.slice(1),
     datasetStructureJSONObj
@@ -4959,7 +4959,11 @@ const swalFileListSingleAction = async (fileList, title, icon, postActionText) =
     icon: icon,
     html: `
       <div class="swal-file-list">
-        ${fileList.map((file) => `<div class="swal-file-row">${file}</div>`).join("")}
+        ${fileList
+          .map(
+            (file) => `<div class="swal-file-row"><span class="swal-file-text">${file}</span></div>`
+          )
+          .join("")}
       </div>
       <b>${postActionText}</b>
     `,
@@ -5021,19 +5025,40 @@ const validateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
 let loadingSweetAlert;
 let loadingSweetAlertTimer;
 
-const showFileImportLoadingSweetAlert = () => {
-  // Clear any existing timer
-  if (loadingSweetAlertTimer) {
-    clearTimeout(loadingSweetAlertTimer);
-  }
+const showFileImportLoadingSweetAlert = (delayBeforeShowingSweetAlert) => {
+  // Close any existing loading sweet alert if it exists
+  closeFileImportLoadingSweetAlert();
 
-  // Set a new timer
+  // Show the loading sweet alert after a short deleay to avoid flickering
+  // if the loading is quick, the closeFileImportLoadingSweetAlert() function should
+  // be called so that the loading sweet alert is not shown at all
   loadingSweetAlertTimer = setTimeout(() => {
     loadingSweetAlert = Swal.fire({
-      title: "Importing files",
-      html: "Please wait while we import the files...",
+      title: "Importing your files and folders into SODA...",
+      html: `
+        <div class="lds-roller">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+      `,
+      width: 800,
+      heightAuto: false,
+      width: 800,
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showCancelButton: false,
+      showConfirmButton: false,
+      showCloseButton: false,
     });
-  }, 500);
+  }, delayBeforeShowingSweetAlert);
 };
 
 const closeFileImportLoadingSweetAlert = () => {
@@ -5057,7 +5082,7 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
   const datasetStructure = {};
   const hiddenItems = [];
 
-  showFileImportLoadingSweetAlert();
+  showFileImportLoadingSweetAlert(500);
 
   // Function to traverse and build JSON structure
   const traverseAndBuildJson = async (pathToExplore, currentStructure, currentStructurePath) => {
@@ -5066,6 +5091,7 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
 
     try {
       const fsStatsObj = await fs.promises.stat(pathToExplore);
+      console.log("fsStatsObj", fsStatsObj);
 
       if (fsStatsObj.isDirectory()) {
         const folderName = path.basename(pathToExplore);
@@ -5093,6 +5119,7 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
         );
       } else if (fsStatsObj.isFile()) {
         const fileName = path.basename(pathToExplore);
+        const fileExtension = path.extname(pathToExplore);
         const relativePathToFileObject = currentStructurePath;
         const fileObject = {
           relativePath: `${relativePathToFileObject}${fileName}`,
@@ -5112,7 +5139,9 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
           path: pathToExplore,
           type: "local",
           description: "",
+          "additional-metadata": "",
           action: ["new"],
+          extension: fileExtension,
         };
       }
     } catch (error) {
@@ -5242,7 +5271,7 @@ const mergeLocalAndRemoteDatasetStructure = async (
     }
   };
 
-  showFileImportLoadingSweetAlert();
+  showFileImportLoadingSweetAlert(500);
 
   // DO THE MERGING
   await traverseAndMergeDatasetJsonObjects(datasetStructureToMerge, currentFileExplorerPath);
@@ -5313,6 +5342,10 @@ const checkForDuplicateFolderAndFileNames = async (importedFolders, itemsAtPath)
 };
 
 const addDataArrayToDatasetStructureAtPath = async (importedData) => {
+  if (importedData.length === 0) {
+    notyf.error("No data found in the selected folder");
+    return;
+  }
   try {
     // STEP 1: Build the JSON object from the imported data
     // (This function handles bad folders/files, inaccessible folders/files, etc and returns a clean dataset structure)
@@ -5342,18 +5375,20 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
     console.log("Imported folders and/or files:");
     console.log(importedData);
 
-    // 'My_dataset_folder/code'
+    // 'dataset_root/code'
 
     await mergeLocalAndRemoteDatasetStructure(builtDatasetStructure, currentFileExplorerPath);
 
     // Step 3: Update the UI
-    const currentPathArray = getGlobalPath(organizeDSglobalPath); // ['My_dataset_folder', 'code']
+    const currentPathArray = getGlobalPath(organizeDSglobalPath); // ['dataset_root', 'code']
     const nestedJsonDatasetStructure = getRecursivePath(
       currentPathArray.slice(1),
       datasetStructureJSONObj
     );
     listItems(nestedJsonDatasetStructure, "#items", 500, (reset = true));
     getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
+
+    notyf.success("Successfully imported data into SODA");
   } catch (error) {
     console.log("Error adding data to dataset structure");
     closeFileImportLoadingSweetAlert();
@@ -5372,6 +5407,7 @@ const allowDrop = (ev) => {
 var filesElement;
 var targetElement;
 const drop = async (ev) => {
+  console.log("drop event", ev);
   const itemsDroppedInFileExplorer = ev.dataTransfer.files;
   const itemPaths = Array.from(itemsDroppedInFileExplorer).map((item) => item.path);
   console.log("itemsDroppedInFileExplorer", itemsDroppedInFileExplorer);
@@ -6692,7 +6728,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     );
 
     //remove my_dataset_folder and if any of the ROOT FOLDER names is included
-    if (splitPath[0] === "My_dataset_folder") splitPath.shift();
+    if (splitPath[0] === "dataset_root") splitPath.shift();
     if (rootFolders.includes(splitPath[0])) splitPath.shift();
     //remove the last element in array is it is always ''
     splitPath.pop();
@@ -6779,7 +6815,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     }
 
     for (let i = 0; i < splitPath.length; i++) {
-      if (splitPath[i] === "My_dataset_folder" || splitPath[i] === undefined) continue;
+      if (splitPath[i] === "dataset_root" || splitPath[i] === undefined) continue;
       trimmedPath += splitPath[i] + "/";
     }
 
@@ -7153,7 +7189,7 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
     let folderType;
 
     if (organizeDSglobalPath.value == undefined) {
-      currentFolder = "My_dataset_folder";
+      currentFolder = "dataset_root";
     } else {
       //Get the name of the folder the user is currently in.
       currentFolder = organizeDSglobalPath.value.split("/").slice(-2)[0];
@@ -7226,7 +7262,7 @@ const getInFolder = (singleUIItem, uiItem, currentLocation, globalObj) => {
       var myPath = getRecursivePath(filtered, globalObj);
       if (myPath.length === 2) {
         filtered = myPath[1];
-        currentLocation.value = "My_dataset_folder/" + filtered.join("/") + "/";
+        currentLocation.value = "dataset_root/" + filtered.join("/") + "/";
       }
       $("#items").empty();
       already_created_elem = [];

@@ -8367,7 +8367,7 @@ const updateFolderStructureUI = (folderPath) => {
   fileExplorer.classList.remove("file-explorer-transition");
 
   //TODO: Figure out why this is undefined when transitioning with no subjects
-  $("#guided-input-global-path").val(`My_dataset_folder/${folderPath}`);
+  $("#guided-input-global-path").val(`dataset_root/${folderPath}`);
   organizeDSglobalPath = $("#guided-input-global-path")[0];
   var filtered = getGlobalPath(organizeDSglobalPath);
   organizeDSglobalPath.value = filtered.slice(0, filtered.length).join("/") + "/";

@@ -904,7 +904,7 @@ const create_child_node = (
     for (const [key, value] of Object.entries(oldFormatNode["folders"])) {
       if ("action" in oldFormatNode["folders"][key]) {
         if (!oldFormatNode["folders"][key]["action"].includes("deleted")) {
-          if (nodeName === "My_dataset_folder") {
+          if (nodeName === "dataset_root") {
             high_lvl_folder_node = key;
           }
           if (key === selectedOriginalLocation && parentFolder === high_lvl_folder_node) {
@@ -1038,7 +1038,7 @@ var jsTreeData = create_child_node(
     files: {},
     type: "",
   },
-  "My_dataset_folder",
+  "dataset_root",
   "folder",
   "",
   true,
@@ -1157,7 +1157,7 @@ const moveItems = async (ev, category) => {
 
   jsTreeData = create_child_node(
     datasetStructureJSONObj,
-    "My_dataset_folder",
+    "dataset_root",
     "folder",
     "",
     true,
@@ -1208,7 +1208,7 @@ const moveItems = async (ev, category) => {
         Swal.showValidationMessage("Please select a folder destination!");
         return undefined;
       } else {
-        if (selectedNode === "My_dataset_folder") {
+        if (selectedNode === "dataset_root") {
           Swal.showValidationMessage("Items cannot be moved to this level of the dataset!");
           return undefined;
         } else if (selectedNode === selectedItem) {
