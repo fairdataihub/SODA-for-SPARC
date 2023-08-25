@@ -3081,13 +3081,11 @@ def main_curate_function(soda_json_structure):
     main_generate_destination = ""
     main_initial_bfdataset_size = 0
 
-
     myds = ""
     main_keys = soda_json_structure.keys()
     error = ""
 
     # 1] Check for potential errors
-
     namespace_logger.info("main_curate_function step 1")
 
     # 1.1. If the dataset is being generated locally then check that the local destination is valid
@@ -3476,8 +3474,11 @@ def generate_manifest_file_data(dataset_structure_obj):
                 item_additional_info = folder["files"][item]["additional-metadata"]
 
                 # The name of the file eg "file.txt"
-                
                 file_name = os.path.basename(local_path_to_file)
+                namespace_logger.info(f"file_name based on file path: {file_name}")
+                namespace_logger.info(f"file name based on key: {item}")
+                if file_name != item:
+                    file_name = item
                 if len(ds_struct_path) > 0:
                     filename_entry = "/".join(ds_struct_path) + "/" + file_name
                 else:
