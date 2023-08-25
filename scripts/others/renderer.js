@@ -87,6 +87,8 @@ let introStatus = {
 // App launch actions
 //////////////////////////////////
 
+let nodeStorage = new JSONStorage(app.getPath("userData"));
+
 // Log file settings //
 log.transports.console.level = false;
 log.transports.file.maxSize = 1024 * 1024 * 10;
@@ -278,7 +280,6 @@ document.getElementById("guided_mode_view").click();
 let launchAnnouncement = false;
 ipcRenderer.on("checkForAnnouncements", (event, index) => {
   launchAnnouncement = true;
-  let nodeStorage = new JSONStorage(app.getPath("userData"));
   nodeStorage.setItem("announcements", false);
 });
 
@@ -9739,6 +9740,23 @@ const gatherLogs = () => {
     }
   });
 };
+
+
+/**
+ * Gather the client's analytics ID and save it in a file of the user's choosing. The user can then send this to use when requesting to have their data 
+ * removed from our analytics database. For each computer/profile the user has they may have to perform this operation if they want all of their data
+ * purged.
+ */
+const displayClientId = () => {
+  let clientId = nodeStorage.getItem("userId")
+  Swal.fire({
+    title: "Your client ID",
+    html: `<div style="margin-bottom:1rem;">${clientId}</div>`,
+    heightAuto: false,
+    allowOutsideClick: false,
+    allowEscapeKey: true,
+  })
+}
 
 const gettingStarted = () => {
   let getting_started = document.getElementById("main_tabs_view");
