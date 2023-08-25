@@ -2328,7 +2328,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                 if current_bytes_uploaded == total_bytes_to_upload and  file_id != "":
                     files_uploaded += 1
                     main_curation_uploaded_files += 1
-                    
+
 
                 # check if the upload has finished
                 if files_uploaded == current_files_in_subscriber_session:
@@ -2480,6 +2480,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
         # create a manifest for files - IMP: We use a single file to start with since creating a manifest requires a file path.  We need to remove this at the end. 
         if len(list_upload_files) > 0:
+            list_of_files_to_renamed = {}
             first_file_local_path = list_upload_files[0][0][0]
             
             if brand_new_dataset:
@@ -2512,6 +2513,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
             # there are files to add to the manifest if there are more than one file in the first folder or more than one folder
             if len(list_upload_files[0][0]) > 1 or len(list_upload_files) > 1:
                 index_skip = True
+                index_skip = True
                 for folderInformation in list_upload_files:
                     list_file_paths = folderInformation[0]
                     if brand_new_dataset:
@@ -2521,7 +2523,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                         relative_path = folderInformation[6]
                         final_file_name_list = folderInformation[4]
                     # get the substring from the string relative_path that starts at the index of the / and contains the rest of the string
-                    # this is the folder name
                     try:
                         folder_name = relative_path[relative_path.index("/")+1:]
                     except ValueError as e:
@@ -2551,7 +2552,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
             total_bytes_uploaded = {"value": 0}
             current_files_in_subscriber_session = total_dataset_files
 
-            
+
             # upload the manifest files
             try: 
                 ps.manifest.upload(manifest_id)
@@ -2612,7 +2613,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                     manifest_file = item[0]
                     ps_folder = item[1]
                     main_curate_progress_message = ( f"Uploading manifest file in {ps_folder} folder" )
-                    
+
                     # add the files to the manifest
                     ps.manifest.add(manifest_file, ps_folder, manifest_id)
 

@@ -4,6 +4,7 @@ run-name: ${{ github.actor }} is building a MAC release for SODA
 on:
   push:
     branches:
+      - staging
       - main
 
 jobs:
@@ -23,10 +24,13 @@ jobs:
 
       - uses: conda-incubator/setup-miniconda@v2
         with:
+          miniconda-version: "latest"
           activate-environment: env-electron-python
           environment-file: tools/anaconda-env/environment-MAC.yml
+          auto-update-conda: true
           auto-activate-base: false
       - run: |
+          conda activate env-electron-python
           conda info
           conda list
 
@@ -42,12 +46,14 @@ jobs:
           p12-file-base64: ${{ secrets.MACOS_CERTIFICATE }}
           p12-password: ${{ secrets.MACOS_CERTIFICATE_PWD }}
 
-      - name: Build and deploy on MAC
+      - name: Build the python server executable
+        run: |
+          npm run python-onefile-build-unix
+
+      - name: Deploy the app to GitHub
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           appleId: ${{ secrets.APPLE_ID }}
           appleIdPassword: ${{ secrets.APPLE_PASSWORD }}
         run: |
-          conda activate env-electron-python
-          npm run python-onefile-build
           npm run deploy-mac

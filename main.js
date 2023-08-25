@@ -91,10 +91,13 @@ const getScriptPath = () => {
     return path.join(__dirname, PY_FLASK_FOLDER, PY_FLASK_MODULE + ".py");
   }
   if (process.platform === "win32") {
-    return path.join(__dirname, PY_FLASK_DIST_FOLDER, PY_FLASK_MODULE + ".exe");
+    const winPath = path.join(__dirname, PY_FLASK_DIST_FOLDER, PY_FLASK_MODULE + ".exe");
+    log.info("Path to server executable: " + winPath);
+    return winPath;
   } else {
-    log.info("Since app is packaged returning path: ");
-    return path.join(process.resourcesPath, PY_FLASK_MODULE);
+    const unixPath = path.join(process.resourcesPath, PY_FLASK_MODULE);
+    log.info("Path to server executable: " + unixPath);
+    return unixPath;
   }
 };
 const selectPort = () => {
@@ -108,7 +111,7 @@ const createPyProc = async () => {
   if (require("fs").existsSync(script)) {
     log.info("server exists at specified location");
   } else {
-    log.info("server does not exist at specified location");
+    log.info("server doesn't exist at specified location");
   }
   fp(PORT, PORT + portRange)
     .then(([freePort]) => {

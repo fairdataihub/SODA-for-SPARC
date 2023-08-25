@@ -1,3 +1,5 @@
+// sourcery skip: merge-nested-ifs
+
 const returnToGuided = () => {
   document.getElementById("guided_mode_view").click();
 };
@@ -18,6 +20,11 @@ const guidedGetDatasetName = (sodaJSON) => {
   }
 
   return "None";
+};
+
+guidedGetDatasetType = () => {
+  // Returns the dataset type (e.g. "computational" or "experimental")
+  return sodaJSONObj?.["dataset-type"];
 };
 
 const guidedGetDatasetOrigin = (sodaJSON) => {
@@ -133,6 +140,27 @@ const startOrStopAnimationsInContainer = (containerId, startOrStop) => {
     }
   }
 };
+
+const guidedLicenseOptions = [
+  {
+    licenseName: "Creative Commons Attribution",
+    licenseDescription:
+      "A permissive license commonly used for open data collections that allows others to use, modify, and distribute your work provided appropriate credit is given.",
+    datasetTypes: ["experimental"],
+  },
+  {
+    licenseName: "MIT",
+    licenseDescription:
+      "A permissive license that allows others to use, modify, and distribute your work provided they grant you credit.",
+    datasetTypes: ["computational"],
+  },
+  {
+    licenseName: "GNU General Public License v3.0",
+    licenseDescription:
+      "A copyleft license that allows others to use, modify, and distribute your work provided they grant you credit and distribute their modifications under the GNU GPL license as well.",
+    datasetTypes: ["computational"],
+  },
+];
 
 const hideAndShowElementsDependingOnStartType = (pageElement) => {
   const startingFromPennsieve = sodaJSONObj?.["starting-point"]?.["type"] === "bf";
@@ -1495,9 +1523,6 @@ const savePageChanges = async (pageBeingLeftID) => {
         throw errorArray;
       }
 
-      const pennsieveIntroOrganizationDetailsText = document.getElementById(
-        "guided-pennsive-selected-organization"
-      );
       sodaJSONObj["last-confirmed-pennsieve-workspace-details"] = userSelectedWorkSpace;
     }
 
@@ -1511,19 +1536,22 @@ const savePageChanges = async (pageBeingLeftID) => {
       }
     }
 
-    if (pageBeingLeftID === "guided-designate-permissions-tab") {
-    }
-
     if (pageBeingLeftID === "guided-assign-license-tab") {
-      const licenseCheckbox = document.getElementById("guided-license-checkbox");
-      if (!licenseCheckbox.checked) {
+      const licenseRadioButtonContainer = document.getElementById(
+        "guided-license-radio-button-container"
+      );
+      // Get the button that contains the class selected
+      const selectedLicenseButton =
+        licenseRadioButtonContainer.getElementsByClassName("selected")[0];
+      if (!selectedLicenseButton) {
         errorArray.push({
           type: "notyf",
-          message: "Please accept the application of the CC-BY license to your dataset.",
+          message: "Please select a license",
         });
         throw errorArray;
       }
-      setGuidedLicense("Creative Commons Attribution (CC-BY)");
+      const selectedLicense = selectedLicenseButton.dataset.value;
+      sodaJSONObj["digital-metadata"]["license"] = selectedLicense;
     }
     /*
     if (pageBeingLeftID === "guided-dataset-generate-location-tab") {
@@ -6063,9 +6091,7 @@ const openPage = async (targetPageID) => {
             },
           });
           const license = licenseReq.data.license;
-          if (license === "Creative Commons Attribution") {
-            sodaJSONObj["digital-metadata"]["license"] = "Creative Commons Attribution";
-          }
+          sodaJSONObj["digital-metadata"]["license"] = license;
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-assign-license-tab");
         } catch (error) {
           clientError(error);
@@ -6076,11 +6102,77 @@ const openPage = async (targetPageID) => {
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-assign-license-tab");
         }
       }
-      const licenseCheckbox = document.getElementById("guided-license-checkbox");
-      if (sodaJSONObj["digital-metadata"]["license"]) {
-        licenseCheckbox.checked = true;
-      } else {
-        licenseCheckbox.checked = false;
+      // Get the selected dataset type ("computational" or "experimental")
+      const datasetType = guidedGetDatasetType();
+
+      // Update the license select instructions based on the selected dataset type
+      const licenseSelectInstructions = document.getElementById("license-select-text");
+      if (datasetType === "computational") {
+        licenseSelectInstructions.innerHTML = `
+          Select a license for your computational dataset from the options below.
+        `;
+      }
+      if (datasetType === "experimental") {
+        licenseSelectInstructions.innerHTML = `
+          As per SPARC policy, all experimental datasets must be shared under the
+          <b>Creative Commons Attribution (CC-BY)</b> license.
+          <br />
+          <br />
+          Select the button below to consent to sharing your dataset under the Creative Commons Attribution license.
+        `;
+      }
+
+      // Get the license options that are applicable for the selected dataset type
+      const selectableLicenses = guidedLicenseOptions.filter((license) => {
+        return license.datasetTypes.includes(datasetType);
+      });
+
+      // Render the license radio buttons into their container
+      const licenseRadioButtonContainer = document.getElementById(
+        "guided-license-radio-button-container"
+      );
+      const licenseRadioButtonElements = selectableLicenses
+        .map((license) => {
+          return `
+          <button class="guided--simple-radio-button" data-value="${license.licenseName}">
+            <input type="radio" name="license" value="${license.licenseName}" style="margin-right: 5px; cursor: pointer; margin-top: 5px;" />
+            <div style=" display: flex; flex-direction: column; align-items: flex-start; flex-grow: 1;">
+              <p class="help-text mb-0"><b>${license.licenseName}</b></p>
+              <p class="guided--text-input-instructions text-left">${license.licenseDescription}</p>
+            </div>
+          </button>
+        `;
+        })
+        .join("\n");
+      licenseRadioButtonContainer.innerHTML = licenseRadioButtonElements;
+
+      // Add event listeners to the license radio buttons that add the selected class to the clicked button
+      // and deselects all other buttons
+      document.querySelectorAll(".guided--simple-radio-button").forEach((button) => {
+        button.addEventListener("click", () => {
+          // Remove selected class from all radio buttons
+          licenseRadioButtonContainer
+            .querySelectorAll(".guided--simple-radio-button")
+            .forEach((button) => {
+              button.classList.remove("selected");
+            });
+
+          // Add selected class to the clicked radio button
+          button.classList.add("selected");
+          // Click the radio button input
+          button.querySelector("input").click();
+        });
+      });
+
+      // If a license has already been selected, select the corresponding radio button (Only if the license is still selectable)
+      const selectedLicense = sodaJSONObj["digital-metadata"]["license"];
+      if (selectedLicense) {
+        const selectedLicenseRadioButton = licenseRadioButtonContainer.querySelector(
+          `[data-value="${selectedLicense}"]`
+        );
+        if (selectedLicenseRadioButton) {
+          selectedLicenseRadioButton.click();
+        }
       }
     }
 
@@ -7319,6 +7411,13 @@ const patchPreviousGuidedModeVersions = async () => {
     sodaJSONObj["dataset-metadata"]["submission-metadata"]["funding-consortium"] = "";
   }
 
+  if (!sodaJSONObj["digital-metadata"]?.["license"]) {
+    sodaJSONObj["digital-metadata"]["license"] = "";
+  }
+
+  if (!sodaJSONObj["curation-mode"]) {
+    sodaJSONObj["cuartion-mode"] = "guided";
+  }
   // If no other conditions are met, return the page the user was last on
   return sodaJSONObj["page-before-exit"];
 };
@@ -7529,6 +7628,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj = {};
 
   sodaJSONObj["guided-options"] = {};
+  sodaJSONObj["cuartion-mode"] = "guided";
   sodaJSONObj["bf-account-selected"] = {};
   sodaJSONObj["dataset-structure"] = { files: {}, folders: {} };
   sodaJSONObj["generate-dataset"] = {};
@@ -7561,6 +7661,7 @@ guidedCreateSodaJSONObj = () => {
   sodaJSONObj["digital-metadata"]["pi-owner"] = {};
   sodaJSONObj["digital-metadata"]["user-permissions"] = [];
   sodaJSONObj["digital-metadata"]["team-permissions"] = [];
+  sodaJSONObj["digital-metadata"]["license"] = "";
   sodaJSONObj["completed-tabs"] = [];
   sodaJSONObj["skipped-pages"] = [];
   sodaJSONObj["last-modified"] = "";
@@ -14000,6 +14101,7 @@ $(document).ready(async () => {
 
     // when generating a new dataset we need to add its ID to the ID -> Name mapping
     // we need to do this only once
+
     // TODO: Reintegrate
     let loggedDatasetNameToIdMapping = false;
 
