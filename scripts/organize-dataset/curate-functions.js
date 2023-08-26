@@ -1294,7 +1294,7 @@ const moveItems = async (ev, category) => {
 
               if (datasetCopy.hasOwnProperty(itemToMove)) {
                 if (itemType == "folder") {
-                  itemToMove = itemToMove + "/";
+                  itemToMove += "/";
                 }
                 duplicateItems.push(`<li style="font-size: large;">${itemToMove}</li>`);
               } else {
