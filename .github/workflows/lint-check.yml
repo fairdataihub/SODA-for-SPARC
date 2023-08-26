@@ -28,21 +28,21 @@ jobs:
       - name: Install Node.js dependencies
         run: npm ci
 
-- name: Run Prettier
-  uses: wearerequired/lint-action@v1
-  with:
-    prettier: true
-    prettier_extensions: "css,html,js,json,jsx,md,sass,scss,ts,tsx,vue"
-    auto_fix: true
-    github_token: ${{ secrets.GITHUB_TOKEN }}
-    git_email: "fairdataihub@gmail.com"
-    git_name: "fairdataihub-bot"
-
-- name: Stage Changes
-  run: git add .
-
-- name: Commit Changes
-  run: git commit -m "style: 🎨 fix code style issues with Prettier"
+      - name: Run Prettier
+        uses: wearerequired/lint-action@v1
+        with:
+          prettier: true
+          prettier_extensions: "css,html,js,json,jsx,md,sass,scss,ts,tsx,vue"
+          auto_fix: true
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          git_email: "fairdataihub@gmail.com"
+          git_name: "fairdataihub-bot"
+      
+      - name: Stage Changes
+        run: git add .
+      
+      - name: Commit Changes
+        run: git commit -m "style: 🎨 fix code style issues with Prettier"
 
 
       - name: Set up Python
