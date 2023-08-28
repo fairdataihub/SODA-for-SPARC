@@ -4953,6 +4953,19 @@ const deleteProblematicFilesFromDatasetStructure = (datasetStructure) => {
   }
 };
 
+const swalShowError = async (title, errorText) => {
+  await Swal.fire({
+    title: title,
+    html: errorText,
+    icon: "error",
+    width: 600,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    showConfirmButton: true,
+    confirmButtonText: "OK",
+  });
+};
+
 const swalFileListSingleAction = async (fileList, title, helpText, postActionText) => {
   await Swal.fire({
     title: title,
@@ -5408,10 +5421,21 @@ const allowDrop = (ev) => {
 var filesElement;
 var targetElement;
 const drop = async (ev) => {
-  console.log("drop event", ev);
+  const slashCount = getPathSlashCount();
+  // If the user is trying to drag/drop files at the root level of the dataset, show an error
+  if (slashCount === 1) {
+    await swalShowError(
+      "You cannot import files at the root level of your dataset",
+      `To import data, please navigate to a SPARC folder and try again.
+      <br /><br />
+      If you are trying to add SPARC metadata file(s), you can do so in the next Step.`
+    );
+    return;
+  }
   const itemsDroppedInFileExplorer = ev.dataTransfer.files;
+  // Create an array of paths for the items dropped in the file explorer
   const itemPaths = Array.from(itemsDroppedInFileExplorer).map((item) => item.path);
-  console.log("itemsDroppedInFileExplorer", itemsDroppedInFileExplorer);
+  // Add the items to the dataset structure (This handles problematic files/folders, duplicate files etc)
   await addDataArrayToDatasetStructureAtPath(itemPaths);
 };
 
