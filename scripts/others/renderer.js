@@ -65,8 +65,10 @@ const { backOff } = require("exponential-backoff");
 const { app } = remote;
 const Clipboard = electron.clipboard;
 
-let nextBtnDisabledVariable = true;
-let reverseSwalButtons = false;
+let nodeStorage = new JSONStorage(app.getPath("userData"));
+
+var nextBtnDisabledVariable = true;
+var reverseSwalButtons = false;
 let organizeDSglobalPath = "";
 
 let datasetStructureJSONObj = {
@@ -85,8 +87,6 @@ let introStatus = {
 //////////////////////////////////
 // App launch actions
 //////////////////////////////////
-
-let nodeStorage = new JSONStorage(app.getPath("userData"));
 
 // Log file settings //
 log.transports.console.level = false;
@@ -236,11 +236,26 @@ contact_us_lottie_observer.observe(contact_section, {
 
 document.getElementById("guided_mode_view").click();
 
-let launchAnnouncement = false;
-ipcRenderer.on("checkForAnnouncements", (event, index) => {
-  launchAnnouncement = true;
-  nodeStorage.setItem("announcements", false);
-});
+let firstLaunch = nodeStorage.getItem("freshLaunch");
+console.log("First launch from storage value: ", firstLaunch);
+// if firstlaunch is undefined then it is a fresh install of the app; so set first launch to true
+if (firstLaunch === undefined || firstLaunch === null) firstLaunch = true;
+// if launchAnnouncements is undefined then announcements havent been launched yet; so set launchAnnouncements to true
+let launchAnnouncement = nodeStorage.getItem("launchAnnouncements");
+console.log("Launch announcements from storage value: ", launchAnnouncement);
+if (launchAnnouncement === undefined || firstLaunch === null) launchAnnouncement = true;
+
+console.log(process.platform);
+
+// first launch on MacOS seems to cause a reload; so only set launch announcements to false if it isnt first launch
+if (!firstLaunch) {
+  // NOTE: launchAnnouncements is only set to true during the auto update process
+  nodeStorage.setItem("launchAnnouncements", false);
+}
+nodeStorage.setItem("freshLaunch", false);
+
+console.log("First launch: ", firstLaunch);
+console.log("Launch announcements: ", launchAnnouncement);
 
 //////////////////////////////////
 // Connect to Python back-end
@@ -504,6 +519,7 @@ const startupServerAndApiCheck = async () => {
   // launchAnnouncement = nodeStorage.getItem("announcements");
   if (launchAnnouncement) {
     // nodeStorage.setItem("announcements", false);
+    console.log("Checking for announcements on base startup");
     await checkForAnnouncements("announcements");
     launchAnnouncement = false;
     nodeStorage.setItem("announcements", false);
@@ -986,6 +1002,7 @@ const run_pre_flight_checks = async (check_update = true) => {
     // launchAnnouncement = nodeStorage.getItem("announcements");
     if (launchAnnouncement) {
       // nodeStorage.setItem("announcements", false);
+      console.log("Checking for announcements on base startup");
       await checkForAnnouncements("announcements");
       launchAnnouncement = false;
     }
@@ -1366,6 +1383,7 @@ ipcRenderer.on("update_downloaded", async () => {
   update_downloaded_notification.on("click", async ({ target, event }) => {
     restartApp();
     //a sweet alert will pop up announcing user to manually update if SODA fails to restart
+    console.log("Checking for announcements on auto update startup");
     checkForAnnouncements("update");
   });
 });

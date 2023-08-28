@@ -1,7 +1,7 @@
 //state will be either "update" or "announcements"
 //when "update" is passed it will know there user needs to update
 const checkForAnnouncements = async (state) => {
-  const url = `https://raw.githubusercontent.com/fairdataihub/SODA-for-SPARC/main/scripts/meta/announcements.json?timestamp=${new Date().getTime()}`;
+  const url = `https://raw.githubusercontent.com/fairdataihub/SODA-for-SPARC/announcements-launch-fix/scripts/meta/announcements.json?timestamp=${new Date().getTime()}`;
 
   const axiosInstance = axios.create({
     baseURL: url,
@@ -12,6 +12,7 @@ const checkForAnnouncements = async (state) => {
     //retrieve the announcements from the SODA repo (announcements.json)
     let result = await axiosInstance.get();
     let res = result.data;
+    console.log("Announcements result: ", res);
 
     let platform = String(os.platform);
 

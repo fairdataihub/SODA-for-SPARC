@@ -34,6 +34,8 @@ autoUpdater.logger = log;
 global.trackEvent = trackEvent;
 global.trackKombuchaEvent = trackKombuchaEvent;
 const nodeStorage = new JSONStorage(app.getPath("userData"));
+// nodeStorage.setItem("announcements", true);
+
 /*************************************************************
  * Python Process
  *************************************************************/
@@ -255,7 +257,7 @@ function initialize() {
       shell.openExternal(url);
     });
     mainWindow.webContents.once("dom-ready", () => {
-      if (updatechecked == false && !buildIsBeta) {
+      if (updatechecked == false && buildIsBeta) {
         autoUpdater.checkForUpdatesAndNotify();
       }
     });
@@ -274,23 +276,23 @@ function initialize() {
               let { response } = responseObject;
               if (response === 0) {
                 // Runs the following if 'Yes' is clicked
-                var announcementsLaunch = nodeStorage.getItem("announcements");
-                nodeStorage.setItem("announcements", false);
                 await exitPyProc();
                 quit_app();
               }
             });
         }
       } else {
-        var first_launch = nodeStorage.getItem("firstlaunch");
-        nodeStorage.setItem("firstlaunch", true);
-        nodeStorage.setItem("announcements", true);
+        // set firstLaunch and launchAnnouncements to true so that when SODA restarts after the auto update the renderer process knows
+        // to consider the launch as a fresh launch wherein we show the announcements
+        nodeStorage.setItem("freshLaunch", true);
+        nodeStorage.setItem("launchAnnouncements", true);
         await exitPyProc();
         app.exit();
       }
     });
   }
   const quit_app = () => {
+    // TODO: CHeck if an update was downloaded here and reset the launchAnnouncements and freshLaunch flags to true [ HERE ]
     app.showExitPrompt = false;
     mainWindow.close();
     /// feedback form iframe prevents closing gracefully
@@ -337,28 +339,28 @@ function initialize() {
         //mainWindow.maximize();
         mainWindow.show();
         createWindow();
-        var first_launch = nodeStorage.getItem("firstlaunch");
+        var first_launch = nodeStorage.getItem("firstLaunch");
         var announcementsLaunch = nodeStorage.getItem("announcements");
         if (first_launch == true || first_launch == undefined) {
           mainWindow.reload();
           mainWindow.focus();
-          nodeStorage.setItem("firstlaunch", false);
+          // nodeStorage.setItem("firstlaunch", false);
         }
         if (announcementsLaunch == true || announcementsLaunch == undefined) {
           checkForAnnouncements();
           nodeStorage.setItem("announcements", false);
         }
         start_pre_flight_checks();
-        if (!buildIsBeta) {
+        if (buildIsBeta) {
           autoUpdater.checkForUpdatesAndNotify();
         }
         updatechecked = true;
       }, 6000);
     });
     mainWindow.on("show", () => {
-      var first_launch = nodeStorage.getItem("firstlaunch");
-      if ((first_launch == true || first_launch == undefined) && window_reloaded == false) {
-      }
+      var first_launch = nodeStorage.getItem("firstLaunch");
+      // if ((first_launch == true || first_launch == undefined) && window_reloaded == false) {
+      // }
     });
   });
 
@@ -462,6 +464,9 @@ autoUpdater.on("update-available", () => {
 });
 autoUpdater.on("update-downloaded", () => {
   log.info("update_downloaded");
+  // set the announcements and freshLaunch flags to true so that when SODA restarts after the auto update the renderer process knows
+  nodeStorage.setItem("freshLaunch", true);
+  nodeStorage.setItem("launchAnnouncements", true);
   mainWindow.webContents.send("update_downloaded");
 });
 ipcMain.on("restart_app", async () => {
