@@ -8461,13 +8461,23 @@ const initiate_generate = async () => {
         statusMeter.value = 100;
         progressStatus.innerHTML = main_curate_status + smileyCan;
         statusText.innerHTML = main_curate_status + smileyCan;
-        successful = true;
+      successful = true;
       }
     } else {
       statusText.innerHTML =
         main_curate_progress_message + "<br>" + "Elapsed time: " + elapsed_time_formatted + "<br>";
       progressStatus.innerHTML =
         main_curate_progress_message + "<br>" + "Elapsed time: " + elapsed_time_formatted + "<br>";
+    }
+
+    if (main_curate_progress_message.includes("Renaming files...")) {
+      console.log("value: " + value);
+      console.log("main_generated_dataset_size: " + main_generated_dataset_size);
+      console.log("main_total_generate_dataset_size: " + main_total_generate_dataset_size);
+      statusMeter.value = value;
+      generateProgressBar.value = value;
+      progressStatus.innerHTML = "Renaming files... <br>This may take a while...";
+      statusText.innerHTML = "Renaming files... <br>This may take a while...";
     }
 
     if (main_curate_status === "Done") {
@@ -8507,8 +8517,6 @@ const initiate_generate = async () => {
         uploadLocally.className = "content-button is-selected";
         uploadLocally.style = "background-color: #fff";
       }
-      // then show the sidebar again
-      // forceActionSidebar("show");
     }
 
     // if a new Pennsieve dataset was generated log it once to the dataset id to name mapping
