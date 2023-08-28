@@ -311,6 +311,7 @@ function initialize() {
       center: true,
       show: false,
       icon: __dirname + "/assets/menu-icon/soda_icon.png",
+      // autoHideMenuBar: true,
       webPreferences: {
         nodeIntegration: true,
         enableRemoteModule: true,

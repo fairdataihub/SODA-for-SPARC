@@ -67,7 +67,11 @@ const bf_request_and_populate_dataset = async (
   hide = true
 ) => {
   // track the import progress if appropriate
-  if (!!progressContainer) trackPennsieveImportProgress(progressContainer, hide);
+  if (!!progressContainer) {
+    trackPennsieveImportProgress(progressContainer, hide);
+  }
+
+  console.log(JSON.stringify(sodaJSONObj));
 
   try {
     let filesFoldersResponse = await client.post(
@@ -78,7 +82,7 @@ const bf_request_and_populate_dataset = async (
       { timeout: 0 }
     );
 
-    let data = filesFoldersResponse.data;
+    const { data } = filesFoldersResponse;
 
     ipcRenderer.send("track-event", "Success", "Retrieve Dataset - Pennsieve", defaultBfDatasetId);
     return data;

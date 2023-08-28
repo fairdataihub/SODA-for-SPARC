@@ -1,7 +1,7 @@
 {
   "name": "soda-for-sparc",
   "productName": "SODA for SPARC",
-  "version": "12.2.3-beta",
+  "version": "12.2.1",
   "description": "Keep Calm and Curate ",
   "main": "main.js",
   "scripts": {
@@ -177,14 +177,14 @@
   "devDependencies": {
     "@commitlint/cli": "^17.1.2",
     "@commitlint/config-conventional": "^17.1.0",
-    "@fairdataihub/config": "^2.2.1",
+    "@fairdataihub/config": "^2.2.3",
     "commitizen": "^4.2.5",
     "cz-conventional-changelog": "^3.3.0",
     "electron": "19.0.0",
     "electron-builder": "^23.3.0",
     "electron-packager": "^14.0.6",
     "electron-rebuild": "^1.11.0",
-    "husky": "^8.0.1",
+    "husky": "^8.0.3",
     "lint-staged": "^13.0.3",
     "megasanjay-devmoji": "^1.1.0",
     "prettier": "^2.3.2",

@@ -1752,7 +1752,6 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
   if (currentDiv === "Question-getting-started-BF-dataset") {
     let selectedDataset = $("#current-bf-dataset").text();
     $("#nextBtn").prop("disabled", true);
-    // $("#button-confirm-bf-dataset-getting-started").prop("disabled", true);
     sodaJSONObj = {
       "bf-account-selected": {
         "account-name": {},
@@ -1769,6 +1768,7 @@ const transitionSubQuestionsButton = async (ev, currentDiv, parentDiv, button, c
       },
     };
 
+    // Set the default Pennsieve account and dataset
     sodaJSONObj["bf-account-selected"]["account-name"] = defaultBfAccount;
     sodaJSONObj["bf-dataset-selected"]["dataset-name"] = selectedDataset;
 

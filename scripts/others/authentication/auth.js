@@ -22,18 +22,26 @@ const hasConnectedAccountWithPennsieve = () => {
 
   // search for a default profile key in the config
   let globalProfile = config.global;
-  if (!globalProfile) return false;
+  if (!globalProfile) {
+    return false;
+  }
 
   // check if default_profile has been set
-  if (!globalProfile.default_profile) return false;
+  if (!globalProfile.default_profile) {
+    return false;
+  }
 
   let defaultProfileKey = globalProfile.default_profile;
-  if (!config[defaultProfileKey]) return false;
+  if (!config[defaultProfileKey]) {
+    return false;
+  }
 
   let defaultProfile = config[defaultProfileKey];
 
   // check if the default profile has a token key and secret key
-  if (!defaultProfile.api_token || !defaultProfile.api_secret) return false;
+  if (!defaultProfile.api_token || !defaultProfile.api_secret) {
+    return false;
+  }
 
   return true;
 };

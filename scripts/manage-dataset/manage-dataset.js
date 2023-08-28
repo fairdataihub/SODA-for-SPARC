@@ -620,7 +620,7 @@ const addPermissionUser = async (
   selectedUser,
   selectedRole
 ) => {
-  log.info("Adding permission ${selectedRole} to ${selectedUser} for ${selectedBfDataset}");
+  log.info(`Adding permission ${selectedRole} to ${selectedUser} for ${selectedBfDataset}`);
 
   let ps_add_permission;
   try {
@@ -640,10 +640,10 @@ const addPermissionUser = async (
     );
   } catch (error) {
     clientError(error);
-    let emessage = userErrorMessage(error);
+
     Swal.fire({
       title: "Failed to change permission!",
-      text: emessage,
+      text: userErrorMessage(error),
       icon: "error",
       showConfirmButton: true,
       heightAuto: false,
@@ -770,8 +770,6 @@ $("#button-add-permission-team").click(async () => {
   setTimeout(async () => {
     log.info("Adding a permission for a team on a dataset");
 
-    let selectedBfAccount = defaultBfAccount;
-    let selectedBfDataset = defaultBfDataset;
     let selectedTeam = $("#bf_list_teams").val();
     let selectedRole = $("#bf_list_roles_team").val();
 
@@ -797,8 +795,8 @@ $("#button-add-permission-team").click(async () => {
         },
         {
           params: {
-            selected_account: selectedBfAccount,
-            selected_dataset: selectedBfDataset,
+            selected_account: defaultBfAccount,
+            selected_dataset: defaultBfDataset,
             scope: "team",
             name: selectedTeam,
           },
@@ -840,10 +838,9 @@ $("#button-add-permission-team").click(async () => {
     } catch (error) {
       clientError(error);
 
-      let emessage = userErrorMessage(error);
       Swal.fire({
         title: "Failed to change permission",
-        text: emessage,
+        text: userErrorMessage(error),
         icon: "error",
         showConfirmButton: true,
         heightAuto: false,
@@ -937,9 +934,9 @@ $("#button-add-subtitle").click(async () => {
         backdrop: "rgba(0,0,0, 0.4)",
       }).then(
         //check if subtitle text is empty and set Add/Edit button appropriately
-        !$("#bf-dataset-subtitle").val()
-          ? $("#button-add-subtitle").html("Add subtitle")
-          : $("#button-add-subtitle").html("Edit subtitle")
+        $("#bf-dataset-subtitle").val()
+          ? $("#button-add-subtitle").html("Edit subtitle")
+          : $("#button-add-subtitle").html("Add subtitle")
       );
 
       ipcRenderer.send(
