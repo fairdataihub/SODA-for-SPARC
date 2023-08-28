@@ -228,6 +228,7 @@ myds = ""
 initial_bfdataset_size = 0
 upload_directly_to_bf = 0
 initial_bfdataset_size_submit = 0
+renaming_files_flow = False
 
 total_files = 0 # the total number of files in a given dataset that need to be uploaded to Pennsieve
 total_bytes_uploaded = 0 # current number of bytes uploaded to Pennsieve in the upload session
@@ -1894,6 +1895,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
     global files_uploaded
     global total_dataset_files
     global current_files_in_subscriber_session
+    global renaming_files_flow
 
 
     total_files = 0
@@ -2608,6 +2610,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
         # 6. Rename files
         namespace_logger.info("===========================BEGINNING OF RENAME FILES===========================")
+        renaming_files_flow = True
         if list_of_files_to_rename:
             namespace_logger.info("ps_create_new_dataset (optional) step 8 rename files")
             main_curate_progress_message = ("Renaming files...")
@@ -2798,6 +2801,7 @@ generate_start_time = 0
 main_generate_destination = ""
 main_initial_bfdataset_size = 0
 myds = ""
+renaming_files_flow = False
 
 
 
@@ -3244,18 +3248,24 @@ def main_curate_function_progress():
     global main_initial_bfdataset_size
     global main_curation_uploaded_files
     global total_bytes_uploaded # current number of bytes uploaded to Pennsieve in the upload session
-    global myds 
+    global myds
+    global renaming_files_flow
 
 
     elapsed_time = time.time() - generate_start_time
     elapsed_time_formatted = time_format(elapsed_time)
+
+    if renaming_files_flow:
+        testing_variable = main_generated_dataset_size
+    else:
+        testing_variable = total_bytes_uploaded["value"]
 
     return {
         "main_curate_status": main_curate_status,
         "start_generate": start_generate,
         "main_curate_progress_message": main_curate_progress_message,
         "main_total_generate_dataset_size": main_total_generate_dataset_size,
-        "main_generated_dataset_size": total_bytes_uploaded["value"],
+        "main_generated_dataset_size": testing_variable,
         "elapsed_time_formatted": elapsed_time_formatted,
         "total_files_uploaded": main_curation_uploaded_files,
         "generated_dataset_id": myds["content"]["id"] if myds != "" else None, # when a new dataset gets generated log its id to our analytics
