@@ -798,12 +798,16 @@ const convertJSONToXlsx = (jsondata, excelfile) => {
   wb.write(excelfile);
 };
 
+const determineStandaloneManifestGeneratorOrigin = () => {
+  const selectedCardCreateManifest = $('input[name="generate-manifest-1"]:checked').prop("id");
+  return selectedCardCreateManifest === "generate-manifest-from-Penn" ? "bf" : "local";
+};
+
 var localDatasetFolderPath = "";
 var finalManifestGenerationPath = "";
 let pennsievePreview = false;
 
 const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
-  let type = "local";
   let continueProgressValidateDataset = true;
   let titleTerm = "folder";
   let localGenerationDifferentDestination = false;
@@ -811,13 +815,8 @@ const generateManifestPrecheck = async (manifestEditBoolean, ev) => {
   let localManifestGeneratePath = document.querySelector(
     "#input-manifest-local-gen-location"
   ).placeholder;
-  let selectedCardCreateManifest = $('input[name="generate-manifest-1"]:checked').prop("id");
   pennsievePreview = false;
-
-  // check if manifest is being generated from Pennsieve
-  if (selectedCardCreateManifest === "generate-manifest-from-Penn") {
-    type = "bf";
-  }
+  const type = determineStandaloneManifestGeneratorOrigin();
 
   exitCurate();
   sodaJSONObj["starting-point"] = {};
@@ -1334,19 +1333,10 @@ const initiate_generate_manifest_bf = async () => {
   }
 
   // Verify the origin of dataset for kombucha tracking
-  let origin = "";
-  if (document.getElementById("create_manifest-section").classList.contains("is-shown")) {
-    // If the standalone manifest generator tab is currently shown
-    origin = "standalone-manifest-generator";
-  } else if (sodaJSONObj?.["cuartion-mode"] === "guided") {
-    // If the special guided mode curation-mode key is found
-    origin = "guided-mode-manifest-generator";
-  } else {
-    // Otherwise the manifest files were generated in FFM
-    origin = "free-form-mode-manifest-gerator";
-  }
-
-  console.log("origin", origin);
+  const origin =
+    determineStandaloneManifestGeneratorOrigin() === "bf"
+      ? kombuchaEnums.Origin.PENNSIEVE
+      : kombuchaEnums.Origin.LOCAL;
 
   // log the manifest file creation to analytics
   logMetadataForAnalytics(

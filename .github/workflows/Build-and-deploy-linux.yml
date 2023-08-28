@@ -6,6 +6,7 @@ on:
     branches:
       - staging
       - support-identifier-conventions
+      - main
 
 jobs:
   deploy-on-linux:

@@ -4930,6 +4930,7 @@ const replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
       if (!newFileObj["action"].includes("renamed")) {
         newFileObj["action"].push("renamed");
       }
+      datasetStructure["files"][newFileName] = newFileObj;
       delete datasetStructure["files"][fileKey];
     }
   }
