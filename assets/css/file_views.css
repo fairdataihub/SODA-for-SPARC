@@ -12,6 +12,10 @@
   white-space: nowrap;
   width: 100%;
   align-items: flex-start;
-  padding: 3px;
+  padding: 2px;
   border-bottom: 1px solid #eee;
+}
+
+.swal-file-text {
+  font-size: 14px;
 }

@@ -4953,11 +4953,11 @@ const deleteProblematicFilesFromDatasetStructure = (datasetStructure) => {
   }
 };
 
-const swalFileListSingleAction = async (fileList, title, icon, postActionText) => {
+const swalFileListSingleAction = async (fileList, title, helpText, postActionText) => {
   await Swal.fire({
     title: title,
-    icon: icon,
     html: `
+      ${helpText ? `<p>${helpText}</p>` : ""}
       <div class="swal-file-list">
         ${fileList
           .map(
@@ -4965,7 +4965,7 @@ const swalFileListSingleAction = async (fileList, title, icon, postActionText) =
           )
           .join("")}
       </div>
-      <b>${postActionText}</b>
+      ${postActionText ? `<b>${postActionText}</b>` : ""}
     `,
     width: 800,
     heightAuto: false,
@@ -4982,15 +4982,15 @@ const swalFileListSingleAction = async (fileList, title, icon, postActionText) =
 const swalFileListConfirmAction = async (
   fileList,
   title,
-  icon,
+  helpText,
   confirmButtonText,
   cancelButtonText,
   confirmationText
 ) => {
   const { value: action } = await Swal.fire({
     title: title,
-    icon: icon,
     html: `
+      <p>${helpText}</p>
       <div class="swal-file-list">
         ${fileList.map((file) => `<div class="swal-file-row">${file}</div>`).join("")}
       </div>
@@ -5126,23 +5126,25 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
           localFilePath: pathToExplore,
           fileName: fileName,
         };
-        if (validateStringAgainstSdsRequirements(fileName, "folder-and-file-names")) {
-          problematicFileNames.push(fileObject);
-        }
-        if (validateStringAgainstSdsRequirements(fileName, "hidden-files-check")) {
-          hiddenItems.push(fileObject);
-        }
+
         if (validateStringAgainstSdsRequirements(fileName, "forbidden-files-check")) {
           forbiddenFileNames.push(fileObject);
+        } else {
+          if (validateStringAgainstSdsRequirements(fileName, "folder-and-file-names")) {
+            problematicFileNames.push(fileObject);
+          }
+          if (validateStringAgainstSdsRequirements(fileName, "hidden-files-check")) {
+            hiddenItems.push(fileObject);
+          }
+          currentStructure["files"][fileName] = {
+            path: pathToExplore,
+            type: "local",
+            description: "",
+            "additional-metadata": "",
+            action: ["new"],
+            extension: fileExtension,
+          };
         }
-        currentStructure["files"][fileName] = {
-          path: pathToExplore,
-          type: "local",
-          description: "",
-          "additional-metadata": "",
-          action: ["new"],
-          extension: fileExtension,
-        };
       }
     } catch (error) {
       console.log("Error accessing path:", pathToExplore);
@@ -5164,20 +5166,19 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
   if (inaccessibleItems.length > 0) {
     await swalFileListSingleAction(
       inaccessibleItems,
-      "Some items could not be accessed",
-      "warning",
-      "These items will be ignored"
+      "SODA was unable to access some of your imported files",
+      "The files listed below will not be imported into SODA:",
+      false
     );
   }
 
   if (forbiddenFileNames.length > 0) {
     await swalFileListSingleAction(
       forbiddenFileNames.map((file) => file.relativePath),
-      "Some files have forbidden names",
-      "warning",
-      "These files will be ignored"
+      "Forbidden file names were found in your import",
+      "The files listed below do not comply with the SPARC data standards and will not be imported:",
+      false
     );
-    removeForbiddenFilesFromDatasetStructure(datasetStructure);
   }
 
   if (problematicFolderNames.length > 0) {
@@ -5185,14 +5186,12 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
   }
 
   if (problematicFileNames.length > 0) {
-    const replaceFileNames = await swalFileListConfirmAction(
-      problematicFileNames.map((file) => file.relativePath),
-      "Some files have problematic names",
-      "warning",
-      "Replace problematic file names",
-      "Do not import problematic files",
-      "What to do with problematic file names"
-    );
+    const replaceFileNames = await (problematicFileNames.map((file) => file.relativePath),
+    "Some files have problematic names",
+    "warning",
+    "Replace problematic file names",
+    "Do not import problematic files",
+    "What to do with problematic file names");
     if (replaceFileNames) {
       replaceProblematicFilesWithSDSCompliantNames(datasetStructure);
     } else {
@@ -5203,11 +5202,11 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
   if (hiddenItems.length > 0) {
     const keepHiddenFiles = await swalFileListConfirmAction(
       hiddenItems.map((file) => file.relativePath),
-      "Some files have hidden names",
-      "warning",
-      "Keep hidden files",
-      "Do not import hidden files",
-      "What to do with hidden files"
+      "Hidden files were found in your import",
+      `Hidden files are typically not recommend per the SPARC data standards, but you can choose to keep them if you wish.`,
+      "Import the hidden files into SODA",
+      "Do not import the hidden files",
+      "What would you like to do with the hidden files?"
     );
     // If the user
     if (!keepHiddenFiles) {
@@ -5281,11 +5280,11 @@ const mergeLocalAndRemoteDatasetStructure = async (
   if (duplicateFiles.length > 0) {
     const userConfirmedFileOverwrite = await swalFileListConfirmAction(
       duplicateFiles.map((file) => `${file.virtualFilePath}${file.fileName}`),
-      "Duplicate files found",
-      "warning",
+      "Some files being imported already exist in your dataset",
+      "Choosing to overwrite the existing files will replace existing local files as well as files on Pennsieve with the newly imported files. Choosing to skip the duplicate files will keep the existing files and not import the duplicate files.",
       "Overwrite existing files",
       "Skip duplicate files",
-      "What to do with existing files"
+      "What would you like to do with the duplicate files?"
     );
     if (userConfirmedFileOverwrite) {
       for (const file of duplicateFiles) {
@@ -5342,11 +5341,13 @@ const checkForDuplicateFolderAndFileNames = async (importedFolders, itemsAtPath)
 };
 
 const addDataArrayToDatasetStructureAtPath = async (importedData) => {
-  if (importedData.length === 0) {
-    notyf.error("No data found in the selected folder");
-    return;
-  }
   try {
+    const numberOfItemsToImport = importedData.length;
+    // Throw an error if there are no importable items
+    // This can sometimes happen is the user imports atypical items
+    if (numberOfItemsToImport === 0) {
+      throw new Error("No importable items found");
+    }
     // STEP 1: Build the JSON object from the imported data
     // (This function handles bad folders/files, inaccessible folders/files, etc and returns a clean dataset structure)
 
