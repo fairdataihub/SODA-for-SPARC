@@ -994,26 +994,7 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
         document.getElementsByClassName("swal2-popup")[0].style.width = "43rem";
         div_footer.style.flexDirection = "column";
         div_footer.style.alignItems = "center";
-        if (!verifyingOrganization) {
-          let swal_actions = document.getElementsByClassName("swal2-actions")[0];
-          let api_button = document.createElement("button");
-          let api_arrow = document.createElement("i");
-
-          api_button.innerText = "Connect with API key instead";
-          api_button.setAttribute("onclick", "showBFAddAccountSweetalert()");
-          api_arrow.classList.add("fas");
-          api_arrow.classList.add("fa-arrow-right");
-          api_arrow.style.marginLeft = "10px";
-          api_button.type = "button";
-          api_button.style.border = "";
-          api_button.id = "api_connect_btn";
-          api_button.classList.add("transition-btn");
-          api_button.classList.add("api_key-btn");
-          api_button.classList.add("back");
-          api_button.style.display = "inline";
-          api_button.appendChild(api_arrow);
-          swal_actions.parentElement.insertBefore(api_button, div_footer);
-        } else {
+        if (verifyingOrganization) {
           // hide the cancel button
           let cancel_button = document.getElementsByClassName("swal2-cancel")[0];
           cancel_button.style.display = "none";

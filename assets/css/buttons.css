@@ -464,3 +464,11 @@
   margin-bottom: 10px;
   width: 135px;
 }
+
+#copy-icon-client-id {
+  margin-left: 5px;
+}
+
+#copy-icon-client-id:hover {
+  cursor: pointer;
+}
