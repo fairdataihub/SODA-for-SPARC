@@ -8470,23 +8470,35 @@ const initiate_generate = async () => {
         main_curate_progress_message + "<br>" + "Elapsed time: " + elapsed_time_formatted + "<br>";
     }
 
+    if (main_curate_progress_message.includes("Preparing files to be renamed...")) {
+      statusMeter.value = 0;
+      progressStatus.innerHTML = "Preparing files to be renamed... <br>Elapsed time: " + elapsed_time_formatted;
+      statusText.innerHTML = "Preparing files to be renamed... <br>Elapsed time: " + elapsed_time_formatted;
+    }
+
     if (main_curate_progress_message.includes("Renaming files...")) {
-      console.log(data);
       console.log("value: " + value);
       console.log("main_generated_dataset_size: " + main_generated_dataset_size);
       console.log("main_total_generate_dataset_size: " + main_total_generate_dataset_size);
       statusMeter.value = value;
       generateProgressBar.value = value;
+      total_files_uploaded = main_generated_dataset_size = " files out of " + main_total_generate_dataset_size;
+      // main_generated_dataset_size / main_total_generate_dataset_size
       progressStatus.innerHTML =
-        "Renaming files... <br>This may take a while" +
+        "Renaming files..." +
         "<br>Elapsed time: " +
         elapsed_time_formatted +
-        "<br>";
+        "<br>Progress: " + 
+        value.toFixed(2) +
+        "%<br>" + 
+        main_generated_dataset_size +
+        " files out of " +
+        main_total_generate_dataset_size;
       statusText.innerHTML =
-        "Renaming files... <br>This may take a while" +
-        "<br>Elapsed time: " +
+        "Renaming files...<br>Elapsed time: " +
         elapsed_time_formatted +
-        "<br>";
+        "<br>Progress: " + 
+        value.toFixed(2);
     }
 
     if (main_curate_status === "Done") {
