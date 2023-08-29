@@ -11421,7 +11421,7 @@ const guidedShowBannerImagePreview = (imagePath, imported) => {
     let guidedbannerImageElem = document.createElement("img");
 
     //imagePath + cachebreakeer at the end to update image every time
-    guidedbannerImageElem.src = imagePath + "?" + date.getMilliseconds();
+    guidedbannerImageElem.src = `${imagePath}?${date.getMilliseconds()}`;
     guidedbannerImageElem.alt = "Preview of banner image";
     guidedbannerImageElem.style = "max-height: 300px";
 
