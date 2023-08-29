@@ -2613,7 +2613,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
         renaming_files_flow = True
         if list_of_files_to_rename:
             namespace_logger.info("ps_create_new_dataset (optional) step 8 rename files")
-            main_curate_progress_message = ("Renaming files...")
+            main_curate_progress_message = ("Gathering file IDs for files to be renamed...")
             dataset_id = ds["content"]["id"]
             collection_ids = {}
             # gets the high level folders in the dataset
@@ -2743,6 +2743,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
             # 8.5 Rename files - All or most ids have been fetched now rename the files or gather the ids again if not all files have been processed at this time
             namespace_logger.info(f"list of files to rename after: {list_of_files_to_rename}")
+            main_curate_progress_message = "Renaming files..."
             main_generated_dataset_size = 0
             main_total_generate_dataset_size = renamed_files_counter
             for relative_path in list_of_files_to_rename:
