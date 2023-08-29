@@ -3185,8 +3185,7 @@ async function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
     refreshDatasetList();
   } catch (error) {
     clientError(error);
-    curateBFAccountLoadStatus.innerHTML =
-      "<span style='color: red'>" + userErrorMessage(error) + "</span>";
+    curateBFAccountLoadStatus.innerHTML = `<span style='color: red'>${userErrorMessage(error)}</span>`;
   }
 }
 
@@ -3199,7 +3198,7 @@ function populateDatasetDropdownCurate(datasetDropdown, datasetlist) {
   var options = datasetDropdown.getElementsByTagName("option");
   options[0].disabled = true;
 
-  for (var myitem of datasetlist) {
+  for (let myitem of datasetlist) {
     var myitemselect = myitem.name;
     var option = document.createElement("option");
     option.textContent = myitemselect;
@@ -3216,7 +3215,6 @@ const metadataDatasetlistChange = () => {
   showCurrentDescription();
   showCurrentLicense();
   showCurrentBannerImage();
-  // TODO-NEW: Check flow
   showCurrentTags();
 };
 
@@ -3225,7 +3223,7 @@ const permissionDatasetlistChange = () => {
   showCurrentPermission();
 };
 
-function datasetStatusListChange() {
+const datasetStatusListChange = () => {
   $(bfCurrentDatasetStatusProgress).css("visibility", "visible");
   $("#bf-dataset-status-spinner").css("display", "block");
   showCurrentDatasetStatus();
@@ -3345,9 +3343,12 @@ const setupPublicationOptionsPopover = () => {
   });
 
   // display/hide calendar on toggle
-  $("input[name='publishing-options']").on("change", (e) => {
+  $("input[id='embargo-date-check']").on("change", (e) => {
     let tuiCalendarWrapper = document.getElementById("calendar-wrapper");
-    if (e.target.value === "embargo-date-check") {
+    console.log(e)
+    console.log(e.target.value)
+    console.log($(`#${e.target.value}`).is(":checked"))
+    if ($(`#${e.target.value}`).is(":checked")) {
       tuiCalendarWrapper.style.visibility = "visible";
     } else {
       tuiCalendarWrapper.style.visibility = "hidden";
@@ -3458,7 +3459,7 @@ const submitReviewDatasetCheck = async (res, curationMode) => {
       },
       willClose: () => {
         // check if the embargo radio button is selected
-        const checkedRadioButton = $("input:radio[name ='publishing-options']:checked").val();
+        const checkedRadioButton = $("input:radio[id ='confirm-to-awknowledge']:checked").val();
 
         if (checkedRadioButton === "embargo-date-check") {
           // set the embargoDate variable if so
@@ -3580,7 +3581,6 @@ ipcRenderer.on("warning-publish-dataset-again-selection", (event, index) => {
   $("#submit_prepublishing_review-spinner").hide();
 });
 
-// TODO: Dorian -> Exlcuded files will no longer be a thing in the future
 // Go about removing the feature and see how it effects dataset submissions
 const submitReviewDataset = async (embargoReleaseDate, curationMode) => {
   let currentAccount = defaultBfAccount;
