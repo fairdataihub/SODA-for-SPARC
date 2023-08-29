@@ -228,6 +228,7 @@ myds = ""
 initial_bfdataset_size = 0
 upload_directly_to_bf = 0
 initial_bfdataset_size_submit = 0
+renaming_files_flow = False
 
 total_files = 0 # the total number of files in a given dataset that need to be uploaded to Pennsieve
 total_bytes_uploaded = 0 # current number of bytes uploaded to Pennsieve in the upload session
@@ -1882,6 +1883,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
     # Progress tracking variables that are used for the frontend progress bar.
     global main_curate_progress_message
     global main_total_generate_dataset_size
+    global main_generated_dataset_size
     global start_generate
     global main_initial_bfdataset_size
     global main_curation_uploaded_files
@@ -1893,6 +1895,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
     global files_uploaded
     global total_dataset_files
     global current_files_in_subscriber_session
+    global renaming_files_flow
 
 
     total_files = 0
@@ -1902,6 +1905,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
     main_curation_uploaded_files = 0
     total_bytes_uploaded = {"value": 0}
     files_uploaded = 0
+    renamed_files_counter = 0
 
     uploaded_folder_counter = 0
     current_size_of_uploaded_files = 0
@@ -2449,7 +2453,6 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
         # create a manifest for files - IMP: We use a single file to start with since creating a manifest requires a file path.  We need to remove this at the end. 
         if len(list_upload_files) > 0:
-            list_of_files_to_renamed = {}
             first_file_local_path = list_upload_files[0][0][0]
 
             if brand_new_dataset:
@@ -2470,6 +2473,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                         "final_file_name": first_final_name,
                         "id": "",
                     },
+                    renamed_files_counter += 1
 
             manifest_data = ps.manifest.create(first_file_local_path, folder_name)
             manifest_id = manifest_data.manifest_id
@@ -2507,6 +2511,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                             if folder_name not in list_of_files_to_rename:
                                 list_of_files_to_rename[folder_name] = {}
                             if basename(file_path) not in list_of_files_to_rename[folder_name]:
+                                renamed_files_counter += 1
                                 list_of_files_to_rename[folder_name][basename(file_path)] = {
                                     "final_file_name": file_file_name,
                                     "id": "",
@@ -2605,9 +2610,10 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
         # 6. Rename files
         namespace_logger.info("===========================BEGINNING OF RENAME FILES===========================")
+        renaming_files_flow = True
         if list_of_files_to_rename:
             namespace_logger.info("ps_create_new_dataset (optional) step 8 rename files")
-            main_curate_progress_message = ("Renaming files...")
+            main_curate_progress_message = ("Preparing files to be renamed...")
             dataset_id = ds["content"]["id"]
             collection_ids = {}
             # gets the high level folders in the dataset
@@ -2619,6 +2625,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
             if dataset_content == []:
                 while dataset_content == []:
+                    time.sleep(3)
                     r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(ps))
                     r.raise_for_status()
                     dataset_content = r.json()["children"]
@@ -2635,6 +2642,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
                 if not collections_found:
                     # No collections were found, metadata files were processed but not the high level folders
+                    time.sleep(3)
                     r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(ps))
                     r.raise_for_status()
                     dataset_content = r.json()["children"]
@@ -2662,6 +2670,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                     if dataset_content == []:
                         # request until there is no children content, (folder is empty so files have not been processed yet)
                         while dataset_content == []:
+                            time.sleep(3)
                             r = requests.get(f"{PENNSIEVE_URL}/packages/{high_lvl_folder_id}", headers=create_request_headers(ps))
                             r.raise_for_status()
                             dataset_content = r.json()["children"]
@@ -2688,6 +2697,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                             if dataset_content == []:
                                 # subfolder has no content so request again
                                 while dataset_content == []:
+                                    time.sleep(3)
                                     r = requests.get(f"{PENNSIEVE_URL}/packages/{subfolder_id}", headers=create_request_headers(ps))
                                     r.raise_for_status()
                                     dataset_content = r.json()["children"]
@@ -2711,6 +2721,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                                             if dataset_content == []:
                                                 while dataset_content == []:
                                                     # subfolder has no content so request again
+                                                    time.sleep(3)
                                                     r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}", headers=create_request_headers(ps))
                                                     r.raise_for_status()
                                                     dataset_content = r.json()["children"]
@@ -2737,6 +2748,9 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
             # 8.5 Rename files - All or most ids have been fetched now rename the files or gather the ids again if not all files have been processed at this time
             namespace_logger.info(f"list of files to rename after: {list_of_files_to_rename}")
+            main_curate_progress_message = "Renaming files..."
+            main_generated_dataset_size = 0
+            main_total_generate_dataset_size = renamed_files_counter
             for relative_path in list_of_files_to_rename:
                 for file in list_of_files_to_rename[relative_path].keys():
                     collection_id = list_of_files_to_rename[relative_path]["id"]
@@ -2747,10 +2761,13 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
                     if file_id != "":
                         # id was found so make api call to rename with final file name
-                        r = requests.put(f"{PENNSIEVE_URL}/packages/{file_id}?updateStorage=true", json={"name": new_name}, headers=create_request_headers(ps))
-                        r.raise_for_status()
-                        if r.status_code == 500:
-                            continue
+                        try:
+                            r = requests.put(f"{PENNSIEVE_URL}/packages/{file_id}?updateStorage=true", json={"name": new_name}, headers=create_request_headers(ps))
+                            r.raise_for_status()
+                        except Exception as e:
+                            if r.status_code == 500:
+                                continue
+                        main_generated_dataset_size += 1
                     else:
                         # id was not found so keep trying to get the id until it is found
                         all_ids_found = False
@@ -2769,8 +2786,13 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
                                     if file_name == file:
                                         # id was found so make api call to rename with file file name
-                                        r = requests.put(f"{PENNSIEVE_URL}/packages/{file_id}", json={"name": new_name}, headers=create_request_headers(ps))
-                                        r.raise_for_status()
+                                        try:
+                                            r = requests.put(f"{PENNSIEVE_URL}/packages/{file_id}", json={"name": new_name}, headers=create_request_headers(ps))
+                                            r.raise_for_status()
+                                        except Exception as e:
+                                            if r.status_code == 500:
+                                                continue
+                                        main_generated_dataset_size += 1
                                         all_ids_found = True
                                         break
 
@@ -2791,6 +2813,7 @@ generate_start_time = 0
 main_generate_destination = ""
 main_initial_bfdataset_size = 0
 myds = ""
+renaming_files_flow = False
 
 
 
@@ -3237,18 +3260,24 @@ def main_curate_function_progress():
     global main_initial_bfdataset_size
     global main_curation_uploaded_files
     global total_bytes_uploaded # current number of bytes uploaded to Pennsieve in the upload session
-    global myds 
+    global myds
+    global renaming_files_flow
 
 
     elapsed_time = time.time() - generate_start_time
     elapsed_time_formatted = time_format(elapsed_time)
+
+    if renaming_files_flow:
+        testing_variable = main_generated_dataset_size
+    else:
+        testing_variable = total_bytes_uploaded["value"]
 
     return {
         "main_curate_status": main_curate_status,
         "start_generate": start_generate,
         "main_curate_progress_message": main_curate_progress_message,
         "main_total_generate_dataset_size": main_total_generate_dataset_size,
-        "main_generated_dataset_size": total_bytes_uploaded["value"],
+        "main_generated_dataset_size": testing_variable,
         "elapsed_time_formatted": elapsed_time_formatted,
         "total_files_uploaded": main_curation_uploaded_files,
         "generated_dataset_id": myds["content"]["id"] if myds != "" else None, # when a new dataset gets generated log its id to our analytics
