@@ -5,7 +5,6 @@ on:
   push:
     branches:
       - staging
-      - support-identifier-conventions
       - main
 
 jobs:
