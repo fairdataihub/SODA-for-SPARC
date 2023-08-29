@@ -8461,7 +8461,7 @@ const initiate_generate = async () => {
         statusMeter.value = 100;
         progressStatus.innerHTML = main_curate_status + smileyCan;
         statusText.innerHTML = main_curate_status + smileyCan;
-      successful = true;
+        successful = true;
       }
     } else {
       statusText.innerHTML =
@@ -8477,8 +8477,16 @@ const initiate_generate = async () => {
       console.log("main_total_generate_dataset_size: " + main_total_generate_dataset_size);
       statusMeter.value = value;
       generateProgressBar.value = value;
-      progressStatus.innerHTML = "Renaming files... <br>This may take a while" + "<br>Elapsed time: " + elapsed_time_formatted + "<br>";
-      statusText.innerHTML = "Renaming files... <br>This may take a while" + "<br>Elapsed time: " + elapsed_time_formatted + "<br>";
+      progressStatus.innerHTML =
+        "Renaming files... <br>This may take a while" +
+        "<br>Elapsed time: " +
+        elapsed_time_formatted +
+        "<br>";
+      statusText.innerHTML =
+        "Renaming files... <br>This may take a while" +
+        "<br>Elapsed time: " +
+        elapsed_time_formatted +
+        "<br>";
     }
 
     if (main_curate_status === "Done") {
