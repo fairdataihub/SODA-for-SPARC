@@ -5341,34 +5341,17 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
     }
     // STEP 1: Build the JSON object from the imported data
     // (This function handles bad folders/files, inaccessible folders/files, etc and returns a clean dataset structure)
-
     const currentFileExplorerPath = organizeDSglobalPath.value.trim();
-
     const builtDatasetStructure = await buildDatasetStructureJsonFromImportedData(
       importedData,
       currentFileExplorerPath
     );
+    // Throw if the dataset structure generated does not contain folders or files
     if (!builtDatasetStructure?.["folders"] || !builtDatasetStructure?.["files"]) {
       throw new Error("Error building dataset structure");
     }
 
-    console.log("NEW DATASET STRUCTURE");
-    console.log(builtDatasetStructure);
-    console.log("Going to step 2 to merge the new data with the existing data");
-    console.log("******************************************************");
-    console.log("Merging");
-    console.log(builtDatasetStructure);
-    console.log("into");
-    console.log("******************************************************");
-
-    // Step 2: Add the imported data to the dataset structure
-    // This step handles duplicate folder/file names, etc
-
-    console.log("Imported folders and/or files:");
-    console.log(importedData);
-
-    // 'dataset_root/code'
-
+    // Step 2: Add the imported data to the dataset structure (This function handles duplicate files, etc)
     await mergeLocalAndRemoteDatasetStructure(builtDatasetStructure, currentFileExplorerPath);
 
     // Step 3: Update the UI
@@ -5380,10 +5363,20 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
     listItems(nestedJsonDatasetStructure, "#items", 500, (reset = true));
     getInFolder(".single-item", "#items", organizeDSglobalPath, datasetStructureJSONObj);
 
-    notyf.success("Successfully imported data into SODA");
+    // Step 4: Update successful, show success message
+    notyf.open({
+      type: "success",
+      message: `Data successfully imported`,
+      duration: 3000,
+    });
   } catch (error) {
-    console.log("Error adding data to dataset structure");
+    console.log(error);
     closeFileImportLoadingSweetAlert();
+    notyf.open({
+      type: "error",
+      message: `Error importing data`,
+      duration: 3000,
+    });
   }
 };
 
