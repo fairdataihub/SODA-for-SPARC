@@ -14032,42 +14032,42 @@ const guidedUploadDatasetToPennsieve = async () => {
           (main_generated_dataset_size / main_total_generate_dataset_size) * 100;
         setGuidedProgressBarValue(percentOfDatasetUploaded);
 
-          let totalSizePrint;
-          if (main_total_generate_dataset_size < displaySize) {
-            totalSizePrint = main_total_generate_dataset_size.toFixed(2) + " B";
-          } else if (main_total_generate_dataset_size < displaySize * displaySize) {
-            totalSizePrint = (main_total_generate_dataset_size / displaySize).toFixed(2) + " KB";
-          } else if (main_total_generate_dataset_size < displaySize * displaySize * displaySize) {
-            totalSizePrint =
-              (main_total_generate_dataset_size / displaySize / displaySize).toFixed(2) + " MB";
-          } else {
-            totalSizePrint =
-              (main_total_generate_dataset_size / displaySize / displaySize / displaySize).toFixed(
-                2
-              ) + " GB";
-          }
-          if (main_curate_progress_message.includes("Renaming files...")) {
-            updateDatasetUploadProgressTable({
-              "Upload status": `${main_curate_progress_message}`,
-              "Percent uploaded": `${percentOfDatasetUploaded.toFixed(2)}%`,
-              "Elapsed time": `${elapsed_time_formatted}`,
-              "Files Renamed": `${main_generated_dataset_size} of ${main_total_generate_dataset_size}`,
-            });
-          } else {
-            updateDatasetUploadProgressTable({
-              "Upload status": `${main_curate_progress_message}`,
-              "Percent uploaded": `${percentOfDatasetUploaded.toFixed(2)}%`,
-              "Elapsed time": `${elapsed_time_formatted}`,
-              "Files Uploaded": `${totalUploadedFiles}`,
-            });
-          }
+        let totalSizePrint;
+        if (main_total_generate_dataset_size < displaySize) {
+          totalSizePrint = main_total_generate_dataset_size.toFixed(2) + " B";
+        } else if (main_total_generate_dataset_size < displaySize * displaySize) {
+          totalSizePrint = (main_total_generate_dataset_size / displaySize).toFixed(2) + " KB";
+        } else if (main_total_generate_dataset_size < displaySize * displaySize * displaySize) {
+          totalSizePrint =
+            (main_total_generate_dataset_size / displaySize / displaySize).toFixed(2) + " MB";
+        } else {
+          totalSizePrint =
+            (main_total_generate_dataset_size / displaySize / displaySize / displaySize).toFixed(
+              2
+            ) + " GB";
         }
-      } else {
-        updateDatasetUploadProgressTable({
-          "Upload status": `${main_curate_progress_message}`,
-          "Elapsed time": `${elapsed_time_formatted}`,
-        });
+        if (main_curate_progress_message.includes("Renaming files...")) {
+          updateDatasetUploadProgressTable({
+            "Upload status": `${main_curate_progress_message}`,
+            "Percent uploaded": `${percentOfDatasetUploaded.toFixed(2)}%`,
+            "Elapsed time": `${elapsed_time_formatted}`,
+            "Files Renamed": `${main_generated_dataset_size} of ${main_total_generate_dataset_size}`,
+          });
+        } else {
+          updateDatasetUploadProgressTable({
+            "Upload status": `${main_curate_progress_message}`,
+            "Percent uploaded": `${percentOfDatasetUploaded.toFixed(2)}%`,
+            "Elapsed time": `${elapsed_time_formatted}`,
+            "Files Uploaded": `${totalUploadedFiles}`,
+          });
+        }
       }
+    } else {
+      updateDatasetUploadProgressTable({
+        "Upload status": `${main_curate_progress_message}`,
+        "Elapsed time": `${elapsed_time_formatted}`,
+      });
+    }
 
     logProgressToAnalytics(totalUploadedFiles, main_generated_dataset_size);
 
@@ -14246,120 +14246,120 @@ $("#guided-button-edit-other-link-fields").on("click", () => {
   unPulseNextButton();
 });
 
-  const guidedGenerateRCFilesHelper = (type) => {
-    let textValue = $(`#guided-textarea-create-${type}`).val().trim();
-    if (textValue === "") {
+const guidedGenerateRCFilesHelper = (type) => {
+  let textValue = $(`#guided-textarea-create-${type}`).val().trim();
+  if (textValue === "") {
+    Swal.fire({
+      title: "Incomplete information",
+      text: "Plase fill in the textarea.",
+      heightAuto: false,
+      backdrop: "rgba(0,0,0, 0.4)",
+      icon: "error",
+      showCancelButton: false,
+      showClass: {
+        popup: "animate__animated animate__zoomIn animate__faster",
+      },
+      hideClass: {
+        popup: "animate__animated animate__zoomOut animate__faster",
+      },
+    });
+    return "empty";
+  }
+};
+const guidedSaveRCFile = async (type) => {
+  var result = guidedGenerateRCFilesHelper(type);
+  if (result === "empty") {
+    return;
+  }
+  var { value: continueProgress } = await Swal.fire({
+    title: `Any existing ${type.toUpperCase()}.txt file in the specified location will be replaced.`,
+    text: "Are you sure you want to continue?",
+    allowEscapeKey: false,
+    allowOutsideClick: false,
+    heightAuto: false,
+    backdrop: "rgba(0,0,0, 0.4)",
+    showConfirmButton: true,
+    showCancelButton: true,
+    cancelButtonText: "Cancel",
+    confirmButtonText: "Yes",
+  });
+  if (!continueProgress) {
+    return;
+  }
+  let data = $(`#guided-textarea-create-${type}`).val().trim();
+  let destinationPath;
+  if (type === "changes") {
+    destinationPath = path.join($("#guided-dataset-path").text().trim(), "CHANGES.xlsx");
+  } else {
+    destinationPath = path.join($("#guided-dataset-path").text().trim(), "README.xlsx");
+  }
+  fs.writeFile(destinationPath, data, (err) => {
+    if (err) {
+      console.log(err);
+      log.error(err);
+      var emessage = userErrorMessage(error);
       Swal.fire({
-        title: "Incomplete information",
-        text: "Plase fill in the textarea.",
+        title: `Failed to generate the existing ${type}.txt file`,
+        html: emessage,
         heightAuto: false,
         backdrop: "rgba(0,0,0, 0.4)",
         icon: "error",
-        showCancelButton: false,
-        showClass: {
-          popup: "animate__animated animate__zoomIn animate__faster",
-        },
-        hideClass: {
-          popup: "animate__animated animate__zoomOut animate__faster",
+        didOpen: () => {
+          Swal.hideLoading();
         },
       });
-      return "empty";
-    }
-  };
-  const guidedSaveRCFile = async (type) => {
-    var result = guidedGenerateRCFilesHelper(type);
-    if (result === "empty") {
-      return;
-    }
-    var { value: continueProgress } = await Swal.fire({
-      title: `Any existing ${type.toUpperCase()}.txt file in the specified location will be replaced.`,
-      text: "Are you sure you want to continue?",
-      allowEscapeKey: false,
-      allowOutsideClick: false,
-      heightAuto: false,
-      backdrop: "rgba(0,0,0, 0.4)",
-      showConfirmButton: true,
-      showCancelButton: true,
-      cancelButtonText: "Cancel",
-      confirmButtonText: "Yes",
-    });
-    if (!continueProgress) {
-      return;
-    }
-    let data = $(`#guided-textarea-create-${type}`).val().trim();
-    let destinationPath;
-    if (type === "changes") {
-      destinationPath = path.join($("#guided-dataset-path").text().trim(), "CHANGES.xlsx");
     } else {
-      destinationPath = path.join($("#guided-dataset-path").text().trim(), "README.xlsx");
+      var newName =
+        type === "changes"
+          ? path.join(path.dirname(destinationPath), "CHANGES.txt")
+          : path.join(path.dirname(destinationPath), "README.txt");
+      fs.rename(destinationPath, newName, async (err) => {
+        if (err) {
+          console.log(err);
+          log.error(err);
+          Swal.fire({
+            title: `Failed to generate the ${type}.txt file`,
+            html: err,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            icon: "error",
+            didOpen: () => {
+              Swal.hideLoading();
+            },
+          });
+        } else {
+          Swal.fire({
+            title: `The ${type.toUpperCase()}.txt file has been successfully generated at the specified location.`,
+            icon: "success",
+            showConfirmButton: true,
+            heightAuto: false,
+            backdrop: "rgba(0,0,0, 0.4)",
+            didOpen: () => {
+              Swal.hideLoading();
+            },
+          });
+        }
+      });
     }
-    fs.writeFile(destinationPath, data, (err) => {
-      if (err) {
-        console.log(err);
-        log.error(err);
-        var emessage = userErrorMessage(error);
-        Swal.fire({
-          title: `Failed to generate the existing ${type}.txt file`,
-          html: emessage,
-          heightAuto: false,
-          backdrop: "rgba(0,0,0, 0.4)",
-          icon: "error",
-          didOpen: () => {
-            Swal.hideLoading();
-          },
-        });
-      } else {
-        var newName =
-          type === "changes"
-            ? path.join(path.dirname(destinationPath), "CHANGES.txt")
-            : path.join(path.dirname(destinationPath), "README.txt");
-        fs.rename(destinationPath, newName, async (err) => {
-          if (err) {
-            console.log(err);
-            log.error(err);
-            Swal.fire({
-              title: `Failed to generate the ${type}.txt file`,
-              html: err,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              icon: "error",
-              didOpen: () => {
-                Swal.hideLoading();
-              },
-            });
-          } else {
-            Swal.fire({
-              title: `The ${type.toUpperCase()}.txt file has been successfully generated at the specified location.`,
-              icon: "success",
-              showConfirmButton: true,
-              heightAuto: false,
-              backdrop: "rgba(0,0,0, 0.4)",
-              didOpen: () => {
-                Swal.hideLoading();
-              },
-            });
-          }
-        });
-      }
-    });
-  };
-  $("#guided-generate-subjects-file").on("click", () => {
-    addSubject("guided");
-    clearAllSubjectFormFields(guidedSubjectsFormDiv);
   });
-  $("#guided-generate-samples-file").on("click", () => {
-    addSample("guided");
-    returnToSampleMetadataTableFromSampleMetadataForm();
-  });
-  $("#guided-generate-submission-file").on("click", () => {
-    guidedSaveSubmissionFile();
-  });
-  $("#guided-generate-readme-file").on("click", () => {
-    guidedSaveRCFile("readme");
-  });
-  $("#guided-generate-changes-file").on("click", () => {
-    guidedSaveRCFile("changes");
-  });
+};
+$("#guided-generate-subjects-file").on("click", () => {
+  addSubject("guided");
+  clearAllSubjectFormFields(guidedSubjectsFormDiv);
+});
+$("#guided-generate-samples-file").on("click", () => {
+  addSample("guided");
+  returnToSampleMetadataTableFromSampleMetadataForm();
+});
+$("#guided-generate-submission-file").on("click", () => {
+  guidedSaveSubmissionFile();
+});
+$("#guided-generate-readme-file").on("click", () => {
+  guidedSaveRCFile("readme");
+});
+$("#guided-generate-changes-file").on("click", () => {
+  guidedSaveRCFile("changes");
+});
 
 $("#guided-generate-dataset-button").on("click", async function () {
   // Ensure that the current workspace is the workspace the user confirmed
