@@ -6090,7 +6090,7 @@ const openPage = async (targetPageID) => {
               selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
             },
           });
-          const {license} = licenseReq.data;
+          const { license } = licenseReq.data;
           sodaJSONObj["digital-metadata"]["license"] = license;
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-assign-license-tab");
         } catch (error) {
@@ -8523,7 +8523,7 @@ const generateContributorField = (
 
 const removeContributorField = (contributorDeleteButton) => {
   const contributorField = contributorDeleteButton.parentElement;
-  const {contributorFirstName, contributorLastName} = contributorField.dataset;
+  const { contributorFirstName, contributorLastName } = contributorField.dataset;
 
   const contributorsBeforeDelete =
     sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
@@ -9627,7 +9627,7 @@ const guidedDeleteProtocol = (protocolElement) => {
 
 const removeProtocolField = (protocolElement) => {
   const protocolURL = protocolElement.dataset.protocolUrl;
-  const {protocolDescription} = protocolElement.dataset;
+  const { protocolDescription } = protocolElement.dataset;
 
   const protocolsBeforeDelete =
     sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
@@ -11710,7 +11710,7 @@ const renderPoolsHighLevelFolderAsideItems = (highLevelFolderName) => {
         }
       });
       //get the path prefix from the clicked item
-      const {pathSuffix} = e.target.dataset;
+      const { pathSuffix } = e.target.dataset;
 
       updateFolderStructureUI(`${highLevelFolderName}/${pathSuffix}`);
     });
@@ -14074,7 +14074,7 @@ $(document).ready(async () => {
               "Upload status": `${main_curate_progress_message}`,
               "Percent uploaded": `${percentOfDatasetUploaded.toFixed(2)}%`,
               "Elapsed time": `${elapsed_time_formatted}`,
-              "Files Renamed": `${main_generated_dataset_size} files out of ${main_total_generate_dataset_size}`,
+              "Files Renamed": `${main_generated_dataset_size} of ${main_total_generate_dataset_size}`,
             });
           } else {
             updateDatasetUploadProgressTable({
@@ -14332,7 +14332,10 @@ $(document).ready(async () => {
           },
         });
       } else {
-        var newName = type === "changes" ? path.join(path.dirname(destinationPath), "CHANGES.txt") : path.join(path.dirname(destinationPath), "README.txt");
+        var newName =
+          type === "changes"
+            ? path.join(path.dirname(destinationPath), "CHANGES.txt")
+            : path.join(path.dirname(destinationPath), "README.txt");
         fs.rename(destinationPath, newName, async (err) => {
           if (err) {
             console.log(err);
