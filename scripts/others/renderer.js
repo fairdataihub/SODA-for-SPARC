@@ -8282,8 +8282,7 @@ const initiate_generate = async () => {
       uploadLocally.className = "content-button is-selected";
       uploadLocally.style = "background-color: #fff";
 
-      document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
-        "<span style='color: red;'>" + emessage + "</span>";
+      document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = `<span style='color: red;'>${emessage}</span>`;
 
       Swal.fire({
         icon: "error",
@@ -8346,8 +8345,7 @@ const initiate_generate = async () => {
       clientError(error);
       let emessage = userErrorMessage(error);
 
-      document.getElementById("para-new-curate-progress-bar-error-status").innerHTML =
-        "<span style='color: red;'>" + emessage + "</span>";
+      document.getElementById("para-new-curate-progress-bar-error-status").innerHTML = `<span style='color: red;'>${emessage}</span>`;
       log.error(error);
 
       //Enable the buttons (organize datasets, upload locally, curate existing dataset, curate new dataset)
@@ -8442,17 +8440,15 @@ const initiate_generate = async () => {
           (main_total_generate_dataset_size / displaySize / displaySize / displaySize).toFixed(2) +
           " GB";
       }
-      var progressMessage = "";
-      var statusProgressMessage = "";
-      progressMessage += main_curate_progress_message + "<br>";
-      statusProgressMessage += "Progress: " + value.toFixed(2) + "%" + "<br>";
-      statusProgressMessage += "Elapsed time: " + elapsed_time_formatted + "<br>";
-      progressMessage +=
-        "Progress: " + value.toFixed(2) + "%" + " (total size: " + totalSizePrint + ") " + "<br>";
-      progressMessage += "Elapsed time: " + elapsed_time_formatted + "<br>";
-      progressMessage += "Total files uploaded: " + total_files_uploaded + "<br>";
-      progressStatus.innerHTML = progressMessage;
-      statusText.innerHTML = statusProgressMessage;
+
+      progressStatus.innerHTML = `${main_curate_progress_message}<br>
+      Elapsed time: ${elapsed_time_formatted}
+      <br>Progress: ${value.toFixed(2)}% (total size: ${totalSizePrint})<br>
+      Total files uploaded: ${total_files_uploaded}<br>`;
+
+      statusText.innerHTML = `Progress: ${value.toFixed(2)}%
+      <br>Elapsed time: ${elapsed_time_formatted}<br>`;
+
       divGenerateProgressBar.style.display = "block";
 
       if (main_curate_progress_message.includes("Success: COMPLETED!")) {
@@ -8464,41 +8460,27 @@ const initiate_generate = async () => {
         successful = true;
       }
     } else {
-      statusText.innerHTML =
-        main_curate_progress_message + "<br>" + "Elapsed time: " + elapsed_time_formatted + "<br>";
-      progressStatus.innerHTML =
-        main_curate_progress_message + "<br>" + "Elapsed time: " + elapsed_time_formatted + "<br>";
+      statusText.innerHTML = `${main_curate_progress_message}<br>Elapsed time: ${elapsed_time_formatted}`
+      progressStatus.innerHTML = `${main_curate_progress_message}<br>Elapsed time: ${elapsed_time_formatted}`
     }
 
     if (main_curate_progress_message.includes("Preparing files to be renamed...")) {
       statusMeter.value = 0;
-      progressStatus.innerHTML = "Preparing files to be renamed... <br>Elapsed time: " + elapsed_time_formatted;
-      statusText.innerHTML = "Preparing files to be renamed... <br>Elapsed time: " + elapsed_time_formatted;
+      generateProgressBar.value = 0;
+      progressStatus.innerHTML = `Preparing files to be renamed...<br>Elapsed time: ${elapsed_time_formatted}`
+      statusText.innerHTML = `Preparing files to be renamed... <br>Elapsed time: ${elapsed_time_formatted}`
     }
 
     if (main_curate_progress_message.includes("Renaming files...")) {
-      console.log("value: " + value);
-      console.log("main_generated_dataset_size: " + main_generated_dataset_size);
-      console.log("main_total_generate_dataset_size: " + main_total_generate_dataset_size);
       statusMeter.value = value;
       generateProgressBar.value = value;
-      total_files_uploaded = main_generated_dataset_size = " files out of " + main_total_generate_dataset_size;
-      // main_generated_dataset_size / main_total_generate_dataset_size
-      progressStatus.innerHTML =
-        "Renaming files..." +
-        "<br>Elapsed time: " +
-        elapsed_time_formatted +
-        "<br>Progress: " + 
-        value.toFixed(2) +
-        "%<br>" + 
-        main_generated_dataset_size +
-        " files out of " +
-        main_total_generate_dataset_size;
-      statusText.innerHTML =
-        "Renaming files...<br>Elapsed time: " +
-        elapsed_time_formatted +
-        "<br>Progress: " + 
-        value.toFixed(2);
+      progressStatus.innerHTML = `Renaming files...<br>
+      Elapsed time: ${elapsed_time_formatted}<br>
+      Progress: ${value.toFixed(2)}% 
+      (${main_generated_dataset_size} files out of ${main_total_generate_dataset_size})`;
+      
+      statusText.innerHTML = `Renaming files...<br>Elapsed time: ${elapsed_time_formatted}<br>
+      Progress: ${value.toFixed(2)}%`;
     }
 
     if (main_curate_status === "Done") {
