@@ -5380,6 +5380,9 @@ const addDataArrayToDatasetStructureAtPath = async (importedData) => {
   }
 };
 
+const allowDrop = (ev) => {
+  ev.preventDefault();
+};
 // This function is called when the user drops files into the file explorer
 const drop = async (ev) => {
   // If the user is trying to drag/drop files at the root level of the dataset, show an error
