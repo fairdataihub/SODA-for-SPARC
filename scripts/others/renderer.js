@@ -8422,6 +8422,8 @@ Analytics Logging Section
 //  action: string - Optional. Indicates the step in the metadata preparation process the Success or Failure occurs
 //  destination: string - Optional. The destination where the action is occurring; defined below in an enum
 
+// TEST comment for build spawn
+
 function logMetadataForAnalytics(
   category,
   analyticsActionPrefix,
