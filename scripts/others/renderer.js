@@ -4837,30 +4837,6 @@ ipcRenderer.on("selected-folders-organize-datasets", async (event, importedFolde
 /* ################################################################################## */
 /* ################################################################################## */
 
-const replaceProblematicFoldersWithSDSCompliantNames = (
-  datasetStructure,
-  problematicFolderNames
-) => {
-  const currentFoldersAtPath = Object.keys(datasetStructure.folders);
-
-  for (const folderKey of currentFoldersAtPath) {
-    const folderObj = datasetStructure["folders"][folderKey];
-    const folderPath = folderObj["path"];
-
-    if (problematicFolderNames.includes(folderPath)) {
-      const newFolderName = folderKey.replace("@", "-");
-      const newfolderObj = { ...folderObj };
-      if (!newfolderObj["action"].includes("renamed")) {
-        newfolderObj["action"].push("renamed");
-      }
-      delete datasetStructure["folders"][folderKey];
-      datasetStructure["folders"][newFolderName] = newfolderObj;
-    }
-
-    replaceProblematicFoldersWithSDSCompliantNames(folderObj, problematicFolderNames);
-  }
-};
-
 const getNestedObjectsFromDatasetStructureByPath = (datasetStructure, path) => {
   const pathArray = path.split("/").filter((item) => item !== "");
   let currentObject = datasetStructure;
@@ -4870,24 +4846,10 @@ const getNestedObjectsFromDatasetStructureByPath = (datasetStructure, path) => {
   return currentObject;
 };
 
-const removeForbiddenFilesFromDatasetStructure = (datasetStructure) => {
-  const currentFilesAtPath = Object.keys(datasetStructure.files);
-  for (const fileKey of currentFilesAtPath) {
-    if (validateStringAgainstSdsRequirements(fileKey, "forbidden-files-check")) {
-      delete datasetStructure["files"][fileKey];
-    }
-  }
-
-  const currentFoldersAtPath = Object.keys(datasetStructure.folders);
-  for (const folderKey of currentFoldersAtPath) {
-    removeForbiddenFilesFromDatasetStructure(datasetStructure["folders"][folderKey]);
-  }
-};
-
 const removeHiddenFilesFromDatasetStructure = (datasetStructure) => {
   const currentFilesAtPath = Object.keys(datasetStructure.files);
   for (const fileKey of currentFilesAtPath) {
-    if (validateStringAgainstSdsRequirements(fileKey, "hidden-files-check")) {
+    if (checkStringAgainstSdsRequirements(fileKey, "file-is-hidden")) {
       delete datasetStructure["files"][fileKey];
     }
   }
@@ -4898,10 +4860,33 @@ const removeHiddenFilesFromDatasetStructure = (datasetStructure) => {
   }
 };
 
+const replaceProblematicFoldersWithSDSCompliantNames = (datasetStructure) => {
+  console.log(datasetStructure);
+  const currentFoldersAtPath = Object.keys(datasetStructure.folders);
+  for (const folderKey of currentFoldersAtPath) {
+    console.log(folderKey);
+    if (checkStringAgainstSdsRequirements(folderKey, "folder-and-file-name-is-valid")) {
+      const newFolderName = folderKey.replace(sparcFolderAndFileRegex, "-");
+      console.log(newFolderName);
+
+      const newFolderObj = { ...datasetStructure["folders"][folderKey] };
+      console.log(newFolderObj);
+      if (!newFolderObj["action"].includes("renamed")) {
+        newFolderObj["action"].push("renamed");
+      }
+      datasetStructure["folders"][newFolderName] = newFolderObj;
+      delete datasetStructure["folders"][folderKey];
+
+      console.log(Object.keys(datasetStructure.folders));
+      replaceProblematicFoldersWithSDSCompliantNames(datasetStructure["folders"][newFolderName]);
+    }
+  }
+};
+
 const replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
   const currentFilesAtPath = Object.keys(datasetStructure.files);
   for (const fileKey of currentFilesAtPath) {
-    if (validateStringAgainstSdsRequirements(fileKey, "folder-and-file-names")) {
+    if (checkStringAgainstSdsRequirements(fileKey, "folder-and-file-name-is-valid")) {
       const newFileName = fileKey.replace("@", "-");
       const newFileObj = { ...datasetStructure["files"][fileKey] };
       if (!newFileObj["action"].includes("renamed")) {
@@ -4920,7 +4905,7 @@ const replaceProblematicFilesWithSDSCompliantNames = (datasetStructure) => {
 const deleteProblematicFilesFromDatasetStructure = (datasetStructure) => {
   const currentFilesAtPath = Object.keys(datasetStructure.files);
   for (const fileKey of currentFilesAtPath) {
-    if (validateStringAgainstSdsRequirements(fileKey, "folder-and-file-names")) {
+    if (checkStringAgainstSdsRequirements(fileKey, "folder-and-file-name-is-valid")) {
       delete datasetStructure["files"][fileKey];
     }
   }
@@ -5005,11 +4990,13 @@ const namesOfForbiddenFiles = {
   "Thumbs.db": true,
 };
 
-const validateStringAgainstSdsRequirements = (stringToTest, stringCase) => {
+const sparcFolderAndFileRegex = /[\+&\%#]/g;
+
+const checkStringAgainstSdsRequirements = (stringToTest, stringCase) => {
   const testCases = {
-    "folder-and-file-names": stringToTest.includes("@"),
-    "hidden-files-check": stringToTest.startsWith("."),
-    "forbidden-files-check": namesOfForbiddenFiles?.[stringToTest],
+    "folder-and-file-name-is-valid": sparcFolderAndFileRegex.test(stringToTest),
+    "file-is-hidden": stringToTest.startsWith("."),
+    "file-is-in-forbidden-files-list": namesOfForbiddenFiles?.[stringToTest],
   };
   return testCases[stringCase];
 };
@@ -5064,8 +5051,6 @@ const closeFileImportLoadingSweetAlert = () => {
 };
 
 const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileExplorerPath) => {
-  console.log("itemPaths", itemPaths);
-  console.log("currentFileExplorerPath", currentFileExplorerPath);
   const inaccessibleItems = [];
   const forbiddenFileNames = [];
   const problematicFolderNames = [];
@@ -5082,13 +5067,13 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
 
     try {
       const fsStatsObj = await fs.promises.stat(pathToExplore);
-      console.log("fsStatsObj", fsStatsObj);
 
       if (fsStatsObj.isDirectory()) {
         const folderName = path.basename(pathToExplore);
-        if (folderName.includes("@")) {
-          problematicFolderNames.push(pathToExplore);
+        if (checkStringAgainstSdsRequirements(folderName, "folder-and-file-name-is-valid")) {
+          problematicFolderNames.push(`${currentStructurePath}${folderName}`);
         }
+
         currentStructure["folders"][folderName] = {
           path: pathToExplore,
           type: "local",
@@ -5097,6 +5082,7 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
           action: ["new"],
         };
 
+        // Recursively traverse the folder and build the JSON structure
         const folderContents = await fs.promises.readdir(pathToExplore);
         await Promise.all(
           folderContents.map(async (item) => {
@@ -5118,13 +5104,13 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
           fileName: fileName,
         };
 
-        if (validateStringAgainstSdsRequirements(fileName, "forbidden-files-check")) {
+        if (checkStringAgainstSdsRequirements(fileName, "file-is-in-forbidden-files-list")) {
           forbiddenFileNames.push(fileObject);
         } else {
-          if (validateStringAgainstSdsRequirements(fileName, "folder-and-file-names")) {
+          if (checkStringAgainstSdsRequirements(fileName, "folder-and-file-name-is-valid")) {
             problematicFileNames.push(fileObject);
           }
-          if (validateStringAgainstSdsRequirements(fileName, "hidden-files-check")) {
+          if (checkStringAgainstSdsRequirements(fileName, "file-is-hidden")) {
             hiddenItems.push(fileObject);
           }
           currentStructure["files"][fileName] = {
@@ -5138,9 +5124,7 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
         }
       }
     } catch (error) {
-      console.log("Error accessing path:", pathToExplore);
-      console.log("Reason for error:");
-      console.error(error);
+      // If the path is inaccessible by Node, add it to the inaccessibleItems array
       inaccessibleItems.push(pathToExplore);
     }
   };
@@ -5173,20 +5157,36 @@ const buildDatasetStructureJsonFromImportedData = async (itemPaths, currentFileE
   }
 
   if (problematicFolderNames.length > 0) {
-    //replaceProblematicFoldersWithSDSCompliantNames(datasetStructure, problematicFolderNames);
+    const replaceFolderNames = await swalFileListConfirmAction(
+      problematicFolderNames,
+      "Folders that do not comply with the SPARC data standards were found in your import",
+      `The folders listed below contain the characters '(#&%+)'
+      which are typically not recommended per the SPARC data standards.
+      You may choose to either keep them as is, or replace the characters with '-'.
+      `,
+      "Replace the special characters with '-'",
+      "Keep the folder names as they are",
+      "Would you like to import your folders with special characters?"
+    );
+    if (replaceFolderNames) {
+      replaceProblematicFoldersWithSDSCompliantNames(datasetStructure);
+    }
   }
 
   if (problematicFileNames.length > 0) {
-    const replaceFileNames = await (problematicFileNames.map((file) => file.relativePath),
-    "Some files have problematic names",
-    "warning",
-    "Replace problematic file names",
-    "Do not import problematic files",
-    "What to do with problematic file names");
+    const replaceFileNames = await swalFileListConfirmAction(
+      problematicFileNames.map((file) => file.relativePath),
+      "Files that do not comply with the SPARC data standards were found in your import",
+      `The files listed below contain the characters '(#&%+)'
+      which are typically not recommended per the SPARC data standards.
+      You may choose to either keep them as is, or replace the characters with '-'.
+      `,
+      "Replace the special characters with '-'",
+      "Keep the folder names as they are",
+      "Would you like to import your files with special characters?"
+    );
     if (replaceFileNames) {
       replaceProblematicFilesWithSDSCompliantNames(datasetStructure);
-    } else {
-      deleteProblematicFilesFromDatasetStructure(datasetStructure);
     }
   }
 
