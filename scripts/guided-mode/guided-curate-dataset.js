@@ -6090,7 +6090,7 @@ const openPage = async (targetPageID) => {
               selected_dataset: sodaJSONObj["digital-metadata"]["pennsieve-dataset-id"],
             },
           });
-          const license = licenseReq.data.license;
+          const {license} = licenseReq.data;
           sodaJSONObj["digital-metadata"]["license"] = license;
           sodaJSONObj["pages-fetched-from-pennsieve"].push("guided-assign-license-tab");
         } catch (error) {
@@ -8523,8 +8523,7 @@ const generateContributorField = (
 
 const removeContributorField = (contributorDeleteButton) => {
   const contributorField = contributorDeleteButton.parentElement;
-  const contributorFirstName = contributorField.dataset.contributorFirstName;
-  const contributorLastName = contributorField.dataset.contributorLastName;
+  const {contributorFirstName, contributorLastName} = contributorField.dataset;
 
   const contributorsBeforeDelete =
     sodaJSONObj["dataset-metadata"]["description-metadata"]["contributors"];
@@ -9628,7 +9627,7 @@ const guidedDeleteProtocol = (protocolElement) => {
 
 const removeProtocolField = (protocolElement) => {
   const protocolURL = protocolElement.dataset.protocolUrl;
-  const protocolDescription = protocolElement.dataset.protocolDescription;
+  const {protocolDescription} = protocolElement.dataset;
 
   const protocolsBeforeDelete =
     sodaJSONObj["dataset-metadata"]["description-metadata"]["protocols"];
@@ -11711,7 +11710,7 @@ const renderPoolsHighLevelFolderAsideItems = (highLevelFolderName) => {
         }
       });
       //get the path prefix from the clicked item
-      const pathSuffix = e.target.dataset.pathSuffix;
+      const {pathSuffix} = e.target.dataset;
 
       updateFolderStructureUI(`${highLevelFolderName}/${pathSuffix}`);
     });
@@ -14333,11 +14332,7 @@ $(document).ready(async () => {
           },
         });
       } else {
-        if (type === "changes") {
-          var newName = path.join(path.dirname(destinationPath), "CHANGES.txt");
-        } else {
-          var newName = path.join(path.dirname(destinationPath), "README.txt");
-        }
+        var newName = type === "changes" ? path.join(path.dirname(destinationPath), "CHANGES.txt") : path.join(path.dirname(destinationPath), "README.txt");
         fs.rename(destinationPath, newName, async (err) => {
           if (err) {
             console.log(err);
