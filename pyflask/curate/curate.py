@@ -2613,7 +2613,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
         renaming_files_flow = True
         if list_of_files_to_rename:
             namespace_logger.info("ps_create_new_dataset (optional) step 8 rename files")
-            main_curate_progress_message = ("Gathering file IDs for files to be renamed...")
+            main_curate_progress_message = ("Preparing files to be renamed...")
             dataset_id = ds["content"]["id"]
             collection_ids = {}
             # gets the high level folders in the dataset
@@ -2625,6 +2625,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
             if dataset_content == []:
                 while dataset_content == []:
+                    time.sleep(3)
                     r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(ps))
                     r.raise_for_status()
                     dataset_content = r.json()["children"]
@@ -2641,6 +2642,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
                 if not collections_found:
                     # No collections were found, metadata files were processed but not the high level folders
+                    time.sleep(3)
                     r = requests.get(f"{PENNSIEVE_URL}/datasets/{dataset_id}", headers=create_request_headers(ps))
                     r.raise_for_status()
                     dataset_content = r.json()["children"]
@@ -2668,6 +2670,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                     if dataset_content == []:
                         # request until there is no children content, (folder is empty so files have not been processed yet)
                         while dataset_content == []:
+                            time.sleep(3)
                             r = requests.get(f"{PENNSIEVE_URL}/packages/{high_lvl_folder_id}", headers=create_request_headers(ps))
                             r.raise_for_status()
                             dataset_content = r.json()["children"]
@@ -2694,6 +2697,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                             if dataset_content == []:
                                 # subfolder has no content so request again
                                 while dataset_content == []:
+                                    time.sleep(3)
                                     r = requests.get(f"{PENNSIEVE_URL}/packages/{subfolder_id}", headers=create_request_headers(ps))
                                     r.raise_for_status()
                                     dataset_content = r.json()["children"]
@@ -2717,6 +2721,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                                             if dataset_content == []:
                                                 while dataset_content == []:
                                                     # subfolder has no content so request again
+                                                    time.sleep(3)
                                                     r = requests.get(f"{PENNSIEVE_URL}/packages/{folder_id}", headers=create_request_headers(ps))
                                                     r.raise_for_status()
                                                     dataset_content = r.json()["children"]
@@ -2756,11 +2761,13 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
                     if file_id != "":
                         # id was found so make api call to rename with final file name
-                        r = requests.put(f"{PENNSIEVE_URL}/packages/{file_id}?updateStorage=true", json={"name": new_name}, headers=create_request_headers(ps))
-                        r.raise_for_status()
+                        try:
+                            r = requests.put(f"{PENNSIEVE_URL}/packages/{file_id}?updateStorage=true", json={"name": new_name}, headers=create_request_headers(ps))
+                            r.raise_for_status()
+                        except Exception as e:
+                            if r.status_code == 500:
+                                continue
                         main_generated_dataset_size += 1
-                        if r.status_code == 500:
-                            continue
                     else:
                         # id was not found so keep trying to get the id until it is found
                         all_ids_found = False
@@ -2779,8 +2786,12 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
                                     if file_name == file:
                                         # id was found so make api call to rename with file file name
-                                        r = requests.put(f"{PENNSIEVE_URL}/packages/{file_id}", json={"name": new_name}, headers=create_request_headers(ps))
-                                        r.raise_for_status()
+                                        try:
+                                            r = requests.put(f"{PENNSIEVE_URL}/packages/{file_id}", json={"name": new_name}, headers=create_request_headers(ps))
+                                            r.raise_for_status()
+                                        except Exception as e:
+                                            if r.status_code == 500:
+                                                continue
                                         main_generated_dataset_size += 1
                                         all_ids_found = True
                                         break
