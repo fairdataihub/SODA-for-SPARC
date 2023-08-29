@@ -14070,12 +14070,21 @@ $(document).ready(async () => {
                 2
               ) + " GB";
           }
-          updateDatasetUploadProgressTable({
-            "Upload status": `${main_curate_progress_message}`,
-            "Percent uploaded": `${percentOfDatasetUploaded.toFixed(2)}%`,
-            "Elapsed time": `${elapsed_time_formatted}`,
-            "Files Uploaded": `${totalUploadedFiles}`,
-          });
+          if (main_curate_progress_message.includes("Renaming files...")) {
+            updateDatasetUploadProgressTable({
+              "Upload status": `${main_curate_progress_message}`,
+              "Percent uploaded": `${percentOfDatasetUploaded.toFixed(2)}%`,
+              "Elapsed time": `${elapsed_time_formatted}`,
+              "Files Renamed": `${main_generated_dataset_size} files out of ${main_total_generate_dataset_size}`,
+            });
+          } else {
+            updateDatasetUploadProgressTable({
+              "Upload status": `${main_curate_progress_message}`,
+              "Percent uploaded": `${percentOfDatasetUploaded.toFixed(2)}%`,
+              "Elapsed time": `${elapsed_time_formatted}`,
+              "Files Uploaded": `${totalUploadedFiles}`,
+            });
+          }
         }
       } else {
         updateDatasetUploadProgressTable({
