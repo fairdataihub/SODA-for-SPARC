@@ -3329,7 +3329,7 @@ const setupPublicationOptionsPopover = () => {
   const target = document.getElementById("tui-date-picker-target");
 
   // calculate one year from now
-  var oneYearFromNow = new Date();
+  let oneYearFromNow = new Date();
   oneYearFromNow.setFullYear(oneYearFromNow.getFullYear() + 1);
 
   // initialize the calendar
@@ -3345,9 +3345,6 @@ const setupPublicationOptionsPopover = () => {
   // display/hide calendar on toggle
   $("input[id='embargo-date-check']").on("change", (e) => {
     let tuiCalendarWrapper = document.getElementById("calendar-wrapper");
-    console.log(e)
-    console.log(e.target.value)
-    console.log($(`#${e.target.value}`).is(":checked"))
     if ($(`#${e.target.value}`).is(":checked")) {
       tuiCalendarWrapper.style.visibility = "visible";
     } else {
