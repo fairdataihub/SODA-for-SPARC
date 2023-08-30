@@ -1655,7 +1655,7 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
 
         index += 1
         # check if path exists for folder, if not then folder has not been created on Pennsieve yet, so create it and add it to the path key
-        if "path" not in current_folder_structure["folders"][folder].keys():
+        if "path" not in current_folder_structure["folders"][folder].keys() or current_folder_structure["folders"][folder]["type"] != "bf":
             namespace_logger.info(f"PATH NOT IN CURRENT FOLDER STRUCTURE FOR FOLDER: {folder}")
             namespace_logger.info(f"CURRENT FOLDER STRUCTURE: {current_folder_structure}")
             namespace_logger.info(f"CURRENT FOLDER STRUCTURE PATH: {current_folder_structure['path']}")
@@ -1685,6 +1685,8 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
                     new_folder_id = recursive_check_and_create_ps_file_path(
                         folder["files"][item]["folderpath"].copy(), 0, dataset_structure
                     )
+                    namespace_logger.info(f"parameter: {folder['files'][item]['folderpath']}")
+                    namespace_logger.info(f"NEW FOLDER ID: {new_folder_id}")
                     # move the file into the target folder on Pennsieve
                     r = requests.post(f"{PENNSIEVE_URL}/data/move",  json={"things": [folder["files"][item]["path"]], "destination": new_folder_id}, headers=create_request_headers(ps),)
                     r.raise_for_status()
