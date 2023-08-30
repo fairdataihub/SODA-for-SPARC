@@ -1654,6 +1654,16 @@ def ps_update_existing_dataset(soda_json_structure, ds, ps):
             }
 
         index += 1
+        # check if path exists for folder, if not then folder has not been created on Pennsieve yet, so create it and add it to the path key
+        if "path" not in current_folder_structure["folders"][folder].keys():
+            namespace_logger.info(f"PATH NOT IN CURRENT FOLDER STRUCTURE FOR FOLDER: {folder}")
+            namespace_logger.info(f"CURRENT FOLDER STRUCTURE: {current_folder_structure}")
+            namespace_logger.info(f"CURRENT FOLDER STRUCTURE PATH: {current_folder_structure['path']}")
+            r = requests.post(f"{PENNSIEVE_URL}/packages", headers=create_request_headers(ps), json=build_create_folder_request(folder, current_folder_structure["path"], ds['content']['id']))
+            r.raise_for_status()
+            new_folder_id = r.json()["content"]["id"]
+            current_folder_structure["folders"][folder]["path"] = new_folder_id
+            namespace_logger.info(f"NEW FOLDER CREATED: {new_folder_id}")
 
         if index < len(folderpath):
             return recursive_check_and_create_ps_file_path(
@@ -2636,9 +2646,8 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                     # high lvl folders' ids are stored to be used to find the file IDS
                     if item["content"]["packageType"] == "Collection":
                         collections_found = True
-                        collection_ids[item["content"]["name"]] = {
-                            "id": item["content"]["nodeId"],
-                        }
+                        collection_ids[item["content"]["name"]] = {"id": item["content"]["nodeId"]}
+
 
                 if not collections_found:
                     # No collections were found, metadata files were processed but not the high level folders
@@ -2662,6 +2671,10 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
                 if high_lvl_folder_name in collection_ids:
                     # subfolder_amount will be the amount of subfolders we need to call until we can get the file ID to rename
+                    namespace_logger.info(f"high_lvl_folder_name: {high_lvl_folder_name}")
+                    namespace_logger.info(f"collection_ids: {collection_ids[high_lvl_folder_name]}")
+                    namespace_logger.info(f"collection_ids[high_lvl_folder_name]['id']: {collection_ids[high_lvl_folder_name]['id']}")
+
                     high_lvl_folder_id = collection_ids[high_lvl_folder_name]["id"]
                     r = requests.get(f"{PENNSIEVE_URL}/packages/{high_lvl_folder_id}", headers=create_request_headers(ps))
                     r.raise_for_status()
