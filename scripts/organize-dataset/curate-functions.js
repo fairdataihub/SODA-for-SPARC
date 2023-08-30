@@ -1202,6 +1202,10 @@ const moveItems = async (ev, category) => {
     hideClass: {
       popup: "animate__animated animate__fadeOutUp animate_fastest",
     },
+    didOpen: () => {
+      document.getElementById("swal2-content").style.overflowY = "auto";
+      document.getElementById("swal2-content").style.maxHeight = "500px";
+    },
     preConfirm: () => {
       Swal.resetValidationMessage();
       if (!selectedPath) {
