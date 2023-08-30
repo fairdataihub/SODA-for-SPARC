@@ -2484,7 +2484,7 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
                     list_of_files_to_rename[folder_name][basename(first_file_local_path)] = {
                         "final_file_name": first_final_name,
                         "id": "",
-                    },
+                    }
                     renamed_files_counter += 1
 
             manifest_data = ps.manifest.create(first_file_local_path, folder_name)
@@ -2699,10 +2699,15 @@ def ps_upload_to_dataset(soda_json_structure, ps, ds):
 
                         for item in dataset_content:
                             if item["content"]["packageType"] != "Collection":
+                                namespace_logger.info(f"item: {item}")
                                 file_name = item["content"]["name"]
                                 file_id = item["content"]["nodeId"]
 
                                 if file_name in list_of_files_to_rename[key]:
+                                    namespace_logger.info(f"file_id: {file_id}")
+                                    namespace_logger.info(f"list_of_files_to_rename[key][file_name]: {list_of_files_to_rename[key][file_name]}")
+                                    namespace_logger.info(f"list_of_files_to_rename[key][file_name]['id']: {list_of_files_to_rename[key][file_name]['id']}")
+                                    # name
                                     # store the package id for now
                                     list_of_files_to_rename[key][file_name]["id"] = file_id
                     else:
