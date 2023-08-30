@@ -3185,7 +3185,9 @@ async function updateDatasetCurate(datasetDropdown, bfaccountDropdown) {
     refreshDatasetList();
   } catch (error) {
     clientError(error);
-    curateBFAccountLoadStatus.innerHTML = `<span style='color: red'>${userErrorMessage(error)}</span>`;
+    curateBFAccountLoadStatus.innerHTML = `<span style='color: red'>${userErrorMessage(
+      error
+    )}</span>`;
   }
 }
 
@@ -3227,7 +3229,7 @@ const datasetStatusListChange = () => {
   $(bfCurrentDatasetStatusProgress).css("visibility", "visible");
   $("#bf-dataset-status-spinner").css("display", "block");
   showCurrentDatasetStatus();
-}
+};
 
 // This function is called when the user selects a dataset from the dropdown list
 // It is called to update the UI elements that are related to the publishing status

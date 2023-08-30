@@ -933,7 +933,9 @@ const addBfAccount = async (ev, verifyingOrganization = False) => {
           refreshDatasetList();
         } catch (error) {
           clientError(error);
-          document.getElementById("para-filter-datasets-status-2").innerHTML = `<span style='color: red'>${userErrorMessage(error)}</span>`;
+          document.getElementById(
+            "para-filter-datasets-status-2"
+          ).innerHTML = `<span style='color: red'>${userErrorMessage(error)}</span>`;
           return;
         }
       } catch (error) {
