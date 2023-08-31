@@ -871,12 +871,12 @@ const generateSubmissionHelper = async (uploadBFBoolean) => {
       }
     );
   } catch (e) {
-    clientError(error);
+    clientError(e);
     Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
       heightAuto: false,
       icon: "error",
-      html: userErrorMessage(error),
+      html: userErrorMessage(e),
       title: "Failed to generate the submission file",
     });
 
