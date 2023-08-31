@@ -1375,14 +1375,14 @@ const moveItems = async (ev, category) => {
         // if moved into an empty folder we need to remove the class 'empty'
         // from the folder destination
         let folderDestinationName = pathAsArray[pathAsArray.length - 1];
-        if (myPath?.["folders"]?.[folderDestinationName] != undefined) {
-          if (Object.keys(myPath?.["folders"]?.[folderDestinationName]).length > 0) {
-            //check if element has empty class
-            let listedItems = document.getElementsByClassName("folder_desc");
-            for (let i = 0; i < listedItems.length; i++) {
-              if (listedItems[i].innerText === folderDestinationName) {
-                listedItems[i].parentElement.children[0].classList.remove("empty");
-              }
+        if (
+          myPath?.["folders"]?.[folderDestinationName] != undefined &&
+          Object.keys(myPath?.["folders"]?.[folderDestinationName]).length > 0
+        ) {
+          let listedItems = document.getElementsByClassName("folder_desc");
+          for (let i = 0; i < listedItems.length; i++) {
+            if (listedItems[i].innerText === folderDestinationName) {
+              listedItems[i].parentElement.children[0].classList.remove("empty");
             }
           }
         }
