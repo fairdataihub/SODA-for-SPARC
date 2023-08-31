@@ -237,13 +237,11 @@ contact_us_lottie_observer.observe(contact_section, {
 document.getElementById("guided_mode_view").click();
 
 ipcRenderer.on("checkForAnnouncements", () => {
-  console.log("CHecking for announcements")
-})
-
-
+  console.log("CHecking for announcements");
+});
 
 // check for announcements on startup; if the user is in the auto update workflow do not check for announcements
-// Rationale: The auto update workflow involves refreshing the DOM which will cause a re-run of 
+// Rationale: The auto update workflow involves refreshing the DOM which will cause a re-run of
 //            the renderer process. One potential outcome of this is the renderer reaches this code block before the refresh
 //            and sets the launch_announcements flag to false. On the second run, the one which the user will have time to see announcements
 //            before the DOM reloads, the announcements will not be checked or displayed at all.
@@ -256,8 +254,6 @@ if (autoUpdateLaunch == false || autoUpdateLaunch == null || autoUpdateLaunch ==
   // do not check for announcements on the next launch
   nodeStorage.setItem("launch_announcements", false); // NOTE: launch_announcements is only set to true during the auto update process ( see main.js )
 }
-
-
 
 //////////////////////////////////
 // Connect to Python back-end
@@ -1799,7 +1795,7 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
             didOpen: () => {
               Swal.showLoading();
             },
-          }).then((result) => { });
+          }).then((result) => {});
           generateSubjectsFileHelper(false);
         }
       });
@@ -1815,7 +1811,7 @@ ipcRenderer.on("selected-generate-metadata-subjects", (event, dirpath, filename)
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => { });
+      }).then((result) => {});
       generateSubjectsFileHelper(false);
     }
   }
@@ -1898,7 +1894,7 @@ const generateSubjectsFileHelper = async (uploadBFBoolean) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   try {
     log.info(`Generating a subjects file.`);
@@ -2008,7 +2004,7 @@ ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) 
             didOpen: () => {
               Swal.showLoading();
             },
-          }).then((result) => { });
+          }).then((result) => {});
           generateSamplesFileHelper(uploadBFBoolean);
         }
       });
@@ -2024,7 +2020,7 @@ ipcRenderer.on("selected-generate-metadata-samples", (event, dirpath, filename) 
         didOpen: () => {
           Swal.showLoading();
         },
-      }).then((result) => { });
+      }).then((result) => {});
       generateSamplesFileHelper(uploadBFBoolean);
     }
   }
@@ -2106,7 +2102,7 @@ const generateSamplesFileHelper = async (uploadBFBoolean) => {
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
 
   try {
     let samplesFileResponse = await client.post(
@@ -2626,7 +2622,7 @@ const loadTaxonomySpecies = async (commonName, destinationInput, curationMode) =
     didOpen: () => {
       Swal.showLoading();
     },
-  }).then((result) => { });
+  }).then((result) => {});
   try {
     let load_taxonomy_species = await client.get(`/taxonomy/species`, {
       params: {
@@ -4937,10 +4933,10 @@ const swalFileListSingleAction = async (fileList, title, helpText, postActionTex
       ${helpText ? `<p>${helpText}</p>` : ""}
       <div class="swal-file-list">
         ${fileList
-        .map(
-          (file) => `<div class="swal-file-row"><span class="swal-file-text">${file}</span></div>`
-        )
-        .join("")}
+          .map(
+            (file) => `<div class="swal-file-row"><span class="swal-file-text">${file}</span></div>`
+          )
+          .join("")}
       </div>
       ${postActionText ? `<b>${postActionText}</b>` : ""}
     `,
@@ -6555,8 +6551,9 @@ const listItems = async (jsonObj, uiItem, amount_req, reset) => {
           ${dragDropInstructionsText}
         </p>
         <p class="text-center">
-          You may also <b>add</b> or <b>import</b> ${folderType === undefined ? "folders or files" : folderType + " data"
-      } using the buttons in the upper right corner
+          You may also <b>add</b> or <b>import</b> ${
+            folderType === undefined ? "folders or files" : folderType + " data"
+          } using the buttons in the upper right corner
         </p>
       </div>`
     );
@@ -7244,7 +7241,7 @@ const deleteTreeviewFiles = (sodaJSONObj) => {
     if (
       "manifest.xlsx" in sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"] &&
       sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"][
-      "forTreeview"
+        "forTreeview"
       ]
     ) {
       delete sodaJSONObj["dataset-structure"]["folders"][highLevelFol]["files"]["manifest.xlsx"];

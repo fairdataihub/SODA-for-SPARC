@@ -460,7 +460,7 @@ autoUpdater.on("update-available", () => {
 });
 autoUpdater.on("update-downloaded", () => {
   log.info("update_downloaded");
-  // set the launch announcements and auto update flags to true here to handle the case where a user closes the application once the update is downloaded 
+  // set the launch announcements and auto update flags to true here to handle the case where a user closes the application once the update is downloaded
   // via some means other than the notyf popup
   nodeStorage.setItem("launch_announcements", true);
   nodeStorage.setItem("auto_update_launch", true);
