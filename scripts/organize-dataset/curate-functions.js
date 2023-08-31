@@ -1224,6 +1224,7 @@ const moveItems = async (ev, category) => {
   });
 
   if (folderDestination) {
+    console.log(`Folder destination: ${folderDestination}`);
     // Confirm with user if they want to move the item(s)
     const { value: confirm } = await Swal.fire({
       backdrop: "rgba(0,0,0, 0.4)",
@@ -1243,6 +1244,8 @@ const moveItems = async (ev, category) => {
     });
 
     if (confirm) {
+      // User confimed the moving of the item(s)
+      // TODO: Dorian -> Add a nicer loading icon for the sweet alert here
       let duplicateItems = [`<ul style="text-align: center;">`];
       let numberItems = $("div.single-item.selected-item").toArray().length;
       let timer = 2000;
@@ -1268,27 +1271,38 @@ const moveItems = async (ev, category) => {
         // multiple files/folders
         let split = selectedPath.split("/");
         let datasetCopy = datasetStructureJSONObj;
+        let splitSelectedPath = selectedPath.split("/");
+        let datasetStructureCopy = datasetStructureJSONObj;
+
+        console.log(`div.single-item.selected-item: ${$("div.single-item.selected-item")}`);
+        console.log(`div.single-item.selected-item: ${$("div.single-item.selected-item").toArray()}`);
+        console.log(`div.single-item.selected-item: ${$("div.single-item.selected-item").toArray().length}`);
+
         if ($("div.single-item.selected-item").toArray().length > 1) {
+          // Moving multiple items
           $("div.single-item.selected-item")
             .toArray()
             .forEach((element) => {
+              console.log(`element: ${element}`);
               datasetCopy = datasetStructureJSONObj;
               let itemToMove = element.textContent;
               let itemType = "";
+              
               if ($(element.firstElementChild).hasClass("myFile")) {
                 itemType = "file";
               } else if ($(element.firstElementChild).hasClass("myFol")) {
                 itemType = "folder";
               }
+              console.log(`Item type was decided to be: ${itemType}`);
               //do a check here
               //store duplicates into array and then skip
               //let user know which ones were duplicates
-
               for (let i = 1; i < split.length; i++) {
                 if (datasetCopy["folders"].hasOwnProperty(split[i])) {
                   datasetCopy = datasetCopy["folders"][split[i]];
                 }
               }
+
               if (itemType == "file") {
                 datasetCopy = datasetCopy["files"];
               } else {
@@ -1297,11 +1311,14 @@ const moveItems = async (ev, category) => {
 
               if (datasetCopy.hasOwnProperty(itemToMove)) {
                 if (itemType == "folder") {
-                  itemToMove = itemToMove + "/";
+                  itemToMove += "/";
                 }
                 duplicateItems.push(`<li style="font-size: large;">${itemToMove}</li>`);
               } else {
+                console.log(`Moving ${itemToMove} to ${selectedPath}`)
                 moveItemsHelper(itemToMove, selectedPath, itemType, organizeDSglobalPath);
+                console.log(`Removing ${element.parentElement}`);
+                console.log(`Remove ev.parentElement: ${ev.parentElement}`)
                 ev.parentElement.remove();
               }
             });
@@ -1321,6 +1338,8 @@ const moveItems = async (ev, category) => {
           }
           // only 1 file/folder
         } else {
+          console.log("single file move only")
+          console.log(`ev: ${ev}`);
           let itemToMove = ev.parentElement.textContent;
           let itemType = "";
 
@@ -1341,6 +1360,7 @@ const moveItems = async (ev, category) => {
           } else {
             datasetCopy = datasetCopy["folders"];
           }
+
           if (datasetCopy.hasOwnProperty(itemToMove)) {
             Swal.fire({
               backdrop: "rgba(0,0,0, 0.4)",
@@ -1367,6 +1387,8 @@ const moveItems = async (ev, category) => {
             });
           }
         }
+
+        // Rerender the file view again
         let pathAsArray = selectedPath.split("/");
         listItems(myPath, "#items", 500);
         getInFolder(".single-item", "#items", organizeDSglobalPath, myPath);
@@ -1374,12 +1396,16 @@ const moveItems = async (ev, category) => {
         // if moved into an empty folder we need to remove the class 'empty'
         // from the folder destination
         let folderDestinationName = pathAsArray[pathAsArray.length - 1];
+        console.log(`folderDestinationName: ${folderDestinationName}`);
         if (
           myPath?.["folders"]?.[folderDestinationName] != undefined &&
           Object.keys(myPath?.["folders"]?.[folderDestinationName]).length > 0
         ) {
           let listedItems = document.getElementsByClassName("folder_desc");
+          console.log(`listedItems: ${listedItems}`);
+          console.log("about to loop through listedItems");
           for (let i = 0; i < listedItems.length; i++) {
+            console.log(`listedItems[i].innerText: ${listedItems[i].innerText}`);
             if (listedItems[i].innerText === folderDestinationName) {
               listedItems[i].parentElement.children[0].classList.remove("empty");
             }
