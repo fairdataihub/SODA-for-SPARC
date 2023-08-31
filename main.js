@@ -282,10 +282,10 @@ function initialize() {
             });
         }
       } else {
-        // set firstLaunch and launchAnnouncements to true so that when SODA restarts after the auto update the renderer process knows
-        // to consider the launch as a fresh launch wherein we show the announcements
-        nodeStorage.setItem("freshLaunch", true);
-        nodeStorage.setItem("launchAnnouncements", true);
+        // if this flag is true SODA for SPARC will run through the auto update launch workflow
+        nodeStorage.setItem("auto_update_launch", true);
+        // after an autoupdate we want to display announcements at launch
+        nodeStorage.setItem("launch_announcements", true);
         await exitPyProc();
         app.exit();
       }
@@ -339,17 +339,13 @@ function initialize() {
         //mainWindow.maximize();
         mainWindow.show();
         createWindow();
-        var first_launch = nodeStorage.getItem("firstLaunch");
-        var announcementsLaunch = nodeStorage.getItem("announcements");
-        if (first_launch == true || first_launch == undefined) {
+        var first_launch = nodeStorage.getItem("auto_update_launch");
+        if (first_launch == true) {
+          nodeStorage.setItem("auto_update_launch", false);
           mainWindow.reload();
           mainWindow.focus();
-          // nodeStorage.setItem("firstlaunch", false);
         }
-        if (announcementsLaunch == true || announcementsLaunch == undefined) {
-          checkForAnnouncements();
-          nodeStorage.setItem("announcements", false);
-        }
+
         start_pre_flight_checks();
         if (!buildIsBeta) {
           autoUpdater.checkForUpdatesAndNotify();
@@ -358,7 +354,7 @@ function initialize() {
       }, 6000);
     });
     mainWindow.on("show", () => {
-      var first_launch = nodeStorage.getItem("firstLaunch");
+      var first_launch = nodeStorage.getItem("auto_update_launch");
       // if ((first_launch == true || first_launch == undefined) && window_reloaded == false) {
       // }
     });
@@ -464,9 +460,10 @@ autoUpdater.on("update-available", () => {
 });
 autoUpdater.on("update-downloaded", () => {
   log.info("update_downloaded");
-  // set the announcements and freshLaunch flags to true so that when SODA restarts after the auto update the renderer process knows
-  nodeStorage.setItem("freshLaunch", true);
-  nodeStorage.setItem("launchAnnouncements", true);
+  // set the launch announcements and auto update flags to true here to handle the case where a user closes the application once the update is downloaded 
+  // via some means other than the notyf popup
+  nodeStorage.setItem("launch_announcements", true);
+  nodeStorage.setItem("auto_update_launch", true);
   mainWindow.webContents.send("update_downloaded");
 });
 ipcMain.on("restart_app", async () => {
